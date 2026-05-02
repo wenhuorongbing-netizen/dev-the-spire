@@ -46,7 +46,7 @@ Every item in this list blocks implementation until resolved.
 | Exact UI preview / reward resolution relationship | PARTIAL | `EventOption` has `TextKey`, `Title`, `Description`, `OnChosen`, `Relic`, and `Chosen()`. Exact UI binding path remains UNKNOWN. |
 | Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Local BaseLib XML/reflection shows custom Ancient support, not an explicit API for mutating existing basegame Ancient rewards. Inspect source/examples before deciding. |
 | Whether Harmony is required | UNKNOWN | Determine whether BaseLib/template APIs are sufficient |
-| Safest no-op logging probe point | CANDIDATE ONLY | Candidate: postfix on `AncientEventModel.GenerateInitialOptionsWrapper()` with reflected signature `protected instance virtual final IReadOnlyList<EventOption>`. See `docs/ANCIENT_REWARD_NOOP_PROBE_SPEC.md`. Not approved until call order and no-op behavior are verified. |
+| No-op logging probe point | OBSERVED WORKING NO-OP PROBE | Postfix on `AncientEventModel.GenerateInitialOptionsWrapper()` with reflected signature `protected instance virtual final IReadOnlyList<EventOption>` has been observed in game as a working no-op probe. This does not approve reward tuning. |
 | Rollback plan for first implementation | PARTIAL | Finalize once implementation path and touched files are known |
 | One-Ancient MVP target | UNKNOWN | Select after catalog and balance map have observed facts |
 | Repeatable test procedure | UNKNOWN | Identify deterministic or practical route to observe Ancient rewards |
@@ -132,7 +132,7 @@ Implementation is blocked until all entries are filled with evidence.
 | Exact UI preview / reward resolution relationship | How display text maps to applied effect | UNKNOWN |
 | Whether BaseLib can modify existing Ancient rewards | API evidence or explicit absence | UNKNOWN |
 | Whether Harmony is required | Decision after BaseLib/template review | UNKNOWN |
-| Safest no-op logging probe point | Exact method/API and why no mutation occurs | UNKNOWN |
+| No-op logging probe point | Exact method/API and why no mutation occurs | OBSERVED WORKING NO-OP PROBE for logging metadata only; not evidence for reward tuning |
 | Rollback plan | Touched files, feature flag if any, revert path | UNKNOWN |
 | One-Ancient MVP target | Observed reward, rationale, proposed minimal change | UNKNOWN |
 | Test procedure | Steps to observe, trigger, verify, and inspect logs | UNKNOWN |
@@ -147,9 +147,11 @@ Key local findings:
 - BaseLib custom Ancient class: `BaseLib.Abstracts.CustomAncientModel : AncientEventModel`.
 - BaseLib custom option helpers: `BaseLib.Utils.OptionPools`, `BaseLib.Utils.AncientOption`, `BaseLib.Utils.WeightedList<T>`.
 - BaseLib internal patches add custom Ancients through `ActModel.GenerateRooms` and `ModelDb.AllSharedAncients`.
+- Manual verification reported on 2026-05-03: `AncientRewardNoopProbe` entries appeared in `godot.log`, Ancient options appeared and selected normally, no probe exception appeared, and no visible gameplay behavior changed.
 
 Remaining blocker:
 - No local evidence yet proves that BaseLib can modify existing basegame Ancient reward options without a project-level Harmony patch.
+- One-Ancient MVP target remains UNKNOWN.
 
 ## Research Output Checklist
 - Update `docs/ANCIENT_REWARD_BALANCE_MAP.md` with observed facts.

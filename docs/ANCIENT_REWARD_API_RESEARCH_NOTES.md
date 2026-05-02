@@ -11,6 +11,8 @@ The research does not yet prove a verified non-mutating way to tune existing bas
 
 An approved no-op logging probe has been implemented for research only. It observes Ancient option generation metadata and must not mutate rewards, options, UI text, player state, run state, room state, act state, save data, or RNG state.
 
+Manual verification reported on 2026-05-03: `AncientRewardNoopProbe` log entries appeared in `godot.log`; BaseLib and EzDailyContent were enabled; Ancient options appeared normally; option selection worked normally; the game did not crash; no `AncientRewardNoopProbe` exception appeared; no visible gameplay behavior changed. Exact log lines were not copied into this document.
+
 Most important finding:
 - StS2 Ancient events are represented by `MegaCrit.Sts2.Core.Models.AncientEventModel`.
 - Ancient reward/choice UI options are represented at the event layer by `MegaCrit.Sts2.Core.Events.EventOption`.
@@ -50,7 +52,7 @@ Most important finding:
 | Exact UI preview to reward resolution relationship | PARTIAL | `EventOption` properties are known, but UI binding and choice resolution path need verification |
 | Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Local XML/reflection showed custom Ancient support, not explicit existing-reward mutation support |
 | Whether Harmony is required for existing reward tuning | UNKNOWN | Cannot decide until BaseLib source/examples and basegame call flow are checked |
-| Safest no-op logging probe point | CANDIDATE ONLY | `AncientEventModel.GenerateInitialOptionsWrapper()` is plausible but not approved |
+| No-op logging probe point | OBSERVED WORKING NO-OP PROBE | `AncientEventModel.GenerateInitialOptionsWrapper()` has been manually observed in game as a working no-op probe. This does not approve reward tuning. |
 | One-Ancient MVP target | UNKNOWN | No observed reward catalog exists yet |
 | Repeatable test procedure | UNKNOWN | In-game route to specific Ancient rewards is not documented yet |
 
@@ -178,6 +180,18 @@ What remains UNKNOWN:
 - Whether Harmony is required for future reward tuning.
 - One-Ancient MVP target.
 - Repeatable Ancient reward test path.
+
+Manual verification status:
+- Status: observed in game as a working no-op probe.
+- Evidence: user reported `AncientRewardNoopProbe` entries in `godot.log`.
+- BaseLib: enabled.
+- EzDailyContent: enabled.
+- Ancient options: appeared normally.
+- Option selection: worked normally.
+- Crash: none observed.
+- Probe exception: none observed.
+- Visible gameplay behavior change: none observed.
+- Reward tuning gate: still closed.
 
 Manual game test steps:
 1. Run `dotnet build`.

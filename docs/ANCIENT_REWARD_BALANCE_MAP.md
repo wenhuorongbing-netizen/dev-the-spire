@@ -17,7 +17,7 @@ This document separates observed facts from assumptions. It is not an implementa
 | Exact UI preview / reward resolution relationship | PARTIAL | `EventOption` text/resolution members confirmed; UI binding still required |
 | Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Custom Ancient support found; no explicit existing-reward mutation API found locally |
 | Whether Harmony is required | UNKNOWN | Required before implementation |
-| Safest no-op logging probe point | CANDIDATE ONLY | `AncientEventModel.GenerateInitialOptionsWrapper()` candidate only; not approved |
+| No-op logging probe point | OBSERVED WORKING NO-OP PROBE | `AncientEventModel.GenerateInitialOptionsWrapper()` logging probe observed in game; reward tuning still not approved |
 | Rollback plan | UNKNOWN | Required before implementation |
 | One-Ancient MVP target | UNKNOWN | Required before implementation |
 | Test procedure | UNKNOWN | Required before implementation |
@@ -77,6 +77,7 @@ Assumptions are not implementation evidence.
 |---|---|---|---|---|---|
 | TODO | TODO | TODO | TODO | TODO | TODO |
 | 2026-05-02 | Local reflection/XML | `sts2.dll`, `BaseLib.dll`, `BaseLib.xml` | `AncientEventModel`, `EventOption`, BaseLib `CustomAncientModel`, `OptionPools`, and `AncientOption` signatures confirmed | Medium-high | Inspect call flow and BaseLib source/examples |
+| 2026-05-03 | Manual game verification | `godot.log` and in-game Ancient event observation | `AncientRewardNoopProbe` log entries appeared; BaseLib and EzDailyContent were enabled; Ancient options appeared and selected normally; no probe exception or visible behavior change was observed | Medium | Use probe logs to build observed Ancient reward catalog before selecting MVP |
 
 ## Candidate Reward Evaluation
 Do not select an MVP until observed facts are available.
@@ -96,6 +97,10 @@ Selection requires:
 - Known BaseLib vs Harmony implementation path.
 - Known test procedure.
 - Known rollback plan.
+
+Current status:
+- No One-Ancient MVP target selected.
+- Reward tuning gate remains closed.
 
 ## Forbidden Until Proven
 - Broad reward pool patches.
