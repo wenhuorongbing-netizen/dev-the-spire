@@ -50,18 +50,18 @@ Implementation is forbidden until every gate item is documented.
 
 | Gate Item | Current Status | Required Before Implementation |
 |---|---|---|
-| Exact Ancient model class or registry location | UNKNOWN | Class/namespace/registry owner with evidence |
-| Exact reward option model or pool type | UNKNOWN | Type name and how options are stored/generated |
-| Exact reward generation timing | UNKNOWN | Method/event where Ancient reward options are built |
-| Exact UI preview / reward resolution relationship | UNKNOWN | Evidence for how preview text maps to applied effect |
-| Whether BaseLib can modify existing Ancient rewards | UNKNOWN | API evidence or documented absence |
+| Exact Ancient model class or registry location | PARTIAL | `MegaCrit.Sts2.Core.Models.AncientEventModel` is confirmed; act-level Ancient members are confirmed. Exact basegame data source/population path remains UNKNOWN. |
+| Exact reward option model or pool type | PARTIAL | `MegaCrit.Sts2.Core.Events.EventOption` is confirmed; BaseLib custom pools are confirmed. Exact basegame reward pool type remains UNKNOWN. |
+| Exact reward generation timing | PARTIAL | Relevant generation signatures are confirmed, but exact call order remains UNKNOWN. |
+| Exact UI preview / reward resolution relationship | PARTIAL | `EventOption` text/resolution members are confirmed, but UI binding path remains UNKNOWN. |
+| Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Local BaseLib XML/reflection shows custom Ancient support, not explicit existing-reward mutation support. |
 | Whether Harmony is required | UNKNOWN | Decision after BaseLib/template research |
-| Safest no-op logging probe point | UNKNOWN | Exact non-mutating method/API to log from |
+| Safest no-op logging probe point | CANDIDATE ONLY | `AncientEventModel.GenerateInitialOptionsWrapper()` is a candidate observation point; not approved until verified. |
 | Rollback plan | UNKNOWN | Touched files, revert path, and runtime disable path |
 | One-Ancient MVP target | UNKNOWN | Selected observed reward and minimal proposed change |
 | Test procedure | UNKNOWN | Repeatable in-game verification route and log check |
 
-If any status remains `UNKNOWN`, implementation must not begin.
+If any status remains `UNKNOWN`, `PARTIAL`, `NO DIRECT API FOUND`, or `CANDIDATE ONLY`, implementation must not begin.
 
 ## Reward Design Philosophy
 Ancient reward optimization should improve decision quality, not simply increase power.
@@ -95,7 +95,7 @@ This taxonomy is provisional until real reward models are inspected.
 ### Option A: BaseLib-supported modification
 Use BaseLib or template APIs to modify existing Ancient reward behavior or pools.
 
-Status: UNKNOWN.
+Status: NO DIRECT API FOUND in local XML/reflection.
 
 Required evidence:
 - API name.
@@ -106,7 +106,7 @@ Required evidence:
 ### Option B: Additive supported content
 Use BaseLib/template APIs to add new Ancient reward models or variants without mutating basegame entries.
 
-Status: UNKNOWN.
+Status: PARTIAL. `CustomAncientModel` and BaseLib custom option pools are confirmed, but this is not the same as tuning existing basegame Ancient rewards.
 
 Required evidence:
 - Whether `CustomAncientModel` exists and what it supports.
@@ -196,7 +196,7 @@ Future config may be considered only if:
 Logging is research-gated.
 
 Required before logging implementation:
-- Exact no-op probe point: UNKNOWN.
+- Exact no-op probe point: CANDIDATE ONLY.
 - Logging API: UNKNOWN.
 - Confirmation that logging does not mutate reward generation: UNKNOWN.
 

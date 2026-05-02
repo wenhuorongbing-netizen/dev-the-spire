@@ -11,13 +11,13 @@ This document separates observed facts from assumptions. It is not an implementa
 
 | Gate Item | Status | Notes |
 |---|---|---|
-| Exact Ancient model class or registry location | UNKNOWN | Required before implementation |
-| Exact reward option model or pool type | UNKNOWN | Required before implementation |
-| Exact reward generation timing | UNKNOWN | Required before implementation |
-| Exact UI preview / reward resolution relationship | UNKNOWN | Required before implementation |
-| Whether BaseLib can modify existing Ancient rewards | UNKNOWN | Required before implementation |
+| Exact Ancient model class or registry location | PARTIAL | `AncientEventModel` confirmed; exact basegame data source/population path still required |
+| Exact reward option model or pool type | PARTIAL | `EventOption` confirmed; BaseLib custom `OptionPools` confirmed; basegame pool type still required |
+| Exact reward generation timing | PARTIAL | Relevant signatures confirmed; exact call order still required |
+| Exact UI preview / reward resolution relationship | PARTIAL | `EventOption` text/resolution members confirmed; UI binding still required |
+| Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Custom Ancient support found; no explicit existing-reward mutation API found locally |
 | Whether Harmony is required | UNKNOWN | Required before implementation |
-| Safest no-op logging probe point | UNKNOWN | Required before implementation |
+| Safest no-op logging probe point | CANDIDATE ONLY | `AncientEventModel.GenerateInitialOptionsWrapper()` candidate only; not approved |
 | Rollback plan | UNKNOWN | Required before implementation |
 | One-Ancient MVP target | UNKNOWN | Required before implementation |
 | Test procedure | UNKNOWN | Required before implementation |
@@ -76,6 +76,7 @@ Assumptions are not implementation evidence.
 | Date | Evidence Type | Source | Finding | Confidence | Follow-up |
 |---|---|---|---|---|---|
 | TODO | TODO | TODO | TODO | TODO | TODO |
+| 2026-05-02 | Local reflection/XML | `sts2.dll`, `BaseLib.dll`, `BaseLib.xml` | `AncientEventModel`, `EventOption`, BaseLib `CustomAncientModel`, `OptionPools`, and `AncientOption` signatures confirmed | Medium-high | Inspect call flow and BaseLib source/examples |
 
 ## Candidate Reward Evaluation
 Do not select an MVP until observed facts are available.

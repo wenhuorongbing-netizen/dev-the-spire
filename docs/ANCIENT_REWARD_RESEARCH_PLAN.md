@@ -40,13 +40,13 @@ Every item in this list blocks implementation until resolved.
 
 | Required Fact | Current Status | Research Task |
 |---|---|---|
-| Exact Ancient model class or registry location | UNKNOWN | Inspect StS2 assemblies and BaseLib APIs for Ancient model registration |
-| Exact reward option model or pool type | UNKNOWN | Inspect reward option, choice, pool, and Ancient-related types |
-| Exact reward generation timing | UNKNOWN | Identify when Ancient reward choices are constructed and resolved |
-| Exact UI preview / reward resolution relationship | UNKNOWN | Trace preview text/model to selected reward effect resolution |
-| Whether BaseLib can modify existing Ancient rewards | UNKNOWN | Inspect BaseLib docs/source/API for existing reward modification support |
+| Exact Ancient model class or registry location | PARTIAL | Model class is `MegaCrit.Sts2.Core.Models.AncientEventModel`; act-level Ancient members include `ActModel.AllAncients`, `_sharedAncientSubset`, `GetUnlockedAncients`, `SetSharedAncientSubset`, and `PullAncient`. Exact basegame data source/population path remains UNKNOWN. |
+| Exact reward option model or pool type | PARTIAL | Event-layer option model is `MegaCrit.Sts2.Core.Events.EventOption`; BaseLib custom Ancient pools use `BaseLib.Utils.OptionPools`, `WeightedList<AncientOption>`, and `RelicModel`. Exact basegame reward pool type remains UNKNOWN. |
+| Exact reward generation timing | PARTIAL | Relevant signatures exist: `EventModel.BeginEvent`, `EventModel.GenerateInitialOptionsWrapper`, `EventModel.GenerateInitialOptions`, and `AncientEventModel.GenerateInitialOptionsWrapper`. Exact call order remains UNKNOWN. |
+| Exact UI preview / reward resolution relationship | PARTIAL | `EventOption` has `TextKey`, `Title`, `Description`, `OnChosen`, `Relic`, and `Chosen()`. Exact UI binding path remains UNKNOWN. |
+| Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Local BaseLib XML/reflection shows custom Ancient support, not an explicit API for mutating existing basegame Ancient rewards. Inspect source/examples before deciding. |
 | Whether Harmony is required | UNKNOWN | Determine whether BaseLib/template APIs are sufficient |
-| Safest no-op logging probe point | UNKNOWN | Find the smallest point that can log without mutating behavior |
+| Safest no-op logging probe point | CANDIDATE ONLY | Candidate: postfix on nonpublic `AncientEventModel.GenerateInitialOptionsWrapper()` to observe returned options. Not approved until call order and no-op behavior are verified. |
 | Rollback plan for first implementation | PARTIAL | Finalize once implementation path and touched files are known |
 | One-Ancient MVP target | UNKNOWN | Select after catalog and balance map have observed facts |
 | Repeatable test procedure | UNKNOWN | Identify deterministic or practical route to observe Ancient rewards |
@@ -95,8 +95,8 @@ The following names and concepts are hypotheses until proven by inspection.
 
 | Hypothesis | Status | Do Not Assume |
 |---|---|---|
-| `CustomAncientModel` can tune existing Ancient rewards | UNPROVEN | Do not build around it until BaseLib evidence exists |
-| Ancient rewards are generated from weighted pools | UNPROVEN | Do not design weight tuning until pool type is known |
+| `CustomAncientModel` can tune existing Ancient rewards | UNPROVEN | Evidence confirms custom Ancient support, not existing basegame reward mutation |
+| Ancient rewards are generated from weighted pools | PARTIAL | BaseLib custom Ancient options use weighted pools; basegame pool type remains UNKNOWN |
 | Reward options are relic-like | UNPROVEN | Do not use relic hooks unless model evidence supports it |
 | Reward effects resolve through command APIs | UNPROVEN | Do not call command APIs until reward resolution is known |
 | Act number is available during reward generation | UNPROVEN | Do not design act-sensitive MVP until context evidence exists |
@@ -136,6 +136,20 @@ Implementation is blocked until all entries are filled with evidence.
 | Rollback plan | Touched files, feature flag if any, revert path | UNKNOWN |
 | One-Ancient MVP target | Observed reward, rationale, proposed minimal change | UNKNOWN |
 | Test procedure | Steps to observe, trigger, verify, and inspect logs | UNKNOWN |
+
+## 9. API Research Notes
+See `docs/ANCIENT_REWARD_API_RESEARCH_NOTES.md`.
+
+Key local findings:
+- StS2 model class: `MegaCrit.Sts2.Core.Models.AncientEventModel`.
+- StS2 event option class: `MegaCrit.Sts2.Core.Events.EventOption`.
+- StS2 act-level Ancient members: `ActModel.AllAncients`, `_sharedAncientSubset`, `GetUnlockedAncients`, `SetSharedAncientSubset`, and `PullAncient`.
+- BaseLib custom Ancient class: `BaseLib.Abstracts.CustomAncientModel : AncientEventModel`.
+- BaseLib custom option helpers: `BaseLib.Utils.OptionPools`, `BaseLib.Utils.AncientOption`, `BaseLib.Utils.WeightedList<T>`.
+- BaseLib internal patches add custom Ancients through `ActModel.GenerateRooms` and `ModelDb.AllSharedAncients`.
+
+Remaining blocker:
+- No local evidence yet proves that BaseLib can modify existing basegame Ancient reward options without a project-level Harmony patch.
 
 ## Research Output Checklist
 - Update `docs/ANCIENT_REWARD_BALANCE_MAP.md` with observed facts.
