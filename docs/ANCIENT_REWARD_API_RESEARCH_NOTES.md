@@ -9,6 +9,8 @@ Local inspection found evidence for the core Ancient event model and option repr
 
 The research does not yet prove a verified non-mutating way to tune existing basegame Ancient rewards. The implementation gate remains closed.
 
+An approved no-op logging probe has been implemented for research only. It observes Ancient option generation metadata and must not mutate rewards, options, UI text, player state, run state, room state, act state, save data, or RNG state.
+
 Most important finding:
 - StS2 Ancient events are represented by `MegaCrit.Sts2.Core.Models.AncientEventModel`.
 - Ancient reward/choice UI options are represented at the event layer by `MegaCrit.Sts2.Core.Events.EventOption`.
@@ -124,6 +126,70 @@ These are candidates only. They are not approved implementation points.
 | Postfix on `AncientEventModel.GenerateInitialOptionsWrapper()` | Reflection signature: `protected instance virtual final IReadOnlyList<EventOption> MegaCrit.Sts2.Core.Models.AncientEventModel.GenerateInitialOptionsWrapper()` | Could log generated options without mutating them | Nonpublic and beta-fragile; call order not verified | Explicit approval, no-op-only patch plan, rollback; see `docs/ANCIENT_REWARD_NOOP_PROBE_SPEC.md` |
 | Postfix on `EventModel.SetEventState(...)`, filtered to `AncientEventModel` | Nonpublic method receives event options | Could observe final current options | Broad base event method; filtering mistake could affect all events | Prefer Ancient-specific point first |
 | Logging through BaseLib diagnostics if available | BaseLib includes diagnostics/logging-related types | Could avoid direct game patching | Not yet tied to Ancient generation | Inspect BaseLib logging examples |
+
+## Implemented No-Op Probe
+
+Implementation file:
+- `EzDailyContentCode/AncientRewardNoopProbe.cs`
+
+Approved target:
+- `MegaCrit.Sts2.Core.Models.AncientEventModel.GenerateInitialOptionsWrapper()`
+
+Patch shape:
+- Harmony postfix observer.
+- No prefix.
+- No transpiler.
+- No finalizer.
+- No return-value replacement.
+
+Logged fields:
+- Ancient runtime type.
+- Option count.
+- Option runtime type.
+- `TextKey`, if accessible.
+- Whether `Relic` is null.
+- `IsLocked`.
+- `IsProceed`.
+- `ShouldSaveChoiceToHistory`.
+
+Not logged:
+- `Title`.
+- `Description`.
+- Full localized text.
+- Full object serialization.
+- Player deck.
+- Save data.
+- Personal filesystem paths.
+
+No-op constraints:
+- Does not call `EventOption.Chosen()`.
+- Does not call `EventOption.WithRelic(...)`.
+- Does not mutate `EventOption` properties.
+- Does not mutate `AncientEventModel.GeneratedOptions`.
+- Does not mutate player, deck, relic, reward, run, room, act, save, or RNG state.
+- If logging fails, it logs the exception type/message if possible and does not change return values.
+
+What remains UNKNOWN:
+- Exact call order around `GenerateInitialOptionsWrapper()`.
+- Whether this is the lowest-risk long-term observation point.
+- Whether all logged getters are permanently side-effect free across public beta updates.
+- Whether BaseLib has a better public diagnostic hook.
+- Whether BaseLib can modify existing basegame Ancient rewards.
+- Whether Harmony is required for future reward tuning.
+- One-Ancient MVP target.
+- Repeatable Ancient reward test path.
+
+Manual game test steps:
+1. Run `dotnet build`.
+2. Run `dotnet publish`.
+3. Launch Slay the Spire 2 public beta `v0.104.0`.
+4. Confirm BaseLib is enabled in Mod Settings.
+5. Confirm EzDailyContent is enabled in Mod Settings.
+6. Reach an Ancient event.
+7. Confirm the Ancient options appear normally.
+8. Select an option normally.
+9. Inspect `godot.log` for `[AncientRewardNoopProbe]` entries.
+10. Confirm no log errors, no option-count changes, and no visible gameplay behavior change.
 
 ## Forbidden Patch Points
 Remain forbidden:
