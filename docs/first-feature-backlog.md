@@ -52,7 +52,7 @@ Priority order:
 - Track compatibility and save/run-state risks.
 
 ## Later: new character design
-- Use `docs/design-operating-brief.md` before proposing mechanics.
+- Use `docs/_future/planning/design-operating-brief.md` before proposing mechanics.
 - Define core experience, pillars, verbs, constraints, and prototype question.
 - Do not implement a full custom character until Ancient reward and Ascension work have their own stable baselines.
 

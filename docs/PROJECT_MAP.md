@@ -37,13 +37,16 @@ dev-the-spire/
     test-plan.md
     release-checklist.md
     codex-workflow.md
-    design-operating-brief.md
-    downfall-character-reference.md
-    boss-character-design-knowledgebase.md
-    boss-character-concepts-v2.md
-    ceremonial-beast-character-draft.md
-    ceremonial-beast-v3-bell-crowned-design.md
     first-feature-backlog.md
+    _future/
+      planning/
+        design-operating-brief.md
+      new-character/
+        downfall-character-reference.md
+        boss-character-design-knowledgebase.md
+        boss-character-concepts-v2.md
+        ceremonial-beast-character-draft.md
+        ceremonial-beast-v3-bell-crowned-design.md
 ```
 
 Generated build/cache/tool output such as `.godot/`, `.tools/`, `bin/`, and `obj/` is intentionally omitted from this map.
@@ -64,13 +67,13 @@ Generated build/cache/tool output such as `.godot/`, `.tools/`, `bin/`, and `obj
 - `docs/test-plan.md`: automated/manual validation and triage.
 - `docs/release-checklist.md`: pre-release safety checklist.
 - `docs/codex-workflow.md`: repeatable Codex collaboration flow.
-- `docs/design-operating-brief.md`: future design operating rules for balance changes and new character design.
-- `docs/downfall-character-reference.md`: public-reference design notes from Downfall characters, focused on transferable boss-to-character lessons.
-- `docs/boss-character-design-knowledgebase.md`: source-bounded design rules for translating STS2 bosses into playable character concepts.
-- `docs/boss-character-concepts-v2.md`: richer three-mechanism boss character concepts derived from the Downfall Collector structure.
-- `docs/ceremonial-beast-character-draft.md`: draft-only Ceremonial Beast playable character concept and 40-card prototype pool.
-- `docs/ceremonial-beast-v3-bell-crowned-design.md`: preferred Ceremonial Beast direction with Toll, Offering, Votive, Ringing, Reverberate, Peal, and Overtone.
 - `docs/first-feature-backlog.md`: corrected feature roadmap, starting with Ancient reward optimization.
+- `docs/_future/planning/design-operating-brief.md`: future design operating rules for balance changes and new character design.
+- `docs/_future/new-character/downfall-character-reference.md`: public-reference design notes from Downfall characters, focused on transferable boss-to-character lessons.
+- `docs/_future/new-character/boss-character-design-knowledgebase.md`: source-bounded design rules for translating STS2 bosses into playable character concepts.
+- `docs/_future/new-character/boss-character-concepts-v2.md`: richer three-mechanism boss character concepts derived from the Downfall Collector structure.
+- `docs/_future/new-character/ceremonial-beast-character-draft.md`: draft-only Ceremonial Beast playable character concept and 40-card prototype pool.
+- `docs/_future/new-character/ceremonial-beast-v3-bell-crowned-design.md`: preferred Ceremonial Beast direction with Toll, Offering, Votive, Ringing, Reverberate, Peal, and Overtone.
 
 ## Setup Flowchart
 ```mermaid

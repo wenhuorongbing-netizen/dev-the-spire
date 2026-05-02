@@ -6,7 +6,7 @@
 3. Run `dotnet build`.
 4. Read `docs/dev-environment.md` for unresolved TODOs.
 5. Read `docs/first-feature-backlog.md` for the corrected mission.
-6. For future balance or new-character work, read `docs/design-operating-brief.md` before proposing or implementing gameplay.
+6. For future balance or new-character work, read `docs/_future/planning/design-operating-brief.md` before proposing or implementing gameplay.
 
 ## Project direction
 The project is a Slay the Spire 2 system expansion mod.
