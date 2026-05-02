@@ -1,0 +1,9 @@
+<Project>
+    <PropertyGroup>
+        <!-- Local path to a Godot .NET / Mono 4.5.1 compatible executable used for export-pack. -->
+        <GodotPath>TODO:/path/to/Godot_v4.5.1-stable_mono_win64.exe</GodotPath>
+
+        <!-- Local Slay the Spire 2 Steam install path. -->
+        <Sts2Path>TODO:/path/to/steamapps/common/Slay the Spire 2</Sts2Path>
+    </PropertyGroup>
+</Project>
