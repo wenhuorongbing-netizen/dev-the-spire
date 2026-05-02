@@ -15,12 +15,12 @@ The next design spec should be `docs/ANCIENT_REWARD_SPEC_v0.104.md`.
 Setup automated checks and manual in-game verification have succeeded. The template project has been generated, `EzDailyContent.sln` exists, `dotnet build` succeeds, `dotnet publish` verifies the DLL, manifest, and PCK artifacts, and Slay the Spire 2 Mod Settings shows BaseLib and EzDailyContent as enabled.
 
 ## Requirements
-- Slay the Spire 2 at `D:\Steam\steamapps\common\Slay the Spire 2`
-- Verified public beta version `v0.104.0`, date `2026.04.23`
+- Slay the Spire 2 public beta, verified on `v0.104.0`, date `2026.04.23`
 - .NET SDK 9.0.313 or compatible
 - Git
-- Godot .NET / Mono 4.5.1 installed under `.tools\godot-4.5.1-mono`
-- BaseLib runtime `v3.1.0` installed under `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib`
+- Godot .NET / Mono 4.5.1
+- BaseLib runtime `v3.1.0` installed under `<GameRoot>\mods\BaseLib`
+- Local `Directory.Build.props` created from `Directory.Build.props.example`
 
 ## Local path configuration
 `Directory.Build.props` is local and gitignored because it contains machine-specific absolute paths.
@@ -32,11 +32,23 @@ On a new machine:
 
 Do not commit local `Directory.Build.props` changes.
 
+See `docs/REMOTE_DEVELOPMENT_SETUP.md` for the clone-and-bootstrap workflow on another Windows machine.
+
+## Original verified local setup
+These paths describe the first verified setup only. New machines should use their own local paths in `Directory.Build.props`.
+
+```text
+Game root: D:\Steam\steamapps\common\Slay the Spire 2
+BaseLib:   D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib
+Mod path:  D:\Steam\steamapps\common\Slay the Spire 2\mods\EzDailyContent
+Godot:     D:\Game\FOTN\dev-the-spire\.tools\godot-4.5.1-mono
+```
+
 ## BaseLib status
 BaseLib runtime is installed at the expected path:
 
 ```text
-D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib\
+<GameRoot>\mods\BaseLib\
   BaseLib.json
   BaseLib.dll
   BaseLib.pck
@@ -46,7 +58,7 @@ Installed runtime version: `v3.1.0`
 
 Project package version: `Alchyr.Sts2.BaseLib` `3.1.0`
 
-The older root-level folder `D:\Steam\steamapps\common\Slay the Spire 2\BaseLib` still exists and was intentionally left untouched.
+If an older root-level folder like `<GameRoot>\BaseLib` exists, treat it as suspicious for runtime loading. The expected runtime location is `<GameRoot>\mods\BaseLib`.
 
 ## Build
 ```powershell
@@ -64,7 +76,7 @@ Current publish note: publish succeeds without the previous missing-solution war
 Current published output:
 
 ```text
-D:\Steam\steamapps\common\Slay the Spire 2\mods\EzDailyContent\
+<GameRoot>\mods\EzDailyContent\
   EzDailyContent.dll
   EzDailyContent.json
   EzDailyContent.pck
@@ -83,10 +95,11 @@ No concrete gameplay content implemented yet. Template-generated card, power, an
 - `docs/test-plan.md`
 - `docs/release-checklist.md`
 - `docs/codex-workflow.md`
-- `docs/design-operating-brief.md`
-- `docs/downfall-character-reference.md`
-- `docs/boss-character-design-knowledgebase.md`
-- `docs/boss-character-concepts-v2.md`
-- `docs/ceremonial-beast-character-draft.md`
-- `docs/ceremonial-beast-v3-bell-crowned-design.md`
 - `docs/first-feature-backlog.md`
+- `docs/REMOTE_DEVELOPMENT_SETUP.md`
+- `docs/_future/planning/design-operating-brief.md`
+- `docs/_future/new-character/boss-character-concepts-v2.md`
+- `docs/_future/new-character/boss-character-design-knowledgebase.md`
+- `docs/_future/new-character/ceremonial-beast-character-draft.md`
+- `docs/_future/new-character/ceremonial-beast-v3-bell-crowned-design.md`
+- `docs/_future/new-character/downfall-character-reference.md`

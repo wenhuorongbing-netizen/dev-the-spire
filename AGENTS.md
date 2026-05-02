@@ -1,7 +1,7 @@
 ﻿# AGENTS.md
 
 ## Project
-This repository workspace (`D:\Game\FOTN\dev-the-spire`) is for a Slay the Spire 2 content mod named `EzDailyContent`, authored by `AUTHOR_NAME_REPLACE_ME`, using C#/.NET, the Alchyr Slay the Spire 2 template, and BaseLib.
+This repository is for a Slay the Spire 2 content mod named `EzDailyContent`, authored by `AUTHOR_NAME_REPLACE_ME`, using C#/.NET, the Alchyr Slay the Spire 2 template, and BaseLib. Original verified local machine paths are recorded in `docs/dev-environment.md`; do not assume those paths on another machine.
 
 ## Project Mission
 This repository is for building a Slay the Spire 2 system expansion mod with Codex-assisted development. The first feature target is Ancient reward optimization. The second major target is Ascension 11-20-30 design and implementation. The final major target is a new custom character.
@@ -28,6 +28,13 @@ The setup baseline is complete: build succeeds, publish succeeds, and manual gam
 ## Publish commands
 - `dotnet publish`
 - Do not continue to publish when build fails.
+
+## Local machine setup
+- Clone the repository on the target machine.
+- Copy `Directory.Build.props.example` to `Directory.Build.props`.
+- Fill local `GodotPath` and `Sts2Path` values.
+- Install BaseLib `v3.1.0` under `<GameRoot>\mods\BaseLib`.
+- Do not commit `Directory.Build.props`, `.tools/`, `.godot/`, `bin/`, `obj/`, downloaded archives, or local binaries.
 
 ## Documentation
 - `docs/SETUP_SPEC.md` contains the setup spec.
@@ -58,7 +65,7 @@ The generated `Cards/`, `Powers/`, and `Relics/` folders currently contain abstr
 - Do not rewrite the whole project unless explicitly requested.
 
 ## BaseLib dependency rule
-Document BaseLib dependency status and expected on-disk location. Do not fabricate BaseLib files.
+Document BaseLib dependency status and expected on-disk location. The expected runtime location is `<GameRoot>\mods\BaseLib`. Do not fabricate BaseLib files.
 
 ## Early Access warning
 Slay the Spire 2 APIs, BaseLib, templates, and tooling may change during Early Access. Revalidate versions and paths each session.
