@@ -1,11 +1,11 @@
 # Ancient Reward Research Plan
 
-This is a safety-gated research plan for Ancient reward optimization.
+This is a research-gated plan for Ancient reward optimization.
 
 No gameplay implementation is allowed from this document alone.
 
 ## Purpose
-Prevent random guessing, unsafe Harmony patching, and premature Ancient reward implementation.
+Prevent random guessing, unproven Harmony patching, and premature Ancient reward implementation.
 
 The project must identify the real Slay the Spire 2 Ancient reward model, reward pool, generation timing, UI preview behavior, and BaseLib support before writing gameplay code.
 
@@ -46,7 +46,7 @@ Every item in this list blocks implementation until resolved.
 | Exact UI preview / reward resolution relationship | PARTIAL | `EventOption` has `TextKey`, `Title`, `Description`, `OnChosen`, `Relic`, and `Chosen()`. Exact UI binding path remains UNKNOWN. |
 | Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Local BaseLib XML/reflection shows custom Ancient support, not an explicit API for mutating existing basegame Ancient rewards. Inspect source/examples before deciding. |
 | Whether Harmony is required | UNKNOWN | Determine whether BaseLib/template APIs are sufficient |
-| Safest no-op logging probe point | CANDIDATE ONLY | Candidate: postfix on nonpublic `AncientEventModel.GenerateInitialOptionsWrapper()` to observe returned options. Not approved until call order and no-op behavior are verified. |
+| Safest no-op logging probe point | CANDIDATE ONLY | Candidate: postfix on `AncientEventModel.GenerateInitialOptionsWrapper()` with reflected signature `protected instance virtual final IReadOnlyList<EventOption>`. See `docs/ANCIENT_REWARD_NOOP_PROBE_SPEC.md`. Not approved until call order and no-op behavior are verified. |
 | Rollback plan for first implementation | PARTIAL | Finalize once implementation path and touched files are known |
 | One-Ancient MVP target | UNKNOWN | Select after catalog and balance map have observed facts |
 | Repeatable test procedure | UNKNOWN | Identify deterministic or practical route to observe Ancient rewards |
@@ -63,7 +63,7 @@ Use decompilation for structure and API shape only. Do not copy implementation b
 | Generation timing | `GenerateRewards`, `CreateReward`, `GetRewards`, `Choose` | When options are generated relative to act/run state | Add timing note |
 | Reward resolution | `Apply`, `Resolve`, `Choose`, `Claim`, `OnSelect` | How selected reward applies its effect | Add resolution note |
 | UI preview | `Preview`, `Description`, `Tooltip`, `Localization`, `Text` | Whether preview text is generated from model or separate localization | Add preview note |
-| Run context | `Run`, `Act`, `Character`, `Deck`, `Player` | Whether act, character, deck context is available safely | Add context note |
+| Run context | `Run`, `Act`, `Character`, `Deck`, `Player` | Whether act, character, deck context is available through verified read-only access | Add context note |
 | Save/load | `Save`, `Load`, `Serialize`, `Deserialize` | Whether reward choices/effects affect persistent state | Add persistence risk |
 
 ## 4. What Must Be Inspected in BaseLib Docs or Source
@@ -104,7 +104,7 @@ The following names and concepts are hypotheses until proven by inspection.
 | Harmony patching will be required | UNPROVEN | Do not create patches until BaseLib path is ruled out |
 
 ## 7. Forbidden Patch Points Until Proven
-These patch areas are forbidden until exact evidence shows they are necessary and safe.
+These patch areas are forbidden until exact evidence shows they are necessary and non-mutating.
 
 | Patch Area | Status | Reason |
 |---|---|---|

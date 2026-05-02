@@ -7,7 +7,7 @@ Scope: local metadata/signature research only. No gameplay implementation was pe
 ## Summary
 Local inspection found evidence for the core Ancient event model and option representation used by StS2, plus BaseLib APIs for defining custom Ancients and their option pools.
 
-The research does not yet prove a safe way to tune existing basegame Ancient rewards. The implementation gate remains closed.
+The research does not yet prove a verified non-mutating way to tune existing basegame Ancient rewards. The implementation gate remains closed.
 
 Most important finding:
 - StS2 Ancient events are represented by `MegaCrit.Sts2.Core.Models.AncientEventModel`.
@@ -33,7 +33,7 @@ Most important finding:
 
 | Hypothesis | Evidence | Confidence | Risk | Next Verification |
 |---|---|---|---|---|
-| `AncientEventModel.GenerateInitialOptionsWrapper()` is a useful no-op logging probe point | It exists as a nonpublic Ancient-specific wrapper returning `IReadOnlyList<EventOption>` | Medium | Nonpublic method may be fragile or too late/early | Confirm call order via decompiled structure or a separately approved no-op probe |
+| `AncientEventModel.GenerateInitialOptionsWrapper()` may be a no-op logging probe candidate | It exists as a nonpublic Ancient-specific wrapper returning `IReadOnlyList<EventOption>` | Medium | Nonpublic method may be fragile or too late/early | Confirm call order via decompiled structure or a separately approved no-op probe |
 | `EventOption.TextKey`, `Title`, and `Description` drive preview text | These properties exist on `EventOption`; `EventModel` has `GetOptionTitle` and `GetOptionDescription` | Medium | UI may use additional layout state | Inspect `NEventLayout`/button binding or test in game |
 | Existing basegame Ancient reward tuning may require Harmony | No direct BaseLib API for mutating existing Ancient rewards was found in local XML/reflection | Low-medium | Could miss source-only extension points or intended APIs | Inspect BaseLib source/examples before deciding |
 | Additive custom Ancient work may not require our own Harmony patches | BaseLib provides `CustomAncientModel` and internal patches for adding custom Ancients | Medium | Does not solve existing reward tuning | Confirm with BaseLib examples and a separate approved implementation plan |
@@ -121,7 +121,7 @@ These are candidates only. They are not approved implementation points.
 
 | Candidate | Evidence | Why Candidate | Risk | Required Before Use |
 |---|---|---|---|---|
-| Postfix on `AncientEventModel.GenerateInitialOptionsWrapper()` | Nonpublic Ancient-specific method returning `IReadOnlyList<EventOption>` | Could log generated options without mutating them | Nonpublic and beta-fragile; call order not verified | Explicit approval, no-op-only patch plan, rollback |
+| Postfix on `AncientEventModel.GenerateInitialOptionsWrapper()` | Reflection signature: `protected instance virtual final IReadOnlyList<EventOption> MegaCrit.Sts2.Core.Models.AncientEventModel.GenerateInitialOptionsWrapper()` | Could log generated options without mutating them | Nonpublic and beta-fragile; call order not verified | Explicit approval, no-op-only patch plan, rollback; see `docs/ANCIENT_REWARD_NOOP_PROBE_SPEC.md` |
 | Postfix on `EventModel.SetEventState(...)`, filtered to `AncientEventModel` | Nonpublic method receives event options | Could observe final current options | Broad base event method; filtering mistake could affect all events | Prefer Ancient-specific point first |
 | Logging through BaseLib diagnostics if available | BaseLib includes diagnostics/logging-related types | Could avoid direct game patching | Not yet tied to Ancient generation | Inspect BaseLib logging examples |
 
