@@ -20,7 +20,7 @@ This document separates observed facts from assumptions. It is not an implementa
 | No-op logging probe point | OBSERVED WORKING NO-OP PROBE | `AncientEventModel.GenerateInitialOptionsWrapper()` logging probe observed in game; reward tuning still not approved |
 | Rollback plan | UNKNOWN | Required before implementation |
 | One-Ancient MVP target | UNKNOWN | Required before implementation |
-| Test procedure | UNKNOWN | Required before implementation |
+| Test procedure | PARTIAL | Probe logs provide observed output for Neow, Pael, and Tanx; repeatable route to specific Ancients remains incomplete |
 
 ## Reward Taxonomy
 This taxonomy is provisional until real Ancient reward abstractions are confirmed.
@@ -61,6 +61,31 @@ Only add rows backed by in-game observation, API inspection, or documented sourc
 |---|---|---|---|---|---|---|---|---|
 | TODO | TODO | UNKNOWN | TODO | UNKNOWN | UNKNOWN | UNKNOWN | TODO | TODO |
 
+### Observed AncientRewardNoopProbe option metadata
+Source: user-provided `godot.log` lines from `AncientRewardNoopProbe`.
+
+Do not infer reward effects, reward strength, or implementation path from these `TextKey` values.
+
+| Ancient Runtime Type | Option Count | Option Index | Option Runtime Type | TextKey | RelicIsNull | IsLocked | IsProceed | ShouldSaveChoiceToHistory |
+|---|---:|---:|---|---|---|---|---|---|
+| `MegaCrit.Sts2.Core.Models.Events.Neow` | 3 | 0 | `MegaCrit.Sts2.Core.Events.EventOption` | `NEOW.pages.INITIAL.options.ARCANE_SCROLL` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Neow` | 3 | 1 | `MegaCrit.Sts2.Core.Events.EventOption` | `NEOW.pages.INITIAL.options.POMANDER` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Neow` | 3 | 2 | `MegaCrit.Sts2.Core.Events.EventOption` | `NEOW.pages.INITIAL.options.LEAFY_POULTICE` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Pael` | 3 | 0 | `MegaCrit.Sts2.Core.Events.EventOption` | `PAEL.pages.INITIAL.options.PAELS_HORN` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Pael` | 3 | 1 | `MegaCrit.Sts2.Core.Events.EventOption` | `PAEL.pages.INITIAL.options.PAELS_CLAW` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Pael` | 3 | 2 | `MegaCrit.Sts2.Core.Events.EventOption` | `PAEL.pages.INITIAL.options.PAELS_LEGION` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Tanx` | 3 | 0 | `MegaCrit.Sts2.Core.Events.EventOption` | `TANX.pages.INITIAL.options.SAI` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Tanx` | 3 | 1 | `MegaCrit.Sts2.Core.Events.EventOption` | `TANX.pages.INITIAL.options.THROWING_AXE` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Tanx` | 3 | 2 | `MegaCrit.Sts2.Core.Events.EventOption` | `TANX.pages.INITIAL.options.MEAT_CLEAVER` | False | False | False | True |
+
+### Observed Ancient summary
+
+| Ancient Runtime Type | Observed Option Count | Shared Observed Option Flags |
+|---|---:|---|
+| `MegaCrit.Sts2.Core.Models.Events.Neow` | 3 | All observed options: `OptionType=EventOption`, `RelicIsNull=False`, `IsLocked=False`, `IsProceed=False`, `ShouldSaveChoiceToHistory=True` |
+| `MegaCrit.Sts2.Core.Models.Events.Pael` | 3 | All observed options: `OptionType=EventOption`, `RelicIsNull=False`, `IsLocked=False`, `IsProceed=False`, `ShouldSaveChoiceToHistory=True` |
+| `MegaCrit.Sts2.Core.Models.Events.Tanx` | 3 | All observed options: `OptionType=EventOption`, `RelicIsNull=False`, `IsLocked=False`, `IsProceed=False`, `ShouldSaveChoiceToHistory=True` |
+
 ## Assumptions
 Assumptions are not implementation evidence.
 
@@ -78,6 +103,7 @@ Assumptions are not implementation evidence.
 | TODO | TODO | TODO | TODO | TODO | TODO |
 | 2026-05-02 | Local reflection/XML | `sts2.dll`, `BaseLib.dll`, `BaseLib.xml` | `AncientEventModel`, `EventOption`, BaseLib `CustomAncientModel`, `OptionPools`, and `AncientOption` signatures confirmed | Medium-high | Inspect call flow and BaseLib source/examples |
 | 2026-05-03 | Manual game verification | `godot.log` and in-game Ancient event observation | `AncientRewardNoopProbe` log entries appeared; BaseLib and EzDailyContent were enabled; Ancient options appeared and selected normally; no probe exception or visible behavior change was observed | Medium | Use probe logs to build observed Ancient reward catalog before selecting MVP |
+| 2026-05-03 | Probe log catalog observation | User-provided `AncientRewardNoopProbe` lines | Neow, Pael, and Tanx runtime types observed; each generated 3 `EventOption` options; all observed options had `RelicIsNull=False`, `IsLocked=False`, `IsProceed=False`, and `ShouldSaveChoiceToHistory=True` | Medium | Continue collecting observed options; do not infer effects from TextKey alone |
 
 ## Candidate Reward Evaluation
 Do not select an MVP until observed facts are available.
@@ -101,6 +127,7 @@ Selection requires:
 Current status:
 - No One-Ancient MVP target selected.
 - Reward tuning gate remains closed.
+- Catalog progress: PARTIAL / IN PROGRESS.
 
 ## Forbidden Until Proven
 - Broad reward pool patches.

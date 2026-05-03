@@ -179,7 +179,7 @@ What remains UNKNOWN:
 - Whether BaseLib can modify existing basegame Ancient rewards.
 - Whether Harmony is required for future reward tuning.
 - One-Ancient MVP target.
-- Repeatable Ancient reward test path.
+- Repeatable Ancient reward test path is PARTIAL: probe logs have been collected for Neow, Pael, and Tanx, but a route to reliably reproduce specific Ancients is not fully documented.
 
 Manual verification status:
 - Status: observed in game as a working no-op probe.
@@ -192,6 +192,41 @@ Manual verification status:
 - Probe exception: none observed.
 - Visible gameplay behavior change: none observed.
 - Reward tuning gate: still closed.
+
+## Observed Probe Log Catalog Entries
+
+Source: user-provided `godot.log` lines from `AncientRewardNoopProbe`.
+
+Observed facts only:
+- Ancient runtime types observed:
+  - `MegaCrit.Sts2.Core.Models.Events.Neow`
+  - `MegaCrit.Sts2.Core.Models.Events.Pael`
+  - `MegaCrit.Sts2.Core.Models.Events.Tanx`
+- Each observed Ancient generated `OptionCount=3`.
+- All observed options used `OptionType=MegaCrit.Sts2.Core.Events.EventOption`.
+- All observed options had `RelicIsNull=False`.
+- All observed options had `IsLocked=False`.
+- All observed options had `IsProceed=False`.
+- All observed options had `ShouldSaveChoiceToHistory=True`.
+
+Observed option rows:
+
+| Ancient Runtime Type | Option Count | Option Index | Option Runtime Type | TextKey | RelicIsNull | IsLocked | IsProceed | ShouldSaveChoiceToHistory |
+|---|---:|---:|---|---|---|---|---|---|
+| `MegaCrit.Sts2.Core.Models.Events.Neow` | 3 | 0 | `MegaCrit.Sts2.Core.Events.EventOption` | `NEOW.pages.INITIAL.options.ARCANE_SCROLL` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Neow` | 3 | 1 | `MegaCrit.Sts2.Core.Events.EventOption` | `NEOW.pages.INITIAL.options.POMANDER` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Neow` | 3 | 2 | `MegaCrit.Sts2.Core.Events.EventOption` | `NEOW.pages.INITIAL.options.LEAFY_POULTICE` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Pael` | 3 | 0 | `MegaCrit.Sts2.Core.Events.EventOption` | `PAEL.pages.INITIAL.options.PAELS_HORN` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Pael` | 3 | 1 | `MegaCrit.Sts2.Core.Events.EventOption` | `PAEL.pages.INITIAL.options.PAELS_CLAW` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Pael` | 3 | 2 | `MegaCrit.Sts2.Core.Events.EventOption` | `PAEL.pages.INITIAL.options.PAELS_LEGION` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Tanx` | 3 | 0 | `MegaCrit.Sts2.Core.Events.EventOption` | `TANX.pages.INITIAL.options.SAI` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Tanx` | 3 | 1 | `MegaCrit.Sts2.Core.Events.EventOption` | `TANX.pages.INITIAL.options.THROWING_AXE` | False | False | False | True |
+| `MegaCrit.Sts2.Core.Models.Events.Tanx` | 3 | 2 | `MegaCrit.Sts2.Core.Events.EventOption` | `TANX.pages.INITIAL.options.MEAT_CLEAVER` | False | False | False | True |
+
+Do not infer reward effects, reward strength, or final implementation path from these `TextKey` values.
+One-Ancient MVP target remains UNKNOWN.
+BaseLib existing reward modification remains NO DIRECT API FOUND / UNKNOWN.
+Harmony requirement for reward tuning remains UNKNOWN.
 
 Manual game test steps:
 1. Run `dotnet build`.

@@ -49,7 +49,7 @@ Every item in this list blocks implementation until resolved.
 | No-op logging probe point | OBSERVED WORKING NO-OP PROBE | Postfix on `AncientEventModel.GenerateInitialOptionsWrapper()` with reflected signature `protected instance virtual final IReadOnlyList<EventOption>` has been observed in game as a working no-op probe. This does not approve reward tuning. |
 | Rollback plan for first implementation | PARTIAL | Finalize once implementation path and touched files are known |
 | One-Ancient MVP target | UNKNOWN | Select after catalog and balance map have observed facts |
-| Repeatable test procedure | UNKNOWN | Identify deterministic or practical route to observe Ancient rewards |
+| Repeatable test procedure | PARTIAL | Probe logs were collected for Neow, Pael, and Tanx; deterministic or practical route to specific Ancients remains incomplete |
 
 ## 3. What Must Be Inspected in Decompiled StS2 Code
 Use decompilation for structure and API shape only. Do not copy implementation bodies into this repository.
@@ -135,7 +135,7 @@ Implementation is blocked until all entries are filled with evidence.
 | No-op logging probe point | Exact method/API and why no mutation occurs | OBSERVED WORKING NO-OP PROBE for logging metadata only; not evidence for reward tuning |
 | Rollback plan | Touched files, feature flag if any, revert path | UNKNOWN |
 | One-Ancient MVP target | Observed reward, rationale, proposed minimal change | UNKNOWN |
-| Test procedure | Steps to observe, trigger, verify, and inspect logs | UNKNOWN |
+| Test procedure | Steps to observe, trigger, verify, and inspect logs | PARTIAL: `AncientRewardNoopProbe` logs observed for Neow, Pael, and Tanx; reliable route to specific Ancients remains incomplete |
 
 ## 9. API Research Notes
 See `docs/ANCIENT_REWARD_API_RESEARCH_NOTES.md`.
@@ -148,10 +148,12 @@ Key local findings:
 - BaseLib custom option helpers: `BaseLib.Utils.OptionPools`, `BaseLib.Utils.AncientOption`, `BaseLib.Utils.WeightedList<T>`.
 - BaseLib internal patches add custom Ancients through `ActModel.GenerateRooms` and `ModelDb.AllSharedAncients`.
 - Manual verification reported on 2026-05-03: `AncientRewardNoopProbe` entries appeared in `godot.log`, Ancient options appeared and selected normally, no probe exception appeared, and no visible gameplay behavior changed.
+- Probe log catalog entries reported on 2026-05-03: Neow, Pael, and Tanx each generated 3 `EventOption` options; all observed options had `RelicIsNull=False`, `IsLocked=False`, `IsProceed=False`, and `ShouldSaveChoiceToHistory=True`.
 
 Remaining blocker:
 - No local evidence yet proves that BaseLib can modify existing basegame Ancient reward options without a project-level Harmony patch.
 - One-Ancient MVP target remains UNKNOWN.
+- Reward tuning gate remains closed.
 
 ## Research Output Checklist
 - Update `docs/ANCIENT_REWARD_BALANCE_MAP.md` with observed facts.
