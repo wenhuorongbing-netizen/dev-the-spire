@@ -14,7 +14,17 @@ Run after build succeeds:
 dotnet test EZMicroBalance.sln --no-build
 ```
 
-The active test project covers release identity, active localization JSON/key parity, zhs no-space numeric formatting, selected-resource PCK contents, installed manifest parity, installed/staging/package hash parity, Harmony patch target resolution against the installed game API, Prismatic Gem v4.3 reroll/all-slot documentation, detached-banner rejection, banner fallback diagnostics, fallback evidence, and manual-test coverage, Velvet Choker and Distinguished Cape no-shrink/max-HP source guards, Ancient behavior source guards, stale current-doc behavior guards, Ascension selector/source guards, A12 firemark map/token/power source guards, A13 Fission icon/text/eligibility source guards, current setup/compatibility/manual-checklist doc targeting, false release-art claim guards, unsupported-system completion guards, and active project/export isolation from legacy sources.
+Normal developer tests cover release identity, active localization JSON/key parity, zhs no-space numeric formatting, Prismatic Gem v4.3 reroll/all-slot documentation, detached-banner rejection, banner fallback diagnostics, fallback evidence, manual-test coverage, Velvet Choker and Distinguished Cape no-shrink/max-HP source guards, Ancient behavior source guards, stale current-doc behavior guards, Ascension selector/source guards, A12 firemark map/token/power source guards, A13 Fission icon/text/eligibility source guards, A20 multiplayer downgrade warning source guards, current setup/compatibility/manual-checklist doc targeting, false release-art claim guards, unsupported-system completion guards, and active project/export isolation from legacy sources.
+
+Release artifact, installed DLL/PCK, package hash, and runtime-smoke evidence tests are skipped in normal developer test runs because `publish/`, `.godot/`, `.zip`, `.dll`, and `.pck` outputs are ignored. Run them only after publish and package staging/zip refresh:
+
+```powershell
+$env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'
+dotnet test EZMicroBalance.sln --no-build
+Remove-Item Env:\EZMB_RUN_RELEASE_ARTIFACT_TESTS
+```
+
+CI or shell variants may set `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` before the test command. If that variable is set and package artifacts are missing or stale, the release artifact tests should fail with missing-file/hash mismatch details.
 
 Run after resource, localization, manifest, project, or packaging changes:
 
@@ -30,6 +40,7 @@ Required artifact checks after publish:
 - Manifest id matches the intended stable id.
 - Dependencies include `BaseLib`.
 - `affects_gameplay` remains `true` for EZ Micro Balance.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passes after package staging, versioned package directory, and zip artifacts are refreshed.
 
 ## Localization Checks
 
@@ -106,6 +117,6 @@ Required for:
 
 The prior legacy `EzDailyContent` setup passed build, publish, and Mod Settings verification on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
 
-v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem is historical only. v4.2 Distinguished Cape 40% min15 is historical only. The current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh. Final bounded smoke loading with `--force-steam off` previously reached main menu with BaseLib and EZ Micro Balance initialized from the installed artifacts. Private beta status is not complete until normal Steam-client Mod Settings verification and the manual feature matrix have runtime results.
+v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem is historical only. v4.2 Distinguished Cape 40% min15 is historical only. The current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh. Current bounded smoke loading with `--force-steam off` reached main menu with BaseLib and EZ Micro Balance initialized from the installed artifacts and `Found 12 SavedSpireFields`. Private beta status is not complete until normal Steam-client Mod Settings verification and the manual feature matrix have runtime results.
 
-Ascension 11-20 is now an active development track. The A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled, guarded by automated source tests that require the patch to stay on standard lobby paths and avoid global progress getter/save validation patches. Enable it only for development testing with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`, disable host-multiplayer selection separately with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, or force slices with `EZMB_ASCENSION_DEBUG_LEVEL`. Full live Ascension and co-op verification is pending.
+Ascension 11-20 is now an active development track. The A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled, guarded by automated source tests that require the patch to stay on standard lobby paths and avoid global progress getter/save validation patches. Enable it only for development testing with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`, disable host-multiplayer selection separately with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, or force slices with `EZMB_ASCENSION_DEBUG_LEVEL`. Host multiplayer A20 selection/start now logs a warning that Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification. Full live Ascension and co-op verification is pending.

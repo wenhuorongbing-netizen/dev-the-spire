@@ -29,7 +29,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         "docs/features/ancients-rework-v4/completion-audit.md"
     ];
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void ActiveCoverArtAndInactiveModRealPolicyMatchExportPckAndPackage()
     {
         var activeCover = RepoPath("EZMicroBalance", "mod_image.png");
@@ -67,7 +67,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain(zippedPckEntries, entry => entry.Contains("mod_real", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void ExportedResourcesInstalledPckAndPackagePckStayInParity()
     {
         var exportedResources = ParseExportFiles(ReadRepoText("export_presets.cfg"))
@@ -145,7 +145,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         var currentDocs = ReadCurrentFacingDocs();
         Assert.Contains("current source defines 12 SavedSpireFields", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("Found 9 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Found 12 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("Found 9 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
         Assert.DoesNotContain("reported 7 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
     }
 
@@ -255,7 +256,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "AscensionSavedStateFields.ForgeTokenHeld[player] = false");
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void CurrentReleaseHashClaimsMatchInstalledStagingVersionedAndZipArtifacts()
     {
         var version = ManifestVersion();
@@ -367,7 +368,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "[INFO] Loading assembly DLL D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.dll",
             "[INFO] Loading Godot PCK D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.pck",
             "[INFO] Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance).",
-            "[INFO] [BaseLib] Found 9 SavedSpireFields.",
+            "[INFO] [BaseLib] Found 12 SavedSpireFields.",
             "[INFO] [Startup] Time to main menu: 12,648ms");
 
         var summary = SmokeLogParser.Parse(syntheticLog);
@@ -378,12 +379,12 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.True(summary.LoadedEzPck);
         Assert.True(summary.InitializedEzMicroBalance);
         Assert.True(summary.ReachedMainMenu);
-        Assert.Equal(9, summary.SavedSpireFieldCount);
+        Assert.Equal(12, summary.SavedSpireFieldCount);
         Assert.Empty(summary.EzMicroBalanceErrorLines);
         Assert.Single(summary.UnrelatedManifestErrorLines);
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void RecentSmokeLogSupportsControlledSmokeClaims()
     {
         var logPath = CurrentGodotLogPath();
@@ -426,7 +427,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             summary.LoadedEzPck &&
             summary.InitializedEzMicroBalance &&
             summary.ReachedMainMenu &&
-            summary.SavedSpireFieldCount == 9 &&
+            summary.SavedSpireFieldCount == 12 &&
             summary.EzMicroBalanceErrorLines.Length == 0;
     }
 

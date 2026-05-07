@@ -57,6 +57,8 @@ Avoid these outcomes:
 | A19 | Boss Royal Seals / Boss 专属王印 | Each Boss gains a bespoke Royal Seal that strengthens its core mechanic without changing the action table. |
 | A20 | Dual King Brands / 双王烙印 | Act 3 double-Boss information is revealed early; the second Boss's seal upgrades into a Brand; a fixed courtyard sits between the two Bosses. |
 
+Current A11 implementation note: width +1, Act 1 +1 route row, Act 2 +1 route row, and Act 3 +2 route rows. A11 adds no dedicated marker, icon, or hover tooltip; ordinary route nodes look vanilla.
+
 ## 3. Implementation Boundaries
 
 ### 3.1 Do Not Implement
@@ -193,15 +195,15 @@ Eligibility:
 
 Player text:
 
-`Maps are wider. Act 2 and Act 3 routes are longer.`
+`Maps are wider and longer.`
 
 Map changes:
 
 | Act | Change |
 | --- | --- |
-| Act 1 | Width +1, no total floor increase |
+| Act 1 | Width +1, total floors +1 |
 | Act 2 | Width +1, total floors +1 |
-| Act 3 | Width +1, total floors +1; may become +2 if run length is acceptable |
+| Act 3 | Width +1, total floors +2 |
 
 Protection rules:
 
@@ -212,6 +214,7 @@ Protection rules:
 - Added floors should mostly be mid/late.
 - Each act must retain at least one low-risk route.
 - The inserted width column must contain at least one reachable optional route node, not only wider spacing.
+- A11 must not add a dedicated map marker, icon, or hover tooltip; new A11 route nodes should look like ordinary vanilla map nodes.
 
 Design purpose:
 
@@ -575,6 +578,8 @@ A20 does three things:
 
 Current implementation note: Boss 1/Boss 2 reveal, Boss 2 Brand metadata/parameters, Boss 1 recovery, Boss card reward, Boss 2 warning text, fixed courtyard event, immediate pre-finished-room save, and duplicate Boss 2 Blight Sprout suppression are source-guarded through the single-player vanilla double-boss map/reward path. Boss 2 Brand metadata is gated by A20 itself and is not dependent on the A19 Boss Seal feature flag. The current courtyard is a default-layout event room inserted from the terminal reward proceed path; a bespoke full custom intermission screen remains deferred until live runtime verification proves it is needed and safe.
 
+Multiplayer implementation note: host multiplayer can select A20 only when the explicit public/development selector gate is enabled. Dual King Brands / second-boss Brand gameplay remains single-player gated; host multiplayer A20 selection and run start must log that this is development testing, that co-op A20 Brand gameplay is disabled or downgraded pending live verification, and that A11-A19 inherited systems may still apply if their gates are enabled.
+
 Revealed information:
 
 | Information | Display |
@@ -936,6 +941,7 @@ Acceptance:
 - Courtyard does not open a menu.
 - Boss 2 does not bury a second Blight Sprout.
 - Multiplayer heals and rewards each player independently.
+- Host multiplayer A20 selection/start logs the co-op downgrade warning until live co-op Boss 1/courtyard/Boss 2 behavior is verified.
 
 ## 18. Telemetry and Balance Metrics
 

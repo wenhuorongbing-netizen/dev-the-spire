@@ -388,8 +388,8 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotMatch(@"(?i)\bA11-A20\b[^\r\n.]*\b(?:release-ready|fully verified)\b", currentDocs);
     }
 
-    [Fact]
-    public void PackageContainsCurrentAscensionLocalizationAndDocsDoNotClaimReadiness()
+    [ReleaseArtifactFact]
+    public void PackageContainsCurrentAscensionLocalization()
     {
         var version = ManifestVersion();
         var package = RepoPath("publish", $"EZMicroBalance-{version}.zip");
@@ -403,7 +403,13 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Contains("EZMicroBalance/localization/eng/cards.json", pck);
         Assert.Contains("EZMicroBalance/localization/zhs/cards.json", pck);
 
+    }
+
+    [Fact]
+    public void CurrentDocsDoNotClaimAscensionReadiness()
+    {
         var currentDocs = ReadCurrentFacingDocs();
+
         Assert.Contains("full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("live Ascension gameplay not executed yet", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", currentDocs, StringComparison.OrdinalIgnoreCase);

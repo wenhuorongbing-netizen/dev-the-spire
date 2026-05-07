@@ -10,6 +10,11 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static class AscensionSelectionPatches
 {
+    public const string MultiplayerA20DowngradeWarning =
+        "Multiplayer A20 selection is enabled for development testing. " +
+        "Dual King Brands / second-boss Brand gameplay is currently disabled or downgraded in co-op pending live verification. " +
+        "A11-A19 inherited systems may still apply if their gates are enabled, subject to live verification.";
+
     private static readonly FieldInfo? MaxAscensionBackingField =
         AccessTools.Field(typeof(StartRunLobby), "<MaxAscension>k__BackingField");
     private static bool _missingMaxAscensionFieldLogged;
@@ -69,6 +74,24 @@ internal static class AscensionSelectionPatches
         return ShouldExpandSelection(lobby) &&
             lobby.Ascension > 10 &&
             lobby.Players.Count > 0;
+    }
+
+    public static void WarnIfA20MultiplayerDowngraded(StartRunLobby lobby, string surface)
+    {
+        if (!ShouldWarnA20MultiplayerDowngrade(lobby))
+        {
+            return;
+        }
+
+        MainFile.Logger.Warn(
+            $"[EZMicroBalance] {MultiplayerA20DowngradeWarning} Surface: {surface}; selected A{lobby.Ascension}; players: {lobby.Players.Count}.");
+    }
+
+    private static bool ShouldWarnA20MultiplayerDowngrade(StartRunLobby lobby)
+    {
+        return ShouldExpandMultiplayerSelection(lobby) &&
+            lobby.Ascension >= AscensionFeatureGate.DoubleRoyalBrandLevel &&
+            lobby.Players.Count > 1;
     }
 
     public static MultiplayerUnlockOverride? TemporarilyExpandMultiplayerUnlocks(StartRunLobby lobby)
@@ -226,5 +249,23 @@ internal static class StartRunLobbyUpdatePreferredAscensionPatch
         MainFile.Logger.Info(
             $"[EZMicroBalance] Keeping A{__instance.Ascension} as a launch-only test selection; not writing it to vanilla progress.");
         return false;
+    }
+}
+
+[HarmonyPatch(typeof(StartRunLobby), nameof(StartRunLobby.SyncAscensionChange))]
+internal static class StartRunLobbySyncAscensionChangeA20WarningPatch
+{
+    private static void Postfix(StartRunLobby __instance)
+    {
+        AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(__instance, "host multiplayer ascension selection");
+    }
+}
+
+[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]
+internal static class StartRunLobbyBeginRunForAllPlayersA20WarningPatch
+{
+    private static void Prefix(StartRunLobby __instance)
+    {
+        AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(__instance, "host multiplayer run start");
     }
 }

@@ -7,20 +7,21 @@ This handoff is for manual verification that cannot be completed by the local au
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `6A5273519B2FD8F4D0256EA755D1E07525E7D185BEF9D0A607EEF261F4F81427`
+- Zip SHA256: `4BC21B37C9C2D90FC4991F353245DEBB47555026975647341281480BB492F089`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `B8303AC917540479B131FF6501E2643114220BFA05B6E63D63F1ECE41E0F54BA`
+- DLL SHA256: `8A6B9696F81B39DF5C04FF306687381629BDD33970A1C3D685A5C2E7CA517DA8`
 - Manifest SHA256: `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`
-- PCK SHA256: `1B89120EA299F4334CDC4D22D3ABBC704899894FF7AAF258AD04A6743BF98717`
+- PCK SHA256: `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`
 
 ## Known Automated Evidence
 
 - `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: A11-A20 v2.0 source/package/localization guards, Ancient v4.3 regression guards, and package hash parity guards passed 75/75 after rebuilding the package and hash docs from the current installed artifacts.
+- `dotnet test EZMicroBalance.sln --no-build`: passed, 62 passed, 15 skipped release artifact/runtime evidence tests, 0 failed.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 77 passed, 0 skipped, 0 failed.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
 - `dotnet publish EZMicroBalance.sln`: passed.
-- `git diff --check`: exit 0 with the documented `EzDailyContent.json` and `docs/dev-environment.md` CRLF warnings.
-- Prior controlled `--force-steam off` smoke temporarily enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 9 SavedSpireFields`, reached main menu in `4,076ms`, found 0 EZ Micro Balance error/exception lines, and restored `settings.save` plus `settings.save.backup` to their original contents. That smoke predates the Rootblight v2.2 card-state fields; the current source defines 12 SavedSpireFields and needs a refreshed runtime smoke before release claims.
+- `git diff --check`: exit 0 with CRLF normalization warnings for touched files.
+- Current controlled `--force-steam off` smoke temporarily enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, reached main menu in `13,423ms`, found 0 EZ Micro Balance error/exception lines, and restored `settings.save` plus `settings.save.backup` byte-for-byte. Normal Steam-client Mod Settings verification is still pending.
 
 ## Required Manual Results
 
@@ -47,8 +48,21 @@ Execute `docs/features/ascension-11-20/manual-test-checklist.md` against A11 thr
 
 - Use the original Ascension arrows to select A11-A20.
 - `EZMB_ASCENSION_DIAGNOSTICS=1` remains available for read-only diagnostics.
+- A20 host multiplayer selection/start should log: multiplayer A20 selection is enabled for development testing, Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled.
 
 Co-op gameplay remains unverified. Either execute the multiplayer ownership/desync checks or keep release notes clear that the candidate has source-patched host selection but no live co-op verification.
+
+## Release Artifact Test Mode
+
+Normal developer tests do not require ignored `publish/`, staging, versioned, zip, installed DLL/PCK, or local smoke-log artifacts. After `dotnet publish EZMicroBalance.sln` and package staging/zip refresh, run:
+
+```powershell
+$env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'
+dotnet test EZMicroBalance.sln --no-build
+Remove-Item Env:\EZMB_RUN_RELEASE_ARTIFACT_TESTS
+```
+
+If `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set and artifacts are missing or stale, the release artifact tests should fail with missing-file or hash-mismatch details.
 
 ## Author Decision
 
@@ -56,7 +70,12 @@ Co-op gameplay remains unverified. Either execute the multiplayer ownership/desy
 
 ## Commit And Push Handoff
 
-No commit or push has been made.
+Current git status at this handoff refresh:
+
+- `git log -1 --oneline --decorate`: `a697596 (HEAD -> main, origin/main, origin/HEAD) impelement`
+- `git status --short --branch`: `## main...origin/main` with existing modified docs/resources/tests/code plus untracked `docs/features/ascension-11-20/current-issue-implementation-spec.md`, `docs/skills/`, and `tests/EZMicroBalance.Tests/ReleaseArtifactFactAttribute.cs`.
+
+No commit or push was attempted in this pass. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
 
 Proposed commit scope after the remaining manual/user gates are resolved:
 

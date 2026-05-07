@@ -200,7 +200,7 @@ Validation:
 Remaining:
 
 - Live Steam-client selection/start verification is still pending.
-- A11 now inserts 2 route rows before the boss rest row. A17 branch insertion, A20 intermission, and multiplayer behavior are still not complete.
+- Historical note: this entry is superseded by the later A11 geometry passes. Current A11 geometry is width +1 plus Act 1 +1 route row, Act 2 +1 route row, and Act 3 +2 route rows, with no A11-specific marker/icon/hover tooltip.
 
 ## 2026-05-06 - Research Spec Mode
 
@@ -830,7 +830,7 @@ Verification:
 ## 2026-05-07 - A11 Visible Route And Forge Token Rest-Site Hardening
 
 - Audited A11 map width against local Core `SavedActMap`/`NMapScreen` behavior and confirmed the prior width change could be spacing-only because no point was created in the inserted column.
-- Updated A11 saved-map shaping to add a reachable optional Monster node in the inserted column while preserving the original parent-to-reconnect route; Act 2/3 still add one late route row before the boss rest row.
+- Updated A11 saved-map shaping to add a reachable optional Monster node in the inserted column while preserving the original parent-to-reconnect route; current row tuning is Act 1 +1, Act 2 +1, and Act 3 +2 late route rows before the boss rest row.
 - Removed Forge Token's private `RestSiteSynchronizer.ChooseOption` wrapper for special rest-site actions after API review; Forge Token now spends only through the official Heal and Smith rest-site hooks until a safe special-action path is proven.
 - Updated Forge Token hover text, source guards, and docs so special rest-site payout is not claimed as an implemented feature.
 - Rebuilt installed/staging/versioned/zip artifacts after the hardening pass. Current hashes: DLL `E97A0FD91C4F2A5A83F5B7410343E9DD95C845BE574400EBAB1CF7C8CD19A7B8`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `8F9A3FE1F1A1184DC96B0784793350F6027AA7BB5D9D3363B91C31EEB2F1C5A4`, package zip `76D1005FDFBDB7AAC71200D9B45D7902070364E78BC9C198647B26E17132365B`.
@@ -860,3 +860,22 @@ Verification:
 - Refreshed package hashes after the A20 fixed-courtyard pass: DLL `66084DA4B38E46F36EBA90BFB999CBA4938AB8B4AC0C01D5B2A87DF7655A3530`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `2F831F169A7ED099D89757DBE7768BF34174894E2DDC36858ABE9D1AFB7E392A`, package zip `98163DD931EA69908A75093DCD613A6668EA4C61B9DFBD39EDEBE677306CD641`.
 - Reran controlled `--force-steam off` smoke against the current installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, registered 9 SavedSpireFields, reached main menu in `4,076ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files to their original contents.
 - Live Boss 1 reward to courtyard to Boss 2 gameplay, save/load in the courtyard, and Boss 2 victory/defeat flow remain pending manual tests.
+
+## 2026-05-07 - Current Issue Implementation Spec, A20 Multiplayer Warning, and Test-Gate Pass
+
+- Added `docs/features/ascension-11-20/current-issue-implementation-spec.md` before implementation, covering stale A11 wording, A20 multiplayer warning, release artifact test gating, stale current-package smoke, and pending live co-op matrix issues.
+- Rechecked local Core source for `StartRunLobby.UpdateMaxMultiplayerAscension`, `SyncAscensionChange`, `BeginRunForAllPlayers`, `BeginRunLocally`, `UpdatePreferredAscension`, `NAscensionPanel`, `LobbyPlayer.maxMultiplayerAscensionUnlocked`, `RunState.Players`, `SerializableRun.Ascension`, and `ProgressState.ClampAscension`.
+- Added a log-only A20 host-multiplayer warning path in `AscensionSelectionPatches`: host A20 selection and host A20 run start now warn that multiplayer A20 selection is development testing, Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled.
+- Kept A20 gameplay conservative: `AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(...)` still requires a one-player run.
+- Updated A11 player-facing localization and docs to say width +1, Act 1 +1 route row, Act 2 +1 route row, Act 3 +2 route rows, and no A11 marker/icon/hover tooltip. A12 Firemark, A16 Banner, A17 Deep Branch, A19 Royal Seal, and A20 Brand indicators remain separate.
+- Added `ReleaseArtifactFactAttribute`; ignored publish/package/installed/runtime-smoke tests now skip unless `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set. Normal source/localization/docs tests should no longer require ignored `publish/` artifacts.
+- Expanded the live co-op manual matrix with gate off/on, multiplayer selection disable flag, client join/clamp, A11/A12/A16 map indicators, A14/A15/A18 ownership, A20 warning, and desync/checksum log checks.
+- Current-package runtime smoke, normal Steam-client Mod Settings verification, live feature verification, save/load, and live co-op verification remain pending until run in this or a later pass.
+
+## 2026-05-07 - Current Package Smoke Refresh
+
+- Ran `dotnet publish EZMicroBalance.sln` after the A20 warning/localization/test-gate pass and rebuilt `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed DLL/JSON/PCK artifacts.
+- Current hashes after package refresh: DLL `8A6B9696F81B39DF5C04FF306687381629BDD33970A1C3D685A5C2E7CA517DA8`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`, package zip `4BC21B37C9C2D90FC4991F353245DEBB47555026975647341281480BB492F089`.
+- Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, reached main menu in `13,423ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
+- Validation after doc/hash/smoke refresh: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` passed, 62 passed, 15 skipped release artifact/runtime evidence tests, 0 failed; `dotnet test EZMicroBalance.sln --no-build` passed with the same counts; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 77 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` exited 0 with CRLF normalization warnings for touched files.
+- Normal Steam-client Mod Settings verification, live feature verification, save/load, and live co-op verification remain pending.

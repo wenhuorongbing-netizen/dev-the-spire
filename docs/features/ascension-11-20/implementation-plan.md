@@ -43,6 +43,7 @@ The current implementation uses the selected run Ascension level after the selec
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` enables the selector expansion for development testing; the private-beta default leaves public selection off. `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` still force-disables it for comparison testing.
 - `EZMB_ASCENSION_DEBUG_LEVEL=11` through `20` can still force slice gates for internal checks.
 - `EZMB_ASCENSION_DIAGNOSTICS=1` enables read-only internal run/combat diagnostics without enabling gameplay systems. It must not mutate restored Blight Sprout card state or raise Rootblight by itself.
+- Host multiplayer A20 selection/start now logs a development-testing warning because A20 Dual King Brands / second-boss Brand gameplay remains single-player gated. This does not prove co-op A20 gameplay support.
 
 The diagnostics gate is intentionally non-mutating. It logs hook reachability and Rootblight state only.
 
@@ -88,7 +89,8 @@ Plan:
 1. Keep English and Simplified Chinese `ascension.json` keys for A11-A20 packaged.
 2. Guard the selector patch so it stays on `StartRunLobby` single-player paths only.
 3. Avoid global `CharacterStats` getter, `ProgressState`, `ProgressSaveManager`, `NAscensionPanel`, and `AscensionManager.maxAscensionAllowed` patches.
-4. Live-test A11 and A20 run start and inspect `godot.log`.
+4. Keep host multiplayer A20 warning logs on selection and run start until a safe UI hint or live co-op support is proven.
+5. Live-test A11 and A20 run start and inspect `godot.log`.
 
 Stop conditions:
 

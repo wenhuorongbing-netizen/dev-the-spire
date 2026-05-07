@@ -1,31 +1,21 @@
-# EZ Micro Balance 更新日志
+# EZ Micro Balance Changelog
 
-每次有面向玩家或测试的改动，只在这个文件追加简短条目。
+Append only short tester/player-facing entries here when behavior or release validation changes.
 
 ## 2026-05-07
 
-- 古代奖励：完成 v4.3 古代奖励重做和主要边界修复。
-- 包体结构：EZ Micro Balance 保持独立 mod，manifest id 为 `EZMicroBalance`。
-- 美术资源：发布封面替换为原创、无文字、无数字、无 logo 图片。
-- A11：宽塔长路现在会扩宽地图，并增加路线层数：第一幕 +1 层，第二幕 +1 层，第三幕 +2 层。
-- A11：新增长路节点悬停提示，让玩家知道路线空间来自进阶 11。
-- A12：火印精英每幕生成候选，带火印宿主、专用标记、第四张卡牌奖励选项。
-- A12：铸令进入休息点不再闪退；休息随机升级，锻造回血，重复铸令转为金币。
-- A12：火印、铸令、战旗相关数字改为蓝色，关键词改为金色。
-- A13：裂变奖励出现率提高，普通战 25%，战旗房 35%，火印精英 40%，Boss 15%。
-- A13：裂变只作用于合格攻击牌/技能牌，耗能 -1，并获得消耗。
-- A14：根蚀 I/II/III 改为真实主牌组污染牌，费用分别为 2/3/4。
-- A14：根蚀只处理战斗开始时已有的根蚀；本战新加入的根蚀从下一场战斗才开始生长。
-- A14：根蚀最多 4 张；达到上限后显示“根系已满”并阻止继续污染。
-- A14：根蚀 III 每张最多分出 1 张根蚀 I，之后继续不处理也不会无限分裂。
-- A14：休息现在只移除 1 张最高阶段根蚀，不再一次清空全部根蚀。
-- A15：第二幕和第三幕 Boss 战现在埋入 2 张根芽。
-- A15：Boss 的两张根芽错峰萌发，分别在第 3/4 回合生效。
-- A15/A18：根芽文本缩短；见到后不打出会在战斗后加入根蚀 I。
-- A16：战旗房第一批效果包含先锋旗、盾阵旗、悬赏旗。
-- A17：第二幕和第三幕加入可选深层支线原型。
-- A19：Boss 王印进入源代码守卫和地图/战斗提示原型。
-- A20：双王烙印、中庭、第二 Boss 提前信息进入源代码守卫原型。
-- 测试：`dotnet build EZMicroBalance.sln` 通过，0 警告，0 错误。
-- 测试：`dotnet test EZMicroBalance.sln --no-build` 通过，75/75。
-- 状态：自动化开发检查通过；Steam 实机、存读档、UI 包裹和多人验证仍需人工测试。
+- Ancient rewards: completed the active v4.3 rebalance and major boundary fixes.
+- Package structure: `EZ Micro Balance` remains an independent mod with manifest id `EZMicroBalance`.
+- Release art: active cover art is original, with no visible text, numbers, logos, or official game assets.
+- A11: Wide Tower, Long Road now changes vanilla-looking map geometry only: width +1, Act 1 +1 route row, Act 2 +1 route row, and Act 3 +2 route rows.
+- A11: removed the dedicated Long Road marker/icon/hover tooltip; ordinary route nodes still look vanilla.
+- A12: Firemarked Elites use dedicated route indicators, a visible Firemark Host, Forge Token rewards, and Heal/Smith token payouts.
+- A12: Firemark, Forge Token, and Banner text now uses native rich-text color markup for important values and terms.
+- A13: Fission reward appearance rates were raised for development testing, with stricter card eligibility and icon support.
+- A14/A15/A18: Rootblight and Blight Sprout were migrated to the v2.0 card-state design and still need live verification.
+- A16: Banner Rooms are visible enhanced normal combats with public rule text.
+- A17: Deep Branches are optional Act 2/3 side branches in single-player only until route-voting behavior is proven.
+- A19/A20: Boss Royal Seal / King Brand map hover text remains available; A20 Dual King Brands gameplay remains single-player gated.
+- Multiplayer A20: host selection is enabled only for development testing when the public Ascension gate is on; logs now warn that Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification.
+- Tests: release artifact/package/runtime-smoke checks are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`; normal developer tests no longer require ignored `publish/` package artifacts.
+- Status: current-package controlled `--force-steam off` smoke passed with only BaseLib and EZ Micro Balance enabled and `Found 12 SavedSpireFields`. Normal Steam-client verification, live feature verification, save/load, and live co-op verification remain pending until actually executed.

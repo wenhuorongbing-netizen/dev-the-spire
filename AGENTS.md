@@ -82,6 +82,7 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 - `README.md` contains the human-facing project state.
 - `docs/architecture-ez-micro-balance.md` records the independent-mod architecture decision.
 - `docs/features/ancients-rework-v4/` contains the EZ Micro Balance source design, implementation plan, API discovery, and work log.
+- `docs/skills/sts2-godot-mod-development.md` is the repository-local agent reference for future StS2/Godot/.NET mod development passes.
 - `docs/PROJECT_MAP.md` contains the project map.
 - `docs/dev-environment.md` records local environment values and validation status.
 - `docs/test-plan.md` contains automated and manual validation steps.

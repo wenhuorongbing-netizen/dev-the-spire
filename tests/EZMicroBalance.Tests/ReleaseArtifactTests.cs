@@ -54,7 +54,7 @@ public sealed class ReleaseArtifactTests
         Assert.Equal("EzDailyContent", legacy.RootElement.GetProperty("id").GetString());
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void ActiveReleaseArtMatchesAuditedNoTextNoLogoAsset()
     {
         var activeArt = RepoPath("EZMicroBalance", "mod_image.png");
@@ -172,7 +172,7 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("must not start in opening hand from Innate", manualMatrix, StringComparison.Ordinal);
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void PublishedPckContainsOnlyActiveReleaseResources()
     {
         var pckPath = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
@@ -204,7 +204,7 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("EZMicroBalance/localization/zhs/events.json", entries);
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void InstalledDllMatchesABuildOutput()
     {
         var installedDll = GamePath("mods", "EZMicroBalance", "EZMicroBalance.dll");
@@ -217,7 +217,7 @@ public sealed class ReleaseArtifactTests
         Assert.Contains(buildDlls, buildDll => Sha256(buildDll) == installedHash);
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void InstalledManifestMatchesRepositoryManifest()
     {
         var sourceManifest = RepoPath("EZMicroBalance.json");
@@ -228,7 +228,7 @@ public sealed class ReleaseArtifactTests
         Assert.Equal(NormalizeJson(sourceManifest), NormalizeJson(installedManifest));
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void HarmonyPatchesResolveAgainstInstalledGameApi()
     {
         var dataDir = GamePath("data_sts2_windows_x86_64");
@@ -312,7 +312,7 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("godot.log", manualMatrix, StringComparison.Ordinal);
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void PrismaticGemRewardBannerContractMatchesInstalledGameApi()
     {
         var dataDir = GamePath("data_sts2_windows_x86_64");

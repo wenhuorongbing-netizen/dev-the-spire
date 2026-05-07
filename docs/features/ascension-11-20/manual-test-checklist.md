@@ -23,7 +23,7 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Final bounded `--force-steam off` smoke for the current A20 fixed-courtyard package initialized only BaseLib and EZ Micro Balance, reported 9 SavedSpireFields, reached main menu in `4,076ms`, found 0 EZ Micro Balance error/exception lines, and restored the temporary profile settings to their original contents.
+- Current bounded `--force-steam off` smoke after the A20 warning/package refresh initialized only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, reached main menu in `13,423ms`, found 0 EZ Micro Balance error/exception lines, and restored the temporary profile settings byte-for-byte.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded Boss Royal Seals, and A20 vanilla double-boss map path/Brand/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
@@ -174,7 +174,18 @@ Gated implementation present; live co-op testing pending. Execute only with `EZM
 - [ ] A11-A20 host selection does not persist to `PreferredMultiplayerAscension` after leaving the lobby.
 - [ ] A11-A20 host selection survives a client joining the lobby without being clamped back to A10.
 - [ ] A client sees the host-selected A11-A20 value.
+- [ ] Gate off: single-player and multiplayer selection remain normal A1-A10.
+- [ ] Gate on: host multiplayer can select A11-A20.
+- [ ] Disable multiplayer selection env var returns host multiplayer to the vanilla cap.
+- [ ] Client join does not clamp host A11-A20 selection back to A10.
+- [ ] Multiplayer A11 starts with widened/longer map geometry and no A11 marker/tooltip on ordinary route nodes.
+- [ ] Multiplayer A12 Firemarked Elite marker remains visible and host/client agree on the marked node.
+- [ ] Multiplayer A16 Banner marker/hover remains visible and host/client agree on the marked node.
+- [ ] Multiplayer A14/A15/A18 Rootblight and Blight Sprout state remains independently owned per player.
 - [ ] Starting a two-player A11/A12/A14/A16 run reaches run load without ownership warnings, checksum divergence, or desync in `godot.log`.
+- [ ] A20 multiplayer selection logs a clear limitation: multiplayer A20 selection is enabled for development testing; Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification; A11-A19 inherited systems may still apply if their gates are enabled.
+- [ ] Starting a two-player A20 run does not silently apply single-player-only Dual King Brands behavior without warning.
+- [ ] `godot.log` has no desync, checksum divergence, ownership, or multiplayer state warnings after the co-op pass.
 
 ## A12 Firemarked Elite and Forge Token
 
@@ -284,3 +295,15 @@ Execute before private beta release.
 - [ ] Remove only EZ Micro Balance from mods folder and confirm BaseLib and other mods still load.
 - [ ] Confirm no official game assets were copied into the repository.
 - [ ] Confirm release notes list any unsupported multiplayer or Ascension-selection limitations.
+
+## Release Artifact and Runtime Smoke Hygiene
+
+Planning checks for the next release-engineering pass; do not mark these complete without running the commands on the current artifacts.
+
+- [ ] In a clean clone or clean workspace, normal `dotnet test EZMicroBalance.sln --no-build` passes without ignored publish artifacts; release artifact/runtime evidence tests are skipped by `ReleaseArtifactFactAttribute`.
+- [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
+- [ ] Publish the current package before runtime smoke.
+- [ ] Launch controlled `--force-steam off` with only BaseLib and EZ Micro Balance enabled.
+- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source defines 12 fields, while the last documented smoke reported 9.
+- [ ] Confirm the controlled smoke has no EZ Micro Balance startup exception or error.
+- [ ] Keep normal Steam-client Mod Settings verification separate from controlled smoke.

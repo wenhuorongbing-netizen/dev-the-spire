@@ -36,6 +36,20 @@ public sealed class AscensionFeatureGuardTests
             "RestoreMultiplayerUnlocks",
             "ShouldSkipVanillaPreferredAscensionSave",
             "not writing it to vanilla progress",
+            "MultiplayerA20DowngradeWarning",
+            "Multiplayer A20 selection is enabled for development testing.",
+            "Dual King Brands / second-boss Brand gameplay is currently disabled or downgraded in co-op pending live verification.",
+            "A11-A19 inherited systems may still apply if their gates are enabled, subject to live verification.",
+            "WarnIfA20MultiplayerDowngraded",
+            "ShouldWarnA20MultiplayerDowngrade",
+            "lobby.Ascension >= AscensionFeatureGate.DoubleRoyalBrandLevel",
+            "lobby.Players.Count > 1",
+            "HarmonyPatch(typeof(StartRunLobby), nameof(StartRunLobby.SyncAscensionChange))",
+            "HarmonyPatch(typeof(StartRunLobby), \"BeginRunForAllPlayers\")",
+            "host multiplayer ascension selection",
+            "host multiplayer run start",
+            "IsDualKingBrandsSinglePlayerEnabled(IRunState runState)",
+            "runState.Players.Count == 1",
             "__state.Stats.MaxAscension = __state.OriginalMaxAscension");
 
         Assert.DoesNotContain("NAscensionPanel", source, StringComparison.Ordinal);

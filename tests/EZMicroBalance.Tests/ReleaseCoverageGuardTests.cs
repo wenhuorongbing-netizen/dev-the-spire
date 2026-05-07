@@ -478,7 +478,7 @@ public sealed class ReleaseCoverageGuardTests
         return Path.GetExtension(path) is ".json" or ".png";
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void PackageStagingVersionedZipAndInstalledArtifactsHaveMatchingHashes()
     {
         var version = ManifestVersion();
@@ -514,7 +514,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Equal(stagingReadmeHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/README_INSTALL.txt")));
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void CurrentDocsMatchReleaseHashesAndAvoidPinnedStaleTestTotals()
     {
         var packageHash = Sha256(RepoPath("publish", $"EZMicroBalance-{ManifestVersion()}.zip"));
@@ -548,7 +548,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.DoesNotContain("release ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void PrivateBetaVerificationHandoffCarriesCurrentArtifactsAndManualBlockers()
     {
         var packageHash = Sha256(RepoPath("publish", $"EZMicroBalance-{ManifestVersion()}.zip"));
@@ -570,12 +570,55 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", handoff, StringComparison.Ordinal);
         Assert.Contains("Live co-op selection and desync verification are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("AUTHOR_NAME_REPLACE_ME", handoff, StringComparison.Ordinal);
-        Assert.Contains("No commit or push has been made", handoff, StringComparison.Ordinal);
+        Assert.Contains("Current git status at this handoff refresh", handoff, StringComparison.Ordinal);
+        Assert.Contains("a697596 (HEAD -> main, origin/main, origin/HEAD) impelement", handoff, StringComparison.Ordinal);
         Assert.Contains("Proposed commit scope", handoff, StringComparison.Ordinal);
         Assert.Contains("Do not include", handoff, StringComparison.Ordinal);
         Assert.Contains("Directory.Build.props", handoff, StringComparison.Ordinal);
         Assert.Contains("art_pipeline/`, `asset/`, or `source code/`", handoff, StringComparison.Ordinal);
         Assert.Contains("Push only after explicit user approval", handoff, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ReleaseArtifactAndRuntimeEvidenceTestsAreExplicitlyOptIn()
+    {
+        var testSource = ReadAllTestSource().Replace("\r\n", "\n");
+        var testPlan = ReadRepoText("docs", "test-plan.md");
+        var releaseChecklist = ReadRepoText("docs", "release-checklist.md");
+        var handoff = ReadRepoText("docs", "private-beta-verification-handoff.md");
+        var issues = ReadRepoText("docs", "issues.md");
+
+        Assert.Contains("ReleaseArtifactFactAttribute", testSource, StringComparison.Ordinal);
+        Assert.Contains("EZMB_RUN_RELEASE_ARTIFACT_TESTS", testSource, StringComparison.Ordinal);
+        Assert.Contains("Skipping release artifact/runtime checks", testSource, StringComparison.Ordinal);
+
+        foreach (var methodName in new[]
+        {
+            "PrivateBetaZipContainsOnlyInstallableActiveModFiles",
+            "PackageContainsCurrentAscensionLocalization",
+            "ActiveReleaseArtMatchesAuditedNoTextNoLogoAsset",
+            "PublishedPckContainsOnlyActiveReleaseResources",
+            "InstalledDllMatchesABuildOutput",
+            "InstalledManifestMatchesRepositoryManifest",
+            "HarmonyPatchesResolveAgainstInstalledGameApi",
+            "PrismaticGemRewardBannerContractMatchesInstalledGameApi",
+            "PackageStagingVersionedZipAndInstalledArtifactsHaveMatchingHashes",
+            "CurrentDocsMatchReleaseHashesAndAvoidPinnedStaleTestTotals",
+            "PrivateBetaVerificationHandoffCarriesCurrentArtifactsAndManualBlockers",
+            "ActiveCoverArtAndInactiveModRealPolicyMatchExportPckAndPackage",
+            "ExportedResourcesInstalledPckAndPackagePckStayInParity",
+            "CurrentReleaseHashClaimsMatchInstalledStagingVersionedAndZipArtifacts",
+            "RecentSmokeLogSupportsControlledSmokeClaims"
+        })
+        {
+            Assert.Contains($"[ReleaseArtifactFact]\n    public void {methodName}", testSource, StringComparison.Ordinal);
+        }
+
+        Assert.Contains("EZMB_RUN_RELEASE_ARTIFACT_TESTS=1", testPlan, StringComparison.Ordinal);
+        Assert.Contains("skipped in normal developer test runs", testPlan, StringComparison.Ordinal);
+        Assert.Contains("Release artifact tests are opt-in", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("EZMB_RUN_RELEASE_ARTIFACT_TESTS=1", handoff, StringComparison.Ordinal);
+        Assert.Contains("Normal `dotnet test` no longer requires ignored publish/package artifacts", issues, StringComparison.Ordinal);
     }
 
     [Fact]

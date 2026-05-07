@@ -149,7 +149,7 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("OPTION_COOK.ezDescriptionDisabled", restSite.Keys);
     }
 
-    [Fact]
+    [ReleaseArtifactFact]
     public void PrivateBetaZipContainsOnlyInstallableActiveModFiles()
     {
         var packagePath = RepoPath("publish", "EZMicroBalance-v0.1.0-private-beta.0.zip");
@@ -181,8 +181,8 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("Manifest id: EZMicroBalance", readme, StringComparison.Ordinal);
         Assert.Contains("BaseLib", readme, StringComparison.Ordinal);
         Assert.Contains("EzDailyContent disabled or absent", readme, StringComparison.Ordinal);
-        Assert.Contains("Prior controlled --force-steam off smoke passed", readme, StringComparison.Ordinal);
-        Assert.Contains("current source defines 12 SavedSpireFields", readme, StringComparison.Ordinal);
+        Assert.Contains("Current controlled --force-steam off smoke passed", readme, StringComparison.Ordinal);
+        Assert.Contains("Found 12 SavedSpireFields", readme, StringComparison.Ordinal);
         Assert.Contains("Normal Steam-client Mod Settings verification is still pending", readme, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer checks are still pending", readme, StringComparison.Ordinal);
         Assert.Contains("A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled", readme, StringComparison.Ordinal);

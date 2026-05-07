@@ -46,7 +46,7 @@ Do not duplicate A1-A10 pressure axes:
 
 | Ascension | Name | Player-facing effect | Design role |
 | --- | --- | --- | --- |
-| A11 | Wide Tower, Long Road / 宽塔长路 | Maps become wider. Acts 2/3 gain one late route row before the boss rest site. | Creates route and growth space for later risk nodes. |
+| A11 | Wide Tower, Long Road / 宽塔长路 | Maps become wider and longer: width +1, Act 1 +1 route row, Act 2 +1 route row, and Act 3 +2 route rows. No A11-specific marker/icon/hover tooltip. | Creates route and growth space for later risk nodes while ordinary route nodes still look vanilla. |
 | A12 | Firemarked Elites | About 3 visible optional firemarked elites per act, route-selected so a normal path should contain at most 1; defeating one grants a Forge Token. | Optional high-risk/high-reward node. |
 | A13 | Fission Enchantments | Some Attack and Skill rewards cost 1 energy less and gain Exhaust. | Reward judgment pressure. |
 | A14 | Root Begins | Start with one removable Root affliction in the deck. | Long-term deck pressure. |

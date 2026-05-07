@@ -31,7 +31,7 @@ Manual retest:
 
 Priority: P3
 
-Status: open
+Status: controlled-smoke refreshed; normal Steam-client runtime still pending
 
 Area: A11/A17 map UI feedback
 
@@ -144,13 +144,16 @@ Implementation notes:
 - Current source patch expands only host multiplayer lobbies when `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is set, temporarily raises in-memory lobby unlock caps only during max recomputation, restores them in a finalizer, and skips A11-A20 preferred-progress writes.
 - Host-multiplayer A11-A20 selection is independently disableable with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`.
 - A11-A20 gameplay, per-player Rootblight/Blight Sprout ownership, and desync behavior still require live co-op verification.
+- A20 Dual King Brands gameplay is still single-player gated through `IsDualKingBrandsSinglePlayerEnabled(...)`; the host multiplayer selector/start path now logs a development-testing downgrade warning, but live co-op verification is still pending.
 
 Manual retest:
 
 - Host a multiplayer lobby with BaseLib and EZ Micro Balance enabled.
 - Confirm A1-A10 behavior is unchanged with the gate disabled.
 - Enable the development/public A11-A20 gate and confirm the lobby can select A11-A20.
-- Start a co-op run at A11/A12/A14/A16 and confirm all players load without desync.
+- Start a co-op run at A11/A12/A14/A16/A20 and confirm all players load without desync.
+- Confirm Rootblight/Blight Sprout ownership remains per-player in co-op.
+- Confirm A20 multiplayer selection does not imply that Dual King Brands gameplay is live co-op verified.
 
 ### ISSUE-2026-05-07-A11-LONG-ROAD-MAP-MARKER-UNWANTED
 
@@ -179,6 +182,122 @@ Manual retest:
 - Confirm the map has the intended route geometry change.
 - Confirm no A11-specific icon, marker, or hover tooltip appears on ordinary route nodes.
 - Confirm Firemark/Banner/Deep Branch/Boss Seal indicators still appear when their own Ascensions are enabled.
+
+### ISSUE-2026-05-07-A20-MULTIPLAYER-SELECTION-WARNING-MISSING
+
+Priority: P2
+
+Status: source-patched with log warning; live co-op verification pending
+
+Area: A20 Dual King Brands / multiplayer selector messaging
+
+Audit finding: host multiplayer can source-select A20 when the public development gate is enabled, but A20 Dual King Brands gameplay remains single-player gated by `AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(...)`.
+
+Desired behavior:
+
+- Multiplayer A20 selection must not make testers think A20 Dual King Brands is fully supported in co-op.
+- Add a clear runtime log, UI warning, or selector-side message before multiplayer A20 testing.
+- Keep A20 gameplay conservative until live co-op boss-path verification proves host/client behavior is safe.
+
+Planning notes:
+
+- Do not remove the current A20 single-player gameplay gate without local source evidence and live co-op test coverage.
+- Keep selection support, gameplay activation, progress writes, and live co-op verification documented as separate surfaces.
+- `AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(...)` now logs on host multiplayer A20 selection and host multiplayer A20 run start.
+- Warning text says multiplayer A20 selection is for development testing, Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled.
+
+Manual retest:
+
+- In a host multiplayer lobby with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`, select A20.
+- Confirm the tester-visible warning or log appears on selection and run start.
+- Confirm the run does not silently apply single-player-only Dual King Brands behavior to co-op.
+
+### ISSUE-2026-05-07-LIVE-COOP-A11-A20-MATRIX-PENDING
+
+Priority: P1
+
+Status: source-patched; normal test path no longer requires ignored package artifacts
+
+Area: A11-A20 multiplayer runtime verification
+
+Audit finding: source guards prove selector and ownership shapes, but no live co-op matrix has verified lobby join, client view, run start, save/load, per-player state, or desync behavior.
+
+Minimum matrix:
+
+- Gate off: multiplayer selection remains vanilla A1-A10.
+- Gate on: host can select A11-A20 and client sees the selected value.
+- Disable flag: `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` restores vanilla multiplayer cap.
+- A11: co-op run starts with widened/longer map and no A11 marker.
+- A12: Firemarked Elite route markers remain visible and host/client agree.
+- A14/A15/A18: Rootblight and Blight Sprout state remains player-owned.
+- A16: Banner Room markers and combat rules remain visible and synchronized.
+- A20: selection limitation or warning is visible; Dual King Brands remains treated as not live co-op verified.
+- Logs: no ownership warnings, checksum divergence, or multiplayer desync lines in `godot.log`.
+
+### ISSUE-2026-05-07-RELEASE-ARTIFACT-TESTS-DEPEND-ON-IGNORED-PUBLISH-OUTPUT
+
+Priority: P2
+
+Status: open; planning recorded
+
+Area: automated tests / release artifact validation
+
+Audit finding: `.gitignore` excludes `publish/`, `*.zip`, `*.dll`, and `*.pck`, while some release guard tests require installed/staging/versioned zip artifacts. This is useful for release validation on the maintainer machine, but it can make normal `dotnet test` brittle in a clean clone unless package generation ran first.
+
+Desired behavior:
+
+- Normal `dotnet test` should pass in a clean clone or clearly skip release artifact tests when ignored package artifacts are absent.
+- Release artifact tests should run behind an explicit opt-in such as `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`, or after a documented package refresh command.
+- Release docs should state the exact command order for artifact validation.
+
+Implementation notes:
+
+- Normal `dotnet test` no longer requires ignored publish/package artifacts because package/hash/runtime-smoke checks are marked with `ReleaseArtifactFactAttribute`.
+- Release artifact tests are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
+- If the environment variable is set, package hash checks remain strict and missing artifacts fail with the test's missing-file assertion.
+- Do not weaken source/localization/package coverage silently; everyday source/localization/docs guards remain normal tests.
+
+### ISSUE-2026-05-07-CURRENT-PACKAGE-RUNTIME-SMOKE-STALE
+
+Priority: P1
+
+Status: open; runtime verification pending
+
+Area: controlled runtime smoke / SavedSpireField registration
+
+Audit finding: several docs cited a prior controlled `--force-steam off` smoke with an obsolete SavedSpireFields count. The current source/package defines 12 SavedSpireFields after Rootblight v2.2 card-state fields.
+
+2026-05-07 update:
+
+- Current controlled `--force-steam off` smoke passed after publish/package refresh.
+- Temporary profile settings enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, and restored `settings.save` plus `settings.save.backup` byte-for-byte.
+- `godot.log` showed `Loaded 2 mods (19 total)`, BaseLib initialization, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, main menu in `13,423ms`, and 0 EZ Micro Balance error/exception lines.
+- Normal Steam-client Mod Settings and live gameplay verification remain pending.
+
+Required verification:
+
+- Publish the current package.
+- Launch controlled `--force-steam off` with only BaseLib and EZ Micro Balance enabled.
+- Inspect `godot.log`.
+- Record the current SavedSpireField count.
+- Confirm no EZ Micro Balance startup error or exception.
+- Keep normal Steam-client Mod Settings verification as a separate pending gate.
+
+### ISSUE-2026-05-07-HANDOFF-GIT-STATUS-HYGIENE
+
+Priority: P3
+
+Status: open; planning recorded
+
+Area: release handoff / repository status docs
+
+Audit finding: handoff and audit docs can become stale when they say "No commit or push has been made" or "worktree dirty." A docs-only audit observed `main...origin/main` at `a697596` before this pass, then this pass intentionally dirtied docs. Final release handoff must re-check the current status rather than relying on old wording.
+
+Required release-pass action:
+
+- Run `git status --short --branch` and `git log -1 --oneline --decorate`.
+- Update `docs/private-beta-verification-handoff.md` and `docs/features/ancients-rework-v4/completion-audit.md` with the actual current commit/worktree state.
+- Do not fabricate commit or push status.
 
 ## Resolved / Player-Verified
 

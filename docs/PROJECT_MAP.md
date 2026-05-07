@@ -58,6 +58,8 @@ dev-the-spire/
     architecture-ez-micro-balance.md
     mod-changelog.md
     issues.md
+    skills/
+      sts2-godot-mod-development.md
     features/ancients-rework-v4/
     archive/legacy-planning/
     BETA_COMPATIBILITY.md
@@ -88,7 +90,7 @@ They are ignored by `.gitignore` and are not part of the current packaged mod su
 
 - `EZMicroBalance.sln`: active solution for bare `dotnet build`.
 - `EZMicroBalance.csproj`: active private beta project.
-- `tests/EZMicroBalance.Tests/`: release artifact and Harmony patch target tests for `EZMicroBalance`.
+- `tests/EZMicroBalance.Tests/`: source/localization/docs guards plus opt-in release artifact, runtime-smoke evidence, and Harmony patch target tests for `EZMicroBalance`.
 - `EZMicroBalance.json`: active private beta manifest. Current id is `EZMicroBalance`.
 - `EzDailyContent.json`: legacy manifest. Current id is `EzDailyContent`; do not rename in-place.
 - `export_presets.cfg`: selected-resource Godot export; packages only `EZMicroBalance` resources and the active manifest.
@@ -104,6 +106,7 @@ They are ignored by `.gitignore` and are not part of the current packaged mod su
 - `docs/architecture-ez-micro-balance.md`: architecture decision for independent mod identity.
 - `docs/mod-changelog.md`: one-line mod-facing changelog; update this file for each future mod change.
 - `docs/issues.md`: open player-reported/runtime issues that must stay visible until fixed and verified.
+- `docs/skills/sts2-godot-mod-development.md`: repository-local agent reference for StS2/Godot/.NET mod development workflow and evidence rules.
 - `docs/features/ancients-rework-v4/source-design.md`: source design brief for Ancient reward changes.
 - `docs/features/ancients-rework-v4/api-discovery.md`: API evidence and implementation notes.
 - `docs/features/ancients-rework-v4/completion-audit.md`: prompt-to-artifact release gate checklist and current blockers.
