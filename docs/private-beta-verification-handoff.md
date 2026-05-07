@@ -1,15 +1,15 @@
 # EZ Micro Balance Private Beta Verification Handoff
 
-Date: 2026-05-07
+Date: 2026-05-08
 
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `4BC21B37C9C2D90FC4991F353245DEBB47555026975647341281480BB492F089`
+- Zip SHA256: `F3F601C1ED304203D269A905F48A2E6F66F468F2D4C5D7E34E1080A79BE74B2C`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `8A6B9696F81B39DF5C04FF306687381629BDD33970A1C3D685A5C2E7CA517DA8`
+- DLL SHA256: `BC4CB9AC61C2F59172F79B96A1996782A15FC247449EB02B5D9AE62A65C0F27D`
 - Manifest SHA256: `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`
 - PCK SHA256: `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`
 
@@ -21,7 +21,7 @@ This handoff is for manual verification that cannot be completed by the local au
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
 - `dotnet publish EZMicroBalance.sln`: passed.
 - `git diff --check`: exit 0 with CRLF normalization warnings for touched files.
-- Current controlled `--force-steam off` smoke temporarily enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, reached main menu in `13,423ms`, found 0 EZ Micro Balance error/exception lines, and restored `settings.save` plus `settings.save.backup` byte-for-byte. Normal Steam-client Mod Settings verification is still pending.
+- Current controlled `--force-steam off` smoke temporarily enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, reached main menu in `12,886ms`, found 0 EZ Micro Balance error/exception lines, and restored `settings.save` plus `settings.save.backup` byte-for-byte. Normal Steam-client Mod Settings verification is still pending.
 
 ## Required Manual Results
 
@@ -72,8 +72,8 @@ If `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set and artifacts are missing or stale
 
 Current git status at this handoff refresh:
 
-- `git log -1 --oneline --decorate`: `a697596 (HEAD -> main, origin/main, origin/HEAD) impelement`
-- `git status --short --branch`: `## main...origin/main` with existing modified docs/resources/tests/code plus untracked `docs/features/ascension-11-20/current-issue-implementation-spec.md`, `docs/skills/`, and `tests/EZMicroBalance.Tests/ReleaseArtifactFactAttribute.cs`.
+- `git log -1 --oneline --decorate`: `212ba0d (HEAD -> main, origin/main, origin/HEAD) fix2`
+- `git status --short --branch`: `## main...origin/main` with modified follow-up code, test, and documentation files listed by the current local status; no untracked files observed in this refresh.
 
 No commit or push was attempted in this pass. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
 

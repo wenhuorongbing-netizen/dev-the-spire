@@ -43,7 +43,7 @@ public sealed class AscensionFeatureGuardTests
             "WarnIfA20MultiplayerDowngraded",
             "ShouldWarnA20MultiplayerDowngrade",
             "lobby.Ascension >= AscensionFeatureGate.DoubleRoyalBrandLevel",
-            "lobby.Players.Count > 1",
+            "players: {lobby.Players.Count}",
             "HarmonyPatch(typeof(StartRunLobby), nameof(StartRunLobby.SyncAscensionChange))",
             "HarmonyPatch(typeof(StartRunLobby), \"BeginRunForAllPlayers\")",
             "host multiplayer ascension selection",
@@ -57,6 +57,7 @@ public sealed class AscensionFeatureGuardTests
         Assert.DoesNotContain("ProgressSaveManager", source, StringComparison.Ordinal);
         Assert.DoesNotContain("HarmonyPatch(typeof(ProgressState", source, StringComparison.Ordinal);
         Assert.DoesNotContain("AscensionManager.maxAscensionAllowed", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("lobby.Players.Count > 1", source, StringComparison.Ordinal);
     }
 
     [Fact]

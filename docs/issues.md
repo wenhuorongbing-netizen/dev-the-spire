@@ -203,12 +203,14 @@ Planning notes:
 
 - Do not remove the current A20 single-player gameplay gate without local source evidence and live co-op test coverage.
 - Keep selection support, gameplay activation, progress writes, and live co-op verification documented as separate surfaces.
-- `AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(...)` now logs on host multiplayer A20 selection and host multiplayer A20 run start.
+- `AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(...)` now logs on host multiplayer A20 selection and host multiplayer A20 run start, including the host-only lobby case before a client joins.
 - Warning text says multiplayer A20 selection is for development testing, Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled.
 
 Manual retest:
 
-- In a host multiplayer lobby with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`, select A20.
+- In a host multiplayer lobby with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`, select A20 before any client joins.
+- Confirm the tester-visible warning or log appears on host-only selection.
+- Let a client join without changing Ascension, then start the A20 run.
 - Confirm the tester-visible warning or log appears on selection and run start.
 - Confirm the run does not silently apply single-player-only Dual King Brands behavior to co-op.
 
@@ -216,7 +218,7 @@ Manual retest:
 
 Priority: P1
 
-Status: source-patched; normal test path no longer requires ignored package artifacts
+Status: source-patched; live co-op matrix pending
 
 Area: A11-A20 multiplayer runtime verification
 
@@ -238,7 +240,7 @@ Minimum matrix:
 
 Priority: P2
 
-Status: open; planning recorded
+Status: source-patched and locally validated; clean-clone verification pending
 
 Area: automated tests / release artifact validation
 
@@ -261,17 +263,17 @@ Implementation notes:
 
 Priority: P1
 
-Status: open; runtime verification pending
+Status: controlled-smoke refreshed; Steam-client and live gameplay verification pending
 
 Area: controlled runtime smoke / SavedSpireField registration
 
 Audit finding: several docs cited a prior controlled `--force-steam off` smoke with an obsolete SavedSpireFields count. The current source/package defines 12 SavedSpireFields after Rootblight v2.2 card-state fields.
 
-2026-05-07 update:
+2026-05-08 update:
 
 - Current controlled `--force-steam off` smoke passed after publish/package refresh.
 - Temporary profile settings enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, and restored `settings.save` plus `settings.save.backup` byte-for-byte.
-- `godot.log` showed `Loaded 2 mods (19 total)`, BaseLib initialization, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, main menu in `13,423ms`, and 0 EZ Micro Balance error/exception lines.
+- `godot.log` showed `Loaded 2 mods (19 total)`, BaseLib initialization, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, main menu in `12,886ms`, and 0 EZ Micro Balance error/exception lines.
 - Normal Steam-client Mod Settings and live gameplay verification remain pending.
 
 Required verification:
@@ -287,11 +289,16 @@ Required verification:
 
 Priority: P3
 
-Status: open; planning recorded
+Status: needs refresh after current commit/push state is known
 
 Area: release handoff / repository status docs
 
-Audit finding: handoff and audit docs can become stale when they say "No commit or push has been made" or "worktree dirty." A docs-only audit observed `main...origin/main` at `a697596` before this pass, then this pass intentionally dirtied docs. Final release handoff must re-check the current status rather than relying on old wording.
+Audit finding: handoff and audit docs can become stale when they say "No commit or push has been made" or "worktree dirty." Final release handoff must re-check the current status rather than relying on old wording from an earlier local snapshot.
+
+2026-05-08 update:
+
+- Local `main` was observed at `212ba0d (HEAD -> main, origin/main, origin/HEAD) fix2` before the A20 warning-condition follow-up changes.
+- The previously untracked spec, `docs/skills/`, and `ReleaseArtifactFactAttribute.cs` are no longer untracked in this checkout.
 
 Required release-pass action:
 

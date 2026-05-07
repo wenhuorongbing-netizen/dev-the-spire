@@ -90,8 +90,7 @@ internal static class AscensionSelectionPatches
     private static bool ShouldWarnA20MultiplayerDowngrade(StartRunLobby lobby)
     {
         return ShouldExpandMultiplayerSelection(lobby) &&
-            lobby.Ascension >= AscensionFeatureGate.DoubleRoyalBrandLevel &&
-            lobby.Players.Count > 1;
+            lobby.Ascension >= AscensionFeatureGate.DoubleRoyalBrandLevel;
     }
 
     public static MultiplayerUnlockOverride? TemporarilyExpandMultiplayerUnlocks(StartRunLobby lobby)

@@ -1,6 +1,6 @@
 # EZ Micro Balance Completion Audit
 
-Last updated: 2026-05-07
+Last updated: 2026-05-08
 
 ## Objective
 
@@ -37,13 +37,13 @@ Concrete deliverables for the current goal:
 | Resolve legacy no-Ascension scope conflict | The 2026-05-06 overnight sprint goal opens Ascension 11-20 as implementation work. A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled; Ascension 21-30 and custom character work remain out of scope. Rootblight/Blight Sprout implementation is isolated under `EZMicroBalanceCode/Ascension/` and guarded by tests. | Pass for development build |
 | Ascension safe slices implemented | `EZMicroBalanceCode/Ascension/` implements A11-A20 single-player and host-multiplayer selector expansion plus A11 +1 map column with an inserted-column optional route and extra route rows by act (Act 1 +1, Act 2 +1, Act 3 +2) without A11-specific map markers, A12 Firemarked Elite/Forge Token, A13 Fission, A14 Root, A15 Boss Blight Sprout, A16 Banner Rooms, A17 optional Act 2/3 Deep Branches, A18 Elite Blight Sprout, A19 Boss Seals/fourth reward, and A20 vanilla double-boss metadata/Brand-parameter/recovery/reward-screen/courtyard-event hooks. A bespoke A20 full custom intermission remains deferred with blockers in Ascension docs. | Pass for development build |
 | A11-A20 selector is constrained | Automated source guards require the selector patch to stay on standard single-player and host-multiplayer lobby paths and avoid global `CharacterStats` getter, `ProgressState`, `ProgressSaveManager`, `NAscensionPanel`, or `AscensionManager.maxAscensionAllowed` patches. | Pass |
-| Multiplayer A20 warning is explicit | `AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(...)` logs on host multiplayer A20 selection and host multiplayer A20 run start. The warning states that multiplayer A20 selection is for development testing, Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled. | Source guard pass pending validation; live co-op verification pending |
+| Multiplayer A20 warning is explicit | `AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(...)` logs on host multiplayer A20 selection, including before a client joins, and on host multiplayer A20 run start. The warning states that multiplayer A20 selection is for development testing, Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled. | Source guard pass pending validation; live co-op verification pending |
 | Ascension 21-30 and custom character excluded | `release-checklist.md`, `README.md`, and source guards document/exclude A21-A30 and custom-character work. | Pass |
 | Debug probes removed or gated | Active project compiles `EZMicroBalanceCode/**/*.cs`; legacy `AncientRewardNoopProbe` is gated behind `EZ_MICRO_BALANCE_DEBUG_PROBES`. | Pass |
 | `.cs.uid` tracking policy consistent | Every Godot-imported C# source under `EZMicroBalanceCode/` and `EzDailyContentCode/` has a `.cs.uid` companion. Test project C# files are outside Godot import scope and intentionally do not use `.cs.uid`. | Pass |
 | No original StS2 assets copied into active package | PCK audit test excludes source/docs/art/archive folders; active package contains selected template mod resources, localization, and original generated `mod_image.png` art. | Pass |
 | No large decompiled game code bodies copied | Active code is small Harmony patches/helpers; local API evidence is summarized in docs rather than copied as game method bodies. Local `source code/` decompile/reference scratch material is ignored by `.gitignore` and excluded from export so it is not commit-eligible or packaged. | Pass by active-source/package review |
-| No accidental build/package artifacts in active release set | The final untracked-file audit is broad because the migration is still uncommitted, but the release package/PCK guards exclude source, docs, art pipeline, archives, build outputs, local tooling, and `source code/`. Active `EZMicroBalance/` resources contain only images, `.import` metadata, and localization JSON. | Pass for active package; worktree still dirty |
+| No accidental build/package artifacts in active release set | The release package/PCK guards exclude source, docs, art pipeline, archives, build outputs, local tooling, and `source code/`. Active `EZMicroBalance/` resources contain only images, `.import` metadata, and localization JSON. | Pass for active package; follow-up worktree currently dirty |
 | Historical planning/research docs preserved | All 13 deleted tracked planning docs have archive copies under `docs/archive/legacy-planning/`; normalized line-content comparison against `HEAD` passed for every archived copy. | Pass |
 | Current-facing docs do not describe legacy `EzDailyContent` as the active release | `BETA_COMPATIBILITY.md`, `REMOTE_DEVELOPMENT_SETUP.md`, and `manual-test-checklist.md` now reference `EZMicroBalance`; `SETUP_SPEC.md` is explicitly marked historical. Manual checklist also requires legacy `EzDailyContent` to be disabled or absent. | Pass |
 | English localization valid and current | `LocalizationJsonIsValidUtf8AndKeyCompatible` parses active localization and checks key parity where applicable. | Pass pending in-game text spot check |
@@ -52,7 +52,7 @@ Concrete deliverables for the current goal:
 | Tests pass | Latest normal solution-level no-build run passed with release artifact/runtime evidence tests intentionally skipped unless `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set. The opt-in release artifact/runtime evidence suite also passed after package/hash/smoke refresh. | Pass |
 | Publish succeeds | Latest `dotnet publish EZMicroBalance.sln` passed, built `EZMicroBalance` in Release, copied DLL/manifest, and skipped publishing tests. The installed PCK is current from the selected-resource export. | Pass |
 | Published artifacts exist | Installed `mods/EZMicroBalance` contains `.json`, `.dll`, and `.pck`; automated tests check PCK contents, installed manifest parity, and DLL parity. | Pass |
-| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `4BC21B37C9C2D90FC4991F353245DEBB47555026975647341281480BB492F089` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
+| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `F3F601C1ED304203D269A905F48A2E6F66F468F2D4C5D7E34E1080A79BE74B2C` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
 | Harmony patch targets resolve | Automated test `HarmonyPatchesResolveAgainstInstalledGameApi` calls `Harmony.PatchAll` on installed DLL against local game/BaseLib assemblies. | Pass |
 | Game loads the mod | Current bounded `--force-steam off` smoke loaded only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, finished EZ Micro Balance initialization, and reached main menu. | Pass for controlled smoke; normal Steam-client pass pending |
 | BaseLib loads | Controlled smoke and release checklist record BaseLib initialization. | Controlled pass; Mod Settings pass pending |
@@ -62,26 +62,26 @@ Concrete deliverables for the current goal:
 | Multiplayer behavior verified | Ancient and Ascension manual checklists include ownership/desync checks, but no multiplayer runtime pass was executed. | Pending |
 | Disable-mod behavior verified | Controlled loader-disable smoke passed; gameplay disable check remains pending. | Partial |
 | Final required command sequence executed | Build, normal tests, publish, package refresh, current-package controlled smoke, opt-in release artifact tests, format, and `git diff --check` were rerun for the current tree. Normal Steam-client verification remains pending until actually executed. | Pass except manual/runtime gates |
-| Worktree clean | Current refresh observed `## main...origin/main` with modified docs/resources/tests/code plus untracked files; not clean. Re-check during final release handoff. | Pending |
+| Worktree clean | Current refresh observed `## main...origin/main` with modified follow-up files and no untracked files. Re-check during final release handoff. | Pending |
 | Commit created | Verify current commit status during the final release handoff; do not reuse stale handoff wording. | Pending |
 | Push to `origin/main` only after approval | No push attempted. | Pending user approval |
 
 ## Current Automated Evidence
 
-- `git status --short --branch`: current refresh observed `## main...origin/main` with modified docs/resources/tests/code and untracked `docs/features/ascension-11-20/current-issue-implementation-spec.md`, `docs/skills/`, and `tests/EZMicroBalance.Tests/ReleaseArtifactFactAttribute.cs`.
-- `git log -1 --oneline --decorate`: `a697596 (HEAD -> main, origin/main, origin/HEAD) impelement`.
+- `git status --short --branch`: current refresh observed `## main...origin/main` with modified follow-up files and no untracked files.
+- `git log -1 --oneline --decorate`: `212ba0d (HEAD -> main, origin/main, origin/HEAD) fix2`.
 - `Get-Process SlayTheSpire2 -ErrorAction SilentlyContinue`: no process before publish.
 - `dotnet build EZMicroBalance.sln`: pass, 0 warnings, 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-07 after publish/package refresh, 62 passed, 15 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-08 after publish/package refresh, 62 passed, 15 skipped release artifact/runtime evidence tests, 0 failed.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: pass.
 - `dotnet publish EZMicroBalance.sln`: pass, Release DLL/manifest installed and the selected-resource PCK remained current.
 - Post-publish `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 77 passed, 0 skipped, 0 failed.
 - Package verification: installed, staging, versioned, and extracted zip DLL/JSON/PCK hashes match; staging/versioned/extracted `README_INSTALL.txt` hashes match. Installed runtime folder intentionally contains only DLL/JSON/PCK. Package-facing `README_INSTALL.txt` documents current controlled-smoke status, pending manual gates, and current Ascension development limits.
-- Controlled smoke with `--force-steam off`: current-package pass after the A20 warning/package refresh. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, then restored `default\1\settings.save` and `settings.save.backup` byte-for-byte. The log showed `Loaded 2 mods (19 total)`, BaseLib DLL load/init, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, main menu reached in `13,423ms`, and 0 EZ Micro Balance error/exception lines. Normal Steam-client verification remains pending.
+- Controlled smoke with `--force-steam off`: current-package pass after the A20 host-only warning/package refresh. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, then restored `default\1\settings.save` and `settings.save.backup` byte-for-byte. The log showed `Loaded 2 mods (19 total)`, BaseLib DLL load/init, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, main menu reached in `12,886ms`, and 0 EZ Micro Balance error/exception lines. Normal Steam-client verification remains pending.
 - `git diff --check`: exit code 0 with CRLF normalization warnings for touched files.
 - Active release art hash: `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75`.
-- Installed/staging/versioned/extracted zip DLL hash: `8A6B9696F81B39DF5C04FF306687381629BDD33970A1C3D685A5C2E7CA517DA8`. Current installed/staging/versioned/extracted PCK hash is `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`; manifest hash is `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`.
-- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `4BC21B37C9C2D90FC4991F353245DEBB47555026975647341281480BB492F089`.
+- Installed/staging/versioned/extracted zip DLL hash: `BC4CB9AC61C2F59172F79B96A1996782A15FC247449EB02B5D9AE62A65C0F27D`. Current installed/staging/versioned/extracted PCK hash is `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`; manifest hash is `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`.
+- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `F3F601C1ED304203D269A905F48A2E6F66F468F2D4C5D7E34E1080A79BE74B2C`.
 
 ## Remaining Gates
 

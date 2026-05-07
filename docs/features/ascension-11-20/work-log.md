@@ -872,10 +872,17 @@ Verification:
 - Expanded the live co-op manual matrix with gate off/on, multiplayer selection disable flag, client join/clamp, A11/A12/A16 map indicators, A14/A15/A18 ownership, A20 warning, and desync/checksum log checks.
 - Current-package runtime smoke, normal Steam-client Mod Settings verification, live feature verification, save/load, and live co-op verification remain pending until run in this or a later pass.
 
-## 2026-05-07 - Current Package Smoke Refresh
+## 2026-05-08 - Current Package Smoke Refresh
 
 - Ran `dotnet publish EZMicroBalance.sln` after the A20 warning/localization/test-gate pass and rebuilt `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed DLL/JSON/PCK artifacts.
-- Current hashes after package refresh: DLL `8A6B9696F81B39DF5C04FF306687381629BDD33970A1C3D685A5C2E7CA517DA8`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`, package zip `4BC21B37C9C2D90FC4991F353245DEBB47555026975647341281480BB492F089`.
-- Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, reached main menu in `13,423ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
+- Current hashes after package refresh: DLL `BC4CB9AC61C2F59172F79B96A1996782A15FC247449EB02B5D9AE62A65C0F27D`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`, package zip `F3F601C1ED304203D269A905F48A2E6F66F468F2D4C5D7E34E1080A79BE74B2C`.
+- Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, reached main menu in `12,886ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
 - Validation after doc/hash/smoke refresh: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` passed, 62 passed, 15 skipped release artifact/runtime evidence tests, 0 failed; `dotnet test EZMicroBalance.sln --no-build` passed with the same counts; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 77 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` exited 0 with CRLF normalization warnings for touched files.
 - Normal Steam-client Mod Settings verification, live feature verification, save/load, and live co-op verification remain pending.
+
+## 2026-05-08 - A20 Host-Only Multiplayer Warning Follow-Up
+
+- Relaxed `AscensionSelectionPatches.ShouldWarnA20MultiplayerDowngrade(...)` so host multiplayer A20 selection logs the downgrade warning even before a client joins the lobby. The log still records the current player count for diagnosis.
+- Updated source guards to reject reintroducing a `lobby.Players.Count > 1` prerequisite on the warning path.
+- Updated the manual co-op checklist to require host-only A20 selection warning, then a second warning when starting A20 after a client joins without changing Ascension.
+- Refreshed issue/handoff/audit status to remove stale untracked-file and stale 9-SavedSpireField wording.
