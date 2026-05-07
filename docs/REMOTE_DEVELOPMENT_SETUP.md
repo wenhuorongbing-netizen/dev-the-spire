@@ -1,10 +1,11 @@
-﻿# Remote Development Setup
+# Remote Development Setup
 
 This guide explains how to clone this private repository on another Windows machine and recreate the local-only development environment.
 
 ## Baseline
 
-- Project: `EzDailyContent`
+- Active project: `EZMicroBalance`
+- Legacy scaffold id: `EzDailyContent`
 - Game: Slay the Spire 2 public beta
 - Verified version: `v0.104.0`, `2026.04.23`
 - BaseLib runtime: `v3.1.0`
@@ -94,9 +95,9 @@ dotnet publish
 Expected published mod output:
 
 ```text
-<GameRoot>\mods\EzDailyContent\EzDailyContent.json
-<GameRoot>\mods\EzDailyContent\EzDailyContent.dll
-<GameRoot>\mods\EzDailyContent\EzDailyContent.pck
+<GameRoot>\mods\EZMicroBalance\EZMicroBalance.json
+<GameRoot>\mods\EZMicroBalance\EZMicroBalance.dll
+<GameRoot>\mods\EZMicroBalance\EZMicroBalance.pck
 ```
 
 ## 8. Launch and verify in game
@@ -106,8 +107,9 @@ Expected published mod output:
 3. Open Mod Settings.
 4. Confirm BaseLib appears.
 5. Confirm BaseLib is enabled.
-6. Confirm EzDailyContent appears.
-7. Confirm EzDailyContent is enabled.
+6. Confirm EZ Micro Balance appears.
+7. Confirm EZ Micro Balance is enabled.
+8. Keep legacy `EzDailyContent` disabled while testing EZ Micro Balance to avoid duplicate Ancient patches.
 
 ## Local-only files that must not be committed
 

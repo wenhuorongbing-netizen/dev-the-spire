@@ -1,0 +1,246 @@
+# Ascension 11-20 API Research
+
+Project: EZ Micro Balance  
+Manifest id: EZMicroBalance  
+Game target: Slay the Spire 2 public beta v0.104.0, 2026.04.23  
+BaseLib runtime target: v3.1.0  
+Research date: 2026-05-06  
+Status: A11-A20 single-player and host-multiplayer selector expansion plus prototype slices added for A11 wider/longer saved-map geometry, A17 optional Deep Branch saved-map geometry, existing-node map metadata, generic combat modifiers, Fission rewards, Forge Token heal/smith payout, boss reward expansion, and A20 vanilla double-boss flow with a fixed courtyard event; bespoke full-screen intermission remains deferred
+
+## Research Boundaries
+
+- Inspected project files, current EZ Micro Balance architecture, BaseLib signatures, and StS2 signatures.
+- Did not copy decompiled game method bodies into the repository.
+- Initial research pass did not implement gameplay, cards, patches, map mutation, reward mutation, combat mutation, rest-site mutation, save mutation, or Ascension behavior.
+- Follow-up implementation pass added the Root-family slice under `EZMicroBalanceCode/Ascension/**` plus Ascension-only card localization keys; the 2026-05-07 Rootblight pass migrated it toward Rootblight I/II/III plus Blight Sprout semantics.
+- Subagent D follow-up added a default-off, non-mutating diagnostics gate under `EZMicroBalanceCode/Ascension/**`.
+- Subagent C follow-up added A11-A20 gameplay slices using run/combat/reward/rest/map hooks only: existing-node map metadata, generic combat modifiers, Fission reward enchantment, Forge Token saved state and heal/smith payout, Banner/Firemark/Boss Seal combat effects, and boss reward +1.
+- The current development build adds narrow Harmony patches for the original single-player and host-multiplayer lobby selector/start paths so A11-A20 can be selected and launched. It skips writing A11-A20 as vanilla `PreferredAscension` or `PreferredMultiplayerAscension`, so development selections do not persist into the original A0-A10 progress file. It does not patch `NAscensionPanel`, `ProgressSaveManager`, `ProgressState`, the global `CharacterStats.MaxAscension` getter, or `AscensionManager.maxAscensionAllowed`.
+- Ran `dotnet build EZMicroBalance.sln`; the A11-A20 v2.0 source pass now builds with 0 warnings and 0 errors.
+- Ran `dotnet test EZMicroBalance.sln --no-build`; the latest A11-A20 v2.0 guard/package/localization pass passed 75/75.
+- `SlayTheSpire2.exe` was not running during the build check, so the normal solution build path was used.
+
+## Current Architecture Evidence
+
+| Area | Evidence | Fact vs hypothesis | Confidence | Risk if wrong | Next verification step |
+| --- | --- | --- | --- | --- | --- |
+| Independent mod id | `EZMicroBalance.json` has `id: "EZMicroBalance"`; `EZMicroBalanceCode/MainFile.cs` has `ModId = "EZMicroBalance"`. | Fact | High | Manifest drift would break private beta identity and saves/config. | Keep id unchanged; verify manifest after publish. |
+| Code/resource split | `EZMicroBalance.csproj` compiles `EZMicroBalanceCode/**/*.cs` and packages `EZMicroBalance/**`. | Fact | High | New feature files in wrong directories may not build or publish. | Place code under `EZMicroBalanceCode`; resources/localization under `EZMicroBalance`. |
+| BaseLib dependency | `EZMicroBalance.csproj` references `Alchyr.Sts2.BaseLib` 3.1.0; local runtime path is `<GameRoot>/mods/BaseLib`. | Fact | High | Missing runtime dependency causes mod-load failure. | Revalidate load with BaseLib v3.1.0 before release. |
+| Existing Harmony use | `MainFile.Initialize()` calls `Harmony.CreateAndPatchAll(...)`; Ancient code has narrow Harmony patches where API gaps existed. | Fact | High | New broad patches can destabilize unrelated Ancient behavior. | Prefer BaseLib/template commands and hooks; document any new patch before coding. |
+
+## Summary Finding
+
+The current implementation now includes the dedicated A11-A20 selection spike requested for testing. StS2 has a hard max of 10 in progress and UI-adjacent paths, so the patch is intentionally narrow: it expands the single-player lobby max shown through the original Ascension panel, temporarily raises local `CharacterStats.MaxAscension` only while `BeginRunLocally` is launching an A11-A20 single-player run, then restores the original in-memory value. For host multiplayer, it temporarily raises each lobby player's advertised `maxMultiplayerAscensionUnlocked` only during `StartRunLobby.UpdateMaxMultiplayerAscension()` so the original host selector can reach A20 without persisting A11-A20 into multiplayer progress.
+
+The A11-A20 selector expansion is implemented but private-beta default-disabled. Development testers must explicitly opt in with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` or force slices with `EZMB_ASCENSION_DEBUG_LEVEL`; host-multiplayer selection can be disabled independently with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`. Full live Ascension and co-op verification is still pending.
+
+## 2026-05-06 Implementation Evidence Update
+
+| Area | Evidence | Status |
+| --- | --- | --- |
+| Selector and gates | `AscensionFeatureGate` defines A11-A20 constants, `MaxSupportedAscensionLevel = 20`, `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION`, `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION`, and `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION`. `AscensionSelectionPatches` expands only non-daily single-player and host-multiplayer `StartRunLobby` paths. Host multiplayer is handled through `StartRunLobby.UpdateMaxMultiplayerAscension`, temporary `LobbyPlayer.maxMultiplayerAscensionUnlocked` snapshots, and a restore finalizer so vanilla multiplayer unlock progress is not mutated. `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` enables this path for development testing; private-beta default is off. | Compile-proven; live selection/start verification pending. |
+| A11-A20 gate constants | `AscensionFeatureGate` now defines level constants for A11 through A20. `IsAnyImplementedSliceEnabled(...)` begins at A11 and uses the selected run `AscensionLevel` when selector expansion is enabled. | Compile-proven; live gameplay pending. |
+| Internal diagnostics | `EZMB_ASCENSION_DIAGNOSTICS=1` registers the same proven run/combat hook models even when gameplay gates are off, and logs run Ascension, act index, debug/public gate state, Rootblight level/card counts, current combat room type, round, and Blight Sprout combat counts. It does not mutate decks, map, rewards, rest-site state, boss flow, or progress. | Implemented default off; live log verification pending after Rootblight migration. |
+| Selector/progress patch boundary | The selector patch touches `StartRunLobby.SetSingleplayerAscensionAfterCharacterChanged`, `StartRunLobby.BeginRunLocally`, `StartRunLobby.UpdateMaxMultiplayerAscension`, and `StartRunLobby.UpdatePreferredAscension` only. The last patch prevents A11-A20 test choices from being saved as vanilla preferred single-player or multiplayer Ascension. It does not patch `NAscensionPanel`, `ProgressSaveManager`, `ProgressState`, the global `CharacterStats.MaxAscension` getter, `AscensionManager.maxAscensionAllowed`, manifest id, or progress serialization. | Compile-proven; live selection/start verification pending. |
+| Hook registration | `AscensionInitializer` uses `ModHelper.SubscribeForRunStateHooks` and `SubscribeForCombatStateHooks`; no new Harmony patch points. `RootRunHook` and `RootBudCombatHook` are stateless canonical `ModelDb` instances with parameterless constructors because StS2 model database startup dynamically instantiates concrete `AbstractModel` types and rejects direct canonical model construction during hook subscription. | Compile- and smoke-proven after constructor and ModelDb fixes. |
+| Existing-node map metadata | `RootRunHook.ModifyGeneratedMap` and `ModifyGeneratedMapLate` call `AscensionMapService`. A12 firemarked elites and A16 banner rooms are selected from existing optional nodes only when a path to the boss still exists without that node; A12 now targets 2/3/3 firemarked elites by act when enough safe nodes exist, forbids same-floor and directly adjacent Firemarks, and only relaxes route exclusivity after the first spread pass. Firemarked elites use `FiremarkedEliteMapQuestMarker`; A16 banner rooms use `BannerRoomMapQuestMarker` plus a narrow `NNormalMapPoint.OnFocus` postfix to show the public banner rule on hover. A19 boss seals are attached as in-memory metadata to boss nodes, and `NBossMapPoint.OnFocus` now shows Royal Seal / King Brand hover text plus localized per-boss Royal Seal or Brand summaries when metadata is present. Combat modifier lookup re-applies deterministic map metadata through `AscensionMapService.TryGetCurrentMetadata(...)` before reading the current map point, so loaded maps can restore the same side-table metadata while the gate remains active. | Source-patched; live visibility/save-load pending. |
+| Map geometry | A11 converts the generated map through `SerializableActMap` / `SavedActMap`, expands vanilla 7-column maps by 1 column, inserts a reachable optional route node in the inserted column while preserving the original parent-to-reconnect route, and inserts late route rows before the boss rest row: Act 1 +1, Act 2 +1, Act 3 +2. Ordinary A11 route nodes no longer receive a dedicated marker, quest icon, or hover tooltip; the visible A12 Firemark, A16 Banner, A17 Deep Branch, and A19/A20 Boss indicators remain separate. A17 uses the same saved-map replacement path to insert one optional 3-4 node Deep Branch in Acts 2/3, keeps the original safe route from branch parent to reconnect, skips multiplayer, restores branch risk/reward metadata after save/load map hooks, and gives enhanced treasure nodes an extra Uncommon relic reward through reward hooks. | Compile/source-proven; live map UI/save-load pending. |
+| Generic combat modifiers | `RootBudCombatHook` now also dispatches to `AscensionCombatModifierService` for A12 Firemarks, A16 Banners, A19 Boss Seals, and A20 second-boss Brands when a second boss map point exists. A12 Firemarks select one host at combat start and use command APIs: `PowerCmd.Apply`, `CreatureCmd.SetMaxAndCurrentHp`, `CreatureCmd.GainBlock`, and `CreatureCmd.Heal`. A16 Banner Rooms use only hook/command APIs, not monster action table edits: Vanguard applies visible temporary Strength and removes it on round 3, Shield Formation marks a non-minion bannerbearer and grants Block to other enemies while it lives, and Bounty marks a target, applies missed-deadline protection, and adds bonus `GoldReward` through `CombatRoom.AddExtraReward`. A19 Royal Seals use source-guarded damage, death, card-play, hand-entry, turn-boundary, and state-scan hooks plus command APIs; no boss action table is rewritten. | Source-patched; runtime tuning pending. |
+| A12 Firemarked Elite and Forge Token | Firemarked Elite and Forge Token are implemented for the A12 Ascension-level gate. Act 1 firemarked elite candidates are limited to rows after the first rest-site row. One Firemark Host receives Might, Giant, Forge Armor, or Constant Heal; non-host enemies do not receive the full Firemark. Firemarked Elite card rewards add a fourth option. `AscensionSavedStateFields.ForgeTokenHeld` stores max-one token per player, and `ForgeTokenRelic` mirrors that state as a visible one-count Event relic. Firemarked elite victory grants it from `AfterCombatEnd`; duplicate tokens convert to 15 gold; heal rest randomly upgrades one upgradable common/uncommon card or fallback-heals; smith rest heals 7 HP. The heal rest option adds extra token text. Special rest-site action payout is disabled because the private `RestSiteSynchronizer.ChooseOption` wrapper was not runtime-proven safe. | Source-patched; live payout/save-load pending. |
+| A13 Fission | Fission is implemented for the A13 Ascension-level gate. Higher enabled Ascensions inherit it through `runState.AscensionLevel >= requiredAscensionLevel`. `FissionEnchantment` is a custom enchantment with English/ZHS provider strings, a dedicated custom icon, and an Exhaust hover tip. `AscensionRewardService` applies at most one Fission card per reward screen through `TryModifyCardRewardOptionsLate`, cloning an eligible reward card before `CardCmd.Enchant<FissionEnchantment>`. Source chance is normal combat 25%, Banner Room 35%, Firemarked Elite 40%, and Boss 15%. Eligibility excludes Powers, X-cost, star-cost, zero-energy, existing Exhaust, one-turn exhaust-on-play, quest/special, existing enchantments, and incompatible cards. Card-body extra text now uses rich-text energy-cost wording only, so raw `{energyPrefix:energyIcons(...)}` templates and duplicate added Exhaust text are guarded against. Fission reward mutation is source-patched; reward reroll, pickup, localization rendering, and save/load are pending. | Source-patched; reward reroll/save-load pending. |
+| A16 Banner Rooms | Banner Rooms are implemented for the A16 Ascension-level gate. Existing monster nodes can receive metadata and `BannerRoomMapQuestMarker`; hover text names Vanguard, Shield Formation, or Bounty and shows the public rule. `AscensionCombatModifierService` routes Vanguard, Shield Formation, and Bounty first-batch modifiers and Bounty bonus gold through command/reward APIs without monster action table edits. Banner node marking and combat modifiers are source-patched; live route visibility, persistence, reward settlement, and combat cleanup are pending. | Source-patched; live map/combat verification pending. |
+| A19 Boss reward and seals | `BossSealDefinition` / `BossSealCatalog` now map active boss encounters to the v2.0 Royal Seal set: Holy Daze, Martyr Oath, Ink Return, Startled Shell, Soul Tide, Boiling Critical, Misaligned Shell, Marginal Note, Struggle Bait, Door Wedge, Chosen Decree, and Residual Sample. The older generic Armor/Rage/Barrier/Chaos combat modifiers are no longer applied. Runtime mechanics are source-guarded through supported hooks and custom powers/cards/enchantments; live boss-by-boss verification remains pending. A19 boss card rewards still add a fourth rare option through `CardFactory.CreateForReward` with `NoModifyHooks`. | Build/source-guard proven; reward screen/reroll and boss trigger live verification pending. |
+| A20 double boss | `RunManager.GenerateRooms()` already proves the vanilla double-boss map path: `Act.SetSecondBossEncounter(...)` before map creation makes `StandardActMap` create `SecondBossMapPoint`, and `NBossMapPoint` renders each boss node from `BossEncounter` / `SecondBossEncounter`. EZ Micro Balance now reuses that path behind the single-player A20 gate when vanilla has not already set a second boss, attaches Boss 2 Brand metadata independently of the A19 Boss Seal feature flag, shows Boss-map Brand hover text through `NBossMapPoint.OnFocus`, applies Brand parameters through source-guarded Royal Seal hooks for all 12 boss definitions, adds Boss 1 post-combat recovery for 25% missing HP, adds one Boss card reward after Boss 1, changes the Boss 1 reward screen header/proceed wording through `NRewardsScreen._Ready` / `UpdateScreenState` postfixes, inserts a fixed courtyard event from `RunManager.ProceedFromTerminalRewardsScreen` with `EnterRoomWithoutExitingCurrentRoom(new EventRoom(ModelDb.Event<A20Courtyard>()))`, immediately saves that event as the current pre-finished room with `SaveRun(eventRoom, saveProgress: false)`, and suppresses duplicate Boss 2 Blight Sprout. A bespoke full-screen intermission screen remains unimplemented. | Source-guarded vanilla-flow implementation; live double-boss/courtyard verification pending. |
+| Custom cards | `Root`, `DeepRoot`, `RootblightIII`, and `RootBud` derive from `CustomCardModel`, use `CustomIDAttribute`, `PoolAttribute(typeof(CurseCardPool))`, existing placeholder portrait resources, and card JSON localization. The legacy class names remain for continuity, while player-facing text now presents Rootblight I/II/III and Blight Sprout. Known generator flags `CanBeGeneratedInCombat` and `CanBeGeneratedByModifiers` are false. | Build-proven; Runtime registration and random transform/reward exclusion pending. |
+| Master deck add/remove | `RootDeckService` uses `RunState.CreateCard<Root>()`, `IRunState.CreateCard<DeepRoot>()`, `RunState.CreateCard<RootblightIII>()`, `CardPileCmd.Add(..., PileType.Deck, ...)`, combat play through `CardModel.OnPlay(...)`, `SavedSpireField<Player,int>` diagnostic Rootblight level state, `SavedSpireField<Player,bool>` one-time starter state, and per-card `SavedSpireField<RootFamilyCard,bool>` markers for combat-start presence and one-time Rootblight III split. Combat-end growth only processes cards present at combat start; played Rootblight queues downgraded replacements after growth; the deck is capped at 4 Rootblight cards. `BeforeCardRemoved` observes `CardPileCmd.RemoveFromDeck(...)` removals and updates the diagnostic level for normal card-removal APIs, while service-owned sync removals are suppressed. Rest removes exactly one highest-stage Rootblight. | Build/source-guard proven; runtime behavior pending. |
+| Temporary combat card | `RootBudCombatHook` uses `CombatState.CreateCard<RootBud>()` for player-facing Blight Sprout, scans active combat piles before seeding, `CardPileCmd.AddGeneratedCardToCombat(..., PileType.Discard, ...)`, `AfterCardChangedPiles`, `AfterPlayerTurnStart`, `AfterDeath`, and `AfterCombatEnd`. Act 1 bosses and Act 1 elites are excluded from the current Blight Sprout slice. | Build/source-guard proven; runtime behavior pending. |
+| Blight Sprout state | `SavedSpireField<RootBud,bool>` stores entered-hand, played, and sprouted flags on the temporary card model, and `SavedSpireField<RootBud,int>` stores the sprout round. Boss fights seed two Blight Sprouts with rounds 3 and 4; eligible elite fights seed one round-3 Blight Sprout. Existing-pile scans protect against duplicate seeding after hook re-entry. Entered-hand tracking uses both pile-change-to-hand and `AfterCardDrawn(...)`; only playing Blight Sprout sets `WasPlayed`, so non-play exhaust after hand entry still adds Rootblight I at combat end. The hook skips flag mutation and Rootblight growth when only diagnostics are enabled, and player death during combat clears that combat's Blight Sprout growth for the revived player. | Build/source-guard proven; save/load pending. |
+| Build | `dotnet build EZMicroBalance.sln` passed after the A11-A20 v2.0 integration pass. | Pass, 0 warnings and 0 errors. |
+| Automated guards | `AscensionV2MilestoneGuardTests`, Ascension source guards, release guards, localization guards, and package/resource guards cover Rootblight I/II/III, Blight Sprout state, firemark/token/fission/banner/deep-branch/boss-seal gates, source-guarded A19/A20 claims, SavedSpireField count, and current package contents. | Latest final sequence passed after the current package publish; controlled runtime smoke passed, live gameplay pending. |
+| Runtime smoke | A bounded `--force-steam off` smoke first exposed `MissingMethodException` for `RootBudCombatHook`; after adding parameterless constructors to Ascension hook models, later A11/A12 run-start testing exposed `DuplicateModelException` from direct `RootRunHook(RunState)` and `AscensionMapQuestMarker` construction during map generation. The current hook registration and map markers use canonical `ModelDb` instances. The latest current-package controlled smoke loaded only BaseLib and EZ Micro Balance, reported 9 SavedSpireFields, found 0 EZ Micro Balance error/exception lines, and reached main menu. | Controlled main-menu smoke passed; live gameplay still pending. |
+| Firemarked map icon patch | Live normal map quest markers use one private `%QuestIcon` texture regardless of quest model type. `NNormalMapPoint.RefreshMarkedIconVisibility()` only checks `Point.Quests.Count > 0`, and the scene texture is the generic spoils marker also used by Fur Coat-style quests. The current implementation uses a narrow Harmony postfix on `NNormalMapPoint.RefreshMarkedIconVisibility` to swap the private `_questIcon` texture only when `Point.Quests` contains `FiremarkedEliteMapQuestMarker`. | Compile-proven; live map UI placement pending. |
+| Forge Token UI surface | Core has no proven dynamic topbar token API for per-player cross-room state. A combat Power would disappear after combat, and a status card would pollute deck/combat systems. A custom Event-rarity relic is the closest native persistent, hoverable one-count UI surface. `RelicCmd.Obtain<ForgeTokenRelic>` and `RelicCmd.Remove` are used so the top relic inventory owns display and removal. | Compile-proven; save/load and run-history side effects pending. |
+| Fission icon API | BaseLib `CustomEnchantmentModel.CustomIconPath` is used to avoid the Core fallback to `missing_enchantment.png`. | Compile-proven; reward screen rendering pending. |
+
+## 1. Current Ascension Level Representation
+
+| Field | Details |
+| --- | --- |
+| Evidence | StS2 signatures: `MegaCrit.Sts2.Core.Entities.Ascension.AscensionLevel` enum; `RunState.AscensionLevel { get; init; }`; `IRunState.AscensionLevel { get; }`; `RunState.CreateForNewRun(..., int ascensionLevel, string seed)`; `SerializableRun.Ascension { get; set; }`; save packet reads/writes Ascension as an 8-bit integer. |
+| Fact vs hypothesis | Fact: active runs store Ascension as an `int` on `RunState`; the named enum only covers current A0-A10 effects. Hypothesis: values above 10 can be stored in saves because the field is an `int`, but downstream game logic may clamp, reject, or fail to display them. |
+| Confidence | High for representation; low for safe values above 10. |
+| Risk if wrong | If values above 10 are not tolerated everywhere, runs may fail to start, display incorrectly, or desync in multiplayer. |
+| Next verification step | Use the original single-player Ascension UI to select A11-A20, start a run, and confirm `RunState.AscensionLevel` plus the implemented slice logs/effects. |
+
+## 2. Max Ascension Definition, Display, and Unlock
+
+| Field | Details |
+| --- | --- |
+| Evidence | `AscensionManager.maxAscensionAllowed = 10`; `CharacterStats.MaxAscension`; `CharacterStats.PreferredAscension`; `SerializableProgress.MaxMultiplayerAscension`; `ProgressSaveManager.IncrementSingleplayerAscension(...)` and `IncrementMultiplayerAscension(...)` both guard with `< 10`; `NAscensionPanel.SetMaxAscension(int)`, `IncrementAscension()`, `SetAscensionLevel(int)`; `StartRunLobby` tracks `Ascension` and `MaxAscension`; `AscensionHelper.GetTitle(int)` and `GetDescription(int)` build localized display strings. |
+| Fact vs hypothesis | Fact: vanilla max unlock/display is hard-bounded to 10 in progress code and current lobby panel logic. Fact: the current development patch expands only standard single-player and host-multiplayer lobby selector/start paths and avoids global progress getter/save validation patches. Fact: host multiplayer recomputes max from `LobbyPlayer.maxMultiplayerAscensionUnlocked`, so the patch temporarily changes those in-memory lobby structs only during the vanilla recomputation and restores them in a finalizer. Hypothesis: this remains stable across all character select/load/join edge cases until live-tested. |
+| Confidence | High that public max is currently 10; low that extending it is safe. |
+| Risk if wrong | Bad unlock handling can corrupt player progress preferences, desync multiplayer lobby state, or expose half-localized Ascension levels. |
+| Next verification step | Live-test original-UI A11-A20 selection for each supported character, start an A11 and A20 run, inspect `godot.log`, and verify the saved preferred Ascension does not corrupt lower-level selection when the mod is disabled. |
+
+## 3. Run Start Hook Reachability
+
+| Field | Details |
+| --- | --- |
+| Evidence | `NGame.StartNewSingleplayerRun(...)` and `StartNewMultiplayerRun(...)` create `RunState` via `CreateForNewRun(...)`, call `RunManager.Instance.SetUpNewSinglePlayer(...)` or multiplayer setup, then call `StartRun(runState)`. `NGame.StartRun(RunState)` calls `RunManager.Instance.FinalizeStartingRelics()`, `RunManager.Instance.Launch()`, sets the run scene, then enters Act 0. `RunManager.Launch()` invokes public event `RunStarted`. `RunManager.EnterAct(...)` invokes `ActEntered` and then awaits `Hook.AfterActEntered(State)`. `ModHelper.SubscribeForRunStateHooks(string id, RunHookSubscriptionDelegate del)` provides run hook listeners. |
+| Fact vs hypothesis | Fact: `RunStarted` exists and runs during launch; `AfterActEntered` is an awaited hook after entering an act. Hypothesis: a Rootblight starter-card insertion is safest in a run hook around first act entry rather than in `RunStarted`, because deck commands are async. |
+| Confidence | High for hook existence; medium for best insertion timing. |
+| Risk if wrong | Adding the card too early may fail because run/player state is not fully ready; adding too late may miss initial deck draw/population or duplicate after load. |
+| Next verification step | Runtime-confirm the `ModInitializer` registration and that `AfterActEntered` fires once for new Act 1 runs. Live save/load must confirm Rootblight is not re-added after level 0 clearance. |
+
+## 4. Master Deck Cards: Add and Permanent Remove
+
+| Field | Details |
+| --- | --- |
+| Evidence | `ICardScope.CreateCard<T>(Player owner)`, `RunState.CreateCard<T>(Player owner)`, `RunState.CreateCard(CardModel canonicalCard, Player owner)`, `RunState.AddCard(...)`, `RunState.RemoveCard(...)`; `CardPileCmd.Add(CardModel card, PileType newPileType, ...)`; `CardPileCmd.RemoveFromDeck(CardModel card, bool showPreview = true)`; `Player.PopulateCombatState(...)` clones deck cards into draw pile and sets combat clone `DeckVersion` to the master-deck card. |
+| Fact vs hypothesis | Fact: run-scope cards are created with `RunState.CreateCard<T>` and deck insertion/removal should go through `CardPileCmd`. Fact: combat copies can reference their master-deck original through `DeckVersion`. Chosen Rootblight implementation removes the played master-deck Rootblight card, queues the downgraded replacement after combat, upgrades unplayed Rootblight cards after combat, and adds one Rootblight I when an ignored Rootblight III survives combat. |
+| Confidence | High for APIs; medium-high for Rootblight sync until runtime tested. |
+| Risk if wrong | Rootblight may lower only the combat copy, duplicate in save data, fail to sync the master deck, or update the wrong player's card. |
+| Next verification step | Runtime-verify: add Rootblight I to deck, save/load, combat clone has `DeckVersion`, playing Rootblight III downgrades the master card after combat, playing Rootblight I removes it after combat, and ordinary exhaust/discard does not lower the level. |
+
+## 5. Temporary Combat Cards: Add to Discard/Draw Piles
+
+| Field | Details |
+| --- | --- |
+| Evidence | `CombatState.CreateCard<T>(Player owner)` and `CreateCard(CardModel, Player)` create combat-scope cards; `CardPileCmd.AddGeneratedCardToCombat(CardModel card, PileType newPileType, Player? creator, CardPilePosition position = Bottom)` requires a combat pile and fires generated-card hooks; `PileType` includes `Draw`, `Hand`, `Discard`, `Exhaust`, `Play`, and `Deck`; `CardPile.Get(PileType, Player)` maps pile types to the player's combat piles or master deck. |
+| Fact vs hypothesis | Fact: combat-only Blight Sprout can be created inside `CombatState` and inserted into discard or draw with `CardPileCmd.AddGeneratedCardToCombat`. Fact: the implementation scans active combat piles for existing Blight Sprouts before seeding to reduce duplicate risk on hook re-entry. Hypothesis: sprouting can move an existing Blight Sprout from discard to top of draw pile with `CardPileCmd.Add(..., PileType.Draw, CardPilePosition.Top, ...)`. |
+| Confidence | High for creation/insertion; medium for sprout movement until tested. |
+| Risk if wrong | Blight Sprout may become a permanent card, enter the wrong pile, fail in multiplayer, or fire reward/deck hooks unexpectedly. |
+| Next verification step | Runtime-test one-player and multiplayer combat piles with `EZMB_ASCENSION_DEBUG_LEVEL=15` for bosses and `=18` for elites. |
+
+## 6. Card Enter-Hand, Card Played, Turn Start, Combat Start, Combat End Hooks
+
+| Field | Details |
+| --- | --- |
+| Evidence | `AbstractModel` virtual hooks include `AfterCardChangedPiles`, `AfterCardDrawn`, `AfterCardEnteredCombat`, `BeforeCardPlayed`, `AfterCardPlayed`, `BeforeCombatStart`, `BeforeSideTurnStart`, `AfterPlayerTurnStart`, `AfterCombatEnd`, and reward/map/rest hooks. `Hook` static methods dispatch these over run/combat hook listeners. `CardPileCmd.Draw(...)` moves cards to hand then calls card-drawn hooks. `CardModel.OnPlayWrapper(...)` builds `CardPlay`, calls `Hook.BeforeCardPlayed`, runs card/enchantment play behavior, calls `Hook.AfterCardPlayed`, then moves to result pile. `CombatManager.StartCombatInternal(...)` calls combat-start hooks; combat turn code calls side/player turn hooks; `EndCombatInternal(...)` calls combat-end/victory hooks. |
+| Fact vs hypothesis | Fact: all required card/combat hook surfaces exist as model hooks. Chosen implementation: Blight Sprout "entered hand" is marked by either `AfterCardChangedPiles` into `PileType.Hand` or `AfterCardDrawn`, so normal draws and non-draw hand moves both count. Rootblight downgrade is intentionally tied only to Rootblight card `OnPlay`, not `AfterCardExhausted`, so non-play exhaust cannot lower the level. |
+| Confidence | High for hook availability; medium for exact runtime timing until live re-test. |
+| Risk if wrong | Blight Sprout may grow when it should not, fail to grow after unusual hand-entry effects, or trigger multiple times. Rootblight may desync between saved level and master-deck card if combat-end sync is missed. |
+| Next verification step | Runtime-verify the chosen semantics: any move into `PileType.Hand` counts as entered hand; playing Blight Sprout before combat end prevents growth; non-play exhaust after hand entry still raises Rootblight; Rootblight visibly syncs to the correct level after combat. |
+
+## 7. Rest-Site Actions
+
+| Field | Details |
+| --- | --- |
+| Evidence | `RestSiteOption` has `OptionId`, `Owner`, `IsEnabled`, localized `Title`/`Description`, static `Generate(Player)` and abstract `OnSelect()`. `RestSiteOption.Generate(...)` adds Heal/Smith/Mend and calls `Hook.ModifyRestSiteOptions(...)`. `RestSiteSynchronizer.BeginRestSite()` generates per-player options; `ChooseOption(...)` invokes public events `BeforePlayerOptionChosen` and `AfterPlayerOptionChosen`, awaits `option.OnSelect()`, and applies `Hook.ShouldDisableRemainingRestSiteOptions(...)`. Built-in options include `HealRestSiteOption`, `SmithRestSiteOption`, `MendRestSiteOption`, and `CookRestSiteOption`. Heal/Smith have specific hooks; Cook uses deck removal. |
+| Fact vs hypothesis | Fact: rest choices are represented by `RestSiteOption` and coordinated by `RestSiteSynchronizer`. Fact: `HealRestSiteOption.ExecuteRestSiteHeal(...)` invokes `Hook.AfterRestSiteHeal(...)`, and `SmithRestSiteOption` invokes `Hook.AfterRestSiteSmith(...)`. Chosen Rootblight v2.2 implementation removes one highest-stage Rootblight only from non-mimicked heal rest through `AfterRestSiteHeal`; smith does not remove it. |
+| Confidence | High for representation; medium for safest generic hook. |
+| Risk if wrong | Rootblight cleanup could trigger for mimicked heals, miss special rest options intentionally left out of scope, or fail to remove the synced master-deck card. |
+| Next verification step | Runtime-verify heal rest clears only that player's Rootblight, smith does not clear it, shop/card-removal APIs clear the saved level through `BeforeCardRemoved`, and Ancient rest-site behavior remains unaffected. |
+
+## 8. Map Generation Nodes and Edges
+
+| Field | Details |
+| --- | --- |
+| Evidence | `ActMap` exposes `startMapPoints`, `BossMapPoint`, `StartingMapPoint`, optional `SecondBossMapPoint`, `GetAllMapPoints()`, `GetPointsInRow(...)`, and point lookup helpers. `StandardActMap` uses a private width of 7 and map length from `ActModel.GetNumberOfRooms(...) + 1`; creates boss and optional second boss points; has `CreateFor(RunState, bool)`. `MapPoint` exposes `coord`, `CanBeModified`, `PointType`, `Quests`, `Children`, `AddChildPoint(...)`, `RemoveChildPoint(...)`, and parent helpers. `MapCoord` stores `col` and `row`. `MapPointType` includes `Shop`, `Treasure`, `RestSite`, `Monster`, `Elite`, `Boss`, and `Ancient`. `AbstractModel.ModifyGeneratedMap` and `ModifyGeneratedMapLate` exist. |
+| Fact vs hypothesis | Fact: existing map points and edges are mutable through `MapPoint` APIs and map hooks exist. Fact: `MapPoint.AddQuest(...)` provides a visible marker path for normal map nodes and can be applied from map hooks. Fact: `SerializableActMap`/`SavedActMap` can represent arbitrary dimensions, while `StandardActMap` generation uses private fixed-width internals. Fact: `RunManager.GenerateMap()` accepts a replacement map from `ModifyGeneratedMap` and saved-map restoration reaches `ModifyGeneratedMapLate`. Fact: `NMapScreen` renders points by `GetColumnCount`, row iteration, point coords, and child edges. Hypothesis: the new A11/A17 saved-map replacement remains stable across live UI, save/load, and route traversal until manually verified. |
+| Confidence | High for existing-node marking and compile shape; medium for single-player saved-map geometry; low for multiplayer branch insertion, which is intentionally skipped. |
+| Risk if wrong | Map edits can create unreachable paths, broken boss links, bad save serialization, or multiplayer route desync. |
+| Next verification step | Live-test A11/A17 route invariants, map UI screenshots, save/load, path traversal, and metadata restoration in single-player. Treat multiplayer branch insertion as unsupported until route voting is proven. |
+
+## 9. Card Reward Generation and Option Lists
+
+| Field | Details |
+| --- | --- |
+| Evidence | `RewardsCmd.OfferForRoomEnd(...)`, `GenerateForRoomEndDebug(...)`, `OfferCustom(...)`; `RewardsSet.WithRewardsFromRoom(...)`, `GenerateWithoutOffering()`, `Hook.ModifyRewards(...)`, and `Hook.AfterModifyingRewards(...)`; `CardReward(CardCreationOptions options, int cardCount, Player player)`; `CardReward.Options`, `Cards`, `RerollOptions`, `Populate()`, `Reroll()`; `CardFactory.CreateForReward(...)`; `CardCreationOptions.ForRoom(...)`, `WithCustomPool(...)`, `WithFlags(...)`; `CardCreationResult.ModifyCard(...)`; `Hook.TryModifyCardRewardOptions(...)` and `Hook.ModifyCardRewardCreationOptions(...)`. |
+| Fact vs hypothesis | Fact: card rewards are generated through `CardReward`/`CardFactory` and can be modified by hooks. Fact: `CardCreationResult.ModifyCard(...)` can swap a cloned reward card, and `CardFactory.CreateForReward(...)` can create an added reward option when `NoModifyHooks` avoids recursion. Hypothesis: the current Fission and A19 fourth-option hooks will survive reward rerolls and picked-card save/load unchanged; this is not live-proven. |
+| Confidence | High for reward structure; medium-high for compile shape; medium for runtime/reroll behavior. |
+| Risk if wrong | Reward screens may desync, rerolls may lose modifiers, or modified reward cards may persist incorrectly. |
+| Next verification step | With `EZMB_ASCENSION_DEBUG_LEVEL=13` and `=19`, test reward creation, reroll, pick, save/load, and boss reward screen count. |
+
+## 10. Card Enchantments and Modifiers
+
+| Field | Details |
+| --- | --- |
+| Evidence | `EnchantmentModel` has `Title`, `Description`, `ExtraCardText`, `Amount`, `Props`, `IsStackable`, `CanEnchantCardType(...)`, `CanEnchant(...)`, `OnPlay(...)`, `ModifyCard(...)`, save serialization through `SerializableEnchantment`. BaseLib exposes `CustomEnchantmentModel`. Existing EZ Micro Balance code has `JeweledMaskFreePower` as a custom enchantment and uses `CardCmd.Enchant<T>(CardModel, decimal)`. |
+| Fact vs hypothesis | Fact: custom enchantments are supported and serialize by id/amount/props. Fact: `FissionEnchantment` compiles as a custom enchantment that reduces non-X cost by 1 and adds Exhaust/text. Hypothesis: Fission display, save/load, and selected-card behavior are correct in live reward and combat flows. |
+| Confidence | High for custom enchantment support; medium-high for compile shape; medium for live behavior. |
+| Risk if wrong | Cost changes may be permanent when they should be reward-card specific, Exhaust may duplicate, or tooltip/localization may be wrong. |
+| Next verification step | Verify selected Fission cards in deck, combat, card text, reroll, English/ZHS localization, and save/load. |
+
+## 11. Boss Order, Double Boss Flow, and Boss Reward Screens
+
+| Field | Details |
+| --- | --- |
+| Evidence | `ActModel` has `BossEncounter`, `SecondBossEncounter`, `HasSecondBoss`, `SetBossEncounter(...)`, `SetSecondBossEncounter(...)`, `PullNextEncounter(...)`. `RoomSet` tracks `bossEncountersVisited`, `Boss`, and `SecondBoss`; `NextBossEncounter` returns second boss after the first boss if configured. `RunManager.GenerateRooms()` sets second boss on final act when `AscensionManager.HasLevel(AscensionLevel.DoubleBoss)`. `StandardActMap.CreateFor(...)` passes `runState.Act.HasSecondBoss` into the map constructor; the constructor creates `SecondBossMapPoint` only when that value is already true and links `BossMapPoint` to `SecondBossMapPoint`. `RunManager.EndCombatInternal()` handles combat end hooks, room pre-finish/save/progress, and final-boss victory timing before reward continuation. `CombatRoom.StartPreFinishedCombat()` offers room-end rewards. `NRewardsScreen.OnProceedButtonPressed()` routes final-act Boss 1 terminal rewards with `SecondBossMapPoint` through `RunManager.ProceedFromTerminalRewardsScreen()`. `EnterRoomWithoutExitingCurrentRoom(AbstractRoom,bool)` pushes a stacked room and records it in map-point history. `EventRoom(ModelDb.Event<T>())` is the native default-layout event room path and `NEventRoom.Proceed()` returns to map. |
+| Fact vs hypothesis | Fact: vanilla double boss is data-driven through second boss fields and map points. Fact: `RunManager.GenerateRooms()` sets `SecondBossEncounter` before map creation, `StandardActMap` creates `SecondBossMapPoint`, `NBossMapPoint` renders Boss 1/Boss 2 icons, and `NRewardsScreen` already has a terminal proceed path from Boss 1 to the second Boss. EZ Micro Balance now reuses that proven path, adds the Boss 1 card reward through reward hooks, changes reward-screen text during the proven Boss 1 terminal pause, replaces the direct terminal-map proceed with a fixed default-layout `A20Courtyard` event room before Boss 2, and saves the inserted event through the same `PreFinishedRoom` path used by pre-finished room saves. Hypothesis: a bespoke full-screen intermission screen can replace the default event room, but that is not required for the current slice and remains unproven. |
+| Confidence | High for current double boss representation; medium for the source-guarded fixed courtyard event and immediate pre-finished-room save until live save/load and Boss 2 continuation are tested. |
+| Risk if wrong | A20 can skip rewards, softlock between bosses, double-offer rewards, or end the run incorrectly. |
+| Next verification step | Live-test an A20 final-act Boss 1 reward screen: proceed to the fixed courtyard event, save/load in or after the event, continue to Boss 2 through the vanilla map path, and verify no duplicate Boss 1 rewards, skipped Boss 2, or wrong victory state. Treat a bespoke full-screen intermission as a separate future spike. |
+
+## 12. Safe BaseLib and Template API Coverage
+
+| Field | Details |
+| --- | --- |
+| Evidence | BaseLib custom model APIs: `CustomCardModel`, `CustomPowerModel`, `CustomRelicModel`, `CustomEnchantmentModel`, `CustomContentDictionary`, `PoolAttribute`, `CustomIDAttribute`. Hook APIs: `ModHelper.SubscribeForRunStateHooks(...)`, `SubscribeForCombatStateHooks(...)`; vanilla `AbstractModel` hooks. Saved state: `SavedSpireField<TKey,TValue>` used by existing Ancient code. Command APIs: `CardPileCmd`, `CardCmd`, `CreatureCmd`, `PowerCmd`, `RewardsCmd`, `CardSelectCmd`. Localization: current mod uses `ILocalizationProvider` models and JSON files under `EZMicroBalance/localization/{eng,zhs}`. |
+| Fact vs hypothesis | Fact: BaseLib covers custom models, saved fields, localization provider models, and many hook/command paths needed for MVP slices. Hypothesis: public A11-A20 UI/progress and major map dimension changes are not fully covered by safe BaseLib APIs. |
+| Confidence | High. |
+| Risk if wrong | Overusing Harmony where BaseLib commands exist increases Early Access maintenance cost. |
+| Next verification step | For each slice, write an API proof checklist before coding and prefer command/hook APIs. |
+
+## 13. Harmony Patch Points: Candidate Only
+
+These are not approved implementation points. They are candidates to revisit only after a BaseLib/template API path fails and the reason is documented.
+
+| Candidate | Why it might be needed | Current status | Risk |
+| --- | --- | --- | --- |
+| `NAscensionPanel` / `StartRunLobby` max-level behavior | Public A11-A20 selection/display may need UI max above 10. | Candidate only | Progress/UI desync and multiplayer lobby mismatch. |
+| `ProgressSaveManager` ascension increment methods | Unlocking A11-A20 beyond hard `< 10` guard. | Candidate only | Progress save corruption or confusing unlock state. |
+| `AscensionHelper.GetTitle/GetDescription` path | A11-A20 labels may need display keys. | Candidate only; localization may be enough if key format supports it. | Missing labels/tooltips. |
+| `StandardActMap` or `ActModel.GetNumberOfRooms` | A11/A17 could require deeper changes if saved-map replacement fails. | Candidate only; current implementation avoids this by returning `SavedActMap`. | Unreachable map, broken serialization, route desync. |
+| `RunManager.EndCombatInternal` or reward transition around Act 3 bosses | A20 intermission after first boss. | Candidate only | Softlocks, skipped terminal flow, duplicate rewards. |
+| Specific rest option methods | Rootblight/Forge cleanup if generic rest events/hooks are insufficient. | Candidate only | Fragile interaction with other mods/options. |
+
+## 14. Forbidden Patch Points Until Proven
+
+| Forbidden until proven | Reason | What proof is required |
+| --- | --- | --- |
+| Enemy AI/action table methods | Source design explicitly excludes boss/enemy AI rewrites; Early Access volatility is high. | Explicit user approval and no generic modifier alternative. |
+| Boss action table methods | Same as above; Boss Seals should be generic modifiers. | Explicit user approval and isolated proof. |
+| Save serialization core methods | Run/card/power/enchantment saves already have structured extension paths. | Evidence that BaseLib saved fields/custom model serialization cannot cover the need. |
+| Direct mutation of private card/reward/map lists through reflection | Commands and public APIs exist for many operations. | Evidence that public APIs cannot express the change and a rollback plan exists. |
+| Manifest id, mod id, or package id changes | Hard project rule. | Never for this feature. |
+| Ancient reward rework patches | Out of scope unless Ascension feature breaks on them; must be documented first. | Reproduction showing an unavoidable interaction. |
+
+## 15. Multiplayer State and Player Targeting
+
+| Field | Details |
+| --- | --- |
+| Evidence | `RunState.Players`, `RunState.GetPlayer(ulong netId)`, `GetPlayerSlotIndex(...)`; `Player.NetId`, `Character`, `Creature`, `Deck`, `PlayerCombatState`, `RunState`, `IsActiveForHooks`, and `Piles`; `Player.PopulateCombatState(...)` clones each player's deck into their combat piles and sets `DeckVersion`. `CombatState.Players`, `PlayerCreatures`, `Allies`, `Enemies`, `HittableEnemies`, `GetPlayer(ulong)`, `GetCreaturesOnSide(...)`, `RoundNumber`, and `CurrentSide`. `LocalContext.NetId`, `LocalContext.GetMe(...)`, `IsMe(...)`, and `IsMine(...)`. `RestSiteSynchronizer` manages per-player rest options. |
+| Fact vs hypothesis | Fact: players are identified by `NetId` and each player has a separate deck/combat state. Hypothesis: Rootblight effects can be individual per player if all card creation/removal uses the target `Player` owner and saved state is indexed by `Player`. |
+| Confidence | High for representation; medium for all multiplayer side effects until smoke-tested. |
+| Risk if wrong | One player's Rootblight could affect another player's deck, multiplayer runs could desync, or rest cleanup could trigger for the wrong slot. |
+| Next verification step | Any MVP implementation must include at least a two-player smoke plan or explicitly mark multiplayer unverified for private beta. |
+
+## Rootblight MVP API Gate
+
+Rootblight closed-loop implementation is not approved until these exact items are verified in code:
+
+| Required item | Current evidence status | Gate |
+| --- | --- | --- |
+| Current Ascension level | `RunState.AscensionLevel` is exact. | Met for read-only gating; public A14 selection not met. |
+| Add card to master deck | `RunState.CreateCard<T>(player)` plus `CardPileCmd.Add(..., PileType.Deck, ...)`. | Compile met; runtime pending. |
+| Saved level and starter state | `SavedSpireField<Player,int>` Rootblight level plus `SavedSpireField<Player,bool>` named `RootBeginsApplied`. | Source-patched; full build blocked outside root slice; runtime save/load pending. |
+| Sync/remove card | Combat-end sync uses saved level and `CardPileCmd.RemoveFromDeck(deckCard)` for level 0 cleanup; combat clone `DeckVersion` remains runtime evidence to inspect. | Source-patched; runtime pending. |
+| Card play hook/command path | `CardModel.OnPlay(...)` via `OnPlayWrapper`, `CardKeyword.Exhaust`, and `ExhaustOnNextPlay`; no `AfterCardExhausted` downgrade path. | Source-patched; runtime pending. |
+| Rest/shop clear | `AfterRestSiteHeal` clears real rest; `BeforeCardRemoved` clears normal deck-removal APIs such as shop removal. | Source-patched; runtime pending. |
+| Localization/resource registration | Existing `EZMicroBalance/localization/{eng,zhs}/cards.json`; BaseLib `CustomCardModel`; existing placeholder portrait resources. | Compile/build met; in-game text pending. |
+| Rollback plan | Debug-gated MVP with no public A11-A20 UI change. | Met at plan level. |
+| Manual test plan | See `manual-test-checklist.md`. | Met as spec; not executed. |
+
+## Open Risks
+
+- Public A11-A20 selection and unlock are blocked by the vanilla hard max of 10 until a dedicated UI/progress spike proves a safe patch set.
+- Rootblight cards use `CurseCardPool` because the active BaseLib custom-card registration path is proven for that pool. Known generator flags are disabled, but random transform/reward exclusion still needs runtime verification before public release.
+- Blight Sprout mid-combat save/load has saved card flags and existing-pile scans, but live save/load, diagnostics log output, and multiplayer synchronization are unverified.
+- Forge Token heal/smith payout is source-patched. Special rest-site action payout is disabled after API review because wrapping private `RestSiteSynchronizer.ChooseOption` in the UI-sensitive rest path was not runtime-proven safe.
+- Firemarked/Banner/Boss Seal map metadata is in-memory and recomputed on map hook entry; `TryGetCurrentMetadata(...)` assigns the returned replacement map before reading the current point, but visible quest markers and save/load restoration still need live verification.
+- A11 map width/length and A17 Deep Branch changes are source-proven only. Live single-player route traversal, map UI, save/load, and metadata restoration are pending. Multiplayer Deep Branch insertion is intentionally skipped until route voting is proven. A11 ordinary route nodes intentionally have no dedicated marker or hover text after the 2026-05-07 player-feedback pass.
+- A20 now uses the vanilla double-boss trace for single-player second-boss creation/reveal, Boss 1 recovery, Boss 1 card reward, narrow Boss 1 reward-screen intermission wording, Boss 2 Brand metadata that is not dependent on the A19 Boss Seal feature flag, and a fixed courtyard event inserted from the terminal reward proceed path. The inserted event is saved as the current pre-finished room, but Boss 2 continuation, save/load in the courtyard, and victory/defeat flow still need live testing. A bespoke full-screen intermission remains deferred.
+- Fission and boss reward expansion are compile-proven only; reward reroll, selected-card persistence, localization display, and multiplayer behavior are unverified.
+- Multiplayer behavior is represented clearly and host A11-A20 selection is source-patched, but live co-op selection, run start, ownership, and desync behavior are not validated for this feature.

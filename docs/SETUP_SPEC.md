@@ -1,5 +1,7 @@
 ﻿# Slay the Spire 2 Mod Workspace Setup Specification
 
+Historical note: this document records the original `EzDailyContent` setup baseline from 2026-05-02. The active private beta deliverable is now `EZMicroBalance`; use `README.md`, `docs/PROJECT_MAP.md`, `docs/dev-environment.md`, `docs/test-plan.md`, and `docs/features/ancients-rework-v4/completion-audit.md` for current release status.
+
 ## 1. Project Overview
 Build a stable, well-documented Slay the Spire 2 mod workspace for `EzDailyContent` (`AUTHOR_NAME_REPLACE_ME`) using C#/.NET, the community template, and BaseLib-aware dependency handling.
 

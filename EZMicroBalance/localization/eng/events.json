@@ -1,0 +1,7 @@
+{
+  "A20_COURTYARD.title": "Courtyard Before the Second King",
+  "A20_COURTYARD.pages.INITIAL.description": "The first Boss falls. Beyond the doors, a quiet courtyard gives you room to breathe. You recover {HealPercent}% of your missing HP. Ahead waits {BossName}, bearing {SealName}: {SealSummary}",
+  "A20_COURTYARD.pages.INITIAL.options.CONTINUE.title": "Steady yourself",
+  "A20_COURTYARD.pages.INITIAL.options.CONTINUE.description": "Prepare for the second Boss.",
+  "A20_COURTYARD.pages.READY.description": "The courtyard falls silent. {BossName}'s Brand remains ahead: {SealSummary}"
+}

@@ -1,4 +1,4 @@
-﻿.godot/
+.godot/
 bin/
 obj/
 /android/
@@ -9,6 +9,13 @@ obj/
 publish/
 Properties/
 packages/
+
+# Local/generated art and calibration material. Not part of the active release package.
+/art_pipeline/
+/asset/
+
+# Local decompile/reference scratch material. Never commit copied game source or assets.
+/source code/
 .editorconfig
 *.user
 Directory.Build.props

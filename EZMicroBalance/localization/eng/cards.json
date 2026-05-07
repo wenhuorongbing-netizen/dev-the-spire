@@ -1,0 +1,18 @@
+{
+  "DEBT.title": "Debt",
+  "DEBT.description": "Exhaust. When Exhausted, lose 5 Gold.",
+  "ENTHRALLED.title": "Enthralled",
+  "ENTHRALLED.description": "If this is in your hand, you must play it before other cards. Gain 10 Block. Eternal.",
+  "FOLLY.title": "Folly",
+  "FOLLY.description": "Unplayable. Innate. Eternal.",
+  "EZMB_ROOT.title": "Rootblight I",
+  "EZMB_ROOT.description": "Play: Exhaust. Permanently remove this from your deck. Growth: if not played or removed this combat, it becomes Rootblight II after combat.",
+  "EZMB_DEEP_ROOT.title": "Rootblight II",
+  "EZMB_DEEP_ROOT.description": "Play: Exhaust. Remove this from your deck and add Rootblight I after combat. Growth: if not played or removed, it becomes Rootblight III after combat.",
+  "EZMB_ROOTBLIGHT_III.title": "Rootblight III",
+  "EZMB_ROOTBLIGHT_III.description": "Play: Exhaust. Remove this from your deck and add Rootblight II after combat. Growth: if not played or removed, it adds Rootblight I once.",
+  "EZMB_ROOT_BUD.title": "Blight Sprout",
+  "EZMB_ROOT_BUD.description": "Play: Exhaust. Sprout 3/4: at that round's start, if unseen, put this on top of your draw pile. If seen and not played, add 1 Rootblight I after combat.",
+  "EZMB_MARGINAL_NOTE.title": "Marginal Note",
+  "EZMB_MARGINAL_NOTE.description": "Retain. When played, Exhaust and draw 1 card. If this stays in your hand at end of turn, Knowledge Demon gains 1 Strength."
+}

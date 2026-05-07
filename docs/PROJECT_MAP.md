@@ -1,117 +1,145 @@
-﻿# Project Map
+# Project Map
 
-## Actual Directory Tree (Current)
+## Active Release Target
+
+`EZ Micro Balance` is the active private beta target. The architecture decision is to create an independent mod project with manifest id `EZMicroBalance`.
+
+The original `EzDailyContent` project remains a legacy scaffold and its manifest id must not be changed in-place.
+
+## Current Top-level Structure
+
 ```text
 dev-the-spire/
-  .gitattributes
-  .gitignore
   AGENTS.md
   README.md
-  Directory.Build.props
   Directory.Build.props.example
-  EzDailyContent.csproj
   EzDailyContent.json
-  EzDailyContent.sln
-  EzDailyContent.sln.DotSettings
+  EZMicroBalance.csproj
+  EZMicroBalance.json
+  EZMicroBalance.sln
+  EZMicroBalance.sln.DotSettings
   Sts2PathDiscovery.props
   export_presets.cfg
   project.godot
   EzDailyContent/
-    mod_image.png
+    .gdignore
     images/
-      card_portraits/
-      powers/
-      relics/
     localization/
       eng/
+      zhs/
   EzDailyContentCode/
+    .gdignore
     MainFile.cs
+    AncientRewardNoopProbe.cs
+    Ancients/
     Cards/
     Extensions/
     Powers/
     Relics/
+  EZMicroBalance/
+    images/
+    localization/
+      eng/
+      zhs/
+  EZMicroBalanceCode/
+    .gdignore
+    MainFile.cs
+    Ancients/
+      Common/
+      Patches/
+    Ascension/
+      Cards/
+  tests/
+    EZMicroBalance.Tests/
+  legacy/
+    EzDailyContent/
+      EzDailyContent.csproj.legacy.xml
   docs/
-    SETUP_SPEC.md
+    architecture-ez-micro-balance.md
+    mod-changelog.md
+    issues.md
+    features/ancients-rework-v4/
+    archive/legacy-planning/
+    BETA_COMPATIBILITY.md
     PROJECT_MAP.md
     dev-environment.md
+    private-beta-verification-handoff.md
     test-plan.md
     release-checklist.md
     codex-workflow.md
     first-feature-backlog.md
-    _future/
-      planning/
-        design-operating-brief.md
-      new-character/
-        downfall-character-reference.md
-        boss-character-design-knowledgebase.md
-        boss-character-concepts-v2.md
-        ceremonial-beast-character-draft.md
-        ceremonial-beast-v3-bell-crowned-design.md
+    REMOTE_DEVELOPMENT_SETUP.md
+    SETUP_SPEC.md
 ```
 
-Generated build/cache/tool output such as `.godot/`, `.tools/`, `bin/`, and `obj/` is intentionally omitted from this map.
+Generated build/cache/tool output such as `.godot/`, `.tools/`, `bin/`, and `obj/` is intentionally omitted.
 
-## File Purpose
-- `AGENTS.md`: persistent machine-readable operating rules for Codex sessions.
-- `README.md`: human-facing overview and current setup/project direction.
-- `Directory.Build.props`: local gitignored build/publish path configuration. Current local `Sts2Path` is `D:/Steam/steamapps/common/Slay the Spire 2`; current local `GodotPath` points into `.tools/godot-4.5.1-mono`.
-- `Directory.Build.props.example`: committed template for new machines. Copy it to `Directory.Build.props` and fill in local paths.
-- `Sts2PathDiscovery.props`: template-generated OS-specific game path discovery.
-- `EzDailyContent.sln`: solution file containing the existing `EzDailyContent.csproj`; added to satisfy Godot .NET export expectations.
-- `EzDailyContent.csproj`: generated C#/.NET Godot project.
-- `EzDailyContent.json`: generated mod manifest. Manifest id is `EzDailyContent` and must not change.
-- `EzDailyContent/`: generated Godot resource folder, localization placeholders, and placeholder images.
-- `EzDailyContentCode/`: generated C# scaffolding. Current card/power/relic files are abstract base scaffolds only; no concrete gameplay content has been added.
-- `docs/SETUP_SPEC.md`: authoritative setup specification and current setup state.
-- `docs/dev-environment.md`: machine/environment record with TODOs.
-- `docs/test-plan.md`: automated/manual validation and triage.
-- `docs/release-checklist.md`: pre-release safety checklist.
-- `docs/codex-workflow.md`: repeatable Codex collaboration flow.
-- `docs/first-feature-backlog.md`: corrected feature roadmap, starting with Ancient reward optimization.
-- `docs/_future/planning/design-operating-brief.md`: future design operating rules for balance changes and new character design.
-- `docs/_future/new-character/downfall-character-reference.md`: public-reference design notes from Downfall characters, focused on transferable boss-to-character lessons.
-- `docs/_future/new-character/boss-character-design-knowledgebase.md`: source-bounded design rules for translating STS2 bosses into playable character concepts.
-- `docs/_future/new-character/boss-character-concepts-v2.md`: richer three-mechanism boss character concepts derived from the Downfall Collector structure.
-- `docs/_future/new-character/ceremonial-beast-character-draft.md`: draft-only Ceremonial Beast playable character concept and 40-card prototype pool.
-- `docs/_future/new-character/ceremonial-beast-v3-bell-crowned-design.md`: preferred Ceremonial Beast direction with Toll, Offering, Votive, Ringing, Reverberate, Peal, and Overtone.
+Ignored local art/research folders currently present:
 
-## Setup Flowchart
-```mermaid
-flowchart TD
-    A[Detect environment] --> B[Verify SDK]
-    B --> C[Install template]
-    C --> D[Generate project]
-    D --> E[Inspect manifest]
-    E --> F[Configure Sts2Path]
-    F --> G[Build]
-    G --> H[Install Godot locally]
-    H --> I[Configure GodotPath]
-    I --> J[Publish]
-    J --> K[Verify artifacts]
-    K --> L[Manual game verification succeeded]
+```text
+art_pipeline/
+asset/
+source code/
 ```
 
-## Future Feature Flowchart
-```mermaid
-flowchart TD
-    A[Setup complete] --> B[Ancient reward research]
-    B --> C[Ancient reward spec]
-    C --> D[One Ancient MVP tuning]
-    D --> E[Build publish verify]
-    E --> F[Ancient reward balance pass]
-    F --> G[Ascension 11-20-30 design]
-    G --> H[Ascension implementation]
-    H --> I[New character design]
-    I --> J[New character implementation]
+They are ignored by `.gitignore` and are not part of the current packaged mod surface unless explicitly included in a future release decision. `source code/` is local decompile/reference scratch material only and must not be committed.
+
+## Important Files
+
+- `EZMicroBalance.sln`: active solution for bare `dotnet build`.
+- `EZMicroBalance.csproj`: active private beta project.
+- `tests/EZMicroBalance.Tests/`: release artifact and Harmony patch target tests for `EZMicroBalance`.
+- `EZMicroBalance.json`: active private beta manifest. Current id is `EZMicroBalance`.
+- `EzDailyContent.json`: legacy manifest. Current id is `EzDailyContent`; do not rename in-place.
+- `export_presets.cfg`: selected-resource Godot export; packages only `EZMicroBalance` resources and the active manifest.
+- `EZMicroBalanceCode/Ancients/Common/`: shared state fields, custom enchantment, and helper functions for Ancient patches.
+- `EZMicroBalanceCode/Ancients/Patches/`: grouped Harmony patches by reward surface/relic family.
+- `EZMicroBalanceCode/Ascension/`: default-off gated Ascension 11-20 implementation slices; currently Root-family cards and run/combat hooks only.
+- `EzDailyContentCode/Ancients/`: legacy copy from before independent-project migration; not part of the active solution.
+- `.gdignore` files: prevent legacy, source-only, docs, art, and archive folders from being imported as Godot resources.
+- `.cs.uid` files: track when generated for C# script files; keep this policy consistent for new release-source files.
+- `EzDailyContentCode/AncientRewardNoopProbe.cs`: legacy debug probe gated by `EZ_MICRO_BALANCE_DEBUG_PROBES=1`; not compiled into the active release project.
+- `EZMicroBalance/localization/eng/`: English localization overrides for implemented behavior.
+- `EZMicroBalance/localization/zhs/`: Simplified Chinese localization overrides for implemented behavior.
+- `docs/architecture-ez-micro-balance.md`: architecture decision for independent mod identity.
+- `docs/mod-changelog.md`: one-line mod-facing changelog; update this file for each future mod change.
+- `docs/issues.md`: open player-reported/runtime issues that must stay visible until fixed and verified.
+- `docs/features/ancients-rework-v4/source-design.md`: source design brief for Ancient reward changes.
+- `docs/features/ancients-rework-v4/api-discovery.md`: API evidence and implementation notes.
+- `docs/features/ancients-rework-v4/completion-audit.md`: prompt-to-artifact release gate checklist and current blockers.
+- `docs/private-beta-verification-handoff.md`: concise tester handoff for the remaining manual/private-beta gates.
+- `docs/features/ancients-rework-v4/work-log.md`: implementation work log.
+- `docs/features/ascension-11-20/development-checklist-v2.md`: current forward-looking A11-A20 feature GDD and development checklist for Rootblight, Firemarked Elites, Fission, Banner Rooms, Deep Branches, Boss Royal Seals, and Dual King Brands.
+- `docs/archive/legacy-planning/`: archived historical research and roadmap docs.
+
+## Intended Private Beta Structure
+
+The active private beta structure is:
+
+```text
+EZMicroBalance/
+  localization/
+    eng/
+    zhs/
+EZMicroBalanceCode/
+  MainFile.cs
+  Ancients/
+  Ascension/
 ```
 
-## Milestone Map
-- M0: Setup
-- M1: Game verification
-- M2: Ancient reward research
-- M3: Ancient reward MVP
-- M4: Ancient reward balance pass
-- M5: Ascension 11-20-30 design
-- M6: Ascension implementation
-- M7: New character design
-- M8: New character implementation
+Published output should be:
+
+```text
+<GameRoot>/mods/EZMicroBalance/
+  EZMicroBalance.json
+  EZMicroBalance.dll
+  EZMicroBalance.pck
+```
+
+## Milestones
+
+- M0: Baseline setup complete.
+- M1: Ancient reward rebalance implemented in legacy project.
+- M2: Independent `EZMicroBalance` project created and root `dotnet build` succeeds.
+- M3: Code organization, probe cleanup, localization validation, build, publish, and gated Ascension source guards complete; manual runtime verification pending.
+- M4: Private beta release after clean commit and user-approved push.

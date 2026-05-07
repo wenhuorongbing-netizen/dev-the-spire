@@ -1,57 +1,47 @@
-﻿# Codex Workflow
+# Codex Workflow
 
-## Starting a session
+## Starting A Session
+
 1. Read `AGENTS.md`.
 2. Run `git status --short --branch`.
-3. Run `dotnet build`.
-4. Read `docs/dev-environment.md` for unresolved TODOs.
-5. Read `docs/first-feature-backlog.md` for the corrected mission.
-6. For future balance or new-character work, read `docs/_future/planning/design-operating-brief.md` before proposing or implementing gameplay.
+3. Identify the active mode from the latest user message.
+4. Read `docs/dev-environment.md`.
+5. For EZ Micro Balance work, read `docs/architecture-ez-micro-balance.md` and `docs/features/ancients-rework-v4/api-discovery.md`.
 
-## Project direction
-The project is a Slay the Spire 2 system expansion mod.
+## Active Project Direction
 
-Priority order:
-1. Ancient reward optimization.
-2. Ascension 11-20-30 design and implementation.
-3. New custom character design and implementation.
+The active deliverable is private beta readiness for `EZ Micro Balance`.
 
-Future feature implementation must start from a design spec. The next spec should be `docs/ANCIENT_REWARD_SPEC_v0.104.md`.
+Do not implement Ascension 21-30 or a custom character during this cycle. Ascension 11-20 work is allowed only when explicitly requested and must stay gated or independently disableable until public selection/progress and runtime behavior are proven safe.
 
-## Local path configuration
-`Directory.Build.props` is local and gitignored because it contains machine-specific absolute paths.
+## Build Mode Flow
 
-On a new machine:
-1. Copy `Directory.Build.props.example` to `Directory.Build.props`.
-2. Fill in `GodotPath`.
-3. Fill in `Sts2Path`.
-4. Run `dotnet build`.
-5. Run `dotnet publish`.
+When the user says `build`:
 
-## Useful prompts
-- `review`
-- `continue`
-- `diagnose this build error`
-- `update docs after this setup change`
-- `draft docs/ANCIENT_REWARD_SPEC_v0.104.md`
-- `create a design artifact for this balance or character idea`
+1. Start from the next unfinished phase.
+2. Run `git status -sb` before each phase.
+3. Keep changes small and reviewable.
+4. Run `dotnet build` after code or project changes.
+5. Run `dotnet publish` after resource, localization, manifest, or packaging changes, only if build succeeds.
+6. Summarize changes and blockers after each phase.
 
-## Error handling
-Paste errors from:
-- `dotnet build`
-- `dotnet publish`
-- `godot.log`
+When the user says `continue`, resume the next unfinished phase.
 
-Current known note:
-- `EzDailyContent.sln` exists and should be kept in sync with the generated project.
-- BaseLib runtime should be installed under the game `mods\BaseLib` folder and should match the project package version.
+When the user says `review`, review only and do not implement new behavior.
 
-## Git workflow
-- Create checkpoints before and after each phase/feature.
-- Keep commits small and reviewable.
-- Avoid bundling unrelated repo-root changes.
+## Error Handling
 
-## Build mode control words
-- `build`: begin implementation phases.
-- `continue`: resume next unfinished phase.
-- `review`: setup/design review only, no new feature implementation.
+Use the Failure Report format from the active user instruction when a phase cannot proceed.
+
+Capture exact command, error summary, likely cause, what was checked, minimal fix attempted, and remaining blocker.
+
+## Git Workflow
+
+- Preserve the existing dirty worktree.
+- Do not revert unrelated user changes.
+- Use checkpoints before and after major phases when practical.
+- Do not push to `origin/main` without explicit user approval.
+
+## Local Paths
+
+`Directory.Build.props` is local and gitignored. Copy from `Directory.Build.props.example` on a new machine and fill in local `GodotPath` and `Sts2Path`.

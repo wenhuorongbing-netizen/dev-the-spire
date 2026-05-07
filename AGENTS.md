@@ -1,35 +1,76 @@
-﻿# AGENTS.md
+# AGENTS.md
 
 ## Project
-This repository is for a Slay the Spire 2 content mod named `EzDailyContent`, authored by `AUTHOR_NAME_REPLACE_ME`, using C#/.NET, the Alchyr Slay the Spire 2 template, and BaseLib. Original verified local machine paths are recorded in `docs/dev-environment.md`; do not assume those paths on another machine.
 
-## Project Mission
-This repository is for building a Slay the Spire 2 system expansion mod with Codex-assisted development. The first feature target is Ancient reward optimization. The second major target is Ascension 11-20-30 design and implementation. The final major target is a new custom character.
+This repository is a Slay the Spire 2 mod workspace using C#/.NET, the Alchyr Slay the Spire 2 template, and BaseLib.
 
-## Current setup status
-The setup baseline is complete: build succeeds, publish succeeds, and manual game verification succeeded on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
+The original scaffold project is `EzDailyContent`; its manifest id is `EzDailyContent` and must not be changed in-place.
 
-## Hard rules
-- Do not change the manifest id after project creation. Current manifest id: `EzDailyContent`.
+The active private beta deliverable is `EZ Micro Balance`, an Ancient reward rebalance mod. Its intended independent manifest id is `EZMicroBalance`.
+
+## Current Mission
+
+Complete `EZ Micro Balance` for private beta release.
+
+In scope:
+
+- Ancient reward rebalance from `docs/features/ancients-rework-v4/source-design.md`.
+- Independent plug-in / plug-off mod structure.
+- English and Simplified Chinese localization.
+- Release documentation, build, publish, and manual verification checklist.
+- Ascension 11-20 expansion work when explicitly requested, kept safely gated unless public selection/progress support is proven.
+
+Out of scope this cycle:
+
+- Ascension 21-30 implementation.
+- Custom character implementation.
+- Unrelated cards, relics, powers, assets, or balance systems.
+
+## Current Setup Status
+
+Baseline setup is complete on the local machine:
+
+- Build has succeeded.
+- Publish has succeeded.
+- Legacy `EzDailyContent` Mod Settings verification succeeded on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
+- Independent `EZMicroBalance` build and publish have succeeded.
+- Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, and documentation freshness guards.
+- Controlled `--force-steam off` smoke loading has verified only BaseLib and `EZMicroBalance` initialization to main menu from the final installed artifacts.
+- Normal Steam-client Mod Settings verification for `EZMicroBalance` and live gameplay feature verification are still pending.
+
+Revalidate build, publish, and game load before claiming private beta readiness.
+
+## Hard Rules
+
+- Do not change an existing manifest id in-place.
+- If creating a new independent mod project, choose and document a stable manifest id before the first build.
 - Do not copy original Slay the Spire 2 game assets into this repository.
 - Do not copy large chunks of decompiled game code into this repository.
-- Do not implement gameplay features during setup or design-only tasks.
+- Do not claim Ascension release readiness until direct API/runtime evidence supports it. If A11-A20 selection is explicitly requested for development testing, keep the patch narrow, documented, independently disableable, and out of A21-A30/custom-character scope.
+- Keep experimental Ascension systems independently disableable or behind an explicit internal/debug gate unless release docs intentionally say otherwise.
+- Do not implement Ascension 21-30 this cycle.
+- Do not implement a custom character this cycle.
 - Prefer BaseLib and template-supported APIs.
-- Prefer game command APIs over direct state mutation when gameplay work begins.
-- For content features, do not set `affects_gameplay` to `false` without a documented reason.
-- If a command fails, diagnose before editing.
+- Use Harmony only where no safer API exists.
+- Prefer game command APIs over direct state mutation.
+- Before changing Ascension map, UI, reward, combat, save/load, or hook behavior, inspect the relevant local game source under `source code/src/Core/`, inspect BaseLib/template APIs, and record the evidence in `docs/features/ascension-11-20/`. Keep the tutorial index `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html` and its BaseLib/RitsuLib sections as secondary references; local game source remains the primary implementation authority.
+- Any type inheriting `AbstractModel` must be obtained from `ModelDb` when used as a canonical marker/hook/model. Do not call constructors directly except where creating mutable/runtime card/relic/etc. instances is explicitly supported by game APIs.
 - Keep changes small and reviewable.
-- Use git checkpoints.
-- Update docs when setup or design decisions change.
+- If a command fails, diagnose before editing.
+- Update docs when setup, architecture, behavior, build, publish, or validation status changes.
+- Preserve useful historical research by archiving or moving docs rather than silently discarding them.
 
-## Build commands
+## Build Commands
+
 - `dotnet build`
 
-## Publish commands
+## Publish Commands
+
 - `dotnet publish`
 - Do not continue to publish when build fails.
 
-## Local machine setup
+## Local Machine Setup
+
 - Clone the repository on the target machine.
 - Copy `Directory.Build.props.example` to `Directory.Build.props`.
 - Fill local `GodotPath` and `Sts2Path` values.
@@ -37,38 +78,40 @@ The setup baseline is complete: build succeeds, publish succeeds, and manual gam
 - Do not commit `Directory.Build.props`, `.tools/`, `.godot/`, `bin/`, `obj/`, downloaded archives, or local binaries.
 
 ## Documentation
-- `docs/SETUP_SPEC.md` contains the setup spec.
+
+- `README.md` contains the human-facing project state.
+- `docs/architecture-ez-micro-balance.md` records the independent-mod architecture decision.
+- `docs/features/ancients-rework-v4/` contains the EZ Micro Balance source design, implementation plan, API discovery, and work log.
 - `docs/PROJECT_MAP.md` contains the project map.
-- `docs/dev-environment.md` records local environment values and TODOs.
-- `docs/test-plan.md` contains validation steps.
-- `docs/release-checklist.md` contains release checks.
-- `docs/codex-workflow.md` explains Codex operating flow.
-- `docs/first-feature-backlog.md` contains the corrected feature roadmap.
-- The next feature spec should be `docs/ANCIENT_REWARD_SPEC_v0.104.md`.
+- `docs/dev-environment.md` records local environment values and validation status.
+- `docs/test-plan.md` contains automated and manual validation steps.
+- `docs/release-checklist.md` contains private beta release checks.
+- `docs/archive/legacy-planning/` preserves historical planning docs.
 
-## Directory conventions
-Preserve template-generated structure if it differs. Current template structure uses:
-- `EzDailyContent/` for Godot resources, localization placeholders, and placeholder images.
-- `EzDailyContentCode/` for generated C# scaffolding.
-- `docs/` for documentation.
+## Directory Conventions
 
-The generated `Cards/`, `Powers/`, and `Relics/` folders currently contain abstract base scaffolding only. Do not add concrete cards, powers, relics, patches, or gameplay behavior during setup or design-only tasks.
+Current legacy scaffold:
 
-## Testing expectations
-- After code/config changes: run `dotnet build` when SDK is available.
-- After resource/localization/packaging changes: run `dotnet publish` when SDK and Godot/MegaDot are available.
-- Record build/publish status and blockers in `docs/dev-environment.md`.
+- `EzDailyContent/` for legacy Godot resources and localization.
+- `EzDailyContentCode/` for legacy C# source.
 
-## Safety rules
-- Do not run destructive commands unless explicitly justified.
-- Do not delete files unless exact paths and reasons are listed.
-- Do not rewrite the whole project unless explicitly requested.
+Private beta target:
 
-## BaseLib dependency rule
+- `EZMicroBalance/` for EZ Micro Balance resources and localization.
+- `EZMicroBalanceCode/` for EZ Micro Balance C# source.
+
+Future mods should use their own independent resource/code folders and manifest ids.
+
+## Testing Expectations
+
+- After code/config changes: run `dotnet build`.
+- After resource/localization/packaging changes: run `dotnet publish` after build succeeds.
+- Before release: verify BaseLib and EZ Micro Balance load in-game, inspect `godot.log`, and complete the feature manual verification matrix.
+
+## BaseLib Dependency Rule
+
 Document BaseLib dependency status and expected on-disk location. The expected runtime location is `<GameRoot>\mods\BaseLib`. Do not fabricate BaseLib files.
 
-## Early Access warning
-Slay the Spire 2 APIs, BaseLib, templates, and tooling may change during Early Access. Revalidate versions and paths each session.
+## Early Access Warning
 
-## Future gameplay implementation rules
-When setup is complete and feature work starts, begin from a design spec, prefer template-supported extensibility paths and command APIs, then re-run build/publish verification after each feature increment.
+Slay the Spire 2 APIs, BaseLib, templates, and tooling may change during Early Access. Revalidate versions and paths each session.

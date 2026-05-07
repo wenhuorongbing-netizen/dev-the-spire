@@ -1,105 +1,74 @@
-﻿# EzDailyContent
+# dev-the-spire
 
-A Slay the Spire 2 system expansion mod workspace.
+Slay the Spire 2 mod workspace for private beta development.
 
-## Project direction
-EzDailyContent is no longer scoped as a temporary tiny card pack. The corrected project direction is:
+## Current Release Target
 
-1. Ancient reward tuning first.
-2. Expanded Ascension 11-20-30 system second.
-3. Custom character design and implementation last.
+The active one-month deliverable is `EZ Micro Balance`: a focused Ancient reward rebalance mod for Slay the Spire 2.
 
-The next design spec should be `docs/ANCIENT_REWARD_SPEC_v0.104.md`.
+The original project and manifest id are `EzDailyContent`. That id must not be renamed in-place. The architecture decision for the private beta is to create a new independent mod project with stable id `EZMicroBalance`, so players can enable or disable EZ Micro Balance separately from later mods.
 
-## Status
-Setup automated checks and manual in-game verification have succeeded. The template project has been generated, `EzDailyContent.sln` exists, `dotnet build` succeeds, `dotnet publish` verifies the DLL, manifest, and PCK artifacts, and Slay the Spire 2 Mod Settings shows BaseLib and EzDailyContent as enabled.
+Ascension 11-20 expansion work is now an active development track after the 2026-05-06 overnight sprint goal. The A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled; enable it for development testing with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` or use `EZMB_ASCENSION_DEBUG_LEVEL`. Live co-op verification is pending, and host-multiplayer selection can be disabled separately with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`. Full live Ascension verification is pending. Ascension 21-30 and custom character work remain out of scope.
+
+## Current State
+
+- Active Ancient reward rebalance implementation exists under `EZMicroBalanceCode/Ancients/`; v4.3 is current. It covers Distinguished Cape's `lose 30% of current Max HP, at least 18` trade gate with same-pool Vakuu replacement when unaffordable, Prismatic Gem's "Every second standard card reward contains only off-color cards" behavior with reward-screen hint fallback diagnostics, Velvet Choker's retained v4.2 soft limit, and no-space Simplified Chinese number formatting. v4.2 rightmost-slot Prismatic Gem is historical only. v4.2 Distinguished Cape 40% min15 is historical only.
+- Legacy Ancient work remains under `EzDailyContentCode/Ancients/` for traceability and is not part of the active solution.
+- `EZMicroBalance` has its own solution, project, manifest, resource folder, code folder, DLL, and PCK.
+- English and Simplified Chinese localization files exist for changed Ancient rewards under `EZMicroBalance/localization/`.
+- The latest automated pass has been refreshed after the A11-A20 v2.0 source/test/package pass: build succeeds with 0 warnings/errors, and 75/75 guard tests cover implemented and source-guarded Ascension slices. Live normal Steam-client Mod Settings and manual feature verification are still pending.
+- Ascension 11-20 has a v2.0 development checklist at `docs/features/ascension-11-20/development-checklist-v2.md`. Active prototype slices live under `EZMicroBalanceCode/Ascension/`: default-disabled original-UI A11-A20 selection for single-player and host multiplayer, A11 +1 map column with an inserted-column optional route plus extra route rows in Act 1/2/3 (`+1/+1/+2`) without A11-specific map markers, Rootblight/Blight Sprout gameplay, A12 Firemarked Elite/Forge Token with dedicated map/status indicators and Heal/Smith payout, A13 Fission with stricter eligibility, higher visibility, and icon support, A16 Banner Rooms, A17 optional Act 2/3 Deep Branches with a guarded enhanced treasure reward, A19 source-guarded boss-specific Royal Seal hooks with Boss-map hover text, and A20 vanilla double-boss map creation with Boss 2 Brand metadata/parameters, Boss-map Brand hover text, Boss 1 post-combat recovery, a Boss 1 card reward, Boss 1 reward-screen intermission wording, and a fixed courtyard event inserted before Boss 2 through the vanilla terminal-reward path. These prototype slices still need live Ascension verification; Forge Token special rest-site payout and a bespoke full-screen intermission remain deferred.
 
 ## Requirements
-- Slay the Spire 2 public beta, verified on `v0.104.0`, date `2026.04.23`
+
+- Slay the Spire 2 public beta, verified baseline `v0.104.0`, date `2026.04.23`
 - .NET SDK 9.0.313 or compatible
-- Git
 - Godot .NET / Mono 4.5.1
 - BaseLib runtime `v3.1.0` installed under `<GameRoot>\mods\BaseLib`
-- Local `Directory.Build.props` created from `Directory.Build.props.example`
+- Local `Directory.Build.props` copied from `Directory.Build.props.example`
 
-## Local path configuration
+## Local Path Configuration
+
 `Directory.Build.props` is local and gitignored because it contains machine-specific absolute paths.
 
 On a new machine:
+
 1. Copy `Directory.Build.props.example` to `Directory.Build.props`.
 2. Fill in `GodotPath`.
 3. Fill in `Sts2Path`.
-
-Do not commit local `Directory.Build.props` changes.
-
-See `docs/REMOTE_DEVELOPMENT_SETUP.md` for the clone-and-bootstrap workflow on another Windows machine.
-
-## Original verified local setup
-These paths describe the first verified setup only. New machines should use their own local paths in `Directory.Build.props`.
-
-```text
-Game root: D:\Steam\steamapps\common\Slay the Spire 2
-BaseLib:   D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib
-Mod path:  D:\Steam\steamapps\common\Slay the Spire 2\mods\EzDailyContent
-Godot:     D:\Game\FOTN\dev-the-spire\.tools\godot-4.5.1-mono
-```
-
-## BaseLib status
-BaseLib runtime is installed at the expected path:
-
-```text
-<GameRoot>\mods\BaseLib\
-  BaseLib.json
-  BaseLib.dll
-  BaseLib.pck
-```
-
-Installed runtime version: `v3.1.0`
-
-Project package version: `Alchyr.Sts2.BaseLib` `3.1.0`
-
-If an older root-level folder like `<GameRoot>\BaseLib` exists, treat it as suspicious for runtime loading. The expected runtime location is `<GameRoot>\mods\BaseLib`.
+4. Install BaseLib under `<GameRoot>\mods\BaseLib`.
 
 ## Build
+
 ```powershell
 dotnet build
 ```
 
 ## Publish
+
 ```powershell
 dotnet publish
 ```
 
-Current publish note: publish succeeds without the previous missing-solution warnings.
-
-## Install
-Current published output:
-
-```text
-<GameRoot>\mods\EzDailyContent\
-  EzDailyContent.dll
-  EzDailyContent.json
-  EzDailyContent.pck
-```
-
-## Current content
-No concrete gameplay content implemented yet. Template-generated card, power, and relic files are abstract base scaffolding only.
-
-## Remaining setup note
-`EzDailyContent.json` still uses `AUTHOR_NAME_REPLACE_ME`. Replace it only after the user supplies the desired author name. Do not change manifest id `EzDailyContent`.
+Run publish after resource, localization, packaging, or manifest changes.
 
 ## Documentation
-- `docs/SETUP_SPEC.md`
-- `docs/PROJECT_MAP.md`
-- `docs/dev-environment.md`
-- `docs/test-plan.md`
-- `docs/release-checklist.md`
-- `docs/codex-workflow.md`
-- `docs/first-feature-backlog.md`
-- `docs/REMOTE_DEVELOPMENT_SETUP.md`
-- `docs/_future/planning/design-operating-brief.md`
-- `docs/_future/new-character/boss-character-concepts-v2.md`
-- `docs/_future/new-character/boss-character-design-knowledgebase.md`
-- `docs/_future/new-character/ceremonial-beast-character-draft.md`
-- `docs/_future/new-character/ceremonial-beast-v3-bell-crowned-design.md`
-- `docs/_future/new-character/downfall-character-reference.md`
+
+- `docs/architecture-ez-micro-balance.md`: independent mod architecture decision.
+- `docs/mod-changelog.md`: one-line mod-facing changelog; update this for each future mod change.
+- `docs/issues.md`: open player-reported/runtime issues to fix before release claims.
+- `docs/features/ancients-rework-v4/`: source design, implementation notes, API evidence, and work log.
+- `docs/features/ascension-11-20/`: source design, API research, implementation plan, manual checklist, and work log for the gated Ascension expansion track.
+- `docs/test-plan.md`: automated and manual validation plan.
+- `docs/release-checklist.md`: private beta release gates.
+- `docs/private-beta-verification-handoff.md`: concise handoff for the remaining Steam-client, gameplay, save/load, multiplayer, author, commit, and push gates.
+- `docs/dev-environment.md`: local machine and build/publish status.
+- `docs/archive/legacy-planning/`: archived historical planning docs preserved from earlier roadmap work.
+
+## Release Policy
+
+- Do not change an existing manifest id in-place.
+- Do not copy original Slay the Spire 2 assets into this repo.
+- Do not copy large decompiled game code bodies into this repo.
+- Keep future mods in independent mod folders/projects.
+- Push private beta changes only after explicit user approval.

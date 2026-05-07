@@ -1,0 +1,11 @@
+{
+  "id": "EZMicroBalance",
+  "name": "EZ Micro Balance",
+  "author": "AUTHOR_NAME_REPLACE_ME",
+  "description": "Micro-balance changes for Slay the Spire 2 Ancient rewards.",
+  "version": "v0.1.0-private-beta.0",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": ["BaseLib"],
+  "affects_gameplay": true
+}
