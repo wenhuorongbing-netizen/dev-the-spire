@@ -59,7 +59,7 @@ internal static class DebtTurnEndEffectPatch
     }
 }
 
-[HarmonyPatch(typeof(Debt), nameof(Debt.OnTurnEndInHand))]
+[HarmonyPatch(typeof(Debt), "OnTurnEndInHand")]
 internal static class DebtTurnEndInHandPatch
 {
     [HarmonyPrefix]

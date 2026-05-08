@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Afflictions;
 using MegaCrit.Sts2.Core.Models.Monsters;
 
@@ -13,6 +14,10 @@ internal static class AscensionCombatModifierService
     private const decimal BountyPenaltyArtifact = 1m;
     private const int BountyDeadlineRound = 3;
     private const int BountyGoldReward = 15;
+    private static readonly ModelId DoormakerMonsterId = new("MONSTER", "DOORMAKER");
+    private static readonly ModelId HungerPowerId = new("POWER", "HUNGER_POWER");
+    private static readonly ModelId ScrutinyPowerId = new("POWER", "SCRUTINY_POWER");
+    private static readonly ModelId GraspPowerId = new("POWER", "GRASP_POWER");
 
     public static async Task BeforeCombatStart(CombatState combatState, AscensionCombatTracker tracker)
     {
@@ -1331,9 +1336,9 @@ internal static class AscensionCombatModifierService
             return;
         }
 
-        var doormaker = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is Doormaker);
+        var doormaker = FindDoormaker(combatState);
         if (doormaker == null ||
-            !doormaker.HasPower<HungerPower>() && !doormaker.HasPower<ScrutinyPower>() && !doormaker.HasPower<GraspPower>())
+            !HasDoormakerPhasePower(doormaker))
         {
             return;
         }
@@ -1356,7 +1361,7 @@ internal static class AscensionCombatModifierService
             return;
         }
 
-        var doormaker = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is Doormaker);
+        var doormaker = FindDoormaker(combatState);
         var wedge = doormaker?.GetPower<DoorWedgePower>();
         if (doormaker == null || wedge == null)
         {
@@ -1370,6 +1375,19 @@ internal static class AscensionCombatModifierService
             await PowerCmd.Remove(wedge);
             MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Door Wedge was removed by Attack plays.");
         }
+    }
+
+    private static Creature? FindDoormaker(CombatState combatState)
+    {
+        return AliveEnemies(combatState)
+            .FirstOrDefault(enemy => enemy.Monster != null && enemy.Monster.Id == DoormakerMonsterId);
+    }
+
+    private static bool HasDoormakerPhasePower(Creature doormaker)
+    {
+        return doormaker.HasPower(HungerPowerId) ||
+            doormaker.HasPower(ScrutinyPowerId) ||
+            doormaker.HasPower(GraspPowerId);
     }
 
     private static void TryAssignChosenDecree(

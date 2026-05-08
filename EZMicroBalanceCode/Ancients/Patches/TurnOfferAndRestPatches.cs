@@ -165,19 +165,43 @@ internal static class WhisperingEarringPatch
     }
 }
 
-[HarmonyPatch(typeof(PumpkinCandle), nameof(PumpkinCandle.AfterRoomEntered))]
+[HarmonyPatch]
 internal static class PumpkinCandlePatch
 {
     private const int ExtinguishedSentinel = -2;
+    private static readonly System.Reflection.PropertyInfo? ActiveActProperty = typeof(PumpkinCandle).GetProperty(
+        "ActiveAct",
+        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+    private static readonly System.Reflection.FieldInfo? ActiveActField = typeof(PumpkinCandle).GetField(
+        "_activeAct",
+        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+
+    private static System.Reflection.MethodBase TargetMethod()
+    {
+        return AccessTools.DeclaredMethod(
+                typeof(PumpkinCandle),
+                "AfterRoomEntered",
+                [typeof(AbstractRoom)]) ??
+            AccessTools.Method(
+                typeof(AbstractModel),
+                nameof(AbstractModel.AfterRoomEntered),
+                [typeof(AbstractRoom)]);
+    }
 
     [HarmonyPrefix]
-    private static bool Prefix(PumpkinCandle __instance, ref Task __result)
+    private static bool Prefix(AbstractModel __instance, ref Task __result)
     {
-        if (__instance.ActiveAct >= 0 &&
-            __instance.Owner.RunState.CurrentActIndex >= 2 &&
-            __instance.ActiveAct != __instance.Owner.RunState.CurrentActIndex)
+        if (__instance is not PumpkinCandle candle ||
+            !TryGetActiveAct(candle, out var activeAct))
         {
-            __result = ExtinguishAndUpgrade(__instance);
+            return true;
+        }
+
+        if (activeAct >= 0 &&
+            candle.Owner.RunState.CurrentActIndex >= 2 &&
+            activeAct != candle.Owner.RunState.CurrentActIndex)
+        {
+            __result = ExtinguishAndUpgrade(candle);
             return false;
         }
 
@@ -198,10 +222,34 @@ internal static class PumpkinCandlePatch
             CardCmd.Upgrade(cards, CardPreviewStyle.HorizontalLayout);
         }
 
-        candle.ActiveAct = ExtinguishedSentinel;
+        SetActiveAct(candle, ExtinguishedSentinel);
         candle.Status = RelicStatus.Disabled;
         MainFile.Logger.Info($"[EZMicroBalance] PumpkinCandle applied: extinguished and upgraded {cards.Count} card(s).");
         return Task.CompletedTask;
+    }
+
+    private static bool TryGetActiveAct(PumpkinCandle candle, out int activeAct)
+    {
+        var rawValue = ActiveActProperty?.GetValue(candle) ?? ActiveActField?.GetValue(candle);
+        if (rawValue is int value)
+        {
+            activeAct = value;
+            return true;
+        }
+
+        activeAct = -1;
+        return false;
+    }
+
+    private static void SetActiveAct(PumpkinCandle candle, int activeAct)
+    {
+        if (ActiveActProperty?.SetMethod != null)
+        {
+            ActiveActProperty.SetValue(candle, activeAct);
+            return;
+        }
+
+        ActiveActField?.SetValue(candle, activeAct);
     }
 }
 

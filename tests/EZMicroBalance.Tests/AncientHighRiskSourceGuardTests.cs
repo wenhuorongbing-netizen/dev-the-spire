@@ -178,11 +178,14 @@ public sealed class AncientHighRiskSourceGuardTests
             "if (card.TargetType is TargetType.AnyEnemy or TargetType.AnyAlly && !card.CanPlayTargeting(target))",
             "await VelvetChokerSoftLimitTracker.SuppressCostFor(card, card.SpendResources)",
             "await CardCmd.AutoPlay(choiceContext, card, target, AutoPlayType.Default, skipXCapture: true)",
-            "__instance.Owner.RunState.CurrentActIndex >= 2",
-            "__instance.ActiveAct != __instance.Owner.RunState.CurrentActIndex",
+            "AccessTools.DeclaredMethod(",
+            "typeof(AbstractModel)",
+            "candle.Owner.RunState.CurrentActIndex >= 2",
+            "TryGetActiveAct(candle, out var activeAct)",
+            "activeAct != candle.Owner.RunState.CurrentActIndex",
             ".StableShuffle(candle.Owner.RunState.Rng.Niche)",
             ".Take(2)",
-            "candle.ActiveAct = ExtinguishedSentinel",
+            "SetActiveAct(candle, ExtinguishedSentinel)",
             "candle.Status = RelicStatus.Disabled");
 
         AssertSourceContains(

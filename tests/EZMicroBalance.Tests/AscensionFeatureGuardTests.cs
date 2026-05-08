@@ -209,6 +209,39 @@ public sealed class AscensionFeatureGuardTests
     }
 
     [Fact]
+    public void BossSealCatalogAvoidsHardRuntimeReferencesToOptionalEarlyAccessBossTypes()
+    {
+        var bossSealDefinition = ReadRepoText("EZMicroBalanceCode", "Ascension", "BossSealDefinition.cs");
+        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionCombatModifierService.cs");
+
+        AssertSourceContains(
+            bossSealDefinition,
+            "private const string EncounterCategory = \"ENCOUNTER\"",
+            "private static ModelId EncounterId(string entry)",
+            "EncounterId(\"DOORMAKER_BOSS\")",
+            "EncounterId(\"QUEEN_BOSS\")",
+            "EncounterId(\"TEST_SUBJECT_BOSS\")");
+
+        Assert.DoesNotContain("using MegaCrit.Sts2.Core.Models.Encounters", bossSealDefinition, StringComparison.Ordinal);
+        Assert.DoesNotContain("ModelDb.GetId<", bossSealDefinition, StringComparison.Ordinal);
+        Assert.DoesNotContain("DoormakerBoss", bossSealDefinition, StringComparison.Ordinal);
+        Assert.DoesNotContain("QueenBoss", bossSealDefinition, StringComparison.Ordinal);
+        Assert.DoesNotContain("TestSubjectBoss", bossSealDefinition, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            combatService,
+            "DoormakerMonsterId = new(\"MONSTER\", \"DOORMAKER\")",
+            "HungerPowerId = new(\"POWER\", \"HUNGER_POWER\")",
+            "private static Creature? FindDoormaker(CombatState combatState)",
+            "private static bool HasDoormakerPhasePower(Creature doormaker)");
+
+        Assert.DoesNotContain("enemy.Monster is Doormaker", combatService, StringComparison.Ordinal);
+        Assert.DoesNotContain("HasPower<HungerPower>", combatService, StringComparison.Ordinal);
+        Assert.DoesNotContain("HasPower<ScrutinyPower>", combatService, StringComparison.Ordinal);
+        Assert.DoesNotContain("HasPower<GraspPower>", combatService, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void A11AndA17MapGeometryStayGatedOptionalAndRouteSafe()
     {
         var featureGate = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionFeatureGate.cs");

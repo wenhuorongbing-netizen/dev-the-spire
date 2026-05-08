@@ -4,6 +4,46 @@ This file tracks player-reported and runtime-observed issues. Do not mark an ite
 
 ## Open
 
+### ISSUE-2026-05-08-MULTIPLAYER-A20-BLACK-SCREEN-OPTIONAL-BOSS-TYPELOAD
+
+Priority: P0
+
+Status: source-patched and published locally; live co-op retest pending
+
+Area: A20 multiplayer run start / A19 Boss Royal Seal catalog / Early Access API compatibility
+
+Player report: starting a multiplayer A20 run can black-screen after the lobby begins the run.
+
+Observed log evidence:
+
+- Latest `godot.log` shows host multiplayer A20 run start reached `NGame.StartNewMultiplayerRun(...)` with Ascension 20.
+- Act 1 map generation applied A11/A12/A16 metadata, then failed in `AscensionMapService.MarkBossSeals(...)`.
+- Fatal mod stack: `System.TypeLoadException: Could not load type 'MegaCrit.Sts2.Core.Models.Encounters.DoormakerBoss'` from `BossSealCatalog..cctor()`.
+- The same local log also contains unrelated local-mod/BaseLib compatibility errors, but the A20 run-start abort is the `DoormakerBoss` type-load failure in EZ Micro Balance.
+
+Root cause:
+
+- The repository source snapshot contains newer Early Access boss types such as `DoormakerBoss`, but the currently installed Steam game DLL does not expose every same type/member.
+- `BossSealCatalog` used hard generic references like `ModelDb.GetId<DoormakerBoss>()`; static initialization therefore crashed before the run could finish generating the first map.
+- Current build also proved adjacent API drift: direct `Doormaker` / `HungerPower` / `ScrutinyPower` / `GraspPower` references and direct `PumpkinCandle.ActiveAct` access are not safe against the installed DLL.
+
+Current source fix:
+
+- `BossSealCatalog` now uses runtime-safe `ModelId` strings such as `ENCOUNTER.DOORMAKER_BOSS` instead of hard references to optional boss encounter classes.
+- Door Wedge combat checks now use runtime `ModelId` checks for the Doormaker monster and phase powers, so missing optional types do not block compile/load.
+- Debt and Pumpkin Candle patches were adjusted to avoid direct compile/accessibility assumptions that broke against the current installed game API.
+- Pumpkin Candle room-entry patching now resolves the declared Pumpkin Candle method when present, otherwise falls back to patching `AbstractModel.AfterRoomEntered` with a Pumpkin-only guard, so `PatchAll()` does not fail when the subclass override is absent.
+- Added source guard tests to prevent reintroducing hard optional `DoormakerBoss` / `Doormaker` type references in the Boss Seal startup path.
+
+Manual retest:
+
+- Republish or confirm the installed `EZMicroBalance.dll` timestamp is newer than this fix.
+- Host multiplayer with BaseLib and EZ Micro Balance only if possible.
+- Select A20, let the client join, ready both players, and start the run.
+- Confirm the run leaves the lobby and reaches the Act 1 map instead of black-screening.
+- Inspect `godot.log` for no `EZMicroBalance` `TypeLoadException`, especially no `DoormakerBoss`, `Doormaker`, `HungerPower`, `ScrutinyPower`, or `GraspPower` load errors.
+- Keep A20 Dual King Brands co-op gameplay verification pending; this fix is a crash/compatibility fix, not a full live co-op balance pass.
+
 ### ISSUE-2026-05-08-ASCENSION-PUBLIC-SELECTION-DEFAULT-ON-FOR-MP-TEST
 
 Priority: P0
