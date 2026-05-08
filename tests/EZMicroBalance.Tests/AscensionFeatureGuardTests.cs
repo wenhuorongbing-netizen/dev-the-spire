@@ -72,9 +72,9 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void RootStarterUsesSavedPlayerMarkerAndCommandDeckMutation()
     {
-        var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionSavedStateFields.cs");
-        var service = ReadRepoText("EZMicroBalanceCode", "Ascension", "RootDeckService.cs");
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "RootRunHook.cs");
+        var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
+        var service = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.cs");
+        var runHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
 
         AssertSourceContains(
             savedFields,
@@ -100,7 +100,7 @@ public sealed class AscensionFeatureGuardTests
             "RunManager.Instance.DebugOnlyGetState()",
             "AscensionFeatureGate.IsRootblightEnabled(runState)");
 
-        var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionInitializer.cs");
+        var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionInitializer.cs");
         Assert.Contains("ModelDb.GetById<RootRunHook>(ModelDb.GetId<RootRunHook>())", initializer, StringComparison.Ordinal);
         Assert.DoesNotContain("new RootRunHook(", initializer, StringComparison.Ordinal);
     }
@@ -108,8 +108,8 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void RootBudSeedingUsesExistingPileScanAndSavedPerCardFlags()
     {
-        var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionSavedStateFields.cs");
-        var combatHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "RootBudCombatHook.cs");
+        var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
+        var combatHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs");
         var cards = ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootCards.cs");
 
         AssertSourceContains(
@@ -145,7 +145,7 @@ public sealed class AscensionFeatureGuardTests
             "get => Math.Max(DefaultSproutRound, AscensionSavedStateFields.RootBudSproutRound[this])",
             "ExhaustOnNextPlay = true");
 
-        var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionInitializer.cs");
+        var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionInitializer.cs");
         Assert.Contains("ModelDb.GetById<RootBudCombatHook>(ModelDb.GetId<RootBudCombatHook>())", initializer, StringComparison.Ordinal);
         Assert.DoesNotContain("new RootBudCombatHook(", initializer, StringComparison.Ordinal);
     }
@@ -153,7 +153,7 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void RootBudGameplayGateProtectsDiagnosticsActOneElitesAndPlayerDeath()
     {
-        var combatHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "RootBudCombatHook.cs");
+        var combatHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
@@ -176,8 +176,8 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void MapAndCombatSlicesStayWithinDocumentedA12AndA19Tuning()
     {
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionMapService.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionCombatModifierService.cs");
+        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
         AssertSourceContains(
@@ -211,8 +211,8 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void BossSealCatalogAvoidsHardRuntimeReferencesToOptionalEarlyAccessBossTypes()
     {
-        var bossSealDefinition = ReadRepoText("EZMicroBalanceCode", "Ascension", "BossSealDefinition.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionCombatModifierService.cs");
+        var bossSealDefinition = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "BossSealDefinition.cs");
+        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
 
         AssertSourceContains(
             bossSealDefinition,
@@ -249,10 +249,10 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void A11AndA17MapGeometryStayGatedOptionalAndRouteSafe()
     {
-        var featureGate = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionFeatureGate.cs");
-        var expansionConfig = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionExpansionConfig.cs");
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionMapService.cs");
-        var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionNodeMetadata.cs");
+        var featureGate = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.cs");
+        var expansionConfig = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionExpansionConfig.cs");
+        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
@@ -313,12 +313,12 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void FiremarkTokenAndFissionPlayerFacingSurfacesAreGuarded()
     {
-        var mapPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionMapUiPatches.cs");
-        var forgeToken = ReadRepoText("EZMicroBalanceCode", "Ascension", "ForgeTokenService.cs");
+        var mapPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionMapUiPatches.cs");
+        var forgeToken = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "ForgeTokenService.cs");
         var forgeRelic = ReadRepoText("EZMicroBalanceCode", "Ascension", "Relics", "ForgeTokenRelic.cs");
         var firemarkPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "FiremarkPowers.cs");
-        var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "FissionEnchantment.cs");
-        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionRewardService.cs");
+        var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "FissionEnchantment.cs");
+        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
         var engAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
         var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
@@ -393,8 +393,8 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void AscensionMapMetadataIsReappliedBeforeCombatLookup()
     {
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionMapService.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionCombatModifierService.cs");
+        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
 
         AssertSourceContains(

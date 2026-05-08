@@ -2,19 +2,22 @@
 
 This folder is the active feature record for the `EZ Micro Balance` Ancient reward rebalance.
 
-## Files
+## Current Files
 
 - `source-design.md`: user-authored source design. Treat as the behavioral source of truth unless a later user decision supersedes it.
 - `completion-audit.md`: current implementation/release audit for this feature, including package and validation evidence.
 - `manual-verification-matrix.md`: live manual gameplay matrix. Rows remain pending until actually tested.
 - `manual-test-checklist.md`: practical tester checklist derived from the matrix.
-- `sts2_ancients_rework_v4_3_adjustment_plan.md`: v4.3 adjustment input copied from the local Downloads folder for traceability and annotated with current implementation/pending-runtime status. v4.3 is current.
-- `sts2_ancients_rework_v4_2_next_plan.md`: archived v4.2 next-plan input copied from the local Downloads folder for traceability.
 - `implementation-plan.md`: phased implementation plan created from the source design.
 - `api-discovery.md`: local API evidence, patch-point rationale, state strategy, and runtime-risk notes.
 - `work-log.md`: chronological implementation and validation log.
 - `external-references.md`: external modding references used during discovery.
-- `goal-prompts.md`: historical prompts used to drive prior implementation batches; not current source truth.
+
+## Reference And Archive
+
+- `reference-inputs/sts2_ancients_rework_v4_3_adjustment_plan.md`: v4.3 adjustment input copied from the local Downloads folder for traceability and annotated with current implementation/pending-runtime status. v4.3 is current.
+- `archive/sts2_ancients_rework_v4_2_next_plan.md`: historical v4.2 next-plan input. v4.2 is superseded by v4.3.
+- `archive/goal-prompts.md`: historical prompts used to drive prior implementation batches; not current source truth.
 
 For the global documentation map, use `../../README.md`.
 

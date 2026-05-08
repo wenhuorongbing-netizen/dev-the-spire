@@ -11,12 +11,12 @@ public sealed class AscensionV2MilestoneGuardTests
     [Fact]
     public void Milestone0FeatureFlagsAreIndependentAndAllOffIsANoOp()
     {
-        var config = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionExpansionConfig.cs");
-        var gates = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionFeatureGate.cs");
-        var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionInitializer.cs");
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionMapService.cs");
-        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionRewardService.cs");
-        var rootRunHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "RootRunHook.cs");
+        var config = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionExpansionConfig.cs");
+        var gates = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.cs");
+        var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionInitializer.cs");
+        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
+        var rootRunHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
 
         AssertSourceContains(
             config,
@@ -64,9 +64,9 @@ public sealed class AscensionV2MilestoneGuardTests
     public void Milestone1RootblightAndBlightSproutUseV2NamingStateAndHooks()
     {
         var cardsSource = ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootCards.cs");
-        var deckService = ReadRepoText("EZMicroBalanceCode", "Ascension", "RootDeckService.cs");
-        var combatHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "RootBudCombatHook.cs");
-        var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionSavedStateFields.cs");
+        var deckService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.cs");
+        var combatHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs");
+        var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
         var englishCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
         var zhsCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
 
@@ -140,12 +140,12 @@ public sealed class AscensionV2MilestoneGuardTests
     [Fact]
     public void Milestones2To4GuardFiremarksForgeTokenAndFission()
     {
-        var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionNodeMetadata.cs");
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionMapService.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionCombatModifierService.cs");
-        var forgeService = ReadRepoText("EZMicroBalanceCode", "Ascension", "ForgeTokenService.cs");
+        var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
+        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
+        var forgeService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "ForgeTokenService.cs");
         var forgeRelic = ReadRepoText("EZMicroBalanceCode", "Ascension", "Relics", "ForgeTokenRelic.cs");
-        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionRewardService.cs");
+        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
 
         AssertSourceContains(metadata, "Might", "Giant", "ForgeArmor", "ConstantHeal");
         AssertSourceContains(
@@ -200,15 +200,15 @@ public sealed class AscensionV2MilestoneGuardTests
     [Fact]
     public void Milestones5To8GuardBannersDeepBranchesBossSealsAndBlockedA20Claims()
     {
-        var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionNodeMetadata.cs");
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionMapService.cs");
-        var mapUiPatches = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionMapUiPatches.cs");
-        var a20Patch = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionA20Patches.cs");
+        var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
+        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var mapUiPatches = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionMapUiPatches.cs");
+        var a20Patch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionA20Patches.cs");
         var a20Courtyard = ReadRepoText("EZMicroBalanceCode", "Ascension", "Events", "A20Courtyard.cs");
-        var a20RewardScreenPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionA20RewardScreenPatches.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionCombatModifierService.cs");
-        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionRewardService.cs");
-        var bossSealDefinition = ReadRepoText("EZMicroBalanceCode", "Ascension", "BossSealDefinition.cs");
+        var a20RewardScreenPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionA20RewardScreenPatches.cs");
+        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
+        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
+        var bossSealDefinition = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "BossSealDefinition.cs");
         var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
         var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
         var englishEvents = JsonStringMap("EZMicroBalance", "localization", "eng", "events.json");

@@ -153,12 +153,12 @@ public sealed class ReleaseSafetyExpandedGuardTests
     [Fact]
     public void AscensionPrototypeMutationPathsStayBehindGatesAndCommandApis()
     {
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionMapService.cs");
-        var a20Patch = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionA20Patches.cs");
-        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionRewardService.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionCombatModifierService.cs");
-        var forgeService = ReadRepoText("EZMicroBalanceCode", "Ascension", "ForgeTokenService.cs");
-        var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "AscensionInitializer.cs");
+        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var a20Patch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionA20Patches.cs");
+        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
+        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
+        var forgeService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "ForgeTokenService.cs");
+        var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionInitializer.cs");
 
         AssertSourceContains(
             initializer,

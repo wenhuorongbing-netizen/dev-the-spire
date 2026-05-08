@@ -1,3 +1,7 @@
+# Historical Note
+
+This v4.2 planning input is preserved for traceability only. The current Ancient reward rebalance record is ../README.md, and v4.3 is the current behavior reference.
+
 # 《杀戮尖塔2》先古之民重构策划案v4.2下一轮开发计划
 
 **版本定位：**在v4.1基础上追加达弗补强、瓦库强项削弱、棱彩宝石待测方案和文本格式规范。  

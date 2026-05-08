@@ -1,3 +1,7 @@
+# Historical Note
+
+This issue implementation spec records a completed 2026-05-08 pass. It is archived; current blockers live in docs/issues.md and current Ascension guidance starts at ../README.md.
+
 # Current Issue Implementation Spec
 
 Date: 2026-05-08
@@ -36,16 +40,16 @@ Date: 2026-05-08
   - `IncrementMultiplayerAscension(SerializableRun run)` only increments `MaxMultiplayerAscension` while it is `< 10`.
 - `source code/src/Core/Saves/SerializableRun.cs` and `source code/src/Core/Runs/RunState.cs`
   - run Ascension is stored as an `int` (`SerializableRun.Ascension`, `RunState.AscensionLevel`), which supports development run values above A10 without changing vanilla progress.
-- `EZMicroBalanceCode/Ascension/AscensionSelectionPatches.cs`
+- `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs`
   - current selector patch expands only `StartRunLobby` single-player and host multiplayer paths.
   - `UpdatePreferredAscension` prefix skips A11-A20 preferred-progress writes.
   - A20 downgrade warning should use the host multiplayer selection surface and A20 level gate, not current `Players.Count > 1`, because a host-only lobby can select A20 before any client joins.
-- `EZMicroBalanceCode/Ascension/AscensionFeatureGate.cs`
+- `EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.cs`
   - `IsPublicSelectionEnabled` previously required `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`; for the private-beta multiplayer test candidate this should become default-on and only be disabled by `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`.
   - `PublicGateEnvironmentVariable` remains defined for compatibility/docs/history, but it must no longer be required by the `IsPublicSelectionEnabled` predicate.
   - `IsMultiplayerSelectionDisabled` remains tied only to `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, so single-player A11-A20 selection can stay available while host-multiplayer expansion is disabled for comparison.
   - `IsDualKingBrandsSinglePlayerEnabled(IRunState)` requires `runState.Players.Count == 1`, so host multiplayer A20 selection can outpace A20 gameplay support.
-- `EZMicroBalanceCode/Ascension/AscensionMapUiPatches.cs` and `EZMicroBalanceCode/Ascension/AscensionNodeMetadata.cs`
+- `EZMicroBalanceCode/Ascension/Patches/AscensionMapUiPatches.cs` and `EZMicroBalanceCode/Ascension/Map/AscensionNodeMetadata.cs`
   - A12 Firemark, A16 Banner, A17 Deep Branch, and A19/A20 boss hovers are still separate metadata paths.
   - There is no `LongRoad` metadata path in active source.
 - `tests/EZMicroBalance.Tests/**`

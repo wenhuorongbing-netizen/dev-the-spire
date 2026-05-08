@@ -36,9 +36,15 @@ EZMicroBalanceCode/
     Patches/
   Ascension/
     Cards/
+    Combat/
+    Core/
+    Enchantments/
     Events/
+    Map/
+    Patches/
     Powers/
     Relics/
+    Rewards/
 ```
 
 Published runtime output should be:
@@ -84,7 +90,7 @@ Start at `docs/README.md`.
 ## Extension Landmarks
 
 - Add Ancient behavior under `EZMicroBalanceCode/Ancients/`, with shared state/helpers in `Ancients/Common/` and patch families in `Ancients/Patches/`.
-- Add Ascension behavior under `EZMicroBalanceCode/Ascension/`; keep public/multiplayer selection disableable and live-readiness claims gated.
+- Add Ascension behavior under `EZMicroBalanceCode/Ascension/`; use the existing `Core/`, `Map/`, `Combat/`, `Rewards/`, `Enchantments/`, `Patches/`, `Cards/`, `Powers/`, `Relics/`, and `Events/` boundaries, and keep public/multiplayer selection disableable with live-readiness claims gated.
 - Add user-facing text in both `EZMicroBalance/localization/eng/` and `EZMicroBalance/localization/zhs/`.
 - Add or update tests in `tests/EZMicroBalance.Tests/` whenever source shape, localization, docs, package contents, or release evidence changes.
 - Update feature README files and `docs/dev-environment.md` when implementation status, validation evidence, versions, or package hashes change.

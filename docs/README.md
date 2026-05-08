@@ -16,6 +16,8 @@ This folder is the project memory for `EZ Micro Balance`. Use this page as the f
 
 ## Feature Records
 
+Use `features/README.md` as the compact feature index.
+
 | Feature | Entry Point | Notes |
 | --- | --- | --- |
 | Ancient reward rebalance v4 | `features/ancients-rework-v4/README.md` | Active EZ Micro Balance core feature. v4.3 is current. |
@@ -39,6 +41,15 @@ This folder is the project memory for `EZ Micro Balance`. Use this page as the f
 | `SETUP_SPEC.md` | Historical setup specification from the original scaffold; keep for context, do not use as current status. |
 | `codex-workflow.md` | Repeatable Codex workflow notes. |
 | `skills/sts2-godot-mod-development.md` | Repo-local StS2/Godot/.NET development reference. |
+
+## Code And Helper Indexes
+
+| Document | Purpose |
+| --- | --- |
+| `../EZMicroBalanceCode/README.md` | Active C# module map and extension rules. |
+| `../tests/EZMicroBalance.Tests/README.md` | Test suite group map and commands. |
+| `../scripts/README.md` | Repository helper script map. |
+| `../legacy/README.md` | Preserved migration artifact map. |
 
 ## Archive Policy
 

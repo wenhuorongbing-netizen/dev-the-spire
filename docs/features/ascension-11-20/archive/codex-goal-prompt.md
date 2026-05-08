@@ -1,4 +1,8 @@
-﻿# Codex Goal Prompt: Ascension 11-20 Development Cycle
+# Historical Note
+
+This prompt is archived for traceability. Current Ascension work should start from ../README.md, ../development-checklist-v2.md, and the current issue tracker instead.
+
+# Codex Goal Prompt: Ascension 11-20 Development Cycle
 
 Use this prompt in Codex when starting the Ascension 11-20 implementation cycle.
 

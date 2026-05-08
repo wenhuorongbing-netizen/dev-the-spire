@@ -11,6 +11,12 @@ This is the active C# code for the independent `EZMicroBalance` mod. Legacy scaf
 | `Ancients/Common/` | Shared state fields, helpers, and small model/enchantment helpers. |
 | `Ancients/Patches/` | Harmony patches grouped by reward surface or relic family. |
 | `Ascension/` | Ascension 11-20 development systems and guarded prototype slices. |
+| `Ascension/Core/` | Gates, initialization, diagnostics, asset paths, and saved fields. |
+| `Ascension/Map/` | Map generation/mutation services and map markers. |
+| `Ascension/Combat/` | Combat trackers, combat modifiers, and combat hooks. |
+| `Ascension/Rewards/` | Reward mutation helpers, Forge Token service, Root deck service, and Boss Seal definitions. |
+| `Ascension/Enchantments/` | Ascension-specific card enchantments. |
+| `Ascension/Patches/` | Harmony patches for lobby, map UI, run hooks, and A20 flow. |
 | `Ascension/Cards/` | Rootblight, Boss Seal, and related card models. |
 | `Ascension/Powers/` | Firemark, Banner, and Boss Seal powers. |
 | `Ascension/Relics/` | Ascension-specific relic models. |

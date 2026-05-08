@@ -14,22 +14,25 @@ Ascension 11-20 is available by default in the current private-beta multiplayer 
 | `implementation-plan.md` | Implementation phases and safety strategy. |
 | `manual-test-checklist.md` | Manual single-player and feature verification checklist. |
 | `multiplayer-test-runbook.md` | Two-PC multiplayer setup, test matrix, and log checks. |
-| `work-log.md` | Chronological implementation and validation history. Older entries may be superseded. |
-| `current-issue-implementation-spec.md` | Last issue-focused implementation spec. Historical once superseded by newer issues or commits. |
 | `localization-review-notes.md` | Localization review notes for Ascension strings. |
-| `codex-goal-prompt.md` | Historical prompt material for this development cycle. |
+| `work-log.md` | Chronological implementation and validation history. Older entries may be superseded. |
+
+Historical prompt/spec material lives in `archive/`.
 
 ## Active Code Areas
 
 | Code Area | Responsibility |
 | --- | --- |
-| `EZMicroBalanceCode/Ascension/AscensionFeatureGate.cs` | Environment gates and public/multiplayer disable switches. |
-| `EZMicroBalanceCode/Ascension/AscensionSelectionPatches.cs` | A11-A20 lobby selection exposure. |
-| `EZMicroBalanceCode/Ascension/AscensionMapService.cs` | A11 map extension, A17 deep branches, A20 boss path metadata. |
-| `EZMicroBalanceCode/Ascension/AscensionCombatModifierService.cs` | Combat-time Ascension modifiers and Boss Seal effects. |
-| `EZMicroBalanceCode/Ascension/AscensionRewardService.cs` | Reward and room payout helpers. |
-| `EZMicroBalanceCode/Ascension/AscensionSavedStateFields.cs` | Saved run fields for Ascension systems. |
-| `EZMicroBalanceCode/Ascension/MultiplayerDiagnostics.cs` | Optional multiplayer diagnostics only. |
+| `EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.cs` | Environment gates and public/multiplayer disable switches. |
+| `EZMicroBalanceCode/Ascension/Core/AscensionInitializer.cs` | Feature registration and hook/model lookup. |
+| `EZMicroBalanceCode/Ascension/Core/AscensionSavedStateFields.cs` | Saved run fields for Ascension systems. |
+| `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.cs` | Optional multiplayer diagnostics only. |
+| `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs` | A11-A20 lobby selection exposure. |
+| `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | A20 boss path/courtyard hooks. |
+| `EZMicroBalanceCode/Ascension/Map/AscensionMapService.cs` | A11 map extension, A17 deep branches, A20 boss path metadata. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.cs` | Combat-time Ascension modifiers and Boss Seal effects. |
+| `EZMicroBalanceCode/Ascension/Rewards/AscensionRewardService.cs` | Reward and room payout helpers. |
+| `EZMicroBalanceCode/Ascension/Enchantments/FissionEnchantment.cs` | Fission card enchantment. |
 
 ## Safety Rules
 

@@ -98,8 +98,8 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void V43AdjustmentPlanIsArchivedAndSupersedesV42AsCurrentTruth()
     {
-        var archivedV43Plan = ReadRepoText("docs", "features", "ancients-rework-v4", "sts2_ancients_rework_v4_3_adjustment_plan.md");
-        var archivedPlan = ReadRepoText("docs", "features", "ancients-rework-v4", "sts2_ancients_rework_v4_2_next_plan.md");
+        var archivedV43Plan = ReadRepoText("docs", "features", "ancients-rework-v4", "reference-inputs", "sts2_ancients_rework_v4_3_adjustment_plan.md");
+        var archivedPlan = ReadRepoText("docs", "features", "ancients-rework-v4", "archive", "sts2_ancients_rework_v4_2_next_plan.md");
         var completionAudit = ReadRepoText("docs", "features", "ancients-rework-v4", "completion-audit.md");
 
         Assert.Contains("v4.3", archivedV43Plan, StringComparison.OrdinalIgnoreCase);
