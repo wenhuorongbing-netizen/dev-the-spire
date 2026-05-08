@@ -131,7 +131,6 @@ internal static class AscensionFeatureGate
     }
 
     public static bool IsPublicSelectionEnabled =>
-        IsTruthy(Environment.GetEnvironmentVariable(PublicGateEnvironmentVariable)) &&
         !IsTruthy(Environment.GetEnvironmentVariable(DisablePublicSelectionEnvironmentVariable));
 
     public static bool IsPublicGateEnabled =>

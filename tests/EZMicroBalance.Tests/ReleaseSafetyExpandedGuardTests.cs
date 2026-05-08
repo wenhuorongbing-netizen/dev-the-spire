@@ -353,8 +353,11 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         Assert.Contains("normal Steam-client Mod Settings verification is still pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]

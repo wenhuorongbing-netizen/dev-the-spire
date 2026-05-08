@@ -410,7 +410,8 @@ public sealed class AscensionV2MilestoneGuardTests
     {
         var currentDocs = ReadCurrentFacingDocs();
 
-        Assert.Contains("full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", currentDocs, StringComparison.Ordinal);
         Assert.Contains("live Ascension gameplay not executed yet", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", currentDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("release ready", currentDocs, StringComparison.OrdinalIgnoreCase);

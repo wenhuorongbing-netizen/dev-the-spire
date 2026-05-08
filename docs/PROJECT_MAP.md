@@ -96,7 +96,7 @@ They are ignored by `.gitignore` and are not part of the current packaged mod su
 - `export_presets.cfg`: selected-resource Godot export; packages only `EZMicroBalance` resources and the active manifest.
 - `EZMicroBalanceCode/Ancients/Common/`: shared state fields, custom enchantment, and helper functions for Ancient patches.
 - `EZMicroBalanceCode/Ancients/Patches/`: grouped Harmony patches by reward surface/relic family.
-- `EZMicroBalanceCode/Ascension/`: default-off gated Ascension 11-20 implementation slices; currently Root-family cards and run/combat hooks only.
+- `EZMicroBalanceCode/Ascension/`: Ascension 11-20 implementation slices; A11-A20 selection is default-on for the private-beta multiplayer test candidate, with public and multiplayer-only disable switches for comparison.
 - `EzDailyContentCode/Ancients/`: legacy copy from before independent-project migration; not part of the active solution.
 - `.gdignore` files: prevent legacy, source-only, docs, art, and archive folders from being imported as Godot resources.
 - `.cs.uid` files: track when generated for C# script files; keep this policy consistent for new release-source files.

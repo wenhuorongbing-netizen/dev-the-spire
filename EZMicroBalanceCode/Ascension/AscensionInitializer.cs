@@ -28,7 +28,7 @@ public static class AscensionInitializer
             CreateCombatHookSubscribers);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension hooks registered. Default-off gate: set {AscensionFeatureGate.DebugLevelEnvironmentVariable}=14+ for internal testing; set {AscensionFeatureGate.DiagnosticsEnvironmentVariable}=1 for internal diagnostics.");
+            $"[EZMicroBalance] Ascension hooks registered. A11-A20 selection is default-on for private-beta multiplayer testing; set {AscensionFeatureGate.DisablePublicSelectionEnvironmentVariable}=1 to restore vanilla A1-A10 selection, set {AscensionFeatureGate.DisableMultiplayerSelectionEnvironmentVariable}=1 to disable only host-multiplayer A11-A20 selection, set {AscensionFeatureGate.DiagnosticsEnvironmentVariable}=1 for internal diagnostics.");
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState)

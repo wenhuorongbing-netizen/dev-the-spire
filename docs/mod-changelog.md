@@ -2,6 +2,15 @@
 
 Append only short tester/player-facing entries here when behavior or release validation changes.
 
+## 2026-05-08
+
+- A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
+- Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.
+- Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
+- `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
+- A20 multiplayer selection is not full A20 co-op support. Dual King Brands / second-boss Brand gameplay remains disabled or downgraded in co-op pending live verification.
+- Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification.
+
 ## 2026-05-07
 
 - Ancient rewards: completed the active v4.3 rebalance and major boundary fixes.

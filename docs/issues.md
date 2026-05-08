@@ -4,6 +4,32 @@ This file tracks player-reported and runtime-observed issues. Do not mark an ite
 
 ## Open
 
+### ISSUE-2026-05-08-ASCENSION-PUBLIC-SELECTION-DEFAULT-ON-FOR-MP-TEST
+
+Priority: P0
+
+Status: source-patched; package/smoke refresh pending
+
+Area: A11-A20 selector gate / multiplayer pre-release testing
+
+Decision: A11-A20 selection is now default-on in this private-beta multiplayer test candidate so testers can immediately exercise single-player and host-multiplayer A11-A20 through the original lobby UI.
+
+Required behavior:
+
+- Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.
+- Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
+- `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
+- A20 multiplayer selection is not full A20 co-op support. Dual King Brands / second-boss Brand gameplay remains disabled or downgraded in co-op pending live verification.
+- Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification.
+
+Manual retest:
+
+- With no Ascension env vars, confirm single-player and host multiplayer can select A11-A20.
+- With `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, confirm single-player and multiplayer selection return to vanilla A1-A10.
+- With `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, confirm single-player A11-A20 remains available and host-multiplayer selection returns to the vanilla cap.
+- Confirm host-only multiplayer A20 selection logs the downgrade warning before any client joins, then logs again on run start after a client joins.
+- Keep normal Steam-client Mod Settings, live gameplay, save/load, and live co-op/desync verification pending until actually executed.
+
 ### ISSUE-2026-05-07-A11-MAP-LENGTH-NOT-PLAYER-VISIBLE
 
 Priority: P1
@@ -132,7 +158,10 @@ Player report: A11-A20 cannot be used in multiplayer, but co-op should eventuall
 
 Desired behavior:
 
-- A11-A20 selection is available in multiplayer when the explicit public/development Ascension gate is enabled.
+- A11-A20 selection is available in multiplayer by default for this private-beta multiplayer test candidate.
+- `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection for comparison.
+- `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection.
+- `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
 - Multiplayer selection must not patch or corrupt vanilla A1-A10 progress.
 - Earlier Ascension effects still inherit normally at higher levels.
 - Per-player systems such as Rootblight and Blight Sprout remain independent and do not desync.
@@ -141,7 +170,7 @@ Desired behavior:
 Implementation notes:
 
 - Local source inspection found that `StartRunLobby.UpdateMaxMultiplayerAscension()` computes the multiplayer cap from each `LobbyPlayer.maxMultiplayerAscensionUnlocked`, while `UpdatePreferredAscension()` writes host selections to `PreferredMultiplayerAscension`.
-- Current source patch expands only host multiplayer lobbies when `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is set, temporarily raises in-memory lobby unlock caps only during max recomputation, restores them in a finalizer, and skips A11-A20 preferred-progress writes.
+- Current source patch expands host multiplayer lobbies by default unless `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` or `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` is set. It temporarily raises in-memory lobby unlock caps only during max recomputation, restores them in a finalizer, and skips A11-A20 preferred-progress writes.
 - Host-multiplayer A11-A20 selection is independently disableable with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`.
 - A11-A20 gameplay, per-player Rootblight/Blight Sprout ownership, and desync behavior still require live co-op verification.
 - A20 Dual King Brands gameplay is still single-player gated through `IsDualKingBrandsSinglePlayerEnabled(...)`; the host multiplayer selector/start path now logs a development-testing downgrade warning, but live co-op verification is still pending.
@@ -149,8 +178,9 @@ Implementation notes:
 Manual retest:
 
 - Host a multiplayer lobby with BaseLib and EZ Micro Balance enabled.
-- Confirm A1-A10 behavior is unchanged with the gate disabled.
-- Enable the development/public A11-A20 gate and confirm the lobby can select A11-A20.
+- Confirm A11-A20 selection is available by default with no Ascension env var.
+- Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` and confirm A1-A10 behavior is restored for comparison.
+- Clear the disable variable and confirm the lobby can select A11-A20 again.
 - Start a co-op run at A11/A12/A14/A16/A20 and confirm all players load without desync.
 - Confirm Rootblight/Blight Sprout ownership remains per-player in co-op.
 - Confirm A20 multiplayer selection does not imply that Dual King Brands gameplay is live co-op verified.
@@ -208,7 +238,7 @@ Planning notes:
 
 Manual retest:
 
-- In a host multiplayer lobby with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`, select A20 before any client joins.
+- In a host multiplayer lobby with no Ascension env vars, select A20 before any client joins.
 - Confirm the tester-visible warning or log appears on host-only selection.
 - Let a client join without changing Ascension, then start the A20 run.
 - Confirm the tester-visible warning or log appears on selection and run start.
@@ -226,8 +256,8 @@ Audit finding: source guards prove selector and ownership shapes, but no live co
 
 Minimum matrix:
 
-- Gate off: multiplayer selection remains vanilla A1-A10.
-- Gate on: host can select A11-A20 and client sees the selected value.
+- Gate default-on: with no Ascension env vars, host can select A11-A20 and client sees the selected value.
+- Gate off: `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection.
 - Disable flag: `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` restores vanilla multiplayer cap.
 - A11: co-op run starts with widened/longer map and no A11 marker.
 - A12: Firemarked Elite route markers remain visible and host/client agree.
@@ -273,7 +303,7 @@ Audit finding: several docs cited a prior controlled `--force-steam off` smoke w
 
 - Current controlled `--force-steam off` smoke passed after publish/package refresh.
 - Temporary profile settings enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, and restored `settings.save` plus `settings.save.backup` byte-for-byte.
-- `godot.log` showed `Loaded 2 mods (19 total)`, BaseLib initialization, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, main menu in `12,886ms`, and 0 EZ Micro Balance error/exception lines.
+- `godot.log` showed `Loaded 2 mods (19 total)`, BaseLib initialization, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, default-on Ascension initializer wording with 0 old `Default-off gate` lines, main menu in `13,201ms`, and 0 EZ Micro Balance error/exception lines.
 - Normal Steam-client Mod Settings and live gameplay verification remain pending.
 
 Required verification:
@@ -289,7 +319,7 @@ Required verification:
 
 Priority: P3
 
-Status: needs refresh after current commit/push state is known
+Status: refreshed for current default-on follow-up; recheck before commit/push
 
 Area: release handoff / repository status docs
 
@@ -297,7 +327,7 @@ Audit finding: handoff and audit docs can become stale when they say "No commit 
 
 2026-05-08 update:
 
-- Local `main` was observed at `212ba0d (HEAD -> main, origin/main, origin/HEAD) fix2` before the A20 warning-condition follow-up changes.
+- Local `main` was observed at `77da0ed (HEAD -> main, origin/main, origin/HEAD) fix2` before the default-on multiplayer-test-candidate follow-up changes.
 - The previously untracked spec, `docs/skills/`, and `ReleaseArtifactFactAttribute.cs` are no longer untracked in this checkout.
 
 Required release-pass action:

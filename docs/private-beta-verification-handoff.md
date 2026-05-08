@@ -7,21 +7,21 @@ This handoff is for manual verification that cannot be completed by the local au
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `F3F601C1ED304203D269A905F48A2E6F66F468F2D4C5D7E34E1080A79BE74B2C`
+- Zip SHA256: `F670B27869357DD6F7EE5549948CC9D09AD8711840B655E08896F22B41D803AF`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `BC4CB9AC61C2F59172F79B96A1996782A15FC247449EB02B5D9AE62A65C0F27D`
+- DLL SHA256: `9F68518A8083C128DB74E6BAC4C2C001B9BB2B8AA4AD89642883659A982C229F`
 - Manifest SHA256: `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`
 - PCK SHA256: `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`
 
 ## Known Automated Evidence
 
 - `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: passed, 62 passed, 15 skipped release artifact/runtime evidence tests, 0 failed.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 77 passed, 0 skipped, 0 failed.
+- `dotnet test EZMicroBalance.sln --no-build`: passed, 63 passed, 15 skipped release artifact/runtime evidence tests, 0 failed.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 78 passed, 0 skipped, 0 failed.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
 - `dotnet publish EZMicroBalance.sln`: passed.
 - `git diff --check`: exit 0 with CRLF normalization warnings for touched files.
-- Current controlled `--force-steam off` smoke temporarily enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, reached main menu in `12,886ms`, found 0 EZ Micro Balance error/exception lines, and restored `settings.save` plus `settings.save.backup` byte-for-byte. Normal Steam-client Mod Settings verification is still pending.
+- Current controlled `--force-steam off` smoke temporarily enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,201ms`, found 0 EZ Micro Balance error/exception lines, and restored `settings.save` plus `settings.save.backup` byte-for-byte. Normal Steam-client Mod Settings verification is still pending.
 
 ## Required Manual Results
 
@@ -42,7 +42,7 @@ Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer check
 
 ## Ascension Verification
 
-The A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled. Full live Ascension verification is pending. Live co-op selection and desync verification are still pending. To test A11-A20 through the original UI, launch with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`; use `EZMB_ASCENSION_DEBUG_LEVEL=12` through `20` for forced internal slice checks. Host-multiplayer selection can be disabled separately with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`.
+A11-A20 selection is now default-on in this private-beta multiplayer test candidate for single-player and host-multiplayer standard lobbies. Full live Ascension verification is pending. Live co-op selection and desync verification are still pending. No env var is needed for the default multiplayer test. Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison. Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection. `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required. Use `EZMB_ASCENSION_DEBUG_LEVEL=12` through `20` for forced internal slice checks.
 
 Execute `docs/features/ascension-11-20/manual-test-checklist.md` against A11 through A20 from the normal single-player and host-multiplayer character select flows after explicitly enabling the selector:
 
@@ -50,7 +50,7 @@ Execute `docs/features/ascension-11-20/manual-test-checklist.md` against A11 thr
 - `EZMB_ASCENSION_DIAGNOSTICS=1` remains available for read-only diagnostics.
 - A20 host multiplayer selection/start should log: multiplayer A20 selection is enabled for development testing, Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled.
 
-Co-op gameplay remains unverified. Either execute the multiplayer ownership/desync checks or keep release notes clear that the candidate has source-patched host selection but no live co-op verification.
+A20 multiplayer selection is not full A20 co-op support. Dual King Brands / second-boss Brand gameplay remains disabled or downgraded in co-op pending live verification. Co-op gameplay remains unverified. Execute `docs/features/ascension-11-20/multiplayer-test-runbook.md` for the two-PC matrix, ownership/desync checks, save/load rows, and result template, or keep release notes clear that the candidate has source-patched host selection but no live co-op verification.
 
 ## Release Artifact Test Mode
 
@@ -72,8 +72,8 @@ If `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set and artifacts are missing or stale
 
 Current git status at this handoff refresh:
 
-- `git log -1 --oneline --decorate`: `212ba0d (HEAD -> main, origin/main, origin/HEAD) fix2`
-- `git status --short --branch`: `## main...origin/main` with modified follow-up code, test, and documentation files listed by the current local status; no untracked files observed in this refresh.
+- `git log -1 --oneline --decorate`: `77da0ed (HEAD -> main, origin/main, origin/HEAD) fix2`
+- `git status --short --branch`: `## main...origin/main` with modified source/docs/tests from this default-on multiplayer-test-candidate pass and untracked `docs/features/ascension-11-20/multiplayer-test-runbook.md`. No release artifacts are tracked.
 
 No commit or push was attempted in this pass. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
 

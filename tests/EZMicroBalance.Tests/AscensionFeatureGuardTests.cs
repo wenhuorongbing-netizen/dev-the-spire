@@ -20,6 +20,13 @@ public sealed class AscensionFeatureGuardTests
             "MaxSupportedAscensionLevel = 20",
             "return 0;",
             "return IsPublicSelectionEnabled && runState.AscensionLevel >= requiredAscensionLevel",
+            "public static bool IsPublicSelectionEnabled =>",
+            "!IsTruthy(Environment.GetEnvironmentVariable(DisablePublicSelectionEnvironmentVariable))",
+            "public static bool IsMultiplayerSelectionDisabled =>",
+            "IsTruthy(Environment.GetEnvironmentVariable(DisableMultiplayerSelectionEnvironmentVariable))",
+            "A11-A20 selection is default-on for private-beta multiplayer testing",
+            "set {AscensionFeatureGate.DisablePublicSelectionEnvironmentVariable}=1 to restore vanilla A1-A10 selection",
+            "set {AscensionFeatureGate.DisableMultiplayerSelectionEnvironmentVariable}=1 to disable only host-multiplayer A11-A20 selection",
             "Math.Clamp(level, 0, MaxSupportedAscensionLevel)",
             "HarmonyPatch(typeof(StartRunLobby), \"SetSingleplayerAscensionAfterCharacterChanged\")",
             "HarmonyPatch(typeof(StartRunLobby), \"BeginRunLocally\")",
@@ -53,11 +60,13 @@ public sealed class AscensionFeatureGuardTests
             "__state.Stats.MaxAscension = __state.OriginalMaxAscension");
 
         Assert.DoesNotContain("NAscensionPanel", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsTruthy(Environment.GetEnvironmentVariable(PublicGateEnvironmentVariable))", source, StringComparison.Ordinal);
         Assert.DoesNotContain("HarmonyPatch(typeof(CharacterStats", source, StringComparison.Ordinal);
         Assert.DoesNotContain("ProgressSaveManager", source, StringComparison.Ordinal);
         Assert.DoesNotContain("HarmonyPatch(typeof(ProgressState", source, StringComparison.Ordinal);
         Assert.DoesNotContain("AscensionManager.maxAscensionAllowed", source, StringComparison.Ordinal);
         Assert.DoesNotContain("lobby.Players.Count > 1", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("Default-off gate", source, StringComparison.Ordinal);
     }
 
     [Fact]

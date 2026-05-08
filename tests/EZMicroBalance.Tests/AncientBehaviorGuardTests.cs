@@ -185,7 +185,10 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("Found 12 SavedSpireFields", readme, StringComparison.Ordinal);
         Assert.Contains("Normal Steam-client Mod Settings verification is still pending", readme, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer checks are still pending", readme, StringComparison.Ordinal);
-        Assert.Contains("A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled", readme, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", readme, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", readme, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", readme, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1 is legacy-compatible and no longer required", readme, StringComparison.Ordinal);
         Assert.Contains("Full live Ascension verification is pending", readme, StringComparison.Ordinal);
         Assert.Contains("Ascension 21-30 and custom-character content are not included", readme, StringComparison.Ordinal);
     }
@@ -989,7 +992,9 @@ public sealed class AncientBehaviorGuardTests
             "normal Steam-client Mod Settings verification is still pending",
             "Manual feature results are pending",
             "Unsupported Cases",
-            "A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled",
+            "A11-A20 selection is now default-on in this private-beta multiplayer test candidate",
+            "EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1",
+            "EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1",
             "A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds route rows by act: Act 1 +1, Act 2 +1, Act 3 +2 without A11-specific map markers or hover tips.",
             "A17 inserts one optional 3-4 node Deep Branch in Acts 2/3",
             "A20 uses the vanilla double-boss map path to create/reveal the final-act second Boss",

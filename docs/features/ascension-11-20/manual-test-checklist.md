@@ -2,8 +2,8 @@
 
 Project: EZ Micro Balance  
 Manifest id: EZMicroBalance  
-Status: checklist for A11-A20 single-player and host-multiplayer selector development build; live Ascension gameplay not executed yet  
-Last updated: 2026-05-07
+Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; live Ascension gameplay not executed yet
+Last updated: 2026-05-08
 
 ## Research-Mode Baseline
 
@@ -23,7 +23,7 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Current bounded `--force-steam off` smoke after the A20 host-only warning/package refresh initialized only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, reached main menu in `12,886ms`, found 0 EZ Micro Balance error/exception lines, and restored the temporary profile settings byte-for-byte.
+- Current bounded `--force-steam off` smoke after the default-on multiplayer test candidate package refresh initialized only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,201ms`, found 0 EZ Micro Balance error/exception lines, and restored the temporary profile settings byte-for-byte.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded Boss Royal Seals, and A20 vanilla double-boss map path/Brand/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
@@ -32,10 +32,10 @@ Baseline result on 2026-05-06:
 
 ## Gate Controls
 
-- Default private-beta launch: no environment variables set; A11-A20 UI selection remains hidden/disabled and implemented slices do not activate through public selection.
-- Development selector test: set `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`; the original single-player and host-multiplayer Ascension UI can select A11-A20 and run-state level gates activate the implemented slices.
-- Disable selector expansion: set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` before launch.
-- Disable host-multiplayer selector expansion only: set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` before launch.
+- Default private-beta multiplayer test candidate: no Ascension environment variables are needed. A11-A20 selection is now default-on in the original single-player and host-multiplayer Ascension UI, and run-state level gates activate the implemented slices.
+- Gate-off comparison: set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` before launch to restore vanilla A1-A10 selection for comparison.
+- Multiplayer-only disable comparison: set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` before launch to disable only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
+- Legacy-compatible opt-in: `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is accepted but no longer required.
 - A11 Wide Tower, Long Road / 宽塔长路 map-shape test: set `EZMB_ASCENSION_DEBUG_LEVEL=11` or select A11+ from the original single-player UI.
 - A12 firemarked elite and Forge Token: set `EZMB_ASCENSION_DEBUG_LEVEL=12`.
 - A13 Fission rewards: set `EZMB_ASCENSION_DEBUG_LEVEL=13`.
@@ -49,7 +49,7 @@ Baseline result on 2026-05-06:
 - Disable A11 map geometry for comparison: set `EZMB_ASCENSION_ENABLE_MAP_GEOMETRY=0`.
 - Disable A17 Deep Branches for comparison: set `EZMB_ASCENSION_ENABLE_DEEP_BRANCHES=0`.
 - Read-only hook/state diagnostics: set `EZMB_ASCENSION_DIAGNOSTICS=1`.
-- `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is now legacy-compatible; normal testing should use the original UI directly.
+- Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification.
 
 ## Read-Only Ascension Diagnostics
 
@@ -166,19 +166,21 @@ Gated implementation present; live testing pending. Execute by selecting A11+ in
 
 ## A11-A20 Host-Multiplayer Selection
 
-Gated implementation present; live co-op testing pending. Execute only with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`.
+Default-on implementation present; live co-op testing pending. Use `docs/features/ascension-11-20/multiplayer-test-runbook.md` for the full two-PC matrix and result template.
 
-- [ ] With the gate disabled, multiplayer host selection remains capped by vanilla A1-A10 progress.
-- [ ] With the gate enabled, the host can select A11-A20 from the original Ascension UI.
-- [ ] With `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, host-multiplayer selection returns to the vanilla cap while single-player selection remains available if the public gate is enabled.
+- [ ] With no Ascension env var, single-player selection can reach A11-A20 from the original Ascension UI.
+- [ ] With no Ascension env var, host-multiplayer selection can reach A11-A20 from the original Ascension UI.
+- [ ] With `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, single-player and multiplayer host selection remain capped by vanilla A1-A10 progress.
+- [ ] With `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, host-multiplayer selection returns to the vanilla cap while single-player A11-A20 selection remains available.
+- [ ] With legacy `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` set and no disable env vars, selection behavior remains the same as default-on.
 - [ ] A11-A20 host selection does not persist to `PreferredMultiplayerAscension` after leaving the lobby.
 - [ ] A11-A20 host selection survives a client joining the lobby without being clamped back to A10.
 - [ ] A client sees the host-selected A11-A20 value.
-- [ ] Gate off: single-player and multiplayer selection remain normal A1-A10.
-- [ ] Gate on: host multiplayer can select A11-A20.
+- [ ] Gate off via `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`: single-player and multiplayer selection remain normal A1-A10.
+- [ ] Gate default-on: host multiplayer can select A11-A20.
 - [ ] Disable multiplayer selection env var returns host multiplayer to the vanilla cap.
 - [ ] Client join does not clamp host A11-A20 selection back to A10.
-- [ ] Host creates a multiplayer lobby, enables the public gate, selects A20 before any client joins, and `godot.log` immediately records the A20 development-testing downgrade warning.
+- [ ] Host creates a multiplayer lobby, selects A20 before any client joins, and `godot.log` immediately records the A20 development-testing downgrade warning.
 - [ ] After a client joins without changing Ascension, starting the A20 run records the A20 development-testing downgrade warning again.
 - [ ] Multiplayer A11 starts with widened/longer map geometry and no A11 marker/tooltip on ordinary route nodes.
 - [ ] Multiplayer A12 Firemarked Elite marker remains visible and host/client agree on the marked node.
@@ -186,6 +188,7 @@ Gated implementation present; live co-op testing pending. Execute only with `EZM
 - [ ] Multiplayer A14/A15/A18 Rootblight and Blight Sprout state remains independently owned per player.
 - [ ] Starting a two-player A11/A12/A14/A16 run reaches run load without ownership warnings, checksum divergence, or desync in `godot.log`.
 - [ ] A20 multiplayer selection logs a clear limitation: multiplayer A20 selection is enabled for development testing; Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification; A11-A19 inherited systems may still apply if their gates are enabled.
+- [ ] A20 multiplayer selection is not treated as full A20 co-op support.
 - [ ] Starting a two-player A20 run does not silently apply single-player-only Dual King Brands behavior without warning.
 - [ ] `godot.log` has no desync, checksum divergence, ownership, or multiplayer state warnings after the co-op pass.
 

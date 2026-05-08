@@ -875,9 +875,9 @@ Verification:
 ## 2026-05-08 - Current Package Smoke Refresh
 
 - Ran `dotnet publish EZMicroBalance.sln` after the A20 warning/localization/test-gate pass and rebuilt `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed DLL/JSON/PCK artifacts.
-- Current hashes after package refresh: DLL `BC4CB9AC61C2F59172F79B96A1996782A15FC247449EB02B5D9AE62A65C0F27D`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`, package zip `F3F601C1ED304203D269A905F48A2E6F66F468F2D4C5D7E34E1080A79BE74B2C`.
-- Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, reached main menu in `12,886ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
-- Validation after doc/hash/smoke refresh: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` passed, 62 passed, 15 skipped release artifact/runtime evidence tests, 0 failed; `dotnet test EZMicroBalance.sln --no-build` passed with the same counts; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 77 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` exited 0 with CRLF normalization warnings for touched files.
+- Historical hashes from this package refresh were superseded by the 2026-05-08 default-on multiplayer test candidate refresh below.
+- Historical bounded `--force-steam off` smoke from this package refresh registered 12 SavedSpireFields and was superseded by the default-on gate smoke below.
+- Historical validation from this package refresh passed; current validation status is recorded in the default-on gate entry below.
 - Normal Steam-client Mod Settings verification, live feature verification, save/load, and live co-op verification remain pending.
 
 ## 2026-05-08 - A20 Host-Only Multiplayer Warning Follow-Up
@@ -886,3 +886,17 @@ Verification:
 - Updated source guards to reject reintroducing a `lobby.Players.Count > 1` prerequisite on the warning path.
 - Updated the manual co-op checklist to require host-only A20 selection warning, then a second warning when starting A20 after a client joins without changing Ascension.
 - Refreshed issue/handoff/audit status to remove stale untracked-file and stale 9-SavedSpireField wording.
+
+## 2026-05-08 - Default-On Multiplayer Test Candidate Gate Pass
+
+- Changed `AscensionFeatureGate.IsPublicSelectionEnabled` so A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
+- Kept `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` as a legacy-compatible variable, but it is no longer required.
+- Kept `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` as the emergency gate-off comparison switch that restores vanilla A1-A10 selection.
+- Kept `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` scoped to host-multiplayer selector expansion only; single-player A11-A20 remains available when only that variable is set.
+- Did not alter `EZMB_ASCENSION_DEBUG_LEVEL`, A11-A20 preferred-progress write skips, or the A20 Dual King Brands single-player gameplay gate.
+- Added `docs/features/ascension-11-20/multiplayer-test-runbook.md` with recommended two-PC setup, env var commands, exact multiplayer matrix, save/load rows, log checks, and result template.
+- Updated current-facing docs/tests to say default-on for multiplayer testing, while preserving the warning that A20 multiplayer selection is not full A20 co-op support and that controlled smoke is not normal Steam-client/live co-op verification.
+- Ran `dotnet publish EZMicroBalance.sln` and rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts.
+- Current hashes after package refresh: DLL `9F68518A8083C128DB74E6BAC4C2C001B9BB2B8AA4AD89642883659A982C229F`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`, package zip `F670B27869357DD6F7EE5549948CC9D09AD8711840B655E08896F22B41D803AF`, package README `6BD2F48F689390C7F6C53AB78A19CB6E26CEDFC22ED0CF30402C269E8699CDC1`.
+- Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,201ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
+- Final validation after this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` passed, 63 passed, 15 skipped release artifact/runtime evidence tests, 0 failed; `dotnet test EZMicroBalance.sln --no-build` passed with the same counts before and after publish; `dotnet publish EZMicroBalance.sln` passed; package refresh passed; controlled smoke passed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 78 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` exited 0 with CRLF normalization warnings for touched files.

@@ -349,8 +349,10 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("A18 Elite Blight Sprout MVP", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.", manualChecklist, StringComparison.Ordinal);
 
-        Assert.Contains("A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled", releaseChecklist, StringComparison.Ordinal);
-        Assert.Contains("enable with `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("`EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.", releaseChecklist, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -566,12 +568,15 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("update `docs/release-checklist.md`", handoff, StringComparison.Ordinal);
         Assert.Contains("Normal Steam-client Mod Settings verification is still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer checks are still pending", handoff, StringComparison.Ordinal);
-        Assert.Contains("A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled", handoff, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", handoff, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", handoff, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", handoff, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", handoff, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required", handoff, StringComparison.Ordinal);
+        Assert.Contains("docs/features/ascension-11-20/multiplayer-test-runbook.md", handoff, StringComparison.Ordinal);
         Assert.Contains("Live co-op selection and desync verification are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("AUTHOR_NAME_REPLACE_ME", handoff, StringComparison.Ordinal);
         Assert.Contains("Current git status at this handoff refresh", handoff, StringComparison.Ordinal);
-        Assert.Contains("212ba0d (HEAD -> main, origin/main, origin/HEAD) fix2", handoff, StringComparison.Ordinal);
+        Assert.Contains("77da0ed (HEAD -> main, origin/main, origin/HEAD) fix2", handoff, StringComparison.Ordinal);
         Assert.Contains("Proposed commit scope", handoff, StringComparison.Ordinal);
         Assert.Contains("Do not include", handoff, StringComparison.Ordinal);
         Assert.Contains("Directory.Build.props", handoff, StringComparison.Ordinal);
@@ -619,6 +624,40 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("Release artifact tests are opt-in", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("EZMB_RUN_RELEASE_ARTIFACT_TESTS=1", handoff, StringComparison.Ordinal);
         Assert.Contains("Normal `dotnet test` no longer requires ignored publish/package artifacts", issues, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void MultiplayerTestRunbookCoversDefaultOnGateControlsAndLiveMatrix()
+    {
+        var runbook = ReadRepoText("docs", "features", "ascension-11-20", "multiplayer-test-runbook.md");
+
+        AssertSourceContains(
+            runbook,
+            "A11-A20 selection is now default-on in this private-beta multiplayer test candidate.",
+            "Two physical PCs.",
+            "Same-PC multi-open is not reliable for real Steam multiplayer and should not be the primary release test.",
+            "`--force-steam off` is valid for controlled loader smoke only.",
+            "EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1",
+            "EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1",
+            "EZMB_ASCENSION_DIAGNOSTICS=1",
+            "EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1",
+            "[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION','1','User')",
+            "[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION',$null,'User')",
+            "fully restart Steam and the game",
+            "Gate Default-On Checks",
+            "Gate-Off Comparison Checks",
+            "Multiplayer-Only Disable Checks",
+            "A11 Map Checks",
+            "A12 Firemarked Elite Marker Checks",
+            "A16 Banner Marker / Hover Checks",
+            "A14/A15/A18 Rootblight / Blight Sprout Ownership Checks",
+            "A20 Warning / Downgrade Checks",
+            "Save / Load Checks",
+            "godot.log Checks",
+            "Date/time:",
+            "Pass/fail/blocker:");
+
+        Assert.Contains("Dual King Brands / second-boss Brand gameplay is currently disabled or downgraded in co-op pending live verification.", runbook, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -694,7 +733,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("Multiplayer branch insertion is skipped", deepBranchesSection, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x]", deepBranchesSection, StringComparison.Ordinal);
 
-        Assert.Contains("A11-A20 single-player and host-multiplayer selection patch is implemented but private-beta default-disabled", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds route rows by act: Act 1 +1, Act 2 +1, Act 3 +2 without A11-specific map markers or hover tips.", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("A17 inserts one optional 3-4 node Deep Branch in Acts 2/3", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("A20 uses the vanilla double-boss map path to create/reveal the final-act second Boss", releaseChecklist, StringComparison.Ordinal);

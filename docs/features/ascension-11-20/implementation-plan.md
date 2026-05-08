@@ -2,8 +2,8 @@
 
 Project: EZ Micro Balance  
 Manifest id: EZMicroBalance  
-Status: A11-A20 single-player and host-multiplayer selector expansion and prototype slices added; v2.0 development checklist added; live gameplay verification pending  
-Last updated: 2026-05-07
+Status: A11-A20 single-player and host-multiplayer selector expansion and prototype slices added; selection is default-on for the private-beta multiplayer test candidate; live gameplay verification pending
+Last updated: 2026-05-08
 
 ## Current Development Checklist
 
@@ -40,10 +40,14 @@ The current implementation uses the selected run Ascension level after the selec
 - A18 also enables elite Blight Sprout.
 - A19 also enables Boss Seal definition lookup, source-guarded boss-specific Royal Seal hooks, and a fourth boss card reward option; all boss-specific mechanics still require live verification.
 - A20 also enables the single-player vanilla double-boss map path, Boss 2 Brand metadata/parameters independent of the A19 Boss Seal feature flag, Boss 1 post-combat recovery, one Boss card reward before Boss 2, narrow Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2 with an immediate pre-finished-room save. It does not create a bespoke full custom intermission screen.
-- `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` enables the selector expansion for development testing; the private-beta default leaves public selection off. `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` still force-disables it for comparison testing.
+- A11-A20 selection is now default-on in this private-beta multiplayer test candidate for standard single-player and host-multiplayer lobbies.
+- `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection for comparison testing.
+- `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
+- `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
 - `EZMB_ASCENSION_DEBUG_LEVEL=11` through `20` can still force slice gates for internal checks.
 - `EZMB_ASCENSION_DIAGNOSTICS=1` enables read-only internal run/combat diagnostics without enabling gameplay systems. It must not mutate restored Blight Sprout card state or raise Rootblight by itself.
-- Host multiplayer A20 selection/start now logs a development-testing warning because A20 Dual King Brands / second-boss Brand gameplay remains single-player gated. This does not prove co-op A20 gameplay support.
+- Host multiplayer A20 selection/start now logs a development-testing warning because A20 Dual King Brands / second-boss Brand gameplay remains single-player gated. A20 multiplayer selection is not full A20 co-op support.
+- Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification.
 
 The diagnostics gate is intentionally non-mutating. It logs hook reachability and Rootblight state only.
 
