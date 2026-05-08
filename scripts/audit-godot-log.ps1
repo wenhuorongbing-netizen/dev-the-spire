@@ -18,7 +18,7 @@ $signatures = @(
     @{ Name = 'EZMicroBalance error/exception'; Pattern = '(?i)(EZMicroBalance|EZ Micro Balance).*(error|exception)' },
     @{ Name = 'TypeLoadException'; Pattern = 'TypeLoadException' },
     @{ Name = 'MissingMethodException'; Pattern = 'MissingMethodException' },
-    @{ Name = 'Godot ERROR line'; Pattern = '(?m)^\s*ERROR\b|(?m)^\s*\[[^\]]+\]\s*ERROR\b' }
+    @{ Name = 'Godot ERROR line'; Pattern = '(?m)^\s*(?:\[ERROR\]|ERROR\b|\[[^\]]+\]\s*ERROR\b)' }
 )
 
 $results = foreach ($inputPath in $Path) {

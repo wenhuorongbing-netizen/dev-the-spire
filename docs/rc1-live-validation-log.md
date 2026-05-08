@@ -7,8 +7,9 @@ This log records what was actually run or observed. It does not close the live g
 
 ## Repository State
 
-- `git log -1 --oneline --decorate`: `96bfa50 (HEAD -> main, origin/main, origin/HEAD) fix try 10`.
-- `git status --short --branch`: `## main...origin/main` with pending local documentation/test/source-organization edits during this RC1 documentation/live-validation hygiene pass, including modified files, deleted moved originals, and untracked new patch/doc/archive files.
+- A1.05.01 review baseline: `ae910e8 (HEAD -> main, origin/main, origin/HEAD) a1.05.01`.
+- `git status --short --branch` at the A1.05.02 cleanup start: `## main...origin/main`.
+- A1.05.01 is a broad engineering/review commit, not only a handoff and `ReleaseCoverageGuardTests` update. It includes Ascension source directory reorganization, the no-op EZ Micro Balance Mod Settings config page, `settings_ui` localization, the manifest BaseLib `v3.1.2` dependency floor, `scripts/audit-godot-log.ps1`, export preset updates, documentation index/archive changes, test path rewrites, and handoff/RC1 evidence updates. Reviewers should review all of these surfaces.
 - `Get-Process SlayTheSpire2 -ErrorAction SilentlyContinue`: no process was running before validation commands.
 
 ## Package Refresh

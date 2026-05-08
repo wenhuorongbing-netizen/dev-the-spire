@@ -579,8 +579,18 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("godot-log-audit.json", handoff, StringComparison.Ordinal);
         Assert.Contains("Live co-op selection and desync verification are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("AUTHOR_NAME_REPLACE_ME", handoff, StringComparison.Ordinal);
-        Assert.Contains("Current git status at this handoff refresh", handoff, StringComparison.Ordinal);
-        Assert.Contains("96bfa50 (HEAD -> main, origin/main, origin/HEAD) fix try 10", handoff, StringComparison.Ordinal);
+        Assert.Contains("This remains a release blocker unless the user either provides the desired author name or explicitly accepts that placeholder", handoff, StringComparison.Ordinal);
+        Assert.Contains("A1.05.01 (`ae910e8`) is a broad engineering/review commit", handoff, StringComparison.Ordinal);
+        Assert.Contains("not only a handoff and `ReleaseCoverageGuardTests` update", handoff, StringComparison.Ordinal);
+        Assert.Contains("Ascension source directory reorganization", handoff, StringComparison.Ordinal);
+        Assert.Contains("settings_ui` localization", handoff, StringComparison.Ordinal);
+        Assert.Contains("manifest BaseLib `v3.1.2` dependency floor", handoff, StringComparison.Ordinal);
+        Assert.Contains("Current git status at the A1.05.02 cleanup start", handoff, StringComparison.Ordinal);
+        Assert.Contains("ae910e8 (HEAD -> main, origin/main, origin/HEAD) a1.05.01", handoff, StringComparison.Ordinal);
+        Assert.Contains("Current A1.05.02 local cleanup status after the test-readiness edits", handoff, StringComparison.Ordinal);
+        Assert.Contains("M scripts/audit-godot-log.ps1", handoff, StringComparison.Ordinal);
+        Assert.Contains("M tests/EZMicroBalance.Tests/ReleaseCoverageGuardTests.cs", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("96bfa50", handoff, StringComparison.Ordinal);
         Assert.Contains("Proposed commit scope", handoff, StringComparison.Ordinal);
         Assert.Contains("Do not include", handoff, StringComparison.Ordinal);
         Assert.Contains("Directory.Build.props", handoff, StringComparison.Ordinal);
@@ -643,12 +653,21 @@ public sealed class ReleaseCoverageGuardTests
             logAuditScript,
             "Creature\\.get_ShowsInfiniteHp",
             "BaseLib\\.Patches\\.UI\\.HealthBarForecastPatch",
+            "\\[ERROR\\]",
             "TypeLoadException",
             "MissingMethodException",
             "EZMicroBalance error/exception",
             "FailOnHit",
             "ConvertTo-Json");
         Assert.DoesNotContain("BaseLib.*(?:patch|patches).*(?:failed|failure|exception)", logAuditScript, StringComparison.Ordinal);
+
+        var godotErrorPatternMatch = Regex.Match(logAuditScript, @"Name = 'Godot ERROR line'; Pattern = '([^']+)'");
+        Assert.True(godotErrorPatternMatch.Success, "Missing Godot ERROR line signature pattern.");
+        var godotErrorPattern = godotErrorPatternMatch.Groups[1].Value;
+        Assert.Matches(godotErrorPattern, "[ERROR] Mod manifest bad");
+        Assert.Matches(godotErrorPattern, "ERROR Mod manifest bad");
+        Assert.Matches(godotErrorPattern, "[Godot] ERROR Mod manifest bad");
+        Assert.DoesNotMatch(godotErrorPattern, "[INFO] [BaseLib] Applied 177 patches successfully, 0 failed");
 
         Assert.DoesNotContain("Status: resolved", open, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Current Open Blocker Audit - 2026-05-08 RC1", open, StringComparison.Ordinal);

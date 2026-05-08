@@ -83,16 +83,30 @@ If `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set and artifacts are missing or stale
 
 ## Author Decision
 
-`EZMicroBalance.json` still contains `AUTHOR_NAME_REPLACE_ME`. Before final private-beta release, either replace it with the desired author name or explicitly accept that placeholder for this candidate.
+`EZMicroBalance.json` still contains `AUTHOR_NAME_REPLACE_ME`. This remains a release blocker unless the user either provides the desired author name or explicitly accepts that placeholder for this candidate.
+
+## A1.05.01 Review Scope
+
+A1.05.01 (`ae910e8`) is a broad engineering/review commit, not only a handoff and `ReleaseCoverageGuardTests` update. It includes Ascension source directory reorganization, the no-op EZ Micro Balance Mod Settings config page, `settings_ui` localization, the manifest BaseLib `v3.1.2` dependency floor, `scripts/audit-godot-log.ps1`, export preset updates, documentation index/archive changes, test path rewrites, and handoff/RC1 evidence updates. Reviewers should review all of these surfaces.
 
 ## Commit And Push Handoff
 
-Current git status at this handoff refresh:
+Current git status at the A1.05.02 cleanup start:
 
-- `git log -1 --oneline --decorate`: `96bfa50 (HEAD -> main, origin/main, origin/HEAD) fix try 10`
-- `git status --short --branch`: `## main...origin/main` with current uncommitted documentation/test/source-organization edits, including modified files, deleted moved originals, and untracked new patch/doc/archive files. The dirty tree includes Ancient patch file moves, documentation index/archive updates, and this issues/handoff hygiene refresh.
+- `git log -1 --oneline --decorate`: `ae910e8 (HEAD -> main, origin/main, origin/HEAD) a1.05.01`
+- `git status --short --branch`: `## main...origin/main`
 
-The existing `main` branch is already aligned with `origin/main` at the recorded commit, but the working tree is not clean. Do not describe the local checkout as fully pushed until the pending edits are reviewed, committed, and pushed. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
+The existing `main` branch is aligned with `origin/main` at the recorded commit at the start of this cleanup. The A1.05.02 cleanup itself may introduce local docs/tests/scripts edits until reviewed, committed, and pushed. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
+
+Current A1.05.02 local cleanup status after the test-readiness edits:
+
+```text
+## main...origin/main
+ M docs/private-beta-verification-handoff.md
+ M docs/rc1-live-validation-log.md
+ M scripts/audit-godot-log.ps1
+ M tests/EZMicroBalance.Tests/ReleaseCoverageGuardTests.cs
+```
 
 Proposed commit scope after the remaining manual/user gates are resolved:
 
