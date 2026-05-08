@@ -47,7 +47,7 @@ The current implementation uses the selected run Ascension level after the selec
 - `EZMB_ASCENSION_DEBUG_LEVEL=11` through `20` can still force slice gates for internal checks.
 - `EZMB_ASCENSION_DIAGNOSTICS=1` enables read-only internal run/combat diagnostics without enabling gameplay systems. It must not mutate restored Blight Sprout card state or raise Rootblight by itself.
 - Host multiplayer A20 selection/start now logs a development-testing warning because A20 Dual King Brands / second-boss Brand gameplay remains single-player gated. A20 multiplayer selection is not full A20 co-op support.
-- Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification.
+- Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
 
 The diagnostics gate is intentionally non-mutating. It logs hook reachability and Rootblight state only.
 

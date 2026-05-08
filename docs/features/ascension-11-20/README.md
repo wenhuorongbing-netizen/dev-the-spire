@@ -1,0 +1,41 @@
+# Ascension 11-20
+
+This folder tracks the active Ascension 11-20 development line for `EZ Micro Balance`.
+
+Ascension 11-20 is available by default in the current private-beta multiplayer test candidate, but it is not release-verified. Live single-player, save/load, and co-op verification remain pending. Ascension 21-30 and custom character work are out of scope.
+
+## Current Entry Points
+
+| File | Purpose |
+| --- | --- |
+| `development-checklist-v2.md` | Current feature checklist and forward-looking design map. |
+| `source-design.md` | Behavior design and scope boundaries. |
+| `api-research.md` | Local v0.105.0 source evidence, safe APIs, and risky patch points. |
+| `implementation-plan.md` | Implementation phases and safety strategy. |
+| `manual-test-checklist.md` | Manual single-player and feature verification checklist. |
+| `multiplayer-test-runbook.md` | Two-PC multiplayer setup, test matrix, and log checks. |
+| `work-log.md` | Chronological implementation and validation history. Older entries may be superseded. |
+| `current-issue-implementation-spec.md` | Last issue-focused implementation spec. Historical once superseded by newer issues or commits. |
+| `localization-review-notes.md` | Localization review notes for Ascension strings. |
+| `codex-goal-prompt.md` | Historical prompt material for this development cycle. |
+
+## Active Code Areas
+
+| Code Area | Responsibility |
+| --- | --- |
+| `EZMicroBalanceCode/Ascension/AscensionFeatureGate.cs` | Environment gates and public/multiplayer disable switches. |
+| `EZMicroBalanceCode/Ascension/AscensionSelectionPatches.cs` | A11-A20 lobby selection exposure. |
+| `EZMicroBalanceCode/Ascension/AscensionMapService.cs` | A11 map extension, A17 deep branches, A20 boss path metadata. |
+| `EZMicroBalanceCode/Ascension/AscensionCombatModifierService.cs` | Combat-time Ascension modifiers and Boss Seal effects. |
+| `EZMicroBalanceCode/Ascension/AscensionRewardService.cs` | Reward and room payout helpers. |
+| `EZMicroBalanceCode/Ascension/AscensionSavedStateFields.cs` | Saved run fields for Ascension systems. |
+| `EZMicroBalanceCode/Ascension/MultiplayerDiagnostics.cs` | Optional multiplayer diagnostics only. |
+
+## Safety Rules
+
+- Keep A11-A20 disableable with `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`.
+- Keep host-multiplayer selection separately disableable with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`.
+- Do not claim live Ascension readiness until manual single-player and co-op checks pass.
+- Do not implement A21-A30 or custom character systems in this cycle.
+- Prefer current local `source code/src/Core/` evidence over old notes.
+- Avoid hard references to optional Early Access boss or power types unless current runtime evidence proves they are stable.

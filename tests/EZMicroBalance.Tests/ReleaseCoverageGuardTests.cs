@@ -42,7 +42,7 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ancients/Common/AncientCardHelpers.cs",
         "EZMicroBalanceCode/Ancients/Common/AncientSavedStateFields.cs",
         "EZMicroBalanceCode/Ancients/Common/JeweledMaskFreePower.cs",
-        "EZMicroBalanceCode/Ancients/PaelsHornPhase1Patch.cs",
+        "EZMicroBalanceCode/Ancients/Patches/PaelsHornPhase1Patch.cs",
         "EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/PaelsToothAndForgePatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/PickupRewardPatches.cs",
@@ -50,7 +50,7 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/TurnOfferAndRestPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/VakuRewardPatches.cs",
-        "EZMicroBalanceCode/Ancients/BrightestFlameExhaustDrawPatch.cs",
+        "EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs",
         "EZMicroBalanceCode/Ascension/AscensionA20Patches.cs",
         "EZMicroBalanceCode/Ascension/AscensionA20RewardScreenPatches.cs",
         "EZMicroBalanceCode/Ascension/AscensionAssetPaths.cs",
@@ -84,6 +84,7 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ascension/RootBudCombatHook.cs",
         "EZMicroBalanceCode/Ascension/RootDeckService.cs",
         "EZMicroBalanceCode/Ascension/RootRunHook.cs",
+        "EZMicroBalanceCode/Config/EZMicroBalanceModConfig.cs",
         "EZMicroBalanceCode/MainFile.cs"
     ];
 
@@ -545,7 +546,7 @@ public sealed class ReleaseCoverageGuardTests
 
         Assert.Contains("manual feature verification", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
         Assert.Contains("still pending", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("normal Steam-client Mod Settings verification is still pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("release ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
@@ -567,17 +568,19 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains(pckHash, handoff, StringComparison.Ordinal);
         Assert.Contains("Record results in `docs/features/ancients-rework-v4/manual-verification-matrix.md`", handoff, StringComparison.Ordinal);
         Assert.Contains("update `docs/release-checklist.md`", handoff, StringComparison.Ordinal);
-        Assert.Contains("Normal Steam-client Mod Settings verification is still pending", handoff, StringComparison.Ordinal);
-        Assert.Contains("Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer checks are still pending", handoff, StringComparison.Ordinal);
+        Assert.Contains("Normal Steam-client Mod Settings verification passed for BaseLib and EZ Micro Balance", handoff, StringComparison.Ordinal);
+        Assert.Contains("Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", handoff, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", handoff, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", handoff, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required", handoff, StringComparison.Ordinal);
         Assert.Contains("docs/features/ascension-11-20/multiplayer-test-runbook.md", handoff, StringComparison.Ordinal);
+        Assert.Contains("scripts/audit-godot-log.ps1 -Path <copied godot.log>", handoff, StringComparison.Ordinal);
+        Assert.Contains("godot-log-audit.json", handoff, StringComparison.Ordinal);
         Assert.Contains("Live co-op selection and desync verification are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("AUTHOR_NAME_REPLACE_ME", handoff, StringComparison.Ordinal);
         Assert.Contains("Current git status at this handoff refresh", handoff, StringComparison.Ordinal);
-        Assert.Contains("38927ce (HEAD -> main, origin/main, origin/HEAD) tryfix 1.05", handoff, StringComparison.Ordinal);
+        Assert.Contains("96bfa50 (HEAD -> main, origin/main, origin/HEAD) fix try 10", handoff, StringComparison.Ordinal);
         Assert.Contains("Proposed commit scope", handoff, StringComparison.Ordinal);
         Assert.Contains("Do not include", handoff, StringComparison.Ordinal);
         Assert.Contains("Directory.Build.props", handoff, StringComparison.Ordinal);
@@ -628,6 +631,58 @@ public sealed class ReleaseCoverageGuardTests
     }
 
     [Fact]
+    public void IssuesFileSeparatesOpenBlockersFromResolvedItemsAndDefinesLiveEvidencePacket()
+    {
+        var issues = ReadRepoText("docs", "issues.md");
+        var logAuditScript = ReadRepoText("scripts", "audit-godot-log.ps1");
+        var open = SliceBetween(issues, "## Open", "## Resolved / Player-Verified");
+        var resolved = issues[(issues.IndexOf("## Resolved / Player-Verified", StringComparison.Ordinal))..];
+        var closureChecklist = SliceBetween(open, "Open issue closure checklist:", "### ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS");
+
+        AssertSourceContains(
+            logAuditScript,
+            "Creature\\.get_ShowsInfiniteHp",
+            "BaseLib\\.Patches\\.UI\\.HealthBarForecastPatch",
+            "TypeLoadException",
+            "MissingMethodException",
+            "EZMicroBalance error/exception",
+            "FailOnHit",
+            "ConvertTo-Json");
+        Assert.DoesNotContain("BaseLib.*(?:patch|patches).*(?:failed|failure|exception)", logAuditScript, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("Status: resolved", open, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Current Open Blocker Audit - 2026-05-08 RC1", open, StringComparison.Ordinal);
+        Assert.Contains("Minimum evidence packet for closing a live issue", open, StringComparison.Ordinal);
+        Assert.Contains("Open issue closure checklist", open, StringComparison.Ordinal);
+        Assert.Contains("scripts/audit-godot-log.ps1", open, StringComparison.Ordinal);
+        Assert.Contains("Two-client Steam evidence", open, StringComparison.Ordinal);
+        Assert.Contains("Single-player live gameplay evidence", open, StringComparison.Ordinal);
+        Assert.Contains("host and client logs from the same attempt", open, StringComparison.Ordinal);
+        AssertSourceContains(
+            closureChecklist,
+            "ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS",
+            "ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED",
+            "ISSUE-2026-05-08-MULTIPLAYER-SAVE-QUIT-NOT-PROPAGATING",
+            "ISSUE-2026-05-08-MULTIPLAYER-RUN-START-BLACK-SCREEN",
+            "ISSUE-2026-05-08-MULTIPLAYER-A20-BLACK-SCREEN-OPTIONAL-BOSS-TYPELOAD",
+            "ISSUE-2026-05-08-ASCENSION-PUBLIC-SELECTION-DEFAULT-ON-FOR-MP-TEST",
+            "ISSUE-2026-05-07-A11-MAP-LENGTH-NOT-PLAYER-VISIBLE",
+            "ISSUE-2026-05-07-A11-MAP-CHANGE-ANIMATION",
+            "ISSUE-2026-05-07-A12-TOOLTIP-RICHTEXT-COLORS",
+            "ISSUE-2026-05-07-A13-FISSION-TOO-RARE-AT-HIGH-ASCENSION",
+            "ISSUE-2026-05-07-ROOTBUD-ROOTBLIGHT-REWORK",
+            "ISSUE-2026-05-07-MULTIPLAYER-A11-A20-SELECTION-BLOCKED",
+            "ISSUE-2026-05-07-A20-MULTIPLAYER-SELECTION-WARNING-MISSING",
+            "ISSUE-2026-05-07-LIVE-COOP-A11-A20-MATRIX-PENDING",
+            "Two-client Steam retest",
+            "Natural route traversal",
+            "Live tooltip screenshots",
+            "User resumes or cancels");
+        Assert.Contains("ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT", resolved, StringComparison.Ordinal);
+        Assert.Contains("ISSUE-2026-05-07-A11-LONG-ROAD-MAP-MARKER-UNWANTED", resolved, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void MultiplayerTestRunbookCoversDefaultOnGateControlsAndLiveMatrix()
     {
         var runbook = ReadRepoText("docs", "features", "ascension-11-20", "multiplayer-test-runbook.md");
@@ -655,6 +710,8 @@ public sealed class ReleaseCoverageGuardTests
             "A20 Warning / Downgrade Checks",
             "Save / Load Checks",
             "godot.log Checks",
+            "scripts/audit-godot-log.ps1 -Path <copied godot.log>",
+            "host-godot-log-audit.json",
             "Date/time:",
             "Pass/fail/blocker:");
 

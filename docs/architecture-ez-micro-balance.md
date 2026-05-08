@@ -29,7 +29,12 @@ Manifest:
 {
   "id": "EZMicroBalance",
   "name": "EZ Micro Balance",
-  "dependencies": ["BaseLib"],
+  "dependencies": [
+    {
+      "id": "BaseLib",
+      "min_version": "v3.1.2"
+    }
+  ],
   "affects_gameplay": true
 }
 ```

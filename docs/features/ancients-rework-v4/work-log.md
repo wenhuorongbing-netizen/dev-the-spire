@@ -440,7 +440,7 @@ Controlled smoke result:
 
 Remaining release gates:
 
-- Normal Steam-client Mod Settings verification is still pending.
+- Historical at this point in the log: normal Steam-client Mod Settings verification was still pending; later RC1 evidence supersedes this for the Mod Settings gate.
 - Manual reward behavior, Prismatic Gem reroll, save/load, and disable-mod behavior tests are still pending.
 
 Final automated checks after the runtime hook fixes:
@@ -1509,5 +1509,12 @@ Remaining blocker:
 - Added a `BrightestFlame.CanonicalKeywords` patch so Exhaust is visible on the card, with the existing `ExhaustOnNextPlay` play wrapper kept only as a behavior backstop.
 - Updated active card localization to `BRIGHTEST_FLAME.title` / `BRIGHTEST_FLAME.description` with `{Cards:diff()}` instead of fixed "Draw 3" text.
 - Fixed stale guard/docs drift for Pumpkin Candle rollback and Quality Flame dynamic text, including the Simplified Chinese manual-matrix strings.
-- Final validation for this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` passed, 65 passed, 16 skipped, 0 failed; `dotnet test EZMicroBalance.sln --no-build` passed, 65 passed, 16 skipped, 0 failed; `dotnet publish EZMicroBalance.sln` passed; package staging/versioned/zip were refreshed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 81 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` passed with only CRLF normalization warnings.
+- Final validation for this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` passed, 66 passed, 16 skipped, 0 failed; `dotnet test EZMicroBalance.sln --no-build` passed, 66 passed, 16 skipped, 0 failed; `dotnet publish EZMicroBalance.sln` passed; package staging/versioned/zip were refreshed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 82 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` passed with only CRLF normalization warnings.
 - Live gameplay verification remains pending.
+
+## 2026-05-08 - RC1 Normal Steam Mod Settings Recheck
+
+- Added a no-op BaseLib config page for EZ Micro Balance so the mod has a visible Mod Settings entry without exposing gameplay options.
+- Rebuilt the package and refreshed hashes. Current package zip SHA256 is `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`.
+- Normal Steam-client isolated recheck `095137` showed BaseLib and EZ Micro Balance loaded, the localized EZMB page `微平衡` with `无可配置选项。`, `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
+- Live Ancient gameplay matrix, save/load checks, disable gameplay checks, multiplayer disposition, author decision, clean commit, and user-approved push remain pending.

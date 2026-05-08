@@ -53,4 +53,4 @@
 |---|---|---|---|---|
 | 2026-05-02 | `v0.104.0`, `2026.04.23` | `v3.1.0` | PASS | Build, publish, and Mod Settings verification succeeded. |
 | 2026-05-05 | `v0.104.0`, `2026.04.23` | `v3.1.0` | PARTIAL | `EZMicroBalance` build, publish, tests, and isolated `--force-steam off` smoke passed; normal Steam-client Mod Settings and manual gameplay matrix remain pending. |
-| 2026-05-08 | `v0.105.0`, `2026.05.07` | `v3.1.2` | PARTIAL | Source refreshed from current PCK, build/publish/tests pass, and isolated BaseLib+EZMB `--force-steam off` smoke reached main menu; normal Steam-client Mod Settings and manual gameplay matrix remain pending. |
+| 2026-05-08 | `v0.105.0`, `2026.05.07` | `v3.1.2` | PARTIAL | Source refreshed from current PCK, build/publish/tests pass, isolated BaseLib+EZMB `--force-steam off` smoke reached main menu, and normal Steam-client Mod Settings passed after the no-op EZMB config page; manual gameplay matrix remains pending. |

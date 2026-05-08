@@ -11,7 +11,7 @@ Append only short tester/player-facing entries here when behavior or release val
 - Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
 - A20 multiplayer selection is not full A20 co-op support. Dual King Brands / second-boss Brand gameplay remains disabled or downgraded in co-op pending live verification.
-- Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification.
+- Normal Steam-client Mod Settings has RC1 evidence for BaseLib and EZ Micro Balance; controlled smoke passed is not the same as live co-op or gameplay verification.
 
 ## 2026-05-07
 

@@ -10,7 +10,7 @@ public sealed class AncientHighRiskSourceGuardTests
     [Fact]
     public void PickupRewardCompensationAndLockoutPatchesStayScoped()
     {
-        var hornSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "PaelsHornPhase1Patch.cs");
+        var hornSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsHornPhase1Patch.cs");
         var pickupSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PickupRewardPatches.cs");
         var sealSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SealOfGoldPatches.cs");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
@@ -117,7 +117,7 @@ public sealed class AncientHighRiskSourceGuardTests
     [Fact]
     public void QualityFlameUsesDynamicDrawAndVisibleExhaustKeyword()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "BrightestFlameExhaustDrawPatch.cs");
+        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "BrightestFlameExhaustDrawPatch.cs");
         var englishCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
         var simplifiedChineseCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");

@@ -176,7 +176,11 @@ public sealed class AncientBehaviorGuardTests
         Assert.Equal("EZMicroBalance", manifest.RootElement.GetProperty("id").GetString());
         Assert.Contains(
             manifest.RootElement.GetProperty("dependencies").EnumerateArray(),
-            dependency => dependency.GetString() == "BaseLib");
+            dependency => dependency.ValueKind == JsonValueKind.Object &&
+                dependency.TryGetProperty("id", out var id) &&
+                id.GetString() == "BaseLib" &&
+                dependency.TryGetProperty("min_version", out var minVersion) &&
+                minVersion.GetString() == "v3.1.2");
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Manifest id: EZMicroBalance", readme, StringComparison.Ordinal);
@@ -184,7 +188,7 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("EzDailyContent disabled or absent", readme, StringComparison.Ordinal);
         Assert.Contains("Current controlled --force-steam off smoke passed", readme, StringComparison.Ordinal);
         Assert.Contains("Found 12 SavedSpireFields", readme, StringComparison.Ordinal);
-        Assert.Contains("Normal Steam-client Mod Settings verification is still pending", readme, StringComparison.Ordinal);
+        Assert.Contains("Normal Steam-client Mod Settings verification passed after the no-op EZ Micro Balance config page was added", readme, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer checks are still pending", readme, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", readme, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", readme, StringComparison.Ordinal);
@@ -982,10 +986,10 @@ public sealed class AncientBehaviorGuardTests
             "Target manifest id: `EZMicroBalance`",
             "- [x] Existing `EzDailyContent` manifest id remains unchanged.",
             "- [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.",
-            "- [x] Manifest depends on `BaseLib`.",
+            "- [x] Manifest declares structured `BaseLib` dependency with `min_version: v3.1.2`.",
             "- [x] PCK audit excludes legacy `EzDailyContent`, C# source, docs, art, asset, and archive folders.",
-            "- [ ] BaseLib appears in Mod Settings.",
-            "- [ ] EZ Micro Balance appears in Mod Settings.",
+            "- [x] BaseLib appears in Mod Settings.",
+            "- [x] EZ Micro Balance appears in Mod Settings.",
             "- [ ] `godot.log` reviewed after normal Steam-client manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",
@@ -995,7 +999,7 @@ public sealed class AncientBehaviorGuardTests
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
             "- [ ] Push to `origin/main` is performed only after explicit user approval.",
-            "normal Steam-client Mod Settings verification is still pending",
+            "RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page",
             "Manual feature results are pending",
             "Unsupported Cases",
             "A11-A20 selection is now default-on in this private-beta multiplayer test candidate",
@@ -1012,7 +1016,9 @@ public sealed class AncientBehaviorGuardTests
             Assert.Contains($"| {row} |", manualMatrix, StringComparison.Ordinal);
         }
 
-        Assert.Contains("Status: automated gates passed; live gameplay verification still pending.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Status: automated gates passed; normal Steam-client Mod Settings passed; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check passed; A11 Act 2/3 map-surface observation passed.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Full live Ancient reward gameplay, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 traversal/boss reachability, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Natural route-click first-node path remains pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Result: pending.", manualMatrix, StringComparison.Ordinal);
     }
 

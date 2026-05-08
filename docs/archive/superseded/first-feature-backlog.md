@@ -1,5 +1,7 @@
 # First Feature Backlog
 
+Historical note: this file is superseded by `docs/issues.md`, `docs/release-checklist.md`, `docs/private-beta-verification-handoff.md`, and the feature README files. It is archived for traceability only.
+
 Current user decision: the active private beta mod is the independent `EZMicroBalance` project. The legacy `EzDailyContent` scaffold remains in the repository for traceability and must be disabled or absent during private-beta testing.
 
 ## Active module

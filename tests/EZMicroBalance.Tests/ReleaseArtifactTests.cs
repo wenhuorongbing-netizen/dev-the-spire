@@ -49,7 +49,11 @@ public sealed class ReleaseArtifactTests
         Assert.True(active.RootElement.GetProperty("affects_gameplay").GetBoolean());
         Assert.Contains(
             active.RootElement.GetProperty("dependencies").EnumerateArray(),
-            dependency => dependency.GetString() == "BaseLib");
+            dependency => dependency.ValueKind == JsonValueKind.Object &&
+                dependency.TryGetProperty("id", out var id) &&
+                id.GetString() == "BaseLib" &&
+                dependency.TryGetProperty("min_version", out var minVersion) &&
+                minVersion.GetString() == "v3.1.2");
 
         Assert.Equal("EzDailyContent", legacy.RootElement.GetProperty("id").GetString());
     }
@@ -179,7 +183,7 @@ public sealed class ReleaseArtifactTests
         Assert.True(File.Exists(pckPath), $"Missing published PCK: {pckPath}");
 
         var entries = ReadPckDirectory(pckPath);
-        Assert.Equal(45, entries.Count);
+        Assert.Equal(47, entries.Count);
         Assert.DoesNotContain(entries, entry =>
             entry.StartsWith("EzDailyContent", StringComparison.Ordinal) ||
             entry.StartsWith("EZMicroBalanceCode", StringComparison.Ordinal) ||
@@ -199,9 +203,11 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("EZMicroBalance/localization/eng/relics.json", entries);
         Assert.Contains("EZMicroBalance/localization/eng/ascension.json", entries);
         Assert.Contains("EZMicroBalance/localization/eng/events.json", entries);
+        Assert.Contains("EZMicroBalance/localization/eng/settings_ui.json", entries);
         Assert.Contains("EZMicroBalance/localization/zhs/relics.json", entries);
         Assert.Contains("EZMicroBalance/localization/zhs/ascension.json", entries);
         Assert.Contains("EZMicroBalance/localization/zhs/events.json", entries);
+        Assert.Contains("EZMicroBalance/localization/zhs/settings_ui.json", entries);
     }
 
     [ReleaseArtifactFact]

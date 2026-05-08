@@ -5,14 +5,17 @@
 1. Read `AGENTS.md`.
 2. Run `git status --short --branch`.
 3. Identify the active mode from the latest user message.
-4. Read `docs/dev-environment.md`.
-5. For EZ Micro Balance work, read `docs/architecture-ez-micro-balance.md` and `docs/features/ancients-rework-v4/api-discovery.md`.
+4. Read `docs/README.md`.
+5. Read `docs/dev-environment.md`.
+6. For feature work, start from the relevant feature README.
 
 ## Active Project Direction
 
 The active deliverable is private beta readiness for `EZ Micro Balance`.
 
-Do not implement Ascension 21-30 or a custom character during this cycle. Ascension 11-20 work is allowed only when explicitly requested and must stay gated or independently disableable until public selection/progress and runtime behavior are proven safe.
+Do not implement Ascension 21-30 or a custom character during this cycle.
+
+Ascension 11-20 is an active development track and is default-on in the current private-beta multiplayer test candidate, but live readiness is still gated by manual verification. Do not expand Ascension scope without explicit request, and keep public/multiplayer disable switches documented and working.
 
 ## Build Mode Flow
 

@@ -346,14 +346,13 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bready\s+for\s+(?:private beta|release)\b", currentDocs);
-        Assert.DoesNotMatch(@"(?i)\bnormal Steam-client\b[^\r\n.]*\b(?:passed|complete|verified)\b", currentDocs);
-        Assert.DoesNotContain("- [x] BaseLib appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
-        Assert.DoesNotContain("- [x] EZ Micro Balance appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] BaseLib appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] EZ Micro Balance appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("normal Steam-client Mod Settings verification is still pending", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", currentDocs, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);

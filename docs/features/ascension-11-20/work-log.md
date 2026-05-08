@@ -81,8 +81,15 @@ Key source findings:
    - `NPauseMenu.OnSaveAndQuitButtonPressed()` calls `CloseToMenu()`.
    - `CloseToMenu()` disables the pause buttons and awaits `NGame.Instance.ReturnToMainMenu()`.
    - `NGame.ReturnToMainMenu()` calls `RunManager.Instance.CleanUp()` before loading the main menu.
-   - `RunManager.CleanUp()` calls `NetService.Disconnect(NetError.Quit, !graceful)`.
+   - `RunManager.CleanUp()` disposes run synchronizers and calls `NetService.Disconnect(NetError.Quit, !graceful)`.
+   - `NetHostGameService.Disconnect(...)` calls the active transport's `StopHost(...)`.
+   - `SteamHost.StopHost(...)` closes every client connection with the quit reason, leaves the Steam lobby, and reports local disconnection.
+   - `ENetHost.StopHost(...)` sends a disconnection packet to each client before disconnecting peers when not immediate.
+   - `RunLobby.OnDisconnected(...)` calls `RunManager.LocalPlayerDisconnected(...)`, which queues `ReturnToMainMenuWithError(...)` for active non-gameover runs.
+   - `NErrorPopup.Create(...)` suppresses a popup only for self-initiated `Quit`; remote peer disconnects should still be non-self-initiated.
    - `NGame.Quit()` saves settings/progress and calls `GetTree().Quit()` — does not send network disconnect.
+
+   - Active EZMB patches do not patch `NPauseMenu`, `RunManager.CleanUp`, `RunLobby.OnDisconnected`, `NetHostGameService`, `NetClientGameService`, `SteamHost`, or `ENetHost`.
 
 5. **Player HP initialization**:
    - `Player.CreateForNewRun(CharacterModel character, ...)` constructor: `new Player(character, netId, character.StartingHp, character.StartingHp, ...)`.
@@ -98,6 +105,7 @@ Hypotheses (ranked):
 Required next steps:
 - Run live co-op triage rows A-F from multiplayer-test-runbook.md with `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1`.
 - Collect host/client `godot.log` and analyze HP values at each diagnostic point.
+- For save/quit specifically, confirm whether the remote peer receives `NetError.Quit`, whether `RunLobby.OnDisconnected(...)` fires, and whether `ReturnToMainMenuWithError(...)` completes before adding any EZMB fix.
 - Static source evidence has been refreshed to v0.105.0. Continue by confirming the runtime multiplayer path in host/client logs, not by relying on the older v0.104.0 source snapshot.
 
 Scope:
@@ -990,7 +998,7 @@ Verification:
 - Added `docs/features/ascension-11-20/multiplayer-test-runbook.md` with recommended two-PC setup, env var commands, exact multiplayer matrix, save/load rows, log checks, and result template.
 - Updated current-facing docs/tests to say default-on for multiplayer testing, while preserving the warning that A20 multiplayer selection is not full A20 co-op support and that controlled smoke is not normal Steam-client/live co-op verification.
 - Ran `dotnet publish EZMicroBalance.sln` and rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts.
-- Current hashes after the 2026-05-08 RC1 documentation/live-validation hygiene package refresh: DLL `70E7D2FF06C067A139027E2B64DFAA76E9638C990E40B0A504CCD34EE6FE9174`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `89D87BEB637EDE00A62A57491563A2254BBABBC471859C5B32F74C11F6D89A7F`, package zip `C928B50616109FF198405F3990A1F4DA40FA9460E8CC6DFE69CC95784DBEEAE2`, package README `986C2F5E339FC617EFEF989B2EFC7191419373AED5A01E4CEA0C509B022B1368`.
+- Current hashes after the 2026-05-08 RC1 Mod Settings package refresh: DLL `1AEE7CD1C6EB945F022CB85997ADC709D930C3E6FC318E7E0EFE1A13436C589F`, JSON `68466CF2BDE07AE7F911AE75EBF6FCAAFE80F70570E3F0D6ECA796B496DB8DB0`, PCK `435D55B14FAD38F611C550F4ACAF604EE1A2C3E63E75C52FC3FA9FCE52D064CA`, package zip `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`, package README `05EAFCC24215EB73C289C59E0C867F01FEE49EA05868D05C4507AAAAA2337F57`.
 - Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored both settings files byte-for-byte.
 - Final validation after this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln --no-build` passed, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed; `dotnet publish EZMicroBalance.sln` passed; package refresh passed; controlled smoke passed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 81 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` passed with only CRLF normalization warnings.
 
@@ -1012,3 +1020,26 @@ Verification:
 - Added the temporary Aeonglass seal as +5 Strength at combat start only. The combat modifier now targets `MONSTER.AEONGLASS` exactly instead of using highest Max HP.
 - Kept all Aeonglass combat behavior source-guarded and pending live verification; no complex Aeonglass Brand/Seal mechanic is implemented in this pass.
 - Final validation for this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` and `dotnet test EZMicroBalance.sln --no-build` passed with 0 failed; `dotnet publish EZMicroBalance.sln` passed; refreshed package artifacts passed `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`; `dotnet format` passed; `git diff --check` passed with only CRLF normalization warnings.
+
+## 2026-05-08 - RC1 A11 Act 1 Map and Save/Load Spot Check
+
+- Ran a normal Steam-client BaseLib+EZMB-only A11 spot check by temporarily isolating the other 23 local mod entries, selecting A11 through the original single-player Ascension arrows, taking a Neow option, and opening the Act 1 map.
+- Evidence directory: `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008`.
+- Live log `a11-map-save-load-godot-live.log` records `Loaded 2 mods (2 total)`, `Embarking on a singleplayer IRONCLAD run. Ascension: 11`, and `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`.
+- Saved-map evidence `a11-save-map-dimensions.json` records `MapHeight=17`, `BossRow=17`, `RouteRowCount=16`, `ColumnCount=8`, and columns `0,1,2,3,4,5,6,7`.
+- The Act 1 map screenshots before and after Continue show normal route nodes with no A11-specific marker or hover tooltip.
+- Save/load spot check: selected the first monster node, observed `current_run.save` writes, used in-game Save & Quit, continued the saved run, and reopened the map after load with `columns=8; rows=17`.
+- The live log used for this spot check has 0 `ERROR` lines and 0 release-blocking signatures. The after-close log contains forced-window-close Godot resource errors and is not used as clean-log gate evidence.
+- Restored the backed-up `modded/profile1/saves` directory and all moved mod entries; `SlayTheSpire2` was not running after cleanup.
+- Remaining A11 work at this point was Act 2/3 geometry observation, broader traversal, and co-op map/save-load behavior; the Act 2/3 map-surface observation is recorded in the next entry.
+
+## 2026-05-08 - RC1 A11 Act 2/3 Map-Surface Observation
+
+- Ran a second normal Steam-client BaseLib+EZMB-only A11 spot check by temporarily isolating the other 23 local mod entries, selecting A11 through the original single-player Ascension arrows, taking a Neow option, and opening the Act 1 map normally.
+- Used DevConsole `act 2` and `act 3` only to inspect the later-act A11 map surfaces without adding gameplay code or claiming natural route traversal.
+- Evidence directory: `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355`.
+- Live log `a11-act23-godot-live.log` records `Loaded 2 mods (2 total)`, `Embarking on a singleplayer IRONCLAD run. Ascension: 11`, Act 1 `columns=8; rows=17` with 1 late row, Act 2 `columns=8; rows=16` with 1 late row, and Act 3 `columns=8; rows=16` with 2 late rows.
+- Screenshots `25-a11-act2-map-clean.png` and `27-a11-act3-map-clean.png` show normal later-act route nodes with no A11-specific marker, icon, or hover tooltip.
+- The live log used for this spot check has 0 `ERROR` lines and 0 release-blocking signatures: no `Creature.get_ShowsInfiniteHp`, BaseLib health-bar patch failure, BaseLib undefined target, DamageMeter/RouteSuggest stack, TypeLoadException, MissingMethodException, or EZMB error/exception pattern.
+- Restored the backed-up `modded/profile1/saves` directory and all moved mod entries; `SlayTheSpire2` was not running after cleanup.
+- Remaining A11 work: natural route traversal, every-start boss reachability, A17 metadata/save-load behavior, and co-op map/save-load behavior.

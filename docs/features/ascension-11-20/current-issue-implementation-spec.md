@@ -118,7 +118,7 @@ Secondary reference checked: `https://glitchedreme.github.io/SlayTheSpire2Moddin
 
 ## 6. Runtime And Manual Checks Still Pending
 
-- Normal Steam-client Mod Settings verification remains pending.
+- Normal Steam-client Mod Settings verification passed in the RC1 `095137` isolated recheck after adding the no-op EZ Micro Balance config page.
 - Live Ancient reward feature matrix remains pending.
 - Current-package controlled `--force-steam off` smoke was refreshed after this publish and reported 12 SavedSpireFields; repeat it after future source/package/BaseLib changes.
 - Live co-op A11-A20 matrix remains pending:

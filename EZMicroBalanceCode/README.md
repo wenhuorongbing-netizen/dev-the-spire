@@ -1,0 +1,32 @@
+# EZMicroBalanceCode
+
+This is the active C# code for the independent `EZMicroBalance` mod. Legacy scaffold code under `EzDailyContentCode/` is kept for traceability and is not the active release target.
+
+## Module Map
+
+| Area | Responsibility |
+| --- | --- |
+| `MainFile.cs` | Mod entry point, initialization, and registration. |
+| `Ancients/` | Ancient reward rebalance implementation. |
+| `Ancients/Common/` | Shared state fields, helpers, and small model/enchantment helpers. |
+| `Ancients/Patches/` | Harmony patches grouped by reward surface or relic family. |
+| `Ascension/` | Ascension 11-20 development systems and guarded prototype slices. |
+| `Ascension/Cards/` | Rootblight, Boss Seal, and related card models. |
+| `Ascension/Powers/` | Firemark, Banner, and Boss Seal powers. |
+| `Ascension/Relics/` | Ascension-specific relic models. |
+| `Ascension/Events/` | Ascension-specific event models. |
+
+## Extension Rules
+
+- Add behavior beside the feature it belongs to; avoid cross-feature utility files unless there is real shared logic.
+- Put saved run fields in the feature's `*SavedStateFields.cs` file and update source guards.
+- Prefer BaseLib/template-supported APIs before adding Harmony patches.
+- When Harmony is needed, keep patch targets narrow and source-guarded by tests.
+- For canonical `AbstractModel` markers/hooks/models, use `ModelDb`; do not construct canonical model instances directly.
+- Keep Early Access API references conservative. Avoid hard references to optional boss/power types when a stable `ModelId` check is enough.
+- Update localization in `EZMicroBalance/localization/eng/` and `EZMicroBalance/localization/zhs/` with matching keys/placeholders.
+- Update feature docs and tests in the same pass as behavior changes.
+
+## Validation
+
+Run `dotnet build` after code changes. Run `dotnet test EZMicroBalance.sln --no-build` after source, localization, docs, or guard changes. Run `dotnet publish` after resource, localization, packaging, or manifest changes.

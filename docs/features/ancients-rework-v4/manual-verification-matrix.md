@@ -2,7 +2,7 @@
 
 Prepared: 2026-05-07
 
-Status: automated gates passed; live gameplay verification still pending.
+Status: automated gates passed; normal Steam-client Mod Settings passed; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check passed; A11 Act 2/3 map-surface observation passed. Full live Ancient reward gameplay, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 traversal/boss reachability, and multiplayer verification are still pending.
 
 Focused regression notes:
 
@@ -18,7 +18,7 @@ Focused regression notes:
 | --- | --- |
 | `dotnet build` | Pass, 0 warnings, 0 errors |
 | `dotnet publish` | Pass, copied `EZMicroBalance.dll`, `EZMicroBalance.json`, and exported `EZMicroBalance.pck` |
-| PCK package audit | Pass, 45 entries and 0 legacy/source/docs/art/archive entries |
+| PCK package audit | Pass, 47 entries and 0 legacy/source/docs/art/archive entries |
 | English JSON parse | Pass |
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese banned-English localization guard | Pass after 2026-05-06 localization sprint |
@@ -27,7 +27,7 @@ Focused regression notes:
 | Jeweled Mask custom enchantment zhs guard | Pass after 2026-05-06 localization sprint |
 | Jewelry Box non-Innate source/serialization guard | Pass, automated source guard confirms marked-only `Apotheosis` handling |
 | Ancient and Ascension source guard tests | Pass, expanded `dotnet test EZMicroBalance.sln --no-build` guard suite |
-| Private-beta package | Pass, `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `C928B50616109FF198405F3990A1F4DA40FA9460E8CC6DFE69CC95784DBEEAE2` |
+| Private-beta package | Pass, `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314` |
 
 ## Runtime Load Checklist
 
@@ -35,13 +35,13 @@ Focused regression notes:
 | --- | --- | --- |
 | Confirm `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib` exists | `BaseLib.json`, `BaseLib.dll`, and `BaseLib.pck` are present | Prepared |
 | Confirm `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` exists | `EZMicroBalance.json`, `EZMicroBalance.dll`, and `EZMicroBalance.pck` are present | Prepared |
-| Launch Slay the Spire 2 public beta | Game reaches main menu | Pass in controlled `--force-steam off` smoke profile; pending normal Steam-client manual pass |
-| Open Settings -> Mod Settings | BaseLib appears and is enabled | Pending |
-| Open Settings -> Mod Settings | EZ Micro Balance appears with id `EZMicroBalance` and can be enabled | Pending |
+| Launch Slay the Spire 2 public beta | Game reaches main menu | Pass in controlled `--force-steam off` smoke profile and isolated normal Steam-client startup log; normal Steam-client A0/A10/A20 combat smoke also reached live combat |
+| Open Settings -> Mod Settings | BaseLib appears and is enabled | Pass, normal Steam-client screenshots and clean log captured during the isolated `095137` recheck |
+| Open Settings -> Mod Settings | EZ Micro Balance appears with id `EZMicroBalance` and can be enabled | Pass, localized page appears as `微平衡` with `无可配置选项。`; matching log has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures |
 | Open Compendium -> Card Library / card encyclopedia with only BaseLib and EZ Micro Balance enabled | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
-| Start a run with EZ Micro Balance enabled | No startup exception in `godot.log` for `EZMicroBalance` | Startup pass in controlled smoke profile; run start pending |
+| Start a run with EZ Micro Balance enabled | No startup exception in `godot.log` for `EZMicroBalance` | Pass for normal Steam-client A0/A10/A20 Ironclad standard run starts followed by DevConsole `fight CULTISTS_NORMAL`; logs show 0 EZMB error/exception pattern hits. Natural route-click first-node path remains pending. |
 | Disable EZ Micro Balance and restart | EZ Micro Balance patches do not apply while disabled | Loader pass in controlled `--force-steam off` smoke profile; gameplay pass pending |
-| Ensure legacy `EzDailyContent` is disabled for private beta testing | No duplicate Ancient Harmony patches from legacy local artifacts | Pending |
+| Ensure legacy `EzDailyContent` is disabled for private beta testing | No duplicate Ancient Harmony patches from legacy local artifacts | Pass for the isolated Mod Settings recheck because only BaseLib and EZ Micro Balance were present in the temporary mods directory; normal user-profile tests should still keep EzDailyContent disabled or absent |
 
 Automated smoke attempts on 2026-05-05 did not reach mod loading:
 
@@ -49,7 +49,7 @@ Automated smoke attempts on 2026-05-05 did not reach mod loading:
 - Direct exe launch with temporary `steam_appid.txt` value `2868840` failed before mod loading with Steamworks `ConnectToGlobalUser failed`; the temporary file was removed.
 - `steam.exe -applaunch 2868840` did not start a detectable game process during the bounded smoke-test window.
 
-Runtime result remains pending until the game is launched normally from Steam and Mod Settings plus `godot.log` are inspected.
+Runtime result: normal Steam-client Mod Settings has been inspected and passed with isolated `095137` evidence. A0/A10/A20 single-player combat-smoke screenshots were collected through normal Steam-client standard runs plus DevConsole `fight CULTISTS_NORMAL`; these confirm draw/energy/combat initialization but do not replace natural route-click or feature-specific manual checks. A normal Steam-client isolated startup log reached main menu with only BaseLib + EZ Micro Balance loaded and no startup `ERROR` lines or release-blocking signatures.
 
 Controlled smoke update:
 

@@ -5,7 +5,7 @@ Scope: private-beta multiplayer test candidate for EZ Micro Balance Ascension 11
 
 A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
 
-Do not treat this runbook as release evidence until results are filled in from real Steam-client multiplayer testing. Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification.
+Do not treat this runbook as release evidence until results are filled in from real Steam-client multiplayer testing. Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
 
 ## Recommended Multiplayer Setup
 
@@ -190,6 +190,7 @@ After changing User env vars, fully restart Steam and the game on the affected m
 ### godot.log Checks
 
 - Collect host and client `godot.log`.
+- Copy each log before another run overwrites it, then run `scripts/audit-godot-log.ps1 -Path <copied godot.log> -OutFile <evidence-dir>\host-godot-log-audit.json -FailOnHit` and repeat for the client log. Omit `-FailOnHit` only when preserving a known-failing diagnostic attempt.
 - Confirm no EZ Micro Balance error or exception lines.
 - Confirm no ownership warning for Rootblight, Blight Sprout, Forge Token, Firemark, Banner, Royal Seal, or Brand state.
 - Confirm no checksum, desync, disconnect, lobby clamp, or save/load exception lines.

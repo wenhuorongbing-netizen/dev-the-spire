@@ -202,7 +202,7 @@ Keep docs synchronized with each setup decision:
 - `test-plan.md`: validation and triage
 - `release-checklist.md`: release safety gates
 - `codex-workflow.md`: repeatable Codex usage
-- `first-feature-backlog.md`: future-only feature ideas
+- `archive/superseded/first-feature-backlog.md`: superseded first-feature backlog, preserved for traceability
 
 ## 20. Git and Rollback Plan
 - Use small, reviewable checkpoints.

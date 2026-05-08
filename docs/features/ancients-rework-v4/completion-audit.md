@@ -52,57 +52,56 @@ Concrete deliverables for the current goal:
 | Tests pass | Latest normal solution-level no-build run passed with release artifact/runtime evidence tests intentionally skipped unless `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set. The opt-in release artifact/runtime evidence suite also passed after package/hash/smoke refresh. | Pass |
 | Publish succeeds | Latest `dotnet publish EZMicroBalance.sln` passed, built `EZMicroBalance` in Release, copied DLL/manifest, and skipped publishing tests. The installed PCK is current from the selected-resource export. | Pass |
 | Published artifacts exist | Installed `mods/EZMicroBalance` contains `.json`, `.dll`, and `.pck`; automated tests check PCK contents, installed manifest parity, and DLL parity. | Pass |
-| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `C928B50616109FF198405F3990A1F4DA40FA9460E8CC6DFE69CC95784DBEEAE2` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
+| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
 | Harmony patch targets resolve | Automated test `HarmonyPatchesResolveAgainstInstalledGameApi` calls `Harmony.PatchAll` on installed DLL against local game/BaseLib assemblies. | Pass |
-| Game loads the mod | Current bounded `--force-steam off` smoke loaded only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, finished EZ Micro Balance initialization, and reached main menu. | Pass for controlled smoke; normal Steam-client pass pending |
-| BaseLib loads | Controlled smoke and release checklist record BaseLib initialization. | Controlled pass; Mod Settings pass pending |
-| EZ Micro Balance appears and can be enabled | Not verified through normal Steam-client Mod Settings UI. | Pending |
+| Game loads the mod | Current bounded `--force-steam off` smoke and isolated normal Steam-client startup both loaded only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, finished EZ Micro Balance initialization, and reached main menu. Normal Steam A0/A10/A20 combat smoke, the Act 1 A11 map/save-load spot check, and the Act 2/3 A11 map-surface observation also loaded into gameplay/map screens. | Pass for loader startup and limited live smoke; full gameplay pending |
+| BaseLib loads | Controlled smoke, normal Steam startup log, and Mod Settings UI screenshot record BaseLib initialization and a visible enabled BaseLib config page. | Pass |
+| EZ Micro Balance appears and can be enabled | Normal Steam main menu and log show only `BaseLib, EZ Micro Balance` loaded. The 2026-05-08 `095137` recheck after adding the no-op BaseLib config page shows the localized EZ Micro Balance page `微平衡` with `无可配置选项。`, and the matching log has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures. | Pass |
 | Every implemented Ancient reward change has manual checklist/result | Checklist exists in `manual-verification-matrix.md`; results remain pending. | Pending |
-| Save/load-sensitive behavior verified | Matrix rows exist for Prismatic Gem, Pael's Tooth, Jeweled Mask, Debt, and Folly. | Pending |
+| Save/load-sensitive behavior verified | Matrix rows exist for Prismatic Gem, Pael's Tooth, Jeweled Mask, Debt, and Folly. RC1 A11 Act 1 map save/load spot check passed, but Ancient reward save/load rows and co-op save/load are still pending. | Partial |
 | Multiplayer behavior verified | Ancient and Ascension manual checklists include ownership/desync checks, but no multiplayer runtime pass was executed. | Pending |
 | Disable-mod behavior verified | Controlled loader-disable smoke passed; gameplay disable check remains pending. | Partial |
-| Final required command sequence executed | Build, normal tests, publish, package refresh, current-package controlled smoke, opt-in release artifact tests, format, and `git diff --check` were rerun for the current tree. Normal Steam-client verification remains pending until actually executed. | Pass except manual/runtime gates |
-| Worktree clean | Current refresh observed `## main...origin/main` with modified follow-up files and no untracked files. Re-check during final release handoff. | Pending |
+| Final required command sequence executed | Build, normal tests, publish, package refresh, current-package controlled smoke, isolated normal Steam-client startup log, normal Steam-client Mod Settings recheck, A0/A10/A20 combat smoke, Act 1 A11 map/save-load spot check, Act 2/3 A11 map-surface observation, opt-in release artifact tests, format, and `git diff --check` were rerun for the current tree. Full live gameplay verification remains pending until actually executed. | Pass except remaining manual/gameplay gates |
+| Worktree clean | Current refresh observed `## main...origin/main` with modified, deleted, and untracked follow-up files. Re-check during final release handoff. | Pending |
 | Commit created | Verify current commit status during the final release handoff; do not reuse stale handoff wording. | Pending |
-| Push to `origin/main` only after approval | No push attempted. | Pending user approval |
+| Push to `origin/main` only after approval | Current HEAD is aligned with `origin/main`; pending local edits are not pushed. | Pending review/commit/push |
 
 ## Current Automated Evidence
 
-- `git status --short --branch`: RC1 live-validation gate refresh began clean at `## main...origin/main`; documentation/live-validation log edits from this pass are uncommitted until the maintainer commits them.
-- `git log -1 --oneline --decorate`: `38927ce (HEAD -> main, origin/main, origin/HEAD) tryfix 1.05`.
+- `git status --short --branch`: `## main...origin/main` with current uncommitted documentation/test/source-organization edits, including modified files, deleted moved originals, and untracked new patch/doc/archive files. The dirty tree includes Ancient patch file moves, documentation index/archive updates, and this issues/handoff hygiene refresh.
+- `git log -1 --oneline --decorate`: `96bfa50 (HEAD -> main, origin/main, origin/HEAD) fix try 10`.
 - `Get-Process SlayTheSpire2 -ErrorAction SilentlyContinue`: no SlayTheSpire2 process was running before the RC1 validation commands.
 - `dotnet build EZMicroBalance.sln`: pass, 0 warnings, 0 errors.
-- `dotnet test EZMicroBalance.sln`: passed on 2026-05-08 during the RC1 documentation/live-validation hygiene pass, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
-- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-08 after package/hash refresh, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet test EZMicroBalance.sln`: passed on 2026-05-08 during the RC1 documentation/live-validation hygiene pass after adding the issues-file live-evidence guard, 66 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-08 after adding the issues-file live-evidence guard, 66 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: pass.
 - `dotnet publish EZMicroBalance.sln`: pass, Release DLL/manifest installed and the selected-resource PCK was exported.
-- Post-publish `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 0 skipped, 0 failed.
+- Post-publish `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 82 passed, 0 skipped, 0 failed.
 - Package verification: installed, staging, versioned, and extracted zip DLL/JSON/PCK hashes match; staging/versioned/extracted `README_INSTALL.txt` hashes match. Installed runtime folder intentionally contains only DLL/JSON/PCK. Package-facing `README_INSTALL.txt` documents current controlled-smoke status, pending manual gates, and current Ascension development limits.
-- Controlled smoke with `--force-steam off`: current-package pass after the v0.105.0/BaseLib v3.1.2 package refresh. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, then restored `default\1\settings.save` and `settings.save.backup` byte-for-byte. The log showed `Loaded 2 mods (19 total)`, BaseLib DLL load/init, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, default-on Ascension initializer wording with 0 old `Default-off gate` lines, main menu reached in `13,628ms`, 0 EZ Micro Balance error/exception lines, and no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures. Normal Steam-client verification remains pending.
-- Normal Steam-client launch/log probe: `D:\Steam\steam.exe -applaunch 2868840` reached main menu with `Loaded 2 mods (19 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, and `Found 12 SavedSpireFields`. Strict removed-API/EZMB exception scan found 0 hits, but the log still contains unrelated invalid-manifest/dependency `ERROR` lines from discovered disabled local mods, so the clean normal Steam-client `godot.log` gate and Mod Settings UI pass remain open.
+- Controlled smoke with `--force-steam off`: current-package pass after the v0.105.0/BaseLib v3.1.2 package refresh. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, then restored `default\1\settings.save` and `settings.save.backup` byte-for-byte. The log showed `Loaded 2 mods (19 total)`, BaseLib DLL load/init, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, default-on Ascension initializer wording with 0 old `Default-off gate` lines, main menu reached in `13,628ms`, 0 EZ Micro Balance error/exception lines, and no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures. Live gameplay verification remains pending.
+- Normal Steam-client isolated startup log: `D:\Steam\steam.exe -applaunch 2868840` reached main menu after temporarily moving 23 non-BaseLib/EZMB entries out of the game `mods` directory. The startup snapshot `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log` discovered only BaseLib and EZ Micro Balance, logged `Loaded 2 mods (2 total)`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, `Found 12 SavedSpireFields`, 0 startup `ERROR` lines, and 0 removed-API/non-EZMB/EZMB exception signatures. The moved entries and `settings.save` were restored afterward.
+- Normal Steam-client Mod Settings UI probe: the first `092717` attempt showed BaseLib and the loaded-mod footer but no EZMB page. After adding the no-op BaseLib config page, the `095137` recheck launched through `D:\Steam\steam.exe -applaunch 2868840`, opened `模组配置`, and captured `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` plus `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png`, showing EZ Micro Balance as `微平衡` with `无可配置选项。`. Log snapshot `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log` has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures. The moved entries were restored; restore check reported `RemainingIsolatedEntries: 0`, `SlayProcessRunning: 0`, and `RestoredWindows: 24`.
+- A11 Act 1 map/save-load spot check: the `20260508-110008` normal Steam-client pass temporarily isolated non-BaseLib/EZMB mods, selected A11 through the original single-player UI, captured the Act 1 map, clicked the first node, used Save & Quit, continued the saved run, and reopened the map after load. Evidence under `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008` records `columns=8; rows=17`, `MapHeight=17`, `BossRow=17`, `RouteRowCount=16`, `ColumnCount=8`, no A11-specific marker on Act 1 screenshots, 0 live-log `ERROR` lines, and 0 release-blocking signatures.
+- A11 Act 2/3 map-surface observation: the `20260508-113355` normal Steam-client pass temporarily isolated non-BaseLib/EZMB mods, selected A11 through the original single-player UI, reached the Act 1 map normally, then used DevConsole `act 2` and `act 3` to inspect later-act map surfaces. Evidence under `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355` records Act 2 `columns=8; rows=16` with 1 late row and Act 3 `columns=8; rows=16` with 2 late rows, no A11-specific marker on Act 2/3 screenshots, 0 live-log `ERROR` lines, and 0 release-blocking signatures. Natural traversal and boss reachability remain pending.
 - `git diff --check`: exit code 0 with CRLF normalization warnings for touched files.
 - Active release art hash: `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75`.
-- Installed/staging/versioned/extracted zip DLL hash: `70E7D2FF06C067A139027E2B64DFAA76E9638C990E40B0A504CCD34EE6FE9174`. Current installed/staging/versioned/extracted PCK hash is `89D87BEB637EDE00A62A57491563A2254BBABBC471859C5B32F74C11F6D89A7F`; manifest hash is `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`.
-- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `C928B50616109FF198405F3990A1F4DA40FA9460E8CC6DFE69CC95784DBEEAE2`.
+- Installed/staging/versioned/extracted zip DLL hash: `1AEE7CD1C6EB945F022CB85997ADC709D930C3E6FC318E7E0EFE1A13436C589F`. Current installed/staging/versioned/extracted PCK hash is `435D55B14FAD38F611C550F4ACAF604EE1A2C3E63E75C52FC3FA9FCE52D064CA`; manifest hash is `68466CF2BDE07AE7F911AE75EBF6FCAAFE80F70570E3F0D6ECA796B496DB8DB0`.
+- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`.
 
 ## Remaining Gates
 
-1. Open Mod Settings through the normal Steam client and verify BaseLib plus EZ Micro Balance in the UI.
-2. Collect a clean normal Steam-client `godot.log` after removing unrelated invalid-manifest/dependency `ERROR` lines from disabled local mods.
-3. Execute `manual-verification-matrix.md`, especially Prismatic Gem reroll, elite/boss/event exclusions, save/load, and disable gameplay checks.
-4. Execute Ascension 11-20 manual checks under the documented internal gates if any gated slice will be promoted beyond source-guard/internal testing.
-5. Execute multiplayer ownership/desync checks or explicitly release-note the feature as single-player verified only.
-6. Decide whether `AUTHOR_NAME_REPLACE_ME` is acceptable for private beta.
-7. Commit a clean release changeset.
-8. Push only after explicit user approval.
+1. Execute `manual-verification-matrix.md`, especially Prismatic Gem reroll, elite/boss/event exclusions, save/load, and disable gameplay checks.
+2. Execute Ascension 11-20 manual checks under the documented internal gates if any gated slice will be promoted beyond source-guard/internal testing.
+3. Execute multiplayer ownership/desync checks or explicitly release-note the feature as single-player verified only.
+4. Decide whether `AUTHOR_NAME_REPLACE_ME` is acceptable for private beta.
+5. Commit a clean release changeset.
+6. Push only after explicit user approval.
 
 RC1 live-validation pending list:
 
 - Rootblight visual feedback.
 - Rootblight card art.
-- A11 geometry diagnostics.
-- Clean normal Steam-client `godot.log`.
+- Broader A11 geometry diagnostics and natural traversal beyond the Act 1/2/3 width/row spot checks.
 - Multiplayer matrix.
-- Steam-client Mod Settings.
-- Save/load verification.
+- Ancient reward and co-op save/load verification.
 

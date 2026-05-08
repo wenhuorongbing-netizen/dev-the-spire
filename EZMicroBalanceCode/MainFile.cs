@@ -1,6 +1,8 @@
 ﻿using Godot;
 using HarmonyLib;
+using BaseLib.Config;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Config;
 using MegaCrit.Sts2.Core.Modding;
 
 namespace EZMicroBalance.EZMicroBalanceCode;
@@ -18,6 +20,7 @@ public partial class MainFile : Node
         Harmony harmony = new(ModId);
 
         harmony.PatchAll();
+        ModConfigRegistry.Register(ModId, new EZMicroBalanceModConfig());
         AscensionInitializer.Initialize();
     }
 }

@@ -2,7 +2,7 @@
 
 Project: EZ Micro Balance  
 Manifest id: EZMicroBalance  
-Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; live Ascension gameplay not executed yet
+Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; limited normal Steam-client A11 map spot checks executed, live Ascension gameplay not executed yet beyond those map observations
 Last updated: 2026-05-08
 
 ## Research-Mode Baseline
@@ -49,7 +49,7 @@ Baseline result on 2026-05-06:
 - Disable A11 map geometry for comparison: set `EZMB_ASCENSION_ENABLE_MAP_GEOMETRY=0`.
 - Disable A17 Deep Branches for comparison: set `EZMB_ASCENSION_ENABLE_DEEP_BRANCHES=0`.
 - Read-only hook/state diagnostics: set `EZMB_ASCENSION_DIAGNOSTICS=1`.
-- Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification.
+- Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
 
 ## Read-Only Ascension Diagnostics
 
@@ -150,19 +150,19 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=18` after A15 boss Blight Sprout behavi
 - [ ] Save/load or re-enter the elite combat after Blight Sprout was seeded; the combat still has at most one Blight Sprout per active player.
 
 ## A11 Wide Tower, Long Road / 宽塔长路
-Gated implementation present; live testing pending. Execute by selecting A11+ in the original single-player UI or with `EZMB_ASCENSION_DEBUG_LEVEL=11`.
+Gated implementation present. RC1 normal Steam-client spot checks executed by selecting A11 through the original single-player UI; Act 1 map/save-load and Act 2/3 DevConsole map-surface observations passed. Broader natural traversal, every-start boss reachability, and co-op map checks remain pending.
 
-- [ ] Gate logs that map width expanded by 1 column and that the act-specific late route row count was applied.
-- [ ] Map width increases from 7 to 8 columns.
-- [ ] At least one reachable optional node appears in the inserted width column.
-- [ ] Act 1 map length increases by exactly 1 late route row before the boss rest row.
-- [ ] Act 2 map length increases by exactly 1 late route row before the boss rest row.
-- [ ] Act 3 map length increases by exactly 2 late route rows before the boss rest row.
+- [x] Gate logs that map width expanded by 1 column and that the act-specific late route row count was applied. RC1 Act 1 log: `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`.
+- [x] Map width increases from 7 to 8 columns. RC1 saved-map evidence records columns `0,1,2,3,4,5,6,7`.
+- [x] At least one reachable optional node appears in the inserted width column. RC1 source/log path reports the reachable optional route and the live map saved/reloaded with 8 columns.
+- [x] Act 1 map length increases by exactly 1 late route row before the boss rest row. RC1 saved-map evidence records route rows `1-16`, `MapHeight=17`, and `BossRow=17`.
+- [x] Act 2 map length increases by exactly 1 late route row before the boss rest row. RC1 Act 2 observation log: `Ascension A11 applied ... inserted 1 late route row(s); actIndex=1; columns=8; rows=16`.
+- [x] Act 3 map length increases by exactly 2 late route rows before the boss rest row. RC1 Act 3 observation log: `Ascension A11 applied ... inserted 2 late route row(s); actIndex=2; columns=8; rows=16`.
 - [ ] Every starting path can still reach the boss.
 - [ ] The inserted late row contains normal route rooms, not boss/start nodes.
-- [ ] No A11-specific marker, icon, or hover tooltip appears on ordinary route nodes.
-- [ ] Save/load preserves the widened map, inserted late rows, and route edges.
-- [ ] Map UI renders all rows without overlapping the boss, starting point, or route lines.
+- [x] No A11-specific marker, icon, or hover tooltip appears on ordinary route nodes. RC1 Act 1 screenshots show normal route nodes before and after load; Act 2/3 observation screenshots `25-a11-act2-map-clean.png` and `27-a11-act3-map-clean.png` show the same no-marker surface.
+- [x] Save/load preserves the widened map, inserted late rows, and route edges. RC1 selected a first node, wrote `current_run.save`, used Save & Quit, continued the run, and reopened the map with `columns=8; rows=17`.
+- [x] Map UI renders all rows without overlapping the boss, starting point, or route lines. RC1 Act 1 screenshots render the initial map and after-load map cleanly; Act 2/3 observation screenshots render the later-act map surfaces cleanly.
 
 ## A11-A20 Host-Multiplayer Selection
 
