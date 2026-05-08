@@ -23,7 +23,7 @@ Pending items deliberately left out of the current fix pass:
 
 Priority: P1 environment/runtime verification
 
-Status: dependency portion superseded by BaseLib `v3.1.2` and a clean BaseLib+EZMB-only controlled smoke. Live A0/A10/A20 combat checks and normal Steam-client verification are still pending.
+Status: dependency portion superseded by BaseLib `v3.1.2` and a clean BaseLib+EZMB-only controlled smoke. User reports single-player A0/A10/A20 and boss/basic combats pass after the BaseLib update; clean normal Steam-client log and Codex-observed live checks are still required.
 
 Area: v0.105.0 API drift / BaseLib compatibility / mod environment hygiene
 
@@ -54,9 +54,11 @@ Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
 Required resolution (before any EZMB fix or release claim):
 - [ ] Disable all mods except BaseLib + EZMicroBalance.
 - [x] Updated BaseLib runtime/project package to `v3.1.2`; current controlled BaseLib+EZMB-only smoke has no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures.
+- [ ] RC1 normal Steam-client log is fully clean. Current Steam launch reached main menu with only BaseLib + EZMicroBalance loaded, BaseLib `177 patches successfully, 0 failed`, and no removed-API/EZMB exception signatures, but the log still contains unrelated local invalid-manifest/dependency `ERROR` lines from discovered disabled mods (`RouteSuggestConfig.json`, `sts2-heybox-support`) and old-style dependency warnings.
 - [ ] Confirm singleplayer A0 combat draws cards and gains energy normally.
 - [ ] Confirm singleplayer A10 combat draws cards and gains energy normally.
 - [ ] Confirm singleplayer A20 combat draws cards and gains energy normally.
+- User-reported on 2026-05-08: single-player A0/A10/A20 plus boss/basic combats pass after the BaseLib update. This is useful live evidence, but it does not replace a clean normal Steam-client `godot.log`.
 - [ ] `godot.log` has no `Creature.get_ShowsInfiniteHp`.
 - [ ] `godot.log` has no BaseLib patch failures.
 - [ ] `godot.log` has no DamageMeter or other non-EZMB mod exceptions.
@@ -80,7 +82,7 @@ Current source analysis:
 
 - `AncientEventModel.BeforeEventStarted` (source code/src/Core/Models/AncientEventModel.cs:143-156) sets player HP to 0 via `SetCurrentHpInternal(0m)`, then heals via `CreatureCmd.Heal` to full (or 80% for A2+ WearyTraveler). This works in singleplayer.
 - Vanilla `AscensionManager` (`source code/src/Core/Entities/Ascension/AscensionManager.cs`) has `maxAscensionAllowed = 10` and only handles A4 (TightBelt -1 potion) and A10 (AscendersBane). No HP effects.
-- `RunManager.InitializeNewRun()` 鈫?`ApplyAscensionEffects(player)` 鈫?`AscensionManager.ApplyEffectsTo(player)` does not touch HP.
+- `RunManager.InitializeNewRun()` -> `ApplyAscensionEffects(player)` -> `AscensionManager.ApplyEffectsTo(player)` does not touch HP.
 - `Player.CreateForNewRun()` uses `character.StartingHp` for both current and max HP.
 - No EZMB gameplay slice touches player HP during run start or Neow.
 
@@ -134,9 +136,9 @@ Current status:
 - But the player report suggests black screen can still occur, potentially from other causes.
 
 Hypotheses:
-1. HP 0/80 鈫?Neow blocked 鈫?screen transition never completes (same root cause as HP0-Neow issue).
+1. HP 0/80 -> Neow blocked -> screen transition never completes (same root cause as HP0-Neow issue).
 2. A different TypeLoadException or missing model for a different v0.105.0 API.
-3. Network desync during run start 鈥?host reaches Act 0 but client never receives the transition.
+3. Network desync during run start - host reaches Act 0 but client never receives the transition.
 4. Missing localization or model that causes a silent failure during lobby cleanup or run scene setup.
 
 Required evidence:
@@ -190,7 +192,7 @@ Manual retest:
 
 Priority: P0
 
-Status: source-patched; package/smoke refresh pending
+Status: source-patched; package/smoke refreshed; Steam-client/live co-op pending
 
 Area: A11-A20 selector gate / multiplayer pre-release testing
 
@@ -311,13 +313,13 @@ Player report: Root Bud and Rootblight were conceptually unclear, Boss Sprout co
 
 Current source fix:
 
-- ZHS player-facing term is now `鏍硅娊`.
+- ZHS player-facing term is now `根芽`.
 - Boss fights in Acts 2/3 now seed 2 Root Bud cards.
 - Root Bud text is shortened: play to Exhaust; Boss sprouts use rounds 3/4 and elite sprouts use round 3; if seen and not played, add Rootblight I after combat.
 - Rootblight I/II/III costs are 2/3/4.
 - Played Rootblight removes its master-deck card and queues the downgrade card after combat.
 - Unplayed Rootblight I/II upgrades after combat; ignored Rootblight III stays III and adds one Rootblight I only once per card.
-- Rootblight is capped at 4 cards, and cap hits show `Root system full.` / `鏍圭郴宸叉弧銆俙.
+- Rootblight is capped at 4 cards, and cap hits show `Root system full.` / `根系已满。`.
 - Rest removes exactly one highest-stage Rootblight instead of clearing all Rootblight.
 
 Manual retest:
@@ -509,7 +511,7 @@ Audit finding: handoff and audit docs can become stale when they say "No commit 
 
 2026-05-08 update:
 
-- Local `main` was observed at `77da0ed (HEAD -> main, origin/main, origin/HEAD) fix2` before the default-on multiplayer-test-candidate follow-up changes.
+- Local `main` was observed at `38927ce (HEAD -> main, origin/main, origin/HEAD) tryfix 1.05` during the RC1 live-validation gate refresh.
 - The previously untracked spec, `docs/skills/`, and `ReleaseArtifactFactAttribute.cs` are no longer untracked in this checkout.
 
 Required release-pass action:

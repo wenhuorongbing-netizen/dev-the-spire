@@ -43,7 +43,7 @@ Concrete deliverables for the current goal:
 | `.cs.uid` tracking policy consistent | Every Godot-imported C# source under `EZMicroBalanceCode/` and `EzDailyContentCode/` has a `.cs.uid` companion. Test project C# files are outside Godot import scope and intentionally do not use `.cs.uid`. | Pass |
 | No original StS2 assets copied into active package | PCK audit test excludes source/docs/art/archive folders; active package contains selected template mod resources, localization, and original generated `mod_image.png` art. | Pass |
 | No large decompiled game code bodies copied | Active code is small Harmony patches/helpers; local API evidence is summarized in docs rather than copied as game method bodies. Local `source code/` decompile/reference scratch material is ignored by `.gitignore` and excluded from export so it is not commit-eligible or packaged. | Pass by active-source/package review |
-| No accidental build/package artifacts in active release set | The release package/PCK guards exclude source, docs, art pipeline, archives, build outputs, local tooling, and `source code/`. Active `EZMicroBalance/` resources contain only images, `.import` metadata, and localization JSON. | Pass for active package; follow-up worktree currently dirty |
+| No accidental build/package artifacts in active release set | The release package/PCK guards exclude source, docs, art pipeline, archives, build outputs, local tooling, and `source code/`. Active `EZMicroBalance/` resources contain only images, `.import` metadata, and localization JSON. | Pass for active package; current worktree status is recorded below |
 | Historical planning/research docs preserved | All 13 deleted tracked planning docs have archive copies under `docs/archive/legacy-planning/`; normalized line-content comparison against `HEAD` passed for every archived copy. | Pass |
 | Current-facing docs do not describe legacy `EzDailyContent` as the active release | `BETA_COMPATIBILITY.md`, `REMOTE_DEVELOPMENT_SETUP.md`, and `manual-test-checklist.md` now reference `EZMicroBalance`; `SETUP_SPEC.md` is explicitly marked historical. Manual checklist also requires legacy `EzDailyContent` to be disabled or absent. | Pass |
 | English localization valid and current | `LocalizationJsonIsValidUtf8AndKeyCompatible` parses active localization and checks key parity where applicable. | Pass pending in-game text spot check |
@@ -52,7 +52,7 @@ Concrete deliverables for the current goal:
 | Tests pass | Latest normal solution-level no-build run passed with release artifact/runtime evidence tests intentionally skipped unless `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set. The opt-in release artifact/runtime evidence suite also passed after package/hash/smoke refresh. | Pass |
 | Publish succeeds | Latest `dotnet publish EZMicroBalance.sln` passed, built `EZMicroBalance` in Release, copied DLL/manifest, and skipped publishing tests. The installed PCK is current from the selected-resource export. | Pass |
 | Published artifacts exist | Installed `mods/EZMicroBalance` contains `.json`, `.dll`, and `.pck`; automated tests check PCK contents, installed manifest parity, and DLL parity. | Pass |
-| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `6C3A9CE64D7227BBC5204D1EC1215EA6877818E24E4400910DCE8BF9199BC090` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
+| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `C928B50616109FF198405F3990A1F4DA40FA9460E8CC6DFE69CC95784DBEEAE2` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
 | Harmony patch targets resolve | Automated test `HarmonyPatchesResolveAgainstInstalledGameApi` calls `Harmony.PatchAll` on installed DLL against local game/BaseLib assemblies. | Pass |
 | Game loads the mod | Current bounded `--force-steam off` smoke loaded only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, finished EZ Micro Balance initialization, and reached main menu. | Pass for controlled smoke; normal Steam-client pass pending |
 | BaseLib loads | Controlled smoke and release checklist record BaseLib initialization. | Controlled pass; Mod Settings pass pending |
@@ -68,29 +68,41 @@ Concrete deliverables for the current goal:
 
 ## Current Automated Evidence
 
-- `git status --short --branch`: current refresh began clean at `## main...origin/main`; default-on multiplayer-test-candidate follow-up files are modified during this pass.
-- `git log -1 --oneline --decorate`: `77da0ed (HEAD -> main, origin/main, origin/HEAD) fix2`.
-- `Get-Process SlayTheSpire2 -ErrorAction SilentlyContinue`: no process before publish.
+- `git status --short --branch`: RC1 live-validation gate refresh began clean at `## main...origin/main`; documentation/live-validation log edits from this pass are uncommitted until the maintainer commits them.
+- `git log -1 --oneline --decorate`: `38927ce (HEAD -> main, origin/main, origin/HEAD) tryfix 1.05`.
+- `Get-Process SlayTheSpire2 -ErrorAction SilentlyContinue`: no SlayTheSpire2 process was running before the RC1 validation commands.
 - `dotnet build EZMicroBalance.sln`: pass, 0 warnings, 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-08 after v0.105.0 source/API refresh, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet test EZMicroBalance.sln`: passed on 2026-05-08 during the RC1 documentation/live-validation hygiene pass, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-08 after package/hash refresh, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: pass.
 - `dotnet publish EZMicroBalance.sln`: pass, Release DLL/manifest installed and the selected-resource PCK was exported.
 - Post-publish `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 0 skipped, 0 failed.
 - Package verification: installed, staging, versioned, and extracted zip DLL/JSON/PCK hashes match; staging/versioned/extracted `README_INSTALL.txt` hashes match. Installed runtime folder intentionally contains only DLL/JSON/PCK. Package-facing `README_INSTALL.txt` documents current controlled-smoke status, pending manual gates, and current Ascension development limits.
 - Controlled smoke with `--force-steam off`: current-package pass after the v0.105.0/BaseLib v3.1.2 package refresh. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, then restored `default\1\settings.save` and `settings.save.backup` byte-for-byte. The log showed `Loaded 2 mods (19 total)`, BaseLib DLL load/init, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, default-on Ascension initializer wording with 0 old `Default-off gate` lines, main menu reached in `13,628ms`, 0 EZ Micro Balance error/exception lines, and no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures. Normal Steam-client verification remains pending.
+- Normal Steam-client launch/log probe: `D:\Steam\steam.exe -applaunch 2868840` reached main menu with `Loaded 2 mods (19 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, and `Found 12 SavedSpireFields`. Strict removed-API/EZMB exception scan found 0 hits, but the log still contains unrelated invalid-manifest/dependency `ERROR` lines from discovered disabled local mods, so the clean normal Steam-client `godot.log` gate and Mod Settings UI pass remain open.
 - `git diff --check`: exit code 0 with CRLF normalization warnings for touched files.
 - Active release art hash: `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75`.
-- Installed/staging/versioned/extracted zip DLL hash: `215A4621019CA93ABB0157BBFEA094FE4C8DBDEA247ECA02222709298784CF5C`. Current installed/staging/versioned/extracted PCK hash is `89D87BEB637EDE00A62A57491563A2254BBABBC471859C5B32F74C11F6D89A7F`; manifest hash is `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`.
-- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `6C3A9CE64D7227BBC5204D1EC1215EA6877818E24E4400910DCE8BF9199BC090`.
+- Installed/staging/versioned/extracted zip DLL hash: `70E7D2FF06C067A139027E2B64DFAA76E9638C990E40B0A504CCD34EE6FE9174`. Current installed/staging/versioned/extracted PCK hash is `89D87BEB637EDE00A62A57491563A2254BBABBC471859C5B32F74C11F6D89A7F`; manifest hash is `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`.
+- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `C928B50616109FF198405F3990A1F4DA40FA9460E8CC6DFE69CC95784DBEEAE2`.
 
 ## Remaining Gates
 
-1. Launch through the normal Steam client and verify BaseLib plus EZ Micro Balance in Mod Settings.
-2. Review `godot.log` after normal Steam-client launch.
+1. Open Mod Settings through the normal Steam client and verify BaseLib plus EZ Micro Balance in the UI.
+2. Collect a clean normal Steam-client `godot.log` after removing unrelated invalid-manifest/dependency `ERROR` lines from disabled local mods.
 3. Execute `manual-verification-matrix.md`, especially Prismatic Gem reroll, elite/boss/event exclusions, save/load, and disable gameplay checks.
 4. Execute Ascension 11-20 manual checks under the documented internal gates if any gated slice will be promoted beyond source-guard/internal testing.
 5. Execute multiplayer ownership/desync checks or explicitly release-note the feature as single-player verified only.
 6. Decide whether `AUTHOR_NAME_REPLACE_ME` is acceptable for private beta.
 7. Commit a clean release changeset.
 8. Push only after explicit user approval.
+
+RC1 live-validation pending list:
+
+- Rootblight visual feedback.
+- Rootblight card art.
+- A11 geometry diagnostics.
+- Clean normal Steam-client `godot.log`.
+- Multiplayer matrix.
+- Steam-client Mod Settings.
+- Save/load verification.
 

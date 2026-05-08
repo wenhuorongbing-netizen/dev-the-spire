@@ -24,7 +24,7 @@ Target manifest id: `EZMicroBalance`
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-smoke evidence tests have been rerun for the current tree with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
-- [x] `publish/EZMicroBalance-v0.1.0-private-beta.0.zip` is rebuilt from the current installed artifacts. Current zip SHA256 `6C3A9CE64D7227BBC5204D1EC1215EA6877818E24E4400910DCE8BF9199BC090`.
+- [x] `publish/EZMicroBalance-v0.1.0-private-beta.0.zip` is rebuilt from the current installed artifacts. Current zip SHA256 `C928B50616109FF198405F3990A1F4DA40FA9460E8CC6DFE69CC95784DBEEAE2`.
 
 ## Runtime
 
@@ -64,6 +64,8 @@ Target manifest id: `EZMicroBalance`
 ## Known Issues
 
 - **Superseded compatibility warning (2026-05-08):** The earlier v0.105.0 live log was collected with 17 mods and BaseLib `v3.1.0`, and showed `Creature.get_ShowsInfiniteHp` / BaseLib patch failures. Current runtime dependency is BaseLib `v3.1.2`; the latest controlled BaseLib+EZMB-only smoke has no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures. This does not replace normal Steam-client Mod Settings verification or live combat/manual feature verification.
+- User-reported live baseline after the BaseLib update: single-player A0/A10/A20 and boss/basic combats pass. This is not a clean Codex-collected normal Steam-client `godot.log`; keep the clean-log and Mod Settings gates open until a clean UI/manual pass is collected.
+- RC1 live gates still pending: Rootblight visual feedback, Rootblight card art, A11 geometry diagnostics, clean normal Steam-client `godot.log`, multiplayer matrix, Steam-client Mod Settings, and save/load verification.
 - Earlier 17-mod logs are not valid release evidence.
 - Current player-reported open issues are tracked in `docs/issues.md`; do not claim Ascension readiness until those entries are fixed or explicitly closed with runtime evidence.
 - A11 source now inserts a reachable optional route node in the new column and adds Act 1/2/3 route rows, while ordinary A11 route nodes no longer receive a dedicated marker or hover tooltip. The visual route choice still needs live Act 1/2/3 map verification.
@@ -71,6 +73,7 @@ Target manifest id: `EZMicroBalance`
 - Forge Token no longer wraps special rest-site options; the player-reported rest-site crash still needs live A12 rest/Smith regression testing before the issue can be closed.
 - A12 tooltip/rich text needs polish: values should use native blue rich text and important game terms/reward nouns should use native gold rich text.
 - Independent `EZMicroBalance` controlled runtime load has current `--force-steam off` evidence after the v0.105.0/BaseLib v3.1.2 package refresh: the bounded smoke temporarily enabled only `BaseLib` and `EZMicroBalance`, loaded exactly 2 mods, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored `settings.save` plus `settings.save.backup` byte-for-byte. Normal Steam-client Mod Settings verification is still pending.
+- RC1 normal Steam-client launch/log probe reached main menu through Steam with `Loaded 2 mods (19 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, `Found 12 SavedSpireFields`, and no `Creature.get_ShowsInfiniteHp`, `HealthBarForecastPatch`, `TypeLoadException`, `MissingMethodException`, or EZMB error/exception signatures. It does not close the clean-log gate because the same log still has unrelated local invalid-manifest/dependency `ERROR` lines for discovered disabled mods (`RouteSuggestConfig.json`, `sts2-heybox-support`) and old-style dependency warnings. Mod Settings UI was not opened in this pass.
 - normal Steam-client Mod Settings verification is still pending.
 - The earlier Root/Fission/Black Star bugfix pass rebuilt the package from installed artifacts, restored installed/staging/versioned/zip hash parity for DLL/JSON/PCK, and added source guards for Root Bud draw tracking, Fission no-template/no-duplicate-text behavior, stricter Fission eligibility, and Black Star post-obtain compensation.
 - Direct automated launches without `--force-steam off` failed before mod loading due Steamworks initialization (`No appID found`, then `ConnectToGlobalUser failed` with a temporary app id). A controlled `--force-steam off` smoke profile loads BaseLib and EZ Micro Balance successfully, but launch from the Steam client is still required for final manual verification.

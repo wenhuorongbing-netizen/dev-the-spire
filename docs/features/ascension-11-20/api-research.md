@@ -276,7 +276,7 @@ Rootblight closed-loop implementation is not approved until these exact items ar
 | --- | --- | --- |
 | Neow HP initialization | `AncientEventModel.BeforeEventStarted` (`source code/src/Core/Models/AncientEventModel.cs:143-157`): sets player HP to 0 via `SetCurrentHpInternal(0m)`, then heals to full (or 80% for A2+ WearyTraveler) via `CreatureCmd.Heal`. This is vanilla behavior, not mod-introduced. | Source-evidenced from refreshed v0.105.0 source |
 | Heal command path | `CreatureCmd.Heal` (`source code/src/Core/Commands/CreatureCmd.cs:511`) calls `creature.HealInternal(amount)` directly. No ActionQueue dependency. Only early return is for non-player creatures during combat end. | Should work outside combat regardless of ascension level |
-| AscensionManager | `AscensionManager` (`source code/src/Core/Entities/Ascension/AscensionManager.cs`) has `maxAscensionAllowed = 10` (used only by progress savemanager clamping). Constructor accepts `int level` directly 鈥?no clamping. `HasLevel(AscensionLevel.WearyTraveler)` checks `_level >= 2`, which is true for any level >= A2. | Works for values > 10 |
+| AscensionManager | `AscensionManager` (`source code/src/Core/Entities/Ascension/AscensionManager.cs`) has `maxAscensionAllowed = 10` (used only by progress savemanager clamping). Constructor accepts `int level` directly - no clamping. `HasLevel(AscensionLevel.WearyTraveler)` checks `_level >= 2`, which is true for any level >= A2. | Works for values > 10 |
 | Player HP creation | `Player.CreateForNewRun(CharacterModel character, ...)` uses `character.StartingHp` for both currentHp and maxHp. No ascension-based HP reduction. | No HP issue at creation time |
 | EZMB gameplay slices | `RootRunHook.AfterActEntered` adds Rootblight cards but does not touch HP. `AscensionCombatModifierService` uses `CreatureCmd.SetMaxAndCurrentHp` only in combat for Firemark modifiers. | No HP modification during run start |
 
@@ -287,15 +287,15 @@ Rootblight closed-loop implementation is not approved until these exact items ar
 | Area | Evidence | Status |
 | --- | --- | --- |
 | Pause-menu Save & Quit | `NPauseMenu.OnSaveAndQuitButtonPressed()` calls `CloseToMenu()`, which disables pause buttons and awaits `NGame.Instance.ReturnToMainMenu()`. `ReturnToMainMenu()` calls `RunManager.Instance.CleanUp()` before loading the main menu. | Source-evidenced from refreshed v0.105.0 source; live co-op propagation pending |
-| RunManager.CleanUp | Calls `NetService.Disconnect(NetError.Quit, !graceful)` 鈥?this should disconnect the network session. | Pending live verification |
-| NGame.Quit | Saves settings/progress and calls `GetTree().Quit()` 鈥?does not send network disconnect message. | Singleplayer-only quit path |
+| RunManager.CleanUp | Calls `NetService.Disconnect(NetError.Quit, !graceful)` - this should disconnect the network session. | Pending live verification |
+| NGame.Quit | Saves settings/progress and calls `GetTree().Quit()` - does not send network disconnect message. | Singleplayer-only quit path |
 | RunManager.LocalPlayerDisconnected | Handles peer disconnection by removing their input sync. If disconnect reason is not `QuitGameOver` and run is not over, returns to main menu with error. | Pending live verification |
 
 **Key question**: v0.105.0 source shows the vanilla Save & Quit path reaches `RunManager.CleanUp()`, which should disconnect the network session. Live co-op still needs to confirm whether the remote peer receives and handles that quit path cleanly.
 
 ### Multiplayer Diagnostics System
 
-Added `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` 鈥?Harmony patches on:
+Added `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` - Harmony patches on:
 
 - `StartRunLobby.BeginRunForAllPlayers` (prefix/finalizer): lobby state, players, ascension
 - `StartRunLobby.BeginRunLocally` (prefix): ascension, singleplayer/multiplayer

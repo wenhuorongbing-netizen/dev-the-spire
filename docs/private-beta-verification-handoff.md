@@ -9,9 +9,9 @@ This handoff is for manual verification that cannot be completed by the local au
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `6C3A9CE64D7227BBC5204D1EC1215EA6877818E24E4400910DCE8BF9199BC090`
+- Zip SHA256: `C928B50616109FF198405F3990A1F4DA40FA9460E8CC6DFE69CC95784DBEEAE2`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `215A4621019CA93ABB0157BBFEA094FE4C8DBDEA247ECA02222709298784CF5C`
+- DLL SHA256: `70E7D2FF06C067A139027E2B64DFAA76E9638C990E40B0A504CCD34EE6FE9174`
 - Manifest SHA256: `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`
 - PCK SHA256: `89D87BEB637EDE00A62A57491563A2254BBABBC471859C5B32F74C11F6D89A7F`
 
@@ -24,10 +24,12 @@ This handoff is for manual verification that cannot be completed by the local au
 - `dotnet publish EZMicroBalance.sln`: passed.
 - `git diff --check`: exit 0 with CRLF normalization warnings for touched files.
 - Current controlled `--force-steam off` smoke temporarily enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored `settings.save` plus `settings.save.backup` byte-for-byte. Normal Steam-client Mod Settings verification is still pending.
+- RC1 normal Steam-client launch/log probe started Slay the Spire 2 through `D:\Steam\steam.exe -applaunch 2868840`, loaded to main menu with `Loaded 2 mods (19 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialization, and `Found 12 SavedSpireFields`. The strict clean-log gate remains open because the log still contains unrelated local invalid-manifest/dependency `ERROR` lines from discovered disabled mods (`RouteSuggestConfig.json`, `sts2-heybox-support`) and old-style dependency warnings. Mod Settings UI was not opened in this pass.
 
 ## Required Manual Results
 
 Record results in `docs/features/ancients-rework-v4/manual-verification-matrix.md` and update `docs/release-checklist.md`.
+This pass also starts `docs/rc1-live-validation-log.md` for source-verified RC1 notes and any live evidence collected during the normal Steam-client gate.
 
 Normal Steam-client Mod Settings verification is still pending.
 Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer checks are still pending.
@@ -46,7 +48,7 @@ Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer check
 
 A11-A20 selection is now default-on in this private-beta multiplayer test candidate for single-player and host-multiplayer standard lobbies. Full live Ascension verification is pending. Live co-op selection and desync verification are still pending. No env var is needed for the default multiplayer test. Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison. Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection. `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required. Use `EZMB_ASCENSION_DEBUG_LEVEL=12` through `20` for forced internal slice checks.
 
-Execute `docs/features/ascension-11-20/manual-test-checklist.md` against A11 through A20 from the normal single-player and host-multiplayer character select flows after explicitly enabling the selector:
+Run `docs/features/ascension-11-20/manual-test-checklist.md` with default-on selection first, then repeat comparison rows with disable env vars:
 
 - Use the original Ascension arrows to select A11-A20.
 - `EZMB_ASCENSION_DIAGNOSTICS=1` remains available for read-only diagnostics.
@@ -74,10 +76,10 @@ If `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set and artifacts are missing or stale
 
 Current git status at this handoff refresh:
 
-- `git log -1 --oneline --decorate`: `7d74d68 (HEAD -> main, origin/main, origin/HEAD) try fix 1.05`
-- `git status --short --branch`: `## main...origin/main` with modified source/docs/tests from the v0.105.0 Pumpkin Candle rollback, Quality Flame hardening, Door Wedge removal, Aeonglass +5 Strength, BaseLib v3.1.2 documentation, package/hash refresh, and guard-test pass. No release artifacts are tracked.
+- `git log -1 --oneline --decorate`: `38927ce (HEAD -> main, origin/main, origin/HEAD) tryfix 1.05`
+- `git status --short --branch`: `## main...origin/main` before this RC1 documentation/live-validation hygiene pass.
 
-No commit or push was attempted in this pass. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
+The existing `main` branch was already aligned with `origin/main` at the start of this RC1 pass. Any new RC1 documentation or validation-log edits made after the status above remain uncommitted until the maintainer commits them. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
 
 Proposed commit scope after the remaining manual/user gates are resolved:
 
