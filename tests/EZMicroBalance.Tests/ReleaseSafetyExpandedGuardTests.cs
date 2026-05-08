@@ -243,7 +243,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "var definition = metadata.BossSeal",
             "TrackInkReturnIfSlipperySpent",
             "TrackKnowledgeDemonEnemyMove",
-            "TryApplyDoorWedge",
+            "BossSealId.AeonglassStrength",
+            "PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), boss, 5, boss, null)",
             "TryApplyResidualSamples");
 
         AssertSourceContains(
@@ -385,6 +386,57 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Equal(12, summary.SavedSpireFieldCount);
         Assert.Empty(summary.EzMicroBalanceErrorLines);
         Assert.Single(summary.UnrelatedManifestErrorLines);
+    }
+
+    [ReleaseArtifactFact]
+    public void RecentRuntimeLogMustNotContainV105ApiDriftOrBaseLibDependencyFailures()
+    {
+        var logPath = CurrentGodotLogPath();
+        var logsDir = Path.GetDirectoryName(logPath);
+        Assert.NotNull(logsDir);
+        if (!Directory.Exists(logsDir))
+        {
+            return;
+        }
+
+        var recentLog = Directory
+            .GetFiles(logsDir, "godot*.log", SearchOption.TopDirectoryOnly)
+            .OrderByDescending(File.GetLastWriteTimeUtc)
+            .FirstOrDefault();
+
+        if (recentLog == null)
+        {
+            return;
+        }
+
+        var logContent = ReadAllTextShared(recentLog);
+
+        var forbiddenSignatures = new[]
+        {
+            // v0.105.0 API drift: Creature.get_ShowsInfiniteHp removed
+            "Creature.get_ShowsInfiniteHp",
+            // BaseLib HealthBarForecastPatch calls removed API
+            "BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay",
+            // DamageMeter calls removed API
+            "DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp",
+            // BaseLib patch failures against v0.105.0
+            "Undefined target method for patch method static System.Void BaseLib.Patches.Features",
+        };
+
+        var matches = new List<string>();
+        foreach (var signature in forbiddenSignatures)
+        {
+            if (logContent.Contains(signature, StringComparison.Ordinal))
+            {
+                matches.Add(signature);
+            }
+        }
+
+        Assert.True(
+            matches.Count == 0,
+            $"Recent runtime log {Path.GetFileName(recentLog)} contains forbidden v0.105.0 API drift or dependency failure signatures: {string.Join("; ", matches)}. " +
+            "The test environment may have incompatible mods (DamageMeter, non-EZMB mods) or an incompatible BaseLib version. " +
+            "Disable all mods except BaseLib + EZMicroBalance and retest. See ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT in docs/issues.md.");
     }
 
     [ReleaseArtifactFact]

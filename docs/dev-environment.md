@@ -18,10 +18,14 @@
 - Game root: `D:\Steam\steamapps\common\Slay the Spire 2`
 - Mod folder: `D:\Steam\steamapps\common\Slay the Spire 2\mods`
 - Current branch target: public beta
-- Observed in-game version (local source snapshot): `v0.104.0`
-- Observed in-game version date (local source snapshot): `2026.04.23`
-- Player-reported installed version (2026-05-08): `v0.105.0, 2026.05.08`
-- ⚠️ Source code under `source code/src/Core/` may be from v0.104.0; current installed game is v0.105.0. API drift risk is present. Revalidate before relying on source-specific conclusions.
+- Observed installed game version: `v0.105.0`
+- Observed installed game date: `2026.05.07` upstream build date, installed locally on `2026-05-08`
+- Live observed in-game version (player report, 2026-05-08): `v0.105.0, 2026.05.08`
+- Local source snapshot: `source code/` was refreshed from `D:\Steam\steamapps\common\Slay the Spire 2\SlayTheSpire2.pck` on 2026-05-08 using GDRE Tools `v2.5.0-beta.5`; `release_info.json` reports commit `e4579d36`, branch/version `v0.105.0`, and `main_assembly_hash` `359406027`.
+- Source recovery log: `source code/gdre_export.log` detected Godot `4.5.1`, bytecode `4.5.0-stable (ebc36a7)`, extracted 15,551 files with no extraction errors, decompiled 3,448 scripts, reported 18 failed scripts, and successfully ran `dotnet build` for the recovered `sts2.sln`.
+- BaseLib v3.1.0 compatibility with v0.105.0: **NOT PROVEN.** Live log (`godot2026-05-08T05.06.30.log`) shows 3 BaseLib patch failures (ExhaustivePatch, PersistPatch, PurgePatch) and `MissingMethodException: Creature.get_ShowsInfiniteHp()` from `BaseLib.Patches.UI.HealthBarForecastPatch`.
+- Do not use pre-2026-05-08 `v0.104.0` source notes as the sole basis for current `v0.105.0` conclusions. Reinspect the refreshed source and confirm runtime behavior before making release claims.
+- Test environment must be ONLY BaseLib + EZMicroBalance. The current log shows `Loaded 17 mods (19 total)` including DamageMeter, RouteSuggest, AnimeWaifuSilent, etc. — this invalidates any release evidence.
 
 
 ## Project mission
@@ -118,4 +122,3 @@
 1. Decide whether private beta can ship with `AUTHOR_NAME_REPLACE_ME` or ask the user for the desired author name before final release.
 2. Check `godot.log` during private beta verification.
 3. Old root-level BaseLib folder remains present; leave it untouched unless explicitly cleaning up later.
-

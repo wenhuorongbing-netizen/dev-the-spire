@@ -13,9 +13,9 @@ internal enum BossSealId
     MisalignedShell,
     MarginalNote,
     StruggleBait,
-    DoorWedge,
     ChosenDecree,
-    ResidualSample
+    ResidualSample,
+    AeonglassStrength
 }
 
 internal enum BossSealImplementationStatus
@@ -101,13 +101,13 @@ internal static class BossSealCatalog
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
                 "Uses Strength/Sandpit/heal observations on The Insatiable and generated Frantic Escape cards; live source-classification verification pending.",
                 "Each unplayed generated Frantic Escape grants 5 Block after 2 player turns."),
-            [EncounterId("DOORMAKER_BOSS")] = new(
-                BossSealId.DoorWedge,
-                "Door Wedge",
-                "First revealed turn should cap per-hit damage until enough Attacks remove the wedge.",
+            [EncounterId("AEONGLASS_BOSS")] = new(
+                BossSealId.AeonglassStrength,
+                "Temporary Royal Seal",
+                "This Boss starts with +5 Strength.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
-                "Uses Doormaker phase-power observation and a custom damage-cap power; does not add draw, cost, or Exhaust restrictions.",
-                "Removed by 4th Attack, with per-hit cap increased to 50."),
+                "v0.105.0 new boss Aeonglass. Simple +5 Strength via PowerCmd.Apply<StrengthPower>; no complex Brand/seal mechanics yet.",
+                "The second Boss version also starts with +5 Strength."),
             [EncounterId("QUEEN_BOSS")] = new(
                 BossSealId.ChosenDecree,
                 "Chosen Decree",
@@ -149,9 +149,9 @@ internal static class BossSealCatalog
             BossSealId.MisalignedShell => "BOSS_SEAL_MISALIGNED_SHELL",
             BossSealId.MarginalNote => "BOSS_SEAL_MARGINAL_NOTE",
             BossSealId.StruggleBait => "BOSS_SEAL_STRUGGLE_BAIT",
-            BossSealId.DoorWedge => "BOSS_SEAL_DOOR_WEDGE",
             BossSealId.ChosenDecree => "BOSS_SEAL_CHOSEN_DECREE",
             BossSealId.ResidualSample => "BOSS_SEAL_RESIDUAL_SAMPLE",
+            BossSealId.AeonglassStrength => "BOSS_SEAL_AEONGLASS_STRENGTH",
             _ => "BOSS_ROYAL_SEAL"
         };
     }

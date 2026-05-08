@@ -353,7 +353,7 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Contains("2 Artifact", englishAscension["BOSS_SEAL_MISALIGNED_SHELL.brand"], StringComparison.Ordinal);
         Assert.Contains("second Marginal Note", englishAscension["BOSS_SEAL_MARGINAL_NOTE.brand"], StringComparison.Ordinal);
         Assert.Contains("5 Block", englishAscension["BOSS_SEAL_STRUGGLE_BAIT.brand"], StringComparison.Ordinal);
-        Assert.Contains("4th Attack", englishAscension["BOSS_SEAL_DOOR_WEDGE.brand"], StringComparison.Ordinal);
+        Assert.Contains("+5 Strength", englishAscension["BOSS_SEAL_AEONGLASS_STRENGTH.brand"], StringComparison.Ordinal);
         Assert.Contains("players 5 Block", englishAscension["BOSS_SEAL_CHOSEN_DECREE.brand"], StringComparison.Ordinal);
         Assert.Contains("2 weakened samples", englishAscension["BOSS_SEAL_RESIDUAL_SAMPLE.brand"], StringComparison.Ordinal);
         foreach (var key in englishAscension.Keys.Where(key => key.StartsWith("BOSS_SEAL_", StringComparison.Ordinal)))

@@ -2,6 +2,8 @@
 
 Date: 2026-05-08
 
+**⚠️ P0 BLOCKER (2026-05-08):** The current live test log (`godot2026-05-08T05.06.30.log`) was collected in a v0.105.0 environment with 17 mods loaded, not the required BaseLib+EZMB-only setup. BaseLib v3.1.0 has 3 patch failures and `MissingMethodException: Creature.get_ShowsInfiniteHp()` on v0.105.0. Do not use this log or this mod environment as release evidence. See `ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT` in `docs/issues.md`.
+
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
 ## Package Under Test

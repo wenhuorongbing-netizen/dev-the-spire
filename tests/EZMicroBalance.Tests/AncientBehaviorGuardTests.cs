@@ -54,7 +54,6 @@ public sealed class AncientBehaviorGuardTests
         "PRISMATIC_GEM.countHint.nextNormal",
         "PRISMATIC_GEM.countHint.nextOffColor",
         "PRISMATIC_GEM.rewardScreenHint",
-        "PUMPKIN_CANDLE.description",
         "SEAL_OF_GOLD.description",
         "SOZU.description",
         "TOASTY_MITTENS.description",
@@ -89,7 +88,6 @@ public sealed class AncientBehaviorGuardTests
         "Crossbow",
         "Toasty Mittens",
         "Whispering Earring",
-        "Pumpkin Candle",
         "Meat Cleaver",
         "Blood-Soaked Rose / Enthralled"
     ];
@@ -240,7 +238,6 @@ public sealed class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart))]",
             "[HarmonyPatch(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))]",
             "[HarmonyPatch(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))]",
-            "internal static class PumpkinCandlePatch",
             "AccessTools.DeclaredMethod(",
             "[HarmonyPatch(typeof(CookRestSiteOption), MethodType.Constructor, typeof(Player))]",
             "[HarmonyPatch(typeof(CookRestSiteOption), \"get_Description\")]",

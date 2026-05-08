@@ -21,6 +21,8 @@ Best release test setup:
 
 Same-PC multi-open is not reliable for real Steam multiplayer and should not be the primary release test. It can be useful for rough local investigation only if Steam permits it, but it does not replace the two-PC matrix.
 
+**Known-incompatible mods (as of v0.105.0, 2026-05-08):** DamageMeter calls removed `Creature.get_ShowsInfiniteHp()` and can interrupt combat startup. Do not enable DamageMeter during EZMB testing until an updated version is confirmed compatible.
+
 `--force-steam off` is valid for controlled loader smoke only. It is not a replacement for real multiplayer lobby, Steam-client Mod Settings, save/load, or co-op desync testing.
 
 ## Environment Variables
@@ -195,6 +197,17 @@ After changing User env vars, fully restart Steam and the game on the affected m
 - Keep unrelated local invalid-manifest errors separate from EZ Micro Balance findings.
 
 ## P0 Triage Matrix — Multiplayer A11-A20 Run-Start / Neow / Black Screen / Save-Quit
+
+**⚠️ Dependency Compatibility Gate — must pass BEFORE any A11-A20 testing:**
+
+1. Disable ALL mods except BaseLib + EZMicroBalance. Explicitly disable/remove DamageMeter, RouteSuggest, AnimeWaifuSilent, AncientWaifus, BetterSpire2Lite, Act4Heart, ModConfig, QuickLink, SpeedX, The-Watcher, and all skin/character/replacement mods.
+2. Start singleplayer A0 with Defect (or any character that starts with an active relic like Cracked Core). Enter first combat.
+3. Expected: draw cards normally, energy not stuck at 0, no `Creature.get_ShowsInfiniteHp` in `godot.log`.
+4. Start singleplayer A10. Same expectations.
+5. Start singleplayer A20. Same expectations.
+6. `godot.log` must have 0 BaseLib patch failures and 0 `Creature.get_ShowsInfiniteHp` lines.
+7. If any of 2-6 fails, stop here. The environment is not ready for EZMB A11-A20 testing. Update BaseLib or roll back game version.
+8. Only after passing steps 1-7, proceed to the triage rows below.
 
 Execute these rows to isolate the root cause of the reported 0/80 HP, Neow blocked, save-quit not propagating, and black screen issues. Each row is a separate co-op run with the specified environment variables on both host and client.
 

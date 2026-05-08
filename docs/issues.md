@@ -4,11 +4,54 @@ This file tracks player-reported and runtime-observed issues. Do not mark an ite
 
 ## Open
 
+### ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT
+
+Priority: P0 — **RELEASE BLOCKER**
+
+Status: confirmed via live log; dependency resolution pending. Do not release until resolved.
+
+Area: v0.105.0 API drift / BaseLib v3.1.0 compatibility / mod environment hygiene
+
+Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
+
+1. **Test environment loaded 17 mods, not only BaseLib + EZMicroBalance:**
+   - `Loaded 17 mods (19 total)`
+   - Loaded `DamageMeter`, `RouteSuggest`, `AnimeWaifuSilent`, `ModConfig`, `QuickLink`, `SpeedX`, `The-Watcher`, and others.
+   - This violates the release test prerequisite: only BaseLib + EZMicroBalance enabled.
+
+2. **BaseLib v3.1.0 has 3 patch failures against v0.105.0:**
+   - `Undefined target method for patch method ... ExhaustivePatch`
+   - `Undefined target method for patch method ... PersistPatch`
+   - `Undefined target method for patch method ... PurgePatch`
+   - `[BaseLib] Applied 150 patches successfully, 3 failed`
+
+3. **`Creature.get_ShowsInfiniteHp()` is missing in v0.105.0:**
+   - `System.MissingMethodException: Method not found: 'Boolean MegaCrit.Sts2.Core.Entities.Creatures.Creature.get_ShowsInfiniteHp()'`
+   - Called from `BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay(NHealthBar healthBar)`
+   - Also called from `DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp(CombatState combatState)`
+   - Stack reaches `CrackedCore.BeforeSideTurnStart` and `CombatManager.StartCombatInternal()`
+
+4. **Direct gameplay impact:**
+   - The `MissingMethodException` in the combat-start/turn-start hook chain interrupts normal combat initialization.
+   - Observed: singleplayer Defect A20 enters combat but does not draw cards, energy stuck at 0/3. Combat does not enter a normal player turn.
+   - This is NOT an EZMB logic bug; it is a dependency/environment compatibility blocker.
+
+Required resolution (before any EZMB fix or release claim):
+- [ ] Disable all mods except BaseLib + EZMicroBalance.
+- [ ] If BaseLib v3.1.0 still throws `Creature.get_ShowsInfiniteHp` on v0.105.0: update BaseLib to a v0.105-compatible version, or roll back game test branch to v0.104.0.
+- [ ] Confirm singleplayer A0 combat draws cards and gains energy normally.
+- [ ] Confirm singleplayer A10 combat draws cards and gains energy normally.
+- [ ] Confirm singleplayer A20 combat draws cards and gains energy normally.
+- [ ] `godot.log` has no `Creature.get_ShowsInfiniteHp`.
+- [ ] `godot.log` has no BaseLib patch failures.
+- [ ] `godot.log` has no DamageMeter or other non-EZMB mod exceptions.
+- Only then resume multiplayer A11-A20 testing.
+
 ### ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED
 
 Priority: P0
 
-Status: investigating; diagnostics patch pending; unsolved
+Status: investigating; diagnostics patch pending; unsolved. **⚠️ BLOCKED by ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT — retest HP/Neow only after clean BaseLib+EZMB environment is confirmed.**
 
 Area: multiplayer A11-A20 run start / Neow initialization / player HP
 
@@ -28,7 +71,7 @@ Current source analysis:
 
 Hypotheses (in priority order):
 1. Vanilla multiplayer `CreatureCmd.Heal` or `SetCurrentHpInternal` fails/skips for the non-host player when `RunState.AscensionLevel > 10`, possibly because `NetService.Type.IsMultiplayer()` bypasses some initialization path.
-2. v0.105.0 API drift: the `AncientEventModel` or `CreatureCmd.Heal` code path changed between the local v0.104.0 source snapshot and the installed v0.105.0 game, altering heal behavior.
+2. A multiplayer-specific runtime path prevents the v0.105.0 `AncientEventModel.BeforeEventStarted` / `CreatureCmd.Heal` flow from applying to the affected client, despite the refreshed source still showing the vanilla full-heal path.
 3. Our `AscensionSelectionPatches` expand `maxMultiplayerAscensionUnlocked` during `UpdateMaxMultiplayerAscension` in a way that corrupts some lobby/player state before the run starts. Our patches do not touch `BeginRunForAllPlayers` directly (only log a warning).
 4. A20 Dual King Brands warning patch or some other EZMB Harmony patch interferes with lobby cleanup or run setup in a non-obvious way.
 5. The Neow event fails to start properly in multiplayer, so `BeforeEventStarted` never fires, and HP remains at whatever value was set during player creation (which should still be `StartingHp`).
@@ -42,15 +85,16 @@ Required evidence:
 
 Priority: P0/P1
 
-Status: investigating; source evidence pending
+Status: investigating; refreshed v0.105.0 source evidence exists; live co-op evidence pending
 
 Area: multiplayer save-and-quit / disconnect / host-client sync
 
 Player report: in co-op, when one player saves and quits, the other machine does not synchronously quit, disconnect, or return to menu.
 
-Current source analysis needed:
-- `NSaveAndQuitButton.cs` exists but contains only whitespace in the local v0.104.0 source snapshot; save/quit flow may be in other files.
-- `NGame.Quit()` (source code/src/Core/Nodes/NGame.cs) saves settings and calls `GetTree().Quit()` but does not send a disconnect message to remote peers.
+Current v0.105.0 source notes:
+- Pause-menu save-and-quit is handled by `NPauseMenu.OnSaveAndQuitButtonPressed()` / `CloseToMenu()`, which calls `NGame.ReturnToMainMenu()`.
+- `NGame.ReturnToMainMenu()` fades out, loads common/main-menu assets, calls `RunManager.Instance.CleanUp()`, and loads the main menu.
+- `NGame.Quit()` (source code/src/Core/Nodes/NGame.cs) saves settings/profile data and calls `GetTree().Quit()` but does not send a disconnect message to remote peers.
 - `StartRunLobby.CleanUp(bool disconnectSession)` can disconnect the network session.
 - `RunManager.LocalPlayerDisconnected` handles peer disconnection events.
 - `NetService.Disconnect(NetError.Quit)` may not propagate to remote clients properly.
@@ -64,9 +108,9 @@ Required investigation:
 
 Priority: P0/P1
 
-Status: investigating; may be same root cause as HP0-Neow issue or separate
+Status: investigating; may be caused by the same combat/start-state exception chain documented in ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT. Do not isolate until dependency errors are removed.
 
-Area: multiplayer run start / screen transition / mod load / A20 BossSeal type load
+Area: multiplayer run start / screen transition / mod load / dependency compatibility
 
 Player report: multiplayer run start can still black-screen, even after the earlier `DoormakerBoss` TypeLoadException fix.
 
@@ -105,7 +149,7 @@ Observed log evidence:
 
 Root cause:
 
-- The repository source snapshot contains newer Early Access boss types such as `DoormakerBoss`, but the currently installed Steam game DLL does not expose every same type/member.
+- Earlier source/API evidence proved optional Early Access boss and power types are not safe to reference directly; the refreshed v0.105.0 source does not expose the previously crashing `DoormakerBoss` type.
 - `BossSealCatalog` used hard generic references like `ModelDb.GetId<DoormakerBoss>()`; static initialization therefore crashed before the run could finish generating the first map.
 - Current build also proved adjacent API drift: direct `Doormaker` / `HungerPower` / `ScrutinyPower` / `GraspPower` references and direct `PumpkinCandle.ActiveAct` access are not safe against the installed DLL.
 

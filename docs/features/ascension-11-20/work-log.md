@@ -5,6 +5,37 @@ Manifest id: EZMicroBalance
 
 Current status note: entries below are chronological history. The current automated test baseline is recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh; earlier 24-test, 28-test, 34-test, 46-test, 56-test, 57-test, 58-test, 63-test, and 64-test entries are retained as historical evidence from before later guard additions.
 
+## 2026-05-08 - v0.105.0 API Drift / BaseLib / Dependency Compatibility Blocker
+
+Scope: re-prioritize from EZMB HP/Neow fix to dependency compatibility gate.
+
+Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
+
+- **17-mod environment:** `Loaded 17 mods (19 total)` — invalidates release evidence. Must test with only BaseLib + EZMicroBalance.
+- **BaseLib v3.1.0 patch failures:** `Undefined target method ... ExhaustivePatch`, `PersistPatch`, `PurgePatch`. `Applied 150 patches successfully, 3 failed`.
+- **`Creature.get_ShowsInfiniteHp()` removed in v0.105.0:**
+  - `System.MissingMethodException: Method not found: 'Boolean MegaCrit.Sts2.Core.Entities.Creatures.Creature.get_ShowsInfiniteHp()'`
+  - Callers: `BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay(NHealthBar)`, `DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp(CombatState)`
+  - Stack reaches `CrackedCore.BeforeSideTurnStart` → `CombatManager.StartCombatInternal()`
+- **Direct gameplay impact:** singleplayer Defect A20 enters combat, does not draw cards, energy stuck at 0/3. Combat startup is interrupted by the exception chain.
+- **Conclusion:** This is NOT an EZMB logic bug. The EZMB HP/Neow/energy diagnostics work is on hold until the dependency environment is cleaned and proven compatible.
+
+Actions taken:
+- Added `ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT` as P0 release blocker.
+- Updated existing P0 multiplayer issues with dependency blocker notes.
+- Updated `docs/dev-environment.md` with v0.105.0 API drift evidence, BaseLib compatibility warning, and later the refreshed v0.105.0 local source snapshot status.
+- Updated `docs/release-checklist.md` with dependency blocker gates.
+- Updated `docs/private-beta-verification-handoff.md` with do-not-use-17-mod warning.
+- Updated `docs/features/ascension-11-20/multiplayer-test-runbook.md` with Dependency Compatibility Gate before all A11-A20 testing.
+- Added log guard test for `Creature.get_ShowsInfiniteHp` and `BaseLib.Patches.UI.HealthBarForecastPatch`.
+- No EZMB gameplay code changed for HP/energy. No emergency HP fix added.
+
+Manual actions for tester:
+1. Disable all mods except BaseLib + EZMicroBalance.
+2. If BaseLib v3.1.0 still throws `Creature.get_ShowsInfiniteHp` on v0.105.0: update BaseLib or roll back game to v0.104.0.
+3. Run singleplayer A0/A10/A20 combat tests.
+4. Only then resume multiplayer A11-A20 triage.
+
 ## 2026-05-08 - Multiplayer A11-A20 P0 Triage: HP0/Neow Blocked / Save-Quit / Black Screen
 
 Scope:
@@ -46,8 +77,10 @@ Key source findings:
    - `RunManager.SetUpNewMultiPlayer()` → `InitializeNewRun()` → `ApplyAscensionEffects()` (no HP change).
    - `StartRun()` → `RunManager.Instance.EnterAct(0, doTransition: false)` → Neow event starts → `BeforeEventStarted` fires.
 
-4. **Save/quit** (`NSaveAndQuitButton.cs`):
-   - Local source snapshot file is empty (1 byte). Cannot analyze from source alone.
+4. **Save/quit** (`NPauseMenu.cs`, refreshed v0.105.0 source):
+   - `NPauseMenu.OnSaveAndQuitButtonPressed()` calls `CloseToMenu()`.
+   - `CloseToMenu()` disables the pause buttons and awaits `NGame.Instance.ReturnToMainMenu()`.
+   - `NGame.ReturnToMainMenu()` calls `RunManager.Instance.CleanUp()` before loading the main menu.
    - `RunManager.CleanUp()` calls `NetService.Disconnect(NetError.Quit, !graceful)`.
    - `NGame.Quit()` saves settings/progress and calls `GetTree().Quit()` — does not send network disconnect.
 
@@ -58,14 +91,14 @@ Key source findings:
 
 Hypotheses (ranked):
 1. (Most likely) Vanilla `CreatureCmd.Heal` or `AncientEventModel.BeforeEventStarted` skips execution for non-host players in multiplayer when `RunState.AscensionLevel > 10`, possibly due to `State.ExtraFields.StartedWithNeow` flag mismatch or `ActionExecutor` not yet unpaused.
-2. (Less likely) v0.105.0 API drift: `AncientEventModel` or `CreatureCmd` changed in a way that breaks the heal path for ascension > 10.
+2. (Less likely after refreshed-source check) A multiplayer-only runtime path prevents the refreshed v0.105.0 `AncientEventModel` / `CreatureCmd.Heal` flow from applying to a client even though static source still shows the heal path.
 3. (Less likely) EZMB patch corruption: our patches on `UpdateMaxMultiplayerAscension`, `BeginRunLocally`, etc. corrupt some lobby/run state before multiplayer run start.
 4. (Unlikely) Neow event type-load failure: if `Neow` or its base classes fail to load for a non-host player, `BeforeEventStarted` never fires.
 
 Required next steps:
 - Run live co-op triage rows A-F from multiplayer-test-runbook.md with `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1`.
 - Collect host/client `godot.log` and analyze HP values at each diagnostic point.
-- Source evidence is from v0.104.0 snapshot; game is now v0.105.0. Confirm no API drift in `AncientEventModel.BeforeEventStarted`, `CreatureCmd.Heal`, `Creature.HealInternal`.
+- Static source evidence has been refreshed to v0.105.0. Continue by confirming the runtime multiplayer path in host/client logs, not by relying on the older v0.104.0 source snapshot.
 
 Scope:
 
@@ -965,7 +998,7 @@ Verification:
 
 - Investigated the player-reported multiplayer A20 black screen through `C:\Users\Jack\AppData\Roaming\SlayTheSpire2\logs\godot.log`.
 - Direct failure evidence: host multiplayer A20 run start reached `NGame.StartNewMultiplayerRun(...)`, then `AscensionMapService.MarkBossSeals(...)` triggered `BossSealCatalog..cctor()` and threw `System.TypeLoadException: Could not load type 'MegaCrit.Sts2.Core.Models.Encounters.DoormakerBoss'`.
-- Root cause: the local source snapshot includes newer Early Access boss classes, but the current installed Steam DLL does not expose every same type/member. Hard generic type references in Boss Seal startup code are unsafe across EA builds.
+- Root cause: earlier source/API evidence exposed Early Access type drift around optional boss and power classes. The later v0.105.0 source refresh does not expose the previously crashing `DoormakerBoss` type, so hard generic type references in Boss Seal startup code remain unsafe across EA builds.
 - Changed `BossSealCatalog` to map Boss Royal Seals by runtime-safe `ModelId` strings such as `ENCOUNTER.DOORMAKER_BOSS` instead of `ModelDb.GetId<DoormakerBoss>()`.
 - Changed Door Wedge checks to use runtime `ModelId` checks for the Doormaker monster and phase powers instead of direct `Doormaker`, `HungerPower`, `ScrutinyPower`, or `GraspPower` type references.
 - Adjusted adjacent compile/runtime compatibility for the current installed game API: Debt turn-end patch now uses a string target name, Pumpkin Candle active-act handling uses reflection for `ActiveAct` / `_activeAct` instead of direct property access, and Pumpkin Candle room-entry patching now falls back to `AbstractModel.AfterRoomEntered` when the subclass override is absent.

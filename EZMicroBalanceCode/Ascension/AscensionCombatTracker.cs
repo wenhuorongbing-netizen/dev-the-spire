@@ -45,8 +45,6 @@ internal sealed class AscensionCombatTracker
     public bool StruggleBaitBaselineCaptured { get; set; }
     public int LastInsatiableStrengthAmount { get; set; }
     public decimal LastInsatiableSandpitAmount { get; set; }
-    public bool DoorWedgeTriggered { get; set; }
-    public int DoorWedgeAttacksPlayed { get; set; }
     public CardModel? ChosenDecreeCard { get; set; }
     public bool ChosenDecreePlayed { get; set; }
     public int TestSubjectPhaseChanges { get; set; }

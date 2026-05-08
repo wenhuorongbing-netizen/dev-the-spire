@@ -218,7 +218,7 @@ public sealed class AscensionFeatureGuardTests
             bossSealDefinition,
             "private const string EncounterCategory = \"ENCOUNTER\"",
             "private static ModelId EncounterId(string entry)",
-            "EncounterId(\"DOORMAKER_BOSS\")",
+            "EncounterId(\"AEONGLASS_BOSS\")",
             "EncounterId(\"QUEEN_BOSS\")",
             "EncounterId(\"TEST_SUBJECT_BOSS\")");
 
@@ -230,10 +230,9 @@ public sealed class AscensionFeatureGuardTests
 
         AssertSourceContains(
             combatService,
-            "DoormakerMonsterId = new(\"MONSTER\", \"DOORMAKER\")",
-            "HungerPowerId = new(\"POWER\", \"HUNGER_POWER\")",
-            "private static Creature? FindDoormaker(CombatState combatState)",
-            "private static bool HasDoormakerPhasePower(Creature doormaker)");
+            "BossSealId.AeonglassStrength",
+            "PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), boss, 5, boss, null)",
+            "Ascension AeonglassStrength: applied +5 Strength");
 
         Assert.DoesNotContain("enemy.Monster is Doormaker", combatService, StringComparison.Ordinal);
         Assert.DoesNotContain("HasPower<HungerPower>", combatService, StringComparison.Ordinal);

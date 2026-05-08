@@ -50,6 +50,7 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/TurnOfferAndRestPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/VakuRewardPatches.cs",
+        "EZMicroBalanceCode/Ancients/BrightestFlameExhaustDrawPatch.cs",
         "EZMicroBalanceCode/Ascension/AscensionA20Patches.cs",
         "EZMicroBalanceCode/Ascension/AscensionA20RewardScreenPatches.cs",
         "EZMicroBalanceCode/Ascension/AscensionAssetPaths.cs",
@@ -104,7 +105,7 @@ public sealed class ReleaseCoverageGuardTests
     [
         new("Pael's Horn", ["PAELS_HORN.description"], [], [], ["PaelsHorn", "CreateCard<Relax>", "CardCmd.Upgrade(upgradedRelax)"]),
         new("Black Star", ["BLACK_STAR.description"], [], [], ["BlackStar", "RelicFactory.PullNextRelicFromFront"]),
-        new("War Hammer", ["WAR_HAMMER.description"], [], [], ["WarHammer", "CardSelectCmd.FromDeckForUpgrade", "CardCmd.Upgrade(cards)"]),
+        new("War Hammer", ["WAR_HAMMER.description"], [], [], ["WarHammer", "CardSelectCmd.FromDeckForUpgrade", "CardCmd.Upgrade(cards, CardPreviewStyle.HorizontalLayout)"]),
         new("Jewelry Box", ["JEWELRY_BOX.description"], [], [], ["JewelryBox", "CreateNonInnateApotheosis", "Apotheosis"]),
         new("Preserved Fog / Folly", ["PRESERVED_FOG.description"], ["FOLLY.title", "FOLLY.description"], [], ["PreservedFog", "Folly", "FollyKeywordsPatch"]),
         new("Claws", ["CLAWS.description"], [], [], ["Claws", "CreateClawsCurseDraft", "CreateCard<Wish>"]),
@@ -126,7 +127,6 @@ public sealed class ReleaseCoverageGuardTests
         new("Crossbow", ["CROSSBOW.description"], [], [], ["Crossbow", "OfferTemporaryAttack", "CardSelectCmd.FromChooseACardScreen"]),
         new("Toasty Mittens", ["TOASTY_MITTENS.description"], [], [], ["ToastyMittens", "OfferTopCardExhaust", "StrengthPower"]),
         new("Whispering Earring", ["WHISPERING_EARRING.description"], [], [], ["WhisperingEarring", "AutoPlayOneHighestCostCard", "AutoPlayType.Default"]),
-        new("Pumpkin Candle", ["PUMPKIN_CANDLE.description"], [], [], ["PumpkinCandle", "ExtinguishedSentinel", "CardCmd.Upgrade(cards)"]),
         new("Meat Cleaver", ["MEAT_CLEAVER.description"], [], ["OPTION_COOK.ezDescription", "OPTION_COOK.ezDescriptionDisabled"], ["MeatCleaver", "CookRestSiteOption", "CardsToRemove = 2"]),
         new("Blood-Soaked Rose / Enthralled", ["BLOOD_SOAKED_ROSE.description"], ["ENTHRALLED.title", "ENTHRALLED.description"], [], ["Enthralled", "PlayEnthralled", "GainBlock"])
     ];
@@ -234,7 +234,7 @@ public sealed class ReleaseCoverageGuardTests
                 "HolyDazePower",
                 "MarginalNote",
                 "RoyalDecreeEnchantment",
-                "DoorWedge",
+                "AeonglassStrength",
                 "IsBossBrand",
                 "AscensionA20GenerateRoomsPatch",
                 "AscensionA20CourtyardProceedPatch",
@@ -328,7 +328,7 @@ public sealed class ReleaseCoverageGuardTests
             "RootblightLevel",
             "RootDeckService.AddRootblightI",
             "RootDeckService.ResolveCombatEndRootblight",
-            "CardPileCmd.RemoveFromDeck(card)");
+            "CardPileCmd.RemoveFromDeck(card, showPreview: false)");
 
         AssertLocalizedKeys(
             [

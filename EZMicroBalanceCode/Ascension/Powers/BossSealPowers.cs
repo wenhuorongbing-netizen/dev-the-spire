@@ -38,26 +38,6 @@ internal sealed class HolyDazePower : BossSealPower
     }
 }
 
-internal sealed class DoorWedgePower : BossSealPower
-{
-    public override PowerStackType StackType => PowerStackType.Counter;
-
-    public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
-        ? new PowerLoc(
-            "王印：门楔",
-            "门扉开启后的首个回合，每次受到的伤害最多为{Amount}。打出足够的攻击牌会移除此效果。",
-            "每次受伤最多为{Amount}。")
-        : new PowerLoc(
-            "Royal Seal: Door Wedge",
-            "On the first revealed turn, damage taken from each hit is capped at {Amount}. Playing enough Attacks removes this.",
-            "Damage taken is capped at {Amount}.");
-
-    public override decimal ModifyDamageCap(Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource)
-    {
-        return target == Owner ? Amount : decimal.MaxValue;
-    }
-}
-
 internal sealed class BoilingCriticalPower : BossSealPower
 {
     public override PowerStackType StackType => PowerStackType.Counter;

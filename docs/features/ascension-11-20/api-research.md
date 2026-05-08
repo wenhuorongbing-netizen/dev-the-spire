@@ -2,7 +2,7 @@
 
 Project: EZ Micro Balance  
 Manifest id: EZMicroBalance  
-Game target: Slay the Spire 2 public beta v0.104.0, 2026.04.23 (local source snapshot); installed player-reported version v0.105.0, 2026.05.08  
+Game target: Slay the Spire 2 public beta v0.105.0, 2026.05.08; local source under `source code/` refreshed from the installed PCK on 2026-05-08
 BaseLib runtime target: v3.1.0  
 Research date: 2026-05-08  
 Status: A11-A20 single-player and host-multiplayer selector expansion plus prototype slices added; P0 multiplayer run-start/Neow HP0/save-quit/black screen triage in progress. Diagnostics system added. Source evidence documented below. Live co-op bisect pending.
@@ -40,6 +40,7 @@ A11-A20 selection is now default-on in this private-beta multiplayer test candid
 This audit did not change gameplay source or run live game/co-op verification. It records source evidence and follow-up work for the next implementation pass.
 
 - Primary local source evidence exists under `source code/src/Core/`. Relevant inspected paths include `StartRunLobby`, `LobbyPlayer.maxMultiplayerAscensionUnlocked`, `SerializableProgress.PreferredMultiplayerAscension`, `RunState.AscensionLevel`, `SerializableRun.Ascension`, `NGame.StartNewMultiplayerRun(...)`, and vanilla map/hover classes.
+- 2026-05-08 source refresh: `source code/` was recovered from the local v0.105.0 `SlayTheSpire2.pck` with GDRE Tools `v2.5.0-beta.5`. Do not rely on older v0.104.0 source notes without rechecking the refreshed files.
 - Local BaseLib runtime files exist under `<GameRoot>/mods/BaseLib` as DLL/JSON/PCK, and `EZMicroBalance.csproj` references NuGet `Alchyr.Sts2.BaseLib` v3.1.0. Local BaseLib/RitsuLib source trees were not found in this repository; future API claims that require their internals need either local source or a cited package/source inspection.
 - Tutorial index checked as secondary reference: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html`, especially its BaseLib/RitsuLib/save/debug sections. Do not use it as a substitute for local source evidence.
 - Multiplayer A11-A20 selection is source-patched through `EZMicroBalanceCode/Ascension/AscensionSelectionPatches.cs`: single-player and host multiplayer selection paths are separate, host multiplayer expansion uses temporary `LobbyPlayer.maxMultiplayerAscensionUnlocked` snapshots during `UpdateMaxMultiplayerAscension`, and `UpdatePreferredAscension` skips A11-A20 preferred-progress writes.
@@ -273,8 +274,8 @@ Rootblight closed-loop implementation is not approved until these exact items ar
 
 | Area | Evidence | Status |
 | --- | --- | --- |
-| Neow HP initialization | `AncientEventModel.BeforeEventStarted` (`source code/src/Core/Models/AncientEventModel.cs:143-156`): sets player HP to 0 via `SetCurrentHpInternal(0m)`, then heals to full (or 80% for A2+ WearyTraveler) via `CreatureCmd.Heal`. This is vanilla behavior, not mod-introduced. | Source-evidenced from v0.104.0; v0.105.0 may differ |
-| Heal command path | `CreatureCmd.Heal` (`source code/src/Core/Commands/CreatureCmd.cs:499`) calls `creature.HealInternal(amount)` directly. No ActionQueue dependency. Only early return is for non-player creatures during combat end. | Should work outside combat regardless of ascension level |
+| Neow HP initialization | `AncientEventModel.BeforeEventStarted` (`source code/src/Core/Models/AncientEventModel.cs:143-157`): sets player HP to 0 via `SetCurrentHpInternal(0m)`, then heals to full (or 80% for A2+ WearyTraveler) via `CreatureCmd.Heal`. This is vanilla behavior, not mod-introduced. | Source-evidenced from refreshed v0.105.0 source |
+| Heal command path | `CreatureCmd.Heal` (`source code/src/Core/Commands/CreatureCmd.cs:511`) calls `creature.HealInternal(amount)` directly. No ActionQueue dependency. Only early return is for non-player creatures during combat end. | Should work outside combat regardless of ascension level |
 | AscensionManager | `AscensionManager` (`source code/src/Core/Entities/Ascension/AscensionManager.cs`) has `maxAscensionAllowed = 10` (used only by progress savemanager clamping). Constructor accepts `int level` directly — no clamping. `HasLevel(AscensionLevel.WearyTraveler)` checks `_level >= 2`, which is true for any level >= A2. | Works for values > 10 |
 | Player HP creation | `Player.CreateForNewRun(CharacterModel character, ...)` uses `character.StartingHp` for both currentHp and maxHp. No ascension-based HP reduction. | No HP issue at creation time |
 | EZMB gameplay slices | `RootRunHook.AfterActEntered` adds Rootblight cards but does not touch HP. `AscensionCombatModifierService` uses `CreatureCmd.SetMaxAndCurrentHp` only in combat for Firemark modifiers. | No HP modification during run start |
@@ -285,12 +286,12 @@ Rootblight closed-loop implementation is not approved until these exact items ar
 
 | Area | Evidence | Status |
 | --- | --- | --- |
-| NSaveAndQuitButton.cs | Local source snapshot file is empty (1 byte). Cannot analyze vanilla save/quit implementation. | Unknown |
+| Pause-menu Save & Quit | `NPauseMenu.OnSaveAndQuitButtonPressed()` calls `CloseToMenu()`, which disables pause buttons and awaits `NGame.Instance.ReturnToMainMenu()`. `ReturnToMainMenu()` calls `RunManager.Instance.CleanUp()` before loading the main menu. | Source-evidenced from refreshed v0.105.0 source; live co-op propagation pending |
 | RunManager.CleanUp | Calls `NetService.Disconnect(NetError.Quit, !graceful)` — this should disconnect the network session. | Pending live verification |
 | NGame.Quit | Saves settings/progress and calls `GetTree().Quit()` — does not send network disconnect message. | Singleplayer-only quit path |
 | RunManager.LocalPlayerDisconnected | Handles peer disconnection by removing their input sync. If disconnect reason is not `QuitGameOver` and run is not over, returns to main menu with error. | Pending live verification |
 
-**Key question**: Does the vanilla Save & Quit button call `RunManager.CleanUp()` (which disconnects network) or `NGame.Quit()` (which does not)? Without source evidence, this must be tested live with diagnostics.
+**Key question**: v0.105.0 source shows the vanilla Save & Quit path reaches `RunManager.CleanUp()`, which should disconnect the network session. Live co-op still needs to confirm whether the remote peer receives and handles that quit path cleanly.
 
 ### Multiplayer Diagnostics System
 

@@ -165,93 +165,10 @@ internal static class WhisperingEarringPatch
     }
 }
 
-[HarmonyPatch]
-internal static class PumpkinCandlePatch
-{
-    private const int ExtinguishedSentinel = -2;
-    private static readonly System.Reflection.PropertyInfo? ActiveActProperty = typeof(PumpkinCandle).GetProperty(
-        "ActiveAct",
-        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
-    private static readonly System.Reflection.FieldInfo? ActiveActField = typeof(PumpkinCandle).GetField(
-        "_activeAct",
-        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
-
-    private static System.Reflection.MethodBase TargetMethod()
-    {
-        return AccessTools.DeclaredMethod(
-                typeof(PumpkinCandle),
-                "AfterRoomEntered",
-                [typeof(AbstractRoom)]) ??
-            AccessTools.Method(
-                typeof(AbstractModel),
-                nameof(AbstractModel.AfterRoomEntered),
-                [typeof(AbstractRoom)]);
-    }
-
-    [HarmonyPrefix]
-    private static bool Prefix(AbstractModel __instance, ref Task __result)
-    {
-        if (__instance is not PumpkinCandle candle ||
-            !TryGetActiveAct(candle, out var activeAct))
-        {
-            return true;
-        }
-
-        if (activeAct >= 0 &&
-            candle.Owner.RunState.CurrentActIndex >= 2 &&
-            activeAct != candle.Owner.RunState.CurrentActIndex)
-        {
-            __result = ExtinguishAndUpgrade(candle);
-            return false;
-        }
-
-        return true;
-    }
-
-    private static Task ExtinguishAndUpgrade(PumpkinCandle candle)
-    {
-        var cards = PileType.Deck.GetPile(candle.Owner).Cards
-            .Where(card => card.IsUpgradable)
-            .ToList()
-            .StableShuffle(candle.Owner.RunState.Rng.Niche)
-            .Take(2)
-            .ToList();
-        if (cards.Count > 0)
-        {
-            candle.Flash();
-            CardCmd.Upgrade(cards, CardPreviewStyle.HorizontalLayout);
-        }
-
-        SetActiveAct(candle, ExtinguishedSentinel);
-        candle.Status = RelicStatus.Disabled;
-        MainFile.Logger.Info($"[EZMicroBalance] PumpkinCandle applied: extinguished and upgraded {cards.Count} card(s).");
-        return Task.CompletedTask;
-    }
-
-    private static bool TryGetActiveAct(PumpkinCandle candle, out int activeAct)
-    {
-        var rawValue = ActiveActProperty?.GetValue(candle) ?? ActiveActField?.GetValue(candle);
-        if (rawValue is int value)
-        {
-            activeAct = value;
-            return true;
-        }
-
-        activeAct = -1;
-        return false;
-    }
-
-    private static void SetActiveAct(PumpkinCandle candle, int activeAct)
-    {
-        if (ActiveActProperty?.SetMethod != null)
-        {
-            ActiveActProperty.SetValue(candle, activeAct);
-            return;
-        }
-
-        ActiveActField?.SetValue(candle, activeAct);
-    }
-}
+// ISSUE-2026-05-08-PUMPKIN-CANDLE-KEEP-VANILLA-BEHAVIOR:
+// PumpkinCandlePatch removed — vanilla Pumpkin Candle behavior restored.
+// The patch previously extinguished the candle in Act 3+ and upgraded 2 random cards.
+// See docs/issues.md for the reversion decision.
 
 [HarmonyPatch(typeof(CookRestSiteOption), MethodType.Constructor, typeof(Player))]
 internal static class MeatCleaverCookCtorPatch

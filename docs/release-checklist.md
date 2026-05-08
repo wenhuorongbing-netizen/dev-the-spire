@@ -63,6 +63,8 @@ Target manifest id: `EZMicroBalance`
 
 ## Known Issues
 
+- **P0 RELEASE BLOCKER (2026-05-08):** v0.105.0 game API is not proven compatible with BaseLib v3.1.0. Live `godot.log` shows `MissingMethodException: Creature.get_ShowsInfiniteHp()` from `BaseLib.Patches.UI.HealthBarForecastPatch` and 3 BaseLib patch failures (ExhaustivePatch, PersistPatch, PurgePatch). This can interrupt `CombatManager.StartCombatInternal()` and cause singleplayer combat to not draw cards or gain energy. Do not release until: (a) only BaseLib + EZMicroBalance are enabled, (b) singleplayer A0/A10/A20 combat draws and gains energy normally, (c) `godot.log` has no `Creature.get_ShowsInfiniteHp` and no BaseLib patch failures. See `ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT` in `docs/issues.md`.
+- **P0 RELEASE BLOCKER (2026-05-08):** The current test log was collected with `Loaded 17 mods (19 total)`, not the required BaseLib+EZMB-only environment. A 17-mod environment is not valid release evidence.
 - Current player-reported open issues are tracked in `docs/issues.md`; do not claim Ascension readiness until those entries are fixed or explicitly closed with runtime evidence.
 - A11 source now inserts a reachable optional route node in the new column and adds Act 1/2/3 route rows, while ordinary A11 route nodes no longer receive a dedicated marker or hover tooltip. The visual route choice still needs live Act 1/2/3 map verification.
 - Host multiplayer A20 development selection now logs an explicit downgrade warning. This is not live co-op support for Dual King Brands; A20 co-op boss-path behavior remains pending manual verification.

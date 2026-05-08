@@ -14,10 +14,6 @@ internal static class AscensionCombatModifierService
     private const decimal BountyPenaltyArtifact = 1m;
     private const int BountyDeadlineRound = 3;
     private const int BountyGoldReward = 15;
-    private static readonly ModelId DoormakerMonsterId = new("MONSTER", "DOORMAKER");
-    private static readonly ModelId HungerPowerId = new("POWER", "HUNGER_POWER");
-    private static readonly ModelId ScrutinyPowerId = new("POWER", "SCRUTINY_POWER");
-    private static readonly ModelId GraspPowerId = new("POWER", "GRASP_POWER");
 
     public static async Task BeforeCombatStart(CombatState combatState, AscensionCombatTracker tracker)
     {
@@ -539,12 +535,12 @@ internal static class AscensionCombatModifierService
         return combatState.RunState.Rng.Niche.NextItem(candidates);
     }
 
-    private static Task ApplyBossSealCombatStart(CombatState combatState, AscensionNodeMetadata metadata)
+    private static async Task ApplyBossSealCombatStart(CombatState combatState, AscensionNodeMetadata metadata)
     {
         var definition = metadata.BossSeal;
         if (definition == null)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         var mode = metadata.IsBossBrand ? "A20 Brand" : "A19 Royal Seal";
@@ -553,7 +549,19 @@ internal static class AscensionCombatModifierService
             : string.Empty;
         MainFile.Logger.Info(
             $"[EZMicroBalance] Ascension {mode} armed: {definition.Name} ({definition.Id}) is active for this boss. evidence={definition.RuntimeEvidence}{brandText}");
-        return Task.CompletedTask;
+
+        if (definition.Id == BossSealId.AeonglassStrength)
+        {
+            var boss = AliveEnemies(combatState)
+                .OrderByDescending(enemy => enemy.MaxHp)
+                .FirstOrDefault();
+            if (boss != null)
+            {
+                await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), boss, 5, boss, null);
+                MainFile.Logger.Info(
+                    $"[EZMicroBalance] Ascension AeonglassStrength: applied +5 Strength to {boss.ModelId.Entry}.");
+            }
+        }
     }
 
     private static async Task ApplyBossSealPlayerTurnStart(
@@ -628,9 +636,6 @@ internal static class AscensionCombatModifierService
                 break;
             case BossSealId.MarginalNote:
                 TrackKnowledgeDemonEnemyMove(combatState, tracker);
-                break;
-            case BossSealId.DoorWedge:
-                await TryApplyDoorWedge(combatState, tracker, metadata);
                 break;
             case BossSealId.ResidualSample:
                 await TryApplyResidualSamples(combatState, tracker, metadata);
@@ -753,7 +758,7 @@ internal static class AscensionCombatModifierService
         }
     }
 
-    private static async Task AfterBossSealCardPlayed(
+    private static Task AfterBossSealCardPlayed(
         CombatState combatState,
         AscensionCombatTracker tracker,
         AscensionNodeMetadata metadata,
@@ -769,9 +774,6 @@ internal static class AscensionCombatModifierService
                 }
 
                 break;
-            case BossSealId.DoorWedge:
-                await TrackDoorWedgeAttack(combatState, tracker, metadata, cardPlay);
-                break;
             case BossSealId.ChosenDecree:
                 TrackChosenDecreePlayed(tracker, cardPlay.Card);
                 break;
@@ -781,6 +783,8 @@ internal static class AscensionCombatModifierService
         {
             MainFile.Logger.Info("[EZMicroBalance] Ascension A19 tracked: Marginal Note was played.");
         }
+
+        return Task.CompletedTask;
     }
 
     private static async Task TryApplyHolyDaze(
@@ -1324,70 +1328,6 @@ internal static class AscensionCombatModifierService
         var block = maturedEscapes.Count * 5m;
         await CreatureCmd.GainBlock(insatiable, block, ValueProp.Move, null, fast: true);
         MainFile.Logger.Info("[EZMicroBalance] Ascension A20 applied: Struggle Bait Brand converted unplayed Frantic Escape pressure into Block.");
-    }
-
-    private static async Task TryApplyDoorWedge(
-        CombatState combatState,
-        AscensionCombatTracker tracker,
-        AscensionNodeMetadata metadata)
-    {
-        if (tracker.DoorWedgeTriggered)
-        {
-            return;
-        }
-
-        var doormaker = FindDoormaker(combatState);
-        if (doormaker == null ||
-            !HasDoormakerPhasePower(doormaker))
-        {
-            return;
-        }
-
-        tracker.DoorWedgeTriggered = true;
-        tracker.DoorWedgeAttacksPlayed = 0;
-        var cap = metadata.IsBossBrand ? 50m : 40m;
-        await PowerCmd.Apply<DoorWedgePower>(new BlockingPlayerChoiceContext(), doormaker, cap, doormaker, null);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Door Wedge capped Doormaker hit damage after reveal.");
-    }
-
-    private static async Task TrackDoorWedgeAttack(
-        CombatState combatState,
-        AscensionCombatTracker tracker,
-        AscensionNodeMetadata metadata,
-        CardPlay cardPlay)
-    {
-        if (cardPlay.Card.Type != CardType.Attack)
-        {
-            return;
-        }
-
-        var doormaker = FindDoormaker(combatState);
-        var wedge = doormaker?.GetPower<DoorWedgePower>();
-        if (doormaker == null || wedge == null)
-        {
-            return;
-        }
-
-        tracker.DoorWedgeAttacksPlayed++;
-        var attacksToRemove = metadata.IsBossBrand ? 4 : 3;
-        if (tracker.DoorWedgeAttacksPlayed >= attacksToRemove)
-        {
-            await PowerCmd.Remove(wedge);
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Door Wedge was removed by Attack plays.");
-        }
-    }
-
-    private static Creature? FindDoormaker(CombatState combatState)
-    {
-        return AliveEnemies(combatState)
-            .FirstOrDefault(enemy => enemy.Monster != null && enemy.Monster.Id == DoormakerMonsterId);
-    }
-
-    private static bool HasDoormakerPhasePower(Creature doormaker)
-    {
-        return doormaker.HasPower(HungerPowerId) ||
-            doormaker.HasPower(ScrutinyPowerId) ||
-            doormaker.HasPower(GraspPowerId);
     }
 
     private static void TryAssignChosenDecree(
