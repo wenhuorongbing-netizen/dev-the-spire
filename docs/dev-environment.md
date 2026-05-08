@@ -18,9 +18,10 @@
 - Game root: `D:\Steam\steamapps\common\Slay the Spire 2`
 - Mod folder: `D:\Steam\steamapps\common\Slay the Spire 2\mods`
 - Current branch target: public beta
-- Observed in-game version: `v0.104.0`
-- Observed in-game version date: `2026.04.23`
-- Correct currently verified public beta version: `v0.104.0, 2026.04.23`
+- Observed in-game version (local source snapshot): `v0.104.0`
+- Observed in-game version date (local source snapshot): `2026.04.23`
+- Player-reported installed version (2026-05-08): `v0.105.0, 2026.05.08`
+- ⚠️ Source code under `source code/src/Core/` may be from v0.104.0; current installed game is v0.105.0. API drift risk is present. Revalidate before relying on source-specific conclusions.
 
 
 ## Project mission

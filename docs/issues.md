@@ -4,6 +4,88 @@ This file tracks player-reported and runtime-observed issues. Do not mark an ite
 
 ## Open
 
+### ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED
+
+Priority: P0
+
+Status: investigating; diagnostics patch pending; unsolved
+
+Area: multiplayer A11-A20 run start / Neow initialization / player HP
+
+Player report (v0.105.0, 2026.05.08, co-op):
+- Two-player co-op entered Neow screen with Ascension >10 selected.
+- Local player HP displayed as 0/80.
+- Cannot select Neow blessing.
+- Singleplayer works fine with the same Ascension level.
+
+Current source analysis:
+
+- `AncientEventModel.BeforeEventStarted` (source code/src/Core/Models/AncientEventModel.cs:143-156) sets player HP to 0 via `SetCurrentHpInternal(0m)`, then heals via `CreatureCmd.Heal` to full (or 80% for A2+ WearyTraveler). This works in singleplayer.
+- Vanilla `AscensionManager` (`source code/src/Core/Entities/Ascension/AscensionManager.cs`) has `maxAscensionAllowed = 10` and only handles A4 (TightBelt -1 potion) and A10 (AscendersBane). No HP effects.
+- `RunManager.InitializeNewRun()` → `ApplyAscensionEffects(player)` → `AscensionManager.ApplyEffectsTo(player)` does not touch HP.
+- `Player.CreateForNewRun()` uses `character.StartingHp` for both current and max HP.
+- No EZMB gameplay slice touches player HP during run start or Neow.
+
+Hypotheses (in priority order):
+1. Vanilla multiplayer `CreatureCmd.Heal` or `SetCurrentHpInternal` fails/skips for the non-host player when `RunState.AscensionLevel > 10`, possibly because `NetService.Type.IsMultiplayer()` bypasses some initialization path.
+2. v0.105.0 API drift: the `AncientEventModel` or `CreatureCmd.Heal` code path changed between the local v0.104.0 source snapshot and the installed v0.105.0 game, altering heal behavior.
+3. Our `AscensionSelectionPatches` expand `maxMultiplayerAscensionUnlocked` during `UpdateMaxMultiplayerAscension` in a way that corrupts some lobby/player state before the run starts. Our patches do not touch `BeginRunForAllPlayers` directly (only log a warning).
+4. A20 Dual King Brands warning patch or some other EZMB Harmony patch interferes with lobby cleanup or run setup in a non-obvious way.
+5. The Neow event fails to start properly in multiplayer, so `BeforeEventStarted` never fires, and HP remains at whatever value was set during player creation (which should still be `StartingHp`).
+
+Required evidence:
+- Run with `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` in co-op to capture lobby state, player HP at run start, `BeginRunLocally` HP, `AfterActEntered` HP, and Neow `BeforeEventStarted` HP.
+- Bisect via `EZMB_ASCENSION_DISABLE_ALL_SYSTEMS=1` to confirm whether EZMB gameplay slices are involved.
+- Test with `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` + vanilla A10 as control.
+
+### ISSUE-2026-05-08-MULTIPLAYER-SAVE-QUIT-NOT-PROPAGATING
+
+Priority: P0/P1
+
+Status: investigating; source evidence pending
+
+Area: multiplayer save-and-quit / disconnect / host-client sync
+
+Player report: in co-op, when one player saves and quits, the other machine does not synchronously quit, disconnect, or return to menu.
+
+Current source analysis needed:
+- `NSaveAndQuitButton.cs` exists but contains only whitespace in the local v0.104.0 source snapshot; save/quit flow may be in other files.
+- `NGame.Quit()` (source code/src/Core/Nodes/NGame.cs) saves settings and calls `GetTree().Quit()` but does not send a disconnect message to remote peers.
+- `StartRunLobby.CleanUp(bool disconnectSession)` can disconnect the network session.
+- `RunManager.LocalPlayerDisconnected` handles peer disconnection events.
+- `NetService.Disconnect(NetError.Quit)` may not propagate to remote clients properly.
+
+Required investigation:
+- Search `source code/src/Core/` for save-quit, disconnect, quit-to-menu flow specific to multiplayer.
+- Determine if this is vanilla behavior (never intended to sync quit), mod-introduced (our patches break disconnect), or A11-A20 state-related (ascension > 10 corrupts save state).
+- If vanilla behavior, document expected workflow (each player must manually quit) and do not claim fix.
+
+### ISSUE-2026-05-08-MULTIPLAYER-RUN-START-BLACK-SCREEN
+
+Priority: P0/P1
+
+Status: investigating; may be same root cause as HP0-Neow issue or separate
+
+Area: multiplayer run start / screen transition / mod load / A20 BossSeal type load
+
+Player report: multiplayer run start can still black-screen, even after the earlier `DoormakerBoss` TypeLoadException fix.
+
+Current status:
+- `ISSUE-2026-05-08-MULTIPLAYER-A20-BLACK-SCREEN-OPTIONAL-BOSS-TYPELOAD` was fixed by making `BossSealCatalog` use runtime-safe `ModelId` strings. This fixed the TypeLoadException for `DoormakerBoss`.
+- But the player report suggests black screen can still occur, potentially from other causes.
+
+Hypotheses:
+1. HP 0/80 → Neow blocked → screen transition never completes (same root cause as HP0-Neow issue).
+2. A different TypeLoadException or missing model for a different v0.105.0 API.
+3. Network desync during run start — host reaches Act 0 but client never receives the transition.
+4. Missing localization or model that causes a silent failure during lobby cleanup or run scene setup.
+
+Required evidence:
+- Collect host AND client `godot.log` covering the 200 lines before and after run start.
+- Look for exceptions, missing models, missing localization, network disconnect, desync, or timeout.
+- If black screen follows from HP0/Neow blocked, fix that root cause first.
+- If independent, add separate `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS` entries for screen transition sync.
+
 ### ISSUE-2026-05-08-MULTIPLAYER-A20-BLACK-SCREEN-OPTIONAL-BOSS-TYPELOAD
 
 Priority: P0

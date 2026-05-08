@@ -2,10 +2,10 @@
 
 Project: EZ Micro Balance  
 Manifest id: EZMicroBalance  
-Game target: Slay the Spire 2 public beta v0.104.0, 2026.04.23  
+Game target: Slay the Spire 2 public beta v0.104.0, 2026.04.23 (local source snapshot); installed player-reported version v0.105.0, 2026.05.08  
 BaseLib runtime target: v3.1.0  
-Research date: 2026-05-06  
-Status: A11-A20 single-player and host-multiplayer selector expansion plus prototype slices added for A11 wider/longer saved-map geometry, A17 optional Deep Branch saved-map geometry, existing-node map metadata, generic combat modifiers, Fission rewards, Forge Token heal/smith payout, boss reward expansion, and A20 vanilla double-boss flow with a fixed courtyard event; bespoke full-screen intermission remains deferred
+Research date: 2026-05-08  
+Status: A11-A20 single-player and host-multiplayer selector expansion plus prototype slices added; P0 multiplayer run-start/Neow HP0/save-quit/black screen triage in progress. Diagnostics system added. Source evidence documented below. Live co-op bisect pending.
 
 ## Research Boundaries
 
@@ -266,3 +266,46 @@ Rootblight closed-loop implementation is not approved until these exact items ar
 - The progress safety evidence is unchanged: `AscensionSelectionPatches.ShouldSkipVanillaPreferredAscensionSave(...)` still skips A11-A20 preferred-progress writes, and local Core `ProgressState.ClampAscension(...)` / `ProgressSaveManager` still clamp or increment vanilla progress only through A1-A10 paths.
 - A20 gameplay safety is unchanged: `AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(...)` still requires `runState.Players.Count == 1`, so default-on multiplayer selection is not full A20 co-op support.
 - Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification. The live multiplayer runbook is `docs/features/ascension-11-20/multiplayer-test-runbook.md`.
+
+## 2026-05-08 P0 Multiplayer A11-A20 Run-Start / Neow / Save-Quit Investigation
+
+### Neow HP Healing Flow
+
+| Area | Evidence | Status |
+| --- | --- | --- |
+| Neow HP initialization | `AncientEventModel.BeforeEventStarted` (`source code/src/Core/Models/AncientEventModel.cs:143-156`): sets player HP to 0 via `SetCurrentHpInternal(0m)`, then heals to full (or 80% for A2+ WearyTraveler) via `CreatureCmd.Heal`. This is vanilla behavior, not mod-introduced. | Source-evidenced from v0.104.0; v0.105.0 may differ |
+| Heal command path | `CreatureCmd.Heal` (`source code/src/Core/Commands/CreatureCmd.cs:499`) calls `creature.HealInternal(amount)` directly. No ActionQueue dependency. Only early return is for non-player creatures during combat end. | Should work outside combat regardless of ascension level |
+| AscensionManager | `AscensionManager` (`source code/src/Core/Entities/Ascension/AscensionManager.cs`) has `maxAscensionAllowed = 10` (used only by progress savemanager clamping). Constructor accepts `int level` directly — no clamping. `HasLevel(AscensionLevel.WearyTraveler)` checks `_level >= 2`, which is true for any level >= A2. | Works for values > 10 |
+| Player HP creation | `Player.CreateForNewRun(CharacterModel character, ...)` uses `character.StartingHp` for both currentHp and maxHp. No ascension-based HP reduction. | No HP issue at creation time |
+| EZMB gameplay slices | `RootRunHook.AfterActEntered` adds Rootblight cards but does not touch HP. `AscensionCombatModifierService` uses `CreatureCmd.SetMaxAndCurrentHp` only in combat for Firemark modifiers. | No HP modification during run start |
+
+**Key observation**: The vanilla Neow event first sets HP to 0, then heals. If the heal fails or is skipped, the player would remain at 0 HP. The heal uses `CreatureCmd.Heal` which is async but calls `HealInternal` synchronously. No EZMB code interferes with this path.
+
+### Save/Quit Disconnect Flow
+
+| Area | Evidence | Status |
+| --- | --- | --- |
+| NSaveAndQuitButton.cs | Local source snapshot file is empty (1 byte). Cannot analyze vanilla save/quit implementation. | Unknown |
+| RunManager.CleanUp | Calls `NetService.Disconnect(NetError.Quit, !graceful)` — this should disconnect the network session. | Pending live verification |
+| NGame.Quit | Saves settings/progress and calls `GetTree().Quit()` — does not send network disconnect message. | Singleplayer-only quit path |
+| RunManager.LocalPlayerDisconnected | Handles peer disconnection by removing their input sync. If disconnect reason is not `QuitGameOver` and run is not over, returns to main menu with error. | Pending live verification |
+
+**Key question**: Does the vanilla Save & Quit button call `RunManager.CleanUp()` (which disconnects network) or `NGame.Quit()` (which does not)? Without source evidence, this must be tested live with diagnostics.
+
+### Multiplayer Diagnostics System
+
+Added `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` — Harmony patches on:
+
+- `StartRunLobby.BeginRunForAllPlayers` (prefix/finalizer): lobby state, players, ascension
+- `StartRunLobby.BeginRunLocally` (prefix): ascension, singleplayer/multiplayer
+- `StartRunLobby.UpdateMaxMultiplayerAscension` (postfix): ascension cap
+- `NGame.StartNewMultiplayerRun` (postfix): RunState player HP after creation
+- `RunManager.EnterAct` (prefix/postfix): player HP before/after act entry
+- `AncientEventModel.BeforeEventStarted` (prefix/postfix): player HP before/after Neow healing
+- `RunManager.SaveRun` (prefix), `NGame.ReturnToMainMenu` (prefix), `NGame.Quit` (prefix): save/quit/disconnect logging
+
+All patches default off; no gameplay changes.
+
+### P0 Triage Matrix
+
+See `docs/features/ascension-11-20/multiplayer-test-runbook.md` for bisect rows A-F.

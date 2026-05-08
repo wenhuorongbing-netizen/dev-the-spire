@@ -5,7 +5,67 @@ Manifest id: EZMicroBalance
 
 Current status note: entries below are chronological history. The current automated test baseline is recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh; earlier 24-test, 28-test, 34-test, 46-test, 56-test, 57-test, 58-test, 63-test, and 64-test entries are retained as historical evidence from before later guard additions.
 
-## 2026-05-07 - Rootblight v2.0 Migration Pass
+## 2026-05-08 - Multiplayer A11-A20 P0 Triage: HP0/Neow Blocked / Save-Quit / Black Screen
+
+Scope:
+
+- Added gated multiplayer diagnostics (`EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1`) with Harmony patches on:
+  - `StartRunLobby.BeginRunForAllPlayers` — lobby state before run start
+  - `StartRunLobby.BeginRunLocally` — ascension/player count at local launch
+  - `StartRunLobby.UpdateMaxMultiplayerAscension` — ascension cap computation
+  - `NGame.StartNewMultiplayerRun` — RunState player HP post-creation
+  - `RunManager.EnterAct` — player HP before and after act entry
+  - `AncientEventModel.BeforeEventStarted` — player HP before/after Neow healing
+  - `RunManager.SaveRun`, `NGame.ReturnToMainMenu`, `NGame.Quit` — save/quit/disconnect logging
+- All patches default off; no gameplay changes.
+- Added `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS` env var to `AscensionFeatureGate`.
+- Added P0 issues to `docs/issues.md`:
+  - `ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED`
+  - `ISSUE-2026-05-08-MULTIPLAYER-SAVE-QUIT-NOT-PROPAGATING`
+  - `ISSUE-2026-05-08-MULTIPLAYER-RUN-START-BLACK-SCREEN`
+- Added P0 triage matrix to `multiplayer-test-runbook.md` with rows A-F.
+- Source evidence reviewed in `NGame.cs`, `StartRunLobby.cs`, `RunManager.cs`, `AncientEventModel.cs`, `Neow.cs`, `AscensionManager.cs`, `Player.cs`, `LobbyPlayer.cs`.
+
+Key source findings:
+
+1. **Neow HP healing flow** (`AncientEventModel.BeforeEventStarted`, line 143-156):
+   - Sets player HP to 0 via `SetCurrentHpInternal(0m)`.
+   - Heals to full (MaxHp - 0) or 80% for A2+ (WearyTraveler).
+   - For A20: expected heal = 64 HP (80% of 80), not 0.
+   - `CreatureCmd.Heal` calls `creature.HealInternal(amount)` directly — no queue dependency.
+   - No EZMB code touches HP during this flow.
+
+2. **Vanilla AscensionManager** (`AscensionManager.cs`):
+   - `maxAscensionAllowed = 10` (const, used only for progress clamping).
+   - Constructor accepts `int level` directly — no clamping.
+   - `HasLevel(AscensionLevel)` checks `_level >= (int)level` — works for values > 10.
+   - `ApplyEffectsTo(player)` only handles A4 (TightBelt -1 potion) and A10 (AscendersBane). No HP effects.
+
+3. **Run start flow** (`NGame.StartNewMultiplayerRun`):
+   - `RunState.CreateForNewRun()` with `ascensionLevel` from lobby → `Player.CreateForNewRun()` uses `character.StartingHp` for both current and max HP.
+   - `RunManager.SetUpNewMultiPlayer()` → `InitializeNewRun()` → `ApplyAscensionEffects()` (no HP change).
+   - `StartRun()` → `RunManager.Instance.EnterAct(0, doTransition: false)` → Neow event starts → `BeforeEventStarted` fires.
+
+4. **Save/quit** (`NSaveAndQuitButton.cs`):
+   - Local source snapshot file is empty (1 byte). Cannot analyze from source alone.
+   - `RunManager.CleanUp()` calls `NetService.Disconnect(NetError.Quit, !graceful)`.
+   - `NGame.Quit()` saves settings/progress and calls `GetTree().Quit()` — does not send network disconnect.
+
+5. **Player HP initialization**:
+   - `Player.CreateForNewRun(CharacterModel character, ...)` constructor: `new Player(character, netId, character.StartingHp, character.StartingHp, ...)`.
+   - No ascension-based HP reduction in vanilla or EZMB code.
+   - Rootblight card additions do not affect HP.
+
+Hypotheses (ranked):
+1. (Most likely) Vanilla `CreatureCmd.Heal` or `AncientEventModel.BeforeEventStarted` skips execution for non-host players in multiplayer when `RunState.AscensionLevel > 10`, possibly due to `State.ExtraFields.StartedWithNeow` flag mismatch or `ActionExecutor` not yet unpaused.
+2. (Less likely) v0.105.0 API drift: `AncientEventModel` or `CreatureCmd` changed in a way that breaks the heal path for ascension > 10.
+3. (Less likely) EZMB patch corruption: our patches on `UpdateMaxMultiplayerAscension`, `BeginRunLocally`, etc. corrupt some lobby/run state before multiplayer run start.
+4. (Unlikely) Neow event type-load failure: if `Neow` or its base classes fail to load for a non-host player, `BeforeEventStarted` never fires.
+
+Required next steps:
+- Run live co-op triage rows A-F from multiplayer-test-runbook.md with `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1`.
+- Collect host/client `godot.log` and analyze HP values at each diagnostic point.
+- Source evidence is from v0.104.0 snapshot; game is now v0.105.0. Confirm no API drift in `AncientEventModel.BeforeEventStarted`, `CreatureCmd.Heal`, `Creature.HealInternal`.
 
 Scope:
 

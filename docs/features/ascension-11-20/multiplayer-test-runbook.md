@@ -49,6 +49,12 @@ Optional diagnostics:
 EZMB_ASCENSION_DIAGNOSTICS=1
 ```
 
+Multiplayer run-start/Neow/save-quit diagnostics (P0 investigation):
+
+```text
+EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1
+```
+
 Legacy compatibility:
 
 ```text
@@ -65,6 +71,7 @@ PowerShell user env set:
 [Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION','1','User')
 [Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION','1','User')
 [Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DIAGNOSTICS','1','User')
+[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS','1','User')
 ```
 
 PowerShell user env clear:
@@ -73,6 +80,7 @@ PowerShell user env clear:
 [Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION',$null,'User')
 [Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION',$null,'User')
 [Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DIAGNOSTICS',$null,'User')
+[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS',$null,'User')
 ```
 
 After changing User env vars, fully restart Steam and the game on the affected machine before testing.
@@ -185,6 +193,100 @@ After changing User env vars, fully restart Steam and the game on the affected m
 - Confirm no checksum, desync, disconnect, lobby clamp, or save/load exception lines.
 - Confirm A20 downgrade warning appears on host-only selection and on run start when A20 is selected in multiplayer.
 - Keep unrelated local invalid-manifest errors separate from EZ Micro Balance findings.
+
+## P0 Triage Matrix — Multiplayer A11-A20 Run-Start / Neow / Black Screen / Save-Quit
+
+Execute these rows to isolate the root cause of the reported 0/80 HP, Neow blocked, save-quit not propagating, and black screen issues. Each row is a separate co-op run with the specified environment variables on both host and client.
+
+**Prerequisites for all rows:**
+- Host and client both launch through Steam client.
+- Only BaseLib + EZ Micro Balance enabled.
+- Restart Steam and game fully after changing env vars.
+- Collect `godot.log` from both machines after each run.
+- Use `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` combined with each row to capture lobby state, player HP at run start, Neow HP, and save/quit diagnostics.
+
+### A. Vanilla Control (A10)
+
+Purpose: confirm that base multiplayer works with the mod loaded and vanilla A10.
+
+```text
+EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1
+```
+
+- Host creates co-op lobby, sets Ascension to A10 (or vanilla max available).
+- Client joins.
+- Both ready up and start the run.
+- Expected: Normal HP, Neow blessings selectable, no black screen.
+- Record: Host/client HP at Neow, blessing availability.
+
+### B. Selection-Only Isolation (A20, all gameplay slices off)
+
+Purpose: determine whether EZMB gameplay slices (Rootblight, Firemarks, etc.) cause the HP/Neow issue, or if it's purely in the selection/run-start path.
+
+```text
+EZMB_ASCENSION_DISABLE_ALL_SYSTEMS=1
+```
+
+- No disable-public env var. A11-A20 selection is default-on.
+- Host creates co-op lobby, selects A20.
+- Client joins.
+- Both ready up and start the run.
+- Expected (if issue is in gameplay slices): HP normal, Neow works.
+- Expected (if issue is in run-start path): HP 0/80, Neow blocked.
+- Critical: Observations here determine whether the fix targets gameplay slices or the run-start infrastructure.
+
+### C. A11 Minimal
+
+Purpose: test the lowest A11-A20 value to see if the issue starts at A11 or only at higher levels.
+
+```text
+(no env vars — default-on)
+```
+
+- Host selects A11.
+- Client joins.
+- Start run.
+- Record: HP, Neow, black screen, save-quit behavior.
+
+### D. A14 (Rootblight)
+
+Purpose: test whether A14 Rootblight slice triggers the issue.
+
+```text
+(no env vars — default-on)
+```
+
+- Host selects A14.
+- Client joins.
+- Start run.
+- Record: HP, Neow, Rootblight card presence, ownership.
+
+### E. A20 (Full)
+
+Purpose: test the full A20 with all systems enabled.
+
+```text
+(no env vars — default-on)
+```
+
+- Host selects A20.
+- Client joins.
+- Start run.
+- Record: A20 warning in log, HP, Neow, black screen, save-quit behavior.
+
+### F. Individual System Disable (used if B shows gameplay slices are involved)
+
+If Row B passes (HP normal with all systems disabled), disable systems one at a time to find which one causes the issue:
+
+1. `EZMB_ASCENSION_ENABLE_ROOTBLIGHT=0` — A14 default
+2. `EZMB_ASCENSION_ENABLE_BLIGHT_SPROUT=0` — A15/A18 default
+3. `EZMB_ASCENSION_ENABLE_MAP_GEOMETRY=0` — A11/A17 default
+4. `EZMB_ASCENSION_ENABLE_FIRE_MARK_ELITES=0` — A12 default
+5. `EZMB_ASCENSION_ENABLE_BANNER_ROOMS=0` — A16 default
+6. `EZMB_ASCENSION_ENABLE_BOSS_SEALS=0` — A19 default
+7. `EZMB_ASCENSION_ENABLE_DUAL_KING_BRANDS=0` — A20 default
+
+Note: These env vars default to enabled when unset. Setting to `0` disables them. Confirm behavior via `AscensionExpansionConfig.IsEnabled`.
 
 ## Result Recording Template
 

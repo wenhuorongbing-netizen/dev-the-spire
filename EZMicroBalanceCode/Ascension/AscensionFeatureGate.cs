@@ -9,6 +9,7 @@ internal static class AscensionFeatureGate
     public const string DisablePublicSelectionEnvironmentVariable = "EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION";
     public const string DisableMultiplayerSelectionEnvironmentVariable = "EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION";
     public const string DiagnosticsEnvironmentVariable = "EZMB_ASCENSION_DIAGNOSTICS";
+    public const string MultiplayerDiagnosticsEnvironmentVariable = "EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS";
 
     public const int MaxSupportedAscensionLevel = 20;
 
@@ -141,6 +142,9 @@ internal static class AscensionFeatureGate
 
     public static bool IsDiagnosticsEnabled =>
         IsTruthy(Environment.GetEnvironmentVariable(DiagnosticsEnvironmentVariable));
+
+    public static bool IsMultiplayerDiagnosticsEnabled =>
+        IsTruthy(Environment.GetEnvironmentVariable(MultiplayerDiagnosticsEnvironmentVariable));
 
     private static bool IsTruthy(string? value)
     {
