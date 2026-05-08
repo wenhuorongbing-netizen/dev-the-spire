@@ -12,7 +12,7 @@ Live pages rechecked on 2026-05-05:
 Tutorial mismatch:
 
 - RitsuLib guidance uses `ModAncientEventTemplate`, registration attributes such as `RegisterActAncient` / `RegisterSharedAncient`, `CreateModRelicOption<T>()`, `AllPossibleOptions`, and `GenerateInitialOptions()`.
-- The active `EZMicroBalance.csproj` references `Alchyr.Sts2.BaseLib` `3.1.0`; no RitsuLib package is referenced. Earlier discovery work started from the legacy `EzDailyContent.csproj`, which is now archived outside the active solution.
+- The active `EZMicroBalance.csproj` references `Alchyr.Sts2.BaseLib` `3.1.2`; no RitsuLib package is referenced. Earlier discovery work started from the legacy `EzDailyContent.csproj`, which is now archived outside the active solution.
 - The BaseLib tutorial aligns with the current project dependency and shows `CustomAncientModel`, `OptionPools`, `MakePool(...)`, and `AncientOption<T>()` for custom Ancients.
 - Phase 1 does not add a custom Ancient. It patches an existing game Ancient relic reward, so the tutorial pages are context for Ancient option structure rather than the direct implementation API.
 
@@ -21,12 +21,13 @@ Tutorial mismatch:
 Evidence source:
 
 - Local game assembly: `D:\Steam\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll`
-- Runtime target in `docs/dev-environment.md`: public beta `v0.104.0`, date `2026.04.23`
-- Local project package: `Alchyr.Sts2.BaseLib` `3.1.0`
+- Runtime target in `docs/dev-environment.md`: public beta `v0.105.0`, installed locally on `2026-05-08`
+- Local project package: `Alchyr.Sts2.BaseLib` `3.1.2`
 - Tooling used for API inspection: local ignored `.tools/ilspy` install of `ilspycmd` `8.2.0.7535`
 
 Findings:
 
+- 2026-05-08 v0.105.0 source refresh: `BrightestFlame` exposes canonical `CardsVar` draw text and `CardKeyword.Exhaust` can be surfaced through canonical keyword patching. EZMB adjusts Quality Flame by adding the Exhaust keyword and increasing the existing dynamic draw var by 1, so vanilla upgrade scaling remains dynamic instead of adding a second post-play draw command.
 - `MegaCrit.Sts2.Core.Models.Events.Pael` is the Pael Ancient event model.
 - Pael's first option pool includes `MegaCrit.Sts2.Core.Models.Relics.PaelsHorn`.
 - `MegaCrit.Sts2.Core.Events.EventOption` stores the option `TextKey`, optional `Relic`, and private `OnChosen` callback. `Chosen()` invokes the callback after any `BeforeChosen` hook.
@@ -79,7 +80,7 @@ Implemented with narrow Harmony patches. The original batch was developed in the
   - `BeautifulBracelet.AfterObtained()` uses the existing deck enchantment UI and applies `Swift` amount 2.
   - `MusicBox` is reimplemented around the same attack-copy trigger, but the generated attack copy gets temporary cost -1 plus `Ethereal` and `Exhaust`.
   - `WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate(...)` now auto-plays only one currently playable highest-cost hand card during rounds 1-3.
-  - `PumpkinCandle.AfterRoomEntered(...)` detects act 3+ transition, disables the candle with its saved `ActiveAct` field, and randomly upgrades up to two deck cards.
+  - `PumpkinCandle` is no longer patched by EZMB. Current source keeps vanilla Pumpkin Candle behavior and has no `PumpkinCandlePatch`, `ExtinguishedSentinel`, or active `PUMPKIN_CANDLE.description` override.
 - Dynamic variable getter patches:
   - `IronClub` `CardsVar(5)` changes draw cadence to every 5 cards.
   - `BrilliantScarf` `CardsVar(6)` changes the free-card trigger to the 6th card each turn.
@@ -87,6 +88,7 @@ Implemented with narrow Harmony patches. The original batch was developed in the
 - Card patches:
   - `Debt` is configured as 1-cost, playable, `Exhaust`; `CardCmd.Exhaust(...)` loses up to 5 gold for `Debt`.
   - `Enthralled` gains 10 block on play while preserving the existing forced-priority behavior.
+  - `BrightestFlame` is the current game class behind Quality Flame. Vanilla source has `CardsVar(2)` and upgrades both `Energy` and `Cards` by 1. EZMB patches `BrightestFlame.CanonicalVars` so draw is vanilla +1 at the dynamic-var source, giving 3 cards unupgraded and 4 upgraded, and patches `CanonicalKeywords` so Exhaust is visible before play. The active localization override uses `BRIGHTEST_FLAME.title` / `BRIGHTEST_FLAME.description` with `{Cards:diff()}` instead of fixed draw text.
 
 Historical limits after batch 2, superseded by later finish evidence below:
 

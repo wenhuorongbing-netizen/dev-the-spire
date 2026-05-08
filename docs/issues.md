@@ -4,13 +4,28 @@ This file tracks player-reported and runtime-observed issues. Do not mark an ite
 
 ## Open
 
+### ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS
+
+Priority: P2/P3
+
+Status: pending; not implemented in the current build/test-green pass.
+
+Area: Rootblight visuals / A11 diagnostics / manual verification backlog
+
+Pending items deliberately left out of the current fix pass:
+- Rootblight animation feedback.
+- Rootblight I/II/III and Blight Sprout independent card art.
+- A11 map geometry diagnostics beyond the current source guards and manual map checks.
+- Clean updated-BaseLib `godot.log` from the normal Steam-client path.
+- Multiplayer matrix, Steam-client Mod Settings, and save/load verification.
+
 ### ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT
 
-Priority: P0 — **RELEASE BLOCKER**
+Priority: P1 environment/runtime verification
 
-Status: confirmed via live log; dependency resolution pending. Do not release until resolved.
+Status: dependency portion superseded by BaseLib `v3.1.2` and a clean BaseLib+EZMB-only controlled smoke. Live A0/A10/A20 combat checks and normal Steam-client verification are still pending.
 
-Area: v0.105.0 API drift / BaseLib v3.1.0 compatibility / mod environment hygiene
+Area: v0.105.0 API drift / BaseLib compatibility / mod environment hygiene
 
 Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
 
@@ -19,7 +34,7 @@ Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
    - Loaded `DamageMeter`, `RouteSuggest`, `AnimeWaifuSilent`, `ModConfig`, `QuickLink`, `SpeedX`, `The-Watcher`, and others.
    - This violates the release test prerequisite: only BaseLib + EZMicroBalance enabled.
 
-2. **BaseLib v3.1.0 has 3 patch failures against v0.105.0:**
+2. **Superseded BaseLib v3.1.0 failure evidence:**
    - `Undefined target method for patch method ... ExhaustivePatch`
    - `Undefined target method for patch method ... PersistPatch`
    - `Undefined target method for patch method ... PurgePatch`
@@ -38,7 +53,7 @@ Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
 
 Required resolution (before any EZMB fix or release claim):
 - [ ] Disable all mods except BaseLib + EZMicroBalance.
-- [ ] If BaseLib v3.1.0 still throws `Creature.get_ShowsInfiniteHp` on v0.105.0: update BaseLib to a v0.105-compatible version, or roll back game test branch to v0.104.0.
+- [x] Updated BaseLib runtime/project package to `v3.1.2`; current controlled BaseLib+EZMB-only smoke has no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures.
 - [ ] Confirm singleplayer A0 combat draws cards and gains energy normally.
 - [ ] Confirm singleplayer A10 combat draws cards and gains energy normally.
 - [ ] Confirm singleplayer A20 combat draws cards and gains energy normally.
@@ -51,7 +66,7 @@ Required resolution (before any EZMB fix or release claim):
 
 Priority: P0
 
-Status: investigating; diagnostics patch pending; unsolved. **⚠️ BLOCKED by ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT — retest HP/Neow only after clean BaseLib+EZMB environment is confirmed.**
+Status: investigating; diagnostics patch pending; unsolved. Controlled BaseLib+EZMB loader smoke is clean on BaseLib `v3.1.2`; host/client co-op Neow HP still needs live retest.
 
 Area: multiplayer A11-A20 run start / Neow initialization / player HP
 
@@ -65,7 +80,7 @@ Current source analysis:
 
 - `AncientEventModel.BeforeEventStarted` (source code/src/Core/Models/AncientEventModel.cs:143-156) sets player HP to 0 via `SetCurrentHpInternal(0m)`, then heals via `CreatureCmd.Heal` to full (or 80% for A2+ WearyTraveler). This works in singleplayer.
 - Vanilla `AscensionManager` (`source code/src/Core/Entities/Ascension/AscensionManager.cs`) has `maxAscensionAllowed = 10` and only handles A4 (TightBelt -1 potion) and A10 (AscendersBane). No HP effects.
-- `RunManager.InitializeNewRun()` → `ApplyAscensionEffects(player)` → `AscensionManager.ApplyEffectsTo(player)` does not touch HP.
+- `RunManager.InitializeNewRun()` 鈫?`ApplyAscensionEffects(player)` 鈫?`AscensionManager.ApplyEffectsTo(player)` does not touch HP.
 - `Player.CreateForNewRun()` uses `character.StartingHp` for both current and max HP.
 - No EZMB gameplay slice touches player HP during run start or Neow.
 
@@ -119,9 +134,9 @@ Current status:
 - But the player report suggests black screen can still occur, potentially from other causes.
 
 Hypotheses:
-1. HP 0/80 → Neow blocked → screen transition never completes (same root cause as HP0-Neow issue).
+1. HP 0/80 鈫?Neow blocked 鈫?screen transition never completes (same root cause as HP0-Neow issue).
 2. A different TypeLoadException or missing model for a different v0.105.0 API.
-3. Network desync during run start — host reaches Act 0 but client never receives the transition.
+3. Network desync during run start 鈥?host reaches Act 0 but client never receives the transition.
 4. Missing localization or model that causes a silent failure during lobby cleanup or run scene setup.
 
 Required evidence:
@@ -153,12 +168,13 @@ Root cause:
 - `BossSealCatalog` used hard generic references like `ModelDb.GetId<DoormakerBoss>()`; static initialization therefore crashed before the run could finish generating the first map.
 - Current build also proved adjacent API drift: direct `Doormaker` / `HungerPower` / `ScrutinyPower` / `GraspPower` references and direct `PumpkinCandle.ActiveAct` access are not safe against the installed DLL.
 
-Current source fix:
+- Earlier source fix:
 
-- `BossSealCatalog` now uses runtime-safe `ModelId` strings such as `ENCOUNTER.DOORMAKER_BOSS` instead of hard references to optional boss encounter classes.
-- Door Wedge combat checks now use runtime `ModelId` checks for the Doormaker monster and phase powers, so missing optional types do not block compile/load.
-- Debt and Pumpkin Candle patches were adjusted to avoid direct compile/accessibility assumptions that broke against the current installed game API.
-- Pumpkin Candle room-entry patching now resolves the declared Pumpkin Candle method when present, otherwise falls back to patching `AbstractModel.AfterRoomEntered` with a Pumpkin-only guard, so `PatchAll()` does not fail when the subclass override is absent.
+- `BossSealCatalog` previously used runtime-safe `ModelId` strings such as `ENCOUNTER.DOORMAKER_BOSS` instead of hard references to optional boss encounter classes.
+- Door Wedge combat checks previously used runtime `ModelId` checks for the Doormaker monster and phase powers, so missing optional types did not block compile/load.
+- v0.105.0 source later replaced the active Doormaker/Door Wedge scope with `AEONGLASS_BOSS`; current active EZMB source has no Door Wedge implementation and applies the temporary Aeonglass +5 Strength seal instead.
+- Debt patching was adjusted to avoid direct compile/accessibility assumptions that broke against the current installed game API.
+- Pumpkin Candle EZMB patching was removed; vanilla Pumpkin Candle behavior is restored for the v0.105.0 package, so no Pumpkin-only Harmony target participates in `PatchAll()`.
 - Added source guard tests to prevent reintroducing hard optional `DoormakerBoss` / `Doormaker` type references in the Boss Seal startup path.
 
 Manual retest:
@@ -295,13 +311,13 @@ Player report: Root Bud and Rootblight were conceptually unclear, Boss Sprout co
 
 Current source fix:
 
-- ZHS player-facing term is now `根芽`.
+- ZHS player-facing term is now `鏍硅娊`.
 - Boss fights in Acts 2/3 now seed 2 Root Bud cards.
 - Root Bud text is shortened: play to Exhaust; Boss sprouts use rounds 3/4 and elite sprouts use round 3; if seen and not played, add Rootblight I after combat.
 - Rootblight I/II/III costs are 2/3/4.
 - Played Rootblight removes its master-deck card and queues the downgrade card after combat.
 - Unplayed Rootblight I/II upgrades after combat; ignored Rootblight III stays III and adds one Rootblight I only once per card.
-- Rootblight is capped at 4 cards, and cap hits show `Root system full.` / `根系已满。`.
+- Rootblight is capped at 4 cards, and cap hits show `Root system full.` / `鏍圭郴宸叉弧銆俙.
 - Rest removes exactly one highest-stage Rootblight instead of clearing all Rootblight.
 
 Manual retest:
@@ -469,7 +485,7 @@ Audit finding: several docs cited a prior controlled `--force-steam off` smoke w
 
 - Current controlled `--force-steam off` smoke passed after publish/package refresh.
 - Temporary profile settings enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, and restored `settings.save` plus `settings.save.backup` byte-for-byte.
-- `godot.log` showed `Loaded 2 mods (19 total)`, BaseLib initialization, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, default-on Ascension initializer wording with 0 old `Default-off gate` lines, main menu in `13,201ms`, and 0 EZ Micro Balance error/exception lines.
+- `godot.log` showed `Loaded 2 mods (19 total)`, BaseLib initialization, EZ Micro Balance DLL/PCK load/init, `Found 12 SavedSpireFields`, default-on Ascension initializer wording with 0 old `Default-off gate` lines, main menu in `13,628ms`, 0 EZ Micro Balance error/exception lines, and no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures.
 - Normal Steam-client Mod Settings and live gameplay verification remain pending.
 
 Required verification:

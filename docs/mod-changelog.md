@@ -5,7 +5,7 @@ Append only short tester/player-facing entries here when behavior or release val
 ## 2026-05-08
 
 - Multiplayer A20: fixed a black-screen run-start crash caused by hard references to optional Early Access Boss Seal types missing from the current installed game DLL.
-- Compatibility: Debt, Pumpkin Candle, and Door Wedge patch paths now avoid direct assumptions about game members that changed across local Early Access builds.
+- Compatibility: Debt patch paths avoid direct assumptions about game members that changed across local Early Access builds. Pumpkin Candle and Door Wedge EZMB overrides are removed from the active v0.105.0 package; Pumpkin Candle is vanilla and Doormaker/Door Wedge is replaced by Aeonglass +5 Strength.
 - A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
 - Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.
 - Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.

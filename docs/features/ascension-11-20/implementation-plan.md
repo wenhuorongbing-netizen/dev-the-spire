@@ -355,7 +355,7 @@ Scope:
 
 Implemented:
 
-- `BossSealDefinition` and `BossSealCatalog` define all v2.0 Boss Royal Seals by boss encounter: Holy Daze, Martyr Oath, Ink Return, Startled Shell, Soul Tide, Boiling Critical, Misaligned Shell, Marginal Note, Struggle Bait, Door Wedge, Chosen Decree, and Residual Sample.
+- `BossSealDefinition` and `BossSealCatalog` define all active v2.0 Boss Royal Seals by boss encounter: Holy Daze, Martyr Oath, Ink Return, Startled Shell, Soul Tide, Boiling Critical, Misaligned Shell, Marginal Note, Struggle Bait, Aeonglass Strength, Chosen Decree, and Residual Sample. Door Wedge is removed from active v0.105.0 scope because Doormaker was replaced by Aeonglass.
 - A19 boss nodes receive boss-specific Royal Seal metadata from the active boss encounter instead of the older generic Armor/Rage/Barrier/Chaos placeholder set.
 - A19 combat logs the armed Royal Seal and source evidence, then applies only the current source-guarded hook paths; live runtime verification is still required before release-readiness claims.
 - A19 boss card rewards add a fourth option through `CardFactory.CreateForReward` with hook recursion disabled.

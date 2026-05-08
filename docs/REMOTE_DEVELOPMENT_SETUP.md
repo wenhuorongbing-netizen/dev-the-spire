@@ -7,8 +7,8 @@ This guide explains how to clone this private repository on another Windows mach
 - Active project: `EZMicroBalance`
 - Legacy scaffold id: `EzDailyContent`
 - Game: Slay the Spire 2 public beta
-- Verified version: `v0.104.0`, `2026.04.23`
-- BaseLib runtime: `v3.1.0`
+- Verified version: `v0.105.0`, installed/tested locally on `2026-05-08`
+- BaseLib runtime: `v3.1.2`
 - Build command: `dotnet build`
 - Publish command: `dotnet publish`
 
@@ -44,9 +44,9 @@ Install Slay the Spire 2 through Steam and record the game root, for example:
 D:\Steam\steamapps\common\Slay the Spire 2
 ```
 
-## 5. Install BaseLib v3.1.0
+## 5. Install BaseLib v3.1.2
 
-Install BaseLib `v3.1.0` runtime files into:
+Install BaseLib `v3.1.2` runtime files into:
 
 ```text
 <GameRoot>\mods\BaseLib

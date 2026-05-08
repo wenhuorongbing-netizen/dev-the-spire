@@ -12,7 +12,7 @@ Scope: re-prioritize from EZMB HP/Neow fix to dependency compatibility gate.
 Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
 
 - **17-mod environment:** `Loaded 17 mods (19 total)` — invalidates release evidence. Must test with only BaseLib + EZMicroBalance.
-- **BaseLib v3.1.0 patch failures:** `Undefined target method ... ExhaustivePatch`, `PersistPatch`, `PurgePatch`. `Applied 150 patches successfully, 3 failed`.
+- **Superseded BaseLib v3.1.0 patch failures:** earlier 17-mod logs showed `Undefined target method ... ExhaustivePatch`, `PersistPatch`, `PurgePatch`. Current BaseLib `v3.1.2` controlled smoke has no BaseLib patch-failure signatures.
 - **`Creature.get_ShowsInfiniteHp()` removed in v0.105.0:**
   - `System.MissingMethodException: Method not found: 'Boolean MegaCrit.Sts2.Core.Entities.Creatures.Creature.get_ShowsInfiniteHp()'`
   - Callers: `BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay(NHealthBar)`, `DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp(CombatState)`
@@ -32,7 +32,7 @@ Actions taken:
 
 Manual actions for tester:
 1. Disable all mods except BaseLib + EZMicroBalance.
-2. If BaseLib v3.1.0 still throws `Creature.get_ShowsInfiniteHp` on v0.105.0: update BaseLib or roll back game to v0.104.0.
+2. Keep BaseLib runtime/project package aligned on `v3.1.2`; if `Creature.get_ShowsInfiniteHp` or BaseLib patch failures return in live testing, stop and update dependency evidence before continuing.
 3. Run singleplayer A0/A10/A20 combat tests.
 4. Only then resume multiplayer A11-A20 triage.
 
@@ -47,7 +47,7 @@ Scope:
   - `NGame.StartNewMultiplayerRun` — RunState player HP post-creation
   - `RunManager.EnterAct` — player HP before and after act entry
   - `AncientEventModel.BeforeEventStarted` — player HP before/after Neow healing
-  - `RunManager.SaveRun`, `NGame.ReturnToMainMenu`, `NGame.Quit` — save/quit/disconnect logging
+  - `SaveManager.SaveRun`, `NGame.ReturnToMainMenu`, `NGame.Quit` — save/quit/disconnect logging
 - All patches default off; no gameplay changes.
 - Added `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS` env var to `AscensionFeatureGate`.
 - Added P0 issues to `docs/issues.md`:
@@ -990,9 +990,9 @@ Verification:
 - Added `docs/features/ascension-11-20/multiplayer-test-runbook.md` with recommended two-PC setup, env var commands, exact multiplayer matrix, save/load rows, log checks, and result template.
 - Updated current-facing docs/tests to say default-on for multiplayer testing, while preserving the warning that A20 multiplayer selection is not full A20 co-op support and that controlled smoke is not normal Steam-client/live co-op verification.
 - Ran `dotnet publish EZMicroBalance.sln` and rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts.
-- Current hashes after package refresh: DLL `9F68518A8083C128DB74E6BAC4C2C001B9BB2B8AA4AD89642883659A982C229F`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`, package zip `F670B27869357DD6F7EE5549948CC9D09AD8711840B655E08896F22B41D803AF`, package README `6BD2F48F689390C7F6C53AB78A19CB6E26CEDFC22ED0CF30402C269E8699CDC1`.
-- Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,201ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
-- Final validation after this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` passed, 63 passed, 15 skipped release artifact/runtime evidence tests, 0 failed; `dotnet test EZMicroBalance.sln --no-build` passed with the same counts before and after publish; `dotnet publish EZMicroBalance.sln` passed; package refresh passed; controlled smoke passed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 78 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` exited 0 with CRLF normalization warnings for touched files.
+- Current hashes after v0.105.0/BaseLib v3.1.2 package refresh: DLL `215A4621019CA93ABB0157BBFEA094FE4C8DBDEA247ECA02222709298784CF5C`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `89D87BEB637EDE00A62A57491563A2254BBABBC471859C5B32F74C11F6D89A7F`, package zip `6C3A9CE64D7227BBC5204D1EC1215EA6877818E24E4400910DCE8BF9199BC090`, package README `986C2F5E339FC617EFEF989B2EFC7191419373AED5A01E4CEA0C509B022B1368`.
+- Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored both settings files byte-for-byte.
+- Final validation after this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln --no-build` passed, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed; `dotnet publish EZMicroBalance.sln` passed; package refresh passed; controlled smoke passed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 81 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` passed with only CRLF normalization warnings.
 
 ## 2026-05-08 - Multiplayer A20 Black-Screen TypeLoad Fix
 
@@ -1001,7 +1001,14 @@ Verification:
 - Root cause: earlier source/API evidence exposed Early Access type drift around optional boss and power classes. The later v0.105.0 source refresh does not expose the previously crashing `DoormakerBoss` type, so hard generic type references in Boss Seal startup code remain unsafe across EA builds.
 - Changed `BossSealCatalog` to map Boss Royal Seals by runtime-safe `ModelId` strings such as `ENCOUNTER.DOORMAKER_BOSS` instead of `ModelDb.GetId<DoormakerBoss>()`.
 - Changed Door Wedge checks to use runtime `ModelId` checks for the Doormaker monster and phase powers instead of direct `Doormaker`, `HungerPower`, `ScrutinyPower`, or `GraspPower` type references.
-- Adjusted adjacent compile/runtime compatibility for the current installed game API: Debt turn-end patch now uses a string target name, Pumpkin Candle active-act handling uses reflection for `ActiveAct` / `_activeAct` instead of direct property access, and Pumpkin Candle room-entry patching now falls back to `AbstractModel.AfterRoomEntered` when the subclass override is absent.
+- Adjusted adjacent compile/runtime compatibility for the current installed game API: Debt turn-end patch now uses a string target name, Pumpkin Candle EZMB patching was removed, and vanilla Pumpkin Candle behavior is restored for the v0.105.0 package.
 - Added source guard coverage so the Boss Seal startup path does not reintroduce hard optional Doormaker/Glory type references.
-- Validation after this fix: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln --no-build` passed, 64 passed, 15 skipped release artifact/runtime evidence tests, 0 failed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build --filter HarmonyPatchesResolveAgainstInstalledGameApi` passed, 1/1; `dotnet publish EZMicroBalance.sln` passed and refreshed the locally installed DLL.
+- Validation after this fix: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln --no-build` passed, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build --filter HarmonyPatchesResolveAgainstInstalledGameApi` passed, 1/1; `dotnet publish EZMicroBalance.sln` passed and refreshed the locally installed DLL.
 - Live multiplayer A20 retest remains pending: host and client still need to verify the run reaches Act 1 map with no EZ Micro Balance `TypeLoadException` in `godot.log`.
+## 2026-05-08 - Door Wedge Removal and Aeonglass Temporary Seal
+
+- Rechecked v0.105.0 source evidence: `source code/src/Core/Models/Encounters/AeonglassBoss.cs` exposes `AeonglassBoss`, `source code/localization/eng/encounters.json` exposes `AEONGLASS_BOSS`, and `AeonglassBoss.GenerateMonsters()` creates exactly one `ModelDb.Monster<Aeonglass>()` with monster id `MONSTER.AEONGLASS`.
+- Removed Door Wedge from active A19/A20 Boss Seal scope because Doormaker was replaced by Aeonglass in v0.105.0.
+- Added the temporary Aeonglass seal as +5 Strength at combat start only. The combat modifier now targets `MONSTER.AEONGLASS` exactly instead of using highest Max HP.
+- Kept all Aeonglass combat behavior source-guarded and pending live verification; no complex Aeonglass Brand/Seal mechanic is implemented in this pass.
+- Final validation for this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` and `dotnet test EZMicroBalance.sln --no-build` passed with 0 failed; `dotnet publish EZMicroBalance.sln` passed; refreshed package artifacts passed `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`; `dotnet format` passed; `git diff --check` passed with only CRLF normalization warnings.

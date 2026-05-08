@@ -1367,3 +1367,6 @@ v4.2保留“高能量但限制连打”的身份，把限制改成软费用，�
 最终目标：
 
 > **玩家看到三选一时，不是问“哪个最不坑”，而是问“我这局敢不敢押这个方向”。**
+## 2026-05-08 v0.105.0 Correction
+
+Pumpkin Candle is restored to vanilla behavior and is no longer an active EZMB override. Quality Flame is implemented on the current `BrightestFlame` class as visible Exhaust plus vanilla draw +1; because vanilla upgrades draw by +1, active dynamic text must show 3 cards unupgraded and 4 cards upgraded.

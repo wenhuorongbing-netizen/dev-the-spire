@@ -1,4 +1,4 @@
-﻿# EZ Micro Balance Work Log
+# EZ Micro Balance Work Log
 
 Current status note: entries below are chronological history. Older entries may reference `EzDailyContent*` paths and smaller automated test totals from before the independent `EZMicroBalance` migration. The current active release code is under `EZMicroBalanceCode/`, active resources are under `EZMicroBalance/`, and the current automated release/source-guard suite is passing unless a later entry supersedes it.
 
@@ -1501,3 +1501,13 @@ Remaining blocker:
 
 - Normal Steam-client Mod Settings verification, live Ancient gameplay matrix, save/load checks, disable gameplay checks, multiplayer disposition, author decision, clean commit, and user-approved push remain pending.
 
+## 2026-05-08 - Pumpkin Candle Rollback and Quality Flame Hardening
+
+- Restored Pumpkin Candle to vanilla behavior for the active EZMB scope: no `PumpkinCandlePatch`, no `ExtinguishedSentinel`, and no active `PUMPKIN_CANDLE.description` override under `EZMicroBalance/localization/**`.
+- Rechecked v0.105.0 source for `MegaCrit.Sts2.Core.Models.Cards.BrightestFlame`: vanilla uses `CardsVar(2)`, `EnergyVar(2)`, `MaxHpVar(1)`, and upgrades both Energy and Cards by +1.
+- Changed Quality Flame implementation to patch `BrightestFlame.CanonicalVars` so draw is vanilla +1 at the dynamic variable source, giving draw 3 unupgraded and draw 4 upgraded while preserving vanilla play order.
+- Added a `BrightestFlame.CanonicalKeywords` patch so Exhaust is visible on the card, with the existing `ExhaustOnNextPlay` play wrapper kept only as a behavior backstop.
+- Updated active card localization to `BRIGHTEST_FLAME.title` / `BRIGHTEST_FLAME.description` with `{Cards:diff()}` instead of fixed "Draw 3" text.
+- Fixed stale guard/docs drift for Pumpkin Candle rollback and Quality Flame dynamic text, including the Simplified Chinese manual-matrix strings.
+- Final validation for this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln` passed, 65 passed, 16 skipped, 0 failed; `dotnet test EZMicroBalance.sln --no-build` passed, 65 passed, 16 skipped, 0 failed; `dotnet publish EZMicroBalance.sln` passed; package staging/versioned/zip were refreshed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 81 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` passed with only CRLF normalization warnings.
+- Live gameplay verification remains pending.

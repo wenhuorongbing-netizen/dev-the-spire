@@ -14,6 +14,8 @@ internal static class AscensionCombatModifierService
     private const decimal BountyPenaltyArtifact = 1m;
     private const int BountyDeadlineRound = 3;
     private const int BountyGoldReward = 15;
+    private const decimal AeonglassStrengthAmount = 5m;
+    private static readonly ModelId AeonglassMonsterId = new("MONSTER", "AEONGLASS");
 
     public static async Task BeforeCombatStart(CombatState combatState, AscensionCombatTracker tracker)
     {
@@ -553,14 +555,21 @@ internal static class AscensionCombatModifierService
         if (definition.Id == BossSealId.AeonglassStrength)
         {
             var boss = AliveEnemies(combatState)
-                .OrderByDescending(enemy => enemy.MaxHp)
-                .FirstOrDefault();
+                .FirstOrDefault(enemy => enemy.ModelId == AeonglassMonsterId);
             if (boss != null)
             {
-                await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), boss, 5, boss, null);
+                await PowerCmd.Apply<StrengthPower>(
+                    new BlockingPlayerChoiceContext(),
+                    boss,
+                    AeonglassStrengthAmount,
+                    boss,
+                    null);
                 MainFile.Logger.Info(
                     $"[EZMicroBalance] Ascension AeonglassStrength: applied +5 Strength to {boss.ModelId.Entry}.");
+                return;
             }
+
+            MainFile.Logger.Warn("[EZMicroBalance] Ascension AeonglassStrength skipped: AEONGLASS monster was not found in combat.");
         }
     }
 

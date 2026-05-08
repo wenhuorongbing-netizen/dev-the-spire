@@ -115,6 +115,39 @@ public sealed class AncientHighRiskSourceGuardTests
     }
 
     [Fact]
+    public void QualityFlameUsesDynamicDrawAndVisibleExhaustKeyword()
+    {
+        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "BrightestFlameExhaustDrawPatch.cs");
+        var englishCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
+        var simplifiedChineseCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
+        var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
+        var apiDiscovery = ReadRepoText("docs", "features", "ancients-rework-v4", "api-discovery.md");
+
+        AssertSourceContains(
+            source,
+            "[HarmonyPatch(typeof(CardModel), \"get_CanonicalKeywords\")]",
+            "__instance is not BrightestFlame",
+            "CardKeyword.Exhaust",
+            "[HarmonyPatch(typeof(BrightestFlame), \"get_CanonicalVars\")]",
+            "dynamicVar is CardsVar cards",
+            "new CardsVar(cards.IntValue + ExtraDraw)",
+            "Vanilla: Gain Energy(2), Draw(2), LoseMaxHp(1). Upgrade: Energy+1, Draw+1.",
+            "upgrade draws 4",
+            "Does not affect Pumpkin Candle relic vanilla behavior.");
+
+        Assert.DoesNotContain("DrawExtraAfterVanilla", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("CardPileCmd.Draw(choiceContext, 1", source, StringComparison.Ordinal);
+
+        Assert.Equal("Quality Flame", englishCards["BRIGHTEST_FLAME.title"]);
+        Assert.Contains("{Cards:diff()}", englishCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
+        Assert.Contains("{Cards:diff()}", simplifiedChineseCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("Draw 3 cards", englishCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("抽3张牌", simplifiedChineseCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
+        Assert.Contains("Quality Flame / Brightest Flame", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("BrightestFlame", apiDiscovery, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void PrismaticGemOffColorReplacementKeepsNormalRewardBoundariesAllSlotsAndRunStateClean()
     {
         var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");

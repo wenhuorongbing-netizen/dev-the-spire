@@ -9,6 +9,8 @@ Focused regression notes:
 - Velvet Choker: card-library/card-compendium sorting must not crash when it computes costs for canonical cards with no owner. The soft-limit tax must apply only to real in-combat hand cards.
 - Distinguished Cape: when the player cannot pay the v4.3 max-HP cost, Vakuu must still show three normal reward options; an otherwise rolled Cape should be replaced by a payable Pool 2 option, with a localized locked Cape only as a defensive fallback.
 - Prismatic Gem: triggered reward screens should show the reward-screen banner hint when available. If the banner cannot be located, `godot.log` should contain `PrismaticGem reward-screen hint fallback`, and testers should use the relic hover count plus every visible reward card being off-color as fallback evidence.
+- Pumpkin Candle: this is now a vanilla/no-EZMB-override spot check only. EZMB must not add an Act 3 extinguish-upgrade patch, sentinel, or localization override.
+- Quality Flame / Brightest Flame: `BrightestFlame` should visibly show Exhaust, draw one more card than vanilla, and use dynamic text so unupgraded draw is 3 and upgraded draw is 4.
 
 ## Automated Prerequisites
 
@@ -25,7 +27,7 @@ Focused regression notes:
 | Jeweled Mask custom enchantment zhs guard | Pass after 2026-05-06 localization sprint |
 | Jewelry Box non-Innate source/serialization guard | Pass, automated source guard confirms marked-only `Apotheosis` handling |
 | Ancient and Ascension source guard tests | Pass, expanded `dotnet test EZMicroBalance.sln --no-build` guard suite |
-| Private-beta package | Pass, `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `924048C3F9DBF66A1B328F03EE1DD68AA33ED61FA0F8929D637314B814CD139E` |
+| Private-beta package | Pass, `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `6C3A9CE64D7227BBC5204D1EC1215EA6877818E24E4400910DCE8BF9199BC090` |
 
 ## Runtime Load Checklist
 
@@ -56,7 +58,7 @@ Controlled smoke update:
 - Final controlled smoke loaded BaseLib, loaded `EZMicroBalance.dll`, loaded `EZMicroBalance.pck`, finished EZ Micro Balance initialization, and reached main menu.
 - Controlled disable smoke enabled BaseLib, explicitly disabled EZ Micro Balance, skipped loading `EZMicroBalance`, did not load its DLL, and reached main menu.
 - After the Release solution mapping fix, an isolated controlled smoke enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, loaded the installed Release `EZMicroBalance.dll`, finished both initializers, and reached main menu. Original default-profile settings were restored afterward.
-- After the default-on multiplayer test candidate package refresh, a bounded `--force-steam off` smoke temporarily enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, loaded the current installed `EZMicroBalance.dll` and `.pck`, reported `Found 12 SavedSpireFields`, finished EZ Micro Balance initialization, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, and reached main menu in `13,201ms`. Temporary profile settings were restored byte-for-byte. The log still contains unrelated local invalid-manifest errors for other mods, but no EZ Micro Balance startup exception or error.
+- After the v0.105.0/BaseLib v3.1.2 package refresh, a bounded `--force-steam off` smoke temporarily enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, loaded the current installed `EZMicroBalance.dll` and `.pck`, reported `Found 12 SavedSpireFields`, finished EZ Micro Balance initialization, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, and reached main menu in `13,628ms`. Temporary profile settings were restored byte-for-byte. The log still contains unrelated local invalid-manifest errors for other mods, but no EZ Micro Balance startup exception or error.
 - Manual reward behavior tests below are still pending.
 
 ## Prismatic Gem Exact Tests
@@ -142,7 +144,8 @@ Result: pending.
 | Crossbow | Start turn, accept offer; repeat and skip offer. | Generated attack offer can be accepted or skipped; skipped card does not linger. | Pending |
 | Toasty Mittens | Start turn with draw pile. | Top draw-pile card can be exhausted for Strength or kept. | Pending |
 | Whispering Earring | Start turns 1, 2, and 3 with playable cards in hand, including self-targeting or no-target cards. | Auto-plays one highest-cost playable hand card after draw; self-targeting and no-target playable cards are not filtered out by enemy/ally targeting checks. | Pending |
-| Pumpkin Candle | Reach act 3 extinguish behavior. | Randomly upgrades two cards. | Pending |
+| Pumpkin Candle vanilla spot check | Obtain Pumpkin Candle and progress through the normal vanilla Act 3 extinguish timing. | No EZMB `PumpkinCandlePatch`, `ExtinguishedSentinel`, or active `PUMPKIN_CANDLE.description` override is present; behavior and text should match the current vanilla game. | Pending |
+| Quality Flame / Brightest Flame | Obtain Quality Flame through Storybook or another source, inspect unupgraded/upgraded previews, then play it. | The card visibly has Exhaust; unupgraded text and behavior draw 3, upgraded text and behavior draw 4, it gains the vanilla dynamic Energy amount, loses 1 Max HP, and exhausts after play. Pumpkin Candle relic behavior remains vanilla. | Pending |
 | Meat Cleaver | Open rest site with/without valid cards and HP. | Cook removes two cards and loses five current HP; disabled when unavailable. | Pending |
 | Blood-Soaked Rose / Enthralled | Gain Enthralled and observe combat priority. | `Enthralled` / `执迷` gains 10 Block while preserving forced-priority behavior. | Pending |
 
@@ -162,7 +165,6 @@ Result: pending.
 | Pael's Tooth relic text | `首领`, no raw `Boss` | Pending |
 | Jeweled Mask custom enchantment | zhs tooltip uses `宝石面具` and 0-cost text | Pending |
 | Keyword surfaces | `保留`, `虚无`, `消耗`, `固有`, `永恒`, `力量` | Pending |
-
 ## Save/Load Matrix
 
 | Surface | Expected Result | Result |

@@ -141,7 +141,7 @@ Expected runtime BaseLib:
 - Path: `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib`
 - Required files: `BaseLib.json`, `BaseLib.dll`, `BaseLib.pck`
 - Current status: installed and verified.
-- Current runtime version: `v3.1.0`
+- Current runtime version: `v3.1.2`
 
 Suspicious root-level BaseLib:
 - Path: `D:\Steam\steamapps\common\Slay the Spire 2\BaseLib`
@@ -149,11 +149,11 @@ Suspicious root-level BaseLib:
 - Files found: `BaseLib.json`, `BaseLib.dll`, `BaseLib.pck`
 
 Project NuGet package:
-- `Alchyr.Sts2.BaseLib` resolves to `3.1.0`
+- `Alchyr.Sts2.BaseLib` resolves to `3.1.2`
 
 Status:
 - Runtime BaseLib path exists under `mods\BaseLib`.
-- Runtime BaseLib version `v3.1.0` matches project package `3.1.0`.
+- Runtime BaseLib version `v3.1.2` matches project package `3.1.2`.
 - The old root-level BaseLib folder remains present and should be left untouched unless explicitly cleaned up later.
 - Do not fabricate BaseLib files.
 

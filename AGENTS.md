@@ -35,6 +35,7 @@ Baseline setup is complete on the local machine:
 - Legacy `EzDailyContent` Mod Settings verification succeeded on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
 - Independent `EZMicroBalance` build and publish have succeeded.
 - Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, and documentation freshness guards.
+- Current local source is refreshed from Slay the Spire 2 `v0.105.0`; BaseLib runtime/project package are aligned on `v3.1.2`.
 - Controlled `--force-steam off` smoke loading has verified only BaseLib and `EZMicroBalance` initialization to main menu from the final installed artifacts.
 - Normal Steam-client Mod Settings verification for `EZMicroBalance` and live gameplay feature verification are still pending.
 
@@ -74,7 +75,7 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 - Clone the repository on the target machine.
 - Copy `Directory.Build.props.example` to `Directory.Build.props`.
 - Fill local `GodotPath` and `Sts2Path` values.
-- Install BaseLib `v3.1.0` under `<GameRoot>\mods\BaseLib`.
+- Install BaseLib `v3.1.2` under `<GameRoot>\mods\BaseLib`.
 - Do not commit `Directory.Build.props`, `.tools/`, `.godot/`, `bin/`, `obj/`, downloaded archives, or local binaries.
 
 ## Documentation

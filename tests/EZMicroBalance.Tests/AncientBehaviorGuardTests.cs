@@ -17,6 +17,8 @@ public sealed class AncientBehaviorGuardTests
 
     private static readonly string[] RequiredCardLocalizationKeys =
     [
+        "BRIGHTEST_FLAME.title",
+        "BRIGHTEST_FLAME.description",
         "DEBT.title",
         "DEBT.description",
         "ENTHRALLED.title",
@@ -88,6 +90,7 @@ public sealed class AncientBehaviorGuardTests
         "Crossbow",
         "Toasty Mittens",
         "Whispering Earring",
+        "Quality Flame / Brightest Flame",
         "Meat Cleaver",
         "Blood-Soaked Rose / Enthralled"
     ];
@@ -238,7 +241,9 @@ public sealed class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart))]",
             "[HarmonyPatch(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))]",
             "[HarmonyPatch(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))]",
-            "AccessTools.DeclaredMethod(",
+            "[HarmonyPatch(typeof(CardModel), \"get_CanonicalKeywords\")]",
+            "[HarmonyPatch(typeof(BrightestFlame), \"get_CanonicalVars\")]",
+            "[HarmonyPatch(typeof(CardModel), nameof(CardModel.OnPlayWrapper))]",
             "[HarmonyPatch(typeof(CookRestSiteOption), MethodType.Constructor, typeof(Player))]",
             "[HarmonyPatch(typeof(CookRestSiteOption), \"get_Description\")]",
             "[HarmonyPatch(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))]",
@@ -262,7 +267,10 @@ public sealed class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.BeforeCardPlayed))]",
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCardPlayed))]",
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.BeforeSideTurnStart))]",
-            "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))]");
+            "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))]",
+            "[HarmonyPatch(typeof(CardModel), \"get_CanonicalKeywords\")]",
+            "[HarmonyPatch(typeof(BrightestFlame), \"get_CanonicalVars\")]",
+            "[HarmonyPatch(typeof(CardModel), nameof(CardModel.OnPlayWrapper))]");
     }
 
     [Fact]
@@ -1066,9 +1074,20 @@ public sealed class AncientBehaviorGuardTests
     private static string[] Placeholders(string value)
     {
         return Regex.Matches(value, @"\{[^{}]+\}")
-            .Select(match => match.Value)
+            .Select(match => NormalizePlaceholderForParity(match.Value))
             .OrderBy(match => match, StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static string NormalizePlaceholderForParity(string placeholder)
+    {
+        var pluralMatch = Regex.Match(
+            placeholder,
+            @"^\{(?<name>[^:{}]+):plural:[^{}]*\}$",
+            RegexOptions.CultureInvariant);
+        return pluralMatch.Success
+            ? $"{{{pluralMatch.Groups["name"].Value}:plural}}"
+            : placeholder;
     }
 
     private static int DistinguishedCapeLossForTest(int currentMaxHp)

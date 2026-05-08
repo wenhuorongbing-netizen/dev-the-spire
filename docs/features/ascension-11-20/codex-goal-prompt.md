@@ -13,8 +13,8 @@ Current project:
 
 - Active private beta mod: EZ Micro Balance
 - Manifest id: EZMicroBalance
-- Game target: Slay the Spire 2 public beta v0.104.0, 2026.04.23
-- BaseLib runtime: v3.1.0
+- Game target: Slay the Spire 2 public beta v0.105.0, installed/tested locally on 2026-05-08
+- BaseLib runtime: v3.1.2
 - Build baseline: EZMicroBalance.sln builds
 - Publish baseline: EZMicroBalance.sln publishes
 - Existing Ancient reward rebalance work is the current completed feature area

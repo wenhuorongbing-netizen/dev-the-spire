@@ -7,6 +7,8 @@ Status: v2.0 implementation pass is in progress. Milestones 0-6 are build/source
 
 This v2.0 checklist supersedes the older v1.0 design direction for future development. Existing code still contains prototype slices that must be audited and migrated toward this spec before any release-readiness claim.
 
+v0.105.0 correction: Doormaker/Door Wedge entries in this checklist are historical design notes only. Active EZMB source removes Door Wedge because v0.105.0 replaced Doormaker with Aeonglass; the current temporary Aeonglass seal is only +5 Strength at combat start.
+
 ## Core Principle
 
 Do not rewrite monster action tables. Do not rewrite Boss action tables.

@@ -1,4 +1,4 @@
-﻿# Ascension 11-20 Manual Test Checklist
+# Ascension 11-20 Manual Test Checklist
 
 Project: EZ Micro Balance  
 Manifest id: EZMicroBalance  
@@ -23,7 +23,7 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Current bounded `--force-steam off` smoke after the default-on multiplayer test candidate package refresh initialized only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,201ms`, found 0 EZ Micro Balance error/exception lines, and restored the temporary profile settings byte-for-byte.
+- Current bounded `--force-steam off` smoke after the v0.105.0/BaseLib v3.1.2 package refresh initialized only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored the temporary profile settings byte-for-byte.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded Boss Royal Seals, and A20 vanilla double-boss map path/Brand/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
@@ -55,7 +55,7 @@ Baseline result on 2026-05-06:
 
 Execute with `EZMB_ASCENSION_DIAGNOSTICS=1` and no gameplay debug level unless the test case explicitly needs Rootblight behavior.
 
-- [ ] Game loads with BaseLib v3.1.0 and EZ Micro Balance enabled.
+- [ ] Game loads with BaseLib v3.1.2 and EZ Micro Balance enabled.
 - [ ] Starting a normal run with only diagnostics enabled does not add Rootblight.
 - [ ] `godot.log` records run Ascension, act index, debug/public gate state, Rootblight level/card counts, room type, round, and combat Blight Sprout counts.
 - [ ] Diagnostics logs appear from the run/combat hook path without mutating gameplay beyond the selected Ascension level.
@@ -69,7 +69,7 @@ Execute only after Rootblight MVP is implemented.
 
 - [x] Build succeeds after implementation.
 - [x] Publish succeeds after localization/resources changed.
-- [ ] Game loads with BaseLib v3.1.0 and EZ Micro Balance enabled.
+- [ ] Game loads with BaseLib v3.1.2 and EZ Micro Balance enabled.
 - [ ] Starting a normal run with the debug/internal gate disabled does not add Rootblight.
 - [ ] Existing Ancient reward rebalance behavior still loads and does not throw.
 - [ ] `godot.log` has no EZ Micro Balance Ascension errors.
@@ -275,12 +275,12 @@ Gated implementation present as BossSeal definitions plus source-guarded runtime
 - [ ] Boss combat logs the Royal Seal/Brand as armed with source-guarded evidence before applying only the currently guarded hook path.
 - [ ] Boss map point hover text names Royal Seal or King Brand and includes the matching per-boss Royal Seal or Brand summary without raw localization keys.
 - [ ] Boss card rewards improve as documented.
-- [ ] Holy Daze, Martyr Oath, Ink Return, Startled Shell, Soul Tide, Boiling Critical, Misaligned Shell, Marginal Note, Struggle Bait, Door Wedge, Chosen Decree, and Residual Sample each trigger only on the matching boss and remain documented as pending live verification.
+- [ ] Holy Daze, Martyr Oath, Ink Return, Startled Shell, Soul Tide, Boiling Critical, Misaligned Shell, Marginal Note, Struggle Bait, Aeonglass Strength, Chosen Decree, and Residual Sample each trigger only on the matching boss and remain documented as pending live verification. Aeonglass Strength should apply exactly +5 Strength to the `AEONGLASS` monster at combat start; no complex Brand/Seal mechanic is implemented for Aeonglass yet.
 - [ ] No generic Armor/Rage/Barrier/Chaos placeholder effect applies.
 - [ ] A20 creates the final-act second Boss through the vanilla double-boss map path when the A20 gate is active.
 - [ ] The Act 3 map shows both Boss map points with vanilla Boss icons/names before route commitment.
 - [ ] Boss 2 receives Brand metadata and Brand parameters.
-- [ ] Boss 2 Brand parameters differ from A19 Royal Seal parameters where documented: Martyr Oath trigger cap/block, Ink Return restored Slippery/Strength, Startled Shell Plating/Soul Siphon reduction, Soul Tide Artifact/Beckon cap, Boiling Critical Steam threshold/warning Block, Misaligned Shell Block/Artifact, Marginal Note count, Struggle Bait timer Block, Door Wedge cap/Attack count, Chosen Decree Queen/player Block, and Residual Sample first phase count.
+- [ ] Boss 2 Brand parameters differ from A19 Royal Seal parameters where documented: Martyr Oath trigger cap/block, Ink Return restored Slippery/Strength, Startled Shell Plating/Soul Siphon reduction, Soul Tide Artifact/Beckon cap, Boiling Critical Steam threshold/warning Block, Misaligned Shell Block/Artifact, Marginal Note count, Struggle Bait timer Block, Aeonglass +5 Strength, Chosen Decree Queen/player Block, and Residual Sample first phase count.
 - [ ] Boss 2 map point hover text warns that the stronger Brand is active.
 - [ ] A20 Boss 1 reward screen offers one Boss card reward before the second Boss.
 - [ ] Boss 1 reward screen shows the A20 intermission header and second-Boss proceed text.

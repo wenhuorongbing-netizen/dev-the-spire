@@ -16,7 +16,7 @@ Ascension 11-20 expansion work is now an active development track after the 2026
 - Legacy Ancient work remains under `EzDailyContentCode/Ancients/` for traceability and is not part of the active solution.
 - `EZMicroBalance` has its own solution, project, manifest, resource folder, code folder, DLL, and PCK.
 - English and Simplified Chinese localization files exist for changed Ancient rewards under `EZMicroBalance/localization/`.
-- The latest automated pass has been refreshed after the A20 warning/current-smoke/package pass: build succeeds with 0 warnings/errors, normal source/localization/docs tests pass with release artifact/runtime evidence tests skipped unless `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`, and controlled `--force-steam off` smoke loaded BaseLib plus EZ Micro Balance with `Found 12 SavedSpireFields`. Live normal Steam-client Mod Settings and manual feature verification are still pending.
+- The latest automated pass has been refreshed for Slay the Spire 2 `v0.105.0` with BaseLib `v3.1.2`: build succeeds with 0 warnings/errors, normal source/localization/docs tests pass with release artifact/runtime evidence tests skipped unless `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`, and controlled `--force-steam off` smoke loaded only BaseLib plus EZ Micro Balance with `Found 12 SavedSpireFields`. Live normal Steam-client Mod Settings and manual feature verification are still pending.
 - Ascension 11-20 has a v2.0 development checklist at `docs/features/ascension-11-20/development-checklist-v2.md`. Active prototype slices live under `EZMicroBalanceCode/Ascension/`: default-on original-UI A11-A20 selection for this private-beta multiplayer test candidate, A11 +1 map column with an inserted-column optional route plus extra route rows in Act 1/2/3 (`+1/+1/+2`) without A11-specific map markers, Rootblight/Blight Sprout gameplay, A12 Firemarked Elite/Forge Token with dedicated map/status indicators and Heal/Smith payout, A13 Fission with stricter eligibility, higher visibility, and icon support, A16 Banner Rooms, A17 optional Act 2/3 Deep Branches with a guarded enhanced treasure reward, A19 source-guarded boss-specific Royal Seal hooks with Boss-map hover text, and A20 vanilla double-boss map creation with Boss 2 Brand metadata/parameters, Boss-map Brand hover text, Boss 1 post-combat recovery, a Boss 1 card reward, Boss 1 reward-screen intermission wording, and a fixed courtyard event inserted before Boss 2 through the vanilla terminal-reward path. These prototype slices still need live Ascension verification; Forge Token special rest-site payout and a bespoke full-screen intermission remain deferred. Controlled smoke passed is not the same as normal Steam-client Mod Settings or live co-op verification.
 
 ## Requirements
@@ -24,7 +24,7 @@ Ascension 11-20 expansion work is now an active development track after the 2026
 - Slay the Spire 2 public beta, verified baseline `v0.104.0`, date `2026.04.23`
 - .NET SDK 9.0.313 or compatible
 - Godot .NET / Mono 4.5.1
-- BaseLib runtime `v3.1.0` installed under `<GameRoot>\mods\BaseLib`
+- BaseLib runtime `v3.1.2` installed under `<GameRoot>\mods\BaseLib`
 - Local `Directory.Build.props` copied from `Directory.Build.props.example`
 
 ## Local Path Configuration

@@ -10,7 +10,7 @@ Do not treat the feature as private-beta ready until these checks are complete o
 
 - Game branch: public beta
 - Verified baseline target: `v0.104.0`, `2026.04.23`
-- BaseLib runtime: `v3.1.0`
+- BaseLib runtime: `v3.1.2`
 - Expected BaseLib folder: `<GameRoot>\mods\BaseLib`
 - Expected mod folder: `<GameRoot>\mods\EZMicroBalance`
 
@@ -152,7 +152,6 @@ Verify pickup behavior and player-facing text for:
 - Jewelry Box
 - Preserved Fog
 - Beautiful Bracelet
-- Pumpkin Candle
 - Iron Club
 - Brilliant Scarf
 

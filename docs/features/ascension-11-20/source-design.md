@@ -4,8 +4,9 @@ Current forward-looking design input: `development-checklist-v2.md` was added on
 
 Document type: Feature GDD / local source design
 Project: EZ Micro Balance workspace, with legacy EzDailyContent scaffold preserved for traceability
-Target game: Slay the Spire 2 public beta v0.104.0, 2026.04.23
-Dependency baseline: BaseLib v3.1.0
+Original target game: Slay the Spire 2 public beta v0.104.0, 2026.04.23
+Current implementation target: Slay the Spire 2 public beta v0.105.0, installed/tested locally on 2026-05-08
+Current dependency baseline: BaseLib v3.1.2
 Status: design source only; not implementation proof
 
 ## 1. One-line Goal

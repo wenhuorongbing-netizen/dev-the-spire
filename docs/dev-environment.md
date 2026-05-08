@@ -23,9 +23,9 @@
 - Live observed in-game version (player report, 2026-05-08): `v0.105.0, 2026.05.08`
 - Local source snapshot: `source code/` was refreshed from `D:\Steam\steamapps\common\Slay the Spire 2\SlayTheSpire2.pck` on 2026-05-08 using GDRE Tools `v2.5.0-beta.5`; `release_info.json` reports commit `e4579d36`, branch/version `v0.105.0`, and `main_assembly_hash` `359406027`.
 - Source recovery log: `source code/gdre_export.log` detected Godot `4.5.1`, bytecode `4.5.0-stable (ebc36a7)`, extracted 15,551 files with no extraction errors, decompiled 3,448 scripts, reported 18 failed scripts, and successfully ran `dotnet build` for the recovered `sts2.sln`.
-- BaseLib v3.1.0 compatibility with v0.105.0: **NOT PROVEN.** Live log (`godot2026-05-08T05.06.30.log`) shows 3 BaseLib patch failures (ExhaustivePatch, PersistPatch, PurgePatch) and `MissingMethodException: Creature.get_ShowsInfiniteHp()` from `BaseLib.Patches.UI.HealthBarForecastPatch`.
+- BaseLib `v3.1.2` compatibility with v0.105.0: controlled main-menu smoke passed with only BaseLib + EZMicroBalance enabled. The earlier `v3.1.0` / 17-mod live log (`godot2026-05-08T05.06.30.log`) is superseded for loader evidence, but normal Steam-client Mod Settings and live gameplay/combat verification are still pending.
 - Do not use pre-2026-05-08 `v0.104.0` source notes as the sole basis for current `v0.105.0` conclusions. Reinspect the refreshed source and confirm runtime behavior before making release claims.
-- Test environment must be ONLY BaseLib + EZMicroBalance. The current log shows `Loaded 17 mods (19 total)` including DamageMeter, RouteSuggest, AnimeWaifuSilent, etc. — this invalidates any release evidence.
+- Test environment must be ONLY BaseLib + EZMicroBalance. Earlier 17-mod logs including DamageMeter, RouteSuggest, AnimeWaifuSilent, etc. are invalid release evidence.
 
 
 ## Project mission
@@ -56,26 +56,26 @@
 - BaseLib runtime status: installed at expected runtime path.
 - BaseLib runtime path: `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib`
 - BaseLib runtime files: `BaseLib.json`, `BaseLib.dll`, `BaseLib.pck`
-- BaseLib runtime version: `v3.1.0`
-- BaseLib source release: `https://github.com/Alchyr/BaseLib-StS2/releases/tag/v3.1.0`
+- BaseLib runtime version: `v3.1.2`
+- BaseLib source release: `https://github.com/Alchyr/BaseLib-StS2/releases/tag/v3.1.2`
 - BaseLib old root-level path still present: `D:\Steam\steamapps\common\Slay the Spire 2\BaseLib`
 - BaseLib old root-level version: `v0.1.3`
-- Project NuGet BaseLib package: `Alchyr.Sts2.BaseLib` `3.1.0`
-- BaseLib version consistency: OK. Runtime `v3.1.0` matches project package `3.1.0`.
+- Project NuGet BaseLib package: `Alchyr.Sts2.BaseLib` `3.1.2`
+- BaseLib version consistency: OK. Runtime `v3.1.2` matches project package `3.1.2`.
 
 ## Last known commands
-- Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-08 after the A20 host-only multiplayer warning follow-up. Default Debug builds no longer overwrite installed release artifacts; Release build/publish remains the installed-mod copy path. Result: succeeded with 0 warnings and 0 errors.
-- Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-08 after the A20 host-only multiplayer warning follow-up. Result: succeeded with 0 warnings and 0 errors.
-- Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-08 after default-on gate publish/package refresh. Result: passed, 63 passed, 15 skipped release artifact/runtime evidence tests, 0 failed.
-- Last attempted test run: `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-08 after default-on gate package/hash/smoke refresh. Result: passed, 78 passed, 0 skipped, 0 failed.
-- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-08 after the default-on multiplayer test candidate package/smoke pass. Result: exit code 0.
-- Last required diff check: `git diff --check` on 2026-05-08 after the default-on multiplayer test candidate package/smoke pass. Result: exit code 0 with CRLF normalization warnings for touched files.
-- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-08 after the A20 host-only multiplayer warning follow-up.
-- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-08. Result: command returned exit code 0, built `EZMicroBalance` in Release, copied `EZMicroBalance.dll` and `EZMicroBalance.json`, found the selected-resource PCK already current, and did not publish the test project.
-- Last PCK audit: automated release tests parsed `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance\EZMicroBalance.pck` after publish/package refresh. Result: 0 entries from `EzDailyContent`, `EzDailyContentCode`, `EZMicroBalanceCode`, `docs`, `art_pipeline`, `asset`, `source code`, or `legacy`; SHA256 `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`.
-- Last installed DLL audit: installed, staging, versioned package, and extracted zip DLL SHA256 all match `9F68518A8083C128DB74E6BAC4C2C001B9BB2B8AA4AD89642883659A982C229F`.
+- Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-08 after the v0.105.0/BaseLib v3.1.2 source/API refresh. Default Debug builds no longer overwrite installed release artifacts; Release build/publish remains the installed-mod copy path. Result: succeeded with 0 warnings and 0 errors.
+- Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-08 after the v0.105.0/BaseLib v3.1.2 source/API refresh. Result: succeeded with 0 warnings and 0 errors.
+- Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-08 after the final v0.105.0 package/hash/smoke refresh. Result: passed, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- Last attempted test run: `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-08 after the final v0.105.0 package/hash/smoke refresh. Result: passed, 81 passed, 0 skipped, 0 failed.
+- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-08 after the final v0.105.0 package/smoke/doc refresh. Result: exit code 0.
+- Last required diff check: `git diff --check` on 2026-05-08 after the final v0.105.0 package/smoke/doc refresh. Result: exit code 0 with CRLF normalization warnings for touched files.
+- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-08 after the Brightest Flame zhs placeholder parity fix.
+- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-08. Result: command returned exit code 0, built `EZMicroBalance` in Release, copied `EZMicroBalance.dll` and `EZMicroBalance.json`, exported the selected-resource `EZMicroBalance.pck`, and did not publish the test project.
+- Last PCK audit: automated release tests parsed `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance\EZMicroBalance.pck` after publish/package refresh. Result: 0 entries from `EzDailyContent`, `EzDailyContentCode`, `EZMicroBalanceCode`, `docs`, `art_pipeline`, `asset`, `source code`, or `legacy`; SHA256 `89D87BEB637EDE00A62A57491563A2254BBABBC471859C5B32F74C11F6D89A7F`.
+- Last installed DLL audit: installed, staging, versioned package, and extracted zip DLL SHA256 all match `215A4621019CA93ABB0157BBFEA094FE4C8DBDEA247ECA02222709298784CF5C`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
-- Last private beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` was rebuilt after the 2026-05-08 default-on multiplayer test candidate publish. SHA256 `F670B27869357DD6F7EE5549948CC9D09AD8711840B655E08896F22B41D803AF`; entries are `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
+- Last private beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` was rebuilt after the 2026-05-08 v0.105.0/BaseLib v3.1.2 refresh. SHA256 `6C3A9CE64D7227BBC5204D1EC1215EA6877818E24E4400910DCE8BF9199BC090`; entries are `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
 - Last release art audit: `EZMicroBalance/mod_image.png` and `publish\EZMicroBalance-cover-source.png` currently have SHA256 `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75` and were manually checked as original generated art with no visible text, letters, numbers, numerals, logos, or official game assets.
 - Publish note: Godot still prints a non-fatal script-scan `sts2` assembly load exception during headless export because the project assembly references runtime game assemblies that are not loaded by the editor process.
 
@@ -105,7 +105,7 @@
 - 2026-05-06: release-engineering bounded `--force-steam off` smoke temporarily enabled only `BaseLib` and `EZMicroBalance` in the default profile, loaded the then-installed `EZMicroBalance.dll` and `.pck`, registered 8 SavedSpireFields, finished EZ Micro Balance initialization, reached main menu in 14 seconds, found 0 EZ Micro Balance error lines, and restored both `default\1\settings.save` and `settings.save.backup` byte-for-byte. This smoke is superseded by the 2026-05-07 current-package smoke below.
 - 2026-05-06: bounded `--force-steam off` smoke after the A11+ run-start black-screen fix loaded the refreshed installed DLL/PCK, reached main menu, found 0 EZ Micro Balance error lines, and confirmed the prior `DuplicateModelException` / direct `RootRunHook(RunState)` constructor path was absent from the new `godot.log`. Temporary default-profile settings were restored byte-for-byte.
 - 2026-05-07: earlier bounded `--force-steam off` smoke for the A20 fixed-courtyard package temporarily enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reached main menu, found 0 EZ Micro Balance error/exception lines, and restored both `default\1\settings.save` and `settings.save.backup` to their original contents. This smoke is superseded by the 2026-05-07 current-package smoke below.
-- 2026-05-08: current-package bounded `--force-steam off` smoke after the default-on multiplayer test candidate publish/package refresh temporarily enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, loaded exactly 2 mods (`Loaded 2 mods (19 total)`), initialized BaseLib and EZ Micro Balance, loaded the current installed `EZMicroBalance.dll` and `.pck`, confirmed the current source defines 12 SavedSpireFields and runtime reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,201ms`, found 0 EZ Micro Balance error/exception lines, and restored both `default\1\settings.save` and `settings.save.backup` byte-for-byte.
+- 2026-05-08: current-package bounded `--force-steam off` smoke after the v0.105.0/BaseLib v3.1.2 publish/package refresh temporarily enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, loaded exactly 2 mods (`Loaded 2 mods (19 total)`), initialized BaseLib and EZ Micro Balance, loaded the current installed `EZMicroBalance.dll` and `.pck`, confirmed the current source defines 12 SavedSpireFields and runtime reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored both `default\1\settings.save` and `settings.save.backup` byte-for-byte.
 - Controlled smoke note: local unrelated mods `RouteSuggest-v1.9.0` and `sts2-heybox-support` still emit invalid-manifest scan errors from their own JSON files before disabled-mod filtering; these are not emitted by `EZMicroBalance`.
 - Runtime verification still requires launching from the normal Steam client path and checking Mod Settings plus the manual feature matrix.
 

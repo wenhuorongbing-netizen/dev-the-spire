@@ -577,7 +577,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("Live co-op selection and desync verification are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("AUTHOR_NAME_REPLACE_ME", handoff, StringComparison.Ordinal);
         Assert.Contains("Current git status at this handoff refresh", handoff, StringComparison.Ordinal);
-        Assert.Contains("77da0ed (HEAD -> main, origin/main, origin/HEAD) fix2", handoff, StringComparison.Ordinal);
+        Assert.Contains("7d74d68 (HEAD -> main, origin/main, origin/HEAD) try fix 1.05", handoff, StringComparison.Ordinal);
         Assert.Contains("Proposed commit scope", handoff, StringComparison.Ordinal);
         Assert.Contains("Do not include", handoff, StringComparison.Ordinal);
         Assert.Contains("Directory.Build.props", handoff, StringComparison.Ordinal);

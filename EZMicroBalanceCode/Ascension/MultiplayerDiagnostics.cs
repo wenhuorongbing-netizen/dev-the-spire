@@ -1,7 +1,9 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Saves;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -215,22 +217,25 @@ internal static class AncientEventModelBeforeEventStartedDiagPatch
 
 /// <summary>
 /// Patches the save/quit path to log when save/quit/diconnect is invoked.
-/// NSaveAndQuitButton is the UI button; we hook RunManager.SaveRun and
+/// NSaveAndQuitButton is the UI button; we hook SaveManager.SaveRun and
 /// NGame.ReturnToMainMenu as additional save/quit surfaces.
 /// </summary>
 [HarmonyPatch]
 internal static class SaveQuitDiagPatches
 {
-    [HarmonyPatch(typeof(RunManager), "SaveRun")]
+    [HarmonyPatch(typeof(SaveManager), nameof(SaveManager.SaveRun), typeof(AbstractRoom), typeof(bool))]
     [HarmonyPrefix]
-    private static void SaveRunPrefix(RunManager __instance)
+    private static void SaveRunPrefix(AbstractRoom? preFinishedRoom, bool saveProgress)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
 
-        var netService = __instance.NetService;
+        var netService = RunManager.Instance.NetService;
         var isHost = netService?.Type == MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType.Host;
         var netId = netService?.NetId ?? 0;
-        MultiplayerDiagnostics.LogSaveQuit("SaveRun prefix", isHost, netId);
+        MultiplayerDiagnostics.LogSaveQuit(
+            $"SaveRun prefix; room={preFinishedRoom?.RoomType.ToString() ?? "<none>"}; saveProgress={saveProgress}",
+            isHost,
+            netId);
     }
 
     [HarmonyPatch(typeof(MegaCrit.Sts2.Core.Nodes.NGame), "ReturnToMainMenu")]

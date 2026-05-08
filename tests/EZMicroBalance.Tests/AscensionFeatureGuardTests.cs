@@ -231,9 +231,15 @@ public sealed class AscensionFeatureGuardTests
         AssertSourceContains(
             combatService,
             "BossSealId.AeonglassStrength",
-            "PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), boss, 5, boss, null)",
+            "private static readonly ModelId AeonglassMonsterId = new(\"MONSTER\", \"AEONGLASS\")",
+            "FirstOrDefault(enemy => enemy.ModelId == AeonglassMonsterId)",
+            "AeonglassStrengthAmount = 5m",
             "Ascension AeonglassStrength: applied +5 Strength");
 
+        Assert.DoesNotContain(
+            "var boss = AliveEnemies(combatState)\n                .OrderByDescending(enemy => enemy.MaxHp)\n                .FirstOrDefault();",
+            combatService.Replace("\r\n", "\n"),
+            StringComparison.Ordinal);
         Assert.DoesNotContain("enemy.Monster is Doormaker", combatService, StringComparison.Ordinal);
         Assert.DoesNotContain("HasPower<HungerPower>", combatService, StringComparison.Ordinal);
         Assert.DoesNotContain("HasPower<ScrutinyPower>", combatService, StringComparison.Ordinal);

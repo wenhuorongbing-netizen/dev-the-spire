@@ -2,28 +2,28 @@
 
 Date: 2026-05-08
 
-**⚠️ P0 BLOCKER (2026-05-08):** The current live test log (`godot2026-05-08T05.06.30.log`) was collected in a v0.105.0 environment with 17 mods loaded, not the required BaseLib+EZMB-only setup. BaseLib v3.1.0 has 3 patch failures and `MissingMethodException: Creature.get_ShowsInfiniteHp()` on v0.105.0. Do not use this log or this mod environment as release evidence. See `ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT` in `docs/issues.md`.
+**Environment warning (2026-05-08):** The earlier live test log (`godot2026-05-08T05.06.30.log`) was collected in a v0.105.0 environment with 17 mods loaded and BaseLib `v3.1.0`, not the required BaseLib+EZMB-only setup. Current package evidence uses BaseLib `v3.1.2` and a controlled BaseLib+EZMB-only smoke; normal Steam-client Mod Settings and live gameplay verification are still pending.
 
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `F670B27869357DD6F7EE5549948CC9D09AD8711840B655E08896F22B41D803AF`
+- Zip SHA256: `6C3A9CE64D7227BBC5204D1EC1215EA6877818E24E4400910DCE8BF9199BC090`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `9F68518A8083C128DB74E6BAC4C2C001B9BB2B8AA4AD89642883659A982C229F`
+- DLL SHA256: `215A4621019CA93ABB0157BBFEA094FE4C8DBDEA247ECA02222709298784CF5C`
 - Manifest SHA256: `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`
-- PCK SHA256: `A08D7D97D041316CCDD5D1F000BE82F545DBA845429900524D924B7A6EAD9F52`
+- PCK SHA256: `89D87BEB637EDE00A62A57491563A2254BBABBC471859C5B32F74C11F6D89A7F`
 
 ## Known Automated Evidence
 
 - `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: passed, 63 passed, 15 skipped release artifact/runtime evidence tests, 0 failed.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 78 passed, 0 skipped, 0 failed.
+- `dotnet test EZMicroBalance.sln --no-build`: passed, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 0 skipped, 0 failed.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
 - `dotnet publish EZMicroBalance.sln`: passed.
 - `git diff --check`: exit 0 with CRLF normalization warnings for touched files.
-- Current controlled `--force-steam off` smoke temporarily enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,201ms`, found 0 EZ Micro Balance error/exception lines, and restored `settings.save` plus `settings.save.backup` byte-for-byte. Normal Steam-client Mod Settings verification is still pending.
+- Current controlled `--force-steam off` smoke temporarily enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored `settings.save` plus `settings.save.backup` byte-for-byte. Normal Steam-client Mod Settings verification is still pending.
 
 ## Required Manual Results
 
@@ -74,8 +74,8 @@ If `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set and artifacts are missing or stale
 
 Current git status at this handoff refresh:
 
-- `git log -1 --oneline --decorate`: `77da0ed (HEAD -> main, origin/main, origin/HEAD) fix2`
-- `git status --short --branch`: `## main...origin/main` with modified source/docs/tests from this default-on multiplayer-test-candidate pass and untracked `docs/features/ascension-11-20/multiplayer-test-runbook.md`. No release artifacts are tracked.
+- `git log -1 --oneline --decorate`: `7d74d68 (HEAD -> main, origin/main, origin/HEAD) try fix 1.05`
+- `git status --short --branch`: `## main...origin/main` with modified source/docs/tests from the v0.105.0 Pumpkin Candle rollback, Quality Flame hardening, Door Wedge removal, Aeonglass +5 Strength, BaseLib v3.1.2 documentation, package/hash refresh, and guard-test pass. No release artifacts are tracked.
 
 No commit or push was attempted in this pass. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
 
@@ -92,4 +92,3 @@ Do not include:
 - Any copied official Slay the Spire 2 assets or large decompiled method bodies.
 
 Push only after explicit user approval.
-

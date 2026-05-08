@@ -244,7 +244,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "TrackInkReturnIfSlipperySpent",
             "TrackKnowledgeDemonEnemyMove",
             "BossSealId.AeonglassStrength",
-            "PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), boss, 5, boss, null)",
+            "FirstOrDefault(enemy => enemy.ModelId == AeonglassMonsterId)",
+            "AeonglassStrengthAmount = 5m",
             "TryApplyResidualSamples");
 
         AssertSourceContains(
