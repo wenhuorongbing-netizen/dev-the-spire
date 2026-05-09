@@ -58,8 +58,8 @@ Target manifest id: `EZMicroBalance`
 - [x] Author placeholder is replaced for this private beta; `EZMicroBalance.json` author is `wenhuorongbing-netizen`.
 - [x] Rootblight I/II/III and Blight Sprout generated portrait art is integrated and packaged; live in-game visual verification remains part of the manual matrix.
 - [ ] Multiplayer disposition is decided: verified, or release-noted as unsupported/unverified.
-- [x] Worktree is clean after the local release-hygiene commit.
-- [x] Local release-hygiene commit is created.
+- [ ] Worktree is clean.
+- [ ] Commit is created.
 - [ ] Push to `origin/main` is performed only after explicit user approval.
 
 ## Known Issues

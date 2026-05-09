@@ -73,7 +73,7 @@ Run with BaseLib and EZ Micro Balance enabled. Disable other mods that alter car
 2. Complete one normal monster combat that grants a normal card reward.
 3. Open the card reward screen.
 4. Record all three card slots, including each slot's color and rarity.
-5. Confirm the relic hover text shows `妫卞僵璁℃暟锛?/2` after this reward screen opens if the current language is zhs, or the English equivalent in English; this means the next standard card reward should be all off-color.
+5. Confirm the relic hover text shows `棱彩计数：1/2` after this reward screen opens if the current language is zhs, or the English equivalent in English; this means the next standard card reward should be all off-color.
 6. Reroll the same reward screen.
 7. Record the three card slots again.
 8. Repeat the reroll at least two more times if rerolls are available.
@@ -88,12 +88,12 @@ Result: pending.
 1. Start or load a run that has Prismatic Gem and a saved normal reward counter of `1`, or use the next normal monster reward after completing test 1.
 2. Complete a normal monster combat that grants a normal card reward.
 3. Open the card reward screen.
-4. Confirm every visible option is off-color / `寮傝壊鐗宍, with each slot preserving its original rarity when a same-rarity off-color replacement is available.
+4. Confirm every visible option is off-color / `棱彩奖励：本次只出现异色牌。` with each slot preserving its original rarity when a same-rarity off-color replacement is available.
 5. Reroll the same reward screen.
 6. Confirm the rerolled reward screen still has every visible option off-color and does not duplicate any visible card where an alternative exists.
 7. Repeat the reroll at least two more times if rerolls are available.
-8. Confirm the relic hover text shows `妫卞僵璁℃暟锛?/2` after this reward screen opens if the current language is zhs, or the English equivalent in English; this means the next standard card reward should be normal.
-9. If the reward banner text is visible in zhs, confirm it shows `妫卞僵濂栧姳锛氭湰娆″彧鍑虹幇寮傝壊鐗屻€俙.
+8. Confirm the relic hover text shows `棱彩计数：2/2` after this reward screen opens if the current language is zhs, or the English equivalent in English; this means the next standard card reward should be normal.
+9. If the reward banner text is visible in zhs, confirm it shows `棱彩奖励：本次只出现异色牌。`.
 10. Review `godot.log` after the screen. Confirm the banner hint used the guarded `_banner` field or the `UI/Banner fallback`; if both failed, the log must say the visible all-off-color cards and relic hover count remain the available confirmation surfaces.
 
 Expected result: the second normal reward screen stays triggered through every reroll. Rerolling must keep every visible option off-color, with no added reward slot and no duplicate card options where an alternative exists. The localized banner hint should render when either the guarded private banner field or the `UI/Banner` fallback is available; visual placement remains manual.
@@ -128,7 +128,7 @@ Result: pending.
 | Claws | Pick up reward and choose curse. | Chooses one curse from four and adds two `Wish` / `璁告効` plus one upgraded `Wish+` / `璁告効+`. | Pending |
 | Choices Paradox | Start combat after pickup. | Five rare choices are offered, retained, and combat temporary. | Pending |
 | Jeweled Mask | Select or draft a power, save/load, then enter combat. | Selected power permanently costs 0 and starts in hand instead of draw pile; zhs custom enchantment tooltip uses `瀹濈煶闈㈠叿`. | Pending |
-| Prismatic Gem | Run the exact tests above and inspect `godot.log`. | Counter increments once per standard reward screen; every second eligible screen makes every visible option off-color / `寮傝壊鐗宍, shows the count hover hint, applies the localized banner through the guarded `_banner` field or `UI/Banner fallback`, and reroll preserves trigger state. | Pending |
+| Prismatic Gem | Run the exact tests above and inspect `godot.log`. | Counter increments once per standard reward screen; every second eligible screen makes every visible option off-color / `棱彩奖励：本次只出现异色牌。` shows the count hover hint, applies the localized banner through the guarded `_banner` field or `UI/Banner fallback`, and reroll preserves trigger state. | Pending |
 | Distinguished Cape | Inspect Vakuu options and pick up the reward at max HP values around 80, 70, 30, 19, 18, and 10 if practical. | Uses `lose 30% of current Max HP, at least 18`; cannot be selected when current Max HP is not greater than the v4.3 cost; an unaffordable Cape roll is replaced by a payable Vakuu Pool 2 option so low-Max-HP Vakuu still shows three normal choices; if current HP exceeds new max, max HP loss is not damage; adds exactly 3 `Apparition` / `鐏典綋` cards. | Pending |
 | Velvet Choker | Play 6 cards manually from hand, then inspect/play the 7th+ card; also test an autoplay and a repeated/copy play. | No hard six-card cap; the 7th+ from-hand manual cards cost +1 after other cost changes; copied, autoplayed, or repeated plays do not advance the counter; counter resets on each player turn. | Pending |
 | Pael's Tooth | Remove five cards, run two non-boss combats, then act transition. | One stored card returns upgraded every two non-boss / `闈為棰哷 combats; remaining stored cards clear after act boss / `棣栭` transition. | Pending |
@@ -155,7 +155,7 @@ Result: pending.
 | --- | --- | --- |
 | Beautiful Bracelet relic text | `杩呴€?`, no raw `Swift` | Pending |
 | Numeric formatting | No spaces between Chinese text, numbers, and units, such as `鑾峰緱1鐐硅兘閲廯, `鎵嬬墝鏈?寮燻, `鑷冲皯18鐐筦 | Pending |
-| Prismatic Gem count hint | zhs hover uses `妫卞僵璁℃暟锛?/2` or `妫卞僵璁℃暟锛?/2`; trigger reward banner uses `妫卞僵濂栧姳锛氭湰娆″彧鍑虹幇寮傝壊鐗屻€俙; if the banner path falls back, `godot.log` names the `UI/Banner fallback` or the final unavailable diagnostic. | Pending |
+| Prismatic Gem count hint | zhs hover uses `棱彩计数：1/2` or `棱彩计数：2/2`; trigger reward banner uses `棱彩奖励：本次只出现异色牌。`; if the banner path falls back, `godot.log` names the `UI/Banner fallback` or the final unavailable diagnostic. | Pending |
 | Jewelry Box relic text | `绁炲寲`, no raw `Apotheosis` | Pending |
 | Pael's Horn relic text | `鏀炬澗` and `鏀炬澗+`, no raw `Relax` | Pending |
 | Claws relic text | `璁告効` and `璁告効+`, no raw `Wish` | Pending |

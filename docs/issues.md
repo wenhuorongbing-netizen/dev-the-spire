@@ -22,7 +22,6 @@ Minimum evidence packet for closing a live issue:
 - For co-op issues, both host and client logs from the same attempt, plus the lobby/run start timing and selected Ascension.
 - Explicit scan result for release-blocking signatures: `Creature.get_ShowsInfiniteHp`, `BaseLib.Patches.UI.HealthBarForecastPatch`, BaseLib patch failures, non-EZMB mod stack traces, EZMB error/exception, `TypeLoadException`, and `MissingMethodException`.
 - Recommended scanner: run `scripts/audit-godot-log.ps1 -Path <copied godot.log> -OutFile <evidence-dir>\godot-log-audit.json -FailOnHit` for clean-log gates, or omit `-FailOnHit` when collecting known-failing diagnostic logs.
-
 Open issue closure checklist:
 
 | Issue | Missing evidence before close |
@@ -50,7 +49,7 @@ Open issue closure checklist:
 
 Priority: P1
 
-Status: source-patched and package-guarded; English and Simplified Chinese live hover/text verification passed for the four Rootblight-family cards. Keep guards active while broader Rootblight combat behavior remains open.
+Status: source-complete and package-guarded; English and Simplified Chinese live hover/text verification passed for the four Rootblight-family cards. Keep guard coverage active while broader Rootblight combat behavior remains open.
 
 Area: A14/A15/A18 Rootblight / Blight Sprout card text, visible keyword display, rich text, card previews, localization
 
@@ -189,7 +188,7 @@ Manual verification required:
 
 Priority: P1/P2
 
-Status: source-implemented and guard-covered; English and Simplified Chinese Rootblight live hover/text passes found no localization drift.
+Status: source-complete and guard-covered; English and Simplified Chinese Rootblight live hover/text passes found no localization drift.
 
 Area: card localization style, naming conventions, dynamic variables, preview rules, bilingual text consistency
 

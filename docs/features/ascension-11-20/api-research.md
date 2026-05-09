@@ -262,7 +262,7 @@ Rootblight closed-loop implementation is not approved until these exact items ar
 ## Open Risks
 
 - Public A11-A20 selection and unlock are blocked by the vanilla hard max of 10 until a dedicated UI/progress spike proves a safe patch set.
-- Rootblight cards use `CurseCardPool` because the active BaseLib custom-card registration path is proven for that pool. Known generator flags are disabled, but random transform/reward exclusion still needs runtime verification before public release.
+- Rootblight cards use `CurseCardPool` because the active BaseLib custom-card registration path is proven for that pool. Known generator flags are disabled, but random transform/reward exclusion still needs runtime verification before public release; runtime registration and random transform/reward exclusion remain pending.
 - Blight Sprout mid-combat save/load has saved card flags and existing-pile scans, but live save/load, diagnostics log output, and multiplayer synchronization are unverified.
 - Forge Token heal/smith payout is source-patched. Special rest-site action payout is disabled after API review because wrapping private `RestSiteSynchronizer.ChooseOption` in the UI-sensitive rest path was not runtime-proven safe.
 - Firemarked/Banner/Boss Seal map metadata is in-memory and recomputed on map hook entry; `TryGetCurrentMetadata(...)` assigns the returned replacement map before reading the current point, but visible quest markers and save/load restoration still need live verification.

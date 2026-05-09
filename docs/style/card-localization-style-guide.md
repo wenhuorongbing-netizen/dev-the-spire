@@ -1,4 +1,4 @@
-# Card Localization Style Guide
+# Card Localization Style Guide (Source-Format)
 
 Project: EZ Micro Balance
 Applies to: custom card text under `EZMicroBalance/localization/{eng,zhs}/cards.json` and matching `CardModel` source.
@@ -12,6 +12,12 @@ This guide is based on the local Slay the Spire 2 `v0.105.0` source and localiza
 - `HoverTipFactory.FromCard<T>()` obtains the canonical card through `ModelDb.Card<T>()` and creates a `CardHoverTip`. Use this for card previews. Avoid `FromCardWithCardHoverTips<T>()` when cards reference each other, because it adds the referenced card's own hover tips too.
 - `CardModel.HoverTips` already appends visible keyword hover tips for `CanonicalKeywords`, including `CardKeyword.Exhaust`. Descriptions must not manually duplicate a keyword that the card model already exposes.
 - Dynamic values in official localization use dynamic vars such as `{Cards:diff()}`, `{Damage:diff()}`, `{Block:diff()}`, and `{Energy:energyIcons()}` when values can change.
+
+Source-format conventions derived from official cards:
+
+- Keep sentences short.
+- Split long behavior into separate `\n` lines, as localizations do for combat-time and conditional text.
+- Keep punctuation simple (`.` / `，` / `。`) and avoid compact but ambiguous phrasing.
 
 ## Rules
 
@@ -47,6 +53,8 @@ protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.Fro
 ```
 
 Preview cards must come from canonical `ModelDb` paths through `HoverTipFactory.FromCard<T>()`; they must not create runtime cards, mutate piles, consume RNG, write saves, or change multiplayer state.
+
+When you add a preview card in text, ensure the source path is also guarded by a safe fallback if owner/run context is unavailable.
 
 5. English and Simplified Chinese consistency rule
 
