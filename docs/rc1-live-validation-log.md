@@ -1,6 +1,6 @@
 # RC1 Live Validation Log
 
-Date: 2026-05-08  
+Date: 2026-05-08 / 2026-05-09
 Scope: RC1 live-validation gate for EZ Micro Balance on Slay the Spire 2 `v0.105.0` with BaseLib `v3.1.2`.
 
 This log records what was actually run or observed. It does not close the live gates unless the corresponding result is marked executed with evidence.
@@ -15,20 +15,19 @@ This log records what was actually run or observed. It does not close the live g
 ## Package Refresh
 
 - `dotnet publish EZMicroBalance.sln` changed installed artifacts, so package staging, versioned package directory, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` were rebuilt from installed artifacts.
-- Zip SHA256: `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`.
-- DLL SHA256: `1AEE7CD1C6EB945F022CB85997ADC709D930C3E6FC318E7E0EFE1A13436C589F`.
-- Manifest SHA256: `68466CF2BDE07AE7F911AE75EBF6FCAAFE80F70570E3F0D6ECA796B496DB8DB0`.
-- PCK SHA256: `435D55B14FAD38F611C550F4ACAF604EE1A2C3E63E75C52FC3FA9FCE52D064CA`.
+- Zip SHA256: `1699D7BEC6C1A0BD02223E45E4B90399C7BFBB20D4E95236F9ED1E08A795AF8F`.
+- DLL SHA256: `9A0E750122D3AEBE449D2D95A20AED84657AFF6D169079E0F0184CC7084A70DF`.
+- Manifest SHA256: `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`.
+- PCK SHA256: `253E1310D8357EEB4D099F34BFA8785A66FEE77576BDA59A4D34277874696C25`.
 
 ## Automated Results
 
 - `dotnet build EZMicroBalance.sln`: passed, 0 warnings, 0 errors.
-- `dotnet test EZMicroBalance.sln`: passed, 66 passed, 16 skipped, 0 failed.
-- `dotnet test EZMicroBalance.sln --no-build`: passed, 66 passed, 16 skipped, 0 failed.
+- `dotnet test EZMicroBalance.sln --no-build`: last passed before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh, 67 passed, 16 skipped, 0 failed; not rerun for the latest DLL/package.
 - `dotnet publish EZMicroBalance.sln`: passed.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 82 passed, 0 skipped, 0 failed.
-- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
-- `git diff --check`: exit 0 with CRLF normalization warnings for touched files, including `docs/features/ancients-rework-v4/completion-audit.md`, `docs/features/ancients-rework-v4/work-log.md`, and `tests/EZMicroBalance.Tests/AncientBehaviorGuardTests.cs`.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: last passed before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh, 83 passed, 0 skipped, 0 failed; not rerun for the latest DLL/package.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: last passed before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh.
+- `git diff --check`: last exit 0 before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh.
 
 ## Normal Steam-Client Launch Probe
 
@@ -54,12 +53,12 @@ This log records what was actually run or observed. It does not close the live g
 ## Normal Steam-Client Mod Settings UI Probe
 
 - Command path: `D:\Steam\steam.exe -applaunch 2868840`.
-- First isolation probe: temporarily moved 23 non-BaseLib/EZMB entries out of `D:\Steam\steamapps\common\Slay the Spire 2\mods`, launched through Steam, opened `模组配置`, captured BaseLib-only screenshots, copied `.tools\runtime-evidence\rc1-normal-steam-modsettings-godot-20260508-092717.log`, closed the game, then restored all moved entries.
-- Source fix for UI visibility: added a no-op BaseLib `ModConfig` page for EZ Micro Balance. It registers `EZMicroBalanceModConfig`, exposes no gameplay options, and localizes the Chinese title as `微平衡` with body text `无可配置选项。`.
-- Recheck isolation probe: temporarily moved the same 23 non-BaseLib/EZMB entries out of the game `mods` directory, launched through Steam, opened `模组配置`, captured screenshots, copied the log, closed the game, then restored all moved entries and temporarily minimized windows. Restore check: `RemainingIsolatedEntries: 0`, `SlayProcessRunning: 0`, `RestoredWindows: 24`.
+- First isolation probe: temporarily moved 23 non-BaseLib/EZMB entries out of `D:\Steam\steamapps\common\Slay the Spire 2\mods`, launched through Steam, opened `妯＄粍閰嶇疆`, captured BaseLib-only screenshots, copied `.tools\runtime-evidence\rc1-normal-steam-modsettings-godot-20260508-092717.log`, closed the game, then restored all moved entries.
+- Source fix for UI visibility: added a no-op BaseLib `ModConfig` page for EZ Micro Balance. It registers `EZMicroBalanceModConfig`, exposes no gameplay options, and localizes the Chinese title as `寰钩琛 with body text `鏃犲彲閰嶇疆閫夐」銆俙.
+- Recheck isolation probe: temporarily moved the same 23 non-BaseLib/EZMB entries out of the game `mods` directory, launched through Steam, opened `妯＄粍閰嶇疆`, captured screenshots, copied the log, closed the game, then restored all moved entries and temporarily minimized windows. Restore check: `RemainingIsolatedEntries: 0`, `SlayProcessRunning: 0`, `RestoredWindows: 24`.
 - Main-menu loaded-mod evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-mainmenu-loadedmods.png` shows the game loaded 2 mods: `BaseLib, EZ Micro Balance`.
 - BaseLib Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-attempt-20260508-092717-modconfig.png` shows the `BaseLib` page and its main-menu display checkbox enabled.
-- EZ Micro Balance Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` shows the EZ Micro Balance page entry as `微平衡`; `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` shows the page body `无可配置选项。`.
+- EZ Micro Balance Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` shows the EZ Micro Balance page entry as `寰钩琛; `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` shows the page body `鏃犲彲閰嶇疆閫夐」銆俙.
 - Log snapshot: `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log`.
 - Positive log evidence: `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, and `Found 12 SavedSpireFields`.
 - Strict scan: 0 `Creature.get_ShowsInfiniteHp`, 0 `BaseLib.Patches.UI.HealthBarForecastPatch`, 0 BaseLib undefined-target patch failures, 0 `DamageMeter`, 0 `RouteSuggest`, 0 `TypeLoadException`, 0 `MissingMethodException`, 0 EZMB error/exception pattern hits, and 0 `ERROR` lines.
@@ -88,7 +87,7 @@ This log records what was actually run or observed. It does not close the live g
 - Method: temporarily isolated all non-BaseLib/EZMB local mods, launched through the normal Steam client, selected A11 through the original single-player Ascension arrows, took the first Neow option, captured the Act 1 map, clicked a first-route monster node to force a run save, used in-game Save & Quit, then continued the saved run and opened the map again from combat.
 - Save/mod hygiene: copied the pre-test `modded/profile1/saves` directory, restored it afterward, restored the 23 temporarily moved local mod entries, and confirmed `SlayTheSpire2` was no longer running.
 - Evidence directory: `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008`.
-- Selection evidence: `08-character-select-a11.png` shows A11 selected through the live UI with the `宽塔长路` description.
+- Selection evidence: `08-character-select-a11.png` shows A11 selected through the live UI with the `瀹藉闀胯矾` description.
 - Initial map evidence: `11-a11-act1-map-after-neow-continue.png` shows the Act 1 A11 map rendered with normal route nodes and no A11-specific marker or hover tooltip.
 - Save/load evidence: `15-after-continue-load.png` shows the saved A11 run continuing into the selected first combat; `16-map-open-after-load-attempt.png` shows the map reopened after load with the same widened/longer Act 1 geometry.
 - Log evidence: `a11-map-save-load-godot-live.log` has `Loaded 2 mods (2 total)`, `Embarking on a singleplayer IRONCLAD run. Ascension: 11`, `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`, multiple `current_run.save` writes, `Continuing run with character: CHARACTER.IRONCLAD`, and a post-load `Ascension A11 gate active ... columns=8; rows=17` line.
@@ -101,12 +100,22 @@ This log records what was actually run or observed. It does not close the live g
 - Method: temporarily isolated all non-BaseLib/EZMB local mods, launched through the normal Steam client, selected A11 through the original single-player Ascension arrows, reached the Act 1 map normally, then used DevConsole `act 2` and `act 3` to observe the later-act map surfaces without adding gameplay code.
 - Save/mod hygiene: copied the pre-test `modded/profile1/saves` directory, restored it afterward, restored the 23 temporarily moved local mod entries, and confirmed `SlayTheSpire2` was no longer running.
 - Evidence directory: `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355`.
-- Selection evidence: `19-character-select-a11.png` shows A11 selected through the live UI with the `宽塔长路` description.
+- Selection evidence: `19-character-select-a11.png` shows A11 selected through the live UI with the `瀹藉闀胯矾` description.
 - Act 2 evidence: `25-a11-act2-map-clean.png` shows an A11 Act 2 map surface with normal route nodes and no A11-specific marker or hover tooltip.
 - Act 3 evidence: `27-a11-act3-map-clean.png` shows an A11 Act 3 map surface with normal route nodes and no A11-specific marker or hover tooltip.
 - Log evidence: `a11-act23-godot-live.log` has `Loaded 2 mods (2 total)`, `Embarking on a singleplayer IRONCLAD run. Ascension: 11`, `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`, `Ascension A11 applied ... inserted 1 late route row(s); actIndex=1; columns=8; rows=16`, and `Ascension A11 applied ... inserted 2 late route row(s); actIndex=2; columns=8; rows=16`.
 - Strict scan for `a11-act23-godot-live.log`: 0 `ERROR` lines, 0 `Creature.get_ShowsInfiniteHp`, 0 `BaseLib.Patches.UI.HealthBarForecastPatch`, 0 BaseLib undefined-target patch failures, 0 `DamageMeter`, 0 `RouteSuggest`, 0 `TypeLoadException`, 0 `MissingMethodException`, and 0 EZMB error/exception pattern hits.
 - Scope note: this closes the normal-Steam Act 2/3 A11 width/row/no-marker observation only. It does not prove natural route traversal, every-start boss reachability, A17 Deep Branch metadata, or multiplayer map behavior.
+
+## A14 Rootblight UI And Notice Spot Checks
+
+- Method: temporarily isolated all non-BaseLib/EZMB local mods, launched through the normal Steam client, selected A14 through the original single-player Ascension arrows, and captured Rootblight-family hover/text and starter-notice screenshots. This was a targeted UI/notice pass, not a full A14 combat-behavior pass.
+- English hover/text evidence directory: `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010`. Screenshot `07-after-confirm-a14-neow.png` shows A14 selected and the English Rootblight-added thought bubble at Neow with the starter deck at 11 cards. Screenshots `12-hover-rootblight-i.png`, `13-hover-rootblight-ii.png`, `14-hover-rootblight-iii.png`, and `15-hover-blight-sprout.png` show one visible Exhaust keyword, no raw `[gold]` tags, and the expected Rootblight previews.
+- Hover/text evidence directory: `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516`. The UI remained Simplified Chinese despite the attempted English switch. Screenshots `14-hover-rootblight-i.png`, `15-hover-rootblight-ii.png`, `16-hover-rootblight-iii.png`, and `17-hover-blight-sprout.png` show one visible Exhaust keyword, no raw `[gold]` tags, and the expected Rootblight previews.
+- Notice evidence directory: `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455`. Screenshot `06-character-select-a14.png` shows A14 selected through the live UI; `07-run-start-06.png` shows the localized Rootblight-added thought bubble at Neow with the starter deck at 11 cards.
+- Save/mod hygiene: restore checks for the English, ZHS UI, and ZHS notice sessions confirm settings/saves were restored, all 22 moved mod entries were restored, and no Slay the Spire 2 process was left running.
+- Log caveat: the English hover/notice log and the ZHS notice-run log each include one setup-noise `ERROR` from deliberately abandoning a pre-existing temporary current run before the A14 start. They are not used as clean-log gates. A separate normal Steam-client BaseLib+EZMB-only main-menu log from `.tools\runtime-evidence\rootblight-a14-notice-zhs-no-current-20260509-041615\godot-mainmenu.log` audited clean with 0 `ERROR` lines and 0 release-blocking signatures.
+- Scope note: this closes only the English/ZHS hover/text spot checks and the A14 Neow starter add-notice spot checks. Combat-end Rootblight-add notices, full Rootblight/Blight Sprout behavior, generated-art visual verification, and co-op ownership/desync checks remain pending.
 
 ## Source-Verified Spot Checks
 
@@ -119,7 +128,7 @@ This log records what was actually run or observed. It does not close the live g
 
 | Gate | Result |
 | --- | --- |
-| Normal Steam-client Mod Settings | Passed. BaseLib page visible/enabled; EZ Micro Balance page appears as `微平衡` with `无可配置选项。`; main menu/log show only BaseLib + EZ Micro Balance loaded; log has 0 `ERROR` lines and 0 release-blocking signatures. |
+| Normal Steam-client Mod Settings | Passed. BaseLib page visible/enabled; EZ Micro Balance page appears as `寰钩琛 with `鏃犲彲閰嶇疆閫夐」銆俙; main menu/log show only BaseLib + EZ Micro Balance loaded; log has 0 `ERROR` lines and 0 release-blocking signatures. |
 | Clean normal Steam-client `godot.log` | Isolated Steam startup snapshot and Mod Settings log collected; both have 0 `ERROR` lines and 0 release-blocking signatures. |
 | A0/A10/A20 single-player spot checks | User-reported pass, plus Codex-observed normal-Steam DevConsole combat smoke for A0/A10/A20. Natural route-click first-node checks remain unrun. |
 | Pumpkin Candle vanilla/no override | Source-verified pending live spot check. |
@@ -127,6 +136,7 @@ This log records what was actually run or observed. It does not close the live g
 | Door Wedge absence | Active source/localization `rg` returned no Door Wedge / `DOORMAKER_BOSS` matches; release-facing docs mention it only as removed/historical. |
 | Aeonglass +5 Strength | Source-verified pending live boss route/seed check. |
 | A11 map geometry | Act 1 normal-Steam spot check passed: A11 selected through the original UI, log reports columns=8/rows=17 with 1 late route row, screenshot shows normal route nodes/no A11 marker, and saved-map JSON records 8 columns. Act 2/3 normal-Steam DevConsole observation passed for map surface and log geometry: Act 2 columns=8/rows=16 with 1 late route row; Act 3 columns=8/rows=16 with 2 late route rows. Natural route traversal and boss reachability remain pending. |
+| Rootblight English/ZHS hover and A14 starter notice | Targeted normal-Steam spot checks passed for English and Simplified Chinese Rootblight I/II/III and Blight Sprout hovers, plus the A14 Neow starter Rootblight-added notice in both languages. Combat-end notices, full behavior, generated-art visual verification, and co-op checks remain pending. |
 | Save/load | Minimal A11 map save/load spot check passed after first node: `current_run.save` was written, Continue loaded the run, and the map reopened with columns=8/rows=17. Ancient save/load rows and co-op save/load remain pending. |
 | Multiplayer matrix | Pending two-PC Steam-client runbook execution. |
 
@@ -134,8 +144,8 @@ Earlier Mod Settings UI attempts are superseded by the `20260508-095137` recheck
 
 ## Pending RC1 Items
 
-- Rootblight visual feedback.
-- Rootblight card art.
+- Remaining Rootblight visual feedback: full combat-end behavior checks, clean non-paused combat-end notice timing, Blight Sprout combat-end notices, co-op ownership/desync checks, and generated-art visual verification. The final source now uses a top-level high-z, input-passthrough, 5-second overlay notice for combat-end additions, but that final hardening still needs manual verification.
+- Rootblight generated-art visual check.
 - Broader A11 map traversal and boss-reachability diagnostics beyond the Act 1/2/3 width/row spot checks.
 - Natural route-click first-node checks, if required beyond the DevConsole combat smoke.
 - Multiplayer matrix.

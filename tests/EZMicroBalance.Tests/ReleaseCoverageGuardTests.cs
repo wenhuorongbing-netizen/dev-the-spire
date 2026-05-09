@@ -349,12 +349,42 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("A14 Rootblight MVP", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("A15 Boss Blight Sprout MVP", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("A18 Elite Blight Sprout MVP", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("one visible Exhaust keyword, no duplicate `Play: Exhaust` body text", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Rootblight II has one visible Exhaust keyword", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Blight Sprout has one visible Exhaust keyword", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("localized `Rootblight added.` / `\u6839\u8680\u5df2\u52a0\u5165\u3002` notice", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.", manualChecklist, StringComparison.Ordinal);
 
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("`EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.", releaseChecklist, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CardLocalizationStyleGuideIsIndexedAndCoversPreviewKeywordRules()
+    {
+        var guide = ReadRepoText("docs", "style", "card-localization-style-guide.md");
+        var agents = ReadRepoText("AGENTS.md");
+        var skill = ReadRepoText("docs", "skills", "sts2-godot-mod-development.md");
+        var docsIndex = ReadRepoText("docs", "README.md");
+
+        AssertSourceContains(
+            guide,
+            "CanonicalKeywords",
+            "duplicate Exhaust",
+            "[gold]",
+            "card preview",
+            "English and Simplified Chinese",
+            "Rootblight = \u6839\u8680",
+            "Blight Sprout / Root Bud = \u6839\u82bd",
+            "HoverTipFactory.FromCard<T>()",
+            "ModelDb",
+            "Preview cards must");
+
+        Assert.Contains("docs/style/card-localization-style-guide.md", agents, StringComparison.Ordinal);
+        Assert.Contains("docs/style/card-localization-style-guide.md", skill, StringComparison.Ordinal);
+        Assert.Contains("style/card-localization-style-guide.md", docsIndex, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -578,17 +608,22 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("scripts/audit-godot-log.ps1 -Path <copied godot.log>", handoff, StringComparison.Ordinal);
         Assert.Contains("godot-log-audit.json", handoff, StringComparison.Ordinal);
         Assert.Contains("Live co-op selection and desync verification are still pending", handoff, StringComparison.Ordinal);
-        Assert.Contains("AUTHOR_NAME_REPLACE_ME", handoff, StringComparison.Ordinal);
-        Assert.Contains("This remains a release blocker unless the user either provides the desired author name or explicitly accepts that placeholder", handoff, StringComparison.Ordinal);
+        Assert.Contains("Resolved for this candidate: `EZMicroBalance.json` author is `wenhuorongbing-netizen`, taken from the local Git user name.", handoff, StringComparison.Ordinal);
+        Assert.Contains("Rootblight I/II/III and Blight Sprout use original generated portrait art at the documented per-card filenames.", handoff, StringComparison.Ordinal);
+        Assert.Contains("Live in-game visual verification is still pending.", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("AUTHOR_NAME_REPLACE_ME", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("This remains a release blocker unless the user either provides the desired author name or explicitly accepts that placeholder", handoff, StringComparison.Ordinal);
         Assert.Contains("A1.05.01 (`ae910e8`) is a broad engineering/review commit", handoff, StringComparison.Ordinal);
         Assert.Contains("not only a handoff and `ReleaseCoverageGuardTests` update", handoff, StringComparison.Ordinal);
         Assert.Contains("Ascension source directory reorganization", handoff, StringComparison.Ordinal);
         Assert.Contains("settings_ui` localization", handoff, StringComparison.Ordinal);
         Assert.Contains("manifest BaseLib `v3.1.2` dependency floor", handoff, StringComparison.Ordinal);
-        Assert.Contains("Current git status at the A1.05.02 cleanup start", handoff, StringComparison.Ordinal);
-        Assert.Contains("ae910e8 (HEAD -> main, origin/main, origin/HEAD) a1.05.01", handoff, StringComparison.Ordinal);
-        Assert.Contains("Current A1.05.02 local cleanup status after the test-readiness edits", handoff, StringComparison.Ordinal);
-        Assert.Contains("M scripts/audit-godot-log.ps1", handoff, StringComparison.Ordinal);
+        Assert.Contains("Current git status before the Rootblight resolved-status release-hygiene commit", handoff, StringComparison.Ordinal);
+        Assert.Contains("b82023c (HEAD -> main, origin/main, origin/HEAD) 1.05.02", handoff, StringComparison.Ordinal);
+        Assert.Contains("Pre-commit local cleanup status summary", handoff, StringComparison.Ordinal);
+        Assert.Contains("M EZMicroBalanceCode/Ascension/Rewards/RootDeckService.cs", handoff, StringComparison.Ordinal);
+        Assert.Contains("?? EZMicroBalance/images/card_portraits/rootblight_i.png", handoff, StringComparison.Ordinal);
+        Assert.Contains("?? docs/style/card-localization-style-guide.md", handoff, StringComparison.Ordinal);
         Assert.Contains("M tests/EZMicroBalance.Tests/ReleaseCoverageGuardTests.cs", handoff, StringComparison.Ordinal);
         Assert.DoesNotContain("96bfa50", handoff, StringComparison.Ordinal);
         Assert.Contains("Proposed commit scope", handoff, StringComparison.Ordinal);
@@ -679,6 +714,10 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("host and client logs from the same attempt", open, StringComparison.Ordinal);
         AssertSourceContains(
             closureChecklist,
+            "ISSUE-2026-05-09-ROOTBLIGHT-CARD-TEXT-STYLE-PREVIEW-DUPLICATE-EXHAUST",
+            "ISSUE-2026-05-09-CARD-TEXT-STYLE-GUIDE-FOR-EZMB",
+            "ISSUE-2026-05-09-ROOTBLIGHT-ADD-TO-DECK-NOTICE-MISSING",
+            "ISSUE-2026-05-09-ROOTBLIGHT-CARD-ART-PENDING",
             "ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS",
             "ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED",
             "ISSUE-2026-05-08-MULTIPLAYER-SAVE-QUIT-NOT-PROPAGATING",
@@ -696,7 +735,7 @@ public sealed class ReleaseCoverageGuardTests
             "Two-client Steam retest",
             "Natural route traversal",
             "Live tooltip screenshots",
-            "User resumes or cancels");
+            "user still must resume/cancel");
         Assert.Contains("ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT", resolved, StringComparison.Ordinal);
         Assert.Contains("ISSUE-2026-05-07-A11-LONG-ROAD-MAP-MARKER-UNWANTED", resolved, StringComparison.Ordinal);
     }

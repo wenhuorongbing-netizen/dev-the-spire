@@ -4,13 +4,13 @@ This file tracks player-reported and runtime-observed issues. Do not mark an ite
 
 ## Open
 
-### Current Open Blocker Audit - 2026-05-08 RC1
+### Current Open Blocker Audit - 2026-05-08 RC1 / 2026-05-09 Rootblight Source Pass
 
 The remaining open issues are not blocked by the automated build/test/package loop. They require one of the following evidence classes before they can be closed:
 
-- **Explicitly deferred work:** Rootblight visual feedback, Rootblight independent card art, and bespoke A11/A17 map feedback should remain pending until the user asks to resume that slice.
+- **Rootblight UX source pass completed on 2026-05-09:** Rootblight/Blight Sprout card text style, duplicate Exhaust wording, card previews, add-to-deck notice, and generated portrait art now have source, localization, docs, package, and guard coverage. English and Simplified Chinese live hover/text passed for the four Rootblight-family cards, and the A14 Neow starter add notice passed in both languages after the event-room fallback. Combat-end add notices are source-hardened with a top-level overlay path but still need clean non-paused/Blight Sprout/co-op verification; generated-art live visual verification also remains pending.
 - **Two-client Steam evidence:** multiplayer HP 0 / Neow blocked, Save & Quit propagation, run-start black screen, A20 TypeLoad retest, A11-A20 selection, A20 warning, and the full co-op matrix require host and client `godot.log` captures from live Steam-client runs.
-- **Single-player live gameplay evidence:** A11 natural route traversal and boss reachability, A12 rich-text tooltip rendering, A13/A16 Fission reward frequency, Rootblight/Blight Sprout behavior, and inherited marker regressions require targeted live route/combat/reward checks.
+- **Single-player live gameplay evidence:** A11 natural route traversal and boss reachability, A12 rich-text tooltip rendering, A13/A16 Fission reward frequency, Rootblight/Blight Sprout behavior/text/previews/notices, and inherited marker regressions require targeted live route/combat/reward checks.
 - **Resolved dependency gate retained for traceability:** the BaseLib `Creature.get_ShowsInfiniteHp` API-drift blocker is resolved for the dependency/runtime gate and no longer blocks single-player smoke; remaining multiplayer retests are tracked by the separate co-op issues in this Open section.
 
 Minimum evidence packet for closing a live issue:
@@ -27,7 +27,11 @@ Open issue closure checklist:
 
 | Issue | Missing evidence before close |
 | --- | --- |
-| `ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS` | User resumes or cancels Rootblight visual feedback, Rootblight card art, A11 diagnostics, multiplayer matrix, and Ancient/co-op save/load backlog. |
+| `ISSUE-2026-05-09-ROOTBLIGHT-CARD-TEXT-STYLE-PREVIEW-DUPLICATE-EXHAUST` | English and Simplified Chinese live hover checks passed: Rootblight/Blight Sprout show one visible Exhaust keyword, no raw `[gold]` tags, and expected preview cards under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` and `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516`. Keep source/localization/package guards active while broader Rootblight behavior remains open. |
+| `ISSUE-2026-05-09-CARD-TEXT-STYLE-GUIDE-FOR-EZMB` | Source/docs guard is complete, and the English/ZHS Rootblight hover passes found no follow-up localization drift. Keep the guide enforced during future card text changes. |
+| `ISSUE-2026-05-09-ROOTBLIGHT-ADD-TO-DECK-NOTICE-MISSING` | A14 Neow starter notice passed in English under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` and in Simplified Chinese under `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455`. Combat-end additions from Rootblight III split / Blight Sprout seen-unplayed outcomes now use the source-hardened top-level overlay notice path, but clean non-paused timing, Blight Sprout, and co-op ownership/desync notice behavior still need live verification. Source/localization/tests/package are patched. |
+| `ISSUE-2026-05-09-ROOTBLIGHT-CARD-ART-PENDING` | Source/package fixed with generated art; close after live visual verification confirms the in-game portraits render as intended. |
+| `ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS` | Remaining backlog now excludes source implementation for Rootblight text/preview/starter-notice work, generated Rootblight-family card art, and the A14 English/ZHS hover/starter-notice proof. Combat-end Rootblight notices are source-hardened but still need full non-paused/Blight Sprout/co-op verification. Generated-art visual verification, bespoke A11/A17 feedback, multiplayer matrix, and Ancient/co-op save/load backlog remain. |
 | `ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED` | Two-client Steam retest with `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1`, plus `EZMB_ASCENSION_DISABLE_ALL_SYSTEMS=1` and vanilla A10 comparison logs. |
 | `ISSUE-2026-05-08-MULTIPLAYER-SAVE-QUIT-NOT-PROPAGATING` | Same-attempt host/client co-op logs around Save & Quit proving whether disconnect propagation or UI return fails. |
 | `ISSUE-2026-05-08-MULTIPLAYER-RUN-START-BLACK-SCREEN` | Fresh host/client run-start logs that distinguish HP0/Neow, transport sync, timeout, and runtime exception causes. |
@@ -42,17 +46,365 @@ Open issue closure checklist:
 | `ISSUE-2026-05-07-A20-MULTIPLAYER-SELECTION-WARNING-MISSING` | Host multiplayer A20 selection and run-start logs proving the downgrade warning appears before/after client join. |
 | `ISSUE-2026-05-07-LIVE-COOP-A11-A20-MATRIX-PENDING` | Full two-client matrix with host/client logs, screenshots, save/load rows, ownership checks, and desync scan results. |
 
+### ISSUE-2026-05-09-ROOTBLIGHT-CARD-TEXT-STYLE-PREVIEW-DUPLICATE-EXHAUST
+
+Priority: P1
+
+Status: source-patched and package-guarded; English and Simplified Chinese live hover/text verification passed for the four Rootblight-family cards. Keep guards active while broader Rootblight combat behavior remains open.
+
+Area: A14/A15/A18 Rootblight / Blight Sprout card text, visible keyword display, rich text, card previews, localization
+
+Player report (2026-05-09):
+
+- Fission / 裂变 icon is currently acceptable and should not be changed in this pass.
+- Firemarked Elite marker is currently acceptable and should not be changed in this pass.
+- Rootblight I/II/III and Blight Sprout are mechanically present, but their card descriptions are confusing.
+- Rootblight cards already display the visible Exhaust / 消耗 keyword, but the description text also manually says `Play: Exhaust` / `打出：消耗`, causing duplicate Exhaust / 消耗 display.
+- Rootblight text lacks the official card-description style: important card names and pile names are not highlighted, and player-facing card references do not show previews.
+- “After combat, add Rootblight I/II” should show a card preview so the player can inspect the resulting card, similar to official cards that add Soul / 灵魂.
+
+Original source evidence that triggered the fix:
+
+- `EZMicroBalanceCode/Ascension/Cards/RootCards.cs`
+  - `RootFamilyCard.CanonicalKeywords => ExhaustKeyword`.
+  - `RootBud.CanonicalKeywords => ExhaustKeyword`.
+  - `RootFamilyCard` and `RootBud` therefore already expose visible Exhaust / 消耗.
+- `EZMicroBalance/localization/eng/cards.json`
+  - Original Rootblight descriptions included `Play: Exhaust`.
+- `EZMicroBalance/localization/zhs/cards.json`
+  - Original Rootblight descriptions included `打出：消耗`.
+- This combination causes duplicate keyword presentation and should be removed.
+
+Implementation notes (2026-05-09):
+
+- English and Simplified Chinese Rootblight/Blight Sprout descriptions no longer manually repeat Exhaust wording; visible Exhaust remains provided by `CanonicalKeywords`.
+- Important Rootblight card names and Draw Pile text now use `[gold]...[/gold]`.
+- Rootblight previews are implemented with `HoverTipFactory.FromCard<T>()`, following the source-backed official Soul preview pattern.
+- Automated guards cover duplicate Exhaust prevention, `[gold]` terms, preview source shape, localization parity, and package artifact freshness.
+- Normal Steam-client BaseLib+EZMB-only A14 English hover screenshots under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` and ZHS hover screenshots under `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516` verified Rootblight I/II/III and Blight Sprout show one visible Exhaust keyword, no raw `[gold]` tags, and expected Rootblight previews.
+
+Required source research:
+
+- Use current v0.105.0 `source code/src/Core/**` as primary evidence.
+- Search official cards/localization and card models for:
+  - `GRAVE_WARDEN`
+  - `SOUL`
+  - `Soul`
+  - `REAVE`
+  - `CAPTURE_SPIRIT`
+  - `GLIMPSE_BEYOND`
+  - `DIRGE`
+  - `SEVERANCE`
+  - `CardPreview`
+  - `PreviewCard`
+  - `HoverTips`
+  - `CanonicalCards`
+  - `CanonicalVars`
+  - `CanonicalKeywords`
+  - `DynamicVar`
+  - `CardModel`
+  - `ModelDb.Card`
+- Record source evidence in `docs/features/ascension-11-20/api-research.md` or `docs/features/ascension-11-20/work-log.md`.
+- Do not copy large source bodies. Summarize exact class/key/API names and conclusions only.
+
+Official style target:
+
+- Follow the same pattern used by official cards that create or add another card, especially Grave Warden / Soul examples.
+- Important card names should be gold-highlighted.
+- Important pile names such as Draw Pile / 抽牌堆 should be gold-highlighted.
+- Referenced cards should show previews where source-proven preview APIs allow it.
+- Do not manually write keywords already provided by `CanonicalKeywords`, such as Exhaust / 消耗.
+
+Required behavior:
+
+1. Remove duplicate manual Exhaust wording from Rootblight I/II/III and Blight Sprout descriptions.
+   - English must not contain `Play: Exhaust`.
+   - Simplified Chinese must not contain `打出：消耗`.
+   - Keep visible `CardKeyword.Exhaust` through source-backed `CanonicalKeywords`.
+2. Rewrite English and Simplified Chinese descriptions in shorter official-style lines.
+3. Use `[gold]...[/gold]` for important card names and pile names.
+4. Add source-backed card previews:
+   - Rootblight I previews Rootblight II.
+   - Rootblight II previews Rootblight I and Rootblight III.
+   - Rootblight III previews Rootblight I and Rootblight II.
+   - Blight Sprout previews Rootblight I.
+5. Preview cards must not pollute deck, run state, RNG, save data, or multiplayer state.
+6. Preview implementation must be safe in card library / hover / combat / reward contexts. If owner/run state is unavailable, use a safe fallback or no preview, not a crash.
+
+Suggested final English copy, after verifying exact behavior:
+
+- `EZMB_ROOT.description`:
+  - `Remove this from your deck.`
+  - `After combat, if this was not played or removed, it becomes [gold]Rootblight II[/gold].`
+- `EZMB_DEEP_ROOT.description`:
+  - `When played, remove this from your deck. After combat, add a [gold]Rootblight I[/gold].`
+  - `If not played or removed this combat, it becomes [gold]Rootblight III[/gold].`
+- `EZMB_ROOTBLIGHT_III.description`:
+  - `When played, remove this from your deck. After combat, add a [gold]Rootblight II[/gold].`
+  - `If not played or removed this combat, add a [gold]Rootblight I[/gold] after combat once.`
+- `EZMB_ROOT_BUD.description`:
+  - `Sprout 3/4: at that round's start, if this has not entered your hand, put it on top of your [gold]Draw Pile[/gold].`
+  - `If seen and not played, after combat add a [gold]Rootblight I[/gold].`
+
+Suggested final Simplified Chinese copy, after verifying exact behavior:
+
+- `EZMB_ROOT.description`:
+  - `将本牌从你的主牌组中移除。`
+  - `战斗后，若本牌未被打出或移除，变为[gold]根蚀 II[/gold]。`
+- `EZMB_DEEP_ROOT.description`:
+  - `打出时，将本牌从你的主牌组中移除；战斗后，加入1张[gold]根蚀 I[/gold]。`
+  - `若本战未打出或移除，战斗后变为[gold]根蚀 III[/gold]。`
+- `EZMB_ROOTBLIGHT_III.description`:
+  - `打出时，将本牌从你的主牌组中移除；战斗后，加入1张[gold]根蚀 II[/gold]。`
+  - `若本战未打出或移除，战斗后加入1张[gold]根蚀 I[/gold]，仅一次。`
+- `EZMB_ROOT_BUD.description`:
+  - `萌发3/4：对应回合开始时，若本牌还未进入手牌，将其置于你的[gold]抽牌堆[/gold]顶部。`
+  - `若见到后未打出，战斗后加入1张[gold]根蚀 I[/gold]。`
+
+Text correctness notes:
+
+- Do not use “upgrade” / “升级” unless the actual mechanic is a card upgrade. Prefer “becomes” / “变为” for Rootblight stage changes.
+- Do not describe both played and unplayed outcomes as if they happen together.
+- Rootblight II and III played outcomes should clearly say “When played...” / “打出时...” and unplayed growth should be a separate sentence.
+- If `打出时` itself appears with the visible keyword, that is acceptable; do not include `消耗` in the same phrase.
+
+Tests required:
+
+- English/ZHS descriptions must not contain `Play: Exhaust` or `打出：消耗`.
+- English/ZHS descriptions must contain `[gold]Rootblight I[/gold]`, `[gold]Rootblight II[/gold]`, `[gold]Rootblight III[/gold]`, `[gold]根蚀 I[/gold]`, `[gold]根蚀 II[/gold]`, `[gold]根蚀 III[/gold]` where applicable.
+- Blight Sprout text must contain `[gold]Draw Pile[/gold]` and `[gold]抽牌堆[/gold]`.
+- RootFamilyCard and RootBud must still expose `CardKeyword.Exhaust` via `CanonicalKeywords` or source-proven equivalent.
+- Add a source guard for preview implementation covering the preview matrix above.
+- Add a localization guard so raw unsupported tags or duplicated keywords cannot reappear.
+
+Manual verification required:
+
+- Hover Rootblight I: one visible Exhaust keyword only; Rootblight II preview visible.
+- Hover Rootblight II: one visible Exhaust keyword only; Rootblight I and III previews visible.
+- Hover Rootblight III: one visible Exhaust keyword only; Rootblight I and II previews visible.
+- Hover Blight Sprout: one visible Exhaust keyword only; Rootblight I preview visible.
+- English and Simplified Chinese render [gold] markup correctly, with no raw tags.
+
+### ISSUE-2026-05-09-CARD-TEXT-STYLE-GUIDE-FOR-EZMB
+
+Priority: P1/P2
+
+Status: source-implemented and guard-covered; English and Simplified Chinese Rootblight live hover/text passes found no localization drift.
+
+Area: card localization style, naming conventions, dynamic variables, preview rules, bilingual text consistency
+
+Problem:
+
+- Rootblight text repeated a visible keyword that the card already displays from `CanonicalKeywords`.
+- Rootblight text did not use official-style rich text for important card/pile names.
+- Rootblight references to generated/added cards did not provide previews.
+- This class of mistake can reappear in future EZMB card text unless a local style guide exists.
+
+Required behavior:
+
+- Create `docs/style/card-localization-style-guide.md`.
+- If `docs/style/` does not exist, create it.
+- Add a short pointer in `AGENTS.md` or `docs/skills/sts2-godot-mod-development.md`.
+- The guide must be based on current v0.105.0 source/localization evidence, not only intuition.
+
+Required source research:
+
+- Search official `source code` localization and card models for the official patterns used by cards that create/add/preview other cards.
+- Include Grave Warden / Soul examples if source confirms them.
+- Record exact localization keys/classes discovered, such as `GRAVE_WARDEN`, `SOUL`, and related card model preview APIs.
+- Include English and Simplified Chinese examples.
+
+The guide must cover at least:
+
+1. **Visible keyword rule**
+   - If a card already exposes Exhaust / Retain / Innate / Eternal / similar through `CanonicalKeywords` or a source-proven keyword API, do not manually repeat the same keyword in the description.
+   - Example anti-pattern: `Play: Exhaust.` / `打出：消耗。` on a card that already has visible Exhaust.
+2. **Rich-text rule**
+   - Important card names, pile names, and official named concepts should use `[gold]...[/gold]` when official examples do so.
+   - Numbers should use dynamic vars where possible.
+3. **Dynamic variable rule**
+   - Use `{Cards:diff()}`, `{Damage:diff()}`, `{Energy:energyIcons()}`, etc. when values can change through upgrades/modifiers.
+   - Do not hard-code values that can become wrong after upgrade.
+4. **Preview rule**
+   - If text says “add a card”, “becomes a card”, “put a card into pile”, or equivalent, provide a card preview if a source-proven safe API exists.
+   - Preview cards must not alter game state, RNG, save data, or piles.
+5. **English/ZHS consistency rule**
+   - Behavior, counts, and conditions must match across English and Simplified Chinese.
+   - Do not over-compress Chinese to the point of ambiguity.
+6. **Terminology rule**
+   - Rootblight = 根蚀
+   - Blight Sprout / Root Bud = 根芽
+   - Draw Pile = 抽牌堆
+   - Discard Pile = 弃牌堆
+   - Exhaust Pile = 消耗牌堆
+   - Deck / master deck = 牌组 / 主牌组 depending on source context; use consistently.
+7. **Manual checklist rule**
+   - Each card text change must update manual checklist rows for hover, preview, text rendering, and raw-tag checks.
+
+Tests required:
+
+- Source/document guard checks that `docs/style/card-localization-style-guide.md` exists.
+- Guard checks that the guide mentions:
+  - `CanonicalKeywords`
+  - duplicate Exhaust prevention
+  - `[gold]`
+  - card preview
+  - English/Simplified Chinese consistency
+  - Rootblight terminology
+- Guard checks that AGENTS or the repo skill points to the guide.
+
+Implementation notes (2026-05-09):
+
+- Added `docs/style/card-localization-style-guide.md`.
+- Indexed the guide from `AGENTS.md`, `docs/README.md`, and `docs/skills/sts2-godot-mod-development.md`.
+- Added guard coverage for duplicate-keyword prevention, `[gold]`, card previews, English/Simplified Chinese consistency, and Rootblight terminology.
+
+### ISSUE-2026-05-09-ROOTBLIGHT-ADD-TO-DECK-NOTICE-MISSING
+
+Priority: P1/P2
+
+Status: source-patched and package-refreshed; A14 Neow starter notice live retests passed in English and Simplified Chinese after the event-room fallback. Combat-end notice source now prefers a top-level run overlay with high z-order, input passthrough, and a longer display duration before falling back to the run global UI container. Full combat-end behavior, Blight Sprout, non-paused notice timing, and co-op ownership/desync notice checks remain pending before close.
+
+Area: A14/A15/A18 Rootblight add-to-deck feedback, card gain notice, combat-end feedback, multiplayer safety
+
+Player report:
+
+- When Rootblight is added to the deck, the player receives no clear prompt, animation, curse-style notice, or visible feedback.
+- Player may not realize a Rootblight card was added.
+
+Current source evidence to verify:
+
+- `RootDeckService.AddRootblightCard(...)` currently adds cards with:
+  - `CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, source: null, skipVisuals: true)`
+- This likely suppresses the standard card-add visual path.
+- `ShowRootSystemFull(...)` already uses `ThinkCmd.Play(new LocString("ascension", "ROOT_SYSTEM_FULL"), player.Creature, 2.0)` for cap notices, proving a lightweight notice path exists.
+
+Required source research:
+
+- Search current v0.105.0 source for:
+  - `CardPileCmd.Add`
+  - `skipVisuals`
+  - `ThinkCmd.Play`
+  - card reward pickup
+  - curse added to deck
+  - event cards added to deck
+  - generated temporary card added to hand/draw/discard
+  - card obtain popup / preview / notification APIs
+- Record source evidence in `api-research.md` or `work-log.md`.
+- Identify which API is multiplayer-safe and command-safe.
+
+Required behavior:
+
+- When Rootblight I/II/III is successfully added to the player’s master deck, the affected player should receive a short player-facing notice or animation.
+- Notice should not spam or duplicate excessively if multiple Rootblights are added in one resolution; if multiple additions can happen, pick a clear but not overwhelming policy.
+- Notice must be per-player in co-op; it must not falsely show for other players.
+- Notice must not mutate game state other than the intended add-to-deck action.
+- If full card-add animation is source-proven safe, use it.
+- If not, keep `skipVisuals: true` but add a `ThinkCmd.Play` notice after successful add.
+
+Implementation notes (2026-05-09):
+
+- `RootDeckService.AddRootblightCard` now checks the `CardPileCmd.Add` result before returning success.
+- The add path keeps `skipVisuals: true` and shows a localized `ROOTBLIGHT_ADDED` notice only for `LocalContext.IsMe(player)`.
+- The notice uses the vanilla `ThinkCmd.Play(...)` path when the player's creature has a VFX container. A14 Neow runtime evidence showed this path is silent in event rooms, so the source now falls back to `NEventRoom.Instance?.VfxContainer` with `NThoughtBubbleVfx.Create(...)`, then to a run overlay notice if needed.
+- Combat-end additions pass `preferOverlayNotice: true`; that path now tries a top-level `NGame.Instance` thought bubble first, sets `MouseFilterEnum.Ignore`, sets `ZIndex = 4096`, uses a 5-second display duration, and falls back to `NRun.Instance.GlobalUi.AboveTopBarVfxContainer`.
+- English and Simplified Chinese notice localization are present; automated guards require the notice path and keys.
+- Normal Steam-client A14 English retest under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` verified `07-after-confirm-a14-neow.png`: Rootblight I is added at Neow, the deck count is 11, and the localized Rootblight-added bubble is visible.
+- Normal Steam-client A14 ZHS retest under `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455` verified `07-run-start-06.png`: Rootblight I is added at Neow, the deck count is 11, and the localized Rootblight-added bubble is visible.
+- Pre-final-hardening combat-end probe `.tools\runtime-evidence\rootblight-combat-end-overlay-eng-20260509-053834` captured the Rootblight III split notice above the loot/pause overlay and then restored settings/saves/22 moved mods. That probe is not enough to close the full combat-end requirement because it did not complete Blight Sprout coverage or a clean non-paused timing check.
+
+Suggested notice localization:
+
+- English:
+  - `ROOTBLIGHT_ADDED`: `Rootblight added.`
+  - Optional level-specific if easy: `Rootblight {Level} added.`
+- Simplified Chinese:
+  - `ROOTBLIGHT_ADDED`: `根蚀已加入。`
+  - Optional level-specific if easy: `根蚀 {Level} 已加入。`
+
+Implementation options:
+
+- **Option A:** Set `skipVisuals: false` only if source evidence proves this displays a safe standard card-add animation and does not break combat/save/multiplayer.
+- **Option B:** Keep `skipVisuals: true`, then call `ThinkCmd.Play(...)` with a short localized message for the affected player.
+- **Option C:** Use a source-proven card obtain popup / preview notice, if available and safe.
+
+Tests required:
+
+- Guard that Rootblight add path is not completely silent.
+- If `skipVisuals: true` remains, require `ThinkCmd.Play` or equivalent after successful add.
+- Require new localization keys in English and ZHS if a notice key is added.
+- Guard against adding notice in unrelated card-add paths.
+
+Manual verification required:
+
+- A14 new run: when Rootblight I is added, player sees a notice/animation.
+- Rootblight III split or RootBud seen-unplayed outcome: when Rootblight I is added after combat, player sees a notice/animation.
+- If multiplayer is later tested, confirm only the affected player’s Rootblight notice is shown and no ownership/desync warning appears.
+
+### ISSUE-2026-05-09-ROOTBLIGHT-CARD-ART-PENDING
+
+Priority: P2
+
+Status: source/package fixed with original generated art; live in-game visual verification pending.
+
+Area: Rootblight I/II/III and Blight Sprout card art
+
+Player report:
+
+- Rootblight I/II/III and Blight Sprout previously did not have independent pictures.
+- This pass generated original procedural portraits and packaged them under the documented per-card paths.
+- Fission / 裂变 icon is acceptable and should not be changed in this pass.
+- Firemarked Elite marker is acceptable and should not be changed in this pass.
+
+Current source evidence:
+
+- `RootBud.CustomPortraitPath` and `RootBud.PortraitPath` now try the documented `blight_sprout.png` / `big/blight_sprout.png` paths and fall back to generic `images/card_portraits/card.png` / `big/card.png` while art is absent.
+- `RootFamilyCard.CustomPortraitPath` and `RootFamilyCard.PortraitPath` now try the documented `rootblight_i.png`, `rootblight_ii.png`, and `rootblight_iii.png` paths and fall back to generic `card.png` while art is absent.
+- Therefore Rootblight I/II/III and Blight Sprout no longer display the shared placeholder art once the latest package is loaded; live visual verification still needs to confirm in-game rendering.
+
+Required behavior after art is provided:
+
+- Use original art only. Do not use official Slay the Spire 2 assets.
+- No text, numbers, logos, or official characters in generated art.
+- Add small and big portraits:
+  - `EZMicroBalance/images/card_portraits/rootblight_i.png`
+  - `EZMicroBalance/images/card_portraits/rootblight_ii.png`
+  - `EZMicroBalance/images/card_portraits/rootblight_iii.png`
+  - `EZMicroBalance/images/card_portraits/blight_sprout.png`
+  - `EZMicroBalance/images/card_portraits/big/rootblight_i.png`
+  - `EZMicroBalance/images/card_portraits/big/rootblight_ii.png`
+  - `EZMicroBalance/images/card_portraits/big/rootblight_iii.png`
+  - `EZMicroBalance/images/card_portraits/big/blight_sprout.png`
+- `RootCards.cs` already resolves these paths with a generic fallback; after art is provided, add the files, import/export/package them, and remove or update the placeholder release note.
+- Add/import Godot `.import` metadata as needed.
+- Update `export_presets.cfg` so the files are packaged.
+- Update package/PCK/hash docs after publish.
+- Record art SHA256 and source/provenance in release docs.
+
+Current pass expectation:
+
+- If user has not provided art yet, do not invent art unless user explicitly requests image generation.
+- Keep this issue open.
+- Release notes should say Rootblight-family generated portrait art is included, with live visual verification pending.
+
+Tests required after art integration:
+
+- Rootblight I/II/III and Blight Sprout must resolve to their specific portrait files once art is supplied, rather than falling back to generic `card.png`.
+- Export preset includes the new images.
+- PCK contains the new images and does not contain source/docs/art_pipeline material.
+- No official assets are packaged.
+
 ### ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS
 
 Priority: P2/P3
 
-Status: pending; not implemented in the current build/test-green pass.
+Status: partially superseded by the 2026-05-09 Rootblight source pass. Rootblight text/previews have English and Simplified Chinese live hover proof, the A14 Neow starter add notice has English and Simplified Chinese live proof after the event-room fallback, and generated portrait art is packaged. Combat-end notices, generated-art live visual verification, and co-op ownership/desync notice checks remain pending.
 
 Area: Rootblight visuals / A11 diagnostics / manual verification backlog
 
-Pending items deliberately left out of the current fix pass:
-- Rootblight animation feedback.
-- Rootblight I/II/III and Blight Sprout independent card art.
+Pending items deliberately left out of the current fix pass or requiring user decision:
+- Rootblight animation/feedback beyond the specific add-to-deck notice issue, unless implemented through `ISSUE-2026-05-09-ROOTBLIGHT-ADD-TO-DECK-NOTICE-MISSING`.
+- Rootblight I/II/III and Blight Sprout generated-art live visual verification.
 - Broader A11 map geometry diagnostics and natural traversal checks beyond the Act 1/2/3 width/row spot checks. Current normal Steam-client A11 map evidence is recorded in `docs/rc1-live-validation-log.md`.
 - Multiplayer matrix and Ancient/co-op save/load verification.
 
@@ -315,7 +667,7 @@ Manual retest:
 
 Priority: P1
 
-Status: source-patched; live Rootblight/Blight Sprout behavior, visual feedback, and card art verification pending
+Status: source-patched; English/Simplified Chinese hover/text and the A14 Neow starter add notice have live spot-check evidence; generated portrait art is packaged; full Rootblight/Blight Sprout behavior, combat-end notices, co-op ownership/desync, and generated-art visual verification remain pending
 
 Area: A14/A15/A18 Rootblight and Blight Sprout
 

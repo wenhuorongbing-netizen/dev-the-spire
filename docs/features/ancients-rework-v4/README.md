@@ -27,12 +27,12 @@ The Ancient v4.3 rebalance has been implemented in the active independent `EZMic
 
 The current v4.3 pass covers Velvet Choker's retained soft limit, Distinguished Cape's `lose 30% of current Max HP, at least 18` trade gate, Prismatic Gem's "Every second standard card reward contains only off-color cards" behavior, and no-space Simplified Chinese number formatting. v4.2 rightmost-slot Prismatic Gem is historical only. v4.2 Distinguished Cape 40% min15 is historical only.
 
-No source-design item is currently documented as blocked for lack of local compile-time API evidence. Normal Steam-client Mod Settings verification now has RC1 evidence for BaseLib and EZ Micro Balance, but private beta is not complete until:
+No source-design item is currently documented as blocked for lack of local compile-time API evidence. Normal Steam-client Mod Settings, limited A11 map checks, and targeted A14 Rootblight English/ZHS hover/starter-notice checks now have RC1 evidence for BaseLib and EZ Micro Balance, but private beta is not complete until:
 
 - the manual verification matrix has concrete runtime results,
 - save/load-sensitive behavior is verified in-game,
 - disable-mod gameplay behavior is verified,
-- the author placeholder is accepted or replaced,
+- generated Rootblight-family portrait art is visually checked in-game,
 - the final release package is rebuilt after any new code/resource changes.
 
 ## Release Scope

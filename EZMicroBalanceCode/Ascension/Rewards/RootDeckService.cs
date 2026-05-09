@@ -1,4 +1,10 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Context;
+using Godot;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
+using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -6,6 +12,7 @@ internal static class RootDeckService
 {
     public const int MaxRootblightLevel = 3;
     public const int MaxRootblightCards = 4;
+    private const double RootblightNoticeSeconds = 5.0;
 
     private static readonly ConditionalWeakTable<CardModel, InternalSyncMarker> InternalSyncRemovals = new();
     private static readonly ConditionalWeakTable<Player, RootblightCombatResolution> PendingCombatResolutions = new();
@@ -79,7 +86,7 @@ internal static class RootDeckService
         }
 
         AscensionSavedStateFields.RootBeginsApplied[player] = true;
-        if (!await AddRootblightCard(player, 1))
+        if (!await AddRootblightCard(player, 1, preferOverlayNotice: true))
         {
             ShowRootSystemFull(player);
             MainFile.Logger.Info(
@@ -128,7 +135,7 @@ internal static class RootDeckService
                 }
 
                 card.HasSplit = true;
-                if (!await AddRootblightCard(player, 1))
+                if (!await AddRootblightCard(player, 1, preferOverlayNotice: true))
                 {
                     ShowRootSystemFull(player);
                     MainFile.Logger.Info(
@@ -150,7 +157,7 @@ internal static class RootDeckService
         {
             foreach (var cardToAdd in pending.CardsToAddAfterGrowth)
             {
-                await AddRootblightCard(player, cardToAdd.Level, cardToAdd.HasSplit);
+                await AddRootblightCard(player, cardToAdd.Level, cardToAdd.HasSplit, preferOverlayNotice: true);
             }
 
             pending.CardsToAddAfterGrowth.Clear();
@@ -242,10 +249,10 @@ internal static class RootDeckService
     {
         InternalSyncRemovals.GetValue(card, _ => new InternalSyncMarker());
         await CardPileCmd.RemoveFromDeck(card, showPreview: false);
-        await AddRootblightCard(player, nextLevel, hasSplit);
+        await AddRootblightCard(player, nextLevel, hasSplit, preferOverlayNotice: true);
     }
 
-    private static async Task<bool> AddRootblightCard(Player player, int level, bool hasSplit = false)
+    private static async Task<bool> AddRootblightCard(Player player, int level, bool hasSplit = false, bool preferOverlayNotice = false)
     {
         if (FindRootFamilyCards(player).Count >= MaxRootblightCards)
         {
@@ -259,7 +266,13 @@ internal static class RootDeckService
             rootFamilyCard.WasPresentAtCombatStart = false;
         }
 
-        await CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, source: null, skipVisuals: true);
+        var addResult = await CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, source: null, skipVisuals: true);
+        if (!addResult.success)
+        {
+            return false;
+        }
+
+        ShowRootblightAdded(player, preferOverlayNotice);
         return true;
     }
 
@@ -286,13 +299,128 @@ internal static class RootDeckService
 
     private static void ShowRootSystemFull(Player player)
     {
+        ShowLocalRootblightNotice(
+            player,
+            new LocString("ascension", "ROOT_SYSTEM_FULL"),
+            "cap");
+    }
+
+    private static void ShowRootblightAdded(Player player, bool preferOverlayNotice)
+    {
+        ShowLocalRootblightNotice(
+            player,
+            new LocString("ascension", "ROOTBLIGHT_ADDED"),
+            "add",
+            preferOverlayNotice);
+    }
+
+    private static void ShowLocalRootblightNotice(
+        Player player,
+        LocString line,
+        string noticeKind,
+        bool preferOverlayNotice = false)
+    {
+        if (!LocalContext.IsMe(player))
+        {
+            return;
+        }
+
         try
         {
-            ThinkCmd.Play(new LocString("ascension", "ROOT_SYSTEM_FULL"), player.Creature, 2.0);
+            if (preferOverlayNotice && TryShowRunOverlayNotice(line))
+            {
+                return;
+            }
+
+            var creatureVfxContainer = player.Creature.GetVfxContainer();
+            if (creatureVfxContainer != null)
+            {
+                ThinkCmd.Play(line, player.Creature, RootblightNoticeSeconds);
+                return;
+            }
+
+            if (TryShowEventRoomNotice(line))
+            {
+                return;
+            }
+
+            TryShowRunOverlayNotice(line);
         }
         catch (Exception ex)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] Ascension Rootblight cap notice could not be displayed: {ex.Message}");
+            MainFile.Logger.Warn($"[EZMicroBalance] Ascension Rootblight {noticeKind} notice could not be displayed: {ex.Message}");
         }
+    }
+
+    private static bool TryShowEventRoomNotice(LocString line)
+    {
+        var container = NEventRoom.Instance?.VfxContainer;
+        if (container == null)
+        {
+            return false;
+        }
+
+        var bubble = NThoughtBubbleVfx.Create(line.GetFormattedText(), DialogueSide.Left, RootblightNoticeSeconds);
+        if (bubble == null)
+        {
+            return false;
+        }
+
+        container.AddChildSafely(bubble);
+        PrepareOverlayNotice(bubble);
+        bubble.GlobalPosition = container.GlobalPosition + new Vector2(220f, MathF.Max(180f, container.Size.Y * 0.55f));
+        return true;
+    }
+
+    private static bool TryShowRunOverlayNotice(LocString line)
+    {
+        return TryShowTopLevelRunNotice(line) || TryShowGlobalRunNotice(line);
+    }
+
+    private static bool TryShowTopLevelRunNotice(LocString line)
+    {
+        var container = NGame.Instance;
+        if (container == null)
+        {
+            return false;
+        }
+
+        var bubble = NThoughtBubbleVfx.Create(line.GetFormattedText(), DialogueSide.Left, RootblightNoticeSeconds);
+        if (bubble == null)
+        {
+            return false;
+        }
+
+        container.AddChildSafely(bubble);
+        PrepareOverlayNotice(bubble);
+        bubble.GlobalPosition = new Vector2(110f, 90f);
+        return true;
+    }
+
+    private static bool TryShowGlobalRunNotice(LocString line)
+    {
+        var container = NRun.Instance?.GlobalUi.AboveTopBarVfxContainer;
+        if (container == null)
+        {
+            return false;
+        }
+
+        var bubble = NThoughtBubbleVfx.Create(line.GetFormattedText(), DialogueSide.Left, RootblightNoticeSeconds);
+        if (bubble == null)
+        {
+            return false;
+        }
+
+        container.AddChildSafely(bubble);
+        PrepareOverlayNotice(bubble);
+        bubble.GlobalPosition = container.GlobalPosition + new Vector2(220f, 180f);
+        return true;
+    }
+
+    private static void PrepareOverlayNotice(NThoughtBubbleVfx bubble)
+    {
+        bubble.MouseFilter = Control.MouseFilterEnum.Ignore;
+        bubble.ZAsRelative = false;
+        bubble.ZIndex = 4096;
     }
 }

@@ -1518,3 +1518,37 @@ Remaining blocker:
 - Rebuilt the package and refreshed hashes. Current package zip SHA256 is `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`.
 - Normal Steam-client isolated recheck `095137` showed BaseLib and EZ Micro Balance loaded, the localized EZMB page `微平衡` with `无可配置选项。`, `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
 - Live Ancient gameplay matrix, save/load checks, disable gameplay checks, multiplayer disposition, author decision, clean commit, and user-approved push remain pending.
+
+## 2026-05-09 - Package README Decision-Blocker Refresh
+
+- Updated package-facing `README_INSTALL.txt` in package staging and the versioned package folder to call out the unresolved manifest author placeholder and Rootblight-family card-art decision blockers.
+- Rebuilt `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the versioned package folder. Package zip SHA256 for this README-only refresh was `F82330F5FBAAD5ADAD581861FC2981071DEA9ABD5BD0BFFDCB27694DC5460156`.
+- DLL, manifest, and PCK hashes are unchanged from the Rootblight top-level notice hardening pass.
+- Per the current implementation-only direction, tests, format, smoke, and live verification were not rerun for this README-only package refresh.
+
+## 2026-05-09 - Rootblight Optional Portrait Fallback
+
+- Added `RootPortraitPaths` so Rootblight I/II/III and Blight Sprout try the documented per-card portrait filenames and fall back to the current generic card portrait while those files are absent.
+- Updated source guard expectations and docs to distinguish the implemented optional path resolver from the still-pending final art decision.
+- Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- Ran `dotnet publish EZMicroBalance.sln`: passed and refreshed the installed DLL/manifest/PCK artifacts.
+- Rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts while preserving the package README decision-blocker notes. Current hashes: DLL `9A0E750122D3AEBE449D2D95A20AED84657AFF6D169079E0F0184CC7084A70DF`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `253E1310D8357EEB4D099F34BFA8785A66FEE77576BDA59A4D34277874696C25`, README `F2C2E7642ADACB4D6DF81E7D4D8CF12113FA7630132800B486031FC07704C1DE`, package zip `1699D7BEC6C1A0BD02223E45E4B90399C7BFBB20D4E95236F9ED1E08A795AF8F`.
+- Per the current implementation-only direction, tests, format, smoke, and live verification were not rerun after this source/package refresh.
+
+## 2026-05-09 - Manifest Author and Generated Rootblight Art Integration
+
+- Replaced the active `EZMicroBalance.json` author placeholder with `wenhuorongbing-netizen`, taken from the local Git user name. The legacy `EzDailyContent` scaffold manifest remains unchanged.
+- Added original generated portrait art for Rootblight I/II/III and Blight Sprout at the documented small and big portrait paths under `EZMicroBalance/images/card_portraits/`.
+- Updated `export_presets.cfg` so all 8 new portrait PNG resources are included in the selected-resource PCK export. Publish imported and packed the matching `.ctex`/`.import` resources.
+- Updated the package-facing `README_INSTALL.txt` to record the resolved author and generated-art status while keeping live generated-art visual verification pending.
+- Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- Ran `dotnet publish EZMicroBalance.sln`: passed and refreshed the installed DLL/manifest/PCK artifacts.
+- Rebuilt package staging, the versioned package folder, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts. Current hashes: DLL `9A0E750122D3AEBE449D2D95A20AED84657AFF6D169079E0F0184CC7084A70DF`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `253E1310D8357EEB4D099F34BFA8785A66FEE77576BDA59A4D34277874696C25`, README `F2C2E7642ADACB4D6DF81E7D4D8CF12113FA7630132800B486031FC07704C1DE`, package zip `1699D7BEC6C1A0BD02223E45E4B90399C7BFBB20D4E95236F9ED1E08A795AF8F`.
+- Per the current implementation-only direction, tests, format, smoke, and live verification were not rerun after this source/resource/package refresh.
+
+## 2026-05-09 - Resolved-Status Guard and Documentation Consistency
+
+- Updated release guard expectations so the private-beta handoff now requires the resolved `wenhuorongbing-netizen` author and generated Rootblight-family art status instead of the earlier placeholder/art-decision blocker language.
+- Updated release-facing docs to keep generated-art visual verification pending while no longer treating the source art decision itself as unresolved.
+- Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- Per the current implementation-only direction, `dotnet test`, opt-in release artifact tests, format, smoke, live verification, publish, and package refresh were not rerun for this docs/test-source consistency pass.

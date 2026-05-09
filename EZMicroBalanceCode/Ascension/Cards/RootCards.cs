@@ -1,8 +1,10 @@
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using BaseLib.Utils.Attributes;
+using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 
@@ -83,10 +85,11 @@ public sealed class RootBud : CustomCardModel
         set => AscensionSavedStateFields.RootBudSproutRound[this] = Math.Max(DefaultSproutRound, value);
     }
 
-    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/card.png";
-    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/card.png";
+    public override string CustomPortraitPath => RootPortraitPaths.BigBlightSprout;
+    public override string PortraitPath => RootPortraitPaths.BlightSprout;
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => ExhaustKeyword;
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Root>()];
     public override bool CanBeGeneratedInCombat => false;
     public override bool CanBeGeneratedByModifiers => false;
     public override int MaxUpgradeLevel => 0;
@@ -123,10 +126,17 @@ public abstract class RootFamilyCard : CustomCardModel
         set => AscensionSavedStateFields.RootblightHasSplit[this] = value;
     }
 
-    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/card.png";
-    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/card.png";
+    public override string CustomPortraitPath => RootPortraitPaths.BigRootblight(RootblightLevel);
+    public override string PortraitPath => RootPortraitPaths.Rootblight(RootblightLevel);
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => ExhaustKeyword;
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => RootblightLevel switch
+    {
+        1 => [HoverTipFactory.FromCard<DeepRoot>()],
+        2 => [HoverTipFactory.FromCard<Root>(), HoverTipFactory.FromCard<RootblightIII>()],
+        _ => [HoverTipFactory.FromCard<Root>(), HoverTipFactory.FromCard<DeepRoot>()],
+    };
+
     public override bool CanBeGeneratedInCombat => false;
     public override bool CanBeGeneratedByModifiers => false;
     public override int MaxUpgradeLevel => 0;
@@ -135,5 +145,43 @@ public abstract class RootFamilyCard : CustomCardModel
     {
         ExhaustOnNextPlay = true;
         await RootDeckService.ApplyPlayedRootblightCard(this);
+    }
+}
+
+internal static class RootPortraitPaths
+{
+    private const string GenericPortrait = $"{MainFile.ResPath}/images/card_portraits/card.png";
+    private const string GenericBigPortrait = $"{MainFile.ResPath}/images/card_portraits/big/card.png";
+
+    public static string BlightSprout => OptionalPortrait("blight_sprout.png", GenericPortrait);
+
+    public static string BigBlightSprout => OptionalPortrait("big/blight_sprout.png", GenericBigPortrait);
+
+    public static string Rootblight(int level) =>
+        OptionalPortrait($"{RootblightFileName(level)}.png", GenericPortrait);
+
+    public static string BigRootblight(int level) =>
+        OptionalPortrait($"big/{RootblightFileName(level)}.png", GenericBigPortrait);
+
+    private static string RootblightFileName(int level) => level switch
+    {
+        1 => "rootblight_i",
+        2 => "rootblight_ii",
+        3 => "rootblight_iii",
+        _ => "rootblight_i",
+    };
+
+    private static string OptionalPortrait(string relativePath, string fallback)
+    {
+        var candidate = $"{MainFile.ResPath}/images/card_portraits/{relativePath}";
+
+        try
+        {
+            return ResourceLoader.Exists(candidate) ? candidate : fallback;
+        }
+        catch
+        {
+            return fallback;
+        }
     }
 }

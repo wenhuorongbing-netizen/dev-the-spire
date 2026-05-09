@@ -40,6 +40,7 @@ Use `features/README.md` as the compact feature index.
 | `REMOTE_DEVELOPMENT_SETUP.md` | Current setup guide for another machine. |
 | `SETUP_SPEC.md` | Historical setup specification from the original scaffold; keep for context, do not use as current status. |
 | `codex-workflow.md` | Repeatable Codex workflow notes. |
+| `style/card-localization-style-guide.md` | Source-backed card text, keyword, preview, and bilingual terminology rules. |
 | `skills/sts2-godot-mod-development.md` | Repo-local StS2/Godot/.NET development reference. |
 
 ## Code And Helper Indexes

@@ -111,9 +111,9 @@ Rootblight is a long-term deck pollution state. Multiple Rootblight cards can ex
 
 Player text:
 
-- Rootblight I: `Play: Exhaust. Permanently remove this card from your master deck. Growth: if not played or removed this combat, it becomes Rootblight II after combat.`
-- Rootblight II: `Play: Exhaust. Permanently remove this card from your master deck and add Rootblight I after combat. Growth: if not played or removed, it becomes Rootblight III after combat.`
-- Rootblight III: `Play: Exhaust. Permanently remove this card from your master deck and add Rootblight II after combat. Growth: if not played or removed, it adds one Rootblight I once.`
+- Rootblight I: `Remove this from your deck. After combat, if this was not played or removed, it becomes [gold]Rootblight II[/gold].`
+- Rootblight II: `When played, remove this from your deck. After combat, add a [gold]Rootblight I[/gold]. If not played or removed this combat, it becomes [gold]Rootblight III[/gold].`
+- Rootblight III: `When played, remove this from your deck. After combat, add a [gold]Rootblight II[/gold]. If not played or removed this combat, add a [gold]Rootblight I[/gold] after combat once.`
 
 Cleanup rules:
 
@@ -135,7 +135,7 @@ It is not a Rootblight card and never persists in the master deck. If mishandled
 
 Player text:
 
-`Cost 2. Play: Exhaust. Sprout 3/4: At the start of that turn, if this card has not entered your hand, put it on top of your draw pile. At combat end, if this card entered your hand and was not played, add one Rootblight I to your master deck.`
+`Cost 2. Sprout 3/4: at that round's start, if this has not entered your hand, put it on top of your [gold]Draw Pile[/gold]. If seen and not played, after combat add a [gold]Rootblight I[/gold].`
 
 Resolution table:
 

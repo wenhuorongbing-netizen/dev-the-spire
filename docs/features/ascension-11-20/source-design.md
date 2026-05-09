@@ -1,4 +1,4 @@
-﻿# Ascension 11-20 Source Design v1.0
+# Ascension 11-20 Source Design v1.0
 
 Current forward-looking design input: `development-checklist-v2.md` was added on 2026-05-07 and should be used as the next development checklist. This v1.0 document remains historical design context for existing prototype slices.
 
@@ -68,7 +68,7 @@ Initial design:
 
 - Cost: 2
 - Type: Affliction card
-- Text: Play: Exhaust. Permanently remove Root from your master deck.
+- Text: Remove this from your deck. Visible Exhaust comes from the card keyword line, not repeated body text.
 - Permanent removal sources: playing Root, card removal, rest-site rest cleanup, compatible events.
 - Non-permanent sources: normal Exhaust effects, discard, temporary combat removal.
 
@@ -84,7 +84,7 @@ Initial design:
 
 - Cost: 3
 - Type: Affliction card
-- Text: Play: Exhaust. Permanently remove Deep Root from your master deck.
+- Text: When played, remove this from your deck. Visible Exhaust comes from the card keyword line, not repeated body text.
 - Max one Root-family permanent card at a time.
 - Root growth upgrades Root to Deep Root, but Deep Root does not stack further.
 

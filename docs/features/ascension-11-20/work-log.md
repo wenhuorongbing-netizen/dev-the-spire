@@ -11,12 +11,12 @@ Scope: re-prioritize from EZMB HP/Neow fix to dependency compatibility gate.
 
 Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
 
-- **17-mod environment:** `Loaded 17 mods (19 total)` — invalidates release evidence. Must test with only BaseLib + EZMicroBalance.
+- **17-mod environment:** `Loaded 17 mods (19 total)` 鈥?invalidates release evidence. Must test with only BaseLib + EZMicroBalance.
 - **Superseded BaseLib v3.1.0 patch failures:** earlier 17-mod logs showed `Undefined target method ... ExhaustivePatch`, `PersistPatch`, `PurgePatch`. Current BaseLib `v3.1.2` controlled smoke has no BaseLib patch-failure signatures.
 - **`Creature.get_ShowsInfiniteHp()` removed in v0.105.0:**
   - `System.MissingMethodException: Method not found: 'Boolean MegaCrit.Sts2.Core.Entities.Creatures.Creature.get_ShowsInfiniteHp()'`
   - Callers: `BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay(NHealthBar)`, `DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp(CombatState)`
-  - Stack reaches `CrackedCore.BeforeSideTurnStart` → `CombatManager.StartCombatInternal()`
+  - Stack reaches `CrackedCore.BeforeSideTurnStart` 鈫?`CombatManager.StartCombatInternal()`
 - **Direct gameplay impact:** singleplayer Defect A20 enters combat, does not draw cards, energy stuck at 0/3. Combat startup is interrupted by the exception chain.
 - **Conclusion:** This is NOT an EZMB logic bug. The EZMB HP/Neow/energy diagnostics work is on hold until the dependency environment is cleaned and proven compatible.
 
@@ -41,13 +41,13 @@ Manual actions for tester:
 Scope:
 
 - Added gated multiplayer diagnostics (`EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1`) with Harmony patches on:
-  - `StartRunLobby.BeginRunForAllPlayers` — lobby state before run start
-  - `StartRunLobby.BeginRunLocally` — ascension/player count at local launch
-  - `StartRunLobby.UpdateMaxMultiplayerAscension` — ascension cap computation
-  - `NGame.StartNewMultiplayerRun` — RunState player HP post-creation
-  - `RunManager.EnterAct` — player HP before and after act entry
-  - `AncientEventModel.BeforeEventStarted` — player HP before/after Neow healing
-  - `SaveManager.SaveRun`, `NGame.ReturnToMainMenu`, `NGame.Quit` — save/quit/disconnect logging
+  - `StartRunLobby.BeginRunForAllPlayers` 鈥?lobby state before run start
+  - `StartRunLobby.BeginRunLocally` 鈥?ascension/player count at local launch
+  - `StartRunLobby.UpdateMaxMultiplayerAscension` 鈥?ascension cap computation
+  - `NGame.StartNewMultiplayerRun` 鈥?RunState player HP post-creation
+  - `RunManager.EnterAct` 鈥?player HP before and after act entry
+  - `AncientEventModel.BeforeEventStarted` 鈥?player HP before/after Neow healing
+  - `SaveManager.SaveRun`, `NGame.ReturnToMainMenu`, `NGame.Quit` 鈥?save/quit/disconnect logging
 - All patches default off; no gameplay changes.
 - Added `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS` env var to `AscensionFeatureGate`.
 - Added P0 issues to `docs/issues.md`:
@@ -63,19 +63,19 @@ Key source findings:
    - Sets player HP to 0 via `SetCurrentHpInternal(0m)`.
    - Heals to full (MaxHp - 0) or 80% for A2+ (WearyTraveler).
    - For A20: expected heal = 64 HP (80% of 80), not 0.
-   - `CreatureCmd.Heal` calls `creature.HealInternal(amount)` directly — no queue dependency.
+   - `CreatureCmd.Heal` calls `creature.HealInternal(amount)` directly 鈥?no queue dependency.
    - No EZMB code touches HP during this flow.
 
 2. **Vanilla AscensionManager** (`AscensionManager.cs`):
    - `maxAscensionAllowed = 10` (const, used only for progress clamping).
-   - Constructor accepts `int level` directly — no clamping.
-   - `HasLevel(AscensionLevel)` checks `_level >= (int)level` — works for values > 10.
+   - Constructor accepts `int level` directly 鈥?no clamping.
+   - `HasLevel(AscensionLevel)` checks `_level >= (int)level` 鈥?works for values > 10.
    - `ApplyEffectsTo(player)` only handles A4 (TightBelt -1 potion) and A10 (AscendersBane). No HP effects.
 
 3. **Run start flow** (`NGame.StartNewMultiplayerRun`):
-   - `RunState.CreateForNewRun()` with `ascensionLevel` from lobby → `Player.CreateForNewRun()` uses `character.StartingHp` for both current and max HP.
-   - `RunManager.SetUpNewMultiPlayer()` → `InitializeNewRun()` → `ApplyAscensionEffects()` (no HP change).
-   - `StartRun()` → `RunManager.Instance.EnterAct(0, doTransition: false)` → Neow event starts → `BeforeEventStarted` fires.
+   - `RunState.CreateForNewRun()` with `ascensionLevel` from lobby 鈫?`Player.CreateForNewRun()` uses `character.StartingHp` for both current and max HP.
+   - `RunManager.SetUpNewMultiPlayer()` 鈫?`InitializeNewRun()` 鈫?`ApplyAscensionEffects()` (no HP change).
+   - `StartRun()` 鈫?`RunManager.Instance.EnterAct(0, doTransition: false)` 鈫?Neow event starts 鈫?`BeforeEventStarted` fires.
 
 4. **Save/quit** (`NPauseMenu.cs`, refreshed v0.105.0 source):
    - `NPauseMenu.OnSaveAndQuitButtonPressed()` calls `CloseToMenu()`.
@@ -87,7 +87,7 @@ Key source findings:
    - `ENetHost.StopHost(...)` sends a disconnection packet to each client before disconnecting peers when not immediate.
    - `RunLobby.OnDisconnected(...)` calls `RunManager.LocalPlayerDisconnected(...)`, which queues `ReturnToMainMenuWithError(...)` for active non-gameover runs.
    - `NErrorPopup.Create(...)` suppresses a popup only for self-initiated `Quit`; remote peer disconnects should still be non-self-initiated.
-   - `NGame.Quit()` saves settings/progress and calls `GetTree().Quit()` — does not send network disconnect.
+   - `NGame.Quit()` saves settings/progress and calls `GetTree().Quit()` 鈥?does not send network disconnect.
 
    - Active EZMB patches do not patch `NPauseMenu`, `RunManager.CleanUp`, `RunLobby.OnDisconnected`, `NetHostGameService`, `NetClientGameService`, `SteamHost`, or `ENetHost`.
 
@@ -256,7 +256,7 @@ Implemented:
 - Heal rest options add player-facing Forge Token extra text before selection.
 - A13 Fission now has a dedicated enchantment icon and Exhaust hover tip.
 - Fission eligibility now excludes Powers, X-cost cards, star-cost cards, zero-energy cards, cards with Exhaust, cards already set to exhaust on next play, quest/special cards, and incompatible existing enchantments.
-- English/ZHS Ascension text was refreshed; ZHS Fission wording uses "耗能" and no longer uses "费用" for this mechanic.
+- English/ZHS Ascension text was refreshed; ZHS Fission wording uses "鑰楄兘" and no longer uses "璐圭敤" for this mechanic.
 
 Validation:
 
@@ -998,7 +998,7 @@ Verification:
 - Added `docs/features/ascension-11-20/multiplayer-test-runbook.md` with recommended two-PC setup, env var commands, exact multiplayer matrix, save/load rows, log checks, and result template.
 - Updated current-facing docs/tests to say default-on for multiplayer testing, while preserving the warning that A20 multiplayer selection is not full A20 co-op support and that controlled smoke is not normal Steam-client/live co-op verification.
 - Ran `dotnet publish EZMicroBalance.sln` and rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts.
-- Current hashes after the 2026-05-08 RC1 Mod Settings package refresh: DLL `1AEE7CD1C6EB945F022CB85997ADC709D930C3E6FC318E7E0EFE1A13436C589F`, JSON `68466CF2BDE07AE7F911AE75EBF6FCAAFE80F70570E3F0D6ECA796B496DB8DB0`, PCK `435D55B14FAD38F611C550F4ACAF604EE1A2C3E63E75C52FC3FA9FCE52D064CA`, package zip `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`, package README `05EAFCC24215EB73C289C59E0C867F01FEE49EA05868D05C4507AAAAA2337F57`.
+- Current hashes after the 2026-05-08 RC1 Mod Settings package refresh: DLL `1AEE7CD1C6EB945F022CB85997ADC709D930C3E6FC318E7E0EFE1A13436C589F`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `435D55B14FAD38F611C550F4ACAF604EE1A2C3E63E75C52FC3FA9FCE52D064CA`, package zip `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`, package README `05EAFCC24215EB73C289C59E0C867F01FEE49EA05868D05C4507AAAAA2337F57`.
 - Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored both settings files byte-for-byte.
 - Final validation after this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln --no-build` passed, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed; `dotnet publish EZMicroBalance.sln` passed; package refresh passed; controlled smoke passed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 81 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` passed with only CRLF normalization warnings.
 
@@ -1043,3 +1043,57 @@ Verification:
 - The live log used for this spot check has 0 `ERROR` lines and 0 release-blocking signatures: no `Creature.get_ShowsInfiniteHp`, BaseLib health-bar patch failure, BaseLib undefined target, DamageMeter/RouteSuggest stack, TypeLoadException, MissingMethodException, or EZMB error/exception pattern.
 - Restored the backed-up `modded/profile1/saves` directory and all moved mod entries; `SlayTheSpire2` was not running after cleanup.
 - Remaining A11 work: natural route traversal, every-start boss reachability, A17 metadata/save-load behavior, and co-op map/save-load behavior.
+
+## 2026-05-09 - Rootblight Text, Preview, and Add Notice Pass
+
+- Rechecked current v0.105.0 source/localization for official card-reference patterns. `GRAVE_WARDEN`, `CAPTURE_SPIRIT`, `REAVE`, `GLIMPSE_BEYOND`, `DIRGE`, and `SEVERANCE` use `[gold]` around referenced cards/piles in localization and `HoverTipFactory.FromCard<Soul>()` in card models for previews.
+- Confirmed `CardModel.HoverTips` appends keyword hover tips from `CanonicalKeywords`, so Rootblight and Blight Sprout should not repeat Exhaust / 娑堣€?in their descriptions when their models already expose `CardKeyword.Exhaust`.
+- Confirmed `CardPileCmd.Add(...)` alone is not a full reward/shop-style animation path for a fresh generated master-deck card; vanilla reward/shop feedback animates an existing UI card node separately. Rootblight therefore keeps the command-based `skipVisuals: true` deck add and adds a localized `ThinkCmd.Play` notice after a successful add for the affected local player.
+- Updated Rootblight I/II/III and Blight Sprout descriptions in English and Simplified Chinese to remove duplicate `Play: Exhaust` / `鎵撳嚭锛氭秷鑰梎, add `[gold]` card/pile terms, and match the current play/unplayed outcomes.
+- Added source-backed hover previews with `HoverTipFactory.FromCard<T>()`: Rootblight I previews Rootblight II; Rootblight II previews Rootblight I and III; Rootblight III previews Rootblight I and II; Blight Sprout previews Rootblight I.
+- Added `ROOTBLIGHT_ADDED` localization in English and Simplified Chinese and added the Rootblight UX manual checklist rows for visible keyword count, hover previews, rich-text rendering, raw-tag checks, and add notice verification.
+- Added `docs/style/card-localization-style-guide.md` and linked it from the repo agent reference/docs so future card text changes reuse the same visible keyword, rich-text, dynamic variable, preview, and bilingual terminology rules.
+- Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- Ran `dotnet test EZMicroBalance.sln --no-build`: passed, 67 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- Ran `dotnet publish EZMicroBalance.sln`: passed and refreshed installed DLL/manifest/PCK artifacts.
+- Rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts. Current hashes: DLL `D75A60FB376821A463F049E9C28ACC0225C7564102E84A408DC23220CEE3EE4F`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `253E1310D8357EEB4D099F34BFA8785A66FEE77576BDA59A4D34277874696C25`, package zip `CFA983BBD22132E2F6C5F839794D688E11BF1BFD4BCEE5B714AD71AEBBC3C6D2`.
+- Ran `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 83 passed, 0 skipped, 0 failed.
+- Ran `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
+- Ran `git diff --check`: passed.
+- Live hover/text/add-notice verification remains pending in the normal Steam client; no new gameplay smoke was claimed for this source pass.
+
+## 2026-05-09 - Rootblight Event-Room Notice Fallback
+
+- Normal Steam-client A14 ZHS UI evidence showed Rootblight I/II/III and Blight Sprout hovers render with one visible Exhaust keyword, no raw `[gold]` tags, and expected Rootblight previews. Evidence directory: `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516`.
+- The same A14 run confirmed Rootblight I was added to the deck, but the localized `ROOTBLIGHT_ADDED` notice was not visible at Neow. Source review found why: `ThinkCmd.Play(...)` attaches through `Creature.GetVfxContainer()`, and current `Creature.GetVfxContainer()` only returns combat or bestiary VFX containers, not event-room containers.
+- Added a local-player-only fallback that keeps the normal `ThinkCmd.Play(...)` path when a creature VFX container exists, then uses `NEventRoom.Instance?.VfxContainer` plus `NThoughtBubbleVfx.Create(...)` for Neow/event-room notices, with a final `NRun.Instance.GlobalUi.AboveTopBarVfxContainer` fallback.
+- Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- Ran `dotnet test EZMicroBalance.sln --no-build`: passed, 67 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- Ran `dotnet publish EZMicroBalance.sln`: passed and refreshed the installed DLL.
+- Rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts. Current hashes: DLL `ABFF721A65B6C9F94423822C352958215D96AF06CD37C90D3A240B564371593B`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `253E1310D8357EEB4D099F34BFA8785A66FEE77576BDA59A4D34277874696C25`, package zip `1C51E59020B078E20BFFB0BE48F6940B0C2CF77A0D46C9500B8642A20C5E88C5`.
+- Reran controlled `--force-steam off` smoke against the refreshed installed/package artifacts with physical mod isolation. Evidence directory: `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904`. The run loaded exactly BaseLib + EZ Micro Balance (`Loaded 2 mods (2 total)`), initialized both mods, reported `Found 12 SavedSpireFields`, reached main menu, restored `settings.save`, `settings.save.backup`, and 22 moved mod entries, and `scripts/audit-godot-log.ps1` reported 0 release-blocking signatures.
+- Normal Steam-client A14 ZHS retest verified the new event-room fallback at Neow. Evidence directory: `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455`; `06-character-select-a14.png` shows A14 selected through the live UI, and `07-run-start-06.png` shows the localized Rootblight-added thought bubble at Neow with the starter deck at 11 cards.
+- Save/mod hygiene for the A14 notice retest passed: `restore-check.json` confirms settings, settings backup, saves, and 22 moved mod entries restored, with no Slay the Spire 2 process left running. The copied notice-run log includes one setup-noise `ERROR` from deliberately abandoning a pre-existing temporary current run before the A14 start; it is not used as a clean-log gate.
+- A separate normal Steam-client BaseLib+EZMB-only main-menu log from `.tools\runtime-evidence\rootblight-a14-notice-zhs-no-current-20260509-041615\godot-mainmenu.log` audited clean with 0 `ERROR` lines and 0 release-blocking signatures, but Steam cloud rehydrated current-run files before startup, so it is recorded as clean startup evidence, not as Rootblight notice evidence.
+- Remaining Rootblight live work at this point: English hover/text screenshots, combat-end add notices from Rootblight III split and Blight Sprout seen-unplayed outcomes, co-op ownership/desync notice checks, and independent card art. The English hover/text screenshots were collected in the next entry.
+
+## 2026-05-09 - Rootblight English Hover And Starter-Notice Retest
+
+- Ran a targeted normal Steam-client BaseLib+EZMB-only A14 retest with the language set to English, physically isolating the 22 non-BaseLib/EZMB local mod entries.
+- Evidence directory: `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010`.
+- Screenshot `07-after-confirm-a14-neow.png` verifies the English Rootblight-added event-room thought bubble at Neow with the starter deck at 11 cards.
+- Screenshots `12-hover-rootblight-i.png`, `13-hover-rootblight-ii.png`, `14-hover-rootblight-iii.png`, and `15-hover-blight-sprout.png` verify Rootblight I/II/III and Blight Sprout hovers with one visible Exhaust keyword, no raw `[gold]` tags, and the expected Rootblight preview cards.
+- Copied `rootblight-a14-hover-eng-godot-live.log` before cleanup. `rootblight-a14-hover-eng-log-audit.json` reports 0 removed-API, BaseLib patch-failure, type-load, missing-method, or EZMB error/exception signatures; the single Godot `ERROR` line is the known setup-noise `current_run.save.backup` delete failure from deliberately abandoning a pre-existing temporary current run before the A14 start.
+- `restore-check.json` confirms settings, settings backups, saves, and all 22 moved mod entries were restored, with no Slay the Spire 2 process left running.
+- Remaining Rootblight live work: combat-end add notices from Rootblight III split and Blight Sprout seen-unplayed outcomes, full Rootblight/Blight Sprout behavior, co-op ownership/desync notice checks, and independent card art.
+
+## 2026-05-09 - Rootblight Combat-End Notice Hardening
+
+- Pre-final-hardening combat-end probe `.tools\runtime-evidence\rootblight-combat-end-eng-20260509-051808` showed Rootblight III split added Rootblight I after combat, but the notice was mostly hidden behind the reward overlay.
+- Added a combat-end `preferOverlayNotice` path so Rootblight III split, Rootblight growth replacement, pending played-card downgrades, and Blight Sprout seen-unplayed Rootblight additions prefer an overlay notice instead of the creature VFX path.
+- Added high-z overlay preparation for Rootblight notices. A second targeted probe under `.tools\runtime-evidence\rootblight-combat-end-overlay-eng-20260509-053834` showed the Rootblight III split notice above the loot/pause overlay and then restored settings/saves and all 22 moved mod entries. The probe was interrupted before a clean non-paused timing check or Blight Sprout coverage, so full combat-end verification remains pending.
+- Final implementation hardening after that probe now tries a top-level `NGame.Instance` thought bubble first for combat-end notices, sets `MouseFilterEnum.Ignore`, keeps `ZIndex = 4096`, extends the display duration to 5 seconds, and falls back to `NRun.Instance.GlobalUi.AboveTopBarVfxContainer`.
+- Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- Ran `dotnet publish EZMicroBalance.sln`: passed and refreshed the installed DLL/manifest/PCK artifacts.
+- Rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts. Current hashes after the later package `README_INSTALL.txt` resolved-status refresh, optional portrait fallback patch, generated Rootblight art, and manifest author refresh: DLL `9A0E750122D3AEBE449D2D95A20AED84657AFF6D169079E0F0184CC7084A70DF`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `253E1310D8357EEB4D099F34BFA8785A66FEE77576BDA59A4D34277874696C25`, package zip `1699D7BEC6C1A0BD02223E45E4B90399C7BFBB20D4E95236F9ED1E08A795AF8F`.
+- Per the current implementation-only direction, `dotnet test`, opt-in release artifact tests, format, diff, and additional live verification were not rerun after the final hardening patch, optional portrait fallback patch, or generated-art/author refresh.

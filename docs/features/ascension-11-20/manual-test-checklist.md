@@ -2,8 +2,8 @@
 
 Project: EZ Micro Balance  
 Manifest id: EZMicroBalance  
-Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; limited normal Steam-client A11 map spot checks executed, live Ascension gameplay not executed yet beyond those map observations
-Last updated: 2026-05-08
+Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; limited normal Steam-client A11 map spot checks and targeted A14 Rootblight English/ZHS hover/notice spot checks executed, full live Ascension gameplay not executed yet beyond those observations
+Last updated: 2026-05-09
 
 ## Research-Mode Baseline
 
@@ -23,12 +23,12 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Current bounded `--force-steam off` smoke after the v0.105.0/BaseLib v3.1.2 package refresh initialized only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored the temporary profile settings byte-for-byte.
+- Current bounded `--force-steam off` smoke after the Rootblight event-room notice package refresh physically isolated unrelated mods, initialized only BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored the temporary profile settings plus 22 moved mod entries.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded Boss Royal Seals, and A20 vanilla double-boss map path/Brand/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
 - Read-only diagnostics are implemented behind `EZMB_ASCENSION_DIAGNOSTICS=1`.
-- No Ascension gameplay has been live-tested in game yet.
+- Full Ascension gameplay has not been live-tested yet beyond the A11 map spot checks and targeted A14 Rootblight English/ZHS hover/starter-notice spot checks.
 
 ## Gate Controls
 
@@ -81,8 +81,13 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
 - [ ] Enable the documented debug/internal gate.
 - [ ] Start a new single-player run.
 - [ ] Rootblight I is added to the local player's master deck.
-- [ ] Rootblight I has cost 2, Curse type, no target, the intended title/description, and Exhaust/remove text in English.
+- [ ] Rootblight I has cost 2, Curse type, no target, the intended title/description, one visible Exhaust keyword, no duplicate `Play: Exhaust` body text, and a Rootblight II hover preview in English.
+- [ ] Rootblight II has one visible Exhaust keyword, no duplicate `Play: Exhaust` body text, and Rootblight I / Rootblight III hover previews.
+- [ ] Rootblight III has one visible Exhaust keyword, no duplicate `Play: Exhaust` body text, and Rootblight I / Rootblight II hover previews.
+- [ ] Rootblight card descriptions render `[gold]` card-name markup correctly and do not show raw tags.
 - [ ] Rootblight localization displays in Simplified Chinese when the game language is Simplified Chinese.
+- [ ] Simplified Chinese Rootblight descriptions have one visible 消耗 keyword, no duplicate `打出：消耗` body text, and render `[gold]根蚀 I/II/III[/gold]` without raw tags.
+- [ ] The player sees the localized `Rootblight added.` / `根蚀已加入。` notice when Rootblight is added to the master deck.
 - [ ] Save and load the run before combat; Rootblight does not duplicate.
 - [ ] Save/load or re-enter Act 1 after Rootblight has been cleared; Rootblight is not re-added.
 - [ ] Enter combat; the combat Rootblight copy links to the master-deck Rootblight card.
@@ -97,6 +102,14 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
 - [ ] Card removal screens/events can clear Rootblight if they use normal deck-removal APIs.
 - [ ] Rootblight is not marked Eternal and is removable.
 - [ ] Starting another run does not leak Rootblight state from the prior run.
+
+Targeted normal Steam-client spot checks already executed without `EZMB_ASCENSION_DEBUG_LEVEL`:
+
+- English hover/text evidence: `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` captured Rootblight I/II/III and Blight Sprout with one visible Exhaust keyword, no raw `[gold]` tags, and expected Rootblight previews. The same directory also captures the English A14 Neow starter Rootblight-added notice with deck count 11.
+- ZHS hover/text evidence: `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516` captured Rootblight I/II/III and Blight Sprout with one visible Exhaust keyword, no raw `[gold]` tags, and expected Rootblight previews.
+- ZHS starter notice evidence: `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455\07-run-start-06.png` shows the localized Rootblight-added notice at Neow with the starter deck at 11 cards after selecting A14 through the live UI.
+- Source status after the final notice hardening: combat-end additions now prefer a top-level overlay notice that ignores mouse input, uses high z-order, displays for 5 seconds, and falls back to the run global UI container. Pre-final-hardening evidence under `.tools\runtime-evidence\rootblight-combat-end-overlay-eng-20260509-053834` showed the Rootblight III split notice above the loot/pause overlay, but this is not a full manual pass.
+- Still pending for this section: save/load/duplicate checks, play/unplayed combat-end behavior, clean non-paused combat-end add notices from Rootblight III and Blight Sprout, removal/rest behavior, and co-op ownership/desync checks.
 
 ## Rootblight MVP: Rest-Site Cleanup
 
@@ -130,6 +143,8 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=15` after A14 Rootblight behavior is ve
 - [ ] Blight Sprout does not appear in opening hand unless drawn naturally.
 - [ ] Boss Blight Sprouts sprout on rounds 3 and 4; each moves to the top of the draw pile if it has not entered hand.
 - [ ] If Blight Sprout enters hand and is not played before combat end, one Rootblight I is added to the master deck.
+- [ ] Blight Sprout has one visible Exhaust keyword, no duplicate `Play: Exhaust` / `打出：消耗` body text, gold-highlighted Draw Pile / 抽牌堆 text, and a Rootblight I hover preview.
+- [ ] Seen-but-unplayed Blight Sprout shows the localized Rootblight added notice when it adds Rootblight I after combat.
 - [ ] If Blight Sprout is played before combat end, Rootblight does not increase.
 - [ ] If combat ends before Blight Sprout enters hand, Blight Sprout withers and does not raise Rootblight.
 - [ ] Temporary Blight Sprout never persists in the master deck or save.

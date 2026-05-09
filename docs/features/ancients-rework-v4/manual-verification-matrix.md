@@ -2,7 +2,7 @@
 
 Prepared: 2026-05-07
 
-Status: automated gates passed; normal Steam-client Mod Settings passed; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check passed; A11 Act 2/3 map-surface observation passed. Full live Ancient reward gameplay, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 traversal/boss reachability, and multiplayer verification are still pending.
+Status: automated gates passed; normal Steam-client Mod Settings passed; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 traversal/boss reachability, and multiplayer verification are still pending.
 
 Focused regression notes:
 
@@ -23,11 +23,11 @@ Focused regression notes:
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese banned-English localization guard | Pass after 2026-05-06 localization sprint |
 | Simplified Chinese no-space numeric formatting guard | Pass after v4.3 localization refresh |
-| Beautiful Bracelet `Swift` zhs regression guard | Pass after 2026-05-06 localization sprint; retained text expects `迅速2` |
+| Beautiful Bracelet `Swift` zhs regression guard | Pass after 2026-05-06 localization sprint; retained text expects `杩呴€?` |
 | Jeweled Mask custom enchantment zhs guard | Pass after 2026-05-06 localization sprint |
 | Jewelry Box non-Innate source/serialization guard | Pass, automated source guard confirms marked-only `Apotheosis` handling |
 | Ancient and Ascension source guard tests | Pass, expanded `dotnet test EZMicroBalance.sln --no-build` guard suite |
-| Private-beta package | Pass, `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314` |
+| Private-beta package | Pass, `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `1699D7BEC6C1A0BD02223E45E4B90399C7BFBB20D4E95236F9ED1E08A795AF8F` |
 
 ## Runtime Load Checklist
 
@@ -37,7 +37,7 @@ Focused regression notes:
 | Confirm `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` exists | `EZMicroBalance.json`, `EZMicroBalance.dll`, and `EZMicroBalance.pck` are present | Prepared |
 | Launch Slay the Spire 2 public beta | Game reaches main menu | Pass in controlled `--force-steam off` smoke profile and isolated normal Steam-client startup log; normal Steam-client A0/A10/A20 combat smoke also reached live combat |
 | Open Settings -> Mod Settings | BaseLib appears and is enabled | Pass, normal Steam-client screenshots and clean log captured during the isolated `095137` recheck |
-| Open Settings -> Mod Settings | EZ Micro Balance appears with id `EZMicroBalance` and can be enabled | Pass, localized page appears as `微平衡` with `无可配置选项。`; matching log has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures |
+| Open Settings -> Mod Settings | EZ Micro Balance appears with id `EZMicroBalance` and can be enabled | Pass, localized page appears as `寰钩琛 with `鏃犲彲閰嶇疆閫夐」銆俙; matching log has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures |
 | Open Compendium -> Card Library / card encyclopedia with only BaseLib and EZ Micro Balance enabled | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
 | Start a run with EZ Micro Balance enabled | No startup exception in `godot.log` for `EZMicroBalance` | Pass for normal Steam-client A0/A10/A20 Ironclad standard run starts followed by DevConsole `fight CULTISTS_NORMAL`; logs show 0 EZMB error/exception pattern hits. Natural route-click first-node path remains pending. |
 | Disable EZ Micro Balance and restart | EZ Micro Balance patches do not apply while disabled | Loader pass in controlled `--force-steam off` smoke profile; gameplay pass pending |
@@ -49,7 +49,7 @@ Automated smoke attempts on 2026-05-05 did not reach mod loading:
 - Direct exe launch with temporary `steam_appid.txt` value `2868840` failed before mod loading with Steamworks `ConnectToGlobalUser failed`; the temporary file was removed.
 - `steam.exe -applaunch 2868840` did not start a detectable game process during the bounded smoke-test window.
 
-Runtime result: normal Steam-client Mod Settings has been inspected and passed with isolated `095137` evidence. A0/A10/A20 single-player combat-smoke screenshots were collected through normal Steam-client standard runs plus DevConsole `fight CULTISTS_NORMAL`; these confirm draw/energy/combat initialization but do not replace natural route-click or feature-specific manual checks. A normal Steam-client isolated startup log reached main menu with only BaseLib + EZ Micro Balance loaded and no startup `ERROR` lines or release-blocking signatures.
+Runtime result: normal Steam-client Mod Settings has been inspected and passed with isolated `095137` evidence. A0/A10/A20 single-player combat-smoke screenshots were collected through normal Steam-client standard runs plus DevConsole `fight CULTISTS_NORMAL`; these confirm draw/energy/combat initialization but do not replace natural route-click or feature-specific manual checks. A normal Steam-client isolated startup log reached main menu with only BaseLib + EZ Micro Balance loaded and no startup `ERROR` lines or release-blocking signatures. Targeted A14 Rootblight English/ZHS hover/starter-notice screenshots were collected under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010`, `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516`, and `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455`.
 
 Controlled smoke update:
 
@@ -58,7 +58,7 @@ Controlled smoke update:
 - Final controlled smoke loaded BaseLib, loaded `EZMicroBalance.dll`, loaded `EZMicroBalance.pck`, finished EZ Micro Balance initialization, and reached main menu.
 - Controlled disable smoke enabled BaseLib, explicitly disabled EZ Micro Balance, skipped loading `EZMicroBalance`, did not load its DLL, and reached main menu.
 - After the Release solution mapping fix, an isolated controlled smoke enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, loaded the installed Release `EZMicroBalance.dll`, finished both initializers, and reached main menu. Original default-profile settings were restored afterward.
-- After the v0.105.0/BaseLib v3.1.2 package refresh, a bounded `--force-steam off` smoke temporarily enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, loaded the current installed `EZMicroBalance.dll` and `.pck`, reported `Found 12 SavedSpireFields`, finished EZ Micro Balance initialization, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, and reached main menu in `13,628ms`. Temporary profile settings were restored byte-for-byte. The log still contains unrelated local invalid-manifest errors for other mods, but no EZ Micro Balance startup exception or error.
+- After the Rootblight event-room notice package refresh, a bounded `--force-steam off` smoke physically isolated unrelated mod entries, enabled only `BaseLib` and `EZMicroBalance`, loaded the current installed `EZMicroBalance.dll` and `.pck`, reported `Found 12 SavedSpireFields`, finished EZ Micro Balance initialization, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, and reached main menu. Temporary profile settings and 22 moved mod entries were restored afterward. The clean evidence directory is `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904`.
 - Manual reward behavior tests below are still pending.
 
 ## Prismatic Gem Exact Tests
@@ -73,7 +73,7 @@ Run with BaseLib and EZ Micro Balance enabled. Disable other mods that alter car
 2. Complete one normal monster combat that grants a normal card reward.
 3. Open the card reward screen.
 4. Record all three card slots, including each slot's color and rarity.
-5. Confirm the relic hover text shows `棱彩计数：1/2` after this reward screen opens if the current language is zhs, or the English equivalent in English; this means the next standard card reward should be all off-color.
+5. Confirm the relic hover text shows `妫卞僵璁℃暟锛?/2` after this reward screen opens if the current language is zhs, or the English equivalent in English; this means the next standard card reward should be all off-color.
 6. Reroll the same reward screen.
 7. Record the three card slots again.
 8. Repeat the reroll at least two more times if rerolls are available.
@@ -88,12 +88,12 @@ Result: pending.
 1. Start or load a run that has Prismatic Gem and a saved normal reward counter of `1`, or use the next normal monster reward after completing test 1.
 2. Complete a normal monster combat that grants a normal card reward.
 3. Open the card reward screen.
-4. Confirm every visible option is off-color / `异色牌`, with each slot preserving its original rarity when a same-rarity off-color replacement is available.
+4. Confirm every visible option is off-color / `寮傝壊鐗宍, with each slot preserving its original rarity when a same-rarity off-color replacement is available.
 5. Reroll the same reward screen.
 6. Confirm the rerolled reward screen still has every visible option off-color and does not duplicate any visible card where an alternative exists.
 7. Repeat the reroll at least two more times if rerolls are available.
-8. Confirm the relic hover text shows `棱彩计数：0/2` after this reward screen opens if the current language is zhs, or the English equivalent in English; this means the next standard card reward should be normal.
-9. If the reward banner text is visible in zhs, confirm it shows `棱彩奖励：本次只出现异色牌。`.
+8. Confirm the relic hover text shows `妫卞僵璁℃暟锛?/2` after this reward screen opens if the current language is zhs, or the English equivalent in English; this means the next standard card reward should be normal.
+9. If the reward banner text is visible in zhs, confirm it shows `妫卞僵濂栧姳锛氭湰娆″彧鍑虹幇寮傝壊鐗屻€俙.
 10. Review `godot.log` after the screen. Confirm the banner hint used the guarded `_banner` field or the `UI/Banner fallback`; if both failed, the log must say the visible all-off-color cards and relic hover count remain the available confirmation surfaces.
 
 Expected result: the second normal reward screen stays triggered through every reroll. Rerolling must keep every visible option off-color, with no added reward slot and no duplicate card options where an alternative exists. The localized banner hint should render when either the guarded private banner field or the `UI/Banner` fallback is available; visual placement remains manual.
@@ -120,18 +120,18 @@ Result: pending.
 
 | Ancient / Relic | Manual Check | Expected Result | Result |
 | --- | --- | --- | --- |
-| Pael's Horn | Pick up the reward. | Adds one `Relax` / `放松` and one upgraded `Relax+` / `放松+`. | Pending |
+| Pael's Horn | Pick up the reward. | Adds one `Relax` / `鏀炬澗` and one upgraded `Relax+` / `鏀炬澗+`. | Pending |
 | Black Star | Pick up in act 3 or later, then kill an elite. | Pickup immediately grants one random relic; normal elite bonus remains. | Pending |
 | War Hammer | Pick up reward, then kill an elite. | Pickup chooses two cards to upgrade; elite kill upgrades remain. | Pending |
-| Jewelry Box | Pick up reward, inspect deck, then save/load or enter the next combat. | Adds `Apotheosis` / `神化` without `Innate` / `固有`; the added card must not start in opening hand from Innate. Other non-Jewelry Box Apotheosis sources are expected to keep their normal Innate behavior. Save/load persistence is now guarded by the marker serialization hook but still needs runtime verification. | Pending manual gameplay; automated source/serialization guard passed |
-| Preserved Fog / Folly | Pick up reward, remove four cards, inspect Folly. | Adds `Folly` / `愚行` with Unplayable, `Innate` / `固有`, and `Eternal` / `永恒`. | Pending |
-| Claws | Pick up reward and choose curse. | Chooses one curse from four and adds two `Wish` / `许愿` plus one upgraded `Wish+` / `许愿+`. | Pending |
+| Jewelry Box | Pick up reward, inspect deck, then save/load or enter the next combat. | Adds `Apotheosis` / `绁炲寲` without `Innate` / `鍥烘湁`; the added card must not start in opening hand from Innate. Other non-Jewelry Box Apotheosis sources are expected to keep their normal Innate behavior. Save/load persistence is now guarded by the marker serialization hook but still needs runtime verification. | Pending manual gameplay; automated source/serialization guard passed |
+| Preserved Fog / Folly | Pick up reward, remove four cards, inspect Folly. | Adds `Folly` / `鎰氳` with Unplayable, `Innate` / `鍥烘湁`, and `Eternal` / `姘告亽`. | Pending |
+| Claws | Pick up reward and choose curse. | Chooses one curse from four and adds two `Wish` / `璁告効` plus one upgraded `Wish+` / `璁告効+`. | Pending |
 | Choices Paradox | Start combat after pickup. | Five rare choices are offered, retained, and combat temporary. | Pending |
-| Jeweled Mask | Select or draft a power, save/load, then enter combat. | Selected power permanently costs 0 and starts in hand instead of draw pile; zhs custom enchantment tooltip uses `宝石面具`. | Pending |
-| Prismatic Gem | Run the exact tests above and inspect `godot.log`. | Counter increments once per standard reward screen; every second eligible screen makes every visible option off-color / `异色牌`, shows the count hover hint, applies the localized banner through the guarded `_banner` field or `UI/Banner fallback`, and reroll preserves trigger state. | Pending |
-| Distinguished Cape | Inspect Vakuu options and pick up the reward at max HP values around 80, 70, 30, 19, 18, and 10 if practical. | Uses `lose 30% of current Max HP, at least 18`; cannot be selected when current Max HP is not greater than the v4.3 cost; an unaffordable Cape roll is replaced by a payable Vakuu Pool 2 option so low-Max-HP Vakuu still shows three normal choices; if current HP exceeds new max, max HP loss is not damage; adds exactly 3 `Apparition` / `灵体` cards. | Pending |
+| Jeweled Mask | Select or draft a power, save/load, then enter combat. | Selected power permanently costs 0 and starts in hand instead of draw pile; zhs custom enchantment tooltip uses `瀹濈煶闈㈠叿`. | Pending |
+| Prismatic Gem | Run the exact tests above and inspect `godot.log`. | Counter increments once per standard reward screen; every second eligible screen makes every visible option off-color / `寮傝壊鐗宍, shows the count hover hint, applies the localized banner through the guarded `_banner` field or `UI/Banner fallback`, and reroll preserves trigger state. | Pending |
+| Distinguished Cape | Inspect Vakuu options and pick up the reward at max HP values around 80, 70, 30, 19, 18, and 10 if practical. | Uses `lose 30% of current Max HP, at least 18`; cannot be selected when current Max HP is not greater than the v4.3 cost; an unaffordable Cape roll is replaced by a payable Vakuu Pool 2 option so low-Max-HP Vakuu still shows three normal choices; if current HP exceeds new max, max HP loss is not damage; adds exactly 3 `Apparition` / `鐏典綋` cards. | Pending |
 | Velvet Choker | Play 6 cards manually from hand, then inspect/play the 7th+ card; also test an autoplay and a repeated/copy play. | No hard six-card cap; the 7th+ from-hand manual cards cost +1 after other cost changes; copied, autoplayed, or repeated plays do not advance the counter; counter resets on each player turn. | Pending |
-| Pael's Tooth | Remove five cards, run two non-boss combats, then act transition. | One stored card returns upgraded every two non-boss / `非首领` combats; remaining stored cards clear after act boss / `首领` transition. | Pending |
+| Pael's Tooth | Remove five cards, run two non-boss combats, then act transition. | One stored card returns upgraded every two non-boss / `闈為棰哷 combats; remaining stored cards clear after act boss / `棣栭` transition. | Pending |
 | Sovereign Blade / Forge | Forge a temporary Sovereign Blade; inspect permanent Refine Blade. | Forged temporary Sovereign Blade has Exhaust; permanent Refine Blade is unchanged. | Pending |
 | Seal of Gold / Debt | Pick up reward, draw/play/exhaust Debt. | Grants energy and two playable Debt curses; gold loss occurs only on exhaust. | Pending |
 | Sozu | Pick up with empty potion slots, then attempt future potion gain. | Empty potion slots fill on pickup, then future potion gain is blocked. | Pending |
@@ -139,7 +139,7 @@ Result: pending.
 | Fiddle | Start turns with hand below/above seven. | Draws toward seven and caps player-turn draw above seven. | Pending |
 | Iron Club | Play five cards in combat. | Draws one card every five cards played. | Pending |
 | Brilliant Scarf | Play six cards in one turn. | Sixth card each turn costs 0. | Pending |
-| Beautiful Bracelet | Apply to selected cards and inspect enchantment. | Selected cards gain `Swift 2` / `迅速2`; zhs text does not show raw `Swift 2`. | Pending |
+| Beautiful Bracelet | Apply to selected cards and inspect enchantment. | Selected cards gain `Swift 2` / `杩呴€?`; zhs text does not show raw `Swift 2`. | Pending |
 | Music Box | Play first attack each turn. | Creates a discounted Ethereal Exhaust copy. | Pending |
 | Crossbow | Start turn, accept offer; repeat and skip offer. | Generated attack offer can be accepted or skipped; skipped card does not linger. | Pending |
 | Toasty Mittens | Start turn with draw pile. | Top draw-pile card can be exhausted for Strength or kept. | Pending |
@@ -147,24 +147,24 @@ Result: pending.
 | Pumpkin Candle vanilla spot check | Obtain Pumpkin Candle and progress through the normal vanilla Act 3 extinguish timing. | No EZMB `internal static class PumpkinCandlePatch`, `ExtinguishedSentinel`, or active `PUMPKIN_CANDLE.description` override is present; behavior and text should match the current vanilla game. | Pending |
 | Quality Flame / Brightest Flame | Obtain Quality Flame through Storybook or another source, inspect unupgraded/upgraded previews, then play it. | The card visibly has Exhaust; unupgraded text and behavior draw 3, upgraded text and behavior draw 4, it gains the vanilla dynamic Energy amount, loses 1 Max HP, and exhausts after play. Pumpkin Candle relic behavior remains vanilla. | Pending |
 | Meat Cleaver | Open rest site with/without valid cards and HP. | Cook removes two cards and loses five current HP; disabled when unavailable. | Pending |
-| Blood-Soaked Rose / Enthralled | Gain Enthralled and observe combat priority. | `Enthralled` / `执迷` gains 10 Block while preserving forced-priority behavior. | Pending |
+| Blood-Soaked Rose / Enthralled | Gain Enthralled and observe combat priority. | `Enthralled` / `鎵ц糠` gains 10 Block while preserving forced-priority behavior. | Pending |
 
 ## Simplified Chinese Localization Spot Checks
 
 | Surface | Expected zhs Text | Result |
 | --- | --- | --- |
-| Beautiful Bracelet relic text | `迅速2`, no raw `Swift` | Pending |
-| Numeric formatting | No spaces between Chinese text, numbers, and units, such as `获得1点能量`, `手牌有7张`, `至少18点` | Pending |
-| Prismatic Gem count hint | zhs hover uses `棱彩计数：1/2` or `棱彩计数：0/2`; trigger reward banner uses `棱彩奖励：本次只出现异色牌。`; if the banner path falls back, `godot.log` names the `UI/Banner fallback` or the final unavailable diagnostic. | Pending |
-| Jewelry Box relic text | `神化`, no raw `Apotheosis` | Pending |
-| Pael's Horn relic text | `放松` and `放松+`, no raw `Relax` | Pending |
-| Claws relic text | `许愿` and `许愿+`, no raw `Wish` | Pending |
-| Preserved Fog relic text | `愚行`, no raw `Folly` | Pending |
-| Blood-Soaked Rose relic text | `执迷`, no raw `Enthralled` | Pending |
-| Seal of Gold relic/card text | `债务`, no raw `Debt` and no obsolete `欠款` | Pending |
-| Pael's Tooth relic text | `首领`, no raw `Boss` | Pending |
-| Jeweled Mask custom enchantment | zhs tooltip uses `宝石面具` and 0-cost text | Pending |
-| Keyword surfaces | `保留`, `虚无`, `消耗`, `固有`, `永恒`, `力量` | Pending |
+| Beautiful Bracelet relic text | `杩呴€?`, no raw `Swift` | Pending |
+| Numeric formatting | No spaces between Chinese text, numbers, and units, such as `鑾峰緱1鐐硅兘閲廯, `鎵嬬墝鏈?寮燻, `鑷冲皯18鐐筦 | Pending |
+| Prismatic Gem count hint | zhs hover uses `妫卞僵璁℃暟锛?/2` or `妫卞僵璁℃暟锛?/2`; trigger reward banner uses `妫卞僵濂栧姳锛氭湰娆″彧鍑虹幇寮傝壊鐗屻€俙; if the banner path falls back, `godot.log` names the `UI/Banner fallback` or the final unavailable diagnostic. | Pending |
+| Jewelry Box relic text | `绁炲寲`, no raw `Apotheosis` | Pending |
+| Pael's Horn relic text | `鏀炬澗` and `鏀炬澗+`, no raw `Relax` | Pending |
+| Claws relic text | `璁告効` and `璁告効+`, no raw `Wish` | Pending |
+| Preserved Fog relic text | `鎰氳`, no raw `Folly` | Pending |
+| Blood-Soaked Rose relic text | `鎵ц糠`, no raw `Enthralled` | Pending |
+| Seal of Gold relic/card text | `鍊哄姟`, no raw `Debt` and no obsolete `娆犳` | Pending |
+| Pael's Tooth relic text | `棣栭`, no raw `Boss` | Pending |
+| Jeweled Mask custom enchantment | zhs tooltip uses `瀹濈煶闈㈠叿` and 0-cost text | Pending |
+| Keyword surfaces | `淇濈暀`, `铏氭棤`, `娑堣€梎, `鍥烘湁`, `姘告亽`, `鍔涢噺` | Pending |
 ## Save/Load Matrix
 
 | Surface | Expected Result | Result |

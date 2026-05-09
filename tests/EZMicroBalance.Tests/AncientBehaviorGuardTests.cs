@@ -189,6 +189,8 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("Current controlled --force-steam off smoke passed", readme, StringComparison.Ordinal);
         Assert.Contains("Found 12 SavedSpireFields", readme, StringComparison.Ordinal);
         Assert.Contains("Normal Steam-client Mod Settings verification passed after the no-op EZ Micro Balance config page was added", readme, StringComparison.Ordinal);
+        Assert.Contains("EZMicroBalance.json author is set to wenhuorongbing-netizen from the local Git user name", readme, StringComparison.Ordinal);
+        Assert.Contains("Rootblight I/II/III and Blight Sprout use original generated portrait art packaged with the mod", readme, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer checks are still pending", readme, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", readme, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", readme, StringComparison.Ordinal);
@@ -994,7 +996,8 @@ public sealed class AncientBehaviorGuardTests
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",
             "- [ ] Disable-mod gameplay behavior is tested in a run.",
-            "- [ ] Author placeholder is replaced or explicitly accepted for this private beta.",
+            "- [x] Author placeholder is replaced for this private beta; `EZMicroBalance.json` author is `wenhuorongbing-netizen`.",
+            "- [x] Rootblight I/II/III and Blight Sprout generated portrait art is integrated and packaged; live in-game visual verification remains part of the manual matrix.",
             "- [ ] Multiplayer disposition is decided: verified, or release-noted as unsupported/unverified.",
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
@@ -1016,8 +1019,8 @@ public sealed class AncientBehaviorGuardTests
             Assert.Contains($"| {row} |", manualMatrix, StringComparison.Ordinal);
         }
 
-        Assert.Contains("Status: automated gates passed; normal Steam-client Mod Settings passed; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check passed; A11 Act 2/3 map-surface observation passed.", manualMatrix, StringComparison.Ordinal);
-        Assert.Contains("Full live Ancient reward gameplay, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 traversal/boss reachability, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Status: automated gates passed; normal Steam-client Mod Settings passed; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 traversal/boss reachability, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Natural route-click first-node path remains pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Result: pending.", manualMatrix, StringComparison.Ordinal);
     }

@@ -2,7 +2,7 @@
 
 This folder tracks the active Ascension 11-20 development line for `EZ Micro Balance`.
 
-Ascension 11-20 is available by default in the current private-beta multiplayer test candidate, but it is not release-verified. Live single-player, save/load, and co-op verification remain pending. Ascension 21-30 and custom character work are out of scope.
+Ascension 11-20 is available by default in the current private-beta multiplayer test candidate, but it is not release-verified. Limited A11 map spot checks and targeted A14 Rootblight English/ZHS hover/starter-notice spot checks have evidence; Rootblight combat-end notices are source-hardened with an overlay path, but full live single-player, save/load, clean combat-end behavior, Blight Sprout notice timing, and co-op verification remain pending. Ascension 21-30 and custom character work are out of scope.
 
 ## Current Entry Points
 

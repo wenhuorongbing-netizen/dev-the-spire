@@ -26,6 +26,7 @@
     "BANNER_SHIELD_FORMATION.description":  "一名敌人成为旗手。只要它存活，其他敌人在每回合开始时获得[blue]5[/blue]点[gold]格挡[/gold]。它死亡时，其他敌人获得[blue]8[/blue]点[gold]格挡[/gold]。",
     "BANNER_SHIELD_FORMATION.title":  "盾阵战旗",
     "BANNER_VANGUARD.description":  "敌人开战时获得[blue]2[/blue]点临时[gold]力量[/gold]；第[blue]3[/blue]回合开始时失去这些力量。",
+    "ROOTBLIGHT_ADDED":  "根蚀已加入。",
     "ROOT_SYSTEM_FULL":  "根系已满。",
     "DEEP_BRANCH_REWARD.description":  "深层支线奖励节点。因为支线路线更危险，所以奖励更高。",
     "DEEP_BRANCH_REWARD.title":  "深层支线奖励",

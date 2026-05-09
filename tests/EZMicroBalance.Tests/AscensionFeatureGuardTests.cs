@@ -88,9 +88,23 @@ public sealed class AscensionFeatureGuardTests
             "player.RunState.CreateCard<Root>(player)",
             "player.RunState.CreateCard<DeepRoot>(player)",
             "player.RunState.CreateCard<RootblightIII>(player)",
-            "private static async Task<bool> AddRootblightCard(Player player, int level, bool hasSplit = false)",
+            "private static async Task<bool> AddRootblightCard(Player player, int level, bool hasSplit = false, bool preferOverlayNotice = false)",
             "MaxRootblightCards = 4",
             "CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, source: null, skipVisuals: true)",
+            "if (!addResult.success)",
+            "ShowRootblightAdded(player, preferOverlayNotice)",
+            "LocalContext.IsMe(player)",
+            "new LocString(\"ascension\", \"ROOTBLIGHT_ADDED\")",
+            "preferOverlayNotice && TryShowRunOverlayNotice(line)",
+            "AddRootblightCard(player, cardToAdd.Level, cardToAdd.HasSplit, preferOverlayNotice: true)",
+            "TryShowTopLevelRunNotice(line) || TryShowGlobalRunNotice(line)",
+            "NGame.Instance",
+            "bubble.MouseFilter = Control.MouseFilterEnum.Ignore",
+            "bubble.ZIndex = 4096",
+            "player.Creature.GetVfxContainer()",
+            "TryShowEventRoomNotice(line)",
+            "NEventRoom.Instance?.VfxContainer",
+            "NThoughtBubbleVfx.Create(line.GetFormattedText(), DialogueSide.Left, RootblightNoticeSeconds)",
             "await CardPileCmd.RemoveFromDeck(card, showPreview: false)");
 
         AssertSourceContains(
@@ -426,15 +440,54 @@ public sealed class AscensionFeatureGuardTests
         Assert.Equal("Rootblight III", englishCards["EZMB_ROOTBLIGHT_III.title"]);
         Assert.Equal("Blight Sprout", englishCards["EZMB_ROOT_BUD.title"]);
 
+        foreach (var key in new[] { "EZMB_ROOT.description", "EZMB_DEEP_ROOT.description", "EZMB_ROOTBLIGHT_III.description", "EZMB_ROOT_BUD.description" })
+        {
+            Assert.DoesNotContain("Play: Exhaust", englishCards[key], StringComparison.Ordinal);
+            Assert.DoesNotContain("\u6253\u51fa\uff1a\u6d88\u8017", simplifiedChineseCards[key], StringComparison.Ordinal);
+        }
+
+        Assert.Contains("[gold]Rootblight II[/gold]", englishCards["EZMB_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Rootblight I[/gold]", englishCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Rootblight III[/gold]", englishCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Rootblight II[/gold]", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Rootblight I[/gold]", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Draw Pile[/gold]", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Rootblight I[/gold]", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+
+        Assert.Contains("[gold]\u6839\u8680 II[/gold]", simplifiedChineseCards["EZMB_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]\u6839\u8680 I[/gold]", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]\u6839\u8680 III[/gold]", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]\u6839\u8680 II[/gold]", simplifiedChineseCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]\u6839\u8680 I[/gold]", simplifiedChineseCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]\u62bd\u724c\u5806[/gold]", simplifiedChineseCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]\u6839\u8680 I[/gold]", simplifiedChineseCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+
         foreach (var key in new[] { "EZMB_ROOT.title", "EZMB_ROOT.description", "EZMB_DEEP_ROOT.title", "EZMB_DEEP_ROOT.description", "EZMB_ROOTBLIGHT_III.title", "EZMB_ROOTBLIGHT_III.description", "EZMB_ROOT_BUD.title", "EZMB_ROOT_BUD.description" })
         {
             Assert.True(simplifiedChineseCards.ContainsKey(key), $"Missing zhs card key: {key}");
         }
 
         Assert.Equal(4, CountOccurrences(rootCards, "[Pool(typeof(CurseCardPool))]"));
+        AssertSourceContains(
+            rootCards,
+            "using Godot;",
+            "using MegaCrit.Sts2.Core.HoverTips;",
+            "internal static class RootPortraitPaths",
+            "ResourceLoader.Exists(candidate) ? candidate : fallback",
+            "rootblight_i",
+            "rootblight_ii",
+            "rootblight_iii",
+            "blight_sprout.png",
+            "protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Root>()];",
+            "1 => [HoverTipFactory.FromCard<DeepRoot>()]",
+            "2 => [HoverTipFactory.FromCard<Root>(), HoverTipFactory.FromCard<RootblightIII>()]",
+            "_ => [HoverTipFactory.FromCard<Root>(), HoverTipFactory.FromCard<DeepRoot>()]");
         Assert.Equal(2, CountOccurrences(rootCards, "public override bool CanBeGeneratedInCombat => false;"));
         Assert.Equal(2, CountOccurrences(rootCards, "public override bool CanBeGeneratedByModifiers => false;"));
         Assert.Contains("CurseCardPool", apiResearch, StringComparison.Ordinal);
+        Assert.Contains("HoverTipFactory.FromCard<Soul>()", apiResearch, StringComparison.Ordinal);
+        Assert.Equal("Rootblight added.", JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json")["ROOTBLIGHT_ADDED"]);
+        Assert.Equal("\u6839\u8680\u5df2\u52a0\u5165\u3002", JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json")["ROOTBLIGHT_ADDED"]);
         Assert.Contains("Runtime registration and random transform/reward exclusion pending", apiResearch, StringComparison.Ordinal);
     }
 
