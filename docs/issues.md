@@ -4,10 +4,10 @@
 
 | ID | Feature | Severity | Status | Blocker |
 | --- | --- | --- | --- | --- |
-| URDA-PROTOTYPE | Ancient expansion | P0 | open | Urda is prototype/debug-only; live activation requires `EZMB_FORCE_ANCIENT=URDA` only and no release gameplay claim.
-| MULTI-LIVE-MATRIX | Ascension 11-20 multiplayer | P1 | open | Two-client Steam validation and co-op save/load matrix still pending.
-| MULTI-ROUTE | Ascension 11 route checks | P1 | open | Natural route traversal and boss reachability evidence pending.
-| ROOTBLOSSOM-PROOF | Ancient/Rootblight manual matrix | P1 | open | Runtime/manual validation matrix still pending.
+| URDA-PROTOTYPE | Ancient expansion | P0 | open | Urda is prototype/debug-only; live activation requires `EZMB_FORCE_ANCIENT=URDA` only and no release gameplay claim. |
+| MULTI-LIVE-MATRIX | Ascension 11-20 multiplayer | P1 | open | Two-client Steam validation and co-op save/load matrix still pending. |
+| MULTI-ROUTE | Ascension 11 route checks | P1 | open | Natural route traversal and boss reachability evidence pending. |
+| ROOTBLIGHT-PROOF | Ancient/Rootblight manual matrix | P1 | open | Runtime/manual validation matrix still pending. |
 
 ## Issue detail links
 

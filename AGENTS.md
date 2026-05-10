@@ -37,7 +37,7 @@ Baseline setup is complete on the local machine:
 - Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, and documentation freshness guards.
 - Current local source is refreshed from Slay the Spire 2 `v0.105.0`; BaseLib runtime/project package are aligned on `v3.1.2`.
 - Controlled `--force-steam off` smoke loading has verified only BaseLib and `EZMicroBalance` initialization to main menu from the final installed artifacts.
-- Normal Steam-client Mod Settings verification for `EZMicroBalance` and live gameplay feature verification are still pending.
+- Normal Steam-client Mod Settings verification for `EZMicroBalance` is verified in the current handoff docs; live gameplay feature verification remains pending.
 
 Revalidate build, publish, and game load before claiming private beta readiness.
 

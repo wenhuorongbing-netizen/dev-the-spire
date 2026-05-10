@@ -96,26 +96,12 @@ A1.05.01 (`ae910e8`) is a broad engineering/review commit, not only a handoff an
 
 ## Commit And Push Handoff
 
-Current git status before the Rootblight resolved-status release-hygiene commit:
+Current git status before this handoff:
 
-- `git log -1 --oneline --decorate`: `fb5ffb7 (HEAD -> main, origin/main, origin/HEAD) refactor`
-- `git status --short --branch`: `## main...origin/main` with modified and untracked source, resource, documentation, and test-guard files for the Rootblight notice/text/art pass and release-handoff hygiene.
+- `git log -1 --oneline --decorate`: `afa89cb (HEAD -> main, origin/main, origin/HEAD) 1.05.06`
+- `git status --short --branch`: `## main...origin/main` with `M AGENTS.md`, `M EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs`, `M PROJECT_STATE.md`, `M docs/issues.md`, `M docs/private-beta-verification-handoff.md`, `M tests/EZMicroBalance.Tests/ReleaseCoverageGuardTests.cs`.
 
-The existing `main` branch is aligned with `origin/main` at the recorded commit before this release-hygiene commit. The current local changes include Rootblight text/preview/notice hardening, generated Rootblight-family art, manifest author resolution, export/package metadata, documentation updates, and guard updates. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
-
-Pre-commit local cleanup status summary:
-
-```text
-## main...origin/main
- M EZMicroBalance.json
- M EZMicroBalanceCode/Ascension/Cards/RootCards.cs
- M EZMicroBalanceCode/Ascension/Rewards/RootDeckService.cs
- M export_presets.cfg
- M tests/EZMicroBalance.Tests/ReleaseCoverageGuardTests.cs
-?? EZMicroBalance/images/card_portraits/rootblight_i.png
-?? EZMicroBalance/images/card_portraits/big/rootblight_i.png
-?? docs/style/card-localization-style-guide.md
-```
+The current local changes are this repository-overhaul completion pass: Urda Done() safety restore, PROJECT_STATE/hand off state refresh, and related issue/index/doc guard cleanup. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
 
 Proposed commit scope after the remaining manual/user gates are resolved:
 

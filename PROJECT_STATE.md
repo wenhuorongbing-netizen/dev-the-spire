@@ -6,7 +6,7 @@
 
 ## Current latest commit
 
-- `fb5ffb7` (`refactor`) on `main`.
+- `afa89cb` (`1.05.06`) on `main`.
 
 ## Game and BaseLib target
 

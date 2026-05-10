@@ -785,6 +785,7 @@ public sealed class ReleaseCoverageGuardTests
             .Select(match => match.Value)
             .Distinct(StringComparer.Ordinal)
             .Count());
+        Assert.Contains("Done();", urdaAncient, StringComparison.Ordinal);
         Assert.DoesNotContain("urda_morvi", urdaBlessings, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("urda_lotha", urdaAncient, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("urda_vakuu", urdaAncient, StringComparison.OrdinalIgnoreCase);

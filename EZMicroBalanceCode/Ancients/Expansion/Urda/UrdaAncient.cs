@@ -82,6 +82,7 @@ internal sealed class EzmbUrda : AncientEventModel, ICustomModel
         }
 
         MainFile.Logger.Info($"[EZMicroBalance] Urda blessing selected: {blessingId}.");
+        Done();
         return Task.CompletedTask;
     }
 }
