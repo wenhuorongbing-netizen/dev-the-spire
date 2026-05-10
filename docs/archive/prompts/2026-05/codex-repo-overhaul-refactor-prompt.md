@@ -4,6 +4,7 @@
 - Archived path: 'docs/archive/prompts/2026-05/codex-repo-overhaul-refactor-prompt.md'
 - Reason: Non-current repository-overhaul planning prompt.
 - Archived date: 2026-05-10
+- Historical archive.
 
 ---
 

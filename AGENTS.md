@@ -61,6 +61,13 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 - Update docs when setup, architecture, behavior, build, publish, or validation status changes.
 - Preserve useful historical research by archiving or moving docs rather than silently discarding them.
 
+### Documentation and workflow rules
+
+- Read `PROJECT_STATE.md` first; then read current docs before archive docs.
+- Fix root causes; do not add normalizers that hide bad upstream state.
+- Large tasks must declare success criteria in docs before implementation.
+- Do not force future agents to read archived prompt dumps; route current work through current docs + active feature docs first.
+
 ## Build Commands
 
 - `dotnet build`

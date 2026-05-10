@@ -371,6 +371,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
     public void CurrentFacingDocsStillFailOnFalseReleaseClaims()
     {
         var currentDocs = ReadCurrentFacingDocs();
+        var projectState = ReadRepoText("PROJECT_STATE.md");
 
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bready\s+for\s+(?:private beta|release)\b", currentDocs);
@@ -387,6 +388,32 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current latest commit", projectState, StringComparison.Ordinal);
+        Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("git diff --check", projectState, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void DocsRootHasNoPromptOrAddendumFilesAndArchivedPromptsHaveHistoricalMarkers()
+    {
+        var docsRoot = RepoPath("docs");
+        var rootMarkdown = Directory
+            .GetFiles(docsRoot, "*.md", SearchOption.TopDirectoryOnly)
+            .Select(path => Path.GetFileName(path))
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Select(name => name!.ToLowerInvariant())
+            .ToArray();
+
+        Assert.DoesNotContain(rootMarkdown, name => name.Contains("prompt") && !name.Contains("codex"));
+        Assert.DoesNotContain(rootMarkdown, name => name.Contains("addendum"));
+
+        var archivedPrompts = Directory.GetFiles(RepoPath("docs", "archive", "prompts"), "*.md", SearchOption.AllDirectories);
+        Assert.NotEmpty(archivedPrompts);
+        foreach (var prompt in archivedPrompts)
+        {
+            Assert.Contains("Historical archive.", ReadRepoText(prompt.Split(Path.DirectorySeparatorChar)));
+        }
     }
 
     [Fact]

@@ -51,7 +51,9 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ancients/Patches/TurnOfferAndRestPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/VakuRewardPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs",
-        "EZMicroBalanceCode/Ancients/UrdaAncient.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingIds.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaFeatureGate.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20RewardScreenPatches.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionAssetPaths.cs",
@@ -658,13 +660,15 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("Ascension source directory reorganization", handoff, StringComparison.Ordinal);
         Assert.Contains("settings_ui` localization", handoff, StringComparison.Ordinal);
         Assert.Contains("manifest BaseLib `v3.1.2` dependency floor", handoff, StringComparison.Ordinal);
-        Assert.Contains("Current git status before the Rootblight resolved-status release-hygiene commit", handoff, StringComparison.Ordinal);
-        Assert.Contains("b82023c (HEAD -> main, origin/main, origin/HEAD) 1.05.02", handoff, StringComparison.Ordinal);
+        Assert.Contains("Current git status before", handoff, StringComparison.Ordinal);
+        Assert.Contains("Current git log -1 --oneline --decorate", handoff, StringComparison.Ordinal);
         Assert.Contains("Pre-commit local cleanup status summary", handoff, StringComparison.Ordinal);
         Assert.Contains("M EZMicroBalanceCode/Ascension/Rewards/RootDeckService.cs", handoff, StringComparison.Ordinal);
         Assert.Contains("?? EZMicroBalance/images/card_portraits/rootblight_i.png", handoff, StringComparison.Ordinal);
         Assert.Contains("?? docs/style/card-localization-style-guide.md", handoff, StringComparison.Ordinal);
         Assert.Contains("M tests/EZMicroBalance.Tests/ReleaseCoverageGuardTests.cs", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("b82023c", handoff, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("f201508", handoff, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("96bfa50", handoff, StringComparison.Ordinal);
         Assert.Contains("Proposed commit scope", handoff, StringComparison.Ordinal);
         Assert.Contains("Do not include", handoff, StringComparison.Ordinal);
@@ -712,17 +716,14 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("skipped in normal developer test runs", testPlan, StringComparison.Ordinal);
         Assert.Contains("Release artifact tests are opt-in", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("EZMB_RUN_RELEASE_ARTIFACT_TESTS=1", handoff, StringComparison.Ordinal);
-        Assert.Contains("Normal `dotnet test` no longer requires ignored publish/package artifacts", issues, StringComparison.Ordinal);
     }
 
     [Fact]
-    public void IssuesFileSeparatesOpenBlockersFromResolvedItemsAndDefinesLiveEvidencePacket()
+    public void IssuesIndexIsCompactAndRoutesUrdaDetailsToFeatureIssueDocs()
     {
         var issues = ReadRepoText("docs", "issues.md");
+        var urdaIssueIndex = ReadRepoText("docs", "issues", "urda.md");
         var logAuditScript = ReadRepoText("scripts", "audit-godot-log.ps1");
-        var open = SliceBetween(issues, "## Open", "## Resolved / Player-Verified");
-        var resolved = issues[(issues.IndexOf("## Resolved / Player-Verified", StringComparison.Ordinal))..];
-        var closureChecklist = SliceBetween(open, "Open issue closure checklist:", "### ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS");
 
         AssertSourceContains(
             logAuditScript,
@@ -744,40 +745,67 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Matches(godotErrorPattern, "[Godot] ERROR Mod manifest bad");
         Assert.DoesNotMatch(godotErrorPattern, "[INFO] [BaseLib] Applied 177 patches successfully, 0 failed");
 
-        Assert.DoesNotContain("Status: resolved", open, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Current Open Blocker Audit - 2026-05-08 RC1", open, StringComparison.Ordinal);
-        Assert.Contains("Minimum evidence packet for closing a live issue", open, StringComparison.Ordinal);
-        Assert.Contains("Open issue closure checklist", open, StringComparison.Ordinal);
-        Assert.Contains("scripts/audit-godot-log.ps1", open, StringComparison.Ordinal);
-        Assert.Contains("Two-client Steam evidence", open, StringComparison.Ordinal);
-        Assert.Contains("Single-player live gameplay evidence", open, StringComparison.Ordinal);
-        Assert.Contains("host and client logs from the same attempt", open, StringComparison.Ordinal);
-        AssertSourceContains(
-            closureChecklist,
-            "ISSUE-2026-05-09-ROOTBLIGHT-CARD-TEXT-STYLE-PREVIEW-DUPLICATE-EXHAUST",
-            "ISSUE-2026-05-09-CARD-TEXT-STYLE-GUIDE-FOR-EZMB",
-            "ISSUE-2026-05-09-ROOTBLIGHT-ADD-TO-DECK-NOTICE-MISSING",
-            "ISSUE-2026-05-09-ROOTBLIGHT-CARD-ART-PENDING",
-            "ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS",
-            "ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED",
-            "ISSUE-2026-05-08-MULTIPLAYER-SAVE-QUIT-NOT-PROPAGATING",
-            "ISSUE-2026-05-08-MULTIPLAYER-RUN-START-BLACK-SCREEN",
-            "ISSUE-2026-05-08-MULTIPLAYER-A20-BLACK-SCREEN-OPTIONAL-BOSS-TYPELOAD",
-            "ISSUE-2026-05-08-ASCENSION-PUBLIC-SELECTION-DEFAULT-ON-FOR-MP-TEST",
-            "ISSUE-2026-05-07-A11-MAP-LENGTH-NOT-PLAYER-VISIBLE",
-            "ISSUE-2026-05-07-A11-MAP-CHANGE-ANIMATION",
-            "ISSUE-2026-05-07-A12-TOOLTIP-RICHTEXT-COLORS",
-            "ISSUE-2026-05-07-A13-FISSION-TOO-RARE-AT-HIGH-ASCENSION",
-            "ISSUE-2026-05-07-ROOTBUD-ROOTBLIGHT-REWORK",
-            "ISSUE-2026-05-07-MULTIPLAYER-A11-A20-SELECTION-BLOCKED",
-            "ISSUE-2026-05-07-A20-MULTIPLAYER-SELECTION-WARNING-MISSING",
-            "ISSUE-2026-05-07-LIVE-COOP-A11-A20-MATRIX-PENDING",
-            "Two-client Steam retest",
-            "Natural route traversal",
-            "Live tooltip screenshots",
-            "user still must resume/cancel");
-        Assert.Contains("ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT", resolved, StringComparison.Ordinal);
-        Assert.Contains("ISSUE-2026-05-07-A11-LONG-ROAD-MAP-MARKER-UNWANTED", resolved, StringComparison.Ordinal);
+        Assert.Contains("## Active blockers", issues, StringComparison.Ordinal);
+        Assert.Contains("## Issue detail links", issues, StringComparison.Ordinal);
+        Assert.Contains("docs/issues/urda.md", issues, StringComparison.Ordinal);
+        Assert.Contains("docs/issues/waiting-tests.md", issues, StringComparison.Ordinal);
+        Assert.Contains("| ID |", issues, StringComparison.Ordinal);
+        Assert.Contains("| URDA-PROTOTYPE |", issues, StringComparison.Ordinal);
+        Assert.DoesNotContain("Status: resolved", issues, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\uFFFD", issues, StringComparison.Ordinal);
+
+        Assert.Contains("Urda is prototype/debug-only", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("default-off", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("EZMB_FORCE_ANCIENT", urdaIssueIndex, StringComparison.Ordinal);
+        Assert.Contains("No Morvi/Lotha/Vakuu active", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void UrdaIsDefaultOffFeatureFlagAndNoUnsafeBlessingContentIsLive()
+    {
+        var urdaGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaFeatureGate.cs");
+        var urdaAncient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.cs");
+        var urdaBlessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingIds.cs");
+
+        Assert.Contains("ForceAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("OrdinalIgnoreCase", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("string.Equals(", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("URDA", urdaGate, StringComparison.Ordinal);
+
+        Assert.Contains("IsUrdaEnabled", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("AllPossibleOptions", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaBlessingIds.Seedbed", urdaAncient, StringComparison.Ordinal);
+        Assert.DoesNotContain("NeowEpoch", urdaAncient, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("urda_seedbed", urdaBlessings, StringComparison.Ordinal);
+        Assert.Contains("urda_humus_pact", urdaBlessings, StringComparison.Ordinal);
+        Assert.Contains("urda_molting", urdaBlessings, StringComparison.Ordinal);
+        Assert.Contains("urda_moss_map", urdaBlessings, StringComparison.Ordinal);
+        Assert.Equal(4, Regex.Matches(urdaAncient, @"UrdaBlessingIds\.[A-Za-z]+")
+            .Cast<Match>()
+            .Select(match => match.Value)
+            .Distinct(StringComparer.Ordinal)
+            .Count());
+        Assert.DoesNotContain("urda_morvi", urdaBlessings, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("urda_lotha", urdaAncient, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("urda_vakuu", urdaAncient, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ProjectStateAndHandoffClaimsTrackCurrentHeadAndNoStaleBaselineRefs()
+    {
+        var projectState = ReadRepoText("PROJECT_STATE.md");
+        var handoff = ReadRepoText("docs", "private-beta-verification-handoff.md");
+        var readme = ReadRepoText("docs", "README.md");
+
+        Assert.Contains("Current latest commit", projectState, StringComparison.Ordinal);
+        Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("git log -1 --oneline --decorate", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("f201508", handoff, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("b82023c", handoff, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Current git status before", handoff, StringComparison.Ordinal);
+        Assert.Contains("git diff --check", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("PROJECT_STATE.md", readme, StringComparison.Ordinal);
     }
 
     [Fact]

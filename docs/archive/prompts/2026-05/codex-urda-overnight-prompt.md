@@ -4,6 +4,7 @@
 - Archived path: 'docs/archive/prompts/2026-05/codex-urda-overnight-prompt.md'
 - Reason: Overnight Urda implementation prompt preserved for historical reference.
 - Archived date: 2026-05-10
+- Historical archive.
 
 ---
 

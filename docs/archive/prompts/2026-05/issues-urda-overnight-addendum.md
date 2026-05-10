@@ -4,6 +4,7 @@
 - Archived path: 'docs/archive/prompts/2026-05/issues-urda-overnight-addendum.md'
 - Reason: Urda issue addendum captured to keep active planning out of the current docs path.
 - Archived date: 2026-05-10
+- Historical archive.
 
 ---
 

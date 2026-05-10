@@ -10,6 +10,7 @@ This is the active C# code for the independent `EZMicroBalance` mod. Legacy scaf
 | `Ancients/` | Ancient reward rebalance implementation. |
 | `Ancients/Common/` | Shared state fields, helpers, and small model/enchantment helpers. |
 | `Ancients/Patches/` | Harmony patches grouped by reward surface or relic family. |
+| `Ancients/Expansion/Urda/` | Urda Ancient expansion prototype, blessing ids, and activation gate. |
 | `Ascension/` | Ascension 11-20 development systems and guarded prototype slices. |
 | `Ascension/Core/` | Gates, initialization, diagnostics, asset paths, and saved fields. |
 | `Ascension/Map/` | Map generation/mutation services and map markers. |

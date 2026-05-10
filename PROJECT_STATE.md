@@ -6,7 +6,7 @@
 
 ## Current latest commit
 
-- `f201508` (`implement urda`) on `main`.
+- `fb5ffb7` (`refactor`) on `main`.
 
 ## Game and BaseLib target
 
@@ -25,21 +25,23 @@
 
 ### Runtime
 
-- Normal single-player loader smoke and controlled `--force-steam off` smoke are known-good with only `BaseLib + EZMicroBalance` when `SavedSpireFields` count is updated to 13.
-- Mod Settings visibility in normal Steam Client is validated by handoff docs.
+- Normal single-player smoke and controlled `--force-steam off` smoke are known-good with only `BaseLib + EZMicroBalance` to main menu from fresh install.
+- Mod Settings visibility is verified in current handoff docs.
 - Full gameplay and manual matrix rows remain pending.
 
 ### Multiplayer
 
-- A11-A20 source selection is default-on for this private-beta candidate.
-- Multiplayer ownership/desync and live co-op traversal matrix are still pending.
+- A11-A20 source selection is default-on for private-beta test scope.
+- Multiplayer ownership/desync and live co-op traversal matrices are still pending.
 - Development warnings are documented for A20 multiplayer downgrade behavior.
 
 ### Urda
 
-- Urda framework/registry is present in code and documentation.
-- Blessing behavior is not fully implemented in gameplay; treat Urda as prototype/vertical-slice state until live runtime and full blessing implementations are completed.
-- Urda remains documented as active-documents-only for controlled follow-up.
+- Urda is a **prototype/debug-only** feature in this private-beta cycle.
+- Urda only enables under `EZMB_FORCE_ANCIENT=URDA`.
+- `IsUrdaEnabled` is guarded only by this environment variable.
+- Active ids are `urda_seedbed`, `urda_humus_pact`, `urda_molting`, `urda_moss_map` (selection state only in this pass).
+- No Morvi/Lotha/Vakuu gameplay is active.
 
 ### Rootblight
 
@@ -51,14 +53,14 @@
 - Ancient reward rebalance v4: v4.3 active.
 - Ascension 11-20: implemented as gated slices; live verification pending.
 - Rootblight polish: source-complete, visual/manual evidence partial.
-- Urda: prototype/vertical-slice scaffolding documented; gameplay completion pending.
+- Urda: prototype/debug-only scaffolded under explicit gating.
 
 ## Current blockers
 
 - Multiplayer co-op verification matrix (save/load, route traversal, ownership checks).
-- Ancient reward manual matrix live pass, save/load-sensitive rows, and disable-mod gameplay.
-- Natural route traversal and boss-reachability confirmation for A11.
-- In-game visual verification for generated Rootblight art.
+- Ancient reward manual matrix and save/load-sensitive rows remain pending.
+- Natural route traversal and boss-reachability confirmation for A11 remain pending.
+- Live visual verification for generated Rootblight art remains pending.
 - Release-note-ready blocker closure after manual verification evidence is complete.
 
 ## Commands that work
@@ -68,8 +70,8 @@
 - `dotnet test`
 - `dotnet test -c Release` (optional)
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`
-- `dotnet diff --check`
+- `git diff --check`
 
 ## Next best action
 
-- Finish required manual matrix rows (Ancient + multiplayer + Rootblight visuals), then refresh package artifacts only if source/resources/docs changes.
+- Complete required manual matrix rows (Ancient + multiplayer + Rootblight visuals), then refresh package artifacts only if source/resources/docs changed.

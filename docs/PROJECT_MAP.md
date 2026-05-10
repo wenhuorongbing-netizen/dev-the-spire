@@ -13,6 +13,7 @@
 | `EZMicroBalance.json` | Current | Active mod manifest, id `EZMicroBalance`. |
 | `EZMicroBalance/` | Current | Active Godot resources, images, and localization. |
 | `EZMicroBalanceCode/` | Current | Active C# source. See `EZMicroBalanceCode/README.md`. |
+| `EZMicroBalanceCode/Ancients/Expansion/Urda/` | Current | Urda Ancient expansion feature implementation and gate control. |
 | `tests/EZMicroBalance.Tests/` | Current | Source, localization, docs, package, and runtime-evidence guards. |
 | `export_presets.cfg` | Current | Selected-resource PCK export for active mod resources only. |
 | `Directory.Build.props.example` | Current | Template for local machine paths. |
@@ -36,6 +37,8 @@ EZMicroBalanceCode/
   Ancients/
     Common/
     Patches/
+    Expansion/
+      Urda/
   Ascension/
     Cards/
     Combat/
