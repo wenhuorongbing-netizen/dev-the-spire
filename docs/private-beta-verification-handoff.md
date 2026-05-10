@@ -1,6 +1,6 @@
 ﻿# EZ Micro Balance Private Beta Verification Handoff
 
-Date: 2026-05-09
+Date: 2026-05-10
 
 **Environment warning (2026-05-08):** The earlier live test log (`godot2026-05-08T05.06.30.log`) was collected in a v0.105.0 environment with 17 mods loaded and BaseLib `v3.1.0`, not the required BaseLib+EZMB-only setup. Current package evidence uses BaseLib `v3.1.2`, a controlled BaseLib+EZMB-only smoke, normal Steam-client Mod Settings evidence, normal-Steam A0/A10/A20 combat smoke, an Act 1 A11 map/save-load spot check, Act 2/3 A11 map-surface observations, and targeted A14 Rootblight English/ZHS hover/starter-notice evidence. Full Ancient reward gameplay, natural A11 traversal, full Rootblight combat behavior, and co-op verification are still pending.
 
@@ -9,20 +9,20 @@ This handoff is for manual verification that cannot be completed by the local au
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `4E22172A2078DBCD67F9DEFFDC447BC35E7619107D19961154B21A6B9A72FDDF`
+- Zip SHA256: `EDA9A59FD8F028287EE5EED558D8CEFFF6FE310AEC07F428B4C53310EBED3EBA`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `B1E3C4A7F419B54F339947403FB48FAFF768F8259DB039CA44F79FEDC2E6BF78`
+- DLL SHA256: `EC0FF02E1AF625B0C3DA63F68D1BDBE37A85BF0E5EDBDF021299472DE4D1489F`
 - Manifest SHA256: `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`
-- PCK SHA256: `6493913D0B1F57A92CF0D1BD24841FCF41E9753C871ED04B4A218531C35BCCDD`
+- PCK SHA256: `24FF522361195C4245CC1009E30302FD30031B65722DAB50FF8B848D14EAE82F`
 
 ## Known Automated Evidence
 
 - `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: last passed before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh, 67 passed, 16 skipped release artifact/runtime evidence tests, 0 failed. Not rerun for the latest DLL/package.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: last passed before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh, 83 passed, 0 skipped, 0 failed. Not rerun for the latest DLL/package.
-- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: last passed before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh. Not rerun for the latest source/resource refresh.
+- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-10 after the latest artifact-parity refresh, 67 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-10 after the latest artifact-parity refresh, 83 passed, 0 skipped, 0 failed.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after the latest source/resource refresh.
 - `dotnet publish EZMicroBalance.sln`: passed.
-- `git diff --check`: last exit 0 before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh. Not rerun for the latest source/resource refresh.
+- `git diff --check`: last exit 0 after the latest source/resource refresh.
 - Current controlled `--force-steam off` smoke physically isolated unrelated mods and temporarily enabled only BaseLib and EZ Micro Balance. Evidence under `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904` loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 13 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored `settings.save`, `settings.save.backup`, and 22 moved mod entries.
 - RC1 normal Steam-client isolated startup log started Slay the Spire 2 through `D:\Steam\steam.exe -applaunch 2868840`, temporarily isolated non-BaseLib/EZMB local mod entries, loaded to main menu with `Loaded 2 mods (2 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialization, `Found 13 SavedSpireFields`, 0 startup `ERROR` lines, and 0 release-blocking signatures. Snapshot: `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log`. The moved mod entries and `settings.save` were restored afterward.
 - RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page. Evidence screenshots: `.tools\runtime-evidence\rc1-modsettings-attempt-20260508-092717-modconfig.png` for BaseLib, `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` for the EZ Micro Balance `寰钩琛 page entry, and `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` for the `鏃犲彲閰嶇疆閫夐」銆俙 page. Log snapshot `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log` has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.

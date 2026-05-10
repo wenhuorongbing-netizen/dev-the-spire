@@ -1,3 +1,12 @@
+﻿# Archived prompt (2026-05)
+
+- Original path: 'docs/codex-urda-overnight-prompt.md'
+- Archived path: 'docs/archive/prompts/2026-05/codex-urda-overnight-prompt.md'
+- Reason: Overnight Urda implementation prompt preserved for historical reference.
+- Archived date: 2026-05-10
+
+---
+
 You are a world-class software engineer and senior Slay the Spire 2 / Godot / .NET mod developer.
 
 You are in:
@@ -40,7 +49,7 @@ Must read first:
 12. EZMicroBalanceCode/Ascension/**
 13. EZMicroBalance/localization/**
 14. tests/EZMicroBalance.Tests/**
-15. source code/src/Core/** — current v0.105.0 source is primary evidence.
+15. source code/src/Core/** �?current v0.105.0 source is primary evidence.
 16. BaseLib / template references if local.
 
 Hard rules:
@@ -131,7 +140,7 @@ Architecture tasks:
 
 Urda blessing requirements:
 
-A. Seedbed / 苗床 — `urda_seedbed`
+A. Seedbed / 苗床 �?`urda_seedbed`
 
 Player text:
 - For the first 4 normal combats in Act 1, after the normal card reward resolves, show 1 extra Seedling card.
@@ -147,7 +156,7 @@ Implementation:
 - Save/load counters.
 - Manual tests for all four triggers and hidden transformation.
 
-B. Humus Pact / 腐殖约定 — `urda_humus_pact`
+B. Humus Pact / 腐殖约定 �?`urda_humus_pact`
 
 Player text:
 - In Act 1, the first 3 times you skip a normal combat card reward, gain 1 Humus and 15 Gold.
@@ -161,7 +170,7 @@ Implementation:
 - Completed state prevents repeat.
 - Save/load counters.
 
-C. Molting / 脱壳 — `urda_molting`
+C. Molting / 脱壳 �?`urda_molting`
 
 Player text:
 - Remove 1 Strike and 1 Defend.
@@ -183,7 +192,7 @@ Implementation:
 - Act 2 cleanup.
 - Save/load.
 
-D. Moss Map / 苔痕地图 — `urda_moss_map`
+D. Moss Map / 苔痕地图 �?`urda_moss_map`
 
 Player text:
 - In Act 1, first time you enter each room type:
@@ -201,7 +210,7 @@ Implementation:
 - Do not double-trigger elite as normal combat.
 - Save/load.
 
-E. After the Rain / 雨后苏生 — `urda_after_rain`
+E. After the Rain / 雨后苏生 �?`urda_after_rain`
 
 Only implement if safe lethal-prevention hook is source-proven.
 
@@ -215,7 +224,7 @@ Implementation:
 - If no safe hook, keep disabled.
 - Save/load triggered and elite bonus count.
 
-F. Trial Branch / 试种枝条 — `urda_trial_branch`
+F. Trial Branch / 试种枝条 �?`urda_trial_branch`
 
 Only implement if persistent per-card marker is source-proven.
 
@@ -229,7 +238,7 @@ Implementation:
 - Save/load.
 - If no safe per-card persistence, keep disabled.
 
-G. Shallow-Root Relic / 浅根遗物 — `urda_shallow_root_relic`
+G. Shallow-Root Relic / 浅根遗物 �?`urda_shallow_root_relic`
 
 Only implement if temporary relic marker and Act 2 choice are source-proven.
 
@@ -248,7 +257,7 @@ Implementation:
 - Save/load.
 - If removing relic or choice UI is unsafe, keep disabled.
 
-H. Rooted Route / 缠根路线 — `urda_rooted_route`
+H. Rooted Route / 缠根路线 �?`urda_rooted_route`
 
 High complexity. Implement only if source-safe overnight; otherwise disabled.
 
@@ -263,7 +272,7 @@ Implementation:
 - Requires map node marking, candidate generation, reachability, reward trigger.
 - Disable if unsafe.
 
-I. Root-Sight / 根下千里眼 — `urda_root_sight`
+I. Root-Sight / 根下千里�?�?`urda_root_sight`
 
 High complexity. Implement only if source-safe overnight; otherwise disabled.
 
@@ -277,7 +286,7 @@ Implementation:
 - Requires map UI action and content locking.
 - Disable if unsafe.
 
-J. Seed Bank / 种子银行 — `urda_seed_bank`
+J. Seed Bank / 种子银行 �?`urda_seed_bank`
 
 Medium/high complexity. Implement if reward action storage and pre-boss hook are safe; otherwise disabled.
 
@@ -380,3 +389,6 @@ Final response format:
 11. Runtime smoke result.
 12. Remaining blockers.
 13. Manual checklist for the user to playtest.
+
+
+

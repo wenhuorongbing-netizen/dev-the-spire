@@ -1,4 +1,5 @@
 using System;
+using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models.Acts;
@@ -9,7 +10,7 @@ using MegaCrit.Sts2.Core.Timeline.Epochs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-internal sealed class EzmbUrda : AncientEventModel
+internal sealed class EzmbUrda : AncientEventModel, ICustomModel
 {
     public const string SeedbedBlessing = "urda_seedbed";
     public const string HumusBlessing = "urda_humus_pact";

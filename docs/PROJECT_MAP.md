@@ -19,6 +19,8 @@
 | `Sts2PathDiscovery.props` | Current | Local path discovery helper used by build props. |
 | `docs/` | Current | Documentation index, current release docs, feature records, and archive. |
 | `scripts/` | Current | Repository helper scripts. |
+| `docs/archive/` | Current | Historical planning, prompt material, and release archaeology. |
+| `docs/issues/` | Current | Source-complete issue follow-up and manual verification queue (`docs/issues/waiting-tests.md`). |
 
 ## Active Mod Surface
 
@@ -82,6 +84,7 @@ Start at `docs/README.md`.
 | Release gates | `docs/release-checklist.md` |
 | Tester handoff | `docs/private-beta-verification-handoff.md` |
 | Open issues | `docs/issues.md` |
+| Manual evidence queue | `docs/issues/waiting-tests.md` |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |
 | Ascension 11-20 | `docs/features/ascension-11-20/README.md` |
 | Architecture decision | `docs/architecture-ez-micro-balance.md` |

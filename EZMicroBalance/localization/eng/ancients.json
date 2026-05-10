@@ -1,6 +1,10 @@
 {
+  "EZMICROBALANCE-EZMB_URDA.title": "Urda, Loamweaver",
+  "EZMICROBALANCE-EZMB_URDA.epithet": "The roots beneath the floor remember your passage.",
   "EZMB_URDA.title": "Urda, Loamweaver",
   "EZMB_URDA.epithet": "The roots beneath the floor remember your passage.",
+  "EZMICROBALANCE-EZMB_URDA.talk.firstVisitEver.0-0.ancient": "",
+  "EZMICROBALANCE-EZMB_URDA.talk.ANY.0-0r.ancient": "",
   "EZMB_URDA.pages.INITIAL.description": "Urda stirs beneath the earth and four blessings pulse from its bark.",
   "EZMB_URDA.pages.INITIAL.options.urda_seedbed.title": "Seedbed",
   "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "A blessing linked to combat card rewards. Some rewards will ask for your seed.",

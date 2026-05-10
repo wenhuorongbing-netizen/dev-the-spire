@@ -1,12 +1,21 @@
-# docs/issues.md addendum — Urda Act 1 Ancient playable implementation
+﻿# Archived prompt (2026-05)
+
+- Original path: 'docs/issues-urda-overnight-addendum.md'
+- Archived path: 'docs/archive/prompts/2026-05/issues-urda-overnight-addendum.md'
+- Reason: Urda issue addendum captured to keep active planning out of the current docs path.
+- Archived date: 2026-05-10
+
+---
+
+# docs/issues.md addendum �?Urda Act 1 Ancient playable implementation
 
 Append this section near the top of `docs/issues.md` under `## Open`, before older RC1 blockers.
 
 ---
 
-## Urda Overnight Implementation Block — 2026-05-09
+## Urda Overnight Implementation Block �?2026-05-09
 
-This block scopes the next overnight build to **one new Act 1 Ancient only**: **息壤织母·乌尔妲 / Urda, Loamweaver**.
+This block scopes the next overnight build to **one new Act 1 Ancient only**: **息壤织母·乌尔�?/ Urda, Loamweaver**.
 
 Do **not** implement Morvi, Lotha, or Vakuu in this pass. Their design notes may be preserved as future planning only, but they must not appear in live offer pools, Mod Settings, localization as active content, package release notes, or manual test pass/fail tables.
 
@@ -44,7 +53,7 @@ Area: Ancient expansion framework / Act 1 Ancient registration / blessing offer 
 
 Player goal:
 
-- Add one new playable Act 1 Ancient: **息壤织母·乌尔妲 / Urda, Loamweaver**.
+- Add one new playable Act 1 Ancient: **息壤织母·乌尔�?/ Urda, Loamweaver**.
 - Urda should appear at Act 1 Ancient selection / Neow-replacement surface, depending on v0.105.0 source architecture.
 - Choosing Urda should offer **4 blessings** from Urda's active blessing pool.
 - Choosing a blessing should grant a blessing relic / persistent blessing state and should survive save/load.
@@ -137,7 +146,7 @@ English / ZHS naming target:
 | `urda_seedbed` | Seedbed | 苗床 |
 | `urda_molting` | Molting | 脱壳 |
 | `urda_after_rain` | After the Rain | 雨后苏生 |
-| `urda_root_sight` | Root-Sight | 根下千里眼 |
+| `urda_root_sight` | Root-Sight | 根下千里�?|
 | `urda_humus_pact` | Humus Pact | 腐殖约定 |
 | `urda_seed_bank` | Seed Bank | 种子银行 |
 | `urda_moss_map` | Moss Map | 苔痕地图 |
@@ -165,8 +174,7 @@ Area: Act 1 card reward extension / extra seedling offer
 
 Design:
 
-前 4 次普通战斗后，正常卡牌奖励结算后，额外展示 1 张苗牌。玩家可以失去 2 HP 拿走它，或跳过它。第一次拿苗牌时自动升级。若 4 次都失去 HP 拿走苗牌，苗床变为 **???的使者**，获得 10 最大生命，不回复当前生命。
-
+�?4 次普通战斗后，正常卡牌奖励结算后，额外展�?1 张苗牌。玩家可以失�?2 HP 拿走它，或跳过它。第一次拿苗牌时自动升级。若 4 次都失去 HP 拿走苗牌，苗床变�?**???的使�?*，获�?10 最大生命，不回复当前生命�?
 Implementation requirements:
 
 - Only active in Act 1.
@@ -210,8 +218,7 @@ Area: card reward skip listener / card removal / upgraded reward
 
 Design:
 
-一幕中，前 3 次跳过普通战斗卡牌奖励时，获得 1 层腐殖并获得 15 金币。获得 3 层腐殖时，移除最多 2 张牌，然后获得 1 次升级卡牌奖励。
-
+一幕中，前 3 次跳过普通战斗卡牌奖励时，获�?1 层腐殖并获得 15 金币。获�?3 层腐殖时，移除最�?2 张牌，然后获�?1 次升级卡牌奖励�?
 Implementation requirements:
 
 - Act 1 only.
@@ -248,8 +255,7 @@ Area: card removal / temporary status card / act transition cleanup
 
 Design:
 
-移除 1 张 Strike 类牌和 1 张 Defend 类牌。将 2 张 **Withered Husk / 枯皮** 加入牌组。进入二幕时，所有枯皮自动移除。
-
+移除 1 �?Strike 类牌�?1 �?Defend 类牌。将 2 �?**Withered Husk / 枯皮** 加入牌组。进入二幕时，所有枯皮自动移除�?
 Withered Husk / 枯皮:
 
 - Status
@@ -295,8 +301,7 @@ Area: Act 1 lethal prevention / elite gold bonus / act transition reward
 
 Design:
 
-一幕中第一次将要死亡时，改为保留 1 HP，获得 15 格挡，抽 1 张牌。然后将 2 张 Wound 加入弃牌堆，并失去 3 最大生命。若一幕结束前没有触发，进入二幕时回复 8 HP，获得 75 金币。触发前，每击败一幕精英获得 20 金币，最多 2 次。
-
+一幕中第一次将要死亡时，改为保�?1 HP，获�?15 格挡，抽 1 张牌。然后将 2 �?Wound 加入弃牌堆，并失�?3 最大生命。若一幕结束前没有触发，进入二幕时回复 8 HP，获�?75 金币。触发前，每击败一幕精英获�?20 金币，最�?2 次�?
 Implementation requirements:
 
 - Act 1 only.
@@ -336,8 +341,7 @@ Area: Act 1 room-type first-entry rewards
 
 Design:
 
-一幕中第一次进入每种房间时获得奖励：
-
+一幕中第一次进入每种房间时获得奖励�?
 - Normal combat: 25 gold
 - Unknown/event: heal 5 HP
 - Shop: random potion
@@ -372,8 +376,7 @@ Area: card selection / per-card persistent marker / combat played tracking
 
 Design:
 
-从 4 张普通或罕见职业牌中选择 1 张，升级后加入牌组。它获得 **Trial Plant / 试种**：接下来 3 场战斗中，若至少 2 场战斗里打出它，它会留下；否则移除它。
-
+�?4 张普通或罕见职业牌中选择 1 张，升级后加入牌组。它获得 **Trial Plant / 试种**：接下来 3 场战斗中，若至少 2 场战斗里打出它，它会留下；否则移除它�?
 Implementation requirements:
 
 - Generate 4 class common/uncommon cards.
@@ -411,8 +414,7 @@ Area: common relic choice / elite kill / act transition choice
 
 Design:
 
-从 2 个普通遗物中选择 1 个，获得它和 75 金币。若你在一幕击败精英，该遗物永久保留，并获得 35 金币。否则进入二幕时选择：失去它获得 75 金币，或失去 6 最大生命保留它。
-
+�?2 个普通遗物中选择 1 个，获得它和 75 金币。若你在一幕击败精英，该遗物永久保留，并获�?35 金币。否则进入二幕时选择：失去它获得 75 金币，或失去 6 最大生命保留它�?
 Implementation requirements:
 
 - Generate 2 common relic choices.
@@ -447,8 +449,7 @@ Area: map node marker / route commitment / multi-reward trigger
 
 Design:
 
-选择一个被标记的房间作为 **Root Mark / 根标**。抵达根标时，获得 3 次卡牌奖励和 1 瓶随机药水；第一次拿的牌自动升级。若根标路线火堆过少，额外获得一次临时营火。若路线选择导致根标不可达，失去 8 HP，获得 25 Gold，移除根标。
-
+选择一个被标记的房间作�?**Root Mark / 根标**。抵达根标时，获�?3 次卡牌奖励和 1 瓶随机药水；第一次拿的牌自动升级。若根标路线火堆过少，额外获得一次临时营火。若路线选择导致根标不可达，失去 8 HP，获�?25 Gold，移除根标�?
 Implementation requirements:
 
 - Source-proven map node marking.
@@ -489,8 +490,7 @@ Area: map node preview / room content lock / root-eye resource
 
 Design:
 
-获得 5 **Root Eyes / 根眼**。在地图上消耗 1 根眼，预知一个可见且可抵达的房间。第一次使用根眼时，获得 1 瓶随机药水。
-
+获得 5 **Root Eyes / 根眼**。在地图上消�?1 根眼，预知一个可见且可抵达的房间。第一次使用根眼时，获�?1 瓶随机药水�?
 Preview results:
 
 - Normal combat: concrete enemy group.
@@ -527,8 +527,7 @@ Area: card reward storage / Act 1 boss pre-settlement
 
 Design:
 
-一幕中，每次看到普通战斗卡牌奖励时，可以将其中 1 张未选择的牌存为种子。最多存 3 张。一幕 Boss 前，从种子中选择最多 2 张：第一张升级后加入；第二张加入并获得 Trial Plant / 试种。未选择种子消失。
-
+一幕中，每次看到普通战斗卡牌奖励时，可以将其中 1 张未选择的牌存为种子。最多存 3 张。一�?Boss 前，从种子中选择最�?2 张：第一张升级后加入；第二张加入并获�?Trial Plant / 试种。未选择种子消失�?
 Implementation requirements:
 
 - Add "store as seed" action on normal combat card rewards.
@@ -644,3 +643,6 @@ Add a dedicated Urda manual checklist covering:
 - Release notes clearly say Urda is new and which blessings are active.
 
 Do not claim release ready until Urda manual rows are executed or explicitly accepted as pending for private beta.
+
+
+

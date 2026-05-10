@@ -389,6 +389,45 @@ public sealed class ReleaseCoverageGuardTests
     }
 
     [Fact]
+    public void DocumentationOverhaulKeepsRepositoryRootDocsCanonicalAndArchiveMetadataVisible()
+    {
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docsReadme = ReadRepoText("docs", "README.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var overduePrompt = ReadRepoText("docs", "archive", "prompts", "2026-05", "codex-repo-overhaul-refactor-prompt.md");
+        var urdaOvernightPrompt = ReadRepoText("docs", "archive", "prompts", "2026-05", "codex-urda-overnight-prompt.md");
+        var urdaAddendum = ReadRepoText("docs", "archive", "prompts", "2026-05", "issues-urda-overnight-addendum.md");
+
+        Assert.Contains("`../PROJECT_STATE.md`", docsReadme, StringComparison.Ordinal);
+        Assert.Contains("`docs/archive/`", projectMap, StringComparison.Ordinal);
+        Assert.Contains("docs/issues/waiting-tests.md", docInventory, StringComparison.Ordinal);
+        Assert.Contains("# Archived prompt (2026-05)", overduePrompt, StringComparison.Ordinal);
+        Assert.Contains("# Archived prompt (2026-05)", urdaOvernightPrompt, StringComparison.Ordinal);
+        Assert.Contains("# Archived prompt (2026-05)", urdaAddendum, StringComparison.Ordinal);
+
+        var rootDocs = Directory.GetFiles(RepoPath("docs"), "*.md", SearchOption.TopDirectoryOnly)
+            .Select(path => Path.GetFileName(path))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var movedPrompt in new[]
+        {
+            "codex-repo-overhaul-refactor-prompt.md",
+            "codex-urda-overnight-prompt.md",
+            "issues-urda-overnight-addendum.md",
+            "issues-waiting-tests.md"
+        })
+        {
+            Assert.DoesNotContain(movedPrompt, rootDocs);
+        }
+
+        Assert.True(Directory.Exists(RepoPath("docs", "issues")), "docs/issues directory should exist.");
+        Assert.True(Directory.Exists(RepoPath("docs", "archive", "prompts", "2026-05")), "Archived prompts directory should exist.");
+        Assert.True(File.Exists(RepoPath("docs", "issues", "waiting-tests.md")), "Moved evidence queue should exist.");
+        Assert.True(File.Exists(RepoPath("docs", "archive", "prompts", "2026-05", "codex-urda-overnight-prompt.md")), "Archived Urda prompt should exist.");
+        Assert.True(File.Exists(RepoPath("docs", "archive", "prompts", "2026-05", "issues-urda-overnight-addendum.md")), "Archived Urda addendum should exist.");
+    }
+
+    [Fact]
     public void GatedAscensionSlicesHaveSourceDocsAndManualCoverage()
     {
         var allAscensionSource = ReadSourceTree("EZMicroBalanceCode", "Ascension");

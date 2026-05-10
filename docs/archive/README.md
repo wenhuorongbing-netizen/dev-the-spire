@@ -10,6 +10,7 @@ Archived documents are useful for context, but they are not current implementati
 | --- | --- |
 | `legacy-planning/` | Pre-`EZMicroBalance` planning, old Ancient reward research, old Ascension 11-30 roadmap, and future custom character concepts. |
 | `superseded/` | Former current-facing docs that have been replaced by clearer indexes, checklists, or feature records. |
+| `prompts/2026-05/` | Nightly/overhaul prompt files and one-off issue addenda archived during the 2026-05 doc-operations pass. |
 | `issues-archive.md` | Closed issue records and release-cycle traceability for previously active blocker items. |
 
 ## Rules

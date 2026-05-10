@@ -1,6 +1,6 @@
 ﻿# EZ Micro Balance Completion Audit
 
-Last updated: 2026-05-09
+Last updated: 2026-05-10
 
 ## Objective
 
@@ -53,7 +53,7 @@ Concrete deliverables for the current goal:
 | Tests pass | `dotnet build`, `dotnet publish`, normal `dotnet test`, and opt-in artifact test runs pass for the current package state; latest run executed 2026-05-10. | Pass |
 | Publish succeeds | Latest `dotnet publish EZMicroBalance.sln` passed, built `EZMicroBalance` in Release, copied DLL/manifest, and skipped publishing tests. The installed PCK is current from the selected-resource export. | Pass |
 | Published artifacts exist | Installed `mods/EZMicroBalance` contains `.json`, `.dll`, and `.pck`; automated tests check PCK contents, installed manifest parity, and DLL parity. | Pass |
-| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `4E22172A2078DBCD67F9DEFFDC447BC35E7619107D19961154B21A6B9A72FDDF` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
+| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `EDA9A59FD8F028287EE5EED558D8CEFFF6FE310AEC07F428B4C53310EBED3EBA` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
 | Harmony patch targets resolve | Automated test `HarmonyPatchesResolveAgainstInstalledGameApi` calls `Harmony.PatchAll` on installed DLL against local game/BaseLib assemblies. | Pass |
 | Game loads the mod | Current bounded `--force-steam off` smoke and isolated normal Steam-client startup both loaded only BaseLib and EZ Micro Balance, reported `Found 13 SavedSpireFields`, finished EZ Micro Balance initialization, and reached main menu. Normal Steam A0/A10/A20 combat smoke, the Act 1 A11 map/save-load spot check, the Act 2/3 A11 map-surface observation, and targeted A14 Rootblight English/ZHS hover/starter-notice checks also loaded into gameplay/UI screens. | Pass for loader startup and limited live smoke; full gameplay pending |
 | BaseLib loads | Controlled smoke, normal Steam startup log, and Mod Settings UI screenshot record BaseLib initialization and a visible enabled BaseLib config page. | Pass |
@@ -87,8 +87,8 @@ Concrete deliverables for the current goal:
 - Rootblight-family generated portrait art: small portraits are 250x190 and big portraits are 1000x760 for Rootblight I/II/III and Blight Sprout. SHA256 values are `37E06A6BCEB585478F681D41A4AC14B0988C6067BE7DC983A7867C8D1A824536`, `6A307787999AF2D154BB320A4D8DCA4079D9060602B73B1AA6BC6E1A22F59D58`, `0C1784FD117A48D47D448972AB3F95BA92B4528A296FC2AE557B58B5AA5F4E4E`, `9BCEE9AD668F2D5DDA6842CBB3D189E8CA42045D51C38C134EECCF9DFF397DE3`, `52AE2A50E1EB6A64FFA243EA061A2B2B5A8EDE7A076C3503FE15F8460F70C97A`, `92EA23513D739DFA9ECB2B95949002346AD4E8D43AB323EF9E7AA949DEB5EC7D`, `4A99EAD43F719D3BB514F6DEF31B72C131D67BE57E2A7B5184B6D788161AAF6E`, and `D2ADB90836972A6903752BC26264A440947797E5CACD4642059B9A98C84DA808`.
 - `git diff --check`: exit code 0 before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh; not rerun after the latest source/resource refresh.
 - Active release art hash: `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75`.
-- Installed/staging/versioned/extracted zip DLL hash: `B1E3C4A7F419B54F339947403FB48FAFF768F8259DB039CA44F79FEDC2E6BF78`. Current installed/staging/versioned/extracted PCK hash is `6493913D0B1F57A92CF0D1BD24841FCF41E9753C871ED04B4A218531C35BCCDD`; manifest hash is `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`.
-- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `4E22172A2078DBCD67F9DEFFDC447BC35E7619107D19961154B21A6B9A72FDDF`.
+- Installed/staging/versioned/extracted zip DLL hash: `EC0FF02E1AF625B0C3DA63F68D1BDBE37A85BF0E5EDBDF021299472DE4D1489F`. Current installed/staging/versioned/extracted PCK hash is `24FF522361195C4245CC1009E30302FD30031B65722DAB50FF8B848D14EAE82F`; manifest hash is `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`.
+- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `EDA9A59FD8F028287EE5EED558D8CEFFF6FE310AEC07F428B4C53310EBED3EBA`.
 
 ## Remaining Gates
 

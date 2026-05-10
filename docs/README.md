@@ -6,10 +6,13 @@ This folder is the project memory for `EZ Micro Balance`. Use this page as the f
 
 | Need | Document | Purpose |
 | --- | --- | --- |
+| Current state snapshot | `../PROJECT_STATE.md` | Short current-state memory: status, blockers, and next action. |
 | Current project overview | `../README.md` | Short human-facing state, build commands, and release policy. |
 | Agent rules | `../AGENTS.md` | Hard rules for manifest ids, source evidence, release claims, and validation. |
 | Directory map | `PROJECT_MAP.md` | Current repo layout, active/legacy boundaries, ignored local scratch folders. |
 | Current machine state | `dev-environment.md` | Local versions, paths, latest build/publish/test/smoke evidence. |
+| Documentation inventory | `doc-inventory.md` | Current vs archive doc map, category list, and clutter decisions. |
+| Manual evidence queue | `issues/waiting-tests.md` | Source-complete issue follow-ups that need manual verification. |
 | Release gates | `release-checklist.md` | Private beta checklist and explicit pending gates. |
 | Tester handoff | `private-beta-verification-handoff.md` | Concise package, validation, and manual-test handoff. |
 | Open problems | `issues.md` | Runtime/player-reported issues and unresolved validation work. |
