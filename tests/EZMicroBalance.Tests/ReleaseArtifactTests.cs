@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -183,8 +184,29 @@ public sealed class ReleaseArtifactTests
         Assert.True(File.Exists(pckPath), $"Missing published PCK: {pckPath}");
 
         var entries = ReadPckDirectory(pckPath);
-        Assert.Equal(47, entries.Count);
-        Assert.DoesNotContain(entries, entry =>
+        var activeEntries = entries
+            .Where(entry => !entry.StartsWith(".godot/", StringComparison.Ordinal) &&
+                            !entry.Equals("project.binary", StringComparison.Ordinal) &&
+                            !entry.Equals(".import", StringComparison.Ordinal))
+            .ToArray();
+
+        var exportedEntries = ParseExportFiles(ReadRepoText("export_presets.cfg"))
+            .Select(path => path["res://".Length..])
+            .Where(entry => entry.StartsWith("EZMicroBalance/", StringComparison.Ordinal))
+            .Concat(
+                Directory.GetFiles(RepoPath("EZMicroBalance"), "*", SearchOption.AllDirectories)
+                    .Select(path => ToRepoRelativePath(path))
+                    .Where(IsActiveExportResource))
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(entry => entry, StringComparer.Ordinal)
+            .ToArray();
+        var expectedPckEntries = GetExportedPckEntries(exportedEntries, activeEntries)
+            .Concat(new[] { "EZMicroBalance.json" })
+            .OrderBy(entry => entry, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(expectedPckEntries, activeEntries.OrderBy(entry => entry, StringComparer.Ordinal));
+        Assert.DoesNotContain(activeEntries, entry =>
             entry.StartsWith("EzDailyContent", StringComparison.Ordinal) ||
             entry.StartsWith("EZMicroBalanceCode", StringComparison.Ordinal) ||
             entry.StartsWith("docs", StringComparison.Ordinal) ||
@@ -528,6 +550,67 @@ public sealed class ReleaseArtifactTests
         return entries;
     }
 
+    private static string[] GetExportedPckEntries(string[] exportedResources, IReadOnlyCollection<string> pckEntries)
+    {
+        var expected = new List<string>();
+
+        foreach (var entry in exportedResources
+                     .Where(resource => resource.EndsWith(".png", StringComparison.Ordinal) ||
+                                        resource.EndsWith(".json", StringComparison.Ordinal) ||
+                                        resource.EndsWith(".txt", StringComparison.Ordinal))
+                     .Where(entry => IsActiveExportResource(entry)))
+        {
+            if (entry.EndsWith(".png", StringComparison.Ordinal))
+            {
+                if (pckEntries.Contains(entry))
+                {
+                    expected.Add(entry);
+                }
+
+                var imported = $"{entry}.import";
+                if (pckEntries.Contains(imported))
+                {
+                    expected.Add(imported);
+                }
+
+                continue;
+            }
+
+            if (pckEntries.Contains(entry))
+            {
+                expected.Add(entry);
+            }
+        }
+
+        return expected
+            .OrderBy(entry => entry, StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    private static bool IsActiveExportResource(string relativePath)
+    {
+        return IsActiveReleaseResource(relativePath) &&
+            (Path.GetExtension(relativePath) is ".json" or ".png" or ".txt");
+    }
+
+    private static bool IsActiveReleaseResource(string relativePath)
+    {
+        return relativePath.StartsWith("EZMicroBalance/", StringComparison.Ordinal) &&
+            !relativePath.Equals("EZMicroBalance/mod_real.png", StringComparison.Ordinal) &&
+            !relativePath.Equals("EZMicroBalance/mod_real.png.import", StringComparison.Ordinal);
+    }
+
+    private static string[] ParseExportFiles(string exportPreset)
+    {
+        var match = Regex.Match(exportPreset, @"export_files=PackedStringArray\((?<files>[^)]*)\)");
+        Assert.True(match.Success, "Could not find export_files in export_presets.cfg.");
+
+        return Regex.Matches(match.Groups["files"].Value, @"""(?<path>[^""]+)""")
+            .Cast<Match>()
+            .Select(match => match.Groups["path"].Value)
+            .ToArray();
+    }
+
     private static Exception? Unwrap(Exception? exception)
     {
         return exception is TargetInvocationException targetInvocationException
@@ -586,6 +669,11 @@ public sealed class ReleaseArtifactTests
     private static string RepoPath(params string[] parts)
     {
         return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
+    }
+
+    private static string ToRepoRelativePath(string path)
+    {
+        return Path.GetRelativePath(FindRepoRoot(), path).Replace('\\', '/');
     }
 
     private static string GamePath(params string[] parts)

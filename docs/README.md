@@ -13,6 +13,7 @@ This folder is the project memory for `EZ Micro Balance`. Use this page as the f
 | Release gates | `release-checklist.md` | Private beta checklist and explicit pending gates. |
 | Tester handoff | `private-beta-verification-handoff.md` | Concise package, validation, and manual-test handoff. |
 | Open problems | `issues.md` | Runtime/player-reported issues and unresolved validation work. |
+| Mod introduction | `介绍.md` | Detailed feature and change summary for downstream web documentation. |
 
 ## Feature Records
 

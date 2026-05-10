@@ -1,693 +1,12 @@
-# EZ Micro Balance Issues
+﻿# Issues Waiting for Live/Manual Verification
 
-This file tracks player-reported and runtime-observed issues. Do not mark an item release-ready unless source validation and live verification both support it.
+These issues are source-complete or source-patched and awaiting live/manual test evidence. They were moved out of `docs/issues.md` so implementation tracking stays focused.
 
-## Open
+This file is the live-verification queue for all source-complete items. Keep this as the source of truth for manual execution order and do not duplicate these entries back into `docs/issues.md` unless they become source blockers again.
 
-
-## Urda Overnight Implementation Block �?2026-05-09
-
-This block scopes the next overnight build to **one new Act 1 Ancient only**: **息壤织母·乌尔�?/ Urda, Loamweaver**.
-
-Do **not** implement Morvi, Lotha, or Vakuu in this pass. Their design notes may be preserved as future planning only, but they must not appear in live offer pools, Mod Settings, localization as active content, package release notes, or manual test pass/fail tables.
-
-The goal is a directly playable Urda vertical slice. The build may ship with only safely implemented Urda blessings in the active Urda pool. Any blessing that cannot be implemented safely overnight must stay disabled and must not appear in-game.
-
-### Common closure evidence for all Urda issues
-
-Each Urda issue can only be closed when all relevant evidence exists:
-
-- Current `source code/src/Core/**` v0.105.0 source inspected first.
-- API evidence recorded in `docs/features/ancient-expansion-urda/api-research.md`.
-- Implementation notes recorded in `docs/features/ancient-expansion-urda/work-log.md`.
-- English and Simplified Chinese localization added.
-- Manual rows added to `docs/features/ancient-expansion-urda/manual-test-checklist.md`.
-- Source guard tests added.
-- `dotnet build EZMicroBalance.sln`: 0 warnings / 0 errors.
-- `dotnet test EZMicroBalance.sln`: 0 failed.
-- `dotnet test EZMicroBalance.sln --no-build`: 0 failed.
-- `dotnet publish EZMicroBalance.sln`: passed if code/resources/localization changed.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: 0 failed after package refresh.
-- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
-- `git diff --check`: passed, only known CRLF normalization warnings allowed.
-- Clean normal Steam-client log with BaseLib + EZMicroBalance only, or explicit pending live blocker.
-- No release-ready claim unless live gates actually pass.
-
----
-
-### ISSUE-2026-05-09-URDA-ACT1-ANCIENT-FRAMEWORK
-
-Priority: P0
-
-Status: open; overnight implementation requested
-
-Area: Ancient expansion framework / Act 1 Ancient registration / blessing offer pool
-
-Player goal:
-
-- Add one new playable Act 1 Ancient: **息壤织母·乌尔�?/ Urda, Loamweaver**.
-- Urda should appear at Act 1 Ancient selection / Neow-replacement surface, depending on v0.105.0 source architecture.
-- Choosing Urda should offer **4 blessings** from Urda's active blessing pool.
-- Choosing a blessing should grant a blessing relic / persistent blessing state and should survive save/load.
-- Morvi, Lotha, and Vakuu must not be implemented or exposed in this pass.
-
-Required source research:
-
-Search current local source:
-
-- `Ancient`
-- `AncientModel`
-- `AncientEvent`
-- `AncientReward`
-- `AncientCard`
-- `Neow`
-- `Blessing`
-- `RelicReward`
-- `StartRun`
-- `ActEnter`
-- `CardReward`
-- `CardRewardSkipped`
-- `RewardScreen`
-- `RunState`
-- `SavedSpireField`
-- `ModelDb`
-- `BaseLib`
-- existing EZMB `Ancients/**` patches
-
-Implementation requirements:
-
-- Create `docs/features/ancient-expansion-urda/` with:
-  - `README.md`
-  - `source-design.md`
-  - `implementation-plan.md`
-  - `api-research.md`
-  - `manual-test-checklist.md`
-  - `work-log.md`
-- Create an Urda registry / pool system using source-proven API.
-- Use stable IDs:
-  - Ancient id: `EZMB_URDA`
-  - English name: `Urda, Loamweaver`
-  - Chinese name: `息壤织母·乌尔妲`
-- Offer count: 4.
-- Only implemented and enabled Urda blessings can appear.
-- Disabled/unsafe blessings must stay out of the live pool.
-- Save/load must preserve selected Urda blessing and cross-combat counters.
-- Add debug/test helper if source-proven and safe, e.g. force Urda / force blessing by env var:
-  - `EZMB_FORCE_ANCIENT=URDA`
-  - `EZMB_FORCE_URDA_BLESSING=<id>`
-  These must be documented and default-off.
-
-Manual closure:
-
-- New run can select Urda.
-- Urda displays 4 implemented blessings.
-- Selecting a blessing grants correct effect.
-- Save/load after selection preserves selected blessing.
-- No Morvi/Lotha/Vakuu active content appears.
-
----
-
-### ISSUE-2026-05-09-URDA-BLESSING-DATA-AND-STYLE
-
-Priority: P0
-
-Status: open
-
-Area: Urda blessing ids / localization / style / docs
-
-Required Urda blessing IDs:
-
-- `urda_trial_branch`
-- `urda_shallow_root_relic`
-- `urda_rooted_route`
-- `urda_seedbed`
-- `urda_molting`
-- `urda_after_rain`
-- `urda_root_sight`
-- `urda_humus_pact`
-- `urda_seed_bank`
-- `urda_moss_map`
-
-English / ZHS naming target:
-
-| ID | EN | ZHS |
-| --- | --- | --- |
-| `urda_trial_branch` | Trial Branch | 试种枝条 |
-| `urda_shallow_root_relic` | Shallow-Root Relic | 浅根遗物 |
-| `urda_rooted_route` | Rooted Route | 缠根路线 |
-| `urda_seedbed` | Seedbed | 苗床 |
-| `urda_molting` | Molting | 脱壳 |
-| `urda_after_rain` | After the Rain | 雨后苏生 |
-| `urda_root_sight` | Root-Sight | 根下千里�?|
-| `urda_humus_pact` | Humus Pact | 腐殖约定 |
-| `urda_seed_bank` | Seed Bank | 种子银行 |
-| `urda_moss_map` | Moss Map | 苔痕地图 |
-
-Style requirements:
-
-- Follow `docs/style/card-localization-style-guide.md`.
-- No duplicate visible keywords in body text.
-- Use `[gold]` for custom blessing/resource/card names where official style supports it.
-- Use `[blue]` for numbers where existing EZMB style does.
-- English and ZHS behavior must match exactly.
-- No mojibake.
-- No raw tags in live UI.
-- Avoid saying an unimplemented blessing is available.
-
----
-
-### ISSUE-2026-05-09-URDA-SEEDBED
-
-Priority: P0
-
-Status: open; recommended minimum playable blessing
-
-Area: Act 1 card reward extension / extra seedling offer
-
-Design:
-
-�?4 次普通战斗后，正常卡牌奖励结算后，额外展�?1 张苗牌。玩家可以失�?2 HP 拿走它，或跳过它。第一次拿苗牌时自动升级。若 4 次都失去 HP 拿走苗牌，苗床变�?**???的使�?*，获�?10 最大生命，不回复当前生命�?
-
-Implementation requirements:
-
-- Only active in Act 1.
-- Only after normal combat card reward flow.
-- Must not replace normal reward.
-- Track:
-  - `seedbedTriggers`
-  - `seedbedAccepted`
-  - `hasUpgradedFirstSeedling`
-  - `transformed`
-- Generate one normal/appropriate class card as Seedling.
-- Choice:
-  - accept: lose 2 HP, add card; first accepted card is upgraded.
-  - skip: no HP loss, no card.
-- If `triggers == 4 && accepted == 4 && !transformed`:
-  - set transformed true
-  - blessing display name becomes `???'s Herald` / `???的使者`
-  - gain +10 Max HP, no heal
-- Save/load preserves counters.
-- Do not softlock card reward screen.
-- Must handle reroll/reward regeneration safely.
-
-Manual tests:
-
-- Four normal fights trigger Seedbed exactly four times.
-- First accepted Seedling upgrades.
-- Accepting all four grants +10 Max HP and renames blessing.
-- Skipping any trigger prevents hidden reward.
-- Save/load after trigger 2 preserves counters.
-- No HP payment if player skips.
-
----
-
-### ISSUE-2026-05-09-URDA-HUMUS-PACT
-
-Priority: P0
-
-Status: open; recommended minimum playable blessing
-
-Area: card reward skip listener / card removal / upgraded reward
-
-Design:
-
-一幕中，前 3 次跳过普通战斗卡牌奖励时，获�?1 层腐殖并获得 15 金币。获�?3 层腐殖时，移除最�?2 张牌，然后获�?1 次升级卡牌奖励�?
-
-Implementation requirements:
-
-- Act 1 only.
-- Listen to normal combat card reward skipped.
-- If `humus < 3`:
-  - humus +1
-  - gain 15 gold
-- When humus reaches 3:
-  - open remove-card flow allowing 0/1/2 removals
-  - then offer 3 class cards, all upgraded before add
-  - player may pick one or skip
-  - mark completed
-- Completed blessing must not trigger again.
-- Save/load preserves humus and completed.
-- Must not trigger on non-combat rewards unless source proves intended.
-
-Manual tests:
-
-- Skip reward 1/2 grants 15 gold each and humus count increments.
-- Third skip opens remove flow.
-- Removing 0, 1, or 2 cards all works.
-- Upgraded card reward can be picked or skipped.
-- Later skips do nothing.
-
----
-
-### ISSUE-2026-05-09-URDA-MOLTING-WITHERED-HUSK
-
-Priority: P0/P1
-
-Status: open; recommended minimum playable blessing
-
-Area: card removal / temporary status card / act transition cleanup
-
-Design:
-
-移除 1 �?Strike 类牌�?1 �?Defend 类牌。将 2 �?**Withered Husk / 枯皮** 加入牌组。进入二幕时，所有枯皮自动移除�?
-
-Withered Husk / 枯皮:
-
-- Status
-- Unplayable
-- Ethereal / 虚无
-- When exhausted, gain 3 Block.
-- Act 1 only: cannot remove, transform, or upgrade if source APIs allow prevention safely.
-- Removed automatically on Act 2 enter.
-
-Implementation requirements:
-
-- Create custom status card:
-  - ID: `EZMB_WITHERED_HUSK`
-  - EN: `Withered Husk`
-  - ZHS: `枯皮`
-- On blessing selection:
-  - choose/remove one Strike-type and one Defend-type card.
-  - add two Withered Husk.
-- If deck lacks Strike/Defend, fallback must not softlock:
-  - allow choosing from available starter cards; or
-  - disable blessing if selection cannot be satisfied.
-- Hook OnExhaust to gain 3 Block.
-- Remove all Withered Husk on entering Act 2.
-- Save/load preserves cards and cleanup.
-
-Manual tests:
-
-- Blessing removes one Strike and one Defend.
-- Adds two Withered Husk.
-- Withered Husk exhausts at end of turn and grants 3 Block.
-- Act 2 start removes all Withered Husk.
-- Save/load before Act 2 preserves them; save/load after Act 2 does not restore them.
-
----
-
-### ISSUE-2026-05-09-URDA-AFTER-RAIN
-
-Priority: P1
-
-Status: open; safe if source-proven death prevention exists
-
-Area: Act 1 lethal prevention / elite gold bonus / act transition reward
-
-Design:
-
-一幕中第一次将要死亡时，改为保�?1 HP，获�?15 格挡，抽 1 张牌。然后将 2 �?Wound 加入弃牌堆，并失�?3 最大生命。若一幕结束前没有触发，进入二幕时回复 8 HP，获�?75 金币。触发前，每击败一幕精英获�?20 金币，最�?2 次�?
-
-Implementation requirements:
-
-- Act 1 only.
-- Source-proven lethal damage hook required. Do not implement by guessing direct HP mutation.
-- If no safe lethal hook exists overnight, keep blessing disabled and mark blocker.
-- Before triggered:
-  - first Act 1 elite kill grants 20 gold, max 2.
-- On first lethal in Act 1:
-  - prevent death
-  - set/leave HP at 1 via source-proven command/API
-  - gain 15 Block
-  - draw 1
-  - add 2 Wound to discard
-  - lose 3 Max HP
-  - mark triggered
-- On Act 2 enter if not triggered:
-  - heal 8
-  - gain 75 gold
-- Save/load preserves triggered and elite gold count.
-
-Manual tests:
-
-- Lethal damage leaves player at 1 HP and applies block/draw/wounds/max HP loss.
-- No second save from lethal.
-- Elite gold bonus only before trigger and max twice.
-- If untriggered by Act 2, heal/gold reward occurs once.
-
----
-
-### ISSUE-2026-05-09-URDA-MOSS-MAP
-
-Priority: P1
-
-Status: open; recommended minimum playable blessing if room-type detection is source-safe
-
-Area: Act 1 room-type first-entry rewards
-
-Design:
-
-一幕中第一次进入每种房间时获得奖励�?
-
-- Normal combat: 25 gold
-- Unknown/event: heal 5 HP
-- Shop: random potion
-- Elite: upgrade 1 random card
-- Rest site: +3 Max HP
-
-Implementation requirements:
-
-- Act 1 only.
-- Track room types already rewarded.
-- Trigger once per type.
-- Use source-proven room type IDs; do not rely on display text.
-- Normal combat should not double-trigger on elite/boss.
-- Save/load preserves rewarded types.
-
-Manual tests:
-
-- Each room type rewards once.
-- Re-entering same type does not reward again.
-- Save/load after two types preserves state.
-- Rewards use safe command APIs.
-
----
-
-### ISSUE-2026-05-09-URDA-TRIAL-BRANCH
-
-Priority: P1/P2
-
-Status: open; implement if persistent per-card marker is safe
-
-Area: card selection / per-card persistent marker / combat played tracking
-
-Design:
-
-�?4 张普通或罕见职业牌中选择 1 张，升级后加入牌组。它获得 **Trial Plant / 试种**：接下来 3 场战斗中，若至少 2 场战斗里打出它，它会留下；否则移除它�?
-
-Implementation requirements:
-
-- Generate 4 class common/uncommon cards.
-- Player picks one.
-- Upgrade chosen card and add to deck.
-- Mark card instance with `TrialPlant`.
-- Track:
-  - remainingCombats = 3
-  - combatsPlayed = 0
-- At combat end:
-  - if marked card was played this combat, combatsPlayed +1
-  - remainingCombats -1
-- When remaining == 0:
-  - if combatsPlayed >= 2: remove marker, card stays
-  - else remove card from deck
-- Save/load preserves marker and counters.
-- If per-card persistence cannot be proven safe, disable blessing.
-
-Manual tests:
-
-- Playing card in 2 of next 3 combats keeps it.
-- Playing in 0/1 removes it.
-- Upgraded card stays upgraded.
-- Save/load during countdown preserves state.
-
----
-
-### ISSUE-2026-05-09-URDA-SHALLOW-ROOT-RELIC
-
-Priority: P1/P2
-
-Status: open; implement if temporary relic marker and Act 2 choice are safe
-
-Area: common relic choice / elite kill / act transition choice
-
-Design:
-
-�?2 个普通遗物中选择 1 个，获得它和 75 金币。若你在一幕击败精英，该遗物永久保留，并获�?35 金币。否则进入二幕时选择：失去它获得 75 金币，或失去 6 最大生命保留它�?
-
-Implementation requirements:
-
-- Generate 2 common relic choices.
-- Pick one, gain relic + 75 gold.
-- Mark relic `ShallowRoot`.
-- First Act 1 elite kill:
-  - remove marker
-  - gain 35 gold
-  - relic becomes permanent
-- Act 2 enter if marker remains:
-  - choice A: remove relic, gain 75 gold
-  - choice B: lose 6 Max HP, keep relic, remove marker
-- Save/load preserves marker and choice state.
-- If losing/removing a relic cannot be done safely, disable blessing.
-
-Manual tests:
-
-- Elite kill roots relic and grants 35 gold.
-- No elite produces Act 2 choice.
-- Both Act 2 choices work.
-- Save/load before Act 2 preserves pending choice.
-
----
-
-### ISSUE-2026-05-09-URDA-ROOTED-ROUTE
-
-Priority: P2/P3
-
-Status: open; high-complexity map blessing; disable if not safe overnight
-
-Area: map node marker / route commitment / multi-reward trigger
-
-Design:
-
-选择一个被标记的房间作�?**Root Mark / 根标**。抵达根标时，获�?3 次卡牌奖励和 1 瓶随机药水；第一次拿的牌自动升级。若根标路线火堆过少，额外获得一次临时营火。若路线选择导致根标不可达，失去 8 HP，获�?25 Gold，移除根标�?
-
-Implementation requirements:
-
-- Source-proven map node marking.
-- Candidate nodes:
-  - within first 7 floors
-  - reachable
-  - non-boss
-  - non-chest
-  - prefer route with at least 2 reachable rest sites after mark
-- Display 2 candidates; player selects 1.
-- On reaching root mark:
-  - 3 card rewards
-  - first picked card auto-upgrades
-  - one random potion
-  - temporary campfire if route had too few rest sites
-- If mark becomes unreachable by route choice:
-  - lose 8 HP
-  - gain 25 gold
-  - clear mark
-- If map UI or reachability is not source-proven, disable blessing and leave issue open.
-
-Manual tests:
-
-- Candidate generation only picks reachable nodes.
-- Reaching mark triggers rewards once.
-- Unreachable route penalty triggers once.
-- Save/load preserves selected mark.
-
----
-
-### ISSUE-2026-05-09-URDA-ROOT-SIGHT
-
-Priority: P2/P3
-
-Status: open; high-complexity map preview blessing; disable if not safe overnight
-
-Area: map node preview / room content lock / root-eye resource
-
-Design:
-
-获得 5 **Root Eyes / 根眼**。在地图上消�?1 根眼，预知一个可见且可抵达的房间。第一次使用根眼时，获�?1 瓶随机药水�?
-
-Preview results:
-
-- Normal combat: concrete enemy group.
-- Elite: concrete elite.
-- Unknown: category combat/event/shop/chest/shrine/special.
-- Boss: cannot preview.
-
-Implementation requirements:
-
-- Add RootEye resource = 5.
-- Add safe map UI action/button or source-proven alternate selection flow.
-- Only visible + reachable nodes can be previewed.
-- Consume 1 RootEye.
-- Roll and lock room content if not already decided.
-- First use grants random potion.
-- If map UI cannot be safely patched overnight, disable blessing and leave issue open.
-
-Manual tests:
-
-- RootEyes count decrements.
-- Preview locks content.
-- Boss not previewable.
-- Save/load preserves RootEyes and previewed nodes.
-
----
-
-### ISSUE-2026-05-09-URDA-SEED-BANK
-
-Priority: P2
-
-Status: open; implement if reward button / temporary card storage is safe
-
-Area: card reward storage / Act 1 boss pre-settlement
-
-Design:
-
-一幕中，每次看到普通战斗卡牌奖励时，可以将其中 1 张未选择的牌存为种子。最多存 3 张。一�?Boss 前，从种子中选择最�?2 张：第一张升级后加入；第二张加入并获�?Trial Plant / 试种。未选择种子消失�?
-
-Implementation requirements:
-
-- Add "store as seed" action on normal combat card rewards.
-- Store at most 1 unchosen card per screen.
-- Max stored seeds = 3.
-- Seeds are not in deck, cannot be upgraded/removed/transformed until chosen.
-- Before Act 1 boss:
-  - choose first seed: upgrade and add
-  - optionally choose second seed: add with TrialPlant
-  - discard unchosen seeds
-- If pre-boss hook or reward action is unsafe overnight, disable blessing.
-
-Manual tests:
-
-- Can store one unchosen card from a normal reward.
-- Cannot exceed 3 seeds.
-- Boss pre-settlement selects up to 2.
-- Save/load preserves seed bank.
-
----
-
-### ISSUE-2026-05-09-URDA-PLAYABLE-POOL-SAFETY
-
-Priority: P0
-
-Status: open
-
-Area: offer pool safety / disable unsafe blessings
-
-Requirement:
-
-The overnight build must be directly playable. Therefore, unsafe or incomplete Urda blessings must not appear in the live Urda offer pool.
-
-Acceptance:
-
-- If all 10 Urda blessings are safely implemented, offer pool contains all 10.
-- If high-complexity blessings are not safe, active pool must still contain at least 4 safe implemented blessings.
-- Recommended minimum safe pool:
-  - `urda_seedbed`
-  - `urda_humus_pact`
-  - `urda_molting`
-  - `urda_after_rain` if lethal hook safe, otherwise `urda_moss_map`
-  - plus any additional safe blessing.
-- Disabled blessings must be documented in issues and manual checklist.
-- Disabled blessings must not show to players.
-
-Manual test:
-
-- Start 20 Urda selection attempts via debug/seed if possible.
-- No disabled blessing appears.
-- Every offered blessing can be selected and played without softlock.
-
----
-
-### ISSUE-2026-05-09-URDA-TELEMETRY-AND-DIAGNOSTICS
-
-Priority: P2
-
-Status: open
-
-Area: balancing data / debug logs
-
-Requirement:
-
-Add default-off diagnostics for Urda.
-
-Suggested env var:
-
-- `EZMB_URDA_DIAGNOSTICS=1`
-
-Log when enabled:
-
-- selected Urda blessing id
-- act/floor picked
-- trigger counts
-- HP lost from blessing
-- cards added/removed
-- gold gained
-- energy/draw gained if tracked
-- disabled blessing attempts
-- save/load restoration state
-
-Do not collect external telemetry. Only log to local `godot.log`.
-
-Manual test:
-
-- With diagnostics on, selecting Seedbed/Humus/Molting logs expected state.
-- With diagnostics off, no spam logs.
-
----
-
-### ISSUE-2026-05-09-URDA-MANUAL-MATRIX-AND-RELEASE-GATE
-
-Priority: P0
-
-Status: open
-
-Area: manual verification / release handoff
-
-Requirement:
-
-Add a dedicated Urda manual checklist covering:
-
-- Urda appears in Act 1.
-- Offer count = 4.
-- Each implemented blessing can be selected.
-- Each implemented blessing save/loads.
-- Each implemented blessing has EN/ZHS text.
-- No raw tags or mojibake.
-- No Morvi/Lotha/Vakuu active content.
-- Clean log audit passes.
-- Normal Steam-client smoke passes.
-- Release notes clearly say Urda is new and which blessings are active.
-
-Do not claim release ready until Urda manual rows are executed or explicitly accepted as pending for private beta.
-
-### Current Open Blocker Audit - 2026-05-08 RC1 / 2026-05-09 Rootblight Source Pass
-
-The remaining open issues are not blocked by the automated build/test/package loop. They require one of the following evidence classes before they can be closed:
-
-- **Rootblight UX source pass completed on 2026-05-09:** Rootblight/Blight Sprout card text style, duplicate Exhaust wording, card previews, add-to-deck notice, and generated portrait art now have source, localization, docs, package, and guard coverage. English and Simplified Chinese live hover/text passed for the four Rootblight-family cards, and the A14 Neow starter add notice passed in both languages after the event-room fallback. Combat-end add notices are source-hardened with a top-level overlay path but still need clean non-paused/Blight Sprout/co-op verification; generated-art live visual verification also remains pending.
-- **Two-client Steam evidence:** multiplayer HP 0 / Neow blocked, Save & Quit propagation, run-start black screen, A20 TypeLoad retest, A11-A20 selection, A20 warning, and the full co-op matrix require host and client `godot.log` captures from live Steam-client runs.
-- **Single-player live gameplay evidence:** A11 natural route traversal and boss reachability, A12 rich-text tooltip rendering, A13/A16 Fission reward frequency, Rootblight/Blight Sprout behavior/text/previews/notices, and inherited marker regressions require targeted live route/combat/reward checks.
-- **Resolved dependency gate retained for traceability:** the BaseLib `Creature.get_ShowsInfiniteHp` API-drift blocker is resolved for the dependency/runtime gate and no longer blocks single-player smoke; remaining multiplayer retests are tracked by the separate co-op issues in this Open section.
-
-Minimum evidence packet for closing a live issue:
-
-- Normal Steam-client launch, not `--force-steam off`.
-- BaseLib + EZ Micro Balance only unless the issue explicitly asks for a multi-mod compatibility run.
-- Screenshot or log line proving the selected Ascension/debug gate.
-- `%APPDATA%\SlayTheSpire2\logs\godot.log` copied before another run overwrites it.
-- For co-op issues, both host and client logs from the same attempt, plus the lobby/run start timing and selected Ascension.
-- Explicit scan result for release-blocking signatures: `Creature.get_ShowsInfiniteHp`, `BaseLib.Patches.UI.HealthBarForecastPatch`, BaseLib patch failures, non-EZMB mod stack traces, EZMB error/exception, `TypeLoadException`, and `MissingMethodException`.
-- Recommended scanner: run `scripts/audit-godot-log.ps1 -Path <copied godot.log> -OutFile <evidence-dir>\godot-log-audit.json -FailOnHit` for clean-log gates, or omit `-FailOnHit` when collecting known-failing diagnostic logs.
-Open issue closure checklist:
-
-- user still must resume/cancel
-
-| Issue | Missing evidence before close |
-| --- | --- |
-| `ISSUE-2026-05-09-ROOTBLIGHT-CARD-TEXT-STYLE-PREVIEW-DUPLICATE-EXHAUST` | English and Simplified Chinese live hover checks passed: Rootblight/Blight Sprout show one visible Exhaust keyword, no raw `[gold]` tags, and expected preview cards under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` and `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516`. Keep source/localization/package guards active while broader Rootblight behavior remains open. |
-| `ISSUE-2026-05-09-CARD-TEXT-STYLE-GUIDE-FOR-EZMB` | Source/docs guard is complete, and the English/ZHS Rootblight hover passes found no follow-up localization drift. Keep the guide enforced during future card text changes. |
-| `ISSUE-2026-05-09-ROOTBLIGHT-ADD-TO-DECK-NOTICE-MISSING` | A14 Neow starter notice passed in English under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` and in Simplified Chinese under `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455`. Combat-end additions from Rootblight III split / Blight Sprout seen-unplayed outcomes now use the source-hardened top-level overlay notice path, but clean non-paused timing, Blight Sprout, and co-op ownership/desync notice behavior still need live verification. Source/localization/tests/package are patched. |
-| `ISSUE-2026-05-09-ROOTBLIGHT-CARD-ART-PENDING` | Source/package fixed with generated art; close after live visual verification confirms the in-game portraits render as intended. |
-| `ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS` | Remaining backlog now excludes source implementation for Rootblight text/preview/starter-notice work, generated Rootblight-family card art, and the A14 English/ZHS hover/starter-notice proof. Combat-end Rootblight notices are source-hardened but still need full non-paused/Blight Sprout/co-op verification. Generated-art visual verification, bespoke A11/A17 feedback, multiplayer matrix, and Ancient/co-op save/load backlog remain. |
-| `ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED` | Two-client Steam retest with `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1`, plus `EZMB_ASCENSION_DISABLE_ALL_SYSTEMS=1` and vanilla A10 comparison logs. |
-| `ISSUE-2026-05-08-MULTIPLAYER-SAVE-QUIT-NOT-PROPAGATING` | Same-attempt host/client co-op logs around Save & Quit proving whether disconnect propagation or UI return fails. |
-| `ISSUE-2026-05-08-MULTIPLAYER-RUN-START-BLACK-SCREEN` | Fresh host/client run-start logs that distinguish HP0/Neow, transport sync, timeout, and runtime exception causes. |
-| `ISSUE-2026-05-08-MULTIPLAYER-A20-BLACK-SCREEN-OPTIONAL-BOSS-TYPELOAD` | Host/client A20 retest showing no `DoormakerBoss`/Door Wedge type-load crash and no replacement EZMB run-start exception. |
-| `ISSUE-2026-05-08-ASCENSION-PUBLIC-SELECTION-DEFAULT-ON-FOR-MP-TEST` | Normal Steam single-player and host-multiplayer selector checks for default-on, public-disable, multiplayer-disable, and A20 warning paths. |
-| `ISSUE-2026-05-07-A11-MAP-LENGTH-NOT-PLAYER-VISIBLE` | Natural route traversal through A11 map nodes to boss reachability; existing DevConsole act jumps only prove map surfaces. |
-| `ISSUE-2026-05-07-A11-MAP-CHANGE-ANIMATION` | User decision on whether current A11 geometry/A17 hover feedback is acceptable or whether bespoke visual feedback should be implemented. |
-| `ISSUE-2026-05-07-A12-TOOLTIP-RICHTEXT-COLORS` | Live tooltip screenshots/logs for Forge Token, Firemark, Banner, A12/A13 rows, rest-site text, and Chinese wrapping with no raw tags. |
-| `ISSUE-2026-05-07-A13-FISSION-TOO-RARE-AT-HIGH-ASCENSION` | A13/A16 live reward-frequency sampling for normal combat, Banner Room, Firemarked Elite, and boss reward screens. |
-| `ISSUE-2026-05-07-ROOTBUD-ROOTBLIGHT-REWORK` | Live A14/A15/A18 Rootblight and Blight Sprout behavior checks, plus user-resumed visual feedback and independent card art work. |
-| `ISSUE-2026-05-07-MULTIPLAYER-A11-A20-SELECTION-BLOCKED` | Two-client host lobby selection checks for A11-A20 default-on and disable flags, then A11/A12/A14/A16/A20 run-start/desync checks. |
-| `ISSUE-2026-05-07-A20-MULTIPLAYER-SELECTION-WARNING-MISSING` | Host multiplayer A20 selection and run-start logs proving the downgrade warning appears before/after client join. |
-| `ISSUE-2026-05-07-LIVE-COOP-A11-A20-MATRIX-PENDING` | Full two-client matrix with host/client logs, screenshots, save/load rows, ownership checks, and desync scan results. |
+Progress rule:
+- An issue closes when all required host/client evidence, screenshots, and log markers are attached.
+- Move closed items directly into the `Resolved / Player-Verified` section with the concrete evidence references.
 
 ### ISSUE-2026-05-09-ROOTBLIGHT-CARD-TEXT-STYLE-PREVIEW-DUPLICATE-EXHAUST
 
@@ -702,16 +21,16 @@ Player report (2026-05-09):
 - Fission / 裂变 icon is currently acceptable and should not be changed in this pass.
 - Firemarked Elite marker is currently acceptable and should not be changed in this pass.
 - Rootblight I/II/III and Blight Sprout are mechanically present, but their card descriptions are confusing.
-- Rootblight cards already display the visible Exhaust / 消�?keyword, but the description text also manually says `Play: Exhaust` / `打出：消耗`, causing duplicate Exhaust / 消�?display.
+- Rootblight cards already display the visible Exhaust / 消耗 keyword, but the description text also manually says `Play: Exhaust` / `打出：消耗`, causing duplicate Exhaust / 消耗 display.
 - Rootblight text lacks the official card-description style: important card names and pile names are not highlighted, and player-facing card references do not show previews.
-- “After combat, add Rootblight I/II�?should show a card preview so the player can inspect the resulting card, similar to official cards that add Soul / 灵魂.
+- “After combat, add Rootblight I/II” should show a card preview so the player can inspect the resulting card, similar to official cards that add Soul / 灵魂.
 
 Original source evidence that triggered the fix:
 
 - `EZMicroBalanceCode/Ascension/Cards/RootCards.cs`
   - `RootFamilyCard.CanonicalKeywords => ExhaustKeyword`.
   - `RootBud.CanonicalKeywords => ExhaustKeyword`.
-  - `RootFamilyCard` and `RootBud` therefore already expose visible Exhaust / 消�?
+  - `RootFamilyCard` and `RootBud` therefore already expose visible Exhaust / 消耗.
 - `EZMicroBalance/localization/eng/cards.json`
   - Original Rootblight descriptions included `Play: Exhaust`.
 - `EZMicroBalance/localization/zhs/cards.json`
@@ -754,9 +73,9 @@ Official style target:
 
 - Follow the same pattern used by official cards that create or add another card, especially Grave Warden / Soul examples.
 - Important card names should be gold-highlighted.
-- Important pile names such as Draw Pile / 抽牌�?should be gold-highlighted.
+- Important pile names such as Draw Pile / 抽牌堆 should be gold-highlighted.
 - Referenced cards should show previews where source-proven preview APIs allow it.
-- Do not manually write keywords already provided by `CanonicalKeywords`, such as Exhaust / 消�?
+- Do not manually write keywords already provided by `CanonicalKeywords`, such as Exhaust / 消耗.
 
 Required behavior:
 
@@ -795,20 +114,20 @@ Suggested final Simplified Chinese copy, after verifying exact behavior:
   - `将本牌从你的主牌组中移除。`
   - `战斗后，若本牌未被打出或移除，变为[gold]根蚀 II[/gold]。`
 - `EZMB_DEEP_ROOT.description`:
-  - `打出时，将本牌从你的主牌组中移除；战斗后，加�?张[gold]根蚀 I[/gold]。`
+  - `打出时，将本牌从你的主牌组中移除；战斗后，加入1张[gold]根蚀 I[/gold]。`
   - `若本战未打出或移除，战斗后变为[gold]根蚀 III[/gold]。`
 - `EZMB_ROOTBLIGHT_III.description`:
-  - `打出时，将本牌从你的主牌组中移除；战斗后，加�?张[gold]根蚀 II[/gold]。`
-  - `若本战未打出或移除，战斗后加�?张[gold]根蚀 I[/gold]，仅一次。`
+  - `打出时，将本牌从你的主牌组中移除；战斗后，加入1张[gold]根蚀 II[/gold]。`
+  - `若本战未打出或移除，战斗后加入1张[gold]根蚀 I[/gold]，仅一次。`
 - `EZMB_ROOT_BUD.description`:
   - `萌发3/4：对应回合开始时，若本牌还未进入手牌，将其置于你的[gold]抽牌堆[/gold]顶部。`
-  - `若见到后未打出，战斗后加�?张[gold]根蚀 I[/gold]。`
+  - `若见到后未打出，战斗后加入1张[gold]根蚀 I[/gold]。`
 
 Text correctness notes:
 
-- Do not use “upgrade�?/ “升级�?unless the actual mechanic is a card upgrade. Prefer “becomes�?/ “变为�?for Rootblight stage changes.
+- Do not use “upgrade” / “升级” unless the actual mechanic is a card upgrade. Prefer “becomes” / “变为” for Rootblight stage changes.
 - Do not describe both played and unplayed outcomes as if they happen together.
-- Rootblight II and III played outcomes should clearly say “When played...�?/ “打出时...�?and unplayed growth should be a separate sentence.
+- Rootblight II and III played outcomes should clearly say “When played...” / “打出时...” and unplayed growth should be a separate sentence.
 - If `打出时` itself appears with the visible keyword, that is acceptable; do not include `消耗` in the same phrase.
 
 Tests required:
@@ -827,6 +146,7 @@ Manual verification required:
 - Hover Rootblight III: one visible Exhaust keyword only; Rootblight I and II previews visible.
 - Hover Blight Sprout: one visible Exhaust keyword only; Rootblight I preview visible.
 - English and Simplified Chinese render [gold] markup correctly, with no raw tags.
+
 
 ### ISSUE-2026-05-09-CARD-TEXT-STYLE-GUIDE-FOR-EZMB
 
@@ -869,7 +189,7 @@ The guide must cover at least:
    - Use `{Cards:diff()}`, `{Damage:diff()}`, `{Energy:energyIcons()}`, etc. when values can change through upgrades/modifiers.
    - Do not hard-code values that can become wrong after upgrade.
 4. **Preview rule**
-   - If text says “add a card�? “becomes a card�? “put a card into pile�? or equivalent, provide a card preview if a source-proven safe API exists.
+   - If text says “add a card”, “becomes a card”, “put a card into pile”, or equivalent, provide a card preview if a source-proven safe API exists.
    - Preview cards must not alter game state, RNG, save data, or piles.
 5. **English/ZHS consistency rule**
    - Behavior, counts, and conditions must match across English and Simplified Chinese.
@@ -877,10 +197,10 @@ The guide must cover at least:
 6. **Terminology rule**
    - Rootblight = 根蚀
    - Blight Sprout / Root Bud = 根芽
-   - Draw Pile = 抽牌�?
-   - Discard Pile = 弃牌�?
-   - Exhaust Pile = 消耗牌�?
-   - Deck / master deck = 牌组 / 主牌�?depending on source context; use consistently.
+   - Draw Pile = 抽牌堆
+   - Discard Pile = 弃牌堆
+   - Exhaust Pile = 消耗牌堆
+   - Deck / master deck = 牌组 / 主牌组 depending on source context; use consistently.
 7. **Manual checklist rule**
    - Each card text change must update manual checklist rows for hover, preview, text rendering, and raw-tag checks.
 
@@ -901,6 +221,7 @@ Implementation notes (2026-05-09):
 - Added `docs/style/card-localization-style-guide.md`.
 - Indexed the guide from `AGENTS.md`, `docs/README.md`, and `docs/skills/sts2-godot-mod-development.md`.
 - Added guard coverage for duplicate-keyword prevention, `[gold]`, card previews, English/Simplified Chinese consistency, and Rootblight terminology.
+
 
 ### ISSUE-2026-05-09-ROOTBLIGHT-ADD-TO-DECK-NOTICE-MISSING
 
@@ -984,6 +305,7 @@ Manual verification required:
 - Rootblight III split or RootBud seen-unplayed outcome: when Rootblight I is added after combat, player sees a notice/animation.
 - If multiplayer is later tested, confirm only the affected player’s Rootblight notice is shown and no ownership/desync warning appears.
 
+
 ### ISSUE-2026-05-09-ROOTBLIGHT-CARD-ART-PENDING
 
 Priority: P2
@@ -1037,6 +359,7 @@ Tests required after art integration:
 - PCK contains the new images and does not contain source/docs/art_pipeline material.
 - No official assets are packaged.
 
+
 ### ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS
 
 Priority: P2/P3
@@ -1050,6 +373,7 @@ Pending items deliberately left out of the current fix pass or requiring user de
 - Rootblight I/II/III and Blight Sprout generated-art live visual verification.
 - Broader A11 map geometry diagnostics and natural traversal checks beyond the Act 1/2/3 width/row spot checks. Current normal Steam-client A11 map evidence is recorded in `docs/rc1-live-validation-log.md`.
 - Multiplayer matrix and Ancient/co-op save/load verification.
+
 
 ### ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED
 
@@ -1085,6 +409,7 @@ Required evidence:
 - Bisect via `EZMB_ASCENSION_DISABLE_ALL_SYSTEMS=1` to confirm whether EZMB gameplay slices are involved.
 - Test with `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` + vanilla A10 as control.
 
+
 ### ISSUE-2026-05-08-MULTIPLAYER-SAVE-QUIT-NOT-PROPAGATING
 
 Priority: P0/P1
@@ -1114,6 +439,7 @@ Required investigation:
 - If the remote peer receives the disconnect but does not return to menu, inspect `RunManager.LocalPlayerDisconnected(...)` and active UI state at that moment.
 - Do not add a speculative EZMB multiplayer save/quit fix without live evidence identifying which branch fails.
 
+
 ### ISSUE-2026-05-08-MULTIPLAYER-RUN-START-BLACK-SCREEN
 
 Priority: P0/P1
@@ -1139,6 +465,7 @@ Required evidence:
 - Look for exceptions, missing models, missing localization, network disconnect, desync, or timeout.
 - If black screen follows from HP0/Neow blocked, fix that root cause first.
 - If independent, add separate `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS` entries for screen transition sync.
+
 
 ### ISSUE-2026-05-08-MULTIPLAYER-A20-BLACK-SCREEN-OPTIONAL-BOSS-TYPELOAD
 
@@ -1181,6 +508,7 @@ Manual retest:
 - Inspect `godot.log` for no `EZMicroBalance` `TypeLoadException`, especially no `DoormakerBoss`, `Doormaker`, `HungerPower`, `ScrutinyPower`, or `GraspPower` load errors.
 - Keep A20 Dual King Brands co-op gameplay verification pending; this fix is a crash/compatibility fix, not a full live co-op balance pass.
 
+
 ### ISSUE-2026-05-08-ASCENSION-PUBLIC-SELECTION-DEFAULT-ON-FOR-MP-TEST
 
 Priority: P0
@@ -1206,6 +534,7 @@ Manual retest:
 - With `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, confirm single-player A11-A20 remains available and host-multiplayer selection returns to the vanilla cap.
 - Confirm host-only multiplayer A20 selection logs the downgrade warning before any client joins, then logs again on run start after a client joins.
 - Keep live gameplay, save/load, and live co-op/desync verification pending until actually executed or explicitly accepted.
+
 
 ### ISSUE-2026-05-07-A11-MAP-LENGTH-NOT-PLAYER-VISIBLE
 
@@ -1242,6 +571,7 @@ Manual retest:
 - Confirm the map still has a low-risk route and boss reachability through natural route traversal.
 - Future traversal helper: `win` may be used to end combats after clicking naturally reachable map nodes; do not use DevConsole `travel` as proof of reachability, because local source shows it enables jumping to any map room.
 
+
 ### ISSUE-2026-05-07-A11-MAP-CHANGE-ANIMATION
 
 Priority: P3
@@ -1261,6 +591,7 @@ Remaining work:
 
 - No bespoke map-generation animation or transition sequence has been implemented yet.
 - Live UI pass should decide whether hover tips are enough or whether a short map pulse/overlay is needed.
+
 
 ### ISSUE-2026-05-07-A12-TOOLTIP-RICHTEXT-COLORS
 
@@ -1285,6 +616,7 @@ Manual retest:
 - Confirm rich text renders instead of showing raw tags.
 - Confirm Chinese text wraps cleanly.
 
+
 ### ISSUE-2026-05-07-A13-FISSION-TOO-RARE-AT-HIGH-ASCENSION
 
 Priority: P2
@@ -1305,6 +637,7 @@ Manual retest:
 - Test A16 with public/debug ascension enabled.
 - Check repeated normal combat rewards and Banner Room rewards.
 - Confirm Fission remains limited to eligible Attack/Skill cards and still appears at most once per reward screen.
+
 
 ### ISSUE-2026-05-07-ROOTBUD-ROOTBLIGHT-REWORK
 
@@ -1334,6 +667,7 @@ Manual retest:
 - A18 eligible Act 2/3 Elite fights bury 1 Blight Sprout.
 - Seen-but-unplayed Blight Sprout adds one Rootblight I after combat.
 - Rootblight I/II/III play and post-combat behavior matches the new card text.
+
 
 ### ISSUE-2026-05-07-MULTIPLAYER-A11-A20-SELECTION-BLOCKED
 
@@ -1374,6 +708,7 @@ Manual retest:
 - Confirm Rootblight/Blight Sprout ownership remains per-player in co-op.
 - Confirm A20 multiplayer selection does not imply that Dual King Brands gameplay is live co-op verified.
 
+
 ### ISSUE-2026-05-07-A20-MULTIPLAYER-SELECTION-WARNING-MISSING
 
 Priority: P2
@@ -1405,6 +740,7 @@ Manual retest:
 - Confirm the tester-visible warning or log appears on selection and run start.
 - Confirm the run does not silently apply single-player-only Dual King Brands behavior to co-op.
 
+
 ### ISSUE-2026-05-07-LIVE-COOP-A11-A20-MATRIX-PENDING
 
 Priority: P1
@@ -1429,150 +765,10 @@ Minimum matrix:
 
 ## Resolved / Player-Verified
 
-### ISSUE-2026-05-07-A11-LONG-ROAD-MAP-MARKER-UNWANTED
+### Closed in source-repaired pass (archived)
 
-Priority: P2
+See [archive/issues-archive.md](archive/issues-archive.md) for closed issues.
 
-Status: resolved for A11 no-marker behavior on 2026-05-08; inherited marker regression checks remain tracked by the relevant A12/A16/A17/A19/A20 live-verification items and the open blocker audit.
+These issues were archived for traceability after implementation and documentation updates.
 
-Area: A11 Wide Tower, Long Road / map UI
-
-Player report: A11 should make the map longer/wider through normal map geometry only. It should not put a special visible marker or hover tooltip on the map just to explain the extra route space.
-
-Desired behavior:
-
-- Remove the dedicated A11 long-road map marker/hover indicator from newly inserted route nodes.
-- A11 map changes should look like vanilla map rows and paths, not like a special event or quest node.
-- Keep the actual map-length/width tuning separately testable; if final tuning is only one added row, update docs/localization/changelog to avoid claiming larger route growth.
-
-Implementation notes:
-
-- `LongRoad` metadata, `MarkLongRoad`, and `LONG_ROAD_NODE` localization were removed from active source/resources.
-- `AscensionMapQuestMarker` remains in use only for A17 Deep Branch generic markers; A12 Firemark, A16 Banner, A17 Deep Branch, A19 Seal, and A20 Brand indicators remain on their own paths.
-- RC1 Act 1 screenshot `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008\11-a11-act1-map-after-neow-continue.png` shows ordinary A11 route nodes without a dedicated A11 marker, icon, or hover tooltip. The after-load map screenshot `16-map-open-after-load-attempt.png` shows the same no-marker surface after Continue.
-- RC1 Act 2/3 screenshots `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355\25-a11-act2-map-clean.png` and `27-a11-act3-map-clean.png` show ordinary later-act route nodes without a dedicated A11 marker, icon, or hover tooltip.
-
-Manual retest:
-
-- Act 1/2/3 A11 no-marker map-surface spot checks are complete for RC1 evidence above.
-- Natural A11 route traversal remains tracked by `ISSUE-2026-05-07-A11-MAP-LENGTH-NOT-PLAYER-VISIBLE`.
-- Firemark/Banner/Deep Branch/Boss Seal indicator checks remain tracked by their relevant Ascension live-verification items.
-
-
-### ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT
-
-Priority: P1 environment/runtime verification
-
-Status: resolved for the BaseLib dependency/API-drift gate on 2026-05-08; remaining multiplayer run-start/Neow/save-quit evidence is tracked by the separate P0 co-op issues in the Open section. BaseLib `v3.1.2`, a clean BaseLib+EZMB-only controlled smoke, clean normal Steam-client startup/Mod Settings log snapshots, and Codex-observed normal-Steam single-player combat smoke for A0/A10/A20 via DevConsole `fight CULTISTS_NORMAL` supersede the earlier failure. User also reports single-player A0/A10/A20 and boss/basic combats pass after the BaseLib update. EZ Micro Balance's dedicated Mod Settings page/display is now covered by the 2026-05-08 `095137` normal Steam-client recheck after adding the no-op BaseLib config page.
-
-Area: v0.105.0 API drift / BaseLib compatibility / mod environment hygiene
-
-Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
-
-1. **Test environment loaded 17 mods, not only BaseLib + EZMicroBalance:**
-   - `Loaded 17 mods (19 total)`
-   - Loaded `DamageMeter`, `RouteSuggest`, `AnimeWaifuSilent`, `ModConfig`, `QuickLink`, `SpeedX`, `The-Watcher`, and others.
-   - This violates the release test prerequisite: only BaseLib + EZMicroBalance enabled.
-
-2. **Superseded BaseLib v3.1.0 failure evidence:**
-   - `Undefined target method for patch method ... ExhaustivePatch`
-   - `Undefined target method for patch method ... PersistPatch`
-   - `Undefined target method for patch method ... PurgePatch`
-   - `[BaseLib] Applied 150 patches successfully, 3 failed`
-
-3. **`Creature.get_ShowsInfiniteHp()` is missing in v0.105.0:**
-   - `System.MissingMethodException: Method not found: 'Boolean MegaCrit.Sts2.Core.Entities.Creatures.Creature.get_ShowsInfiniteHp()'`
-   - Called from `BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay(NHealthBar healthBar)`
-   - Also called from `DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp(CombatState combatState)`
-   - Stack reaches `CrackedCore.BeforeSideTurnStart` and `CombatManager.StartCombatInternal()`
-
-4. **Direct gameplay impact:**
-   - The `MissingMethodException` in the combat-start/turn-start hook chain interrupts normal combat initialization.
-   - Observed: singleplayer Defect A20 enters combat but does not draw cards, energy stuck at 0/3. Combat does not enter a normal player turn.
-   - This is NOT an EZMB logic bug; it is a dependency/environment compatibility blocker.
-
-Required resolution (before any EZMB fix or release claim):
-- [x] Disabled/isolated all mods except BaseLib + EZMicroBalance for the RC1 normal Steam-client startup log; the moved local mod entries were restored afterward.
-- [x] Updated BaseLib runtime/project package to `v3.1.2`; current controlled BaseLib+EZMB-only smoke has no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures.
-- [x] RC1 normal Steam-client startup log snapshot is clean for the release gate signatures. Codex temporarily isolated non-BaseLib/EZMB local mod entries, launched through Steam, reached main menu, saved `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log`, restored 23 moved mod entries and `settings.save`, and confirmed `Loaded 2 mods (2 total)`, BaseLib `177 patches successfully, 0 failed`, EZMB initialization, 0 `ERROR` lines in the startup snapshot, and 0 removed-API/EZMB exception signatures.
-- [x] RC1 normal Steam-client Mod Settings UI recheck opened `模组配置`: BaseLib appeared and was enabled; EZ Micro Balance appeared as the localized page `微平衡` with `无可配置选项。`; main-menu/log evidence showed only `BaseLib, EZ Micro Balance` loaded. Snapshot `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log` has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
-- [x] Confirm singleplayer A0 combat draws cards and gains energy normally. Evidence: normal Steam-client BaseLib+EZMB-only DevConsole combat smoke `a0-debug-fight-clean.png` shows 80/80 HP, 3/3 energy, five-card hand, enemies, HP bars, and intents; natural route-click first-node path remains unrun if stricter coverage is required.
-- [x] Confirm singleplayer A10 combat draws cards and gains energy normally. Evidence: normal Steam-client BaseLib+EZMB-only DevConsole combat smoke `a10-first-combat-clean.png` shows 64/80 HP, 3/3 energy, five-card hand, enemies, HP bars, and intents; natural route-click first-node path remains unrun if stricter coverage is required.
-- [x] Confirm singleplayer A20 combat draws cards and gains energy normally. Evidence: normal Steam-client BaseLib+EZMB-only DevConsole combat smoke `a20-debug-fight-clean.png` shows 64/80 HP, 3/3 energy, five-card hand, Rootblight present, enemies, HP bars, and intents; natural route-click first-node path remains unrun if stricter coverage is required.
-- User-reported on 2026-05-08: single-player A0/A10/A20 plus boss/basic combats pass after the BaseLib update. This now complements the Codex-observed combat-smoke evidence.
-- [x] Normal Steam-client startup snapshot has no `Creature.get_ShowsInfiniteHp`.
-- [x] Normal Steam-client startup snapshot has no BaseLib patch failures.
-- [x] Normal Steam-client startup snapshot has no DamageMeter or other non-EZMB mod exceptions.
-- Combat-smoke log caveat: the A0/A10/A20 debug-fight logs have 0 removed-API signatures, 0 BaseLib patch failures, 0 `TypeLoadException`, 0 `MissingMethodException`, and 0 EZMB error/exception pattern hits. They are not clean-log gate snapshots because automated test-run abandonment/window closing produced Godot exit resource-leak `ERROR` lines, and A20/A0 include a temporary save-backup delete `ERROR` from the save restoration flow. The clean-log gate remains the earlier isolated startup and Mod Settings snapshots.
-- Multiplayer A11-A20 testing may resume, but co-op run-start/Neow/save-quit evidence remains required.
-
-
-### ISSUE-2026-05-07-HANDOFF-GIT-STATUS-HYGIENE
-
-Priority: P3
-
-Status: resolved for the 2026-05-08 RC1 hygiene refresh; final handoff still must re-run git status/log after any later edits
-
-Area: release handoff / repository status docs
-
-Audit finding: handoff and audit docs can become stale when they say "No commit or push has been made" or "worktree dirty." Final release handoff must re-check the current status rather than relying on old wording from an earlier local snapshot.
-
-Resolution evidence:
-
-- `docs/private-beta-verification-handoff.md`, `docs/features/ancients-rework-v4/completion-audit.md`, and `docs/rc1-live-validation-log.md` record the current point-in-time `git log -1 --oneline --decorate`: `96bfa50 (HEAD -> main, origin/main, origin/HEAD) fix try 10`.
-- Those docs record the branch as aligned with `origin/main` while the working tree remains dirty with modified files, deleted moved originals, and untracked new patch/doc/archive files.
-- The handoff no longer uses stale no-commit wording for the current branch state, and it explicitly says not to describe the checkout as fully pushed until pending edits are reviewed, committed, and pushed.
-- The handoff and audit docs require rerunning `git status --short --branch` and `git log -1 --oneline --decorate` before final release packaging or handoff.
-
-### ISSUE-2026-05-07-RELEASE-ARTIFACT-TESTS-DEPEND-ON-IGNORED-PUBLISH-OUTPUT
-
-Priority: P2
-
-Status: resolved on 2026-05-08; normal tests pass without ignored publish artifacts, release artifact tests stay opt-in
-
-Area: automated tests / release artifact validation
-
-Audit finding: `.gitignore` excludes `publish/`, `*.zip`, `*.dll`, and `*.pck`, while some release guard tests require installed/staging/versioned zip artifacts. This is useful for release validation on the maintainer machine, but it can make normal `dotnet test` brittle in a clean clone unless package generation ran first.
-
-Resolution evidence:
-
-- Normal `dotnet test` no longer requires ignored publish/package artifacts because package/hash/runtime-smoke checks are marked with `ReleaseArtifactFactAttribute`.
-- Normal package/hash/runtime-smoke checks are marked with `ReleaseArtifactFactAttribute` and skip unless `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set.
-- Release artifact tests remain strict when opted in.
-- On 2026-05-08, Codex temporarily moved the ignored `publish/` directory aside, ran `dotnet test EZMicroBalance.sln`, observed 65 passed / 16 skipped / 0 failed, and restored `publish/`.
-- The refreshed docs describe the package refresh and opt-in command order.
-
-### ISSUE-2026-05-07-CURRENT-PACKAGE-RUNTIME-SMOKE-STALE
-
-Priority: P1
-
-Status: resolved for loader/runtime-smoke freshness on 2026-05-08; live gameplay remains tracked by separate open issues
-
-Area: controlled runtime smoke / SavedSpireField registration
-
-Audit finding: several docs cited a prior controlled `--force-steam off` smoke with an obsolete SavedSpireFields count. The current source/package defines 12 SavedSpireFields after Rootblight v2.2 card-state fields.
-
-Resolution evidence:
-
-- Current package was published and package staging/versioned/zip artifacts were refreshed.
-- Controlled `--force-steam off` smoke passed after publish/package refresh.
-- Temporary profile settings enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled other discovered local mods, and restored `settings.save` plus `settings.save.backup` byte-for-byte.
-- `godot.log` showed `Loaded 2 mods (19 total)`, BaseLib initialization, EZ Micro Balance DLL/PCK load/init, `Found 13 SavedSpireFields`, default-on Ascension initializer wording with 0 old `Default-off gate` lines, main menu in `13,628ms`, 0 EZ Micro Balance error/exception lines, and no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures.
-- Later normal Steam-client isolated startup and Mod Settings snapshots also loaded only BaseLib + EZ Micro Balance with `Loaded 2 mods (2 total)`, `Found 13 SavedSpireFields`, 0 `ERROR` lines, and the localized EZ Micro Balance config page visible. Live gameplay verification is still open elsewhere.
-
-### ISSUE-2026-05-07-A12-FORGE-TOKEN-RESTSITE-CRASH
-
-Priority: P1
-
-Status: player reported fixed on 2026-05-07; keep in regression list
-
-Area: A12 Forge Token / rest-site transition
-
-Player verification: carrying Forge Token into a rest site no longer crashes.
-
-Regression retest:
-
-- Enter a rest site while holding Forge Token.
-- Test Rest payout and Smith payout separately.
-- Confirm token relic is removed after payout.
 

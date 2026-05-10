@@ -1,0 +1,16 @@
+{
+  "EZMB_URDA.title": "息壤织母·乌尔达",
+  "EZMB_URDA.epithet": "大地深处的根系牢记你的足音。",
+  "EZMB_URDA.pages.INITIAL.description": "乌尔达在土壤中苏醒，四个祝福从古木中跳动。",
+  "EZMB_URDA.pages.INITIAL.options.urda_seedbed.title": "苗床",
+  "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "与普通战斗卡牌奖励相关。每次完成奖励时，土壤都会索取一粒种子。",
+  "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title": "腐殖约定",
+  "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description": "与跳过的战斗卡牌奖励相关。每次跳过，土地都会记录你的选择。",
+  "EZMB_URDA.pages.INITIAL.options.urda_molting.title": "脱壳",
+  "EZMB_URDA.pages.INITIAL.options.urda_molting.description": "一种改变牌组成长方式的祝福，使旧容重回旧土。",
+  "EZMB_URDA.pages.INITIAL.options.urda_moss_map.title": "苔痕地图",
+  "EZMB_URDA.pages.INITIAL.options.urda_moss_map.description": "一项通过隐秘蘚脉推进房间路径的祝福。",
+  "EZMB_URDA.pages.DONE.description": "乌尔达的祝福沉入泥土。命运的路径已确定。",
+  "EZMB_URDA.talk.firstVisitEver.0-0.ancient": "",
+  "EZMB_URDA.talk.ANY.0-0r.ancient": ""
+}

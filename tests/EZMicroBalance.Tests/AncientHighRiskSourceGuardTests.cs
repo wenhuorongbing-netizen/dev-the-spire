@@ -239,7 +239,7 @@ public sealed class AncientHighRiskSourceGuardTests
             .Select(match => match.Groups["key"].Value)
             .ToArray();
 
-        Assert.Equal(3, keys.Length);
+        Assert.Equal(4, keys.Length);
         Assert.Equal(keys.Length, keys.Distinct(StringComparer.Ordinal).Count());
         Assert.All(keys, key => Assert.StartsWith("EZMicroBalance", key, StringComparison.Ordinal));
         Assert.DoesNotContain("EzDailyContent", savedFields, StringComparison.Ordinal);
@@ -249,9 +249,11 @@ public sealed class AncientHighRiskSourceGuardTests
             "SavedSpireField<PrismaticGem, int> PrismaticGemNormalRewardCounter",
             "SavedSpireField<PaelsTooth, int> PaelsToothNonBossCombatCounter",
             "SavedSpireField<CardModel, bool> JewelryBoxNonInnateApotheosis",
+            "SavedSpireField<Player, string> UrdaStateKey",
             "\"EZMicroBalanceNormalRewardCounter\"",
             "\"EZMicroBalanceNonBossCombatCounter\"",
-            "\"EZMicroBalanceJewelryBoxNonInnateApotheosis\"");
+            "\"EZMicroBalanceJewelryBoxNonInnateApotheosis\"",
+            "\"EZMicroBalanceUrdaStateKey\"");
 
         Assert.Contains("AncientSavedStateFields.PrismaticGemNormalRewardCounter[prismaticGem]", prismaticSource, StringComparison.Ordinal);
         Assert.Contains("AncientSavedStateFields.PaelsToothNonBossCombatCounter[paelsTooth]", paelsToothSource, StringComparison.Ordinal);

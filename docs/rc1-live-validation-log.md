@@ -35,7 +35,7 @@ This log records what was actually run or observed. It does not close the live g
 - App manifest: `appmanifest_2868840.acf` names `Slay the Spire 2`.
 - Result: SlayTheSpire2 started from Steam, loaded to main menu, then was closed after log collection.
 - Log: `%APPDATA%\SlayTheSpire2\logs\godot.log`, last write `2026-05-08T07:32:55+02:00`, length `25818`.
-- Positive log evidence: `Loaded 2 mods (19 total)`, BaseLib `Version=3.1.2.0`, `[BaseLib] Applied 177 patches successfully, 0 failed`, `Finished mod initialization for 'BaseLib' (BaseLib).`, `Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance).`, `[BaseLib] Found 12 SavedSpireFields.`, `Time to main menu: 14,444ms`.
+- Positive log evidence: `Loaded 2 mods (19 total)`, BaseLib `Version=3.1.2.0`, `[BaseLib] Applied 177 patches successfully, 0 failed`, `Finished mod initialization for 'BaseLib' (BaseLib).`, `Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance).`, `[BaseLib] Found 13 SavedSpireFields.`, `Time to main menu: 14,444ms`.
 - Strict scan: `Creature.get_ShowsInfiniteHp` 0, `BaseLib.Patches.UI.HealthBarForecastPatch` 0, BaseLib undefined-target patch failures 0, `TypeLoadException` 0, `MissingMethodException` 0, EZMB error/exception pattern 0.
 - Clean-log gate status for this first probe: not closed. The captured log still contains unrelated manifest/dependency `ERROR` lines from discovered local mods, including `RouteSuggestConfig.json` missing `id` and `sts2-heybox-support` missing `id`. DamageMeter and RouteSuggest were discovered but skipped as disabled in settings. The isolated startup log below supersedes this first probe for clean-log evidence.
 - Mod Settings UI status: superseded by the isolated Mod Settings recheck below.
@@ -45,7 +45,7 @@ This log records what was actually run or observed. It does not close the live g
 - Command path: `D:\Steam\steam.exe -applaunch 2868840`.
 - Isolation method: temporarily moved 23 non-BaseLib/EZMB entries out of `D:\Steam\steamapps\common\Slay the Spire 2\mods`, launched through Steam, copied the startup log at main menu, then restored the moved entries and `settings.save`.
 - Snapshot: `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log`.
-- Positive log evidence: only `BaseLib\BaseLib.json` and `EZMicroBalance\EZMicroBalance.json` were discovered; `Loaded 2 mods (2 total)`; BaseLib `177 patches successfully, 0 failed`; BaseLib and EZ Micro Balance initialized; BaseLib reported `Found 12 SavedSpireFields`; main menu reached in `13,470ms`.
+- Positive log evidence: only `BaseLib\BaseLib.json` and `EZMicroBalance\EZMicroBalance.json` were discovered; `Loaded 2 mods (2 total)`; BaseLib `177 patches successfully, 0 failed`; BaseLib and EZ Micro Balance initialized; BaseLib reported `Found 13 SavedSpireFields`; main menu reached in `13,470ms`.
 - Strict scan: startup snapshot has 0 `ERROR` lines, 0 `Creature.get_ShowsInfiniteHp`, 0 `BaseLib.Patches.UI.HealthBarForecastPatch`, 0 BaseLib undefined-target patch failures, 0 `DamageMeter`, 0 `RouteSuggest`, 0 `TypeLoadException`, 0 `MissingMethodException`, and 0 EZMB error/exception pattern hits.
 - Warning scan: startup snapshot has 8 warnings: D3D12 PSO caching, BaseLib missing `min_game_version`, EZMB prerelease version/min-game metadata warnings, and uncached startup assets.
 - Clean-log gate status: startup log gate passed for the release-blocking signatures after isolation. Broader gameplay spot checks are tracked below and remain incomplete.
@@ -54,13 +54,13 @@ This log records what was actually run or observed. It does not close the live g
 
 - Command path: `D:\Steam\steam.exe -applaunch 2868840`.
 - First isolation probe: temporarily moved 23 non-BaseLib/EZMB entries out of `D:\Steam\steamapps\common\Slay the Spire 2\mods`, launched through Steam, opened `妯＄粍閰嶇疆`, captured BaseLib-only screenshots, copied `.tools\runtime-evidence\rc1-normal-steam-modsettings-godot-20260508-092717.log`, closed the game, then restored all moved entries.
-- Source fix for UI visibility: added a no-op BaseLib `ModConfig` page for EZ Micro Balance. It registers `EZMicroBalanceModConfig`, exposes no gameplay options, and localizes the Chinese title as `寰钩琛 with body text `鏃犲彲閰嶇疆閫夐」銆俙.
+- Source fix for UI visibility: added a no-op BaseLib `ModConfig` page for EZ Micro Balance. It registers `EZMicroBalanceModConfig`, exposes no gameplay options, and localizes the Chinese title as `寰钩琛�?with body text `鏃犲彲閰嶇疆閫夐」銆�?
 - Recheck isolation probe: temporarily moved the same 23 non-BaseLib/EZMB entries out of the game `mods` directory, launched through Steam, opened `妯＄粍閰嶇疆`, captured screenshots, copied the log, closed the game, then restored all moved entries and temporarily minimized windows. Restore check: `RemainingIsolatedEntries: 0`, `SlayProcessRunning: 0`, `RestoredWindows: 24`.
 - Main-menu loaded-mod evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-mainmenu-loadedmods.png` shows the game loaded 2 mods: `BaseLib, EZ Micro Balance`.
 - BaseLib Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-attempt-20260508-092717-modconfig.png` shows the `BaseLib` page and its main-menu display checkbox enabled.
-- EZ Micro Balance Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` shows the EZ Micro Balance page entry as `寰钩琛; `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` shows the page body `鏃犲彲閰嶇疆閫夐」銆俙.
+- EZ Micro Balance Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` shows the EZ Micro Balance page entry as `寰钩琛�? `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` shows the page body `鏃犲彲閰嶇疆閫夐」銆�?
 - Log snapshot: `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log`.
-- Positive log evidence: `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, and `Found 12 SavedSpireFields`.
+- Positive log evidence: `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, and `Found 13 SavedSpireFields`.
 - Strict scan: 0 `Creature.get_ShowsInfiniteHp`, 0 `BaseLib.Patches.UI.HealthBarForecastPatch`, 0 BaseLib undefined-target patch failures, 0 `DamageMeter`, 0 `RouteSuggest`, 0 `TypeLoadException`, 0 `MissingMethodException`, 0 EZMB error/exception pattern hits, and 0 `ERROR` lines.
 - Gate status: normal Steam-client Mod Settings visibility/enabled check passed for BaseLib and EZ Micro Balance. Broader gameplay spot checks are tracked below and remain incomplete.
 
@@ -128,7 +128,7 @@ This log records what was actually run or observed. It does not close the live g
 
 | Gate | Result |
 | --- | --- |
-| Normal Steam-client Mod Settings | Passed. BaseLib page visible/enabled; EZ Micro Balance page appears as `寰钩琛 with `鏃犲彲閰嶇疆閫夐」銆俙; main menu/log show only BaseLib + EZ Micro Balance loaded; log has 0 `ERROR` lines and 0 release-blocking signatures. |
+| Normal Steam-client Mod Settings | Passed. BaseLib page visible/enabled; EZ Micro Balance page appears as `寰钩琛�?with `鏃犲彲閰嶇疆閫夐」銆�? main menu/log show only BaseLib + EZ Micro Balance loaded; log has 0 `ERROR` lines and 0 release-blocking signatures. |
 | Clean normal Steam-client `godot.log` | Isolated Steam startup snapshot and Mod Settings log collected; both have 0 `ERROR` lines and 0 release-blocking signatures. |
 | A0/A10/A20 single-player spot checks | User-reported pass, plus Codex-observed normal-Steam DevConsole combat smoke for A0/A10/A20. Natural route-click first-node checks remain unrun. |
 | Pumpkin Candle vanilla/no override | Source-verified pending live spot check. |
@@ -150,3 +150,4 @@ Earlier Mod Settings UI attempts are superseded by the `20260508-095137` recheck
 - Natural route-click first-node checks, if required beyond the DevConsole combat smoke.
 - Multiplayer matrix.
 - Ancient reward and co-op save/load verification.
+

@@ -51,6 +51,7 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ancients/Patches/TurnOfferAndRestPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/VakuRewardPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs",
+        "EZMicroBalanceCode/Ancients/UrdaAncient.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20RewardScreenPatches.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionAssetPaths.cs",

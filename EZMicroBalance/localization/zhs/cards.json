@@ -1,5 +1,5 @@
-{
-  "BRIGHTEST_FLAME.title": "质量之焰",
+﻿{
+  "BRIGHTEST_FLAME.title": "至亮之焰",
   "BRIGHTEST_FLAME.description": "[gold]消耗[/gold]。\n获得{Energy:energyIcons()}。\n抽{Cards:diff()}{Cards:plural:张牌|张牌}。\n失去{MaxHp:diff()}点最大生命。",
   "DEBT.title": "债务",
   "DEBT.description": "消耗。被消耗时，失去5金币。",
@@ -8,13 +8,14 @@
   "FOLLY.title": "愚行",
   "FOLLY.description": "无法打出。固有。永恒。",
   "EZMB_ROOT.title": "根蚀 I",
-  "EZMB_ROOT.description": "将本牌从你的主牌组中移除。\n若此场战斗内未打出或移除，本牌变为[gold]根蚀 II[/gold]。",
+  "EZMB_ROOT.description": "将本牌从你的主牌组中移除。\n若本场战斗中未打出或移除，本牌变为[gold]根蚀 II[/gold]。",
   "EZMB_DEEP_ROOT.title": "根蚀 II",
-  "EZMB_DEEP_ROOT.description": "打出时将本牌从你的主牌组中移除。\n战斗后，加入1张[gold]根蚀 I[/gold]。\n若此场战斗内未打出或移除，本牌变为[gold]根蚀 III[/gold]。",
+  "EZMB_DEEP_ROOT.description": "打出时将本牌从你的主牌组中移除。\n战斗后，加入1张[gold]根蚀 I[/gold]。\n若本场战斗中未打出或移除，本牌变为[gold]根蚀 III[/gold]。",
   "EZMB_ROOTBLIGHT_III.title": "根蚀 III",
-  "EZMB_ROOTBLIGHT_III.description": "打出时将本牌从你的主牌组中移除。\n战斗后，加入1张[gold]根蚀 II[/gold]。\n若此场战斗内未打出或移除，战斗后加入1张[gold]根蚀 I[/gold]，仅一次。",
+  "EZMB_ROOTBLIGHT_III.description": "打出时将本牌从你的主牌组中移除。\n战斗后，加入1张[gold]根蚀 II[/gold]。\n若本场战斗中未打出或移除，战斗后加入1张[gold]根蚀 I[/gold]，仅一次。",
   "EZMB_ROOT_BUD.title": "根芽",
-  "EZMB_ROOT_BUD.description": "萌发3/4：该回合开始时，若本牌还未进入手牌，将其置于你的[gold]抽牌堆[/gold]顶部。\n若本牌被见到但未打出，战斗后加入1张[gold]根蚀 I[/gold]。",
+  "EZMB_ROOT_BUD.description": "萌发3/4：该回合开始时，若本牌还未进入手牌，将其置于你的[gold]抽牌堆[/gold]顶部。\n见到后未打出，则战斗后加入1张[gold]根蚀 I[/gold]。",
   "EZMB_MARGINAL_NOTE.title": "旁注",
   "EZMB_MARGINAL_NOTE.description": "保留。打出时，消耗并抽1张牌。若回合结束时仍在手牌中，知识恶魔获得1点力量。"
 }
+

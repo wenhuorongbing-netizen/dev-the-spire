@@ -1,74 +1,80 @@
 # Card Localization Style Guide (Source-Format)
 
 Project: EZ Micro Balance
-Applies to: custom card text under `EZMicroBalance/localization/{eng,zhs}/cards.json` and matching `CardModel` source.
+Applies to: `EZMicroBalance/localization/{eng,zhs}/cards.json` and matching `CardModel` source.
 
-This guide is based on the local Slay the Spire 2 `v0.105.0` source and localization snapshot under `source code/`.
+This guide follows local Slay the Spire 2 `v0.105.0` source behavior.
 
-## Source Evidence
+## Source evidence
 
-- Official card text highlights referenced card names and pile names with `[gold]...[/gold]`. Examples: `GRAVE_WARDEN.description` says `Add a [gold]Soul[/gold] into your [gold]Draw Pile[/gold].`; ZHS says `将一张[gold]灵魂[/gold]放入你的[gold]抽牌堆[/gold]中。`
-- Official cards that reference generated cards use card hover tips. `GraveWarden`, `CaptureSpirit`, `Reave`, `Severance`, `Seance`, and `SoulStorm` override `ExtraHoverTips` and call `HoverTipFactory.FromCard<Soul>()`.
-- `HoverTipFactory.FromCard<T>()` obtains the canonical card through `ModelDb.Card<T>()` and creates a `CardHoverTip`. Use this for card previews. Avoid `FromCardWithCardHoverTips<T>()` when cards reference each other, because it adds the referenced card's own hover tips too.
-- `CardModel.HoverTips` already appends visible keyword hover tips for `CanonicalKeywords`, including `CardKeyword.Exhaust`. Descriptions must not manually duplicate a keyword that the card model already exposes.
-- Dynamic values in official localization use dynamic vars such as `{Cards:diff()}`, `{Damage:diff()}`, `{Block:diff()}`, and `{Energy:energyIcons()}` when values can change.
+- `CardModel.HoverTips` via `HoverTipFactory.FromCard<T>()` is used for card previews.
+- `CardModel.CanonicalKeywords` already supplies visible keyword UI, so description text must not duplicate the same visible keyword.
+- Use `ModelDb` APIs for canonical model references and avoid direct canonical `AbstractModel` construction.
+- Official localization patterns use `[gold]...[/gold]` for named concepts and `[blue]...[/blue]` for numeric values.
+- Use dynamic variables when values can change by upgrade or runtime effects.
 
-Source-format conventions derived from official cards:
+## Source format rules
 
-- Keep sentences short.
-- Split long behavior into separate `\n` lines, as localizations do for combat-time and conditional text.
-- Keep punctuation simple (`.` / `，` / `。`) and avoid compact but ambiguous phrasing.
+- Keep descriptions short and split conditional lines with `\n`.
+- Use one behavior per sentence where possible.
+- Prefer plain punctuation (`.` / `;`) over full-width punctuation.
 
-## Rules
+## 1) Visible keyword rule
 
-1. Visible keyword rule
+- Do not repeat a keyword in description text when it is already exposed via `CardModel.CanonicalKeywords`.
+- Applies to: Exhaust, Retain, Innate, Sly, Ethereal, Eternal, and similar visible flags.
+- duplicate Exhaust wording in body text is a rule violation.
 
-If a card exposes Exhaust, Retain, Innate, Eternal, Sly, Ethereal, or another visible keyword through `CanonicalKeywords` or a source-proven equivalent, do not repeat the same keyword as manual body text.
+Anti-pattern:
+- `Play: Exhaust.`
+- `...` includes `Play: Exhaust` while `CardKeyword.Exhaust` is already active.
 
-This is the duplicate Exhaust prevention rule for cards like Rootblight and Blight Sprout.
+## 2) Rich text rule
 
-Anti-pattern: `Play: Exhaust.` or `打出：消耗。` on a card whose `CanonicalKeywords` already includes `CardKeyword.Exhaust`.
+- Use `[gold]...[/gold]` for:
+  - important card names (Rootblight, Blight Sprout, etc.)
+  - important pile names (`Draw Pile`, `Discard Pile`, `Exhaust Pile`)
+  - key source-style named combat concepts when applicable
+- Use `[blue]...[/blue]` for numeric values and variable values.
 
-2. Rich-text rule
+## 3) Dynamic variable rule
 
-Use `[gold]...[/gold]` for important card names, pile names, keywords used as in-line actions, and official named concepts when matching official examples.
+- Use dynamic vars when values can change via upgrade or tuning.
+- Prefer dynamic placeholders over hard-coded literals when behavior is mutable.
 
-Examples:
+## 4) Preview rule
 
-- English: `[gold]Rootblight I[/gold]`, `[gold]Draw Pile[/gold]`
-- Simplified Chinese: `[gold]根蚀 I[/gold]`, `[gold]抽牌堆[/gold]`
+- If text says "add", "becomes", or "put into pile", include `HoverTipFactory.FromCard<T>()` preview entries when API-safe.
+- Preview cards must be state-free:
+  - no runtime card creation
+  - no save/data mutation
+  - no RNG side effects
 
-3. Dynamic variable rule
-
-Use dynamic vars when values can change through upgrade, enchantment, modifier, or balance tuning. Prefer `{Cards:diff()}`, `{Damage:diff()}`, `{Block:diff()}`, `{Energy:energyIcons()}`, `{Cards:plural:card|cards}`, and source-proven variants over hard-coded mutable values.
-
-Hard-coded fixed values are acceptable only when the source constant is intentionally fixed and tests guard the text.
-
-4. Preview rule
-
-If text says "add a card", "becomes a card", "put a card into a pile", or the Simplified Chinese equivalent, add a safe card preview when source APIs support it. For EZMB custom cards, prefer:
+Preview source pattern:
 
 ```csharp
-protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<SomeCard>()];
+protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [HoverTipFactory.FromCard<SomeCard>()];
 ```
 
-Preview cards must come from canonical `ModelDb` paths through `HoverTipFactory.FromCard<T>()`; they must not create runtime cards, mutate piles, consume RNG, write saves, or change multiplayer state.
+## 5) English/Simplified Chinese parity rule
 
-When you add a preview card in text, ensure the source path is also guarded by a safe fallback if owner/run context is unavailable.
+- English and Simplified Chinese must describe identical behavior, timing, and limits.
+- Keep played/unplayed and one-time cap behavior aligned across both locales.
 
-5. English and Simplified Chinese consistency rule
-
-English and Simplified Chinese must describe the same behavior, counts, timing, and conditions. Do not over-compress Chinese text so far that play/unplayed outcomes or one-time limits become ambiguous.
-
-6. Terminology rule
+## 6) Terminology rule
 
 - Rootblight = 根蚀
 - Blight Sprout / Root Bud = 根芽
-- Draw Pile = 抽牌堆
-- Discard Pile = 弃牌堆
-- Exhaust Pile = 消耗牌堆
-- Deck / master deck = 牌组 / 主牌组, using 主牌组 when distinguishing permanent deck cards from combat piles
+- Draw Pile = draw pile
+- Discard Pile = discard pile
+- Exhaust Pile = exhaust pile
+- Deck = deck, master deck = main deck
 
-7. Manual checklist rule
+## 7) Manual checklist rule
 
-Each card text change must update the relevant manual checklist rows for hover preview, visible keyword count, rich-text rendering, raw-tag checks, and English/Simplified Chinese parity.
+Every card text change should validate:
+- hover-preview (eng + zhs)
+- duplicate visible keyword checks
+- rich-text rendering checks for `[gold]` / `[blue]`
+- English/Simplified Chinese parity checks

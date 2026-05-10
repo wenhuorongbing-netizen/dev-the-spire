@@ -74,7 +74,7 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Equal("Rootblight II", englishCards["EZMB_DEEP_ROOT.title"]);
         Assert.Equal("Rootblight III", englishCards["EZMB_ROOTBLIGHT_III.title"]);
         Assert.Equal("Blight Sprout", englishCards["EZMB_ROOT_BUD.title"]);
-        Assert.Contains("after combat add a [gold]Rootblight I[/gold]", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("If this was seen but not played, add a [gold]Rootblight I[/gold] after combat.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
 
         foreach (var key in new[] { "EZMB_ROOT.title", "EZMB_DEEP_ROOT.title", "EZMB_ROOTBLIGHT_III.title", "EZMB_ROOT_BUD.title" })
         {

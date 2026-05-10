@@ -1,3 +1,16 @@
 {
-  
+  "EZMB_URDA.title": "Urda, Loamweaver",
+  "EZMB_URDA.epithet": "The roots beneath the floor remember your passage.",
+  "EZMB_URDA.pages.INITIAL.description": "Urda stirs beneath the earth and four blessings pulse from its bark.",
+  "EZMB_URDA.pages.INITIAL.options.urda_seedbed.title": "Seedbed",
+  "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "A blessing linked to combat card rewards. Some rewards will ask for your seed.",
+  "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title": "Humus Pact",
+  "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description": "A blessing linked to skipped combat card rewards. Each skip changes what the earth keeps for you.",
+  "EZMB_URDA.pages.INITIAL.options.urda_molting.title": "Molting",
+  "EZMB_URDA.pages.INITIAL.options.urda_molting.description": "A blessing that changes what returns to your hand at the end of your growth.",
+  "EZMB_URDA.pages.INITIAL.options.urda_moss_map.title": "Moss Map",
+  "EZMB_URDA.pages.INITIAL.options.urda_moss_map.description": "A blessing that rewards room progression through hidden fungal routes.",
+  "EZMB_URDA.pages.DONE.description": "Urda's blessing sinks into the soil. The chosen path is set.",
+  "EZMB_URDA.talk.firstVisitEver.0-0.ancient": "",
+  "EZMB_URDA.talk.ANY.0-0r.ancient": ""
 }

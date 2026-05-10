@@ -187,7 +187,7 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("BaseLib", readme, StringComparison.Ordinal);
         Assert.Contains("EzDailyContent disabled or absent", readme, StringComparison.Ordinal);
         Assert.Contains("Current controlled --force-steam off smoke passed", readme, StringComparison.Ordinal);
-        Assert.Contains("Found 12 SavedSpireFields", readme, StringComparison.Ordinal);
+        Assert.Contains("Found 13 SavedSpireFields", readme, StringComparison.Ordinal);
         Assert.Contains("Normal Steam-client Mod Settings verification passed after the no-op EZ Micro Balance config page was added", readme, StringComparison.Ordinal);
         Assert.Contains("EZMicroBalance.json author is set to wenhuorongbing-netizen from the local Git user name", readme, StringComparison.Ordinal);
         Assert.Contains("Rootblight I/II/III and Blight Sprout use original generated portrait art packaged with the mod", readme, StringComparison.Ordinal);

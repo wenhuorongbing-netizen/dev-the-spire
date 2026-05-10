@@ -1,4 +1,4 @@
-# EZ Micro Balance Private Beta Verification Handoff
+﻿# EZ Micro Balance Private Beta Verification Handoff
 
 Date: 2026-05-09
 
@@ -9,11 +9,11 @@ This handoff is for manual verification that cannot be completed by the local au
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `1699D7BEC6C1A0BD02223E45E4B90399C7BFBB20D4E95236F9ED1E08A795AF8F`
+- Zip SHA256: `4E22172A2078DBCD67F9DEFFDC447BC35E7619107D19961154B21A6B9A72FDDF`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `9A0E750122D3AEBE449D2D95A20AED84657AFF6D169079E0F0184CC7084A70DF`
+- DLL SHA256: `B1E3C4A7F419B54F339947403FB48FAFF768F8259DB039CA44F79FEDC2E6BF78`
 - Manifest SHA256: `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`
-- PCK SHA256: `253E1310D8357EEB4D099F34BFA8785A66FEE77576BDA59A4D34277874696C25`
+- PCK SHA256: `6493913D0B1F57A92CF0D1BD24841FCF41E9753C871ED04B4A218531C35BCCDD`
 
 ## Known Automated Evidence
 
@@ -23,8 +23,8 @@ This handoff is for manual verification that cannot be completed by the local au
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: last passed before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh. Not rerun for the latest source/resource refresh.
 - `dotnet publish EZMicroBalance.sln`: passed.
 - `git diff --check`: last exit 0 before the Rootblight top-level notice hardening, optional portrait fallback, and generated-art/author refresh. Not rerun for the latest source/resource refresh.
-- Current controlled `--force-steam off` smoke physically isolated unrelated mods and temporarily enabled only BaseLib and EZ Micro Balance. Evidence under `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904` loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 12 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored `settings.save`, `settings.save.backup`, and 22 moved mod entries.
-- RC1 normal Steam-client isolated startup log started Slay the Spire 2 through `D:\Steam\steam.exe -applaunch 2868840`, temporarily isolated non-BaseLib/EZMB local mod entries, loaded to main menu with `Loaded 2 mods (2 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialization, `Found 12 SavedSpireFields`, 0 startup `ERROR` lines, and 0 release-blocking signatures. Snapshot: `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log`. The moved mod entries and `settings.save` were restored afterward.
+- Current controlled `--force-steam off` smoke physically isolated unrelated mods and temporarily enabled only BaseLib and EZ Micro Balance. Evidence under `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904` loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 13 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored `settings.save`, `settings.save.backup`, and 22 moved mod entries.
+- RC1 normal Steam-client isolated startup log started Slay the Spire 2 through `D:\Steam\steam.exe -applaunch 2868840`, temporarily isolated non-BaseLib/EZMB local mod entries, loaded to main menu with `Loaded 2 mods (2 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialization, `Found 13 SavedSpireFields`, 0 startup `ERROR` lines, and 0 release-blocking signatures. Snapshot: `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log`. The moved mod entries and `settings.save` were restored afterward.
 - RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page. Evidence screenshots: `.tools\runtime-evidence\rc1-modsettings-attempt-20260508-092717-modconfig.png` for BaseLib, `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` for the EZ Micro Balance `寰钩琛 page entry, and `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` for the `鏃犲彲閰嶇疆閫夐」銆俙 page. Log snapshot `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log` has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
 - RC1 A11 Act 1 map/save-load spot check launched through normal Steam with only BaseLib + EZ Micro Balance, selected A11 through the original single-player Ascension arrows, confirmed the Act 1 map log `columns=8; rows=17` with `inserted 1 late route row(s)`, saved after the first node, continued the run, and reopened the map after load with the same geometry. Evidence: `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008\08-character-select-a11.png`, `11-a11-act1-map-after-neow-continue.png`, `15-after-continue-load.png`, `16-map-open-after-load-attempt.png`, `a11-map-save-load-godot-live.log`, and `a11-save-map-dimensions.json`. The live log used for the gate has 0 `ERROR` lines and 0 release-blocking signatures.
 - RC1 A11 Act 2/3 map-surface observation launched through normal Steam with only BaseLib + EZ Micro Balance, selected A11 through the original single-player Ascension arrows, reached the Act 1 map normally, then used DevConsole `act 2` and `act 3` only to inspect later-act map surfaces. Evidence: `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355\19-character-select-a11.png`, `25-a11-act2-map-clean.png`, `27-a11-act3-map-clean.png`, and `a11-act23-godot-live.log`. The log records Act 2 `columns=8; rows=16` with 1 late row and Act 3 `columns=8; rows=16` with 2 late rows, with 0 `ERROR` lines and 0 release-blocking signatures. Natural route traversal and boss reachability remain pending.
@@ -130,3 +130,4 @@ Do not include:
 - Any copied official Slay the Spire 2 assets or large decompiled method bodies.
 
 Push only after explicit user approval.
+

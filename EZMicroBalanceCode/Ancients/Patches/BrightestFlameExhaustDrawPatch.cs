@@ -5,7 +5,7 @@ using MegaCrit.Sts2.Core.Models.Cards;
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 /// <summary>
-/// ISSUE-2026-05-08-QUALITY-FLAME-CARD-EXHAUST-DRAW-ONE-MORE:
+/// ISSUE-2026-05-08-BRIGHTEST-FLAME-CARD-EXHAUST-DRAW-ONE-MORE:
 /// BrightestFlame gains Exhaust and draws 1 more card.
 /// Vanilla: Gain Energy(2), Draw(2), LoseMaxHp(1). Upgrade: Energy+1, Draw+1.
 /// Modified: Gain Energy(2), Draw(3), LoseMaxHp(1); upgrade draws 4. Also Exhaust.

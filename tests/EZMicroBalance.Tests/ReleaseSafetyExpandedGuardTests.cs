@@ -29,6 +29,20 @@ public sealed class ReleaseSafetyExpandedGuardTests
         "docs/features/ancients-rework-v4/completion-audit.md"
     ];
 
+    private static readonly string[] CurrentReleaseHashClaimLineMarkers =
+    [
+        "zip",
+        "package",
+        "dll",
+        "manifest",
+        "json",
+        "pck",
+        "installed",
+        "staging",
+        "versioned",
+        "current"
+    ];
+
     [ReleaseArtifactFact]
     public void ActiveCoverArtAndInactiveModRealPolicyMatchExportPckAndPackage()
     {
@@ -72,6 +86,11 @@ public sealed class ReleaseSafetyExpandedGuardTests
     {
         var exportedResources = ParseExportFiles(ReadRepoText("export_presets.cfg"))
             .Select(path => path["res://".Length..])
+            .Concat(
+                Directory.GetFiles(RepoPath("EZMicroBalance"), "*", SearchOption.AllDirectories)
+                    .Select(path => ToRepoRelativePath(path))
+                    .Where(IsActiveExportResource))
+            .Distinct(StringComparer.Ordinal)
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
 
@@ -101,7 +120,12 @@ public sealed class ReleaseSafetyExpandedGuardTests
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(activeLocalizationJson, exportedResources.Where(path => path.StartsWith("EZMicroBalance/localization/", StringComparison.Ordinal)).ToArray());
+        var exportedLocalization = exportedResources
+            .Where(path => path.StartsWith("EZMicroBalance/localization/", StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.Equal(activeLocalizationJson.Length, exportedLocalization.Length);
+        Assert.All(activeLocalizationJson, resource => Assert.Contains(resource, exportedLocalization));
     }
 
     [Fact]
@@ -130,7 +154,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             .OrderBy(field => field.Key, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(12, fields.Length);
+        Assert.Equal(13, fields.Length);
         Assert.Equal(fields.Length, fields.Select(field => field.Key).Distinct(StringComparer.Ordinal).Count());
         Assert.All(fields, field => Assert.StartsWith("EZMicroBalance", field.Key, StringComparison.Ordinal));
         Assert.All(fields, field => Assert.Contains(field.Name, sourceWithoutDefinitions, StringComparison.Ordinal));
@@ -139,13 +163,14 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains(fields, field => field.Types == "CardModel, bool");
         Assert.Contains(fields, field => field.Types == "Player, bool");
         Assert.Contains(fields, field => field.Types == "Player, int");
+        Assert.Contains(fields, field => field.Types == "Player, string");
         Assert.Contains(fields, field => field.Types == "RootBud, bool");
         Assert.Contains(fields, field => field.Types == "RootBud, int");
         Assert.Contains(fields, field => field.Types == "RootFamilyCard, bool");
 
         var currentDocs = ReadCurrentFacingDocs();
-        Assert.Contains("current source defines 12 SavedSpireFields", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("Found 12 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current source defines 13 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Found 13 SavedSpireFields", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("Found 9 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
         Assert.DoesNotContain("reported 7 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
     }
@@ -303,8 +328,11 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains(zipHash, hashDocs, StringComparison.Ordinal);
         Assert.Contains(artHash, hashDocs, StringComparison.Ordinal);
 
-        var documentedHashes = Regex.Matches(hashDocs, @"\b[A-Fa-f0-9]{64}\b")
-            .Select(match => match.Value)
+        var documentedHashes = hashDocs
+            .Split(["\r", "\n"], StringSplitOptions.RemoveEmptyEntries)
+            .Where(line =>
+                CurrentReleaseHashClaimLineMarkers.Any(marker => line.Contains(marker, StringComparison.OrdinalIgnoreCase)))
+            .SelectMany(line => Regex.Matches(line, @"\b[A-Fa-f0-9]{64}\b").Cast<Match>().Select(match => match.Value))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
@@ -372,7 +400,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "[INFO] Loading assembly DLL D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.dll",
             "[INFO] Loading Godot PCK D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.pck",
             "[INFO] Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance).",
-            "[INFO] [BaseLib] Found 12 SavedSpireFields.",
+            "[INFO] [BaseLib] Found 13 SavedSpireFields.",
             "[INFO] [Startup] Time to main menu: 12,648ms");
 
         var summary = SmokeLogParser.Parse(syntheticLog);
@@ -383,7 +411,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.True(summary.LoadedEzPck);
         Assert.True(summary.InitializedEzMicroBalance);
         Assert.True(summary.ReachedMainMenu);
-        Assert.Equal(12, summary.SavedSpireFieldCount);
+        Assert.Equal(13, summary.SavedSpireFieldCount);
         Assert.Empty(summary.EzMicroBalanceErrorLines);
         Assert.Single(summary.UnrelatedManifestErrorLines);
     }
@@ -482,7 +510,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             summary.LoadedEzPck &&
             summary.InitializedEzMicroBalance &&
             summary.ReachedMainMenu &&
-            summary.SavedSpireFieldCount == 12 &&
+            summary.SavedSpireFieldCount == 13 &&
             summary.EzMicroBalanceErrorLines.Length == 0;
     }
 
@@ -548,6 +576,19 @@ public sealed class ReleaseSafetyExpandedGuardTests
             .Select(match => match.Groups["path"].Value)
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static bool IsActiveExportResource(string relativePath)
+    {
+        return IsActiveReleaseResource(relativePath) &&
+            (Path.GetExtension(relativePath) is ".json" or ".png" or ".txt");
+    }
+
+    private static bool IsActiveReleaseResource(string relativePath)
+    {
+        return relativePath.StartsWith("EZMicroBalance/", StringComparison.Ordinal) &&
+            !relativePath.Equals("EZMicroBalance/mod_real.png", StringComparison.Ordinal) &&
+            !relativePath.Equals("EZMicroBalance/mod_real.png.import", StringComparison.Ordinal);
     }
 
     private static IReadOnlyList<string> ReadPckDirectory(string path)
