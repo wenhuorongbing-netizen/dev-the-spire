@@ -9,17 +9,17 @@ This handoff is for manual verification that cannot be completed by the local au
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `EDA9A59FD8F028287EE5EED558D8CEFFF6FE310AEC07F428B4C53310EBED3EBA`
+- Zip SHA256: `11BE93B02CE5999FAE04E77CEB82FC20E4FD2416D01EB1C5B6D91900D03CFB0D`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `EC0FF02E1AF625B0C3DA63F68D1BDBE37A85BF0E5EDBDF021299472DE4D1489F`
+- DLL SHA256: `29A271AB6A1325F2DFAA56C2221E09E5F4AAC1F60BE9CFB5D7541079A05EC8CA`
 - Manifest SHA256: `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`
 - PCK SHA256: `24FF522361195C4245CC1009E30302FD30031B65722DAB50FF8B848D14EAE82F`
 
 ## Known Automated Evidence
 
 - `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-10 after the latest artifact-parity refresh, 67 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-10 after the latest artifact-parity refresh, 83 passed, 0 skipped, 0 failed.
+- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-10 after the latest artifact-parity refresh, 71 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-10 after the latest artifact-parity refresh, 84 passed, 0 skipped, 0 failed.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after the latest source/resource refresh.
 - `dotnet publish EZMicroBalance.sln`: passed.
 - `git diff --check`: last exit 0 after the latest source/resource refresh.
@@ -98,10 +98,21 @@ A1.05.01 (`ae910e8`) is a broad engineering/review commit, not only a handoff an
 
 Current git status before this handoff:
 
-- `git log -1 --oneline --decorate`: `afa89cb (HEAD -> main, origin/main, origin/HEAD) 1.05.06`
-- `git status --short --branch`: `## main...origin/main` with `M AGENTS.md`, `M EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs`, `M PROJECT_STATE.md`, `M docs/issues.md`, `M docs/private-beta-verification-handoff.md`, `M tests/EZMicroBalance.Tests/ReleaseCoverageGuardTests.cs`.
+- Current git log -1 --oneline --decorate: `9fd9e3f (HEAD -> main, origin/main, origin/HEAD) 1.05.07`
+- `git status --short --branch`: `## main...origin/main`
 
-The current local changes are this repository-overhaul completion pass: Urda Done() safety restore, PROJECT_STATE/hand off state refresh, and related issue/index/doc guard cleanup. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
+Pre-commit local cleanup status summary:
+
+- `M AGENTS.md`
+- `M EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs`
+- `M EZMicroBalanceCode/Ascension/Rewards/RootDeckService.cs`
+- `?? EZMicroBalance/images/card_portraits/rootblight_i.png`
+- `?? docs/style/card-localization-style-guide.md`
+- `M tests/EZMicroBalance.Tests/ReleaseCoverageGuardTests.cs`
+- `M PROJECT_STATE.md`
+- `M docs/private-beta-verification-handoff.md`
+
+The current local changes are this package/evidence refresh pass: hash refresh, counts refresh, and remaining-manual-blocker updates. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
 
 Proposed commit scope after the remaining manual/user gates are resolved:
 

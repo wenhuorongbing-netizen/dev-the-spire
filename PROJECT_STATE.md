@@ -6,7 +6,7 @@
 
 ## Current latest commit
 
-- `afa89cb` (`1.05.06`) on `main`.
+- `9fd9e3f` (`1.05.07`) on `main`.
 
 ## Game and BaseLib target
 

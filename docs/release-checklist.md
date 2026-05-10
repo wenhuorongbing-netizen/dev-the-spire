@@ -24,7 +24,7 @@ Target manifest id: `EZMicroBalance`
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-smoke evidence tests have been rerun for the current tree with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` after the latest package hash refresh.
-- [x] `publish/EZMicroBalance-v0.1.0-private-beta.0.zip` is rebuilt from the current installed artifacts. Current zip SHA256 `EDA9A59FD8F028287EE5EED558D8CEFFF6FE310AEC07F428B4C53310EBED3EBA`.
+- [x] `publish/EZMicroBalance-v0.1.0-private-beta.0.zip` is rebuilt from the current installed artifacts. Current zip SHA256 `11BE93B02CE5999FAE04E77CEB82FC20E4FD2416D01EB1C5B6D91900D03CFB0D`.
 
 ## Runtime
 
