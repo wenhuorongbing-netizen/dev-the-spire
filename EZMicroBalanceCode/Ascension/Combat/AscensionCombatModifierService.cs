@@ -35,7 +35,7 @@ internal static class AscensionCombatModifierService
 
         if (HasActiveFiremark(combatState, metadata))
         {
-            await ApplyFiremarkCombatStart(combatState, metadata.Firemark!.Value);
+            await ApplyFiremarkCombatStart(combatState, tracker, metadata.Firemark!.Value);
         }
 
         if (HasActiveBanner(combatState, metadata))
@@ -281,7 +281,10 @@ internal static class AscensionCombatModifierService
         return Task.CompletedTask;
     }
 
-    private static async Task ApplyFiremarkCombatStart(CombatState combatState, FiremarkKind firemark)
+    private static async Task ApplyFiremarkCombatStart(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        FiremarkKind firemark)
     {
         var host = FindFiremarkHost(combatState);
         if (host == null)
@@ -290,6 +293,7 @@ internal static class AscensionCombatModifierService
             return;
         }
 
+        tracker.FiremarkHost = host;
         var actIndex = Math.Clamp(combatState.RunState.CurrentActIndex, 0, 2);
         switch (firemark)
         {
@@ -456,11 +460,14 @@ internal static class AscensionCombatModifierService
         AscensionCombatTracker tracker)
     {
         var bearer = tracker.ShieldFormationBearer;
-        if (bearer == null || !bearer.IsAlive)
+        if (bearer == null ||
+            !bearer.IsAlive ||
+            tracker.ShieldFormationLastBlockRound == combatState.RoundNumber)
         {
             return;
         }
 
+        tracker.ShieldFormationLastBlockRound = combatState.RoundNumber;
         await ApplyBlockToEnemies(
             AliveEnemies(combatState).Where(enemy => enemy != bearer),
             ShieldFormationTurnBlock);

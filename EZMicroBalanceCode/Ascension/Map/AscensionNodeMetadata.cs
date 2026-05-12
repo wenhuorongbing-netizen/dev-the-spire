@@ -27,6 +27,7 @@ internal sealed class AscensionNodeMetadata
     public BannerKind? Banner { get; set; }
     public BossSealDefinition? BossSeal { get; set; }
     public DeepBranchNodeKind? DeepBranch { get; set; }
+    public bool IsDeepBranchEntry { get; set; }
     public bool IsBossBrand { get; set; }
 
     public bool HasAny =>

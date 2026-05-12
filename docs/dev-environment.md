@@ -1,4 +1,4 @@
-﻿# Development Environment
+# Development Environment
 
 ## Machine
 - OS: Windows 11 Pro (`10.0.26200`, `64-bit`)
@@ -18,7 +18,7 @@
 - Game root: `D:\Steam\steamapps\common\Slay the Spire 2`
 - Mod folder: `D:\Steam\steamapps\common\Slay the Spire 2\mods`
 - Current branch target: public beta
-- Observed installed game version: `v0.105.0`
+- Observed installed game version: `v0.105.1` from `D:\Steam\steamapps\common\Slay the Spire 2\release_info.json` on 2026-05-11. The local `source code/` reference snapshot remains `v0.105.0` and must be refreshed before source-backed conclusions about new `v0.105.1` API changes.
 - Observed installed game date: `2026.05.07` upstream build date, installed locally on `2026-05-08`
 - Live observed in-game version (player report, 2026-05-08): `v0.105.0, 2026.05.08`
 - Local source snapshot: `source code/` was refreshed from `D:\Steam\steamapps\common\Slay the Spire 2\SlayTheSpire2.pck` on 2026-05-08 using GDRE Tools `v2.5.0-beta.5`; `release_info.json` reports commit `e4579d36`, branch/version `v0.105.0`, and `main_assembly_hash` `359406027`.
@@ -64,20 +64,20 @@
 - BaseLib version consistency: OK. Runtime `v3.1.2` matches project package `3.1.2`.
 
 ## Last known commands
-- Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-09 after the Rootblight optional portrait fallback, generated-art/author refresh, and guard/doc consistency patch. Default Debug builds no longer overwrite installed release artifacts; Release build/publish remains the installed-mod copy path. Result: succeeded with 0 warnings and 0 errors.
-- Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-09 after the Rootblight optional portrait fallback, generated-art/author refresh, and guard/doc consistency patch. Result: succeeded with 0 warnings and 0 errors.
-- Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-10. Result: passed, 71 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
-- Latest opt-in artifact-validation run: `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-10. Result: passed, 84 passed, 0 skipped, 0 failed.
-- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-10 after the docs-overhaul pass. Result: exit code 0.
-- Last required diff check: `git diff --check` on 2026-05-10 after the docs-overhaul pass. Result: exit code 0.
-- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-10 after the package/evidence refresh.
-- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-10. Result: command returned exit code 0, built `EZMicroBalance` in Release, copied `EZMicroBalance.dll` and `EZMicroBalance.json`, exported the selected-resource `EZMicroBalance.pck`, and did not publish the test project.
-- Last PCK audit: publish/package refresh left the installed, staging, versioned, and zip PCK at SHA256 `24FF522361195C4245CC1009E30302FD30031B65722DAB50FF8B848D14EAE82F`. The latest opt-in automated PCK-content audit matches this full artifact set and is current through the latest package refresh.
-- Last installed DLL audit: installed, staging, versioned package, and extracted zip DLL SHA256 all match `29A271AB6A1325F2DFAA56C2221E09E5F4AAC1F60BE9CFB5D7541079A05EC8CA`.
+- Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-12 after the Urda source gameplay slice. Default Debug builds no longer overwrite installed release artifacts; Release build/publish remains the installed-mod copy path. Result: succeeded with 0 warnings and 0 errors.
+- Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-12 after the Urda source gameplay slice. Result: succeeded with 0 warnings and 0 errors.
+- Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-12. Result: passed, 73 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- Latest opt-in artifact-validation run: `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-12 after the Urda package refresh. Result: passed, 89 passed, 0 skipped, 0 failed.
+- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-12 after the Urda package refresh. Result: exit code 0.
+- Last required diff check: `git diff --check` on 2026-05-12 after the Urda package refresh. Result: exit code 0 with CRLF normalization warnings only.
+- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-12 after the Urda localization/export update.
+- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-12. Result: command returned exit code 0, built `EZMicroBalance` in Release, copied `EZMicroBalance.dll` and `EZMicroBalance.json`, and exported the selected-resource PCK with Urda card-reward UI localization included.
+- Last PCK audit: publish/package refresh left the installed, staging, versioned, and zip PCK at SHA256 `FCD38F1E5D940D4CDEB94623465FA24D71A75AABFF323586D1B9FBED856D4557`. The latest opt-in automated PCK-content audit matches this full artifact set and is current through the latest package refresh.
+- Last installed DLL audit: installed, staging, versioned package, and extracted zip DLL SHA256 all match `EE6B9EE9F2D0D3F4962D6DA11B03E19E6E4806DF08930C1F342BF9530A36A6EF`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
-- Last private beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` was rebuilt from the current installed artifacts after the latest artifact parity refresh. The package `README_INSTALL.txt` records the resolved author/generated-art status. SHA256 `11BE93B02CE5999FAE04E77CEB82FC20E4FD2416D01EB1C5B6D91900D03CFB0D`; entries are `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
+- Last private beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` was rebuilt from the current installed artifacts after the Urda source gameplay slice. The package `README_INSTALL.txt` records the resolved author/generated-art status, the multiplayer diagnostics note, and Urda live-verification limits. SHA256 `2A13A44EA643EA872A8A189883E4EEFFDE8D9DDB8A83A0F5838CE9B6FA8072AD`; entries are `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
 - Last release art audit: `EZMicroBalance/mod_image.png` and `publish\EZMicroBalance-cover-source.png` currently have SHA256 `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75` and were manually checked as original generated art with no visible text, letters, numbers, numerals, logos, or official game assets.
-- Publish note: Godot still prints a non-fatal script-scan `sts2` assembly load exception during headless export because the project assembly references runtime game assemblies that are not loaded by the editor process.
+- Publish note: Headless Godot export requires `export_presets.cfg` to be UTF-8 without BOM and needs local runtime references available to the editor assembly scan. `EZMicroBalance.csproj` copies `sts2.dll`, `0Harmony.dll`, and BaseLib into the Godot temp build folders before export; the selected-resource PCK still contains only active mod resources.
 
 ## Manual game verification
 - Manual game verification succeeded: legacy baseline only.
@@ -87,7 +87,7 @@
 - BaseLib enabled: yes.
 - Legacy EzDailyContent appeared in Mod Settings: yes.
 - Legacy EzDailyContent enabled: yes.
-- Target EZMicroBalance Mod Settings verification: passed for RC1. A no-op BaseLib `ModConfig` page is registered for EZ Micro Balance, and the normal Steam-client UI probe opened `妯＄粍閰嶇疆` after temporarily isolating non-BaseLib/EZMB mods. Evidence `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` shows the EZ Micro Balance page entry as `寰钩琛; `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` shows its `鏃犲彲閰嶇疆閫夐」銆俙 page; `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log` shows `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, and 0 `ERROR` / release-blocking signature hits.
+- Target EZMicroBalance Mod Settings verification: passed for RC1. A no-op BaseLib `ModConfig` page is registered for EZ Micro Balance, and the normal Steam-client UI probe opened `妯＄粍閰嶇疆` after temporarily isolating non-BaseLib/EZMB mods. Evidence `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` shows the EZ Micro Balance page entry as `寰钩琛�? `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` shows its `鏃犲彲閰嶇疆閫夐」銆�?page; `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log` shows `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, and 0 `ERROR` / release-blocking signature hits.
 - Screenshot-observed in-game version: `v0.104.0`, date `2026.04.23`.
 - Current branch target: public beta.
 

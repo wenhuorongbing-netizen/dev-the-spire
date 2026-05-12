@@ -1,6 +1,11 @@
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Debug;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Modding;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
+using MegaCrit.Sts2.Core.Multiplayer.Messages.Lobby;
+using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
@@ -62,6 +67,60 @@ internal static class MultiplayerDiagnostics
 
         MainFile.Logger.Info(
             $"[EZMicroBalance][MPDiag] SaveQuit: phase={phase}; isHost={isHost}; localNetId={localNetId}");
+    }
+
+    public static void LogInitialGameInfo(InitialGameInfoMessage message)
+    {
+        var localVersion = ReleaseInfoManager.Instance.ReleaseInfo?.Version ?? GitHelper.ShortCommitId ?? "UNKNOWN";
+        var localModelHash = ModelIdSerializationCache.Hash;
+        var localMods = ModManager.GetGameplayRelevantModNameList() ?? [];
+        var hostMods = message.mods ?? [];
+        var versionMatch = string.Equals(message.version, localVersion, StringComparison.Ordinal);
+        var modelHashMatch = message.idDatabaseHash == localModelHash;
+        var missingOnHost = localMods.Except(hostMods).ToList();
+        var missingOnLocal = hostMods.Except(localMods).ToList();
+        var modListMatch = missingOnHost.Count == 0 && missingOnLocal.Count == 0;
+
+        if (!IsEnabled && versionMatch && modelHashMatch && modListMatch) return;
+
+        var summary =
+            $"[EZMicroBalance][MPDiag] JoinFlow initial game info: " +
+            $"hostVersion={message.version}; localVersion={localVersion}; versionMatch={versionMatch}; " +
+            $"hostModelHash={message.idDatabaseHash}; localModelHash={localModelHash}; modelHashMatch={modelHashMatch}; " +
+            $"gameMode={message.gameMode}; sessionState={message.sessionState}; " +
+            $"hostFailure={message.connectionFailureReason?.ToString() ?? "<none>"}; " +
+            $"hostMods=[{FormatList(hostMods)}]; localMods=[{FormatList(localMods)}]; " +
+            $"missingOnHost=[{FormatList(missingOnHost)}]; missingOnLocal=[{FormatList(missingOnLocal)}]";
+
+        if (versionMatch && !modelHashMatch)
+        {
+            MainFile.Logger.Warn(summary + "; visible game versions match, but the ModelDb hash does not; vanilla will report this as VersionMismatch.");
+            return;
+        }
+
+        if (!versionMatch || !modListMatch)
+        {
+            MainFile.Logger.Warn(summary);
+            return;
+        }
+
+        MainFile.Logger.Info(summary);
+    }
+
+    private static string FormatList(IEnumerable<string> values) =>
+        string.Join(",", values.OrderBy(value => value, StringComparer.Ordinal));
+}
+
+/// <summary>
+/// Logs the initial join handshake before vanilla collapses a ModelDb hash mismatch
+/// into the same VersionMismatch UI used for a real release-version mismatch.
+/// </summary>
+[HarmonyPatch(typeof(JoinFlow), "HandleInitialGameInfoMessage")]
+internal static class JoinFlowHandleInitialGameInfoMessageDiagPatch
+{
+    private static void Prefix(InitialGameInfoMessage message)
+    {
+        MultiplayerDiagnostics.LogInitialGameInfo(message);
     }
 }
 

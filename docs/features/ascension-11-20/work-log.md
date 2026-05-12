@@ -5,18 +5,75 @@ Manifest id: EZMicroBalance
 
 Current status note: entries below are chronological history. The current automated test baseline is recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh; earlier 24-test, 28-test, 34-test, 46-test, 56-test, 57-test, 58-test, 63-test, and 64-test entries are retained as historical evidence from before later guard additions.
 
+## 2026-05-11 - Multiplayer Version-Mismatch / ModelDb Hash Diagnostics
+
+Scope:
+
+- Investigated the player-reported Windows/Mac co-op failure where the visible Slay the Spire 2 version appeared identical but the client popup said the host game version differed.
+- Did not bypass vanilla `ModelIdSerializationCache.Hash` validation or allow mismatched peers to connect.
+
+Evidence:
+
+- Local log evidence showed host and local version strings both at `v0.105.1`, but `JoinFlow` disconnected because host `InitialGameInfoMessage.idDatabaseHash` was `3593977223` while local `ModelIdSerializationCache.Hash` was `150743674`.
+- Source review confirmed vanilla maps this ModelDb hash mismatch to `ConnectionFailureReason.VersionMismatch`, so the Simplified Chinese UI string still says the game versions differ.
+
+Implemented:
+
+- Added a narrow `JoinFlow.HandleInitialGameInfoMessage` diagnostic patch that logs host/local version, host/local ModelDb hash, gameplay-relevant mod lists, and missing-mod deltas before vanilla disconnects.
+- The mismatch summary logs automatically when version, mod list, or ModelDb hash differs; `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` still enables the broader lobby/run-start/save-quit stream.
+- Updated the package README and multiplayer runbook notes so testers know the popup can mean a ModelDb hash mismatch even when the visible version string matches.
+
+Validation:
+
+- `dotnet build`: passed with 0 warnings and 0 errors.
+- `dotnet test --no-build`: passed, 73 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet publish`: passed and refreshed the installed DLL.
+- Rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from installed artifacts.
+- Current hashes: DLL `497DF8EFCCEEFA6527406B6BC95739C4DFF7E6A441FD68C70C285759A61CAFCD`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `94DA61B1C57316FF08AE9E39E1212E7B581E81AEB9D23633FF8DDF9B6BDE33CF`, README `3F346608F821ED6F4116266FE647BE1821CE1532AE4FB0FCA70F6A497453C619`, package zip `607E903C911E8B3FF40DA0E0005829C1654A6BD0B15920DC1A5DD0AAB694CB12`.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test --no-build`: passed, 89 passed, 0 skipped, 0 failed.
+
+## 2026-05-10 - A12/A16/A19 Modifier Variety And Preview Pass
+
+Scope:
+
+- Fixed deterministic Firemark/Banner monotony and map preview clarity.
+- Did not add new Firemark, Banner, Boss Seal, or Fission mechanics.
+- Did not change the Fission icon, Firemarked Elite marker existence, A11 Long Road marker status, or A20 multiplayer gate.
+
+Implemented:
+
+- Replaced the old first-room kind formulas with stable marker hashing based on run seed, marker family, act index, and map coord.
+- Added act-level shuffled Firemark/Banner kind order so the same act avoids duplicate kinds until every kind has been used.
+- Added always-on assignment logs with act index, coord, marker family, and kind.
+- Added `EZMB_ASCENSION_DIAGNOSTICS=1` map distribution summaries for Firemark kinds, Banner kinds, and Boss Seal/Brand metadata.
+- Added Firemarked Elite map hover for exact Firemark kind name and summary.
+- Kept Banner Room hover on exact Banner kind summaries and added Firemark localization parity.
+- Hardened Boss Royal Seal / King Brand hover with localized summary text plus `BossSealDefinition` summary fallback; Aeonglass remains the temporary +5 Strength seal and is visible in hover text.
+- Added Fission diagnostics under `EZMB_ASCENSION_DIAGNOSTICS=1` for source label, chance, eligible candidate count, roll, applied yes/no, and card id.
+- Added `docs/features/ascension-11-20/player-facing-modifier-guide.md`.
+
+Validation:
+
+- `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- `dotnet test EZMicroBalance.sln`: passed, 72 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet test EZMicroBalance.sln --no-build`: passed, 72 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet publish EZMicroBalance.sln`: passed after fixing the local Godot export environment (`export_presets.cfg` UTF-8 no BOM and editor-scan runtime references).
+- Rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from installed artifacts.
+- Current hashes: DLL `599D4EF00CF207F8AB79AB90FCBE4B644E5C476B7F4DE2AB60CE8BBE9B460C50`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `94DA61B1C57316FF08AE9E39E1212E7B581E81AEB9D23633FF8DDF9B6BDE33CF`, package zip `B1F8B0FBA1BBFA736233D27C83BF193CE661B22726FA37420CE2C4B2B1F8750E`.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 88 passed, 0 skipped, 0 failed.
+
 ## 2026-05-08 - v0.105.0 API Drift / BaseLib / Dependency Compatibility Blocker
 
 Scope: re-prioritize from EZMB HP/Neow fix to dependency compatibility gate.
 
 Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
 
-- **17-mod environment:** `Loaded 17 mods (19 total)` Èà•?invalidates release evidence. Must test with only BaseLib + EZMicroBalance.
+- **17-mod environment:** `Loaded 17 mods (19 total)` Èà?invalidates release evidence. Must test with only BaseLib + EZMicroBalance.
 - **Superseded BaseLib v3.1.0 patch failures:** earlier 17-mod logs showed `Undefined target method ... ExhaustivePatch`, `PersistPatch`, `PurgePatch`. Current BaseLib `v3.1.2` controlled smoke has no BaseLib patch-failure signatures.
 - **`Creature.get_ShowsInfiniteHp()` removed in v0.105.0:**
   - `System.MissingMethodException: Method not found: 'Boolean MegaCrit.Sts2.Core.Entities.Creatures.Creature.get_ShowsInfiniteHp()'`
   - Callers: `BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay(NHealthBar)`, `DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp(CombatState)`
-  - Stack reaches `CrackedCore.BeforeSideTurnStart` Èà´?`CombatManager.StartCombatInternal()`
+  - Stack reaches `CrackedCore.BeforeSideTurnStart` Èà?`CombatManager.StartCombatInternal()`
 - **Direct gameplay impact:** singleplayer Defect A20 enters combat, does not draw cards, energy stuck at 0/3. Combat startup is interrupted by the exception chain.
 - **Conclusion:** This is NOT an EZMB logic bug. The EZMB HP/Neow/energy diagnostics work is on hold until the dependency environment is cleaned and proven compatible.
 
@@ -41,13 +98,13 @@ Manual actions for tester:
 Scope:
 
 - Added gated multiplayer diagnostics (`EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1`) with Harmony patches on:
-  - `StartRunLobby.BeginRunForAllPlayers` Èà•?lobby state before run start
-  - `StartRunLobby.BeginRunLocally` Èà•?ascension/player count at local launch
-  - `StartRunLobby.UpdateMaxMultiplayerAscension` Èà•?ascension cap computation
-  - `NGame.StartNewMultiplayerRun` Èà•?RunState player HP post-creation
-  - `RunManager.EnterAct` Èà•?player HP before and after act entry
-  - `AncientEventModel.BeforeEventStarted` Èà•?player HP before/after Neow healing
-  - `SaveManager.SaveRun`, `NGame.ReturnToMainMenu`, `NGame.Quit` Èà•?save/quit/disconnect logging
+  - `StartRunLobby.BeginRunForAllPlayers` Èà?lobby state before run start
+  - `StartRunLobby.BeginRunLocally` Èà?ascension/player count at local launch
+  - `StartRunLobby.UpdateMaxMultiplayerAscension` Èà?ascension cap computation
+  - `NGame.StartNewMultiplayerRun` Èà?RunState player HP post-creation
+  - `RunManager.EnterAct` Èà?player HP before and after act entry
+  - `AncientEventModel.BeforeEventStarted` Èà?player HP before/after Neow healing
+  - `SaveManager.SaveRun`, `NGame.ReturnToMainMenu`, `NGame.Quit` Èà?save/quit/disconnect logging
 - All patches default off; no gameplay changes.
 - Added `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS` env var to `AscensionFeatureGate`.
 - Added P0 issues to `docs/issues.md`:
@@ -63,19 +120,19 @@ Key source findings:
    - Sets player HP to 0 via `SetCurrentHpInternal(0m)`.
    - Heals to full (MaxHp - 0) or 80% for A2+ (WearyTraveler).
    - For A20: expected heal = 64 HP (80% of 80), not 0.
-   - `CreatureCmd.Heal` calls `creature.HealInternal(amount)` directly Èà•?no queue dependency.
+   - `CreatureCmd.Heal` calls `creature.HealInternal(amount)` directly Èà?no queue dependency.
    - No EZMB code touches HP during this flow.
 
 2. **Vanilla AscensionManager** (`AscensionManager.cs`):
    - `maxAscensionAllowed = 10` (const, used only for progress clamping).
-   - Constructor accepts `int level` directly Èà•?no clamping.
-   - `HasLevel(AscensionLevel)` checks `_level >= (int)level` Èà•?works for values > 10.
+   - Constructor accepts `int level` directly Èà?no clamping.
+   - `HasLevel(AscensionLevel)` checks `_level >= (int)level` Èà?works for values > 10.
    - `ApplyEffectsTo(player)` only handles A4 (TightBelt -1 potion) and A10 (AscendersBane). No HP effects.
 
 3. **Run start flow** (`NGame.StartNewMultiplayerRun`):
-   - `RunState.CreateForNewRun()` with `ascensionLevel` from lobby Èà´?`Player.CreateForNewRun()` uses `character.StartingHp` for both current and max HP.
-   - `RunManager.SetUpNewMultiPlayer()` Èà´?`InitializeNewRun()` Èà´?`ApplyAscensionEffects()` (no HP change).
-   - `StartRun()` Èà´?`RunManager.Instance.EnterAct(0, doTransition: false)` Èà´?Neow event starts Èà´?`BeforeEventStarted` fires.
+   - `RunState.CreateForNewRun()` with `ascensionLevel` from lobby Èà?`Player.CreateForNewRun()` uses `character.StartingHp` for both current and max HP.
+   - `RunManager.SetUpNewMultiPlayer()` Èà?`InitializeNewRun()` Èà?`ApplyAscensionEffects()` (no HP change).
+   - `StartRun()` Èà?`RunManager.Instance.EnterAct(0, doTransition: false)` Èà?Neow event starts Èà?`BeforeEventStarted` fires.
 
 4. **Save/quit** (`NPauseMenu.cs`, refreshed v0.105.0 source):
    - `NPauseMenu.OnSaveAndQuitButtonPressed()` calls `CloseToMenu()`.
@@ -87,7 +144,7 @@ Key source findings:
    - `ENetHost.StopHost(...)` sends a disconnection packet to each client before disconnecting peers when not immediate.
    - `RunLobby.OnDisconnected(...)` calls `RunManager.LocalPlayerDisconnected(...)`, which queues `ReturnToMainMenuWithError(...)` for active non-gameover runs.
    - `NErrorPopup.Create(...)` suppresses a popup only for self-initiated `Quit`; remote peer disconnects should still be non-self-initiated.
-   - `NGame.Quit()` saves settings/progress and calls `GetTree().Quit()` Èà•?does not send network disconnect.
+   - `NGame.Quit()` saves settings/progress and calls `GetTree().Quit()` Èà?does not send network disconnect.
 
    - Active EZMB patches do not patch `NPauseMenu`, `RunManager.CleanUp`, `RunLobby.OnDisconnected`, `NetHostGameService`, `NetClientGameService`, `SteamHost`, or `ENetHost`.
 
@@ -256,7 +313,7 @@ Implemented:
 - Heal rest options add player-facing Forge Token extra text before selection.
 - A13 Fission now has a dedicated enchantment icon and Exhaust hover tip.
 - Fission eligibility now excludes Powers, X-cost cards, star-cost cards, zero-energy cards, cards with Exhaust, cards already set to exhaust on next play, quest/special cards, and incompatible existing enchantments.
-- English/ZHS Ascension text was refreshed; ZHS Fission wording uses "Èë∞Ê•ÑÂÖò" and no longer uses "ÁíêÂú≠Êï§" for this mechanic.
+- English/ZHS Ascension text was refreshed; ZHS Fission wording uses "Èë∞Ê•ÑÂÖ? and no longer uses "ÁíêÂú≠Êï? for this mechanic.
 
 Validation:
 
@@ -1047,7 +1104,7 @@ Verification:
 ## 2026-05-09 - Rootblight Text, Preview, and Add Notice Pass
 
 - Rechecked current v0.105.0 source/localization for official card-reference patterns. `GRAVE_WARDEN`, `CAPTURE_SPIRIT`, `REAVE`, `GLIMPSE_BEYOND`, `DIRGE`, and `SEVERANCE` use `[gold]` around referenced cards/piles in localization and `HoverTipFactory.FromCard<Soul>()` in card models for previews.
-- Confirmed `CardModel.HoverTips` appends keyword hover tips from `CanonicalKeywords`, so Rootblight and Blight Sprout should not repeat Exhaust / Â®ëÂ†£‚Ç¨?in their descriptions when their models already expose `CardKeyword.Exhaust`.
+- Confirmed `CardModel.HoverTips` appends keyword hover tips from `CanonicalKeywords`, so Rootblight and Blight Sprout should not repeat Exhaust / Â®ëÂ†£‚Ç?in their descriptions when their models already expose `CardKeyword.Exhaust`.
 - Confirmed `CardPileCmd.Add(...)` alone is not a full reward/shop-style animation path for a fresh generated master-deck card; vanilla reward/shop feedback animates an existing UI card node separately. Rootblight therefore keeps the command-based `skipVisuals: true` deck add and adds a localized `ThinkCmd.Play` notice after a successful add for the affected local player.
 - Updated Rootblight I/II/III and Blight Sprout descriptions in English and Simplified Chinese to remove duplicate `Play: Exhaust` / `ÈéµÊí≥Âö≠ÈîõÊ∞≠Áß∑Èë∞Ê¢é, add `[gold]` card/pile terms, and match the current play/unplayed outcomes.
 - Added source-backed hover previews with `HoverTipFactory.FromCard<T>()`: Rootblight I previews Rootblight II; Rootblight II previews Rootblight I and III; Rootblight III previews Rootblight I and II; Blight Sprout previews Rootblight I.

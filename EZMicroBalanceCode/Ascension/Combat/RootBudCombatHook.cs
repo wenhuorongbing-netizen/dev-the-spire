@@ -56,7 +56,20 @@ internal sealed class RootBudCombatHook : AbstractModel
         foreach (var player in state.Players.Where(player => player.IsActiveForHooks))
         {
             var targetBudCount = GetRootBudCountForCurrentRoom(state);
-            var existingBuds = FindRootBudsInCombat(player);
+            var existingBuds = FindRootBudsInCombat(player).ToList();
+            foreach (var duplicateBud in existingBuds.Skip(targetBudCount).ToList())
+            {
+                await CardPileCmd.RemoveFromCombat(duplicateBud, skipVisuals: true);
+                tracker.Buds.Remove(duplicateBud);
+            }
+
+            if (existingBuds.Count > targetBudCount)
+            {
+                MainFile.Logger.Info(
+                    $"[EZMicroBalance] Ascension Blight Sprout normalized: removed {existingBuds.Count - targetBudCount} duplicate Blight Sprout card(s) for player {state.RunState.GetPlayerSlotIndex(player)}.");
+                existingBuds = existingBuds.Take(targetBudCount).ToList();
+            }
+
             if (existingBuds.Count >= targetBudCount)
             {
                 foreach (var existingBud in existingBuds)
@@ -372,11 +385,6 @@ internal sealed class RootBudCombatHook : AbstractModel
         if (!IsActTwoOrThree(state))
         {
             return false;
-        }
-
-        if (state.RunState.CurrentActIndex == 2)
-        {
-            return true;
         }
 
         var currentRow = state.RunState.CurrentMapPoint?.coord.row ?? state.RunState.ActFloor - 1;

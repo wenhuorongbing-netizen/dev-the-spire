@@ -2,6 +2,16 @@
 
 Append only short tester/player-facing entries here when behavior or release validation changes.
 
+## 2026-05-11
+
+- Urda, Loamweaver is now enabled by default for private-beta testing in Act 1.
+- Set `EZMB_DISABLE_URDA=1` only when you want to hide Urda for comparison.
+- Urda now has first-pass gameplay for Seedbed, Humus Pact, Molting, and Moss Map; live gameplay and save/load testing are still pending.
+- Seedbed can trade max HP for Seedlings from normal Act 1 combat card rewards and rewards four accepts with max HP.
+- Humus Pact rewards skipped normal Act 1 combat card rewards, then opens a small removal plus upgraded-card payoff.
+- Molting removes one Strike and one Defend, adds two Withered Husk cards, then clears those husks at Act 2.
+- Moss Map grants one small Act 1 reward per first visited room type.
+
 ## 2026-05-08
 
 - Multiplayer A20: fixed a black-screen run-start crash caused by hard references to optional Early Access Boss Seal types missing from the current installed game DLL.

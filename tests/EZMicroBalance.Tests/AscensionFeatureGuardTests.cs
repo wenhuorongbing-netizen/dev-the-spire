@@ -70,6 +70,33 @@ public sealed class AscensionFeatureGuardTests
     }
 
     [Fact]
+    public void MultiplayerVersionMismatchDiagnosticsExposeModelHashHandshakeWithoutBypass()
+    {
+        var diagnostics = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.cs");
+        var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
+        var runbook = ReadRepoText("docs", "features", "ascension-11-20", "multiplayer-test-runbook.md");
+
+        AssertSourceContains(
+            diagnostics,
+            "HarmonyPatch(typeof(JoinFlow), \"HandleInitialGameInfoMessage\")",
+            "InitialGameInfoMessage message",
+            "ReleaseInfoManager.Instance.ReleaseInfo?.Version ?? GitHelper.ShortCommitId ?? \"UNKNOWN\"",
+            "ModelIdSerializationCache.Hash",
+            "ModManager.GetGameplayRelevantModNameList()",
+            "message.idDatabaseHash == localModelHash",
+            "visible game versions match, but the ModelDb hash does not; vanilla will report this as VersionMismatch",
+            "missingOnHost",
+            "missingOnLocal");
+
+        Assert.Contains("the version string matches but the hash differs", apiResearch, StringComparison.Ordinal);
+        Assert.Contains("Record both `Got initial game info message. Version: ... Hash: ...` and local `ModelIdSerializationCache initialized... Hash: ...` lines.", runbook, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("ConnectionFailureReason.VersionMismatch = null", diagnostics, StringComparison.Ordinal);
+        Assert.DoesNotContain("message.idDatabaseHash = ModelIdSerializationCache.Hash", diagnostics, StringComparison.Ordinal);
+        Assert.DoesNotContain("return false", diagnostics, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void RootStarterUsesSavedPlayerMarkerAndCommandDeckMutation()
     {
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
@@ -204,6 +231,7 @@ public sealed class AscensionFeatureGuardTests
             "IsOnSameRoute",
             "AreAdjacent",
             "CanReach(left, right) || CanReach(right, left)",
+            "KeepsFiremarksOptional(start, boss, selected, point)",
             "EnsureQuestMarker<FiremarkedEliteMapQuestMarker>(point)",
             "candidate.PointType == MapPointType.RestSite",
             "point.coord.row > firstRestSiteRow.Value");
@@ -216,10 +244,103 @@ public sealed class AscensionFeatureGuardTests
             "PowerCmd.Apply<ForgeArmorMarkFiremarkPower>",
             "PowerCmd.Apply<ConstantHealMarkFiremarkPower>",
             "CreatureCmd.SetMaxAndCurrentHp",
+            "tracker.FiremarkHost = host",
             "ApplyBossSealCombatStart(combatState, metadata)");
 
         Assert.DoesNotContain("await ApplyStrengthToEnemies(combatState, 2m);", combatService, StringComparison.Ordinal);
         Assert.Contains("Act 1 firemarked elite appears only after the first rest-site row.", manualChecklist, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AscensionMapModifierVarietyPreviewAndFissionDiagnosticsAreGuarded()
+    {
+        var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
+        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var mapPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionMapUiPatches.cs");
+        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
+        var playerGuide = ReadRepoText("docs", "features", "ascension-11-20", "player-facing-modifier-guide.md");
+        var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
+        var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
+
+        AssertSourceContains(
+            metadata,
+            "Might",
+            "Giant",
+            "ForgeArmor",
+            "ConstantHeal",
+            "Vanguard",
+            "ShieldFormation",
+            "Bounty");
+
+        AssertSourceContains(
+            mapService,
+            "StableMarkerHash",
+            "runState.Rng.StringSeed",
+            "runState.Rng.Seed",
+            "markerFamily",
+            "coord.col",
+            "coord.row",
+            "GetKindFromActOrder<FiremarkKind>",
+            "GetKindFromActOrder<BannerKind>",
+            "EnumerateByStableMarkerOrder",
+            "Ascension map assignment: actIndex=",
+            "map marker distribution");
+
+        Assert.DoesNotContain("(actIndex + markedCount) % Enum.GetValues<FiremarkKind>().Length", mapService, StringComparison.Ordinal);
+        Assert.DoesNotContain("(actIndex + markedCount) % Enum.GetValues<BannerKind>().Length", mapService, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            mapPatch,
+            "FiremarkedEliteMapHoverPatch",
+            "FIREMARK_MIGHT",
+            "FIREMARK_GIANT",
+            "FIREMARK_FORGE_ARMOR",
+            "FIREMARK_CONSTANT_HEAL",
+            "BannerRoomMapHoverPatch",
+            "BANNER_VANGUARD",
+            "BANNER_SHIELD_FORMATION",
+            "BANNER_BOUNTY",
+            "BossMapPointHoverPatch",
+            "CreateHoverTip(metadata.BossSeal, metadata.IsBossBrand)",
+            "sourceFallbackDescription = isBossBrand ? definition.BrandSummary : definition.Summary");
+
+        foreach (var key in new[]
+                 {
+                     "FIREMARK_MIGHT",
+                     "FIREMARK_GIANT",
+                     "FIREMARK_FORGE_ARMOR",
+                     "FIREMARK_CONSTANT_HEAL",
+                     "BANNER_VANGUARD",
+                     "BANNER_SHIELD_FORMATION",
+                     "BANNER_BOUNTY"
+                 })
+        {
+            Assert.True(englishAscension.ContainsKey($"{key}.title"), $"Missing English title: {key}");
+            Assert.True(englishAscension.ContainsKey($"{key}.description"), $"Missing English description: {key}");
+            Assert.True(zhsAscension.ContainsKey($"{key}.title"), $"Missing zhs title: {key}");
+            Assert.True(zhsAscension.ContainsKey($"{key}.description"), $"Missing zhs description: {key}");
+        }
+
+        Assert.Contains("+5 Strength", englishAscension["BOSS_SEAL_AEONGLASS_STRENGTH.summary"], StringComparison.Ordinal);
+        Assert.Contains("地图悬停", zhsAscension["MODIFIER_GUIDE.description"], StringComparison.Ordinal);
+
+        AssertSourceContains(
+            rewardService,
+            "LogFissionDiagnostics(sourceLabel, chancePercent, candidates.Count, roll",
+            "sourceLabel={sourceLabel}",
+            "chancePercent={chancePercent}",
+            "eligibleCandidateCount={eligibleCandidateCount}",
+            "applied={applied}",
+            "cardId={cardId ?? \"<none>\"}");
+
+        AssertSourceContains(
+            playerGuide,
+            "Firemarked Elite",
+            "Banner Room",
+            "Boss Royal Seal",
+            "Boss Brand",
+            "Fission reward enchantment",
+            "Map hover previews");
     }
 
     [Fact]
@@ -349,6 +470,7 @@ public sealed class AscensionFeatureGuardTests
             "await RelicCmd.Obtain<ForgeTokenRelic>(player)",
             "await RelicCmd.Remove(token)",
             "player.RunState.Rng.Niche.NextItem(targets)",
+            "SpecialRestSiteActionPayoutEnabled = false",
             "ModifyExtraRestSiteHealText");
         Assert.DoesNotContain("RestSiteSynchronizer", forgeToken, StringComparison.Ordinal);
         Assert.DoesNotContain("ApplyAfterSpecialRestSiteAction", forgeToken, StringComparison.Ordinal);

@@ -2,7 +2,7 @@
 
 This folder tracks the Urda Ancient vertical slice for private beta.
 
-Status: planning + documentation phase active. Gameplay implementation is not yet in this folder and is controlled through live Urda issues in `docs/issues.md`.
+Status: default-on Act 1 selection and the first source-backed blessing gameplay slice are active for private-beta testing. Live gameplay, save/load, and UI verification are still pending and tracked through live Urda issues in `docs/issues.md`.
 
 ## Feature Map
 
@@ -15,7 +15,7 @@ Status: planning + documentation phase active. Gameplay implementation is not ye
 Current active focus from `docs/issues.md`:
 
 - One new Act 1 Ancient: `Urda, Loamweaver`.
-- 4 initial blessings intended to be enabled first: `Seedbed`, `Humus Pact`, `Molting`, `Moss Map`.
+- 4 initial blessings exposed for testing: `Seedbed`, `Humus Pact`, `Molting`, `Moss Map`.
 - Only Urda is in this overnight work scope.
 - Morvi, Lotha, and Vakuu are out of scope for this pass.
 
@@ -26,4 +26,3 @@ Out of scope for this feature pass:
 - Non-Urda ancient families.
 
 See `docs/PROJECT_MAP.md` for code ownership conventions and `docs/AGENTS.md` for repository hard rules.
-

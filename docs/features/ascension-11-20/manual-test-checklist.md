@@ -3,7 +3,7 @@
 Project: EZ Micro Balance  
 Manifest id: EZMicroBalance  
 Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; limited normal Steam-client A11 map spot checks and targeted A14 Rootblight English/ZHS hover/notice spot checks executed, full live Ascension gameplay not executed yet beyond those observations
-Last updated: 2026-05-09
+Last updated: 2026-05-10
 
 ## Research-Mode Baseline
 
@@ -212,11 +212,16 @@ Default-on implementation present; live co-op testing pending. Use `docs/feature
 Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION_DEBUG_LEVEL=12`.
 
 - [ ] Act 1 selects 2 eligible firemarked elites, and Acts 2/3 select 3 when enough safe nodes exist.
+- [ ] Across multiple fresh seeds/runs, Act 1's first Firemarked Elite is not always Might.
+- [ ] Save and Continue from the same map; Firemarked Elite kind assignments do not change.
+- [ ] Firemarked Elite map hover names the exact Firemark kind and summary before route commitment.
+- [ ] Firemarked Elite hover renders in English and Simplified Chinese without raw localization keys or raw rich-text tags.
 - [ ] No two firemarked elites are on the same floor or directly adjacent.
 - [ ] A greedy route can plan for 2 firemarked elites when route geometry allows it.
 - [ ] Firemarked elite uses the dedicated red firemark indicator, not the generic quest marker used by Fur Coat / Spoils-style markers.
 - [ ] Firemarked elite is visible before route commitment.
 - [ ] Firemarked elite is not forced into the only route.
+- [ ] At least one route to the boss remains available that avoids all selected Firemarked Elite candidates.
 - [ ] Act 1 firemarked elite appears only after the first rest-site row.
 - [ ] Combat shows one Firemark Host with the active firemark type as a visible enemy power.
 - [ ] Might Mark grants only the host +2/+3/+4 Strength by act.
@@ -231,7 +236,7 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 - [ ] Forge Token after heal rest randomly upgrades one upgradable common/uncommon card, or fallback-heals if none exists.
 - [ ] Heal rest option shows extra Forge Token text before selection.
 - [ ] Forge Token after smith rest heals 7 HP and removes the visible token.
-- [ ] Special rest-site actions do not spend Forge Token in this build and do not crash.
+- [ ] Special rest-site actions do not spend Forge Token in this build and do not crash; `SpecialRestSiteActionPayoutEnabled` remains `false` until a safe generic rest-option hook is runtime-proven.
 - [ ] Forge Token save/load behavior is stable.
 
 ## A13 Fission Enchantment
@@ -248,13 +253,21 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 - [ ] Tooltip/card text is correct in English and Simplified Chinese, uses energy-cost wording, does not show raw `{energyPrefix:energyIcons(...)}` templates, does not duplicate the added Exhaust line, and does not use the Chinese word "费用" for Fission.
 - [ ] Rerolling card rewards does not duplicate or lose state incorrectly.
 - [ ] Picked Fission cards save/load correctly.
+- [ ] With `EZMB_ASCENSION_DIAGNOSTICS=1`, sample 20 normal combat reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
+- [ ] With `EZMB_ASCENSION_DIAGNOSTICS=1`, sample 10 Banner Room reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
+- [ ] With `EZMB_ASCENSION_DIAGNOSTICS=1`, sample 10 Firemarked Elite reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
+- [ ] With `EZMB_ASCENSION_DIAGNOSTICS=1`, sample Boss reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
+- [ ] Do not change Fission probabilities or add a pity counter unless the diagnostic sampling shows eligible reward droughts.
 
 ## A16 Banner Rooms
 
 Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION_DEBUG_LEVEL=16`.
 
 - [ ] Banner rooms are visible before route commitment.
-- [ ] Banner room hover text names the rule before route commitment.
+- [ ] Across multiple fresh seeds/runs, Act 1's Banner Room is not always Vanguard.
+- [ ] Save and Continue from the same map; Banner Room kind assignments do not change.
+- [ ] Banner room hover text names the exact Banner kind and rule before route commitment.
+- [ ] Banner Room hover renders in English and Simplified Chinese without raw localization keys or raw rich-text tags.
 - [ ] Banner rooms do not stack with firemarked elites.
 - [ ] Vanguard Banner grants enemies 2 temporary Strength and removes it at the start of round 3.
 - [ ] Shield Formation Banner marks a non-minion bannerbearer and gives other enemies Block while the bannerbearer lives.
@@ -287,6 +300,8 @@ Gated implementation present as BossSeal definitions plus source-guarded runtime
 
 - [ ] A19 boss-specific Royal Seal metadata is assigned at map generation.
 - [ ] The assigned Seal name matches the active boss encounter in `BossSealCatalog`.
+- [ ] Boss map point hover previews the current Royal Seal name and summary before entering combat.
+- [ ] Aeonglass Boss hover states the temporary +5 Strength Royal Seal before entering combat.
 - [ ] Boss combat logs the Royal Seal/Brand as armed with source-guarded evidence before applying only the currently guarded hook path.
 - [ ] Boss map point hover text names Royal Seal or King Brand and includes the matching per-boss Royal Seal or Brand summary without raw localization keys.
 - [ ] Boss card rewards improve as documented.
@@ -297,6 +312,7 @@ Gated implementation present as BossSeal definitions plus source-guarded runtime
 - [ ] Boss 2 receives Brand metadata and Brand parameters.
 - [ ] Boss 2 Brand parameters differ from A19 Royal Seal parameters where documented: Martyr Oath trigger cap/block, Ink Return restored Slippery/Strength, Startled Shell Plating/Soul Siphon reduction, Soul Tide Artifact/Beckon cap, Boiling Critical Steam threshold/warning Block, Misaligned Shell Block/Artifact, Marginal Note count, Struggle Bait timer Block, Aeonglass +5 Strength, Chosen Decree Queen/player Block, and Residual Sample first phase count.
 - [ ] Boss 2 map point hover text warns that the stronger Brand is active.
+- [ ] Boss 2 map point hover shows the exact King Brand name and summary before entering combat.
 - [ ] A20 Boss 1 reward screen offers one Boss card reward before the second Boss.
 - [ ] Boss 1 reward screen shows the A20 intermission header and second-Boss proceed text.
 - [ ] Boss 1 reward screen opens the A20 courtyard event before the second Boss.

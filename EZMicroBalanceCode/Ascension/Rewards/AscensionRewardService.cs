@@ -4,10 +4,10 @@ internal static class AscensionRewardService
 {
     private const int FiremarkedEliteRewardTargetOptionCount = 4;
     private const int BossRewardTargetOptionCount = 4;
-    private const int NormalFissionChancePercent = 25;
-    private const int BannerFissionChancePercent = 35;
-    private const int FiremarkedEliteFissionChancePercent = 40;
-    private const int BossFissionChancePercent = 15;
+    private const int NormalFissionChancePercent = 10;
+    private const int BannerFissionChancePercent = 15;
+    private const int FiremarkedEliteFissionChancePercent = 20;
+    private const int BossFissionChancePercent = 5;
 
     public static bool TryModifyCardRewardOptionsLate(
         Player player,
@@ -156,17 +156,21 @@ internal static class AscensionRewardService
             .ToList();
         if (candidates.Count == 0)
         {
+            LogFissionDiagnostics(sourceLabel, chancePercent, 0, roll: null, applied: false, cardId: null);
             return false;
         }
 
-        if (player.PlayerRng.Rewards.NextInt(100) >= chancePercent)
+        var roll = player.PlayerRng.Rewards.NextInt(100);
+        if (roll >= chancePercent)
         {
+            LogFissionDiagnostics(sourceLabel, chancePercent, candidates.Count, roll, applied: false, cardId: null);
             return false;
         }
 
         var candidate = player.PlayerRng.Rewards.NextItem(candidates);
         if (candidate == null)
         {
+            LogFissionDiagnostics(sourceLabel, chancePercent, candidates.Count, roll, applied: false, cardId: null);
             return false;
         }
 
@@ -176,7 +180,25 @@ internal static class AscensionRewardService
 
         MainFile.Logger.Info(
             $"[EZMicroBalance] Ascension A13 applied: added Fission to {modifiedCard.Id.Entry} in a {sourceLabel} card reward ({chancePercent}% source chance).");
+        LogFissionDiagnostics(sourceLabel, chancePercent, candidates.Count, roll, applied: true, modifiedCard.Id.Entry);
         return true;
+    }
+
+    private static void LogFissionDiagnostics(
+        string sourceLabel,
+        int chancePercent,
+        int eligibleCandidateCount,
+        int? roll,
+        bool applied,
+        string? cardId)
+    {
+        if (!AscensionFeatureGate.IsDiagnosticsEnabled)
+        {
+            return;
+        }
+
+        MainFile.Logger.Info(
+            $"[EZMicroBalance] Ascension diagnostics: Fission reward roll; sourceLabel={sourceLabel}; chancePercent={chancePercent}; eligibleCandidateCount={eligibleCandidateCount}; roll={(roll.HasValue ? roll.Value.ToString() : "<none>")}; applied={applied}; cardId={cardId ?? "<none>"}.");
     }
 
     private static int GetFissionChancePercent(
@@ -279,14 +301,20 @@ internal static class AscensionRewardService
     {
         return ModelDb.Enchantment<FissionEnchantment>().CanEnchant(card) &&
             card.Type is CardType.Attack or CardType.Skill &&
-            card.Rarity is CardRarity.Common or CardRarity.Uncommon or CardRarity.Rare &&
+            IsFissionEligibleRarity(card.Rarity) &&
             !card.EnergyCost.CostsX &&
             !card.HasStarCostX &&
             card.CurrentStarCost <= 0 &&
+            card.EnergyCost.Canonical > 0 &&
             card.EnergyCost.GetWithModifiers(CostModifiers.None) > 0 &&
             !card.Keywords.Contains(CardKeyword.Exhaust) &&
             !card.ExhaustOnNextPlay &&
             card.Enchantment == null &&
             card.CanBeGeneratedByModifiers;
+    }
+
+    private static bool IsFissionEligibleRarity(CardRarity rarity)
+    {
+        return rarity is CardRarity.Common or CardRarity.Uncommon or CardRarity.Rare;
     }
 }

@@ -16,16 +16,70 @@ internal static class FiremarkedEliteMapIconPatch
     [HarmonyPostfix]
     private static void Postfix(NNormalMapPoint __instance)
     {
-        if (!__instance.Point.Quests.Any(quest => quest is FiremarkedEliteMapQuestMarker) ||
-            QuestIconField.GetValue(__instance) is not TextureRect questIcon)
+        if (QuestIconField.GetValue(__instance) is not TextureRect questIcon)
+        {
+            return;
+        }
+
+        var metadata = AscensionMapService.TryGetMetadata(__instance.Point);
+        var texturePath = metadata?.IsDeepBranchEntry == true &&
+            __instance.Point.Quests.Any(quest => quest is AscensionMapQuestMarker)
+                ? AscensionAssetPaths.DeepBranchEntryIndicator
+                : __instance.Point.Quests.Any(quest => quest is FiremarkedEliteMapQuestMarker)
+                    ? AscensionAssetPaths.FiremarkedEliteIndicator
+                    : __instance.Point.Quests.Any(quest => quest is BannerRoomMapQuestMarker)
+                        ? AscensionAssetPaths.BannerRoomIndicator
+                        : null;
+        if (texturePath == null)
         {
             return;
         }
 
         questIcon.Texture = ResourceLoader.Load<Texture2D>(
-            AscensionAssetPaths.FiremarkedEliteIndicator,
+            texturePath,
             null,
             ResourceLoader.CacheMode.Reuse);
+    }
+}
+
+[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]
+internal static class FiremarkedEliteMapHoverPatch
+{
+    [HarmonyPostfix]
+    private static void Postfix(NNormalMapPoint __instance)
+    {
+        if (!__instance.Point.Quests.Any(quest => quest is FiremarkedEliteMapQuestMarker))
+        {
+            return;
+        }
+
+        var metadata = AscensionMapService.TryGetMetadata(__instance.Point);
+        if (metadata?.Firemark == null)
+        {
+            return;
+        }
+
+        var hoverTipSet = NHoverTipSet.CreateAndShow(__instance, CreateHoverTip(metadata.Firemark.Value));
+        if (hoverTipSet != null)
+        {
+            Callable.From(() => hoverTipSet.SetAlignment(__instance, HoverTip.GetHoverTipAlignment(__instance))).CallDeferred();
+        }
+    }
+
+    private static HoverTip CreateHoverTip(FiremarkKind firemark)
+    {
+        var locKey = firemark switch
+        {
+            FiremarkKind.Might => "FIREMARK_MIGHT",
+            FiremarkKind.Giant => "FIREMARK_GIANT",
+            FiremarkKind.ForgeArmor => "FIREMARK_FORGE_ARMOR",
+            FiremarkKind.ConstantHeal => "FIREMARK_CONSTANT_HEAL",
+            _ => "FIREMARK_ELITE"
+        };
+
+        return new HoverTip(
+            new LocString("ascension", $"{locKey}.title"),
+            new LocString("ascension", $"{locKey}.description"));
     }
 }
 
@@ -91,7 +145,7 @@ internal static class AscensionGenericMapHoverPatch
         HoverTip? hoverTip = null;
         if (metadata.DeepBranch.HasValue)
         {
-            hoverTip = CreateDeepBranchHoverTip(metadata.DeepBranch.Value);
+            hoverTip = CreateDeepBranchHoverTip(metadata.DeepBranch.Value, metadata.IsDeepBranchEntry);
         }
 
         if (hoverTip == null)
@@ -106,9 +160,11 @@ internal static class AscensionGenericMapHoverPatch
         }
     }
 
-    private static HoverTip CreateDeepBranchHoverTip(DeepBranchNodeKind kind)
+    private static HoverTip CreateDeepBranchHoverTip(DeepBranchNodeKind kind, bool isEntry)
     {
-        var key = kind == DeepBranchNodeKind.EnhancedReward
+        var key = isEntry
+            ? "DEEP_BRANCH_ENTRY"
+            : kind == DeepBranchNodeKind.EnhancedReward
             ? "DEEP_BRANCH_REWARD"
             : "DEEP_BRANCH_RISK";
 
@@ -149,9 +205,18 @@ internal static class BossMapPointHoverPatch
         var baseDescription = new LocString("ascension", $"{locKey}.description").GetFormattedText();
         var sealTitle = new LocString("ascension", $"{sealKey}.title").GetFormattedText();
         var sealDescriptionKey = isBossBrand ? "brand" : "summary";
-        var sealDescription = new LocString("ascension", $"{sealKey}.{sealDescriptionKey}").GetFormattedText();
+        var sourceFallbackDescription = isBossBrand ? definition.BrandSummary : definition.Summary;
+        var sealDescription = GetLocalizedOrFallback($"{sealKey}.{sealDescriptionKey}", sourceFallbackDescription);
         return new HoverTip(
             new LocString("ascension", $"{locKey}.title"),
             $"{baseDescription}\n{sealTitle}: {sealDescription}");
+    }
+
+    private static string GetLocalizedOrFallback(string key, string fallback)
+    {
+        var localized = new LocString("ascension", key).GetFormattedText();
+        return string.IsNullOrWhiteSpace(localized) || localized.Equals(key, StringComparison.Ordinal)
+            ? fallback
+            : localized;
     }
 }

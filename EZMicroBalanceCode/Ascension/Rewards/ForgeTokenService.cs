@@ -4,6 +4,8 @@ internal static class ForgeTokenService
 {
     private const decimal SmithHealAmount = 7m;
     private const decimal NoUpgradeFallbackHealAmount = 5m;
+    internal const decimal SpecialRestSiteHealAmount = 5m;
+    internal const bool SpecialRestSiteActionPayoutEnabled = false;
     private const decimal DuplicateTokenGoldAmount = 15m;
 
     public static async Task GrantAfterFiremarkedElite(CombatState combatState)

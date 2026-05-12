@@ -10,9 +10,11 @@ internal sealed class AscensionCombatTracker
 
     public bool CombatModifiersInitialized { get; set; }
     public AscensionNodeMetadata? NodeMetadata { get; set; }
+    public Creature? FiremarkHost { get; set; }
     public bool BannerRageApplied { get; set; }
     public bool VanguardStrengthRemoved { get; set; }
     public Creature? ShieldFormationBearer { get; set; }
+    public int ShieldFormationLastBlockRound { get; set; }
     public bool ShieldFormationDeathBlockApplied { get; set; }
     public Creature? BountyTarget { get; set; }
     public bool BountyKilledEarly { get; set; }

@@ -1,6 +1,6 @@
-﻿# EZ Micro Balance Private Beta Verification Handoff
+# EZ Micro Balance Private Beta Verification Handoff
 
-Date: 2026-05-10
+Date: 2026-05-12
 
 **Environment warning (2026-05-08):** The earlier live test log (`godot2026-05-08T05.06.30.log`) was collected in a v0.105.0 environment with 17 mods loaded and BaseLib `v3.1.0`, not the required BaseLib+EZMB-only setup. Current package evidence uses BaseLib `v3.1.2`, a controlled BaseLib+EZMB-only smoke, normal Steam-client Mod Settings evidence, normal-Steam A0/A10/A20 combat smoke, an Act 1 A11 map/save-load spot check, Act 2/3 A11 map-surface observations, and targeted A14 Rootblight English/ZHS hover/starter-notice evidence. Full Ancient reward gameplay, natural A11 traversal, full Rootblight combat behavior, and co-op verification are still pending.
 
@@ -9,19 +9,19 @@ This handoff is for manual verification that cannot be completed by the local au
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `11BE93B02CE5999FAE04E77CEB82FC20E4FD2416D01EB1C5B6D91900D03CFB0D`
+- Zip SHA256: `2A13A44EA643EA872A8A189883E4EEFFDE8D9DDB8A83A0F5838CE9B6FA8072AD`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `29A271AB6A1325F2DFAA56C2221E09E5F4AAC1F60BE9CFB5D7541079A05EC8CA`
+- DLL SHA256: `EE6B9EE9F2D0D3F4962D6DA11B03E19E6E4806DF08930C1F342BF9530A36A6EF`
 - Manifest SHA256: `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`
-- PCK SHA256: `24FF522361195C4245CC1009E30302FD30031B65722DAB50FF8B848D14EAE82F`
+- PCK SHA256: `FCD38F1E5D940D4CDEB94623465FA24D71A75AABFF323586D1B9FBED856D4557`
 
 ## Known Automated Evidence
 
-- `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-10 after the latest artifact-parity refresh, 71 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-10 after the latest artifact-parity refresh, 84 passed, 0 skipped, 0 failed.
+- `dotnet build EZMicroBalance.sln`: passed on 2026-05-12 with 0 warnings and 0 errors.
+- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-12 after the Urda source gameplay slice, 73 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-12 after the Urda package refresh, 89 passed, 0 skipped, 0 failed.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after the latest source/resource refresh.
-- `dotnet publish EZMicroBalance.sln`: passed.
+- `dotnet publish EZMicroBalance.sln`: passed on 2026-05-12 and refreshed the installed/package DLL and PCK.
 - `git diff --check`: last exit 0 after the latest source/resource refresh.
 - Current controlled `--force-steam off` smoke physically isolated unrelated mods and temporarily enabled only BaseLib and EZ Micro Balance. Evidence under `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904` loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 13 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored `settings.save`, `settings.save.backup`, and 22 moved mod entries.
 - RC1 normal Steam-client isolated startup log started Slay the Spire 2 through `D:\Steam\steam.exe -applaunch 2868840`, temporarily isolated non-BaseLib/EZMB local mod entries, loaded to main menu with `Loaded 2 mods (2 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialization, `Found 13 SavedSpireFields`, 0 startup `ERROR` lines, and 0 release-blocking signatures. Snapshot: `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log`. The moved mod entries and `settings.save` were restored afterward.
@@ -29,13 +29,16 @@ This handoff is for manual verification that cannot be completed by the local au
 - RC1 A11 Act 1 map/save-load spot check launched through normal Steam with only BaseLib + EZ Micro Balance, selected A11 through the original single-player Ascension arrows, confirmed the Act 1 map log `columns=8; rows=17` with `inserted 1 late route row(s)`, saved after the first node, continued the run, and reopened the map after load with the same geometry. Evidence: `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008\08-character-select-a11.png`, `11-a11-act1-map-after-neow-continue.png`, `15-after-continue-load.png`, `16-map-open-after-load-attempt.png`, `a11-map-save-load-godot-live.log`, and `a11-save-map-dimensions.json`. The live log used for the gate has 0 `ERROR` lines and 0 release-blocking signatures.
 - RC1 A11 Act 2/3 map-surface observation launched through normal Steam with only BaseLib + EZ Micro Balance, selected A11 through the original single-player Ascension arrows, reached the Act 1 map normally, then used DevConsole `act 2` and `act 3` only to inspect later-act map surfaces. Evidence: `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355\19-character-select-a11.png`, `25-a11-act2-map-clean.png`, `27-a11-act3-map-clean.png`, and `a11-act23-godot-live.log`. The log records Act 2 `columns=8; rows=16` with 1 late row and Act 3 `columns=8; rows=16` with 2 late rows, with 0 `ERROR` lines and 0 release-blocking signatures. Natural route traversal and boss reachability remain pending.
 - Rootblight targeted normal Steam-client evidence: `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` captured the English A14 Neow starter Rootblight-added notice plus English Rootblight I/II/III and Blight Sprout hovers with one visible Exhaust keyword, no raw `[gold]` tags, and expected previews. `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516` captured the same hover/text checks in Simplified Chinese. `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455\07-run-start-06.png` captured the A14 ZHS Neow starter Rootblight-added notice after the event-room fallback. Combat-end notices are source-hardened with a top-level high-z, input-passthrough, 5-second overlay path, and generated Rootblight-family card art is packaged, but clean non-paused timing, Blight Sprout, full Rootblight/Blight Sprout behavior, generated-art visual verification, and co-op ownership/desync checks remain pending.
+- Urda is source-patched and packaged for default-on private-beta testing: Seedbed, Humus Pact, Molting, and Moss Map have first-pass gameplay hooks plus EN/ZHS custom card and Seedbed alternative localization. Live Urda selection, reward-screen behavior, save/load, UI, and co-op verification remain pending.
+- A12/A16/A19 modifier-variety and preview pass is source-patched and packaged: Firemark/Banner assignment uses stable seed/act/coord hashing with act-level kind shuffle, Firemarked Elite/Banner/Boss hover previews expose exact modifier summaries, and Fission diagnostics log source label/chance/eligible count/roll/applied/card id under `EZMB_ASCENSION_DIAGNOSTICS=1`. Live multi-seed, save/load, hover rendering, and effect-match verification remain pending.
+- Multiplayer join mismatch diagnostics are source-patched and packaged: when vanilla would show the generic "game version differs" popup for a release-version, gameplay-mod, or ModelDb hash mismatch, EZ Micro Balance logs host/local version, host/local ModelDb hash, gameplay-relevant mod lists, and missing mod deltas before the disconnect. This does not bypass vanilla's ModelDb hash check.
 
 ## Required Manual Results
 
 Record results in `docs/features/ancients-rework-v4/manual-verification-matrix.md` and update `docs/release-checklist.md`.
 This pass also starts `docs/rc1-live-validation-log.md` for source-verified RC1 notes and any live evidence collected during the normal Steam-client gate.
 
-Normal Steam-client Mod Settings verification passed for BaseLib and EZ Micro Balance. Normal Steam-client A0/A10/A20 single-player DevConsole combat smoke passed for draw/energy/combat initialization. A11 Act 1 map/save-load and Act 2/3 map-surface spot checks passed. Targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed. Live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, natural A11 traversal/boss reachability, disable-gameplay, broader save/load, and multiplayer checks are still pending.
+Normal Steam-client Mod Settings verification passed for BaseLib and EZ Micro Balance. Normal Steam-client A0/A10/A20 single-player DevConsole combat smoke passed for draw/energy/combat initialization. A11 Act 1 map/save-load and Act 2/3 map-surface spot checks passed. Targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed. Live Ancient reward gameplay, Urda gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, natural A11 traversal/boss reachability, disable-gameplay, broader save/load, and multiplayer checks are still pending.
 Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending.
 
 1. Launch through the normal Steam client.
@@ -98,8 +101,8 @@ A1.05.01 (`ae910e8`) is a broad engineering/review commit, not only a handoff an
 
 Current git status before this handoff:
 
-- Current git log -1 --oneline --decorate: `9fd9e3f (HEAD -> main, origin/main, origin/HEAD) 1.05.07`
-- `git status --short --branch`: `## main...origin/main`
+- Current git log -1 --oneline --decorate: `98d260d (HEAD -> main) urda pic`
+- `git status --short --branch`: current A12/A16/A19 pass has source/docs/package-refresh changes pending local commit.
 
 Pre-commit local cleanup status summary:
 
@@ -112,7 +115,7 @@ Pre-commit local cleanup status summary:
 - `M PROJECT_STATE.md`
 - `M docs/private-beta-verification-handoff.md`
 
-The current local changes are this package/evidence refresh pass: hash refresh, counts refresh, and remaining-manual-blocker updates. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
+The current local changes are the A12/A16/A19 modifier-variety and preview pass plus package/evidence refresh. Re-run `git status --short --branch` before final release packaging or handoff, because this section is a point-in-time snapshot.
 
 Proposed commit scope after the remaining manual/user gates are resolved:
 

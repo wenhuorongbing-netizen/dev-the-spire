@@ -15,10 +15,10 @@ This log records what was actually run or observed. It does not close the live g
 ## Package Refresh
 
 - `dotnet publish EZMicroBalance.sln` changed installed artifacts, so package staging, versioned package directory, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` were rebuilt from installed artifacts.
-- Zip SHA256: `1699D7BEC6C1A0BD02223E45E4B90399C7BFBB20D4E95236F9ED1E08A795AF8F`.
-- DLL SHA256: `9A0E750122D3AEBE449D2D95A20AED84657AFF6D169079E0F0184CC7084A70DF`.
+- Zip SHA256: `B1F8B0FBA1BBFA736233D27C83BF193CE661B22726FA37420CE2C4B2B1F8750E`.
+- DLL SHA256: `599D4EF00CF207F8AB79AB90FCBE4B644E5C476B7F4DE2AB60CE8BBE9B460C50`.
 - Manifest SHA256: `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`.
-- PCK SHA256: `253E1310D8357EEB4D099F34BFA8785A66FEE77576BDA59A4D34277874696C25`.
+- PCK SHA256: `94DA61B1C57316FF08AE9E39E1212E7B581E81AEB9D23633FF8DDF9B6BDE33CF`.
 
 ## Automated Results
 
@@ -54,11 +54,11 @@ This log records what was actually run or observed. It does not close the live g
 
 - Command path: `D:\Steam\steam.exe -applaunch 2868840`.
 - First isolation probe: temporarily moved 23 non-BaseLib/EZMB entries out of `D:\Steam\steamapps\common\Slay the Spire 2\mods`, launched through Steam, opened `妯＄粍閰嶇疆`, captured BaseLib-only screenshots, copied `.tools\runtime-evidence\rc1-normal-steam-modsettings-godot-20260508-092717.log`, closed the game, then restored all moved entries.
-- Source fix for UI visibility: added a no-op BaseLib `ModConfig` page for EZ Micro Balance. It registers `EZMicroBalanceModConfig`, exposes no gameplay options, and localizes the Chinese title as `寰钩琛�?with body text `鏃犲彲閰嶇疆閫夐」銆�?
+- Source fix for UI visibility: added a no-op BaseLib `ModConfig` page for EZ Micro Balance. It registers `EZMicroBalanceModConfig`, exposes no gameplay options, and localizes the Chinese title as `寰钩琛�?with body text `鏃犲彲閰嶇疆閫夐」銆�?
 - Recheck isolation probe: temporarily moved the same 23 non-BaseLib/EZMB entries out of the game `mods` directory, launched through Steam, opened `妯＄粍閰嶇疆`, captured screenshots, copied the log, closed the game, then restored all moved entries and temporarily minimized windows. Restore check: `RemainingIsolatedEntries: 0`, `SlayProcessRunning: 0`, `RestoredWindows: 24`.
 - Main-menu loaded-mod evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-mainmenu-loadedmods.png` shows the game loaded 2 mods: `BaseLib, EZ Micro Balance`.
 - BaseLib Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-attempt-20260508-092717-modconfig.png` shows the `BaseLib` page and its main-menu display checkbox enabled.
-- EZ Micro Balance Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` shows the EZ Micro Balance page entry as `寰钩琛�? `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` shows the page body `鏃犲彲閰嶇疆閫夐」銆�?
+- EZ Micro Balance Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` shows the EZ Micro Balance page entry as `寰钩琛�? `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` shows the page body `鏃犲彲閰嶇疆閫夐」銆�?
 - Log snapshot: `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log`.
 - Positive log evidence: `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, and `Found 13 SavedSpireFields`.
 - Strict scan: 0 `Creature.get_ShowsInfiniteHp`, 0 `BaseLib.Patches.UI.HealthBarForecastPatch`, 0 BaseLib undefined-target patch failures, 0 `DamageMeter`, 0 `RouteSuggest`, 0 `TypeLoadException`, 0 `MissingMethodException`, 0 EZMB error/exception pattern hits, and 0 `ERROR` lines.
@@ -128,7 +128,7 @@ This log records what was actually run or observed. It does not close the live g
 
 | Gate | Result |
 | --- | --- |
-| Normal Steam-client Mod Settings | Passed. BaseLib page visible/enabled; EZ Micro Balance page appears as `寰钩琛�?with `鏃犲彲閰嶇疆閫夐」銆�? main menu/log show only BaseLib + EZ Micro Balance loaded; log has 0 `ERROR` lines and 0 release-blocking signatures. |
+| Normal Steam-client Mod Settings | Passed. BaseLib page visible/enabled; EZ Micro Balance page appears as `寰钩琛�?with `鏃犲彲閰嶇疆閫夐」銆�? main menu/log show only BaseLib + EZ Micro Balance loaded; log has 0 `ERROR` lines and 0 release-blocking signatures. |
 | Clean normal Steam-client `godot.log` | Isolated Steam startup snapshot and Mod Settings log collected; both have 0 `ERROR` lines and 0 release-blocking signatures. |
 | A0/A10/A20 single-player spot checks | User-reported pass, plus Codex-observed normal-Steam DevConsole combat smoke for A0/A10/A20. Natural route-click first-node checks remain unrun. |
 | Pumpkin Candle vanilla/no override | Source-verified pending live spot check. |
@@ -151,3 +151,29 @@ Earlier Mod Settings UI attempts are superseded by the `20260508-095137` recheck
 - Multiplayer matrix.
 - Ancient reward and co-op save/load verification.
 
+
+
+## 2026-05-10 Upload Review: `godot2026-05-10T06.07.51.log` INVALID for release evidence
+
+Uploaded player report `godot2026-05-10T06.07.51.log` is not valid RC1/A1.05.08 release evidence.
+
+Reasons:
+- Runtime is `v0.105.1`, not the `v0.105.0`/expected-clean package context in earlier baseline notes.
+- Log reports `Loaded 18 mods (19 total)` and is not BaseLib + EZMicroBalance isolated.
+- Non-EZMB mods emit runtime errors before gameplay:
+  - `RouteSuggestConfig.json` missing `id`.
+  - `sts2-heybox-support\mod_mainfest.json` missing `id`.
+  - `Heybox`: `ModManager.GetModNameList Method NotFound`.
+  - `SpeedX`: undefined target patch on `NRewardsScreen`.
+  - `Act4Heart`: `ConfigMessage.get_ShouldBuffer` `TypeLoadException`.
+- BaseLib and EZMB initialize, but BaseLib logs `Found 12 SavedSpireFields` (expected `13` for this package state).
+- Therefore gameplay conclusions from this file are blocked by polluted environment + hash-mismatch risk.
+
+Clean retest rules:
+1. Before collecting release logs, move all entries in `<GameRoot>\mods` except:
+   - `BaseLib`
+   - `EZMicroBalance`
+2. Run a fresh normal-Steam launch and confirm `Loaded 2 mods (2 total)` and `Found 13 SavedSpireFields`.
+3. Run `scripts/check-installed-ezmb-package.ps1` against the live install and require PASS before gameplay evidence.
+4. If clean hash-matching logs still report `Found 12 SavedSpireFields`, do not judge gameplay from that run; open a source/doc mismatch investigation around `AncientSavedStateFields.UrdaStateKey` registration and BaseLib SavedSpireField discovery.
+5. Tag this file as invalid and do not attach it to release artifact acceptance.

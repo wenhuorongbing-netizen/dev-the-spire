@@ -6,7 +6,7 @@
 
 ## Current latest commit
 
-- `9fd9e3f` (`1.05.07`) on `main`.
+- `98d260d` (`urda pic`) on `main`.
 
 ## Game and BaseLib target
 
@@ -22,6 +22,7 @@
 - `dotnet test` passes in default mode.
 - Release artifact checks pass when `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is enabled.
 - Published artifacts are hash-parity synced (`DLL`, `manifest`, `PCK`, `zip`) and validated by tests.
+- Current package refresh includes the A12/A16/A19 modifier-variety/map-preview source pass and multiplayer join mismatch diagnostics; live hover/gameplay/co-op verification remains pending.
 
 ### Runtime
 
@@ -32,15 +33,16 @@
 ### Multiplayer
 
 - A11-A20 source selection is default-on for private-beta test scope.
+- Multiplayer join failures that vanilla reports as "game version differs" now log host/local version, ModelDb hash, and gameplay-relevant mod-list evidence before disconnecting.
 - Multiplayer ownership/desync and live co-op traversal matrices are still pending.
 - Development warnings are documented for A20 multiplayer downgrade behavior.
 
 ### Urda
 
-- Urda is a **prototype/debug-only** feature in this private-beta cycle.
-- Urda only enables under `EZMB_FORCE_ANCIENT=URDA`.
-- `IsUrdaEnabled` is guarded only by this environment variable.
-- Active ids are `urda_seedbed`, `urda_humus_pact`, `urda_molting`, `urda_moss_map` (selection state only in this pass).
+- Urda is default-on for private-beta testing, but remains a prototype until manual gameplay and save/load checks are complete.
+- Set `EZMB_DISABLE_URDA=1` to hide Urda for comparison.
+- `EZMB_FORCE_ANCIENT=URDA` is legacy-compatible and no longer required.
+- Active ids are `urda_seedbed`, `urda_humus_pact`, `urda_molting`, `urda_moss_map`; source gameplay hooks now cover Seedbed, Humus Pact, Molting, and Moss Map.
 - No Morvi/Lotha/Vakuu gameplay is active.
 
 ### Rootblight
@@ -53,7 +55,7 @@
 - Ancient reward rebalance v4: v4.3 active.
 - Ascension 11-20: implemented as gated slices; live verification pending.
 - Rootblight polish: source-complete, visual/manual evidence partial.
-- Urda: prototype/debug-only scaffolded under explicit gating.
+- Urda: default-on Act 1 selection plus first source-backed blessing gameplay slice with an explicit disable gate; live verification remains pending.
 
 ## Current blockers
 
@@ -74,4 +76,4 @@
 
 ## Next best action
 
-- Complete required manual matrix rows (Ancient + multiplayer + Rootblight visuals), then refresh package artifacts only if source/resources/docs changed.
+- Complete required manual matrix rows (Ancient + Urda + multiplayer + Rootblight visuals), then refresh package artifacts only if source/resources/docs changed.

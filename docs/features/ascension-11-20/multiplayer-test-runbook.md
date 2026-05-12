@@ -191,6 +191,11 @@ After changing User env vars, fully restart Steam and the game on the affected m
 
 - Collect host and client `godot.log`.
 - Copy each log before another run overwrites it, then run `scripts/audit-godot-log.ps1 -Path <copied godot.log> -OutFile <evidence-dir>\host-godot-log-audit.json -FailOnHit` and repeat for the client log. Omit `-FailOnHit` only when preserving a known-failing diagnostic attempt.
+- If a client sees `NETWORK_ERROR.VERSION_MISMATCH` / `你试图加入的游戏与您的杀戮尖塔2的版本不同。`, inspect the client log before assuming the visible game version is different:
+  - `Version mismatch. Host: ... Ours: ...` means the handshake version strings differ.
+  - `Our version ... matches the host's, but our Model ID hash does not` or `ModelDb hash mismatch` means the visible version string matched, but the multiplayer model serialization table differed.
+  - Record both `Got initial game info message. Version: ... Hash: ...` and local `ModelIdSerializationCache initialized... Hash: ...` lines.
+  - Compare both machines' `release_info.json`, `Loaded X mods (Y total)`, BaseLib/EZMB versions, and installed package hashes.
 - Confirm no EZ Micro Balance error or exception lines.
 - Confirm no ownership warning for Rootblight, Blight Sprout, Forge Token, Firemark, Banner, Royal Seal, or Brand state.
 - Confirm no checksum, desync, disconnect, lobby clamp, or save/load exception lines.

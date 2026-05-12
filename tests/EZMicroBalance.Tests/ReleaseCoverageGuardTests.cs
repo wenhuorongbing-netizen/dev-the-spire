@@ -53,7 +53,10 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingIds.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCards.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaFeatureGate.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaInitializer.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRunHook.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20RewardScreenPatches.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionAssetPaths.cs",
@@ -754,27 +757,38 @@ public sealed class ReleaseCoverageGuardTests
         Assert.DoesNotContain("Status: resolved", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\uFFFD", issues, StringComparison.Ordinal);
 
-        Assert.Contains("Urda is prototype/debug-only", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("default-off", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("EZMB_FORCE_ANCIENT", urdaIssueIndex, StringComparison.Ordinal);
+        Assert.Contains("Urda is default-on", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("EZMB_DISABLE_URDA", urdaIssueIndex, StringComparison.Ordinal);
+        Assert.Contains("prototype", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("No Morvi/Lotha/Vakuu active", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public void UrdaIsDefaultOffFeatureFlagAndNoUnsafeBlessingContentIsLive()
+    public void UrdaIsDefaultOnDisableableAndBlessingSliceSourceBacked()
     {
         var urdaGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaFeatureGate.cs");
         var urdaAncient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.cs");
         var urdaBlessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingIds.cs");
+        var urdaCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaCards.cs");
+        var urdaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaInitializer.cs");
+        var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
+        var engCards = ReadRepoText("EZMicroBalance", "localization", "eng", "cards.json");
+        var zhsCards = ReadRepoText("EZMicroBalance", "localization", "zhs", "cards.json");
+        var engCardRewardUi = ReadRepoText("EZMicroBalance", "localization", "eng", "card_reward_ui.json");
+        var zhsCardRewardUi = ReadRepoText("EZMicroBalance", "localization", "zhs", "card_reward_ui.json");
 
         Assert.Contains("ForceAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("DisableAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("EZMB_DISABLE_URDA", urdaGate, StringComparison.Ordinal);
         Assert.Contains("OrdinalIgnoreCase", urdaGate, StringComparison.Ordinal);
         Assert.Contains("string.Equals(", urdaGate, StringComparison.Ordinal);
-        Assert.Contains("URDA", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("!IsTruthy", urdaGate, StringComparison.Ordinal);
 
         Assert.Contains("IsUrdaEnabled", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("AllPossibleOptions", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("UrdaBlessingIds.Seedbed", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaBlessingService.SetSelectedBlessing", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaBlessingService.ApplyMolting", urdaAncient, StringComparison.Ordinal);
         Assert.DoesNotContain("NeowEpoch", urdaAncient, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("urda_seedbed", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_humus_pact", urdaBlessings, StringComparison.Ordinal);
@@ -789,6 +803,46 @@ public sealed class ReleaseCoverageGuardTests
         Assert.DoesNotContain("urda_morvi", urdaBlessings, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("urda_lotha", urdaAncient, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("urda_vakuu", urdaAncient, StringComparison.OrdinalIgnoreCase);
+
+        AssertSourceContains(
+            urdaInitializer,
+            "ModHelper.SubscribeForRunStateHooks",
+            "UrdaFeatureGate.IsUrdaEnabled(runState.UnlockState)",
+            "ModelDb.GetById<UrdaRunHook>");
+        AssertSourceContains(
+            urdaRunHook,
+            "TryModifyCardRewardAlternatives",
+            "PostAlternateCardRewardAction.EndSelectionAndCompleteReward",
+            "AcceptSeedbed",
+            "CreatureCmd.LoseMaxHp",
+            "CreatureCmd.GainMaxHp",
+            "AfterCardRewardSkipped",
+            "PlayerCmd.GainGold",
+            "ResolveHumusCompletion",
+            "CardSelectCmd.FromDeckForRemoval",
+            "ApplyMolting",
+            "CreateCard<WitheredHusk>",
+            "AfterRoomEntered",
+            "ApplyMossMapRoomReward",
+            "PotionCmd.TryToProcure",
+            "UrdaStateKey");
+        AssertSourceContains(
+            urdaCards,
+            "UrdaSeedling",
+            "WitheredHusk",
+            "CardKeyword.Ethereal",
+            "CardKeyword.Unplayable",
+            "AfterCardExhausted");
+        AssertSourceContains(
+            engCards,
+            "EZMB_URDA_SEEDLING.title",
+            "EZMB_WITHERED_HUSK.title");
+        AssertSourceContains(
+            zhsCards,
+            "EZMB_URDA_SEEDLING.title",
+            "EZMB_WITHERED_HUSK.title");
+        Assert.Contains("OPTION_EZMB_URDA_SEEDBED.name", engCardRewardUi, StringComparison.Ordinal);
+        Assert.Contains("OPTION_EZMB_URDA_SEEDBED.name", zhsCardRewardUi, StringComparison.Ordinal);
     }
 
     [Fact]

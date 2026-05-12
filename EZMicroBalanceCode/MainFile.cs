@@ -1,6 +1,7 @@
 ﻿using Godot;
 using HarmonyLib;
 using BaseLib.Config;
+using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using MegaCrit.Sts2.Core.Modding;
@@ -21,6 +22,7 @@ public partial class MainFile : Node
 
         harmony.PatchAll();
         ModConfigRegistry.Register(ModId, new EZMicroBalanceModConfig());
+        UrdaInitializer.Initialize();
         AscensionInitializer.Initialize();
     }
 }

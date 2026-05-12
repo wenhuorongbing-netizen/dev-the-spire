@@ -8,6 +8,8 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static class AscensionMapService
 {
+    private const string FiremarkMarkerFamily = "firemark";
+    private const string BannerMarkerFamily = "banner";
     private const int ActOneFiremarkedEliteTargetCount = 2;
     private const int LaterActFiremarkedEliteTargetCount = 3;
     private const int MinimumFiremarkedEliteFallbackCount = 2;
@@ -40,6 +42,7 @@ internal static class AscensionMapService
         MarkFiremarkedElite(runState, map, actIndex);
         MarkBannerRooms(runState, map, actIndex);
         MarkBossSeals(runState, map, actIndex);
+        LogMapDistributionSummary(runState, map, actIndex);
 
         AppliedMaps.GetValue(map, _ => new AppliedMapMarker()).Applied = true;
 
@@ -410,6 +413,53 @@ internal static class AscensionMapService
         return false;
     }
 
+    private static bool HasSerializablePathAvoiding(
+        SerializableMapPoint start,
+        MapCoord targetCoord,
+        IReadOnlyDictionary<MapCoord, SerializableMapPoint> pointsByCoord,
+        IReadOnlySet<MapCoord> excludedCoords)
+    {
+        if (excludedCoords.Contains(start.Coord) ||
+            excludedCoords.Contains(targetCoord))
+        {
+            return false;
+        }
+
+        var visited = new HashSet<MapCoord>();
+        var queue = new Queue<SerializableMapPoint>();
+        queue.Enqueue(start);
+
+        while (queue.Count > 0)
+        {
+            var point = queue.Dequeue();
+            if (!visited.Add(point.Coord))
+            {
+                continue;
+            }
+
+            if (point.Coord.Equals(targetCoord))
+            {
+                return true;
+            }
+
+            if (point.ChildCoords == null)
+            {
+                continue;
+            }
+
+            foreach (var childCoord in point.ChildCoords)
+            {
+                if (!excludedCoords.Contains(childCoord) &&
+                    pointsByCoord.TryGetValue(childCoord, out var child))
+                {
+                    queue.Enqueue(child);
+                }
+            }
+        }
+
+        return false;
+    }
+
     private static ActMap TryInsertDeepBranch(IRunState runState, ActMap map, int actIndex)
     {
         if (!IsDeepBranchAct(actIndex) ||
@@ -449,6 +499,11 @@ internal static class AscensionMapService
         }
 
         AddChild(previousPoint, plan.ReconnectCoord);
+        if (!IsDeepBranchRouteSafe(saved, plan))
+        {
+            return map;
+        }
+
         return new SavedActMap(saved);
     }
 
@@ -474,21 +529,39 @@ internal static class AscensionMapService
             }
 
             var metadata = GetOrCreateMetadata(point);
+            metadata.IsDeepBranchEntry = i == 0;
             metadata.DeepBranch = IsDeepBranchRewardIndex(i, plan.BranchCoords.Count)
                 ? DeepBranchNodeKind.EnhancedReward
                 : DeepBranchNodeKind.Risk;
 
+            if (metadata.IsDeepBranchEntry)
+            {
+                EnsureQuestMarker<AscensionMapQuestMarker>(point);
+            }
+
             if (point.PointType == MapPointType.Monster &&
                 AscensionFeatureGate.IsBannerRoomEnabled(runState))
             {
-                metadata.Banner = (BannerKind)((actIndex + i) % Enum.GetValues<BannerKind>().Length);
+                metadata.Banner = GetKindFromActOrder<BannerKind>(
+                    runState,
+                    BannerMarkerFamily,
+                    actIndex,
+                    point.coord,
+                    i);
                 EnsureQuestMarker<BannerRoomMapQuestMarker>(point);
+                LogMapAssignment(actIndex, point.coord, BannerMarkerFamily, metadata.Banner.Value);
             }
             else if (point.PointType == MapPointType.Elite &&
                 AscensionFeatureGate.IsFiremarkedEliteEnabled(runState))
             {
-                metadata.Firemark = (FiremarkKind)((actIndex + i) % Enum.GetValues<FiremarkKind>().Length);
+                metadata.Firemark = GetKindFromActOrder<FiremarkKind>(
+                    runState,
+                    FiremarkMarkerFamily,
+                    actIndex,
+                    point.coord,
+                    i);
                 EnsureQuestMarker<FiremarkedEliteMapQuestMarker>(point);
+                LogMapAssignment(actIndex, point.coord, FiremarkMarkerFamily, metadata.Firemark.Value);
             }
             else
             {
@@ -503,7 +576,7 @@ internal static class AscensionMapService
     private static DeepBranchPlan? CreateDeepBranchPlan(ActMap map, int actIndex)
     {
         if (!IsDeepBranchAct(actIndex) ||
-            map.GetColumnCount() <= A11InsertedColumn)
+            map.GetColumnCount() <= 0)
         {
             return null;
         }
@@ -514,28 +587,33 @@ internal static class AscensionMapService
             var lastParentRow = map.GetRowCount() - branchLength - 2;
             for (var parentRow = firstParentRow; parentRow <= lastParentRow; parentRow++)
             {
-                if (!TryGetDeepBranchCoords(map, parentRow, branchLength, out var branchCoords))
+                foreach (var branchColumn in EnumerateDeepBranchColumns(map))
                 {
-                    continue;
-                }
-
-                foreach (var parent in map.GetPointsInRow(parentRow)
-                    .OrderBy(point => Math.Abs(point.coord.col - A11InsertedColumn))
-                    .ThenBy(point => point.coord.col))
-                {
-                    var reconnect = GetReachablePointsAtRow(parent, parentRow + branchLength + 1)
-                        .OrderBy(point => Math.Abs(point.coord.col - A11InsertedColumn))
-                        .ThenBy(point => point.coord.col)
-                        .FirstOrDefault();
-                    if (reconnect == null)
+                    if (!TryGetDeepBranchCoords(map, parentRow, branchLength, branchColumn, out var branchCoords))
                     {
                         continue;
                     }
 
-                    return new DeepBranchPlan(
-                        parent.coord,
-                        reconnect.coord,
-                        branchCoords);
+                    foreach (var parent in map.GetPointsInRow(parentRow)
+                        .Where(point => Math.Abs(point.coord.col - branchColumn) <= 1)
+                        .OrderBy(point => Math.Abs(point.coord.col - branchColumn))
+                        .ThenBy(point => point.coord.col))
+                    {
+                        var reconnect = GetReachablePointsAtRow(parent, parentRow + branchLength + 1)
+                            .Where(point => Math.Abs(point.coord.col - branchColumn) <= 1)
+                            .OrderBy(point => Math.Abs(point.coord.col - branchColumn))
+                            .ThenBy(point => point.coord.col)
+                            .FirstOrDefault();
+                        if (reconnect == null)
+                        {
+                            continue;
+                        }
+
+                        return new DeepBranchPlan(
+                            parent.coord,
+                            reconnect.coord,
+                            branchCoords);
+                    }
                 }
             }
         }
@@ -546,7 +624,7 @@ internal static class AscensionMapService
     private static DeepBranchPlan? FindExistingDeepBranch(ActMap map, int actIndex)
     {
         if (!IsDeepBranchAct(actIndex) ||
-            map.GetColumnCount() <= A11InsertedColumn)
+            map.GetColumnCount() <= 0)
         {
             return null;
         }
@@ -555,39 +633,74 @@ internal static class AscensionMapService
             .OrderBy(point => point.coord.row)
             .ThenBy(point => point.coord.col))
         {
-            for (var branchLength = DeepBranchMaxLength; branchLength >= DeepBranchMinLength; branchLength--)
+            foreach (var firstBranchPoint in parent.Children
+                .Where(child => child.coord.row == parent.coord.row + 1)
+                .OrderBy(child => Math.Abs(child.coord.col - A11InsertedColumn))
+                .ThenBy(child => child.coord.col))
             {
-                var branchCoords = BuildDeepBranchCoords(parent.coord.row, branchLength);
-                var branchPoints = branchCoords
-                    .Select(map.GetPoint)
-                    .ToList();
-                var existingBranchPoints = branchPoints.OfType<MapPoint>().ToList();
-                if (existingBranchPoints.Count != branchLength ||
-                    !parent.Children.Contains(existingBranchPoints[0]) ||
-                    existingBranchPoints.Where((point, index) =>
-                        point.PointType != GetDeepBranchPointType(index, branchLength) ||
-                        point.CanBeModified).Any())
+                for (var branchLength = DeepBranchMaxLength; branchLength >= DeepBranchMinLength; branchLength--)
                 {
-                    continue;
+                    if (TryMatchExistingDeepBranch(parent, firstBranchPoint, branchLength, out var plan))
+                    {
+                        return plan;
+                    }
                 }
-
-                var lastBranchPoint = existingBranchPoints[^1];
-                var reconnect = lastBranchPoint!.Children
-                    .FirstOrDefault(point => point.coord.row == parent.coord.row + branchLength + 1);
-                if (reconnect == null ||
-                    !HasPathAvoiding(parent, reconnect, existingBranchPoints))
-                {
-                    continue;
-                }
-
-                return new DeepBranchPlan(
-                    parent.coord,
-                    reconnect.coord,
-                    branchCoords);
             }
         }
 
         return null;
+    }
+
+    private static bool TryMatchExistingDeepBranch(
+        MapPoint parent,
+        MapPoint firstBranchPoint,
+        int branchLength,
+        out DeepBranchPlan? plan)
+    {
+        plan = null;
+        var branchColumn = firstBranchPoint.coord.col;
+        var existingBranchPoints = new List<MapPoint>(branchLength);
+        var current = firstBranchPoint;
+        for (var index = 0; index < branchLength; index++)
+        {
+            if (current.coord.col != branchColumn ||
+                current.coord.row != parent.coord.row + index + 1 ||
+                current.PointType != GetDeepBranchPointType(index, branchLength) ||
+                current.CanBeModified)
+            {
+                return false;
+            }
+
+            existingBranchPoints.Add(current);
+            if (index == branchLength - 1)
+            {
+                continue;
+            }
+
+            var nextRow = parent.coord.row + index + 2;
+            var next = current.Children
+                .FirstOrDefault(child => child.coord.col == branchColumn && child.coord.row == nextRow);
+            if (next == null)
+            {
+                return false;
+            }
+
+            current = next;
+        }
+
+        var reconnect = current.Children
+            .FirstOrDefault(point => point.coord.row == parent.coord.row + branchLength + 1);
+        if (reconnect == null ||
+            !HasPathAvoiding(parent, reconnect, existingBranchPoints))
+        {
+            return false;
+        }
+
+        plan = new DeepBranchPlan(
+            parent.coord,
+            reconnect.coord,
+            existingBranchPoints.Select(point => point.coord).ToList());
+        return true;
     }
 
     private static IEnumerable<MapPoint> GetReachablePointsAtRow(MapPoint start, int row)
@@ -617,25 +730,64 @@ internal static class AscensionMapService
         }
     }
 
-    private static bool TryGetDeepBranchCoords(ActMap map, int parentRow, int branchLength, out List<MapCoord> branchCoords)
+    private static bool TryGetDeepBranchCoords(
+        ActMap map,
+        int parentRow,
+        int branchLength,
+        int branchColumn,
+        out List<MapCoord> branchCoords)
     {
-        branchCoords = BuildDeepBranchCoords(parentRow, branchLength);
-        return branchCoords.All(coord => !map.HasPoint(coord));
+        branchCoords = BuildDeepBranchCoords(parentRow, branchLength, branchColumn);
+        return branchCoords.All(coord =>
+            coord.col >= 0 &&
+            coord.col < map.GetColumnCount() &&
+            !map.HasPoint(coord));
     }
 
-    private static List<MapCoord> BuildDeepBranchCoords(int parentRow, int branchLength)
+    private static List<MapCoord> BuildDeepBranchCoords(int parentRow, int branchLength, int branchColumn)
     {
         var coords = new List<MapCoord>(branchLength);
         for (var i = 0; i < branchLength; i++)
         {
             coords.Add(new MapCoord
             {
-                col = A11InsertedColumn,
+                col = branchColumn,
                 row = parentRow + i + 1
             });
         }
 
         return coords;
+    }
+
+    private static IEnumerable<int> EnumerateDeepBranchColumns(ActMap map)
+    {
+        for (var offset = 0; offset < map.GetColumnCount(); offset++)
+        {
+            var right = A11InsertedColumn + offset;
+            if (right >= 0 && right < map.GetColumnCount())
+            {
+                yield return right;
+            }
+
+            var left = A11InsertedColumn - offset;
+            if (offset > 0 && left >= 0 && left < map.GetColumnCount())
+            {
+                yield return left;
+            }
+        }
+    }
+
+    private static bool IsDeepBranchRouteSafe(SerializableActMap saved, DeepBranchPlan plan)
+    {
+        var pointsByCoord = BuildSerializableLookup(saved);
+        var excludedBranchCoords = plan.BranchCoords.ToHashSet();
+        return pointsByCoord.TryGetValue(plan.ParentCoord, out var parent) &&
+            pointsByCoord.TryGetValue(plan.BranchCoords[0], out var firstBranchPoint) &&
+            pointsByCoord.TryGetValue(plan.BranchCoords[^1], out var lastBranchPoint) &&
+            HasSerializablePath(saved.StartingPoint, firstBranchPoint.Coord, pointsByCoord) &&
+            HasSerializablePath(lastBranchPoint, saved.BossPoint.Coord, pointsByCoord) &&
+            HasSerializablePathAvoiding(parent, plan.ReconnectCoord, pointsByCoord, excludedBranchCoords) &&
+            HasSerializablePathAvoiding(saved.StartingPoint, saved.BossPoint.Coord, pointsByCoord, excludedBranchCoords);
     }
 
     private static bool IsDeepBranchAct(int actIndex)
@@ -683,15 +835,28 @@ internal static class AscensionMapService
 
         var desiredCount = GetFiremarkedEliteTargetCount(actIndex);
         var markedCount = 0;
-        foreach (var point in PickFiremarkedElitesByAct(candidates, desiredCount, actIndex))
+        foreach (var point in PickFiremarkedElitesByAct(
+                     candidates,
+                     desiredCount,
+                     runState,
+                     FiremarkMarkerFamily,
+                     actIndex,
+                     map.StartingMapPoint,
+                     map.BossMapPoint))
         {
-            var kind = (FiremarkKind)((actIndex + markedCount) % Enum.GetValues<FiremarkKind>().Length);
+            var kind = GetKindFromActOrder<FiremarkKind>(
+                runState,
+                FiremarkMarkerFamily,
+                actIndex,
+                point.coord,
+                markedCount);
             GetOrCreateMetadata(point).Firemark = kind;
             EnsureQuestMarker<FiremarkedEliteMapQuestMarker>(point);
             markedCount++;
 
             MainFile.Logger.Info(
                 $"[EZMicroBalance] Ascension A12 applied: marked {point} as firemarked elite ({kind}).");
+            LogMapAssignment(actIndex, point.coord, FiremarkMarkerFamily, kind);
         }
 
         if (markedCount == 0)
@@ -740,15 +905,26 @@ internal static class AscensionMapService
         }
 
         var markedCount = 0;
-        foreach (var point in PickDistinctByAct(candidates, desiredCount, actIndex + 1))
+        foreach (var point in PickDistinctByStableOrder(
+                     candidates,
+                     desiredCount,
+                     runState,
+                     BannerMarkerFamily,
+                     actIndex))
         {
-            var kind = (BannerKind)((actIndex + markedCount) % Enum.GetValues<BannerKind>().Length);
+            var kind = GetKindFromActOrder<BannerKind>(
+                runState,
+                BannerMarkerFamily,
+                actIndex,
+                point.coord,
+                markedCount);
             GetOrCreateMetadata(point).Banner = kind;
             EnsureQuestMarker<BannerRoomMapQuestMarker>(point);
             markedCount++;
 
             MainFile.Logger.Info(
                 $"[EZMicroBalance] Ascension A16 applied: marked {point} as banner room ({kind}).");
+            LogMapAssignment(actIndex, point.coord, BannerMarkerFamily, kind);
         }
 
         if (markedCount < desiredCount)
@@ -810,6 +986,43 @@ internal static class AscensionMapService
         secondBossMetadata.IsBossBrand = true;
         MainFile.Logger.Info(
             $"[EZMicroBalance] Ascension A20 armed: second boss node marked with {secondBossSeal.Name} Brand ({secondBossSeal.Id}); vanilla boss map icons reveal the boss order, and the fixed courtyard event is ready after Boss 1 rewards.");
+    }
+
+    private static void LogMapAssignment<TEnum>(int actIndex, MapCoord coord, string markerFamily, TEnum kind)
+        where TEnum : struct, Enum
+    {
+        MainFile.Logger.Info(
+            $"[EZMicroBalance] Ascension map assignment: actIndex={actIndex}; coord=({coord.col},{coord.row}); markerFamily={markerFamily}; kind={kind}.");
+    }
+
+    private static void LogMapDistributionSummary(IRunState runState, ActMap map, int actIndex)
+    {
+        if (!AscensionFeatureGate.IsDiagnosticsEnabled)
+        {
+            return;
+        }
+
+        var assigned = map.GetAllMapPoints()
+            .Select(point => (Point: point, Metadata: TryGetMetadata(point)))
+            .Where(entry => entry.Metadata != null)
+            .ToList();
+
+        var firemarks = assigned
+            .Where(entry => entry.Metadata!.Firemark.HasValue)
+            .Select(entry => $"({entry.Point.coord.col},{entry.Point.coord.row})={entry.Metadata!.Firemark!.Value}");
+        var banners = assigned
+            .Where(entry => entry.Metadata!.Banner.HasValue)
+            .Select(entry => $"({entry.Point.coord.col},{entry.Point.coord.row})={entry.Metadata!.Banner!.Value}");
+        var bossSeals = new[] { map.BossMapPoint, map.SecondBossMapPoint }
+            .Where(point => point != null)
+            .Select(point => (Point: point!, Metadata: TryGetMetadata(point)))
+            .Where(entry => entry.Metadata?.BossSeal != null)
+            .Select(entry =>
+                $"({entry.Point.coord.col},{entry.Point.coord.row})={entry.Metadata!.BossSeal!.Name}/{entry.Metadata.BossSeal.Id}" +
+                (entry.Metadata.IsBossBrand ? "/brand" : "/seal"));
+
+        MainFile.Logger.Info(
+            $"[EZMicroBalance] Ascension diagnostics: map marker distribution; actIndex={actIndex}; seed={runState.Rng.StringSeed}; firemarkKinds=[{string.Join(", ", firemarks)}]; bannerKinds=[{string.Join(", ", banners)}]; bossSeals=[{string.Join(", ", bossSeals)}].");
     }
 
     private static AscensionNodeMetadata GetOrCreateMetadata(MapPoint point)
@@ -915,7 +1128,12 @@ internal static class AscensionMapService
         }
     }
 
-    private static IEnumerable<MapPoint> PickDistinctByAct(IReadOnlyList<MapPoint> candidates, int count, int offset)
+    private static IEnumerable<MapPoint> PickDistinctByStableOrder(
+        IReadOnlyList<MapPoint> candidates,
+        int count,
+        IRunState runState,
+        string markerFamily,
+        int actIndex)
     {
         if (candidates.Count == 0 || count <= 0)
         {
@@ -923,12 +1141,15 @@ internal static class AscensionMapService
         }
 
         var used = new HashSet<MapPoint>();
-        for (var i = 0; i < candidates.Count && used.Count < count; i++)
+        foreach (var point in EnumerateByStableMarkerOrder(candidates, runState, markerFamily, actIndex))
         {
-            var point = candidates[Math.Abs(offset + i) % candidates.Count];
             if (used.Add(point))
             {
                 yield return point;
+                if (used.Count >= count)
+                {
+                    yield break;
+                }
             }
         }
     }
@@ -943,7 +1164,11 @@ internal static class AscensionMapService
     private static IEnumerable<MapPoint> PickFiremarkedElitesByAct(
         IReadOnlyList<MapPoint> candidates,
         int count,
-        int offset)
+        IRunState runState,
+        string markerFamily,
+        int actIndex,
+        MapPoint start,
+        MapPoint boss)
     {
         if (candidates.Count == 0 || count <= 0)
         {
@@ -951,10 +1176,11 @@ internal static class AscensionMapService
         }
 
         var selected = new List<MapPoint>();
-        foreach (var point in EnumerateFromOffset(candidates, offset))
+        foreach (var point in EnumerateByStableMarkerOrder(candidates, runState, markerFamily, actIndex))
         {
             if (HasHardFiremarkPlacementConflict(selected, point) ||
-                selected.Any(existing => IsOnSameRoute(existing, point)))
+                selected.Any(existing => IsOnSameRoute(existing, point)) ||
+                !KeepsFiremarksOptional(start, boss, selected, point))
             {
                 continue;
             }
@@ -968,10 +1194,11 @@ internal static class AscensionMapService
 
         if (selected.Count < count)
         {
-            foreach (var point in EnumerateFromOffset(candidates, offset))
+            foreach (var point in EnumerateByStableMarkerOrder(candidates, runState, markerFamily, actIndex))
             {
                 if (selected.Contains(point) ||
-                    HasHardFiremarkPlacementConflict(selected, point))
+                    HasHardFiremarkPlacementConflict(selected, point) ||
+                    !KeepsFiremarksOptional(start, boss, selected, point))
                 {
                     continue;
                 }
@@ -990,11 +1217,94 @@ internal static class AscensionMapService
         }
     }
 
-    private static IEnumerable<MapPoint> EnumerateFromOffset(IReadOnlyList<MapPoint> candidates, int offset)
+    private static bool KeepsFiremarksOptional(
+        MapPoint start,
+        MapPoint boss,
+        IReadOnlyCollection<MapPoint> selected,
+        MapPoint candidate)
     {
-        for (var i = 0; i < candidates.Count; i++)
+        return HasPathAvoiding(start, boss, selected.Append(candidate));
+    }
+
+    private static IEnumerable<MapPoint> EnumerateByStableMarkerOrder(
+        IReadOnlyList<MapPoint> candidates,
+        IRunState runState,
+        string markerFamily,
+        int actIndex)
+    {
+        return candidates
+            .OrderBy(point => StableMarkerHash(runState, markerFamily, actIndex, point.coord, "point"))
+            .ThenBy(point => point.coord.row)
+            .ThenBy(point => point.coord.col);
+    }
+
+    private static TEnum GetKindFromActOrder<TEnum>(
+        IRunState runState,
+        string markerFamily,
+        int actIndex,
+        MapCoord coord,
+        int assignmentIndex)
+        where TEnum : struct, Enum
+    {
+        var values = Enum.GetValues<TEnum>();
+        var order = values
+            .OrderBy(value => StableMarkerHash(runState, markerFamily, actIndex, default, value.ToString()))
+            .ThenBy(value => value.ToString(), StringComparer.Ordinal)
+            .ToArray();
+
+        var cycle = assignmentIndex / order.Length;
+        var index = assignmentIndex % order.Length;
+        if (cycle > 0)
         {
-            yield return candidates[Math.Abs(offset + i) % candidates.Count];
+            index = (index + (int)(StableMarkerHash(runState, markerFamily, actIndex, coord, $"cycle:{cycle}") % (uint)order.Length)) % order.Length;
+        }
+
+        return order[index];
+    }
+
+    private static uint StableMarkerHash(
+        IRunState runState,
+        string markerFamily,
+        int actIndex,
+        MapCoord coord,
+        string salt)
+    {
+        unchecked
+        {
+            var hash = 2166136261u;
+            AddString(ref hash, runState.Rng.StringSeed);
+            AddUInt(ref hash, runState.Rng.Seed);
+            AddString(ref hash, markerFamily);
+            AddInt(ref hash, actIndex);
+            AddInt(ref hash, coord.col);
+            AddInt(ref hash, coord.row);
+            AddString(ref hash, salt);
+            return hash;
+        }
+    }
+
+    private static void AddString(ref uint hash, string value)
+    {
+        foreach (var ch in value)
+        {
+            AddInt(ref hash, ch);
+        }
+    }
+
+    private static void AddInt(ref uint hash, int value)
+    {
+        AddUInt(ref hash, unchecked((uint)value));
+    }
+
+    private static void AddUInt(ref uint hash, uint value)
+    {
+        unchecked
+        {
+            for (var shift = 0; shift < 32; shift += 8)
+            {
+                hash ^= (value >> shift) & 0xffu;
+                hash *= 16777619u;
+            }
         }
     }
 

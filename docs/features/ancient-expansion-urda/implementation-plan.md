@@ -40,13 +40,13 @@ Actions:
 1. Implement or wire Urda identity registration path.
 2. Add `urda` blessing registry with enabled flags.
 3. Ensure inactive blessings are excluded from live pool.
-4. Add explicit debug/test env vars (`EZMB_FORCE_ANCIENT`, `EZMB_FORCE_URDA_BLESSING`) as default-off if needed for diagnostics.
+4. Keep Urda independently disableable with `EZMB_DISABLE_URDA=1`; keep `EZMB_FORCE_URDA_BLESSING` default-off for diagnostics.
 5. Add source-guarded fallback behavior when registration path is unavailable.
 
 Exit:
 
-- New run can reach and select Urda.
-- Offer count appears as configured for enabled blessing set.
+- Source path exists for Urda Act 1 insertion and selection.
+- Live run still needs to prove Urda appears and the configured blessing set is selectable.
 
 ## 3. Phase 2: Active blessing slice
 
@@ -59,11 +59,11 @@ Order by safety:
 
 For each blessing:
 
-- Implement guarded hooks only.
-- Add required save/load fields.
-- Add EN and ZHS localization keys.
-- Add manual checklist rows.
-- Add/adjust tests where practical.
+- Guarded source hooks are implemented for the first active slice.
+- Progress is encoded in `AncientSavedStateFields.UrdaStateKey` to avoid adding a new SavedSpireField until live persistence is proven.
+- EN and ZHS localization keys are present for the active custom cards and Seedbed alternative.
+- Manual checklist rows remain open until tested in-game.
+- Source guard tests cover the implementation shape.
 
 ## 4. Phase 3: Diagnostics and release hygiene
 
@@ -92,9 +92,8 @@ Actions:
 - Publish only if resources or localization changed.
 - Run smoke/load checks before any public readiness claim.
 
-No milestone in this branch should ship active behavior if:
+No milestone in this branch should claim release-ready Urda behavior if:
 
 - `Seedbed`, `Humus Pact`, `Molting`, or `Moss Map` logic is incomplete.
 - save/load behavior is broken.
 - live manual checks are still unexecuted.
-

@@ -1,6 +1,6 @@
 # Urda Ancient API Research
 
-Last updated: 2026-05-09
+Last updated: 2026-05-12
 
 ## 1. Current evidence set
 
@@ -51,12 +51,15 @@ Need proof for:
 
 ### 2.2 Blessing hook proof
 
-Need proof for:
+Source-backed implementation now uses:
 
-- normal combat card reward callbacks,
-- skipped reward callbacks,
-- room-type callbacks for Act 1,
-- act transition callback for Act 2 cleanup.
+- `AbstractModel.TryModifyCardRewardOptionsLate(...)` plus the active `CardReward.Populate` context to identify normal Act 1 combat card rewards.
+- `AbstractModel.TryModifyCardRewardAlternatives(...)` and `CardRewardAlternative` for the Seedbed reward-screen option.
+- A narrow `CardReward.OnSkipped` postfix to process Humus Pact after the card reward is finally skipped.
+- `AbstractModel.AfterRoomEntered(...)` for Moss Map first-room-type rewards.
+- `AbstractModel.AfterActEntered(...)` for Molting cleanup at Act 2+ start.
+
+These paths compile and are covered by source-guard tests, but they are not a substitute for live reward-screen, save/load, and UI checks.
 
 ### 2.3 Runtime proof
 
@@ -92,9 +95,10 @@ Avoid direct mutable state edits where game command APIs exist.
 
 Known unresolved items:
 
-- direct Urda registration source certainty,
+- live Act 1 Urda selection and registration proof,
+- reward-screen timing for Seedbed and Humus Pact in normal Steam-client play,
+- save/load of encoded Urda blessing progress in `UrdaStateKey`,
 - full room-type callback stability for Moss Map,
-- safe `Withered Husk` end-of-turn exhaust block behavior and end act cleanup ordering.
+- safe `Withered Husk` end-of-turn exhaust block behavior and end-act cleanup ordering.
 
-No game behavior is claimed implemented in this doc. Evidence must be collected before release claims.
-
+Source gameplay is implemented, but no live game behavior is claimed verified in this doc. Evidence must be collected before release claims.

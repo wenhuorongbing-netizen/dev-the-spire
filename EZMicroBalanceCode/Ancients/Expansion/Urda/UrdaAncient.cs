@@ -74,16 +74,19 @@ internal sealed class EzmbUrda : AncientEventModel, ICustomModel
         () => SelectBlessing(UrdaBlessingIds.MossMap),
         InitialOptionKey(UrdaBlessingIds.MossMap));
 
-    private Task SelectBlessing(string blessingId)
+    private async Task SelectBlessing(string blessingId)
     {
         if (Owner != null)
         {
-            AncientSavedStateFields.UrdaStateKey[Owner] = blessingId;
+            UrdaBlessingService.SetSelectedBlessing(Owner, blessingId);
+            if (blessingId == UrdaBlessingIds.Molting)
+            {
+                await UrdaBlessingService.ApplyMolting(Owner);
+            }
         }
 
         MainFile.Logger.Info($"[EZMicroBalance] Urda blessing selected: {blessingId}.");
         Done();
-        return Task.CompletedTask;
     }
 }
 

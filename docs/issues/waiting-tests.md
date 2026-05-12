@@ -763,6 +763,154 @@ Minimum matrix:
 - A20: selection limitation or warning is visible; Dual King Brands remains treated as not live co-op verified.
 - Logs: no ownership warnings, checksum divergence, or multiplayer desync lines in `godot.log`.
 
+### ISSUE-2026-05-10-RUNTIME-TEST-ENV-POLLUTED-AND-EZMB-PACKAGE-MISMATCH
+
+Priority: P0/P1
+
+Status: source-complete; release evidence blocked by runtime pollution and package-hash ambiguity.
+
+Area: runtime test hygiene / installed-package validation
+
+Findings from uploaded player log `godot2026-05-10T06.07.51.log`:
+
+- Runtime version is `v0.105.1` (not the `v0.105.0` baseline used by some earlier notes).
+- Loaded mods is `Loaded 18 mods (19 total)` rather than a clean BaseLib + EZMicroBalance check.
+- Non-EZMB mods report manifest/API/runtime issues before gameplay:
+  - `RouteSuggestConfig.json` has no `mod id` entry.
+  - `mods\sts2-heybox-support\mod_mainfest.json` has no `mod id` entry.
+  - Heybox reports `ModManager.GetModNameList Method NotFound`.
+  - SpeedX reports undefined target patch on `NRewardsScreen`.
+  - Act4Heart reports `ConfigMessage.get_ShouldBuffer` `TypeLoadException` (`No implementation found`).
+- BaseLib `v3.1.2` and EZ Micro Balance initialize, but BaseLib reports `Found 12 SavedSpireFields`.
+- A1.05.08 packaging expectation in this repo is 13 `SavedSpireFields` for Urda state registration; this log therefore cannot prove package/runtime consistency.
+- Gameplay conclusions from this file are invalid until the environment is cleaned and installed artifact hash is verified.
+
+Manual retest gates:
+
+1. Move all mods out of `<GameRoot>\mods` except:
+   - `BaseLib`
+   - `EZMicroBalance`
+2. Launch normal Steam-client test run and verify log contains:
+   - `Loaded 2 mods` (or `Loaded 2 mods (2 total)` depending on launch order), and
+   - `Found 13 SavedSpireFields`.
+3. Re-run install hash check using `scripts/check-installed-ezmb-package.ps1`.
+4. Do not use the polluted `godot2026-05-10T06.07.51.log` as release evidence again.
+5. If a clean hash-matching log still reports `Found 12 SavedSpireFields`, investigate `AncientSavedStateFields.UrdaStateKey` registration and BaseLib SavedSpireField discovery mismatch before any gameplay assertion.
+
+### ISSUE-2026-05-10-A12-A16-MARKER-VARIETY-DETERMINISTIC-MIGHT-VANGUARD
+
+Priority: P1
+
+Status: source-patched; live multi-seed and save/load verification pending.
+
+Area: A12 Firemarked Elite / A16 Banner Room map metadata variety
+
+Problem:
+
+- Previous deterministic assignment made the first Act 1 Firemark always `Might` and the first Act 1 Banner always `Vanguard`.
+- Player repeatedly saw Strength effects and could not meaningfully experience `Giant`, `ForgeArmor`, `ConstantHeal`, `ShieldFormation`, or `Bounty`.
+- This made the feature look like it only had one modifier.
+
+Current source fix:
+
+- Firemark and Banner node selection now use a stable hash over run seed, marker family, act index, and map coord.
+- Firemark and Banner kind assignment now uses an act-level shuffled order, so kinds avoid duplicates within an act until all kinds are used.
+- Assignment logs always include `actIndex`, coord, marker family, and kind.
+- `EZMB_ASCENSION_DIAGNOSTICS=1` logs compact per-map Firemark/Banner/Boss Seal distribution summaries.
+
+Manual verification:
+
+- Start multiple fresh runs/seeds at A12/A16 and confirm Act 1 Firemark is not always Might and Act 1 Banner is not always Vanguard.
+- Save and Continue from the same map and confirm assigned kinds do not change.
+- Confirm entering a marked node applies the hover-described effect.
+
+### ISSUE-2026-05-10-A12-A16-A19-MAP-PREVIEW-MISSING
+
+Priority: P1
+
+Status: source-patched; live hover rendering verification pending.
+
+Area: A12 Firemarked Elite / A16 Banner Room / A19-A20 Boss Seal map preview
+
+Problem:
+
+- Firemarked Elite and Banner markers existed, but players could not easily tell what exact modifier was on a node.
+- Boss Royal Seal / Brand strengthening was not clearly previewed before entering boss combat.
+
+Current source fix:
+
+- Firemarked Elite hover now names the exact Firemark kind and summary.
+- Banner Room hover keeps exact Banner kind names and player-facing summaries.
+- Boss node hover shows Royal Seal or King Brand title plus the matching seal/brand summary.
+- Aeonglass hover text states the +5 Strength seal before combat.
+- English and Simplified Chinese localization keys were added for Firemark names/summaries and the player guide line.
+
+Manual verification:
+
+- Hover Firemarked Elite, Banner Room, Boss Royal Seal, and Boss Brand nodes in English and Simplified Chinese.
+- Confirm text names the exact modifier and does not show raw localization keys or raw rich-text tags.
+- Confirm unmarked normal combat does not receive Banner effects.
+
+### ISSUE-2026-05-10-A13-FISSION-VISIBILITY-SAMPLING
+
+Priority: P2
+
+Status: diagnostics source-patched; live sampling pending.
+
+Area: A13 Fission reward visibility
+
+Problem:
+
+- Player reports Fission is hard to see.
+- Source chance remains probabilistic and filtered by eligibility, so a drought can be caused by low eligible candidate count rather than only probability.
+
+Current source fix:
+
+- Fission probabilities are unchanged.
+- With `EZMB_ASCENSION_DIAGNOSTICS=1`, reward rolls now log `sourceLabel`, `chancePercent`, eligible candidate count, roll value, applied yes/no, and applied card id when present.
+
+Manual verification:
+
+- Sample 20 normal combat reward screens, 10 Banner Room reward screens, 10 Firemarked Elite reward screens, and boss reward screens.
+- Record eligible candidate count and applied count per source type before changing probabilities.
+- Consider a future pity counter only if clean sampling proves long droughts despite eligible candidates.
+
+### ISSUE-2026-05-11-MULTIPLAYER-MAC-VERSION-MISMATCH-MODELDB-HASH
+
+Priority: P1
+
+Status: investigation documented; live host/Mac evidence pending.
+
+Area: cross-platform multiplayer join / misleading version-mismatch popup
+
+Player report:
+
+- Windows-to-Windows multiplayer appears to work.
+- macOS client cannot join and shows `你试图加入的游戏与您的杀戮尖塔2的版本不同。`
+- Tester believes both machines are on the same visible Slay the Spire 2 version.
+
+Source finding:
+
+- The visible popup corresponds to `NETWORK_ERROR.VERSION_MISMATCH`.
+- `JoinFlow.Begin(...)` throws this same failure both when the handshake version string differs and when the version string matches but `ModelIdSerializationCache.Hash` differs.
+- `ModelIdSerializationCache.Hash` is derived from base-game and loaded-mod `AbstractModel` IDs plus epoch IDs, so it can differ if the game build, loaded gameplay mods, BaseLib/EZMB binaries, or mod model graph differ.
+
+Current local evidence:
+
+- Latest local Windows `godot.log` shows a failed join with matching handshake version `v0.105.1`.
+- The actual failure was `ModelDb hash mismatch. Host: 3593977223 Ours: 150743674`.
+- That local run loaded `15 mods (21 total)`, which invalidates it as BaseLib+EZMB-only multiplayer evidence and strongly suggests a loaded-model mismatch surface.
+
+Manual evidence required:
+
+- Capture the host and macOS client `godot.log` from the same failed join attempt.
+- Record `release_info.json` on both machines: `version`, `commit`, `branch`, and `main_assembly_hash`.
+- Record both `Loaded X mods (Y total)` lines.
+- Record both `ModelIdSerializationCache initialized... Hash: ...` lines.
+- Record client-side `Got initial game info message. Version: ... Hash: ...` plus the exact subsequent failure line.
+- Repeat with only `BaseLib` and `EZMicroBalance` installed/enabled on both machines.
+- Verify BaseLib version/hash and EZMB DLL/PCK/JSON hashes match on both machines before concluding macOS runtime incompatibility.
+
 ## Resolved / Player-Verified
 
 ### Closed in source-repaired pass (archived)

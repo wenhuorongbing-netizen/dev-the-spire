@@ -11,7 +11,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 internal static class RootDeckService
 {
     public const int MaxRootblightLevel = 3;
-    public const int MaxRootblightCards = 4;
+    public const int MaxRootblightCards = 1;
     private const double RootblightNoticeSeconds = 5.0;
 
     private static readonly ConditionalWeakTable<CardModel, InternalSyncMarker> InternalSyncRemovals = new();
@@ -33,13 +33,21 @@ internal static class RootDeckService
 
         foreach (var player in runState.Players.Where(player => player.IsActiveForHooks))
         {
+            await NormalizeRootblightDeck(player, "run-state sync");
             if (!AscensionSavedStateFields.RootBeginsApplied[player])
             {
                 AscensionSavedStateFields.RootBeginsApplied[player] = true;
-                await AddRootblightCard(player, 1);
+                var addedStartingRoot = false;
+                if (FindRootFamilyCards(player).Count == 0)
+                {
+                    addedStartingRoot = await AddRootblightCard(player, 1);
+                }
+
                 SetDiagnosticLevelFromDeck(player);
                 MainFile.Logger.Info(
-                    $"[EZMicroBalance] Ascension A14 applied: Rootblight I added for player {runState.GetPlayerSlotIndex(player)}.");
+                    addedStartingRoot
+                        ? $"[EZMicroBalance] Ascension A14 applied: Rootblight I added for player {runState.GetPlayerSlotIndex(player)}."
+                        : $"[EZMicroBalance] Ascension A14 applied: starting Rootblight already present for player {runState.GetPlayerSlotIndex(player)}; no duplicate added.");
                 continue;
             }
 
@@ -86,6 +94,7 @@ internal static class RootDeckService
         }
 
         AscensionSavedStateFields.RootBeginsApplied[player] = true;
+        await NormalizeRootblightDeck(player, $"{source} add");
         if (!await AddRootblightCard(player, 1, preferOverlayNotice: true))
         {
             ShowRootSystemFull(player);
@@ -120,6 +129,7 @@ internal static class RootDeckService
             return;
         }
 
+        await NormalizeRootblightDeck(player, "combat-end sync");
         var existingRootblight = FindRootFamilyCards(player)
             .Where(card => card.WasPresentAtCombatStart)
             .ToList();
@@ -129,24 +139,8 @@ internal static class RootDeckService
             card.WasPresentAtCombatStart = false;
             if (card.RootblightLevel >= MaxRootblightLevel)
             {
-                if (card.HasSplit)
-                {
-                    continue;
-                }
-
-                card.HasSplit = true;
-                if (!await AddRootblightCard(player, 1, preferOverlayNotice: true))
-                {
-                    ShowRootSystemFull(player);
-                    MainFile.Logger.Info(
-                        $"[EZMicroBalance] Ascension Rootblight capped: Rootblight III split was blocked for player {player.RunState.GetPlayerSlotIndex(player)} because the deck already has {MaxRootblightCards} Rootblight cards.");
-                }
-                else
-                {
-                    MainFile.Logger.Info(
-                        $"[EZMicroBalance] Ascension Rootblight applied: ignored unsplit Rootblight III added one Rootblight I for player {player.RunState.GetPlayerSlotIndex(player)}.");
-                }
-
+                MainFile.Logger.Info(
+                    $"[EZMicroBalance] Ascension Rootblight applied: ignored Rootblight III stayed at max level for player {player.RunState.GetPlayerSlotIndex(player)}.");
                 continue;
             }
 
@@ -274,6 +268,30 @@ internal static class RootDeckService
 
         ShowRootblightAdded(player, preferOverlayNotice);
         return true;
+    }
+
+    private static async Task NormalizeRootblightDeck(Player player, string reason)
+    {
+        var cards = FindRootFamilyCards(player);
+        if (cards.Count <= MaxRootblightCards)
+        {
+            SetDiagnosticLevelFromDeck(player);
+            return;
+        }
+
+        var cardToKeep = cards
+            .OrderByDescending(card => card.RootblightLevel)
+            .ThenByDescending(card => card.HasSplit)
+            .First();
+        foreach (var duplicate in cards.Where(card => !ReferenceEquals(card, cardToKeep)).ToList())
+        {
+            InternalSyncRemovals.GetValue(duplicate, _ => new InternalSyncMarker());
+            await CardPileCmd.RemoveFromDeck(duplicate, showPreview: false);
+        }
+
+        SetDiagnosticLevelFromDeck(player);
+        MainFile.Logger.Info(
+            $"[EZMicroBalance] Ascension Rootblight normalized by {reason}: kept level {cardToKeep.RootblightLevel} and removed {cards.Count - 1} duplicate Rootblight card(s) for player {player.RunState.GetPlayerSlotIndex(player)}.");
     }
 
     private static CardModel CreateRootblightCard(Player player, int level)
