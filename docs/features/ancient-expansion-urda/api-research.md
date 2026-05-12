@@ -54,10 +54,22 @@ Need proof for:
 Source-backed implementation now uses:
 
 - `AbstractModel.TryModifyCardRewardOptionsLate(...)` plus the active `CardReward.Populate` context to identify normal Act 1 combat card rewards.
-- `AbstractModel.TryModifyCardRewardAlternatives(...)` and `CardRewardAlternative` for the Seedbed reward-screen option.
-- A narrow `CardReward.OnSkipped` postfix to process Humus Pact after the card reward is finally skipped.
+- `AbstractModel.TryModifyCardRewardAlternatives(...)` and `CardRewardAlternative` for the Seedbed and Humus Pact reward-screen options.
+- `AbstractModel.AfterRewardTaken(...)` for Humus Pact's third-trigger remove/payoff sequence after the card reward selection has completed.
 - `AbstractModel.AfterRoomEntered(...)` for Moss Map first-room-type rewards.
 - `AbstractModel.AfterActEntered(...)` for Molting cleanup at Act 2+ start.
+- `CardRewardAlternative.Generate(...)` supports at most two alternatives total, so Urda alternatives must no-op when built-in or other mod alternatives already fill both slots.
+- `CardReward.OnSkipped(...)` can run during reward-set abandonment or room-exit cleanup; Humus Pact must not open UI from this path.
+- `Reward.SelectUnsynchronized(...)` calls `Hook.AfterRewardTaken(...)` after a reward's `OnSelect()` succeeds, then sets `SuccessfullySelected`. `RewardsSetSynchronizer.SelectRewardForPlayer(...)` completes the current reward set after that call returns. Humus Pact's third payoff therefore still needs source guards against reentry/loss even though it no longer runs from `OnSkipped`.
+- `CreatureCmd.LoseMaxHp(...)` can damage before max HP clamping, so Seedbed must require max HP greater than its cost before offering or accepting.
+- `CreatureCmd.GainMaxHp(...)` heals by the gained amount; Seedbed uses `SetMaxHp(...)` for its no-heal completion bonus.
+- Humus Pact now generates the upgraded payoff card before opening optional deck removal, and clears `HumusCompletionPending` only after the payoff resolver succeeds. This keeps the third payoff from being marked complete if reward-card generation cannot produce a card.
+- BaseLib `SavedSpireField<TKey,TValue>` documentation says automatic save/load only works on model types with saved properties, mainly cards and relics. Local Core source does not prove player-field persistence for `SavedSpireField<Player,string>`:
+  - `Player.ToSerializable()` writes a fixed `SerializablePlayer` shape and does not call `SavedProperties.From(...)`.
+  - `SerializablePlayer` has fixed fields such as deck, relics, potions, rng, odds, and `extra_fields`; it has no general `SavedProperties`/`Props` field.
+  - `ExtraPlayerFields` serializes only built-in fixed fields.
+  - `SavedProperties.From(AbstractModel)` is used by card, relic, and modifier save paths, but no inspected `Player` save path routes through it.
+  Current Urda player-owned state must remain save/load-pending until live evidence proves it or state is moved to a proven carrier.
 
 These paths compile and are covered by source-guard tests, but they are not a substitute for live reward-screen, save/load, and UI checks.
 

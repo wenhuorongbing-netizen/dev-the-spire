@@ -134,6 +134,12 @@ internal sealed class RootBudCombatHook : AbstractModel
             return;
         }
 
+        var tracker = GetTracker(state);
+        if (card.Pile?.Type == PileType.Hand)
+        {
+            await AscensionCombatModifierService.AfterCardEnteredHand(state, tracker, card);
+        }
+
         if (!IsGameplayEnabledForCurrentRoom(state))
         {
             return;
@@ -141,37 +147,31 @@ internal sealed class RootBudCombatHook : AbstractModel
 
         if (card is RootBud bud)
         {
-            GetTracker(state).Buds.Add(bud);
+            tracker.Buds.Add(bud);
             if (bud.Pile?.Type == PileType.Hand)
             {
                 MarkEnteredHand(state, bud);
             }
         }
-
-        if (card.Pile?.Type == PileType.Hand)
-        {
-            await AscensionCombatModifierService.AfterCardEnteredHand(state, GetTracker(state), card);
-        }
-
-        return;
     }
 
     public override async Task AfterCardDrawn(PlayerChoiceContext choiceContext, CardModel card, bool fromHandDraw)
     {
         var state = CurrentCombatState();
-        if (state == null || !IsGameplayEnabledForCurrentRoom(state))
+        if (state == null)
         {
             return;
         }
 
-        if (card is RootBud bud)
+        var tracker = GetTracker(state);
+        if (IsGameplayEnabledForCurrentRoom(state) &&
+            card is RootBud bud)
         {
-            GetTracker(state).Buds.Add(bud);
+            tracker.Buds.Add(bud);
             MarkEnteredHand(state, bud);
         }
 
-        await AscensionCombatModifierService.AfterCardEnteredHand(state, GetTracker(state), card);
-        return;
+        await AscensionCombatModifierService.AfterCardEnteredHand(state, tracker, card);
     }
 
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -182,20 +182,16 @@ internal sealed class RootBudCombatHook : AbstractModel
             return;
         }
 
-        if (!IsGameplayEnabledForCurrentRoom(state))
+        var tracker = GetTracker(state);
+        if (IsGameplayEnabledForCurrentRoom(state) &&
+            cardPlay.Card is RootBud bud)
         {
-            return;
-        }
-
-        if (cardPlay.Card is RootBud bud)
-        {
-            GetTracker(state).Buds.Add(bud);
+            tracker.Buds.Add(bud);
             bud.WasPlayed = true;
             MainFile.Logger.Info("[EZMicroBalance] Ascension Blight Sprout tracked: played before combat end.");
         }
 
-        await AscensionCombatModifierService.AfterCardPlayed(state, GetTracker(state), cardPlay);
-        return;
+        await AscensionCombatModifierService.AfterCardPlayed(state, tracker, cardPlay);
     }
 
     public override async Task AfterDamageReceived(

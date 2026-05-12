@@ -40,6 +40,8 @@
   "BANNER_VANGUARD.description": "Enemies start with [blue]2[/blue] temporary [gold]Strength[/gold]. It is removed at the start of round [blue]3[/blue].",
   "ROOTBLIGHT_ADDED": "Rootblight added.",
   "ROOT_SYSTEM_FULL": "Root system full.",
+  "DEEP_BRANCH_ENTRY.description": "Entrance to an optional Deep Branch. It reconnects later, and a normal route remains available.",
+  "DEEP_BRANCH_ENTRY.title": "Deep Branch Entrance",
   "DEEP_BRANCH_REWARD.description": "A Deep Branch reward node. It pays better because the branch path is riskier.",
   "DEEP_BRANCH_REWARD.title": "Deep Branch Reward",
   "DEEP_BRANCH_RISK.description": "A Deep Branch risk node. It is optional and reconnects to the main map.",

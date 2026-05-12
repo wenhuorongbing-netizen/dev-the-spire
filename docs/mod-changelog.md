@@ -2,13 +2,25 @@
 
 Append only short tester/player-facing entries here when behavior or release validation changes.
 
+## 2026-05-12
+
+- Morvi default-off prototype hardening: Misprint Press now cleans up generated copies if they cannot enter combat, and Debt Settlement keeps its final payoff pending until the upgraded-card reward is actually offered.
+- Morvi Debt Settlement text now tells players that missing Gold is paid with nonlethal HP.
+- Morvi/Lotha event art remains pending because no explicit local source PNGs were available; no placeholder art was added.
+- Morvi, the Lender-Scribe now has a default-off Act 2 prototype for focused testing.
+- Set `EZMB_ENABLE_MORVI_V22=1` to include Morvi in Act 2 Ancient selection.
+- Set `EZMB_FORCE_MORVI_BLESSING=morvi_misprint_press`, `morvi_open_book_exam`, or `morvi_debt_settlement` to force one prototype blessing.
+- Morvi prototype blessings: Misprint Press replays your first Attack or Skill each combat, Open-Book Exam upgrades one eligible Act 2 combat reward card, and Debt Settlement trades immediate gold for three later repayments.
+- Lotha, Vakuu fight content, and the six future Urda blessings remain unimplemented.
+- Live gameplay, save/load, and co-op verification for Morvi remain pending.
+
 ## 2026-05-11
 
 - Urda, Loamweaver is now enabled by default for private-beta testing in Act 1.
 - Set `EZMB_DISABLE_URDA=1` only when you want to hide Urda for comparison.
 - Urda now has first-pass gameplay for Seedbed, Humus Pact, Molting, and Moss Map; live gameplay and save/load testing are still pending.
-- Seedbed can trade max HP for Seedlings from normal Act 1 combat card rewards and rewards four accepts with max HP.
-- Humus Pact rewards skipped normal Act 1 combat card rewards, then opens a small removal plus upgraded-card payoff.
+- Seedbed can trade max HP for Seedlings from normal Act 1 combat card rewards, counts accepted Seedbed choices only, and rewards four accepts with max HP without healing.
+- Humus Pact uses a Compost Reward card-reward option for normal Act 1 combat rewards, then opens a small removal plus upgraded-card payoff after the third compost.
 - Molting removes one Strike and one Defend, adds two Withered Husk cards, then clears those husks at Act 2.
 - Moss Map grants one small Act 1 reward per first visited room type.
 

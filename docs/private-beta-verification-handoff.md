@@ -9,21 +9,21 @@ This handoff is for manual verification that cannot be completed by the local au
 ## Package Under Test
 
 - Package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`
-- Zip SHA256: `2A13A44EA643EA872A8A189883E4EEFFDE8D9DDB8A83A0F5838CE9B6FA8072AD`
+- Zip SHA256: `F09686BA68A8A63FEC716713C2B7A5D3A184F1FEE5EE1EB749BBD1AEDEB142FC`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `EE6B9EE9F2D0D3F4962D6DA11B03E19E6E4806DF08930C1F342BF9530A36A6EF`
+- DLL SHA256: `05C9E0430EB219BB1B7B3E830DC7286A7CE2879427939D0DEDC6DDF2E50A5E34`
 - Manifest SHA256: `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`
-- PCK SHA256: `FCD38F1E5D940D4CDEB94623465FA24D71A75AABFF323586D1B9FBED856D4557`
+- PCK SHA256: `0417E3402A026C4B4D0597A3183108F88C22391499C20886BAF28BFD28BBF292`
 
 ## Known Automated Evidence
 
 - `dotnet build EZMicroBalance.sln`: passed on 2026-05-12 with 0 warnings and 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-12 after the Urda source gameplay slice, 73 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-12 after the Urda package refresh, 89 passed, 0 skipped, 0 failed.
-- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after the latest source/resource refresh.
+- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-12 after the A11-A20 v2.0 source/doc refresh, 73 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-12 after the A11-A20 v2.0 package refresh, 89 passed, 0 skipped, 0 failed.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after the latest A11-A20 source/doc refresh.
 - `dotnet publish EZMicroBalance.sln`: passed on 2026-05-12 and refreshed the installed/package DLL and PCK.
 - `git diff --check`: last exit 0 after the latest source/resource refresh.
-- Current controlled `--force-steam off` smoke physically isolated unrelated mods and temporarily enabled only BaseLib and EZ Micro Balance. Evidence under `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904` loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 13 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored `settings.save`, `settings.save.backup`, and 22 moved mod entries.
+- Previous controlled `--force-steam off` smoke physically isolated unrelated mods and temporarily enabled only BaseLib and EZ Micro Balance. Evidence under `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904` loaded exactly 2 mods, initialized BaseLib and EZ Micro Balance, reported `Found 13 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored `settings.save`, `settings.save.backup`, and 22 moved mod entries. The current source defines 14 SavedSpireFields after the default-off Morvi prototype state field, so that smoke is stale and must be rerun before release handoff.
 - RC1 normal Steam-client isolated startup log started Slay the Spire 2 through `D:\Steam\steam.exe -applaunch 2868840`, temporarily isolated non-BaseLib/EZMB local mod entries, loaded to main menu with `Loaded 2 mods (2 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialization, `Found 13 SavedSpireFields`, 0 startup `ERROR` lines, and 0 release-blocking signatures. Snapshot: `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log`. The moved mod entries and `settings.save` were restored afterward.
 - RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page. Evidence screenshots: `.tools\runtime-evidence\rc1-modsettings-attempt-20260508-092717-modconfig.png` for BaseLib, `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` for the EZ Micro Balance localized page entry, and `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` for the EZ Micro Balance settings page. Log snapshot `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log` has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
 - RC1 A11 Act 1 map/save-load spot check launched through normal Steam with only BaseLib + EZ Micro Balance, selected A11 through the original single-player Ascension arrows, confirmed the Act 1 map log `columns=8; rows=17` with `inserted 1 late route row(s)`, saved after the first node, continued the run, and reopened the map after load with the same geometry. Evidence: `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008\08-character-select-a11.png`, `11-a11-act1-map-after-neow-continue.png`, `15-after-continue-load.png`, `16-map-open-after-load-attempt.png`, `a11-map-save-load-godot-live.log`, and `a11-save-map-dimensions.json`. The live log used for the gate has 0 `ERROR` lines and 0 release-blocking signatures.

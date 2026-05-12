@@ -18,6 +18,7 @@
 - `docs/features/ancients-rework-v4/`
 - `docs/features/ascension-11-20/`
 - `docs/features/ancient-expansion-urda/`
+- `docs/features/ancient-expansion-v2.2/` (planning-only future roadmap)
 
 ## C. Style / agent docs
 

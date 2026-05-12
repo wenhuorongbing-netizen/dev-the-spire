@@ -234,12 +234,13 @@ public sealed class AncientHighRiskSourceGuardTests
         var prismaticSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");
         var paelsToothSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsToothAndForgePatches.cs");
         var jewelryBoxSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var morviSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
 
         var keys = Regex.Matches(savedFields, "\"(?<key>EZMicroBalance[^\"]+)\"")
             .Select(match => match.Groups["key"].Value)
             .ToArray();
 
-        Assert.Equal(4, keys.Length);
+        Assert.Equal(5, keys.Length);
         Assert.Equal(keys.Length, keys.Distinct(StringComparer.Ordinal).Count());
         Assert.All(keys, key => Assert.StartsWith("EZMicroBalance", key, StringComparison.Ordinal));
         Assert.DoesNotContain("EzDailyContent", savedFields, StringComparison.Ordinal);
@@ -250,14 +251,17 @@ public sealed class AncientHighRiskSourceGuardTests
             "SavedSpireField<PaelsTooth, int> PaelsToothNonBossCombatCounter",
             "SavedSpireField<CardModel, bool> JewelryBoxNonInnateApotheosis",
             "SavedSpireField<Player, string> UrdaStateKey",
+            "SavedSpireField<Player, string> MorviStateKey",
             "\"EZMicroBalanceNormalRewardCounter\"",
             "\"EZMicroBalanceNonBossCombatCounter\"",
             "\"EZMicroBalanceJewelryBoxNonInnateApotheosis\"",
-            "\"EZMicroBalanceUrdaStateKey\"");
+            "\"EZMicroBalanceUrdaStateKey\"",
+            "\"EZMicroBalanceMorviStateKey\"");
 
         Assert.Contains("AncientSavedStateFields.PrismaticGemNormalRewardCounter[prismaticGem]", prismaticSource, StringComparison.Ordinal);
         Assert.Contains("AncientSavedStateFields.PaelsToothNonBossCombatCounter[paelsTooth]", paelsToothSource, StringComparison.Ordinal);
         Assert.Contains("AncientSavedStateFields.JewelryBoxNonInnateApotheosis[card]", jewelryBoxSource, StringComparison.Ordinal);
+        Assert.Contains("AncientSavedStateFields.MorviStateKey[player]", morviSource, StringComparison.Ordinal);
     }
 
     [Fact]

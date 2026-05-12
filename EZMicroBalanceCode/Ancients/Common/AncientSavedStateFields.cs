@@ -13,4 +13,7 @@ internal static class AncientSavedStateFields
 
     public static readonly SavedSpireField<Player, string> UrdaStateKey =
         new(() => string.Empty, "EZMicroBalanceUrdaStateKey");
+
+    public static readonly SavedSpireField<Player, string> MorviStateKey =
+        new(() => string.Empty, "EZMicroBalanceMorviStateKey");
 }

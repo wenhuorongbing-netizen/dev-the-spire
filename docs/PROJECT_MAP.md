@@ -22,6 +22,7 @@
 | `scripts/` | Current | Repository helper scripts. |
 | `docs/archive/` | Current | Historical planning, prompt material, and release archaeology. |
 | `docs/issues/` | Current | Source-complete issue follow-up and manual verification queue (`docs/issues/waiting-tests.md`). |
+| `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization plus default-off Morvi prototype; Lotha/Vakuu remain planning-only. |
 
 ## Active Mod Surface
 
@@ -89,6 +90,9 @@ Start at `docs/README.md`.
 | Open issues | `docs/issues.md` |
 | Manual evidence queue | `docs/issues/waiting-tests.md` |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |
+| Ancient expansion v2.2 | `docs/features/ancient-expansion-v2.2/README.md` |
+| Ancient expansion next prompt | `docs/features/ancient-expansion-v2.2/next-development-prompt.md` |
+| Urda current test slice | `docs/features/ancient-expansion-urda/README.md` |
 | Ascension 11-20 | `docs/features/ascension-11-20/README.md` |
 | Architecture decision | `docs/architecture-ez-micro-balance.md` |
 | Historical planning | `docs/archive/README.md` |

@@ -10,6 +10,8 @@ Current dependency and architecture baseline:
 
 Urda work should remain independently disableable and independent from other ancient families.
 
+Ancient Expansion v2.2 adds a future ten-blessing Urda roadmap, but this implementation plan remains scoped to the current private-beta slice. Do not add the six future Urda blessings until the current four blessings have live gameplay and save/load evidence.
+
 ## 1. Phase 0: Source evidence guard pass
 
 Goal:
@@ -61,9 +63,18 @@ For each blessing:
 
 - Guarded source hooks are implemented for the first active slice.
 - Progress is encoded in `AncientSavedStateFields.UrdaStateKey` to avoid adding a new SavedSpireField until live persistence is proven.
-- EN and ZHS localization keys are present for the active custom cards and Seedbed alternative.
+- EN and ZHS localization keys are present for the active custom cards, Seedbed alternative, and Humus Pact alternative.
 - Manual checklist rows remain open until tested in-game.
 - Source guard tests cover the implementation shape.
+
+Current hardening notes:
+
+- Seedbed counters advance only on accepted Seedbed alternatives, not reward alternative generation.
+- Seedbed is hidden when max HP cannot safely pay the 2 max HP cost.
+- Humus Pact uses an explicit card reward alternative and resolves its third-trigger payoff after `AfterRewardTaken`.
+- Humus Pact no longer patches `CardReward.OnSkipped` because local Core source shows skipped reward finalization can happen when a reward set is abandoned or a room is exited.
+- Humus Pact keeps `HumusCompletionPending` until payoff resolution succeeds, and creates the payoff card before optional removals to avoid consuming removals if no payoff card can be generated.
+- `UrdaStateKey` now includes a Humus completion-pending bit and keeps an eight-field migration read path, but live save/load proof is still required.
 
 ## 4. Phase 3: Diagnostics and release hygiene
 

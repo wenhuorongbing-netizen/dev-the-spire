@@ -4,6 +4,46 @@ Project: EZ Micro Balance
 Manifest id: EZMicroBalance
 
 Current status note: entries below are chronological history. The current automated test baseline is recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh; earlier 24-test, 28-test, 34-test, 46-test, 56-test, 57-test, 58-test, 63-test, and 64-test entries are retained as historical evidence from before later guard additions.
+## 2026-05-12 - A11-A20 v2.0 Integration And Package Refresh
+
+Scope:
+
+- Integrated the current Rootblight, Firemark/Forge Token, Fission/Banner, A11/A17 map, Boss Seal, and A20 surfaces into one validated package pass.
+- Updated current-facing docs and package README text for the one-Rootblight cap, source-specific Fission rates `10/15/20/5`, Deep Branch entry markers, Forge Token special-rest deferral, and live-verification limits.
+- Closed the remaining Forge Token duplicate-reward checklist gap: an existing token now converts to 15 gold and prefers an upgraded fourth Firemarked Elite card reward option when an upgradable card exists.
+
+Validation:
+
+- `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- `dotnet test EZMicroBalance.sln --no-build`: passed, 73 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
+- `dotnet publish EZMicroBalance.sln`: exited 0 and refreshed the installed DLL/manifest/PCK. Godot still prints the known local `source code/` nested-project scan warning during export.
+- Rebuilt `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the current installed artifacts. Current hashes: DLL `05C9E0430EB219BB1B7B3E830DC7286A7CE2879427939D0DEDC6DDF2E50A5E34`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `0417E3402A026C4B4D0597A3183108F88C22391499C20886BAF28BFD28BBF292`, package zip `F09686BA68A8A63FEC716713C2B7A5D3A184F1FEE5EE1EB749BBD1AEDEB142FC`.
+
+Runtime status:
+
+- No new live gameplay/manual pass was executed in this integration run. Full live Ascension gameplay, save/load, natural route traversal, Rootblight combat-end behavior, A12/A16 map hover/effect checks, A19 boss-by-boss checks, A20 double-boss/courtyard checks, and multiplayer ownership/desync remain pending.
+
+## 2026-05-12 - Firemark/Forge Token v2.0 Hardening
+
+Scope:
+
+- Hardened only A12 Firemarked Elite and Forge Token surfaces while preserving concurrent ascension and Urda edits in the shared worktree.
+- Did not reintroduce a `RestSiteSynchronizer.ChooseOption` wrapper or claim special rest-site payout as implemented.
+
+Implemented:
+
+- Firemarked Elite map selection still targets Act 1=2, Act 2=3, Act 3=3 candidates, and now also preserves a boss route that avoids the selected Firemark set as a group.
+- Firemark combat start stores the selected Firemark Host in `AscensionCombatTracker.FiremarkHost` before applying Might, Giant, Forge Armor, or Constant Heal to that host.
+- Forge Token special-action healing remains explicitly disabled with `SpecialRestSiteActionPayoutEnabled = false`; the intended deferred heal amount is documented as `SpecialRestSiteHealAmount = 5m`.
+- Updated English and Simplified Chinese A12 text to state the 2/3/3 candidate counts, and updated Forge Token hover text to avoid implying special rest actions spend the token.
+- Updated API research, manual checklist, and source guards for the optional-route set check, host state, and special-action deferral flag.
+
+Validation:
+
+- `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~Milestones2To4GuardFiremarksForgeTokenAndFission|FullyQualifiedName~MapAndCombatSlicesStayWithinDocumentedA12AndA19Tuning|FullyQualifiedName~FiremarkTokenAndFissionPlayerFacingSurfacesAreGuarded"`: passed, 3 tests total.
+- Full test pass and live route/rest verification are still pending.
 
 ## 2026-05-11 - Multiplayer Version-Mismatch / ModelDb Hash Diagnostics
 

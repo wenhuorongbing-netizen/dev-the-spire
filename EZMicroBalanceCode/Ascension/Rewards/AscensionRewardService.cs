@@ -97,14 +97,23 @@ internal static class AscensionRewardService
             .Select(option => option.Card.Id)
             .ToHashSet();
 
+        var duplicateTokenReward = ForgeTokenService.HasToken(player);
         var pool = creationOptions.GetPossibleCards(player)
             .Where(card => !existingIds.Contains(card.Id))
             .Where(card => card.Rarity is CardRarity.Common or CardRarity.Uncommon or CardRarity.Rare)
+            .Where(card => !duplicateTokenReward || card.IsUpgradable)
             .ToList();
 
         if (pool.Count == 0)
         {
-            return false;
+            pool = creationOptions.GetPossibleCards(player)
+                .Where(card => !existingIds.Contains(card.Id))
+                .Where(card => card.Rarity is CardRarity.Common or CardRarity.Uncommon or CardRarity.Rare)
+                .ToList();
+            if (pool.Count == 0)
+            {
+                return false;
+            }
         }
 
         var extraOptions = new CardCreationOptions(pool, CardCreationSource.Other, CardRarityOddsType.Uniform)
@@ -119,6 +128,13 @@ internal static class AscensionRewardService
         if (extraCard == null)
         {
             return false;
+        }
+
+        if (duplicateTokenReward && extraCard.IsUpgradable)
+        {
+            CardCmd.Upgrade(extraCard);
+            MainFile.Logger.Info(
+                $"[EZMicroBalance] Ascension A12 applied: upgraded duplicate-token Firemarked Elite card reward option {extraCard.Id.Entry}.");
         }
 
         cardRewardOptions.Add(new CardCreationResult(extraCard));

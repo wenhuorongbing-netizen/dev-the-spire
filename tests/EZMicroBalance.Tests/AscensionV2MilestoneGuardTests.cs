@@ -74,7 +74,7 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Equal("Rootblight II", englishCards["EZMB_DEEP_ROOT.title"]);
         Assert.Equal("Rootblight III", englishCards["EZMB_ROOTBLIGHT_III.title"]);
         Assert.Equal("Blight Sprout", englishCards["EZMB_ROOT_BUD.title"]);
-        Assert.Contains("If this was seen but not played, add a [gold]Rootblight I[/gold] after combat.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("If this was seen but not played and your deck has no Rootblight, add a [gold]Rootblight I[/gold] after combat.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
 
         foreach (var key in new[] { "EZMB_ROOT.title", "EZMB_DEEP_ROOT.title", "EZMB_ROOTBLIGHT_III.title", "EZMB_ROOT_BUD.title" })
         {
@@ -107,13 +107,15 @@ public sealed class AscensionV2MilestoneGuardTests
         AssertSourceContains(
             deckService,
             "MaxRootblightLevel = 3",
-            "MaxRootblightCards = 4",
+            "MaxRootblightCards = 1",
+            "NormalizeRootblightDeck(player",
             "FindRootFamilyCards(player)",
             "MarkCombatStartRootblight",
             "PendingCombatResolutions",
             "CardsToAddAfterGrowth",
             "card.RootblightLevel - 1",
-            "card.HasSplit = true",
+            "rootFamilyCard.HasSplit = hasSplit",
+            "ignored Rootblight III stayed at max level",
             "ShowRootSystemFull(player)",
             "RemoveHighestRootblight",
             "await CardPileCmd.RemoveFromDeck(card, showPreview: false)",
@@ -126,6 +128,8 @@ public sealed class AscensionV2MilestoneGuardTests
             "AfterCardChangedPiles(CardModel card, PileType oldPileType",
             "AfterCardDrawn(PlayerChoiceContext choiceContext, CardModel card, bool fromHandDraw)",
             "AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)",
+            "await AscensionCombatModifierService.AfterCardEnteredHand(state, tracker, card)",
+            "await AscensionCombatModifierService.AfterCardPlayed(state, tracker, cardPlay)",
             "FindKnownBuds(state)",
             "bud.HasEnteredHand && !bud.WasPlayed",
             "await RootDeckService.AddRootblightI(bud.Owner, \"Blight Sprout\")",
@@ -174,6 +178,9 @@ public sealed class AscensionV2MilestoneGuardTests
         AssertSourceContains(
             rewardService,
             "FiremarkedEliteRewardTargetOptionCount = 4",
+            "var duplicateTokenReward = ForgeTokenService.HasToken(player)",
+            "Where(card => !duplicateTokenReward || card.IsUpgradable)",
+            "CardCmd.Upgrade(extraCard)",
             "NormalFissionChancePercent = 10",
             "BannerFissionChancePercent = 15",
             "FiremarkedEliteFissionChancePercent = 20",
@@ -192,6 +199,7 @@ public sealed class AscensionV2MilestoneGuardTests
         AssertSourceContains(
             forgeService,
             "DuplicateTokenGoldAmount",
+            "internal static bool HasToken(Player player)",
             "AscensionSavedStateFields.ForgeTokenHeld[player]",
             "SpecialRestSiteActionPayoutEnabled = false",
             "SpecialRestSiteHealAmount = 5m",
@@ -230,6 +238,9 @@ public sealed class AscensionV2MilestoneGuardTests
             "DeepBranchMinLength = 3",
             "DeepBranchMaxLength = 4",
             "TryInsertDeepBranch",
+            "EnumerateDeepBranchColumns(map)",
+            "TryMatchExistingDeepBranch",
+            "IsDeepBranchRouteSafe(saved, plan)",
             "HasPathAvoiding(parent, reconnect, existingBranchPoints)",
             "runState.Players.Count > 1",
             "BossSealCatalog.TryGetForEncounter",

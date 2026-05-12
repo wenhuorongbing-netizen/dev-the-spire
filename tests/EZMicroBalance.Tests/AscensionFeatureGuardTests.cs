@@ -116,7 +116,8 @@ public sealed class AscensionFeatureGuardTests
             "player.RunState.CreateCard<DeepRoot>(player)",
             "player.RunState.CreateCard<RootblightIII>(player)",
             "private static async Task<bool> AddRootblightCard(Player player, int level, bool hasSplit = false, bool preferOverlayNotice = false)",
-            "MaxRootblightCards = 4",
+            "MaxRootblightCards = 1",
+            "NormalizeRootblightDeck(player",
             "CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, source: null, skipVisuals: true)",
             "if (!addResult.success)",
             "ShowRootblightAdded(player, preferOverlayNotice)",
@@ -418,6 +419,10 @@ public sealed class AscensionFeatureGuardTests
             "HasSerializablePath(saved.StartingPoint",
             "DeepBranchMinLength = 3",
             "DeepBranchMaxLength = 4",
+            "EnumerateDeepBranchColumns(map)",
+            "TryMatchExistingDeepBranch",
+            "IsDeepBranchRouteSafe(saved, plan)",
+            "HasSerializablePathAvoiding",
             "runState.Players.Count > 1",
             "IsDeepBranchAct(actIndex)",
             "canBeModified: false",
@@ -430,7 +435,8 @@ public sealed class AscensionFeatureGuardTests
             metadata,
             "DeepBranchNodeKind",
             "EnhancedReward",
-            "DeepBranch.HasValue");
+            "DeepBranch.HasValue",
+            "IsDeepBranchEntry");
 
         Assert.Contains("A11 converts the generated map", apiResearch, StringComparison.Ordinal);
         Assert.Contains("reachable optional route", apiResearch, StringComparison.Ordinal);
@@ -440,6 +446,8 @@ public sealed class AscensionFeatureGuardTests
         Assert.Contains("At least one reachable optional node appears in the inserted width column.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("No A11-specific marker, icon, or hover tooltip appears", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("A safer parallel route from the branch parent to reconnect remains available", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Deep Branch insertion now searches for an empty branch column", apiResearch, StringComparison.Ordinal);
+        Assert.Contains("start-to-boss route that skips branch nodes remains", apiResearch, StringComparison.Ordinal);
         Assert.DoesNotContain("MarkLongRoad", mapService, StringComparison.Ordinal);
         Assert.DoesNotContain("LongRoad", metadata, StringComparison.Ordinal);
         Assert.DoesNotContain("LONG_ROAD_NODE", mapService, StringComparison.Ordinal);
@@ -572,7 +580,7 @@ public sealed class AscensionFeatureGuardTests
         Assert.Contains("[gold]Rootblight I[/gold]", englishCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Rootblight III[/gold]", englishCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Rootblight II[/gold]", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
-        Assert.Contains("[gold]Rootblight I[/gold]", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Rootblight III[/gold]", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Draw Pile[/gold]", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Rootblight I[/gold]", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
 
@@ -580,7 +588,7 @@ public sealed class AscensionFeatureGuardTests
         Assert.Contains("[gold]\u6839\u8680 I[/gold]", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u6839\u8680 III[/gold]", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u6839\u8680 II[/gold]", simplifiedChineseCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
-        Assert.Contains("[gold]\u6839\u8680 I[/gold]", simplifiedChineseCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]\u6839\u8680 III[/gold]", simplifiedChineseCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u62bd\u724c\u5806[/gold]", simplifiedChineseCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u6839\u8680 I[/gold]", simplifiedChineseCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
 

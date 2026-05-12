@@ -12,6 +12,7 @@
 ## Issue detail links
 
 - `docs/issues/urda.md` (Urda prototype, blessed ids, and blockers)
+- `docs/issues/ancient-expansion-v2.2.md` (Urda stabilization plus default-off Morvi hardening; Lotha/Vakuu planning)
 - `docs/issues/waiting-tests.md` (current manual evidence queue)
 - `docs/features/ancients-rework-v4/manual-verification-matrix.md`
 - `docs/features/ascension-11-20/manual-test-checklist.md`

@@ -154,7 +154,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             .OrderBy(field => field.Key, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(13, fields.Length);
+        Assert.Equal(14, fields.Length);
         Assert.Equal(fields.Length, fields.Select(field => field.Key).Distinct(StringComparer.Ordinal).Count());
         Assert.All(fields, field => Assert.StartsWith("EZMicroBalance", field.Key, StringComparison.Ordinal));
         Assert.All(fields, field => Assert.Contains(field.Name, sourceWithoutDefinitions, StringComparison.Ordinal));
@@ -169,8 +169,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains(fields, field => field.Types == "RootFamilyCard, bool");
 
         var currentDocs = ReadCurrentFacingDocs();
-        Assert.Contains("current source defines 13 SavedSpireFields", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("Found 13 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current source defines 14 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("previous smoke reported `Found 13 SavedSpireFields` and is stale", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("Found 9 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
         Assert.DoesNotContain("reported 7 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
     }
@@ -218,6 +218,9 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "HasSerializablePath(saved.StartingPoint",
             "DeepBranchMinLength = 3",
             "DeepBranchMaxLength = 4",
+            "EnumerateDeepBranchColumns(map)",
+            "IsDeepBranchRouteSafe(saved, plan)",
+            "HasSerializablePathAvoiding",
             "safe-route reconnect",
             "canBeModified: false",
             "DeepBranchNodeKind.EnhancedReward");
@@ -388,7 +391,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("Current latest commit", projectState, StringComparison.Ordinal);
+        Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
+        Assert.Contains("c8bcaa9", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("git diff --check", projectState, StringComparison.OrdinalIgnoreCase);

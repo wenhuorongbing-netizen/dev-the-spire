@@ -138,10 +138,10 @@ Status: Rootblight v2.0 migration implemented; build/source-guard proven; runtim
 Scope:
 
 - Add Rootblight I at Act 1 start when A14+ is selected or forced by debug level.
-- Treat Rootblight as real master-deck pollution cards. A14 starts with Rootblight I; ignored Rootblight cards worsen after combat; played Rootblight cards remove their master-deck version and queue the downgraded replacement after combat.
+- Treat Rootblight as a real master-deck pollution card with a max-one deck cap. A14 starts with Rootblight I; ignored Rootblight I/II worsens after combat; ignored Rootblight III stays at III; played Rootblight cards remove their master-deck version and queue the downgraded replacement after combat.
 - Use Rootblight I/II/III display cards, with costs 2/3/4.
 - Playing Rootblight exhausts the combat copy, removes its master-deck card, and queues the downgrade card after combat when applicable.
-- Combat end upgrades only Rootblight cards that were present at combat start; ignored Rootblight III stays III and adds one Rootblight I once per card.
+- Combat end upgrades only Rootblight cards that were present at combat start; ignored Rootblight III stays III without adding another Rootblight.
 - Rootblight start seeding uses `SavedSpireField<Player,bool>`, `SavedSpireField<Player,int>`, and a Rootblight deck scan to avoid re-adding after clearance and to migrate prototype Root/Deep Root saves.
 - Rest heal removes exactly one highest-stage Rootblight; smith does not remove Rootblight.
 - Shop/card-removal APIs clear Rootblight through `BeforeCardRemoved`.
@@ -164,7 +164,7 @@ Required exact APIs:
 | Add master-deck card | `RunState.CreateCard<Root>(player)` / `CreateCard<DeepRoot>(player)` / `CreateCard<RootblightIII>(player)` then `CardPileCmd.Add(card, PileType.Deck, ...)` |
 | Level state | `SavedSpireField<Player,int>` diagnostic Rootblight level, `SavedSpireField<Player,bool>` one-time starter marker, and per-card saved fields for combat-start presence, one-time split state, and Blight Sprout round |
 | Play downgrade | In combat card play, remove the matching master-deck Rootblight card and queue the downgraded replacement; do not listen to non-play exhaust |
-| Combat-end sync | `RootBudCombatHook.AfterCombatEnd(...)` calls `RootDeckService.ResolveCombatEndRootblight(...)` before adding Rootblight I from unplayed Root Bud cards |
+| Combat-end sync | `RootBudCombatHook.AfterCombatEnd(...)` calls `RootDeckService.ResolveCombatEndRootblight(...)` before adding Rootblight I from unplayed Blight Sprout cards when the deck has no Rootblight |
 | Removal/clear | `AfterRestSiteHeal` clears on real rest; `BeforeCardRemoved` clears for normal deck-removal APIs; sync-owned removals suppress the clear hook |
 | Card play behavior | Custom `CardModel.OnPlay(...)`, `CardKeyword.Exhaust`, and `ExhaustOnNextPlay` |
 | Card removability | Do not add `CardKeyword.Eternal`; verify `CardModel.IsRemovable` stays true |
@@ -253,7 +253,7 @@ Implemented:
 - `AscensionMapService` keeps Act 1 firemarked elite candidates after the first rest-site row.
 - `AscensionCombatModifierService` assigns one Firemark Host per firemarked elite combat and applies Might, Giant, Forge Armor, or Constant Heal with generic command APIs and visible host powers.
 - Firemarked elite card rewards gain one extra card option.
-- `ForgeTokenService` grants max-one saved token on firemarked elite victory; duplicate tokens convert to 15 gold.
+- `ForgeTokenService` grants max-one saved token on firemarked elite victory; duplicate tokens convert to 15 gold, and the Firemarked Elite fourth reward option is upgraded when an upgradable candidate exists.
 - `ForgeTokenRelic` mirrors the saved token as a visible one-count Event relic and provides player-facing hover/rest text.
 - Heal rest spends the token to randomly upgrade an upgradable common/uncommon card or fallback-heal; smith rest spends it to heal 7 HP.
 
@@ -280,9 +280,9 @@ Required proof:
 Implemented:
 
 - `FissionEnchantment` is a custom enchantment with English and Simplified Chinese provider strings, a dedicated icon, and an Exhaust hover tip.
-- `AscensionRewardService` rolls source-specific Fission chance through `TryModifyCardRewardOptionsLate`: normal combat 25%, Banner Room 35%, Firemarked Elite 40%, and Boss 15%.
+- `AscensionRewardService` rolls source-specific Fission chance through `TryModifyCardRewardOptionsLate`: normal combat 10%, Banner Room 15%, Firemarked Elite 20%, and Boss 5%.
 - Each reward screen can receive at most one Fission card; the service clones one eligible reward card and applies `CardCmd.Enchant<FissionEnchantment>`.
-- Eligibility excludes Powers, X-cost, star-cost, zero-energy cards, cards with Exhaust, cards already set to exhaust on next play, quest/special cards, unmodifiable cards, and incompatible existing enchantments.
+- Eligibility excludes Powers, X-cost, star-cost, cards whose canonical or current unmodified energy cost is 0, cards with Exhaust, cards already set to exhaust on next play, quest/special/story rarities, unmodifiable cards, and incompatible existing enchantments.
 
 Remaining deferrals:
 
@@ -309,7 +309,7 @@ Implemented:
 
 - `AscensionMapService` marks one optional existing monster node in Act 1 and two in later acts when another boss path remains available.
 - `BannerRoomMapQuestMarker` marks banner nodes, and `AscensionMapUiPatches` shows Vanguard, Shield Formation, or Bounty rule text on map hover.
-- `AscensionCombatModifierService` applies Vanguard temporary Strength, Shield Formation bannerbearer Block, and Bounty target/penalty behavior through command APIs.
+- `AscensionCombatModifierService` applies Vanguard temporary Strength, Shield Formation bannerbearer Block once per round, and Bounty target/penalty behavior through command APIs.
 - Bounty success adds a 15 Gold room-end reward through `CombatRoom.AddExtraReward`; no monster action table edits are used.
 
 Remaining deferrals:

@@ -95,7 +95,7 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
 - [ ] Playing Rootblight I removes its master-deck card and leaves no replacement after combat.
 - [ ] Playing Rootblight II removes its master-deck card and adds Rootblight I after combat.
 - [ ] Playing Rootblight III removes its master-deck card and adds Rootblight II after combat.
-- [ ] Leaving Rootblight I/II unplayed upgrades it after combat; ignored Rootblight III stays III and adds one Rootblight I only the first time that specific card grows.
+- [ ] Leaving Rootblight I/II unplayed upgrades it after combat; ignored Rootblight III stays III and does not add an extra Rootblight.
 - [ ] Rootblight cards added during combat-end resolution do not grow again until the next combat.
 - [ ] If Rootblight is discarded normally, Rootblight level and the master-deck card remain unchanged.
 - [ ] If Rootblight is exhausted by a non-play effect, Rootblight level and the master-deck card remain unchanged.
@@ -142,13 +142,13 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=15` after A14 Rootblight behavior is ve
 - [ ] Act 2 and Act 3 boss combat adds two temporary Blight Sprouts to the relevant discard pile.
 - [ ] Blight Sprout does not appear in opening hand unless drawn naturally.
 - [ ] Boss Blight Sprouts sprout on rounds 3 and 4; each moves to the top of the draw pile if it has not entered hand.
-- [ ] If Blight Sprout enters hand and is not played before combat end, one Rootblight I is added to the master deck.
+- [ ] If Blight Sprout enters hand and is not played before combat end, one Rootblight I is added to the master deck only when no Rootblight is already present.
 - [ ] Blight Sprout has one visible Exhaust keyword, no duplicate `Play: Exhaust` / `打出：消耗` body text, gold-highlighted Draw Pile / 抽牌堆 text, and a Rootblight I hover preview.
 - [ ] Seen-but-unplayed Blight Sprout shows the localized Rootblight added notice when it adds Rootblight I after combat.
 - [ ] If Blight Sprout is played before combat end, Rootblight does not increase.
 - [ ] If combat ends before Blight Sprout enters hand, Blight Sprout withers and does not raise Rootblight.
 - [ ] Temporary Blight Sprout never persists in the master deck or save.
-- [ ] Rootblight card count never exceeds 4; additional Blight Sprout growth shows the `根系已满。` / `Root system full.` notice instead of adding a fifth Rootblight.
+- [ ] Rootblight card count never exceeds 1; additional Blight Sprout growth shows the `根系已满。` / `Root system full.` notice instead of adding a duplicate Rootblight.
 - [ ] Save/load or re-enter the boss combat after Blight Sprout was seeded; the combat still has at most one Blight Sprout per active player.
 - [ ] Knockout/revive should not raise Rootblight from that combat's Blight Sprout.
 - [ ] Multiplayer targeting follows the source-design caps.
@@ -232,7 +232,7 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 - [ ] Defeating firemarked elite grants one visible Forge Token status relic with counter 1.
 - [ ] Forge Token hover text explains Rest, Smith, fallback heal, max-one cap, and random upgrade targeting, without claiming special-action payout.
 - [ ] Forge Token cap of 1 is enforced.
-- [ ] Duplicate Forge Token converts to gold.
+- [ ] Duplicate Forge Token converts to gold and the extra Firemarked Elite card reward option is upgraded when an upgradable candidate exists.
 - [ ] Forge Token after heal rest randomly upgrades one upgradable common/uncommon card, or fallback-heals if none exists.
 - [ ] Heal rest option shows extra Forge Token text before selection.
 - [ ] Forge Token after smith rest heals 7 HP and removes the visible token.
@@ -244,9 +244,9 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION_DEBUG_LEVEL=13`.
 
 - [ ] Fission appears only on eligible reward cards.
-- [ ] Fission source rates are visibly plausible over repeated debug rolls: normal combat 25%, Banner Room 35%, Firemarked Elite 40%, Boss 15%.
+- [ ] Fission source rates are visibly plausible over repeated debug rolls: normal combat 10%, Banner Room 15%, Firemarked Elite 20%, Boss 5%.
 - [ ] Each reward screen contains at most one Fission card.
-- [ ] Fission does not appear on Powers, X-cost cards, star-cost cards, cards with Exhaust, cards that already exhaust on next play, quest/special cards, or incompatible cards.
+- [ ] Fission does not appear on Powers, X-cost cards, star-cost cards, original/current 0-cost cards, cards with Exhaust, cards that already exhaust on next play, quest/special/story cards, unmodifiable cards, or incompatible cards.
 - [ ] Cost reduction is correct.
 - [ ] Exhaust behavior is correct after play.
 - [ ] Fission has a non-missing enchantment icon.
@@ -340,6 +340,6 @@ Planning checks for the next release-engineering pass; do not mark these complet
 - [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
 - [ ] Publish the current package before runtime smoke.
 - [ ] Launch controlled `--force-steam off` with only BaseLib and EZ Micro Balance enabled.
-- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source defines 12 fields and the latest controlled smoke reported 12. Rerun this check after future SavedSpireField, source, package, or BaseLib changes.
+- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source/package baseline defines 13 fields and the latest clean controlled smoke reported 13. Rerun this check after future SavedSpireField, source, package, or BaseLib changes.
 - [ ] Confirm the controlled smoke has no EZ Micro Balance startup exception or error.
 - [ ] Keep normal Steam-client Mod Settings verification separate from controlled smoke.

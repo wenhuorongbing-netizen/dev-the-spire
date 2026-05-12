@@ -12,6 +12,7 @@ Status: source gameplay slice implemented, live checks pending.
 - `EZMB_FORCE_URDA_BLESSING=<blessing-id>` (default-off).
 - `EZMB_URDA_DIAGNOSTICS=1` (default-off).
 - BaseLib and EZ Micro Balance enabled.
+- Ancient Expansion v2.2 contains six additional Urda blessings as planning-only future work; they should not appear in this checklist's current live pool.
 
 ## 1. Baseline checks
 
@@ -25,6 +26,7 @@ Status: source gameplay slice implemented, live checks pending.
 - [ ] New run can reach Act 1 Urda on the configured surface.
 - [ ] Urda selection appears with EN and ZHS names.
 - [ ] Only implemented Urda blessings are visible and selectable.
+- [ ] Trial Branch, Shallow-Root Relic, Rooted Route, After the Rain, Root-Sight, and Seed Bank do not appear in the current live pool.
 - [ ] No Morvi, Lotha, or Vakuu active content appears.
 - [ ] Selected blessing is preserved on save/load.
 - [ ] Blessing selection logs include the selected blessing id.
@@ -33,17 +35,22 @@ Status: source gameplay slice implemented, live checks pending.
 
 - [ ] Trigger counters start at zero and progress only on normal combat card rewards.
 - [ ] Each normal Act 1 combat card reward can either take its regular card reward path or the Seedbed alternative while Seedbed has remaining checks.
+- [ ] Rerolling or reopening a reward does not consume a Seedbed check before accepting Seedbed.
+- [ ] Seedbed alternative is absent when max HP is 2 or lower.
 - [ ] Accepting consumes 2 max HP and adds one Seedling card.
 - [ ] First accepted Seedling is upgraded.
-- [ ] Four successful accepts transform the blessing and grant +10 max HP.
-- [ ] Transformed name appears as `Seedbed's Herald`.
+- [ ] Four successful accepts set the transformed latch and grant +10 max HP without healing current HP.
+- [ ] No visible `Seedbed's Herald` name is expected in the current source slice.
 - [ ] Save/load preserves `UrdaSeedbed` counters and transformed state.
 
 ## 4. Humus Pact checks
 
-- [ ] The first three skipped normal Act 1 combat card rewards grant 15 gold each.
-- [ ] Third trigger opens remove flow and then offers one upgraded card.
+- [ ] The first three explicit `Compost Reward` choices on normal Act 1 combat card rewards grant 15 gold each.
+- [ ] Ordinary reward skip/proceed and room-exit cleanup do not trigger Humus Pact.
+- [ ] Third trigger completes the card reward first, then opens remove flow and offers one upgraded card.
 - [ ] Third trigger can be completed with 0, 1, or 2 removals.
+- [ ] Upgraded payoff reward cannot be skipped from its custom reward set.
+- [ ] Third payoff does not duplicate, disappear, or softlock when leaving/reopening reward flows.
 - [ ] Humus Pact marks completed and does not trigger again.
 - [ ] Save/load preserves skip and completion state.
 

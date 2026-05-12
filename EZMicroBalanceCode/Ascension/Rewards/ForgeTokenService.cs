@@ -121,7 +121,7 @@ internal static class ForgeTokenService
             HasToken(player);
     }
 
-    private static bool HasToken(Player player)
+    internal static bool HasToken(Player player)
     {
         return AscensionSavedStateFields.ForgeTokenHeld[player] ||
             player.GetRelic<ForgeTokenRelic>() != null;

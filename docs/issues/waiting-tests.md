@@ -103,7 +103,7 @@ Suggested final English copy, after verifying exact behavior:
   - `If not played or removed this combat, it becomes [gold]Rootblight III[/gold].`
 - `EZMB_ROOTBLIGHT_III.description`:
   - `When played, remove this from your deck. After combat, add a [gold]Rootblight II[/gold].`
-  - `If not played or removed this combat, add a [gold]Rootblight I[/gold] after combat once.`
+  - `If not played or removed this combat, it remains [gold]Rootblight III[/gold].`
 - `EZMB_ROOT_BUD.description`:
   - `Sprout 3/4: at that round's start, if this has not entered your hand, put it on top of your [gold]Draw Pile[/gold].`
   - `If seen and not played, after combat add a [gold]Rootblight I[/gold].`
@@ -630,7 +630,7 @@ Player report: A16 should include earlier ascension effects, but Fission nearly 
 Current source evidence:
 
 - `AscensionFeatureGate.IsLevelEnabled(...)` uses `runState.AscensionLevel >= requiredAscensionLevel`, so A16 includes A13 when the public/debug gate is active.
-- Fission source chances were raised from `10/15/20/5` to `25/35/40/15` for normal combat / Banner Room / Firemarked Elite / Boss rewards.
+- Fission source chances are `10/15/20/5` for normal combat / Banner Room / Firemarked Elite / Boss rewards.
 
 Manual retest:
 
@@ -656,8 +656,8 @@ Current source fix:
 - Blight Sprout text is shortened: play to Exhaust; Boss sprouts use rounds 3/4 and elite sprouts use round 3; if seen and not played, add Rootblight I after combat.
 - Rootblight I/II/III costs are 2/3/4.
 - Played Rootblight removes its master-deck card and queues the downgrade card after combat.
-- Unplayed Rootblight I/II upgrades after combat; ignored Rootblight III stays III and adds one Rootblight I only once per card.
-- Rootblight is capped at 4 cards, and cap hits show `Root system full.` / `根系已满。`.
+- Unplayed Rootblight I/II upgrades after combat; ignored Rootblight III stays III and does not add an extra Rootblight.
+- Rootblight is capped at 1 card, and cap hits show `Root system full.` / `根系已满。`.
 - Rest removes exactly one highest-stage Rootblight instead of clearing all Rootblight.
 
 Manual retest:

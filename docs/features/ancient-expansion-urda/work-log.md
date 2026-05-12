@@ -3,7 +3,58 @@
 Project: EZ Micro Balance  
 Manifest id: EZMicroBalance
 
+## 2026-05-12 - Urda acceptance hardening pass
+
+Scope:
+
+- Kept the pass limited to Urda's four current active blessing ids: `urda_seedbed`, `urda_humus_pact`, `urda_molting`, and `urda_moss_map`.
+- Did not add Morvi, Lotha, Vakuu, or the six future Urda v2.2 blessings.
+- Did not add a new gameplay path; changed Humus Pact completion handling so the third payoff pending bit is cleared only after resolver success.
+
+Source/API evidence:
+
+- Rechecked local Core reward flow: `Reward.SelectUnsynchronized()` calls `Hook.AfterRewardTaken(...)` before the reward set is completed by `RewardsSetSynchronizer`, so Humus Pact still needs explicit pending/reentry guards even after moving off `CardReward.OnSkipped`.
+- Rechecked local Core save flow for `SavedSpireField<Player,string>`: `Player.ToSerializable()` writes fixed `SerializablePlayer` fields, `SerializablePlayer` has no general `SavedProperties`/`Props`, `ExtraPlayerFields` is fixed-shape, and inspected `SavedProperties.From(...)` call sites are card/relic/modifier paths. Player-field persistence remains not source-proven.
+
+Validation:
+
+- `git status --short --branch`: branch `main...origin/main` with a dirty worktree already containing unrelated modified files before this pass.
+- `git log -1 --oneline --decorate`: `c8bcaa9 (HEAD -> main, origin/main, origin/HEAD) update`.
+- `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- `dotnet test EZMicroBalance.sln --no-build`: passed, 75 passed, 16 skipped.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
+- `git diff --check`: passed with CRLF normalization warnings only.
+- `dotnet publish EZMicroBalance.sln`: not run; this pass did not change resources, localization, export presets, or package logic.
+
+Status:
+
+- Humus `OnSkipped` dependency, Seedbed accept-only counting, future-Urda active-source exclusion, Morvi/Lotha/Vakuu active-source exclusion, and live/save-load docs status now have automated guards.
+- Live gameplay, save/load, and co-op checks were not run.
+- `URDA-PROTOTYPE` remains open.
+
 ## 2026-05-12 - Urda source gameplay slice
+
+Follow-up stabilization:
+
+- Removed the Humus Pact `CardReward.OnSkipped` postfix after local Core source review showed skipped reward finalization can happen during reward-set abandonment/room-exit cleanup.
+- Added an explicit `Compost Reward` card reward alternative for Humus Pact.
+- Delayed Humus Pact's third-trigger removal and upgraded-card payoff to `AfterRewardTaken`, after the card reward screen has completed.
+- Made the Humus payoff custom reward unskippable.
+- Suppressed card reward modification hooks for the Humus payoff card and upgraded it explicitly.
+- Changed Seedbed accounting so reward generation/reroll does not spend a check; only accepted Seedbed choices advance counters.
+- Hid/blocked Seedbed when max HP is not greater than its 2 max HP cost.
+- Changed Seedbed's fourth-accept bonus to `SetMaxHp` so the +10 max HP bonus does not also heal current HP.
+- Added source guards and EN/ZHS localization for the Humus Pact card reward option.
+- Added a backward-compatible `UrdaStateKey` read path for the prior eight-field shape and a new Humus completion-pending bit.
+- Source evidence still does not prove `SavedSpireField<Player,string>` persistence; live save/load remains required.
+- Validation for the stabilization pass:
+  - `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+  - `dotnet test EZMicroBalance.sln --no-build`: passed, 74 passed, 16 skipped.
+  - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
+  - `git diff --check`: passed with CRLF normalization warnings only.
+  - `dotnet publish EZMicroBalance.sln`: passed because localization/resources changed. Godot emitted the known nested `source code/project.godot` ignore warning during export.
+- Release artifact tests were not run because release artifact logic was not changed.
+- Live gameplay, save/load, and co-op checks were not run.
 
 Scope:
 

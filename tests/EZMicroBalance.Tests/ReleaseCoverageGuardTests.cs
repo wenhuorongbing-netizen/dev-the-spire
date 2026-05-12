@@ -51,6 +51,11 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ancients/Patches/TurnOfferAndRestPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/VakuRewardPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingIds.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviFeatureGate.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviInitializer.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviRunHook.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingIds.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCards.cs",
@@ -164,6 +169,8 @@ public sealed class ReleaseCoverageGuardTests
                 "ForgeTokenHeld",
                 "ForgeTokenRelic",
                 "ForgeTokenService.GrantAfterFiremarkedElite",
+                "ForgeTokenService.HasToken",
+                "CardCmd.Upgrade(extraCard)",
                 "ApplyAfterRestSiteHeal",
                 "ApplyAfterRestSiteSmith",
                 "DuplicateTokenGoldAmount"
@@ -760,7 +767,219 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("Urda is default-on", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("EZMB_DISABLE_URDA", urdaIssueIndex, StringComparison.Ordinal);
         Assert.Contains("prototype", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("No Morvi/Lotha/Vakuu active", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("No Morvi/Lotha/Vakuu content is currently enabled by default", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void AncientExpansionV22PlanningDocsAreIndexedAndNotActiveImplementation()
+    {
+        var issues = ReadRepoText("docs", "issues.md");
+        var v22Issues = ReadRepoText("docs", "issues", "ancient-expansion-v2.2.md");
+        var featureReadme = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "README.md");
+        var sourceDesign = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "source-design.md");
+        var safetyRules = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "card-and-power-safety-rules.md");
+        var riskRegister = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md");
+        var projectState = ReadRepoText("PROJECT_STATE.md");
+        var docsIndex = ReadRepoText("docs", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var featuresIndex = ReadRepoText("docs", "features", "README.md");
+        var activeExpansionSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion");
+
+        Assert.Contains("docs/issues/ancient-expansion-v2.2.md", issues, StringComparison.Ordinal);
+        Assert.DoesNotContain("morvi_forbidden_loan", issues, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("lotha_death_reprieve", issues, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Fight Vakuu", issues, StringComparison.OrdinalIgnoreCase);
+
+        Assert.Contains("planning-only", v22Issues, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-DESIGN-DOC-INGEST", v22Issues, StringComparison.Ordinal);
+        Assert.Contains("ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RULES", v22Issues, StringComparison.Ordinal);
+        Assert.Contains("ISSUE-2026-05-12-MORVI-V22-PLANNING", v22Issues, StringComparison.Ordinal);
+        Assert.Contains("ISSUE-2026-05-12-LOTHA-V22-PLANNING", v22Issues, StringComparison.Ordinal);
+        Assert.Contains("ISSUE-2026-05-12-VAKUU-FIGHT-V22-PLANNING", v22Issues, StringComparison.Ordinal);
+        Assert.Contains("ISSUE-2026-05-12-URDA-V22-ALIGNMENT", v22Issues, StringComparison.Ordinal);
+        Assert.Contains("ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MILESTONE-GATES", v22Issues, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            featureReadme,
+            "default-off Morvi prototype",
+            "Lotha and Vakuu fight content are not active gameplay content",
+            "Live gameplay and save/load verification for current Urda remains pending");
+        AssertSourceContains(
+            sourceDesign,
+            "Seedbed",
+            "Humus Pact",
+            "Molting",
+            "Moss Map",
+            "Trial Branch",
+            "Shallow-Root Relic",
+            "Rooted Route",
+            "After the Rain",
+            "Root-Sight",
+            "Seed Bank",
+            "Morvi is default-off",
+            "Lotha is not active",
+            "Vakuu fight is not active");
+        AssertSourceContains(
+            safetyRules,
+            "Power cards are not copied, extra-played, or replayed by default",
+            "Extra-played or copied cards must not recursively trigger the same blessing",
+            "Each Morvi or Lotha blessing");
+        AssertSourceContains(
+            riskRegister,
+            "Power-card extra-play exploit",
+            "Death-interrupt complexity",
+            "Reward UI softlock",
+            "Multiplayer ownership/desync",
+            "Save/load persistence");
+
+        Assert.Contains("ancient-expansion-v2.2", projectState, StringComparison.Ordinal);
+        Assert.Contains("default-off Morvi", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("features/ancient-expansion-v2.2/README.md", docsIndex, StringComparison.Ordinal);
+        Assert.Contains("docs/features/ancient-expansion-v2.2/README.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("ancient-expansion-v2.2/README.md", featuresIndex, StringComparison.Ordinal);
+
+        Assert.Contains("MorviFeatureGate", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ENABLE_MORVI_V22", activeExpansionSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("Lotha", activeExpansionSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("Vakuu", activeExpansionSource, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void MorviPrototypeIsDefaultOffGatedLocalizedAndPowerSafe()
+    {
+        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
+        var morviGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviFeatureGate.cs");
+        var morviInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviInitializer.cs");
+        var morviAncient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.cs");
+        var morviBlessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingIds.cs");
+        var morviRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
+        var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
+        var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
+        var engRewardUi = JsonStringMap("EZMicroBalance", "localization", "eng", "card_reward_ui.json");
+        var zhsRewardUi = JsonStringMap("EZMicroBalance", "localization", "zhs", "card_reward_ui.json");
+
+        Assert.Contains("MorviInitializer.Initialize();", mainFile, StringComparison.Ordinal);
+        Assert.Contains("MorviStateKey", savedFields, StringComparison.Ordinal);
+        Assert.Contains("EZMicroBalanceMorviStateKey", savedFields, StringComparison.Ordinal);
+
+        Assert.Contains("EZMB_ENABLE_MORVI_V22", morviGate, StringComparison.Ordinal);
+        Assert.Contains("EZMB_FORCE_MORVI_BLESSING", morviGate, StringComparison.Ordinal);
+        Assert.Contains("return IsTruthy(value);", morviGate, StringComparison.Ordinal);
+        Assert.DoesNotContain("return true;", morviGate, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            morviInitializer,
+            "ModHelper.SubscribeForRunStateHooks",
+            "MorviFeatureGate.IsMorviEnabled(runState.UnlockState)",
+            "ModelDb.GetById<MorviRunHook>");
+        AssertSourceContains(
+            morviAncient,
+            "HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))",
+            "MorviFeatureGate.IsMorviEnabled(unlockState)",
+            "ModelDb.AncientEvent<EzmbMorvi>()",
+            "MorviBlessingIds.MisprintPress",
+            "MorviBlessingIds.OpenBookExam",
+            "MorviBlessingIds.DebtSettlement");
+        Assert.DoesNotContain("Glory.GetUnlockedAncients", morviAncient, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            morviBlessings,
+            "morvi_misprint_press",
+            "morvi_open_book_exam",
+            "morvi_debt_settlement");
+        AssertSourceContains(
+            morviRunHook,
+            "public override bool ShouldReceiveCombatHooks => true",
+            "BeforeCombatStart",
+            "CardType.Attack or CardType.Skill",
+            "cardPlay.Card.IsClone",
+            "IsResolvingMisprint",
+            "AncientCardHelpers.ApplyKeywords(copy, CardKeyword.Exhaust)",
+            "AncientCardHelpers.TryAddGeneratedCardToCombat(copy, PileType.Play, player)",
+            "addResult is not { success: true }",
+            "CardCmd.AutoPlay(choiceContext, copy, null, AutoPlayType.Default, skipXCapture: true)",
+            "finally",
+            "CardCmd.Upgrade(target, CardPreviewStyle.None)",
+            "DebtSettlementStartingGold = 75",
+            "DebtSettlementRequiredPayments = 3",
+            "DebtSettlementGoldPayment = 25",
+            "DebtSettlementHpFallback = 3",
+            "CanPayDebtSettlement(player)",
+            "DebtRewardPending",
+            "CreatureCmd.SetCurrentHp(player.Creature, player.Creature.CurrentHp - hpLoss)",
+            "WithCustomRewards([new SpecialCardReward(rewardCard, player)])");
+        Assert.DoesNotContain("CardType.Power", morviRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Play, player)", morviRunHook, StringComparison.Ordinal);
+
+        var morviAfterReward = SliceBetween(morviRunHook, "public static async Task AfterRewardTaken", "public static async Task AfterCardPlayed");
+        AssertSourceContains(
+            morviAfterReward,
+            "var resolved = await ResolveDebtSettlementCompletion(player);",
+            "if (!resolved)",
+            "progress = GetProgress(player) with { DebtRewardPending = false };");
+        Assert.True(
+            morviAfterReward.IndexOf("ResolveDebtSettlementCompletion(player)", StringComparison.Ordinal) <
+            morviAfterReward.IndexOf("DebtRewardPending = false", StringComparison.Ordinal),
+            "Debt payoff pending should clear only after the payoff reward is offered successfully.");
+
+        var morviDebtChoice = SliceBetween(morviRunHook, "private static async Task ChooseDebtSettlement", "private static async Task PayDebtSettlement");
+        AssertSourceContains(
+            morviDebtChoice,
+            "context.DebtSettlementHandled",
+            "progress.DebtRemaining <= 0 || progress.DebtRewardPending || !CanPayDebtSettlement(player)",
+            "DebtRewardPending = nextRemaining == 0",
+            "SetProgress(player, progress)");
+        Assert.DoesNotContain("RewardsSet", morviDebtChoice, StringComparison.Ordinal);
+        Assert.DoesNotContain("ResolveDebtSettlementCompletion", morviDebtChoice, StringComparison.Ordinal);
+
+        var morviPayDebt = SliceBetween(morviRunHook, "private static async Task PayDebtSettlement", "private static async Task<bool> ResolveDebtSettlementCompletion");
+        AssertSourceContains(
+            morviPayDebt,
+            "Math.Min(player.Gold, DebtSettlementGoldPayment)",
+            "Math.Max(0, player.Creature.CurrentHp - 1)",
+            "CreatureCmd.SetCurrentHp(player.Creature, player.Creature.CurrentHp - hpLoss)");
+
+        foreach (var key in new[]
+        {
+            "EZMB_MORVI.title",
+            "EZMB_MORVI.pages.INITIAL.options.morvi_misprint_press.title",
+            "EZMB_MORVI.pages.INITIAL.options.morvi_open_book_exam.title",
+            "EZMB_MORVI.pages.INITIAL.options.morvi_debt_settlement.title"
+        })
+        {
+            Assert.True(engAncients.ContainsKey(key), $"Missing English Morvi localization: {key}");
+            Assert.True(zhsAncients.ContainsKey(key), $"Missing zhs Morvi localization: {key}");
+        }
+
+        Assert.Equal("Repay Debt", engRewardUi["OPTION_EZMB_MORVI_DEBT_SETTLEMENT.name"]);
+        Assert.Equal("偿还债务", zhsRewardUi["OPTION_EZMB_MORVI_DEBT_SETTLEMENT.name"]);
+    }
+
+    [Fact]
+    public void AncientExpansionEventArtRemainsPendingUntilExplicitSourceFilesExist()
+    {
+        var exportPreset = ReadRepoText("export_presets.cfg");
+        var artDirection = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "art-direction.md");
+        var v22Issues = ReadRepoText("docs", "issues", "ancient-expansion-v2.2.md");
+        var workLog = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "work-log.md");
+
+        var morviPng = RepoPath("EZMicroBalance", "images", "events", "ezmb_morvi.png");
+        var lothaPng = RepoPath("EZMicroBalance", "images", "events", "ezmb_lotha.png");
+
+        Assert.False(File.Exists(morviPng), "Do not silently add Morvi event art without updating export resources and docs.");
+        Assert.False(File.Exists(lothaPng), "Do not silently add Lotha event art without updating export resources and docs.");
+        Assert.DoesNotContain("res://EZMicroBalance/images/events/ezmb_morvi.png", exportPreset, StringComparison.Ordinal);
+        Assert.DoesNotContain("res://EZMicroBalance/images/events/ezmb_lotha.png", exportPreset, StringComparison.Ordinal);
+        AssertSourceContains(
+            artDirection,
+            "source image must be copied from an explicit local file before export",
+            "Do not generate or copy placeholder event art just to satisfy the export list.");
+        AssertSourceContains(
+            v22Issues,
+            "Add both PNGs to `export_presets.cfg` only after the source files are present",
+            "Do not use placeholder art to close this issue.");
+        Assert.Contains("No explicit local source file was found", workLog, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -772,10 +991,15 @@ public sealed class ReleaseCoverageGuardTests
         var urdaCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaCards.cs");
         var urdaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaInitializer.cs");
         var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
+        var urdaSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
         var engCards = ReadRepoText("EZMicroBalance", "localization", "eng", "cards.json");
         var zhsCards = ReadRepoText("EZMicroBalance", "localization", "zhs", "cards.json");
         var engCardRewardUi = ReadRepoText("EZMicroBalance", "localization", "eng", "card_reward_ui.json");
         var zhsCardRewardUi = ReadRepoText("EZMicroBalance", "localization", "zhs", "card_reward_ui.json");
+        var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
+        var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
+        var engCardRewardUiMap = JsonStringMap("EZMicroBalance", "localization", "eng", "card_reward_ui.json");
+        var zhsCardRewardUiMap = JsonStringMap("EZMicroBalance", "localization", "zhs", "card_reward_ui.json");
 
         Assert.Contains("ForceAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
         Assert.Contains("DisableAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
@@ -803,6 +1027,20 @@ public sealed class ReleaseCoverageGuardTests
         Assert.DoesNotContain("urda_morvi", urdaBlessings, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("urda_lotha", urdaAncient, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("urda_vakuu", urdaAncient, StringComparison.OrdinalIgnoreCase);
+        foreach (var futureUrdaId in new[]
+        {
+            "urda_trial_branch",
+            "urda_shallow_root_relic",
+            "urda_rooted_route",
+            "urda_after_the_rain",
+            "urda_root_sight",
+            "urda_seed_bank"
+        })
+        {
+            Assert.DoesNotContain(futureUrdaId, urdaBlessings, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(futureUrdaId, urdaAncient, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(futureUrdaId, urdaSource, StringComparison.OrdinalIgnoreCase);
+        }
 
         AssertSourceContains(
             urdaInitializer,
@@ -812,20 +1050,75 @@ public sealed class ReleaseCoverageGuardTests
         AssertSourceContains(
             urdaRunHook,
             "TryModifyCardRewardAlternatives",
+            "AfterRewardTaken",
             "PostAlternateCardRewardAction.EndSelectionAndCompleteReward",
             "AcceptSeedbed",
+            "CanPaySeedbedCost",
             "CreatureCmd.LoseMaxHp",
-            "CreatureCmd.GainMaxHp",
-            "AfterCardRewardSkipped",
+            "CreatureCmd.SetMaxHp",
+            "TryAddHumusPactAlternative",
+            "ChooseHumusPact",
+            "HumusCompletionPending",
             "PlayerCmd.GainGold",
             "ResolveHumusCompletion",
             "CardSelectCmd.FromDeckForRemoval",
+            "WithSkippingDisallowed",
+            "CardCreationFlags.NoModifyHooks | CardCreationFlags.NoCardPoolModifications | CardCreationFlags.NoUpgradeRoll",
             "ApplyMolting",
             "CreateCard<WitheredHusk>",
             "AfterRoomEntered",
             "ApplyMossMapRoomReward",
             "PotionCmd.TryToProcure",
             "UrdaStateKey");
+        Assert.DoesNotContain("[HarmonyPatch(typeof(CardReward), nameof(CardReward.OnSkipped))]", urdaRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("OnSkipped", urdaRunHook, StringComparison.Ordinal);
+        var seedbedAlternative = SliceBetween(urdaRunHook, "private static bool TryAddSeedbedAlternative", "private static bool TryAddHumusPactAlternative");
+        Assert.DoesNotContain("SeedbedChecks = progress.SeedbedChecks + 1", seedbedAlternative, StringComparison.Ordinal);
+        AssertSourceContains(
+            seedbedAlternative,
+            "progress.SeedbedAccepted >= MaxSeedbedChecks",
+            "!CanPaySeedbedCost(player)",
+            "PostAlternateCardRewardAction.EndSelectionAndCompleteReward");
+        var seedbedAccept = SliceBetween(urdaRunHook, "private static async Task AcceptSeedbed", "private static async Task<bool> ResolveHumusCompletion");
+        AssertSourceContains(
+            seedbedAccept,
+            "!CanPaySeedbedCost(player)",
+            "CreatureCmd.LoseMaxHp",
+            "SeedbedChecks = progress.SeedbedChecks + 1",
+            "CreatureCmd.SetMaxHp");
+        Assert.DoesNotContain("CreatureCmd.GainMaxHp", seedbedAccept, StringComparison.Ordinal);
+        var chooseHumus = SliceBetween(urdaRunHook, "private static async Task ChooseHumusPact", "public static async Task ApplyMolting");
+        AssertSourceContains(
+            chooseHumus,
+            "context.HumusPactHandled",
+            "progress.HumusCompleted || progress.HumusCompletionPending",
+            "progress = progress with { HumusSkips = progress.HumusSkips + 1 }",
+            "HumusCompletionPending = true",
+            "PlayerCmd.GainGold");
+        Assert.DoesNotContain("RewardsSet", chooseHumus, StringComparison.Ordinal);
+        Assert.DoesNotContain("CardSelectCmd.FromDeckForRemoval", chooseHumus, StringComparison.Ordinal);
+        var humusAfterReward = SliceBetween(urdaRunHook, "public static async Task AfterRewardTaken", "private static bool TryAddSeedbedAlternative");
+        AssertSourceContains(
+            humusAfterReward,
+            "var resolved = await ResolveHumusCompletion(player);",
+            "if (!resolved)",
+            "progress = GetProgress(player) with { HumusCompletionPending = false };");
+        Assert.True(
+            humusAfterReward.IndexOf("ResolveHumusCompletion(player)", StringComparison.Ordinal) <
+            humusAfterReward.IndexOf("HumusCompletionPending = false", StringComparison.Ordinal),
+            "Humus completion pending should clear only after the payoff resolver succeeds.");
+        var humusCompletion = SliceBetween(urdaRunHook, "private static async Task<bool> ResolveHumusCompletion", "private static async Task ApplyMossMapRoomReward");
+        AssertSourceContains(
+            humusCompletion,
+            "var rewardCard = CreateRandomRewardCard(player);",
+            "return false;",
+            "CardSelectCmd.FromDeckForRemoval",
+            "WithSkippingDisallowed",
+            "return true;");
+        Assert.True(
+            humusCompletion.IndexOf("CreateRandomRewardCard(player)", StringComparison.Ordinal) <
+            humusCompletion.IndexOf("CardSelectCmd.FromDeckForRemoval", StringComparison.Ordinal),
+            "Humus should generate the payoff card before optional removals so a no-card fallback cannot consume removals.");
         AssertSourceContains(
             urdaCards,
             "UrdaSeedling",
@@ -843,6 +1136,62 @@ public sealed class ReleaseCoverageGuardTests
             "EZMB_WITHERED_HUSK.title");
         Assert.Contains("OPTION_EZMB_URDA_SEEDBED.name", engCardRewardUi, StringComparison.Ordinal);
         Assert.Contains("OPTION_EZMB_URDA_SEEDBED.name", zhsCardRewardUi, StringComparison.Ordinal);
+        Assert.Equal("Compost Reward", engCardRewardUiMap["OPTION_EZMB_URDA_HUMUS_PACT.name"]);
+        AssertLocalizedKeys(
+            [
+                "OPTION_EZMB_URDA_SEEDBED.name",
+                "OPTION_EZMB_URDA_HUMUS_PACT.name"
+            ],
+            engCardRewardUiMap,
+            zhsCardRewardUiMap,
+            "Urda card-reward option localization");
+        AssertLocalizedKeys(
+            [
+                "EZMB_URDA.pages.INITIAL.options.urda_seedbed.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_molting.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_molting.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_moss_map.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_moss_map.description"
+            ],
+            engAncients,
+            zhsAncients,
+            "Urda ancient localization");
+    }
+
+    [Fact]
+    public void UrdaDocsKeepLiveAndSaveLoadVerificationPending()
+    {
+        var issueIndex = ReadRepoText("docs", "issues.md");
+        var urdaIssue = ReadRepoText("docs", "issues", "urda.md");
+        var urdaReadme = ReadRepoText("docs", "features", "ancient-expansion-urda", "README.md");
+        var urdaApi = ReadRepoText("docs", "features", "ancient-expansion-urda", "api-research.md");
+        var urdaChecklist = ReadRepoText("docs", "features", "ancient-expansion-urda", "manual-test-checklist.md");
+        var v22Readme = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "README.md");
+        var v22Api = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
+        var v22Risk = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md");
+
+        var currentUrdaDocs = string.Join(
+            Environment.NewLine,
+            issueIndex,
+            urdaIssue,
+            urdaReadme,
+            urdaApi,
+            urdaChecklist,
+            v22Readme,
+            v22Api,
+            v22Risk);
+
+        Assert.Contains("| URDA-PROTOTYPE | Ancient expansion | P0 | open |", issueIndex, StringComparison.Ordinal);
+        Assert.Contains("live gameplay/save-load verification is still pending", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Live gameplay and save/load verification for current Urda remains pending", v22Readme, StringComparison.Ordinal);
+        Assert.Contains("not source-proven as persisted", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Urda live gameplay verified", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Urda save/load verified", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("URDA-PROTOTYPE | Closed", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("- [x]", urdaChecklist, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -852,7 +1201,8 @@ public sealed class ReleaseCoverageGuardTests
         var handoff = ReadRepoText("docs", "private-beta-verification-handoff.md");
         var readme = ReadRepoText("docs", "README.md");
 
-        Assert.Contains("Current latest commit", projectState, StringComparison.Ordinal);
+        Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
+        Assert.Contains("c8bcaa9", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("git log -1 --oneline --decorate", handoff, StringComparison.Ordinal);

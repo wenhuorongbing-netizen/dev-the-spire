@@ -29,6 +29,11 @@ internal sealed class UrdaRunHook : AbstractModel
         return UrdaBlessingService.TryModifyCardRewardAlternatives(player, cardReward, alternatives);
     }
 
+    public override Task AfterRewardTaken(Player player, Reward reward)
+    {
+        return UrdaBlessingService.AfterRewardTaken(player, reward);
+    }
+
     public override Task AfterActEntered()
     {
         return UrdaBlessingService.AfterActEntered();
@@ -37,15 +42,6 @@ internal sealed class UrdaRunHook : AbstractModel
     public override Task AfterRoomEntered(AbstractRoom room)
     {
         return UrdaBlessingService.AfterRoomEntered(room);
-    }
-}
-
-[HarmonyPatch(typeof(CardReward), nameof(CardReward.OnSkipped))]
-internal static class UrdaCardRewardSkippedPatch
-{
-    private static void Postfix(CardReward __instance)
-    {
-        TaskHelper.RunSafely(UrdaBlessingService.AfterCardRewardSkipped(__instance));
     }
 }
 
@@ -65,9 +61,7 @@ internal static class UrdaBlessingService
     {
         public bool IsNormalActOneCombatCardReward { get; set; }
 
-        public bool SeedbedCheckRecorded { get; set; }
-
-        public bool HumusSkipHandled { get; set; }
+        public bool HumusPactHandled { get; set; }
     }
 
     private sealed record Progress(
@@ -76,10 +70,11 @@ internal static class UrdaBlessingService
         bool SeedbedTransformed,
         int HumusSkips,
         bool HumusCompleted,
+        bool HumusCompletionPending,
         bool MoltingActive,
         int MossRoomMask)
     {
-        public static Progress Default => new(0, 0, false, 0, false, false, 0);
+        public static Progress Default => new(0, 0, false, 0, false, false, false, 0);
     }
 
     private static readonly ConditionalWeakTable<CardReward, CardRewardContext> CardRewardContexts = new();
@@ -116,26 +111,53 @@ internal static class UrdaBlessingService
         CardReward cardReward,
         List<CardRewardAlternative> alternatives)
     {
-        if (!IsTrackedNormalActOneCombatReward(cardReward) ||
-            GetSelectedBlessing(player) != UrdaBlessingIds.Seedbed ||
-            alternatives.Count >= 2)
+        if (!IsTrackedNormalActOneCombatReward(cardReward) || alternatives.Count >= 2)
         {
             return false;
+        }
+
+        return GetSelectedBlessing(player) switch
+        {
+            UrdaBlessingIds.Seedbed => TryAddSeedbedAlternative(player, alternatives),
+            UrdaBlessingIds.HumusPact => TryAddHumusPactAlternative(player, cardReward, alternatives),
+            _ => false
+        };
+    }
+
+    public static async Task AfterRewardTaken(Player player, Reward reward)
+    {
+        if (reward is not CardReward ||
+            GetSelectedBlessing(player) != UrdaBlessingIds.HumusPact)
+        {
+            return;
         }
 
         var progress = GetProgress(player);
-        if (progress.SeedbedTransformed ||
-            progress.SeedbedChecks >= MaxSeedbedChecks)
+        if (!progress.HumusCompletionPending)
         {
-            return false;
+            return;
         }
 
-        var context = CardRewardContexts.GetValue(cardReward, _ => new CardRewardContext());
-        if (!context.SeedbedCheckRecorded)
+        var resolved = await ResolveHumusCompletion(player);
+        if (!resolved)
         {
-            context.SeedbedCheckRecorded = true;
-            progress = progress with { SeedbedChecks = progress.SeedbedChecks + 1 };
-            SetProgress(player, progress);
+            return;
+        }
+
+        progress = GetProgress(player) with { HumusCompletionPending = false };
+        SetProgress(player, progress);
+    }
+
+    private static bool TryAddSeedbedAlternative(
+        Player player,
+        List<CardRewardAlternative> alternatives)
+    {
+        var progress = GetProgress(player);
+        if (progress.SeedbedTransformed ||
+            progress.SeedbedAccepted >= MaxSeedbedChecks ||
+            !CanPaySeedbedCost(player))
+        {
+            return false;
         }
 
         alternatives.Add(new CardRewardAlternative(
@@ -145,9 +167,26 @@ internal static class UrdaBlessingService
         return true;
     }
 
-    public static async Task AfterCardRewardSkipped(CardReward reward)
+    private static bool TryAddHumusPactAlternative(
+        Player player,
+        CardReward cardReward,
+        List<CardRewardAlternative> alternatives)
     {
-        var player = reward.Player;
+        var progress = GetProgress(player);
+        if (progress.HumusCompleted || progress.HumusCompletionPending)
+        {
+            return false;
+        }
+
+        alternatives.Add(new CardRewardAlternative(
+            "EZMB_URDA_HUMUS_PACT",
+            () => ChooseHumusPact(player, cardReward),
+            PostAlternateCardRewardAction.EndSelectionAndCompleteReward));
+        return true;
+    }
+
+    private static async Task ChooseHumusPact(Player player, CardReward reward)
+    {
         if (!IsTrackedNormalActOneCombatReward(reward) ||
             GetSelectedBlessing(player) != UrdaBlessingIds.HumusPact)
         {
@@ -155,30 +194,28 @@ internal static class UrdaBlessingService
         }
 
         var context = CardRewardContexts.GetValue(reward, _ => new CardRewardContext());
-        if (context.HumusSkipHandled)
+        if (context.HumusPactHandled)
         {
             return;
         }
 
-        context.HumusSkipHandled = true;
+        context.HumusPactHandled = true;
         var progress = GetProgress(player);
-        if (progress.HumusCompleted)
+        if (progress.HumusCompleted || progress.HumusCompletionPending)
         {
             return;
         }
 
         progress = progress with { HumusSkips = progress.HumusSkips + 1 };
+        if (progress.HumusSkips >= HumusRequiredSkips)
+        {
+            progress = progress with { HumusCompleted = true, HumusCompletionPending = true };
+        }
+
         SetProgress(player, progress);
         await PlayerCmd.GainGold(HumusGoldPerSkip, player);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Humus Pact applied: skipped normal combat card reward {progress.HumusSkips}/{HumusRequiredSkips}; gained {HumusGoldPerSkip} gold.");
-
-        if (progress.HumusSkips >= HumusRequiredSkips)
-        {
-            progress = progress with { HumusCompleted = true };
-            SetProgress(player, progress);
-            await ResolveHumusCompletion(player);
-        }
+            $"[EZMicroBalance] Urda Humus Pact applied: composted normal combat card reward {progress.HumusSkips}/{HumusRequiredSkips}; gained {HumusGoldPerSkip} gold.");
     }
 
     public static async Task ApplyMolting(Player player)
@@ -283,7 +320,9 @@ internal static class UrdaBlessingService
     private static async Task AcceptSeedbed(Player player)
     {
         var progress = GetProgress(player);
-        if (progress.SeedbedTransformed || progress.SeedbedAccepted >= MaxSeedbedChecks)
+        if (progress.SeedbedTransformed ||
+            progress.SeedbedAccepted >= MaxSeedbedChecks ||
+            !CanPaySeedbedCost(player))
         {
             return;
         }
@@ -305,11 +344,15 @@ internal static class UrdaBlessingService
             AncientCardHelpers.RemoveUnpiledRunCard(seedling);
         }
 
-        progress = progress with { SeedbedAccepted = progress.SeedbedAccepted + 1 };
+        progress = progress with
+        {
+            SeedbedChecks = progress.SeedbedChecks + 1,
+            SeedbedAccepted = progress.SeedbedAccepted + 1
+        };
         if (progress.SeedbedAccepted >= MaxSeedbedChecks)
         {
             progress = progress with { SeedbedTransformed = true };
-            await CreatureCmd.GainMaxHp(player.Creature, SeedbedCompletionMaxHpGain);
+            await CreatureCmd.SetMaxHp(player.Creature, player.Creature.MaxHp + SeedbedCompletionMaxHpGain);
         }
 
         SetProgress(player, progress);
@@ -317,8 +360,15 @@ internal static class UrdaBlessingService
             $"[EZMicroBalance] Urda Seedbed applied: accepted {progress.SeedbedAccepted}/{MaxSeedbedChecks}; transformed={progress.SeedbedTransformed}.");
     }
 
-    private static async Task ResolveHumusCompletion(Player player)
+    private static async Task<bool> ResolveHumusCompletion(Player player)
     {
+        var rewardCard = CreateRandomRewardCard(player);
+        if (rewardCard == null)
+        {
+            MainFile.Logger.Warn("[EZMicroBalance] Urda Humus Pact deferred upgraded card reward: no valid reward card could be generated.");
+            return false;
+        }
+
         var removalPrefs = new CardSelectorPrefs(CardSelectorPrefs.RemoveSelectionPrompt, 0, 2)
         {
             Cancelable = true,
@@ -331,21 +381,18 @@ internal static class UrdaBlessingService
             await CardPileCmd.RemoveFromDeck(card);
         }
 
-        var rewardCard = CreateRandomRewardCard(player);
-        if (rewardCard == null)
-        {
-            MainFile.Logger.Warn("[EZMicroBalance] Urda Humus Pact skipped upgraded card reward: no valid reward card could be generated.");
-            return;
-        }
-
         if (rewardCard.IsUpgradable)
         {
             CardCmd.Upgrade(rewardCard);
         }
 
-        await RewardsCmd.OfferCustom(player, [new SpecialCardReward(rewardCard, player)]);
+        await new RewardsSet(player)
+            .WithCustomRewards([new SpecialCardReward(rewardCard, player)])
+            .WithSkippingDisallowed()
+            .Offer();
         MainFile.Logger.Info(
             $"[EZMicroBalance] Urda Humus Pact completed: removed {selectedRemovals.Count} card(s) and offered upgraded {rewardCard.Id.Entry}.");
+        return true;
     }
 
     private static async Task ApplyMossMapRoomReward(Player player, RoomType roomType)
@@ -402,7 +449,8 @@ internal static class UrdaBlessingService
 
     private static CardModel? CreateRandomRewardCard(Player player)
     {
-        var options = CardCreationOptions.ForRoom(player, RoomType.Monster);
+        var options = CardCreationOptions.ForRoom(player, RoomType.Monster)
+            .WithFlags(CardCreationFlags.NoModifyHooks | CardCreationFlags.NoCardPoolModifications | CardCreationFlags.NoUpgradeRoll);
         return CardFactory.CreateForReward(player, 1, options).FirstOrDefault()?.Card;
     }
 
@@ -418,6 +466,9 @@ internal static class UrdaBlessingService
     private static bool IsTrackedNormalActOneCombatReward(CardReward reward) =>
         CardRewardContexts.TryGetValue(reward, out var context) &&
         context.IsNormalActOneCombatCardReward;
+
+    private static bool CanPaySeedbedCost(Player player) =>
+        player.Creature.MaxHp > SeedbedMaxHpCost;
 
     private static bool IsNormalActOneCombatReward(Player player, CardCreationOptions creationOptions)
     {
@@ -439,14 +490,16 @@ internal static class UrdaBlessingService
             return Progress.Default;
         }
 
+        var hasHumusPendingField = parts.Length >= 9;
         return new Progress(
             ParseInt(parts[1]),
             ParseInt(parts[2]),
             ParseBool(parts[3]),
             ParseInt(parts[4]),
             ParseBool(parts[5]),
-            ParseBool(parts[6]),
-            ParseInt(parts[7]));
+            hasHumusPendingField && ParseBool(parts[6]),
+            ParseBool(parts[hasHumusPendingField ? 7 : 6]),
+            ParseInt(parts[hasHumusPendingField ? 8 : 7]));
     }
 
     private static void SetProgress(Player player, Progress progress)
@@ -468,6 +521,7 @@ internal static class UrdaBlessingService
             progress.SeedbedTransformed ? 1 : 0,
             progress.HumusSkips,
             progress.HumusCompleted ? 1 : 0,
+            progress.HumusCompletionPending ? 1 : 0,
             progress.MoltingActive ? 1 : 0,
             progress.MossRoomMask);
     }

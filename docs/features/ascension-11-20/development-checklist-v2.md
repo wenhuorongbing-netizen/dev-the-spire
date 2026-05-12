@@ -52,7 +52,7 @@ Avoid these outcomes:
 | A12 | Firemarked Elite Pack / 火印精英群 | Each act generates 2-3 Firemarked Elite candidates, spread out and avoidable. |
 | A13 | Fission Enchantment / 裂变附魔 | Some Attack/Skill rewards can become Fission cards: cost -1, Exhaust after play. |
 | A14 | Rootblight Begins / 根蚀初生 | Start with Rootblight I. Rootblight cards are real master-deck pollution and worsen after combat if ignored. |
-| A15 | Boss Blight Sprout / 首领根芽 | Act 2/3 Boss fights bury two Blight Sprouts. They sprout on turns 3 and 4; each seen and unplayed Sprout adds Rootblight I after combat. |
+| A15 | Boss Blight Sprout / 首领根芽 | Act 2/3 Boss fights bury two Blight Sprouts. They sprout on turns 3 and 4; a seen and unplayed Sprout adds Rootblight I after combat only if the deck has no Rootblight. |
 | A16 | Banner Rooms / 战旗房 | Visible enhanced normal fights appear on the map with public combat rules. |
 | A17 | Deep Branches / 深层支线 | Acts 2/3 contain optional high-risk, high-reward side branches. |
 | A18 | Elite Blight Sprout / 精英根芽 | Mid/late Act 2 and Act 3 elites bury a Blight Sprout. |
@@ -100,7 +100,7 @@ Current A11 implementation note: width +1, Act 1 +1 route row, Act 2 +1 route ro
 
 ### 4.1 Rootblight
 
-Rootblight is a long-term deck pollution state. Multiple Rootblight cards can exist after repeated ignored Root Buds or ignored Rootblight III cards.
+Rootblight is a long-term deck pollution state. The active v2.0 implementation keeps at most one Rootblight card in the master deck; duplicate legacy/prototype cards are normalized down to the highest-level Rootblight.
 
 | Level | Master-deck display | Cost | Play effect |
 | --- | --- | ---: | --- |
@@ -113,7 +113,7 @@ Player text:
 
 - Rootblight I: `Remove this from your deck. After combat, if this was not played or removed, it becomes [gold]Rootblight II[/gold].`
 - Rootblight II: `When played, remove this from your deck. After combat, add a [gold]Rootblight I[/gold]. If not played or removed this combat, it becomes [gold]Rootblight III[/gold].`
-- Rootblight III: `When played, remove this from your deck. After combat, add a [gold]Rootblight II[/gold]. If not played or removed this combat, add a [gold]Rootblight I[/gold] after combat once.`
+- Rootblight III: `When played, remove this from your deck. After combat, add a [gold]Rootblight II[/gold]. If not played or removed this combat, it remains [gold]Rootblight III[/gold].`
 
 Cleanup rules:
 
@@ -131,7 +131,7 @@ Cleanup rules:
 
 Blight Sprout is a temporary combat card.
 
-It is not a Rootblight card and never persists in the master deck. If mishandled, it adds Rootblight I to the master deck.
+It is not a Rootblight card and never persists in the master deck. If mishandled while the deck has no Rootblight, it adds Rootblight I to the master deck.
 
 Player text:
 
@@ -352,7 +352,7 @@ Rule:
 rootblight_level += 1
 ```
 
-At run start, add Rootblight I to the master deck. Later Root Buds add additional Rootblight I cards when seen and ignored.
+At run start, add Rootblight I to the master deck. Later Blight Sprouts add Rootblight I only when seen, ignored, and the deck has no Rootblight.
 
 ## 9. A15: Boss Blight Sprout
 
@@ -768,7 +768,7 @@ Acceptance cases:
 | Play Rootblight II | Card is removed from deck and Rootblight I is added after combat |
 | Play Rootblight III | Card is removed from deck and Rootblight II is added after combat |
 | Sprout never enters hand before combat ends | No growth |
-| Sprout enters hand and is not played | Add Rootblight I |
+| Sprout enters hand and is not played | Add Rootblight I only if the deck has no Rootblight |
 | Sprout is discarded and not played | Add Rootblight I |
 | Rest | One highest-stage Rootblight is removed |
 | Shop-remove Rootblight | Selected Rootblight is removed |

@@ -1,6 +1,6 @@
 # EZ Micro Balance Completion Audit
 
-Last updated: 2026-05-11
+Last updated: 2026-05-12
 
 ## Objective
 
@@ -53,7 +53,7 @@ Concrete deliverables for the current goal:
 | Tests pass | `dotnet build`, `dotnet publish`, normal `dotnet test`, and opt-in artifact test runs pass for the current package state; latest run executed 2026-05-11 after the multiplayer join mismatch diagnostics/package refresh. | Pass |
 | Publish succeeds | Latest `dotnet publish EZMicroBalance.sln` passed, built `EZMicroBalance` in Release, copied DLL/manifest, and skipped publishing tests. The installed PCK is current from the selected-resource export. | Pass |
 | Published artifacts exist | Installed `mods/EZMicroBalance` contains `.json`, `.dll`, and `.pck`; automated tests check PCK contents, installed manifest parity, and DLL parity. | Pass |
-| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `2A13A44EA643EA872A8A189883E4EEFFDE8D9DDB8A83A0F5838CE9B6FA8072AD` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
+| Private-beta package created | Current rebuilt zip `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` has SHA256 `F09686BA68A8A63FEC716713C2B7A5D3A184F1FEE5EE1EB749BBD1AEDEB142FC` and was rebuilt from installed artifacts with matching staging/versioned/extracted zip DLL/JSON/PCK hashes. | Pass |
 | Harmony patch targets resolve | Automated test `HarmonyPatchesResolveAgainstInstalledGameApi` calls `Harmony.PatchAll` on installed DLL against local game/BaseLib assemblies. | Pass |
 | Game loads the mod | Current bounded `--force-steam off` smoke and isolated normal Steam-client startup both loaded only BaseLib and EZ Micro Balance, reported `Found 13 SavedSpireFields`, finished EZ Micro Balance initialization, and reached main menu. Normal Steam A0/A10/A20 combat smoke, the Act 1 A11 map/save-load spot check, the Act 2/3 A11 map-surface observation, and targeted A14 Rootblight English/ZHS hover/starter-notice checks also loaded into gameplay/UI screens. | Pass for loader startup and limited live smoke; full gameplay pending |
 | BaseLib loads | Controlled smoke, normal Steam startup log, and Mod Settings UI screenshot record BaseLib initialization and a visible enabled BaseLib config page. | Pass |
@@ -72,11 +72,11 @@ Concrete deliverables for the current goal:
 - `git status --short --branch`: current A12/A16/A19 plus multiplayer diagnostics pass has source/docs/package-refresh changes pending local commit.
 - `git log -1 --oneline --decorate`: current `HEAD` is `98d260d (HEAD -> main) urda pic`.
 - `Get-Process SlayTheSpire2 -ErrorAction SilentlyContinue`: no SlayTheSpire2 process was left running after the English Rootblight hover/notice cleanup.
-- `dotnet build`: passed on 2026-05-11 after the multiplayer join mismatch diagnostics pass, 0 warnings, 0 errors.
-- `dotnet test --no-build`: passed on 2026-05-11, 73 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet build`: passed on 2026-05-12 after the A11-A20 v2.0 hardening pass, 0 warnings, 0 errors.
+- `dotnet test --no-build`: passed on 2026-05-12, 73 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed on 2026-05-12 after the Urda package refresh.
-- `dotnet publish`: passed on 2026-05-11 after the multiplayer diagnostics pass, with Release DLL/manifest installed and the selected-resource PCK unchanged/current.
-- Latest `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-12 after the Urda package refresh, 89 passed, 0 skipped, 0 failed.
+- `dotnet publish`: passed on 2026-05-12 after the A11-A20 v2.0 hardening pass, with Release DLL/manifest installed and the selected-resource PCK exported.
+- Latest `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-12 after the A11-A20 v2.0 package refresh, 89 passed, 0 skipped, 0 failed.
 - Package verification: installed, staging, versioned, and extracted zip DLL/JSON/PCK hashes match; staging/versioned/extracted `README_INSTALL.txt` hashes match. Installed runtime folder intentionally contains only DLL/JSON/PCK. Package-facing `README_INSTALL.txt` documents the resolved author/generated-art status, current controlled-smoke status, pending manual gates, current Ascension development limits, and multiplayer mismatch diagnostics.
 - Controlled smoke with `--force-steam off`: current-package pass after the Rootblight event-room notice package refresh. Evidence directory `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904` physically isolated unrelated mod entries, enabled only BaseLib and EZ Micro Balance, restored `default\1\settings.save`, `settings.save.backup`, and 22 moved mod entries afterward, and left no game process running. The log showed `Loaded 2 mods (2 total)`, BaseLib DLL load/init, EZ Micro Balance DLL/PCK load/init, `Found 13 SavedSpireFields`, default-on Ascension initializer wording with 0 old `Default-off gate` lines, main menu reached, 0 EZ Micro Balance error/exception lines, and no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures. Live gameplay verification remains pending.
 - Normal Steam-client isolated startup log: `D:\Steam\steam.exe -applaunch 2868840` reached main menu after temporarily moving 23 non-BaseLib/EZMB entries out of the game `mods` directory. The startup snapshot `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log` discovered only BaseLib and EZ Micro Balance, logged `Loaded 2 mods (2 total)`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, `Found 13 SavedSpireFields`, 0 startup `ERROR` lines, and 0 removed-API/non-EZMB/EZMB exception signatures. The moved entries and `settings.save` were restored afterward.
@@ -87,8 +87,8 @@ Concrete deliverables for the current goal:
 - Rootblight-family generated portrait art: small portraits are 250x190 and big portraits are 1000x760 for Rootblight I/II/III and Blight Sprout. SHA256 values are `37E06A6BCEB585478F681D41A4AC14B0988C6067BE7DC983A7867C8D1A824536`, `6A307787999AF2D154BB320A4D8DCA4079D9060602B73B1AA6BC6E1A22F59D58`, `0C1784FD117A48D47D448972AB3F95BA92B4528A296FC2AE557B58B5AA5F4E4E`, `9BCEE9AD668F2D5DDA6842CBB3D189E8CA42045D51C38C134EECCF9DFF397DE3`, `52AE2A50E1EB6A64FFA243EA061A2B2B5A8EDE7A076C3503FE15F8460F70C97A`, `92EA23513D739DFA9ECB2B95949002346AD4E8D43AB323EF9E7AA949DEB5EC7D`, `4A99EAD43F719D3BB514F6DEF31B72C131D67BE57E2A7B5184B6D788161AAF6E`, and `D2ADB90836972A6903752BC26264A440947797E5CACD4642059B9A98C84DA808`.
 - `git diff --check`: exit code 0 after the 2026-05-12 Urda package refresh; only CRLF normalization warnings were printed.
 - Active release art hash: `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75`.
-- Installed/staging/versioned/extracted zip DLL hash: `EE6B9EE9F2D0D3F4962D6DA11B03E19E6E4806DF08930C1F342BF9530A36A6EF`. Current installed/staging/versioned/extracted PCK hash is `FCD38F1E5D940D4CDEB94623465FA24D71A75AABFF323586D1B9FBED856D4557`; manifest hash is `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`.
-- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `2A13A44EA643EA872A8A189883E4EEFFDE8D9DDB8A83A0F5838CE9B6FA8072AD`.
+- Installed/staging/versioned/extracted zip DLL hash: `05C9E0430EB219BB1B7B3E830DC7286A7CE2879427939D0DEDC6DDF2E50A5E34`. Current installed/staging/versioned/extracted PCK hash is `0417E3402A026C4B4D0597A3183108F88C22391499C20886BAF28BFD28BBF292`; manifest hash is `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`.
+- Private-beta package: `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `F09686BA68A8A63FEC716713C2B7A5D3A184F1FEE5EE1EB749BBD1AEDEB142FC`.
 
 ## Remaining Gates
 

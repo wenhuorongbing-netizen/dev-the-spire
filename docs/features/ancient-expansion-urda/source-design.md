@@ -58,22 +58,26 @@ Unsafe or unfinished blessings must be excluded from live pools.
 #### Seedbed (`urda_seedbed`)
 
 - Triggered by normal Act 1 combat card rewards.
-- Tracks four reward checks and accepts a one-card `Seedling` reward with optional upgrade.
+- Offers a Seedbed reward alternative while the player has more than 2 max HP and fewer than four accepted Seedbed rewards.
+- Tracks four accepted Seedbed choices; reward generation, reroll, and screen refresh do not spend a check by themselves.
 - On accepting a reward, lose 2 max HP.
-- On all four accepted rewards, upgrade to `Seedbed's Herald` state and gain +10 max HP, no heal.
+- On all four accepted rewards, set the transformed latch and gain +10 max HP with no heal.
+- A visible `Seedbed's Herald` display state is not implemented in the current source slice.
 
 #### Humus Pact (`urda_humus_pact`)
 
-- Triggered by normal combat card rewards that the player skips.
-- On each skip, gain 15 gold.
-- At three completed skips: open a remove flow (0/1/2 card removals), then offer one upgraded card reward.
+- Triggered by an explicit `Compost Reward` alternative on normal Act 1 combat card rewards.
+- On each composted reward, gain 15 gold.
+- At three completed composts: after the card reward has completed, open a remove flow (0/1/2 card removals), then offer one unskippable upgraded card reward.
+- The third payoff keeps a pending latch until payoff resolution succeeds; payoff card generation happens before optional removals so a no-card fallback cannot consume removals or silently drop the payoff.
+- Ordinary reward-set skip/proceed and room-exit cleanup must not trigger Humus Pact.
 - Apply once; do not repeat past completion.
 
 #### Molting (`urda_molting`)
 
 - On selection, remove one Strike and one Defend from deck, then add two `Withered Husk` cards.
 - `Withered Husk` is a temporary status-like effect card.
-- All `Withered Husk` are removed at Act 2 start.
+- Deck `Withered Husk` cards are removed at Act 2 start.
 - `Withered Husk` is non-playable for long-term deck loops except its exhaust-to-block behavior.
 
 #### Moss Map (`urda_moss_map`)
@@ -83,26 +87,28 @@ Unsafe or unfinished blessings must be excluded from live pools.
 - Bonus table:
   - normal combat: +25 gold,
   - unknown/event: heal 5 HP,
-  - shop: add one random potion,
-  - elite: upgrade one random card,
+  - shop: add one random potion if a potion slot is open,
+  - elite: upgrade one random card if an upgradable card exists,
   - rest site: +3 max HP.
 - Safe room-type resolution is required before release claiming.
 
 ## 4. State and persistence design
 
-Urda state should use local `SavedSpireField` instances attached to `Player` or blessing owner models:
+Current source packs Urda state into `AncientSavedStateFields.UrdaStateKey` on `Player` to avoid increasing the SavedSpireField count during the prototype slice.
 
-- `UrdaStateKey`: selected blessing id.
-- `UrdaSeedbedTriggers`: normal reward-check count.
-- `UrdaSeedbedAccepted`: accepted reward count.
-- `UrdaSeedbedUpgraded`: whether first reward was auto-upgraded.
-- `UrdaSeedbedTransformed`: whether the blessing transformed to Herald.
-- `UrdaHumusSkipCount`: skip count.
-- `UrdaHumusCompleted`: completion latch.
-- `UrdaMoltingActive`: blessing selected latch.
-- `UrdaMossMapRewards`: per-room-type reward flags.
+Encoded fields:
 
-State must survive save/load.
+- selected blessing id,
+- Seedbed accepted-check count,
+- Seedbed accepted reward count,
+- Seedbed transformed latch,
+- Humus compost count,
+- Humus completed latch,
+- Humus completion-pending latch,
+- Molting active latch,
+- Moss Map per-room-type reward flags.
+
+The parser accepts the prior eight-field shape for migration, but `SavedSpireField<Player,string>` persistence is not source-proven by this pass. State must survive live save/load before this design can be marked release-ready.
 
 ## 5. Localization and terms
 
@@ -117,7 +123,8 @@ All active Urda text must include EN + ZHS entries.
 1. Unsafe ancient registration API in v0.105.x can block release-ready claims.
 2. Room-type identity changes can misfire across non-standard rooms.
 3. `Withered Husk` temporary card behavior must not soft-lock removal, transformation, or upgrade.
-4. Reward screen mutation must preserve reroll and skip flows.
+4. Reward screen mutation must preserve reroll, skip, proceed, and room-exit flows.
+5. Player-owned encoded state must be proven by live save/load or moved to a source-proven persisted carrier.
 
 ## 7. Out-of-scope release assertions
 
@@ -127,4 +134,3 @@ Do not claim release-ready for Urda until:
 - Urda registration and blessing pool are verified in live act 1 selection,
 - each active blessing passes manual checks,
 - logs and save/load evidence are attached.
-

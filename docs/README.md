@@ -26,6 +26,8 @@ Use `features/README.md` as the compact feature index.
 | --- | --- | --- |
 | Ancient reward rebalance v4 | `features/ancients-rework-v4/README.md` | Active EZ Micro Balance core feature. v4.3 is current. |
 | Ascension 11-20 | `features/ascension-11-20/README.md` | Active development track, default-on for private-beta multiplayer testing, not release-verified. |
+| Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current Urda stabilization plus default-off Morvi prototype; Lotha/Vakuu remain planning-only. |
+| Urda ancient expansion | `features/ancient-expansion-urda/README.md` | Current default-on private-beta Urda test slice with four source-backed blessings; live verification pending. |
 | Independent mod architecture | `architecture-ez-micro-balance.md` | Why `EZMicroBalance` exists separately from `EzDailyContent`. |
 
 ## Validation And Release
