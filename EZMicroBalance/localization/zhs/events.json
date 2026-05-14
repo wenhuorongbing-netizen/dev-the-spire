@@ -1,7 +1,7 @@
 {
-    "A20_COURTYARD.title":  "第二王前的中庭",
-    "A20_COURTYARD.pages.INITIAL.description":  "第一名首领倒下。门后的中庭安静得只能听见回声。你恢复已损生命值的{HealPercent}%。前方是{BossName}，其烙印为{SealName}：{SealSummary}",
-    "A20_COURTYARD.pages.INITIAL.options.CONTINUE.title":  "稳住呼吸",
-    "A20_COURTYARD.pages.INITIAL.options.CONTINUE.description":  "准备迎战第二名首领。",
-    "A20_COURTYARD.pages.READY.description":  "中庭归于沉寂。{BossName}的烙印仍在前方：{SealSummary}"
+  "A20_COURTYARD.title": "第二王前的中庭",
+  "A20_COURTYARD.pages.INITIAL.description": "第一名首领倒下。门后的中庭安静得只能听见回声。你恢复已损生命值的{HealPercent}%。前方是{BossName}，其烙印为{SealName}：{SealSummary}",
+  "A20_COURTYARD.pages.INITIAL.options.CONTINUE.title": "稳住呼吸",
+  "A20_COURTYARD.pages.INITIAL.options.CONTINUE.description": "准备迎战第二名首领。",
+  "A20_COURTYARD.pages.READY.description": "中庭归于沉寂。{BossName}的烙印仍在前方：{SealSummary}"
 }
