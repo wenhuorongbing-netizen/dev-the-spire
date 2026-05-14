@@ -15,7 +15,7 @@ $signatures = @(
     @{ Name = 'BaseLib patch failure'; Pattern = '(?i)BaseLib.*(?:[1-9][0-9]*\s+failed|patch(?:es)?\s+failed|patch\s+failure|failed\s+to\s+patch|exception)' },
     @{ Name = 'DamageMeter'; Pattern = 'DamageMeter' },
     @{ Name = 'RouteSuggest'; Pattern = 'RouteSuggest' },
-    @{ Name = 'EZMicroBalance error/exception'; Pattern = '(?i)(EZMicroBalance|EZ Micro Balance).*(error|exception)' },
+    @{ Name = 'Spire Plus / EZMicroBalance error/exception'; Pattern = '(?i)(EZMicroBalance|EZ Micro Balance|Spire Plus).*(error|exception)' },
     @{ Name = 'TypeLoadException'; Pattern = 'TypeLoadException' },
     @{ Name = 'MissingMethodException'; Pattern = 'MissingMethodException' },
     @{ Name = 'Godot ERROR line'; Pattern = '(?m)^\s*(?:\[ERROR\]|ERROR\b|\[[^\]]+\]\s*ERROR\b)' }

@@ -221,10 +221,14 @@ public sealed class AncientHighRiskSourceGuardTests
             "TargetType.AnyEnemy => combatState.HittableEnemies.OrderByDescending(creature => creature.CurrentHp).FirstOrDefault()",
             "TargetType.AnyPlayer => owner.Creature",
             "public static async Task<CardPileAddResult?> TryAddGeneratedCardToCombat",
-            "if (CombatManager.Instance.IsOverOrEnding)",
+            "CombatManager.Instance.IsOverOrEnding",
+            "!CombatManager.Instance.IsInProgress",
+            "card.Owner?.Creature.CombatState == null",
             "RemoveUnpiledCombatCard(card)",
-            "await CardPileCmd.AddGeneratedCardToCombat(card, pileType, creator)",
-            "if (!result.success)");
+            "await CardPileCmd.AddGeneratedCardsToCombat([card], pileType, creator, position)",
+            "var result = results.FirstOrDefault()",
+            "result.cardAdded == null",
+            "|| !result.success)");
     }
 
     [Fact]
@@ -234,13 +238,21 @@ public sealed class AncientHighRiskSourceGuardTests
         var prismaticSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");
         var paelsToothSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsToothAndForgePatches.cs");
         var jewelryBoxSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var playerStateSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientPlayerState.cs");
+        var urdaSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var morviSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
+        var lothaSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var ancientSourceWithoutPlayerStateHelper = Directory
+            .GetFiles(RepoPath("EZMicroBalanceCode", "Ancients"), "*.cs", SearchOption.AllDirectories)
+            .Where(path => !path.EndsWith("AncientPlayerState.cs", StringComparison.Ordinal) &&
+                           !path.EndsWith("AncientSavedStateFields.cs", StringComparison.Ordinal))
+            .Select(path => File.ReadAllText(path, Encoding.UTF8));
 
         var keys = Regex.Matches(savedFields, "\"(?<key>EZMicroBalance[^\"]+)\"")
             .Select(match => match.Groups["key"].Value)
             .ToArray();
 
-        Assert.Equal(5, keys.Length);
+        Assert.Equal(13, keys.Length);
         Assert.Equal(keys.Length, keys.Distinct(StringComparer.Ordinal).Count());
         Assert.All(keys, key => Assert.StartsWith("EZMicroBalance", key, StringComparison.Ordinal));
         Assert.DoesNotContain("EzDailyContent", savedFields, StringComparison.Ordinal);
@@ -251,17 +263,67 @@ public sealed class AncientHighRiskSourceGuardTests
             "SavedSpireField<PaelsTooth, int> PaelsToothNonBossCombatCounter",
             "SavedSpireField<CardModel, bool> JewelryBoxNonInnateApotheosis",
             "SavedSpireField<Player, string> UrdaStateKey",
+            "SavedSpireField<CardModel, string> UrdaDeckStateKey",
+            "SavedSpireField<CardModel, bool> UrdaTrialPlantCard",
             "SavedSpireField<Player, string> MorviStateKey",
+            "SavedSpireField<CardModel, string> MorviDeckStateKey",
+            "SavedSpireField<CardModel, bool> MorviBorrowedAncientCard",
+            "SavedSpireField<CardModel, bool> MorviOpenBookSealedCard",
+            "SavedSpireField<Player, string> LothaStateKey",
+            "SavedSpireField<CardModel, string> LothaDeckStateKey",
+            "SavedSpireField<CardModel, bool> LothaMirrorRebuttalCard",
             "\"EZMicroBalanceNormalRewardCounter\"",
             "\"EZMicroBalanceNonBossCombatCounter\"",
             "\"EZMicroBalanceJewelryBoxNonInnateApotheosis\"",
             "\"EZMicroBalanceUrdaStateKey\"",
-            "\"EZMicroBalanceMorviStateKey\"");
+            "\"EZMicroBalanceUrdaDeckStateKey\"",
+            "\"EZMicroBalanceUrdaTrialPlantCard\"",
+            "\"EZMicroBalanceMorviStateKey\"",
+            "\"EZMicroBalanceMorviDeckStateKey\"",
+            "\"EZMicroBalanceMorviBorrowedAncientCard\"",
+            "\"EZMicroBalanceMorviOpenBookSealedCard\"",
+            "\"EZMicroBalanceLothaStateKey\"",
+            "\"EZMicroBalanceLothaDeckStateKey\"",
+            "\"EZMicroBalanceLothaMirrorRebuttalCard\"");
+
+        AssertSourceContains(
+            playerStateSource,
+            "public static string Get(",
+            "SavedSpireField<Player, string> runtimeField",
+            "SavedSpireField<CardModel, string> deckField",
+            "runtimeField[player] = deckState",
+            "player.Deck.Cards",
+            ".Where(card => card.Owner == player && !card.HasBeenRemovedFromState)",
+            "deckField[card] = state",
+            "!card.HasBeenRemovedFromState");
 
         Assert.Contains("AncientSavedStateFields.PrismaticGemNormalRewardCounter[prismaticGem]", prismaticSource, StringComparison.Ordinal);
         Assert.Contains("AncientSavedStateFields.PaelsToothNonBossCombatCounter[paelsTooth]", paelsToothSource, StringComparison.Ordinal);
         Assert.Contains("AncientSavedStateFields.JewelryBoxNonInnateApotheosis[card]", jewelryBoxSource, StringComparison.Ordinal);
-        Assert.Contains("AncientSavedStateFields.MorviStateKey[player]", morviSource, StringComparison.Ordinal);
+        AssertSourceContains(
+            urdaSource,
+            "AncientPlayerState.Get(",
+            "AncientPlayerState.Set(",
+            "AncientPlayerState.SyncDeck(",
+            "AncientSavedStateFields.UrdaStateKey",
+            "AncientSavedStateFields.UrdaDeckStateKey");
+        AssertSourceContains(
+            morviSource,
+            "AncientPlayerState.Get(",
+            "AncientPlayerState.Set(",
+            "AncientPlayerState.SyncDeck(",
+            "AncientSavedStateFields.MorviStateKey",
+            "AncientSavedStateFields.MorviDeckStateKey");
+        AssertSourceContains(
+            lothaSource,
+            "AncientPlayerState.Get(",
+            "AncientPlayerState.Set(",
+            "AncientPlayerState.SyncDeck(",
+            "AncientSavedStateFields.LothaStateKey",
+            "AncientSavedStateFields.LothaDeckStateKey");
+        Assert.DoesNotMatch(
+            @"\b(?:UrdaStateKey|UrdaDeckStateKey|MorviStateKey|MorviDeckStateKey|LothaStateKey|LothaDeckStateKey)\s*\[",
+            string.Join(Environment.NewLine, ancientSourceWithoutPlayerStateHelper));
     }
 
     [Fact]

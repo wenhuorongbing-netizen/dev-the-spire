@@ -14,7 +14,9 @@ public sealed class ReleaseSafetyExpandedGuardTests
         "README.md",
         "docs/dev-environment.md",
         "docs/private-beta-verification-handoff.md",
+        "docs/private-beta-release-completion-audit.md",
         "docs/test-plan.md",
+        "docs/test-ready-completion-audit.md",
         "docs/release-checklist.md",
         "docs/features/ancients-rework-v4/completion-audit.md",
         "docs/features/ancients-rework-v4/manual-verification-matrix.md",
@@ -25,6 +27,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
     private static readonly string[] KnownCurrentHashDocs =
     [
         "docs/dev-environment.md",
+        "docs/test-ready-completion-audit.md",
         "docs/release-checklist.md",
         "docs/features/ancients-rework-v4/completion-audit.md"
     ];
@@ -52,7 +55,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         var inactiveRootCoverImport = RepoPath("EZMicroBalance", "mod_real.png.import");
         var exportPreset = ReadRepoText("export_presets.cfg");
         var installedPck = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
-        var packageZip = RepoPath("publish", $"EZMicroBalance-{ManifestVersion()}.zip");
+        var packageZip = RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip");
 
         Assert.True(File.Exists(activeCover), $"Missing active cover art: {activeCover}");
         Assert.True(File.Exists(auditedCover), $"Missing audited cover source copy: {auditedCover}");
@@ -96,7 +99,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         var installedPck = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
         var installedEntries = ReadPckDirectory(installedPck);
-        using var archive = ZipFile.OpenRead(RepoPath("publish", $"EZMicroBalance-{ManifestVersion()}.zip"));
+        using var archive = ZipFile.OpenRead(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
         var zippedEntries = ReadPckDirectory(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck"));
 
         Assert.Equal(installedEntries.OrderBy(entry => entry, StringComparer.Ordinal), zippedEntries.OrderBy(entry => entry, StringComparer.Ordinal));
@@ -105,6 +108,16 @@ public sealed class ReleaseSafetyExpandedGuardTests
         {
             Assert.Contains(resource, installedEntries);
             Assert.Contains(resource, zippedEntries);
+        }
+
+        foreach (var resource in exportedResources.Where(path => path.EndsWith(".tscn", StringComparison.Ordinal)))
+        {
+            Assert.True(
+                installedEntries.Contains(resource) || installedEntries.Contains($"{resource}.remap"),
+                $"Installed PCK is missing exported scene or remap: {resource}");
+            Assert.True(
+                zippedEntries.Contains(resource) || zippedEntries.Contains($"{resource}.remap"),
+                $"Package PCK is missing exported scene or remap: {resource}");
         }
 
         foreach (var resource in exportedResources.Where(path => path.EndsWith(".png", StringComparison.Ordinal)))
@@ -154,13 +167,14 @@ public sealed class ReleaseSafetyExpandedGuardTests
             .OrderBy(field => field.Key, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(14, fields.Length);
+        Assert.Equal(22, fields.Length);
         Assert.Equal(fields.Length, fields.Select(field => field.Key).Distinct(StringComparer.Ordinal).Count());
         Assert.All(fields, field => Assert.StartsWith("EZMicroBalance", field.Key, StringComparison.Ordinal));
         Assert.All(fields, field => Assert.Contains(field.Name, sourceWithoutDefinitions, StringComparison.Ordinal));
         Assert.Contains(fields, field => field.Types == "PrismaticGem, int");
         Assert.Contains(fields, field => field.Types == "PaelsTooth, int");
         Assert.Contains(fields, field => field.Types == "CardModel, bool");
+        Assert.Contains(fields, field => field.Types == "CardModel, string");
         Assert.Contains(fields, field => field.Types == "Player, bool");
         Assert.Contains(fields, field => field.Types == "Player, int");
         Assert.Contains(fields, field => field.Types == "Player, string");
@@ -169,10 +183,149 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains(fields, field => field.Types == "RootFamilyCard, bool");
 
         var currentDocs = ReadCurrentFacingDocs();
-        Assert.Contains("current source defines 14 SavedSpireFields", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("previous smoke reported `Found 13 SavedSpireFields` and is stale", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current source defines 22 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current-package-smoke-20260514-015901", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Found 22 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("latest clean controlled smoke reported 13", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("current source defines 22 SavedSpireFields, while", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("Found 9 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
         Assert.DoesNotContain("reported 7 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void TestReadyCompletionAuditMapsGoalToConcreteArtifacts()
+    {
+        var audit = ReadRepoText("docs", "test-ready-completion-audit.md");
+
+        AssertSourceContains(
+            audit,
+            "# Spire Plus Test-Ready Completion Audit",
+            "## Objective Restated",
+            "## Prompt-To-Artifact Checklist",
+            "## Missing Or Weakly Verified Items",
+            "Stable technical id and display-name split",
+            "Phase 4 Lotha first slice",
+            "Source-complete / live-pending",
+            "Phase 8 required commands",
+            "current-package controlled smoke",
+            "It is not private-beta release-ready");
+
+        Assert.Contains("`EZMicroBalance`", audit, StringComparison.Ordinal);
+        Assert.Contains("`Spire Plus`", audit, StringComparison.Ordinal);
+        Assert.Contains("current source defines 22 SavedSpireFields", audit, StringComparison.Ordinal);
+        Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
+        Assert.Contains("Found 22 SavedSpireFields", audit, StringComparison.Ordinal);
+        Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", audit, StringComparison.Ordinal);
+        Assert.Contains("Current normal Steam-client startup/log verification passed for the refreshed `Spire Plus` display name", audit, StringComparison.Ordinal);
+        Assert.Contains("refreshed Mod Settings UI list capture now shows `Spire Plus`", audit, StringComparison.Ordinal);
+        Assert.Contains("Two-client multiplayer matrix is pending", audit, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void LiveSessionHelperStaysRestoreSafeAndDocsKeepLoaderEvidenceSeparateFromGameplay()
+    {
+        var helper = ReadRepoText("scripts", "spire-plus-live-session.ps1");
+        var windowPreflight = ReadRepoText("scripts", "check-spire-window-preflight.ps1");
+        var scriptsReadme = ReadRepoText("scripts", "README.md");
+        var currentDocs = ReadCurrentFacingDocs();
+
+        AssertSourceContains(
+            helper,
+            "[ValidateSet('Prepare', 'Restore')]",
+            "[switch]$MoveOtherMods",
+            "[switch]$MoveCurrentRuns",
+            "[switch]$DisableSpirePlus",
+            "[switch]$StopGameOnRestore",
+            "[switch]$PreserveNewCurrentRunsOnRestore",
+            "session-state.json",
+            "restore-state.json",
+            "Assert-PathInside",
+            "Move-ModsForIsolation",
+            "Move-CurrentRuns",
+            "Move-NewCurrentRunsBeforeRestore",
+            "Restore-MovedItems",
+            "live-spire-plus-disabled-session",
+            "DisableSpirePlus requires -MoveOtherMods",
+            "$allowedModIds = if ($DisableSpirePlus) { @('BaseLib') } else { $defaultAllowedModIds }",
+            "AllowedModIds = @($allowedModIds)",
+            "DisableSpirePlus = [bool]$DisableSpirePlus",
+            "Start-Process -FilePath $SteamExe",
+            "'-applaunch', '2868840'",
+            "Copy-Item -LiteralPath $settingsBefore -Destination $session.SettingsPath -Force");
+
+        Assert.DoesNotContain("Remove-Item", helper, StringComparison.OrdinalIgnoreCase);
+        AssertSourceContains(
+            windowPreflight,
+            "[switch]$RequireSpireForeground",
+            "GetForegroundWindow",
+            "GetWindowThreadProcessId",
+            "SlayTheSpire2",
+            "SpireForeground",
+            "CaptureGuidance",
+            "exit 2");
+        Assert.DoesNotContain("Stop-Process", windowPreflight, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Move-Item", windowPreflight, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Remove-Item", windowPreflight, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("spire-plus-live-session.ps1", scriptsReadme, StringComparison.Ordinal);
+        Assert.Contains("check-spire-window-preflight.ps1", scriptsReadme, StringComparison.Ordinal);
+        Assert.Contains("-DisableSpirePlus", scriptsReadme, StringComparison.Ordinal);
+        Assert.Contains("-RequireSpireForeground", scriptsReadme, StringComparison.Ordinal);
+        Assert.Contains("-PreserveNewCurrentRunsOnRestore", scriptsReadme, StringComparison.Ordinal);
+        Assert.Contains("test-created `current_run*` files are preserved", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("covered desktop captures", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("window-preflight-smoke-20260513-135402", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("live-helper-preserve-current-run-smoke-20260513-133431", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("live-spire-plus-session-20260513-125206", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("live-spire-plus-disabled-session-20260513-143020", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Loaded 1 mods (1 total)", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("settings-only disabled attempt", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("This is a previous loader/helper validation pass, not live gameplay evidence.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("This is loader/helper evidence only; gameplay/manual gates remain pending.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("manual feature matrix has runtime gameplay", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Two-client multiplayer matrix is pending", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("helper-driven startup/log pass proves gameplay", currentDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("disable-mod gameplay verified", currentDocs, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void PrivateBetaReleaseCompletionAuditMapsFinishGoalToActualEvidenceAndOpenBlockers()
+    {
+        var audit = ReadRepoText("docs", "private-beta-release-completion-audit.md");
+        var docsIndex = ReadRepoText("docs", "README.md");
+
+        AssertSourceContains(
+            audit,
+            "# Spire Plus Private Beta Release Completion Audit",
+            "## Objective Restated",
+            "## Prompt-To-Artifact Checklist",
+            "## Missing Or Weakly Verified Items",
+            "## Conclusion",
+            "151 passed / 18 skipped",
+            "169 passed / 0 skipped",
+            "current-package-smoke-20260514-015901",
+            "urda-pck-resource-load-20260513-123345",
+            "window-preflight-smoke-20260513-135402",
+            "Full Ancient reward runtime matrix",
+            "Disable-mod gameplay behavior in an actual run",
+            "Natural A11 click-by-click traversal",
+            "Two-client multiplayer/co-op matrix",
+            "Not achieved.",
+            "It is not private-beta release-ready");
+
+        Assert.Contains("| Ancient reward gameplay |", audit, StringComparison.Ordinal);
+        Assert.Contains("| Not complete: runtime results remain pending |", audit, StringComparison.Ordinal);
+        Assert.Contains("Invalid live screenshot attempts are not counted as gameplay evidence.", audit, StringComparison.Ordinal);
+        Assert.Contains("they do not satisfy live Urda, Rootblight, or gameplay rows.", audit, StringComparison.Ordinal);
+        AssertEvidenceLabelOnlyReferencedAsInvalid(audit, "live-urda-postfix-20260513-131752");
+        AssertEvidenceLabelOnlyReferencedAsInvalid(audit, "live-urda-continue-postfix-20260513-134337");
+        Assert.Contains("| Worktree/release handoff |", audit, StringComparison.Ordinal);
+        Assert.Contains("| Not complete |", audit, StringComparison.Ordinal);
+        Assert.Contains("Release completion audit", docsIndex, StringComparison.Ordinal);
+        Assert.Contains("private-beta-release-completion-audit.md", docsIndex, StringComparison.Ordinal);
+        Assert.DoesNotContain("private beta ready", audit, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotMatch(@"(?i)\b(?:is|are)\s+(?:private-beta\s+)?release-ready\b", audit);
     }
 
     [Fact]
@@ -290,7 +443,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
     public void CurrentReleaseHashClaimsMatchInstalledStagingVersionedAndZipArtifacts()
     {
         var version = ManifestVersion();
-        var packageName = $"EZMicroBalance-{version}";
+        var packageName = $"SpirePlus-{version}";
         var installedDir = GamePath("mods", "EZMicroBalance");
         var stagingDir = RepoPath("publish", "package-staging", "EZMicroBalance");
         var versionedDir = RepoPath("publish", packageName, "EZMicroBalance");
@@ -299,6 +452,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         var dllHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.dll"));
         var manifestHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.json"));
         var pckHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.pck"));
+        var readmeHash = Sha256(Path.Combine(stagingDir, "README_INSTALL.txt"));
         var zipHash = Sha256(zipPath);
         var artHash = Sha256(RepoPath("EZMicroBalance", "mod_image.png"));
         var knownCurrentHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -306,6 +460,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             dllHash,
             manifestHash,
             pckHash,
+            readmeHash,
             zipHash,
             artHash
         };
@@ -316,12 +471,14 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Equal(manifestHash, Sha256(Path.Combine(versionedDir, "EZMicroBalance.json")));
         Assert.Equal(pckHash, Sha256(Path.Combine(stagingDir, "EZMicroBalance.pck")));
         Assert.Equal(pckHash, Sha256(Path.Combine(versionedDir, "EZMicroBalance.pck")));
+        Assert.Equal(readmeHash, Sha256(Path.Combine(versionedDir, "README_INSTALL.txt")));
 
         using (var archive = ZipFile.OpenRead(zipPath))
         {
             Assert.Equal(dllHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.dll")));
             Assert.Equal(manifestHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.json")));
             Assert.Equal(pckHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck")));
+            Assert.Equal(readmeHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/README_INSTALL.txt")));
         }
 
         var hashDocs = string.Join(Environment.NewLine, KnownCurrentHashDocs.Select(path => ReadRepoText(path.Split('/'))));
@@ -350,9 +507,16 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         foreach (var file in Directory.GetFiles(zhsRoot, "*.json", SearchOption.AllDirectories))
         {
+            var relativePath = ToRepoRelativePath(file);
             using var document = JsonDocument.Parse(File.ReadAllText(file, Encoding.UTF8));
             foreach (var (key, value) in JsonStringValues(document.RootElement))
             {
+                if (relativePath.EndsWith("EZMicroBalance/localization/zhs/settings_ui.json", StringComparison.Ordinal) &&
+                    key == "EZMICROBALANCE.mod_title")
+                {
+                    continue;
+                }
+
                 var visibleValue = Regex.Replace(value, @"\{[^{}]*\}", string.Empty, RegexOptions.CultureInvariant);
                 visibleValue = Regex.Replace(visibleValue, @"\[(?:/)?[A-Za-z][^\]]*\]", string.Empty, RegexOptions.CultureInvariant);
                 foreach (Match match in Regex.Matches(visibleValue, @"[A-Za-z][A-Za-z0-9_-]*", RegexOptions.CultureInvariant))
@@ -362,12 +526,64 @@ public sealed class ReleaseSafetyExpandedGuardTests
                         continue;
                     }
 
-                    failures.Add($"{ToRepoRelativePath(file)}:{key} contains raw ASCII word `{match.Value}` in `{value}`");
+                    failures.Add($"{relativePath}:{key} contains raw ASCII word `{match.Value}` in `{value}`");
                 }
             }
         }
 
         Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
+    }
+
+    [Fact]
+    public void SimplifiedChineseLocalizationContainsNoKnownMojibakeFragments()
+    {
+        var zhsRoot = RepoPath("EZMicroBalance", "localization", "zhs");
+        var allText = string.Join(
+            Environment.NewLine,
+            Directory.GetFiles(zhsRoot, "*.json", SearchOption.AllDirectories)
+                .OrderBy(path => path, StringComparer.Ordinal)
+                .Select(path => File.ReadAllText(path, Encoding.UTF8)));
+
+        var fragments = new[]
+        {
+            "\uFFFD",
+            "妫卞僵",
+            "寮傝壊",
+            "鏀炬澗",
+            "鏀朵笅",
+            "鍖栦负",
+            "鍋胯繕",
+            "绁炲寲",
+            "璁告効",
+            "鎵ц糠",
+            "杩呴",
+            "鍥烘湁",
+            "鎰氳",
+            "姘告亽",
+            "瀹濈煶",
+            "鐏典綋",
+            "闈為",
+            "棣栭",
+            "鍊哄姟",
+            "娆犳",
+            "淇濈暀",
+            "铏氭棤",
+            "娑堣",
+            "鍔涢噺",
+            "鑾峰緱",
+            "鐐硅兘",
+            "澶卞幓",
+            "绗",
+            "绋充綇",
+            "涓涵",
+            "闇€瑕佽嚦"
+        };
+
+        var matches = fragments
+            .Where(fragment => allText.Contains(fragment, StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.True(matches.Length == 0, "Found mojibake fragments in active zhs localization: " + string.Join(", ", matches));
     }
 
     [Fact]
@@ -379,12 +595,15 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bready\s+for\s+(?:private beta|release)\b", currentDocs);
         Assert.Contains("- [x] BaseLib appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("- [x] EZ Micro Balance appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current normal Steam-client startup/log verification passed for the Spire Plus display-name package", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", currentDocs, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);
@@ -392,7 +611,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
-        Assert.Contains("c8bcaa9", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("git diff --check", projectState, StringComparison.OrdinalIgnoreCase);
@@ -430,7 +649,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "[INFO] Finished mod initialization for 'BaseLib' (BaseLib).",
             "[INFO] Loading assembly DLL D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.dll",
             "[INFO] Loading Godot PCK D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.pck",
-            "[INFO] Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance).",
+            "[INFO] Finished mod initialization for 'Spire Plus' (EZMicroBalance).",
             "[INFO] [BaseLib] Found 13 SavedSpireFields.",
             "[INFO] [Startup] Time to main menu: 12,648ms");
 
@@ -541,8 +760,47 @@ public sealed class ReleaseSafetyExpandedGuardTests
             summary.LoadedEzPck &&
             summary.InitializedEzMicroBalance &&
             summary.ReachedMainMenu &&
-            summary.SavedSpireFieldCount == 13 &&
+            summary.SavedSpireFieldCount == 22 &&
             summary.EzMicroBalanceErrorLines.Length == 0;
+    }
+
+    [ReleaseArtifactFact]
+    public void DisabledSpirePlusPlugOffEvidenceSupportsDocs()
+    {
+        var evidenceDir = RepoPath(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020");
+        Assert.True(Directory.Exists(evidenceDir), $"Missing plug-off evidence directory: {evidenceDir}");
+
+        using var summary = JsonDocument.Parse(ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "disabled-startup-summary.json"));
+        var root = summary.RootElement;
+        Assert.True(root.GetProperty("DisableSpirePlus").GetBoolean());
+        Assert.True(root.GetProperty("MovedEzmb").GetBoolean());
+        Assert.True(root.GetProperty("ReachedMainMenu").GetBoolean());
+        Assert.True(root.GetProperty("ContainsBaseLibInitialization").GetBoolean());
+        Assert.False(root.GetProperty("ContainsSpirePlusInitialization").GetBoolean());
+        Assert.False(root.GetProperty("ContainsEzmbError").GetBoolean());
+        Assert.Equal(["BaseLib"], root.GetProperty("AllowedModIds").EnumerateArray().Select(value => value.GetString() ?? string.Empty).ToArray());
+        Assert.Contains(root.GetProperty("LoadedLines").EnumerateArray().Select(value => value.GetString() ?? string.Empty), line => line.Contains("Loaded 1 mods (1 total)", StringComparison.Ordinal));
+
+        var log = ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "godot.log");
+        Assert.Contains("Loaded 1 mods (1 total)", log, StringComparison.Ordinal);
+        Assert.Contains("Finished mod initialization for 'BaseLib' (BaseLib)", log, StringComparison.Ordinal);
+        Assert.DoesNotContain("Finished mod initialization for 'Spire Plus' (EZMicroBalance)", log, StringComparison.Ordinal);
+        Assert.DoesNotContain("Registered config for mod EZMicroBalance", log, StringComparison.Ordinal);
+        Assert.DoesNotContain("EZMicroBalance.dll", log, StringComparison.Ordinal);
+        Assert.DoesNotContain("EZMicroBalance.pck", log, StringComparison.Ordinal);
+
+        using var audit = JsonDocument.Parse(ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "godot-log-audit.json"));
+        Assert.True(audit.RootElement.GetProperty("Clean").GetBoolean());
+        Assert.All(audit.RootElement.GetProperty("SignatureHits").EnumerateArray(), hit => Assert.Equal(0, hit.GetProperty("Count").GetInt32()));
+
+        using var restore = JsonDocument.Parse(ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "restore-output.json"));
+        Assert.Equal(25, restore.RootElement.GetProperty("RestoredModCount").GetInt32());
+        Assert.Equal(1, restore.RootElement.GetProperty("RestoredCurrentRunCount").GetInt32());
+
+        var currentDocs = ReadCurrentFacingDocs();
+        Assert.Contains("live-spire-plus-disabled-session-20260513-143020", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("settings-only disabled attempt", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.", currentDocs, StringComparison.Ordinal);
     }
 
     private sealed record SmokeLogSummary(
@@ -571,7 +829,9 @@ public sealed class ReleaseSafetyExpandedGuardTests
                                                line.Contains("EZMicroBalance.dll", StringComparison.Ordinal)),
                 LoadedEzPck: lines.Any(line => line.Contains("Loading Godot PCK", StringComparison.Ordinal) &&
                                                line.Contains("EZMicroBalance.pck", StringComparison.Ordinal)),
-                InitializedEzMicroBalance: lines.Any(line => line.Contains("Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance)", StringComparison.Ordinal)),
+                InitializedEzMicroBalance: lines.Any(line =>
+                    line.Contains("Finished mod initialization for 'Spire Plus' (EZMicroBalance)", StringComparison.Ordinal) ||
+                    line.Contains("Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance)", StringComparison.Ordinal)),
                 ReachedMainMenu: lines.Any(line => line.Contains("Time to main menu", StringComparison.Ordinal)),
                 SavedSpireFieldCount: savedFieldCount.Success ? int.Parse(savedFieldCount.Groups["count"].Value) : null,
                 EzMicroBalanceErrorLines: lines
@@ -612,7 +872,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
     private static bool IsActiveExportResource(string relativePath)
     {
         return IsActiveReleaseResource(relativePath) &&
-            (Path.GetExtension(relativePath) is ".json" or ".png" or ".txt");
+            (Path.GetExtension(relativePath) is ".json" or ".png" or ".txt" or ".tscn");
     }
 
     private static bool IsActiveReleaseResource(string relativePath)
@@ -707,6 +967,24 @@ public sealed class ReleaseSafetyExpandedGuardTests
             .ToArray();
 
         Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
+    }
+
+    private static void AssertEvidenceLabelOnlyReferencedAsInvalid(string source, string label)
+    {
+        var matchingLines = source
+            .Replace("\r\n", "\n", StringComparison.Ordinal)
+            .Replace('\r', '\n')
+            .Split('\n')
+            .Where(line => line.Contains(label, StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.NotEmpty(matchingLines);
+        foreach (var line in matchingLines)
+        {
+            Assert.Matches(
+                @"(?i)\b(?:invalid|not counted|do not satisfy|does not satisfy|not gameplay evidence|loader health only|covered by another foreground app|stayed on the main menu|wrong surface)\b",
+                line);
+        }
     }
 
     private static string ManifestVersion()

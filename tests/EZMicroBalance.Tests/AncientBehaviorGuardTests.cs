@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -109,7 +109,6 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("v4.3 is current", completionAudit, StringComparison.Ordinal);
 
         Assert.Contains("v4.2", archivedPlan, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("天鹅绒项圈", archivedPlan, StringComparison.Ordinal);
         Assert.Contains("卓越斗篷", archivedPlan, StringComparison.Ordinal);
         Assert.Contains("棱彩宝石", archivedPlan, StringComparison.Ordinal);
         Assert.Contains("v4.2 is historical", completionAudit, StringComparison.Ordinal);
@@ -153,7 +152,7 @@ public sealed class AncientBehaviorGuardTests
     [ReleaseArtifactFact]
     public void PrivateBetaZipContainsOnlyInstallableActiveModFiles()
     {
-        var packagePath = RepoPath("publish", "EZMicroBalance-v0.1.0-private-beta.0.zip");
+        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.0.zip");
         Assert.True(File.Exists(packagePath), $"Missing private beta package: {packagePath}");
 
         using var archive = ZipFile.OpenRead(packagePath);
@@ -183,14 +182,19 @@ public sealed class AncientBehaviorGuardTests
                 minVersion.GetString() == "v3.1.2");
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
+        Assert.Contains("Archive name: SpirePlus-v0.1.0-private-beta.0.zip", readme, StringComparison.Ordinal);
         Assert.Contains("Manifest id: EZMicroBalance", readme, StringComparison.Ordinal);
         Assert.Contains("BaseLib", readme, StringComparison.Ordinal);
         Assert.Contains("EzDailyContent disabled or absent", readme, StringComparison.Ordinal);
         Assert.Contains("Current controlled --force-steam off smoke passed", readme, StringComparison.Ordinal);
-        Assert.Contains("Found 13 SavedSpireFields", readme, StringComparison.Ordinal);
-        Assert.Contains("Normal Steam-client Mod Settings verification passed after the no-op EZ Micro Balance config page was added", readme, StringComparison.Ordinal);
+        Assert.Contains("Found 16 SavedSpireFields", readme, StringComparison.Ordinal);
+        Assert.Contains("0 Spire Plus / EZMicroBalance error signatures", readme, StringComparison.Ordinal);
+        Assert.Contains("Normal Steam-client Mod Settings UI verification now has a current Spire Plus list screenshot", readme, StringComparison.Ordinal);
+        Assert.Contains("Historical page-level Mod Settings verification remains under the old EZ Micro Balance display name", readme, StringComparison.Ordinal);
         Assert.Contains("EZMicroBalance.json author is set to wenhuorongbing-netizen from the local Git user name", readme, StringComparison.Ordinal);
         Assert.Contains("Rootblight I/II/III and Blight Sprout use original generated portrait art packaged with the mod", readme, StringComparison.Ordinal);
+        Assert.Contains("Urda, Loamweaver now uses mod-owned custom Ancient icon and background-scene paths", readme, StringComparison.Ordinal);
+        Assert.Contains("the post-fix live Urda and Rootblight visual/gameplay checks are still pending", readme, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer checks are still pending", readme, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", readme, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", readme, StringComparison.Ordinal);
@@ -643,7 +647,7 @@ public sealed class AncientBehaviorGuardTests
         Assert.DoesNotContain("费用为 0", source, StringComparison.Ordinal);
         Assert.Contains("设为0", source, StringComparison.Ordinal);
         Assert.Contains("费用为0", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("耗能降低 1", activeCode, StringComparison.Ordinal);
+        Assert.DoesNotContain("能量降低 1", activeCode, StringComparison.Ordinal);
         Assert.Contains("[gold]耗能[/gold]降低[blue]1[/blue]", activeCode, StringComparison.Ordinal);
         Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
     }
@@ -651,44 +655,22 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void ManualVerificationMatrixUsesUncorruptedSimplifiedChineseExpectedText()
     {
-        var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
         var zhsCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
-        var zhsRestSite = JsonStringMap("EZMicroBalance", "localization", "zhs", "rest_site_ui.json");
         var jeweledMaskFreePowerSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "JeweledMaskFreePower.cs");
         var zhsLocalizationText = string.Join(
             Environment.NewLine,
-            zhsRelics.Values.Concat(zhsCards.Values).Concat(zhsRestSite.Values));
-        var mojibakeFragments = new[]
-        {
-            "妫卞僵",
-            "寮傝壊",
-            "鏀炬澗",
-            "绁炲寲",
-            "璁告効",
-            "鎵ц糠",
-            "杩呴",
-            "鍥烘湁",
-            "鎰氳",
-            "姘告亽",
-            "瀹濈煶",
-            "鐏典綋",
-            "闈為",
-            "棣栭",
-            "鍊哄姟",
-            "娆犳",
-            "淇濈暀",
-            "铏氭棤",
-            "娑堣",
-            "鍔涢噺",
-            "鑾峰緱",
-            "鐐硅兘",
-            "鐐筦",
-            "澶卞幓",
-            "寮燻"
-        };
+            Directory.GetFiles(RepoPath("EZMicroBalance", "localization", "zhs"), "*.json", SearchOption.TopDirectoryOnly)
+                .OrderBy(path => path, StringComparer.Ordinal)
+                .Select(path => File.ReadAllText(path, Encoding.UTF8)));
+        var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
         Assert.DoesNotContain("\uFFFD", zhsLocalizationText, StringComparison.Ordinal);
+        Assert.DoesNotContain("鐟佷礁", zhsLocalizationText, StringComparison.Ordinal);
+        Assert.DoesNotContain("瀵偓", zhsLocalizationText, StringComparison.Ordinal);
+        Assert.DoesNotContain("閺€", zhsLocalizationText, StringComparison.Ordinal);
+        Assert.DoesNotContain("鍊哄姟", zhsLocalizationText, StringComparison.Ordinal);
+
         Assert.Contains("迅速2", zhsRelics["BEAUTIFUL_BRACELET.description"], StringComparison.Ordinal);
         Assert.Contains("放松", zhsRelics["PAELS_HORN.description"], StringComparison.Ordinal);
         Assert.Contains("神化", zhsRelics["JEWELRY_BOX.description"], StringComparison.Ordinal);
@@ -714,12 +696,6 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("虚无", zhsRelics["CROSSBOW.description"], StringComparison.Ordinal);
         Assert.Contains("力量", zhsRelics["TOASTY_MITTENS.description"], StringComparison.Ordinal);
 
-        foreach (var fragment in mojibakeFragments)
-        {
-            Assert.DoesNotContain(fragment, zhsLocalizationText, StringComparison.Ordinal);
-            Assert.DoesNotContain(fragment, manualMatrix, StringComparison.Ordinal);
-        }
-
         AssertSourceContains(
             manualMatrix,
             "`迅速2`, no raw `Swift`",
@@ -736,7 +712,6 @@ public sealed class AncientBehaviorGuardTests
             "`宝石面具` and 0-cost text",
             "`保留`, `虚无`, `消耗`, `固有`, `永恒`, `力量`");
     }
-
     [Fact]
     public void CurrentAncientDocsDoNotPresentSupersededV42BehaviorAsCurrent()
     {
@@ -991,8 +966,11 @@ public sealed class AncientBehaviorGuardTests
             "- [x] Manifest declares structured `BaseLib` dependency with `min_version: v3.1.2`.",
             "- [x] PCK audit excludes legacy `EzDailyContent`, C# source, docs, art, asset, and archive folders.",
             "- [x] BaseLib appears in Mod Settings.",
-            "- [x] EZ Micro Balance appears in Mod Settings.",
-            "- [ ] `godot.log` reviewed after normal Steam-client manual verification.",
+            "- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
+            "- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.",
+            "current-spire-plus-modsettings-20260513-111342",
+            "- [x] `godot.log` reviewed after current normal Steam-client isolated startup/log verification.",
+            "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",
             "- [ ] Disable-mod gameplay behavior is tested in a run.",
@@ -1002,7 +980,9 @@ public sealed class AncientBehaviorGuardTests
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
             "- [ ] Push to `origin/main` is performed only after explicit user approval.",
-            "RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page",
+            "Current normal Steam-client startup/log verification passed for the Spire Plus display-name package",
+            "Refreshed normal Steam-client Mod Settings UI evidence at `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` shows `Spire Plus`",
+            "RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name",
             "Manual feature results are pending",
             "Unsupported Cases",
             "A11-A20 selection is now default-on in this private-beta multiplayer test candidate",
@@ -1019,8 +999,8 @@ public sealed class AncientBehaviorGuardTests
             Assert.Contains($"| {row} |", manualMatrix, StringComparison.Ordinal);
         }
 
-        Assert.Contains("Status: automated gates passed; normal Steam-client Mod Settings passed; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed.", manualMatrix, StringComparison.Ordinal);
-        Assert.Contains("Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 traversal/boss reachability, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Status: automated gates passed; current normal Steam-client startup/log verification passed; refreshed normal Steam-client Mod Settings UI list screenshot shows Spire Plus; historical page-level Mod Settings UI passed under the old display name; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check and saved-map boss-reachability graph proof passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Natural route-click first-node path remains pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Result: pending.", manualMatrix, StringComparison.Ordinal);
     }

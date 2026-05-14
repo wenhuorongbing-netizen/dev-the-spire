@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -44,7 +44,7 @@ public sealed class ReleaseArtifactTests
         using var legacy = JsonDocument.Parse(File.ReadAllText(RepoPath("EzDailyContent.json")));
 
         Assert.Equal("EZMicroBalance", active.RootElement.GetProperty("id").GetString());
-        Assert.Equal("EZ Micro Balance", active.RootElement.GetProperty("name").GetString());
+        Assert.Equal("Spire Plus", active.RootElement.GetProperty("name").GetString());
         Assert.True(active.RootElement.GetProperty("has_dll").GetBoolean());
         Assert.True(active.RootElement.GetProperty("has_pck").GetBoolean());
         Assert.True(active.RootElement.GetProperty("affects_gameplay").GetBoolean());
@@ -143,7 +143,7 @@ public sealed class ReleaseArtifactTests
         using var relics = JsonDocument.Parse(ReadRepoText("EZMicroBalance", "localization", "zhs", "relics.json"));
         var description = relics.RootElement.GetProperty("BEAUTIFUL_BRACELET.description").GetString();
 
-        Assert.Contains("迅速2", description, StringComparison.Ordinal);
+        Assert.Contains("迅速", description, StringComparison.Ordinal);
         Assert.DoesNotContain("Swift", description, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -157,7 +157,6 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("这张牌的费用已被宝石面具永久设为0。", source, StringComparison.Ordinal);
         Assert.Contains("来自宝石面具，费用为0。", source, StringComparison.Ordinal);
     }
-
     [Fact]
     public void JewelryBoxApotheosisNonInnateMarkerIsInstanceScopedAndSerializable()
     {
@@ -222,6 +221,22 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("EZMicroBalance/images/ascension/boss_seal_indicator.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ascension/fission_enchantment_icon.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ascension/forge_token_status.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_seedbed.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_humus_pact.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_molting.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_moss_map.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_trial_branch.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_shallow_root_relic.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_rooted_route.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_after_rain.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_root_sight.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_seed_bank.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/events/ezmb_urda.png.import", entries);
+        Assert.Contains("EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn.remap", entries);
         Assert.Contains("EZMicroBalance/localization/eng/relics.json", entries);
         Assert.Contains("EZMicroBalance/localization/eng/ascension.json", entries);
         Assert.Contains("EZMicroBalance/localization/eng/events.json", entries);
@@ -296,6 +311,65 @@ public sealed class ReleaseArtifactTests
 
             var exception = Record.Exception(() => patchAll.Invoke(harmony, new object[] { ez }));
             Assert.Null(Unwrap(exception));
+        }
+        finally
+        {
+            AppDomain.CurrentDomain.AssemblyResolve -= resolver;
+        }
+    }
+
+    [ReleaseArtifactFact]
+    public void InstalledUrdaUsesCustomAncientAssetPaths()
+    {
+        var dataDir = GamePath("data_sts2_windows_x86_64");
+        var baseLibDir = GamePath("mods", "BaseLib");
+        var installedModDir = GamePath("mods", "EZMicroBalance");
+        var searchDirs = new[] { dataDir, baseLibDir, installedModDir }
+            .Concat(CandidateBuildDirectories())
+            .ToArray();
+
+        ResolveEventHandler resolver = (_, args) =>
+        {
+            var assemblyFileName = new AssemblyName(args.Name).Name + ".dll";
+            foreach (var dir in searchDirs)
+            {
+                var candidate = Path.Combine(dir, assemblyFileName);
+                if (File.Exists(candidate))
+                {
+                    return Assembly.LoadFrom(candidate);
+                }
+            }
+
+            return null;
+        };
+
+        AppDomain.CurrentDomain.AssemblyResolve += resolver;
+        try
+        {
+            Assembly.LoadFrom(Path.Combine(dataDir, "GodotSharp.dll"));
+            Assembly.LoadFrom(Path.Combine(dataDir, "sts2.dll"));
+            Assembly.LoadFrom(Path.Combine(baseLibDir, "BaseLib.dll"));
+            var ez = Assembly.LoadFrom(Path.Combine(installedModDir, "EZMicroBalance.dll"));
+
+            var urdaType = ez.GetType(
+                "EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda.EzmbUrda",
+                throwOnError: true)!;
+            Assert.Equal("BaseLib.Abstracts.CustomAncientModel", urdaType.BaseType?.FullName);
+
+            var urda = Activator.CreateInstance(urdaType, nonPublic: true)!;
+            Assert.Equal("res://EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png", GetStringProperty(urdaType, urda, "CustomMapIconPath"));
+            Assert.Equal("res://EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png", GetStringProperty(urdaType, urda, "CustomMapIconOutlinePath"));
+            Assert.Equal("res://EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png", GetStringProperty(urdaType, urda, "CustomRunHistoryIconPath"));
+            Assert.Equal("res://EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png", GetStringProperty(urdaType, urda, "CustomRunHistoryIconOutlinePath"));
+            Assert.Equal("res://EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn", GetStringProperty(urdaType, urda, "CustomScenePath"));
+
+            var entries = ReadPckDirectory(Path.Combine(installedModDir, "EZMicroBalance.pck"));
+            Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png.import", entries);
+            Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png.import", entries);
+            Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png.import", entries);
+            Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png.import", entries);
+            Assert.Contains("EZMicroBalance/images/events/ezmb_urda.png.import", entries);
+            Assert.Contains("EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn.remap", entries);
         }
         finally
         {
@@ -409,7 +483,7 @@ public sealed class ReleaseArtifactTests
         Assert.Contains(@"<GameRoot>\mods\EZMicroBalance\EZMicroBalance.dll", remoteSetup, StringComparison.Ordinal);
         Assert.Contains("manifest id `EZMicroBalance`", manualChecklist, StringComparison.Ordinal);
         Assert.Contains(@"<GameRoot>\mods\EZMicroBalance", manualChecklist, StringComparison.Ordinal);
-        Assert.Contains("Confirm EZ Micro Balance / EZMicroBalance appears.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Confirm Spire Plus / `EZMicroBalance` appears.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Confirm legacy Easy Content / EzDailyContent is disabled or absent.", manualChecklist, StringComparison.Ordinal);
 
         Assert.DoesNotContain("dotnet list EzDailyContent.csproj", betaCompatibility, StringComparison.Ordinal);
@@ -530,6 +604,13 @@ public sealed class ReleaseArtifactTests
             System.Text.RegularExpressions.RegexOptions.IgnoreCase);
     }
 
+    private static string? GetStringProperty(Type type, object instance, string propertyName)
+    {
+        var property = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+        Assert.NotNull(property);
+        return (string?)property.GetValue(instance);
+    }
+
     private static IReadOnlyList<string> ReadPckDirectory(string path)
     {
         var bytes = File.ReadAllBytes(path);
@@ -557,7 +638,8 @@ public sealed class ReleaseArtifactTests
         foreach (var entry in exportedResources
                      .Where(resource => resource.EndsWith(".png", StringComparison.Ordinal) ||
                                         resource.EndsWith(".json", StringComparison.Ordinal) ||
-                                        resource.EndsWith(".txt", StringComparison.Ordinal))
+                                        resource.EndsWith(".txt", StringComparison.Ordinal) ||
+                                        resource.EndsWith(".tscn", StringComparison.Ordinal))
                      .Where(entry => IsActiveExportResource(entry)))
         {
             if (entry.EndsWith(".png", StringComparison.Ordinal))
@@ -571,6 +653,22 @@ public sealed class ReleaseArtifactTests
                 if (pckEntries.Contains(imported))
                 {
                     expected.Add(imported);
+                }
+
+                continue;
+            }
+
+            if (entry.EndsWith(".tscn", StringComparison.Ordinal))
+            {
+                if (pckEntries.Contains(entry))
+                {
+                    expected.Add(entry);
+                }
+
+                var remap = $"{entry}.remap";
+                if (pckEntries.Contains(remap))
+                {
+                    expected.Add(remap);
                 }
 
                 continue;
@@ -590,7 +688,7 @@ public sealed class ReleaseArtifactTests
     private static bool IsActiveExportResource(string relativePath)
     {
         return IsActiveReleaseResource(relativePath) &&
-            (Path.GetExtension(relativePath) is ".json" or ".png" or ".txt");
+            (Path.GetExtension(relativePath) is ".json" or ".png" or ".txt" or ".tscn");
     }
 
     private static bool IsActiveReleaseResource(string relativePath)

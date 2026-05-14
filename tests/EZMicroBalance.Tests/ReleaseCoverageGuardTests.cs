@@ -29,7 +29,9 @@ public sealed class ReleaseCoverageGuardTests
         "README.md",
         "docs/dev-environment.md",
         "docs/private-beta-verification-handoff.md",
+        "docs/private-beta-release-completion-audit.md",
         "docs/test-plan.md",
+        "docs/test-ready-completion-audit.md",
         "docs/release-checklist.md",
         "docs/features/ancients-rework-v4/completion-audit.md",
         "docs/features/ancients-rework-v4/manual-verification-matrix.md",
@@ -40,6 +42,7 @@ public sealed class ReleaseCoverageGuardTests
     private static readonly string[] ExpectedActiveSourceFiles =
     [
         "EZMicroBalanceCode/Ancients/Common/AncientCardHelpers.cs",
+        "EZMicroBalanceCode/Ancients/Common/AncientPlayerState.cs",
         "EZMicroBalanceCode/Ancients/Common/AncientSavedStateFields.cs",
         "EZMicroBalanceCode/Ancients/Common/JeweledMaskFreePower.cs",
         "EZMicroBalanceCode/Ancients/Patches/PaelsHornPhase1Patch.cs",
@@ -51,19 +54,37 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ancients/Patches/TurnOfferAndRestPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/VakuRewardPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAncient.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingIds.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaFeatureGate.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaInitializer.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaOptionRelics.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaPowers.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRunHook.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightEncounter.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightFeatureGate.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightOptionRelic.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightRunHook.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuTemptationCard.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingIds.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviCards.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviFeatureGate.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviInitializer.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviOptionRelics.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviPowers.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviRunHook.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingIds.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCards.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaFeatureGate.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaInitializer.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRunHook.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20RewardScreenPatches.cs",
+        "EZMicroBalanceCode/Ascension/Patches/AscensionMapGenerationPatches.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionAssetPaths.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatTracker.cs",
@@ -71,6 +92,7 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ascension/Core/AscensionExpansionConfig.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionInitializer.cs",
+        "EZMicroBalanceCode/Ascension/Map/A11MapGeometryProof.cs",
         "EZMicroBalanceCode/Ascension/Map/AscensionMapQuestMarker.cs",
         "EZMicroBalanceCode/Ascension/Map/AscensionMapService.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionMapUiPatches.cs",
@@ -177,7 +199,7 @@ public sealed class ReleaseCoverageGuardTests
             ],
             [
                 "Firemarked Elite and Forge Token are implemented for the A12 Ascension-level gate.",
-                "One Firemark Host receives Might, Giant, Forge Armor, or Constant Heal",
+                "One Firemarked enemy receives Might, Giant, Forge Armor, or Constant Heal",
                 "Special rest-site action payout is disabled"
             ],
             [
@@ -295,6 +317,43 @@ public sealed class ReleaseCoverageGuardTests
     }
 
     [Fact]
+    public void CurrentStatusDocsUseLatestPackageHashes()
+    {
+        const string oldZipHash = "A96D592E5E244743D1DD0FC58035E34AC263743FFEC98F54CE8D4B31CD9C2432";
+        const string oldDllHash = "A56CF2044A736DFF4E7BEACB55D63388C4DE72AC9C7A99418708D7F2776FE9D9";
+        const string currentZipHash = "61BA0EB09A01E3AF849A6AFA78C1F6EE6D9395CB8ACF2CCF962B5BC4AA8B58D0";
+        const string currentDllHash = "A072EA75ABC00C3879B5F1E57B1014992740E6057308F4DA5EDAC5FEC034863F";
+        const string currentPckHash = "5A567F84E25B333E8739C11B1001560DD1E837599E11450059384B67C26C1F1C";
+        const string currentManifestHash = "9CB73137A04958D0DC0278E854CA1E0E1AC187C125E938DF7C3734F23F7B6A02";
+        const string currentReadmeHash = "5B1194440F6B212471E05F0EE117EE7F30E597FAAA916DF91F9378CD529DDCBB";
+
+        var currentStatusDocs = new[]
+        {
+            ReadRepoText("PROJECT_STATE.md"),
+            ReadRepoText("docs", "issues.md"),
+            ReadRepoText("docs", "dev-environment.md"),
+            ReadRepoText("docs", "private-beta-verification-handoff.md"),
+            ReadRepoText("docs", "private-beta-release-completion-audit.md"),
+            ReadRepoText("docs", "release-checklist.md"),
+            ReadRepoText("docs", "test-ready-completion-audit.md")
+        };
+
+        foreach (var doc in currentStatusDocs)
+        {
+            Assert.DoesNotContain(oldZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(oldDllHash, doc, StringComparison.Ordinal);
+        }
+
+        AssertSourceContains(
+            ReadRepoText("docs", "issues.md"),
+            currentZipHash,
+            currentDllHash,
+            currentPckHash,
+            currentManifestHash,
+            currentReadmeHash);
+    }
+
+    [Fact]
     public void ImplementedAncientSystemsHaveSourceDocsAndLocalizationCoverage()
     {
         var allAncientSource = ReadSourceTree("EZMicroBalanceCode", "Ancients");
@@ -365,8 +424,14 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("one visible Exhaust keyword, no duplicate `Play: Exhaust` body text", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Rootblight II has one visible Exhaust keyword", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Blight Sprout has one visible Exhaust keyword", manualChecklist, StringComparison.Ordinal);
-        Assert.Contains("localized `Rootblight added.` / `\u6839\u8680\u5df2\u52a0\u5165\u3002` notice", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("localized `[gold]Rootblight[/gold] added.` / `[gold]\u6839\u8680[/gold]\u5df2\u52a0\u5165\u3002` notice", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("## Live Evidence Protocol", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("scripts/spire-plus-live-session.ps1 -Mode Prepare -MoveOtherMods -MoveCurrentRuns -Launch", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("scripts/check-spire-window-preflight.ps1 -OutFile <evidence-dir>\\window-preflight.json -RequireSpireForeground", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("scripts/audit-godot-log.ps1 -Path <evidence-dir>\\godot.log -OutFile <evidence-dir>\\godot-log-audit.json -FailOnHit", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("scripts/spire-plus-live-session.ps1 -Mode Restore -EvidenceDir <evidence-dir> -StopGameOnRestore -PreserveNewCurrentRunsOnRestore", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Covered desktop captures, wrong-surface captures, or sessions that never reach the target game surface do not satisfy Rootblight, Ascension, or gameplay rows.", manualChecklist, StringComparison.Ordinal);
 
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.", releaseChecklist, StringComparison.Ordinal);
@@ -487,6 +552,27 @@ public sealed class ReleaseCoverageGuardTests
     }
 
     [Fact]
+    public void ActiveLocalizationJsonFilesAllParse()
+    {
+        var localizationFiles = Directory.GetFiles(RepoPath("EZMicroBalance", "localization"), "*.json", SearchOption.AllDirectories);
+        var failures = new List<string>();
+
+        foreach (var file in localizationFiles)
+        {
+            try
+            {
+                JsonDocument.Parse(File.ReadAllText(file, Encoding.UTF8)).Dispose();
+            }
+            catch (JsonException ex)
+            {
+                failures.Add($"{ToRepoRelativePath(file)}: {ex.Message}");
+            }
+        }
+
+        Assert.True(failures.Count == 0, "Invalid localization JSON:" + Environment.NewLine + string.Join(Environment.NewLine, failures));
+    }
+
+    [Fact]
     public void SourceDeclaredCustomLocalizationKeysExistInEnglishAndSimplifiedChinese()
     {
         var allSource = ReadSourceTree("EZMicroBalanceCode");
@@ -561,22 +647,24 @@ public sealed class ReleaseCoverageGuardTests
             return false;
         }
 
-        return Path.GetExtension(path) is ".json" or ".png";
+        return Path.GetExtension(path) is ".json" or ".png" or ".tscn";
     }
 
     [ReleaseArtifactFact]
     public void PackageStagingVersionedZipAndInstalledArtifactsHaveMatchingHashes()
     {
         var version = ManifestVersion();
-        var packageName = $"EZMicroBalance-{version}";
+        var packageName = $"SpirePlus-{version}";
         var installedDir = GamePath("mods", "EZMicroBalance");
         var stagingDir = RepoPath("publish", "package-staging", "EZMicroBalance");
         var versionedDir = RepoPath("publish", packageName, "EZMicroBalance");
         var zipPath = RepoPath("publish", $"{packageName}.zip");
+        var legacyZipPath = RepoPath("publish", $"EZMicroBalance-{version}.zip");
 
         AssertPackageDirectory(stagingDir);
         AssertPackageDirectory(versionedDir);
         Assert.True(File.Exists(zipPath), $"Missing package zip: {zipPath}");
+        Assert.False(File.Exists(legacyZipPath), $"Do not ship the player-facing archive under the technical id: {legacyZipPath}");
 
         using var archive = ZipFile.OpenRead(zipPath);
         var zipEntries = archive.Entries
@@ -603,7 +691,7 @@ public sealed class ReleaseCoverageGuardTests
     [ReleaseArtifactFact]
     public void CurrentDocsMatchReleaseHashesAndAvoidPinnedStaleTestTotals()
     {
-        var packageHash = Sha256(RepoPath("publish", $"EZMicroBalance-{ManifestVersion()}.zip"));
+        var packageHash = Sha256(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
         var modImageHash = Sha256(RepoPath("EZMicroBalance", "mod_image.png"));
         var legacyModImageHash = Sha256(RepoPath("EzDailyContent", "mod_image.png"));
 
@@ -628,7 +716,9 @@ public sealed class ReleaseCoverageGuardTests
 
         Assert.Contains("manual feature verification", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
         Assert.Contains("still pending", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Current normal Steam-client startup/log verification passed for the Spire Plus display-name package", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("current-spire-plus-modsettings-20260513-111342", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("release ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
@@ -637,7 +727,7 @@ public sealed class ReleaseCoverageGuardTests
     [ReleaseArtifactFact]
     public void PrivateBetaVerificationHandoffCarriesCurrentArtifactsAndManualBlockers()
     {
-        var packageHash = Sha256(RepoPath("publish", $"EZMicroBalance-{ManifestVersion()}.zip"));
+        var packageHash = Sha256(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
         var installedDir = GamePath("mods", "EZMicroBalance");
         var dllHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.dll"));
         var manifestHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.json"));
@@ -650,7 +740,9 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains(pckHash, handoff, StringComparison.Ordinal);
         Assert.Contains("Record results in `docs/features/ancients-rework-v4/manual-verification-matrix.md`", handoff, StringComparison.Ordinal);
         Assert.Contains("update `docs/release-checklist.md`", handoff, StringComparison.Ordinal);
-        Assert.Contains("Normal Steam-client Mod Settings verification passed for BaseLib and EZ Micro Balance", handoff, StringComparison.Ordinal);
+        Assert.Contains("Normal Steam-client startup/log verification passed for the current Spire Plus display-name package", handoff, StringComparison.Ordinal);
+        Assert.Contains("Normal Steam-client Mod Settings UI verification now has a current `Spire Plus` list screenshot", handoff, StringComparison.Ordinal);
+        Assert.Contains("current-spire-plus-modsettings-20260513-111342", handoff, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", handoff, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", handoff, StringComparison.Ordinal);
@@ -674,8 +766,9 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("Current git log -1 --oneline --decorate", handoff, StringComparison.Ordinal);
         Assert.Contains("Pre-commit local cleanup status summary", handoff, StringComparison.Ordinal);
         Assert.Contains("M EZMicroBalanceCode/Ascension/Rewards/RootDeckService.cs", handoff, StringComparison.Ordinal);
-        Assert.Contains("?? EZMicroBalance/images/card_portraits/rootblight_i.png", handoff, StringComparison.Ordinal);
-        Assert.Contains("?? docs/style/card-localization-style-guide.md", handoff, StringComparison.Ordinal);
+        Assert.Contains("M export_presets.cfg", handoff, StringComparison.Ordinal);
+        Assert.Contains("?? EZMicroBalance/scenes/", handoff, StringComparison.Ordinal);
+        Assert.Contains("?? docs/test-ready-completion-audit.md", handoff, StringComparison.Ordinal);
         Assert.Contains("M tests/EZMicroBalance.Tests/ReleaseCoverageGuardTests.cs", handoff, StringComparison.Ordinal);
         Assert.DoesNotContain("b82023c", handoff, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("f201508", handoff, StringComparison.OrdinalIgnoreCase);
@@ -709,6 +802,7 @@ public sealed class ReleaseCoverageGuardTests
             "InstalledDllMatchesABuildOutput",
             "InstalledManifestMatchesRepositoryManifest",
             "HarmonyPatchesResolveAgainstInstalledGameApi",
+            "InstalledUrdaUsesCustomAncientAssetPaths",
             "PrismaticGemRewardBannerContractMatchesInstalledGameApi",
             "PackageStagingVersionedZipAndInstalledArtifactsHaveMatchingHashes",
             "CurrentDocsMatchReleaseHashesAndAvoidPinnedStaleTestTotals",
@@ -716,7 +810,8 @@ public sealed class ReleaseCoverageGuardTests
             "ActiveCoverArtAndInactiveModRealPolicyMatchExportPckAndPackage",
             "ExportedResourcesInstalledPckAndPackagePckStayInParity",
             "CurrentReleaseHashClaimsMatchInstalledStagingVersionedAndZipArtifacts",
-            "RecentSmokeLogSupportsControlledSmokeClaims"
+            "RecentSmokeLogSupportsControlledSmokeClaims",
+            "DisabledSpirePlusPlugOffEvidenceSupportsDocs"
         })
         {
             Assert.Contains($"[ReleaseArtifactFact]\n    public void {methodName}", testSource, StringComparison.Ordinal);
@@ -767,11 +862,13 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("Urda is default-on", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("EZMB_DISABLE_URDA", urdaIssueIndex, StringComparison.Ordinal);
         Assert.Contains("prototype", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("No Morvi/Lotha/Vakuu content is currently enabled by default", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Lotha is now default-on in the active test slice", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Vakuu fight", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("save/load", urdaIssueIndex, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public void AncientExpansionV22PlanningDocsAreIndexedAndNotActiveImplementation()
+    public void AncientExpansionV22DocsTrackActiveSourceReadySlices()
     {
         var issues = ReadRepoText("docs", "issues.md");
         var v22Issues = ReadRepoText("docs", "issues", "ancient-expansion-v2.2.md");
@@ -786,11 +883,13 @@ public sealed class ReleaseCoverageGuardTests
         var activeExpansionSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion");
 
         Assert.Contains("docs/issues/ancient-expansion-v2.2.md", issues, StringComparison.Ordinal);
-        Assert.DoesNotContain("morvi_forbidden_loan", issues, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("lotha_death_reprieve", issues, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Fight Vakuu", issues, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("morvi_forbidden_loan", issues, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("lotha_death_reprieve", issues, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Fight Vakuu", issues, StringComparison.OrdinalIgnoreCase);
 
-        Assert.Contains("planning-only", v22Issues, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Lotha is default-on", v22Issues, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Vakuu fight", v22Issues, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("save/load", v22Issues, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-DESIGN-DOC-INGEST", v22Issues, StringComparison.Ordinal);
         Assert.Contains("ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RULES", v22Issues, StringComparison.Ordinal);
         Assert.Contains("ISSUE-2026-05-12-MORVI-V22-PLANNING", v22Issues, StringComparison.Ordinal);
@@ -801,8 +900,9 @@ public sealed class ReleaseCoverageGuardTests
 
         AssertSourceContains(
             featureReadme,
-            "default-off Morvi prototype",
-            "Lotha and Vakuu fight content are not active gameplay content",
+            "default-on Morvi v2.2",
+            "Lotha is default-on",
+            "Vakuu fight",
             "Live gameplay and save/load verification for current Urda remains pending");
         AssertSourceContains(
             sourceDesign,
@@ -816,9 +916,9 @@ public sealed class ReleaseCoverageGuardTests
             "After the Rain",
             "Root-Sight",
             "Seed Bank",
-            "Morvi is default-off",
-            "Lotha is not active",
-            "Vakuu fight is not active");
+            "Morvi is default-on",
+            "Lotha is default-on",
+            "Vakuu fight");
         AssertSourceContains(
             safetyRules,
             "Power cards are not copied, extra-played, or replayed by default",
@@ -833,118 +933,159 @@ public sealed class ReleaseCoverageGuardTests
             "Save/load persistence");
 
         Assert.Contains("ancient-expansion-v2.2", projectState, StringComparison.Ordinal);
-        Assert.Contains("default-off Morvi", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("default-on Morvi", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Vakuu fight", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("save/load", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("features/ancient-expansion-v2.2/README.md", docsIndex, StringComparison.Ordinal);
         Assert.Contains("docs/features/ancient-expansion-v2.2/README.md", projectMap, StringComparison.Ordinal);
         Assert.Contains("ancient-expansion-v2.2/README.md", featuresIndex, StringComparison.Ordinal);
 
         Assert.Contains("MorviFeatureGate", activeExpansionSource, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ENABLE_MORVI_V22", activeExpansionSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("Lotha", activeExpansionSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("Vakuu", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("EZMB_DISABLE_MORVI", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_DISABLE_MORVI", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("EZMB_FORCE_MORVI_BLESSING", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("LothaFeatureGate", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("EZMB_DISABLE_LOTHA", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_DISABLE_LOTHA", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("VakuuFightFeatureGate", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("EZMB_DISABLE_VAKUU_FIGHT", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_FORCE_VAKUU_FIGHT", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("EventModel.Resume", activeExpansionSource, StringComparison.Ordinal);
+        Assert.Contains("EzmbVakuuTrialEncounter", activeExpansionSource, StringComparison.Ordinal);
     }
 
     [Fact]
-    public void MorviPrototypeIsDefaultOffGatedLocalizedAndPowerSafe()
+    public void MorviV22IsDefaultOnGatedLocalizedAndPowerSafe()
     {
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var morviGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviFeatureGate.cs");
         var morviInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviInitializer.cs");
         var morviAncient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.cs");
+        var morviCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviCards.cs");
+        var morviOptionRelics = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviOptionRelics.cs");
+        var morviPowers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviPowers.cs");
         var morviBlessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingIds.cs");
         var morviRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
-        var engRewardUi = JsonStringMap("EZMicroBalance", "localization", "eng", "card_reward_ui.json");
-        var zhsRewardUi = JsonStringMap("EZMicroBalance", "localization", "zhs", "card_reward_ui.json");
+        var engCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
+        var zhsCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
 
         Assert.Contains("MorviInitializer.Initialize();", mainFile, StringComparison.Ordinal);
         Assert.Contains("MorviStateKey", savedFields, StringComparison.Ordinal);
         Assert.Contains("EZMicroBalanceMorviStateKey", savedFields, StringComparison.Ordinal);
+        Assert.Contains("MorviBorrowedAncientCard", savedFields, StringComparison.Ordinal);
+        Assert.Contains("MorviOpenBookSealedCard", savedFields, StringComparison.Ordinal);
 
-        Assert.Contains("EZMB_ENABLE_MORVI_V22", morviGate, StringComparison.Ordinal);
-        Assert.Contains("EZMB_FORCE_MORVI_BLESSING", morviGate, StringComparison.Ordinal);
-        Assert.Contains("return IsTruthy(value);", morviGate, StringComparison.Ordinal);
-        Assert.DoesNotContain("return true;", morviGate, StringComparison.Ordinal);
+        AssertSourceContains(
+            morviGate,
+            "EZMB_DISABLE_MORVI",
+            "SPIREPLUS_DISABLE_MORVI",
+            "EZMB_FORCE_ANCIENT",
+            "SPIREPLUS_FORCE_ANCIENT",
+            "EZMB_FORCE_MORVI_BLESSING",
+            "SPIREPLUS_FORCE_MORVI_BLESSING",
+            "ShouldForceMorvi",
+            "!IsTruthy(Environment.GetEnvironmentVariable(DisableEnvironmentVariable))");
+        Assert.DoesNotContain("return IsTruthy(value);", morviGate, StringComparison.Ordinal);
 
         AssertSourceContains(
             morviInitializer,
             "ModHelper.SubscribeForRunStateHooks",
-            "MorviFeatureGate.IsMorviEnabled(runState.UnlockState)",
+            "default-on",
             "ModelDb.GetById<MorviRunHook>");
         AssertSourceContains(
             morviAncient,
+            "CustomAncientModel",
             "HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))",
             "MorviFeatureGate.IsMorviEnabled(unlockState)",
+            "MorviFeatureGate.ShouldForceMorvi",
             "ModelDb.AncientEvent<EzmbMorvi>()",
+            "ExpectedInitialOptionCount = 3",
+            "options.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()",
+            "OptionWithRelic<MorviForbiddenLoanOptionRelic>",
+            "MorviBlessingIds.ForbiddenLoan",
             "MorviBlessingIds.MisprintPress",
+            "MorviBlessingIds.RedInkOverdraft",
+            "MorviBlessingIds.OverdueLibrary",
             "MorviBlessingIds.OpenBookExam",
-            "MorviBlessingIds.DebtSettlement");
+            "MorviBlessingIds.Paperstorm",
+            "MorviBlessingIds.BlueprintProof",
+            "MorviBlessingIds.DebtSettlement",
+            "MorviAssetPaths.MapIcon",
+            "MorviAssetPaths.BackgroundScene");
         Assert.DoesNotContain("Glory.GetUnlockedAncients", morviAncient, StringComparison.Ordinal);
 
         AssertSourceContains(
             morviBlessings,
+            "morvi_forbidden_loan",
             "morvi_misprint_press",
+            "morvi_red_ink_overdraft",
+            "morvi_overdue_library",
             "morvi_open_book_exam",
+            "morvi_paperstorm",
+            "morvi_blueprint_proof",
             "morvi_debt_settlement");
         AssertSourceContains(
             morviRunHook,
             "public override bool ShouldReceiveCombatHooks => true",
             "BeforeCombatStart",
+            "player.IsActiveForHooks",
             "CardType.Attack or CardType.Skill",
-            "cardPlay.Card.IsClone",
-            "IsResolvingMisprint",
-            "AncientCardHelpers.ApplyKeywords(copy, CardKeyword.Exhaust)",
-            "AncientCardHelpers.TryAddGeneratedCardToCombat(copy, PileType.Play, player)",
-            "addResult is not { success: true }",
-            "CardCmd.AutoPlay(choiceContext, copy, null, AutoPlayType.Default, skipXCapture: true)",
-            "finally",
-            "CardCmd.Upgrade(target, CardPreviewStyle.None)",
-            "DebtSettlementStartingGold = 75",
-            "DebtSettlementRequiredPayments = 3",
-            "DebtSettlementGoldPayment = 25",
-            "DebtSettlementHpFallback = 3",
-            "CanPayDebtSettlement(player)",
-            "DebtRewardPending",
-            "CreatureCmd.SetCurrentHp(player.Creature, player.Creature.CurrentHp - hpLoss)",
-            "WithCustomRewards([new SpecialCardReward(rewardCard, player)])");
-        Assert.DoesNotContain("CardType.Power", morviRunHook, StringComparison.Ordinal);
-        Assert.DoesNotContain("CardPileCmd.AddGeneratedCardToCombat(copy, PileType.Play, player)", morviRunHook, StringComparison.Ordinal);
+            "!card.IsClone",
+            "CardCmd.Upgrade(card, CardPreviewStyle.None)",
+            "CardCmd.Downgrade(card)",
+            "ForbiddenLoanKeepGoldCost = 180",
+            "RedInkOverdraftGoldPerDebt = 12",
+            "OverdueLibraryPageCount = 3",
+            "OpenBookDraw = 5",
+            "PaperstormWastePaperCount = 4",
+            "BlueprintProofStacks = 3",
+            "DebtSettlementImmediateGold = 220",
+            "DebtSettlementStartingDebt = 320",
+            "DebtSettlementCombatDue = 40",
+            "maximumNonlethalHpLoss = Math.Max(0m, player.Creature.CurrentHp - 1m)",
+            "visibleDebtCount = player.Creature.GetPower<MorviOverdraftPower>()?.Amount ?? 0",
+            "FindOpenBookSealedCards(player, combatState)",
+            "DebtRemaining = Math.Max(0, progress.DebtRemaining - due)");
+        Assert.DoesNotContain("CreateClone", morviRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("TryAddGeneratedCardToCombat(copy", morviRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("CardCmd.AutoPlay", morviRunHook, StringComparison.Ordinal);
 
-        var morviAfterReward = SliceBetween(morviRunHook, "public static async Task AfterRewardTaken", "public static async Task AfterCardPlayed");
         AssertSourceContains(
-            morviAfterReward,
-            "var resolved = await ResolveDebtSettlementCompletion(player);",
-            "if (!resolved)",
-            "progress = GetProgress(player) with { DebtRewardPending = false };");
-        Assert.True(
-            morviAfterReward.IndexOf("ResolveDebtSettlementCompletion(player)", StringComparison.Ordinal) <
-            morviAfterReward.IndexOf("DebtRewardPending = false", StringComparison.Ordinal),
-            "Debt payoff pending should clear only after the payoff reward is offered successfully.");
-
-        var morviDebtChoice = SliceBetween(morviRunHook, "private static async Task ChooseDebtSettlement", "private static async Task PayDebtSettlement");
+            morviCards,
+            "MorviArchiveDrawPage",
+            "MorviArchiveVeilPage",
+            "MorviArchiveBurnPage",
+            "MorviArchiveDiscountPage",
+            "MorviArchiveBraveryPage",
+            "MorviArchiveDexterityPage",
+            "MorviRedInkOverdraftCard",
+            "MorviWastePaper");
         AssertSourceContains(
-            morviDebtChoice,
-            "context.DebtSettlementHandled",
-            "progress.DebtRemaining <= 0 || progress.DebtRewardPending || !CanPayDebtSettlement(player)",
-            "DebtRewardPending = nextRemaining == 0",
-            "SetProgress(player, progress)");
-        Assert.DoesNotContain("RewardsSet", morviDebtChoice, StringComparison.Ordinal);
-        Assert.DoesNotContain("ResolveDebtSettlementCompletion", morviDebtChoice, StringComparison.Ordinal);
-
-        var morviPayDebt = SliceBetween(morviRunHook, "private static async Task PayDebtSettlement", "private static async Task<bool> ResolveDebtSettlementCompletion");
+            morviOptionRelics,
+            "MorviForbiddenLoanOptionRelic",
+            "MorviDebtSettlementOptionRelic",
+            "IsAllowed(IRunState runState) => false");
         AssertSourceContains(
-            morviPayDebt,
-            "Math.Min(player.Gold, DebtSettlementGoldPayment)",
-            "Math.Max(0, player.Creature.CurrentHp - 1)",
-            "CreatureCmd.SetCurrentHp(player.Creature, player.Creature.CurrentHp - hpLoss)");
+            morviPowers,
+            "MorviDebtPower",
+            "MorviProofreadPower",
+            "MorviOpenBookPower",
+            "MorviOverdraftPower",
+            "MorviPaperstormPower");
 
         foreach (var key in new[]
         {
             "EZMB_MORVI.title",
+            "EZMB_MORVI.pages.INITIAL.options.morvi_forbidden_loan.title",
             "EZMB_MORVI.pages.INITIAL.options.morvi_misprint_press.title",
+            "EZMB_MORVI.pages.INITIAL.options.morvi_red_ink_overdraft.title",
+            "EZMB_MORVI.pages.INITIAL.options.morvi_overdue_library.title",
             "EZMB_MORVI.pages.INITIAL.options.morvi_open_book_exam.title",
+            "EZMB_MORVI.pages.INITIAL.options.morvi_paperstorm.title",
+            "EZMB_MORVI.pages.INITIAL.options.morvi_blueprint_proof.title",
             "EZMB_MORVI.pages.INITIAL.options.morvi_debt_settlement.title"
         })
         {
@@ -952,12 +1093,246 @@ public sealed class ReleaseCoverageGuardTests
             Assert.True(zhsAncients.ContainsKey(key), $"Missing zhs Morvi localization: {key}");
         }
 
-        Assert.Equal("Repay Debt", engRewardUi["OPTION_EZMB_MORVI_DEBT_SETTLEMENT.name"]);
-        Assert.Equal("偿还债务", zhsRewardUi["OPTION_EZMB_MORVI_DEBT_SETTLEMENT.name"]);
+        foreach (var key in new[]
+        {
+            "EZMB_MORVI_ARCHIVE_DRAW_PAGE.title",
+            "EZMB_MORVI_ARCHIVE_VEIL_PAGE.title",
+            "EZMB_MORVI_ARCHIVE_BURN_PAGE.title",
+            "EZMB_MORVI_ARCHIVE_DISCOUNT_PAGE.title",
+            "EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.title",
+            "EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE.title",
+            "EZMB_MORVI_RED_INK_OVERDRAFT.title",
+            "EZMB_MORVI_WASTE_PAPER.title"
+        })
+        {
+            Assert.True(engCards.ContainsKey(key), $"Missing English Morvi card localization: {key}");
+            Assert.True(zhsCards.ContainsKey(key), $"Missing zhs Morvi card localization: {key}");
+        }
+    }
+    [Fact]
+    public void LothaIsDefaultOnGatedLocalizedAndPowerSafe()
+    {
+        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
+        var lothaGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaFeatureGate.cs");
+        var lothaAncient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
+        var lothaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var lothaOptionRelics = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaOptionRelics.cs");
+        var lothaPower = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
+        var lothaScene = ReadRepoText("EZMicroBalance", "scenes", "events", "background_scenes", "ezmb_lotha.tscn");
+        var exportPreset = ReadRepoText("export_presets.cfg");
+        var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
+        var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
+        var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
+        var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
+        var engPowers = JsonStringMap("EZMicroBalance", "localization", "eng", "powers.json");
+        var zhsPowers = JsonStringMap("EZMicroBalance", "localization", "zhs", "powers.json");
+
+        Assert.Contains("LothaInitializer.Initialize();", mainFile, StringComparison.Ordinal);
+        AssertSourceContains(savedFields, "SavedSpireField<Player, string> LothaStateKey", "SavedSpireField<CardModel, string> LothaDeckStateKey", "SavedSpireField<CardModel, bool> LothaMirrorRebuttalCard");
+        AssertSourceContains(lothaGate, "EZMB_DISABLE_LOTHA", "SPIREPLUS_DISABLE_LOTHA", "EZMB_FORCE_ANCIENT", "SPIREPLUS_FORCE_ANCIENT", "EZMB_FORCE_LOTHA_BLESSING", "SPIREPLUS_FORCE_LOTHA_BLESSING", "ShouldForceLotha", "!IsTruthy");
+        AssertSourceContains(lothaAncient, "CustomAncientModel", "HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))", "LothaFeatureGate.ShouldForceLotha", "ExpectedInitialOptionCount = 3", "options.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()", "OptionWithRelic<LothaMirrorRebuttalOptionRelic>", "OptionWithRelic<LothaPublicEvidenceOptionRelic>", "CardSelectCmd.FromDeckGeneric", "LothaBlessingService.MarkMirrorRebuttalCard", "HoverTipFactory.FromPower<LothaPresumptionPower>()", "HoverTipFactory.FromPower<LothaVerdictPower>()", "HoverTipFactory.FromPower<LothaDeathReprievePower>()", "HoverTipFactory.FromPower<LothaEnlightenmentPower>()", "HoverTipFactory.Static(StaticHoverTip.Energy)", "HoverTipFactory.Static(StaticHoverTip.Block)", "LothaAssetPaths.MapIcon", "LothaAssetPaths.RunHistoryIcon", "LothaAssetPaths.BackgroundScene");
+        AssertSourceContains(lothaRunHook, "ShouldReceiveCombatHooks => true", "public override int ModifyCardPlayCount", "public override bool ShouldPlay", "public override Task AfterTurnEnd", "public override Task AfterDamageReceived", "public override bool TryModifyRewardsLate", "public override bool TryModifyEnergyCostInCombat", "public override bool TryModifyStarCost", "public override Task AfterCombatEnd", "ModifyPowerAmountGiven", "TryModifyPowerAmountReceived", "AfterPowerAmountChanged", "LothaExtraPlayCount = 2", "SingleSentenceRemainingPlayLimit = 4", "MirrorRebuttalPowerFallbackEnergy = 2", "MirrorRebuttalPowerFallbackCards = 2", "MirrorHallEchoExtraPlayCount = 1", "ClosedCourtEnergy = 4", "ClosedCourtDiscountCount = 3", "PresumptionCards = 2", "PresumptionEnergy = 1", "PresumptionBlock = 8", "PresumptionHpLoss = 8", "DeferredVerdictTurn = 4", "DeferredVerdictStacks = 3", "DeferredVerdictEnergy = 4", "DeferredVerdictCards = 4", "DeferredVerdictExtraPlayCount = 1", "DeferredVerdictEarlyEndHeal = 4", "DeathReprieveCards = 10", "DeathReprieveEnergy = 10", "PowerFallbackCards = 1", "IsPowerReplacementCostZeroCard", "PowerReplacementCardPendingBenefit", "cost 0 and draw 1", "CardType.Attack or CardType.Skill", "!card.IsClone", "cardPlay.IsAutoPlay", "card.Type == CardType.Power && !card.IsClone", "ApplyPowerReplacementBenefit", "RecordMirrorHallEchoType", "PowerCmd.Apply<LothaPresumptionPower>", "PowerCmd.Apply<LothaVerdictPower>", "PowerCmd.Apply<LothaEnlightenmentPower>", "PowerCmd.Decrement(verdict)", "PowerCmd.ModifyAmount(choiceContext, enlightenment, -consumed", "CreatureCmd.Heal(player.Creature, DeferredVerdictEarlyEndHeal", "CreatureCmd.Damage(", "rewards.RemoveAll(reward => reward is CardReward)", "IsPublicEvidenceDebuffApplication", "IsPublicEvidenceExcludedDamageDebuff", "power is PoisonPower", "power.GetTypeForAmount(amount) == PowerType.Debuff", "ShouldDieLate(Creature creature)", "ShouldDie(Creature creature)", "AfterPreventingDeath(Creature creature)", "CreatureCmd.Kill(player.Creature, force: true)", "AncientSavedStateFields.LothaStateKey", "AncientSavedStateFields.LothaDeckStateKey", "AncientSavedStateFields.LothaMirrorRebuttalCard");
+        Assert.DoesNotContain("MirrorRebuttalMinimumBlock", lothaRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("TryReplayMirrorRebuttalCopy", lothaRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("TryCreateMirrorHallEcho", lothaRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("TryAddGeneratedCardToCombat(copy", lothaRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("DeathReprieveHealPercent", lothaRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("TryBurstDeferredVerdict", lothaRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("DeferredVerdictDamagePerStack", lothaRunHook, StringComparison.Ordinal);
+        Assert.Equal(8, Regex.Matches(lothaOptionRelics, @"\[Pool\(typeof\(SharedRelicPool\)\)\]").Count);
+        AssertSourceContains(lothaPower, "internal sealed class LothaVerdictPower", "internal sealed class LothaPresumptionPower", "internal sealed class LothaDeathReprievePower", "internal sealed class LothaEnlightenmentPower", "PowerType.Buff", "PowerStackType.Counter", "PowerStackType.Single", "LothaAssetPaths.VerdictPowerIcon", "LothaAssetPaths.PresumptionPowerIcon", "LothaAssetPaths.DeathReprievePowerIcon", "LothaAssetPaths.EnlightenmentPowerIcon");
+        AssertSourceContains(lothaScene, "[node name=\"EzmbLothaBackground\" type=\"Control\"]", "type=\"TextureRect\"", "ezmb_lotha.png");
+
+        AssertLocalizedKeys(
+            [
+                "EZMICROBALANCE-EZMB_LOTHA.title",
+                "EZMICROBALANCE-EZMB_LOTHA.epithet",
+                "EZMICROBALANCE-EZMB_LOTHA.talk.firstVisitEver.0-0.ancient",
+                "EZMICROBALANCE-EZMB_LOTHA.talk.ANY.0-0r.ancient",
+                "EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_rebuttal.title",
+                "EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_rebuttal.selectionScreenPrompt",
+                "EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_hall_echo.description",
+                "EZMB_LOTHA.pages.INITIAL.options.lotha_death_reprieve.description",
+                "EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"
+            ],
+            engAncients,
+            zhsAncients,
+            "Lotha Ancient localization");
+        AssertLocalizedKeys(
+            [
+                "EZMICROBALANCE-LOTHA_MIRROR_REBUTTAL_OPTION_RELIC.title",
+                "EZMICROBALANCE-LOTHA_MIRROR_HALL_ECHO_OPTION_RELIC.title",
+                "EZMICROBALANCE-LOTHA_PRESUMPTION_OPTION_RELIC.title",
+                "EZMICROBALANCE-LOTHA_CLOSED_COURT_OPTION_RELIC.title",
+                "EZMICROBALANCE-LOTHA_DEFERRED_VERDICT_OPTION_RELIC.title",
+                "EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_OPTION_RELIC.title",
+                "EZMICROBALANCE-LOTHA_SINGLE_SENTENCE_OPTION_RELIC.title",
+                "EZMICROBALANCE-LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC.title"
+            ],
+            engRelics,
+            zhsRelics,
+            "Lotha option relic localization");
+        AssertLocalizedKeys(
+            [
+                "EZMICROBALANCE-LOTHA_VERDICT_POWER.title",
+                "EZMICROBALANCE-LOTHA_VERDICT_POWER.description",
+                "EZMICROBALANCE-LOTHA_VERDICT_POWER.smartDescription",
+                "EZMICROBALANCE-LOTHA_PRESUMPTION_POWER.title",
+                "EZMICROBALANCE-LOTHA_PRESUMPTION_POWER.description",
+                "EZMICROBALANCE-LOTHA_PRESUMPTION_POWER.smartDescription",
+                "EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_POWER.title",
+                "EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_POWER.description",
+                "EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_POWER.smartDescription",
+                "EZMICROBALANCE-LOTHA_ENLIGHTENMENT_POWER.title",
+                "EZMICROBALANCE-LOTHA_ENLIGHTENMENT_POWER.description",
+                "EZMICROBALANCE-LOTHA_ENLIGHTENMENT_POWER.smartDescription"
+            ],
+            engPowers,
+            zhsPowers,
+            "Lotha power localization");
+
+        Assert.Contains("[gold]Attack[/gold]", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_rebuttal.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]攻击牌[/gold]", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_rebuttal.description"], StringComparison.Ordinal);
+        Assert.Contains("[blue]4[/blue]", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]能力牌[/gold]", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"], StringComparison.Ordinal);
+        Assert.Contains("double its stacks", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("non-damaging [gold]negative status[/gold]", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Poison[/gold], damage-over-time, and countdown damage do not count", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.Ordinal);
+        Assert.Contains("层数翻倍", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.Ordinal);
+        Assert.Contains("非伤害类[gold]负面状态[/gold]", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]中毒[/gold]、持续伤害和倒计时伤害不计", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Verdict[/gold]", engPowers["EZMICROBALANCE-LOTHA_VERDICT_POWER.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]裁决[/gold]", zhsPowers["EZMICROBALANCE-LOTHA_VERDICT_POWER.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Innocent[/gold]", engPowers["EZMICROBALANCE-LOTHA_PRESUMPTION_POWER.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]无罪[/gold]", zhsPowers["EZMICROBALANCE-LOTHA_PRESUMPTION_POWER.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Death Reprieve[/gold]", engPowers["EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_POWER.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]死刑缓期[/gold]", zhsPowers["EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_POWER.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Enlightenment[/gold]", engPowers["EZMICROBALANCE-LOTHA_ENLIGHTENMENT_POWER.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]开悟[/gold]", zhsPowers["EZMICROBALANCE-LOTHA_ENLIGHTENMENT_POWER.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Energy[/gold]", engRelics["EZMICROBALANCE-LOTHA_MIRROR_REBUTTAL_OPTION_RELIC.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]能量[/gold]", zhsRelics["EZMICROBALANCE-LOTHA_MIRROR_REBUTTAL_OPTION_RELIC.description"], StringComparison.Ordinal);
+        foreach (var relativePath in new[]
+        {
+            "EZMicroBalance/images/events/ezmb_lotha.png",
+            "EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon.png",
+            "EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon_outline.png",
+            "EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon.png",
+            "EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon_outline.png",
+            "EZMicroBalance/images/ancients/lotha/options/lotha_mirror_rebuttal.png",
+            "EZMicroBalance/images/ancients/lotha/options/lotha_mirror_hall_echo.png",
+            "EZMicroBalance/images/ancients/lotha/options/lotha_presumption.png",
+            "EZMicroBalance/images/ancients/lotha/options/lotha_closed_court.png",
+            "EZMicroBalance/images/ancients/lotha/options/lotha_deferred_verdict.png",
+            "EZMicroBalance/images/ancients/lotha/options/lotha_death_reprieve.png",
+            "EZMicroBalance/images/ancients/lotha/options/lotha_single_sentence.png",
+            "EZMicroBalance/images/ancients/lotha/options/lotha_public_evidence.png",
+            "EZMicroBalance/images/powers/lotha_verdict.png",
+            "EZMicroBalance/scenes/events/background_scenes/ezmb_lotha.tscn"
+        })
+        {
+            Assert.True(File.Exists(RepoPath(relativePath.Split('/'))), $"Missing Lotha resource: {relativePath}");
+            Assert.Contains($"res://{relativePath}", exportPreset, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
-    public void AncientExpansionEventArtRemainsPendingUntilExplicitSourceFilesExist()
+    public void VakuuFightIsSinglePlayerGatedLocalizedAndResumeSafe()
+    {
+        var gate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
+        var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
+        var optionRelic = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightOptionRelic.cs");
+        var exportPreset = ReadRepoText("export_presets.cfg");
+        var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
+        var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
+        var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
+        var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
+        var engEncounters = JsonStringMap("EZMicroBalance", "localization", "eng", "encounters.json");
+        var zhsEncounters = JsonStringMap("EZMicroBalance", "localization", "zhs", "encounters.json");
+
+        AssertSourceContains(
+            gate,
+            "EZMB_DISABLE_VAKUU_FIGHT",
+            "SPIREPLUS_DISABLE_VAKUU_FIGHT",
+            "EZMB_FORCE_ANCIENT",
+            "SPIREPLUS_FORCE_ANCIENT",
+            "EZMB_FORCE_VAKUU_FIGHT",
+            "SPIREPLUS_FORCE_VAKUU_FIGHT",
+            "ShouldForceVakuu",
+            "ShouldForceFight",
+            "runState.Players.Count == 1");
+        AssertSourceContains(
+            patch,
+            "[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]",
+            "ModelDb.AncientEvent<MegaCrit.Sts2.Core.Models.Events.Vakuu>()",
+            "[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Models.Events.Vakuu), \"GenerateInitialOptions\")]",
+            "VakuuFightFeatureGate.ShouldForceFight",
+            "EventOption.FromRelic",
+            "ThatWillKillPlayerIf",
+            "[HarmonyPatch(typeof(EventModel), nameof(EventModel.Resume))]",
+            "SetEventState",
+            "RunManager.Instance.EnterRoomWithoutExitingCurrentRoom",
+            "ModelDb.Encounter<EzmbVakuuTrialEncounter>()",
+            "Nonupeipe",
+            "Tanx",
+            "RelicCmd.Obtain(relic, owner)",
+            "vakuu.StartPreFinished()");
+        Assert.DoesNotContain("LinkedRewardSet", patch, StringComparison.Ordinal);
+        Assert.DoesNotContain("ExtraRewards", patch, StringComparison.Ordinal);
+        AssertSourceContains(
+            encounter,
+            "CustomEncounterModel",
+            "base(RoomType.Event, autoAdd: false)",
+            "ShouldGiveRewards => false",
+            "OwlMagistrate",
+            "IsValidForAct(ActModel act) => false");
+        AssertSourceContains(
+            optionRelic,
+            "[Pool(typeof(SharedRelicPool))]",
+            "PackedIconPath => VakuuFightAssetPaths.OptionIcon",
+            "IsAllowed(IRunState runState) => false",
+            "IsAllowedAtNeow(Player player) => false",
+            "IsAllowedInShops => false");
+
+        AssertLocalizedKeys(
+            [
+                "VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.title",
+                "VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description",
+                "EZMB_VAKUU_FIGHT.pages.VICTORY.description",
+                "EZMB_VAKUU_FIGHT.pages.DONE.description"
+            ],
+            engAncients,
+            zhsAncients,
+            "Vakuu fight Ancient localization");
+        AssertLocalizedKeys(
+            [
+                "EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.title",
+                "EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.description",
+                "EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.flavor"
+            ],
+            engRelics,
+            zhsRelics,
+            "Vakuu fight option relic localization");
+        AssertLocalizedKeys(
+            [
+                "EZMICROBALANCE-EZMB_VAKUU_TRIAL_ENCOUNTER.title",
+                "EZMICROBALANCE-EZMB_VAKUU_TRIAL_ENCOUNTER.loss"
+            ],
+            engEncounters,
+            zhsEncounters,
+            "Vakuu fight encounter localization");
+
+        Assert.True(
+            File.Exists(RepoPath("EZMicroBalance", "images", "ancients", "vakuu", "options", "vakuu_fight.png")),
+            "Missing Vakuu fight option art.");
+        Assert.Contains("res://EZMicroBalance/images/ancients/vakuu/options/vakuu_fight.png", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("res://EZMicroBalance/localization/eng/encounters.json", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("res://EZMicroBalance/localization/zhs/encounters.json", exportPreset, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActiveAncientExpansionEventArtIsExportedAndDocumented()
     {
         var exportPreset = ReadRepoText("export_presets.cfg");
         var artDirection = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "art-direction.md");
@@ -965,21 +1340,43 @@ public sealed class ReleaseCoverageGuardTests
         var workLog = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "work-log.md");
 
         var morviPng = RepoPath("EZMicroBalance", "images", "events", "ezmb_morvi.png");
-        var lothaPng = RepoPath("EZMicroBalance", "images", "events", "ezmb_lotha.png");
 
-        Assert.False(File.Exists(morviPng), "Do not silently add Morvi event art without updating export resources and docs.");
-        Assert.False(File.Exists(lothaPng), "Do not silently add Lotha event art without updating export resources and docs.");
-        Assert.DoesNotContain("res://EZMicroBalance/images/events/ezmb_morvi.png", exportPreset, StringComparison.Ordinal);
-        Assert.DoesNotContain("res://EZMicroBalance/images/events/ezmb_lotha.png", exportPreset, StringComparison.Ordinal);
+        Assert.True(File.Exists(morviPng), "Morvi event art should exist now that Morvi is active.");
+        Assert.Contains("res://EZMicroBalance/images/events/ezmb_morvi.png", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("res://EZMicroBalance/scenes/events/background_scenes/ezmb_morvi.tscn", exportPreset, StringComparison.Ordinal);
+        Assert.True(
+            new FileInfo(morviPng).Length > 1_000_000,
+            "Morvi event art must not regress to a small geometric placeholder.");
+        Assert.True(
+            new FileInfo(RepoPath("EZMicroBalance", "images", "ancients", "morvi", "ezmb_morvi_map_icon.png")).Length > 10_000,
+            "Morvi map icon must not regress to placeholder art.");
+        Assert.True(File.Exists(RepoPath("EZMicroBalance", "images", "events", "ezmb_lotha.png")), "Lotha event art should exist now that Lotha is active.");
+        Assert.Contains("res://EZMicroBalance/images/events/ezmb_lotha.png", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("res://EZMicroBalance/scenes/events/background_scenes/ezmb_lotha.tscn", exportPreset, StringComparison.Ordinal);
+        Assert.True(
+            new FileInfo(RepoPath("EZMicroBalance", "images", "events", "ezmb_lotha.png")).Length > 1_000_000,
+            "Lotha event art must not regress to the small geometric placeholder.");
+        Assert.True(
+            new FileInfo(RepoPath("EZMicroBalance", "images", "ancients", "lotha", "ezmb_lotha_map_icon.png")).Length > 10_000,
+            "Lotha map icon must not regress to the old 2KB placeholder.");
+        foreach (var optionArt in Directory.GetFiles(RepoPath("EZMicroBalance", "images", "ancients", "lotha", "options"), "*.png"))
+        {
+            Assert.True(new FileInfo(optionArt).Length > 10_000, $"{optionArt} must not regress to placeholder art.");
+        }
+
         AssertSourceContains(
             artDirection,
-            "source image must be copied from an explicit local file before export",
-            "Do not generate or copy placeholder event art just to satisfy the export list.");
+            "Active Morvi event art uses `art_pipeline/generated/ancient_morvi_bg_v1_v001.png`",
+            "Active event art now uses `art_pipeline/generated/ancient_lotha_bg_v1_v001.png`",
+            "source-local reviewed option/icon/card art",
+            "Custom card portraits now use source-local reviewed files",
+            "Do not use placeholder art for Morvi or future active Ancients just to satisfy the export list.");
         AssertSourceContains(
             v22Issues,
-            "Add both PNGs to `export_presets.cfg` only after the source files are present",
-            "Do not use placeholder art to close this issue.");
-        Assert.Contains("No explicit local source file was found", workLog, StringComparison.OrdinalIgnoreCase);
+            "Morvi is default-on",
+            "Lotha is default-on");
+        Assert.Contains("Copied the generated Morvi background", workLog, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Replaced the geometric Lotha event placeholder", workLog, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -990,8 +1387,11 @@ public sealed class ReleaseCoverageGuardTests
         var urdaBlessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingIds.cs");
         var urdaCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaCards.cs");
         var urdaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaInitializer.cs");
+        var urdaOptionRelics = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaOptionRelics.cs");
         var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var urdaSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
+        var urdaScene = ReadRepoText("EZMicroBalance", "scenes", "events", "background_scenes", "ezmb_urda.tscn");
+        var exportPreset = ReadRepoText("export_presets.cfg");
         var engCards = ReadRepoText("EZMicroBalance", "localization", "eng", "cards.json");
         var zhsCards = ReadRepoText("EZMicroBalance", "localization", "zhs", "cards.json");
         var engCardRewardUi = ReadRepoText("EZMicroBalance", "localization", "eng", "card_reward_ui.json");
@@ -1000,46 +1400,130 @@ public sealed class ReleaseCoverageGuardTests
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
         var engCardRewardUiMap = JsonStringMap("EZMicroBalance", "localization", "eng", "card_reward_ui.json");
         var zhsCardRewardUiMap = JsonStringMap("EZMicroBalance", "localization", "zhs", "card_reward_ui.json");
+        var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
+        var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
 
         Assert.Contains("ForceAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
         Assert.Contains("DisableAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
         Assert.Contains("EZMB_DISABLE_URDA", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_DISABLE_URDA", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("ForcedAncient", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("ShouldForceUrda", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("EZMB_FORCE_ANCIENT", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_FORCE_ANCIENT", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("ForceBlessingEnvironmentVariable", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("EZMB_FORCE_URDA_BLESSING", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_FORCE_URDA_BLESSING", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("FirstEnvironmentValue", urdaGate, StringComparison.Ordinal);
         Assert.Contains("OrdinalIgnoreCase", urdaGate, StringComparison.Ordinal);
         Assert.Contains("string.Equals(", urdaGate, StringComparison.Ordinal);
         Assert.Contains("!IsTruthy", urdaGate, StringComparison.Ordinal);
 
         Assert.Contains("IsUrdaEnabled", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaFeatureGate.ShouldForceUrda", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("CustomAncientModel", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("CustomScenePath", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("CustomMapIconPath", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("CustomMapIconOutlinePath", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("CustomRunHistoryIconPath", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("CustomRunHistoryIconOutlinePath", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaAssetPaths.BackgroundScene", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaAssetPaths.MapIcon", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaAssetPaths.MapIconOutline", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaAssetPaths.RunHistoryIcon", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaAssetPaths.RunHistoryIconOutline", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaSeedbedOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaHumusPactOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaMoltingOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaMossMapOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaTrialBranchOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaShallowRootRelicOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaRootedRouteOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaAfterRainOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaRootSightOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaSeedBankOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("ExpectedInitialOptionCount = 4", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("options.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("base(autoAdd: false)", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("AllPossibleOptions", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("UrdaBlessingIds.Seedbed", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("UrdaBlessingService.SetSelectedBlessing", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("UrdaBlessingService.ApplyMolting", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaBlessingService.ApplyTrialBranch", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaBlessingService.ApplyShallowRootRelic", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaBlessingService.ApplyRootedRoute", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("UrdaBlessingService.ApplyRootSight", urdaAncient, StringComparison.Ordinal);
         Assert.DoesNotContain("NeowEpoch", urdaAncient, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("urda_seedbed", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_humus_pact", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_molting", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_moss_map", urdaBlessings, StringComparison.Ordinal);
-        Assert.Equal(4, Regex.Matches(urdaAncient, @"UrdaBlessingIds\.[A-Za-z]+")
+        Assert.Contains("urda_trial_branch", urdaBlessings, StringComparison.Ordinal);
+        Assert.Contains("urda_shallow_root_relic", urdaBlessings, StringComparison.Ordinal);
+        Assert.Contains("urda_rooted_route", urdaBlessings, StringComparison.Ordinal);
+        Assert.Contains("urda_after_rain", urdaBlessings, StringComparison.Ordinal);
+        Assert.Contains("urda_root_sight", urdaBlessings, StringComparison.Ordinal);
+        Assert.Contains("urda_seed_bank", urdaBlessings, StringComparison.Ordinal);
+        Assert.Equal(10, Regex.Matches(urdaAncient, @"UrdaBlessingIds\.[A-Za-z]+")
             .Cast<Match>()
             .Select(match => match.Value)
             .Distinct(StringComparer.Ordinal)
             .Count());
         Assert.Contains("Done();", urdaAncient, StringComparison.Ordinal);
+        Assert.DoesNotContain("CustomMapIconPath => UrdaAssetPaths.BackgroundScene", urdaAncient, StringComparison.Ordinal);
+        Assert.DoesNotContain("CustomMapIconPath => UrdaAssetPaths.Icon", urdaAncient, StringComparison.Ordinal);
+        Assert.DoesNotContain("CustomMapIconPath => $\"{MainFile.ResPath}/images/events/ezmb_urda.png\"", urdaAncient, StringComparison.Ordinal);
         Assert.DoesNotContain("urda_morvi", urdaBlessings, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("urda_lotha", urdaAncient, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("urda_vakuu", urdaAncient, StringComparison.OrdinalIgnoreCase);
-        foreach (var futureUrdaId in new[]
+
+        AssertSourceContains(
+            urdaOptionRelics,
+            "UrdaOptionRelic : CustomRelicModel",
+            "Rarity => RelicRarity.Event",
+            "IsAllowed(IRunState runState) => false",
+            "IsAllowedAtNeow(Player player) => false",
+            "IsAllowedInShops => false",
+            "UrdaSeedbedOptionRelic",
+            "UrdaHumusPactOptionRelic",
+            "UrdaMoltingOptionRelic",
+            "UrdaMossMapOptionRelic",
+            "UrdaTrialBranchOptionRelic",
+            "UrdaShallowRootRelicOptionRelic",
+            "UrdaRootedRouteOptionRelic",
+            "UrdaAfterRainOptionRelic",
+            "UrdaRootSightOptionRelic",
+            "UrdaSeedBankOptionRelic");
+        Assert.Equal(10, Regex.Matches(urdaOptionRelics, @"\[Pool\(typeof\(SharedRelicPool\)\)\]").Count);
+
+        AssertSourceContains(
+            urdaScene,
+            "[node name=\"EzmbUrdaBackground\" type=\"Control\"]",
+            "[node name=\"Artwork\" type=\"TextureRect\" parent=\".\"]",
+            "texture = ExtResource(\"1_urda\")");
+        Assert.DoesNotContain("[node name=\"EzmbUrdaBackground\" type=\"Node2D\"]", urdaScene, StringComparison.Ordinal);
+        Assert.DoesNotContain("type=\"Sprite2D\"", urdaScene, StringComparison.Ordinal);
+
+        foreach (var relativePath in new[]
         {
-            "urda_trial_branch",
-            "urda_shallow_root_relic",
-            "urda_rooted_route",
-            "urda_after_the_rain",
-            "urda_root_sight",
-            "urda_seed_bank"
+            "EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png",
+            "EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png",
+            "EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png",
+            "EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_seedbed.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_humus_pact.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_molting.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_moss_map.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_trial_branch.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_shallow_root_relic.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_rooted_route.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_after_rain.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_root_sight.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_seed_bank.png"
         })
         {
-            Assert.DoesNotContain(futureUrdaId, urdaBlessings, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain(futureUrdaId, urdaAncient, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain(futureUrdaId, urdaSource, StringComparison.OrdinalIgnoreCase);
+            Assert.True(File.Exists(RepoPath(relativePath.Split('/'))), $"Missing Urda UI/art resource: {relativePath}");
+            Assert.Contains($"res://{relativePath}", exportPreset, StringComparison.Ordinal);
         }
 
         AssertSourceContains(
@@ -1051,6 +1535,11 @@ public sealed class ReleaseCoverageGuardTests
             urdaRunHook,
             "TryModifyCardRewardAlternatives",
             "AfterRewardTaken",
+            "BeforeRoomEntered",
+            "AfterCardPlayed",
+            "AfterCombatVictory",
+            "ShouldDieLate",
+            "AfterPreventingDeath",
             "PostAlternateCardRewardAction.EndSelectionAndCompleteReward",
             "AcceptSeedbed",
             "CanPaySeedbedCost",
@@ -1067,8 +1556,39 @@ public sealed class ReleaseCoverageGuardTests
             "ApplyMolting",
             "CreateCard<WitheredHusk>",
             "AfterRoomEntered",
+            "player.IsActiveForHooks",
             "ApplyMossMapRoomReward",
             "PotionCmd.TryToProcure",
+            "ApplyTrialBranch",
+            "TrialBranchOfferCount = 4",
+            "TrialBranchCombats = 3",
+            "TrialBranchRequiredSuccesses = 2",
+            "AncientSavedStateFields.UrdaTrialPlantCard",
+            "ApplyShallowRootRelic",
+            "ShallowRootRelicChoices = 2",
+            "ShallowRootInitialGold = 75",
+            "ShallowRootEliteGold = 35",
+            "ShallowRootSettlementMaxHpLoss = 6",
+            "RootedRouteMaxTargetFloor = 7",
+            "RootedRouteCardRewards = 3",
+            "RootedRouteWitherHpLoss = 8",
+            "RootedRouteWitherGold = 25",
+            "MapPointType.Monster",
+            "EnsureQuestMarker<UrdaRootedRouteMapQuestMarker>",
+            "AfterRainBlock = 15",
+            "AfterRainDraw = 1",
+            "AfterRainWounds = 2",
+            "AfterRainMaxHpLoss = 3",
+            "AfterRainCompensationHeal = 8",
+            "AfterRainCompensationGold = 75",
+            "AfterRainEliteGold = 20",
+            "AfterRainEliteGoldLimit = 2",
+            "RootSightStartingEyes = 5",
+            "MapPointType.Boss",
+            "SeedBankMaxSeeds = 3",
+            "SeedBankMaxSettlementCards = 2",
+            "TryAddSeedBankAlternative",
+            "EZMB_URDA_SEED_BANK_STORE",
             "UrdaStateKey");
         Assert.DoesNotContain("[HarmonyPatch(typeof(CardReward), nameof(CardReward.OnSkipped))]", urdaRunHook, StringComparison.Ordinal);
         Assert.DoesNotContain("OnSkipped", urdaRunHook, StringComparison.Ordinal);
@@ -1087,7 +1607,7 @@ public sealed class ReleaseCoverageGuardTests
             "SeedbedChecks = progress.SeedbedChecks + 1",
             "CreatureCmd.SetMaxHp");
         Assert.DoesNotContain("CreatureCmd.GainMaxHp", seedbedAccept, StringComparison.Ordinal);
-        var chooseHumus = SliceBetween(urdaRunHook, "private static async Task ChooseHumusPact", "public static async Task ApplyMolting");
+        var chooseHumus = SliceBetween(urdaRunHook, "private static async Task ChooseHumusPact", "private static async Task ChooseSeedBankStore");
         AssertSourceContains(
             chooseHumus,
             "context.HumusPactHandled",
@@ -1107,7 +1627,7 @@ public sealed class ReleaseCoverageGuardTests
             humusAfterReward.IndexOf("ResolveHumusCompletion(player)", StringComparison.Ordinal) <
             humusAfterReward.IndexOf("HumusCompletionPending = false", StringComparison.Ordinal),
             "Humus completion pending should clear only after the payoff resolver succeeds.");
-        var humusCompletion = SliceBetween(urdaRunHook, "private static async Task<bool> ResolveHumusCompletion", "private static async Task ApplyMossMapRoomReward");
+        var humusCompletion = SliceBetween(urdaRunHook, "private static async Task<bool> ResolveHumusCompletion", "private static async Task ResolveTrialBranchCombat");
         AssertSourceContains(
             humusCompletion,
             "var rewardCard = CreateRandomRewardCard(player);",
@@ -1119,6 +1639,46 @@ public sealed class ReleaseCoverageGuardTests
             humusCompletion.IndexOf("CreateRandomRewardCard(player)", StringComparison.Ordinal) <
             humusCompletion.IndexOf("CardSelectCmd.FromDeckForRemoval", StringComparison.Ordinal),
             "Humus should generate the payoff card before optional removals so a no-card fallback cannot consume removals.");
+        var trialBranch = SliceBetween(urdaRunHook, "public static async Task ApplyTrialBranch", "public static async Task ApplyShallowRootRelic");
+        AssertSourceContains(
+            trialBranch,
+            "CreateTrialBranchOffers(player)",
+            "CardSelectCmd.FromSimpleGrid",
+            "CardCmd.Upgrade(selected, CardPreviewStyle.None)",
+            "CardPileCmd.Add(selected, PileType.Deck)",
+            "AncientSavedStateFields.UrdaTrialPlantCard[addResult.cardAdded] = true");
+        var shallowRoot = SliceBetween(urdaRunHook, "public static async Task ApplyShallowRootRelic", "public static void ApplyRootedRoute");
+        AssertSourceContains(
+            shallowRoot,
+            "RelicFactory.PullNextRelicFromFront",
+            "RelicRarity.Common",
+            "RelicSelectCmd.FromChooseARelicScreen",
+            "RelicCmd.Obtain",
+            "PlayerCmd.GainGold(ShallowRootInitialGold");
+        var rootedRoute = SliceBetween(urdaRunHook, "public static void ApplyRootedRoute", "public static async Task ApplyRootSight");
+        AssertSourceContains(
+            rootedRoute,
+            "FindRootedRouteTarget(player)",
+            "EnsureQuestMarker<UrdaRootedRouteMapQuestMarker>",
+            "RootedRouteCoord = FormatCoord(target.coord)");
+        var afterRain = SliceBetween(urdaRunHook, "public static bool ShouldDieLate", "private static async Task AcceptSeedbed");
+        AssertSourceContains(
+            afterRain,
+            "player.RunState.CurrentActIndex != 0",
+            "return GetProgress(player).AfterRainSpent",
+            "CreatureCmd.SetCurrentHp(creature, 1m)",
+            "CreatureCmd.GainBlock(creature, AfterRainBlock",
+            "CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), AfterRainDraw, player)",
+            "CreateCard<Wound>",
+            "CreatureCmd.LoseMaxHp");
+        var seedBank = SliceBetween(urdaRunHook, "private static async Task ChooseSeedBankStore", "public static async Task ApplyTrialBranch");
+        AssertSourceContains(
+            seedBank,
+            "GetSeedBankCardIds(progress)",
+            "CardSelectCmd.FromSimpleGrid",
+            "selected.Id.ToString()",
+            "SeedBankCardIds");
+        Assert.DoesNotContain("UrdaTrialPlantCard", seedBank, StringComparison.Ordinal);
         AssertSourceContains(
             urdaCards,
             "UrdaSeedling",
@@ -1140,13 +1700,52 @@ public sealed class ReleaseCoverageGuardTests
         AssertLocalizedKeys(
             [
                 "OPTION_EZMB_URDA_SEEDBED.name",
-                "OPTION_EZMB_URDA_HUMUS_PACT.name"
+                "OPTION_EZMB_URDA_HUMUS_PACT.name",
+                "OPTION_EZMB_URDA_SEED_BANK_STORE.name"
             ],
             engCardRewardUiMap,
             zhsCardRewardUiMap,
             "Urda card-reward option localization");
         AssertLocalizedKeys(
             [
+                "EZMICROBALANCE-URDA_HUMUS_PACT_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_HUMUS_PACT_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_HUMUS_PACT_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_MOLTING_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_MOLTING_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_MOLTING_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_TRIAL_BRANCH_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_TRIAL_BRANCH_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_TRIAL_BRANCH_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_SHALLOW_ROOT_RELIC_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_SHALLOW_ROOT_RELIC_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_SHALLOW_ROOT_RELIC_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_ROOTED_ROUTE_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_ROOTED_ROUTE_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_ROOTED_ROUTE_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_AFTER_RAIN_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_AFTER_RAIN_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_AFTER_RAIN_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_ROOT_SIGHT_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_ROOT_SIGHT_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_ROOT_SIGHT_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_SEED_BANK_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_SEED_BANK_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_SEED_BANK_OPTION_RELIC.flavor"
+            ],
+            engRelics,
+            zhsRelics,
+            "Urda option relic localization");
+        AssertLocalizedKeys(
+            [
+                "EZMICROBALANCE-EZMB_URDA.talk.firstVisitEver.0-0.ancient",
+                "EZMICROBALANCE-EZMB_URDA.talk.ANY.0-0r.ancient",
                 "EZMB_URDA.pages.INITIAL.options.urda_seedbed.title",
                 "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description",
                 "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title",
@@ -1154,7 +1753,22 @@ public sealed class ReleaseCoverageGuardTests
                 "EZMB_URDA.pages.INITIAL.options.urda_molting.title",
                 "EZMB_URDA.pages.INITIAL.options.urda_molting.description",
                 "EZMB_URDA.pages.INITIAL.options.urda_moss_map.title",
-                "EZMB_URDA.pages.INITIAL.options.urda_moss_map.description"
+                "EZMB_URDA.pages.INITIAL.options.urda_moss_map.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_trial_branch.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_trial_branch.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_trial_branch.selectionScreenPrompt",
+                "EZMB_URDA.pages.INITIAL.options.urda_shallow_root_relic.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_shallow_root_relic.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_rooted_route.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_rooted_route.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_after_rain.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_after_rain.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_root_sight.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_root_sight.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.storeSelectionPrompt",
+                "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.settlementSelectionPrompt"
             ],
             engAncients,
             zhsAncients,
@@ -1188,6 +1802,14 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("live gameplay/save-load verification is still pending", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Live gameplay and save/load verification for current Urda remains pending", v22Readme, StringComparison.Ordinal);
         Assert.Contains("not source-proven as persisted", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("## 1A. Live evidence protocol", urdaChecklist, StringComparison.Ordinal);
+        Assert.Contains("scripts/spire-plus-live-session.ps1 -Mode Prepare -MoveOtherMods -MoveCurrentRuns -Launch", urdaChecklist, StringComparison.Ordinal);
+        Assert.Contains("scripts/check-spire-window-preflight.ps1 -OutFile <evidence-dir>\\window-preflight.json -RequireSpireForeground", urdaChecklist, StringComparison.Ordinal);
+        Assert.Contains("scripts/audit-godot-log.ps1 -Path <evidence-dir>\\godot.log -OutFile <evidence-dir>\\godot-log-audit.json -FailOnHit", urdaChecklist, StringComparison.Ordinal);
+        Assert.Contains("scripts/spire-plus-live-session.ps1 -Mode Restore -EvidenceDir <evidence-dir> -StopGameOnRestore -PreserveNewCurrentRunsOnRestore", urdaChecklist, StringComparison.Ordinal);
+        Assert.Contains("live-urda-postfix-20260513-131752", urdaChecklist, StringComparison.Ordinal);
+        Assert.Contains("live-urda-continue-postfix-20260513-134337", urdaChecklist, StringComparison.Ordinal);
+        Assert.Contains("do not satisfy any gameplay row", urdaChecklist, StringComparison.Ordinal);
         Assert.DoesNotContain("Urda live gameplay verified", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Urda save/load verified", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("URDA-PROTOTYPE | Closed", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
@@ -1202,7 +1824,7 @@ public sealed class ReleaseCoverageGuardTests
         var readme = ReadRepoText("docs", "README.md");
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
-        Assert.Contains("c8bcaa9", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("git log -1 --oneline --decorate", handoff, StringComparison.Ordinal);

@@ -74,7 +74,10 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Equal("Rootblight II", englishCards["EZMB_DEEP_ROOT.title"]);
         Assert.Equal("Rootblight III", englishCards["EZMB_ROOTBLIGHT_III.title"]);
         Assert.Equal("Blight Sprout", englishCards["EZMB_ROOT_BUD.title"]);
-        Assert.Contains("If this was seen but not played and your deck has no Rootblight, add a [gold]Rootblight I[/gold] after combat.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("If seen and not played, add a [gold]Rootblight I[/gold] after combat.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("If never seen, it withers.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("No Rootblight IV.", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("your deck has no Rootblight", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
 
         foreach (var key in new[] { "EZMB_ROOT.title", "EZMB_DEEP_ROOT.title", "EZMB_ROOTBLIGHT_III.title", "EZMB_ROOT_BUD.title" })
         {
@@ -107,15 +110,21 @@ public sealed class AscensionV2MilestoneGuardTests
         AssertSourceContains(
             deckService,
             "MaxRootblightLevel = 3",
-            "MaxRootblightCards = 1",
-            "NormalizeRootblightDeck(player",
+            "MaxRootblightCards = 4",
+            "TrimRootblightDeckToCap(player",
             "FindRootFamilyCards(player)",
             "MarkCombatStartRootblight",
             "PendingCombatResolutions",
             "CardsToAddAfterGrowth",
             "card.RootblightLevel - 1",
+            "new RootblightCardToAdd(downgradedLevel, splitState)",
             "rootFamilyCard.HasSplit = hasSplit",
-            "ignored Rootblight III stayed at max level",
+            "if (!card.HasSplit)",
+            "card.HasSplit = true",
+            "ignored Rootblight III split once",
+            "ignored Rootblight III already split once; no Rootblight IV",
+            "await AddRootblightCard(player, 1, preferOverlayNotice: true)",
+            "ThenBy(entry => entry.Index)",
             "ShowRootSystemFull(player)",
             "RemoveHighestRootblight",
             "await CardPileCmd.RemoveFromDeck(card, showPreview: false)",
@@ -139,6 +148,61 @@ public sealed class AscensionV2MilestoneGuardTests
             "RootBud.BossSecondSproutRound",
             "RoomType.Boss when IsActTwoOrThree(state) && !IsSecondBossFight(state)",
             "RoomType.Elite when IsEligibleEliteSproutFight(state)");
+    }
+
+    [Fact]
+    public void RootblightAndBlightSproutV22StateMachineIsSourceGuarded()
+    {
+        var deckService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.cs");
+        var combatHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs");
+        var englishCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
+        var zhsCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
+        var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
+
+        AssertSourceContains(
+            deckService,
+            "MaxRootblightCards = 4",
+            "card.WasPresentAtCombatStart = false;",
+            "if (!card.HasSplit)",
+            "card.HasSplit = true;",
+            "ignored Rootblight III split once",
+            "ignored Rootblight III already split once; no Rootblight IV",
+            "CardsToAddAfterGrowth",
+            "await TrimRootblightDeckToCap(player, \"pre-add cap check\")",
+            "OrderByDescending(entry => entry.Card.RootblightLevel)",
+            "ThenBy(entry => entry.Index)",
+            "kept {MaxRootblightCards} highest/oldest Rootblight card(s)",
+            "Rootblight removed through a deck-removal API",
+            "remaining Rootblight cards are preserved");
+
+        AssertSourceContains(
+            combatHook,
+            "return state.RunState.CurrentRoom?.RoomType == RoomType.Boss",
+            "? 2",
+            ": 1",
+            "NormalizeExistingRootBudRounds(state, existingBuds)",
+            "existingBuds[i].SproutRound = GetRootBudSproutRoundForCurrentRoom(state, i)",
+            "RootBud.BossSecondSproutRound",
+            "RoomType.Boss when IsActTwoOrThree(state) && !IsSecondBossFight(state)",
+            "RoomType.Elite when IsEligibleEliteSproutFight(state)",
+            "return state.RunState.CurrentActIndex is 1 or 2;",
+            "currentRow >= 3",
+            "bud.HasEnteredHand && !bud.WasPlayed",
+            "await RootDeckService.AddRootblightI(bud.Owner, \"Blight Sprout\")");
+
+        Assert.Contains("No Rootblight IV.", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("If never seen, it withers.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("没有第四阶段根蚀", zhsCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("若从未见到，则枯萎", zhsCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+
+        Assert.Contains("Rootblight IV never appears.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Rootblight cards added during combat-end resolution do not grow again until the next combat.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("If Blight Sprout enters hand and is discarded or exhausted by a non-play effect, it still adds Rootblight I after combat.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Act 2 elites in the first 3 route rows do not add Blight Sprout.", manualChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("MaxRootblightCards = 1", deckService, StringComparison.Ordinal);
+        Assert.DoesNotContain("NormalizeRootblightDeck", deckService, StringComparison.Ordinal);
+        Assert.DoesNotContain("downgradedLevel == MaxRootblightLevel && splitState", deckService, StringComparison.Ordinal);
+        Assert.DoesNotContain("your deck has no Rootblight", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
     }
 
     [Fact]
@@ -360,19 +424,19 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Contains("round [blue]3[/blue]", englishAscension["BANNER_VANGUARD.description"], StringComparison.Ordinal);
         Assert.Contains("[blue]15[/blue] [gold]Gold[/gold]", englishAscension["BANNER_BOUNTY.description"], StringComparison.Ordinal);
         Assert.Equal("Royal Seal", englishAscension["BOSS_ROYAL_SEAL.title"]);
-        Assert.Contains("stronger Brand", englishAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
+        Assert.Contains("stronger [gold]King Brand[/gold]", englishAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
         Assert.Equal("Holy Daze", englishAscension["BOSS_SEAL_HOLY_DAZE.title"]);
-        Assert.Contains("3 follower deaths", englishAscension["BOSS_SEAL_MARTYR_OATH.brand"], StringComparison.Ordinal);
-        Assert.Contains("2 Slippery", englishAscension["BOSS_SEAL_INK_RETURN.brand"], StringComparison.Ordinal);
-        Assert.Contains("10", englishAscension["BOSS_SEAL_STARTLED_SHELL.brand"], StringComparison.Ordinal);
-        Assert.Contains("16", englishAscension["BOSS_SEAL_SOUL_TIDE.brand"], StringComparison.Ordinal);
-        Assert.Contains("10 Steam", englishAscension["BOSS_SEAL_BOILING_CRITICAL.brand"], StringComparison.Ordinal);
-        Assert.Contains("2 Artifact", englishAscension["BOSS_SEAL_MISALIGNED_SHELL.brand"], StringComparison.Ordinal);
-        Assert.Contains("second Marginal Note", englishAscension["BOSS_SEAL_MARGINAL_NOTE.brand"], StringComparison.Ordinal);
-        Assert.Contains("5 Block", englishAscension["BOSS_SEAL_STRUGGLE_BAIT.brand"], StringComparison.Ordinal);
-        Assert.Contains("+5 Strength", englishAscension["BOSS_SEAL_AEONGLASS_STRENGTH.brand"], StringComparison.Ordinal);
-        Assert.Contains("players 5 Block", englishAscension["BOSS_SEAL_CHOSEN_DECREE.brand"], StringComparison.Ordinal);
-        Assert.Contains("2 weakened samples", englishAscension["BOSS_SEAL_RESIDUAL_SAMPLE.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]3[/blue] follower deaths", englishAscension["BOSS_SEAL_MARTYR_OATH.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]2[/blue] [gold]Slippery[/gold]", englishAscension["BOSS_SEAL_INK_RETURN.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]10[/blue]", englishAscension["BOSS_SEAL_STARTLED_SHELL.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]16[/blue]", englishAscension["BOSS_SEAL_SOUL_TIDE.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]10[/blue] [gold]Steam[/gold]", englishAscension["BOSS_SEAL_BOILING_CRITICAL.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]2[/blue] [gold]Artifact[/gold]", englishAscension["BOSS_SEAL_MISALIGNED_SHELL.brand"], StringComparison.Ordinal);
+        Assert.Contains("second [gold]Marginal Note[/gold]", englishAscension["BOSS_SEAL_MARGINAL_NOTE.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]5[/blue] [gold]Block[/gold]", englishAscension["BOSS_SEAL_STRUGGLE_BAIT.brand"], StringComparison.Ordinal);
+        Assert.Contains("+[blue]5[/blue] [gold]Strength[/gold]", englishAscension["BOSS_SEAL_AEONGLASS_STRENGTH.brand"], StringComparison.Ordinal);
+        Assert.Contains("players [blue]5[/blue] [gold]Block[/gold]", englishAscension["BOSS_SEAL_CHOSEN_DECREE.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]2[/blue] [gold]weakened samples[/gold]", englishAscension["BOSS_SEAL_RESIDUAL_SAMPLE.brand"], StringComparison.Ordinal);
         foreach (var key in englishAscension.Keys.Where(key => key.StartsWith("BOSS_SEAL_", StringComparison.Ordinal)))
         {
             Assert.True(zhsAscension.ContainsKey(key), $"Missing zhs Boss Seal key: {key}");
@@ -382,7 +446,7 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Equal("Enter the Courtyard", englishAscension["A20_INTERMISSION_PROCEED"]);
         Assert.Equal("\u6218\u65d7\u623f", zhsAscension["BANNER_ROOM.title"]);
         Assert.Equal("\u738b\u5370", zhsAscension["BOSS_ROYAL_SEAL.title"]);
-        Assert.Contains("\u66f4\u5f3a\u7684\u70d9\u5370", zhsAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
+        Assert.Contains("\u66f4\u5f3a\u7684[gold]\u738b\u70d9\u5370[/gold]", zhsAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
         Assert.Equal("\u524d\u65b9\u4e2d\u5ead", zhsAscension["A20_INTERMISSION_HEADER"]);
         Assert.Equal("\u8fdb\u5165\u4e2d\u5ead", zhsAscension["A20_INTERMISSION_PROCEED"]);
         Assert.Equal("Courtyard Before the Second King", englishEvents["A20_COURTYARD.title"]);
@@ -409,7 +473,7 @@ public sealed class AscensionV2MilestoneGuardTests
     public void PackageContainsCurrentAscensionLocalization()
     {
         var version = ManifestVersion();
-        var package = RepoPath("publish", $"EZMicroBalance-{version}.zip");
+        var package = RepoPath("publish", $"SpirePlus-{version}.zip");
         Assert.True(File.Exists(package), $"Missing package zip: {package}");
 
         using var archive = ZipFile.OpenRead(package);

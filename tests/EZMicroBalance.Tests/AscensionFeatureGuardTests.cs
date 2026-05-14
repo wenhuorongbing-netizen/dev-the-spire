@@ -112,12 +112,14 @@ public sealed class AscensionFeatureGuardTests
             service,
             "AscensionSavedStateFields.RootblightLevel[player]",
             "AscensionSavedStateFields.RootBeginsApplied[player] = true;",
+            "player.RunState.CurrentMapCoord.HasValue",
+            "player.RunState.MapPointHistory.Any(actHistory => actHistory.Count > 0)",
             "player.RunState.CreateCard<Root>(player)",
             "player.RunState.CreateCard<DeepRoot>(player)",
             "player.RunState.CreateCard<RootblightIII>(player)",
             "private static async Task<bool> AddRootblightCard(Player player, int level, bool hasSplit = false, bool preferOverlayNotice = false)",
-            "MaxRootblightCards = 1",
-            "NormalizeRootblightDeck(player",
+            "MaxRootblightCards = 4",
+            "TrimRootblightDeckToCap(player",
             "CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, source: null, skipVisuals: true)",
             "if (!addResult.success)",
             "ShowRootblightAdded(player, preferOverlayNotice)",
@@ -133,7 +135,11 @@ public sealed class AscensionFeatureGuardTests
             "TryShowEventRoomNotice(line)",
             "NEventRoom.Instance?.VfxContainer",
             "NThoughtBubbleVfx.Create(line.GetFormattedText(), DialogueSide.Left, RootblightNoticeSeconds)",
+            "ignored Rootblight III split once",
+            "ignored Rootblight III already split once; no Rootblight IV",
+            "ThenBy(entry => entry.Index)",
             "await CardPileCmd.RemoveFromDeck(card, showPreview: false)");
+        Assert.DoesNotContain("VisitedMapCoords", service, StringComparison.Ordinal);
 
         AssertSourceContains(
             runHook,
@@ -169,6 +175,8 @@ public sealed class AscensionFeatureGuardTests
             "CombatManager.Instance.DebugOnlyGetState()",
             "var existingBuds = FindRootBudsInCombat(player)",
             "GetRootBudCountForCurrentRoom(state)",
+            "NormalizeExistingRootBudRounds(state, existingBuds)",
+            "existingBuds[i].SproutRound = GetRootBudSproutRoundForCurrentRoom(state, i)",
             "GetRootBudSproutRoundForCurrentRoom(state, i)",
             "RootBud.BossSecondSproutRound",
             "player.Piles",
@@ -322,7 +330,7 @@ public sealed class AscensionFeatureGuardTests
             Assert.True(zhsAscension.ContainsKey($"{key}.description"), $"Missing zhs description: {key}");
         }
 
-        Assert.Contains("+5 Strength", englishAscension["BOSS_SEAL_AEONGLASS_STRENGTH.summary"], StringComparison.Ordinal);
+        Assert.Contains("+[blue]5[/blue] [gold]Strength[/gold]", englishAscension["BOSS_SEAL_AEONGLASS_STRENGTH.summary"], StringComparison.Ordinal);
         Assert.Contains("地图悬停", zhsAscension["MODIFIER_GUIDE.description"], StringComparison.Ordinal);
 
         AssertSourceContains(
@@ -388,7 +396,12 @@ public sealed class AscensionFeatureGuardTests
         var featureGate = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.cs");
         var expansionConfig = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionExpansionConfig.cs");
         var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var mapProof = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "A11MapGeometryProof.cs");
+        var rootRunHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
+        var mapGenerationPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionMapGenerationPatches.cs");
         var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
+        var coreRunManager = ReadRepoText("source code", "src", "Core", "Runs", "RunManager.cs");
+        var coreMapScreen = ReadRepoText("source code", "src", "Core", "Nodes", "Screens", "Map", "NMapScreen.cs");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
@@ -416,6 +429,19 @@ public sealed class AscensionFeatureGuardTests
             "A11InsertedColumn = 4",
             "TryInsertA11WidthChoice(saved)",
             "HasA11InsertedColumnRouteChoice",
+            "ApplyA11MapGeometryAtCreateMapBoundary",
+            "ActModel.CreateMap",
+            "Ascension A11 source-boundary check",
+            "insertedColumnRoute={evidence.HasInsertedColumnRouteChoice}",
+            "originalRoutePreserved={evidence.HasStartToBossRouteAvoidingInsertedColumn}",
+            "insertedColumnRouteChoices={evidence.InsertedColumnRouteChoiceCount}",
+            "TryGetA11GeometryEvidence(map, out var evidence)",
+            "catch (Exception ex)",
+            "A11 map geometry diagnostic failed",
+            "A11 map geometry diagnostic failed closed",
+            "GetA11TargetRowCount(runState, actIndex)",
+            "HasA11OriginalRoutePreserved(saved)",
+            "A11MapGeometryProof.Analyze",
             "HasSerializablePath(saved.StartingPoint",
             "DeepBranchMinLength = 3",
             "DeepBranchMaxLength = 4",
@@ -432,6 +458,42 @@ public sealed class AscensionFeatureGuardTests
             "safe-route reconnect");
 
         AssertSourceContains(
+            mapProof,
+            "A11MapGeometryGraph",
+            "A11MapGeometryEvidence",
+            "HasInsertedColumnRouteChoice",
+            "HasStartToBossRouteAvoidingInsertedColumn",
+            "InsertedColumnRouteChoiceCount");
+
+        AssertSourceContains(
+            rootRunHook,
+            "public override ActMap ModifyGeneratedMap(IRunState runState, ActMap map, int actIndex)",
+            "return AscensionMapService.Apply(runState, map, actIndex);",
+            "public override ActMap ModifyGeneratedMapLate(IRunState runState, ActMap map, int actIndex)");
+
+        AssertSourceContains(
+            mapGenerationPatch,
+            "HarmonyPatch(typeof(ActModel), nameof(ActModel.CreateMap))",
+            "Postfix(RunState runState, ref ActMap __result)",
+            "AscensionMapService.ApplyA11MapGeometryAtCreateMapBoundary",
+            "runState.CurrentActIndex");
+
+        AssertSourceContains(
+            coreRunManager,
+            "ActMap map2 = State.Act.CreateMap(State, replaceTreasureWithElites: false)",
+            "map = Hook.ModifyGeneratedMap(State, map2, State.CurrentActIndex)",
+            "State.Map = map",
+            "NMapScreen.Instance?.SetMap(map, State.Rng.Seed, clearDrawings: true)");
+
+        AssertSourceContains(
+            coreMapScreen,
+            "int rowCount = map.GetRowCount()",
+            "int columnCount = map.GetColumnCount()",
+            "_distY = 2325f / (float)(rowCount - 1)",
+            "_distX = 1050f / (float)columnCount",
+            "foreach (MapPoint allMapPoint in map.GetAllMapPoints())");
+
+        AssertSourceContains(
             metadata,
             "DeepBranchNodeKind",
             "EnhancedReward",
@@ -443,6 +505,7 @@ public sealed class AscensionFeatureGuardTests
         Assert.Contains("A17 uses the same saved-map replacement path", apiResearch, StringComparison.Ordinal);
         Assert.Contains("Multiplayer Deep Branch insertion is intentionally skipped", apiResearch, StringComparison.Ordinal);
         Assert.Contains("Map width increases from 7 to 8 columns.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Act 1 visible route rows increase by 1, Act 2 visible route rows increase by 1, and Act 3 visible route rows increase by 2.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("At least one reachable optional node appears in the inserted width column.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("No A11-specific marker, icon, or hover tooltip appears", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("A safer parallel route from the branch parent to reconnect remains available", manualChecklist, StringComparison.Ordinal);
@@ -523,9 +586,11 @@ public sealed class AscensionFeatureGuardTests
 
         Assert.StartsWith("火印精英", zhsAscension["LEVEL_12.title"], StringComparison.Ordinal);
         Assert.Contains("optional [gold]Firemarked Elites[/gold]", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
-        Assert.Contains("Firemark Host", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Forge Token[/gold]", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("Firemark Host", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.Contains("可选[gold]火印精英[/gold]", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.Contains("铸令", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("火印宿主", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("注令", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("路线", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("费用", zhsAscension["LEVEL_13.description"], StringComparison.Ordinal);
@@ -573,9 +638,14 @@ public sealed class AscensionFeatureGuardTests
         foreach (var key in new[] { "EZMB_ROOT.description", "EZMB_DEEP_ROOT.description", "EZMB_ROOTBLIGHT_III.description", "EZMB_ROOT_BUD.description" })
         {
             Assert.DoesNotContain("Play: Exhaust", englishCards[key], StringComparison.Ordinal);
+            Assert.DoesNotContain("If not played or removed this combat", englishCards[key], StringComparison.Ordinal);
             Assert.DoesNotContain("\u6253\u51fa\uff1a\u6d88\u8017", simplifiedChineseCards[key], StringComparison.Ordinal);
+            Assert.DoesNotContain("\u672a\u6253\u51fa\u6216\u79fb\u9664", simplifiedChineseCards[key], StringComparison.Ordinal);
         }
 
+        Assert.Contains("still in your deck after combat", englishCards["EZMB_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("still in your deck after combat", englishCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("still in your deck after combat", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Rootblight II[/gold]", englishCards["EZMB_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Rootblight I[/gold]", englishCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Rootblight III[/gold]", englishCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
@@ -584,6 +654,9 @@ public sealed class AscensionFeatureGuardTests
         Assert.Contains("[gold]Draw Pile[/gold]", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Rootblight I[/gold]", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
 
+        Assert.Contains("\u6218\u6597\u7ed3\u675f\u65f6\u672c\u724c\u4ecd\u5728\u4f60\u7684\u4e3b\u724c\u7ec4\u4e2d", simplifiedChineseCards["EZMB_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("\u6218\u6597\u7ed3\u675f\u65f6\u672c\u724c\u4ecd\u5728\u4f60\u7684\u4e3b\u724c\u7ec4\u4e2d", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("\u6218\u6597\u7ed3\u675f\u65f6\u672c\u724c\u4ecd\u5728\u4f60\u7684\u4e3b\u724c\u7ec4\u4e2d", simplifiedChineseCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u6839\u8680 II[/gold]", simplifiedChineseCards["EZMB_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u6839\u8680 I[/gold]", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u6839\u8680 III[/gold]", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
@@ -616,8 +689,8 @@ public sealed class AscensionFeatureGuardTests
         Assert.Equal(2, CountOccurrences(rootCards, "public override bool CanBeGeneratedByModifiers => false;"));
         Assert.Contains("CurseCardPool", apiResearch, StringComparison.Ordinal);
         Assert.Contains("HoverTipFactory.FromCard<Soul>()", apiResearch, StringComparison.Ordinal);
-        Assert.Equal("Rootblight added.", JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json")["ROOTBLIGHT_ADDED"]);
-        Assert.Equal("\u6839\u8680\u5df2\u52a0\u5165\u3002", JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json")["ROOTBLIGHT_ADDED"]);
+        Assert.Equal("[gold]Rootblight[/gold] added.", JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json")["ROOTBLIGHT_ADDED"]);
+        Assert.Equal("[gold]\u6839\u8680[/gold]\u5df2\u52a0\u5165\u3002", JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json")["ROOTBLIGHT_ADDED"]);
         Assert.Contains("Runtime registration and random transform/reward exclusion pending", apiResearch, StringComparison.Ordinal);
     }
 
