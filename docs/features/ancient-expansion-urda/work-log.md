@@ -1,7 +1,63 @@
 # Urda Work Log
 
-Project: EZ Micro Balance  
+Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance
+
+## 2026-05-13 - Urda v2.2 ten-blessing source completion
+
+Scope:
+
+- Promoted Urda from four active blessing ids to ten default-on source-backed ids: `urda_seedbed`, `urda_humus_pact`, `urda_molting`, `urda_moss_map`, `urda_trial_branch`, `urda_shallow_root_relic`, `urda_rooted_route`, `urda_after_rain`, `urda_root_sight`, and `urda_seed_bank`.
+- Kept `EZMB_DISABLE_URDA=1`, `EZMB_FORCE_ANCIENT=URDA`, and `EZMB_FORCE_URDA_BLESSING` behavior available for focused testing.
+- Preserved existing Seedbed, Humus Pact, Molting, and Moss Map source behavior.
+- Added Trial Branch with a 4-card common/uncommon source-safe grid, upgraded Trial Plant marker, three combat tracking window, two-success keep path, and removal path.
+- Added Shallow-Root Relic with two common relic choices, 75 Gold, Act 1 elite rooting for 35 Gold, and a documented Act 2 removal/refund fallback instead of the unproven `lose 6 Max HP` settlement UI.
+- Added Rooted Route with automatic reachable normal-combat marking in the first seven floors, quest markers only, no map graph mutation, three card rewards plus potion-if-slot on success, and an 8 HP / 25 Gold wither fallback.
+- Added After the Rain through the source-backed death-prevention hooks, with 1 HP, 15 Block, draw 1, two Wounds, -3 Max HP, Act 2 unused compensation, and two elite-gold bonuses.
+- Added Root-Sight with 5 Root Eyes and automatic reachable non-Boss map marking; no map button is claimed in this source slice.
+- Added Seed Bank with a `Store Seed` reward alternative, max three stored Seeds, and pre-Boss settlement for up to two Seeds.
+- Added English/zhs player text, option relics, temporary source-derived option icons, export entries, and guard tests. `OPENAI_API_KEY` was not set, so no bespoke Image API icons were generated.
+
+Validation:
+
+- `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- `dotnet test EZMicroBalance.sln --no-build`: first run exposed one stale art-direction guard string, then passed with 98 passed, 18 skipped, 0 failed.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
+- `git diff --check`: passed with CRLF normalization warnings only.
+- `dotnet publish EZMicroBalance.sln`: passed; Godot emitted the known nested `source code/project.godot` ignore warning and regenerated `.uid` metadata for existing new Lotha/Morvi test files while importing the six new Urda option PNGs.
+- Post-publish `dotnet test EZMicroBalance.sln --no-build`: passed with 98 passed, 18 skipped, 0 failed.
+- No live game, save-load, or co-op testing was run in this implementation pass.
+
+## 2026-05-13 - Urda custom Ancient asset-path fix
+
+Scope:
+
+- Investigated a current A14 Rootblight generated-art hover probe that entered the default-on Urda Ancient event before combat.
+- Treated `.tools\runtime-evidence\current-rootblight-art-hover-20260513-114103` as negative evidence: `godot-live.log` reported missing vanilla-derived Urda map icon, run-history icon, and background-scene paths.
+- Switched Urda to BaseLib `CustomAncientModel` with `autoAdd: false`, preserving the existing explicit Act 1 registration path.
+- Added mod-owned Urda icon/run-history/background scene path overrides and packaged `EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn`.
+- Added clean headless installed-PCK resource-load evidence at `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345`; Godot loaded the installed `EZMicroBalance.pck` as `--main-pack`, resolved the custom Urda scene/icon resources, emitted `URDA_RESOURCE_LOAD_OK`, and logged 0 `ERROR` / `WARNING` lines.
+
+Validation:
+
+- `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- `dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 17 skipped after the private-beta release completion audit guard was added.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 98 passed, 0 skipped after the private-beta release completion audit guard was added.
+- `dotnet publish EZMicroBalance.sln`: passed and refreshed the installed DLL/PCK.
+- Rebuilt package staging, versioned package folder, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from installed artifacts.
+
+Current hashes:
+
+- DLL: `C64B5787625F497E930D4470AB4758950F59D9574D22847996FBCF55E0DACF71` after the later no-test Urda/Morvi hook-state package refresh
+- JSON: `9CB73137A04958D0DC0278E854CA1E0E1AC187C125E938DF7C3734F23F7B6A02`
+- PCK: `39F0ED5E592BC9131BE7C317450357F9ACC82D7031D97C92C71C59C8B5109736`
+- Package zip: `8AA5F65BECF6672B7B41F3B474851A828BFAF60250F04FB2C58061F52747D128` after the later no-test Urda/Morvi hook-state package refresh
+
+Status:
+
+- The missing-asset root cause is source/package-mitigated.
+- Post-fix live Urda selection, Rootblight visual/gameplay checks, save/load, and co-op checks remain pending.
+- `URDA-PROTOTYPE` remains open.
 
 ## 2026-05-12 - Urda acceptance hardening pass
 

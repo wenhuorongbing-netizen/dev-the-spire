@@ -69,7 +69,7 @@ Source-backed implementation now uses:
   - `SerializablePlayer` has fixed fields such as deck, relics, potions, rng, odds, and `extra_fields`; it has no general `SavedProperties`/`Props` field.
   - `ExtraPlayerFields` serializes only built-in fixed fields.
   - `SavedProperties.From(AbstractModel)` is used by card, relic, and modifier save paths, but no inspected `Player` save path routes through it.
-  Current Urda player-owned state must remain save/load-pending until live evidence proves it or state is moved to a proven carrier.
+  Current Urda player-owned state is mirrored onto deck cards through `AncientSavedStateFields.UrdaDeckStateKey`, but save/load must remain pending until live evidence proves the Player field or card-backed recovery path survives reload.
 
 These paths compile and are covered by source-guard tests, but they are not a substitute for live reward-screen, save/load, and UI checks.
 
@@ -109,7 +109,7 @@ Known unresolved items:
 
 - live Act 1 Urda selection and registration proof,
 - reward-screen timing for Seedbed and Humus Pact in normal Steam-client play,
-- save/load of encoded Urda blessing progress in `UrdaStateKey`,
+- save/load of encoded Urda blessing progress in `UrdaStateKey` plus recovery from card-backed `UrdaDeckStateKey`,
 - full room-type callback stability for Moss Map,
 - safe `Withered Husk` end-of-turn exhaust block behavior and end-act cleanup ordering.
 

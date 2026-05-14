@@ -1,3 +1,7 @@
+# Historical archive.
+
+This prompt is superseded by `docs/test-ready-development-goal.md`. Do not use it as current implementation truth.
+
 # Next Development Prompt: Ancient Expansion v2.2 Implementation Push
 
 Use this prompt for the next Codex development pass.
@@ -7,7 +11,7 @@ You are in:
 
 D:\Game\FOTN\dev-the-spire
 
-Goal: continue EZ Micro Balance Ancient Expansion v2.2 until the next source-complete, test-backed development slice is ready for player testing. This is a code/docs/test/package pass, not a release-ready claim. Do not mark live verification complete unless you actually run the game and record evidence.
+Goal: continue Spire Plus (`EZMicroBalance` manifest id) Ancient Expansion v2.2 until the next source-complete, test-backed development slice is ready for player testing. This is a code/docs/test/package pass, not a release-ready claim. Do not mark live verification complete unless you actually run the game and record evidence.
 
 Hard constraints:
 - Read PROJECT_STATE.md first, then AGENTS.md.
@@ -16,6 +20,7 @@ Hard constraints:
 - Do not copy official Slay the Spire 2 assets or large decompiled code into the repo.
 - Do not implement A21-A30 or a custom character.
 - Keep EZMicroBalance independent.
+- Preserve `Spire Plus` as the player-facing display name and `EZMicroBalance` as the stable manifest id/package id.
 - Prefer BaseLib/template APIs before Harmony; use Harmony only where local source proves there is no safer API.
 - Any AbstractModel canonical marker/hook/model must come from ModelDb where appropriate.
 - Keep experimental Ancient expansion content independently disableable.
@@ -27,29 +32,30 @@ Primary references to read:
 2. AGENTS.md
 3. README.md
 4. docs/README.md
-5. docs/PROJECT_MAP.md
-6. docs/issues.md
-7. docs/issues/ancient-expansion-v2.2.md
-8. docs/issues/urda.md
-9. docs/features/ancient-expansion-v2.2/README.md
-10. docs/features/ancient-expansion-v2.2/source-design.md
-11. docs/features/ancient-expansion-v2.2/implementation-plan.md
-12. docs/features/ancient-expansion-v2.2/milestone-roadmap.md
-13. docs/features/ancient-expansion-v2.2/card-and-power-safety-rules.md
-14. docs/features/ancient-expansion-v2.2/art-direction.md
-15. docs/features/ancient-expansion-v2.2/manual-test-checklist.md
-16. docs/features/ancient-expansion-v2.2/api-research.md
-17. docs/features/ancient-expansion-v2.2/risk-register.md
-18. docs/features/ancient-expansion-v2.2/work-log.md
-19. docs/features/ancient-expansion-urda/README.md
-20. docs/features/ancient-expansion-urda/source-design.md
-21. docs/features/ancient-expansion-urda/implementation-plan.md
-22. docs/features/ancient-expansion-urda/manual-test-checklist.md
-23. docs/style/card-localization-style-guide.md
-24. docs/skills/sts2-godot-mod-development.md
-25. source code/src/Core/** as primary local game-source evidence
-26. Local BaseLib/RitsuLib/template references if present
-27. Tutorial index only as secondary reference: https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html
+5. docs/test-ready-development-goal.md
+6. docs/PROJECT_MAP.md
+7. docs/issues.md
+8. docs/issues/ancient-expansion-v2.2.md
+9. docs/issues/urda.md
+10. docs/features/ancient-expansion-v2.2/README.md
+11. docs/features/ancient-expansion-v2.2/source-design.md
+12. docs/features/ancient-expansion-v2.2/implementation-plan.md
+13. docs/features/ancient-expansion-v2.2/milestone-roadmap.md
+14. docs/features/ancient-expansion-v2.2/card-and-power-safety-rules.md
+15. docs/features/ancient-expansion-v2.2/art-direction.md
+16. docs/features/ancient-expansion-v2.2/manual-test-checklist.md
+17. docs/features/ancient-expansion-v2.2/api-research.md
+18. docs/features/ancient-expansion-v2.2/risk-register.md
+19. docs/features/ancient-expansion-v2.2/work-log.md
+20. docs/features/ancient-expansion-urda/README.md
+21. docs/features/ancient-expansion-urda/source-design.md
+22. docs/features/ancient-expansion-urda/implementation-plan.md
+23. docs/features/ancient-expansion-urda/manual-test-checklist.md
+24. docs/style/card-localization-style-guide.md
+25. docs/skills/sts2-godot-mod-development.md
+26. source code/src/Core/** as primary local game-source evidence
+27. Local BaseLib/RitsuLib/template references if present
+28. Tutorial index only as secondary reference: https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html
 
 Current source-backed state:
 - Urda is default-on private-beta prototype content.
@@ -58,7 +64,7 @@ Current source-backed state:
 - Morvi has a default-off prototype behind EZMB_ENABLE_MORVI_V22=1.
 - Current Morvi prototype ids: morvi_misprint_press, morvi_open_book_exam, morvi_debt_settlement.
 - Lotha and Vakuu fight content are planning-only right now.
-- Current source defines 14 SavedSpireFields after Morvi state registration. Older smoke evidence that reported 13 SavedSpireFields is stale until rerun.
+- Current source defines 16 SavedSpireFields after Morvi state registration and Urda/Morvi deck mirror state. Current controlled `--force-steam off` smoke reports `Found 16 SavedSpireFields`; older 13-field smoke evidence is historical only.
 
 Approved art direction:
 - Morvi art target: EZMicroBalance/images/events/ezmb_morvi.png. Visual reference: blue-lit lender-scribe court, sealed contract, skeletal hands, ledger/typewriter, central blue eye.
@@ -144,4 +150,3 @@ Success criteria:
 - Docs accurately state what is source-complete, what is default-on, what is default-off, and what still needs live testing.
 - Final response lists changed files, commands run, and explicitly says whether live game/save-load/co-op testing was or was not performed.
 ```
-

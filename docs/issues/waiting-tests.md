@@ -280,10 +280,10 @@ Implementation notes (2026-05-09):
 Suggested notice localization:
 
 - English:
-  - `ROOTBLIGHT_ADDED`: `Rootblight added.`
+  - `ROOTBLIGHT_ADDED`: `[gold]Rootblight[/gold] added.`
   - Optional level-specific if easy: `Rootblight {Level} added.`
 - Simplified Chinese:
-  - `ROOTBLIGHT_ADDED`: `根蚀已加入。`
+  - `ROOTBLIGHT_ADDED`: `[gold]根蚀[/gold]已加入。`
   - Optional level-specific if easy: `根蚀 {Level} 已加入。`
 
 Implementation options:
@@ -657,7 +657,7 @@ Current source fix:
 - Rootblight I/II/III costs are 2/3/4.
 - Played Rootblight removes its master-deck card and queues the downgrade card after combat.
 - Unplayed Rootblight I/II upgrades after combat; ignored Rootblight III stays III and does not add an extra Rootblight.
-- Rootblight is capped at 1 card, and cap hits show `Root system full.` / `根系已满。`.
+- Rootblight is capped at 4 cards, and cap hits show `Root system full: max [blue]4[/blue] [gold]Rootblights[/gold].` / `根系已满：最多[blue]4[/blue]张[gold]根蚀[/gold]。`.
 - Rest removes exactly one highest-stage Rootblight instead of clearing all Rootblight.
 
 Manual retest:
@@ -782,7 +782,7 @@ Findings from uploaded player log `godot2026-05-10T06.07.51.log`:
   - SpeedX reports undefined target patch on `NRewardsScreen`.
   - Act4Heart reports `ConfigMessage.get_ShouldBuffer` `TypeLoadException` (`No implementation found`).
 - BaseLib `v3.1.2` and EZ Micro Balance initialize, but BaseLib reports `Found 12 SavedSpireFields`.
-- A1.05.08 packaging expectation in this repo is 13 `SavedSpireFields` for Urda state registration; this log therefore cannot prove package/runtime consistency.
+- Current package expectation is 16 `SavedSpireFields` after the Urda/Morvi deck mirror state fields. The older A1.05.08 expectation was 13 fields. This uploaded log therefore cannot prove package/runtime consistency.
 - Gameplay conclusions from this file are invalid until the environment is cleaned and installed artifact hash is verified.
 
 Manual retest gates:
@@ -792,10 +792,10 @@ Manual retest gates:
    - `EZMicroBalance`
 2. Launch normal Steam-client test run and verify log contains:
    - `Loaded 2 mods` (or `Loaded 2 mods (2 total)` depending on launch order), and
-   - `Found 13 SavedSpireFields`.
+   - `Found 20 SavedSpireFields` for the current post-Morvi source/package.
 3. Re-run install hash check using `scripts/check-installed-ezmb-package.ps1`.
 4. Do not use the polluted `godot2026-05-10T06.07.51.log` as release evidence again.
-5. If a clean hash-matching log still reports `Found 12 SavedSpireFields`, investigate `AncientSavedStateFields.UrdaStateKey` registration and BaseLib SavedSpireField discovery mismatch before any gameplay assertion.
+5. If a clean hash-matching log reports anything other than the current source/package field count, investigate `AncientSavedStateFields` registration and BaseLib SavedSpireField discovery mismatch before any gameplay assertion.
 
 ### ISSUE-2026-05-10-A12-A16-MARKER-VARIETY-DETERMINISTIC-MIGHT-VANGUARD
 

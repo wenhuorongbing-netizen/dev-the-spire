@@ -14,7 +14,7 @@
 - Publish: `dotnet publish` succeeds.
 - Legacy manual verification: BaseLib and `EzDailyContent` appeared and were enabled in Mod Settings on `v0.104.0`.
 - Active controlled smoke verification: BaseLib and `EZMicroBalance` load with `--force-steam off`; exactly 2 mods loaded in the isolated smoke profile and the game reached main menu.
-- Active normal Steam-client verification: pending.
+- Active normal Steam-client startup/log verification: current Spire Plus / `EZMicroBalance` package reached main menu with exactly BaseLib and Spire Plus loaded under `.tools\runtime-evidence\current-package-smoke-20260514-015901`, `Registered config for mod EZMicroBalance`, `Found 22 SavedSpireFields`, and 0 `ERROR` / release-blocking / missing-resource signature hits. Current Mod Settings UI list screenshot shows `Spire Plus`; gameplay matrix remains pending.
 
 ## Compatibility Policy
 
@@ -33,7 +33,7 @@
 5. Run `dotnet publish`.
 6. Launch game.
 7. Confirm BaseLib appears and is enabled.
-8. Confirm EZ Micro Balance appears and is enabled.
+8. Confirm Spire Plus appears with manifest id `EZMicroBalance` and is enabled.
 9. Test current feature surface.
 10. Update this file and `docs/dev-environment.md`.
 
@@ -54,3 +54,4 @@
 | 2026-05-02 | `v0.104.0`, `2026.04.23` | `v3.1.0` | PASS | Build, publish, and Mod Settings verification succeeded. |
 | 2026-05-05 | `v0.104.0`, `2026.04.23` | `v3.1.0` | PARTIAL | `EZMicroBalance` build, publish, tests, and isolated `--force-steam off` smoke passed; normal Steam-client Mod Settings and manual gameplay matrix remain pending. |
 | 2026-05-08 | `v0.105.0`, `2026.05.07` | `v3.1.2` | PARTIAL | Source refreshed from current PCK, build/publish/tests pass, isolated BaseLib+EZMB `--force-steam off` smoke reached main menu, and normal Steam-client Mod Settings passed after the no-op EZMB config page; manual gameplay matrix remains pending. |
+| 2026-05-13 | `v0.105.0`, `2026.05.07` | `v3.1.2` | PARTIAL | Current package controlled smoke, normal Steam-client isolated startup/log pass, and refreshed Mod Settings UI list screenshot with Spire Plus / `EZMicroBalance`, 16 SavedSpireFields, and 0 release-blocking log hits; manual gameplay matrix remains pending. |

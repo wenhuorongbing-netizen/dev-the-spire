@@ -1,4 +1,4 @@
-# EZ Micro Balance API Discovery
+# Spire Plus API Discovery
 
 Last updated: 2026-05-06 19:30:00 +02:00
 

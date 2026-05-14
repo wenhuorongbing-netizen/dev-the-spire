@@ -5,6 +5,15 @@ Scope: RC1 live-validation gate for EZ Micro Balance on Slay the Spire 2 `v0.105
 
 This log records what was actually run or observed. It does not close the live gates unless the corresponding result is marked executed with evidence.
 
+## 2026-05-13 Current Package Addendum
+
+- Current normal Steam-client isolated startup/log verification evidence: `.tools\runtime-evidence\current-spire-plus-normal-steam-20260513-054241`.
+- Method: temporarily moved non-BaseLib/EZMB installed mod entries out of `D:\Steam\steamapps\common\Slay the Spire 2\mods`, rewrote Steam user settings to enable only BaseLib and `EZMicroBalance`, launched through `D:\Steam\steam.exe -applaunch 2868840`, copied `godot.log` at main menu, stopped the game, and restored settings plus moved mod entries.
+- Positive log evidence: manifest list `0: BaseLib (BaseLib)` and `1: Spire Plus (EZMicroBalance)`, `Registered config for mod EZMicroBalance`, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 16 SavedSpireFields`, and `Time to main menu: 12,790ms`.
+- Audit result: `scripts/audit-godot-log.ps1` reports `Clean: true` with 0 `ERROR` lines and 0 release-blocking signatures.
+- Scope note: this refreshes normal Steam startup/log evidence for the current display-name package. A later refreshed Mod Settings UI list screenshot shows `Spire Plus` under the current display-name package, while the older page-level screenshots remain historical under the old EZ Micro Balance display name. Full live gameplay/co-op gates remain pending.
+- A11 graph addendum: `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008\a11-boss-reachability-from-save.json` proves the live saved Act 1 A11 map has a path from post-load coord `(3,1)` to boss `(3,17)`. This is not a substitute for natural click-by-click traversal.
+
 ## Repository State
 
 - A1.05.01 review baseline: `ae910e8 (HEAD -> main, origin/main, origin/HEAD) a1.05.01`.
@@ -54,11 +63,11 @@ This log records what was actually run or observed. It does not close the live g
 
 - Command path: `D:\Steam\steam.exe -applaunch 2868840`.
 - First isolation probe: temporarily moved 23 non-BaseLib/EZMB entries out of `D:\Steam\steamapps\common\Slay the Spire 2\mods`, launched through Steam, opened `妯＄粍閰嶇疆`, captured BaseLib-only screenshots, copied `.tools\runtime-evidence\rc1-normal-steam-modsettings-godot-20260508-092717.log`, closed the game, then restored all moved entries.
-- Source fix for UI visibility: added a no-op BaseLib `ModConfig` page for EZ Micro Balance. It registers `EZMicroBalanceModConfig`, exposes no gameplay options, and localizes the Chinese title as `寰钩琛�?with body text `鏃犲彲閰嶇疆閫夐」銆�?
+- Source fix for UI visibility: added a no-op BaseLib `ModConfig` page for EZ Micro Balance. It registers `EZMicroBalanceModConfig` and exposes no gameplay options. The historical screenshot text was mojibake and is not current localization evidence.
 - Recheck isolation probe: temporarily moved the same 23 non-BaseLib/EZMB entries out of the game `mods` directory, launched through Steam, opened `妯＄粍閰嶇疆`, captured screenshots, copied the log, closed the game, then restored all moved entries and temporarily minimized windows. Restore check: `RemainingIsolatedEntries: 0`, `SlayProcessRunning: 0`, `RestoredWindows: 24`.
 - Main-menu loaded-mod evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-mainmenu-loadedmods.png` shows the game loaded 2 mods: `BaseLib, EZ Micro Balance`.
 - BaseLib Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-attempt-20260508-092717-modconfig.png` shows the `BaseLib` page and its main-menu display checkbox enabled.
-- EZ Micro Balance Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` shows the EZ Micro Balance page entry as `寰钩琛�? `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` shows the page body `鏃犲彲閰嶇疆閫夐」銆�?
+- EZ Micro Balance Mod Settings evidence: `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` and `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` are retained as historical visibility screenshots only; their mojibake text is not current localization evidence.
 - Log snapshot: `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log`.
 - Positive log evidence: `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialized, and `Found 13 SavedSpireFields`.
 - Strict scan: 0 `Creature.get_ShowsInfiniteHp`, 0 `BaseLib.Patches.UI.HealthBarForecastPatch`, 0 BaseLib undefined-target patch failures, 0 `DamageMeter`, 0 `RouteSuggest`, 0 `TypeLoadException`, 0 `MissingMethodException`, 0 EZMB error/exception pattern hits, and 0 `ERROR` lines.
@@ -128,14 +137,14 @@ This log records what was actually run or observed. It does not close the live g
 
 | Gate | Result |
 | --- | --- |
-| Normal Steam-client Mod Settings | Passed. BaseLib page visible/enabled; EZ Micro Balance page appears as `寰钩琛�?with `鏃犲彲閰嶇疆閫夐」銆�? main menu/log show only BaseLib + EZ Micro Balance loaded; log has 0 `ERROR` lines and 0 release-blocking signatures. |
+| Normal Steam-client Mod Settings | Passed for historical visibility only. BaseLib page visible/enabled; EZ Micro Balance page appears in the UI, but the captured text was mojibake and is not current localization evidence. Main menu/log show only BaseLib + EZ Micro Balance loaded; log has 0 `ERROR` lines and 0 release-blocking signatures. |
 | Clean normal Steam-client `godot.log` | Isolated Steam startup snapshot and Mod Settings log collected; both have 0 `ERROR` lines and 0 release-blocking signatures. |
 | A0/A10/A20 single-player spot checks | User-reported pass, plus Codex-observed normal-Steam DevConsole combat smoke for A0/A10/A20. Natural route-click first-node checks remain unrun. |
 | Pumpkin Candle vanilla/no override | Source-verified pending live spot check. |
 | Quality Flame unupgraded/upgraded | Source-verified pending live spot check. |
 | Door Wedge absence | Active source/localization `rg` returned no Door Wedge / `DOORMAKER_BOSS` matches; release-facing docs mention it only as removed/historical. |
 | Aeonglass +5 Strength | Source-verified pending live boss route/seed check. |
-| A11 map geometry | Act 1 normal-Steam spot check passed: A11 selected through the original UI, log reports columns=8/rows=17 with 1 late route row, screenshot shows normal route nodes/no A11 marker, and saved-map JSON records 8 columns. Act 2/3 normal-Steam DevConsole observation passed for map surface and log geometry: Act 2 columns=8/rows=16 with 1 late route row; Act 3 columns=8/rows=16 with 2 late route rows. Natural route traversal and boss reachability remain pending. |
+| A11 map geometry | Act 1 normal-Steam spot check passed: A11 selected through the original UI, log reports columns=8/rows=17 with 1 late route row, screenshot shows normal route nodes/no A11 marker, and saved-map JSON records 8 columns. Act 2/3 normal-Steam DevConsole observation passed for map surface and log geometry: Act 2 columns=8/rows=16 with 1 late route row; Act 3 columns=8/rows=16 with 2 late route rows. The current graph addendum proves boss reachability for the saved Act 1 map; natural click-by-click traversal remains pending. |
 | Rootblight English/ZHS hover and A14 starter notice | Targeted normal-Steam spot checks passed for English and Simplified Chinese Rootblight I/II/III and Blight Sprout hovers, plus the A14 Neow starter Rootblight-added notice in both languages. Combat-end notices, full behavior, generated-art visual verification, and co-op checks remain pending. |
 | Save/load | Minimal A11 map save/load spot check passed after first node: `current_run.save` was written, Continue loaded the run, and the map reopened with columns=8/rows=17. Ancient save/load rows and co-op save/load remain pending. |
 | Multiplayer matrix | Pending two-PC Steam-client runbook execution. |
@@ -173,7 +182,7 @@ Clean retest rules:
 1. Before collecting release logs, move all entries in `<GameRoot>\mods` except:
    - `BaseLib`
    - `EZMicroBalance`
-2. Run a fresh normal-Steam launch and confirm `Loaded 2 mods (2 total)` and `Found 13 SavedSpireFields`.
+2. Run a fresh normal-Steam launch and confirm `Loaded 2 mods (2 total)` and the current package's expected SavedSpireField count (`Found 20 SavedSpireFields` after the Morvi Borrowed Ancient marker).
 3. Run `scripts/check-installed-ezmb-package.ps1` against the live install and require PASS before gameplay evidence.
 4. If clean hash-matching logs still report `Found 12 SavedSpireFields`, do not judge gameplay from that run; open a source/doc mismatch investigation around `AncientSavedStateFields.UrdaStateKey` registration and BaseLib SavedSpireField discovery.
 5. Tag this file as invalid and do not attach it to release artifact acceptance.

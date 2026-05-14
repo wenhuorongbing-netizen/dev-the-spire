@@ -5,6 +5,7 @@ This guide explains how to clone this private repository on another Windows mach
 ## Baseline
 
 - Active project: `EZMicroBalance`
+- Player-facing mod name: `Spire Plus`
 - Legacy scaffold id: `EzDailyContent`
 - Game: Slay the Spire 2 public beta
 - Verified version: `v0.105.0`, installed/tested locally on `2026-05-08`
@@ -107,9 +108,9 @@ Expected published mod output:
 3. Open Mod Settings.
 4. Confirm BaseLib appears.
 5. Confirm BaseLib is enabled.
-6. Confirm EZ Micro Balance appears.
-7. Confirm EZ Micro Balance is enabled.
-8. Keep legacy `EzDailyContent` disabled while testing EZ Micro Balance to avoid duplicate Ancient patches.
+6. Confirm Spire Plus appears with manifest id `EZMicroBalance`.
+7. Confirm Spire Plus is enabled.
+8. Keep legacy `EzDailyContent` disabled while testing Spire Plus to avoid duplicate Ancient patches.
 
 ## Local-only files that must not be committed
 

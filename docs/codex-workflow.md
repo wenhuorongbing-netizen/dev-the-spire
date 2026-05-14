@@ -11,7 +11,7 @@
 
 ## Active Project Direction
 
-The active deliverable is private beta readiness for `EZ Micro Balance`.
+The active deliverable is private beta readiness for `Spire Plus` (`EZMicroBalance` manifest id).
 
 Do not implement Ascension 21-30 or a custom character during this cycle.
 
@@ -44,6 +44,21 @@ Capture exact command, error summary, likely cause, what was checked, minimal fi
 - Do not revert unrelated user changes.
 - Use checkpoints before and after major phases when practical.
 - Do not push to `origin/main` without explicit user approval.
+
+## Worktree Hygiene
+
+Use this cleanup order whenever a pass leaves many files changed:
+
+1. Inspect with `git status --porcelain=v1 -uall`, `git diff --stat`, and `git clean -ndX`.
+2. Classify every path as source/resource, tests, docs, package evidence, local environment, ignored build output, or obsolete prompt/audit material.
+3. Never run broad `git reset --hard`, `git restore .`, or `git clean -fdx` while source work is still uncommitted.
+4. Keep ignored local/runtime paths ignored: `.godot/`, `.tools/`, `publish/`, `bin/`, `obj/`, `Directory.Build.props`, local game source, and local art scratch.
+5. Commit useful source, resource, test, and current documentation changes in a few named groups.
+6. Remove redundant active prompt dumps after their final implementation records exist in `docs/archive/implementation-records/`.
+7. Keep active docs small: `PROJECT_STATE.md`, `docs/test-ready-development-goal.md`, and `docs/issues.md` should carry current state; archives should not be required reading.
+8. After packaging, update only current status/hash docs and release guards; do not rewrite old archive history.
+9. Finish with build/test/format/diff-check, then `git status --short --branch`.
+10. A clean pass means no unstaged or untracked project files remain, not that ignored local build/runtime caches were deleted.
 
 ## Local Paths
 

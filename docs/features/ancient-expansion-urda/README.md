@@ -1,10 +1,10 @@
-# EZ Micro Balance Ancient Expansion - Urda, Loamweaver
+# Spire Plus Ancient Expansion - Urda, Loamweaver
 
 This folder tracks the Urda Ancient vertical slice for private beta.
 
-Status: default-on Act 1 selection and the first source-backed blessing gameplay slice are active for private-beta testing. Seedbed and Humus Pact have source-level stabilization in the current pass. Live gameplay, save/load, and UI verification are still pending and tracked through live Urda issues in `docs/issues.md`.
+Status: Urda is default-on for private-beta testing with all ten v2.2 blessing ids source-backed: Seedbed, Humus Pact, Molting, Moss Map, Trial Branch, Shallow-Root Relic, Rooted Route, After the Rain, Root-Sight, and Seed Bank. Urda uses BaseLib custom Ancient icon/background-scene paths and packages its background scene after the 2026-05-13 negative A14 probe exposed missing vanilla-derived asset paths; `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345` verifies the installed PCK resolves the custom scene/icon with 0 `ERROR` / `WARNING` lines. Live gameplay, save/load, co-op, and current UI verification are still pending and tracked through live Urda issues in `docs/issues.md`.
 
-Ancient Expansion v2.2 records a future ten-blessing Urda roadmap in `../ancient-expansion-v2.2/README.md`. That roadmap does not overwrite the current implementation: only Seedbed, Humus Pact, Molting, and Moss Map are active in source today.
+Ancient Expansion v2.2 is the current source of truth for the combined Urda/Morvi/Lotha/Vakuu Ancient expansion in `../ancient-expansion-v2.2/README.md`. This folder remains the Urda-specific evidence and checklist folder.
 
 ## Feature Map
 
@@ -16,11 +16,10 @@ Ancient Expansion v2.2 records a future ten-blessing Urda roadmap in `../ancient
 
 Current active focus from `docs/issues.md`:
 
-- One new Act 1 Ancient: `Urda, Loamweaver`.
-- 4 initial blessings exposed for testing: `Seedbed`, `Humus Pact`, `Molting`, `Moss Map`.
-- Future v2.2 Urda blessings (`Trial Branch`, `Shallow-Root Relic`, `Rooted Route`, `After the Rain`, `Root-Sight`, `Seed Bank`) remain planning-only.
-- Only Urda is in this overnight work scope.
-- Morvi, Lotha, and Vakuu are out of scope for this pass.
+- One default-on Act 1 Ancient: `Urda, Loamweaver`.
+- Ten blessing ids exposed for source/manual testing.
+- Emergency gates: `EZMB_DISABLE_URDA=1` / `SPIREPLUS_DISABLE_URDA=1`; force gates: `EZMB_FORCE_ANCIENT=URDA` / `SPIREPLUS_FORCE_ANCIENT=URDA`; blessing force aliases: `EZMB_FORCE_URDA_BLESSING` / `SPIREPLUS_FORCE_URDA_BLESSING`.
+- Live gameplay, save/load, co-op, Rootblight interaction, and final-art verification remain pending.
 
 Out of scope for this feature pass:
 

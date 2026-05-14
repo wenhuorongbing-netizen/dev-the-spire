@@ -1,20 +1,60 @@
 # Ancient Expansion v2.2 Manual Test Checklist
 
-Status: Urda and default-off Morvi prototype rows are source-backed but still require live validation. Lotha, Vakuu fight, and extra Urda rows remain future validation requirements; Lotha is blocked this pass by missing explicit event-art/background source files.
+Status: Urda ten-blessing rows, default-on Morvi source rows, default-on Lotha source rows, and default-on single-player Vakuu fight rows are source-backed but still require live validation. Vakuu's known unfinished parent-linked active-combat save shape is source-reduced, Lotha Death Reprieve phase is now deck-mirrored, and Urda/Morvi/Lotha encoded state mirror usage is source-guarded, but active live save/load restore remains pending. The latest player-facing polish pass removed legacy Urda option-marker wording and tightened key rich-text highlights; live hover readability remains pending until clicked UI screenshots/logs are captured.
 
 ## 0. Planning Integrity
 
 - [x] v2.2 design is stored outside `docs/issues.md`.
 - [x] Compact issue file exists at `docs/issues/ancient-expansion-v2.2.md`.
-- [x] Morvi is explicitly default-off behind `EZMB_ENABLE_MORVI_V22=1`.
-- [x] Lotha and Vakuu fight are explicitly planning-only.
+- [x] Morvi is default-on for private-beta direct testing and can be hidden with `EZMB_DISABLE_MORVI=1` or `SPIREPLUS_DISABLE_MORVI=1`.
+- [x] Lotha is explicitly source-complete/live-pending; Vakuu fight is explicitly source-complete/live-pending for single-player testing only.
 - [x] User approved continuing into the next development round before live testing.
 - [x] Morvi/Lotha art direction is recorded in `art-direction.md`.
-- [ ] Morvi/Lotha source image files are copied into `EZMicroBalance/images/events/` and verified in export resources.
-- [ ] Morvi/Lotha custom Ancient background path is verified in game after real assets/scenes are exported.
+- [x] Morvi source image files are copied into `EZMicroBalance/images/events/` and listed in export resources before Morvi is made visible.
+- [ ] Lotha custom Ancient background path is verified in game after exported assets/scenes are published.
+
+## 0A. Ancient Clicked UI Evidence Helper
+
+No safe automated clicked-Ancient UI path exists in the repo today. `scripts/collect-ancient-ui-evidence.ps1` prepares one forced-Ancient evidence folder, writes `ancient-ui-evidence-plan.json` plus `manual-instructions.md`, runs the window preflight unless `-NoPreflight` is used, and only launches through `scripts/spire-plus-live-session.ps1` when `-Launch` is explicitly present. This helper prepares evidence; it does not prove clicked UI by itself.
+
+Static resource-routing guards added on 2026-05-14 confirm current source/resource/export wiring only: Urda, Morvi, and Lotha scene files are Control-root clicked backgrounds using event art; map/run-history icons and option marker relic art remain separate exported resources; and the latest art audit reports 0 missing targets, 0 hash mismatches, and 0 missing exports. No final bespoke art was integrated in the player-facing polish pass. Keep all clicked UI rows below pending until screenshots/logs prove the live screens.
+
+Prepare without launching:
+
+```powershell
+.\scripts\collect-ancient-ui-evidence.ps1 -Mode Prepare -Ancient URDA -MoveOtherMods -MoveCurrentRuns
+.\scripts\collect-ancient-ui-evidence.ps1 -Mode Prepare -Ancient MORVI -MoveOtherMods -MoveCurrentRuns
+.\scripts\collect-ancient-ui-evidence.ps1 -Mode Prepare -Ancient LOTHA -MoveOtherMods -MoveCurrentRuns
+.\scripts\collect-ancient-ui-evidence.ps1 -Mode Prepare -Ancient VAKUU -MoveOtherMods -MoveCurrentRuns
+.\scripts\collect-ancient-ui-evidence.ps1 -Mode Prepare -Ancient VAKUU -ForceVakuuFight -MoveOtherMods -MoveCurrentRuns
+```
+
+Rerun the printed command with `-Launch` only when ready for a live session. The helper sets `SPIREPLUS_FORCE_ANCIENT=<Ancient>` and `EZMB_FORCE_ANCIENT=<Ancient>` for the launched process; for `VAKUU -ForceVakuuFight`, it also sets `SPIREPLUS_FORCE_VAKUU_FIGHT=1` and `EZMB_FORCE_VAKUU_FIGHT=1`.
+
+Expected visible option counts are Urda 4, Morvi 3, Lotha 3, and Vakuu 4 in normal single-player when the fight gate is enabled or 3 if the fight gate is disabled/ineligible. Current source changes the focused `-ForceVakuuFight` case to one fight option.
+
+DevConsole render-smoke commands, only when natural routing would take too long and the row is marked as UI render smoke rather than gameplay proof:
+
+```text
+ancient EZMB_URDA
+ancient EZMB_MORVI
+ancient EZMB_LOTHA
+ancient VAKUU
+```
+
+Follow the generated `manual-instructions.md` for exact screenshot/log filenames. Clicked UI evidence must include the screenshot, foreground `window-preflight.json`, copied `godot.log`, `godot-log-audit.json`, and `route-note.md` stating whether the route was natural map click or DevConsole render smoke.
+
+Restore after capture:
+
+```powershell
+.\scripts\collect-ancient-ui-evidence.ps1 -Mode Restore -EvidenceDir <evidence-dir>
+```
+
+Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen screenshots/logs are captured.
 
 ## 1. Current Urda First
 
+- [ ] Urda event UI renders event art, dialogue, four options, option/relic icons, and hover tips.
 - [ ] Seedbed live selection and reward alternative verified, including no counter advance from reroll/reopen alone.
 - [ ] Seedbed does not offer the alternative when max HP is not greater than 2.
 - [ ] Seedbed fourth acceptance grants +10 max HP without healing current HP.
@@ -23,40 +63,85 @@ Status: Urda and default-off Morvi prototype rows are source-backed but still re
 - [ ] Humus Pact does not trigger from ordinary reward-set skip/proceed or room-exit cleanup.
 - [ ] Molting / Withered Husk live card behavior verified.
 - [ ] Moss Map room-type reward behavior verified.
+- [ ] Trial Branch offers four common/uncommon class cards, upgrades and adds the chosen Trial Plant card, and after three combats keeps it only if played in at least two combats.
+- [ ] Shallow-Root Relic offers two common relics, grants the chosen relic plus 75 Gold, roots on an Act 1 elite for 35 Gold, and otherwise uses the documented Act 2 removal/refund fallback.
+- [ ] Rooted Route auto-marks a reachable normal-combat node within the first seven floors without changing the map graph, rewards reaching it, and withers for 8 HP loss plus 25 Gold if unreachable.
+- [ ] After the Rain prevents the first Act 1 lethal damage for 1 HP, 15 Block, draw 1, two Wounds, and -3 Max HP; if unused before Act 2 it heals 8 and grants 75 Gold.
+- [ ] Root-Sight starts with 5 Root Eyes, automatically marks reachable non-Boss rooms without a map button, and grants the first-use potion if a slot exists.
+- [ ] Seed Bank uses the source-safe `Store Seed` reward alternative, caps at three Seeds, and before the Act 1 Boss chooses up to two Seeds with the first upgraded. It must not mark Seed Bank cards as Trial Branch plants.
 - [ ] Current Urda save/load verified; do not close from `SavedSpireField<Player,string>` source evidence alone.
 
-## 2. Default-Off Morvi Prototype
+## 2. Default-On Morvi Source Slice
 
-- [ ] Morvi does not appear when `EZMB_ENABLE_MORVI_V22` is unset.
-- [ ] Morvi appears in Act 2 when `EZMB_ENABLE_MORVI_V22=1`.
-- [ ] `EZMB_FORCE_MORVI_BLESSING=morvi_misprint_press` limits Morvi options to Misprint Press.
-- [ ] `EZMB_FORCE_MORVI_BLESSING=morvi_open_book_exam` limits Morvi options to Open-Book Exam.
-- [ ] `EZMB_FORCE_MORVI_BLESSING=morvi_debt_settlement` limits Morvi options to Debt Settlement.
-- [ ] Misprint Press extra-play does not recurse.
-- [ ] Misprint Press ignores Power cards and generated clones.
-- [ ] Misprint Press generated-copy failure path leaves no unpiled clone behind.
-- [ ] Open-Book Exam upgrades only an Attack or Skill reward option in normal Act 2 combat rewards.
-- [ ] Debt Settlement grants 75 Gold on selection.
-- [ ] Debt Settlement `Repay Debt` alternative appears only while debt remains and the player can pay Gold or nonlethal HP.
-- [ ] Debt Settlement third repayment offers an upgraded card reward and does not softlock.
-- [ ] Debt Settlement debt accounting survives save/load.
+- [ ] Morvi appears in Act 2 by default and is hidden when `EZMB_DISABLE_MORVI=1` or `SPIREPLUS_DISABLE_MORVI=1`.
+- [ ] `EZMB_FORCE_ANCIENT=MORVI` or `SPIREPLUS_FORCE_ANCIENT=MORVI` focuses Act 2 testing on Morvi.
+- [ ] `EZMB_FORCE_MORVI_BLESSING` or `SPIREPLUS_FORCE_MORVI_BLESSING` can force each id: `morvi_forbidden_loan`, `morvi_misprint_press`, `morvi_red_ink_overdraft`, `morvi_overdue_library`, `morvi_open_book_exam`, `morvi_paperstorm`, `morvi_blueprint_proof`, and `morvi_debt_settlement`.
+- [ ] Morvi event UI renders event art, dialogue, three options, option/relic icons, and hover tips.
+- [ ] Forbidden Loan offers one of three class Ancient cards, adds the upgraded chosen card with the Borrowed Ancient marker, and charges 1 HP for borrowed Attack/Skill plays.
+- [ ] Forbidden Loan borrowed Power play loses 8 HP and is not copied, replayed, or extra-played by Morvi v2.2 systems.
+- [ ] Forbidden Loan source-safe deviation verified: after the Act 2 boss the borrowed card auto-settles by paying 180 Gold if possible, otherwise the card is removed; no post-boss choice UI is claimed.
+- [ ] Misprint Press triggers once per turn from the first player-played Attack or Skill, uses play-count modification on the original card, draws 1 when the original/base Energy cost is at least 1, and creates no copied card in hand.
+- [ ] Misprint Press ignores Power, Status, Curse, autoplay, generated clone, and recursive extra-play executions.
+- [ ] Red Ink Overdraft source-safe UI deviation verified: a temporary 0-cost Overdraft action card is added at player-turn start only when hand space allows, stays out of discard when the hand is full, and is playable only once per turn at 0 Energy; it is not an automatic trigger or native combat button.
+- [ ] Red Ink Overdraft draws 2, gains 1 Energy, records one debt, and at combat end pays 12 Gold per debt or loses 3 nonlethal HP per unpaid debt.
+- [ ] Overdue Library adds three random temporary Archive Pages at combat start from Draw, Veil, Burn, Discount, Bravery, and Dexterity pages; unplayed pages carry no extra punishment and are cleaned up after combat.
+- [ ] Open-Book Exam turn 1 draws up to 5 extra cards, gains 2 Energy, seals tracked Open Book cards remaining in hand at turn end, and returns them at turn 3 start with cost 0 for that turn/play.
+- [ ] Open-Book Exam source-safe deviation verified: sealed cards are held through an Exhaust Pile holding path and return only when hand space allows. Save/load during the sealed-card window must prove the saved marker recovery works.
+- [ ] Paperstorm shuffles four Waste Paper status cards into the Draw Pile and the first two Status cards drawn from the Draw Pile each turn are consumed for draw 1 and Energy 1.
+- [ ] Blueprint Proof starts combat with 3 Proofread stacks; the first three non-Status, non-Curse player-played deck cards either temporarily upgrade and draw 1, or if already upgraded cost 1 less and grant 4 Block. Power cards are never extra-played.
+- [ ] Debt Settlement immediately grants 220 Gold, removes up to 2 cards, upgrades 2 cards, sets Debt to 320, then each combat end pays due `min(40, Debt)` with Gold first and 3 nonlethal HP per 10 Gold short rounded up while Debt decreases by the full due.
+- [ ] Morvi save/load after selecting each blessing preserves the selected blessing, debt/progress state, and borrowed Ancient card marker.
+- [ ] Morvi co-op behavior is observed before any multiplayer-safe claim.
 
-## 3. Future Lotha
+## 3. Default-On Lotha Source Slice
 
-- [ ] Explicit `EZMicroBalance/images/events/ezmb_lotha.png` source file or custom scene path is present before Lotha is enabled for player testing.
-- [ ] Lotha appears only when enabled by future gate.
-- [ ] Mirror effects do not target unsupported card types.
-- [ ] Deferred Verdict stacks display and clear correctly.
-- [ ] Death Reprieve lethal-damage path cannot duplicate death, rewards, or room transitions.
-- [ ] Public Evidence debuff detection matches source-backed rules.
+- [x] `EZMicroBalance/images/events/ezmb_lotha.png` and custom scene path are present before Lotha is enabled for player testing.
+- [ ] Lotha appears in Act 3 by default and is hidden when `EZMB_DISABLE_LOTHA=1` or `SPIREPLUS_DISABLE_LOTHA=1`.
+- [ ] `EZMB_FORCE_ANCIENT=LOTHA` or `SPIREPLUS_FORCE_ANCIENT=LOTHA` focuses Act 3 testing on Lotha.
+- [ ] Lotha event UI renders event art, dialogue, three options, option/relic icons, and hover tips.
+- [ ] Mirror Rebuttal selection screen chooses exactly one Attack, Skill, or Power deck card.
+- [ ] Mirror Rebuttal combat start moves the selected combat card to hand when it starts in a combat pile outside the hand.
+- [ ] Mirror Rebuttal first selected Attack/Skill play adds two plays, does not recurse from autoplay/generated executions, and selected Power costs 0 for that play, then grants 2 Energy plus draw 2 instead of extra-playing.
+- [ ] Mirror Hall Echo records the last player-played non-Status Attack/Skill/Power at player-turn end and only the next turn's first matching player-played card consumes the echo.
+- [ ] Mirror Hall Echo Attack/Skill consumes the echo for one extra play; Power consumes it by costing 0 for that play and drawing 1, with no Energy gain; autoplay/generated cards do not set or consume it.
+- [ ] Presumption applies visible Innocent state at combat start and each turn while active draws 2, grants 1 Energy, and grants 8 Block.
+- [ ] Presumption breaks only from unblocked enemy attack damage in normal combat testing, then removes Innocent, applies immediate 8 HP loss, and does not return this combat.
+- [ ] Closed Court removes post-combat card rewards for the rest of the run while gold, potions, and relic rewards still appear.
+- [ ] Closed Court first player turn draws until hand has 10, grants 4 Energy, and makes the first three player-played hand cards cost 1 less Energy for that play.
+- [ ] Deferred Verdict turn 4 grants draw 4, Energy 4, and 3 player-owned Verdict; each next non-Status card consumes 1 Verdict.
+- [ ] Deferred Verdict Attack/Skill adds one play, Power costs 0 for that play and draws 1 with no Energy gain, Verdict clears after turn 4/combat, and combat ending before turn 4 heals 4 HP.
+- [ ] Death Reprieve player-turn lethal trigger sets HP to 1 and starts the reprieve immediately in the current player turn.
+- [ ] Death Reprieve enemy-turn lethal trigger sets HP to 1 and starts the reprieve on the next player turn; this is the documented source-safe deviation from immediate turn interruption.
+- [ ] During Death Reprieve, draw 10, gain 10 Energy, all cards cost 0, and further damage/HP loss cannot kill the player.
+- [ ] Death Reprieve victory during the reprieve turn continues the run if all enemies die before turn end.
+- [ ] Death Reprieve failure after the reprieve turn kills the player with enemies alive and does not duplicate rewards or room transitions.
+- [ ] Death Reprieve interaction with other death-prevention effects is tested, including trigger order and no repeated once-per-run activation.
+- [ ] Death Reprieve save/load before any lethal trigger preserves the selected blessing and leaves the once-per-run reprieve available.
+- [ ] Death Reprieve save/load after lethal prevention records no duplicate trigger. Current source persists `DeathReprieveUsed` plus `DeathReprievePhase` through Lotha player/deck state, but this row remains pending until live restore proves it.
+- [ ] Death Reprieve save/load while reprieve start is pending or the reprieve turn is active remains a blocking live row. Current source can rehydrate pending/active protection state from the deck-mirrored phase and logs the restored phase/power state, but exact active-turn hand/energy/pile/power continuation is not source-proven; do not count this path as save-safe without direct live proof.
+- [ ] Single Sentence first player-played Attack/Skill each turn adds two plays, then only four more normal player-played cards can be played that turn.
+- [ ] Single Sentence cap does not count extra-play executions, autoplay/generated cards, clones, or blocked play attempts; first Power before the sentence costs 0 for that play and draws 1 without consuming it.
+- [ ] Public Evidence doubles only non-damaging negative statuses in both directions, grants/removes Enlightenment, and consumes up to 3 Enlightenment at turn start for draw and Block. Verify Weak, Vulnerable, and Frail count; verify Poison, damage-over-time, countdown damage, and source-proven damage/kill Debuffs such as Constrict, Demise, Disintegration, Doom, Magic Bomb, Strangle, and The Gambit do not count.
+- [ ] Lotha save/load after selecting each blessing preserves the selected blessing and any persistent once-per-run/deck-card state.
+- [ ] Lotha co-op behavior is observed before any multiplayer-safe claim.
 
-## 4. Future Vakuu Fight
+## 4. Vakuu Fight Source Slice
 
-- [ ] Extra fight option appears only when enabled.
+- [ ] In single-player, extra Fight Vakuu option appears by default and is hidden with `EZMB_DISABLE_VAKUU_FIGHT=1` or `SPIREPLUS_DISABLE_VAKUU_FIGHT=1`.
+- [ ] `EZMB_FORCE_ANCIENT=VAKUU` or `SPIREPLUS_FORCE_ANCIENT=VAKUU` focuses Act 3 testing on Vakuu.
+- [ ] `EZMB_FORCE_VAKUU_FIGHT=1` or `SPIREPLUS_FORCE_VAKUU_FIGHT=1` limits Vakuu to the fight option for focused testing.
 - [ ] Declining the fight preserves current Vakuu behavior.
-- [ ] Victory offers three non-Vakuu Act 3 Ancient blessings.
+- [ ] Selecting Fight Vakuu enters the custom combat and the option text warns that Temptation is added after the hand draw on turns 1/3/5+.
+- [ ] On turns 1, 3, 5, and onward, after the normal hand draw, one Temptation is added to the top of the Draw Pile and appears in combat history/log evidence.
+- [ ] Drawing Temptation shows a Status card with Ethereal and Unplayable hover tips and no duplicated keyword body text.
+- [ ] Exhausting Temptation, including via end-of-turn Ethereal, grants 1 Energy and loses 3 HP without softlock.
+- [ ] Victory offers three non-Vakuu Act 3 Ancient blessings when enough unclaimed choices remain; otherwise the fallback continue option appears.
+- [ ] Combat victory does not show a normal combat reward screen before the Vakuu victory blessing choice.
 - [ ] Failure/death path is correct and does not softlock.
-- [ ] Temptation text and status behavior are clear if implemented.
+- [ ] Save/load before choosing Fight Vakuu preserves the normal Vakuu event and choice availability.
+- [ ] Save/load during active Vakuu child combat no longer uses the known Core-rejected unfinished `ParentEventId` shape. If the game permits saving during this active fight, verify reload behavior directly; do not close this row until no-normal-reward flow and parent resume are proven.
+- [ ] Save/load after Vakuu combat victory/resume preserves the no-normal-reward victory flow and either three non-Vakuu Act 3 blessing choices or the fallback continue option. Source logs the explicit ownerless fallback path if restore reaches it, but that log is not live save/load proof by itself.
+- [ ] Co-op does not show the fight option unless a future explicit multiplayer-safe design replaces the current single-player gate.
 
 ## 5. Multiplayer / Save-Load
 

@@ -1,6 +1,6 @@
 # Private Beta Release Checklist
 
-Target mod: `EZ Micro Balance`
+Target mod: `Spire Plus`
 Target manifest id: `EZMicroBalance`
 
 ## Architecture
@@ -14,6 +14,8 @@ Target manifest id: `EZMicroBalance`
 ## Build And Publish
 
 - [x] `dotnet build` succeeds.
+- [x] Latest source/package build check passed with `dotnet build EZMicroBalance.sln --no-restore` after the Morvi reward/state lifecycle hardening pass.
+- [x] Publish/package/hash refresh has been rerun for the latest source/text/resource slices with `dotnet publish EZMicroBalance.sln --no-restore` and a rebuilt `SpirePlus` private-beta zip.
 - [x] `dotnet publish` succeeds.
 - [x] Published `EZMicroBalance.json` exists.
 - [x] Published `EZMicroBalance.dll` exists.
@@ -23,18 +25,24 @@ Target manifest id: `EZMicroBalance`
 - [x] PCK audit excludes legacy `EzDailyContent`, C# source, docs, art, asset, and archive folders.
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh.
-- [x] Release artifact, installed DLL/PCK, package hash, and runtime-smoke evidence tests have been rerun for the current tree with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` after the latest package hash refresh.
-- [x] `publish/EZMicroBalance-v0.1.0-private-beta.0.zip` is rebuilt from the current installed artifacts. Current zip SHA256 `F09686BA68A8A63FEC716713C2B7A5D3A184F1FEE5EE1EB749BBD1AEDEB142FC`.
+- [x] Release artifact, installed DLL/PCK, package hash, and runtime-smoke evidence tests pass after the latest package refresh with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts during the 2026-05-14 Ancient art promotion pass. Current package DLL SHA256 `A072EA75ABC00C3879B5F1E57B1014992740E6057308F4DA5EDAC5FEC034863F`; manifest SHA256 `9CB73137A04958D0DC0278E854CA1E0E1AC187C125E938DF7C3734F23F7B6A02`; PCK SHA256 `5A567F84E25B333E8739C11B1001560DD1E837599E11450059384B67C26C1F1C`; README SHA256 `5B1194440F6B212471E05F0EE117EE7F30E597FAAA916DF91F9378CD529DDCBB`; zip SHA256 `61BA0EB09A01E3AF849A6AFA78C1F6EE6D9395CB8ACF2CCF962B5BC4AA8B58D0`. This hash refresh records automated source/package validation only; live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
 
 ## Runtime
 
 - [x] BaseLib appears in Mod Settings.
 - [x] BaseLib loads when enabled in a controlled smoke profile.
-- [x] EZ Micro Balance appears in Mod Settings.
-- [x] EZ Micro Balance loads when enabled in a controlled smoke profile.
-- [x] Game reaches main menu with only BaseLib and EZ Micro Balance enabled in the controlled smoke profile.
+- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
+- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.
+- [x] Historical EZ Micro Balance display-name Mod Settings evidence exists for the same `EZMicroBalance` manifest id.
+- [x] Spire Plus / `EZMicroBalance` loads when enabled in a controlled smoke profile for the current package.
+- [x] Game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded in the controlled smoke profile for the current package; unrelated disabled local-mod manifest/name noise is still present in the developer mods folder.
+- [x] Current-package normal Steam helper startup/log verification under `.tools\runtime-evidence\current-package-smoke-20260514-015901` reached main menu with only BaseLib and Spire Plus / `EZMicroBalance`, reported `Found 22 SavedSpireFields`, restored settings/moved mods/current-run files, left 0 `SlayTheSpire2` processes, and audited clean.
+- [x] Repeat helper-driven normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` reached main menu with only BaseLib and Spire Plus / `EZMicroBalance`, reported `Found 16 SavedSpireFields`, restored settings plus 24 moved mod entries, and audited clean.
+- [x] BaseLib-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with `EZMicroBalance` temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus / `EZMicroBalance`, restored settings plus 25 moved entries and the current-run save, and audited clean.
 - [x] `godot.log` reviewed for controlled smoke-test initializer errors.
-- [ ] `godot.log` reviewed after normal Steam-client manual verification.
+- [x] `godot.log` reviewed after current normal Steam-client isolated startup/log verification.
+- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.
 
 ## Content Verification
 
@@ -44,7 +52,10 @@ Target manifest id: `EZMicroBalance`
 - [ ] Disable-mod gameplay behavior is tested in a run.
 - [ ] Multiplayer disposition is decided: verified, or release-noted as unsupported/unverified.
 - [x] Rootblight I/II/III and Blight Sprout generated portrait art is integrated and packaged; live in-game visual verification remains part of the manual matrix.
-- [x] Urda, Loamweaver has a source-backed first gameplay slice for Seedbed, Humus Pact, Molting, and Moss Map; live Urda gameplay and save/load checks remain pending.
+- [x] Urda, Loamweaver has a source-backed first gameplay slice for Seedbed, Humus Pact, Molting, and Moss Map, filters run-state player loops through `Player.IsActiveForHooks`, uses custom Ancient icon/background scene asset paths, packages the Urda background scene, and has a clean headless installed-PCK resource-load check for the custom scene/icon under `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345`; live Urda gameplay and save/load checks remain pending.
+- [x] Current installed-PCK Ancient resource smoke under `.tools/runtime-evidence/current-package-smoke-20260514-015901` loads Urda/Morvi/Lotha background scenes and 43 Ancient textures with 0 errors/warnings, verifies map/event/option art paths are distinct and exported, and finds 0 missing EN/zhs localization keys; clicked live Ancient UI remains pending.
+- [x] Lotha is default-on in source for Act 3 private-beta testing with all eight v2.2 blessing ids, custom scene/art, option marker relics, English/zhs localization, and disable/force gates; live gameplay, save/load, lethal-path, and co-op checks remain pending.
+- [x] Fight Vakuu is default-on for single-player private-beta testing with disable/force gates, custom Event combat, victory resume into Vakuu, and three non-Vakuu Act 3 blessing choices; live UI/gameplay, save/load, failure/death, and co-op checks remain pending.
 
 ## Release Hygiene
 
@@ -59,12 +70,14 @@ Target manifest id: `EZMicroBalance`
 
 ## Known Issues
 
-- RC1 normal Steam-client Mod Settings verification passed after adding the no-op EZ Micro Balance BaseLib config page.
+- Current normal Steam-client startup/log verification passed for the Spire Plus display-name package under `.tools\runtime-evidence\current-package-smoke-20260514-015901` with exactly BaseLib and `EZMicroBalance` loaded, `Registered config for mod EZMicroBalance`, `Found 22 SavedSpireFields`, and 0 `ERROR` / release-blocking / missing-resource / Ancient scene-load signature hits. The run restored settings, 24 moved mods, and 2 current-run files, preserved Steam-rehydrated test current-run files under evidence, and left 0 `SlayTheSpire2` processes. The repeat 2026-05-13 helper-driven startup/log pass at `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` is now historical field-count evidence for the earlier 16-field package state. BaseLib-only plug-off startup/log evidence at `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` loaded only BaseLib and did not initialize Spire Plus / `EZMicroBalance`; the earlier settings-only disabled attempt at `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-142835` is invalid because Spire Plus still initialized. Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list; RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name.
 - Manual feature results are pending; `docs/features/ancients-rework-v4/manual-verification-matrix.md`, `docs/features/ancient-expansion-urda/manual-test-checklist.md`, and `docs/features/ascension-11-20/manual-test-checklist.md` remain the current manual surfaces.
-- A11 source now inserts a reachable optional route node in the new column and adds Act 1/2/3 route rows, while ordinary A11 route nodes no longer receive a dedicated marker or hover tooltip. Natural traversal and boss reachability remain pending.
+- A11 source now inserts a reachable optional route node in the new column and adds Act 1/2/3 route rows, while ordinary A11 route nodes no longer receive a dedicated marker or hover tooltip. The existing A11 live save has a saved-map graph proof from the post-load first-node coord to the boss; natural click-by-click traversal remains pending.
 - Host multiplayer A20 development selection logs an explicit downgrade warning. This is not live co-op support for Dual King Brands; A20 co-op boss-path behavior remains pending manual verification.
 - The misleading multiplayer "game version differs" popup can also mean the vanilla `ModelDb` hash check failed after the visible game version matched. The current package logs host/local version, ModelDb hash, and gameplay-relevant mod-list differences before vanilla disconnects; it does not bypass the hash check.
 - Urda source behavior is packaged, but live selection, reward-screen timing, room-entry rewards, act-transition cleanup, save/load, UI, and co-op behavior remain pending.
+- Latest source hardening also filters Urda/Morvi player loops to active hook players and recovers deck-mirrored state only from owned, non-removed cards. This source pass is build/publish/package-refreshed, and release-artifact tests pass; live verification remains pending.
+- The 2026-05-13 A14 Rootblight art-hover probe found pre-fix missing Urda vanilla-derived asset paths before combat. The Urda custom Ancient asset-path fix is packaged and the installed PCK resolves the custom Urda scene/icon in headless Godot, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.
 - Forge Token no longer wraps special rest-site options; live A12 rest/Smith regression testing is still needed before closing that issue.
 - Prismatic Gem intentionally skips custom pools, filtered pools, colorless-only pools, no-pool/no-model-modification rewards, elites, bosses, and events; on every second standard reward every visible reward option becomes off-color. If the reward banner hint cannot be updated, `godot.log` should contain a `PrismaticGem reward-screen hint fallback` diagnostic and testers should use the relic hover count plus visible off-color cards as fallback evidence.
 

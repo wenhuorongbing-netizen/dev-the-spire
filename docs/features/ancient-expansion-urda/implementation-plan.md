@@ -8,9 +8,9 @@ Current dependency and architecture baseline:
 - BaseLib package target: `v3.1.2`.
 - Active private-beta project: `EZMicroBalance`.
 
-Urda work should remain independently disableable and independent from other ancient families.
+Urda work remains independently disableable and independent from other ancient families.
 
-Ancient Expansion v2.2 adds a future ten-blessing Urda roadmap, but this implementation plan remains scoped to the current private-beta slice. Do not add the six future Urda blessings until the current four blessings have live gameplay and save/load evidence.
+Ancient Expansion v2.2 now promotes Urda to a ten-blessing default-on source slice. The slice is test-ready in source only: live gameplay, save/load, and co-op verification remain pending, and several blessings intentionally use narrower source-safe UI fallbacks.
 
 ## 1. Phase 0: Source evidence guard pass
 
@@ -52,17 +52,23 @@ Exit:
 
 ## 3. Phase 2: Active blessing slice
 
-Order by safety:
+Active blessing pool:
 
 1. Seedbed.
 2. Humus Pact.
 3. Molting + `Withered Husk`.
 4. Moss Map.
+5. Trial Branch.
+6. Shallow-Root Relic.
+7. Rooted Route.
+8. After the Rain.
+9. Root-Sight.
+10. Seed Bank.
 
 For each blessing:
 
 - Guarded source hooks are implemented for the first active slice.
-- Progress is encoded in `AncientSavedStateFields.UrdaStateKey` to avoid adding a new SavedSpireField until live persistence is proven.
+- Progress is encoded in `AncientSavedStateFields.UrdaStateKey` and mirrored to deck cards through `AncientSavedStateFields.UrdaDeckStateKey` so reload testing can recover from a card-backed carrier if the Player field is empty.
 - EN and ZHS localization keys are present for the active custom cards, Seedbed alternative, and Humus Pact alternative.
 - Manual checklist rows remain open until tested in-game.
 - Source guard tests cover the implementation shape.
@@ -74,7 +80,13 @@ Current hardening notes:
 - Humus Pact uses an explicit card reward alternative and resolves its third-trigger payoff after `AfterRewardTaken`.
 - Humus Pact no longer patches `CardReward.OnSkipped` because local Core source shows skipped reward finalization can happen when a reward set is abandoned or a room is exited.
 - Humus Pact keeps `HumusCompletionPending` until payoff resolution succeeds, and creates the payoff card before optional removals to avoid consuming removals if no payoff card can be generated.
-- `UrdaStateKey` now includes a Humus completion-pending bit and keeps an eight-field migration read path, but live save/load proof is still required.
+- `UrdaStateKey` now includes a Humus completion-pending bit and keeps an eight-field migration read path. `AncientPlayerState` mirrors Urda progress to the card-backed `UrdaDeckStateKey`, but live save/load proof is still required.
+- Trial Branch uses a 4-card source-safe selection grid, upgrades the chosen card, marks it with `UrdaTrialPlantCard`, tracks three combats, and keeps the card only if it was played in at least two of those combats.
+- Shallow-Root Relic offers two common relics, grants 75 Gold, roots on an Act 1 elite kill for 35 Gold, and uses a deterministic Act 2 fallback that removes the pending relic and refunds 75 Gold. The `lose 6 Max HP to keep it` settlement remains a guarded design constant but is not exposed because no safe Act 2 choice UI was proven.
+- Rooted Route automatically marks a reachable normal-combat node within the first seven floors, uses quest markers only, grants three card rewards plus a potion if available on success, and withers for 8 HP loss plus 25 Gold if the marked route becomes unreachable.
+- After the Rain uses `ShouldDieLate` / `AfterPreventingDeath` for one Act 1 death prevention, then grants 15 Block, draws 1, adds two Wounds, loses 3 Max HP, and spends the blessing. If unused at Act 2, it heals 8 and grants 75 Gold. Before spending, up to two Act 1 elite kills grant 20 Gold.
+- Root-Sight starts with 5 Root Eyes but has no source-safe map button in this slice. It automatically marks reachable visible non-Boss rooms and grants the first-use potion if a slot exists.
+- Seed Bank adds a `Store Seed` reward alternative to Act 1 normal combat card rewards. The source-safe slice stores a selected reward card by consuming that reward, caps at three seeds, and before the Act 1 Boss lets the player choose up to two seeds; the first selected card is upgraded and Seed Bank does not mark cards as Trial Plant.
 
 ## 4. Phase 3: Diagnostics and release hygiene
 
@@ -105,6 +117,6 @@ Actions:
 
 No milestone in this branch should claim release-ready Urda behavior if:
 
-- `Seedbed`, `Humus Pact`, `Molting`, or `Moss Map` logic is incomplete.
+- any of the ten Urda blessing rows is incomplete or undocumented.
 - save/load behavior is broken.
 - live manual checks are still unexecuted.

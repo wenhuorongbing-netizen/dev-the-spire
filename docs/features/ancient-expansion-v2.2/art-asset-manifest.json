@@ -1,0 +1,1056 @@
+{
+  "schema_version": 1,
+  "updated_date": "2026-05-14",
+  "required_generation_mode": "GPTimage2",
+  "notes": [
+    "Active Ancient and related card/power/relic art manifest for Spire Plus / EZMicroBalance.",
+    "This file records current active art bytes and temporary status. It is not a final-art claim.",
+    "New final_generated image records must set generation_mode to GPTimage2.",
+    "Final generated or user-supplied art must update prompt/source/target/SHA256/dimensions before release docs can cite it."
+  ],
+  "assets": [
+    {
+      "id": "urda_event_background",
+      "role": "event_background",
+      "target_path": "EZMicroBalance/images/events/ezmb_urda.png",
+      "source_status": "source_local_background",
+      "sha256": "6D7CE7572F88393231B6658EC6D71B51FC464C06F9BFEF870812FCAA77C66ACB",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "final_required_before_release": false,
+      "notes": "Original local event background. The documented generated-source candidate art_pipeline/generated/ancient_urda_bg_v1_v001.png does not match these bytes, so source provenance must be corrected before any final-art provenance claim."
+    },
+    {
+      "id": "morvi_event_background",
+      "role": "event_background",
+      "target_path": "EZMicroBalance/images/events/ezmb_morvi.png",
+      "source_status": "source_local_background",
+      "source_path": "art_pipeline/generated/ancient_morvi_bg_v1_v001.png",
+      "sha256": "461990516EAE6AEA4D41B2BC1B6CFF7FCE565B83E09335B99CE65529455ADB50",
+      "dimensions": {
+        "width": 1831,
+        "height": 859
+      },
+      "final_required_before_release": false,
+      "notes": "Active local generated background copied from the recorded source path."
+    },
+    {
+      "id": "lotha_event_background",
+      "role": "event_background",
+      "target_path": "EZMicroBalance/images/events/ezmb_lotha.png",
+      "source_status": "source_local_background",
+      "source_path": "art_pipeline/generated/ancient_lotha_bg_v1_v001.png",
+      "sha256": "03936C556F9FF16927694121DC07F8B0A637BA196EE1B9642AC215934E3B702B",
+      "dimensions": {
+        "width": 1831,
+        "height": 859
+      },
+      "prompt_id": "lotha_event_background",
+      "final_required_before_release": false,
+      "notes": "Active local generated background copied from the recorded source path."
+    },
+    {
+      "id": "urda_map_icon",
+      "role": "map_icon",
+      "target_path": "EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png",
+      "sha256": "730EB57F65E2AC52593BD6C3604F7F39CD9BD4CE903E9D85AE8A6A903944406E",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_filled_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_filled_icon_v2.png"
+    },
+    {
+      "id": "urda_map_icon_outline",
+      "role": "map_icon_outline",
+      "target_path": "EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png",
+      "sha256": "A98C587A2B0BD15E65BFC2500F0D80E093C51FD69B7306BDA1E9109CB99DEBCD",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_outline_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_outline_icon_v2.png"
+    },
+    {
+      "id": "urda_run_history_icon",
+      "role": "run_history_icon",
+      "target_path": "EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png",
+      "sha256": "730EB57F65E2AC52593BD6C3604F7F39CD9BD4CE903E9D85AE8A6A903944406E",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_filled_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_filled_icon_v2.png"
+    },
+    {
+      "id": "urda_run_history_outline",
+      "role": "run_history_outline",
+      "target_path": "EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png",
+      "sha256": "A98C587A2B0BD15E65BFC2500F0D80E093C51FD69B7306BDA1E9109CB99DEBCD",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_outline_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_outline_icon_v2.png"
+    },
+    {
+      "id": "morvi_map_icon",
+      "role": "map_icon",
+      "target_path": "EZMicroBalance/images/ancients/morvi/ezmb_morvi_map_icon.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/ezmb_morvi_map_icon.png",
+      "sha256": "7DFE44AB102D07A3A85E1C4AFDB3E2806A629DED877E0547E72F7E53FC44C151",
+      "dimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_filled_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_filled_icon_v2.png"
+    },
+    {
+      "id": "morvi_map_icon_outline",
+      "role": "map_icon_outline",
+      "target_path": "EZMicroBalance/images/ancients/morvi/ezmb_morvi_map_icon_outline.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/ezmb_morvi_map_icon_outline.png",
+      "sha256": "D604430CD2E9879D375593051CFFEC81DDAFF724F82323855FB57841B974E3E6",
+      "dimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_outline_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_outline_icon_v2.png"
+    },
+    {
+      "id": "morvi_run_history_icon",
+      "role": "run_history_icon",
+      "target_path": "EZMicroBalance/images/ancients/morvi/ezmb_morvi_run_history_icon.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/ezmb_morvi_run_history_icon.png",
+      "sha256": "7DFE44AB102D07A3A85E1C4AFDB3E2806A629DED877E0547E72F7E53FC44C151",
+      "dimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_filled_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_filled_icon_v2.png"
+    },
+    {
+      "id": "morvi_run_history_outline",
+      "role": "run_history_outline",
+      "target_path": "EZMicroBalance/images/ancients/morvi/ezmb_morvi_run_history_icon_outline.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/ezmb_morvi_run_history_icon_outline.png",
+      "sha256": "D604430CD2E9879D375593051CFFEC81DDAFF724F82323855FB57841B974E3E6",
+      "dimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_outline_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_outline_icon_v2.png"
+    },
+    {
+      "id": "lotha_map_icon",
+      "role": "map_icon",
+      "target_path": "EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon.png",
+      "sha256": "330584A1160167C2F4DB62FF6184408EB964108F12B7FC0EFDD61BAA2C81A289",
+      "dimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/lotha_identity_filled_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/lotha_identity_filled_icon_v2.png"
+    },
+    {
+      "id": "lotha_map_icon_outline",
+      "role": "map_icon_outline",
+      "target_path": "EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon_outline.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon_outline.png",
+      "sha256": "628A3CF44D910CF38500C25159A7F435100AB3F0DAE0199E8BA2AC9BD38FEB46",
+      "dimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_identity_outline_icon_v3.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_identity_outline_icon_v3.png"
+    },
+    {
+      "id": "lotha_run_history_icon",
+      "role": "run_history_icon",
+      "target_path": "EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon.png",
+      "sha256": "330584A1160167C2F4DB62FF6184408EB964108F12B7FC0EFDD61BAA2C81A289",
+      "dimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/lotha_identity_filled_icon_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/lotha_identity_filled_icon_v2.png"
+    },
+    {
+      "id": "lotha_run_history_outline",
+      "role": "run_history_outline",
+      "target_path": "EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon_outline.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon_outline.png",
+      "sha256": "628A3CF44D910CF38500C25159A7F435100AB3F0DAE0199E8BA2AC9BD38FEB46",
+      "dimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt_id": "ancient_identity_icons",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_identity_outline_icon_v3.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_identity_outline_icon_v3.png"
+    },
+    {
+      "id": "urda_seedbed_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_seedbed.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_seedbed.png",
+      "sha256": "BF49A325B61C8714BCF9AD14A8973FF4682EBDD2B5C1E722D25B956284A79138",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_seedbed_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_seedbed_option_relic.png"
+    },
+    {
+      "id": "urda_humus_pact_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_humus_pact.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_humus_pact.png",
+      "sha256": "E57800D3D5EDEF45509EF55CF9FC711544A0A8FB2AFCCF6D4F8198457E3744C4",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_humus_pact_option_relic_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_humus_pact_option_relic_v2.png"
+    },
+    {
+      "id": "urda_molting_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_molting.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_molting.png",
+      "sha256": "26560DBF014A699973EDAA497C19EEF8FE848A3B4D71825465C5D1DD49CFBAE1",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_molting_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_molting_option_relic.png"
+    },
+    {
+      "id": "urda_moss_map_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_moss_map.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_moss_map.png",
+      "sha256": "930AD7BAC840D4A6741CCC7957907BC1BE09A0A5B233BFC2BB841DD6CC450EE5",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_moss_map_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_moss_map_option_relic.png"
+    },
+    {
+      "id": "urda_trial_branch_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_trial_branch.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_trial_branch.png",
+      "sha256": "A616BF1CB6FF176BB80CA12A450E78A860089A5F8BBAC39A6CD5F754CBB3E4F0",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_trial_branch_option_relic_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_trial_branch_option_relic_v2.png"
+    },
+    {
+      "id": "urda_shallow_root_relic_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_shallow_root_relic.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_shallow_root_relic.png",
+      "sha256": "4CCF663F7FA30283CEF4E3FBC1A27BC27B2030FD1914CA9ABBDA3DB909963C9C",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_shallow_root_relic_option_relic_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_shallow_root_relic_option_relic_v2.png"
+    },
+    {
+      "id": "urda_rooted_route_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_rooted_route.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_rooted_route.png",
+      "sha256": "9639E5C6B8CB7B9980F055FB68BF488FC8C31A12461568BED87905D93E6C230B",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_rooted_route_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_rooted_route_option_relic.png"
+    },
+    {
+      "id": "urda_after_rain_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_after_rain.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_after_rain.png",
+      "sha256": "FDBCA5D936FC46796458C64AE350F8EAB89EFE7E1A2CA40723BAF1B7033E0DC6",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_after_rain_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_after_rain_option_relic.png"
+    },
+    {
+      "id": "urda_root_sight_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_root_sight.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_root_sight.png",
+      "sha256": "72694F566A90200E8D997BAD150B98CC9ACC1CE50CC84ABA958A9CC214AEC936",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_root_sight_option_relic_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_root_sight_option_relic_v2.png"
+    },
+    {
+      "id": "urda_seed_bank_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_seed_bank.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_seed_bank.png",
+      "sha256": "0B36D535D5E767D89EEFE27CEDB720D4C6B2E65880325CC23A248EDBE8FD59FC",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "urda_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_seed_bank_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_seed_bank_option_relic.png"
+    },
+    {
+      "id": "morvi_forbidden_loan_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_forbidden_loan.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_forbidden_loan.png",
+      "sha256": "3B07F3F2907AA410AC2918BC25E2977412B3DD1843FD3A04E94873F4B45B0D5C",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "morvi_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_forbidden_loan_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_forbidden_loan_option_relic.png"
+    },
+    {
+      "id": "morvi_misprint_press_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_misprint_press.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_misprint_press.png",
+      "sha256": "679E46A6FF007B6BF1491741399818CBE405A3BF3006F9C28405A70309F048E0",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "morvi_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_misprint_press_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_misprint_press_option_relic.png"
+    },
+    {
+      "id": "morvi_red_ink_overdraft_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_red_ink_overdraft.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_red_ink_overdraft.png",
+      "sha256": "5D48E000305CB746998913CFF0494E928B7ED8009C8885C2ED690A69D273C8C0",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "morvi_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_red_ink_overdraft_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_red_ink_overdraft_option_relic.png"
+    },
+    {
+      "id": "morvi_overdue_library_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_overdue_library.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_overdue_library.png",
+      "sha256": "0B6EBB48C0EE6EEBF8F447CA438CCB784597F9C79438CDDB64CE62AB82DDEB71",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "morvi_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_overdue_library_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_overdue_library_option_relic.png"
+    },
+    {
+      "id": "morvi_open_book_exam_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_open_book_exam.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_open_book_exam.png",
+      "sha256": "074E862618E56BA5783658AD1061631AB30BEDAC8F2F619CCFBA6618CA74551B",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "morvi_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_open_book_exam_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_open_book_exam_option_relic.png"
+    },
+    {
+      "id": "morvi_paperstorm_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_paperstorm.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_paperstorm.png",
+      "sha256": "4DC15CAA30BC7C2CE2E0BDADBF60ED8D94D4DB87BAFDF05BCD6066D3A02C0C15",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "morvi_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_paperstorm_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_paperstorm_option_relic.png"
+    },
+    {
+      "id": "morvi_blueprint_proof_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_blueprint_proof.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_blueprint_proof.png",
+      "sha256": "AD2F16B46174C708EF909B649B640E9272E2F7DAB393A5603A52A22FBD646BF5",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "morvi_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_blueprint_proof_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_blueprint_proof_option_relic.png"
+    },
+    {
+      "id": "morvi_debt_settlement_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_debt_settlement.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_debt_settlement.png",
+      "sha256": "9BE9700874A5CA6C10024FF41C5A469A39F7CE81A55F9B1ED42DED33C8760B0D",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "morvi_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_debt_settlement_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_debt_settlement_option_relic.png"
+    },
+    {
+      "id": "lotha_mirror_rebuttal_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_mirror_rebuttal.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_mirror_rebuttal.png",
+      "sha256": "454E80350EEAF8E4B8053433C9ED5056AC22BE31F41E532E82064ED9CC0D0C40",
+      "dimensions": {
+        "width": 160,
+        "height": 120
+      },
+      "prompt_id": "lotha_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_mirror_rebuttal_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_mirror_rebuttal_option_relic.png"
+    },
+    {
+      "id": "lotha_mirror_hall_echo_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_mirror_hall_echo.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_mirror_hall_echo.png",
+      "sha256": "E7207872C431D8881D8F67CC95B192FC653F8BEB6213CE7A4D97FAE53ED94A2F",
+      "dimensions": {
+        "width": 160,
+        "height": 120
+      },
+      "prompt_id": "lotha_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_mirror_hall_echo_option_relic_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_mirror_hall_echo_option_relic_v2.png"
+    },
+    {
+      "id": "lotha_presumption_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_presumption.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_presumption.png",
+      "sha256": "E41CE4D46E333E0080D562223250FC89D86B13EEDB8DFFEFDB27E004C67361DC",
+      "dimensions": {
+        "width": 160,
+        "height": 120
+      },
+      "prompt_id": "lotha_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_presumption_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_presumption_option_relic.png"
+    },
+    {
+      "id": "lotha_closed_court_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_closed_court.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_closed_court.png",
+      "sha256": "D0F35EA400F5BCE14735A859AD32302B9DA12B8CDE92E2FDA43A743C805F235C",
+      "dimensions": {
+        "width": 160,
+        "height": 120
+      },
+      "prompt_id": "lotha_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_closed_court_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_closed_court_option_relic.png"
+    },
+    {
+      "id": "lotha_deferred_verdict_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_deferred_verdict.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_deferred_verdict.png",
+      "sha256": "C6DF6E567A6785084387EF41CF26E8E0BD07089CE3955073501DEE2897D2DAE5",
+      "dimensions": {
+        "width": 160,
+        "height": 120
+      },
+      "prompt_id": "lotha_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_deferred_verdict_option_relic_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_deferred_verdict_option_relic_v2.png"
+    },
+    {
+      "id": "lotha_death_reprieve_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_death_reprieve.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_death_reprieve.png",
+      "sha256": "454CCE85B8B6F5DF76C0CC377E6893B6FE0980AAC9F36D3994220F07A78C0B39",
+      "dimensions": {
+        "width": 160,
+        "height": 120
+      },
+      "prompt_id": "lotha_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_death_reprieve_option_relic_v2.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_death_reprieve_option_relic_v2.png"
+    },
+    {
+      "id": "lotha_single_sentence_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_single_sentence.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_single_sentence.png",
+      "sha256": "F2CF1A5E32471FBAFB5910F27F90874A9119F4DABB1E92ADE058A490240D5890",
+      "dimensions": {
+        "width": 160,
+        "height": 120
+      },
+      "prompt_id": "lotha_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_single_sentence_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_single_sentence_option_relic.png"
+    },
+    {
+      "id": "lotha_public_evidence_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_public_evidence.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_public_evidence.png",
+      "sha256": "A4FA62E1F125B2C91519F9A0770C4A1C7E5A9063303761A0475593FAE4549AE3",
+      "dimensions": {
+        "width": 160,
+        "height": 120
+      },
+      "prompt_id": "lotha_option_relics",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_public_evidence_option_relic.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_public_evidence_option_relic.png"
+    },
+    {
+      "id": "vakuu_fight_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/vakuu/options/vakuu_fight.png",
+      "source_status": "source_local_generated",
+      "sha256": "65E05B8D56341FAC62447A35E5EE82F657F36E9A05AE734984AFDAFEB12D94E1",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "prompt_id": "vakuu_fight_and_temptation",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/remaining-icons/vakuu_fight_option_relic.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/vakuu/options/vakuu_fight.png",
+      "source_review_path": ".tools/art-generation/chatgpt/remaining-icons/vakuu_fight_option_relic.png"
+    },
+    {
+      "id": "lotha_verdict_power",
+      "role": "power_art",
+      "target_path": "EZMicroBalance/images/powers/lotha_verdict.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/powers/lotha_verdict.png",
+      "sha256": "95829290605D50F45580F6A9678A4620E7381FE93E29556BD95B8C9CA4C2E049",
+      "dimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt_id": "lotha_power_art",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/remaining-icons/lotha_verdict_power.png.",
+      "source_review_path": ".tools/art-generation/chatgpt/remaining-icons/lotha_verdict_power.png"
+    },
+    {
+      "id": "rootblight_i_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/rootblight_i.png",
+      "source_status": "source_local_generated",
+      "sha256": "37E06A6BCEB585478F681D41A4AC14B0988C6067BE7DC983A7867C8D1A824536",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "final_required_before_release": false,
+      "notes": "Active local generated Rootblight I small portrait. Live visual verification remains pending."
+    },
+    {
+      "id": "rootblight_ii_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/rootblight_ii.png",
+      "source_status": "source_local_generated",
+      "sha256": "6A307787999AF2D154BB320A4D8DCA4079D9060602B73B1AA6BC6E1A22F59D58",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "final_required_before_release": false,
+      "notes": "Active local generated Rootblight II small portrait. Live visual verification remains pending."
+    },
+    {
+      "id": "rootblight_iii_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/rootblight_iii.png",
+      "source_status": "source_local_generated",
+      "sha256": "0C1784FD117A48D47D448972AB3F95BA92B4528A296FC2AE557B58B5AA5F4E4E",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "final_required_before_release": false,
+      "notes": "Active local generated Rootblight III small portrait. Live visual verification remains pending."
+    },
+    {
+      "id": "blight_sprout_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/blight_sprout.png",
+      "source_status": "source_local_generated",
+      "sha256": "9BCEE9AD668F2D5DDA6842CBB3D189E8CA42045D51C38C134EECCF9DFF397DE3",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "final_required_before_release": false,
+      "notes": "Active local generated Blight Sprout small portrait. Live visual verification remains pending."
+    },
+    {
+      "id": "rootblight_i_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/rootblight_i.png",
+      "source_status": "source_local_generated",
+      "sha256": "52AE2A50E1EB6A64FFA243EA061A2B2B5A8EDE7A076C3503FE15F8460F70C97A",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "final_required_before_release": false,
+      "notes": "Active local generated Rootblight I large portrait. Live visual verification remains pending."
+    },
+    {
+      "id": "rootblight_ii_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/rootblight_ii.png",
+      "source_status": "source_local_generated",
+      "sha256": "92EA23513D739DFA9ECB2B95949002346AD4E8D43AB323EF9E7AA949DEB5EC7D",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "final_required_before_release": false,
+      "notes": "Active local generated Rootblight II large portrait. Live visual verification remains pending."
+    },
+    {
+      "id": "rootblight_iii_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/rootblight_iii.png",
+      "source_status": "source_local_generated",
+      "sha256": "4A99EAD43F719D3BB514F6DEF31B72C131D67BE57E2A7B5184B6D788161AAF6E",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "final_required_before_release": false,
+      "notes": "Active local generated Rootblight III large portrait. Live visual verification remains pending."
+    },
+    {
+      "id": "blight_sprout_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/blight_sprout.png",
+      "source_status": "source_local_generated",
+      "sha256": "D2ADB90836972A6903752BC26264A440947797E5CACD4642059B9A98C84DA808",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "final_required_before_release": false,
+      "notes": "Active local generated Blight Sprout large portrait. Live visual verification remains pending."
+    },
+    {
+      "id": "generic_power_icon",
+      "role": "power_art",
+      "target_path": "EZMicroBalance/images/powers/power.png",
+      "source_status": "generic_temporary",
+      "sha256": "BB651CE7C711BE0EB4D4FD9A01E194BA162825D7B8DD71EDFB35670A11BD89B8",
+      "dimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "final_required_before_release": true,
+      "notes": "Shared generic fallback power icon. Replace with feature-specific final art before final-art release claims."
+    },
+    {
+      "id": "generic_power_icon_big",
+      "role": "power_art",
+      "target_path": "EZMicroBalance/images/powers/big/power.png",
+      "source_status": "generic_temporary",
+      "sha256": "63E8CAF77B8D49E6351E384499B2C4C48033A9B4A9E798A9AB8693EF7F376A8D",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "final_required_before_release": true,
+      "notes": "Shared generic fallback large power icon. Replace with feature-specific final art before final-art release claims."
+    },
+    {
+      "id": "generic_relic_icon",
+      "role": "relic_art",
+      "target_path": "EZMicroBalance/images/relics/relic.png",
+      "source_status": "generic_temporary",
+      "sha256": "6860FBC8D82112F8C717C7D0B0E7639A07E79B52C06180A69BBF75E5F4D4D252",
+      "dimensions": {
+        "width": 94,
+        "height": 94
+      },
+      "final_required_before_release": true,
+      "notes": "Shared generic fallback relic icon. Replace with feature-specific final art before final-art release claims."
+    },
+    {
+      "id": "generic_relic_icon_big",
+      "role": "relic_art",
+      "target_path": "EZMicroBalance/images/relics/big/relic.png",
+      "source_status": "generic_temporary",
+      "sha256": "209E24E717DBE805054FBD4EAD9E3A4558584693B29B3BE1CCBC5C065810D718",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "final_required_before_release": true,
+      "notes": "Shared generic fallback large relic icon. Replace with feature-specific final art before final-art release claims."
+    },
+    {
+      "id": "generic_relic_outline",
+      "role": "relic_art_outline",
+      "target_path": "EZMicroBalance/images/relics/relic_outline.png",
+      "source_status": "generic_temporary",
+      "sha256": "F9B7C2A92709D192C8DAB143519E66A2E2C90A816BEF90D9B6242CC5CAF53F38",
+      "dimensions": {
+        "width": 94,
+        "height": 94
+      },
+      "final_required_before_release": true,
+      "notes": "Shared generic fallback relic outline. Replace with feature-specific final art before final-art release claims."
+    },
+    {
+      "id": "urda_seedling_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/urda_seedling.png",
+      "source_status": "source_local_generated",
+      "sha256": "FE5B68BEE1D8D65564A322742027C4798839352016316C647A94DFBCA4C89CFA",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "prompt_id": "urda_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_seedling_card_portrait_v2.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/urda_seedling.png",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_seedling_card_portrait_v2.png"
+    },
+    {
+      "id": "urda_seedling_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/urda_seedling.png",
+      "source_status": "source_local_generated",
+      "sha256": "CEB81C5A37C78E55F3ED7D8FF3D178ED0238EB6B2F31C6267777A15B6CD777BA",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "prompt_id": "urda_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_seedling_card_portrait_v2.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/urda_seedling.png",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_seedling_card_portrait_v2.png"
+    },
+    {
+      "id": "withered_husk_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/withered_husk.png",
+      "source_status": "source_local_generated",
+      "sha256": "2228B1160C14757EF2EBA5E66412CB426E4411FC357A21B79B9012E51333BA9F",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "prompt_id": "urda_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/withered_husk_card_portrait_v2.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/withered_husk.png",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/withered_husk_card_portrait_v2.png"
+    },
+    {
+      "id": "withered_husk_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/withered_husk.png",
+      "source_status": "source_local_generated",
+      "sha256": "7CA3AEB0A28ADF3BE9D02619F6CE2539356E68E6ED9CA69070B5487FA39980F5",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "prompt_id": "urda_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/withered_husk_card_portrait_v2.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/withered_husk.png",
+      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/withered_husk_card_portrait_v2.png"
+    },
+    {
+      "id": "morvi_archive_pages_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/morvi_archive_pages.png",
+      "source_status": "source_local_generated",
+      "sha256": "259756C73D1FC4178EF13967027315C0E40071CFDF272236E3D734F266F2CB7D",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "prompt_id": "morvi_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_archive_pages_card_portrait.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/morvi_archive_pages.png",
+      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_archive_pages_card_portrait.png"
+    },
+    {
+      "id": "morvi_archive_pages_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/morvi_archive_pages.png",
+      "source_status": "source_local_generated",
+      "sha256": "6C02E9BC0EA12705B7C8C7333AC982CAC2044954DAA1B6DA7A53C16B513289BB",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "prompt_id": "morvi_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_archive_pages_card_portrait.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/morvi_archive_pages.png",
+      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_archive_pages_card_portrait.png"
+    },
+    {
+      "id": "morvi_red_ink_overdraft_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/morvi_red_ink_overdraft.png",
+      "source_status": "source_local_generated",
+      "sha256": "4815BDDC5E398C90F8D5BD83376536A634C9FD2F8D784902D9A55651D9761021",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "prompt_id": "morvi_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_red_ink_overdraft_card_portrait.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/morvi_red_ink_overdraft.png",
+      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_red_ink_overdraft_card_portrait.png"
+    },
+    {
+      "id": "morvi_red_ink_overdraft_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/morvi_red_ink_overdraft.png",
+      "source_status": "source_local_generated",
+      "sha256": "1E31CED9C395A7E5B189082BDF14C45ADFBD78534B649B0F933280C488436AFD",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "prompt_id": "morvi_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_red_ink_overdraft_card_portrait.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/morvi_red_ink_overdraft.png",
+      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_red_ink_overdraft_card_portrait.png"
+    },
+    {
+      "id": "morvi_waste_paper_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/morvi_waste_paper.png",
+      "source_status": "source_local_generated",
+      "sha256": "73DA673E762C1A148306E351E53AD882CD7CF70CD4B6A31F0D62C3FF61C6C497",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "prompt_id": "morvi_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_waste_paper_card_portrait.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/morvi_waste_paper.png",
+      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_waste_paper_card_portrait.png"
+    },
+    {
+      "id": "morvi_waste_paper_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/morvi_waste_paper.png",
+      "source_status": "source_local_generated",
+      "sha256": "4432CD23149A3FF8AF6D9D6DEC0A877209E524ED7E4EB4EEE53871C257604DE1",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "prompt_id": "morvi_card_portraits",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_waste_paper_card_portrait.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/morvi_waste_paper.png",
+      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_waste_paper_card_portrait.png"
+    },
+    {
+      "id": "vakuu_temptation_card_portrait_small",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/vakuu_temptation.png",
+      "source_status": "source_local_generated",
+      "sha256": "54F2ECB8CD9902CFC284B2C2ADEFE0649BE7ECAE584A4DF4FF4A06955F9D1145",
+      "dimensions": {
+        "width": 250,
+        "height": 190
+      },
+      "prompt_id": "vakuu_fight_and_temptation",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/vakuu_temptation_card_portrait.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/vakuu_temptation.png",
+      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/vakuu_temptation_card_portrait.png"
+    },
+    {
+      "id": "vakuu_temptation_card_portrait_big",
+      "role": "card_portrait",
+      "target_path": "EZMicroBalance/images/card_portraits/big/vakuu_temptation.png",
+      "source_status": "source_local_generated",
+      "sha256": "D0889E6DC4694122164E5BDF7ECA84917D427EB3AA4D786346F7796C508758DE",
+      "dimensions": {
+        "width": 1000,
+        "height": 760
+      },
+      "prompt_id": "vakuu_fight_and_temptation",
+      "final_required_before_release": false,
+      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/vakuu_temptation_card_portrait.png.",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/vakuu_temptation.png",
+      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/vakuu_temptation_card_portrait.png"
+    }
+  ]
+}

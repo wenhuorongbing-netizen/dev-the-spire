@@ -6,10 +6,10 @@ Status: player-facing guide for the current A12/A16/A19/A20 source pass. Live UI
 
 Firemarked Elite nodes use the Firemarked Elite map marker. Hover the node before choosing the route to see the exact Firemark:
 
-- Might: the Firemark Host starts with Strength.
-- Giant: the Firemark Host starts with increased max HP.
-- Forge Armor: the Firemark Host gains Block at the end of its turn.
-- Constant Heal: the Firemark Host heals at the end of its turn.
+- Might: the Firemarked enemy starts with Strength.
+- Giant: the Firemarked enemy starts with increased max HP.
+- Forge Armor: the Firemarked enemy gains Block at the end of its turn.
+- Constant Heal: the Firemarked enemy heals at the end of its turn.
 
 The combat effect should match the hover text. Defeating the node still grants the Firemarked Elite reward upgrades documented in the manual checklist.
 

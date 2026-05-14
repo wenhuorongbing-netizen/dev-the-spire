@@ -44,14 +44,21 @@ Acting rule:
 
 ### 3.2 Blessings
 
-The initial active pool is limited to:
+The active v2.2 source pool contains:
 
 1. Seedbed (`urda_seedbed`, 苗床)
 2. Humus Pact (`urda_humus_pact`, 腐殖约定)
 3. Molting (`urda_molting`, 脱壳)
 4. Moss Map (`urda_moss_map`, 苔痕地图)
 
-Unsafe or unfinished blessings must be excluded from live pools.
+5. Trial Branch (`urda_trial_branch`)
+6. Shallow-Root Relic (`urda_shallow_root_relic`)
+7. Rooted Route (`urda_rooted_route`)
+8. After the Rain (`urda_after_rain`)
+9. Root-Sight (`urda_root_sight`)
+10. Seed Bank (`urda_seed_bank`)
+
+All ten remain disableable through the Urda feature gate. Runtime testing must use the source-safe behavior and deviations documented here rather than the richer unproven UI from the original design.
 
 ### 3.3 Blessing behavior
 
@@ -92,9 +99,49 @@ Unsafe or unfinished blessings must be excluded from live pools.
   - rest site: +3 max HP.
 - Safe room-type resolution is required before release claiming.
 
+#### Trial Branch (`urda_trial_branch`)
+
+- On selection, offer four common/uncommon class cards through the source-safe card grid.
+- Upgrade the chosen card, add it to the deck, and mark it as Trial Plant through `UrdaTrialPlantCard`.
+- Track the next three combats; a combat succeeds only if the marked deck card is player-played at least once.
+- After three combats, two or more successes keep the card and clear the marker; fewer than two successes remove the marked card.
+
+#### Shallow-Root Relic (`urda_shallow_root_relic`)
+
+- On selection, offer two common relics and grant the chosen relic plus 75 Gold.
+- If the player defeats an Act 1 elite, root the relic permanently and grant 35 Gold.
+- Source-safe deviation: if Act 2 starts before rooting, remove the pending relic and refund 75 Gold. The preferred `lose 6 Max HP to keep it` settlement UI is not exposed until source-safe.
+
+#### Rooted Route (`urda_rooted_route`)
+
+- On selection, automatically mark a reachable normal-combat node in the first seven floors.
+- Do not mutate the map graph.
+- Reaching the mark grants three card rewards, gives a random potion when a slot exists, and upgrades the first generated reward card.
+- If the route becomes unreachable before the mark resolves, the root withers: lose 8 HP and gain 25 Gold.
+
+#### After the Rain (`urda_after_rain`)
+
+- Act 1 only.
+- First lethal damage prevents death, sets/keeps 1 HP, grants 15 Block, draws 1, adds two Wounds to discard, loses 3 Max HP, and spends the blessing.
+- Before spending, up to two Act 1 elite kills grant 20 Gold.
+- If unused at Act 2 start, heal 8 HP and gain 75 Gold once.
+
+#### Root-Sight (`urda_root_sight`)
+
+- Gain 5 Root Eyes.
+- Source-safe deviation: no map button is exposed. The hook automatically marks reachable visible non-Boss rooms and spends one Root Eye per mark.
+- The first mark grants one random potion if a slot exists.
+
+#### Seed Bank (`urda_seed_bank`)
+
+- During Act 1 normal combat card rewards, add a `Store Seed` alternative while fewer than three Seeds are stored.
+- Source-safe deviation: storing consumes the current card reward and stores the selected reward card; it does not store one unchosen card after the player also takes another card.
+- Before the Act 1 Boss, choose up to two Seeds. The first chosen Seed is upgraded and added to deck; any second chosen Seed is added without Trial Plant marking. Unchosen Seeds disappear.
+- Unchosen Seeds disappear and settlement does not repeat.
+
 ## 4. State and persistence design
 
-Current source packs Urda state into `AncientSavedStateFields.UrdaStateKey` on `Player` to avoid increasing the SavedSpireField count during the prototype slice.
+Current source packs Urda state into `AncientSavedStateFields.UrdaStateKey` on `Player` and mirrors that encoded string onto deck cards through `AncientSavedStateFields.UrdaDeckStateKey`. `AncientPlayerState` reads the Player field first, falls back to the first nonblank deck marker, and mirrors the restored state back to the deck.
 
 Encoded fields:
 
@@ -106,9 +153,15 @@ Encoded fields:
 - Humus completed latch,
 - Humus completion-pending latch,
 - Molting active latch,
-- Moss Map per-room-type reward flags.
+- Moss Map per-room-type reward flags,
+- Trial Branch combat/success counters, played-this-combat latch, and settlement latch,
+- Shallow-Root pending/rooted/relic id,
+- Rooted Route coordinate/resolved/withered state,
+- After the Rain spent/compensated/elite-gold counters,
+- Root-Sight eye count, first-potion latch, and marked coordinates,
+- Seed Bank stored card ids and settlement latch.
 
-The parser accepts the prior eight-field shape for migration, but `SavedSpireField<Player,string>` persistence is not source-proven by this pass. State must survive live save/load before this design can be marked release-ready.
+The parser accepts the prior eight-field shape for migration. `SavedSpireField<Player,string>` persistence is still not source-proven by this pass, and the card-backed mirror is a mitigation rather than release proof. State must survive live save/load before this design can be marked release-ready.
 
 ## 5. Localization and terms
 

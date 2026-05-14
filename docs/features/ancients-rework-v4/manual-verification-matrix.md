@@ -2,7 +2,7 @@
 
 Prepared: 2026-05-07
 
-Status: automated gates passed; normal Steam-client Mod Settings passed; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 traversal/boss reachability, and multiplayer verification are still pending.
+Status: automated gates passed; current normal Steam-client startup/log verification passed; refreshed normal Steam-client Mod Settings UI list screenshot shows Spire Plus; historical page-level Mod Settings UI passed under the old display name; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check and saved-map boss-reachability graph proof passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed. Latest Urda UI/art, Lotha, and Vakuu package refresh reran build/publish plus normal and opt-in artifact tests, but did not rerun live verification. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
 
 Focused regression notes:
 
@@ -11,6 +11,7 @@ Focused regression notes:
 - Prismatic Gem: triggered reward screens should show the reward-screen banner hint when available. If the banner cannot be located, `godot.log` should contain `PrismaticGem reward-screen hint fallback`, and testers should use the relic hover count plus every visible reward card being off-color as fallback evidence.
 - Pumpkin Candle: this is now a vanilla/no-EZMB-override spot check only. EZMB must not add an Act 3 extinguish-upgrade patch, sentinel, or localization override.
 - Quality Flame / Brightest Flame: `BrightestFlame` should visibly show Exhaust, draw one more card than vanilla, and use dynamic text so unupgraded draw is 3 and upgraded draw is 4.
+- Urda, Loamweaver: custom Ancient icon/run-history/background scene paths are now mod-owned after the 2026-05-13 negative A14 probe exposed missing vanilla-derived asset paths. The installed-PCK resource-load check at `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345` resolves the custom scene/icon with 0 `ERROR` / `WARNING` lines. Post-fix live Urda and Rootblight visual/gameplay verification remains pending.
 
 ## Automated Prerequisites
 
@@ -18,7 +19,7 @@ Focused regression notes:
 | --- | --- |
 | `dotnet build` | Pass, 0 warnings, 0 errors |
 | `dotnet publish` | Pass, copied `EZMicroBalance.dll`, `EZMicroBalance.json`, and exported `EZMicroBalance.pck` |
-| PCK package audit | Pass, 64 entries and 0 legacy/source/docs/art/archive entries |
+| PCK package audit | Pass, 70 total PCK directory entries, 44 active non-Godot/project entries, and 0 legacy/source/docs/art/archive entries |
 | English JSON parse | Pass |
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese banned-English localization guard | Pass after 2026-05-06 localization sprint |
@@ -27,7 +28,7 @@ Focused regression notes:
 | Jeweled Mask custom enchantment zhs guard | Pass after 2026-05-06 localization sprint |
 | Jewelry Box non-Innate source/serialization guard | Pass, automated source guard confirms marked-only `Apotheosis` handling |
 | Ancient and Ascension source guard tests | Pass, expanded `dotnet test EZMicroBalance.sln --no-build` guard suite |
-| Private-beta package | Pass, `publish\EZMicroBalance-v0.1.0-private-beta.0.zip`, SHA256 `2A13A44EA643EA872A8A189883E4EEFFDE8D9DDB8A83A0F5838CE9B6FA8072AD` |
+| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, SHA256 `681929E84F694A3C644070F3562F00377C3ED6E00804FF250E469A2F75DADB84` |
 
 ## Runtime Load Checklist
 
@@ -35,12 +36,12 @@ Focused regression notes:
 | --- | --- | --- |
 | Confirm `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib` exists | `BaseLib.json`, `BaseLib.dll`, and `BaseLib.pck` are present | Prepared |
 | Confirm `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` exists | `EZMicroBalance.json`, `EZMicroBalance.dll`, and `EZMicroBalance.pck` are present | Prepared |
-| Launch Slay the Spire 2 public beta | Game reaches main menu | Pass in controlled `--force-steam off` smoke profile and isolated normal Steam-client startup log; normal Steam-client A0/A10/A20 combat smoke also reached live combat |
+| Launch Slay the Spire 2 public beta | Game reaches main menu | Pass in controlled `--force-steam off` smoke profile and current isolated normal Steam-client startup log; normal Steam-client A0/A10/A20 combat smoke also reached live combat |
 | Open Settings -> Mod Settings | BaseLib appears and is enabled | Pass, normal Steam-client screenshots and clean log captured during the isolated `095137` recheck |
-| Open Settings -> Mod Settings | EZ Micro Balance appears with id `EZMicroBalance` and can be enabled | Pass, localized page appears as `寰钩琛 with `鏃犲彲閰嶇疆閫夐」銆俙; matching log has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures |
+| Open Settings -> Mod Settings | Spire Plus appears with id `EZMicroBalance` and can be enabled | Pass for visible mod list: current normal Steam-client evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus`; the same log confirms `Spire Plus (EZMicroBalance)`, `Registered config for mod EZMicroBalance`, and 0 release-blocking signatures. Historical page-level UI evidence remains available for the same manifest id under the old EZ Micro Balance display name. |
 | Open Compendium -> Card Library / card encyclopedia with only BaseLib and EZ Micro Balance enabled | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
 | Start a run with EZ Micro Balance enabled | No startup exception in `godot.log` for `EZMicroBalance` | Pass for normal Steam-client A0/A10/A20 Ironclad standard run starts followed by DevConsole `fight CULTISTS_NORMAL`; logs show 0 EZMB error/exception pattern hits. Natural route-click first-node path remains pending. |
-| Disable EZ Micro Balance and restart | EZ Micro Balance patches do not apply while disabled | Loader pass in controlled `--force-steam off` smoke profile; gameplay pass pending |
+| Disable Spire Plus / `EZMicroBalance` and restart | Spire Plus / `EZMicroBalance` patches do not apply while disabled or plugged off | Pass for BaseLib-only normal Steam plug-off startup/log evidence at `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020`; gameplay pass pending |
 | Ensure legacy `EzDailyContent` is disabled for private beta testing | No duplicate Ancient Harmony patches from legacy local artifacts | Pass for the isolated Mod Settings recheck because only BaseLib and EZ Micro Balance were present in the temporary mods directory; normal user-profile tests should still keep EzDailyContent disabled or absent |
 
 Automated smoke attempts on 2026-05-05 did not reach mod loading:
@@ -49,7 +50,7 @@ Automated smoke attempts on 2026-05-05 did not reach mod loading:
 - Direct exe launch with temporary `steam_appid.txt` value `2868840` failed before mod loading with Steamworks `ConnectToGlobalUser failed`; the temporary file was removed.
 - `steam.exe -applaunch 2868840` did not start a detectable game process during the bounded smoke-test window.
 
-Runtime result: normal Steam-client Mod Settings has been inspected and passed with isolated `095137` evidence. A0/A10/A20 single-player combat-smoke screenshots were collected through normal Steam-client standard runs plus DevConsole `fight CULTISTS_NORMAL`; these confirm draw/energy/combat initialization but do not replace natural route-click or feature-specific manual checks. A normal Steam-client isolated startup log reached main menu with only BaseLib + EZ Micro Balance loaded and no startup `ERROR` lines or release-blocking signatures. Targeted A14 Rootblight English/ZHS hover/starter-notice screenshots were collected under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010`, `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516`, and `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455`.
+Runtime result: normal Steam-client startup/log verification has been refreshed for the current Spire Plus display-name package under `.tools\runtime-evidence\current-spire-plus-normal-steam-20260513-054241`. Current normal Steam-client Mod Settings UI list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus` for the current display-name package; historical page-level Mod Settings UI evidence remains available for the same manifest id under the old display name. A0/A10/A20 single-player combat-smoke screenshots were collected through normal Steam-client standard runs plus DevConsole `fight CULTISTS_NORMAL`; these confirm draw/energy/combat initialization but do not replace natural route-click or feature-specific manual checks. Targeted A14 Rootblight English/ZHS hover/starter-notice screenshots were collected under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010`, `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516`, and `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455`.
 
 Controlled smoke update:
 
@@ -58,7 +59,9 @@ Controlled smoke update:
 - Final controlled smoke loaded BaseLib, loaded `EZMicroBalance.dll`, loaded `EZMicroBalance.pck`, finished EZ Micro Balance initialization, and reached main menu.
 - Controlled disable smoke enabled BaseLib, explicitly disabled EZ Micro Balance, skipped loading `EZMicroBalance`, did not load its DLL, and reached main menu.
 - After the Release solution mapping fix, an isolated controlled smoke enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, loaded the installed Release `EZMicroBalance.dll`, finished both initializers, and reached main menu. Original default-profile settings were restored afterward.
-- After the Rootblight event-room notice package refresh, a bounded `--force-steam off` smoke physically isolated unrelated mod entries, enabled only `BaseLib` and `EZMicroBalance`, loaded the current installed `EZMicroBalance.dll` and `.pck`, reported `Found 13 SavedSpireFields`, finished EZ Micro Balance initialization, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, and reached main menu. Temporary profile settings and 22 moved mod entries were restored afterward. The clean evidence directory is `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904`.
+- Current normal Steam-client helper startup/log/resource pass under `.tools\runtime-evidence\current-package-smoke-20260514-015901` launched through Steam, loaded exactly BaseLib and Spire Plus / `EZMicroBalance`, logged `Registered config for mod EZMicroBalance`, reported `Found 22 SavedSpireFields`, reached main menu, audited clean, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes.
+- The same current-package evidence includes headless installed-PCK resource loading for Urda/Morvi/Lotha scenes and 43 Ancient textures with 0 errors/warnings, but clicked live Ancient UI screens and gameplay/manual rows remain pending.
+- Current BaseLib-only normal Steam plug-off startup/log pass under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` temporarily isolated `EZMicroBalance` out of the mods folder, launched through Steam, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus / `EZMicroBalance`, audited clean, and restored settings, the current-run save, and 25 moved entries. The earlier settings-only disabled attempt under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-142835` is invalid plug-off evidence because Spire Plus still initialized.
 - Manual reward behavior tests below are still pending.
 
 ## Prismatic Gem Exact Tests

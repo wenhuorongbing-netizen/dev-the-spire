@@ -1,6 +1,6 @@
 # Localization Validation
 
-Validation date: 2026-05-06
+Validation date: 2026-05-13
 
 Scope: `EZMicroBalance/localization` and localization-only tooltip strings in `EZMicroBalanceCode`.
 
@@ -11,21 +11,31 @@ v4.3 is current. v4.2 rightmost-slot Prismatic Gem is historical only. v4.2 Dist
 All active localization JSON files parse as explicit UTF-8:
 
 - `eng/ancients.json`
+- `eng/ascension.json`
 - `eng/cards.json`
 - `eng/card_keywords.json`
+- `eng/card_reward_ui.json`
+- `eng/events.json`
 - `eng/powers.json`
 - `eng/relics.json`
 - `eng/rest_site_ui.json`
+- `eng/settings_ui.json`
 - `eng/static_hover_tips.json`
+- `zhs/ancients.json`
+- `zhs/ascension.json`
 - `zhs/cards.json`
+- `zhs/card_reward_ui.json`
+- `zhs/events.json`
 - `zhs/relics.json`
 - `zhs/rest_site_ui.json`
+- `zhs/settings_ui.json`
 
 ## Key Matching
 
 - English and Simplified Chinese relic override keys match.
 - English and Simplified Chinese card override keys match.
 - English and Simplified Chinese rest-site UI override keys match.
+- English and Simplified Chinese card-reward, event, settings, Ancient, and Ascension tables are parsed and guarded by the broader source/package test suite.
 - Legacy `EzDailyContent` localization is not compiled or packaged by `EZMicroBalance`.
 
 ## Simplified Chinese Glossary
@@ -76,13 +86,19 @@ Active card localization:
 - Added `DEBT.title` / `ENTHRALLED.title` / `FOLLY.title` in English and zhs for key parity.
 - `ENTHRALLED.description` now uses the official zhs phrasing pattern `必须优先打出这张牌`.
 
+Other active zhs tables:
+
+- `settings_ui.json` uses `Spire Plus` for the player-facing mod title and `无可配置选项。` for the no-op settings page.
+- `card_reward_ui.json` localizes Urda's Seedbed/Humus alternatives and Morvi's Debt repayment alternative as `收下幼芽`, `化为腐殖`, and `偿还债务`.
+- `events.json` localizes the A20 courtyard intermission and preserves `{HealPercent}`, `{BossName}`, `{SealName}`, and `{SealSummary}` placeholders.
+
 Tooltip/localization-only code:
 
 - `JeweledMaskFreePower` now returns zhs `CardModifierLoc` strings when `LocManager.Instance.Language == "zhs"`.
 
 ## Tooltip Findings
 
-- `card_keywords.json` controls keyword tooltip names/descriptions. No EZ Micro Balance keyword override is required because the base game already localizes `Retain`, `Ethereal`, `Exhaust`, `Innate`, and `Eternal` in zhs.
+- `card_keywords.json` controls keyword tooltip names/descriptions. No Spire Plus keyword override is required because the base game already localizes `Retain`, `Ethereal`, `Exhaust`, `Innate`, and `Eternal` in zhs.
 - `static_hover_tips.json` controls static hover tips and dynamic-var hover surfaces, but Swift is not a static hover tip or a card keyword.
 - Swift is an enchantment. Its zhs name and tooltip come from base game `localization/zhs/enchantments.json` (`SWIFT.title = 迅速`). Beautiful Bracelet text should reference the localized term, not raw `Swift`.
 - `DynamicVar("Swift", 2m)` remains a numeric variable provider for relic text if a `{Swift}` placeholder is used. It is not the localized display name and does not need replacement for this pass.
@@ -103,6 +119,8 @@ v4.3 retains player-facing Simplified Chinese number normalization with no space
 - Beautiful Bracelet specifically contains `迅速2` and not `Swift`.
 - Player-facing zhs numbers have no spaces around digits in active localization or custom tooltip strings.
 - Jeweled Mask custom enchantment localization contains zhs strings.
+
+`tests/EZMicroBalance.Tests/ReleaseSafetyExpandedGuardTests.cs` now also rejects known mojibake fragments across every active `EZMicroBalance/localization/zhs/*.json` table, including settings, event, and card-reward UI text.
 
 ## Remaining Manual Validation
 

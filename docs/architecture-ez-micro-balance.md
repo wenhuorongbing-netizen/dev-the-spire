@@ -1,16 +1,16 @@
-# EZ Micro Balance Architecture Decision
+# Spire Plus Architecture Decision
 
 Decision date: 2026-05-05
 
 ## Decision
 
-`EZ Micro Balance` will become an independent mod project with stable manifest id `EZMicroBalance`.
+`Spire Plus` is the player-facing mod name for the independent mod project with stable manifest id `EZMicroBalance`.
 
 The existing `EzDailyContent` manifest id remains unchanged. It must not be renamed in-place because mod ids are persistent player-facing identifiers after project creation.
 
 ## Reason
 
-The repository is moving to multiple independent mods over time. Players should be able to enable or disable `EZ Micro Balance`, future Ascension changes, and future custom-character work separately. Keeping the Ancient rebalance inside `EzDailyContent` would make future features share one mod toggle and one release identity.
+The repository is moving to multiple independent mods over time. Players should be able to enable or disable `Spire Plus`, future Ascension changes, and future custom-character work separately. Keeping the Ancient rebalance inside `EzDailyContent` would make future features share one mod toggle and one release identity.
 
 ## Intended Release Shape
 
@@ -28,7 +28,7 @@ Manifest:
 ```json
 {
   "id": "EZMicroBalance",
-  "name": "EZ Micro Balance",
+  "name": "Spire Plus",
   "dependencies": [
     {
       "id": "BaseLib",

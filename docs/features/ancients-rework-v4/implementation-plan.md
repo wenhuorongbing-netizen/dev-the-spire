@@ -1,4 +1,4 @@
-# EZ Micro Balance - Ancients Rework v4.3 Implementation Plan
+# Spire Plus - Ancients Rework v4.3 Implementation Plan
 
 Source brief: `docs/features/ancients-rework-v4/source-design.md`  
 Planning date: 2026-05-05  
@@ -6,7 +6,7 @@ Status: historical implementation plan with current v4.3 addendum. The Ancient r
 
 ## 1. Intended Mod Identity
 
-`EZ Micro Balance` is a focused Slay the Spire 2 balance mod for Ancient reward choices. It is not a broad content expansion and should not add new playable systems unless a specific rework requires one.
+`Spire Plus` is a Slay the Spire 2 balance mod for Ancient reward choices and progression expansion testing. It should not add unrelated playable systems unless a specific rework requires one.
 
 The design target is high-level play. The mod should make Ancient choices feel like deliberate strategic commitments instead of random punishment or obvious best picks:
 
@@ -242,7 +242,7 @@ Validation focus:
 
 ### Phase 6 - Integration, Balance, and Release Readiness
 
-Goal: verify the mod as `EZ Micro Balance` across all implemented phases.
+Goal: verify the mod as `Spire Plus` across all implemented phases while preserving manifest id `EZMicroBalance`.
 
 Deliverables:
 
@@ -265,7 +265,7 @@ Validation:
 The prompt below is preserved for traceability only. Do not execute it as current release work; it predates the independent `EZMicroBalance` migration and the completed v4.3 implementation.
 
 ```text
-/goal Implement phase 1 of docs/features/ancients-rework-v4/implementation-plan.md for the Slay the Spire 2 mod named "EZ Micro Balance".
+/goal Implement phase 1 of docs/features/ancients-rework-v4/implementation-plan.md for the Slay the Spire 2 mod named "Spire Plus" with manifest id "EZMicroBalance".
 
 Read AGENTS.md first. Preserve the dirty worktree. Do not implement any behavior outside phase 1.
 

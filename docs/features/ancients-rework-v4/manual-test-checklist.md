@@ -1,6 +1,6 @@
-# EZ Micro Balance Manual Test Checklist
+# Spire Plus Manual Test Checklist
 
-This checklist is for the independent private-beta mod: manifest id `EZMicroBalance`, user-facing name `EZ Micro Balance`.
+This checklist is for the independent private-beta mod: manifest id `EZMicroBalance`, user-facing name `Spire Plus`.
 
 Keep the legacy `EzDailyContent` scaffold disabled or absent during these checks to avoid duplicate Ancient patches.
 
@@ -23,8 +23,8 @@ Do not treat the feature as private-beta ready until these checks are complete o
 - Open Settings -> Mod Settings.
 - Confirm BaseLib appears.
 - Confirm BaseLib is enabled.
-- Confirm EZ Micro Balance / EZMicroBalance appears.
-- Confirm EZ Micro Balance / EZMicroBalance is enabled.
+- Confirm Spire Plus / `EZMicroBalance` appears.
+- Confirm Spire Plus / `EZMicroBalance` is enabled.
 - Confirm legacy Easy Content / EzDailyContent is disabled or absent.
 - Check `godot.log` for `EZMicroBalance`, `BaseLib`, `EzDailyContent`, `error`, and `exception`.
 
@@ -210,5 +210,5 @@ The feature is private-beta ready only when:
 - Mod loads in game.
 - No crash occurs during tested Ancient option selection.
 - Every high-priority item above has PASS or a documented accepted known issue.
-- `godot.log` has no new unhandled exception from EZ Micro Balance.
+- `godot.log` has no new unhandled exception from Spire Plus / `EZMicroBalance`.
 - The private-beta package has been smoke-inspected for `EZMicroBalance.dll`, `EZMicroBalance.json`, `EZMicroBalance.pck`, and `README_INSTALL.txt`.

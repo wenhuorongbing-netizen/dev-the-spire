@@ -6,11 +6,11 @@ This repository is a Slay the Spire 2 mod workspace using C#/.NET, the Alchyr Sl
 
 The original scaffold project is `EzDailyContent`; its manifest id is `EzDailyContent` and must not be changed in-place.
 
-The active private beta deliverable is `EZ Micro Balance`, an Ancient reward rebalance mod. Its intended independent manifest id is `EZMicroBalance`.
+The active private beta deliverable is `Spire Plus`, a Slay the Spire 2 balance and progression expansion mod. Its stable independent manifest id remains `EZMicroBalance`.
 
 ## Current Mission
 
-Complete `EZ Micro Balance` for private beta release.
+Complete `Spire Plus` for private beta testing and eventual private beta release.
 
 In scope:
 
@@ -37,7 +37,7 @@ Baseline setup is complete on the local machine:
 - Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, and documentation freshness guards.
 - Current local source is refreshed from Slay the Spire 2 `v0.105.0`; BaseLib runtime/project package are aligned on `v3.1.2`.
 - Controlled `--force-steam off` smoke loading has verified only BaseLib and `EZMicroBalance` initialization to main menu from the final installed artifacts.
-- Normal Steam-client Mod Settings verification for `EZMicroBalance` is verified in the current handoff docs; live gameplay feature verification remains pending.
+- Normal Steam-client startup/log verification for the current `Spire Plus` display-name package has passed with exactly BaseLib and `EZMicroBalance` loaded, config registration, 16 SavedSpireFields, and 0 release-blocking log hits. Mod Settings UI screenshot evidence for `EZMicroBalance` is still historical under the old `EZ Micro Balance` display name. Live gameplay feature verification remains pending.
 
 Revalidate build, publish, and game load before claiming private beta readiness.
 
@@ -64,6 +64,7 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 ### Documentation and workflow rules
 
 - Read `PROJECT_STATE.md` first; then read current docs before archive docs.
+- For the next test-ready implementation push, read `docs/test-ready-development-goal.md` before coding.
 - Fix root causes; do not add normalizers that hide bad upstream state.
 - Large tasks must declare success criteria in docs before implementation.
 - Do not force future agents to read archived prompt dumps; route current work through current docs + active feature docs first.
@@ -90,7 +91,8 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 - `README.md` contains the human-facing project state.
 - `docs/README.md` is the documentation index and should point readers to the current source of truth.
 - `docs/architecture-ez-micro-balance.md` records the independent-mod architecture decision.
-- `docs/features/ancients-rework-v4/` contains the EZ Micro Balance source design, implementation plan, API discovery, and work log.
+- `docs/test-ready-development-goal.md` is the current long-scope development goal for taking `Spire Plus` to a test-ready candidate.
+- `docs/features/ancients-rework-v4/` contains the Spire Plus Ancient reward source design, implementation plan, API discovery, and work log.
 - `docs/style/card-localization-style-guide.md` records source-backed card text, visible keyword, rich-text, dynamic variable, preview, and bilingual terminology rules.
 - `docs/skills/sts2-godot-mod-development.md` is the repository-local agent reference for future StS2/Godot/.NET mod development passes.
 - `docs/PROJECT_MAP.md` contains the project map.
@@ -108,8 +110,8 @@ Current legacy scaffold:
 
 Private beta target:
 
-- `EZMicroBalance/` for EZ Micro Balance resources and localization.
-- `EZMicroBalanceCode/` for EZ Micro Balance C# source.
+- `EZMicroBalance/` for Spire Plus resources and localization.
+- `EZMicroBalanceCode/` for Spire Plus C# source.
 
 Future mods should use their own independent resource/code folders and manifest ids.
 
@@ -117,7 +119,7 @@ Future mods should use their own independent resource/code folders and manifest 
 
 - After code/config changes: run `dotnet build`.
 - After resource/localization/packaging changes: run `dotnet publish` after build succeeds.
-- Before release: verify BaseLib and EZ Micro Balance load in-game, inspect `godot.log`, and complete the feature manual verification matrix.
+- Before release: verify BaseLib and Spire Plus load in-game, inspect `godot.log`, and complete the feature manual verification matrix.
 
 ## BaseLib Dependency Rule
 

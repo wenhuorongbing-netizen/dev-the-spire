@@ -1,19 +1,19 @@
-# Ascension 11-20 Manual Test Checklist
+﻿# Ascension 11-20 Manual Test Checklist
 
-Project: EZ Micro Balance  
+Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
-Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; limited normal Steam-client A11 map spot checks and targeted A14 Rootblight English/ZHS hover/notice spot checks executed, full live Ascension gameplay not executed yet beyond those observations
-Last updated: 2026-05-10
+Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; current normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
+Last updated: 2026-05-14
 
 ## Research-Mode Baseline
 
 - [x] Read `AGENTS.md`.
 - [x] Read `docs/features/ascension-11-20/source-design.md`.
-- [x] Inspect current EZ Micro Balance architecture.
+- [x] Inspect current Spire Plus / `EZMicroBalance` architecture.
 - [x] Run `git status --short --branch`.
 - [x] Check whether `SlayTheSpire2.exe` is running before build.
 - [x] Run `dotnet build EZMicroBalance.sln`.
-- [x] Launch game and verify EZ Micro Balance loads after Ascension implementation in a bounded `--force-steam off` smoke profile.
+- [x] Historical bounded `--force-steam off` smoke verified `EZMicroBalance` loaded after Ascension implementation; current controlled smoke and normal Steam-client startup/log verification passed after the Spire Plus display-name package refresh.
 - [x] Inspect `godot.log` after Ascension implementation for startup errors.
 
 Baseline result on 2026-05-06:
@@ -23,12 +23,13 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Current bounded `--force-steam off` smoke after the Rootblight event-room notice package refresh physically isolated unrelated mods, initialized only BaseLib and EZ Micro Balance, reported `Found 13 SavedSpireFields`, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored the temporary profile settings plus 22 moved mod entries.
+- Current normal Steam-client helper startup/log verification under `.tools\runtime-evidence\current-package-smoke-20260514-015901` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu, found 0 Spire Plus / EZMicroBalance error signatures, found no missing-resource, Ancient scene-load, `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or removed-API signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes.
+- Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the current-package 22-field smoke above.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded Boss Royal Seals, and A20 vanilla double-boss map path/Brand/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
-- A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
+- A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. The current source also patches `ActModel.CreateMap` as an earlier geometry boundary before the run hook. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
 - Read-only diagnostics are implemented behind `EZMB_ASCENSION_DIAGNOSTICS=1`.
-- Full Ascension gameplay has not been live-tested yet beyond the A11 map spot checks and targeted A14 Rootblight English/ZHS hover/starter-notice spot checks.
+- Full Ascension gameplay has not been live-tested yet beyond the A11 map spot checks, saved-map boss-reachability graph proof, and targeted A14 Rootblight English/ZHS hover/starter-notice spot checks.
 
 ## Gate Controls
 
@@ -51,11 +52,28 @@ Baseline result on 2026-05-06:
 - Read-only hook/state diagnostics: set `EZMB_ASCENSION_DIAGNOSTICS=1`.
 - Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
 
+## Live Evidence Protocol
+
+Use this protocol for A11-A20 live evidence, especially Rootblight/Blight Sprout visual checks, combat-end behavior, map traversal screenshots, save/load rows, and co-op rows. Covered desktop captures, wrong-surface captures, or sessions that never reach the target game surface do not satisfy Rootblight, Ascension, or gameplay rows.
+
+- [ ] Prepare a restore-safe normal Steam session:
+  `scripts/spire-plus-live-session.ps1 -Mode Prepare -MoveOtherMods -MoveCurrentRuns -Launch`
+- [ ] Record the evidence directory printed in `session-state.json`.
+- [ ] Before every gameplay screenshot batch, require foreground confirmation:
+  `scripts/check-spire-window-preflight.ps1 -OutFile <evidence-dir>\window-preflight.json -RequireSpireForeground`
+- [ ] If the preflight exits nonzero, do not capture or count screenshots; bring Slay the Spire 2 foreground first and rerun the preflight.
+- [ ] Copy the live `godot.log` into the evidence directory after the gameplay row being tested.
+- [ ] Audit the copied log:
+  `scripts/audit-godot-log.ps1 -Path <evidence-dir>\godot.log -OutFile <evidence-dir>\godot-log-audit.json -FailOnHit`
+- [ ] Restore the machine state after any run-start, save/load, continue, or co-op-host test:
+  `scripts/spire-plus-live-session.ps1 -Mode Restore -EvidenceDir <evidence-dir> -StopGameOnRestore -PreserveNewCurrentRunsOnRestore`
+- [ ] Confirm restore output reports settings and moved mods restored, and any test-created `current_run*` files are preserved inside the evidence directory before the original current run is restored.
+
 ## Read-Only Ascension Diagnostics
 
 Execute with `EZMB_ASCENSION_DIAGNOSTICS=1` and no gameplay debug level unless the test case explicitly needs Rootblight behavior.
 
-- [ ] Game loads with BaseLib v3.1.2 and EZ Micro Balance enabled.
+- [ ] Game loads with BaseLib v3.1.2 and Spire Plus enabled.
 - [ ] Starting a normal run with only diagnostics enabled does not add Rootblight.
 - [ ] `godot.log` records run Ascension, act index, debug/public gate state, Rootblight level/card counts, room type, round, and combat Blight Sprout counts.
 - [ ] Diagnostics logs appear from the run/combat hook path without mutating gameplay beyond the selected Ascension level.
@@ -69,10 +87,10 @@ Execute only after Rootblight MVP is implemented.
 
 - [x] Build succeeds after implementation.
 - [x] Publish succeeds after localization/resources changed.
-- [ ] Game loads with BaseLib v3.1.2 and EZ Micro Balance enabled.
+- [ ] Game loads with BaseLib v3.1.2 and Spire Plus enabled.
 - [ ] Starting a normal run with the debug/internal gate disabled does not add Rootblight.
 - [ ] Existing Ancient reward rebalance behavior still loads and does not throw.
-- [ ] `godot.log` has no EZ Micro Balance Ascension errors.
+- [ ] `godot.log` has no Spire Plus / `EZMicroBalance` Ascension errors.
 
 ## A14 Rootblight MVP: Debug Gate On
 
@@ -87,7 +105,7 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
 - [ ] Rootblight card descriptions render `[gold]` card-name markup correctly and do not show raw tags.
 - [ ] Rootblight localization displays in Simplified Chinese when the game language is Simplified Chinese.
 - [ ] Simplified Chinese Rootblight descriptions have one visible 消耗 keyword, no duplicate `打出：消耗` body text, and render `[gold]根蚀 I/II/III[/gold]` without raw tags.
-- [ ] The player sees the localized `Rootblight added.` / `根蚀已加入。` notice when Rootblight is added to the master deck.
+- [ ] The player sees the localized `[gold]Rootblight[/gold] added.` / `[gold]根蚀[/gold]已加入。` notice when Rootblight is added to the master deck.
 - [ ] Save and load the run before combat; Rootblight does not duplicate.
 - [ ] Save/load or re-enter Act 1 after Rootblight has been cleared; Rootblight is not re-added.
 - [ ] Enter combat; the combat Rootblight copy links to the master-deck Rootblight card.
@@ -95,7 +113,12 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
 - [ ] Playing Rootblight I removes its master-deck card and leaves no replacement after combat.
 - [ ] Playing Rootblight II removes its master-deck card and adds Rootblight I after combat.
 - [ ] Playing Rootblight III removes its master-deck card and adds Rootblight II after combat.
-- [ ] Leaving Rootblight I/II unplayed upgrades it after combat; ignored Rootblight III stays III and does not add an extra Rootblight.
+- [ ] Leaving Rootblight I/II unplayed upgrades that card after combat.
+- [ ] Leaving Rootblight III unplayed keeps it at III; the first time only, it adds one Rootblight I while remaining III.
+- [ ] A Rootblight III lineage that already split once keeps its hidden split marker through Rootblight III -> II -> I downgrades, so it cannot split again after growing back to III.
+- [ ] Rootblight IV never appears.
+- [ ] Each Rootblight lineage can split at most once.
+- [ ] The master deck never has more than 4 Rootblight cards; further additions show `Root system full: max [blue]4[/blue] [gold]Rootblights[/gold].` / `根系已满：最多[blue]4[/blue]张[gold]根蚀[/gold]。`.
 - [ ] Rootblight cards added during combat-end resolution do not grow again until the next combat.
 - [ ] If Rootblight is discarded normally, Rootblight level and the master-deck card remain unchanged.
 - [ ] If Rootblight is exhausted by a non-play effect, Rootblight level and the master-deck card remain unchanged.
@@ -142,14 +165,16 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=15` after A14 Rootblight behavior is ve
 - [ ] Act 2 and Act 3 boss combat adds two temporary Blight Sprouts to the relevant discard pile.
 - [ ] Blight Sprout does not appear in opening hand unless drawn naturally.
 - [ ] Boss Blight Sprouts sprout on rounds 3 and 4; each moves to the top of the draw pile if it has not entered hand.
-- [ ] If Blight Sprout enters hand and is not played before combat end, one Rootblight I is added to the master deck only when no Rootblight is already present.
+- [ ] If Blight Sprout enters hand and is not played before combat end, one Rootblight I is added to the master deck, capped by the 4-card Rootblight limit.
 - [ ] Blight Sprout has one visible Exhaust keyword, no duplicate `Play: Exhaust` / `打出：消耗` body text, gold-highlighted Draw Pile / 抽牌堆 text, and a Rootblight I hover preview.
-- [ ] Seen-but-unplayed Blight Sprout shows the localized Rootblight added notice when it adds Rootblight I after combat.
+- [ ] Seen-but-unplayed Blight Sprout shows the localized rich-text Rootblight added notice when it adds Rootblight I after combat.
 - [ ] If Blight Sprout is played before combat end, Rootblight does not increase.
+- [ ] If Blight Sprout enters hand and is discarded or exhausted by a non-play effect, it still adds Rootblight I after combat.
 - [ ] If combat ends before Blight Sprout enters hand, Blight Sprout withers and does not raise Rootblight.
 - [ ] Temporary Blight Sprout never persists in the master deck or save.
-- [ ] Rootblight card count never exceeds 1; additional Blight Sprout growth shows the `根系已满。` / `Root system full.` notice instead of adding a duplicate Rootblight.
+- [ ] Rootblight card count never exceeds 4; additional Blight Sprout growth shows the rich-text max-4 root system notice instead of adding another Rootblight.
 - [ ] Save/load or re-enter the boss combat after Blight Sprout was seeded; the combat still has at most one Blight Sprout per active player.
+- [ ] Save/load or re-enter the boss combat normalizes kept Blight Sprouts to the source-correct round sequence: first bud round 3, second bud round 4, and no extra buds beyond two.
 - [ ] Knockout/revive should not raise Rootblight from that combat's Blight Sprout.
 - [ ] Multiplayer targeting follows the source-design caps.
 
@@ -159,25 +184,28 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=18` after A15 boss Blight Sprout behavi
 
 - [ ] Elite combat adds one temporary Blight Sprout to the relevant discard pile.
 - [ ] Act 1 elites do not add Blight Sprout.
+- [ ] Act 2 elites in the first 3 route rows do not add Blight Sprout.
 - [ ] Elite Blight Sprout uses the same sprout, play-prevention, wither, and growth rules as boss Blight Sprout.
 - [ ] Normal monster combats do not add Blight Sprout.
 - [ ] Elite Blight Sprout does not stack with another Blight Sprout source in the same combat.
 - [ ] Save/load or re-enter the elite combat after Blight Sprout was seeded; the combat still has at most one Blight Sprout per active player.
+- [ ] Save/load or re-enter the elite combat normalizes the kept Blight Sprout to round 3 and does not create extras beyond one.
 
 ## A11 Wide Tower, Long Road / 宽塔长路
-Gated implementation present. RC1 normal Steam-client spot checks executed by selecting A11 through the original single-player UI; Act 1 map/save-load and Act 2/3 DevConsole map-surface observations passed. Broader natural traversal, every-start boss reachability, and co-op map checks remain pending.
+Gated implementation present. RC1 normal Steam-client spot checks executed by selecting A11 through the original single-player UI; Act 1 map/save-load and Act 2/3 DevConsole map-surface observations passed for the prior package. The current 2026-05-14 source patch also hooks `ActModel.CreateMap` before the run hook and logs target/actual rows, columns, inserted-column route evidence, original-route-preserved evidence, and inserted-column route-choice count. Fresh current-build manual proof is still required because the reported real-play symptom was "not visibly longer/wider."
 
-- [x] Gate logs that map width expanded by 1 column and that the act-specific late route row count was applied. RC1 Act 1 log: `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`.
-- [x] Map width increases from 7 to 8 columns. RC1 saved-map evidence records columns `0,1,2,3,4,5,6,7`.
-- [x] At least one reachable optional node appears in the inserted width column. RC1 source/log path reports the reachable optional route and the live map saved/reloaded with 8 columns.
-- [x] Act 1 map length increases by exactly 1 late route row before the boss rest row. RC1 saved-map evidence records route rows `1-16`, `MapHeight=17`, and `BossRow=17`.
-- [x] Act 2 map length increases by exactly 1 late route row before the boss rest row. RC1 Act 2 observation log: `Ascension A11 applied ... inserted 1 late route row(s); actIndex=1; columns=8; rows=16`.
-- [x] Act 3 map length increases by exactly 2 late route rows before the boss rest row. RC1 Act 3 observation log: `Ascension A11 applied ... inserted 2 late route row(s); actIndex=2; columns=8; rows=16`.
+- [ ] Current build log records the `ActModel.CreateMap` or run-map-hook source-boundary check with `columns=8/8`, target rows reached, `insertedColumnRoute=True`, `originalRoutePreserved=True`, and `insertedColumnRouteChoices>=1`.
+- [ ] Map width increases from 7 to 8 columns. In the current build, it is visibly wider than a matched A10/control map.
+- [ ] Act 1 visible route rows increase by 1, Act 2 visible route rows increase by 1, and Act 3 visible route rows increase by 2.
+- [ ] At least one reachable optional node appears in the inserted width column.
+- [ ] Act 1 map length increases by exactly 1 late route row before the boss rest row.
+- [ ] Act 2 map length increases by exactly 1 late route row before the boss rest row.
+- [ ] Act 3 map length increases by exactly 2 late route rows before the boss rest row.
 - [ ] Every starting path can still reach the boss.
 - [ ] The inserted late row contains normal route rooms, not boss/start nodes.
-- [x] No A11-specific marker, icon, or hover tooltip appears on ordinary route nodes. RC1 Act 1 screenshots show normal route nodes before and after load; Act 2/3 observation screenshots `25-a11-act2-map-clean.png` and `27-a11-act3-map-clean.png` show the same no-marker surface.
-- [x] Save/load preserves the widened map, inserted late rows, and route edges. RC1 selected a first node, wrote `current_run.save`, used Save & Quit, continued the run, and reopened the map with `columns=8; rows=17`.
-- [x] Map UI renders all rows without overlapping the boss, starting point, or route lines. RC1 Act 1 screenshots render the initial map and after-load map cleanly; Act 2/3 observation screenshots render the later-act map surfaces cleanly.
+- [ ] No A11-specific marker, icon, or hover tooltip appears on ordinary route nodes.
+- [ ] Save/load preserves the widened map, inserted late rows, and route edges.
+- [ ] Map UI renders all rows without overlapping the boss, starting point, or route lines.
 
 ## A11-A20 Host-Multiplayer Selection
 
@@ -326,9 +354,9 @@ Gated implementation present as BossSeal definitions plus source-guarded runtime
 
 Execute before private beta release.
 
-- [ ] Disable EZ Micro Balance and confirm the game reaches main menu.
-- [ ] Re-enable EZ Micro Balance and confirm current supported saves behave as documented.
-- [ ] Remove only EZ Micro Balance from mods folder and confirm BaseLib and other mods still load.
+- [ ] Disable Spire Plus / `EZMicroBalance` and confirm the game reaches main menu.
+- [ ] Re-enable Spire Plus / `EZMicroBalance` and confirm current supported saves behave as documented.
+- [ ] Remove only `EZMicroBalance` from mods folder and confirm BaseLib and other mods still load.
 - [ ] Confirm no official game assets were copied into the repository.
 - [ ] Confirm release notes list any unsupported multiplayer or Ascension-selection limitations.
 
@@ -339,7 +367,7 @@ Planning checks for the next release-engineering pass; do not mark these complet
 - [ ] In a clean clone or clean workspace, normal `dotnet test EZMicroBalance.sln --no-build` passes without ignored publish artifacts; release artifact/runtime evidence tests are skipped by `ReleaseArtifactFactAttribute`.
 - [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
 - [ ] Publish the current package before runtime smoke.
-- [ ] Launch controlled `--force-steam off` with only BaseLib and EZ Micro Balance enabled.
-- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source/package baseline defines 13 fields and the latest clean controlled smoke reported 13. Rerun this check after future SavedSpireField, source, package, or BaseLib changes.
-- [ ] Confirm the controlled smoke has no EZ Micro Balance startup exception or error.
+- [ ] Launch controlled `--force-steam off` with only BaseLib and Spire Plus enabled.
+- [x] Inspect `godot.log` and record the current SavedSpireField count; current source defines 22 SavedSpireFields, and `.tools\runtime-evidence\current-package-smoke-20260514-015901\godot.log` reports `Found 22 SavedSpireFields`. Rerun this check after future SavedSpireField, source, package, or BaseLib changes.
+- [ ] Confirm the controlled smoke has no Spire Plus / `EZMicroBalance` startup exception or error.
 - [ ] Keep normal Steam-client Mod Settings verification separate from controlled smoke.

@@ -1,9 +1,9 @@
 # Ascension 11-20 Implementation Plan
 
-Project: EZ Micro Balance  
+Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
-Status: A11-A20 single-player and host-multiplayer selector expansion and prototype slices added; selection is default-on for the private-beta multiplayer test candidate; live gameplay verification pending
-Last updated: 2026-05-08
+Status: A11-A20 single-player and host-multiplayer selector expansion and prototype slices added; selection is default-on for the private-beta multiplayer test candidate; A11 map geometry has source-boundary and optional-route graph proof; live gameplay verification pending
+Last updated: 2026-05-14
 
 ## Current Development Checklist
 
@@ -11,7 +11,7 @@ The current forward-looking development checklist is `docs/features/ascension-11
 
 That v2.0 checklist defines the next target design for:
 
-- Rootblight / Blight Sprout as a level-based single-card pollution system.
+- Rootblight / Blight Sprout as a v2.2 seed/root pollution system with up to four master-deck Rootblight cards.
 - Firemarked Elite hosts, stronger Firemark types, and Firemark reward settlement.
 - Forge Token as upgrade-tempo protection.
 - Fission reward rates, UI, and eligibility.
@@ -30,7 +30,7 @@ The vanilla game exposes a hard max Ascension of 10 through progress and lobby/U
 
 The current implementation uses the selected run Ascension level after the selector expansion:
 
-- A11 Wide Tower, Long Road / 宽塔长路 expands vanilla maps by 1 column, inserts a reachable optional route in the inserted column, and inserts late route rows by act (Act 1 +1, Act 2 +1, Act 3 +2) through `SerializableActMap` / `SavedActMap`. Ordinary A11 route nodes do not receive a dedicated marker or hover tooltip.
+- A11 Wide Tower, Long Road / 宽塔长路 expands vanilla maps by 1 column, inserts a reachable optional route in the inserted column, and inserts late route rows by act (Act 1 +1, Act 2 +1, Act 3 +2) through `SerializableActMap` / `SavedActMap`. Source guards now require both an inserted-column route choice and a preserved start-to-boss route that avoids the inserted column. Ordinary A11 route nodes do not receive a dedicated marker or hover tooltip.
 - A12 also enables firemarked elite marking, generic firemark combat modifiers, and Forge Token grant/heal/smith payout. Special rest-site payout is disabled until a safe runtime API is proven.
 - A13 also enables Fission reward-card enchantment.
 - A14 also enables Rootblight Begins.
@@ -125,26 +125,26 @@ Stop conditions:
 
 ## Phase 1B: A11 Wider/Longer Map
 
-Status: source-patched; live route/UI/save-load verification pending.
+Status: source-patched with optional-route graph proof; live route/UI/save-load verification pending.
 
 Exact deferral:
 
-- A11 does not patch `StandardActMap` internals. Exact API evidence: `StandardActMap` generation uses private width/path internals and `ActModel.GetNumberOfRooms(...)` controls length before hook code sees the map. `SerializableActMap` / `SavedActMap` can represent arbitrary saved dimensions, and `RunManager.GenerateMap()` accepts a replacement map from the map hook. The implementation serializes the generated map, shifts columns at and after the inserted column to open an 8th column, adds a reachable optional Monster node in the inserted column while keeping the original safe parent-to-reconnect path, shifts the final rest/boss rows down by Act 1 +1, Act 2 +1, and Act 3 +2, bridges every affected route into the shifted rest row, leaves ordinary A11 route nodes unmarked, and returns a `SavedActMap`. Next proof step: live-test route reachability, save/load, and map UI rendering before calling the slice release-ready.
+- A11 does not patch `StandardActMap` internals. Exact API evidence: `StandardActMap` generation uses private width/path internals and `ActModel.GetNumberOfRooms(...)` controls length before hook code sees the map. `ActModel.CreateMap(RunState,bool)` is now also patched as an earlier source boundary, and `RunManager.GenerateMap()` still accepts replacement maps from `ModifyGeneratedMap(...)` and `ModifyGeneratedMapLate(...)` before `NMapScreen.SetMap(...)` reads dimensions and child edges. `SerializableActMap` / `SavedActMap` can represent arbitrary saved dimensions. The implementation serializes the generated map, shifts columns at and after the inserted column to open an 8th column, adds a reachable optional Monster node in the inserted column while keeping the original safe parent-to-reconnect path, shifts the final rest/boss rows down by Act 1 +1, Act 2 +1, and Act 3 +2, bridges every affected route into the shifted rest row, leaves ordinary A11 route nodes unmarked, and returns a `SavedActMap`. Source-level graph tests now prove valid optional inserted-column route evidence, reject inserted-column chokepoints, and keep already-target-sized maps idempotent only when both inserted-column route and original-route-preserved evidence are true. Next proof step: live-test visible width/rows, natural route-click reachability, save/load, and map UI rendering before calling the slice release-ready.
 
 ## Phase 2: A14 Rootblight Closed-Loop MVP
 
-Status: Rootblight v2.0 migration implemented; build/source-guard proven; runtime verification pending.
+Status: Rootblight v2.2 source migration implemented; build/source-guard validation and runtime verification pending.
 
 Scope:
 
 - Add Rootblight I at Act 1 start when A14+ is selected or forced by debug level.
-- Treat Rootblight as a real master-deck pollution card with a max-one deck cap. A14 starts with Rootblight I; ignored Rootblight I/II worsens after combat; ignored Rootblight III stays at III; played Rootblight cards remove their master-deck version and queue the downgraded replacement after combat.
+- Treat Rootblight as real master-deck pollution with a four-card cap. A14 starts with Rootblight I; ignored Rootblight I/II worsens after combat; ignored Rootblight III stays at III and, the first time per card, adds one Rootblight I; played Rootblight cards remove their master-deck version and queue the downgraded replacement after combat.
 - Use Rootblight I/II/III display cards, with costs 2/3/4.
 - Playing Rootblight exhausts the combat copy, removes its master-deck card, and queues the downgrade card after combat when applicable.
-- Combat end upgrades only Rootblight cards that were present at combat start; ignored Rootblight III stays III without adding another Rootblight.
+- Combat end upgrades only Rootblight cards that were present at combat start; newly added Rootblight cards do not grow until the next combat. Ignored Rootblight III has no IV path.
 - Rootblight start seeding uses `SavedSpireField<Player,bool>`, `SavedSpireField<Player,int>`, and a Rootblight deck scan to avoid re-adding after clearance and to migrate prototype Root/Deep Root saves.
-- Rest heal removes exactly one highest-stage Rootblight; smith does not remove Rootblight.
-- Shop/card-removal APIs clear Rootblight through `BeforeCardRemoved`.
+- Rest heal removes exactly one highest-stage Rootblight, oldest first when tied; smith does not remove Rootblight.
+- Shop/card-removal APIs remove the selected Rootblight through `BeforeCardRemoved` without clearing other Rootblight cards.
 - Non-play exhaust does not lower Rootblight level.
 - No map changes.
 - No reward-generation changes.
@@ -164,7 +164,7 @@ Required exact APIs:
 | Add master-deck card | `RunState.CreateCard<Root>(player)` / `CreateCard<DeepRoot>(player)` / `CreateCard<RootblightIII>(player)` then `CardPileCmd.Add(card, PileType.Deck, ...)` |
 | Level state | `SavedSpireField<Player,int>` diagnostic Rootblight level, `SavedSpireField<Player,bool>` one-time starter marker, and per-card saved fields for combat-start presence, one-time split state, and Blight Sprout round |
 | Play downgrade | In combat card play, remove the matching master-deck Rootblight card and queue the downgraded replacement; do not listen to non-play exhaust |
-| Combat-end sync | `RootBudCombatHook.AfterCombatEnd(...)` calls `RootDeckService.ResolveCombatEndRootblight(...)` before adding Rootblight I from unplayed Blight Sprout cards when the deck has no Rootblight |
+| Combat-end sync | `RootBudCombatHook.AfterCombatEnd(...)` calls `RootDeckService.ResolveCombatEndRootblight(...)` before adding Rootblight I from unplayed Blight Sprout cards, capped at four Rootblight cards |
 | Removal/clear | `AfterRestSiteHeal` clears on real rest; `BeforeCardRemoved` clears for normal deck-removal APIs; sync-owned removals suppress the clear hook |
 | Card play behavior | Custom `CardModel.OnPlay(...)`, `CardKeyword.Exhaust`, and `ExhaustOnNextPlay` |
 | Card removability | Do not add `CardKeyword.Eternal`; verify `CardModel.IsRemovable` stays true |
@@ -200,7 +200,7 @@ Rollback plan:
 
 ## Phase 3: A15 Boss Blight Sprout MVP
 
-Status: Blight Sprout terminology and Rootblight level growth migrated in root files; runtime verification pending.
+Status: Blight Sprout terminology and Rootblight v2.2 growth are migrated in root files; runtime verification pending.
 
 Scope:
 
@@ -208,7 +208,7 @@ Scope:
 - Add two temporary Blight Sprouts to each relevant player's discard pile for Act 2/3 boss fights.
 - Before seeding, scan that player's active combat piles for an existing Blight Sprout so hook re-entry or mid-combat reload does not add a duplicate.
 - Boss Blight Sprouts sprout on rounds 3 and 4 by moving to top of draw pile if they have not entered hand; elite Blight Sprout uses round 3.
-- If it entered hand and was not played before combat end, add one Rootblight I after combat.
+- If it entered hand and was not played before combat end, add one Rootblight I after combat, capped by the 4-card Rootblight limit.
 - A18 elite Blight Sprout is also implemented behind `EZMB_ASCENSION_DEBUG_LEVEL=18`, but only for Acts 2/3 elites.
 - If a player dies during the combat, that combat's Blight Sprout does not raise Rootblight for that player after the game's pre-end revive path.
 

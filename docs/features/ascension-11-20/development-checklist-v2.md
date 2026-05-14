@@ -3,7 +3,7 @@
 Document type: executable feature GDD / development checklist  
 Target version: A11-A20 high-Ascension expansion update  
 Implementation style: modular, gated, phased, and suitable for Codex/program-agent execution  
-Status: v2.0 implementation pass is in progress. Milestones 0-6 are build/source-guard proven behind independent feature flags, and A11-A20 selection is now default-on in this private-beta multiplayer test candidate. Milestone 7 now has source-guarded boss-specific Royal Seal hooks, reward metadata, and Boss-map hover text; all Royal Seal behavior still needs live boss verification. Milestone 8 uses the single-player vanilla double-boss map path for final-act Boss 1/Boss 2 reveal, Boss 2 Brand metadata/parameters, Boss-map Brand hover text, Boss 1 post-combat recovery, one Boss card reward after Boss 1, Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event inserted from the terminal reward proceed path with an immediate pre-finished-room save. A bespoke full custom intermission screen remains deferred. Live gameplay verification is still pending.
+Status: v2.2 source-hardening is in progress. Milestones 0-6 are build/source-guard proven behind independent feature flags, and A11-A20 selection is now default-on in this private-beta multiplayer test candidate. A11 has both run-hook map shaping and an earlier `ActModel.CreateMap` geometry boundary, with source-level graph proof that the inserted column contains an optional reachable route choice and that a start-to-boss route avoiding that column remains. Rootblight/Blight Sprout has migrated from the one-root prototype to the v2.2 seed/root model with a 4-card Rootblight cap. Milestone 7 now has source-guarded boss-specific Royal Seal hooks, reward metadata, and Boss-map hover text; all Royal Seal behavior still needs live boss verification. Milestone 8 uses the single-player vanilla double-boss map path for final-act Boss 1/Boss 2 reveal, Boss 2 Brand metadata/parameters, Boss-map Brand hover text, Boss 1 post-combat recovery, one Boss card reward after Boss 1, Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event inserted from the terminal reward proceed path with an immediate pre-finished-room save. A bespoke full custom intermission screen remains deferred. Live gameplay verification is still pending.
 
 This v2.0 checklist supersedes the older v1.0 design direction for future development. Existing code still contains prototype slices that must be audited and migrated toward this spec before any release-readiness claim.
 
@@ -52,14 +52,14 @@ Avoid these outcomes:
 | A12 | Firemarked Elite Pack / 火印精英群 | Each act generates 2-3 Firemarked Elite candidates, spread out and avoidable. |
 | A13 | Fission Enchantment / 裂变附魔 | Some Attack/Skill rewards can become Fission cards: cost -1, Exhaust after play. |
 | A14 | Rootblight Begins / 根蚀初生 | Start with Rootblight I. Rootblight cards are real master-deck pollution and worsen after combat if ignored. |
-| A15 | Boss Blight Sprout / 首领根芽 | Act 2/3 Boss fights bury two Blight Sprouts. They sprout on turns 3 and 4; a seen and unplayed Sprout adds Rootblight I after combat only if the deck has no Rootblight. |
+| A15 | Boss Blight Sprout / 首领根芽 | Act 2/3 Boss fights bury two Blight Sprouts. They sprout on turns 3 and 4; a seen and unplayed Sprout adds Rootblight I after combat, capped by the 4-card Rootblight limit. |
 | A16 | Banner Rooms / 战旗房 | Visible enhanced normal fights appear on the map with public combat rules. |
 | A17 | Deep Branches / 深层支线 | Acts 2/3 contain optional high-risk, high-reward side branches. |
 | A18 | Elite Blight Sprout / 精英根芽 | Mid/late Act 2 and Act 3 elites bury a Blight Sprout. |
 | A19 | Boss Royal Seals / Boss 专属王印 | Each Boss gains a bespoke Royal Seal that strengthens its core mechanic without changing the action table. |
 | A20 | Dual King Brands / 双王烙印 | Act 3 double-Boss information is revealed early; the second Boss's seal upgrades into a Brand; a fixed courtyard sits between the two Bosses. |
 
-Current A11 implementation note: width +1, Act 1 +1 route row, Act 2 +1 route row, and Act 3 +2 route rows. A11 adds no dedicated marker, icon, or hover tooltip; ordinary route nodes look vanilla.
+Current A11 implementation note: width +1, Act 1 +1 route row, Act 2 +1 route row, and Act 3 +2 route rows. Source guards require target dimensions, a reachable inserted-column route choice, and a preserved start-to-boss route that avoids the inserted column; chokepoint-only width does not pass. A11 adds no dedicated marker, icon, or hover tooltip; ordinary route nodes look vanilla. Live visible width/row, natural route-click, save-load, and co-op proof remains pending.
 
 ## 3. Implementation Boundaries
 
@@ -100,7 +100,7 @@ Current A11 implementation note: width +1, Act 1 +1 route row, Act 2 +1 route ro
 
 ### 4.1 Rootblight
 
-Rootblight is a long-term deck pollution state. The active v2.0 implementation keeps at most one Rootblight card in the master deck; duplicate legacy/prototype cards are normalized down to the highest-level Rootblight.
+Rootblight is a long-term deck pollution state. The active v2.2 implementation supports up to 4 Rootblight cards in the master deck. Defensive trimming keeps the 4 highest-stage cards, oldest first when tied, only if legacy/prototype state exceeds the cap. Each Rootblight III lineage can split into Rootblight I at most once; that hidden split marker persists through Rootblight III -> II -> I downgrades if the card is played and later grows back.
 
 | Level | Master-deck display | Cost | Play effect |
 | --- | --- | ---: | --- |
@@ -111,9 +111,9 @@ Rootblight is a long-term deck pollution state. The active v2.0 implementation k
 
 Player text:
 
-- Rootblight I: `Remove this from your deck. After combat, if this was not played or removed, it becomes [gold]Rootblight II[/gold].`
+- Rootblight I: `Remove this from your deck. If not played or removed this combat, it becomes [gold]Rootblight II[/gold].`
 - Rootblight II: `When played, remove this from your deck. After combat, add a [gold]Rootblight I[/gold]. If not played or removed this combat, it becomes [gold]Rootblight III[/gold].`
-- Rootblight III: `When played, remove this from your deck. After combat, add a [gold]Rootblight II[/gold]. If not played or removed this combat, it remains [gold]Rootblight III[/gold].`
+- Rootblight III: `When played, remove this from your deck. After combat, add a [gold]Rootblight II[/gold]. If not played or removed this combat, it stays [gold]Rootblight III[/gold]. The first time, add a [gold]Rootblight I[/gold]. No Rootblight IV.`
 
 Cleanup rules:
 
@@ -122,20 +122,20 @@ Cleanup rules:
 | Play Rootblight in combat | Remove that master-deck card and queue the downgrade described by the card text |
 | Rest at a rest site | Remove one highest-stage Rootblight card |
 | Remove Rootblight at a shop | Remove the selected Rootblight card |
-| Special cleansing event | May set to 0 or reduce by 1, depending on event strength |
+| Special cleansing event | Pending source proof; do not claim until tested |
 | Exhaust by a non-play effect | No level reduction |
 | Discard | No level reduction |
-| Transform | Defaults to clearing Rootblight, but must be balance-tested |
+| Transform | Pending source proof; do not claim until tested |
 
 ### 4.2 Blight Sprout
 
 Blight Sprout is a temporary combat card.
 
-It is not a Rootblight card and never persists in the master deck. If mishandled while the deck has no Rootblight, it adds Rootblight I to the master deck.
+It is not a Rootblight card and never persists in the master deck. If it enters hand and is not played, it adds Rootblight I to the master deck after combat, capped by the 4-card Rootblight limit.
 
 Player text:
 
-`Cost 2. Sprout 3/4: at that round's start, if this has not entered your hand, put it on top of your [gold]Draw Pile[/gold]. If seen and not played, after combat add a [gold]Rootblight I[/gold].`
+`Cost 2. Sprout 3/4: at that round's start, if this has not entered your hand, put it on top of your [gold]Draw Pile[/gold]. If seen and not played, after combat add a [gold]Rootblight I[/gold]. If never seen, withers.`
 
 Resolution table:
 
@@ -146,7 +146,9 @@ Resolution table:
 | Entered hand and was not played | Add Rootblight I |
 | Discarded after entering hand, not played | Add Rootblight I |
 | Exhausted by a non-play effect after entering hand | Add Rootblight I |
-| Existing Rootblight already includes III | Add Rootblight I; Sprout still pressures 2 energy |
+| Existing Rootblight already includes III | Add Rootblight I if below the 4-card cap; Sprout still pressures 2 energy |
+
+Existing or restored Blight Sprouts are normalized at combat-start hook reentry: boss fights keep at most two buds with rounds 3 and 4, while elite fights keep at most one bud with round 3. The hook must not blindly trust stale saved `SproutRound` values.
 
 Design reason:
 
@@ -216,6 +218,7 @@ Protection rules:
 - Added floors should mostly be mid/late.
 - Each act must retain at least one low-risk route.
 - The inserted width column must contain at least one reachable optional route node, not only wider spacing.
+- The inserted route node must be optional: a start-to-boss path that avoids the inserted column must remain source-proven.
 - A11 must not add a dedicated map marker, icon, or hover tooltip; new A11 route nodes should look like ordinary vanilla map nodes.
 
 Design purpose:
@@ -352,7 +355,7 @@ Rule:
 rootblight_level += 1
 ```
 
-At run start, add Rootblight I to the master deck. Later Blight Sprouts add Rootblight I only when seen, ignored, and the deck has no Rootblight.
+At run start, add Rootblight I to the master deck. Later Blight Sprouts add Rootblight I only when seen and ignored, capped by the 4-card Rootblight limit.
 
 ## 9. A15: Boss Blight Sprout
 
@@ -766,9 +769,9 @@ Acceptance cases:
 | A14 start | Rootblight I is added to the master deck |
 | Play Rootblight I | Card is removed from deck with no replacement |
 | Play Rootblight II | Card is removed from deck and Rootblight I is added after combat |
-| Play Rootblight III | Card is removed from deck and Rootblight II is added after combat |
+| Play Rootblight III | Card is removed from deck and Rootblight II is added after combat while preserving the split-once lineage marker |
 | Sprout never enters hand before combat ends | No growth |
-| Sprout enters hand and is not played | Add Rootblight I only if the deck has no Rootblight |
+| Sprout enters hand and is not played | Add Rootblight I, capped at 4 Rootblight cards |
 | Sprout is discarded and not played | Add Rootblight I |
 | Rest | One highest-stage Rootblight is removed |
 | Shop-remove Rootblight | Selected Rootblight is removed |

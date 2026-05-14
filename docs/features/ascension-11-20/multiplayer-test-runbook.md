@@ -1,7 +1,7 @@
 # A11-A20 Multiplayer Test Runbook
 
 Date: 2026-05-08  
-Scope: private-beta multiplayer test candidate for EZ Micro Balance Ascension 11-20 selection and source-patched gameplay slices.
+Scope: private-beta multiplayer test candidate for Spire Plus (`EZMicroBalance` manifest id) Ascension 11-20 selection and source-patched gameplay slices.
 
 A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
 
@@ -15,9 +15,9 @@ Best release test setup:
 - Two Steam accounts.
 - Both own and can launch Slay the Spire 2.
 - Same game branch and game version/date.
-- Same EZ Micro Balance package hash.
+- Same Spire Plus / `EZMicroBalance` package hash.
 - Same BaseLib runtime version and files under `<GameRoot>\mods\BaseLib`.
-- Same enabled mod set: BaseLib plus EZ Micro Balance only unless a row explicitly tests compatibility.
+- Same enabled mod set: BaseLib plus Spire Plus only unless a row explicitly tests compatibility.
 
 Same-PC multi-open is not reliable for real Steam multiplayer and should not be the primary release test. It can be useful for rough local investigation only if Steam permits it, but it does not replace the two-PC matrix.
 
@@ -94,11 +94,11 @@ After changing User env vars, fully restart Steam and the game on the affected m
 - Launch through the normal Steam client on host and client.
 - Confirm BaseLib appears in Mod Settings on both machines.
 - Confirm BaseLib is enabled on both machines.
-- Confirm EZ Micro Balance appears as `EZMicroBalance` on both machines.
-- Confirm EZ Micro Balance is enabled on both machines.
+- Confirm Spire Plus appears as `EZMicroBalance` on both machines.
+- Confirm Spire Plus is enabled on both machines.
 - Confirm legacy `EzDailyContent` is disabled or absent on both machines.
 - Confirm both machines use the same package hash and same BaseLib version.
-- Inspect both `godot.log` files for startup errors, missing localization keys, `CanonicalModelException`, and EZ Micro Balance exceptions.
+- Inspect both `godot.log` files for startup errors, missing localization keys, `CanonicalModelException`, and Spire Plus / `EZMicroBalance` exceptions.
 
 ### Gate Default-On Checks
 
@@ -196,11 +196,11 @@ After changing User env vars, fully restart Steam and the game on the affected m
   - `Our version ... matches the host's, but our Model ID hash does not` or `ModelDb hash mismatch` means the visible version string matched, but the multiplayer model serialization table differed.
   - Record both `Got initial game info message. Version: ... Hash: ...` and local `ModelIdSerializationCache initialized... Hash: ...` lines.
   - Compare both machines' `release_info.json`, `Loaded X mods (Y total)`, BaseLib/EZMB versions, and installed package hashes.
-- Confirm no EZ Micro Balance error or exception lines.
+- Confirm no Spire Plus / `EZMicroBalance` error or exception lines.
 - Confirm no ownership warning for Rootblight, Blight Sprout, Forge Token, Firemark, Banner, Royal Seal, or Brand state.
 - Confirm no checksum, desync, disconnect, lobby clamp, or save/load exception lines.
 - Confirm A20 downgrade warning appears on host-only selection and on run start when A20 is selected in multiplayer.
-- Keep unrelated local invalid-manifest errors separate from EZ Micro Balance findings.
+- Keep unrelated local invalid-manifest errors separate from Spire Plus / `EZMicroBalance` findings.
 
 ## P0 Triage Matrix — Multiplayer A11-A20 Run-Start / Neow / Black Screen / Save-Quit
 
@@ -219,7 +219,7 @@ Execute these rows to isolate the root cause of the reported 0/80 HP, Neow block
 
 **Prerequisites for all rows:**
 - Host and client both launch through Steam client.
-- Only BaseLib + EZ Micro Balance enabled.
+- Only BaseLib + Spire Plus enabled.
 - Restart Steam and game fully after changing env vars.
 - Collect `godot.log` from both machines after each run.
 - Use `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` combined with each row to capture lobby state, player HP at run start, Neow HP, and save/quit diagnostics.

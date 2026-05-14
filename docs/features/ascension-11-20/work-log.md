@@ -4,6 +4,114 @@ Project: EZ Micro Balance
 Manifest id: EZMicroBalance
 
 Current status note: entries below are chronological history. The current automated test baseline is recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh; earlier 24-test, 28-test, 34-test, 46-test, 56-test, 57-test, 58-test, 63-test, and 64-test entries are retained as historical evidence from before later guard additions.
+## 2026-05-14 - Rootblight v2.2 State Hardening
+
+Scope:
+
+- Focused only on Rootblight / Blight Sprout v2.2 state hardening and A11 diagnostic fail-closed behavior.
+- Did not run live game testing, gameplay, save-load, clicked UI, death/failure-path, natural route-click traversal, co-op testing, A21-A30, custom characters, or new art work.
+
+Core source evidence:
+
+- `CardPileCmd.RemoveFromDeck(...)` calls `Hook.BeforeCardRemoved(...)`, removes the deck card, and removes it from state; command deck mutation remains the source-backed Rootblight carrier path.
+- `CardPileCmd.AddGeneratedCardToCombat(...)` returns empty if combat is not in progress, rejects already-piled generated cards, and adds generated cards through combat piles before `AfterCardGeneratedForCombat(...)`.
+- `CombatManager` calls `Hook.BeforeCombatStart(...)` before combat setup proceeds and `Hook.AfterCombatEnd(...)` during combat end; card pile changes and draws route through `AfterCardChangedPiles(...)` / `AfterCardDrawn(...)`.
+- `SerializableActMap.FromActMap(...)`, `SavedActMap`, `RunManager.GenerateMap()`, `NMapScreen.SetMap(...)`, and `MapTravel.GetTravelablePointsFrom(...)` remain the current map serialization/render/traversal authority; diagnostic evidence must not crash if a future unsupported map shape cannot serialize or convert to the proof graph.
+
+Implemented:
+
+- Preserved the hidden Rootblight split lineage marker across any played downgrade above level 0, so a Rootblight III that has already split and is played down to II/I cannot split again after growing back to III.
+- Normalized existing kept Blight Sprouts at combat-start hook reentry: boss fights keep target rounds 3 and 4, elite fights keep round 3, duplicate cleanup still removes extras, and the hook does not create more buds than the room target.
+- Wrapped A11 geometry evidence collection for diagnostic logging in a safe helper that catches serialization/graph-conversion failures, logs a warning, and fails the diagnostic closed instead of crashing the run.
+- Added source guard coverage for the split-marker downgrade bug, existing Blight Sprout round normalization, boss target count / second boss bud round evidence, and protected A11 diagnostic evidence.
+- Updated current Rootblight manual checklist and v2.2 checklist wording for split marker persistence, no Rootblight IV, one split per lineage, and source-correct existing Blight Sprout rounds.
+
+Validation:
+
+- `git status --short --branch`: ran on an already dirty `main...origin/main` worktree.
+- `git log -1 --oneline --decorate`: `a2183ee (HEAD -> main, origin/main, origin/HEAD) 1`.
+- `dotnet build EZMicroBalance.sln --no-restore`: passed with 0 warnings and 0 errors.
+- `dotnet test EZMicroBalance.sln --no-build`: passed with 147 passed, 18 skipped, 0 failed.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
+- `git diff --check`: passed with CRLF normalization warnings only.
+- `dotnet publish EZMicroBalance.sln --no-restore`: passed and refreshed installed DLL/manifest/PCK artifacts.
+- `scripts/package-spire-plus.ps1`: passed and rebuilt `publish/SpirePlus-v0.1.0-private-beta.0.zip`.
+- Post-package `dotnet build EZMicroBalance.sln --no-restore`: passed with 0 warnings and 0 errors.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed with 165 passed, 0 skipped, 0 failed.
+- Current package hashes after this pass: zip `595160E11BAE06407EAC67601C4884FDBD593F2FE2F88B91DE412DCCB9EC3046`, DLL `DF83EA7A7D0DAACAF2DC33416FEC63A04436D9A36070561DEB00F0C40DA1AF21`, PCK `F279CD94C6BFB0D92B675E5546D937A08C1A121D7B8284549FAD1FD527272377`, manifest `9CB73137A04958D0DC0278E854CA1E0E1AC187C125E938DF7C3734F23F7B6A02`, README `5B1194440F6B212471E05F0EE117EE7F30E597FAAA916DF91F9378CD529DDCBB`.
+- No live gameplay evidence was produced.
+## 2026-05-14 - A11 Map Geometry Optional-Route Source Proof Hardening
+
+Scope:
+
+- Focused only on A11 Wide Tower, Long Road map geometry source hardening.
+- Did not run live game testing, natural route-click traversal, gameplay, save/load, clicked UI, death/failure-path, or co-op testing.
+- Did not implement A21-A30, custom characters, new assets, or non-A11 Ascension behavior.
+
+Core source evidence:
+
+- `ActModel.CreateMap(RunState,bool)` returns the generated map from `StandardActMap.CreateFor(...)`, making it the earliest current source boundary for replacing A11 geometry without patching `StandardActMap` internals.
+- `StandardActMap` still owns private vanilla width/path generation with width 7 and row count from `ActModel.GetNumberOfRooms(isMultiplayer) + 1`.
+- `RunManager.GenerateMap()` either restores `SavedActMap` then calls `ModifyGeneratedMapLate(...)`, or creates a new map then calls `ModifyGeneratedMap(...)`, assigns `State.Map`, removes stale visited map coords, and calls `NMapScreen.SetMap(...)`.
+- `SavedActMap`, `SerializableActMap`, and `SerializableMapPoint` preserve dimensions, coordinates, point types, start/boss points, and child edges across map replacement and save/load reconstruction.
+- `NMapScreen.SetMap(...)` and `MapTravel.GetTravelablePointsFrom(...)` render and traverse by map dimensions, all map points, and child edges, so source proof must cover route edges rather than dimensions alone.
+
+Implemented:
+
+- Added `A11MapGeometryProof` as a pure graph proof over map coordinates and child edges.
+- Hardened A11 idempotency so already-target-sized maps count as complete only when the inserted-column route choice and original route preserved evidence both pass.
+- Hardened inserted-column branch insertion so a route that avoids the inserted branch remains before the insertion is accepted.
+- Expanded A11 diagnostics to log target/actual dimensions, `insertedColumnRoute`, `originalRoutePreserved`, and `insertedColumnRouteChoices` from both the `ActModel.CreateMap` boundary and the run-map-hook path.
+- Added deterministic tests for a valid optional inserted-column route, a rejected chokepoint, and already-target-sized evidence.
+
+Validation:
+
+- `git status --short --branch`: ran on an already dirty `main...origin/main` worktree.
+- `dotnet build EZMicroBalance.sln --no-restore`: final run passed with 0 warnings and 0 errors after an initial missing `using Xunit;` compile fix.
+- `dotnet test EZMicroBalance.sln --no-build`: final normal run passed with 147 passed, 18 skipped, 0 failed after fixing one stale source coverage entry and one stale docs guard phrase.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
+- `git diff --check`: passed with CRLF normalization warnings only.
+- `dotnet publish EZMicroBalance.sln --no-restore`: passed and refreshed installed DLL/manifest artifacts.
+- `scripts/package-spire-plus.ps1`: passed and rebuilt `publish/SpirePlus-v0.1.0-private-beta.0.zip`.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed with 165 passed, 0 skipped, 0 failed after current hash docs/guards were refreshed.
+- Current package hashes after this pass: zip `8856F4ADEF942CEE207D7F5C6074C03943311B446D5B5B4B1A5BC416A249A7D2`, DLL `216C98859E0BC2E9FD99CE61C7C100A9BA8EBBAFD5820D6E873C44C841D1D306`, PCK `F279CD94C6BFB0D92B675E5546D937A08C1A121D7B8284549FAD1FD527272377`, manifest `9CB73137A04958D0DC0278E854CA1E0E1AC187C125E938DF7C3734F23F7B6A02`, README `5B1194440F6B212471E05F0EE117EE7F30E597FAAA916DF91F9378CD529DDCBB`.
+- No live gameplay evidence was produced.
+## 2026-05-14 - A11 Source-Boundary And Rootblight v2.2 Hardening
+
+Scope:
+
+- Audited local Core source for map generation, map serialization, map UI rendering/travel, deck removal, rest cleanup, shop removal, and combat-end ownership paths.
+- Did not implement A21-A30, custom characters, new assets, or live gameplay verification.
+
+Evidence:
+
+- `ActModel.CreateMap(RunState,bool)` returns `StandardActMap.CreateFor(...)`; `StandardActMap` chooses vanilla width 7 and rows from `ActModel.GetNumberOfRooms(isMultiplayer) + 1`.
+- `RunManager.GenerateMap()` creates or loads the `ActMap`, calls run-hook map modifiers, assigns `State.Map`, removes stale visited coords, and calls `NMapScreen.SetMap(...)`.
+- `NMapScreen.SetMap(...)` reads `map.GetRowCount()`, `map.GetColumnCount()`, and `map.GetAllMapPoints()`; traversal follows generated child edges through `MapTravel.GetTravelablePointsFrom(...)`.
+- `CardPileCmd.RemoveFromDeck(...)` calls `Hook.BeforeCardRemoved(...)`; shop removal reaches that command through `OneOffSynchronizer.DoMerchantCardRemoval(...)`; rest cleanup reaches the mod through `AfterRestSiteHeal(...)`.
+
+Implemented:
+
+- Added a Harmony postfix at the `ActModel.CreateMap` source boundary so A11 geometry is adjusted before the normal run map hook and before the map UI receives the generated map.
+- Kept A11 as geometry only: width +1, Act 1 +1 route row, Act 2 +1 route row, Act 3 +2 route rows, no Long Road marker/icon/hover.
+- Added A11 diagnostics that report target/actual rows, columns, and whether a reachable inserted-column route exists; unsupported or overwritten geometry logs a warning instead of silently passing.
+- Migrated `RootDeckService` from the one-root prototype to the v2.2 model: max 4 Rootblight cards, per-card combat-start growth, Rootblight III split once into Rootblight I while staying III, no IV path, played-card downgrades after growth, new roots do not grow in the same combat, and rest removes one highest-stage Rootblight with oldest tie priority.
+- Updated English/zhs Rootblight and Blight Sprout text to remove the stale "deck has no Rootblight" rule and document wither/split/no-IV behavior compactly.
+
+Validation:
+
+- `dotnet build EZMicroBalance.sln --no-restore`: passed with `NUGET_PACKAGES=C:\Users\Jack\.nuget\packages` so the existing local Godot SDK package was visible to dotnet.
+- `dotnet test EZMicroBalance.sln --no-build`: passed, 125 passed, 18 skipped, 0 failed, with the same local NuGet cache setting.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed with the same local NuGet cache setting.
+- `git diff --check`: passed; only existing line-ending warnings were reported.
+- `dotnet publish EZMicroBalance.sln --no-restore`: Release build reached the copy step but could not write to the real Steam mods directory from the sandbox (`Access to the path ... is denied`).
+- Redirected publish with `ModsPath=D:/Game/FOTN/dev-the-spire/.tools/publish-mods/` and Godot user dirs under `.tools/godot-user/`: passed and produced workspace-local DLL, manifest, and PCK. This does not replace installed game artifacts.
+## 2026-05-13 - Rootblight Interface Compile Fix
+
+- Rechecked local `source code/src/Core/Runs/IRunState.cs` and `RunState.cs`: `VisitedMapCoords` is exposed by concrete `RunState`, but not by `IRunState`; `IRunState` exposes `CurrentMapCoord`, `ActFloor`, `CurrentActIndex`, and `MapPointHistory`.
+- Updated `RootDeckService.HasRootBeginsApplied` to use interface-backed run-progress evidence instead of `VisitedMapCoords`, preserving the one-time starting Rootblight guard without depending on a concrete runtime type.
+- Added a source guard requiring `CurrentMapCoord.HasValue` / `MapPointHistory` usage and rejecting `VisitedMapCoords` in `RootDeckService`.
+- Build/test/publish results for this pass are recorded in current state docs after validation.
 ## 2026-05-12 - A11-A20 v2.0 Integration And Package Refresh
 
 Scope:

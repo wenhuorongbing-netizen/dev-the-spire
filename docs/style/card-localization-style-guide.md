@@ -1,6 +1,6 @@
 # Card Localization Style Guide (Source-Format)
 
-Project: EZ Micro Balance
+Project: Spire Plus (`EZMicroBalance` manifest id)
 Applies to: `EZMicroBalance/localization/{eng,zhs}/cards.json` and matching `CardModel` source.
 
 This guide follows local Slay the Spire 2 `v0.105.0` source behavior.

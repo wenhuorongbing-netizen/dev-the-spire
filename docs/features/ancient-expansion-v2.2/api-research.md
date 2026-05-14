@@ -1,6 +1,6 @@
 # Ancient Expansion v2.2 API Research
 
-Status: current Urda stabilization evidence plus default-off Morvi prototype evidence. Lotha, extra Urda blessings, and the Vakuu fight remain planning-only.
+Status: current ten-blessing Urda source evidence plus default-on Morvi source evidence, default-on Lotha source evidence, and default-on single-player Vakuu fight/Temptation source evidence. Vakuu's old unfinished parent-linked active-combat shape has been removed from current source, and Lotha now encodes Death Reprieve phase through deck-mirrored state. Runtime gameplay, exact save/load restore, post-victory Vakuu restore, and co-op proof remain pending.
 
 ## Current Source-Backed Facts
 
@@ -11,24 +11,28 @@ Current Urda source files:
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCards.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaFeatureGate.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaInitializer.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRunHook.cs`
 
 Observed implementation baseline:
 
 - Urda is default-on unless `EZMB_DISABLE_URDA=1` is set.
 - `EZMB_FORCE_ANCIENT=URDA` remains legacy-compatible but is not required for Urda visibility.
-- Current blessing ids are `urda_seedbed`, `urda_humus_pact`, `urda_molting`, and `urda_moss_map`.
-- Current source hooks cover reward alternatives, reward-taken follow-up handling, act entry, room entry, and Molting card setup.
+- Current blessing ids are `urda_seedbed`, `urda_humus_pact`, `urda_molting`, `urda_moss_map`, `urda_trial_branch`, `urda_shallow_root_relic`, `urda_rooted_route`, `urda_after_rain`, `urda_root_sight`, and `urda_seed_bank`.
+- Current source hooks cover reward alternatives, reward-taken follow-up handling, act entry, room entry, map marker checks, death-prevention checks, reward-card storage, and Molting card setup.
 - Humus Pact now uses an explicit `EZMB_URDA_HUMUS_PACT` card reward alternative instead of a global `CardReward.OnSkipped` postfix.
 - Seedbed counts accepted Seedbed choices, not reward alternative generation.
 - Live gameplay and save/load evidence remains pending.
 
-Current Morvi prototype source files:
+Current Morvi source files:
 
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingIds.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviCards.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviFeatureGate.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviInitializer.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviOptionRelics.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviPowers.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviRunHook.cs`
 
 Morvi evidence recorded in this source pass:
@@ -36,21 +40,61 @@ Morvi evidence recorded in this source pass:
 - Local `source code/src/Core/Models/Acts/Hive.cs` shows Act 2 Ancient selection flows through `Hive.GetUnlockedAncients(...)`.
 - Local `source code/src/Core/Rewards/CardReward.cs` and `source code/src/Core/Entities/CardRewardAlternatives/CardRewardAlternative.cs` show reward alternatives are generated from `Hook.ModifyCardRewardAlternatives(...)` and are limited to two visible alternatives.
 - Local `source code/src/Core/Commands/CardCmd.cs` shows `CardCmd.AutoPlay(...)` goes through card play hooks and can resolve automatic Attack/Skill replays.
-- Local `source code/src/Core/Commands/CardPileCmd.cs` shows `AddGeneratedCardToCombat(...)` is the source-backed path for generated combat cards, but it indexes the first result from `AddGeneratedCardsToCombat(...)`. That lower-level method can return an empty list when combat is not in progress, and `Add(...)` can return `success=false` for combat-ending/dead-owner cases. Morvi now uses the local `AncientCardHelpers.TryAddGeneratedCardToCombat(...)` wrapper so failed generated copies are removed from combat state instead of leaving unpiled clones.
-- Local `source code/src/Core/Models/AbstractModel.cs` exposes `BeforeCombatStart`, `AfterCardPlayed`, `TryModifyCardRewardOptionsLate`, `TryModifyCardRewardAlternatives`, and `AfterRewardTaken` hooks used by the Morvi prototype.
-- Morvi Debt Settlement now defers the payoff to `AfterRewardTaken(...)`, offers the one-card payoff through `RewardsSet.WithCustomRewards(...).WithSkippingDisallowed().Offer()`, and clears `DebtRewardPending` only after that resolver succeeds.
-- Morvi is default-off behind `EZMB_ENABLE_MORVI_V22=1`; no live gameplay/save-load/co-op evidence is claimed.
+- Local `source code/src/Core/Commands/CardPileCmd.cs` shows `AddGeneratedCardToCombat(...)` indexes the first result from `AddGeneratedCardsToCombat(...)`. The lower-level method can return an empty list when combat is not in progress or the owner has no combat state, and `Add(...)` can return `success=false` for combat-ending/dead-owner cases. The shared `AncientCardHelpers.TryAddGeneratedCardToCombat(...)` wrapper now guards `CombatManager.Instance.IsOverOrEnding`, `!CombatManager.Instance.IsInProgress`, and missing owner combat state, calls `AddGeneratedCardsToCombat([card], ...)` directly, checks the first result for null/unsuccessful adds, and removes failed generated cards from combat state instead of leaving unpiled cards.
+- Local `source code/src/Core/Commands/CardPileCmd.cs` also shows `Add(..., PileType.Hand)` redirects a full-hand add into the discard pile. Red Ink Overdraft therefore skips temporary-card generation when the hand is full, verifies the result pile is still `PileType.Hand`, and removes/logs any generated card that lands elsewhere.
+- Local `source code/src/Core/Combat/CombatManager.cs` calls `Hook.AfterCombatEnd(...)` before combat victory cleanup, and local `source code/src/Core/Commands/CreatureCmd.cs` routes ordinary damage through the normal death path. Morvi combat-end debt HP fallbacks now share a nonlethal helper that caps HP loss at current HP minus 1 for both Red Ink Overdraft and Debt Settlement.
+- Local `source code/src/Core/Models/AbstractModel.cs` exposes `BeforeCombatStart`, `AfterCardPlayed`, `TryModifyCardRewardOptionsLate`, `TryModifyCardRewardAlternatives`, and `AfterRewardTaken` hooks used by the Morvi source slice.
+- Morvi Debt Settlement is the current v2.2 combat-end debt model: it grants 220 Gold, optional remove/upgrade selections, sets Debt to 320, then pays up to 40 Debt at each combat end. Missing Gold falls back to the shared nonlethal HP loss helper capped so the player is not reduced below 1 HP.
+- Morvi is default-on for private-beta direct testing with `EZMB_DISABLE_MORVI` / `SPIREPLUS_DISABLE_MORVI` and force-test gates; no live gameplay/save-load/co-op evidence is claimed.
 
-## 2026-05-12 Lotha/Event Visual Evidence
+## 2026-05-12/13 Lotha/Event Visual Evidence
 
 Local source findings:
 
 - `source code/src/Core/Models/Acts/Glory.cs` shows Act 3 Ancient selection flows through `Glory.GetUnlockedAncients(...)`, which returns `AllAncients.ToList()` and has no native mod extension hook.
-- A Lotha Act 3 insertion would therefore need a narrow Harmony postfix on `Glory.GetUnlockedAncients(...)`, equivalent in shape to the existing Urda/Morvi insertion patches, unless a safer BaseLib/template Ancient-pool API is introduced or adopted.
+- Lotha Act 3 insertion uses a narrow Harmony postfix on `Glory.GetUnlockedAncients(...)`, equivalent in shape to the existing Urda/Morvi insertion patches, because no safer BaseLib/template Ancient-pool API is present locally.
 - `source code/src/Core/Models/EventModel.cs` shows `GetAssetPaths(...)` preloads `BackgroundScenePath` for `EventLayoutType.Ancient`.
 - `source code/src/Core/Nodes/Events/NAncientEventLayout.cs` shows Ancient rooms initialize visuals by calling `CreateBackgroundScene()` and adding that scene to the Ancient background container; the normal event portrait path is not the active Ancient background path.
 - BaseLib `v3.1.2` XML/decompiled local package evidence exposes `CustomAncientModel.CustomScenePath` and patches the Ancient background scene path only for `CustomAncientModel`.
-- No explicit local source file exists for `EZMicroBalance/images/events/ezmb_morvi.png` or `EZMicroBalance/images/events/ezmb_lotha.png`, and no custom Morvi/Lotha Ancient background scene resource exists in this repo. This blocks truthful event-art/background integration and keeps Lotha gameplay planning-only in this pass.
+- Lotha now has `EZMicroBalance/images/events/ezmb_lotha.png`, `EZMicroBalance/scenes/events/background_scenes/ezmb_lotha.tscn`, separate map/run-history icons, option art, and export entries. Morvi now has `EZMicroBalance/images/events/ezmb_morvi.png`, copied from `art_pipeline/generated/ancient_morvi_bg_v1_v001.png`, plus `EZMicroBalance/scenes/events/background_scenes/ezmb_morvi.tscn`, separate map/run-history icons, option art, and export entries.
+- Local card-play source supports Lotha replay safety: `CardModel.OnPlayWrapper(...)` calls `Hook.ModifyCardPlayCount(...)` for player-driven play count changes, while `CardPlay.IsAutoPlay`, `CardPlay.IsFirstInSeries`, `CardModel.IsClone`, and `CombatHistory.CardPlaysFinished` expose enough state to exclude autoplay/generated clone executions from Lotha recursion and turn-end echo tracking.
+- Lotha v2.2 corrective polish reuses source-backed command paths already inspected locally: Mirror Rebuttal uses `CardSelectCmd.FromDeckGeneric(...)`, a `SavedSpireField<CardModel,bool>` deck-card marker, `CardModel.DeckVersion`, and `CardPileCmd.Add(..., PileType.Hand)` to move the matching combat card; Attack/Skill extra plays use `ModifyCardPlayCount` rather than generated autoplay copies; Mirror Hall Echo uses `AfterTurnEnd(...)` plus combat history to record the last player-played non-Status Attack/Skill/Power for the next player turn; Deferred Verdict applies player-owned `LothaVerdictPower` stacks through `PowerCmd.Apply(...)` and consumes them with `PowerCmd.Decrement(...)`; Power-card replacement cost preview/payment uses `TryModifyEnergyCostInCombat(...)` and `TryModifyStarCost(...)`, then applies only the source-design draw/Energy benefit after play.
+- Lotha Presumption uses `AfterDamageReceived(...)` with a conservative enemy-attack approximation: `DamageResult.UnblockedDamage > 0`, enemy dealer, `cardSource == null`, and `ValueProp.Move`. Poison, Doom, HP-loss scripts, and self payments inspected locally do not match that full shape.
+- Lotha Closed Court uses `TryModifyRewardsLate(...)` to remove only `CardReward` instances from combat rewards, leaving gold, potion, and relic reward objects intact. First-turn hand filling uses `CardPile.MaxCardsInHand` and `CardPileCmd.Draw(...)`; temporary cost reduction uses `TryModifyEnergyCostInCombat(...)`.
+- Lotha Death Reprieve uses the local `ShouldDieLate` / `AfterPreventingDeath` death-prevention path, modeled after local `CreatureCmd.Kill(...)` and `LizardTail` source. `CreatureCmd.Kill(force: true)` is used only at reprieve failure. Source-safe deviation: local turn-flow evidence did not prove a safe immediate enemy-turn interruption into a new player turn, so enemy-turn lethal marks a pending reprieve that starts at the next player turn. Current source encodes `DeathReprieveUsed` plus `DeathReprievePhase` through the existing Lotha deck mirror. Live lethal-path and restore testing remains pending.
+- Lotha Public Evidence uses `ModifyPowerAmountGiven`, `TryModifyPowerAmountReceived`, and `AfterPowerAmountChanged` to double non-damaging negative status applications and manage `LothaEnlightenmentPower`. Eligibility uses `power.GetTypeForAmount(amount) == PowerType.Debuff` as the base gate, but excludes source-proven damage/kill Debuffs. Local Core evidence: `WeakPower`, `VulnerablePower`, and `FrailPower` are non-damage Debuffs; `PoisonPower` is also a Debuff but deals unblockable/unpowered side-turn damage, so it is excluded along with Constrict, Demise, Disintegration, Doom, Magic Bomb, Strangle, and The Gambit.
+
+## 2026-05-14 Ancient UI/Art Resource Routing Evidence
+
+Local source findings:
+
+- `source code/src/Core/Nodes/Events/NAncientEventLayout.cs` adds `AncientEventModel.CreateBackgroundScene().Instantiate<Control>(...)` into the Ancient background container, so custom clicked-Ancient backgrounds must be `Control`-root scene resources rather than raw image paths or `Node2D` scenes.
+- `source code/src/Core/Models/EventModel.cs` preloads `BackgroundScenePath` for `EventLayoutType.Ancient` through `GetAssetPaths(...)`, which supports keeping event background scenes separate from map and run-history icons.
+- `source code/src/Core/Events/EventOption.cs` shows `EventOption.FromRelic(...)` and `EventOption.WithRelic<T>(Player?)` use mutable relic instances and relic hover tips for option art/hover presentation. Current Urda, Morvi, and Lotha options use `WithRelic<T>` marker relics; Vakuu fight uses `EventOption.FromRelic(...)`.
+- `source code/src/Core/Models/RelicModel.cs` loads `PackedIconPath`, `PackedIconOutlinePath`, and `BigIconPath` separately. Current marker relics override their packed, outline, and big icon paths to the option art path so the option button is not dependent on the generic shared relic fallback.
+- `source code/src/Core/Helpers/ImageHelper.cs` and `source code/src/Core/Nodes/Screens/RunHistoryScreen/NMapPointHistoryEntry.cs` route Ancient map/run-history images through room-icon lookups, not through the clicked Ancient background scene. Current Urda, Morvi, and Lotha map/run-history paths therefore stay under `EZMicroBalance/images/ancients/**` and not `EZMicroBalance/images/events/**`.
+- Current guard/audit coverage now checks source role separation, option-marker resource/localization coverage, manifest-target file/hash presence, and manifest-target export coverage. This is static source/resource evidence only; it is not clicked live UI proof.
+
+## 2026-05-13/14 Vakuu Fight Source Evidence
+
+Local source findings:
+
+- `source code/src/Core/Models/EventModel.cs` exposes a protected `EnterCombatWithoutExitingEvent(...)` helper that requires shared events. Vakuu is an `AncientEventModel`, so the implementation does not call that protected helper directly.
+- Local shared event examples use parent-event combat rooms that resume after combat. Current `VakuuFightService.StartFight(...)` follows the live room-stack shape through an awaited `RunManager.Instance.EnterRoomWithoutExitingCurrentRoom(...)`, but it does not assign `ParentEventId` while the combat room is unfinished.
+- `source code/src/Core/Rooms/CombatRoom.cs` serializes parent-event combat rooms only after they are prefinished. Current Vakuu source keeps the active combat unparented for serialization, then a narrow `CombatRoom.ToSerializable()` postfix records the Vakuu parent only for prefinished `EzmbVakuuTrialEncounter` rooms that still intend to resume the parent event.
+- `source code/src/Core/Runs/RunManager.cs` and `source code/src/Core/Rooms/EventRoom.cs` show parent events resume after terminal combat rewards when the combat room asks to resume the parent event.
+- `source code/src/Core/Events/EventModel.cs` has a protected `SetEventState(...)` path used by normal event state transitions. The implementation calls it by reflection only after the parent Vakuu event resumes from the custom combat.
+- `source code/src/Core/Nodes/Combat/NCombatUi.cs` skips `CombatRoom.OfferRoomEndRewards(...)` when `Encounter.ShouldGiveRewards` is false; the custom Vakuu encounter is `RoomType.Event` and overrides `ShouldGiveRewards => false`, so the normal victory UI path should not generate ordinary combat rewards.
+- `source code/src/Core/Rooms/CombatRoom.cs` `StartPreFinishedCombat(...)` can still restore or generate room-end rewards for prefinished combat rooms. Vakuu therefore remains save/load-unverified after the custom child combat; do not claim save/load-ready until live restore testing proves the empty terminal reward/no-normal-reward/resume behavior.
+- If filtering owned Act 3 Ancient blessings leaves fewer than three non-Vakuu options, the source now falls back to a single continue option instead of presenting an empty or partial reward choice set.
+- Local `source code/src/Core/Commands/CardCmd.cs` moves exhausted cards into the Exhaust pile, records combat history, and dispatches `Hook.AfterCardExhausted(...)`. The Temptation card uses a card-local `AfterCardExhausted(...)` override, matching the existing Withered Husk shape, so it does not depend on the card being exhausted from hand.
+- Local `source code/src/Core/Commands/PlayerCmd.cs` exposes `GainEnergy(...)`, and local `source code/src/Core/Commands/CreatureCmd.cs` exposes `Damage(...)` with `ValueProp.Unblockable | ValueProp.Unpowered`; Temptation uses these command paths for its gain 1 Energy / lose 3 HP exhaust effect.
+- Local `source code/src/Core/Combat/CombatManager.cs` calls `Hook.AfterPlayerTurnStart(...)` after normal hand draw. The Vakuu run hook uses that timing to add Temptation to the top of the Draw Pile after the hand draw on player turns 1, 3, 5, and onward, making the pressure deterministic without rewriting monster actions.
+- Local `source code/src/Core/Commands/CardPileCmd.cs` supports `AddGeneratedCardToCombat(..., PileType.Draw, ..., CardPilePosition.Top)` and records `CardGeneratedEntry` combat history. The implementation uses the existing `AncientCardHelpers.TryAddGeneratedCardToCombat(...)` cleanup wrapper with an added position argument.
+- The hook is scoped by `combatState.Encounter is EzmbVakuuTrialEncounter` and the run-hook subscriber is gated through `VakuuFightFeatureGate.IsFightEnabledForRun(...)`, preserving the current single-player-only stance.
+- Multiplayer authority is not source-proven. `VakuuFightFeatureGate.IsFightEnabledForRun(...)` requires `runState.Players.Count == 1`.
+- Local `source code/src/Core/Rooms/CombatRoom.cs` throws in `ToSerializable()` when a combat room has `ParentEventId` and is not pre-finished. The old unfinished parent-linked shape remains a source-level blocker; current Vakuu source no longer creates that shape for the active fight.
+- Live UI, combat victory, save/load, failure/death, and co-op verification remain pending.
 
 ## 2026-05-12 Urda Stabilization Evidence
 
@@ -69,17 +113,42 @@ Local source findings:
 
 Save/load evidence:
 
-- `AncientSavedStateFields.UrdaStateKey` still packs Urda progress into one `SavedSpireField<Player,string>`.
+- `AncientSavedStateFields.UrdaStateKey` packs Urda progress into a `SavedSpireField<Player,string>` and `AncientSavedStateFields.UrdaDeckStateKey` mirrors that encoded string onto deck cards through `AncientPlayerState`.
+- `AncientSavedStateFields.MorviStateKey` and `AncientSavedStateFields.MorviDeckStateKey` use the same Player runtime plus card-backed deck mirror pattern for Morvi source progress.
+- 2026-05-14 state mirror source audit: `AncientPlayerState.Get(...)` reads runtime state first, mirrors it to owned, non-removed deck cards, and restores the runtime field from the first owned, non-removed deck mirror when runtime state is empty. `AncientPlayerState.Set(...)` writes runtime plus deck mirrors, and `AncientPlayerState.SyncDeck(...)` forces the same recovery/mirror path. Urda, Morvi, and Lotha encoded state reads/writes funnel through hook-local `GetSelectedBlessing(...)`, `GetProgress(...)`, `SetProgress(...)`/`SetState(...)`, and recurrent `AfterCardChangedPiles(...)` sync calls; active source guards reject direct indexing of `UrdaStateKey`, `UrdaDeckStateKey`, `MorviStateKey`, `MorviDeckStateKey`, `LothaStateKey`, and `LothaDeckStateKey` outside the helper.
 - The packed state now includes a `HumusCompletionPending` bit and can read the prior eight-field shape.
-- BaseLib `SavedSpireField<TKey,TValue>` documentation says automatic save/load only works on model types that support `SavedProperty`, mainly cards and relics. `Player` persistence for this field is therefore not source-proven by this pass.
+- BaseLib `SavedSpireField<TKey,TValue>` documentation says automatic save/load only works on model types that support `SavedProperty`, mainly cards and relics. `Player` persistence for these fields is therefore not source-proven by this pass; the deck mirror is a safer carrier for live save/load testing, not a substitute for runtime proof.
 - Local Core source reinforces that pending status: `Player.ToSerializable()` writes a fixed `SerializablePlayer` shape, `SerializablePlayer` has no general `SavedProperties`/`Props` field, `ExtraPlayerFields` serializes only built-in fixed fields, and inspected `SavedProperties.From(...)` call sites are card/relic/modifier save paths rather than `Player`.
 - Do not close Urda save/load checklist rows until live save/load confirms the player-owned encoded state survives reload.
+
+## 2026-05-14 Save/Load Red-Team Evidence
+
+Vakuu parent-linked child combat evidence:
+
+- Local `source code/src/Core/Rooms/CombatRoom.cs` shows `ParentEventId`, `ShouldResumeParentEventAfterCombat`, `FromSerializable(...)`, `StartPreFinishedCombat()`, and `ToSerializable()`. `ToSerializable()` throws when `ParentEventId != null && !IsPreFinished`.
+- Local `source code/src/Core/Runs/RunManager.cs` shows `EnterRoomWithoutExitingCurrentRoom(...)` pushes a child room without exiting the parent event and appends a room-history entry; `ProceedFromTerminalRewardsScreen()` resumes the previous room when the current room is a `CombatRoom` with `ShouldResumeParentEventAfterCombat != false`; `ResumePreviousRoom()` pops the child room and calls the parent room's `Resume(...)`.
+- Local `source code/src/Core/Rooms/EventRoom.cs` resumes events through `EventSynchronizer.ResumeEvents(exitedRoom)` and saves only when Ancient event state changes mark the event pre-finished.
+- Local `source code/src/Core/Runs/RunManager.cs`, `source code/src/Core/Saves/SaveManager.cs`, and `source code/src/Core/Saves/SerializableRun.cs` show run saves carry `PreFinishedRoom = preFinishedRoom?.ToSerializable()`. This is source-compatible with a pre-finished parent-linked combat room after victory, but not with an unfinished parent-linked combat room.
+- Current `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` creates `new CombatRoom(ModelDb.Encounter<EzmbVakuuTrialEncounter>().ToMutable(), vakuu.Owner.RunState)` without assigning `ParentEventId`, then enters it through `RunManager.Instance.EnterRoomWithoutExitingCurrentRoom(...)`. Core `CombatRoom.ShouldResumeParentEventAfterCombat` defaults to true, so the live room stack can still resume the parent event after terminal rewards.
+- Current `VakuuFightPreFinishedSavePatch` patches `CombatRoom.ToSerializable()` and writes `serializableRoom.ParentEventId = ModelDb.AncientEvent<Vakuu>().Id` plus `ShouldResumeParentEvent = true` only when the room is an `EzmbVakuuTrialEncounter`, `IsPreFinished`, and still marked for parent resume.
+- Conclusion: the known Core-rejected unfinished parent-linked active-combat shape is removed from current Vakuu source. Prefinished parent restore is source-shaped, but live save/load still must prove active-fight behavior if the game permits saving there, the prefinished empty-terminal-reward path, and the final Vakuu victory choices.
+
+Lotha Death Reprieve persistence evidence:
+
+- Current `EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRunHook.cs` still stores live booleans `DeathReprieveActive`, `DeathReprievePendingStart`, and `DeathReprieveStarted` in a private `LothaCombatState` held by `ConditionalWeakTable<Player, LothaCombatState>`, but it now mirrors the durable state as `Progress(bool DeathReprieveUsed, DeathReprievePhase DeathReprievePhase)`.
+- The same file encodes `DeathReprievePhase.None`, `PendingStart`, `Active`, and `Resolved` through `AncientSavedStateFields.LothaStateKey` and `AncientSavedStateFields.LothaDeckStateKey`; `SetProgress(...)` writes the used flag and phase before starting or pending the reprieve, and `HydrateDeathReprieveState(...)` rebuilds pending/active protection state from that encoded progress.
+- `EZMicroBalanceCode/Ancients/Common/AncientPlayerState.cs` mirrors encoded Ancient state from the `Player` field onto deck cards and can rebuild runtime state from the first nonempty deck-card mirror.
+- Local `source code/src/Core/Entities/Players/Player.cs` and `source code/src/Core/Saves/Runs/SerializablePlayer.cs` show player save data contains fixed HP, max HP, deck, relics, potions, RNG/odds, unlock state, discoveries, and fixed extra fields. It does not expose a general player `SavedProperties`/`Props` field.
+- Local `source code/src/Core/Models/CardModel.cs` and `source code/src/Core/Models/RelicModel.cs` save `SavedProperties.From(this)`, while local `source code/src/Core/Models/PowerModel.cs` has no corresponding `ToSerializable()` path. Local `Creature` power lists are runtime state; no source evidence here proves combat powers survive a run save/load.
+- Local `source code/src/Core/Commands/CreatureCmd.cs` shows non-forced death runs through `Hook.ShouldDie(...)` and `Hook.AfterPreventingDeath(...)`, while `CreatureCmd.Kill(..., force: true)` bypasses the death-prevention check. Current Lotha failure intentionally uses `force: true`.
+- Local `source code/src/Core/Combat/CombatManager.cs` shows normal player-turn start and turn-end hooks drive the reprieve start/end sequence (`AfterPlayerTurnStart`, `AfterTurnEnd`). Current Lotha source uses those hooks to start a rehydrated pending reprieve and to mark the phase `Resolved` at turn end, combat end, and before the forced failure death path.
+- Conclusion: the current source reduces duplicate-trigger and lost-protection risk by persisting the once-per-run used flag plus pending/active/resolved phase through the deck-card mirror. Exact save/load continuation of an already active reprieve turn is not fully source-proven because Core run saves do not persist the complete active combat hand/energy/pile/power state here; keep live restore rows open.
 
 Secondary tutorial reference checked only for orientation: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html`.
 
 ## Required Future Research
 
-Before implementing Morvi, Lotha, extra Urda blessings, or Vakuu fight, inspect local `source code/src/Core/` for:
+Before claiming runtime-ready behavior or broadening Vakuu behavior beyond the current Temptation hook, inspect local `source code/src/Core/` for:
 
 | Area | Evidence Needed |
 | --- | --- |
@@ -89,7 +158,7 @@ Before implementing Morvi, Lotha, extra Urda blessings, or Vakuu fight, inspect 
 | Power-card fallbacks | Whether cost/draw/energy fallbacks should be card commands, powers, or reward commands. |
 | Active button UI | Whether Red Ink Overdraft should use relic, power, or combat UI action APIs. |
 | Death interrupt | Whether Death Reprieve can safely intercept lethal damage without corrupting combat state. |
-| Temporary storage | How Archive Pages and Temptation should exist in hand/draw/discard/reward zones. |
+| Temporary storage | Whether save/load and restore preserve generated Temptation cards correctly during the custom parent-event combat. |
 | Multiplayer | Player ownership, host/client authority, and deterministic reward mutation. |
 
 Primary evidence remains local game source. BaseLib/RitsuLib/template APIs are preferred before Harmony. Tutorial material is secondary only: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html`.

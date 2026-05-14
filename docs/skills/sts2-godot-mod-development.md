@@ -1,6 +1,6 @@
 # StS2 Godot Mod Development Skill
 
-Use this repository-local skill/reference guide when working on EZ Micro Balance or future Slay the Spire 2 Godot/.NET mods in this workspace.
+Use this repository-local skill/reference guide when working on Spire Plus (`EZMicroBalance` manifest id) or future Slay the Spire 2 Godot/.NET mods in this workspace.
 
 ## Operating Rules
 
@@ -12,6 +12,7 @@ Use this repository-local skill/reference guide when working on EZ Micro Balance
 - Do not copy large decompiled game code bodies; record only signatures, class names, field names, call paths, and conclusions.
 - Do not mutate the legacy `EzDailyContent` manifest id.
 - Keep `EZMicroBalance` independent from the legacy scaffold.
+- Preserve `Spire Plus` as the current player-facing display name while keeping `EZMicroBalance` as the stable manifest id/package id unless a separate migration plan is approved.
 - For card text, visible keyword wording, rich text, dynamic variables, card previews, and bilingual terminology, follow `docs/style/card-localization-style-guide.md`.
 - Keep Ascension 11-20 exposure aligned with the current release docs; for the current private-beta multiplayer test candidate A11-A20 selection is default-on, with documented emergency disable switches.
 - Do not implement Ascension 21-30 in this cycle.

@@ -1,6 +1,6 @@
 # Project Map
 
-`EZ Micro Balance` is the active private beta target. Its stable manifest id is `EZMicroBalance`. The original `EzDailyContent` scaffold remains for traceability and must not be renamed in-place.
+`Spire Plus` is the active private beta target. Its stable manifest id is `EZMicroBalance`. The original `EzDailyContent` scaffold remains for traceability and must not be renamed in-place.
 
 ## Top-Level Layout
 
@@ -10,7 +10,7 @@
 | `AGENTS.md` | Current | Agent rules and project hard constraints. |
 | `EZMicroBalance.sln` | Current | Active solution for build/test/publish. |
 | `EZMicroBalance.csproj` | Current | Active private beta C# project. |
-| `EZMicroBalance.json` | Current | Active mod manifest, id `EZMicroBalance`. |
+| `EZMicroBalance.json` | Current | Active mod manifest, display name `Spire Plus`, id `EZMicroBalance`. |
 | `EZMicroBalance/` | Current | Active Godot resources, images, and localization. |
 | `EZMicroBalanceCode/` | Current | Active C# source. See `EZMicroBalanceCode/README.md`. |
 | `EZMicroBalanceCode/Ancients/Expansion/Urda/` | Current | Urda Ancient expansion feature implementation and gate control. |
@@ -20,9 +20,11 @@
 | `Sts2PathDiscovery.props` | Current | Local path discovery helper used by build props. |
 | `docs/` | Current | Documentation index, current release docs, feature records, and archive. |
 | `scripts/` | Current | Repository helper scripts. |
-| `docs/archive/` | Current | Historical planning, prompt material, and release archaeology. |
-| `docs/issues/` | Current | Source-complete issue follow-up and manual verification queue (`docs/issues/waiting-tests.md`). |
-| `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization plus default-off Morvi prototype; Lotha/Vakuu remain planning-only. |
+| `docs/archive/` | Current | Historical planning, prompt material, release archaeology, archived audits, and implementation records. |
+| `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Archive | Historical v2.2 source-audit matrices; do not use as default next-development input. |
+| `docs/archive/implementation-records/` | Archive | Compact implementation records moved out of the active reading path. |
+| `docs/issues/` | Current support | Compact issue follow-up plus manual evidence queue retained for guard/reference support (`docs/issues/waiting-tests.md`). |
+| `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi source slice, default-on Lotha source slice, and default-on single-player Vakuu fight source slice; live verification remains pending. |
 
 ## Active Mod Surface
 
@@ -88,10 +90,11 @@ Start at `docs/README.md`.
 | Release gates | `docs/release-checklist.md` |
 | Tester handoff | `docs/private-beta-verification-handoff.md` |
 | Open issues | `docs/issues.md` |
-| Manual evidence queue | `docs/issues/waiting-tests.md` |
+| Test-ready development goal | `docs/test-ready-development-goal.md` |
+| Manual evidence queue | `docs/issues/waiting-tests.md` (support only; next development starts from `docs/test-ready-development-goal.md`) |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |
 | Ancient expansion v2.2 | `docs/features/ancient-expansion-v2.2/README.md` |
-| Ancient expansion next prompt | `docs/features/ancient-expansion-v2.2/next-development-prompt.md` |
+| Ancient expansion v2.2 source audit archive | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/README.md` |
 | Urda current test slice | `docs/features/ancient-expansion-urda/README.md` |
 | Ascension 11-20 | `docs/features/ascension-11-20/README.md` |
 | Architecture decision | `docs/architecture-ez-micro-balance.md` |

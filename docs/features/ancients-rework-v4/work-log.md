@@ -1,6 +1,85 @@
-# EZ Micro Balance Work Log
+﻿# EZ Micro Balance Work Log
 
 Current status note: entries below are chronological history. Older entries may reference `EzDailyContent*` paths and smaller automated test totals from before the independent `EZMicroBalance` migration. The current active release code is under `EZMicroBalanceCode/`, active resources are under `EZMicroBalance/`, and the current automated release/source-guard suite is passing unless a later entry supersedes it.
+
+## 2026-05-13 - No-test package refresh for Urda/Morvi hook hardening
+
+- Ran `dotnet publish EZMicroBalance.sln --no-restore`: passed, built the Release DLL, copied the DLL/manifest to the installed `mods\EZMicroBalance` folder, and exported the selected-resource PCK. Godot printed the known project-scan warning for the nested `source code/project.godot` folder and completed `savepack`.
+- Updated `README_INSTALL.txt` to state that this package includes the Urda/Morvi active-hook filtering and owned/non-removed deck-mirror recovery hardening, while `dotnet test`, live gameplay/Steam verification, and release-artifact tests were intentionally not rerun for this no-test package refresh.
+- Rebuilt package staging, the versioned package folder, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the refreshed installed artifacts.
+- Current hashes: DLL `C64B5787625F497E930D4470AB4758950F59D9574D22847996FBCF55E0DACF71`, JSON `9CB73137A04958D0DC0278E854CA1E0E1AC187C125E938DF7C3734F23F7B6A02`, PCK `39F0ED5E592BC9131BE7C317450357F9ACC82D7031D97C92C71C59C8B5109736`, README `B233ADB9730DF93AC8FA291960D3DD2E647D1200B6CD52FFC8183409BA1A820B`, package zip `8AA5F65BECF6672B7B41F3B474851A828BFAF60250F04FB2C58061F52747D128`.
+- Ran a no-test source-completion scan across `EZMicroBalanceCode`: no active `TODO`, `FIXME`, or `NotImplemented` markers were found; Urda/Morvi saved-field direct indexing is still blocked outside `AncientPlayerState`; remaining `pending` strings are documented live-verification notes or runtime state names.
+- Ran `git diff --check`: passed with CRLF normalization warnings only.
+- This closes the non-test packaging gap for the latest source hardening. Private-beta release readiness remains blocked by live Ancient reward matrix rows, save/load-sensitive rows, disable-mod gameplay, post-fix Urda/Rootblight gameplay, natural A11 traversal, co-op verification, release-artifact tests for this package, clean commit, and user-approved push.
+
+## 2026-05-13 - Urda/Morvi source-only hook-state hardening
+
+- Inspected local game source for hook dispatch. `RunState.IterateHookListeners` filters deck/relic/potion listeners to `player.IsActiveForHooks`, but still yields mod run-state subscribers globally through `ModHelper.IterateAllRunStateSubscribers(this)`, so mod subscribers that iterate `RunState.Players` must apply their own active-player filter.
+- Inspected `Player.IsActiveForHooks`: it is initialized and restored from `Creature.IsAlive`, and can be toggled by `DeactivateHooks()` / `ActivateHooks()`.
+- Hardened `AncientPlayerState.ReadFromDeck` so Urda/Morvi deck-mirror recovery only trusts cards owned by the player and not removed from state, matching the existing mirror-write filter.
+- Hardened Urda's act-entry and Moss Map room-entry player loops, plus Morvi's combat-start loop, to process only players active for hooks.
+- Updated source/release guards to preserve the `AncientPlayerState` deck mirror pattern and require active-player filtering in the Urda/Morvi hook loops.
+- Ran `dotnet build EZMicroBalance.sln --no-restore`: passed with 0 warnings and 0 errors.
+- At this source-only checkpoint, `dotnet test`, live gameplay/Steam verification, `dotnet publish`, package refresh, and release-artifact tests had not been rerun. The no-test package refresh entry above supersedes the package gap; tests and live verification remain pending.
+- Private-beta release readiness remains blocked by live Ancient reward matrix rows, save/load-sensitive rows, disable-mod gameplay, post-fix Urda/Rootblight gameplay, natural A11 traversal, co-op verification, release-artifact tests for the refreshed package, clean commit, and user-approved push.
+
+## 2026-05-13 - BaseLib-only plug-off startup/log evidence
+
+- Added `-DisableSpirePlus` to `scripts/spire-plus-live-session.ps1` for BaseLib-only plug-off startup/log evidence. The option now requires `-MoveOtherMods`, temporarily isolates `EZMicroBalance` out of the mods folder, records `AllowedModIds`, and restores the package afterward.
+- The first settings-only disabled attempt under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-142835` is invalid plug-off evidence: the game still logged `Finished mod initialization for 'Spire Plus' (EZMicroBalance)` and `Loaded 2 mods (2 total)`.
+- No-launch plug-off helper smoke under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-142957` moved 25 entries including `EZMicroBalance`, moved 1 current-run file, restored all 25 mod entries and the run file, and restored Steam settings to the original hash.
+- Normal Steam plug-off startup/log validation under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` moved 25 entries including `EZMicroBalance`, launched through Steam, reached main menu, logged `Loaded 1 mods (1 total)` and BaseLib initialization only, did not initialize Spire Plus / `EZMicroBalance`, audited clean with 0 release-blocking signatures, then stopped the game and restored settings, current-run save, and moved entries.
+- This closes only current plug-off loader evidence. Disable-mod gameplay in an actual run remains pending.
+- Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- Ran `dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 18 skipped after the BaseLib-only plug-off startup/log refresh.
+- Ran `dotnet test EZMicroBalance.sln -c Release`: passed, 81 passed, 18 skipped after the BaseLib-only plug-off startup/log refresh.
+- Ran `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 99 passed, 0 skipped after the BaseLib-only plug-off startup/log refresh.
+- Ran `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after the BaseLib-only plug-off startup/log refresh.
+- Ran `git diff --check`: passed with CRLF normalization warnings only after the BaseLib-only plug-off startup/log refresh.
+- Did not run `dotnet publish`; this pass changed scripts, docs, and tests only, so the current package artifacts remain the Urda custom Ancient asset-path package refresh artifacts.
+
+## 2026-05-13 - Ascension live-evidence protocol guard refresh
+
+- Added an A11-A20 live evidence protocol to `docs/features/ascension-11-20/manual-test-checklist.md`, requiring restore-safe Steam setup, foreground preflight before screenshots, copied/audited `godot.log`, and restore with `-PreserveNewCurrentRunsOnRestore` for Rootblight/Blight Sprout, map traversal, save/load, and co-op rows.
+- Added release-coverage guard assertions so the Ascension checklist keeps the live-session helper, foreground preflight, log audit, restore command, and invalid covered/wrong-surface screenshot warning.
+- Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- Ran `dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 17 skipped after adding the Ascension live-evidence protocol guard.
+- Ran `dotnet test EZMicroBalance.sln -c Release`: passed, 81 passed, 17 skipped after adding the Ascension live-evidence protocol guard.
+- Ran `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 98 passed, 0 skipped after adding the Ascension live-evidence protocol guard.
+- Ran `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after adding the Ascension live-evidence protocol guard.
+- Ran `git diff --check`: passed with CRLF normalization warnings only after adding the Ascension live-evidence protocol guard.
+- Did not run `dotnet publish`; this pass changed only docs and tests, so the current package artifacts remain the Urda custom Ancient asset-path package refresh artifacts.
+- Post-fix live Urda selection, Rootblight visual/gameplay verification, Ancient reward matrix, save/load checks, multiplayer disposition, clean commit, and user-approved push remain pending.
+
+## 2026-05-13 - Urda custom Ancient asset-path package refresh
+
+- A controlled current A14 Rootblight generated-art hover probe under `.tools\runtime-evidence\current-rootblight-art-hover-20260513-114103` was negative evidence, not a pass: it entered the default-on Urda Ancient event before combat and `godot-live.log` reported missing vanilla-derived Urda map icon, run-history icon, and background-scene paths.
+- Fixed Urda to derive from BaseLib `CustomAncientModel` with `autoAdd: false`, custom mod-owned icon/run-history/background scene paths, and a packaged background scene at `EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn`.
+- Updated release artifact/source guards so selected-resource PCK parity covers packaged `.tscn` scenes and the Urda custom Ancient asset paths.
+- Added headless installed-PCK resource-load evidence at `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345`; the custom Urda scene/icon resolved with `URDA_RESOURCE_LOAD_OK` and 0 `ERROR` / `WARNING` lines.
+- Added `scripts/spire-plus-live-session.ps1` for repeatable normal Steam live-test prepare/restore sessions; no-launch smoke checks restored Steam settings byte-for-byte, restored 24 temporarily moved non-BaseLib/EZMicroBalance mod entries, and confirmed current-run isolation is a clean no-op when no current-run files exist.
+- Ran a helper-driven normal Steam startup/log validation under `.tools/runtime-evidence/live-spire-plus-session-20260513-125206`; the stricter rerun moved the previous log aside before launch, logged Spire Plus initialization, `Loaded 2 mods (2 total)`, `Found 16 SavedSpireFields`, and `Time to main menu: 13,849ms`, restored settings and 24 moved mod entries, and audited clean. This is loader/helper evidence, not gameplay evidence.
+- Hardened `scripts/spire-plus-live-session.ps1` restore for sessions that start or continue a run by adding `-PreserveNewCurrentRunsOnRestore`. The no-launch smoke under `.tools/runtime-evidence/live-helper-preserve-current-run-smoke-20260513-133431` moved a dummy test-created `current_run.save` into evidence, restored the original current run, and restored Steam settings to the expected hash. This is tooling safety evidence, not gameplay evidence.
+- Added `scripts/check-spire-window-preflight.ps1` after invalid local screenshot attempts showed another foreground application covering Slay the Spire 2. The preflight records foreground-window state and can reject screenshot collection unless Slay the Spire 2 is actually foreground; smoke evidence under `.tools/runtime-evidence/window-preflight-smoke-20260513-135402` reported `VampireSurvivors` foreground and Slay the Spire 2 not running.
+- Added a release-safety guard that requires the invalid live Urda screenshot attempts `.tools/runtime-evidence/live-urda-postfix-20260513-131752` and `.tools/runtime-evidence/live-urda-continue-postfix-20260513-134337` to be referenced only as invalid or non-satisfying evidence in the private-beta release completion audit.
+- Added a source guard that prevents Urda/Morvi code from directly indexing `UrdaStateKey`, `UrdaDeckStateKey`, `MorviStateKey`, or `MorviDeckStateKey` outside `AncientPlayerState`, preserving the runtime Player field plus card-backed deck mirror pattern for save/load testing.
+- Added a Urda manual-test live evidence protocol and guard coverage requiring restore-safe Steam setup, foreground preflight before screenshots, copied/audited `godot.log`, and restore with `-PreserveNewCurrentRunsOnRestore`.
+- Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
+- Ran `dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 17 skipped after adding the Urda live-evidence protocol guard.
+- Ran `dotnet test EZMicroBalance.sln -c Release`: passed, 81 passed, 17 skipped after adding the Urda live-evidence protocol guard.
+- Ran `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 98 passed, 0 skipped after adding the Urda live-evidence protocol guard.
+- Ran `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after adding the Urda live-evidence protocol guard.
+- Ran `git diff --check`: passed with CRLF normalization warnings only after adding the Urda live-evidence protocol guard.
+- Ran `dotnet publish EZMicroBalance.sln`: passed and refreshed the installed DLL/PCK.
+- Rebuilt package staging, the versioned package folder, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts.
+- Current hashes: DLL `8098717F2F99F12D5DA67A32046CD2460644EA9C5EC9864DE64E4A5ECCA356F0`, JSON `9CB73137A04958D0DC0278E854CA1E0E1AC187C125E938DF7C3734F23F7B6A02`, PCK `39F0ED5E592BC9131BE7C317450357F9ACC82D7031D97C92C71C59C8B5109736`, package zip `243439C980B7B1E16F8B8B0DF561D9AE073F97C4E92F192A05563885AB2F07C8`.
+- Post-fix live Urda selection, Rootblight visual/gameplay verification, Ancient reward matrix, save/load checks, multiplayer disposition, clean commit, and user-approved push remain pending.
+
+## 2026-05-13 - Active zhs Localization Encoding Guard
+
+- Repaired active Simplified Chinese localization in `settings_ui.json`, `card_reward_ui.json`, `events.json`, `rest_site_ui.json`, and `relics.json` after UTF-8/ANSI display checks exposed release-facing mojibake risk.
+- Added a guard in `ReleaseSafetyExpandedGuardTests` that scans every active `EZMicroBalance/localization/zhs/*.json` table for known mojibake fragments, extending earlier relic/card/rest-site spot checks.
+- Updated the localization validation notes and changelog; runtime language verification remains pending until an in-game English/zhs pass is performed.
 
 ## 2026-05-05 15:04:18 +02:00
 
@@ -651,7 +730,7 @@ Remaining blocker:
 Goal summary:
 
 - Close private-beta hardening gates for the current EZ Micro Balance Ancient reward rebalance pass.
-- Revalidate Jewelry Box actual-deck `Apotheosis` / `绁炲寲` behavior, Simplified Chinese localization guards, Prismatic Gem source/manual coverage, and release packaging.
+- Revalidate Jewelry Box actual-deck `Apotheosis` / `缁佺偛瀵瞏 behavior, Simplified Chinese localization guards, Prismatic Gem source/manual coverage, and release packaging.
 
 Jewelry Box review:
 
@@ -663,8 +742,8 @@ Jewelry Box review:
 Localization and Prismatic Gem review:
 
 - Active zhs localization scan found no raw `Swift`, `Apotheosis`, `Enthralled`, `Wish`, `Relax`, `Folly`, `Debt`, `Boss`, `Innate`, `Exhaust`, `Ethereal`, `Retain`, or `Eternal` in player-facing zhs localization.
-- Beautiful Bracelet zhs text contains `杩呴€?`.
-- Jewelry Box zhs text contains `绁炲寲` and `涓嶅叿鏈夊浐鏈塦.
+- Beautiful Bracelet zhs text contains `鏉╁懘鈧?`.
+- Jewelry Box zhs text contains `缁佺偛瀵瞏 and `娑撳秴鍙块張澶婃祼閺堝ˇ.
 - Prismatic Gem source still uses `CardReward.Populate()` state plus `ConditionalWeakTable<CardReward, RewardScreenState>` so reroll reuses the same trigger state; manual matrix keeps first reward, second reward/reroll, and non-normal reward exclusion checks.
 
 Files changed:
@@ -690,7 +769,7 @@ Remaining blocker:
 
 Goal summary:
 
-- Fix Jewelry Box so the actual `Apotheosis` / `绁炲寲` card added to the deck is non-Innate, not only the relic tooltip or hover preview.
+- Fix Jewelry Box so the actual `Apotheosis` / `缁佺偛瀵瞏 card added to the deck is non-Innate, not only the relic tooltip or hover preview.
 
 Finding:
 
@@ -705,8 +784,8 @@ Files changed:
 
 Expected manual result:
 
-- Jewelry Box adds `Apotheosis` / `绁炲寲`.
-- That specific card does not show `Innate` / `鍥烘湁` in deck inspection.
+- Jewelry Box adds `Apotheosis` / `缁佺偛瀵瞏.
+- That specific card does not show `Innate` / `閸ョ儤婀乣 in deck inspection.
 - That specific card is not forced into the opening hand by `Innate` after entering combat in the same run session.
 - Other non-Jewelry Box `Apotheosis` sources should keep the base game's normal `Innate` behavior unless a future design changes them explicitly.
 
@@ -722,7 +801,7 @@ Goal summary:
 
 Files changed:
 
-- `EZMicroBalance/localization/zhs/relics.json`: removed raw English leftovers and corrected `Debt` wording to `鍊哄姟`.
+- `EZMicroBalance/localization/zhs/relics.json`: removed raw English leftovers and corrected `Debt` wording to `閸婂搫濮焋.
 - `EZMicroBalance/localization/eng/cards.json` and `EZMicroBalance/localization/zhs/cards.json`: added `DEBT`, `ENTHRALLED`, and `FOLLY` title overrides for parity; tightened `ENTHRALLED.description` zhs wording.
 - `EzDailyContent/localization/eng/cards.json`, `EzDailyContent/localization/zhs/cards.json`, and `EzDailyContent/localization/zhs/relics.json`: mirrored localization-only text for legacy consistency.
 - `EZMicroBalanceCode/Ancients/Common/JeweledMaskFreePower.cs`: added zhs `CardModifierLoc` strings for the custom Jeweled Mask enchantment tooltip.
@@ -732,9 +811,9 @@ Files changed:
 
 Localization evidence:
 
-- Local base-game zhs resources from `SlayTheSpire2.pck` provided official terms: `绁炲寲`, `鎵ц糠`, `璁告効`, `鏀炬澗`, `鎰氳`, `鍊哄姟`, `杩呴€焋, `鐑归オ`, `鑳藉姏鐗宍, `鏀诲嚮鐗宍, `绋€鏈夌墝`, `淇濈暀`, `铏氭棤`, `娑堣€梎, `鍥烘湁`, `姘告亽`, and `鍔涢噺`.
-- No official zhs `off-color` match was found locally; the existing project term `寮傝壊鐗宍 remains documented as `NEEDS_OFFICIAL_TERM` before public release if the base game adds an official term.
-- Base zhs still exposes `ROOM_BOSS.title` as raw `Boss`; mod player text now uses `棣栭` per the localization sprint requirement.
+- Local base-game zhs resources from `SlayTheSpire2.pck` were consulted during the localization sprint, but the historical extracted text in this log was mojibake and is no longer kept as terminology evidence.
+- No official zhs `off-color` match was found locally at the time of the sprint; keep the project term under review before public release if the base game adds an official term.
+- Base zhs still exposed `ROOM_BOSS.title` as raw `Boss` at the time of the sprint; do not use this historical log as current localization authority.
 
 Tooltip findings:
 
@@ -745,7 +824,7 @@ Tooltip findings:
 
 Commands and results:
 
-- `rg` over active and legacy zhs localization for the sprint banned terms plus `娆犳`: no matches.
+- `rg` over active and legacy zhs localization for the sprint banned terms plus `濞嗙姵顑檂: no matches.
 - `SlayTheSpire2.exe` was running as PID 45312, so build/publish/test validation used temporary `ModsPath` and `STS2_PATH` under `%TEMP%\EZMicroBalanceBuildSmoke`.
 - `dotnet build EZMicroBalance.sln /p:ModsPath="$env:TEMP\EZMicroBalanceBuildSmoke\mods\"`: passed with 0 warnings and 0 errors.
 - `dotnet publish EZMicroBalance.sln /p:ModsPath="$env:TEMP\EZMicroBalanceBuildSmoke\mods\"`: exited 0 and exported the temp PCK; Godot printed a non-fatal `sts2` assembly lookup exception during headless project scan.
@@ -1516,7 +1595,7 @@ Remaining blocker:
 
 - Added a no-op BaseLib config page for EZ Micro Balance so the mod has a visible Mod Settings entry without exposing gameplay options.
 - Rebuilt the package and refreshed hashes. Current package zip SHA256 is `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`.
-- Normal Steam-client isolated recheck `095137` showed BaseLib and EZ Micro Balance loaded, the localized EZMB page `微平衡` with `无可配置选项。`, `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
+- Normal Steam-client isolated recheck `095137` showed BaseLib and EZ Micro Balance loaded, the localized EZMB page `寰钩琛 with `鏃犲彲閰嶇疆閫夐」銆俙, `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
 - Live Ancient gameplay matrix, save/load checks, disable gameplay checks, multiplayer disposition, author decision, clean commit, and user-approved push remain pending.
 
 ## 2026-05-09 - Package README Decision-Blocker Refresh
