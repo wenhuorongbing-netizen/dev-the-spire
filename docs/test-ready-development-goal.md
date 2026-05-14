@@ -8,6 +8,8 @@ This is not a release-ready claim. Live gameplay, save/load, and co-op status ca
 
 Latest static evidence, 2026-05-14: the source-audited text correction pass passed JSON parse checks, build, normal tests, format, diff check, publish, package refresh, post-hash rebuild/test, and opt-in artifact tests after correcting Rootblight, Marginal Note, Red Ink Overdraft, Seedbed, After the Rain, Forbidden Loan, and Debt Settlement text. It did not run live game/Steam, clicked Ancient UI, gameplay, save/load, death/failure path, co-op, or final package smoke for this package.
 
+Latest feedback response, 2026-05-15: Ancient reward choices now obtain visible marker relics when selected, so players can inspect the chosen Urda/Morvi/Lotha/Vakuu reward from the relic bar after the event. The package manifest description and `README_INSTALL.txt` now use a short manual-test introduction instead of a long status dump. This still needs live clicked-Ancient UI and gameplay proof.
+
 ## Current Focus Todo
 
 Keep the next pass focused on finishing the manual-test candidate, not re-implementing source-complete Ancient slices.
@@ -29,6 +31,9 @@ Keep the next pass focused on finishing the manual-test candidate, not re-implem
 5. Fix image placement and aspect fit before treating the build as visually test-ready.
    - Current source scenes use cover-style fit for clicked Ancient backgrounds; final visual acceptance still needs live screenshots.
    - Large Ancient portraits belong in clicked Ancient/event screens; map/run-history thumbnails and option/relic icons must stay separate.
+6. Keep reward visibility player-first.
+   - Ancient choices may use event option previews, but the selected reward must also become a visible relic unless the design deliberately says otherwise.
+   - If a reward is only a hidden saved-field or run hook, add a marker relic or status surface so testers can see what they chose.
 
 ## Player Text Scrub Notes, 2026-05-14
 

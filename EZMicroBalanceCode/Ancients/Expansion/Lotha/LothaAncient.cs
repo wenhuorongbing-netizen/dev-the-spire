@@ -1,3 +1,4 @@
+using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.HoverTips;
@@ -160,15 +161,17 @@ internal sealed class EzmbLotha : CustomAncientModel
 
     private EventOption OptionWithRelic<T>(string blessingId, IEnumerable<IHoverTip>? hoverTips = null) where T : RelicModel
     {
-        var option = new EventOption(this, () => SelectBlessing(blessingId), InitialOptionKey(blessingId), hoverTips ?? []);
+        var option = new EventOption(this, () => SelectBlessing<T>(blessingId), InitialOptionKey(blessingId), hoverTips ?? []);
         return option.WithRelic<T>(Owner);
     }
 
-    private async Task SelectBlessing(string blessingId)
+    private async Task SelectBlessing<T>(string blessingId)
+        where T : RelicModel
     {
         if (Owner != null)
         {
             LothaBlessingService.SetSelectedBlessing(Owner, blessingId);
+            await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(Owner, blessingId);
             if (blessingId == LothaBlessingIds.MirrorRebuttal)
             {
                 await SelectMirrorRebuttalCard(Owner);

@@ -236,6 +236,42 @@ public sealed class AncientUiReadinessGuardTests
     }
 
     [Fact]
+    public void AncientRewardSelectionsObtainVisibleMarkerRelics()
+    {
+        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientRewardRelicService.cs");
+        AssertSourceContains(
+            rewardService,
+            "ObtainSelectionRelicIfMissing<T>",
+            "owner.GetRelic<T>() is not null",
+            "ModelDb.Relic<T>().ToMutable()",
+            "await RelicCmd.Obtain(relic, owner)");
+
+        foreach (var sourcePath in new[]
+        {
+            "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs",
+            "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs",
+            "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAncient.cs"
+        })
+        {
+            var source = ReadRepoText(sourcePath.Split('/'));
+            AssertSourceContains(
+                source,
+                "() => SelectBlessing<T>(blessingId)",
+                "private async Task SelectBlessing<T>(string blessingId)",
+                "where T : RelicModel",
+                "await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(Owner, blessingId)");
+            Assert.DoesNotContain("() => SelectBlessing(blessingId)", source, StringComparison.Ordinal);
+        }
+
+        var vakuuPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        AssertSourceContains(
+            vakuuPatch,
+            "await AncientRewardRelicService.ObtainSelectionRelicIfMissing<VakuuFightOptionRelic>",
+            "FightOptionKey",
+            "await RunManager.Instance.EnterRoomWithoutExitingCurrentRoom");
+    }
+
+    [Fact]
     public void ForceAncientGatesAreSourceBackedAndDocumentedForManualClickedUiEvidence()
     {
         var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion");

@@ -1,4 +1,5 @@
 using System.Reflection;
+using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ancients;
@@ -129,6 +130,10 @@ internal static class VakuuFightService
         {
             return;
         }
+
+        await AncientRewardRelicService.ObtainSelectionRelicIfMissing<VakuuFightOptionRelic>(
+            vakuu.Owner,
+            FightOptionKey);
 
         var combatRoom = new CombatRoom(ModelDb.Encounter<EzmbVakuuTrialEncounter>().ToMutable(), vakuu.Owner.RunState);
 

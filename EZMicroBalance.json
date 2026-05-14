@@ -2,7 +2,7 @@
   "id": "EZMicroBalance",
   "name": "Spire Plus",
   "author": "wenhuorongbing-netizen",
-  "description": "Expanded balance and progression changes for Slay the Spire 2.",
+  "description": "Manual-test build with Ancient blessings, A11-A20 progression, Rootblight, and balance changes. Requires BaseLib.",
   "version": "v0.1.0-private-beta.0",
   "has_pck": true,
   "has_dll": true,

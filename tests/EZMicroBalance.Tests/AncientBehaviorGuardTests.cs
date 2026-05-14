@@ -182,26 +182,17 @@ public sealed class AncientBehaviorGuardTests
                 minVersion.GetString() == "v3.1.2");
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
-        Assert.Contains("Archive name: SpirePlus-v0.1.0-private-beta.0.zip", readme, StringComparison.Ordinal);
-        Assert.Contains("Manifest id: EZMicroBalance", readme, StringComparison.Ordinal);
+        Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);
+        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.0.zip", readme, StringComparison.Ordinal);
+        Assert.Contains("Technical id / install folder: EZMicroBalance", readme, StringComparison.Ordinal);
         Assert.Contains("BaseLib", readme, StringComparison.Ordinal);
         Assert.Contains("EzDailyContent disabled or absent", readme, StringComparison.Ordinal);
-        Assert.Contains("Current controlled --force-steam off smoke passed", readme, StringComparison.Ordinal);
-        Assert.Contains("Found 16 SavedSpireFields", readme, StringComparison.Ordinal);
-        Assert.Contains("0 Spire Plus / EZMicroBalance error signatures", readme, StringComparison.Ordinal);
-        Assert.Contains("Normal Steam-client Mod Settings UI verification now has a current Spire Plus list screenshot", readme, StringComparison.Ordinal);
-        Assert.Contains("Historical page-level Mod Settings verification remains under the old EZ Micro Balance display name", readme, StringComparison.Ordinal);
-        Assert.Contains("EZMicroBalance.json author is set to wenhuorongbing-netizen from the local Git user name", readme, StringComparison.Ordinal);
-        Assert.Contains("Rootblight I/II/III and Blight Sprout use original generated portrait art packaged with the mod", readme, StringComparison.Ordinal);
-        Assert.Contains("Urda, Loamweaver now uses mod-owned custom Ancient icon and background-scene paths", readme, StringComparison.Ordinal);
-        Assert.Contains("the post-fix live Urda and Rootblight visual/gameplay checks are still pending", readme, StringComparison.Ordinal);
-        Assert.Contains("Live Ancient reward gameplay, save/load, disable-gameplay, and multiplayer checks are still pending", readme, StringComparison.Ordinal);
-        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", readme, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", readme, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", readme, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1 is legacy-compatible and no longer required", readme, StringComparison.Ordinal);
-        Assert.Contains("Full live Ascension verification is pending", readme, StringComparison.Ordinal);
+        Assert.Contains("Ancient selections now grant visible marker relics", readme, StringComparison.Ordinal);
+        Assert.Contains("manual-test build, not release-ready", readme, StringComparison.Ordinal);
+        Assert.Contains("Save/load, death/failure paths, and co-op still need manual proof", readme, StringComparison.Ordinal);
         Assert.Contains("Ascension 21-30 and custom-character content are not included", readme, StringComparison.Ordinal);
+        Assert.DoesNotContain("source-safe", readme, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Found 16 SavedSpireFields", readme, StringComparison.Ordinal);
     }
 
     [Fact]

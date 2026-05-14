@@ -61,17 +61,31 @@ if (-not $NoRefreshFromInstalled) {
 }
 
 $readmePath = Join-Path $stagingModDir 'README_INSTALL.txt'
-if (-not (Test-Path -LiteralPath $readmePath)) {
-    @"
-Spire Plus private beta package
+@"
+Spire Plus manual-test package
 
-Archive name: SpirePlus-$($manifest.version).zip
-Manifest id: EZMicroBalance
+Archive: SpirePlus-$($manifest.version).zip
+Display name: Spire Plus
+Technical id / install folder: EZMicroBalance
+Version: $($manifest.version)
+Requires: BaseLib v3.1.2
 
-Install by placing this EZMicroBalance folder under the Slay the Spire 2 mods folder.
-Requires BaseLib v3.1.2 installed under the same mods folder as BaseLib.
+Install:
+1. Place this EZMicroBalance folder under the Slay the Spire 2 mods folder.
+2. Keep legacy EzDailyContent disabled or absent.
+3. Enable Spire Plus in the game's Mod Settings.
+
+Test focus:
+- Urda, Morvi, Lotha, and Vakuu Ancient rewards.
+- A11-A20 progression: wider maps, Firemarked Elites, Rootblight, Banner Rooms, Royal Seals, and King Brands.
+- Save/load, death/failure paths, and co-op still need manual proof.
+
+Notes:
+- This is a manual-test build, not release-ready.
+- EZMicroBalance stays as the technical id this cycle so existing saves, config, and env-var gates keep working.
+- Ancient selections now grant visible marker relics so the chosen blessing stays readable in the relic bar.
+- Ascension 21-30 and custom-character content are not included.
 "@ | Set-Content -LiteralPath $readmePath -Encoding UTF8
-}
 
 foreach ($target in @($versionedRoot, $zipPath, $legacyZipPath)) {
     Assert-UnderPath -Candidate $target -Parent $publishRoot

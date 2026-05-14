@@ -43,6 +43,7 @@ public sealed class ReleaseCoverageGuardTests
     [
         "EZMicroBalanceCode/Ancients/Common/AncientCardHelpers.cs",
         "EZMicroBalanceCode/Ancients/Common/AncientPlayerState.cs",
+        "EZMicroBalanceCode/Ancients/Common/AncientRewardRelicService.cs",
         "EZMicroBalanceCode/Ancients/Common/AncientSavedStateFields.cs",
         "EZMicroBalanceCode/Ancients/Common/JeweledMaskFreePower.cs",
         "EZMicroBalanceCode/Ancients/Patches/PaelsHornPhase1Patch.cs",
@@ -321,11 +322,11 @@ public sealed class ReleaseCoverageGuardTests
     {
         const string oldZipHash = "A96D592E5E244743D1DD0FC58035E34AC263743FFEC98F54CE8D4B31CD9C2432";
         const string oldDllHash = "A56CF2044A736DFF4E7BEACB55D63388C4DE72AC9C7A99418708D7F2776FE9D9";
-        const string currentZipHash = "61BA0EB09A01E3AF849A6AFA78C1F6EE6D9395CB8ACF2CCF962B5BC4AA8B58D0";
-        const string currentDllHash = "A072EA75ABC00C3879B5F1E57B1014992740E6057308F4DA5EDAC5FEC034863F";
-        const string currentPckHash = "5A567F84E25B333E8739C11B1001560DD1E837599E11450059384B67C26C1F1C";
-        const string currentManifestHash = "9CB73137A04958D0DC0278E854CA1E0E1AC187C125E938DF7C3734F23F7B6A02";
-        const string currentReadmeHash = "5B1194440F6B212471E05F0EE117EE7F30E597FAAA916DF91F9378CD529DDCBB";
+        const string currentZipHash = "788257A536635D7E3429AF68EF3A4105DC925B95A0738F5EB14D23A5748F5F35";
+        const string currentDllHash = "BFE470EBE6A918B063ACF51294CF91035F3A2D8DCE9624B5433A85CFDBFEE77E";
+        const string currentPckHash = "60558C1BF556D67BE13258AC36F5578CC82BEE75B890EC0254FF65FBB9CC8D02";
+        const string currentManifestHash = "659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2";
+        const string currentReadmeHash = "C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4";
 
         var currentStatusDocs = new[]
         {
