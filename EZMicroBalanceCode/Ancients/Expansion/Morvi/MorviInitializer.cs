@@ -20,7 +20,7 @@ internal static class MorviInitializer
             CreateRunHookSubscribers);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Morvi v2.2 prototype hooks registered default-off; set {MorviFeatureGate.EnableEnvironmentVariable}=1 to enable.");
+            $"[EZMicroBalance] Morvi v2.2 hooks registered default-on; set {MorviFeatureGate.DisableEnvironmentVariable}=1 or {MorviFeatureGate.SpirePlusDisableEnvironmentVariable}=1 to disable.");
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>
@@ -28,4 +28,3 @@ internal static class MorviInitializer
             ? [ModelDb.GetById<MorviRunHook>(ModelDb.GetId<MorviRunHook>())]
             : [];
 }
-

@@ -70,6 +70,7 @@ internal sealed class RootBudCombatHook : AbstractModel
                 existingBuds = existingBuds.Take(targetBudCount).ToList();
             }
 
+            NormalizeExistingRootBudRounds(state, existingBuds);
             if (existingBuds.Count >= targetBudCount)
             {
                 foreach (var existingBud in existingBuds)
@@ -353,6 +354,14 @@ internal sealed class RootBudCombatHook : AbstractModel
         return state.RunState.CurrentRoom?.RoomType == RoomType.Boss && budIndex == 1
             ? RootBud.BossSecondSproutRound
             : RootBud.DefaultSproutRound;
+    }
+
+    private static void NormalizeExistingRootBudRounds(CombatState state, IReadOnlyList<RootBud> existingBuds)
+    {
+        for (var i = 0; i < existingBuds.Count; i++)
+        {
+            existingBuds[i].SproutRound = GetRootBudSproutRoundForCurrentRoom(state, i);
+        }
     }
 
     private static int? RequiredAscensionLevelForCurrentRoom(CombatState state)

@@ -1,31 +1,34 @@
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Unlocks;
 
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
-internal static class MorviFeatureGate
+internal static class VakuuFightFeatureGate
 {
-    public const string DisableEnvironmentVariable = "EZMB_DISABLE_MORVI";
-    public const string SpirePlusDisableEnvironmentVariable = "SPIREPLUS_DISABLE_MORVI";
-    public const string LegacyEnableEnvironmentVariable = "EZMB_ENABLE_MORVI_V22";
+    public const string DisableEnvironmentVariable = "EZMB_DISABLE_VAKUU_FIGHT";
+    public const string SpirePlusDisableEnvironmentVariable = "SPIREPLUS_DISABLE_VAKUU_FIGHT";
     public const string ForceAncientEnvironmentVariable = "EZMB_FORCE_ANCIENT";
     public const string SpirePlusForceAncientEnvironmentVariable = "SPIREPLUS_FORCE_ANCIENT";
-    public const string ForceBlessingEnvironmentVariable = "EZMB_FORCE_MORVI_BLESSING";
-    public const string SpirePlusForceBlessingEnvironmentVariable = "SPIREPLUS_FORCE_MORVI_BLESSING";
+    public const string ForceFightEnvironmentVariable = "EZMB_FORCE_VAKUU_FIGHT";
+    public const string SpirePlusForceFightEnvironmentVariable = "SPIREPLUS_FORCE_VAKUU_FIGHT";
 
     public static string? ForcedAncient =>
         Environment.GetEnvironmentVariable(SpirePlusForceAncientEnvironmentVariable) ??
         Environment.GetEnvironmentVariable(ForceAncientEnvironmentVariable);
 
-    public static string? ForcedBlessing =>
-        Environment.GetEnvironmentVariable(SpirePlusForceBlessingEnvironmentVariable) ??
-        Environment.GetEnvironmentVariable(ForceBlessingEnvironmentVariable);
+    public static bool ShouldForceVakuu =>
+        IsForcedAncient("VAKUU") || IsForcedAncient("EZMB_VAKUU");
 
-    public static bool ShouldForceMorvi =>
-        IsForcedAncient("MORVI") || IsForcedAncient("EZMB_MORVI");
+    public static bool ShouldForceFight =>
+        IsTruthy(Environment.GetEnvironmentVariable(ForceFightEnvironmentVariable)) ||
+        IsTruthy(Environment.GetEnvironmentVariable(SpirePlusForceFightEnvironmentVariable));
 
-    public static bool IsMorviEnabled(UnlockState _) =>
+    public static bool IsFightEnabled(UnlockState _) =>
         !IsTruthy(Environment.GetEnvironmentVariable(DisableEnvironmentVariable)) &&
         !IsTruthy(Environment.GetEnvironmentVariable(SpirePlusDisableEnvironmentVariable));
+
+    public static bool IsFightEnabledForRun(IRunState runState) =>
+        IsFightEnabled(runState.UnlockState) && runState.Players.Count == 1;
 
     private static bool IsForcedAncient(string value) =>
         string.Equals(ForcedAncient?.Trim(), value, StringComparison.OrdinalIgnoreCase);

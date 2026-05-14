@@ -94,16 +94,29 @@ internal static class AncientCardHelpers
         PileType pileType,
         Player creator)
     {
-        if (CombatManager.Instance.IsOverOrEnding)
+        return await TryAddGeneratedCardToCombat(card, pileType, creator, CardPilePosition.Bottom);
+    }
+
+    public static async Task<CardPileAddResult?> TryAddGeneratedCardToCombat(
+        CardModel card,
+        PileType pileType,
+        Player creator,
+        CardPilePosition position)
+    {
+        if (CombatManager.Instance.IsOverOrEnding ||
+            !CombatManager.Instance.IsInProgress ||
+            card.Owner?.Creature.CombatState == null)
         {
             RemoveUnpiledCombatCard(card);
             return null;
         }
 
-        var result = await CardPileCmd.AddGeneratedCardToCombat(card, pileType, creator);
-        if (!result.success)
+        var results = await CardPileCmd.AddGeneratedCardsToCombat([card], pileType, creator, position);
+        var result = results.FirstOrDefault();
+        if (result.cardAdded == null || !result.success)
         {
             RemoveUnpiledCombatCard(card);
+            return null;
         }
 
         return result;

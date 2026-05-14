@@ -25,12 +25,12 @@ internal sealed class HolyDazePower : BossSealPower
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "王印：圣昏",
-            "本次眩晕窗口中，每次受到的伤害最多为1。结束时获得{Amount}点力量。",
-            "受伤最多为1；结束时获得力量。")
+            "本次眩晕窗口中，每次受到的伤害最多为[blue]1[/blue]。结束时获得{Amount}点[gold]力量[/gold]。",
+            "受伤最多为[blue]1[/blue]；结束时获得[gold]力量[/gold]。")
         : new PowerLoc(
             "Royal Seal: Holy Daze",
-            "During this stun window, damage taken from each hit is capped at 1. Gains {Amount} Strength when it ends.",
-            "Damage taken is capped at 1.");
+            "During this stun window, damage taken from each hit is capped at [blue]1[/blue]. Gains {Amount} [gold]Strength[/gold] when it ends.",
+            "Damage taken is capped at [blue]1[/blue].");
 
     public override decimal ModifyDamageCap(Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
@@ -45,11 +45,11 @@ internal sealed class BoilingCriticalPower : BossSealPower
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "王印：沸腾临界",
-            "死亡爆发额外造成每层2点伤害。爆发回合开始时，玩家获得等量格挡。",
-            "爆发更强，但会提前给出格挡提示。")
+            "死亡爆发每层额外造成[blue]2[/blue]点伤害。爆发回合开始时，玩家获得等量[gold]格挡[/gold]。",
+            "爆发更强，但会提前给出[gold]格挡[/gold]提示。")
         : new PowerLoc(
             "Royal Seal: Boiling Critical",
-            "Death explosion deals 2 more damage per stack. At the start of the explosion turn, players gain equal Block.",
+            "Death explosion deals [blue]2[/blue] more damage per stack. At the start of the explosion turn, players gain equal [gold]Block[/gold].",
             "Explosion is stronger and telegraphed.");
 
     public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
@@ -70,12 +70,12 @@ internal sealed class ResidualSamplePower : BossSealPower
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "王印：残留样本",
-            "下个形态会保留{Amount}份弱化样本。样本会在复苏后结算。",
-            "复苏后结算弱化样本。")
+            "下个形态会保留{Amount}份[gold]弱化样本[/gold]。样本会在复苏后结算。",
+            "复苏后结算[gold]弱化样本[/gold]。")
         : new PowerLoc(
             "Royal Seal: Residual Sample",
-            "The next phase keeps {Amount} weakened sample(s). Samples resolve after respawn.",
-            "Weakened samples resolve after respawn.");
+            "The next phase keeps {Amount} [gold]weakened sample(s)[/gold]. Samples resolve after respawn.",
+            "[gold]Weakened samples[/gold] resolve after respawn.");
 
     public override bool ShouldPowerBeRemovedAfterOwnerDeath()
     {
@@ -93,12 +93,12 @@ internal sealed class ChosenDecreeReductionPower : BossSealPower
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "王印：择令",
-            "下一次由女王给予的力量减少1，然后移除此效果。",
-            "下一次女王力量强化-1。")
+            "下一次由[gold]女王[/gold]给予的[gold]力量[/gold]减少[blue]1[/blue]，然后移除此效果。",
+            "下一次女王[gold]力量[/gold]强化-[blue]1[/blue]。")
         : new PowerLoc(
             "Royal Seal: Chosen Decree",
-            "The next Strength gain from the Queen is reduced by 1, then this is removed.",
-            "Next Queen Strength gain -1.");
+            "The next [gold]Strength[/gold] gain from the [gold]Queen[/gold] is reduced by [blue]1[/blue], then this is removed.",
+            "Next Queen [gold]Strength[/gold] gain -[blue]1[/blue].");
 
     protected override object InitInternalData()
     {

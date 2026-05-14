@@ -1,8 +1,8 @@
 {
   "id": "EZMicroBalance",
-  "name": "EZ Micro Balance",
+  "name": "Spire Plus",
   "author": "wenhuorongbing-netizen",
-  "description": "Micro-balance changes for Slay the Spire 2 Ancient rewards.",
+  "description": "Expanded balance and progression changes for Slay the Spire 2.",
   "version": "v0.1.0-private-beta.0",
   "has_pck": true,
   "has_dll": true,

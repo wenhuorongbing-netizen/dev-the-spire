@@ -21,8 +21,8 @@ public sealed class UrdaSeedling : CustomCardModel
     {
     }
 
-    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/card.png";
-    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/card.png";
+    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/urda_seedling.png";
+    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/urda_seedling.png";
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => SeedlingKeywords;
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromKeyword(CardKeyword.Exhaust)];
@@ -55,8 +55,8 @@ public sealed class WitheredHusk : CustomCardModel
     {
     }
 
-    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/card.png";
-    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/card.png";
+    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/withered_husk.png";
+    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/withered_husk.png";
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => HuskKeywords;
     protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(6m, ValueProp.Move)];

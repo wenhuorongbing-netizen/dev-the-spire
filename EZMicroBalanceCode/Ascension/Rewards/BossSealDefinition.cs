@@ -41,10 +41,10 @@ internal static class BossSealCatalog
             [EncounterId("CEREMONIAL_BEAST_BOSS")] = new(
                 BossSealId.HolyDaze,
                 "Holy Daze",
-                "First stun should turn the first stun round into setup instead of burst.",
+                "During the first stun, each hit deals at most 1 damage; afterward the Boss gains Strength.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
                 "Observed through PlowPower removal, CeremonialBeast.NextMove, settled damage hooks, and a custom damage-cap power; exact first-stun timing still needs live trace verification.",
-                "Holy Daze would grant 2 Strength after ending."),
+                "After the first stun ends, the Boss gains 2 Strength."),
             [EncounterId("THE_KIN_BOSS")] = new(
                 BossSealId.MartyrOath,
                 "Martyr Oath",
@@ -97,7 +97,7 @@ internal static class BossSealCatalog
             [EncounterId("THE_INSATIABLE_BOSS")] = new(
                 BossSealId.StruggleBait,
                 "Struggle Bait",
-                "Self-enhancement should add Frantic Escape pressure.",
+                "When The Insatiable gains Strength or Sandpit, it adds Frantic Escape cards.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
                 "Uses Strength/Sandpit/heal observations on The Insatiable and generated Frantic Escape cards; live source-classification verification pending.",
                 "Each unplayed generated Frantic Escape grants 5 Block after 2 player turns."),
@@ -118,7 +118,7 @@ internal static class BossSealCatalog
             [EncounterId("TEST_SUBJECT_BOSS")] = new(
                 BossSealId.ResidualSample,
                 "Residual Sample",
-                "Phase changes should retain weakened samples from prior phases.",
+                "The second and third phases keep part of the previous phase's weakened samples.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
                 "Uses TestSubject AdaptablePower death observation and a persistent custom sample power applied after respawn; exact phase UI timing needs live verification.",
                 "First phase change keeps 2 weakened samples, then 1 afterward.")
