@@ -104,7 +104,8 @@ function Test-RequiresExportCoverage {
         "EZMicroBalance/scenes/",
         "EZMicroBalance/images/powers/",
         "EZMicroBalance/images/card_portraits/",
-        "EZMicroBalance/images/relics/"
+        "EZMicroBalance/images/relics/",
+        "EZMicroBalance/images/ascension/"
     )) {
         if ($TargetPath.StartsWith($prefix, [System.StringComparison]::Ordinal)) {
             return $true

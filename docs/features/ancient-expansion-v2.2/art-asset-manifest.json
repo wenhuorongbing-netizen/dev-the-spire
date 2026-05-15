@@ -1,12 +1,13 @@
 {
   "schema_version": 1,
-  "updated_date": "2026-05-14",
+  "updated_date": "2026-05-15",
   "required_generation_mode": "GPTimage2",
   "notes": [
     "Active Ancient and related card/power/relic art manifest for Spire Plus / EZMicroBalance.",
-    "This file records current active art bytes and temporary status. It is not a final-art claim.",
-    "New final_generated image records must set generation_mode to GPTimage2.",
-    "Final generated or user-supplied art must update prompt/source/target/SHA256/dimensions before release docs can cite it."
+    "This file records current active art bytes and final status for browser GPTimage2 small-art assets.",
+    "All final_generated image records must set generation_mode, mode, and semantic_model to GPTimage2.",
+    "Final generated or user-supplied art must update prompt/source/target/SHA256/dimensions before release docs can cite it.",
+    "Event backgrounds still require separate live clicked-UI review before release-ready claims."
   ],
   "assets": [
     {
@@ -14,13 +15,14 @@
       "role": "event_background",
       "target_path": "EZMicroBalance/images/events/ezmb_urda.png",
       "source_status": "source_local_background",
-      "sha256": "6D7CE7572F88393231B6658EC6D71B51FC464C06F9BFEF870812FCAA77C66ACB",
+      "source_path": ".tools/art-generation/event-background-reframe-20260515/ezmb_urda_crop_y80_1831x859.png",
+      "sha256": "267CBCDDA63FD935E5A04FC71F8A2D70B0EF6FBC6450E4A302665344B906184F",
       "dimensions": {
-        "width": 1672,
-        "height": 941
+        "width": 1831,
+        "height": 859
       },
       "final_required_before_release": false,
-      "notes": "Original local event background. The documented generated-source candidate art_pipeline/generated/ancient_urda_bg_v1_v001.png does not match these bytes, so source provenance must be corrected before any final-art provenance claim."
+      "notes": "User-accepted Urda middle-draft background reframed to the source-calibrated 2.13:1 event background target. The active resource uses a deterministic y=80 vertical crop and high-quality resize so the Ancient UI does not display a 16:9 asset in a 2.13-style frame."
     },
     {
       "id": "morvi_event_background",
@@ -41,655 +43,775 @@
       "role": "event_background",
       "target_path": "EZMicroBalance/images/events/ezmb_lotha.png",
       "source_status": "source_local_background",
-      "source_path": "art_pipeline/generated/ancient_lotha_bg_v1_v001.png",
-      "sha256": "03936C556F9FF16927694121DC07F8B0A637BA196EE1B9642AC215934E3B702B",
+      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/events/ezmb_lotha_first_preview_crop_1831x859.png",
+      "sha256": "B4CDE646A67404BCC5D6EBBDF825BA2176588009B1908B205F3F1687AB6478C9",
       "dimensions": {
         "width": 1831,
         "height": 859
       },
       "prompt_id": "lotha_event_background",
       "final_required_before_release": false,
-      "notes": "Active local generated background copied from the recorded source path."
+      "notes": "Promoted the first user-preferred mirror-ensemble preview crop to active Lotha event art, replacing the older silver judge background. This remains source-local event art and still needs clicked Ancient UI review before release-ready claims."
     },
     {
       "id": "urda_map_icon",
       "role": "map_icon",
       "target_path": "EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png",
-      "sha256": "730EB57F65E2AC52593BD6C3604F7F39CD9BD4CE903E9D85AE8A6A903944406E",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/urda_identity_filled.png",
+      "sha256": "FEC7C82CA2741D4AF764A71A23C7755227065F6F327714B2C0A142E627B88B0D",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_filled_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_filled_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient identity icon. Map and run-history filled icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_map_icon_outline",
       "role": "map_icon_outline",
       "target_path": "EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png",
-      "sha256": "A98C587A2B0BD15E65BFC2500F0D80E093C51FD69B7306BDA1E9109CB99DEBCD",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/urda_identity_outline.png",
+      "sha256": "65117E9417C7A13C32B375EA2AF5BFF10AA3FE5E8EE6207023A1189DAA8223AE",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_outline_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_outline_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient outline identity icon. Map and run-history outline icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_run_history_icon",
       "role": "run_history_icon",
       "target_path": "EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png",
-      "sha256": "730EB57F65E2AC52593BD6C3604F7F39CD9BD4CE903E9D85AE8A6A903944406E",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/urda_identity_filled.png",
+      "sha256": "FEC7C82CA2741D4AF764A71A23C7755227065F6F327714B2C0A142E627B88B0D",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_filled_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_filled_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient identity icon. Map and run-history filled icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_run_history_outline",
       "role": "run_history_outline",
       "target_path": "EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png",
-      "sha256": "A98C587A2B0BD15E65BFC2500F0D80E093C51FD69B7306BDA1E9109CB99DEBCD",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/urda_identity_outline.png",
+      "sha256": "65117E9417C7A13C32B375EA2AF5BFF10AA3FE5E8EE6207023A1189DAA8223AE",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_outline_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/urda_identity_outline_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient outline identity icon. Map and run-history outline icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_map_icon",
       "role": "map_icon",
       "target_path": "EZMicroBalance/images/ancients/morvi/ezmb_morvi_map_icon.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/ezmb_morvi_map_icon.png",
-      "sha256": "7DFE44AB102D07A3A85E1C4AFDB3E2806A629DED877E0547E72F7E53FC44C151",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/morvi_identity_filled.png",
+      "sha256": "15C790F9E3821DE23D01278A73E96B2615E1397897F09DFA697A72D2F5ABF147",
       "dimensions": {
-        "width": 96,
-        "height": 96
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_filled_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_filled_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient identity icon. Map and run-history filled icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_map_icon_outline",
       "role": "map_icon_outline",
       "target_path": "EZMicroBalance/images/ancients/morvi/ezmb_morvi_map_icon_outline.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/ezmb_morvi_map_icon_outline.png",
-      "sha256": "D604430CD2E9879D375593051CFFEC81DDAFF724F82323855FB57841B974E3E6",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/morvi_identity_outline.png",
+      "sha256": "2D1553951AD3ED6076283F0E9465B058E6C269D68A854ABB6037CDF9828998EE",
       "dimensions": {
-        "width": 96,
-        "height": 96
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_outline_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_outline_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient outline identity icon. Map and run-history outline icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_run_history_icon",
       "role": "run_history_icon",
       "target_path": "EZMicroBalance/images/ancients/morvi/ezmb_morvi_run_history_icon.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/ezmb_morvi_run_history_icon.png",
-      "sha256": "7DFE44AB102D07A3A85E1C4AFDB3E2806A629DED877E0547E72F7E53FC44C151",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/morvi_identity_filled.png",
+      "sha256": "15C790F9E3821DE23D01278A73E96B2615E1397897F09DFA697A72D2F5ABF147",
       "dimensions": {
-        "width": 96,
-        "height": 96
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_filled_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_filled_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient identity icon. Map and run-history filled icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_run_history_outline",
       "role": "run_history_outline",
       "target_path": "EZMicroBalance/images/ancients/morvi/ezmb_morvi_run_history_icon_outline.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/ezmb_morvi_run_history_icon_outline.png",
-      "sha256": "D604430CD2E9879D375593051CFFEC81DDAFF724F82323855FB57841B974E3E6",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/morvi_identity_outline.png",
+      "sha256": "2D1553951AD3ED6076283F0E9465B058E6C269D68A854ABB6037CDF9828998EE",
       "dimensions": {
-        "width": 96,
-        "height": 96
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_outline_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/morvi_identity_outline_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient outline identity icon. Map and run-history outline icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_map_icon",
       "role": "map_icon",
       "target_path": "EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon.png",
-      "sha256": "330584A1160167C2F4DB62FF6184408EB964108F12B7FC0EFDD61BAA2C81A289",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/lotha_identity_filled.png",
+      "sha256": "3E2CA9BEF63E34FB4F9B9E1A201CC50A9221473367BD88B975CF0138C75EAE43",
       "dimensions": {
-        "width": 96,
-        "height": 96
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/lotha_identity_filled_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/lotha_identity_filled_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient identity icon. Map and run-history filled icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_map_icon_outline",
       "role": "map_icon_outline",
       "target_path": "EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon_outline.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/ezmb_lotha_map_icon_outline.png",
-      "sha256": "628A3CF44D910CF38500C25159A7F435100AB3F0DAE0199E8BA2AC9BD38FEB46",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/lotha_identity_outline.png",
+      "sha256": "651EAFFE0A372B7317CAAA02F5F45B4D3D28F11F29A34EBE402800C69056CF5D",
       "dimensions": {
-        "width": 96,
-        "height": 96
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_identity_outline_icon_v3.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_identity_outline_icon_v3.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient outline identity icon. Map and run-history outline icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_run_history_icon",
       "role": "run_history_icon",
       "target_path": "EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon.png",
-      "sha256": "330584A1160167C2F4DB62FF6184408EB964108F12B7FC0EFDD61BAA2C81A289",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/lotha_identity_filled.png",
+      "sha256": "3E2CA9BEF63E34FB4F9B9E1A201CC50A9221473367BD88B975CF0138C75EAE43",
       "dimensions": {
-        "width": 96,
-        "height": 96
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/identity-icons-corrections/lotha_identity_filled_icon_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/identity-icons-corrections/lotha_identity_filled_icon_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient identity icon. Map and run-history filled icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_run_history_outline",
       "role": "run_history_outline",
       "target_path": "EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon_outline.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/ezmb_lotha_run_history_icon_outline.png",
-      "sha256": "628A3CF44D910CF38500C25159A7F435100AB3F0DAE0199E8BA2AC9BD38FEB46",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/lotha_identity_outline.png",
+      "sha256": "651EAFFE0A372B7317CAAA02F5F45B4D3D28F11F29A34EBE402800C69056CF5D",
       "dimensions": {
-        "width": 96,
-        "height": 96
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "ancient_identity_icons",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed identity icon promoted for the next art-testing round; map and run-history variants may intentionally share the same filled/outline bytes. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_identity_outline_icon_v3.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_identity_outline_icon_v3.png"
+      "notes": "Final browser ChatGPT/GPTimage2 rebuilt Ancient outline identity icon. Map and run-history outline icons intentionally share the same generated source for player recognition. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_seedbed_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_seedbed.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_seedbed.png",
-      "sha256": "BF49A325B61C8714BCF9AD14A8973FF4682EBDD2B5C1E722D25B956284A79138",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_seedbed_option_relic.png",
+      "sha256": "D9E8CE5346D5A6615E6DF63CE3808C1B2360759E62F3E47F8AD43C3A1193007C",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_seedbed_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_seedbed_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_humus_pact_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_humus_pact.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_humus_pact.png",
-      "sha256": "E57800D3D5EDEF45509EF55CF9FC711544A0A8FB2AFCCF6D4F8198457E3744C4",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_humus_pact_option_relic.png",
+      "sha256": "5FA4DB3CA7E8AA676960CCF20C91A1E19278F3336EBEC145C108CADBD9ABC201",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_humus_pact_option_relic_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_humus_pact_option_relic_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_molting_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_molting.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_molting.png",
-      "sha256": "26560DBF014A699973EDAA497C19EEF8FE848A3B4D71825465C5D1DD49CFBAE1",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_molting_option_relic.png",
+      "sha256": "773AB1F94F673B63A2431E64EC02BF5FFA04149A842C2427ECA55F47A1260941",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_molting_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_molting_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_moss_map_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_moss_map.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_moss_map.png",
-      "sha256": "930AD7BAC840D4A6741CCC7957907BC1BE09A0A5B233BFC2BB841DD6CC450EE5",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_moss_map_option_relic.png",
+      "sha256": "08DDD8380A3825292678C0159D6DC242CEFAF7879F3005C2EC47A9A0F30F550E",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_moss_map_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_moss_map_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_trial_branch_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_trial_branch.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_trial_branch.png",
-      "sha256": "A616BF1CB6FF176BB80CA12A450E78A860089A5F8BBAC39A6CD5F754CBB3E4F0",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_trial_branch_option_relic.png",
+      "sha256": "5E432BFBBB0CDBC5923B17D09D8531794F66A3D7FA65FE3F80DCB4CB0FA88D73",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_trial_branch_option_relic_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_trial_branch_option_relic_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_shallow_root_relic_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_shallow_root_relic.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_shallow_root_relic.png",
-      "sha256": "4CCF663F7FA30283CEF4E3FBC1A27BC27B2030FD1914CA9ABBDA3DB909963C9C",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_shallow_root_relic_option_relic.png",
+      "sha256": "19A3A81ED7F0C24003D1502FFAF6E9D9647CD667DD392DA46EFA47B80E5AD961",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_shallow_root_relic_option_relic_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_shallow_root_relic_option_relic_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_rooted_route_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_rooted_route.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_rooted_route.png",
-      "sha256": "9639E5C6B8CB7B9980F055FB68BF488FC8C31A12461568BED87905D93E6C230B",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_rooted_route_option_relic.png",
+      "sha256": "ACD563030FC735799A52ECE3CDD3BDE68610CDBAD09EA3BDD46EAA21F461DC2C",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_rooted_route_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_rooted_route_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_after_rain_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_after_rain.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_after_rain.png",
-      "sha256": "FDBCA5D936FC46796458C64AE350F8EAB89EFE7E1A2CA40723BAF1B7033E0DC6",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_after_rain_option_relic.png",
+      "sha256": "52A17C0F09A6BCD47B20C3212D45E91F14935DB7D7FAB3688C72D0A07EC2BF5A",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_after_rain_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_after_rain_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_root_sight_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_root_sight.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_root_sight.png",
-      "sha256": "72694F566A90200E8D997BAD150B98CC9ACC1CE50CC84ABA958A9CC214AEC936",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_root_sight_option_relic.png",
+      "sha256": "4D6F3315CA141A185C146797CA29C3785B2222D1CBD1AA52B1756209CE140EC1",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_root_sight_option_relic_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_root_sight_option_relic_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_seed_bank_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_seed_bank.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/urda/options/urda_seed_bank.png",
-      "sha256": "0B36D535D5E767D89EEFE27CEDB720D4C6B2E65880325CC23A248EDBE8FD59FC",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/urda_seed_bank_option_relic.png",
+      "sha256": "C24B6227B8E2169216C8A173427C61EC53E3E96267EC2982A4C0AED0D4655AEB",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "urda_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-option-relics/urda_seed_bank_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-option-relics/urda_seed_bank_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_forbidden_loan_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_forbidden_loan.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_forbidden_loan.png",
-      "sha256": "3B07F3F2907AA410AC2918BC25E2977412B3DD1843FD3A04E94873F4B45B0D5C",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/morvi_forbidden_loan_option_relic.png",
+      "sha256": "1835EA49437C055586AFC8D90F5DC8AF504915FF5B095E9A845E82F798C3DCA1",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "morvi_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_forbidden_loan_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_forbidden_loan_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_misprint_press_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_misprint_press.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_misprint_press.png",
-      "sha256": "679E46A6FF007B6BF1491741399818CBE405A3BF3006F9C28405A70309F048E0",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/morvi_misprint_press_option_relic.png",
+      "sha256": "967A1955FF02B6DAB2FB59F1331FD0EB56B8DCF7ABD59ECC9A4E203714305AC6",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "morvi_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_misprint_press_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_misprint_press_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_red_ink_overdraft_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_red_ink_overdraft.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_red_ink_overdraft.png",
-      "sha256": "5D48E000305CB746998913CFF0494E928B7ED8009C8885C2ED690A69D273C8C0",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/morvi_red_ink_overdraft_option_relic.png",
+      "sha256": "A843583497C83BB4097421F112C04250D1C8F444F0E522E7556876B59911DF5E",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "morvi_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_red_ink_overdraft_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_red_ink_overdraft_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_overdue_library_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_overdue_library.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_overdue_library.png",
-      "sha256": "0B6EBB48C0EE6EEBF8F447CA438CCB784597F9C79438CDDB64CE62AB82DDEB71",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/morvi_overdue_library_option_relic.png",
+      "sha256": "0A351BDB80AB3DCF77CD2818E7772A8F952645F61664F5AA4CEA41B62FA2C086",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "morvi_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_overdue_library_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_overdue_library_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_open_book_exam_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_open_book_exam.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_open_book_exam.png",
-      "sha256": "074E862618E56BA5783658AD1061631AB30BEDAC8F2F619CCFBA6618CA74551B",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/morvi_open_book_exam_option_relic.png",
+      "sha256": "7C9993D0FF73041B54DD2C175A87DA406BFCFBBD161EFEDB2F5593AE3A8321AC",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "morvi_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_open_book_exam_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_open_book_exam_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_paperstorm_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_paperstorm.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_paperstorm.png",
-      "sha256": "4DC15CAA30BC7C2CE2E0BDADBF60ED8D94D4DB87BAFDF05BCD6066D3A02C0C15",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/morvi_paperstorm_option_relic.png",
+      "sha256": "1B1EEAD5F0767FC37A3FA51F1B606F459EFDDE0E291A5EA52B9851D914F17403",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "morvi_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_paperstorm_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_paperstorm_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_blueprint_proof_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_blueprint_proof.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_blueprint_proof.png",
-      "sha256": "AD2F16B46174C708EF909B649B640E9272E2F7DAB393A5603A52A22FBD646BF5",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/morvi_blueprint_proof_option_relic.png",
+      "sha256": "690B667C7ADC300C36622863FA4CF8FB37C1F05C03DB4BE41A2301FC53BE9704",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "morvi_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_blueprint_proof_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_blueprint_proof_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_debt_settlement_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/morvi/options/morvi_debt_settlement.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/morvi/options/morvi_debt_settlement.png",
-      "sha256": "9BE9700874A5CA6C10024FF41C5A469A39F7CE81A55F9B1ED42DED33C8760B0D",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/morvi_debt_settlement_option_relic.png",
+      "sha256": "82C8D444F1A580570187866A285D3BC70A14FC4E528CDC5BDFF48B9ACA1EDFEB",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "morvi_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/morvi-option-relics/morvi_debt_settlement_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/morvi-option-relics/morvi_debt_settlement_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_mirror_rebuttal_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_mirror_rebuttal.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_mirror_rebuttal.png",
-      "sha256": "454E80350EEAF8E4B8053433C9ED5056AC22BE31F41E532E82064ED9CC0D0C40",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/lotha_mirror_rebuttal_option_relic.png",
+      "sha256": "4ADEFCD360D4DB8383FDC4BABA822FCAAFF7E10298A7D6C6ED78B3F7BA3B9DBD",
       "dimensions": {
-        "width": 160,
-        "height": 120
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "lotha_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_mirror_rebuttal_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_mirror_rebuttal_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_mirror_hall_echo_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_mirror_hall_echo.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_mirror_hall_echo.png",
-      "sha256": "E7207872C431D8881D8F67CC95B192FC653F8BEB6213CE7A4D97FAE53ED94A2F",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/lotha_mirror_hall_echo_option_relic.png",
+      "sha256": "D7D17B976E6DCAE29DB7E5FB01FA7AC391B2EE2784E113C66A7BD984E67CE15B",
       "dimensions": {
-        "width": 160,
-        "height": 120
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "lotha_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_mirror_hall_echo_option_relic_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_mirror_hall_echo_option_relic_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_presumption_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_presumption.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_presumption.png",
-      "sha256": "E41CE4D46E333E0080D562223250FC89D86B13EEDB8DFFEFDB27E004C67361DC",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/lotha_presumption_option_relic.png",
+      "sha256": "EF40B97C0BC555569C43713970F20D367B3BB1A31BC60936ED9075F651AEC34C",
       "dimensions": {
-        "width": 160,
-        "height": 120
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "lotha_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_presumption_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_presumption_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_closed_court_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_closed_court.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_closed_court.png",
-      "sha256": "D0F35EA400F5BCE14735A859AD32302B9DA12B8CDE92E2FDA43A743C805F235C",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/lotha_closed_court_option_relic.png",
+      "sha256": "092629A9F33C276664F116EE43BE5F8B83237724F37E3E2E8B41E5759AA6BF01",
       "dimensions": {
-        "width": 160,
-        "height": 120
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "lotha_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_closed_court_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_closed_court_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_deferred_verdict_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_deferred_verdict.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_deferred_verdict.png",
-      "sha256": "C6DF6E567A6785084387EF41CF26E8E0BD07089CE3955073501DEE2897D2DAE5",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/lotha_deferred_verdict_option_relic.png",
+      "sha256": "E785D790A90FA8BE7144EEA9106C0F05D2E88F41F200C11DBBF0840DF975DFE0",
       "dimensions": {
-        "width": 160,
-        "height": 120
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "lotha_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_deferred_verdict_option_relic_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_deferred_verdict_option_relic_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_death_reprieve_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_death_reprieve.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_death_reprieve.png",
-      "sha256": "454CCE85B8B6F5DF76C0CC377E6893B6FE0980AAC9F36D3994220F07A78C0B39",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/lotha_death_reprieve_option_relic.png",
+      "sha256": "EA307D51F03705C1BB95E4C8ACE6C3FE0368909558ACB3E6DDAE0501B5C5B8ED",
       "dimensions": {
-        "width": 160,
-        "height": 120
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "lotha_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-corrections/lotha_death_reprieve_option_relic_v2.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-corrections/lotha_death_reprieve_option_relic_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_single_sentence_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_single_sentence.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_single_sentence.png",
-      "sha256": "F2CF1A5E32471FBAFB5910F27F90874A9119F4DABB1E92ADE058A490240D5890",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/lotha_single_sentence_option_relic.png",
+      "sha256": "DED24FF8092FD22EDB34453073F8F840BFD378E8B2BB8D992B8292CD19E144A5",
       "dimensions": {
-        "width": 160,
-        "height": 120
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "lotha_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_single_sentence_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_single_sentence_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_public_evidence_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/lotha/options/lotha_public_evidence.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/lotha/options/lotha_public_evidence.png",
-      "sha256": "A4FA62E1F125B2C91519F9A0770C4A1C7E5A9063303761A0475593FAE4549AE3",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch2/lotha_public_evidence_option_relic.png",
+      "sha256": "4E8B1432B8A2E6BB3555F9E75E7BCD89E0F8312B4D720C5A33AE279A51FF9F0F",
       "dimensions": {
-        "width": 160,
-        "height": 120
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "lotha_option_relics",
+      "prompt_id": "oil_rebuild_20260515_batch2_morvi_lotha",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/lotha-option-relics/lotha_public_evidence_option_relic.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/lotha-option-relics/lotha_public_evidence_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "vakuu_fight_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/vakuu/options/vakuu_fight.png",
-      "source_status": "source_local_generated",
-      "sha256": "65E05B8D56341FAC62447A35E5EE82F657F36E9A05AE734984AFDAFEB12D94E1",
+      "source_status": "final_generated",
+      "sha256": "D142CF409A5E3543827B845B38CE035ADA4ACB7B67827A8EE61F12E45AB03DEA",
       "dimensions": {
-        "width": 256,
-        "height": 256
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "vakuu_fight_and_temptation",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/remaining-icons/vakuu_fight_option_relic.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/ancients/vakuu/options/vakuu_fight.png",
-      "source_review_path": ".tools/art-generation/chatgpt/remaining-icons/vakuu_fight_option_relic.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint transparent option/identity icon with painterly acrylic-gouache finish, strong black contour, and no opaque square background.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/vakuu_fight.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "lotha_verdict_power",
       "role": "power_art",
       "target_path": "EZMicroBalance/images/powers/lotha_verdict.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/promotion-candidates/EZMicroBalance/images/powers/lotha_verdict.png",
-      "sha256": "95829290605D50F45580F6A9678A4620E7381FE93E29556BD95B8C9CA4C2E049",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/lotha_verdict_power.png",
+      "sha256": "163079BB1E6F1941AB3DCC4E281EAD877183D5FD467AE02D9E8BD812507F1419",
       "dimensions": {
-        "width": 96,
-        "height": 96
+        "width": 128,
+        "height": 128
       },
-      "prompt_id": "lotha_power_art",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed candidate promoted for the next art-testing round. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/remaining-icons/lotha_verdict_power.png.",
-      "source_review_path": ".tools/art-generation/chatgpt/remaining-icons/lotha_verdict_power.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint power icon with transparent padding and painterly black-contour finish.",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "rootblight_i_card_portrait_small",
@@ -799,258 +921,552 @@
       "id": "generic_power_icon",
       "role": "power_art",
       "target_path": "EZMicroBalance/images/powers/power.png",
-      "source_status": "generic_temporary",
-      "sha256": "BB651CE7C711BE0EB4D4FD9A01E194BA162825D7B8DD71EDFB35670A11BD89B8",
+      "source_status": "final_generated",
+      "sha256": "382DFC985C87AEFB6874F754B88CF19887752506EA93A9F033C4FD2C61A1F24F",
       "dimensions": {
         "width": 64,
         "height": 64
       },
-      "final_required_before_release": true,
-      "notes": "Shared generic fallback power icon. Replace with feature-specific final art before final-art release claims."
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint power icon with transparent padding and painterly black-contour finish.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/generic_power_fallback.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "generic_power_icon_big",
       "role": "power_art",
       "target_path": "EZMicroBalance/images/powers/big/power.png",
-      "source_status": "generic_temporary",
-      "sha256": "63E8CAF77B8D49E6351E384499B2C4C48033A9B4A9E798A9AB8693EF7F376A8D",
+      "source_status": "final_generated",
+      "sha256": "80AE5C9281DAFDB4ACB117618EE2B8519B634964B44F8013F02368F0CAC1CBA8",
       "dimensions": {
         "width": 256,
         "height": 256
       },
-      "final_required_before_release": true,
-      "notes": "Shared generic fallback large power icon. Replace with feature-specific final art before final-art release claims."
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint power icon with transparent padding and painterly black-contour finish.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/generic_power_fallback.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "generic_relic_icon",
       "role": "relic_art",
       "target_path": "EZMicroBalance/images/relics/relic.png",
-      "source_status": "generic_temporary",
-      "sha256": "6860FBC8D82112F8C717C7D0B0E7639A07E79B52C06180A69BBF75E5F4D4D252",
+      "source_status": "final_generated",
+      "sha256": "EF516E6556A908DDAE29CE2BD97B843CD414020D4558FE0F890D9797BE2B6D07",
       "dimensions": {
         "width": 94,
         "height": 94
       },
-      "final_required_before_release": true,
-      "notes": "Shared generic fallback relic icon. Replace with feature-specific final art before final-art release claims."
+      "final_required_before_release": false,
+      "notes": "Final neutral browser ChatGPT/GPTimage2 oil repaint fallback relic art, replacing the earlier weak generic version.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/generic_relic_fallback.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "generic_relic_icon_big",
       "role": "relic_art",
       "target_path": "EZMicroBalance/images/relics/big/relic.png",
-      "source_status": "generic_temporary",
-      "sha256": "209E24E717DBE805054FBD4EAD9E3A4558584693B29B3BE1CCBC5C065810D718",
+      "source_status": "final_generated",
+      "sha256": "2F7116206EC2D6A5455ABCE1E03173B0C3FFB08C623128216F3F2A70CAFA2D5E",
       "dimensions": {
         "width": 256,
         "height": 256
       },
-      "final_required_before_release": true,
-      "notes": "Shared generic fallback large relic icon. Replace with feature-specific final art before final-art release claims."
+      "final_required_before_release": false,
+      "notes": "Final neutral browser ChatGPT/GPTimage2 oil repaint fallback relic art, replacing the earlier weak generic version.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/generic_relic_fallback.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "generic_relic_outline",
       "role": "relic_art_outline",
       "target_path": "EZMicroBalance/images/relics/relic_outline.png",
-      "source_status": "generic_temporary",
-      "sha256": "F9B7C2A92709D192C8DAB143519E66A2E2C90A816BEF90D9B6242CC5CAF53F38",
+      "source_status": "final_generated",
+      "sha256": "072F2A10B190B9D774502A319E6E3B649348641A75F8CC4FF16B7B0E67B6F0BD",
       "dimensions": {
         "width": 94,
         "height": 94
       },
-      "final_required_before_release": true,
-      "notes": "Shared generic fallback relic outline. Replace with feature-specific final art before final-art release claims."
+      "final_required_before_release": false,
+      "notes": "Final neutral fallback relic outline derived from the approved browser ChatGPT/GPTimage2 relic source; intentionally shares the same source concept as the filled fallback. Oil repaint reviewed in the 2026-05-15 active contact sheet.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch1/generic_relic_fallback.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "prompt_id": "oil_rebuild_20260515_batch1_urda_vakuu",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_seedling_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/urda_seedling.png",
-      "source_status": "source_local_generated",
-      "sha256": "FE5B68BEE1D8D65564A322742027C4798839352016316C647A94DFBCA4C89CFA",
+      "source_status": "final_generated",
+      "sha256": "14C8BD66FD5A96D9518328DB1C272A1074584FE35A7A2022B2D23D65447C73B3",
       "dimensions": {
         "width": 250,
         "height": 190
       },
-      "prompt_id": "urda_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_seedling_card_portrait_v2.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/urda_seedling.png",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_seedling_card_portrait_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/urda_seedling.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_seedling_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/urda_seedling.png",
-      "source_status": "source_local_generated",
-      "sha256": "CEB81C5A37C78E55F3ED7D8FF3D178ED0238EB6B2F31C6267777A15B6CD777BA",
+      "source_status": "final_generated",
+      "sha256": "17EC0F28D74C94CCF176825BB701BDB363113E0C8D17CA26992C8443834E547A",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
-      "prompt_id": "urda_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/urda_seedling_card_portrait_v2.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/urda_seedling.png",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/urda_seedling_card_portrait_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/big/urda_seedling.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "withered_husk_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/withered_husk.png",
-      "source_status": "source_local_generated",
-      "sha256": "2228B1160C14757EF2EBA5E66412CB426E4411FC357A21B79B9012E51333BA9F",
+      "source_status": "final_generated",
+      "sha256": "A4794DD7600D40E7B254C47BB4DA132BC101A2C27151F68CDB4E80EB094700B4",
       "dimensions": {
         "width": 250,
         "height": 190
       },
-      "prompt_id": "urda_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/withered_husk_card_portrait_v2.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/withered_husk.png",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/withered_husk_card_portrait_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/withered_husk.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "withered_husk_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/withered_husk.png",
-      "source_status": "source_local_generated",
-      "sha256": "7CA3AEB0A28ADF3BE9D02619F6CE2539356E68E6ED9CA69070B5487FA39980F5",
+      "source_status": "final_generated",
+      "sha256": "2A03EB538CEB0343E21A5F5C9A5136CE0AF4569BFCA19036D2ECC7E6822A6429",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
-      "prompt_id": "urda_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/urda-corrections/withered_husk_card_portrait_v2.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/withered_husk.png",
-      "source_review_path": ".tools/art-generation/chatgpt/urda-corrections/withered_husk_card_portrait_v2.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/big/withered_husk.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_archive_pages_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/morvi_archive_pages.png",
-      "source_status": "source_local_generated",
-      "sha256": "259756C73D1FC4178EF13967027315C0E40071CFDF272236E3D734F266F2CB7D",
+      "source_status": "final_generated",
+      "sha256": "21EF5FBF835C8E870622BB9A0F139A69ABCF32F044226788372A48ADA9C0014E",
       "dimensions": {
         "width": 250,
         "height": 190
       },
-      "prompt_id": "morvi_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_archive_pages_card_portrait.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/morvi_archive_pages.png",
-      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_archive_pages_card_portrait.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/morvi_archive_pages.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_archive_pages_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/morvi_archive_pages.png",
-      "source_status": "source_local_generated",
-      "sha256": "6C02E9BC0EA12705B7C8C7333AC982CAC2044954DAA1B6DA7A53C16B513289BB",
+      "source_status": "final_generated",
+      "sha256": "C93AC143D32A77C11D313F451B5392E9899A90B260A3E16212AF7EE5E148D8F1",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
-      "prompt_id": "morvi_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_archive_pages_card_portrait.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/morvi_archive_pages.png",
-      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_archive_pages_card_portrait.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/big/morvi_archive_pages.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_red_ink_overdraft_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/morvi_red_ink_overdraft.png",
-      "source_status": "source_local_generated",
-      "sha256": "4815BDDC5E398C90F8D5BD83376536A634C9FD2F8D784902D9A55651D9761021",
+      "source_status": "final_generated",
+      "sha256": "F6B319D899807A1F323AC1FE536FAD20AA0D0C99F870956D6C83155EB985503A",
       "dimensions": {
         "width": 250,
         "height": 190
       },
-      "prompt_id": "morvi_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_red_ink_overdraft_card_portrait.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/morvi_red_ink_overdraft.png",
-      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_red_ink_overdraft_card_portrait.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/morvi_red_ink_overdraft.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_red_ink_overdraft_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/morvi_red_ink_overdraft.png",
-      "source_status": "source_local_generated",
-      "sha256": "1E31CED9C395A7E5B189082BDF14C45ADFBD78534B649B0F933280C488436AFD",
+      "source_status": "final_generated",
+      "sha256": "3C950AB161CD85FD12ED16B53D1B9217D12AA6CECCAE4D1459109AAF6CA2A888",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
-      "prompt_id": "morvi_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_red_ink_overdraft_card_portrait.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/morvi_red_ink_overdraft.png",
-      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_red_ink_overdraft_card_portrait.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/big/morvi_red_ink_overdraft.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_waste_paper_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/morvi_waste_paper.png",
-      "source_status": "source_local_generated",
-      "sha256": "73DA673E762C1A148306E351E53AD882CD7CF70CD4B6A31F0D62C3FF61C6C497",
+      "source_status": "final_generated",
+      "sha256": "66390AD4F34B5D71B2A48E82C811E78D889330F093A0851B2FEAF141C742CC63",
       "dimensions": {
         "width": 250,
         "height": 190
       },
-      "prompt_id": "morvi_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_waste_paper_card_portrait.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/morvi_waste_paper.png",
-      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_waste_paper_card_portrait.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/morvi_waste_paper.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "morvi_waste_paper_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/morvi_waste_paper.png",
-      "source_status": "source_local_generated",
-      "sha256": "4432CD23149A3FF8AF6D9D6DEC0A877209E524ED7E4EB4EEE53871C257604DE1",
+      "source_status": "final_generated",
+      "sha256": "947AEA71A18A8045B10558815B8FFF1A2E229459DD08A38D8177580DFDF45E98",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
-      "prompt_id": "morvi_card_portraits",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/morvi_waste_paper_card_portrait.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/morvi_waste_paper.png",
-      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/morvi_waste_paper_card_portrait.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/big/morvi_waste_paper.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "vakuu_temptation_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/vakuu_temptation.png",
-      "source_status": "source_local_generated",
-      "sha256": "54F2ECB8CD9902CFC284B2C2ADEFE0649BE7ECAE584A4DF4FF4A06955F9D1145",
+      "source_status": "final_generated",
+      "sha256": "470F62B8ABB6B52088EB442B941FB43111A4A7B4E8D859C34F7B6A9F05981B97",
       "dimensions": {
         "width": 250,
         "height": 190
       },
-      "prompt_id": "vakuu_fight_and_temptation",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/vakuu_temptation_card_portrait.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/vakuu_temptation.png",
-      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/vakuu_temptation_card_portrait.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/vakuu_temptation.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "vakuu_temptation_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/vakuu_temptation.png",
-      "source_status": "source_local_generated",
-      "sha256": "D0889E6DC4694122164E5BDF7ECA84917D427EB3AA4D786346F7796C508758DE",
+      "source_status": "final_generated",
+      "sha256": "0A640ED328EB47A9F9FBAEAC396CA11457B79F8AB0DA7675ADFA2AD756D27A9E",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
-      "prompt_id": "vakuu_fight_and_temptation",
+      "prompt_id": "oil_rebuild_20260515_batch5_card_portraits",
       "final_required_before_release": false,
-      "notes": "Active manual ChatGPT UI reviewed custom card portrait promoted for the next art-testing round; replaces the shared generic card portrait path. This is not a final Image API/GPTimage2 generation claim. Target-size review source: .tools/art-generation/chatgpt/card-portraits/vakuu_temptation_card_portrait.png.",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/card_portraits/big/vakuu_temptation.png",
-      "source_review_path": ".tools/art-generation/chatgpt/card-portraits/vakuu_temptation_card_portrait.png"
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint custom card portrait; replaces the shared generic card portrait path and preserves target-size readability.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits/big/vakuu_temptation.png",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_boss_seal_indicator",
+      "role": "ascension_indicator_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seal_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/boss_seal_indicator.png",
+      "sha256": "E34920593B2D8EB23828366BCDF350F908EC790AF0FBE516DC4AB3780CA61978",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_firemarked_elite_indicator",
+      "role": "ascension_indicator_icon",
+      "target_path": "EZMicroBalance/images/ascension/firemarked_elite_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/firemarked_elite_indicator.png",
+      "sha256": "3F46E7118BA702AF64161EA401480639965E83D1BEA44C40333864BDCFAF2023",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_firemark_might_indicator",
+      "role": "ascension_indicator_icon",
+      "target_path": "EZMicroBalance/images/ascension/firemark_might_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/firemark_might_indicator.png",
+      "sha256": "70C5F54BDA1B6FAE4BF1D9137EE889D2FE44879C9F61D49FD9D3279B12DD1CE3",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_firemark_giant_indicator",
+      "role": "ascension_indicator_icon",
+      "target_path": "EZMicroBalance/images/ascension/firemark_giant_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/firemark_giant_indicator.png",
+      "sha256": "174B34C9F4497436BDD91306292B8F6137F3AC2DBA8C4B85597C28242AAE6FB0",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_firemark_forge_armor_indicator",
+      "role": "ascension_indicator_icon",
+      "target_path": "EZMicroBalance/images/ascension/firemark_forge_armor_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/firemark_forge_armor_indicator.png",
+      "sha256": "1822985DEC103AE979F8B22990C376A3D80FC6D236F32844763FCB1CA5E93732",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_firemark_constant_heal_indicator",
+      "role": "ascension_indicator_icon",
+      "target_path": "EZMicroBalance/images/ascension/firemark_constant_heal_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/firemark_constant_heal_indicator.png",
+      "sha256": "E41F98820D6C1D0B4B8E595D99FE8F6EC64F84CEEA4FE300F3418FDB61A76AB4",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_fission_enchantment_icon",
+      "role": "ascension_status_icon",
+      "target_path": "EZMicroBalance/images/ascension/fission_enchantment_icon.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/fission_enchantment_icon.png",
+      "sha256": "0549927D34F288C93517D60ACB7F7C156106155EBEB9A56047B4E5DFDAB0E728",
+      "dimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_forge_token_status",
+      "role": "ascension_status_icon",
+      "target_path": "EZMicroBalance/images/ascension/forge_token_status.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/forge_token_status.png",
+      "sha256": "EA3D076EDB3CD4F9156B2EDA03547206E39179F18746323AF98C4DCC6A4D7A61",
+      "dimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_banner_room_indicator",
+      "role": "ascension_banner_icon",
+      "target_path": "EZMicroBalance/images/ascension/banner_room_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch4/banner_room_indicator.png",
+      "sha256": "65D7D297BC73AD29794D07BDF8F12099EF2D4A5C18BDCB7DB9AFBF0BEC30DD9B",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch4_banners",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_banner_vanguard_indicator",
+      "role": "ascension_banner_icon",
+      "target_path": "EZMicroBalance/images/ascension/banner_vanguard_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch4/banner_vanguard_indicator.png",
+      "sha256": "9562D7B629A8C78F68170E781634E2EC88DBDF9AF88EC2CA865E0567FA6A8F0F",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch4_banners",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_banner_shield_formation_indicator",
+      "role": "ascension_banner_icon",
+      "target_path": "EZMicroBalance/images/ascension/banner_shield_formation_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch4/banner_shield_formation_indicator.png",
+      "sha256": "37973C6F227A6A232B691CB3BE64E5C743BCEF6BBC4C29B58F0A8616092BFD56",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch4_banners",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "ascension_banner_bounty_indicator",
+      "role": "ascension_banner_icon",
+      "target_path": "EZMicroBalance/images/ascension/banner_bounty_indicator.png",
+      "source_status": "final_generated",
+      "final_required_before_release": false,
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint ascension UI icon with transparent padding; manifest tracks hash, generation mode, and export coverage.",
+      "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch4/banner_bounty_indicator.png",
+      "sha256": "8D55800D2ECE2242253480423C9C24ABC4AC6667B95A9AC67EBEFC919A8724BA",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "oil_rebuild_20260515_batch4_banners",
+      "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     }
   ]
 }

@@ -1050,10 +1050,13 @@ internal static class UrdaBlessingService
             return;
         }
 
+        var marked = GetCoordSet(progress.RootSightMarkedCoords);
         var current = player.RunState.CurrentMapPoint ?? player.RunState.Map.StartingMapPoint;
         var target = MapTravel.GetTravelablePointsFrom(player.RunState, current)
             .Where(point => point.PointType != MapPointType.Boss)
-            .OrderBy(point => point.coord.row)
+            .Where(point => !marked.Contains(FormatCoord(point.coord)))
+            .OrderBy(point => point.Quests.Count == 0 ? 0 : 1)
+            .ThenBy(point => point.coord.row)
             .ThenBy(point => point.coord.col)
             .FirstOrDefault();
         if (target == null)
@@ -1061,13 +1064,7 @@ internal static class UrdaBlessingService
             return;
         }
 
-        var marked = GetCoordSet(progress.RootSightMarkedCoords);
         var coord = FormatCoord(target.coord);
-        if (marked.Contains(coord))
-        {
-            return;
-        }
-
         marked.Add(coord);
         EnsureQuestMarker<UrdaRootSightMapQuestMarker>(target);
         progress = progress with

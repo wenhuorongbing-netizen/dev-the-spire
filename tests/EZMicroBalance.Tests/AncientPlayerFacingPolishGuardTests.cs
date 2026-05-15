@@ -200,6 +200,26 @@ public sealed class AncientPlayerFacingPolishGuardTests
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
             "[gold]储存种子[/gold]",
             "[gold]种子[/gold]");
+        AssertSourceContains(
+            engAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"],
+            "[gold]Root Eyes[/gold]",
+            "immediately marks [blue]1[/blue] reachable non-Boss room",
+            "after each room you enter");
+        AssertSourceContains(
+            zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"],
+            "[gold]根眼[/gold]",
+            "立即标记[blue]1[/blue]个可到达的非首领房间",
+            "每进入一个房间，再标记一个");
+        Assert.DoesNotContain("reveal", engAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"], StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("提前揭示", zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"], StringComparison.Ordinal);
+        AssertSourceContains(
+            engAncients["EZMB_URDA.root_sight.map_hover.description"],
+            "marked this reachable room",
+            "no extra penalty");
+        AssertSourceContains(
+            zhsAncients["EZMB_URDA.root_sight.map_hover.description"],
+            "标出的可到达房间",
+            "没有额外惩罚");
 
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_forbidden_loan.description"],
@@ -312,6 +332,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
     public void AncientOptionHoversPreviewNamedAddedCardsWhereSupported()
     {
         var urda = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.cs");
+        var urdaMapUiPatches = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaMapUiPatches.cs");
         var morvi = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.cs");
         var vakuu = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
 
@@ -319,6 +340,12 @@ public sealed class AncientPlayerFacingPolishGuardTests
             urda,
             "HoverTipFactory.FromCardWithCardHoverTips<UrdaSeedling>()",
             "HoverTipFactory.FromCardWithCardHoverTips<WitheredHusk>()");
+        AssertSourceContains(
+            urdaMapUiPatches,
+            "UrdaRootSightMapQuestMarker",
+            "NHoverTipSet.CreateAndShow",
+            "EZMB_URDA.root_sight.map_hover.title",
+            "EZMB_URDA.root_sight.map_hover.description");
         AssertSourceContains(
             morvi,
             "HoverTipFactory.FromCardWithCardHoverTips<MorviRedInkOverdraftCard>()",
@@ -440,12 +467,13 @@ public sealed class AncientPlayerFacingPolishGuardTests
 
         AssertSourceContains(
             artDirection,
-            "Final bespoke Image API art generated this pass: none.",
-            "Urda source provenance must be corrected before any final-art claim.",
-            "source-local reviewed option/icon/card art",
-            "map and run-history pairs may intentionally share source-local reviewed filled/outline bytes",
-            "Custom card portraits now use source-local reviewed files",
-            "Vakuu fight option art is source-local reviewed art",
+            "Final browser GPTimage2 small art generated this pass",
+            "Urda event background: Active event art is a 2.13:1 reframe",
+            "Urda, Morvi, and Lotha option/icon art uses browser ChatGPT/GPTimage2 rebuilt transparent PNGs",
+            "map and run-history pairs intentionally share final browser GPTimage2 filled/outline bytes",
+            "Custom card portraits now use browser GPTimage2 rebuilt files",
+            "Vakuu fight option art uses the same browser GPTimage2 rebuild pass",
+            "No `generic_temporary` or `final_required_before_release` art blockers remain",
             "Vakuu Temptation");
     }
 

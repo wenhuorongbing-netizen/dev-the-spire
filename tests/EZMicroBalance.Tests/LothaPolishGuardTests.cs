@@ -213,11 +213,12 @@ public sealed class LothaPolishGuardTests
         Assert.DoesNotContain("gain [blue]1[/blue] [gold]Energy[/gold] and draw [blue]2[/blue] cards", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_closed_court.description"], StringComparison.Ordinal);
         AssertSourceContains(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_closed_court.description"],
-            "post-combat card rewards no longer appear",
-            "[gold]Gold[/gold], potions, and relics remain",
-            "draw until your hand has [blue]10[/blue] cards",
+            "Post-combat card rewards no longer appear",
+            "draw [blue]10[/blue] cards",
             "gain [blue]4[/blue] [gold]Energy[/gold]",
             "first [blue]3[/blue] player-played cards");
+        Assert.DoesNotContain("[gold]Gold[/gold], potions, and relics remain", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_closed_court.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("draw until your hand has", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_closed_court.description"], StringComparison.Ordinal);
     }
 
     [Fact]

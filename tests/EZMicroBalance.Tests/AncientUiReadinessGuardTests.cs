@@ -118,6 +118,11 @@ public sealed class AncientUiReadinessGuardTests
             Assert.Contains($"[node name=\"{scene.RootNode}\" type=\"Control\"]", sceneSource, StringComparison.Ordinal);
             Assert.Contains("type=\"TextureRect\"", sceneSource, StringComparison.Ordinal);
             Assert.Contains($"path=\"res://{scene.EventArtPath}\"", sceneSource, StringComparison.Ordinal);
+            var artworkSource = ExtractNodeBlock(sceneSource, "[node name=\"Artwork\" type=\"TextureRect\" parent=\".\"]");
+            Assert.DoesNotContain("anchor_left = ", artworkSource, StringComparison.Ordinal);
+            Assert.DoesNotContain("anchor_top = ", artworkSource, StringComparison.Ordinal);
+            Assert.Contains("anchor_right = 1.0", artworkSource, StringComparison.Ordinal);
+            Assert.Contains("anchor_bottom = 1.0", artworkSource, StringComparison.Ordinal);
             Assert.Contains("expand_mode = 1", sceneSource, StringComparison.Ordinal);
             Assert.Contains("stretch_mode = 6", sceneSource, StringComparison.Ordinal);
             Assert.DoesNotContain("stretch_mode = 5", sceneSource, StringComparison.Ordinal);
@@ -433,6 +438,14 @@ public sealed class AncientUiReadinessGuardTests
     private static string ReadRepoText(params string[] parts)
     {
         return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
+    }
+
+    private static string ExtractNodeBlock(string sceneSource, string nodeHeader)
+    {
+        var start = sceneSource.IndexOf(nodeHeader, StringComparison.Ordinal);
+        Assert.True(start >= 0, $"Missing scene node: {nodeHeader}");
+        var next = sceneSource.IndexOf("\n[node ", start + nodeHeader.Length, StringComparison.Ordinal);
+        return next < 0 ? sceneSource[start..] : sceneSource[start..next];
     }
 
     private static string RepoPath(params string[] parts)

@@ -219,6 +219,13 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("EZMicroBalance/images/ascension/firemarked_elite_indicator.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ascension/banner_room_indicator.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ascension/boss_seal_indicator.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ascension/firemark_might_indicator.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ascension/firemark_giant_indicator.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ascension/firemark_forge_armor_indicator.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ascension/firemark_constant_heal_indicator.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ascension/banner_vanguard_indicator.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ascension/banner_shield_formation_indicator.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ascension/banner_bounty_indicator.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ascension/fission_enchantment_icon.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ascension/forge_token_status.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png.import", entries);

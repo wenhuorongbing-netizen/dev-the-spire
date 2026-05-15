@@ -1,28 +1,30 @@
 # Ancient Art Testing And Integration Plan
 
-Status date: 2026-05-14
+Status date: 2026-05-15
 
-This plan separates source/gameplay testing from final-art integration. The current review PNGs have now been promoted into active resources for the next art-testing round, except for the optional Lotha first-preview event-background crop, which remains review-only.
+This plan separates source/gameplay testing from final-art integration. The previous source-local review PNGs were superseded by the browser ChatGPT/GPTimage2 oil-repaint pass under `.tools/art-generation/chatgpt/oil-rebuild-20260515/`. The Lotha first-preview event-background crop and the Urda 2.13:1 reframe are now active middle-draft event backgrounds.
 
 ## Readiness Decision
 
-- Source/gameplay testing can proceed with the promoted source-local reviewed art.
-- Final Image API/GPTimage2 provenance is still not claimed because these files came from the manual ChatGPT UI fallback, not the audited gpt4free/Image API path.
-- The current small-art review set has been promoted. More small-icon generation is not needed before the next in-game preview pass.
-- The Lotha event background still needs one explicit choice before replacement: keep the current active wide mirror background, or use/regenerate the first user-approved `Crystal throne of shattered visions` direction as a true 2.13:1 background.
+- Source/gameplay testing can proceed with the promoted browser GPTimage2 oil-repaint art.
+- Final small-art provenance is claimed through the manifest for 69 browser ChatGPT/GPTimage2 `final_generated` records. This covers option relics, identity icons, Lotha Verdict, Vakuu fight, fallback power/relic assets, Ascension indicators/banners/status icons, and six custom card portraits.
+- More small-icon generation is not needed before the next in-game preview pass unless live UI screenshots expose scale/readability issues.
+- Event backgrounds are now unified to the 1831x859 / about 2.13:1 target and use full-scene cover fitting. They still need live clicked-UI screenshots before release-ready claims.
 
 ## Review Outputs
 
-- Blueprint overview: `.tools/art-generation/chatgpt/ancient-art-blueprint-preview-v1.png`
-- Exact target-size preview: `.tools/art-generation/chatgpt/ancient-art-promotion-target-preview-v1.png`
-- Candidate manifest: `.tools/art-generation/promotion-candidates/promotion-candidates-manifest.json`
-- Candidate files: `.tools/art-generation/promotion-candidates/`
+- Current active small-art contact sheet: `.tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png`
+- Current card-portrait contact sheet: `.tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch5-card-portraits-contact.png`
+- Historical blueprint overview: `.tools/art-generation/chatgpt/ancient-art-blueprint-preview-v1.png`
+- Historical target-size preview: `.tools/art-generation/chatgpt/ancient-art-promotion-target-preview-v1.png`
+- Historical candidate manifest: `.tools/art-generation/promotion-candidates/promotion-candidates-manifest.json`
+- Active event-background contact sheet: `.tools/art-generation/event-background-reframe-20260515/active-event-backgrounds-1831x859-contact.png`
 
-Current candidate manifest summary:
+Historical candidate manifest summary:
 
 - 40 former `ready_candidate` items are active resources: option relics, identity icons, Lotha verdict power, and Vakuu fight option art.
 - 12 former `needs_code_path` items are active resources: six custom card portraits, each with small and big variants; the card source now uses unique image paths instead of generic `card.png` / `big/card.png`.
-- 1 `needs_user_review` item remains review-only: `lotha_event_background_first_preview_crop`, a 1831x859 crop of the first user-approved mirror ensemble.
+- The former `needs_user_review` Lotha crop is now active as `EZMicroBalance/images/events/ezmb_lotha.png`.
 
 ## Art Categories
 
@@ -32,14 +34,15 @@ Purpose: clicked Ancient event background art.
 
 Current state:
 
-- Urda and Morvi active backgrounds are usable for source/gameplay testing.
-- Lotha active background is functional but does not match the user-preferred first mirror-ensemble preview.
-- A non-integrated Lotha candidate exists at `.tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/events/ezmb_lotha_first_preview_crop_1831x859.png`.
+- Urda, Morvi, and Lotha active backgrounds are all 1831x859 source-local middle-draft resources.
+- Urda is a y=80 2.13:1 reframe of the user-accepted root-mother background.
+- Morvi already matched the 2.13:1 event-background target.
+- Lotha now uses `.tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/events/ezmb_lotha_first_preview_crop_1831x859.png`, replacing the older silver judge background.
 
-Decision needed before integration:
+Decision needed before release-ready art claims:
 
-- If the crop is visually acceptable, promote it as the Lotha event background.
-- If the crop feels too compressed, regenerate a true 2.13:1 version using the first-preview prompt below.
+- Capture live clicked Ancient UI screenshots for Urda, Morvi, and Lotha and verify title/text overlays do not hide the focal silhouettes.
+- If the Lotha crop feels too compressed in live UI, regenerate a true 2.13:1 version using the first-preview prompt below.
 
 ### Option Relics
 
@@ -47,14 +50,14 @@ Purpose: Ancient choice option art and related relic hover art.
 
 Current state:
 
-- Lotha: 8 ready candidates at 160x120.
-- Morvi: 8 ready candidates at 128x128.
-- Urda: 10 ready candidates at 128x128.
+- Lotha: 8 active final-generated option relics.
+- Morvi: 8 active final-generated option relics.
+- Urda: 10 active final-generated option relics.
 
 Current active decision:
 
-- The reviewed option relics are active at the matching `EZMicroBalance/images/ancients/**/options/` paths.
-- Manifest records use `source_local_generated`, not `final_generated`, because this was a manual ChatGPT UI fallback promotion.
+- The oil-repaint option relics are active at the matching `EZMicroBalance/images/ancients/**/options/` paths.
+- Manifest records for active option relics use `final_generated` with `generation_mode`, `mode`, and `semantic_model` set to `GPTimage2`.
 
 ### Identity Icons
 
@@ -70,7 +73,7 @@ Current state:
 Current active decision:
 
 - The filled/outline candidates are active at `EZMicroBalance/images/ancients/{ancient}/`.
-- Map and run-history pairs intentionally share source-local reviewed filled/outline files unless live UI evidence proves separate variants are needed.
+- Map and run-history pairs intentionally share final browser GPTimage2 oil-repaint filled/outline files unless live UI evidence proves separate variants are needed.
 
 ### Power And Fight Icons
 
@@ -83,7 +86,7 @@ Current state:
 
 Current active decision:
 
-- Direct PNG bytes are promoted and manifest hashes are updated.
+- Direct oil-repaint PNG bytes are promoted and manifest hashes are updated.
 
 ### Card Portraits
 
@@ -91,8 +94,8 @@ Purpose: Urda Seedling, Withered Husk, Morvi Archive Pages, Morvi Red Ink Overdr
 
 Current state:
 
-- Visual candidates are prepared at 250x190 and 1000x760.
-- They are not direct drop-ins because current source still points these cards at generic card portrait paths.
+- Oil-repaint portraits are active at 250x190 and 1000x760.
+- Current source points these cards at unique portrait paths instead of generic card portrait paths.
 
 Current active decision:
 

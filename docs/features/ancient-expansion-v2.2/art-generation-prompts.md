@@ -28,7 +28,7 @@ dark hand-painted roguelike card game art, Slay the Spire 2 inspired, painterly 
 Append this exact style suffix to every event, character, monster, relic, option-art, card-art, and power-art prompt:
 
 ```text
-Slay the Spire 2 inspired dark fantasy roguelike card-game art, hand-painted 2D illustration, rough gouache and oil brush texture, painterly flat colors, strong black silhouette, uneven ink outline, muted navy-purple shadows, small saturated highlights, grotesque but charming fantasy design, readable at small size, not realistic, not anime, not 3D, not overpolished.
+Slay the Spire 2 inspired dark fantasy roguelike card-game art, hand-painted 2D illustration, rough gouache, acrylic paint, and marker texture, painterly flat colors, strong black silhouette, uneven ink outline, transparent background for UI icons, clear storybook shapes, low line density, muted navy-purple shadows, small saturated highlights, grotesque but charming fantasy design, readable at small size, not realistic, not anime, not 3D, not overpolished.
 ```
 
 Use these acceptance rules when inspecting output:
@@ -39,6 +39,8 @@ Use these acceptance rules when inspecting output:
 - Reserve saturated color for eyes, candles, gems, hearts, seals, and runes.
 - Lines and edges must feel hand-painted and imperfect, not clean vector or mobile-game polish.
 - Relics should look like cursed tabletop tokens or card-game icons, not product renders.
+- Small UI icons, option relics, map markers, run-history icons, and power icons must be transparent PNGs with no opaque black, navy, or paper square behind the symbol.
+- Use flat readable color blocks with thick acrylic/marker paint; keep line density low and avoid fine decorative hatching.
 - Do not use official Slay the Spire 2 assets, web images, logos, UI, release numbers, watermarks, or visible text.
 
 ## Source-Code Visual Calibration
@@ -53,7 +55,25 @@ This first manual preview is the current best user-approved style direction for 
 
 Do not overcorrect toward later darker and emptier iterations. `crystalline-shrine-of-fractured-souls.png`, `ritual-in-a-shattered-mirror-hall.png`, and `the-mirror-hall-of-forgotten-souls.png` are review artifacts for aspect-ratio, Neow-like silhouette, and simplification lessons only; they are not the current style target. Small option relic sheets should inherit the first preview's dark mirror-card finish and broad painted material language, then simplify only enough to remain readable as small icons.
 
-Before any small-art review candidate is promoted to an active resource, inspect it at target size: 96px identity icons, 128px power/fight/standard option icons, 160x120 Lotha option relics, and 250x190 card portraits. If a candidate loses its silhouette or becomes mostly black at target size, regenerate only that weak asset or weak group; do not restart the whole batch. Identity outline icons should be simple UI glyphs with hollow centers, uneven painted strokes, and no paper texture, pseudo-writing, or label-like detail. Keep review contact sheets and target-size audit sheets under `.tools/art-generation/chatgpt/` until the selected PNGs are integrated and the manifest is updated.
+Before any small-art review candidate is promoted to an active resource, inspect it at target size: 96px identity icons, 128px power/fight/standard option icons, 160x120 Lotha option relics, and 250x190 card portraits. If a candidate loses its silhouette or becomes mostly black at target size, regenerate only that weak asset or weak group; do not restart the whole batch. Identity outline icons should be simple UI glyphs with hollow centers, uneven painted strokes, transparent PNG with no opaque black, navy, or paper square behind the symbol, flat readable color blocks with thick acrylic/marker paint, low line density, and no paper texture, pseudo-writing, or label-like detail. Keep review contact sheets and target-size audit sheets under `.tools/art-generation/chatgpt/` until the selected PNGs are integrated and the manifest is updated.
+
+## Browser GPTimage2 Oil-Repaint Batch Rules
+
+The 2026-05-15 oil repaint pass used the existing logged-in Edge ChatGPT project conversation and recovered PNGs from Edge cache under `.tools/art-generation/chatgpt/oil-rebuild-20260515/`. Do not upload official game atlas art. The local `source code/images/atlases/relic_atlas.png` and `power_atlas.png` may be inspected only as read-only visual calibration: refined oil-painted object masses, black contours, broad material blocks, and no dense hatching.
+
+Prompt ids used by the active manifest:
+
+- `oil_rebuild_20260515_batch1_urda_vakuu`: Urda option relics, Vakuu fight icon, and neutral relic fallback.
+- `oil_rebuild_20260515_batch2_morvi_lotha`: Morvi and Lotha option relics.
+- `oil_rebuild_20260515_batch3_identity_power_ascension`: Ancient identity icons, Lotha Verdict, neutral power fallback, boss/firemark/fission/forge icons.
+- `oil_rebuild_20260515_batch4_banners`: Banner Room, Vanguard, Shield Formation, and Bounty banner icons.
+- `oil_rebuild_20260515_batch5_card_portraits`: Urda Seedling, Withered Husk, Morvi Archive Pages, Red Ink Overdraft, Waste Paper, and Vakuu Temptation card portraits.
+
+For transparent-ready icon sheets, ask for isolated icons only, no scene, no character group, no UI, no labels, and no readable text. Use a flat chroma-key magenta background (`#ff00ff`) when true alpha is unavailable, then remove it locally. The required finish is: refined dark roguelike atlas icons, oil/acrylic/gouache painted, thick black outer contour, broad matte color blocks, low saturation, one small accent glow, no glossy mobile-game rendering, no neon color dominance, no tiny cracks/vines/scratch noise, and no simplified doodle/vector look.
+
+For card portraits, use a 3x2 sheet with dark painted backgrounds inside each cell. Keep subjects large, simple, and readable at 250x190; no fake writing, no card frame, no captions, no glossy cinematic polish.
+
+After slicing, preserve transparent padding during promotion. Do not crop 128x128 processed icons back to the alpha bounds and stretch them to the canvas edge. Run both the manifest audit and a pixel-alpha/edge-padding audit before packaging.
 
 Reviewed style anchors:
 
@@ -160,12 +180,12 @@ An original relic item illustration inspired by Slay the Spire 2 roguelike card 
 
 A strange ancient relic: [item concept].
 
-The relic should be centered on a dark simple background, with a strong readable silhouette and iconic shape. It should look like a small game item icon, not a realistic object. Use exaggerated proportions, slight asymmetry, old worn materials, cracks, stains, small glowing details, and cursed fantasy symbolism.
+The relic should be centered as a transparent PNG with a strong readable silhouette and iconic shape. It should look like a small game item icon, not a realistic object. Use exaggerated proportions, slight asymmetry, old worn materials, cracks, stains, small glowing details, and cursed fantasy symbolism. Do not place an opaque black, navy, paper, or rectangular background behind the symbol.
 
-Hand-painted 2D item art, rough gouache texture, painterly flat colors, thick uneven dark outline, limited palette, deep shadow, small saturated highlight, ancient spire atmosphere. Readable at small size.
+Hand-painted 2D item art, rough gouache/acrylic and marker texture, painterly flat colors, thick uneven dark outline, limited palette, flat readable color blocks, low line density, small saturated highlight, ancient spire atmosphere. Readable at small size.
 
 Negative prompt:
-photorealistic object, 3D render, product photography, clean vector icon, overly detailed ornament, realistic metal, modern object, smooth polished digital painting, anime, text, logo, UI, watermark, official game asset.
+photorealistic object, 3D render, product photography, clean vector icon, opaque square background, black background box, paper card background, pseudo-writing, tiny decorative hatching, overly detailed ornament, realistic metal, modern object, smooth polished digital painting, anime, text, logo, UI, watermark, official game asset.
 ```
 
 ### Card Portrait

@@ -1,6 +1,6 @@
 # Ancient Expansion v2.2 Art Direction
 
-Status: active art is usable for source/manual testing but still not final bespoke art. This file is the compact direction summary; the machine-readable source of truth for asset paths, hashes, dimensions, and final/temporary status is `art-asset-manifest.json`.
+Status: active small UI, option relic, fallback relic/power, Ascension UI, and custom card portrait art now has browser ChatGPT/GPTimage2 final-generation provenance for the private-beta art pass. Urda, Morvi, and Lotha event backgrounds are now 2.13:1 source-local middle-draft resources matched to the local source event-background aspect, but still need live clicked-UI review. The machine-readable source of truth for asset paths, hashes, dimensions, and final status is `art-asset-manifest.json`.
 
 ## Operational Sources
 
@@ -14,21 +14,23 @@ Do not use older ignored `art_pipeline/prompts/*.md` calibration prompts for new
 
 ## Current Art Stance
 
-- Final bespoke Image API art generated this pass: none.
+- Final browser GPTimage2 small art generated this pass: Urda/Morvi/Lotha/Vakuu option relics, Ancient identity icons, Lotha verdict power art, Ascension indicators/banners/status icons, neutral fallback power/relic assets, and six custom Ancient card portraits.
 - Morvi event background: Active Morvi event art uses `art_pipeline/generated/ancient_morvi_bg_v1_v001.png`.
-- Lotha event background: Active event art now uses `art_pipeline/generated/ancient_lotha_bg_v1_v001.png`.
-- Urda event background: Urda source provenance must be corrected before any final-art claim.
-- Urda, Morvi, and Lotha option/icon art is now source-local reviewed option/icon/card art promoted from the manual ChatGPT UI review batch.
-- Vakuu fight option art is source-local reviewed art promoted from the same small-art review batch.
-- Custom card portraits now use source-local reviewed files for Urda Seedling, Withered Husk, Morvi Archive Pages, Red Ink Overdraft, Waste Paper, and Vakuu Temptation.
-- These promoted files are active next-round testing art, not `final_generated` Image API/GPTimage2 records.
+- Lotha event background: Active event art now uses the first user-preferred mirror-ensemble preview crop at `.tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/events/ezmb_lotha_first_preview_crop_1831x859.png`.
+- Urda event background: Active event art is a 2.13:1 reframe of the user-accepted Urda middle-draft at `.tools/art-generation/event-background-reframe-20260515/ezmb_urda_crop_y80_1831x859.png`.
+- Urda, Morvi, Lotha, Vakuu, fallback, and Ascension small art uses browser ChatGPT/GPTimage2 oil-repaint transparent PNGs with target-size review contact sheets under `.tools/art-generation/chatgpt/oil-rebuild-20260515/`.
+- Urda, Morvi, and Lotha option/icon art uses browser ChatGPT/GPTimage2 rebuilt transparent PNGs; the current oil-repaint pass is the latest version of that rebuilt-art line.
+- Vakuu fight option art uses the same browser GPTimage2 rebuild pass.
+- Custom card portraits now use browser GPTimage2 rebuilt files for Urda Seedling, Withered Husk, Morvi Archive Pages, Red Ink Overdraft, Waste Paper, and Vakuu Temptation.
+- No `generic_temporary` or `final_required_before_release` art blockers remain in the manifest after this pass.
+- The current manifest tracks 80 assets, including 69 `final_generated` entries. Ascension small-art assets are now manifest-tracked rather than only indirectly covered by package/export tests.
 
 ## Style Contract
 
 All new generated Ancient art must follow the core style in `art-generation-prompts.md`:
 
 ```text
-Slay the Spire 2 inspired dark fantasy roguelike card-game art, hand-painted 2D illustration, rough gouache and oil brush texture, painterly flat colors, strong black silhouette, uneven ink outline, muted navy-purple shadows, small saturated highlights, grotesque but charming fantasy design, readable at small size, not realistic, not anime, not 3D, not overpolished.
+Slay the Spire 2 inspired dark fantasy roguelike card-game art, hand-painted 2D illustration, rough gouache, acrylic paint, and marker texture, painterly flat colors, strong black silhouette, uneven ink outline, transparent background for UI icons, clear storybook shapes, low line density, muted navy-purple shadows, small saturated highlights, grotesque but charming fantasy design, readable at small size, not realistic, not anime, not 3D, not overpolished.
 ```
 
 The practical control points are:
@@ -38,6 +40,9 @@ The practical control points are:
 - Use deep navy, black-purple, gray-green, and dirty brown bases, with saturated highlights only on eyes, candles, gems, hearts, seals, or runes.
 - Edges must feel rough, hand-painted, and imperfect.
 - Relics must read as cursed tabletop tokens or card-game icons, not product renders.
+- UI icon resources must use transparent PNG padding, not opaque black/navy square backgrounds.
+- Promotion must preserve transparent padding; do not crop final icons back to their alpha bounds and stretch them to the target edge.
+- Keep small resources flat, vivid, and logical: one symbol, thick outline, low line density, and acrylic/marker texture.
 - No visible text, logos, UI, official game assets, watermarks, or release numbers.
 
 ## Event Art Direction
@@ -45,15 +50,15 @@ The practical control points are:
 | Ancient | Target resource path | Current direction |
 | --- | --- | --- |
 | Morvi, the Lender-Scribe | `EZMicroBalance/images/events/ezmb_morvi.png` | Blue-lit lender-scribe court, sealed contract, skeletal hands, ledger/typewriter, one central blue eye. Fits debt, archive, and borrowed-power rules. |
-| Lotha, the Judge | `EZMicroBalance/images/events/ezmb_lotha.png` | Mirror tribunal/event chamber with crystal panes, grotesque reflected figures, evidence/relic shards, and a central judge/oracle mirror-heart motif. Fits verdict, evidence, rebuttal, and judgment rules. |
-| Urda, Loamweaver | `EZMicroBalance/images/events/ezmb_urda.png` | Root nursery, seedbed, trial growth, soil, moss, route hints, and ancient root-mask silhouette. Current source provenance still needs correction before final-art claims. |
+| Lotha, the Judge | `EZMicroBalance/images/events/ezmb_lotha.png` | First user-preferred mirror-ensemble crop with crystal panes, grotesque reflected figures, and a central oracle/heart motif. Fits verdict, evidence, rebuttal, and judgment rules. |
+| Urda, Loamweaver | `EZMicroBalance/images/events/ezmb_urda.png` | Reframed root nursery with seedbed, soil, moss, route-hint standing stones, and ancient root-mask silhouette. Fits growth, burial, route, and Max HP trade rules. |
 
-## Temporary Art Risks
+## Remaining Art Risks
 
-- Urda, Morvi, and Lotha map and run-history pairs may intentionally share source-local reviewed filled/outline bytes until a live UI test proves separate variants are needed.
-- Five generic fallback assets remain temporary: `images/powers/power.png`, `images/powers/big/power.png`, `images/relics/relic.png`, `images/relics/big/relic.png`, and `images/relics/relic_outline.png`.
-- Lotha's first user-preferred mirror-ensemble event crop remains in `.tools/art-generation/promotion-candidates/proposed/` for review and is not active.
-- These are acceptable only for manual-test candidate work. They must not be called final art.
+- Urda, Morvi, and Lotha map and run-history pairs intentionally share final browser GPTimage2 oil-repaint filled/outline bytes until a live UI test proves separate variants are needed.
+- The map and run-history pairs intentionally share final browser GPTimage2 filled/outline bytes; the current files are the oil-repaint replacements recorded in the manifest.
+- Neutral fallback assets are no longer temporary blockers: `images/powers/power.png`, `images/powers/big/power.png`, `images/relics/relic.png`, `images/relics/big/relic.png`, and `images/relics/relic_outline.png` were rebuilt from browser GPTimage2 sources.
+- Event backgrounds are active middle-draft resources, not final generated event art. Live clicked-UI review remains unresolved, so art readiness still requires in-game preview checks before release-ready claims.
 
 ## Asset Hygiene Rules
 
@@ -66,9 +71,10 @@ The practical control points are:
 ## Next Integration Checklist
 
 - [x] Promote reviewed option relics, identity icons, Lotha verdict power, Vakuu fight art, and six custom card portraits into active resource paths for the next art-testing round.
-- [ ] Generate final art only through `GPTimage2` using `art-generation-prompts.md` if the private-beta art policy requires `final_generated` provenance instead of source-local reviewed art.
-- [ ] Decide whether to keep the current active Lotha event background or replace it with a true 2.13:1 version of the first user-preferred mirror-ensemble preview.
-- [ ] Replace or explicitly accept the five generic fallback power/relic assets before any final-art release claim.
-- [ ] Correct Urda event source provenance: either record the real source for `EZMicroBalance/images/events/ezmb_urda.png` or replace it with the documented generated source and update hashes.
-- [ ] Replace duplicated map/run-history icon pairs only if live UI evidence proves the shared source-local reviewed filled/outline art is insufficient.
+- [x] Generate final small-art replacements through browser ChatGPT/GPTimage2 and record `final_generated` provenance, hashes, dimensions, source paths, and review sheets in the manifest.
+- [x] Add Ascension indicator/banner/status icons to the manifest and export audit coverage.
+- [x] Replace the older Lotha event background with a 2.13:1 crop of the first user-preferred mirror-ensemble preview.
+- [x] Replace the five generic fallback power/relic assets with final neutral browser GPTimage2 art.
+- [x] Correct Urda event source provenance by recording the 2.13:1 middle-draft reframe source and active hash.
+- [ ] Replace duplicated map/run-history icon pairs only if live UI evidence proves the shared final filled/outline art is insufficient.
 - [ ] Verify no release doc claims live gameplay/save-load readiness before runtime evidence exists.

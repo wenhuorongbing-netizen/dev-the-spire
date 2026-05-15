@@ -10,15 +10,19 @@ internal abstract class FiremarkPower : CustomPowerModel, ILocalizationProvider
 
     public override int DisplayAmount => Amount;
 
-    public override string CustomPackedIconPath => AscensionAssetPaths.FiremarkedEliteIndicator;
+    protected virtual string FiremarkIconPath => AscensionAssetPaths.FiremarkedEliteIndicator;
 
-    public override string CustomBigIconPath => AscensionAssetPaths.FiremarkedEliteIndicator;
+    public override string CustomPackedIconPath => FiremarkIconPath;
+
+    public override string CustomBigIconPath => FiremarkIconPath;
 
     public override abstract List<(string, string)>? Localization { get; }
 }
 
 internal sealed class MightMarkFiremarkPower : FiremarkPower
 {
+    protected override string FiremarkIconPath => AscensionAssetPaths.FiremarkMightIndicator;
+
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "\u706b\u5370\uff1a\u70c8\u529b",
@@ -32,6 +36,8 @@ internal sealed class MightMarkFiremarkPower : FiremarkPower
 
 internal sealed class GiantMarkFiremarkPower : FiremarkPower
 {
+    protected override string FiremarkIconPath => AscensionAssetPaths.FiremarkGiantIndicator;
+
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "\u706b\u5370\uff1a\u5de8\u8eaf",
@@ -45,6 +51,8 @@ internal sealed class GiantMarkFiremarkPower : FiremarkPower
 
 internal sealed class ForgeArmorMarkFiremarkPower : FiremarkPower
 {
+    protected override string FiremarkIconPath => AscensionAssetPaths.FiremarkForgeArmorIndicator;
+
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "\u706b\u5370\uff1a\u94f8\u7532",
@@ -67,6 +75,8 @@ internal sealed class ForgeArmorMarkFiremarkPower : FiremarkPower
 
 internal sealed class ConstantHealMarkFiremarkPower : FiremarkPower
 {
+    protected override string FiremarkIconPath => AscensionAssetPaths.FiremarkConstantHealIndicator;
+
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "\u706b\u5370\uff1a\u6052\u6108",

@@ -10,15 +10,19 @@ internal abstract class BannerPower : CustomPowerModel, ILocalizationProvider
 
     public override int DisplayAmount => 0;
 
-    public override string CustomPackedIconPath => AscensionAssetPaths.BannerRoomIndicator;
+    protected virtual string BannerIconPath => AscensionAssetPaths.BannerRoomIndicator;
 
-    public override string CustomBigIconPath => AscensionAssetPaths.BannerRoomIndicator;
+    public override string CustomPackedIconPath => BannerIconPath;
+
+    public override string CustomBigIconPath => BannerIconPath;
 
     public override abstract List<(string, string)>? Localization { get; }
 }
 
 internal sealed class VanguardBannerPower : BannerPower
 {
+    protected override string BannerIconPath => AscensionAssetPaths.BannerVanguardIndicator;
+
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override int DisplayAmount => Amount;
@@ -41,6 +45,8 @@ internal sealed class VanguardBannerPower : BannerPower
 
 internal sealed class ShieldFormationBannerbearerPower : BannerPower
 {
+    protected override string BannerIconPath => AscensionAssetPaths.BannerShieldFormationIndicator;
+
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "战旗：盾阵旗手",
@@ -54,6 +60,8 @@ internal sealed class ShieldFormationBannerbearerPower : BannerPower
 
 internal sealed class BountyBannerTargetPower : BannerPower
 {
+    protected override string BannerIconPath => AscensionAssetPaths.BannerBountyIndicator;
+
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "战旗：悬赏",

@@ -301,6 +301,8 @@ public sealed class AscensionFeatureGuardTests
         AssertSourceContains(
             mapPatch,
             "FiremarkedEliteMapHoverPatch",
+            "GetFiremarkIndicator(firemark)",
+            "GetBannerIndicator(banner)",
             "FIREMARK_MIGHT",
             "FIREMARK_GIANT",
             "FIREMARK_FORGE_ARMOR",
@@ -534,6 +536,8 @@ public sealed class AscensionFeatureGuardTests
             "NNormalMapPoint",
             "\"_questIcon\"",
             "FiremarkedEliteMapQuestMarker",
+            "AscensionAssetPaths.GetFiremarkIndicator(firemark)",
+            "AscensionAssetPaths.GetBannerIndicator(banner)",
             "AscensionAssetPaths.FiremarkedEliteIndicator");
 
         AssertSourceContains(
@@ -557,9 +561,13 @@ public sealed class AscensionFeatureGuardTests
         AssertSourceContains(
             firemarkPowers,
             "MightMarkFiremarkPower",
+            "AscensionAssetPaths.FiremarkMightIndicator",
             "GiantMarkFiremarkPower",
+            "AscensionAssetPaths.FiremarkGiantIndicator",
             "ForgeArmorMarkFiremarkPower",
+            "AscensionAssetPaths.FiremarkForgeArmorIndicator",
             "ConstantHealMarkFiremarkPower",
+            "AscensionAssetPaths.FiremarkConstantHealIndicator",
             "Firemark: Might",
             "Firemark: Constant Heal");
 
@@ -585,11 +593,16 @@ public sealed class AscensionFeatureGuardTests
             "card.Enchantment == null");
 
         Assert.StartsWith("火印精英", zhsAscension["LEVEL_12.title"], StringComparison.Ordinal);
-        Assert.Contains("optional [gold]Firemarked Elites[/gold]", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.Contains("[gold]Firemarked Elites[/gold] appear on the map", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Forge Token[/gold]", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("Act 1 has", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("Acts 2 and 3", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("Firemark Host", engAscension["LEVEL_12.description"], StringComparison.Ordinal);
-        Assert.Contains("可选[gold]火印精英[/gold]", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.Contains("地图上会出现[gold]火印精英[/gold]", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.Contains("铸令", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("第一幕", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("第二幕", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("第三幕", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("火印宿主", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("注令", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("路线", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);

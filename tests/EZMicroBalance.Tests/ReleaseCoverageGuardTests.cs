@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
@@ -81,6 +82,7 @@ public sealed class ReleaseCoverageGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCards.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaFeatureGate.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaInitializer.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRunHook.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs",
@@ -322,9 +324,9 @@ public sealed class ReleaseCoverageGuardTests
     {
         const string oldZipHash = "A96D592E5E244743D1DD0FC58035E34AC263743FFEC98F54CE8D4B31CD9C2432";
         const string oldDllHash = "A56CF2044A736DFF4E7BEACB55D63388C4DE72AC9C7A99418708D7F2776FE9D9";
-        const string currentZipHash = "788257A536635D7E3429AF68EF3A4105DC925B95A0738F5EB14D23A5748F5F35";
-        const string currentDllHash = "BFE470EBE6A918B063ACF51294CF91035F3A2D8DCE9624B5433A85CFDBFEE77E";
-        const string currentPckHash = "60558C1BF556D67BE13258AC36F5578CC82BEE75B890EC0254FF65FBB9CC8D02";
+        const string currentZipHash = "EEE66FB09694E8A39D669CC8211032F35B13484E19D19E2A282D6EA01BB3C95E";
+        const string currentDllHash = "47DA05BFB7E4DDD575BAFD944036CDF1F61A5570F242EB733B6C9A5EFAF17482";
+        const string currentPckHash = "8B4235CA8F37CB7DC6CBCD86728C89E47DF9E5752BA03DF493F4DDB6C479466D";
         const string currentManifestHash = "659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2";
         const string currentReadmeHash = "C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4";
 
@@ -1348,36 +1350,40 @@ public sealed class ReleaseCoverageGuardTests
         Assert.True(
             new FileInfo(morviPng).Length > 1_000_000,
             "Morvi event art must not regress to a small geometric placeholder.");
-        Assert.True(
-            new FileInfo(RepoPath("EZMicroBalance", "images", "ancients", "morvi", "ezmb_morvi_map_icon.png")).Length > 10_000,
-            "Morvi map icon must not regress to placeholder art.");
+        AssertSmallUiPngHasAlpha(
+            RepoPath("EZMicroBalance", "images", "ancients", "morvi", "ezmb_morvi_map_icon.png"),
+            "Morvi map icon must remain a readable transparent UI resource.");
         Assert.True(File.Exists(RepoPath("EZMicroBalance", "images", "events", "ezmb_lotha.png")), "Lotha event art should exist now that Lotha is active.");
         Assert.Contains("res://EZMicroBalance/images/events/ezmb_lotha.png", exportPreset, StringComparison.Ordinal);
         Assert.Contains("res://EZMicroBalance/scenes/events/background_scenes/ezmb_lotha.tscn", exportPreset, StringComparison.Ordinal);
         Assert.True(
             new FileInfo(RepoPath("EZMicroBalance", "images", "events", "ezmb_lotha.png")).Length > 1_000_000,
             "Lotha event art must not regress to the small geometric placeholder.");
-        Assert.True(
-            new FileInfo(RepoPath("EZMicroBalance", "images", "ancients", "lotha", "ezmb_lotha_map_icon.png")).Length > 10_000,
-            "Lotha map icon must not regress to the old 2KB placeholder.");
+        AssertSmallUiPngHasAlpha(
+            RepoPath("EZMicroBalance", "images", "ancients", "lotha", "ezmb_lotha_map_icon.png"),
+            "Lotha map icon must remain a readable transparent UI resource.");
         foreach (var optionArt in Directory.GetFiles(RepoPath("EZMicroBalance", "images", "ancients", "lotha", "options"), "*.png"))
         {
-            Assert.True(new FileInfo(optionArt).Length > 10_000, $"{optionArt} must not regress to placeholder art.");
+            AssertSmallUiPngHasAlpha(optionArt, $"{optionArt} must remain a readable transparent option icon.");
         }
 
         AssertSourceContains(
             artDirection,
             "Active Morvi event art uses `art_pipeline/generated/ancient_morvi_bg_v1_v001.png`",
-            "Active event art now uses `art_pipeline/generated/ancient_lotha_bg_v1_v001.png`",
-            "source-local reviewed option/icon/card art",
-            "Custom card portraits now use source-local reviewed files",
+            "Active event art now uses the first user-preferred mirror-ensemble preview crop",
+            "Active event art is a 2.13:1 reframe of the user-accepted Urda middle-draft",
+            "Final browser GPTimage2 small art generated this pass",
+            "Urda, Morvi, and Lotha option/icon art uses browser ChatGPT/GPTimage2 rebuilt transparent PNGs",
+            "Custom card portraits now use browser GPTimage2 rebuilt files",
+            "No `generic_temporary` or `final_required_before_release` art blockers remain",
             "Do not use placeholder art for Morvi or future active Ancients just to satisfy the export list.");
         AssertSourceContains(
             v22Issues,
             "Morvi is default-on",
             "Lotha is default-on");
         Assert.Contains("Copied the generated Morvi background", workLog, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Replaced the geometric Lotha event placeholder", workLog, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Promoted the first user-preferred Lotha mirror-ensemble crop", workLog, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Reframed the user-accepted Urda root-mother background to 1831x859", workLog, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -1388,6 +1394,7 @@ public sealed class ReleaseCoverageGuardTests
         var urdaBlessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingIds.cs");
         var urdaCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaCards.cs");
         var urdaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaInitializer.cs");
+        var urdaMapUiPatches = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaMapUiPatches.cs");
         var urdaOptionRelics = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaOptionRelics.cs");
         var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var urdaSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
@@ -1662,6 +1669,22 @@ public sealed class ReleaseCoverageGuardTests
             "FindRootedRouteTarget(player)",
             "EnsureQuestMarker<UrdaRootedRouteMapQuestMarker>",
             "RootedRouteCoord = FormatCoord(target.coord)");
+        var rootSight = SliceBetween(urdaRunHook, "public static async Task ApplyRootSight", "private static async Task SettleSeedBankBeforeActOneBoss");
+        AssertSourceContains(
+            rootSight,
+            "RootSightStartingEyes",
+            "TryUseRootSightFallback(player, \"selection\")",
+            ".Where(point => !marked.Contains(FormatCoord(point.coord)))",
+            ".OrderBy(point => point.Quests.Count == 0 ? 0 : 1)",
+            "EnsureQuestMarker<UrdaRootSightMapQuestMarker>");
+        AssertSourceContains(
+            urdaMapUiPatches,
+            "UrdaRootSightMapHoverPatch",
+            "HarmonyPatch(typeof(NNormalMapPoint), \"OnFocus\")",
+            "UrdaRootSightMapQuestMarker",
+            "NHoverTipSet.CreateAndShow",
+            "EZMB_URDA.root_sight.map_hover.title",
+            "EZMB_URDA.root_sight.map_hover.description");
         var afterRain = SliceBetween(urdaRunHook, "public static bool ShouldDieLate", "private static async Task AcceptSeedbed");
         AssertSourceContains(
             afterRain,
@@ -1766,6 +1789,8 @@ public sealed class ReleaseCoverageGuardTests
                 "EZMB_URDA.pages.INITIAL.options.urda_after_rain.description",
                 "EZMB_URDA.pages.INITIAL.options.urda_root_sight.title",
                 "EZMB_URDA.pages.INITIAL.options.urda_root_sight.description",
+                "EZMB_URDA.root_sight.map_hover.title",
+                "EZMB_URDA.root_sight.map_hover.description",
                 "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.title",
                 "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description",
                 "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.storeSelectionPrompt",
@@ -2074,6 +2099,21 @@ public sealed class ReleaseCoverageGuardTests
     private static string Sha256(byte[] bytes)
     {
         return Convert.ToHexString(SHA256.HashData(bytes));
+    }
+
+    private static void AssertSmallUiPngHasAlpha(string path, string message)
+    {
+        Assert.True(File.Exists(path), $"Missing PNG: {path}");
+        var bytes = File.ReadAllBytes(path);
+        Assert.True(bytes.Length >= 33, $"PNG too small to contain IHDR: {path}");
+        Assert.True(bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47, $"Not a PNG file: {path}");
+
+        var width = BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(16, 4));
+        var height = BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(20, 4));
+        var colorType = bytes[25];
+
+        Assert.True(width >= 96 && height >= 96, message);
+        Assert.Equal(6, colorType);
     }
 
     private static string ToRepoRelativePath(string path)

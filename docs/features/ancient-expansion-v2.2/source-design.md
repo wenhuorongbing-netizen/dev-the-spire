@@ -154,7 +154,7 @@ Source shape:
 | Withered Husk | Current Urda source-backed slice | Temporary/unplayable Molting card. Current live verification pending. |
 | Waste Paper | Current Morvi source-backed slice | Temporary Status used by Paperstorm; no extra punishment beyond Paperstorm consuming drawn Status cards. |
 | Archive Pages | Current Morvi source-backed slice | Temporary 0-cost Ethereal/Exhaust pages from Overdue Library; unplayed pages have no extra punishment. |
-| Temptation | Current Vakuu source-backed slice | Hidden Status card added by the Vakuu fight on turns 1/3/5+. Ethereal + Unplayable; when exhausted, gain 1 Energy and lose 3 HP. Uses the generic temporary custom card portrait until bespoke art is available. |
+| Temptation | Current Vakuu source-backed slice | Hidden Status card added by the Vakuu fight on turns 1/3/5+. Ethereal + Unplayable; when exhausted, gain 1 Energy and lose 3 HP. Uses the browser GPTimage2 rebuilt custom card portrait. |
 
 ## 9. Hook Requirements
 

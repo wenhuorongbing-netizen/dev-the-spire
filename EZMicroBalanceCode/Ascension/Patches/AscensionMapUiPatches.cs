@@ -22,14 +22,20 @@ internal static class FiremarkedEliteMapIconPatch
         }
 
         var metadata = AscensionMapService.TryGetMetadata(__instance.Point);
+        var hasFiremarkMarker = __instance.Point.Quests.Any(quest => quest is FiremarkedEliteMapQuestMarker);
+        var hasBannerMarker = __instance.Point.Quests.Any(quest => quest is BannerRoomMapQuestMarker);
         var texturePath = metadata?.IsDeepBranchEntry == true &&
             __instance.Point.Quests.Any(quest => quest is AscensionMapQuestMarker)
                 ? AscensionAssetPaths.DeepBranchEntryIndicator
-                : __instance.Point.Quests.Any(quest => quest is FiremarkedEliteMapQuestMarker)
-                    ? AscensionAssetPaths.FiremarkedEliteIndicator
-                    : __instance.Point.Quests.Any(quest => quest is BannerRoomMapQuestMarker)
-                        ? AscensionAssetPaths.BannerRoomIndicator
-                        : null;
+                : hasFiremarkMarker && metadata?.Firemark is { } firemark
+                    ? AscensionAssetPaths.GetFiremarkIndicator(firemark)
+                    : hasBannerMarker && metadata?.Banner is { } banner
+                        ? AscensionAssetPaths.GetBannerIndicator(banner)
+                        : hasFiremarkMarker
+                            ? AscensionAssetPaths.FiremarkedEliteIndicator
+                            : hasBannerMarker
+                                ? AscensionAssetPaths.BannerRoomIndicator
+                                : null;
         if (texturePath == null)
         {
             return;

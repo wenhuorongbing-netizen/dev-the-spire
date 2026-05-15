@@ -1,7 +1,7 @@
 {
   "LEVEL_11.description": "Maps are wider and longer: width +1; Act 1 +1 row, Act 2 +1 row, Act 3 +2 rows.",
   "LEVEL_11.title": "Wide Tower, Long Road",
-  "LEVEL_12.description": "Act 1 has [blue]2[/blue] optional [gold]Firemarked Elites[/gold]; Acts 2 and 3 have [blue]3[/blue]. They are tougher and give a [gold]Forge Token[/gold] plus better card rewards.",
+  "LEVEL_12.description": "[gold]Firemarked Elites[/gold] appear on the map. They are tougher and give a [gold]Forge Token[/gold] plus better card rewards.",
   "LEVEL_12.title": "Firemarked Elites",
   "LEVEL_13.description": "Some [gold]Attack[/gold] and [gold]Skill[/gold] rewards have [gold]Fission[/gold]: they cost [blue]1[/blue] less and [gold]Exhaust[/gold] after play.",
   "LEVEL_13.title": "Fission Enchantment",

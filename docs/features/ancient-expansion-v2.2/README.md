@@ -16,7 +16,7 @@ Current source-backed state to preserve:
 - Lotha is default-on for private-beta testing with all eight v2.2 blessing ids, custom Ancient event art, map/run-history icons, option art, English/zhs localization, disable gates, force-Ancient gates, and force-blessing gates.
 - Lotha live gameplay, save/load, co-op, and post-Lotha loader/package validation remain pending.
 - Vakuu fight is default-on for single-player private-beta testing. It adds a Fight Vakuu option, awaits a custom Event combat transition, gives no normal combat rewards, resumes the parent Vakuu event on victory, and offers three non-Vakuu Act 3 Ancient blessings or an explicit no-unclaimed-blessing fallback. Live UI/gameplay, save/load, failure/death, and co-op evidence remain pending.
-- Morvi, Lotha, Urda, and Vakuu small art now use source-local reviewed manual ChatGPT UI candidates for the next art-testing round; final Image API/GPTimage2 provenance is still not claimed.
+- Morvi, Lotha, Urda, and Vakuu small art now use browser ChatGPT/GPTimage2 rebuilt `final_generated` assets for the private-beta art pass; live clicked-UI preview is still pending.
 
 ## Documents
 

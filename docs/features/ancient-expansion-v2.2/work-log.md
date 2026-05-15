@@ -1,5 +1,29 @@
 # Ancient Expansion v2.2 Work Log
 
+## 2026-05-15 - Event background aspect and scene-fit repair
+
+- Rechecked the BaseLib and RitsuLib add-Ancient tutorials. Both paths route custom Ancient visuals through a custom scene/background scene path rather than treating the event PNG as an independently fixed UI element; the active local Core source also instantiates the Ancient `BackgroundScenePath` scene into the event layout.
+- Compared local source event backgrounds (`source code/images/events/reflections.png` and `source code/images/events/crystal_sphere.png`) against the active resources. The source anchors are about 2.13:1, while the accepted Urda middle-draft was still 1672x941 / 16:9 and the three active `.tscn` files placed the `Artwork` `TextureRect` only in a right-side sub-rectangle.
+- Promoted the first user-preferred Lotha mirror-ensemble crop from `.tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/events/ezmb_lotha_first_preview_crop_1831x859.png` into `EZMicroBalance/images/events/ezmb_lotha.png`, replacing the older silver judge background.
+- Reframed the user-accepted Urda root-mother background to 1831x859 at `.tools/art-generation/event-background-reframe-20260515/ezmb_urda_crop_y80_1831x859.png` and promoted it to `EZMicroBalance/images/events/ezmb_urda.png`. Morvi already matched the 1831x859 event-background target.
+- Updated Urda, Morvi, and Lotha background scenes so their `Artwork` nodes fill the scene root with cover-style fitting, instead of anchoring from roughly the right 64-71% of the scene. Updated manifest hashes/dimensions and added guard coverage for full-scene artwork anchors plus the 2.13:1 event-background ratio.
+- Preview contact sheet: `.tools/art-generation/event-background-reframe-20260515/active-event-backgrounds-1831x859-contact.png`. Live clicked Ancient UI review, gameplay, save-load, route-click, and co-op verification remain pending.
+
+## 2026-05-15 - Browser GPTimage2 oil repaint rebuild
+
+- Rebuilt the rejected over-simplified/over-line-heavy icon pass through the user's logged-in Edge/ChatGPT `ez的日常 - 图像生成请求` conversation, using GPTimage2 prompts that explicitly target refined oil/acrylic/gouache atlas icons: matte broad color masses, thick black contours, low line density, no opaque square backgrounds, and no glossy mobile-game rendering.
+- Regenerated and promoted Urda/Vakuu option relics, Morvi/Lotha option relics, Ancient identity filled/outline icons, Lotha Verdict, Ascension firemark/banner/seal/fission/forge icons, neutral fallback power/relic assets, and six custom card portraits into active resource paths.
+- Added Ascension indicator/banner/status PNGs to `art-asset-manifest.json` so their hashes, `GPTimage2` generation mode, and export coverage are audited instead of only being checked indirectly by package tests.
+- Fixed the promotion script so same-size 128x128 icons keep transparent padding and resized 64/94/256 assets retain edge padding rather than being cropped to the alpha bounds and stretched to the target edge.
+- Current review sheets are under `.tools/art-generation/chatgpt/oil-rebuild-20260515/`: `active-small-art-contact.png`, `processed/batch1-contact.png`, `processed/batch2-contact.png`, `processed/batch3-contact.png`, `processed/batch4-contact.png`, and `processed/batch5-card-portraits-contact.png`.
+- Validation so far: `scripts\audit-ancient-art-assets.ps1 -FailOnMissingExport -FailOnInvalidGenerationMode -FailOnHashMismatch -FailOnMissingFinal` reports 80 manifest assets, 69 `final_generated`, 0 temporary/missing assets, 0 missing final assets, 0 missing targets, 0 missing exports, 0 invalid generation modes, and 0 hash mismatches. A pixel-alpha/edge audit of 57 small active UI PNGs reports 0 opaque-square or edge-padding issues. Build, publish, package, and live/manual verification are still pending for this repaint pass.
+
+## 2026-05-15 - Browser GPTimage2 small-art rebuild
+
+- Rebuilt the rejected simplified transparent icon pass through the logged-in Edge/ChatGPT image-generation conversation using the canonical `GPTimage2` art direction: painterly oil/acrylic/marker texture, black outline, low line density, transparent icon backgrounds, and readable relic/card-game silhouettes.
+- Promoted browser GPTimage2-generated Urda/Morvi/Lotha/Vakuu option relics, Ancient identity filled/outline icons, Lotha Verdict, Ascension firemark/banner/seal/fission/forge icons, neutral fallback power/relic assets, and six custom Ancient card portraits into active resource paths.
+- Historical note: this first browser rebuild was superseded by the oil-repaint pass above, which expanded manifest coverage to 80 assets / 69 `final_generated` records and moved the current review sheets to `.tools/art-generation/chatgpt/oil-rebuild-20260515/`.
+
 ## 2026-05-14 - Active source-local art promotion
 
 - Promoted the curated manual ChatGPT UI small-art batch into active `EZMicroBalance/` resources for the next art-testing round: 40 direct option/icon/power/fight PNGs plus 12 small/big card portrait PNGs. The optional first-preview Lotha event-background crop remains review-only under `.tools/art-generation/promotion-candidates/proposed/`.

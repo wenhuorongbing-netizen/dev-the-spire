@@ -1,7 +1,7 @@
 ﻿{
     "LEVEL_11.description":  "地图更宽也更长：宽度+1；第一幕+1层，第二幕+1层，第三幕+2层。",
     "LEVEL_11.title":  "宽塔长路",
-    "LEVEL_12.description":  "第一幕有[blue]2[/blue]个可选[gold]火印精英[/gold]；第二幕和第三幕各有[blue]3[/blue]个。[gold]火印精英[/gold]更强，击败后获得[gold]铸令[/gold]和更好的卡牌奖励。",
+    "LEVEL_12.description":  "地图上会出现[gold]火印精英[/gold]。它更强，击败后获得[gold]铸令[/gold]和更好的卡牌奖励。",
     "LEVEL_12.title":  "火印精英群",
     "LEVEL_13.description":  "部分奖励[gold]攻击牌[/gold]和[gold]技能牌[/gold]带有[gold]裂变[/gold]：[gold]耗能[/gold]降低[blue]1[/blue]，打出后[gold]消耗[/gold]。",
     "LEVEL_13.title":  "裂变附魔",

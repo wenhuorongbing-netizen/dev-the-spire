@@ -14,9 +14,9 @@ Latest feedback response, 2026-05-15: Ancient reward choices now obtain visible 
 
 Keep the next pass focused on finishing the manual-test candidate, not re-implementing source-complete Ancient slices.
 
-1. Bespoke art remains open.
-   - Urda, Morvi, Lotha, and Vakuu have source-backed custom event/icon/option asset paths and exported temporary assets.
-   - Final original option/relic/card/power art is still needed. Do not invent Image API prompts, hashes, or provenance unless assets are actually generated or supplied.
+1. Bespoke art remains open only for event-background provenance and live preview.
+   - Urda, Morvi, Lotha, and Vakuu have source-backed custom event/icon/option asset paths and browser GPTimage2 oil-repaint small-art assets; post-rebuild live clicked-UI verification is still pending.
+   - Final original option/relic/card/power/fallback/Ascension small art is now generated and manifest-tracked. Do not invent additional Image API prompts, hashes, or provenance unless assets are actually generated or supplied.
 2. Live/manual proof remains open.
    - Run the Ancient UI/gameplay matrix for Urda, Morvi, Lotha, and the single-player Vakuu fight.
    - No safe automated clicked-Ancient UI path exists yet; use the force-gate evidence protocol in `docs/features/ancient-expansion-v2.2/manual-test-checklist.md`.
@@ -208,7 +208,7 @@ Keep fixes narrow and evidence-backed:
 
 ## P1: Art, Text, And Package Polish
 
-- Replace temporary Urda/Morvi/Lotha/Vakuu option/icon/card/power art with original bespoke art only when generation or user-supplied sources are available.
+- Keep the browser GPTimage2 rebuilt Urda/Morvi/Lotha/Vakuu option/icon/card/power art unless live preview exposes readability or composition defects; do not reintroduce simplified deterministic icons or opaque-background crops.
 - Keep event/background art separate from map icons and run-history icons.
 - Keep option relic art separate from map thumbnails.
 - Clicked Ancient background scenes now use cover-style TextureRect fit; verify title/home/Ancient-screen aspect ratios with live screenshots before calling the art pass complete.
