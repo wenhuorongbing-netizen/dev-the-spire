@@ -8,7 +8,7 @@ Current display-name note: the player-facing name is now `Spire Plus`, while man
 
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
-Latest package note, 2026-05-15: the package hashes below include the event-background aspect/scene-fit repair. `dotnet build EZMicroBalance.sln --no-restore` passed, `dotnet publish EZMicroBalance.sln --no-restore` refreshed the configured installed artifacts, and `scripts/package-spire-plus.ps1` rebuilt staging/versioned folder/zip as `SpirePlus-v0.1.0-private-beta.0.zip` with `EZMicroBalance/` as the install folder. Current-package smoke/log/resource verification under `.tools\runtime-evidence\current-package-smoke-20260514-015901` remains historical smoke evidence for an earlier package; live load/smoke for this refreshed package has not been run. Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
+Latest package note, 2026-05-15: the package hashes below include the Cook hover correction and the event-background aspect/scene-fit repair. `dotnet build EZMicroBalance.sln --no-restore` passed, `dotnet publish EZMicroBalance.sln --no-restore` refreshed the configured installed artifacts, and `scripts/package-spire-plus.ps1` rebuilt staging/versioned folder/zip as `SpirePlus-v0.1.0-private-beta.0.zip` with `EZMicroBalance/` as the install folder. Current-package smoke/log/resource verification under `.tools\runtime-evidence\current-package-smoke-20260514-015901` remains historical smoke evidence for an earlier package; live load/smoke for this refreshed package has not been run. Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
 Browser GPTimage2 art rebuild recheck, 2026-05-15: rebuilt the rejected simplified icon pass through the logged-in Edge/ChatGPT image-generation conversation, then promoted Urda/Morvi/Lotha/Vakuu option relics, Ancient identity icons, Lotha Verdict, Ascension indicators, neutral fallback power/relic assets, and six custom Ancient card portraits into active resources. The latest oil-repaint review sheets are under `.tools/art-generation/chatgpt/oil-rebuild-20260515/`, especially `active-small-art-contact.png` and `processed/batch5-card-portraits-contact.png`. Event-background repair promoted the Lotha first-preview mirror ensemble, reframed Urda to 1831x859, kept Morvi at 1831x859, and changed all three scenes to full-frame cover fitting; preview sheet is `.tools/art-generation/event-background-reframe-20260515/active-event-backgrounds-1831x859-contact.png`. `scripts\audit-ancient-art-assets.ps1 -FailOnMissingExport -FailOnInvalidGenerationMode -FailOnHashMismatch -FailOnMissingFinal` passed with 80 manifest assets, 69 `final_generated`, 0 temporary/missing assets, 0 missing final assets, 0 missing targets, 0 missing exports, 0 invalid generation modes, and 0 hash mismatches. This resolves the generic fallback, source-local small-art blockers, and event-background provenance/ratio blocker; live clicked-UI preview remains pending.
 
@@ -24,11 +24,11 @@ Clicked Ancient UI handoff, 2026-05-14: No safe automated clicked-Ancient UI pat
 
 - Package: `publish\SpirePlus-v0.1.0-private-beta.0.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `EEE66FB09694E8A39D669CC8211032F35B13484E19D19E2A282D6EA01BB3C95E`
+- Zip SHA256: `32076EE57C8FF3809F6733FED8D2C26DFF2D79488A2675083DA86BDF6D6E384B`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `47DA05BFB7E4DDD575BAFD944036CDF1F61A5570F242EB733B6C9A5EFAF17482`
+- DLL SHA256: `D5852972FD5EB59CBE93B505ECEA341A30936EFFCB86A7DE2D7E1C4C4FB72BD4`
 - Manifest SHA256: `659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2`
-- PCK SHA256: `8B4235CA8F37CB7DC6CBCD86728C89E47DF9E5752BA03DF493F4DDB6C479466D`
+- PCK SHA256: `CD5C9254887C30C449D195798A999E699B73CD6F62EF0D67C86F065FD074E05F`
 - README_INSTALL SHA256: `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4`
 
 ## Known Automated Evidence

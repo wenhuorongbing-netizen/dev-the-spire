@@ -915,11 +915,24 @@ public sealed class AncientBehaviorGuardTests
         var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TurnOfferAndRestPatches.cs");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var restSite = JsonStringMap("EZMicroBalance", "localization", "eng", "rest_site_ui.json");
+        var staticHovers = JsonStringMap("EZMicroBalance", "localization", "eng", "static_hover_tips.json");
+        var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
+        var zhsRestSite = JsonStringMap("EZMicroBalance", "localization", "zhs", "rest_site_ui.json");
+        var zhsStaticHovers = JsonStringMap("EZMicroBalance", "localization", "zhs", "static_hover_tips.json");
         var manualChecklist = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-test-checklist.md");
 
         Assert.Equal("Adds the Cook option to rest sites. Cook: remove 2 cards and lose 5 HP.", relics["MEAT_CLEAVER.description"]);
         Assert.Equal("Remove 2 cards. Lose 5 HP.", restSite["OPTION_COOK.ezDescription"]);
         Assert.Equal("Requires at least 2 removable cards and more than 5 HP.", restSite["OPTION_COOK.ezDescriptionDisabled"]);
+        Assert.Equal("At a [gold]Rest Site[/gold], [gold]remove[/gold] [blue]2[/blue] cards from your [gold]Deck[/gold] and lose [blue]5[/blue] HP.", staticHovers["COOK.description"]);
+        Assert.Equal("Cook", staticHovers["COOK.title"]);
+        Assert.Equal("在休息处加入烹饪选项。烹饪：移除2张牌并失去5点生命。", zhsRelics["MEAT_CLEAVER.description"]);
+        Assert.Equal("移除2张牌。失去5点生命。", zhsRestSite["OPTION_COOK.ezDescription"]);
+        Assert.Equal("需要至少2张可移除牌且生命值大于5。", zhsRestSite["OPTION_COOK.ezDescriptionDisabled"]);
+        Assert.Equal("在[gold]休息处[/gold]从你的[gold]牌组[/gold]中[gold]移除[/gold][blue]2[/blue]张牌，并失去[blue]5[/blue]点生命。", zhsStaticHovers["COOK.description"]);
+        Assert.Equal("烹饪", zhsStaticHovers["COOK.title"]);
+        Assert.DoesNotContain("gain [green]9[/green] Max HP", staticHovers["COOK.description"], StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("获得[green]9[/green]点最大生命", zhsStaticHovers["COOK.description"], StringComparison.Ordinal);
 
         AssertSourceContains(
             source,
