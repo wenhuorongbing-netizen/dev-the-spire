@@ -53,7 +53,7 @@ Current implementation decision:
 
 - `EZMicroBalance.sln` is the active solution for bare `dotnet build`.
 - `EZMicroBalance.csproj` is the active project.
-- The old `EzDailyContent.csproj` file has been moved to `legacy/EzDailyContent/EzDailyContent.csproj.legacy.xml` so root `dotnet build` is unambiguous.
+- The old `EzDailyContent.csproj` file has been archived at `docs/archive/legacy-planning/legacy-project-files/EzDailyContent/EzDailyContent.csproj.legacy.xml` so root `dotnet build` is unambiguous and top-level project clutter stays low.
 - Legacy `EzDailyContent` resources/code remain in the repository for traceability but are not part of the active solution.
 - `export_presets.cfg` uses a selected-resource export so `EZMicroBalance.pck` contains active resources only and does not package legacy files, source files, docs, or art research folders.
 

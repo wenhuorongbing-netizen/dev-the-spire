@@ -62,7 +62,7 @@ internal static class BossSealCatalog
             [EncounterId("LAGAVULIN_MATRIARCH_BOSS")] = new(
                 BossSealId.StartledShell,
                 "Startled Shell",
-                "Wake-up source should tune starting Plating and later Plating reduction.",
+                "Wake-up timing should change starting Plating and later Plating reduction.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
                 "Uses settled damage, enemy move observation, and turn-end state scans for wake-up and Soul Siphon settlement; live wake-source timing verification pending.",
                 "Wake Plating rises to 10 and Soul Siphon only trims one-third."),

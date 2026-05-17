@@ -39,10 +39,10 @@ Focused regression notes:
 | Launch Slay the Spire 2 public beta | Game reaches main menu | Pass in controlled `--force-steam off` smoke profile and current isolated normal Steam-client startup log; normal Steam-client A0/A10/A20 combat smoke also reached live combat |
 | Open Settings -> Mod Settings | BaseLib appears and is enabled | Pass, normal Steam-client screenshots and clean log captured during the isolated `095137` recheck |
 | Open Settings -> Mod Settings | Spire Plus appears with id `EZMicroBalance` and can be enabled | Pass for visible mod list: current normal Steam-client evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus`; the same log confirms `Spire Plus (EZMicroBalance)`, `Registered config for mod EZMicroBalance`, and 0 release-blocking signatures. Historical page-level UI evidence remains available for the same manifest id under the old EZ Micro Balance display name. |
-| Open Compendium -> Card Library / card encyclopedia with only BaseLib and EZ Micro Balance enabled | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
-| Start a run with EZ Micro Balance enabled | No startup exception in `godot.log` for `EZMicroBalance` | Pass for normal Steam-client A0/A10/A20 Ironclad standard run starts followed by DevConsole `fight CULTISTS_NORMAL`; logs show 0 EZMB error/exception pattern hits. Natural route-click first-node path remains pending. |
+| Open Compendium -> Card Library / card encyclopedia with only BaseLib and Spire Plus / `EZMicroBalance` enabled | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
+| Start a run with Spire Plus / `EZMicroBalance` enabled | No startup exception in `godot.log` for `EZMicroBalance` | Pass for normal Steam-client A0/A10/A20 Ironclad standard run starts followed by DevConsole `fight CULTISTS_NORMAL`; logs show 0 EZMB error/exception pattern hits. Natural route-click first-node path remains pending. |
 | Disable Spire Plus / `EZMicroBalance` and restart | Spire Plus / `EZMicroBalance` patches do not apply while disabled or plugged off | Pass for BaseLib-only normal Steam plug-off startup/log evidence at `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020`; gameplay pass pending |
-| Ensure legacy `EzDailyContent` is disabled for private beta testing | No duplicate Ancient Harmony patches from legacy local artifacts | Pass for the isolated Mod Settings recheck because only BaseLib and EZ Micro Balance were present in the temporary mods directory; normal user-profile tests should still keep EzDailyContent disabled or absent |
+| Ensure legacy `EzDailyContent` is disabled for private beta testing | No duplicate Ancient Harmony patches from legacy local artifacts | Pass for the isolated Mod Settings recheck because only BaseLib and Spire Plus / `EZMicroBalance` were present in the temporary mods directory; normal user-profile tests should still keep EzDailyContent disabled or absent |
 
 Automated smoke attempts on 2026-05-05 did not reach mod loading:
 
@@ -56,9 +56,9 @@ Controlled smoke update:
 
 - A temporary default-profile settings edit enabled only `BaseLib` and `EZMicroBalance` and disabled other discovered local mods, including legacy `EzDailyContent`; original settings were restored afterward.
 - First controlled smoke exposed two invalid Harmony targets. `SealOfGoldMaxEnergyPatch` and `CrossbowOfferPatch` were retargeted to `AbstractModel` hook methods.
-- Final controlled smoke loaded BaseLib, loaded `EZMicroBalance.dll`, loaded `EZMicroBalance.pck`, finished EZ Micro Balance initialization, and reached main menu.
+- Final controlled smoke loaded BaseLib, loaded `EZMicroBalance.dll`, loaded `EZMicroBalance.pck`, finished Spire Plus / `EZMicroBalance` initialization, and reached main menu.
 - Controlled disable smoke enabled BaseLib, explicitly disabled EZ Micro Balance, skipped loading `EZMicroBalance`, did not load its DLL, and reached main menu.
-- After the Release solution mapping fix, an isolated controlled smoke enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, loaded the installed Release `EZMicroBalance.dll`, finished both initializers, and reached main menu. Original default-profile settings were restored afterward.
+- After the Release solution mapping fix, an isolated controlled smoke enabled only BaseLib and Spire Plus / `EZMicroBalance`, loaded exactly 2 mods, loaded the installed Release `EZMicroBalance.dll`, finished both initializers, and reached main menu. Original default-profile settings were restored afterward.
 - Current normal Steam-client helper startup/log/resource pass under `.tools\runtime-evidence\current-package-smoke-20260514-015901` launched through Steam, loaded exactly BaseLib and Spire Plus / `EZMicroBalance`, logged `Registered config for mod EZMicroBalance`, reported `Found 22 SavedSpireFields`, reached main menu, audited clean, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes.
 - The same current-package evidence includes headless installed-PCK resource loading for Urda/Morvi/Lotha scenes and 43 Ancient textures with 0 errors/warnings, but clicked live Ancient UI screens and gameplay/manual rows remain pending.
 - Current BaseLib-only normal Steam plug-off startup/log pass under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` temporarily isolated `EZMicroBalance` out of the mods folder, launched through Steam, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus / `EZMicroBalance`, audited clean, and restored settings, the current-run save, and 25 moved entries. The earlier settings-only disabled attempt under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-142835` is invalid plug-off evidence because Spire Plus still initialized.
@@ -68,7 +68,7 @@ Controlled smoke update:
 
 v4.3 is current. v4.2 rightmost-slot Prismatic Gem is historical only.
 
-Run with BaseLib and EZ Micro Balance enabled. Disable other mods that alter card rewards. Avoid custom-pool, filtered-pool, colorless-only, no-model-modification, elite, boss, and event rewards unless the step explicitly asks for them.
+Run with BaseLib and Spire Plus / `EZMicroBalance` enabled. Disable other mods that alter card rewards. Avoid custom-pool, filtered-pool, colorless-only, no-model-modification, elite, boss, and event rewards unless the step explicitly asks for them.
 
 ### 1. First Normal Reward, Reroll
 

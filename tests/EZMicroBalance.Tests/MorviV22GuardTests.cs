@@ -1,5 +1,3 @@
-using System.Text;
-using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -16,6 +14,14 @@ public sealed class MorviV22GuardTests
         "morvi_paperstorm",
         "morvi_blueprint_proof",
         "morvi_debt_settlement"
+    ];
+
+    private static readonly string[] MojibakeFragments =
+    [
+        "閻熶椒绀?",
+        "鐎殿喒鍋?",
+        "闁衡偓",
+        "閸婂搫濮?"
     ];
 
     [Fact]
@@ -37,7 +43,7 @@ public sealed class MorviV22GuardTests
             "EZMB_FORCE_MORVI_BLESSING",
             "SPIREPLUS_FORCE_MORVI_BLESSING",
             "ShouldForceMorvi",
-            "!IsTruthy(Environment.GetEnvironmentVariable(DisableEnvironmentVariable))");
+            "AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable)");
         Assert.DoesNotContain("return IsTruthy(value);", gate, StringComparison.Ordinal);
 
         AssertSourceContains(
@@ -211,16 +217,27 @@ public sealed class MorviV22GuardTests
             "CardKeyword.Exhaust",
             "CanBeGeneratedInCombat => false",
             "CanBeGeneratedByModifiers => false",
+            "new CardsVar(2)",
             "CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner)",
             "CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay)",
             "TargetingAllOpponents(CombatState)",
             "ArmOverdueLibraryDiscount(Owner)",
             "PowerCmd.Apply<MorviBraveryPagePower>",
             "PowerCmd.Apply<MorviDexterityPagePower>");
+        Assert.DoesNotContain("new IntVar(\"Cards\"", cards, StringComparison.Ordinal);
         AssertSourceContains(
             powers,
-            "MorviBraveryPagePower : TemporaryStrengthPower, ICustomModel",
-            "MorviDexterityPagePower : TemporaryDexterityPower, ICustomModel");
+            "MorviBraveryPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveBraveryPage, StrengthPower>",
+            "MorviDexterityPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveDexterityPage, DexterityPower>",
+            "CustomPackedIconPath => MorviAssetPaths.ArchivePagePowerIcon",
+            "CustomBigIconPath => MorviAssetPaths.ArchivePagePowerIcon");
+        Assert.Contains("ArchivePagePowerIcon", ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.cs"), StringComparison.Ordinal);
+        Assert.Contains("{StrengthPower:diff()}", engCards["EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description"], StringComparison.Ordinal);
+        Assert.Contains("{DexterityPower:diff()}", engCards["EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE.description"], StringComparison.Ordinal);
+        Assert.Contains("{StrengthPower:diff()}", zhsCards["EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description"], StringComparison.Ordinal);
+        Assert.Contains("{DexterityPower:diff()}", zhsCards["EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("{Strength:diff()}", engCards["EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("{Dexterity:diff()}", engCards["EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE.description"], StringComparison.Ordinal);
 
         foreach (var key in new[]
         {
@@ -236,6 +253,48 @@ public sealed class MorviV22GuardTests
             Assert.True(engCards.ContainsKey(key), $"Missing English Morvi card localization: {key}");
             Assert.True(zhsCards.ContainsKey(key), $"Missing zhs Morvi card localization: {key}");
         }
+    }
+
+    [Fact]
+    public void BlueprintProofHasPerCombatLateInitializationGuard()
+    {
+        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
+        var beforeCombat = SliceBetween(runHook, "public static async Task BeforeCombatStart", "public static async Task AfterPlayerTurnStart");
+        var costHook = SliceBetween(runHook, "public static bool TryModifyEnergyCostInCombat", "public static async Task BeforeCardPlayed");
+        var beforeCard = SliceBetween(runHook, "public static async Task BeforeCardPlayed", "public static async Task AfterCardPlayed");
+        var initialization = SliceBetween(runHook, "private static async Task EnsureBlueprintProofInitialized", "private static async Task AutoSettleForbiddenLoan");
+
+        AssertSourceContains(
+            runHook,
+            "public bool BlueprintProofInitializedThisCombat { get; set; }",
+            "combatState.BlueprintProofInitializedThisCombat = false;");
+        AssertSourceContains(
+            beforeCombat,
+            "case MorviBlessingIds.BlueprintProof:",
+            "await EnsureBlueprintProofInitialized(player, combatState, \"combat start\");");
+        AssertSourceContains(
+            costHook,
+            "TryInitializeBlueprintProofState(player, combatState, \"energy-cost guard\")",
+            "combatState.ProofreadRemaining > 0 && card.IsUpgraded",
+            "modifiedCost = Math.Max(0, originalCost - BlueprintProofCostReduction)");
+        AssertSourceContains(
+            beforeCard,
+            "!cardPlay.IsFirstInSeries || cardPlay.IsAutoPlay",
+            "await EnsureBlueprintProofInitialized(player, combatState, \"before-card-play guard\");",
+            "combatState.ProofreadRemaining--;",
+            "CardCmd.Upgrade(card, CardPreviewStyle.None)",
+            "combatState.BlueprintDrawAfterCards.Add(card)",
+            "combatState.BlueprintBlockAfterCards.Add(card)");
+        AssertSourceContains(
+            initialization,
+            "combatState.BlueprintProofInitializedThisCombat",
+            "player.PlayerCombatState == null",
+            "player.Creature.CombatState == null",
+            "visibleProofread = player.Creature.GetPower<MorviProofreadPower>()?.Amount ?? 0",
+            "? visibleProofread",
+            ": BlueprintProofStacks",
+            "combatState.BlueprintProofInitializedThisCombat = true",
+            "Morvi Blueprint Proof initialized");
     }
 
     [Fact]
@@ -273,18 +332,24 @@ public sealed class MorviV22GuardTests
             var key = $"EZMB_MORVI.pages.INITIAL.options.{id}.description";
             Assert.True(engAncients.TryGetValue(key, out var engDescription), $"Missing English Morvi ancient localization: {key}");
             Assert.True(zhsAncients.TryGetValue(key, out var zhsDescription), $"Missing zhs Morvi ancient localization: {key}");
-            AssertNoMojibake(engDescription);
-            AssertNoMojibake(zhsDescription);
+            AssertNoMojibake(engDescription, MojibakeFragments);
+            AssertNoMojibake(zhsDescription, MojibakeFragments);
             Assert.Contains("[blue]", engDescription, StringComparison.Ordinal);
             Assert.Contains("[blue]", zhsDescription, StringComparison.Ordinal);
         }
 
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_misprint_press.description"],
+            "Once each turn",
+            "manually played deck",
             "[gold]Attack[/gold]",
             "[gold]Skill[/gold]",
             "[gold]Power[/gold]",
-            "[gold]Energy[/gold]");
+            "[gold]Energy[/gold]",
+            "generated cards do not trigger");
+        Assert.DoesNotContain("Borrow one upgraded", engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_forbidden_loan.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("借一张", zhsAncients["EZMB_MORVI.pages.INITIAL.options.morvi_forbidden_loan.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("借来的牌", zhsRelics["EZMICROBALANCE-MORVI_FORBIDDEN_LOAN_OPTION_RELIC.description"], StringComparison.Ordinal);
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_red_ink_overdraft.description"],
             "[gold]Overdraft[/gold]",
@@ -292,21 +357,38 @@ public sealed class MorviV22GuardTests
             "nonlethal HP");
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_blueprint_proof.description"],
+            "manually played deck cards",
+            "draw [blue]1[/blue]",
+            "gain [blue]4[/blue] [gold]Block[/gold]",
             "[gold]Proofread[/gold]",
             "[gold]Block[/gold]");
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_debt_settlement.description"],
-            "[gold]Debt[/gold]");
+            "Take [blue]320[/blue] [gold]Debt[/gold]",
+            "repay [blue]40[/blue] [gold]Gold[/gold]",
+            "for each [blue]10[/blue] short",
+            "lose [blue]3[/blue] nonlethal HP");
+        AssertSourceContains(
+            zhsAncients["EZMB_MORVI.pages.INITIAL.options.morvi_misprint_press.description"],
+            "每回合一次",
+            "手动打出",
+            "生成牌不触发");
+        AssertSourceContains(
+            zhsAncients["EZMB_MORVI.pages.INITIAL.options.morvi_debt_settlement.description"],
+            "获得[blue]320[/blue]点[gold]债务[/gold]",
+            "每场战斗后偿还[blue]40[/blue][gold]金币[/gold]",
+            "每短缺[blue]10[/blue][gold]金币[/gold]",
+            "失去[blue]3[/blue]点非致命生命");
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_open_book_exam.description"],
             "sealed in the [gold]Exhaust Pile[/gold]");
 
-        AssertLocalizedKeys(MorviRelicKeys(), engRelics, zhsRelics, "Morvi option relic localization");
-        AssertLocalizedKeys(MorviPowerKeys(), engPowers, zhsPowers, "Morvi power localization");
+        AssertLocalizedKeys(MorviRelicKeys(), engRelics, zhsRelics, "Morvi option relic localization", value => AssertNoMojibake(value, MojibakeFragments));
+        AssertLocalizedKeys(MorviPowerKeys(), engPowers, zhsPowers, "Morvi power localization", value => AssertNoMojibake(value, MojibakeFragments));
 
         foreach (var relativePath in MorviResourcePaths())
         {
-            Assert.True(File.Exists(RepoPath(relativePath.Split('/'))), $"Missing Morvi resource: {relativePath}");
+            AssertRepoFileExists(relativePath.Split('/'));
             Assert.Contains($"res://{relativePath}", exportPreset, StringComparison.Ordinal);
         }
     }
@@ -363,82 +445,4 @@ public sealed class MorviV22GuardTests
         yield return "EZMicroBalance/scenes/events/background_scenes/ezmb_morvi.tscn";
     }
 
-    private static void AssertLocalizedKeys(
-        IEnumerable<string> keys,
-        IReadOnlyDictionary<string, string> eng,
-        IReadOnlyDictionary<string, string> zhs,
-        string context)
-    {
-        foreach (var key in keys)
-        {
-            Assert.True(eng.TryGetValue(key, out var engValue), $"Missing English {context}: {key}");
-            Assert.True(zhs.TryGetValue(key, out var zhsValue), $"Missing zhs {context}: {key}");
-            Assert.False(string.IsNullOrWhiteSpace(engValue), $"Empty English {context}: {key}");
-            Assert.False(string.IsNullOrWhiteSpace(zhsValue), $"Empty zhs {context}: {key}");
-            AssertNoMojibake(engValue);
-            AssertNoMojibake(zhsValue);
-        }
-    }
-
-    private static void AssertNoMojibake(string value)
-    {
-        Assert.DoesNotContain("\uFFFD", value, StringComparison.Ordinal);
-        Assert.DoesNotContain("鐟佷礁", value, StringComparison.Ordinal);
-        Assert.DoesNotContain("瀵偓", value, StringComparison.Ordinal);
-        Assert.DoesNotContain("閺€", value, StringComparison.Ordinal);
-        Assert.DoesNotContain("鍊哄姟", value, StringComparison.Ordinal);
-    }
-
-    private static SortedDictionary<string, string> JsonStringMap(params string[] parts)
-    {
-        using var document = JsonDocument.Parse(ReadRepoText(parts));
-        var map = new SortedDictionary<string, string>(StringComparer.Ordinal);
-        foreach (var property in document.RootElement.EnumerateObject())
-        {
-            Assert.Equal(JsonValueKind.String, property.Value.ValueKind);
-            map.Add(property.Name, property.Value.GetString() ?? string.Empty);
-        }
-
-        return map;
-    }
-
-    private static string SliceBetween(string source, string startMarker, string endMarker)
-    {
-        var start = source.IndexOf(startMarker, StringComparison.Ordinal);
-        Assert.True(start >= 0, $"Missing start marker: {startMarker}");
-        var end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
-        Assert.True(end >= 0, $"Missing end marker: {endMarker}");
-        return source[start..end];
-    }
-
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string ReadRepoText(params string[] parts) =>
-        File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-
-    private static string RepoPath(params string[] parts) =>
-        Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

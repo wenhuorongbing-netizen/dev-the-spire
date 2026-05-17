@@ -16,8 +16,8 @@ This folder is the active feature record for the `Spire Plus` Ancient reward reb
 ## Reference And Archive
 
 - `reference-inputs/sts2_ancients_rework_v4_3_adjustment_plan.md`: v4.3 adjustment input copied from the local Downloads folder for traceability and annotated with current implementation/pending-runtime status. v4.3 is current.
-- `archive/sts2_ancients_rework_v4_2_next_plan.md`: historical v4.2 next-plan input. v4.2 is superseded by v4.3.
-- `archive/goal-prompts.md`: historical prompts used to drive prior implementation batches; not current source truth.
+- `../../archive/feature-inputs/ancients-rework-v4/sts2_ancients_rework_v4_2_next_plan.md`: historical v4.2 next-plan input. v4.2 is superseded by v4.3.
+- `../../archive/feature-inputs/ancients-rework-v4/goal-prompts.md`: historical prompts used to drive prior implementation batches; not current source truth.
 
 For the global documentation map, use `../../README.md`.
 

@@ -1,5 +1,4 @@
-using System.Text;
-using System.Text.Json;
+﻿using System.Text;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -74,6 +73,9 @@ public sealed class AncientPlayerFacingPolishGuardTests
                 "prototype",
                 "pending",
                 "manual verification",
+                "unfinished Vakuu challenge",
+                "placeholder enemy",
+                "default combat scene",
                 "common/uncommon",
                 "Firemark Host",
                 "setup window",
@@ -88,7 +90,9 @@ public sealed class AncientPlayerFacingPolishGuardTests
                 "源码就绪",
                 "测试就绪",
                 "内测",
-                "普通/罕见",
+                "未完成的瓦库挑战",
+                "占位敌人",
+                "普通场景",
                 "火印宿主",
                 "蓄势窗口",
                 "爆发窗口",
@@ -102,8 +106,61 @@ public sealed class AncientPlayerFacingPolishGuardTests
                 Assert.DoesNotContain(banned, value, StringComparison.OrdinalIgnoreCase);
             }
 
+            Assert.DoesNotMatch("不是.*而是", value);
+            Assert.DoesNotMatch("(?i)not\\s+.+\\s+but", value);
             Assert.DoesNotContain("TODO", value, StringComparison.OrdinalIgnoreCase);
             Assert.False(string.IsNullOrWhiteSpace(value), $"Empty active localization value: {key}");
+        }
+    }
+
+    [Fact]
+    public void SimplifiedChineseLocalizationFilesDoNotContainMojibake()
+    {
+        var zhsLocalizationDir = RepoPath("EZMicroBalance", "localization", "zhs");
+        var mojibakeFragments = new[]
+        {
+            "闁革腹",
+            "闁汇劌",
+            "缂佹",
+            "鐎殿",
+            "闁?",
+            "闁告帒娲╅崐?",
+            "闁烩槄绠戠花?",
+            "闂侇偄顦扮€?",
+            "闁兼儳鍢茬欢?",
+            "闁瑰瓨蓱閺?",
+            "缂佸顭峰▍?",
+            "閻犳劕婀遍弫?",
+            "闁哄秴鍚嬬亸?",
+            "闁稿﹤鎼慨?",
+            "缂傚倹鎸诲﹢?",
+            "妤犵",
+            "闂傚洠鍋撻悷?",
+            "闁哄啰濮磋ぐ?"
+        };
+
+        foreach (var file in Directory.GetFiles(zhsLocalizationDir, "*.json"))
+        {
+            var bytes = File.ReadAllBytes(file);
+            Assert.True(
+                bytes.Length >= 3 &&
+                bytes[0] == 0xEF &&
+                bytes[1] == 0xBB &&
+                bytes[2] == 0xBF,
+                $"{Path.GetFileName(file)} should stay UTF-8 with BOM so Simplified Chinese text opens cleanly in Windows tools.");
+
+            foreach (var (key, value) in JsonStringMap(file))
+            {
+                Assert.DoesNotContain('\uFFFD', value);
+                Assert.DoesNotContain(value, static ch => ch is >= '\uE000' and <= '\uF8FF');
+
+                foreach (var fragment in mojibakeFragments)
+                {
+                    Assert.False(
+                        value.Contains(fragment, StringComparison.Ordinal),
+                        $"{Path.GetFileName(file)}:{key} still contains mojibake fragment '{fragment}'.");
+                }
+            }
         }
     }
 
@@ -149,7 +206,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "[blue]8[/blue] HP");
         AssertSourceContains(
             engRelics["EZMICROBALANCE-MORVI_DEBT_SETTLEMENT_OPTION_RELIC.description"],
-            "[gold]Debt[/gold] drops by the due amount either way");
+            "[gold]Debt[/gold] drops by [blue]40[/blue] either way");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-UrdaHumusPactOptionRelic.description"],
             "[gold]化为腐殖[/gold]",
@@ -171,7 +228,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "[gold]能力牌[/gold]失去[blue]8[/blue]点生命");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-MORVI_DEBT_SETTLEMENT_OPTION_RELIC.description"],
-            "[gold]债务[/gold]都会减少到期数值");
+            "[gold]债务[/gold]照常减少[blue]40[/blue]点");
     }
 
     [Fact]
@@ -186,49 +243,67 @@ public sealed class AncientPlayerFacingPolishGuardTests
 
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description"],
-            "[gold]Compost Reward[/gold]",
-            "[blue]3[/blue] composts");
+            "[blue]15[/blue] [gold]Gold[/gold]",
+            "[blue]1[/blue] upgraded card");
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
-            "[gold]Store Seed[/gold]",
-            "[gold]Seed[/gold]");
+            "max [blue]3[/blue]",
+            "first chosen card is upgraded",
+            "Click this relic later");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description"],
-            "[gold]化为腐殖[/gold]",
-            "[blue]3[/blue]次");
+            "[blue]15[/blue][gold]金币[/gold]",
+            "[blue]1[/blue]张已升级牌");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
-            "[gold]储存种子[/gold]",
-            "[gold]种子[/gold]");
+            "最多[blue]3[/blue]张",
+            "第一张会升级");
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"],
             "[gold]Root Eyes[/gold]",
-            "immediately marks [blue]1[/blue] reachable non-Boss room",
-            "after each room you enter");
+            "Click this relic on the map",
+            "Monster, Unknown, or Elite",
+            "enemy group or event");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"],
             "[gold]根眼[/gold]",
-            "立即标记[blue]1[/blue]个可到达的非首领房间",
-            "每进入一个房间，再标记一个");
-        Assert.DoesNotContain("reveal", engAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"], StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("提前揭示", zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"], StringComparison.Ordinal);
+            "点击此遗物",
+            "怪物、随机或精英",
+            "敌群或事件");
         AssertSourceContains(
             engAncients["EZMB_URDA.root_sight.map_hover.description"],
-            "marked this reachable room",
-            "no extra penalty");
+            "previewed this room");
+        AssertSourceContains(
+            engAncients["EZMB_URDA.root_sight.map_hover.preview_description"],
+            "previewed this result",
+            "Enter this room");
+        AssertSourceContains(
+            engAncients["EZMB_URDA.root_sight.hover.description"],
+            "click this relic",
+            "Monster, Unknown, or Elite",
+            "Rest Sites, Shops, Treasure, and Boss rooms cannot be chosen");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.root_sight.map_hover.description"],
-            "标出的可到达房间",
-            "没有额外惩罚");
+            "根眼已经预见");
+        AssertSourceContains(
+            zhsAncients["EZMB_URDA.root_sight.map_hover.preview_description"],
+            "根眼预见了这个结果",
+            "进入该房间");
+        AssertSourceContains(
+            zhsAncients["EZMB_URDA.root_sight.hover.description"],
+            "点击此遗物",
+            "怪物、随机或精英",
+            "不能选择篝火、商店、宝箱和首领");
 
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_forbidden_loan.description"],
-            "[gold]Borrowed[/gold]",
+            "Choose [blue]1[/blue] of [blue]3[/blue] upgraded [gold]Ancient[/gold] cards and add it to your deck",
             "[blue]180[/blue] [gold]Gold[/gold]");
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_red_ink_overdraft.description"],
+            "[gold]Overdraft[/gold]",
             "[gold]red-ink debt[/gold]",
-            "[blue]1[/blue] [gold]red-ink debt[/gold]");
+            "after combat");
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_overdue_library.description"],
             "[gold]Archive Pages[/gold]",
@@ -239,11 +314,11 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "[blue]4[/blue]");
         AssertSourceContains(
             zhsAncients["EZMB_MORVI.pages.INITIAL.options.morvi_forbidden_loan.description"],
-            "[gold]借来的牌[/gold]",
+            "已升级的[gold]远古[/gold]牌",
             "[blue]180[/blue][gold]金币[/gold]");
         AssertSourceContains(
             zhsAncients["EZMB_MORVI.pages.INITIAL.options.morvi_red_ink_overdraft.description"],
-            "[blue]1[/blue]张临时[gold]透支[/gold]",
+            "临时[gold]透支[/gold]",
             "[gold]红墨债[/gold]");
         AssertSourceContains(
             zhsAncients["EZMB_MORVI.pages.INITIAL.options.morvi_overdue_library.description"],
@@ -277,10 +352,10 @@ public sealed class AncientPlayerFacingPolishGuardTests
 
         AssertSourceContains(
             engRelics["EZMICROBALANCE-MORVI_DEBT_SETTLEMENT_OPTION_RELIC.description"],
-            "[gold]Debt[/gold] drops by the due amount either way");
+            "[gold]Debt[/gold] drops by [blue]40[/blue] either way");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-MORVI_DEBT_SETTLEMENT_OPTION_RELIC.description"],
-            "[gold]债务[/gold]都会减少到期数值");
+            "[gold]债务[/gold]照常减少[blue]40[/blue]点");
     }
 
     [Fact]
@@ -339,13 +414,20 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             urda,
             "HoverTipFactory.FromCardWithCardHoverTips<UrdaSeedling>()",
-            "HoverTipFactory.FromCardWithCardHoverTips<WitheredHusk>()");
+            "HoverTipFactory.FromCardWithCardHoverTips<WitheredHusk>()",
+            "RootSightHoverTips",
+            "EZMB_URDA.root_sight.hover.title",
+            "EZMB_URDA.root_sight.hover.description");
         AssertSourceContains(
             urdaMapUiPatches,
-            "UrdaRootSightMapQuestMarker",
+            "%QuestIcon",
+            "MouseFilterEnum.Ignore",
+            "UrdaBlessingService.TryGetRootSightHoverTip",
+            "NHoverTipSet.Remove(__instance)",
             "NHoverTipSet.CreateAndShow",
-            "EZMB_URDA.root_sight.map_hover.title",
-            "EZMB_URDA.root_sight.map_hover.description");
+            "UrdaRootSightMapPointClickPatch",
+            "HarmonyPatch(typeof(NMapPoint), \"OnRelease\")",
+            "UrdaBlessingService.TryCommitRootSightSelection");
         AssertSourceContains(
             morvi,
             "HoverTipFactory.FromCardWithCardHoverTips<MorviRedInkOverdraftCard>()",
@@ -374,12 +456,13 @@ public sealed class AncientPlayerFacingPolishGuardTests
         Assert.DoesNotContain("UrdaTrialPlantCard", seedBankSource, StringComparison.Ordinal);
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
-            "The first chosen card is upgraded",
-            "Unchosen [gold]Seed[/gold] cards disappear");
+            "max [blue]3[/blue]",
+            "the first chosen card is upgraded",
+            "Click this relic later");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
-            "第一张所选牌会升级",
-            "未选择的[gold]种子[/gold]会消失");
+            "最多[blue]3[/blue]张",
+            "第一张会升级");
 
         foreach (var value in new[]
         {
@@ -390,7 +473,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
         })
         {
             Assert.DoesNotContain("Trial Plant", value, StringComparison.Ordinal);
-            Assert.DoesNotContain("试炼植株", value, StringComparison.Ordinal);
+            Assert.DoesNotContain("试炼种植", value, StringComparison.Ordinal);
         }
     }
 
@@ -406,41 +489,66 @@ public sealed class AncientPlayerFacingPolishGuardTests
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
 
         Assert.DoesNotContain("TaskHelper.RunSafely", patch, StringComparison.Ordinal);
-        Assert.Contains("await RunManager.Instance.EnterRoomWithoutExitingCurrentRoom", patch, StringComparison.Ordinal);
+        Assert.Contains("EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)", patch, StringComparison.Ordinal);
+        Assert.Contains("ClearEventNode(vakuu)", patch, StringComparison.Ordinal);
+        Assert.Contains("EventNodeBackingField", patch, StringComparison.Ordinal);
         Assert.Contains("CreateVictoryFallbackOption", patch, StringComparison.Ordinal);
         Assert.Contains("VictoryFallbackDescriptionKey", patch, StringComparison.Ordinal);
-        Assert.Contains("options.Count == 3 ? options", patch, StringComparison.Ordinal);
+        Assert.Contains("targetChoiceCount = encounter.VictoryChoiceCount", patch, StringComparison.Ordinal);
+        Assert.Contains("encounter.VictoryGold", patch, StringComparison.Ordinal);
         Assert.DoesNotContain("ExtraRewards", patch, StringComparison.Ordinal);
-        Assert.Contains("base(RoomType.Event, autoAdd: false)", encounter, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", patch, StringComparison.Ordinal);
+        Assert.Contains("base(RoomType.Monster, autoAdd: false)", encounter, StringComparison.Ordinal);
         Assert.Contains("ShouldGiveRewards => false", encounter, StringComparison.Ordinal);
+        Assert.Contains("CustomScenePath => VakuuFightAssetPaths.EncounterScene", encounter, StringComparison.Ordinal);
+        Assert.Contains("Slots => [VakuuSlot]", encounter, StringComparison.Ordinal);
+        Assert.Contains("ModelDb.Monster<EzmbVakuuTrialMonster>()", encounter, StringComparison.Ordinal);
         Assert.Contains("runState.Players.Count == 1", gate, StringComparison.Ordinal);
+        Assert.Contains("ShouldEnableFight", gate, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ENABLE_VAKUU_FIGHT", gate, StringComparison.Ordinal);
 
         AssertSourceContains(
             engAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"],
-            "real fight",
-            "After your hand is drawn",
-            "no normal combat rewards",
-            "non-Vakuu Act [blue]3[/blue] Ancient blessings",
-            "If you die, the run ends");
+            "Fight Vakuu",
+            "after your hand is drawn",
+            "No normal combat rewards",
+            "random [gold]Contract[/gold]",
+            "while any remain",
+            "[gold]Stolen Locks[/gold]",
+            "[gold]Blood Debt[/gold]",
+            "[blue]50[/blue] [gold]Gold[/gold]",
+            "Death ends the run");
         AssertSourceContains(
             zhsAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"],
-            "真正战斗",
+            "与瓦库战斗",
             "抽完起始手牌后",
-            "不会掉落普通战斗奖励",
-            "非瓦库",
-            "若你死亡，本局结束");
+            "本场没有普通战斗奖励",
+            "随机[gold]契约[/gold]",
+            "[gold]赃物锁[/gold]",
+            "[gold]血债[/gold]",
+            "[blue]50[/blue][gold]金币[/gold]",
+            "死亡会结束本局");
         AssertSourceContains(
             engRelics["EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.description"],
-            "real fight",
-            "After your hand is drawn",
+            "Fight Vakuu",
+            "after your hand is drawn",
+            "random [gold]Contract[/gold]",
+            "while any remain",
+            "[gold]Stolen Locks[/gold]",
+            "[gold]Blood Debt[/gold]",
             "No normal combat rewards",
-            "If you die, the run ends");
+            "[blue]50[/blue] [gold]Gold[/gold]",
+            "Death ends the run");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.description"],
-            "真正战斗",
+            "与瓦库战斗",
             "抽完起始手牌后",
-            "不会掉落普通战斗奖励",
-            "死亡则本局结束");
+            "随机[gold]契约[/gold]",
+            "[gold]赃物锁[/gold]",
+            "[gold]血债[/gold]",
+            "本场没有普通战斗奖励",
+            "[blue]50[/blue][gold]金币[/gold]",
+            "死亡会结束本局");
         AssertNonEmpty(engAncients, zhsAncients, "EZMB_VAKUU_FIGHT.pages.VICTORY_FALLBACK.description");
         AssertNonEmpty(engAncients, zhsAncients, "EZMB_VAKUU_FIGHT.pages.VICTORY_FALLBACK.options.CONTINUE.title");
         AssertNonEmpty(engAncients, zhsAncients, "EZMB_VAKUU_FIGHT.pages.VICTORY_FALLBACK.options.CONTINUE.description");
@@ -452,8 +560,8 @@ public sealed class AncientPlayerFacingPolishGuardTests
         var sourceDesign = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "source-design.md");
         var issue = ReadRepoText("docs", "issues", "ancient-expansion-v2.2.md");
 
-        Assert.Contains("Temptation", sourceDesign, StringComparison.Ordinal);
-        Assert.Contains("Temptation", issue, StringComparison.Ordinal);
+        Assert.Contains("Contract", sourceDesign, StringComparison.Ordinal);
+        Assert.Contains("Contract", issue, StringComparison.Ordinal);
         Assert.DoesNotContain("Temptation remains not implemented", sourceDesign, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Temptation remains not implemented", issue, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("future content and is not implemented", sourceDesign, StringComparison.OrdinalIgnoreCase);
@@ -468,7 +576,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             artDirection,
             "Final browser GPTimage2 small art generated this pass",
-            "Urda event background: Active event art is a 2.13:1 reframe",
+            "Urda event background: Active event art is the original user-accepted 16:9 Urda middle-draft",
             "Urda, Morvi, and Lotha option/icon art uses browser ChatGPT/GPTimage2 rebuilt transparent PNGs",
             "map and run-history pairs intentionally share final browser GPTimage2 filled/outline bytes",
             "Custom card portraits now use browser GPTimage2 rebuilt files",
@@ -680,61 +788,4 @@ public sealed class AncientPlayerFacingPolishGuardTests
         Assert.False(string.IsNullOrWhiteSpace(zhsValue), $"Empty zhs localization key: {key}");
     }
 
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string SliceBetween(string source, string startMarker, string endMarker)
-    {
-        var start = source.IndexOf(startMarker, StringComparison.Ordinal);
-        Assert.True(start >= 0, $"Missing start marker: {startMarker}");
-        var end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
-        Assert.True(end > start, $"Missing end marker after {startMarker}: {endMarker}");
-        return source[start..end];
-    }
-
-    private static SortedDictionary<string, string> JsonStringMap(params string[] parts)
-    {
-        using var document = JsonDocument.Parse(ReadRepoText(parts));
-        var map = new SortedDictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (var property in document.RootElement.EnumerateObject())
-        {
-            Assert.Equal(JsonValueKind.String, property.Value.ValueKind);
-            map.Add(property.Name, property.Value.GetString() ?? string.Empty);
-        }
-
-        return map;
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

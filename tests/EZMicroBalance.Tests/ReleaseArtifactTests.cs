@@ -40,8 +40,8 @@ public sealed class ReleaseArtifactTests
     [Fact]
     public void ActiveManifestHasStableReleaseIdentity()
     {
-        using var active = JsonDocument.Parse(File.ReadAllText(RepoPath("EZMicroBalance.json")));
-        using var legacy = JsonDocument.Parse(File.ReadAllText(RepoPath("EzDailyContent.json")));
+        using var active = JsonDocument.Parse(ReadRepoText("EZMicroBalance.json"));
+        using var legacy = JsonDocument.Parse(ReadRepoText("EzDailyContent.json"));
 
         Assert.Equal("EZMicroBalance", active.RootElement.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", active.RootElement.GetProperty("name").GetString());
@@ -62,15 +62,12 @@ public sealed class ReleaseArtifactTests
     [ReleaseArtifactFact]
     public void ActiveReleaseArtMatchesAuditedNoTextNoLogoAsset()
     {
-        var activeArt = RepoPath("EZMicroBalance", "mod_image.png");
-        var sourceCopy = RepoPath("publish", "EZMicroBalance-cover-source.png");
+        var activeArt = AssertRepoFileExists("EZMicroBalance", "mod_image.png");
+        var sourceCopy = AssertRepoFileExists("publish", "EZMicroBalance-cover-source.png");
         var devEnvironment = ReadRepoText("docs", "dev-environment.md");
         var releaseChecklist = ReadRepoText("docs", "release-checklist.md");
 
-        Assert.True(File.Exists(activeArt), $"Missing active release art: {activeArt}");
-        Assert.True(File.Exists(sourceCopy), $"Missing audited source art copy: {sourceCopy}");
         var expectedArtHash = Sha256(activeArt);
-        Assert.Equal(expectedArtHash, Sha256(activeArt));
         Assert.Equal(expectedArtHash, Sha256(sourceCopy));
 
         var (width, height) = ReadPngDimensions(activeArt);
@@ -244,13 +241,16 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_seed_bank.png.import", entries);
         Assert.Contains("EZMicroBalance/images/events/ezmb_urda.png.import", entries);
         Assert.Contains("EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn.remap", entries);
+        Assert.Contains("EZMicroBalance/scenes/encounters/ezmb_vakuu_trial.tscn.remap", entries);
         Assert.Contains("EZMicroBalance/localization/eng/relics.json", entries);
         Assert.Contains("EZMicroBalance/localization/eng/ascension.json", entries);
         Assert.Contains("EZMicroBalance/localization/eng/events.json", entries);
+        Assert.Contains("EZMicroBalance/localization/eng/monsters.json", entries);
         Assert.Contains("EZMicroBalance/localization/eng/settings_ui.json", entries);
         Assert.Contains("EZMicroBalance/localization/zhs/relics.json", entries);
         Assert.Contains("EZMicroBalance/localization/zhs/ascension.json", entries);
         Assert.Contains("EZMicroBalance/localization/zhs/events.json", entries);
+        Assert.Contains("EZMicroBalance/localization/zhs/monsters.json", entries);
         Assert.Contains("EZMicroBalance/localization/zhs/settings_ui.json", entries);
     }
 
@@ -270,10 +270,9 @@ public sealed class ReleaseArtifactTests
     [ReleaseArtifactFact]
     public void InstalledManifestMatchesRepositoryManifest()
     {
-        var sourceManifest = RepoPath("EZMicroBalance.json");
+        var sourceManifest = AssertRepoFileExists("EZMicroBalance.json");
         var installedManifest = GamePath("mods", "EZMicroBalance", "EZMicroBalance.json");
 
-        Assert.True(File.Exists(sourceManifest), $"Missing source manifest: {sourceManifest}");
         Assert.True(File.Exists(installedManifest), $"Missing installed manifest: {installedManifest}");
         Assert.Equal(NormalizeJson(sourceManifest), NormalizeJson(installedManifest));
     }
@@ -288,21 +287,7 @@ public sealed class ReleaseArtifactTests
             .Concat(CandidateBuildDirectories())
             .ToArray();
 
-        ResolveEventHandler resolver = (_, args) =>
-        {
-            var assemblyFileName = new AssemblyName(args.Name).Name + ".dll";
-            foreach (var dir in searchDirs)
-            {
-                var candidate = Path.Combine(dir, assemblyFileName);
-                if (File.Exists(candidate))
-                {
-                    return Assembly.LoadFrom(candidate);
-                }
-            }
-
-            return null;
-        };
-
+        var resolver = CreateAssemblyResolver(searchDirs);
         AppDomain.CurrentDomain.AssemblyResolve += resolver;
         try
         {
@@ -335,21 +320,7 @@ public sealed class ReleaseArtifactTests
             .Concat(CandidateBuildDirectories())
             .ToArray();
 
-        ResolveEventHandler resolver = (_, args) =>
-        {
-            var assemblyFileName = new AssemblyName(args.Name).Name + ".dll";
-            foreach (var dir in searchDirs)
-            {
-                var candidate = Path.Combine(dir, assemblyFileName);
-                if (File.Exists(candidate))
-                {
-                    return Assembly.LoadFrom(candidate);
-                }
-            }
-
-            return null;
-        };
-
+        var resolver = CreateAssemblyResolver(searchDirs);
         AppDomain.CurrentDomain.AssemblyResolve += resolver;
         try
         {
@@ -428,21 +399,7 @@ public sealed class ReleaseArtifactTests
         var baseLibDir = GamePath("mods", "BaseLib");
         var searchDirs = new[] { dataDir, baseLibDir };
 
-        ResolveEventHandler resolver = (_, args) =>
-        {
-            var assemblyFileName = new AssemblyName(args.Name).Name + ".dll";
-            foreach (var dir in searchDirs)
-            {
-                var candidate = Path.Combine(dir, assemblyFileName);
-                if (File.Exists(candidate))
-                {
-                    return Assembly.LoadFrom(candidate);
-                }
-            }
-
-            return null;
-        };
-
+        var resolver = CreateAssemblyResolver(searchDirs);
         AppDomain.CurrentDomain.AssemblyResolve += resolver;
         try
         {
@@ -481,7 +438,7 @@ public sealed class ReleaseArtifactTests
     {
         var betaCompatibility = ReadRepoText("docs", "BETA_COMPATIBILITY.md");
         var remoteSetup = ReadRepoText("docs", "REMOTE_DEVELOPMENT_SETUP.md");
-        var setupSpec = ReadRepoText("docs", "SETUP_SPEC.md");
+        var setupSpec = ReadRepoText("docs", "archive", "superseded", "setup-spec-original-scaffold.md");
         var manualChecklist = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-test-checklist.md");
 
         Assert.Contains("EZMicroBalance", betaCompatibility, StringComparison.Ordinal);
@@ -502,6 +459,7 @@ public sealed class ReleaseArtifactTests
         Assert.DoesNotContain("Confirm Easy Content / EzDailyContent appears.", manualChecklist, StringComparison.Ordinal);
 
         Assert.Contains("Historical note: this document records the original `EzDailyContent` setup baseline", setupSpec, StringComparison.Ordinal);
+        Assert.DoesNotContain("SETUP_SPEC.md", ReadRepoText("docs", "README.md"), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -534,58 +492,9 @@ public sealed class ReleaseArtifactTests
 
     private static void AssertSameKeys(string fileName)
     {
-        var eng = JsonKeys(RepoPath("EZMicroBalance", "localization", "eng", fileName));
-        var zhs = JsonKeys(RepoPath("EZMicroBalance", "localization", "zhs", fileName));
+        var eng = JsonStringMap("EZMicroBalance", "localization", "eng", fileName).Keys.ToArray();
+        var zhs = JsonStringMap("EZMicroBalance", "localization", "zhs", fileName).Keys.ToArray();
         Assert.Equal(eng, zhs);
-    }
-
-    private static SortedSet<string> JsonKeys(string path)
-    {
-        using var document = JsonDocument.Parse(File.ReadAllText(path, Encoding.UTF8));
-        return new SortedSet<string>(
-            document.RootElement.EnumerateObject().Select(property => property.Name),
-            StringComparer.Ordinal);
-    }
-
-    private static IEnumerable<(string key, string value)> JsonStringValues(JsonElement element, string keyPrefix = "")
-    {
-        if (element.ValueKind == JsonValueKind.Object)
-        {
-            foreach (var property in element.EnumerateObject())
-            {
-                var key = string.IsNullOrEmpty(keyPrefix)
-                    ? property.Name
-                    : $"{keyPrefix}.{property.Name}";
-
-                foreach (var value in JsonStringValues(property.Value, key))
-                {
-                    yield return value;
-                }
-            }
-
-            yield break;
-        }
-
-        if (element.ValueKind == JsonValueKind.Array)
-        {
-            var index = 0;
-            foreach (var item in element.EnumerateArray())
-            {
-                foreach (var value in JsonStringValues(item, $"{keyPrefix}[{index}]"))
-                {
-                    yield return value;
-                }
-
-                index++;
-            }
-
-            yield break;
-        }
-
-        if (element.ValueKind == JsonValueKind.String)
-        {
-            yield return (keyPrefix, element.GetString() ?? string.Empty);
-        }
     }
 
     private static string RemoveDynamicVarPlaceholders(string value)
@@ -618,24 +527,24 @@ public sealed class ReleaseArtifactTests
         return (string?)property.GetValue(instance);
     }
 
-    private static IReadOnlyList<string> ReadPckDirectory(string path)
+    private static ResolveEventHandler CreateAssemblyResolver(IEnumerable<string> searchDirs)
     {
-        var bytes = File.ReadAllBytes(path);
-        var directoryOffset = (int)BitConverter.ToUInt64(bytes, 0x20);
-        var count = (int)BitConverter.ToUInt32(bytes, directoryOffset);
-        var offset = directoryOffset + 4;
-        var entries = new List<string>(count);
+        var directories = searchDirs.ToArray();
 
-        for (var i = 0; i < count; i++)
+        return (_, args) =>
         {
-            var length = (int)BitConverter.ToUInt32(bytes, offset);
-            offset += 4;
-            entries.Add(Encoding.UTF8.GetString(bytes, offset, length).TrimEnd('\0'));
-            offset += length;
-            offset += 8 + 8 + 16 + 4;
-        }
+            var assemblyFileName = new AssemblyName(args.Name).Name + ".dll";
+            foreach (var dir in directories)
+            {
+                var candidate = Path.Combine(dir, assemblyFileName);
+                if (File.Exists(candidate))
+                {
+                    return Assembly.LoadFrom(candidate);
+                }
+            }
 
-        return entries;
+            return null;
+        };
     }
 
     private static string[] GetExportedPckEntries(string[] exportedResources, IReadOnlyCollection<string> pckEntries)
@@ -692,73 +601,6 @@ public sealed class ReleaseArtifactTests
             .ToArray();
     }
 
-    private static bool IsActiveExportResource(string relativePath)
-    {
-        return IsActiveReleaseResource(relativePath) &&
-            (Path.GetExtension(relativePath) is ".json" or ".png" or ".txt" or ".tscn");
-    }
-
-    private static bool IsActiveReleaseResource(string relativePath)
-    {
-        return relativePath.StartsWith("EZMicroBalance/", StringComparison.Ordinal) &&
-            !relativePath.Equals("EZMicroBalance/mod_real.png", StringComparison.Ordinal) &&
-            !relativePath.Equals("EZMicroBalance/mod_real.png.import", StringComparison.Ordinal);
-    }
-
-    private static string[] ParseExportFiles(string exportPreset)
-    {
-        var match = Regex.Match(exportPreset, @"export_files=PackedStringArray\((?<files>[^)]*)\)");
-        Assert.True(match.Success, "Could not find export_files in export_presets.cfg.");
-
-        return Regex.Matches(match.Groups["files"].Value, @"""(?<path>[^""]+)""")
-            .Cast<Match>()
-            .Select(match => match.Groups["path"].Value)
-            .ToArray();
-    }
-
-    private static Exception? Unwrap(Exception? exception)
-    {
-        return exception is TargetInvocationException targetInvocationException
-            ? targetInvocationException.InnerException ?? targetInvocationException
-            : exception;
-    }
-
-    private static string Sha256(string path)
-    {
-        using var stream = File.OpenRead(path);
-        return Convert.ToHexString(SHA256.HashData(stream));
-    }
-
-    private static string NormalizeJson(string path)
-    {
-        using var document = JsonDocument.Parse(File.ReadAllText(path, Encoding.UTF8));
-        return JsonSerializer.Serialize(document.RootElement, new JsonSerializerOptions { WriteIndented = false });
-    }
-
-    private static (int Width, int Height) ReadPngDimensions(string path)
-    {
-        var bytes = File.ReadAllBytes(path);
-        Assert.True(bytes.Length >= 24, $"PNG file is too short: {path}");
-        ReadOnlySpan<byte> pngSignature = [0x89, (byte)'P', (byte)'N', (byte)'G', 0x0D, 0x0A, 0x1A, 0x0A];
-        Assert.True(bytes.AsSpan(0, 8).SequenceEqual(pngSignature), $"Release art is not a PNG: {path}");
-
-        return (ReadBigEndianInt32(bytes, 16), ReadBigEndianInt32(bytes, 20));
-    }
-
-    private static int ReadBigEndianInt32(byte[] bytes, int offset)
-    {
-        return
-            (bytes[offset] << 24) |
-            (bytes[offset + 1] << 16) |
-            (bytes[offset + 2] << 8) |
-            bytes[offset + 3];
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
     private static IEnumerable<string> CandidateBuildDlls()
     {
         return CandidateBuildDirectories().Select(dir => Path.Combine(dir, "EZMicroBalance.dll"));
@@ -769,42 +611,5 @@ public sealed class ReleaseArtifactTests
         var root = RepoPath(".godot", "mono", "temp", "bin");
         yield return Path.Combine(root, "Debug");
         yield return Path.Combine(root, "Release");
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string ToRepoRelativePath(string path)
-    {
-        return Path.GetRelativePath(FindRepoRoot(), path).Replace('\\', '/');
-    }
-
-    private static string GamePath(params string[] parts)
-    {
-        var root = Environment.GetEnvironmentVariable("STS2_PATH");
-        if (string.IsNullOrWhiteSpace(root))
-        {
-            root = @"D:\Steam\steamapps\common\Slay the Spire 2";
-        }
-
-        return Path.Combine(new[] { root }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
     }
 }

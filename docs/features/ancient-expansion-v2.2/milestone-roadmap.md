@@ -1,6 +1,6 @@
 # Ancient Expansion v2.2 Milestone Roadmap
 
-Status: Urda has ten source-backed/default-on v2.2 blessings. Morvi has eight source-backed/default-on v2.2 blessings. Lotha has eight source-backed/default-on v2.2 blessings. Vakuu fight has a default-on single-player source-backed test slice with Temptation. This roadmap is now a historical milestone map; use `source-design.md`, `manual-test-checklist.md`, and `docs/issues.md` for current work.
+Status: Urda has ten source-backed/default-on v2.2 blessings. Morvi has eight source-backed/default-on v2.2 blessings. Lotha has eight source-backed/default-on v2.2 blessings. Vakuu fight is hidden by default as a dedicated opt-in slice with Temptation. This roadmap is now a historical milestone map; use `source-design.md`, `manual-test-checklist.md`, and `docs/issues.md` for current work.
 
 ## Milestone 0: Planning Ingest
 
@@ -11,7 +11,7 @@ Exit:
 - `source-design.md` stores the full roadmap.
 - `docs/issues/ancient-expansion-v2.2.md` tracks compact issues.
 - Current Urda docs track the full ten-blessing source-backed slice.
-- Morvi is default-on source-complete/live-pending content; Lotha is default-on source-complete/live-pending content; Vakuu fight is default-on single-player source-complete/live-pending content.
+- Morvi is default-on source-complete/live-pending content; Lotha is default-on source-complete/live-pending content; Vakuu fight is hidden-by-default source-dedicated/live-pending content.
 
 ## Milestone 1: Current Urda Verification First
 

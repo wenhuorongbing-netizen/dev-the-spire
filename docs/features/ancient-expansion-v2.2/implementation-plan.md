@@ -1,6 +1,6 @@
 # Ancient Expansion v2.2 Implementation Plan
 
-Status: Urda v2.2 is source-complete/default-on with ten blessing ids, Morvi v2.2 is source-complete/default-on for direct private-beta testing, Lotha is source-complete/default-on for direct testing, and Vakuu fight is source-complete/default-on for single-player testing with Temptation status pressure. All remain live-pending.
+Status: Urda v2.2 is source-complete/default-on with ten blessing ids, Morvi v2.2 is source-complete/default-on for direct private-beta testing, Lotha is source-complete/default-on for direct testing, and Vakuu fight is hidden by default with a dedicated source enemy/scene plus Contract, Stolen Vault, and Blood Debt pressure. All remain live-pending.
 
 ## 0. Evidence First
 
@@ -18,7 +18,7 @@ For every future implementation slice:
 Current hard boundaries for claims:
 
 - Do not expand Lotha beyond the current eight-blessing test slice until live UI/gameplay/save-load evidence exists.
-- Do not expand Vakuu fight beyond the current single-player source slice until live UI/gameplay/save-load/failure evidence exists.
+- Do not expose or expand Vakuu fight beyond the current hidden opt-in single-player slice until live UI/gameplay/save-load/failure evidence proves the dedicated source enemy/scene path is stable.
 - Do not expand Urda beyond the current ten v2.2 blessing ids in this cycle.
 - Morvi is default-on in the current private-beta test slice with all eight v2.2 blessing ids, event art, option/icon art, English/zhs localization, hover powers, disable gates, force-Ancient gates, and force-blessing gates. Live gameplay, save/load, and co-op evidence remain pending.
 - Do not change Ascension, Rootblight, Boss Seal, Fission, or multiplayer gameplay in this v2.2 Ancient pass.
@@ -50,7 +50,7 @@ Lotha current status:
 
 Vakuu current status:
 
-- Local Core source supports a single-player test slice that enters a custom `RoomType.Event` combat from Vakuu, resumes the parent event on victory, and offers three non-Vakuu Act 3 Ancient blessings when three unclaimed options exist. The transition is awaited, normal combat rewards are disabled, a no-unclaimed-blessings fallback prevents an empty victory state, and the fight adds a hidden Temptation Status to the top of the Draw Pile after the normal hand draw on turns 1, 3, 5, and onward. The slice has `EZMB_DISABLE_VAKUU_FIGHT` / `SPIREPLUS_DISABLE_VAKUU_FIGHT`, `EZMB_FORCE_ANCIENT=VAKUU` / `SPIREPLUS_FORCE_ANCIENT=VAKUU`, and `EZMB_FORCE_VAKUU_FIGHT` / `SPIREPLUS_FORCE_VAKUU_FIGHT` gates. Save/load during the unfinished parent-linked child combat is a source-level blocker; live UI/gameplay/save-load/failure and co-op evidence remain pending.
+- Local Core source supports a hidden opt-in single-player slice that enters a custom `RoomType.Monster` combat from Vakuu with normal rewards disabled, resumes the parent event on victory, and offers 1/2/3 non-Vakuu Act 3 Ancient blessing choices based on how many Stolen Vault locks the player breaks. The transition is awaited, normal combat rewards are disabled, a no-unclaimed-blessings fallback prevents an empty victory state, the parent event `Node` is cleared before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips normal combat rewards and the duplicate reconstructed-parent Ancient heal before resuming the parent event. The fight now adds a random hidden 0-cost Contract to hand after the normal hand draw on turns 1, 3, 5, and onward; Contracts cost HP, break locks while any remain, add Blood Debt, and each broken lock grants 50 Gold on victory. The slice requires `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, or a force-fight gate, and uses a dedicated Vakuu monster plus custom encounter scene. Save/load during the parent-linked child-combat flow remains a runtime risk; live UI/gameplay/save-load/failure and co-op evidence remain pending.
 
 ## 1.5 Next Full-Implementation Track
 
@@ -60,7 +60,7 @@ The next development pass should not create more audit files before improving th
    - bespoke Lotha option/relic/card/power art;
    - Morvi event, map, option/relic, and card/status art finalization;
    - Urda option/card polish for Withered Husk and temporary v2.2 blessing art;
-   - Vakuu fight option art and bespoke Temptation/status art.
+   - Vakuu fight option art and bespoke Contract/power art.
 2. Verify Lotha mechanics live instead of claiming release readiness from source guards:
    - Mirror Rebuttal selected-card pull and 2/2 Power fallback;
    - Mirror Hall Echo turn-end type recording and next-turn one-shot trigger;
@@ -76,7 +76,7 @@ The next development pass should not create more audit files before improving th
    - all eight v2.2 Morvi blessings, gates, state, localization, option art, and save/load stance are source-present;
    - preserve Power-card safety and nonrecursive extra-play rules while replacing temporary art.
 5. Live-verify Urda's ten source-backed blessings and tighten any source-safe deviation that runtime evidence proves can support richer UI.
-6. Live-verify Vakuu fight failure/victory clarity and Temptation draw/exhaust behavior.
+6. Live-verify Vakuu fight failure/victory clarity, Contract hand injection, lock breaks, Blood Debt scaling, bonus Gold, and victory choice count behavior.
 7. Refresh build, publish, package, and then live/manual validation evidence before any release-ready claim.
 
 ## 2. Future Task Packet Template
@@ -100,7 +100,7 @@ Each blessing implementation packet should contain:
 2. Live-verify Lotha against the documented source-safe v2.2 behavior, including the Death Reprieve timing deviation.
 3. Live-verify Morvi's full source slice, including Red Ink/Open Book restore-sensitive rows and Debt Settlement nonlethal HP fallback.
 4. Live-verify Urda's ten-blessing source slice and replace temporary Urda option icons.
-5. Replace temporary Vakuu/Temptation art after Image API access or final user source files are available.
+5. Replace temporary Vakuu/Contract/power art after Image API access or final user source files are available.
 6. Run live/save-load/co-op/manual validation and update release docs with actual evidence.
 
 ## 4. Acceptance Pattern

@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
@@ -142,7 +142,7 @@ public sealed class AncientArtAssetHygieneGuardTests
                     Assert.True(actualWidth >= 1280, $"Event background is too narrow: {targetPath}");
                     Assert.True(actualHeight >= 720, $"Event background is too short: {targetPath}");
                     var aspect = (double)actualWidth / actualHeight;
-                    Assert.InRange(aspect, 2.08, 2.18);
+                    Assert.InRange(aspect, 1.76, 1.79);
                     break;
                 case "map_icon":
                 case "map_icon_outline":
@@ -246,8 +246,9 @@ public sealed class AncientArtAssetHygieneGuardTests
             "source code/images/events/crystal_sphere.png",
             "source code/images/packed/map/ancients/ancient_node_neow.png",
             "Primary manual ChatGPT style anchor",
-            ".tools/art-generation/chatgpt/crystal-throne-of-shattered-visions.png",
-            "current best user-approved style direction",
+            ".tools/art-generation/lotha-background-repair-20260515-feedback/sources/lotha-horizontal-mirror-ensemble-upload-source.png",
+            "corrected user-uploaded horizontal mirror-ensemble source",
+            "crystal-throne-of-shattered-visions.png` file is a similarly named but rejected composition",
             "Do not overcorrect toward later darker and emptier iterations",
             "Small option relic sheets should inherit the first preview's dark mirror-card finish",
             "Before any small-art review candidate is promoted to an active resource, inspect it at target size",
@@ -258,7 +259,7 @@ public sealed class AncientArtAssetHygieneGuardTests
             "low line density",
             "no paper texture, pseudo-writing, or label-like detail",
             "Keep review contact sheets and target-size audit sheets under `.tools/art-generation/chatgpt/`",
-            "Prefer a 2.13:1 wide composition for final backgrounds",
+            "Prefer a 16:9 composition for clicked Ancient event backgrounds",
             "upload only the intended mirror-character shape references",
             "original simplified whale-tower silhouette with a hole-punched face",
             "acrylic paint and marker texture",
@@ -462,18 +463,6 @@ public sealed class AncientArtAssetHygieneGuardTests
         return false;
     }
 
-    private static string[] ParseExportFiles(string exportPreset)
-    {
-        var match = Regex.Match(exportPreset, @"export_files=PackedStringArray\((?<files>[^)]*)\)");
-        Assert.True(match.Success, "Could not find export_files in export_presets.cfg.");
-
-        return Regex.Matches(match.Groups["files"].Value, @"""(?<path>[^""]+)""")
-            .Cast<Match>()
-            .Select(match => match.Groups["path"].Value)
-            .OrderBy(path => path, StringComparer.Ordinal)
-            .ToArray();
-    }
-
     private static string RequiredString(JsonElement element, string propertyName)
     {
         Assert.True(element.TryGetProperty(propertyName, out var property), $"Missing JSON property: {propertyName}");
@@ -481,24 +470,12 @@ public sealed class AncientArtAssetHygieneGuardTests
         return property.GetString() ?? string.Empty;
     }
 
-    private static (int Width, int Height) ReadPngDimensions(string path)
-    {
-        var bytes = File.ReadAllBytes(path);
-        Assert.True(bytes.Length >= 24, $"PNG too small to contain IHDR: {path}");
-        Assert.True(bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47, $"Not a PNG file: {path}");
-        return (
-            BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(16, 4)),
-            BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(20, 4)));
-    }
-
     private static (bool HasTransparentPixel, bool HasVisiblePixel) ReadPngAlphaCoverage(string path)
     {
-        var bytes = File.ReadAllBytes(path);
+        var bytes = ReadPngBytes(path);
         Assert.True(bytes.Length >= 33, $"PNG too small to contain IHDR: {path}");
-        Assert.True(bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47, $"Not a PNG file: {path}");
 
-        var width = BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(16, 4));
-        var height = BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(20, 4));
+        var (width, height) = ReadPngDimensions(path);
         var bitDepth = bytes[24];
         var colorType = bytes[25];
         var interlace = bytes[28];
@@ -587,38 +564,4 @@ public sealed class AncientArtAssetHygieneGuardTests
         return pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft;
     }
 
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

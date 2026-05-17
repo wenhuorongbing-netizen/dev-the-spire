@@ -1,6 +1,6 @@
 # Ancient Expansion v2.2 Issues
 
-Status: Urda is default-on with a ten-blessing source-complete/live-pending v2.2 test slice, Morvi is default-on with a source-complete v2.2 test slice, Lotha is default-on with a source-complete v2.2 test slice, and Vakuu fight is default-on for single-player private-beta testing as a source-complete/live-pending slice.
+Status: Urda is default-on with a ten-blessing source-complete/live-pending v2.2 test slice, Morvi is default-on with a source-complete v2.2 test slice, Lotha is default-on with a source-complete v2.2 test slice, and Vakuu fight is hidden by default with a source-dedicated monster/scene pending live proof.
 
 Current-state constraints:
 
@@ -13,9 +13,9 @@ Current-state constraints:
 - Lotha is default-on for private-beta testing with `EZMB_DISABLE_LOTHA` / `SPIREPLUS_DISABLE_LOTHA`, force-Ancient gates, forced-blessing gates, custom event art, option art, and all eight v2.2 blessing ids.
 - Lotha no longer uses the geometric placeholder event art; it uses the local generated mirror-tribunal background and source-derived temporary option/icon crops. Bespoke Image API relic/option art remains pending until `OPENAI_API_KEY` or final user source files are available.
 - Lotha live gameplay, save/load, lethal-path, and co-op verification are still pending. Death Reprieve has one documented source-safe deviation: enemy-turn lethal starts the reprieve on the next player turn because local source did not prove safe immediate enemy-turn interruption.
-- Vakuu fight is default-on for single-player private-beta testing, can be hidden with `EZMB_DISABLE_VAKUU_FIGHT=1` / `SPIREPLUS_DISABLE_VAKUU_FIGHT=1`, can be focused with `EZMB_FORCE_ANCIENT=VAKUU` / `SPIREPLUS_FORCE_ANCIENT=VAKUU`, and can be forced to the fight option with `EZMB_FORCE_VAKUU_FIGHT=1` / `SPIREPLUS_FORCE_VAKUU_FIGHT=1`.
-- Vakuu fight now includes source-backed Temptation status pressure after the normal hand draw on turns 1, 3, 5, and onward. Live UI/gameplay, save/load, failure/death, and co-op verification are still pending. The current source gate requires single-player (`runState.Players.Count == 1`) and does not claim multiplayer safety. Source review found the post-victory child-combat restore path can re-enter parent Ancient start behavior unless proven otherwise, so save/load readiness remains a blocker.
-- Morvi active art uses the local generated lender-scribe background, plus source-derived temporary option/icon crops. Bespoke Image API relic/option art remains pending until `OPENAI_API_KEY` or final user source files are available.
+- Vakuu fight is hidden by default while runtime proof is pending. It can be enabled with `EZMB_ENABLE_VAKUU_FIGHT=1` / `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, can be focused with `EZMB_FORCE_ANCIENT=VAKUU` / `SPIREPLUS_FORCE_ANCIENT=VAKUU`, and can be forced to the fight option with `EZMB_FORCE_VAKUU_FIGHT=1` / `SPIREPLUS_FORCE_VAKUU_FIGHT=1`.
+- Vakuu fight now includes a dedicated Vakuu monster, a custom encounter scene, and source-backed Contract/Stolen Vault/Blood Debt pressure after the normal hand draw on turns 1, 3, 5, and onward. Source also clears the parent event `Node` before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips the duplicate Ancient heal when Core reconstructs the parent event below the finished combat. Live UI/gameplay, victory return, save/load, failure/death, and co-op verification are still pending. The current source gate requires single-player (`runState.Players.Count == 1`) and does not claim multiplayer safety.
+- Morvi active event art uses the recovered user-uploaded blue-eye court/scribe background; option/icon art uses browser ChatGPT/GPTimage2 oil-repaint transparent PNGs recorded in the art manifest. Live UI/gameplay evidence remains pending.
 - v2.2 must not be represented as release-ready until source/live/save-load checks pass.
 
 ## ISSUE-2026-05-13-ANCIENT-EVENT-UI-ART-REPAIR
@@ -85,25 +85,27 @@ Next target:
 
 ## ISSUE-2026-05-13-VAKUU-FIGHT-TEST-IMPLEMENTATION
 
-Priority: P1
-Status: source-complete / live-pending
+Priority: P0
+Status: hidden-by-default / source-dedicated / live-pending
 Area: Act 3 Vakuu fight option
 
 Implemented source evidence:
 
-- Event option creation uses a `Vakuu.GenerateInitialOptions` postfix and a non-droppable marker relic so the option has art.
-- Event-to-combat transition now awaits `RunManager.Instance.EnterRoomWithoutExitingCurrentRoom(...)`, uses a custom `RoomType.Event` encounter, and relies on Core's default `ShouldResumeParentEventAfterCombat = true` room-stack behavior without assigning `ParentEventId` while the combat is unfinished.
-- A narrow `CombatRoom.ToSerializable()` postfix records the Vakuu parent only after the Vakuu trial combat is prefinished, avoiding Core's known rejected unfinished parent-linked serialization shape while keeping prefinished parent restore source-shaped.
-- Victory routing patches `EventModel.Resume(...)` for the Vakuu parent event after `EzmbVakuuTrialEncounter`, then uses the protected `SetEventState(...)` path by reflection to offer three non-Vakuu Act 3 Ancient relic options from Nonupeipe/Tanx.
-- If fewer than three unclaimed non-Vakuu reward options remain, victory uses an explicit fallback page instead of passing zero options and silently finishing. If a restored victory resume has no owner, source now logs that the explicit fallback path was used and keeps live restore proof pending.
-- The custom encounter has `ShouldGiveRewards => false` and does not put `LinkedRewardSet` or extra rewards into the combat room, avoiding the nonserializable parent-event combat reward path discovered in source. Prefinished restore can still show an empty terminal reward path before parent resume, so live save/load proof remains pending.
-- The visible option is "Fight Vakuu" / `挑战瓦库`; option and marker-relic text now state this is a real fight, Vakuu puts Temptation on top of the draw pile on turns 1/3/5+, normal combat rewards are disabled, victory gives a non-Vakuu Act 3 Ancient blessing choice, and death ends the run.
-- `EZMB_VAKUU_TEMPTATION` is a hidden Status card with Ethereal and Unplayable. Its `AfterCardExhausted` override grants 1 Energy and applies 3 HP loss through source-backed command paths.
-- A dedicated run-state combat hook injects Temptation only while `combatState.Encounter is EzmbVakuuTrialEncounter`, gated to single-player by `VakuuFightFeatureGate.IsFightEnabledForRun(...)`.
+- Event option creation uses a `Vakuu.GenerateInitialOptions` postfix and a non-droppable marker relic so the option has art, but it only appears when explicitly enabled or forced.
+- The current encounter uses a dedicated `EzmbVakuuTrialMonster`, localized monster/move text, and a custom `ezmb_vakuu_trial.tscn` encounter scene with a Vakuu marker slot.
+- Event-to-combat transition now awaits `RunManager.Instance.EnterRoomWithoutExitingCurrentRoom(...)`, uses a custom `RoomType.Monster` encounter with normal rewards disabled, sets `ShouldResumeParentEventAfterCombat = true`, and does not call Core's `EnterCombatWithoutExitingEvent(...)` helper because that helper rejects non-shared events.
+- Before entering child combat, source clears the parent event `Node` to match Core's own child-combat node cleanup behavior and address the reported post-victory black screen risk.
+- Active Vakuu child combat no longer stores `ParentEventId`, avoiding Core's known active-combat serialization exception. A narrow `CombatRoom.ToSerializable()` postfix records the Vakuu parent only after the Vakuu trial combat is prefinished, keeping prefinished parent restore source-shaped while live save/load proof remains pending.
+- Victory routing patches `EventModel.Resume(...)` for the Vakuu parent event after `EzmbVakuuTrialEncounter`, then uses the protected `SetEventState(...)` path by reflection to offer 1/2/3 non-Vakuu Act 3 Ancient relic options from Nonupeipe/Tanx plus custom Lotha option relics based on broken Stolen Vault locks. Lotha victory choices use `LothaRewardSelectionService.SelectBlessing(...)`, so the visible marker relic and Lotha blessing state are granted together.
+- If no unclaimed non-Vakuu reward options remain, victory uses an explicit fallback page instead of passing zero options and silently finishing. If a restored victory resume has no owner, source now logs that the explicit fallback path was used and keeps live restore proof pending.
+- The custom encounter has `ShouldGiveRewards => false` and does not put `LinkedRewardSet` or extra rewards into the combat room, avoiding the nonserializable parent-event combat reward path discovered in source. `CombatRoom.OfferRoomEndRewards()` is patched for the prefinished Vakuu trial restore path so it resumes the parent event instead of generating normal combat rewards. Live save/load proof remains pending.
+- The visible option/relic text now says the player fights Vakuu, says random Contracts enter hand after draw on turns 1/3/5+, says Contracts cost HP, break Stolen Vault locks while any remain, and add Blood Debt, says broken locks grant more blessing choices and 50 Gold each, says normal combat rewards are disabled, and says death ends the run.
+- `EZMB_VAKUU_KNIFE_CONTRACT`, `EZMB_VAKUU_TEMPTATION`, and `EZMB_VAKUU_SHELTER_CONTRACT` are hidden 0-cost Skill token Contracts with Ethereal and Exhaust. Playing one signs the Contract, costs HP, breaks a lock if any remain, adds Blood Debt, and then resolves Knife/Gold/Shelter command effects.
+- A dedicated run-state combat hook injects Contracts only while `combatState.Encounter is EzmbVakuuTrialEncounter`, applies Stolen Vault to Vakuu on combat entry, and tracks 40 unblocked player-turn damage lock breaks. It is gated to single-player by `VakuuFightFeatureGate.IsFightEnabledForRun(...)`.
 
 Next target:
 
-- Live-test the fight, Temptation draw/exhaust behavior, failure/death path, save/load behavior, and victory reward flow before claiming test-ready.
+- Live-test the fight, post-victory return/no-black-screen path, Contract hand injection/play behavior, Stolen Vault lock breaks, Blood Debt attack scaling, failure/death path, save/load behavior, and victory reward flow before exposing the fight by default or claiming release-ready behavior.
 
 ## ISSUE-2026-05-13-SPIREPLUS-TECHNICAL-IDENTITY-MIGRATION
 
@@ -202,16 +204,17 @@ Implementation source is present: Lotha has custom event art/background resource
 ## ISSUE-2026-05-12-VAKUU-FIGHT-V22-PLANNING
 
 Priority: P2
-Status: source-complete / live-pending for the first single-player test slice
+Status: hidden-by-default / source-dedicated / live-pending for the first single-player opt-in slice
 Area: Act 3 special Vakuu option
 
 Implemented first slice:
 
-- Add "Fight Vakuu" / `挑战瓦库` as an extra option when Vakuu appears.
-- During the fight, after the normal player-turn hand draw on turns 1, 3, 5, and onward, add Temptation to the top of the draw pile.
-- Victory offers three non-Vakuu Act 3 Ancient blessings from existing Act 3 Ancient reward pools.
-- Failure is still treated as lethal by the option text and source marker; live failure/death verification is pending.
-- Temptation is source-backed as a Status card: Ethereal + Unplayable, hidden from the card library, not normally generatable, and on exhaust it grants 1 Energy and costs 3 HP.
+- Add a Vakuu fight option only when the explicit enable/force gate is set.
+- The fight uses a dedicated Vakuu monster and encounter scene in source; live victory and restore behavior are still unproven.
+- During the fight, after the normal player-turn hand draw on turns 1, 3, 5, and onward, add one random Contract to hand if there is hand space.
+- Victory offers 1/2/3 non-Vakuu Act 3 Ancient blessings from existing Act 3 Ancient reward pools plus custom Lotha option relics based on broken Stolen Vault locks, and each broken lock grants 50 Gold.
+- Failure is still described as lethal by the option text; live failure/death verification is pending.
+- Vakuu Contracts are source-backed as hidden 0-cost Skill token cards: Ethereal + Exhaust, hidden from the card library, not normally generatable, and on play they cost HP, break Stolen Vault locks, add Blood Debt, and resolve their listed effect.
 
 Do not claim multiplayer, save/load, or death/failure readiness until live evidence exists.
 

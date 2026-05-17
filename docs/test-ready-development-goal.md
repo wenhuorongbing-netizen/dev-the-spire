@@ -2,9 +2,13 @@
 
 This is the single active implementation directive for the next large Codex pass.
 
-Goal: turn the current `Spire Plus` workspace into a release-candidate-quality test build, with the v2.2 Ancient design implemented as completely as source evidence allows, final-looking original art, readable highlighted text/tooltips, coherent package naming, and no stale release-ready claims.
+Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test build, with the v2.2 Ancient design implemented as completely as source evidence allows, final-looking original art, readable highlighted text/tooltips, coherent package naming, and no stale release-ready claims.
 
-This is not a release-ready claim. Live gameplay, save/load, and co-op status can only be closed with actual runtime evidence.
+Current stop line: Codex should not chase release-ready evidence in this pass. The user will run live/manual testing. Codex work should keep source, resources, package, docs, and automated guards aligned so the user can test one coherent package.
+
+This is not a release-ready claim. Live gameplay, save/load, death/failure path, clicked UI, and co-op status can only be closed with actual runtime evidence from the user test pass.
+
+Latest target reset, 2026-05-15: the user will run the live/manual verification. Codex should stop at a coherent test-ready handoff: source/docs/tests/package alignment, no stale release-ready wording, and clear manual rows for the user to execute.
 
 Latest static evidence, 2026-05-14: the source-audited text correction pass passed JSON parse checks, build, normal tests, format, diff check, publish, package refresh, post-hash rebuild/test, and opt-in artifact tests after correcting Rootblight, Marginal Note, Red Ink Overdraft, Seedbed, After the Rain, Forbidden Loan, and Debt Settlement text. It did not run live game/Steam, clicked Ancient UI, gameplay, save/load, death/failure path, co-op, or final package smoke for this package.
 
@@ -17,19 +21,19 @@ Keep the next pass focused on finishing the manual-test candidate, not re-implem
 1. Bespoke art remains open only for event-background provenance and live preview.
    - Urda, Morvi, Lotha, and Vakuu have source-backed custom event/icon/option asset paths and browser GPTimage2 oil-repaint small-art assets; post-rebuild live clicked-UI verification is still pending.
    - Final original option/relic/card/power/fallback/Ascension small art is now generated and manifest-tracked. Do not invent additional Image API prompts, hashes, or provenance unless assets are actually generated or supplied.
-2. Live/manual proof remains open.
-   - Run the Ancient UI/gameplay matrix for Urda, Morvi, Lotha, and the single-player Vakuu fight.
-   - No safe automated clicked-Ancient UI path exists yet; use the force-gate evidence protocol in `docs/features/ancient-expansion-v2.2/manual-test-checklist.md`.
-   - Include save/load, failure/death path, co-op disposition, A11 traversal, Rootblight visual/save-load proof, and final package smoke before any release-ready claim.
+2. Live/manual proof remains open for the user test pass.
+   - The user will run the Ancient UI/gameplay matrix for Urda, Morvi, Lotha, and the single-player Vakuu fight.
+   - The repo now has a safer UI-smoke route: `spireplus_test_ancient <Ancient> confirm` starts an unsaved single-player run from the main menu and opens the target Ancient. Use it through the force-gate evidence protocol in `docs/features/ancient-expansion-v2.2/manual-test-checklist.md`; it does not replace natural gameplay, save/load, or co-op proof.
+   - Keep save/load, failure/death path, co-op disposition, A11 traversal, Rootblight visual/save-load proof, and final package smoke open before any release-ready claim.
 3. Source-red-team follow-up remains open where it needs runtime design work.
    - Vakuu child combat uses a parent-event combat room shape that is not save/load-proven.
    - Lotha Death Reprieve, Morvi Red Ink/Open Book, and Player-field Ancient state still need live restore checks after the source hardening pass.
 4. Maintain player-facing polish.
    - Keep English/zhs option, relic, card, and power text truthful to the source implementation.
    - Avoid development wording, stale "missing" claims, and unresolved dynamic expressions.
-   - Current source text has been scrubbed for the 2026-05-14 player feedback list. Keep live UI fit and hover readability pending until clicked-screen evidence exists.
+   - Current source text has been scrubbed for the 2026-05-14 player feedback list. Root-Sight map hover now clears any existing hover on the same map point before showing the Root-Sight explanation, but live UI fit and hover readability remain pending until clicked-screen evidence exists.
 5. Fix image placement and aspect fit before treating the build as visually test-ready.
-   - Current source scenes use cover-style fit for clicked Ancient backgrounds; final visual acceptance still needs live screenshots.
+   - Current source scenes use keep-aspect centered TextureRect fit for clicked Ancient backgrounds; final visual acceptance still needs live screenshots.
    - Large Ancient portraits belong in clicked Ancient/event screens; map/run-history thumbnails and option/relic icons must stay separate.
 6. Keep reward visibility player-first.
    - Ancient choices may use event option previews, but the selected reward must also become a visible relic unless the design deliberately says otherwise.
@@ -45,6 +49,7 @@ Global rules:
 - Use one term for one mechanic. For A12 Chinese text, prefer `火印精英`; avoid mixing `火印宿主` into player-facing level descriptions unless the combat UI specifically needs to explain the marked enemy.
 - Keep numbers blue and gameplay nouns/actions gold where the existing rich-text policy supports it.
 - Do not include design-analysis phrases such as "setup window", "burst window", "source-safe", "candidate", "host", "fallback", or "route graph".
+- Avoid the sentence shape `不是……而是……` in player-facing Chinese text. State the effect directly.
 - Tooltips should explain what happens, not why the implementation is shaped that way.
 - Recheck every `EZMicroBalance/localization/eng/*.json` and `EZMicroBalance/localization/zhs/*.json` entry that is shown to the player: Ancient choices, option relics, powers, custom cards/statuses, card reward alternatives, Ascension levels, map hovers, boss seals/brands, and event dialogue.
 
@@ -80,6 +85,17 @@ The current active reading path is intentionally small. Do not create another la
 - Completed implementation record: `docs/archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md`.
 
 Manual checklist and completion-audit documents remain in place because automated guards read them, but they are support evidence, not default next-development reading material.
+
+## Worktree Hygiene
+
+Treat the current branch as a release-candidate work branch, not a scratchpad.
+
+- Keep one intentional feature/package diff. Do not hide unrelated dirty files by deleting, reverting, or ignore-listing them unless the project owner explicitly approves.
+- Before staging, split the status into `include`, `exclude`, and `needs owner decision`. The current include set is `EZMicroBalance/`, `EZMicroBalanceCode/`, `tests/`, `scripts/`, `export_presets.cfg`, and current docs touched by the Spire Plus package.
+- Keep `.github/`, `website/`, local tool output, `.godot/`, `bin/`, `obj/`, and machine-local config out of the release commit unless a current requirement explicitly names them.
+- Use `git status --short` for the current inventory, `git add -p` or pathspec staging for intentional slices, `git stash push -u -- <paths>` only for reversible temporary isolation, and `git clean -nd` only as a preview. Do not use destructive cleanup to make the tree look clean.
+- Run `git diff --check`, normal tests, opt-in artifact tests, package parity checks, and a loader smoke after package-changing work before any release commit.
+- A clean worktree is a final handoff state after an intentional stage/commit, not a reason to erase useful untracked assets or user work.
 
 ## Naming Rule
 
@@ -176,7 +192,7 @@ Do not spend time redoing completed work unless it blocks validation:
 - Ancient reward rebalance v4.3 baseline.
 - Ascension 21-30 and custom characters.
 - New Ancient families or new blessing sets beyond Urda/Morvi/Lotha/Vakuu v2.2.
-- Re-implementing source-complete Urda, Morvi, Lotha, Vakuu, or Temptation behavior without a concrete source bug.
+- Re-implementing source-complete Urda, Morvi, Lotha, or Vakuu Contract behavior without a concrete source bug. Vakuu fight now has a dedicated source enemy and scene, but remains hidden until live victory, save/load, death/failure, clicked UI, and co-op disposition are proven.
 - Old prompt/audit migration work already archived under `docs/archive/prompts/2026-05/` and `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/`.
 
 ## P0: Manual And Runtime Evidence
@@ -186,13 +202,13 @@ Current source state:
 - Urda is default-on with ten source-backed v2.2 blessing ids and `EZMB_*` plus `SPIREPLUS_*` force/disable aliases.
 - Morvi is default-on with eight source-backed v2.2 blessing ids.
 - Lotha is default-on with eight source-backed v2.2 blessing ids.
-- Vakuu fight is default-on for single-player testing with Temptation injected on turns 1/3/5+.
+- Vakuu fight is hidden by default because the reported post-victory black-screen path still needs live proof. It now has a dedicated source enemy/scene and can be deliberately enabled with `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, or force-fight gates while random Temptation Contracts enter hand on turns 1/3/5+.
 
 Required before any release-ready claim:
 
-- Open each Ancient screen live and verify background art, option art, option text, hover tips, expected option count, and no black screen. Current expected counts are Urda four, Morvi three, Lotha three, and the Vakuu fight option only where single-player gates allow it.
+- Open each Ancient screen live and verify background art, option art, option text, hover tips, expected option count, and no black screen. Current expected counts are Urda four, Morvi three, Lotha three, and Vakuu three by default; the gated Vakuu fight appears only when explicitly enabled or forced.
 - Run the Urda/Morvi/Lotha/Vakuu gameplay matrix in `manual-test-checklist.md`.
-- Run save/load tests across player state, deck mirror recovery, Open-Book held cards, Red Ink debt, Lotha Death Reprieve, Vakuu child combat, Temptation draw/exhaust, and failure/death paths.
+- Run save/load tests across player state, deck mirror recovery, Open-Book held cards, Red Ink debt, Lotha Death Reprieve, Vakuu child combat, Contract hand injection/play, Stolen Vault/Blood Debt state, and failure/death paths.
 - Run co-op disposition tests or keep the feature explicitly single-player/live-pending.
 - Refresh package smoke only after source/resource changes are stable.
 
@@ -200,18 +216,30 @@ Required before any release-ready claim:
 
 Keep fixes narrow and evidence-backed:
 
-- Vakuu child combat no longer assigns the known Core-rejected unfinished `ParentEventId` active-combat shape, but live active-fight and prefinished parent-resume restore behavior remains a blocker until tested.
+- Vakuu child combat intentionally does not call Core's `EnterCombatWithoutExitingEvent(...)` helper because local source shows the helper rejects non-shared events before transitioning. It instead clears the parent event `Node` and uses direct `EnterRoomWithoutExitingCurrentRoom(...)` with parent resume, which addresses the reported black-screen path at source level. The active fight no longer assigns `ParentEventId`; the parent id is recorded only for prefinished restore. The prefinished no-reward restore path is patched back to the Vakuu event, and the fight stays hidden until live active-fight, victory-return, and prefinished parent-resume behavior are proven.
 - Lotha Death Reprieve persists pending/active/resolved phase through the deck mirror, but exact active-turn restore is still not source-proven. Do not claim save/load-safe until live restore proves the current shape.
 - Morvi Red Ink and Open Book have been source-hardened to recover from visible power/card markers; Red Ink also skips full hands, verifies hand placement, and uses nonlethal unpaid-debt HP fallback. They still require live restore testing.
 - Player-level `SavedSpireField<Player,string>` persistence remains unproven; deck-card mirrors are the fallback, and live save/load proof remains required.
 - Do not hide bad upstream state with normalizers. Fix the carrier or document the unsupported limitation.
+
+## Working Tree Hygiene
+
+Keep each implementation pass small:
+
+- Start with `git status --short` and treat unrelated dirty files as user-owned.
+- Use `git diff -- <path>` before editing a file that is already dirty.
+- Prefer targeted edits and focused guard tests over broad formatting churn.
+- Use `git clean -nd` only to preview removable untracked output; do not delete untracked folders unless their purpose is known.
+- Use `git stash push -u -- <paths>` only for temporary local isolation, not as a substitute for understanding changes.
+- Never use `git reset --hard`, checkout/restore over dirty files, or recursive deletes to make the tree look clean.
+- Keep current work in current docs (`PROJECT_STATE.md`, `docs/issues.md`, and this file), not new prompt dumps.
 
 ## P1: Art, Text, And Package Polish
 
 - Keep the browser GPTimage2 rebuilt Urda/Morvi/Lotha/Vakuu option/icon/card/power art unless live preview exposes readability or composition defects; do not reintroduce simplified deterministic icons or opaque-background crops.
 - Keep event/background art separate from map icons and run-history icons.
 - Keep option relic art separate from map thumbnails.
-- Clicked Ancient background scenes now use cover-style TextureRect fit; verify title/home/Ancient-screen aspect ratios with live screenshots before calling the art pass complete.
+- Clicked Ancient background scenes now use keep-aspect centered TextureRect fit; verify title/home/Ancient-screen aspect ratios with live screenshots before calling the art pass complete.
 - When the user supplies the next GPT Image prompt, use it as the governing style prompt for new final art and record it in the art manifest. Do not reuse misrouted temporary crops as final relic/card/power art.
 - Record prompt/source path/target path/SHA256/asset role for every generated or supplied final asset.
 - Keep localization bilingual, short enough for UI, and truthful to source behavior. Prefer player language over implementation language.
@@ -307,7 +335,7 @@ You are in D:\Game\FOTN\dev-the-spire.
 
 Your job is to move Spire Plus from source-complete Ancient expansion toward a manual-test candidate without adding a new feature set. Use subagents where useful. Read PROJECT_STATE.md, AGENTS.md, docs/test-ready-development-goal.md, docs/issues.md, docs/features/ancient-expansion-v2.2/source-design.md, implementation-plan.md, manual-test-checklist.md, risk-register.md, docs/style/card-localization-style-guide.md, and docs/skills/sts2-godot-mod-development.md before editing.
 
-Current source state to preserve unless a concrete source bug is found: Urda has ten default-on v2.2 blessings; Morvi has eight default-on v2.2 blessings; Lotha has eight default-on v2.2 blessings; Vakuu fight is a default-on single-player test option with Temptation on turns 1/3/5+; the technical manifest id remains EZMicroBalance.
+Current source state to preserve unless a concrete source bug is found: Urda has ten default-on v2.2 blessings; Morvi has eight default-on v2.2 blessings; Lotha has eight default-on v2.2 blessings; Vakuu fight is hidden by default as a source-dedicated opt-in slice with Contract hand injection, Stolen Vault locks, Blood Debt scaling, and broken-lock reward scaling; the technical manifest id remains EZMicroBalance.
 
 Use local source code/src/Core/** as primary evidence, BaseLib/RitsuLib/template references second, and the tutorial only as secondary orientation. Do not run live game/Steam unless explicitly asked and safe. Do not claim release-ready, live-ready, save/load-ready, or co-op-ready without runtime evidence.
 
@@ -315,7 +343,7 @@ Priority work: source-red-team hardening, a full player-facing EN/zhs text scrub
 
 Before editing localization, apply the 2026-05-14 player text feedback in this goal file. Rewrite visible text to be short and understandable for players: simplify Trial Branch, Rooted Route, Seed Bank, A12/A15/A16/A17/A18/A19/A20 level descriptions, Firemarked Elite wording, Holy Daze, Struggle Bait, and Residual Sample. Use one term per mechanic, keep numbers blue and important gameplay nouns/actions gold, and remove implementation/design-analysis wording from tooltips.
 
-Special caution: Vakuu child combat save/load is not proven because Core rejects serialization of unfinished parent-linked combat rooms. Lotha Death Reprieve pending/active state also needs restore proof or a persisted carrier. Morvi Red Ink/Open Book and Player-field Ancient state need live restore validation even after source guards.
+Special caution: Vakuu child combat no longer uses the known Core-rejected active `ParentEventId` save shape, but live active-fight and prefinished parent-resume save/load are still not proven. Lotha Death Reprieve pending/active state also needs restore proof or a persisted carrier. Morvi Red Ink/Open Book and Player-field Ancient state need live restore validation even after source guards.
 
 Keep docs/issues.md compact. Do not create another giant active prompt or audit folder. Update PROJECT_STATE.md, docs/issues.md, relevant feature docs, and docs/mod-changelog.md only with evidence actually produced.
 

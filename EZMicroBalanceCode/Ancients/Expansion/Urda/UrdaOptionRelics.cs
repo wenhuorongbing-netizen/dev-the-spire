@@ -1,5 +1,7 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Nodes.Relics;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 
 internal abstract class UrdaOptionRelic : CustomRelicModel
@@ -69,10 +71,85 @@ internal sealed class UrdaAfterRainOptionRelic : UrdaOptionRelic
 internal sealed class UrdaRootSightOptionRelic : UrdaOptionRelic
 {
     public override string PackedIconPath => UrdaAssetPaths.RootSightOptionIcon;
+
+    public override bool IsUsedUp =>
+        IsMutable &&
+        Owner != null &&
+        UrdaBlessingService.GetRootSightEyes(Owner) <= 0;
+
+    public override bool ShowCounter =>
+        IsMutable &&
+        Owner != null &&
+        UrdaBlessingService.GetRootSightEyes(Owner) > 0;
+
+    public override int DisplayAmount =>
+        IsMutable && Owner != null
+            ? UrdaBlessingService.GetRootSightEyes(Owner)
+            : 0;
+
+    public void RefreshRootSightDisplay() => InvokeDisplayAmountChanged();
 }
 
 [Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaSeedBankOptionRelic : UrdaOptionRelic
 {
     public override string PackedIconPath => UrdaAssetPaths.SeedBankOptionIcon;
+
+    public override bool IsUsedUp =>
+        IsMutable &&
+        Owner != null &&
+        UrdaBlessingService.IsSeedBankSettled(Owner);
+
+    public override bool ShowCounter =>
+        IsMutable &&
+        Owner != null &&
+        UrdaBlessingService.GetSeedBankStoredCount(Owner) > 0 &&
+        !UrdaBlessingService.IsSeedBankSettled(Owner);
+
+    public override int DisplayAmount =>
+        IsMutable && Owner != null
+            ? UrdaBlessingService.GetSeedBankStoredCount(Owner)
+            : 0;
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            if (!IsMutable || Owner == null)
+            {
+                return [];
+            }
+
+            return UrdaBlessingService
+                .GetSeedBankStoredCards(Owner)
+                .SelectMany(card => new[] { HoverTipFactory.FromCard(card) }.Concat(card.HoverTips))
+                .ToArray();
+        }
+    }
+
+    public void RefreshStoredSeedDisplay() => InvokeDisplayAmountChanged();
+}
+
+[HarmonyPatch(typeof(NRelicInventory), "OnRelicClicked")]
+internal static class UrdaSeedBankRelicClickPatch
+{
+    [HarmonyPrefix]
+    private static bool ExtractStoredSeedInsteadOfInspecting(RelicModel model)
+    {
+        if (model is UrdaRootSightOptionRelic rootSight && rootSight.Owner != null)
+        {
+            return !UrdaBlessingService.TryBeginRootSightSelection(rootSight.Owner);
+        }
+
+        if (model is not UrdaSeedBankOptionRelic seedBank ||
+            seedBank.Owner == null ||
+            seedBank.IsUsedUp ||
+            UrdaBlessingService.GetSeedBankStoredCount(seedBank.Owner) == 0)
+        {
+            return true;
+        }
+
+        _ = TaskHelper.RunSafely(UrdaBlessingService.TryExtractSeedBankFromRelicClick(seedBank.Owner));
+        return false;
+    }
 }

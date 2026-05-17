@@ -1,5 +1,7 @@
 ﻿# Slay the Spire 2 Mod Workspace Setup Specification
 
+Archive note: this file was moved from `docs/SETUP_SPEC.md` because it is historical setup archaeology, not a current setup entry point.
+
 Historical note: this document records the original `EzDailyContent` setup baseline from 2026-05-02. The active private beta deliverable is now `EZMicroBalance`; use `README.md`, `docs/PROJECT_MAP.md`, `docs/dev-environment.md`, `docs/test-plan.md`, and `docs/features/ancients-rework-v4/completion-audit.md` for current release status.
 
 ## 1. Project Overview

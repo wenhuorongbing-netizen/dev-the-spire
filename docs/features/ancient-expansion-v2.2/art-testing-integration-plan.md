@@ -2,14 +2,14 @@
 
 Status date: 2026-05-15
 
-This plan separates source/gameplay testing from final-art integration. The previous source-local review PNGs were superseded by the browser ChatGPT/GPTimage2 oil-repaint pass under `.tools/art-generation/chatgpt/oil-rebuild-20260515/`. The Lotha first-preview event-background crop and the Urda 2.13:1 reframe are now active middle-draft event backgrounds.
+This plan separates source/gameplay testing from final-art integration. The previous source-local review PNGs were superseded by the browser ChatGPT/GPTimage2 oil-repaint pass under `.tools/art-generation/chatgpt/oil-rebuild-20260515/`. The event-background live UI correction restored the user-approved 16:9 Urda, Morvi, and Lotha source images and changed scene fitting to keep aspect rather than crop.
 
 ## Readiness Decision
 
 - Source/gameplay testing can proceed with the promoted browser GPTimage2 oil-repaint art.
 - Final small-art provenance is claimed through the manifest for 69 browser ChatGPT/GPTimage2 `final_generated` records. This covers option relics, identity icons, Lotha Verdict, Vakuu fight, fallback power/relic assets, Ascension indicators/banners/status icons, and six custom card portraits.
 - More small-icon generation is not needed before the next in-game preview pass unless live UI screenshots expose scale/readability issues.
-- Event backgrounds are now unified to the 1831x859 / about 2.13:1 target and use full-scene cover fitting. They still need live clicked-UI screenshots before release-ready claims.
+- Event backgrounds are now unified to the 1672x941 / about 16:9 source images and use full-scene keep-aspect centered fitting. They still need live clicked-UI screenshots before release-ready claims.
 
 ## Review Outputs
 
@@ -18,13 +18,14 @@ This plan separates source/gameplay testing from final-art integration. The prev
 - Historical blueprint overview: `.tools/art-generation/chatgpt/ancient-art-blueprint-preview-v1.png`
 - Historical target-size preview: `.tools/art-generation/chatgpt/ancient-art-promotion-target-preview-v1.png`
 - Historical candidate manifest: `.tools/art-generation/promotion-candidates/promotion-candidates-manifest.json`
-- Active event-background contact sheet: `.tools/art-generation/event-background-reframe-20260515/active-event-backgrounds-1831x859-contact.png`
+- Active event-background contact sheet: `.tools/art-generation/event-background-repair-20260515-live-feedback/active-event-backgrounds-16x9-contact.png`
+- Corrected Lotha source/audit sheet: `.tools/art-generation/lotha-background-repair-20260515-feedback/edge-1672x941-candidates-contact.png`
 
 Historical candidate manifest summary:
 
 - 40 former `ready_candidate` items are active resources: option relics, identity icons, Lotha verdict power, and Vakuu fight option art.
 - 12 former `needs_code_path` items are active resources: six custom card portraits, each with small and big variants; the card source now uses unique image paths instead of generic `card.png` / `big/card.png`.
-- The former `needs_user_review` Lotha crop is now active as `EZMicroBalance/images/events/ezmb_lotha.png`.
+- The former `needs_user_review` Lotha first preview was rejected after user review as the wrong similarly named mirror composition. The active Lotha event background is now the corrected user-uploaded horizontal mirror-ensemble source recovered from Edge cache.
 
 ## Art Categories
 
@@ -34,15 +35,15 @@ Purpose: clicked Ancient event background art.
 
 Current state:
 
-- Urda, Morvi, and Lotha active backgrounds are all 1831x859 source-local middle-draft resources.
-- Urda is a y=80 2.13:1 reframe of the user-accepted root-mother background.
-- Morvi already matched the 2.13:1 event-background target.
-- Lotha now uses `.tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/events/ezmb_lotha_first_preview_crop_1831x859.png`, replacing the older silver judge background.
+- Urda, Morvi, and Lotha active backgrounds are all 1672x941 source-local or user-supplied middle-draft resources.
+- Urda uses the original user-accepted 16:9 root-mother background.
+- Morvi uses the recovered user-uploaded blue-eye court/scribe background, not the rejected wooden cabinet lender-scribe image.
+- Lotha uses `.tools/art-generation/lotha-background-repair-20260515-feedback/sources/lotha-horizontal-mirror-ensemble-upload-source.png`, the corrected user-uploaded horizontal mirror-ensemble source. The older `crystal-throne-of-shattered-visions.png` file is retained as historical reference only and must not be treated as the active Lotha source.
 
 Decision needed before release-ready art claims:
 
 - Capture live clicked Ancient UI screenshots for Urda, Morvi, and Lotha and verify title/text overlays do not hide the focal silhouettes.
-- If the Lotha crop feels too compressed in live UI, regenerate a true 2.13:1 version using the first-preview prompt below.
+- If any event background still crops or misplaces focal content in live UI, regenerate a true 16:9 version using the first-preview prompt below and keep `stretch_mode = 5` unless source evidence proves otherwise.
 
 ### Option Relics
 
@@ -105,10 +106,10 @@ Current active decision:
 
 ## Prompt Definitions
 
-### Lotha Event Background, If The Crop Is Rejected
+### Lotha Event Background, If The 16:9 Fit Is Rejected
 
 ```text
-Generate one wide 2.13:1 dark fantasy event illustration.
+Generate one wide 16:9 dark fantasy event illustration.
 
 Use the first approved mirror-ensemble composition as the target: a central obsidian crystal oracle holding a circular mirror with a glowing anatomical heart, surrounded by jagged vertical crystal mirrors. The leftmost large mirror contains an original simplified Neow-like whale-tower silhouette with a hole-punched face. Other mirrors contain simplified grotesque character clues: dripping pale beast, candle-headed priest, blue horned demon, green forest prophet, floating eye relic, masked rider, and golden lion-serpent guardian.
 
@@ -142,7 +143,7 @@ Composition: one clear object or action, large central shape, readable at 250x19
 1. Run art audit and targeted art hygiene tests against the promoted active paths.
 2. Run `dotnet build`, `dotnet test`, `dotnet publish`, package refresh, and release artifact tests.
 3. Generate a consolidated active preview sheet from current resource paths.
-4. Decide Lotha event background crop vs regeneration; promote only after visual approval.
+4. Decide whether any 16:9 event background needs regeneration after live UI preview; promote only after visual approval.
 5. Run clicked-Ancient UI preview capture after package validation.
 
 ## Non-Goals For This Pass

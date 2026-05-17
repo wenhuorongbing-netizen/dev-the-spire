@@ -97,6 +97,41 @@ foreach ($target in @($versionedRoot, $zipPath, $legacyZipPath)) {
 New-Item -ItemType Directory -Force -Path $versionedRoot | Out-Null
 Copy-Item -LiteralPath $stagingModDir -Destination $versionedRoot -Recurse -Force
 
-Compress-Archive -LiteralPath $versionedModDir -DestinationPath $zipPath -CompressionLevel Optimal
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.IO.Compression
+$fixedZipTimestamp = [System.DateTimeOffset]::new(2026, 1, 1, 0, 0, 0, [System.TimeSpan]::Zero)
+$zipStream = [System.IO.File]::Open($zipPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::ReadWrite)
+try {
+    $archive = [System.IO.Compression.ZipArchive]::new($zipStream, [System.IO.Compression.ZipArchiveMode]::Create, $false)
+    try {
+        Get-ChildItem -LiteralPath $versionedModDir -File |
+            Sort-Object -Property Name |
+            ForEach-Object {
+                $entry = $archive.CreateEntry(
+                    "EZMicroBalance/$($_.Name)",
+                    [System.IO.Compression.CompressionLevel]::Optimal)
+                $entry.LastWriteTime = $fixedZipTimestamp
+                $entryStream = $entry.Open()
+                try {
+                    $fileStream = [System.IO.File]::OpenRead($_.FullName)
+                    try {
+                        $fileStream.CopyTo($entryStream)
+                    }
+                    finally {
+                        $fileStream.Dispose()
+                    }
+                }
+                finally {
+                    $entryStream.Dispose()
+                }
+            }
+    }
+    finally {
+        $archive.Dispose()
+    }
+}
+finally {
+    $zipStream.Dispose()
+}
 
 Write-Host "Created $zipPath"

@@ -14,7 +14,7 @@ Urda is default-on for private-beta testing in this pass. All ten v2.2 Urda bles
 - Disable gate: set `EZMB_DISABLE_URDA=1` to hide Urda for comparison.
 - `EZMB_FORCE_ANCIENT=URDA` is legacy-compatible and no longer required.
 - `UrdaFeatureGate.IsUrdaEnabled(...)` returns true unless the disable gate is truthy.
-- Morvi is default-on in the active private-beta test slice with its own disable/force gates. Lotha is now default-on in the active test slice with its own disable/force gates. Vakuu fight is source-complete/live-pending for single-player testing, with its own disable/force gates.
+- Morvi is default-on in the active private-beta test slice with its own disable/force gates. Lotha is now default-on in the active test slice with its own disable/force gates. Vakuu fight is hidden by default, has a dedicated source enemy/scene, and still needs live victory proof before normal exposure.
 - NeowEpoch visibility is not a live gate for Urda; activation is limited to `Underdocks`/`Overgrowth` patches.
 - Ancient Expansion v2.2 now uses a ten-blessing Urda source slice. Runtime proof is still pending.
 

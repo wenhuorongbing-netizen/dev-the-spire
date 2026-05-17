@@ -1,6 +1,6 @@
 # Ancient Expansion Pack v2.2
 
-Status: current Urda stabilization is source-backed but live-pending, default-on Morvi v2.2 is source-complete for direct private-beta testing, Lotha is default-on with a source-complete test slice, and Vakuu fight is default-on for single-player private-beta testing as a source-complete/live-pending slice.
+Status: current Urda stabilization is source-backed but live-pending, default-on Morvi v2.2 is source-complete for direct private-beta testing, Lotha is default-on with a source-complete test slice, and Vakuu fight is hidden by default with a dedicated source enemy/scene pending live proof.
 
 ## Scope
 
@@ -15,7 +15,7 @@ Current source-backed state to preserve:
 - Morvi is default-on for private-beta testing with all eight v2.2 blessing ids, custom event art, map/run-history icons, option art, English/zhs localization, disable gates, force-Ancient gates, and force-blessing gates. Live gameplay, save/load, and co-op verification remain pending.
 - Lotha is default-on for private-beta testing with all eight v2.2 blessing ids, custom Ancient event art, map/run-history icons, option art, English/zhs localization, disable gates, force-Ancient gates, and force-blessing gates.
 - Lotha live gameplay, save/load, co-op, and post-Lotha loader/package validation remain pending.
-- Vakuu fight is default-on for single-player private-beta testing. It adds a Fight Vakuu option, awaits a custom Event combat transition, gives no normal combat rewards, resumes the parent Vakuu event on victory, and offers three non-Vakuu Act 3 Ancient blessings or an explicit no-unclaimed-blessing fallback. Live UI/gameplay, save/load, failure/death, and co-op evidence remain pending.
+- Vakuu fight is hidden by default and appears only with `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, or a force-fight gate. It now uses a dedicated Vakuu monster and custom encounter scene in source. The source clears the parent event node before entering child combat to address the reported post-victory black screen risk, but live victory, save/load, failure/death, clicked UI, and co-op evidence remain pending.
 - Morvi, Lotha, Urda, and Vakuu small art now use browser ChatGPT/GPTimage2 rebuilt `final_generated` assets for the private-beta art pass; live clicked-UI preview is still pending.
 
 ## Documents
@@ -41,4 +41,4 @@ Archived prompt material:
 
 ## Hard Boundary
 
-This folder may guide later implementation. Morvi, Lotha, and Vakuu are source-complete but not live-verified. Future work must first acknowledge current blockers, update the related issue row, inspect local `source code/src/Core/`, and add source guards plus manual checklist rows before claiming a feature is live-ready.
+This folder may guide later implementation. Morvi and Lotha are source-complete but not live-verified. Vakuu fight is source-dedicated but not live-verified: it remains opt-in until post-victory, save/load, death/failure, clicked UI, and co-op proof exists. Future work must first acknowledge current blockers, update the related issue row, inspect local `source code/src/Core/`, and add source guards plus manual checklist rows before claiming a feature is live-ready.

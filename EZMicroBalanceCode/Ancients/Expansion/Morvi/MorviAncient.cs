@@ -251,6 +251,8 @@ internal static class MorviAssetPaths
 
     public static string DebtSettlementOptionIcon => $"{MainFile.ResPath}/images/ancients/morvi/options/morvi_debt_settlement.png";
 
+    public static string ArchivePagePowerIcon => $"{MainFile.ResPath}/images/card_portraits/morvi_archive_pages.png";
+
     public static string DebtPowerIcon => DebtSettlementOptionIcon;
 
     public static string ProofreadPowerIcon => BlueprintProofOptionIcon;

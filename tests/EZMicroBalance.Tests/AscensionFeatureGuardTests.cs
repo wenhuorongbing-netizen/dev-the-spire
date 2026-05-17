@@ -1,5 +1,4 @@
-using System.Text;
-using System.Text.Json;
+﻿using System.Text;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -9,7 +8,7 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void AscensionSelectionExtendsOriginalStandardLobbiesWithoutGlobalProgressGetterPatch()
     {
-        var source = ReadAscensionSource();
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ascension");
 
         AssertSourceContains(
             source,
@@ -608,6 +607,11 @@ public sealed class AscensionFeatureGuardTests
         Assert.DoesNotContain("路线", zhsAscension["LEVEL_12.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("费用", zhsAscension["LEVEL_13.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]耗能[/gold]降低[blue]1[/blue]", zhsAscension["LEVEL_13.description"], StringComparison.Ordinal);
+        var allAscensionText = string.Join(Environment.NewLine, engAscension.Values.Concat(zhsAscension.Values));
+        Assert.DoesNotContain("Wake-up source", allAscensionText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Queen-side settlement", allAscensionText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\u7206\u53d1\u538b\u529b", allAscensionText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\u7206\u53d1\u9884\u8b66", allAscensionText, StringComparison.Ordinal);
         Assert.Contains("Forge Token special rest-site action payout is disabled", manualChecklist, StringComparison.Ordinal);
         Assert.DoesNotContain("Special rest-site actions heal 5 HP", manualChecklist, StringComparison.Ordinal);
     }
@@ -707,76 +711,4 @@ public sealed class AscensionFeatureGuardTests
         Assert.Contains("Runtime registration and random transform/reward exclusion pending", apiResearch, StringComparison.Ordinal);
     }
 
-    private static SortedDictionary<string, string> JsonStringMap(params string[] parts)
-    {
-        using var document = JsonDocument.Parse(ReadRepoText(parts));
-        var map = new SortedDictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (var property in document.RootElement.EnumerateObject())
-        {
-            Assert.Equal(JsonValueKind.String, property.Value.ValueKind);
-            map.Add(property.Name, property.Value.GetString() ?? string.Empty);
-        }
-
-        return map;
-    }
-
-    private static string ReadAscensionSource()
-    {
-        var sourceRoot = RepoPath("EZMicroBalanceCode", "Ascension");
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(sourceRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(path => File.ReadAllText(path, Encoding.UTF8)));
-    }
-
-    private static int CountOccurrences(string source, string snippet)
-    {
-        var count = 0;
-        var index = 0;
-
-        while ((index = source.IndexOf(snippet, index, StringComparison.Ordinal)) >= 0)
-        {
-            count++;
-            index += snippet.Length;
-        }
-
-        return count;
-    }
-
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

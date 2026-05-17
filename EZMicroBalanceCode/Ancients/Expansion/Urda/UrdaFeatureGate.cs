@@ -1,5 +1,4 @@
-using System;
-
+using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 using MegaCrit.Sts2.Core.Unlocks;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -14,10 +13,10 @@ internal static class UrdaFeatureGate
     public const string ForceBlessingAliasEnvironmentVariable = "SPIREPLUS_FORCE_URDA_BLESSING";
 
     public static string? ForcedAncient =>
-        FirstEnvironmentValue(ForceAncientEnvironmentVariable, ForceAncientAliasEnvironmentVariable);
+        AncientFeatureGate.FirstNonBlankEnvironmentValue(ForceAncientEnvironmentVariable, ForceAncientAliasEnvironmentVariable);
 
     public static string? ForcedBlessing =>
-        FirstEnvironmentValue(ForceBlessingEnvironmentVariable, ForceBlessingAliasEnvironmentVariable);
+        AncientFeatureGate.FirstNonBlankEnvironmentValue(ForceBlessingEnvironmentVariable, ForceBlessingAliasEnvironmentVariable);
 
     public static bool ShouldForceUrda =>
         ForcedAncient is { Length: > 0 } forcedAncient &&
@@ -25,29 +24,6 @@ internal static class UrdaFeatureGate
          string.Equals(forcedAncient, "EZMB_URDA", StringComparison.OrdinalIgnoreCase));
 
     public static bool IsUrdaEnabled(UnlockState _unlockState) =>
-        !IsTruthy(Environment.GetEnvironmentVariable(DisableAncientEnvironmentVariable)) &&
-        !IsTruthy(Environment.GetEnvironmentVariable(DisableAncientAliasEnvironmentVariable));
-
-    private static string? FirstEnvironmentValue(params string[] names)
-    {
-        foreach (var name in names)
-        {
-            var value = Environment.GetEnvironmentVariable(name)?.Trim();
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                return value;
-            }
-        }
-
-        return null;
-    }
-
-    private static bool IsTruthy(string? value)
-    {
-        var normalized = value?.Trim();
-        return string.Equals(normalized, "1", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(normalized, "true", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(normalized, "yes", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(normalized, "on", StringComparison.OrdinalIgnoreCase);
-    }
+        !AncientFeatureGate.IsTruthyEnvironmentVariable(DisableAncientEnvironmentVariable, trimValue: true) &&
+        !AncientFeatureGate.IsTruthyEnvironmentVariable(DisableAncientAliasEnvironmentVariable, trimValue: true);
 }

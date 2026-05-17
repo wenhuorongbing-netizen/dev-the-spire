@@ -1,6 +1,6 @@
 # Ancient Expansion Pack v2.2 Source Design
 
-Status: default-on Urda ten-blessing source-complete test slice, default-on Morvi source-complete test slice, default-on Lotha source-complete test slice, and default-on single-player Vakuu fight source-complete test slice with Temptation status pressure. Live gameplay, save/load, and co-op verification remain pending.
+Status: default-on Urda ten-blessing source-complete test slice, default-on Morvi source-complete test slice, default-on Lotha source-complete test slice, and hidden-by-default source-dedicated Vakuu fight slice with Contract, Stolen Vault, and Blood Debt pressure. Live gameplay, save/load, and co-op verification remain pending.
 
 Working title: **Sowing, Borrowing, and Judgment** (`播种、借阅与审判`).
 
@@ -24,8 +24,8 @@ The design should remain modular. Each blessing must be independently disableabl
 - Do not replace the existing Ancient reward rebalance v4 behavior.
 - Morvi is default-on for the current private-beta test slice, with `EZMB_DISABLE_MORVI` / `SPIREPLUS_DISABLE_MORVI` emergency gates and force-test env vars.
 - Lotha is default-on for the current private-beta test slice, with `EZMB_DISABLE_LOTHA` / `SPIREPLUS_DISABLE_LOTHA` emergency gates and force-test env vars.
-- Vakuu fight is default-on for single-player private-beta testing with `EZMB_DISABLE_VAKUU_FIGHT` / `SPIREPLUS_DISABLE_VAKUU_FIGHT` emergency gates and force-test env vars.
-- Current Urda, Morvi, Lotha, and the single-player Vakuu fight option are the active expansion test slices.
+- Vakuu fight is hidden by default and requires `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, or a force-fight gate. It also keeps `EZMB_DISABLE_VAKUU_FIGHT` / `SPIREPLUS_DISABLE_VAKUU_FIGHT` rollback gates.
+- Current Urda, Morvi, and Lotha are active expansion test slices. The single-player Vakuu fight is a source-dedicated opt-in slice only.
 - Future Ancient additions must avoid silently changing existing run setup, reward, map, or save/load behavior.
 
 ### Punishment Principles
@@ -58,8 +58,8 @@ Current source-backed blessings:
 | Shallow-Root Relic | `urda_shallow_root_relic` | Source hook exists with 2 common relic choices, gold/rooting, and deterministic Act 2 removal/refund fallback; live gameplay/save-load pending. |
 | Rooted Route | `urda_rooted_route` | Source hook exists with automatic reachable normal-combat mark, no map graph mutation, success rewards, and wither fallback; live gameplay/save-load pending. |
 | After the Rain | `urda_after_rain` | Source hook exists with Act 1 death prevention, elite gold, and Act 2 unused compensation; live gameplay/save-load pending. |
-| Root-Sight | `urda_root_sight` | Source hook exists with 5 Root Eyes and automatic non-Boss map marking instead of a map button; live gameplay/save-load pending. |
-| Seed Bank | `urda_seed_bank` | Source hook exists with Store Seed reward alternative and pre-boss settlement; live gameplay/save-load pending. |
+| Root-Sight | `urda_root_sight` | Source hook exists with 5 Root Eyes, relic-click map selection, and stored previews for reachable Monster/Unknown/Elite nodes; live gameplay/save-load pending. |
+| Seed Bank | `urda_seed_bank` | Source hook exists with Store Seed reward alternative and relic-click extraction of up to 2 stored cards; live gameplay/save-load pending. |
 
 ## 4. Full Urda v2.2 Roadmap
 
@@ -121,31 +121,38 @@ Implementation summary:
 | Single Sentence / 单牌宣判 | `lotha_single_sentence` | First Attack/Skill judgment plus a four-card remaining cap; Powers use replacement reward. |
 | Public Evidence / 公开罪证 | `lotha_public_evidence` | Non-damaging negative status/evidence detection uses source power-amount hooks; Poison, damage-over-time, countdown damage, and source-proven damage/kill Debuffs are excluded; consumes Enlightenment at turn start. |
 
-## 7. Vakuu Fight Source-Complete Test Slice
+## 7. Vakuu Fight Hidden Opt-In Slice
 
-Vakuu fight is default-on for single-player private-beta testing. It remains live-pending and is not claimed multiplayer-safe.
+Vakuu fight is hidden by default for single-player private-beta testing. It now has a dedicated source enemy and encounter scene, remains live-pending, and is not claimed multiplayer-safe.
 
 Implemented behavior:
 
-- When Vakuu appears, add an extra option: "Fight Vakuu" / `挑战瓦库`.
-- The option text tells the player this is a real fight, Vakuu adds Temptation after the hand draw on turns 1/3/5+, normal combat rewards are disabled, victory grants a non-Vakuu Act 3 Ancient blessing choice, and death ends the run.
-- On player turns 1, 3, 5, and onward, after the normal hand draw, the fight adds one Temptation to the top of the Draw Pile.
-- Temptation is a hidden Status card with Ethereal and Unplayable. When it exhausts, it grants 1 Energy and costs 3 HP.
-- Victory resumes the parent Vakuu event and offers three non-Vakuu Act 3 Ancient blessings from existing Nonupeipe/Tanx reward options when three unclaimed choices remain; otherwise it shows a continue fallback instead of an empty reward state.
-- If fewer than three unclaimed non-Vakuu options are available, the victory page uses an explicit fallback instead of silently finishing the event with zero options.
+- When explicitly enabled and Vakuu appears, add an extra fight option.
+- The current encounter uses a dedicated `EzmbVakuuTrialMonster`, a custom `ezmb_vakuu_trial.tscn` encounter scene, and a simple four-move Vakuu action loop. Live victory and restore behavior still need proof.
+- The option text tells the player Vakuu adds a random Contract after the hand draw on turns 1/3/5+, normal combat rewards are disabled, Contracts cost HP, break Stolen Vault locks while any remain, and add Blood Debt, broken Stolen Vault locks improve victory rewards, and death ends the run.
+- On player turns 1, 3, 5, and onward, after the normal hand draw, the fight adds one random 0-cost Contract to hand if hand space allows: Knife Contract, Gold Contract, or Shelter Contract.
+- The Gold Contract is the localized face of the internal `EZMB_VAKUU_TEMPTATION` / Temptation card; it is implemented as a hidden Contract token, not future content.
+- Vakuu starts with three Stolen Vault locks. Playing a Contract breaks one lock, and dealing 40 unblocked damage to Vakuu in one player turn breaks one lock once for that turn.
+- Each Contract adds one Blood Debt stack. Blood Debt increases each of Vakuu's powered attack hits by 3 damage, so the cost of signing multiple Contracts is visible in intents.
+- Victory resumes the parent Vakuu event and offers 1/2/3 non-Vakuu Act 3 Ancient blessing choices based on broken locks, from existing Nonupeipe/Tanx rewards plus custom Lotha option relics when unclaimed choices remain. Each broken lock also grants 50 Gold when the victory option or fallback is accepted. Custom Lotha victory choices route through the same Lotha selection service as the Lotha event, so the player receives the visible marker relic and the run hook state together.
+- If no unclaimed non-Vakuu options are available, the victory page uses an explicit fallback instead of silently finishing the event with zero options; broken-lock Gold is still granted through that fallback.
 - Failure is presented as lethal; live failure/death verification is pending.
 
 Source shape:
 
 - The fight option is injected through `Vakuu.GenerateInitialOptions`.
-- Combat entry awaits `RunManager.Instance.EnterRoomWithoutExitingCurrentRoom(...)` and relies on Core's default `ShouldResumeParentEventAfterCombat = true` room-stack behavior, but it does not store `ParentEventId` while the combat room is unfinished.
+- The fight gate requires `ShouldEnableFight`, so normal Vakuu remains at three standard options unless `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, `EZMB_FORCE_VAKUU_FIGHT=1`, or `SPIREPLUS_FORCE_VAKUU_FIGHT=1` is set.
+- Combat entry does not call Core's `EnterCombatWithoutExitingEvent(...)`, because the local Core helper rejects non-shared events before it reaches the transition. Vakuu instead explicitly creates an `EzmbVakuuTrialEncounter` `CombatRoom`, sets `ShouldResumeParentEventAfterCombat = true`, clears the parent event `Node`, then awaits direct `EnterRoomWithoutExitingCurrentRoom(...)`.
+- Clearing the parent event `Node` addresses the reported post-victory black-screen risk where `NEventRoom` rejects an event that still has an attached node. The active fight no longer assigns `ParentEventId`; the active combat room does not store `ParentEventId` while the combat room is active; the parent id is written only after prefinished combat serialization.
 - A narrow `CombatRoom.ToSerializable()` postfix records the Vakuu parent id only for prefinished `EzmbVakuuTrialEncounter` combat rooms that still intend to resume the parent event.
-- The custom encounter is `RoomType.Event` and `ShouldGiveRewards => false`, so default combat rewards and nonserializable linked reward sets are not used.
+- The prefinished parent-restore path also skips the duplicate Ancient heal that Core would otherwise apply when it reconstructs the parent Vakuu `EventRoom` below the finished combat.
+- The custom encounter is `RoomType.Monster` and `ShouldGiveRewards => false`, matching Core's event-launched combat shape while avoiding normal combat rewards and nonserializable linked reward sets.
+- The prefinished Vakuu trial restore path patches `CombatRoom.OfferRoomEndRewards()` so it resumes the parent Vakuu event instead of generating normal combat rewards.
 - Parent-event resume patches `EventModel.Resume(...)` and calls the protected `SetEventState(...)` path by reflection to present the victory blessing choices.
-- A run-state combat hook, registered only when the single-player Vakuu fight gate is enabled, injects Temptation only when `combatState.Encounter is EzmbVakuuTrialEncounter`.
-- Temptation uses a source-safe `AfterCardExhausted(...)` override like Withered Husk, so exhausting it from a non-hand pile still resolves the Energy/HP effect without depending on hand state.
+- A run-state combat hook, registered only when the single-player Vakuu fight gate is enabled, injects Contracts only when `combatState.Encounter is EzmbVakuuTrialEncounter`, applies the Stolen Vault power when Vakuu enters combat, and tracks player-turn unblocked damage for lock breaks.
+- Contract cards are hidden 0-cost Skill tokens with Ethereal and Exhaust. They use normal card play commands plus a shared signing service for HP loss, Blood Debt, and lock breaks.
 - Multiplayer is gated off by requiring `runState.Players.Count == 1`.
-- Local `CombatRoom.ToSerializable()` throws for unfinished combat rooms with `ParentEventId`; current Vakuu source avoids that known unsafe active-combat shape. Do not claim fight save/load readiness until live testing proves active-fight behavior if saving is available there, plus the prefinished empty-reward/parent-resume path.
+- Local `CombatRoom.ToSerializable()` throws for active combat rooms with `ParentEventId`; current Vakuu source no longer stores `ParentEventId` while the combat room is active, avoiding that known source-level blocker. Do not claim fight save/load readiness until live testing proves active-fight behavior if saving is available there, plus the patched prefinished no-reward parent-resume path.
 
 ## 8. New Cards And Statuses
 
@@ -154,7 +161,7 @@ Source shape:
 | Withered Husk | Current Urda source-backed slice | Temporary/unplayable Molting card. Current live verification pending. |
 | Waste Paper | Current Morvi source-backed slice | Temporary Status used by Paperstorm; no extra punishment beyond Paperstorm consuming drawn Status cards. |
 | Archive Pages | Current Morvi source-backed slice | Temporary 0-cost Ethereal/Exhaust pages from Overdue Library; unplayed pages have no extra punishment. |
-| Temptation | Current Vakuu source-backed slice | Hidden Status card added by the Vakuu fight on turns 1/3/5+. Ethereal + Unplayable; when exhausted, gain 1 Energy and lose 3 HP. Uses the browser GPTimage2 rebuilt custom card portrait. |
+| Vakuu Contracts | Current Vakuu source-backed slice | Hidden 0-cost Skill token Contracts added by the Vakuu fight on turns 1/3/5+. Ethereal + Exhaust; playing one costs HP, breaks one Stolen Vault lock if any remain, adds one Blood Debt, and then applies Knife/Gold/Shelter effects. Uses the browser GPTimage2 rebuilt custom card portrait. |
 
 ## 9. Hook Requirements
 

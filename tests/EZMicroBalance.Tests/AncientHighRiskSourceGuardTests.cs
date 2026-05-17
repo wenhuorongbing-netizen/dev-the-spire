@@ -1,5 +1,4 @@
-using System.Text;
-using System.Text.Json;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -142,7 +141,7 @@ public sealed class AncientHighRiskSourceGuardTests
         Assert.Contains("{Cards:diff()}", englishCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
         Assert.Contains("{Cards:diff()}", simplifiedChineseCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("Draw 3 cards", englishCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
-        Assert.DoesNotContain("抽3张牌", simplifiedChineseCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("鎶?寮犵墝", simplifiedChineseCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
         Assert.Contains("Quality Flame / Brightest Flame", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("BrightestFlame", apiDiscovery, StringComparison.Ordinal);
     }
@@ -350,63 +349,4 @@ public sealed class AncientHighRiskSourceGuardTests
         Assert.DoesNotContain("manually verified", ancientMatrix, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static SortedDictionary<string, string> JsonStringMap(params string[] parts)
-    {
-        using var document = JsonDocument.Parse(ReadRepoText(parts));
-        var map = new SortedDictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (var property in document.RootElement.EnumerateObject())
-        {
-            Assert.Equal(JsonValueKind.String, property.Value.ValueKind);
-            map.Add(property.Name, property.Value.GetString() ?? string.Empty);
-        }
-
-        return map;
-    }
-
-    private static string SliceBetween(string source, string startMarker, string endMarker)
-    {
-        var start = source.IndexOf(startMarker, StringComparison.Ordinal);
-        Assert.True(start >= 0, $"Missing start marker: {startMarker}");
-
-        var end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
-        Assert.True(end >= 0, $"Missing end marker: {endMarker}");
-
-        return source[start..end];
-    }
-
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

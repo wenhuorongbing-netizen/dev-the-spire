@@ -8,9 +8,12 @@ This is the active C# code for the independent `EZMicroBalance` mod. Legacy scaf
 | --- | --- |
 | `MainFile.cs` | Mod entry point, initialization, and registration. |
 | `Ancients/` | Ancient reward rebalance implementation. |
-| `Ancients/Common/` | Shared state fields, helpers, and small model/enchantment helpers. |
+| `Ancients/Common/` | Shared saved fields, card helpers, selection relic service, feature-gate helpers, and small model/enchantment helpers. |
 | `Ancients/Patches/` | Harmony patches grouped by reward surface or relic family. |
 | `Ancients/Expansion/Urda/` | Urda Ancient expansion prototype, blessing ids, and activation gate. |
+| `Ancients/Expansion/Morvi/` | Morvi Ancient expansion implementation, cards, powers, blessing ids, and activation gate. |
+| `Ancients/Expansion/Lotha/` | Lotha Ancient expansion implementation, powers, blessing ids, and activation gate. |
+| `Ancients/Expansion/Vakuu/` | Hidden-by-default Vakuu fight slice, encounter, monster, Temptation card, and fight gate. |
 | `Ascension/` | Ascension 11-20 development systems and guarded prototype slices. |
 | `Ascension/Core/` | Gates, initialization, diagnostics, asset paths, and saved fields. |
 | `Ascension/Map/` | Map generation/mutation services and map markers. |

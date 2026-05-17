@@ -44,7 +44,7 @@ internal sealed class MorviArchiveDrawPage : MorviArchivePageCard
     {
     }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Cards", 2m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(2)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

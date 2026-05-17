@@ -21,7 +21,7 @@ internal static class VakuuFightInitializer
             CreateRunHookSubscribers);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Vakuu fight hooks registered default-on for single-player; set {VakuuFightFeatureGate.DisableEnvironmentVariable}=1 or {VakuuFightFeatureGate.SpirePlusDisableEnvironmentVariable}=1 to disable.");
+            $"[EZMicroBalance] Vakuu fight hooks registered but hidden by default; set {VakuuFightFeatureGate.EnableEnvironmentVariable}=1 or {VakuuFightFeatureGate.SpirePlusEnableEnvironmentVariable}=1 to opt in, or {VakuuFightFeatureGate.ForceFightEnvironmentVariable}=1 / {VakuuFightFeatureGate.SpirePlusForceFightEnvironmentVariable}=1 for focused debugging.");
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>
@@ -34,18 +34,37 @@ internal sealed class VakuuFightRunHook : AbstractModel
 {
     public override bool ShouldReceiveCombatHooks => true;
 
+    public override Task AfterCreatureAddedToCombat(Creature creature) =>
+        VakuuFightService.AfterCreatureAddedToCombat(creature);
+
+    public override Task AfterDamageReceived(
+        PlayerChoiceContext choiceContext,
+        Creature target,
+        DamageResult result,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource) =>
+        VakuuFightService.AfterDamageReceived(choiceContext, target, result, props, dealer, cardSource);
+
     public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player) =>
-        VakuuTemptationService.AfterPlayerTurnStart(choiceContext, player);
+        VakuuContractService.AfterPlayerTurnStart(choiceContext, player);
 }
 
-internal static class VakuuTemptationService
+internal static class VakuuContractService
 {
-    private const int FirstTemptationTurn = 1;
-    private const int TemptationTurnCadence = 2;
+    private const int FirstContractTurn = 1;
+    private const int ContractTurnCadence = 2;
 
-    private static readonly ConditionalWeakTable<ICombatState, CombatTemptationState> CombatStates = new();
+    private static readonly Type[] ContractTypes =
+    [
+        typeof(VakuuKnifeContract),
+        typeof(VakuuTemptation),
+        typeof(VakuuShelterContract)
+    ];
 
-    private sealed class CombatTemptationState
+    private static readonly ConditionalWeakTable<ICombatState, CombatContractState> CombatStates = new();
+
+    private sealed class CombatContractState
     {
         public HashSet<int> InjectedRounds { get; } = [];
     }
@@ -61,8 +80,8 @@ internal static class VakuuTemptationService
         }
 
         var round = combatState.RoundNumber;
-        if (round < FirstTemptationTurn ||
-            (round - FirstTemptationTurn) % TemptationTurnCadence != 0)
+        if (round < FirstContractTurn ||
+            (round - FirstContractTurn) % ContractTurnCadence != 0)
         {
             return;
         }
@@ -73,22 +92,29 @@ internal static class VakuuTemptationService
             return;
         }
 
-        var temptation = combatState.CreateCard<VakuuTemptation>(player);
+        if (PileType.Hand.GetPile(player).Cards.Count >= CardPile.MaxCardsInHand)
+        {
+            MainFile.Logger.Info(
+                $"[EZMicroBalance] Vakuu fight skipped a Contract on player turn {round} because the hand is full.");
+            return;
+        }
+
+        var contractType = player.RunState.Rng.CombatCardSelection.NextItem(ContractTypes) ?? typeof(VakuuTemptation);
+        var contract = combatState.CreateCard(ModelDb.GetById<CardModel>(ModelDb.GetId(contractType)), player);
         var result = await AncientCardHelpers.TryAddGeneratedCardToCombat(
-            temptation,
-            PileType.Draw,
-            player,
-            CardPilePosition.Top);
+            contract,
+            PileType.Hand,
+            player);
 
         if (result?.success == true)
         {
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Vakuu fight added Temptation to the top of the draw pile on player turn {round}.");
+                $"[EZMicroBalance] Vakuu fight added a Contract to hand on player turn {round}.");
         }
         else
         {
             MainFile.Logger.Warn(
-                $"[EZMicroBalance] Vakuu fight could not add Temptation on player turn {round}; generated card was cleaned up.");
+                $"[EZMicroBalance] Vakuu fight could not add a Contract on player turn {round}; generated card was cleaned up.");
         }
     }
 

@@ -1,4 +1,4 @@
-{
+﻿{
   "EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_POWER.description": "[gold]死刑缓期[/gold]：缓刑期间，你的生命保持在[blue]1[/blue]点，牌费用变为[blue]0[/blue]，且你不会死亡。该玩家回合结束时，若仍有敌人存活，你死亡。",
   "EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_POWER.smartDescription": "[gold]死刑缓期[/gold]：本回合你不会死亡。牌费用变为[blue]0[/blue]。在回合结束前击杀所有敌人。",
   "EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_POWER.title": "死刑缓期",
@@ -14,7 +14,7 @@
   "EZMICROBALANCE-MORVI_DEBT_POWER.description": "[gold]债务[/gold]：战斗结束时，至多[blue]40[/blue]点到期。优先支付[gold]金币[/gold]；每短缺[blue]10[/blue][gold]金币[/gold]（向上取整），失去[blue]3[/blue]点非致命生命。[gold]债务[/gold]都会减少到期数值。",
   "EZMICROBALANCE-MORVI_DEBT_POWER.smartDescription": "[gold]债务[/gold]：战斗结束时优先用[gold]金币[/gold]支付；不足时用非致命生命支付。",
   "EZMICROBALANCE-MORVI_DEBT_POWER.title": "债务",
-  "EZMICROBALANCE-MORVI_PROOFREAD_POWER.description": "[gold]校样[/gold]：接下来每张非状态、玩家打出的牌组牌消耗[blue]1[/blue]层。未升级牌临时升级并抽[blue]1[/blue]张；已升级牌[gold]能量[/gold]费用降低[blue]1[/blue]点并获得[blue]4[/blue]点[gold]格挡[/gold]。",
+  "EZMICROBALANCE-MORVI_PROOFREAD_POWER.description": "[gold]校样[/gold]：接下来每张手动打出的非状态、非诅咒牌组牌消耗[blue]1[/blue]层。未升级牌临时升级并抽[blue]1[/blue]张；已升级牌[gold]能量[/gold]费用降低[blue]1[/blue]点并获得[blue]4[/blue]点[gold]格挡[/gold]。",
   "EZMICROBALANCE-MORVI_PROOFREAD_POWER.smartDescription": "[gold]校样[/gold]：接下来的合格牌获得升级/抽牌或降费/[gold]格挡[/gold]效果。",
   "EZMICROBALANCE-MORVI_PROOFREAD_POWER.title": "校样",
   "EZMICROBALANCE-MORVI_OPEN_BOOK_POWER.description": "[gold]开卷[/gold]：追踪开卷考试抽到的牌。第[blue]1[/blue]回合结束时，仍在手牌中的追踪牌会封存在[gold]消耗牌堆[/gold]；第[blue]3[/blue]回合在手牌空间允许时返回，并变为[blue]0[/blue]费。",
@@ -25,5 +25,11 @@
   "EZMICROBALANCE-MORVI_OVERDRAFT_POWER.title": "透支",
   "EZMICROBALANCE-MORVI_PAPERSTORM_POWER.description": "[gold]纸页风暴[/gold]：每回合，从[gold]抽牌堆[/gold]抽到的前[blue]2[/blue]张状态牌会被消耗。每张都会抽[blue]1[/blue]张牌并获得[blue]1[/blue]点[gold]能量[/gold]。",
   "EZMICROBALANCE-MORVI_PAPERSTORM_POWER.smartDescription": "[gold]纸页风暴[/gold]：抽到的状态牌会转化为抽牌和[gold]能量[/gold]。",
-  "EZMICROBALANCE-MORVI_PAPERSTORM_POWER.title": "纸页风暴"
+  "EZMICROBALANCE-MORVI_PAPERSTORM_POWER.title": "纸页风暴",
+  "EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.description": "[gold]赃物库[/gold]：每把被打破的锁都会提高瓦库胜利奖励。打出[gold]契约[/gold]会打破[blue]1[/blue]把锁。单个玩家回合对瓦库造成[blue]40[/blue]点未被格挡伤害会打破[blue]1[/blue]把锁。每把破锁会在胜利时给予[blue]50[/blue][gold]金币[/gold]。",
+  "EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.smartDescription": "[gold]赃物库[/gold]：用[gold]契约[/gold]或单回合[blue]40[/blue]点未被格挡伤害破锁，获得更多奖励。",
+  "EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.title": "赃物库",
+  "EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.description": "[gold]血债[/gold]：每层使瓦库的每段攻击伤害增加[blue]3[/blue]点。[gold]契约[/gold]会增加[blue]1[/blue]层。",
+  "EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.smartDescription": "[gold]血债[/gold]：每层都会提高瓦库每段攻击伤害。",
+  "EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.title": "血债"
 }

@@ -51,8 +51,7 @@ internal static class AscensionCombatModifierService
 
     public static async Task AfterPlayerTurnStart(CombatState combatState, AscensionCombatTracker tracker)
     {
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null)
+        if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
@@ -61,8 +60,6 @@ internal static class AscensionCombatModifierService
         {
             await ApplyBossSealPlayerTurnStart(combatState, tracker, metadata);
         }
-
-        tracker.NodeMetadata = metadata;
 
         if (HasActiveBanner(combatState, metadata))
         {
@@ -82,13 +79,10 @@ internal static class AscensionCombatModifierService
             return;
         }
 
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null)
+        if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
-
-        tracker.NodeMetadata = metadata;
 
         if (HasActiveBossSeal(combatState, metadata))
         {
@@ -122,13 +116,10 @@ internal static class AscensionCombatModifierService
             return;
         }
 
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null)
+        if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
-
-        tracker.NodeMetadata = metadata;
 
         if (HasActiveBossSeal(combatState, metadata))
         {
@@ -146,13 +137,10 @@ internal static class AscensionCombatModifierService
             return;
         }
 
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null)
+        if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
-
-        tracker.NodeMetadata = metadata;
 
         if (HasActiveBanner(combatState, metadata) &&
             metadata.Banner == BannerKind.ShieldFormation)
@@ -171,13 +159,11 @@ internal static class AscensionCombatModifierService
         AscensionCombatTracker tracker,
         CombatSide side)
     {
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null)
+        if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
 
-        tracker.NodeMetadata = metadata;
         if (HasActiveBossSeal(combatState, metadata))
         {
             await ApplyBossSealTurnEnd(combatState, tracker, metadata, side);
@@ -186,13 +172,10 @@ internal static class AscensionCombatModifierService
 
     public static async Task AfterCombatEnd(CombatState combatState, AscensionCombatTracker tracker)
     {
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null)
+        if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
-
-        tracker.NodeMetadata = metadata;
 
         if (HasActiveBanner(combatState, metadata))
         {
@@ -219,13 +202,11 @@ internal static class AscensionCombatModifierService
         Creature? dealer,
         CardModel? cardSource)
     {
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null || !HasActiveBossSeal(combatState, metadata))
+        if (!TryRefreshActiveBossSealMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
 
-        tracker.NodeMetadata = metadata;
         await AfterBossSealDamageReceived(combatState, tracker, metadata, target, result, dealer, cardSource);
     }
 
@@ -240,13 +221,11 @@ internal static class AscensionCombatModifierService
             return;
         }
 
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null || !HasActiveBossSeal(combatState, metadata))
+        if (!TryRefreshActiveBossSealMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
 
-        tracker.NodeMetadata = metadata;
         await AfterBossSealDeath(combatState, tracker, metadata, creature);
     }
 
@@ -255,13 +234,11 @@ internal static class AscensionCombatModifierService
         AscensionCombatTracker tracker,
         CardPlay cardPlay)
     {
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null || !HasActiveBossSeal(combatState, metadata))
+        if (!TryRefreshActiveBossSealMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
 
-        tracker.NodeMetadata = metadata;
         await AfterBossSealCardPlayed(combatState, tracker, metadata, cardPlay);
     }
 
@@ -270,16 +247,38 @@ internal static class AscensionCombatModifierService
         AscensionCombatTracker tracker,
         CardModel card)
     {
-        var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
-        if (metadata == null || !HasActiveBossSeal(combatState, metadata))
+        if (!TryRefreshActiveBossSealMetadata(combatState, tracker, out var metadata))
         {
             return Task.CompletedTask;
         }
 
-        tracker.NodeMetadata = metadata;
         TryAssignChosenDecree(combatState, tracker, metadata, card);
         return Task.CompletedTask;
     }
+
+    private static bool TryRefreshNodeMetadata(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        out AscensionNodeMetadata metadata)
+    {
+        var current = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);
+        if (current == null)
+        {
+            metadata = null!;
+            return false;
+        }
+
+        tracker.NodeMetadata = current;
+        metadata = current;
+        return true;
+    }
+
+    private static bool TryRefreshActiveBossSealMetadata(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        out AscensionNodeMetadata metadata) =>
+        TryRefreshNodeMetadata(combatState, tracker, out metadata) &&
+        HasActiveBossSeal(combatState, metadata);
 
     private static async Task ApplyFiremarkCombatStart(
         CombatState combatState,

@@ -99,7 +99,7 @@ public sealed class AncientBehaviorGuardTests
     public void V43AdjustmentPlanIsArchivedAndSupersedesV42AsCurrentTruth()
     {
         var archivedV43Plan = ReadRepoText("docs", "features", "ancients-rework-v4", "reference-inputs", "sts2_ancients_rework_v4_3_adjustment_plan.md");
-        var archivedPlan = ReadRepoText("docs", "features", "ancients-rework-v4", "archive", "sts2_ancients_rework_v4_2_next_plan.md");
+        var archivedPlan = ReadRepoText("docs", "archive", "feature-inputs", "ancients-rework-v4", "sts2_ancients_rework_v4_2_next_plan.md");
         var completionAudit = ReadRepoText("docs", "features", "ancients-rework-v4", "completion-audit.md");
 
         Assert.Contains("v4.3", archivedV43Plan, StringComparison.OrdinalIgnoreCase);
@@ -198,7 +198,7 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void HarmonyPatchTargetsAreDeclaredForImplementedAncientSurfaces()
     {
-        var allSource = ReadAncientSource();
+        var allSource = ReadSourceTree("EZMicroBalanceCode", "Ancients");
 
         AssertSourceContains(
             allSource,
@@ -921,18 +921,24 @@ public sealed class AncientBehaviorGuardTests
         var zhsStaticHovers = JsonStringMap("EZMicroBalance", "localization", "zhs", "static_hover_tips.json");
         var manualChecklist = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-test-checklist.md");
 
-        Assert.Equal("Adds the Cook option to rest sites. Cook: remove 2 cards and lose 5 HP.", relics["MEAT_CLEAVER.description"]);
+        Assert.Equal("Adds a [gold]Cleaver[/gold] option to rest sites: remove [blue]2[/blue] cards and lose [blue]5[/blue] HP.", relics["MEAT_CLEAVER.description"]);
+        Assert.Equal("Cleaver", restSite["OPTION_COOK.name"]);
         Assert.Equal("Remove 2 cards. Lose 5 HP.", restSite["OPTION_COOK.ezDescription"]);
         Assert.Equal("Requires at least 2 removable cards and more than 5 HP.", restSite["OPTION_COOK.ezDescriptionDisabled"]);
         Assert.Equal("At a [gold]Rest Site[/gold], [gold]remove[/gold] [blue]2[/blue] cards from your [gold]Deck[/gold] and lose [blue]5[/blue] HP.", staticHovers["COOK.description"]);
-        Assert.Equal("Cook", staticHovers["COOK.title"]);
-        Assert.Equal("在休息处加入烹饪选项。烹饪：移除2张牌并失去5点生命。", zhsRelics["MEAT_CLEAVER.description"]);
+        Assert.Equal("Cleaver", staticHovers["COOK.title"]);
+        Assert.Equal("在休息处加入[gold]切肉[/gold]选项：移除[blue]2[/blue]张牌并失去[blue]5[/blue]点生命。", zhsRelics["MEAT_CLEAVER.description"]);
+        Assert.Equal("切肉", zhsRestSite["OPTION_COOK.name"]);
         Assert.Equal("移除2张牌。失去5点生命。", zhsRestSite["OPTION_COOK.ezDescription"]);
         Assert.Equal("需要至少2张可移除牌且生命值大于5。", zhsRestSite["OPTION_COOK.ezDescriptionDisabled"]);
         Assert.Equal("在[gold]休息处[/gold]从你的[gold]牌组[/gold]中[gold]移除[/gold][blue]2[/blue]张牌，并失去[blue]5[/blue]点生命。", zhsStaticHovers["COOK.description"]);
-        Assert.Equal("烹饪", zhsStaticHovers["COOK.title"]);
+        Assert.Equal("切肉", zhsStaticHovers["COOK.title"]);
         Assert.DoesNotContain("gain [green]9[/green] Max HP", staticHovers["COOK.description"], StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("获得[green]9[/green]点最大生命", zhsStaticHovers["COOK.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("Cooking", relics["MEAT_CLEAVER.description"], StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("烹饪", zhsRelics["MEAT_CLEAVER.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("烹饪", zhsRestSite["OPTION_COOK.name"], StringComparison.Ordinal);
+        Assert.DoesNotContain("烹饪", zhsStaticHovers["COOK.title"], StringComparison.Ordinal);
 
         AssertSourceContains(
             source,
@@ -1009,61 +1015,6 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("Result: pending.", manualMatrix, StringComparison.Ordinal);
     }
 
-    private static SortedDictionary<string, string> JsonStringMap(params string[] parts)
-    {
-        using var document = JsonDocument.Parse(ReadRepoText(parts));
-        var map = new SortedDictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (var property in document.RootElement.EnumerateObject())
-        {
-            Assert.Equal(JsonValueKind.String, property.Value.ValueKind);
-            map.Add(property.Name, property.Value.GetString() ?? string.Empty);
-        }
-
-        return map;
-    }
-
-    private static IEnumerable<(string key, string value)> JsonStringValues(JsonElement element, string keyPrefix = "")
-    {
-        if (element.ValueKind == JsonValueKind.Object)
-        {
-            foreach (var property in element.EnumerateObject())
-            {
-                var key = string.IsNullOrEmpty(keyPrefix)
-                    ? property.Name
-                    : $"{keyPrefix}.{property.Name}";
-
-                foreach (var value in JsonStringValues(property.Value, key))
-                {
-                    yield return value;
-                }
-            }
-
-            yield break;
-        }
-
-        if (element.ValueKind == JsonValueKind.Array)
-        {
-            var index = 0;
-            foreach (var item in element.EnumerateArray())
-            {
-                foreach (var value in JsonStringValues(item, $"{keyPrefix}[{index}]"))
-                {
-                    yield return value;
-                }
-
-                index++;
-            }
-
-            yield break;
-        }
-
-        if (element.ValueKind == JsonValueKind.String)
-        {
-            yield return (keyPrefix, element.GetString() ?? string.Empty);
-        }
-    }
-
     private static string[] Placeholders(string value)
     {
         return Regex.Matches(value, @"\{[^{}]+\}")
@@ -1094,81 +1045,10 @@ public sealed class AncientBehaviorGuardTests
         return currentMaxHp > DistinguishedCapeLossForTest(currentMaxHp);
     }
 
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string SliceBetween(string value, string start, string end)
-    {
-        var startIndex = value.IndexOf(start, StringComparison.Ordinal);
-        Assert.True(startIndex >= 0, $"Missing start marker: {start}");
-        var endIndex = value.IndexOf(end, startIndex, StringComparison.Ordinal);
-        Assert.True(endIndex > startIndex, $"Missing end marker after {start}: {end}");
-        return value[startIndex..endIndex];
-    }
-
-    private static string SliceFrom(string value, string start)
-    {
-        var startIndex = value.IndexOf(start, StringComparison.Ordinal);
-        Assert.True(startIndex >= 0, $"Missing start marker: {start}");
-        return value[startIndex..];
-    }
-
     private static void AssertNoRawEnglishInZhsFallback(string value)
     {
         var visibleValue = Regex.Replace(value, @"\{[^{}]*\}", string.Empty, RegexOptions.CultureInvariant);
         Assert.DoesNotMatch(@"[A-Za-z]{2,}", visibleValue);
     }
 
-    private static string ReadAncientSource()
-    {
-        var sourceRoot = RepoPath("EZMicroBalanceCode", "Ancients");
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(sourceRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(path => File.ReadAllText(path, Encoding.UTF8)));
-    }
-
-    private static string ReadZipText(ZipArchive archive, string entryName)
-    {
-        var entry = archive.Entries.FirstOrDefault(candidate =>
-            candidate.FullName.Replace('\\', '/').Equals(entryName, StringComparison.Ordinal));
-        Assert.NotNull(entry);
-
-        using var stream = entry.Open();
-        using var reader = new StreamReader(stream, Encoding.UTF8);
-        return reader.ReadToEnd();
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

@@ -7,6 +7,7 @@
     "This file records current active art bytes and final status for browser GPTimage2 small-art assets.",
     "All final_generated image records must set generation_mode, mode, and semantic_model to GPTimage2.",
     "Final generated or user-supplied art must update prompt/source/target/SHA256/dimensions before release docs can cite it.",
+    "Event backgrounds use 1920x1080 normalized 16:9 user-approved source images with keep-aspect scene fitting after live clicked-UI screenshots showed the earlier 2.13 cover-fit repair cropped the art incorrectly.",
     "Event backgrounds still require separate live clicked-UI review before release-ready claims."
   ],
   "assets": [
@@ -15,43 +16,43 @@
       "role": "event_background",
       "target_path": "EZMicroBalance/images/events/ezmb_urda.png",
       "source_status": "source_local_background",
-      "source_path": ".tools/art-generation/event-background-reframe-20260515/ezmb_urda_crop_y80_1831x859.png",
-      "sha256": "267CBCDDA63FD935E5A04FC71F8A2D70B0EF6FBC6450E4A302665344B906184F",
+      "source_path": ".tools/art-generation/event-background-reframe-20260515/head-backup/EZMicroBalance/images/events/ezmb_urda.png",
+      "sha256": "85A78793F6FABA918AE18A4A8BD425AB7DD4F92FBC2C6334926A18345F3969C1",
       "dimensions": {
-        "width": 1831,
-        "height": 859
+        "width": 1920,
+        "height": 1080
       },
       "final_required_before_release": false,
-      "notes": "User-accepted Urda middle-draft background reframed to the source-calibrated 2.13:1 event background target. The active resource uses a deterministic y=80 vertical crop and high-quality resize so the Ancient UI does not display a 16:9 asset in a 2.13-style frame."
+      "notes": "Restored the original user-accepted 16:9 Urda middle-draft after live clicked-UI screenshots showed the 2.13 cover-fit reframe cropped the Ancient event view incorrectly, then normalized the active file to 1920x1080 so the event UI no longer scales a lower-resolution source."
     },
     {
       "id": "morvi_event_background",
       "role": "event_background",
       "target_path": "EZMicroBalance/images/events/ezmb_morvi.png",
-      "source_status": "source_local_background",
-      "source_path": "art_pipeline/generated/ancient_morvi_bg_v1_v001.png",
-      "sha256": "461990516EAE6AEA4D41B2BC1B6CFF7FCE565B83E09335B99CE65529455ADB50",
+      "source_status": "user_supplied",
+      "source_path": ".tools/art-generation/event-background-repair-20260515-live-feedback/sources/morvi-blue-eye-court-upload-source.png",
+      "sha256": "83B814F2B55A44559285BD4F47036CD6443712588E1573EBF00FB2D223986587",
       "dimensions": {
-        "width": 1831,
-        "height": 859
+        "width": 1920,
+        "height": 1080
       },
       "final_required_before_release": false,
-      "notes": "Active local generated background copied from the recorded source path."
+      "notes": "Recovered the user-uploaded blue-eye court/scribe background from local temp cache and archived it under .tools before promoting it to active Morvi event art, then normalized the active file to 1920x1080. This replaces the rejected left-side wooden cabinet lender-scribe image."
     },
     {
       "id": "lotha_event_background",
       "role": "event_background",
       "target_path": "EZMicroBalance/images/events/ezmb_lotha.png",
-      "source_status": "source_local_background",
-      "source_path": ".tools/art-generation/promotion-candidates/proposed/EZMicroBalance/images/events/ezmb_lotha_first_preview_crop_1831x859.png",
-      "sha256": "B4CDE646A67404BCC5D6EBBDF825BA2176588009B1908B205F3F1687AB6478C9",
+      "source_status": "user_supplied",
+      "source_path": ".tools/art-generation/lotha-background-repair-20260515-feedback/sources/lotha-horizontal-mirror-ensemble-upload-source.png",
+      "sha256": "B08B0FB60879790BDF9C423DEAD7CE139427E0C13276D38ADE93680FAAA8A08A",
       "dimensions": {
-        "width": 1831,
-        "height": 859
+        "width": 1920,
+        "height": 1080
       },
       "prompt_id": "lotha_event_background",
       "final_required_before_release": false,
-      "notes": "Promoted the first user-preferred mirror-ensemble preview crop to active Lotha event art, replacing the older silver judge background. This remains source-local event art and still needs clicked Ancient UI review before release-ready claims."
+      "notes": "Recovered the correct user-uploaded 16:9 horizontal mirror-ensemble source from Edge cache after the earlier similarly named crystal-throne image proved to be the wrong composition, then normalized the active file to 1920x1080. This is the wide vertical-crystal mirror lineup with the Neow-like whale, central obsidian oracle, and handheld heart mirror."
     },
     {
       "id": "urda_map_icon",
@@ -793,6 +794,36 @@
       "generation_mode": "GPTimage2",
       "mode": "GPTimage2",
       "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "vakuu_trial_monster_visual",
+      "role": "monster_visual",
+      "target_path": "EZMicroBalance/images/monsters/vakuu_trial.png",
+      "source_status": "source_local_generated",
+      "source_path": "EZMicroBalance/images/ancients/vakuu/options/vakuu_fight.png + EZMicroBalance/images/card_portraits/big/vakuu_temptation.png",
+      "sha256": "DCBDDF180F901FBF78AFB9B11A2B890F56EF39BC3886526A804938685A19A524",
+      "dimensions": {
+        "width": 512,
+        "height": 384
+      },
+      "prompt_id": "vakuu_runtime_visual_separation_20260515",
+      "final_required_before_release": false,
+      "notes": "Dedicated Vakuu combat monster visual derived from active Vakuu art so the monster no longer reuses the option relic icon or card portrait path. Live combat framing remains pending."
+    },
+    {
+      "id": "vakuu_trial_encounter_backdrop",
+      "role": "encounter_background",
+      "target_path": "EZMicroBalance/images/encounters/vakuu_trial_backdrop.png",
+      "source_status": "source_local_generated",
+      "source_path": "EZMicroBalance/images/card_portraits/big/vakuu_temptation.png",
+      "sha256": "D62B53449FFF40D58A496CFC3446E9EA849BEF923836133D14A9A07D83E9606D",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "prompt_id": "vakuu_runtime_visual_separation_20260515",
+      "final_required_before_release": false,
+      "notes": "Dedicated Vakuu combat backdrop derived from active Vakuu art so the encounter scene no longer references a card portrait as its background. Live combat framing remains pending."
     },
     {
       "id": "lotha_verdict_power",

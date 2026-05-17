@@ -1,5 +1,3 @@
-using System.Text;
-using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -111,8 +109,8 @@ public sealed class AncientUiReadinessGuardTests
 
         foreach (var scene in ActiveAncientScenes)
         {
-            Assert.True(File.Exists(RepoPath(scene.ScenePath.Split('/'))), $"Missing {scene.Ancient} background scene.");
-            Assert.True(File.Exists(RepoPath(scene.EventArtPath.Split('/'))), $"Missing {scene.Ancient} event artwork.");
+            AssertRepoFileExists(scene.ScenePath.Split('/'));
+            AssertRepoFileExists(scene.EventArtPath.Split('/'));
 
             var sceneSource = ReadRepoText(scene.ScenePath.Split('/'));
             Assert.Contains($"[node name=\"{scene.RootNode}\" type=\"Control\"]", sceneSource, StringComparison.Ordinal);
@@ -124,8 +122,8 @@ public sealed class AncientUiReadinessGuardTests
             Assert.Contains("anchor_right = 1.0", artworkSource, StringComparison.Ordinal);
             Assert.Contains("anchor_bottom = 1.0", artworkSource, StringComparison.Ordinal);
             Assert.Contains("expand_mode = 1", sceneSource, StringComparison.Ordinal);
-            Assert.Contains("stretch_mode = 6", sceneSource, StringComparison.Ordinal);
-            Assert.DoesNotContain("stretch_mode = 5", sceneSource, StringComparison.Ordinal);
+            Assert.Contains("stretch_mode = 5", sceneSource, StringComparison.Ordinal);
+            Assert.DoesNotContain("stretch_mode = 6", sceneSource, StringComparison.Ordinal);
             Assert.DoesNotContain("images/ancients", sceneSource, StringComparison.Ordinal);
             Assert.DoesNotContain("map_icon", sceneSource, StringComparison.Ordinal);
             Assert.DoesNotContain("run_history", sceneSource, StringComparison.Ordinal);
@@ -164,15 +162,15 @@ public sealed class AncientUiReadinessGuardTests
                 Assert.NotEqual(roleSet.EventArtPath, path);
                 Assert.NotEqual(roleSet.BackgroundScenePath, path);
                 Assert.Contains($"{member} => $\"{{MainFile.ResPath}}/{path["EZMicroBalance/".Length..]}\"", source, StringComparison.Ordinal);
-                Assert.True(File.Exists(RepoPath(path.Split('/'))), $"Missing {roleSet.Ancient} {member}: {path}");
+                AssertRepoFileExists(path.Split('/'));
                 Assert.Contains($"res://{path}", exportPreset, StringComparison.Ordinal);
             }
 
             Assert.StartsWith("EZMicroBalance/scenes/events/background_scenes/", roleSet.BackgroundScenePath, StringComparison.Ordinal);
             Assert.EndsWith(".tscn", roleSet.BackgroundScenePath, StringComparison.Ordinal);
             Assert.StartsWith("EZMicroBalance/images/events/", roleSet.EventArtPath, StringComparison.Ordinal);
-            Assert.True(File.Exists(RepoPath(roleSet.BackgroundScenePath.Split('/'))), $"Missing {roleSet.Ancient} background scene.");
-            Assert.True(File.Exists(RepoPath(roleSet.EventArtPath.Split('/'))), $"Missing {roleSet.Ancient} event art.");
+            AssertRepoFileExists(roleSet.BackgroundScenePath.Split('/'));
+            AssertRepoFileExists(roleSet.EventArtPath.Split('/'));
             Assert.Contains($"BackgroundScene => $\"{{MainFile.ResPath}}/{roleSet.BackgroundScenePath["EZMicroBalance/".Length..]}\"", source, StringComparison.Ordinal);
             Assert.Contains($"res://{roleSet.BackgroundScenePath}", exportPreset, StringComparison.Ordinal);
             Assert.Contains($"res://{roleSet.EventArtPath}", exportPreset, StringComparison.Ordinal);
@@ -207,9 +205,44 @@ public sealed class AncientUiReadinessGuardTests
             "if (VakuuFightFeatureGate.ShouldForceFight)",
             "__result = [fightOption]",
             "__result = __result.Concat([fightOption]).ToList()",
-            "options.Count == 3 ? options : [CreateVictoryFallbackOption(vakuu)]",
+            "targetChoiceCount = encounter.VictoryChoiceCount",
+            "options.Count > 0 ? options : [CreateVictoryFallbackOption(vakuu, combatRoom)]",
             "CreateVictoryFallbackOption");
-        AssertSourceContains(vakuuGate, "runState.Players.Count == 1", "EZMB_FORCE_VAKUU_FIGHT", "SPIREPLUS_FORCE_VAKUU_FIGHT");
+        AssertSourceContains(
+            vakuuGate,
+            "runState.Players.Count == 1",
+            "EZMB_ENABLE_VAKUU_FIGHT",
+            "SPIREPLUS_ENABLE_VAKUU_FIGHT",
+            "EZMB_FORCE_VAKUU_FIGHT",
+            "SPIREPLUS_FORCE_VAKUU_FIGHT",
+            "ShouldEnableFight");
+    }
+
+    [Fact]
+    public void AncientAndVakuuArtAssetsUseStableUiSizedRoles()
+    {
+        foreach (var scene in ActiveAncientScenes)
+        {
+            Assert.Equal((1920, 1080), ReadPngDimensions(RepoPath(scene.EventArtPath.Split('/'))));
+        }
+
+        foreach (var roleSet in ActiveAncientArtRoles)
+        {
+            Assert.Equal((128, 128), ReadPngDimensions(RepoPath(roleSet.MapIconPath.Split('/'))));
+            Assert.Equal((128, 128), ReadPngDimensions(RepoPath(roleSet.MapIconOutlinePath.Split('/'))));
+            Assert.Equal((128, 128), ReadPngDimensions(RepoPath(roleSet.RunHistoryIconPath.Split('/'))));
+            Assert.Equal((128, 128), ReadPngDimensions(RepoPath(roleSet.RunHistoryIconOutlinePath.Split('/'))));
+        }
+
+        foreach (var marker in OptionMarkers)
+        {
+            Assert.Equal((128, 128), ReadPngDimensions(RepoPath(marker.AssetPath.Split('/'))));
+        }
+
+        Assert.Equal((1920, 1080), ReadPngDimensions(RepoPath("EZMicroBalance", "images", "encounters", "vakuu_trial_backdrop.png")));
+        Assert.Equal((512, 384), ReadPngDimensions(RepoPath("EZMicroBalance", "images", "monsters", "vakuu_trial.png")));
+        Assert.Equal((250, 190), ReadPngDimensions(RepoPath("EZMicroBalance", "images", "card_portraits", "vakuu_temptation.png")));
+        Assert.Equal((1000, 760), ReadPngDimensions(RepoPath("EZMicroBalance", "images", "card_portraits", "big", "vakuu_temptation.png")));
     }
 
     [Fact]
@@ -229,7 +262,7 @@ public sealed class AncientUiReadinessGuardTests
             Assert.DoesNotContain("run_history", marker.AssetPath, StringComparison.Ordinal);
             Assert.NotEqual("EZMicroBalance/images/relics/relic.png", marker.AssetPath);
             Assert.DoesNotContain($"{marker.AssetMember} => $\"{{MainFile.ResPath}}/images/relics/relic.png\"", source, StringComparison.Ordinal);
-            Assert.True(File.Exists(RepoPath(marker.AssetPath.Split('/'))), $"Missing option marker art: {marker.AssetPath}");
+            AssertRepoFileExists(marker.AssetPath.Split('/'));
             Assert.Contains($"res://{marker.AssetPath}", exportPreset, StringComparison.Ordinal);
 
             foreach (var suffix in new[] { ".title", ".description", ".flavor" })
@@ -238,6 +271,54 @@ public sealed class AncientUiReadinessGuardTests
                 AssertLocalizedValue(zhsRelics, marker.RelicKey + suffix);
             }
         }
+    }
+
+    [Fact]
+    public void VakuuFightHasDedicatedEncounterSceneMonsterAndLocalization()
+    {
+        var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
+        var monster = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTrialMonster.cs");
+        var scene = ReadRepoText("EZMicroBalance", "scenes", "encounters", "ezmb_vakuu_trial.tscn");
+        var exportPreset = ReadRepoText("export_presets.cfg");
+        var engMonsters = JsonStringMap("EZMicroBalance", "localization", "eng", "monsters.json");
+        var zhsMonsters = JsonStringMap("EZMicroBalance", "localization", "zhs", "monsters.json");
+
+        AssertSourceContains(
+            encounter,
+            "CustomScenePath => VakuuFightAssetPaths.EncounterScene",
+            "Slots => [VakuuSlot]",
+            "ModelDb.Monster<EzmbVakuuTrialMonster>()");
+        Assert.DoesNotContain("OwlMagistrate", encounter, StringComparison.Ordinal);
+        AssertSourceContains(
+            monster,
+            "CustomMonsterModel",
+            "CustomVisualPath => VakuuFightAssetPaths.MonsterVisual",
+            "VisualScale = 1.25f",
+            "GenerateMoveStateMachine",
+            "OpeningOfferMove",
+            "KnifeRainMove",
+            "GildedHideMove",
+            "DebtCallMove");
+        AssertSourceContains(
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs"),
+            "OptionIcon => $\"{MainFile.ResPath}/images/ancients/vakuu/options/vakuu_fight.png\"",
+            "MonsterVisual => $\"{MainFile.ResPath}/images/monsters/vakuu_trial.png\"");
+        AssertSourceContains(
+            scene,
+            "res://EZMicroBalance/images/encounters/vakuu_trial_backdrop.png",
+            "[node name=\"EzmbVakuuTrialEncounter\" type=\"Control\"]",
+            "offset_right = 1920.0",
+            "offset_bottom = 1080.0",
+            "[node name=\"Vakuu\" type=\"Marker2D\" parent=\".\"]");
+        Assert.DoesNotContain("images/card_portraits/big/vakuu_temptation.png", scene, StringComparison.Ordinal);
+
+        AssertLocalizedValue(engMonsters, "EZMB_VAKUU_TRIAL_MONSTER.name");
+        AssertLocalizedValue(zhsMonsters, "EZMB_VAKUU_TRIAL_MONSTER.name");
+        Assert.Contains("res://EZMicroBalance/images/monsters/vakuu_trial.png", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("res://EZMicroBalance/images/encounters/vakuu_trial_backdrop.png", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("res://EZMicroBalance/scenes/encounters/ezmb_vakuu_trial.tscn", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("res://EZMicroBalance/localization/eng/monsters.json", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("res://EZMicroBalance/localization/zhs/monsters.json", exportPreset, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -254,8 +335,7 @@ public sealed class AncientUiReadinessGuardTests
         foreach (var sourcePath in new[]
         {
             "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs",
-            "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs",
-            "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAncient.cs"
+            "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs"
         })
         {
             var source = ReadRepoText(sourcePath.Split('/'));
@@ -268,12 +348,25 @@ public sealed class AncientUiReadinessGuardTests
             Assert.DoesNotContain("() => SelectBlessing(blessingId)", source, StringComparison.Ordinal);
         }
 
+        var lothaAncient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
+        AssertSourceContains(
+            lothaAncient,
+            "() => SelectBlessing<T>(blessingId)",
+            "private async Task SelectBlessing<T>(string blessingId)",
+            "where T : RelicModel",
+            "LothaRewardSelectionService.SelectBlessing<T>",
+            "await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(owner, blessingId)");
+        Assert.DoesNotContain("() => SelectBlessing(blessingId)", lothaAncient, StringComparison.Ordinal);
+
         var vakuuPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
         AssertSourceContains(
             vakuuPatch,
             "await AncientRewardRelicService.ObtainSelectionRelicIfMissing<VakuuFightOptionRelic>",
             "FightOptionKey",
-            "await RunManager.Instance.EnterRoomWithoutExitingCurrentRoom");
+            "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)",
+            "ClearEventNode(vakuu)",
+            "GetLothaAct3AncientRelicChoices",
+            "LothaRewardSelectionService.SelectBlessing<T>");
     }
 
     [Fact]
@@ -296,6 +389,8 @@ public sealed class AncientUiReadinessGuardTests
             "SPIREPLUS_DISABLE_MORVI",
             "EZMB_DISABLE_LOTHA",
             "SPIREPLUS_DISABLE_LOTHA",
+            "EZMB_ENABLE_VAKUU_FIGHT",
+            "SPIREPLUS_ENABLE_VAKUU_FIGHT",
             "EZMB_DISABLE_VAKUU_FIGHT",
             "SPIREPLUS_DISABLE_VAKUU_FIGHT");
 
@@ -305,16 +400,18 @@ public sealed class AncientUiReadinessGuardTests
             ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md"));
         AssertSourceContains(
             docs,
-            "No safe automated clicked-Ancient UI path exists",
             "scripts/collect-ancient-ui-evidence.ps1",
             "ancient-ui-evidence-plan.json",
             "manual-instructions.md",
-            "SPIREPLUS_FORCE_ANCIENT=<Ancient>",
-            "EZMB_FORCE_ANCIENT=<Ancient>",
-            "SPIREPLUS_FORCE_VAKUU_FIGHT=1",
-            "EZMB_FORCE_VAKUU_FIGHT=1",
+            "spireplus_test_ancient URDA confirm",
+            "spireplus_test_ancient MORVI confirm",
+            "spireplus_test_ancient LOTHA confirm",
+            "spireplus_test_ancient VAKUU confirm",
+            "spireplus_test_ancient VAKUU confirm fight",
+            "starts an unsaved single-player test run",
             "Expected visible option counts are Urda 4, Morvi 3, Lotha 3",
-            "Current source changes the focused `-ForceVakuuFight` case to one fight option.",
+            "Vakuu 3 by default",
+            "one fight option",
             "ancient EZMB_URDA",
             "ancient EZMB_MORVI",
             "ancient EZMB_LOTHA",
@@ -325,7 +422,7 @@ public sealed class AncientUiReadinessGuardTests
     public void AncientClickedUiEvidenceHelperIsSourceGuardedAndDocumented()
     {
         var helper = ReadRepoText("scripts", "collect-ancient-ui-evidence.ps1");
-        Assert.True(File.Exists(RepoPath("scripts", "collect-ancient-ui-evidence.ps1")), "Missing Ancient UI evidence helper.");
+        AssertRepoFileExists("scripts", "collect-ancient-ui-evidence.ps1");
         AssertSourceContains(
             helper,
             "[ValidateSet('URDA', 'MORVI', 'LOTHA', 'VAKUU')]",
@@ -335,11 +432,15 @@ public sealed class AncientUiReadinessGuardTests
             "EZMB_FORCE_ANCIENT",
             "SPIREPLUS_FORCE_VAKUU_FIGHT",
             "EZMB_FORCE_VAKUU_FIGHT",
+            "PreferredUnsavedDevConsoleCommand",
+            "spireplus_test_ancient URDA confirm",
+            "spireplus_test_ancient VAKUU confirm fight",
+            "capture-spire-window.ps1",
             "URDA = 4",
             "MORVI = 3",
             "LOTHA = 3",
-            "VakuuFightEnabledSinglePlayer = 4",
-            "VakuuFightDisabledOrIneligible = 3",
+            "VakuuNormal = 3",
+            "VakuuFightOptInSinglePlayer = 4",
             "VakuuForceFight = 1",
             "ExpectedOptionCountForThisRun",
             "check-spire-window-preflight.ps1",
@@ -359,12 +460,50 @@ public sealed class AncientUiReadinessGuardTests
             "scripts/collect-ancient-ui-evidence.ps1",
             "ancient-ui-evidence-plan.json",
             "manual-instructions.md",
-            "This helper prepares evidence; it does not prove clicked UI by itself.",
+            "spireplus_test_ancient URDA confirm",
+            "This helper and command prepare UI evidence",
             "Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen screenshots/logs are captured.");
 
         Assert.DoesNotContain("helper verifies clicked UI", docs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("helper proves clicked UI", docs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("clicked UI verified by the helper", docs, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void SpirePlusAncientUiSmokeCommandStartsOnlyUnsavedFreshRuns()
+    {
+        var command = ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.cs");
+        AssertSourceContains(
+            command,
+            "SpirePlusAncientLiveTestConsoleCmd",
+            "CmdName => \"spireplus_test_ancient\"",
+            "ConfirmationToken = \"confirm\"",
+            "FightToken = \"fight\"",
+            "RunManager.Instance.IsInProgress",
+            "Return to the main menu before using it.",
+            "shouldSave: false",
+            "ModelDb.Character<Ironclad>()",
+            "ActModel.GetDefaultList()",
+            "RoomType.Event",
+            "MapPointType.Ancient",
+            "ModelDb.AncientEvent<EzmbUrda>()",
+            "ModelDb.AncientEvent<EzmbMorvi>()",
+            "ModelDb.AncientEvent<EzmbLotha>()",
+            "ModelDb.AncientEvent<Vakuu>()",
+            "VakuuFightFeatureGate.SpirePlusForceFightEnvironmentVariable",
+            "VakuuFightFeatureGate.ForceFightEnvironmentVariable");
+
+        Assert.DoesNotContain("shouldSave: true", command, StringComparison.Ordinal);
+
+        var helperDocs = string.Join(
+            Environment.NewLine,
+            ReadRepoText("scripts", "README.md"),
+            ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md"));
+        AssertSourceContains(
+            helperDocs,
+            "starts an unsaved single-player test run",
+            "refuses to run over an existing run",
+            "only UI smoke");
     }
 
     [Fact]
@@ -403,43 +542,6 @@ public sealed class AncientUiReadinessGuardTests
         Assert.DoesNotContain("\uFFFD", value, StringComparison.Ordinal);
     }
 
-    private static SortedDictionary<string, string> JsonStringMap(params string[] parts)
-    {
-        using var document = JsonDocument.Parse(ReadRepoText(parts));
-        var map = new SortedDictionary<string, string>(StringComparer.Ordinal);
-        foreach (var property in document.RootElement.EnumerateObject())
-        {
-            Assert.Equal(JsonValueKind.String, property.Value.ValueKind);
-            map.Add(property.Name, property.Value.GetString() ?? string.Empty);
-        }
-
-        return map;
-    }
-
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string ReadSourceTree(params string[] parts)
-    {
-        var root = RepoPath(parts);
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(path => File.ReadAllText(path, Encoding.UTF8)));
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
     private static string ExtractNodeBlock(string sceneSource, string nodeHeader)
     {
         var start = sceneSource.IndexOf(nodeHeader, StringComparison.Ordinal);
@@ -448,24 +550,4 @@ public sealed class AncientUiReadinessGuardTests
         return next < 0 ? sceneSource[start..] : sceneSource[start..next];
     }
 
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

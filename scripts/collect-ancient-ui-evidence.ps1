@@ -30,8 +30,8 @@ $expectedOptionCounts = [ordered]@{
     URDA = 4
     MORVI = 3
     LOTHA = 3
-    VakuuFightEnabledSinglePlayer = 4
-    VakuuFightDisabledOrIneligible = 3
+    VakuuNormal = 3
+    VakuuFightOptInSinglePlayer = 4
     VakuuForceFight = 1
 }
 
@@ -40,6 +40,14 @@ $devConsoleCommands = @{
     MORVI = 'ancient EZMB_MORVI'
     LOTHA = 'ancient EZMB_LOTHA'
     VAKUU = 'ancient VAKUU'
+}
+
+$unsavedTestCommands = @{
+    URDA = 'spireplus_test_ancient URDA confirm'
+    MORVI = 'spireplus_test_ancient MORVI confirm'
+    LOTHA = 'spireplus_test_ancient LOTHA confirm'
+    VAKUU = 'spireplus_test_ancient VAKUU confirm'
+    VakuuFight = 'spireplus_test_ancient VAKUU confirm fight'
 }
 
 $manualRoutes = @{
@@ -208,10 +216,23 @@ function Get-ExpectedOptionCountForRun {
             return $expectedOptionCounts['VakuuForceFight']
         }
 
-        return $expectedOptionCounts['VakuuFightEnabledSinglePlayer']
+        return $expectedOptionCounts['VakuuNormal']
     }
 
     return $expectedOptionCounts[$AncientName]
+}
+
+function Get-UnsavedTestCommandForRun {
+    param(
+        [Parameter(Mandatory = $true)][string]$AncientName,
+        [switch]$VakuuFight
+    )
+
+    if ($AncientName -eq 'VAKUU' -and $VakuuFight) {
+        return $unsavedTestCommands['VakuuFight']
+    }
+
+    return $unsavedTestCommands[$AncientName]
 }
 
 function New-ManualInstructions {
@@ -220,6 +241,7 @@ function New-ManualInstructions {
         [Parameter(Mandatory = $true)][string]$EvidenceFull,
         [Parameter(Mandatory = $true)]$ForceEnvironment,
         [Parameter(Mandatory = $true)][int]$ExpectedOptionCountForThisRun,
+        [Parameter(Mandatory = $true)][string]$UnsavedTestCommand,
         [Parameter(Mandatory = $true)][string]$DevConsoleCommand,
         [Parameter(Mandatory = $true)][string]$ManualRoute,
         [Parameter(Mandatory = $true)][string]$WrapperLaunchCommand,
@@ -240,9 +262,9 @@ function New-ManualInstructions {
 
     $vakuuNote = if ($AncientName -eq 'VAKUU') {
         if ($VakuuFight) {
-            'This focused run sets the current source force-fight gate, so the expected visible option count is 1 fight option. For the normal single-player fight-enabled screen, expect 4 options; with the fight gate disabled or ineligible, expect 3.'
+            'This focused run sets the unfinished Vakuu force-fight gate, so the expected visible option count is 1 fight option. For the normal Vakuu screen, expect 3 options; if EZMB_ENABLE_VAKUU_FIGHT or SPIREPLUS_ENABLE_VAKUU_FIGHT is set, expect 4.'
         } else {
-            'For Vakuu, the current source expects 4 options in normal single-player when the fight gate is enabled, or 3 if the fight gate is disabled or ineligible. Use -ForceVakuuFight only for a focused one-option fight smoke.'
+            'For Vakuu, the current source expects 3 options by default. Set EZMB_ENABLE_VAKUU_FIGHT=1 or SPIREPLUS_ENABLE_VAKUU_FIGHT=1 only for the unfinished opt-in fight, or use -ForceVakuuFight for a focused one-option fight smoke.'
         }
     } else {
         ''
@@ -265,10 +287,12 @@ function New-ManualInstructions {
         '',
         "Expected visible option count for this prepared run: $ExpectedOptionCountForThisRun.",
         $vakuuNote,
-        "DevConsole render-smoke command: $DevConsoleCommand",
+        "Preferred unsaved UI smoke command: $UnsavedTestCommand",
+        "Active-run DevConsole render-smoke command: $DevConsoleCommand",
         "Manual route: $ManualRoute",
         '',
-        'Use DevConsole only when this row is being recorded as UI render smoke, not natural gameplay proof.',
+        'Use the preferred command from the main menu to start an unsaved single-player test run and open this Ancient. Use the active-run command only after a run is already in progress.',
+        'Either DevConsole route is UI render smoke, not natural gameplay proof.',
         '',
         '## Capture files under this evidence directory',
         '',
@@ -281,6 +305,7 @@ function New-ManualInstructions {
         'Recommended capture commands after the game is foreground on the Ancient UI:',
         '',
         "    .\scripts\check-spire-window-preflight.ps1 -OutFile `"$EvidenceFull\window-preflight.json`" -RequireSpireForeground",
+        "    .\scripts\capture-spire-window.ps1 -OutFile `"$EvidenceFull\$screenshotName`" -RequireSpireForeground",
         "    Copy-Item `"$env:APPDATA\SlayTheSpire2\logs\godot.log`" `"$EvidenceFull\godot.log`" -Force",
         "    .\scripts\audit-godot-log.ps1 -Path `"$EvidenceFull\godot.log`" -OutFile `"$EvidenceFull\godot-log-audit.json`" -FailOnHit",
         '',
@@ -413,6 +438,7 @@ New-DirectoryIfMissing -Path $evidenceFull
 
 $forceEnvironment = Get-ForceEnvironment -AncientName $ancientName -VakuuFight:$ForceVakuuFight
 $expectedOptionCountForThisRun = Get-ExpectedOptionCountForRun -AncientName $ancientName -VakuuFight:$ForceVakuuFight
+$unsavedTestCommandForThisRun = Get-UnsavedTestCommandForRun -AncientName $ancientName -VakuuFight:$ForceVakuuFight
 
 $wrapperLaunchArgs = @('-Mode', 'Prepare', '-Ancient', $ancientName, '-EvidenceDir', $evidenceFull)
 if ($ForceVakuuFight) { $wrapperLaunchArgs += '-ForceVakuuFight' }
@@ -440,6 +466,7 @@ $plan = [ordered]@{
     ForceEnvironment = $forceEnvironment
     ExpectedOptionCounts = $expectedOptionCounts
     ExpectedOptionCountForThisRun = $expectedOptionCountForThisRun
+    PreferredUnsavedDevConsoleCommand = $unsavedTestCommandForThisRun
     ExpectedDevConsoleCommand = $devConsoleCommands[$ancientName]
     ManualRouteInstruction = $manualRoutes[$ancientName]
     ForceVakuuFight = [bool]$ForceVakuuFight
@@ -473,6 +500,7 @@ $instructions = New-ManualInstructions `
     -EvidenceFull $evidenceFull `
     -ForceEnvironment $forceEnvironment `
     -ExpectedOptionCountForThisRun $expectedOptionCountForThisRun `
+    -UnsavedTestCommand $unsavedTestCommandForThisRun `
     -DevConsoleCommand $devConsoleCommands[$ancientName] `
     -ManualRoute $manualRoutes[$ancientName] `
     -WrapperLaunchCommand $wrapperLaunchCommand `

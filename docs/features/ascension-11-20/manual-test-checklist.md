@@ -1,4 +1,4 @@
-﻿# Ascension 11-20 Manual Test Checklist
+# Ascension 11-20 Manual Test Checklist
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
@@ -23,7 +23,7 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Current normal Steam-client helper startup/log verification under `.tools\runtime-evidence\current-package-smoke-20260514-015901` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu, found 0 Spire Plus / EZMicroBalance error signatures, found no missing-resource, Ancient scene-load, `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or removed-API signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes.
+- Current normal Steam-client helper startup/log verification under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, found 0 release-blocking signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes.
 - Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the current-package 22-field smoke above.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded Boss Royal Seals, and A20 vanilla double-boss map path/Brand/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
@@ -104,7 +104,7 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
 - [ ] Rootblight III has one visible Exhaust keyword, no duplicate `Play: Exhaust` body text, and Rootblight I / Rootblight II hover previews.
 - [ ] Rootblight card descriptions render `[gold]` card-name markup correctly and do not show raw tags.
 - [ ] Rootblight localization displays in Simplified Chinese when the game language is Simplified Chinese.
-- [ ] Simplified Chinese Rootblight descriptions have one visible 消耗 keyword, no duplicate `打出：消耗` body text, and render `[gold]根蚀 I/II/III[/gold]` without raw tags.
+- [ ] Simplified Chinese Rootblight descriptions have one visible 消�?keyword, no duplicate `打出：消耗` body text, and render `[gold]根蚀 I/II/III[/gold]` without raw tags.
 - [ ] The player sees the localized `[gold]Rootblight[/gold] added.` / `[gold]根蚀[/gold]已加入。` notice when Rootblight is added to the master deck.
 - [ ] Save and load the run before combat; Rootblight does not duplicate.
 - [ ] Save/load or re-enter Act 1 after Rootblight has been cleared; Rootblight is not re-added.
@@ -166,7 +166,7 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=15` after A14 Rootblight behavior is ve
 - [ ] Blight Sprout does not appear in opening hand unless drawn naturally.
 - [ ] Boss Blight Sprouts sprout on rounds 3 and 4; each moves to the top of the draw pile if it has not entered hand.
 - [ ] If Blight Sprout enters hand and is not played before combat end, one Rootblight I is added to the master deck, capped by the 4-card Rootblight limit.
-- [ ] Blight Sprout has one visible Exhaust keyword, no duplicate `Play: Exhaust` / `打出：消耗` body text, gold-highlighted Draw Pile / 抽牌堆 text, and a Rootblight I hover preview.
+- [ ] Blight Sprout has one visible Exhaust keyword, no duplicate `Play: Exhaust` / `打出：消耗` body text, gold-highlighted Draw Pile / 抽牌�?text, and a Rootblight I hover preview.
 - [ ] Seen-but-unplayed Blight Sprout shows the localized rich-text Rootblight added notice when it adds Rootblight I after combat.
 - [ ] If Blight Sprout is played before combat end, Rootblight does not increase.
 - [ ] If Blight Sprout enters hand and is discarded or exhausted by a non-play effect, it still adds Rootblight I after combat.

@@ -101,6 +101,8 @@ function Test-RequiresExportCoverage {
     foreach ($prefix in @(
         "EZMicroBalance/images/ancients/",
         "EZMicroBalance/images/events/",
+        "EZMicroBalance/images/encounters/",
+        "EZMicroBalance/images/monsters/",
         "EZMicroBalance/scenes/",
         "EZMicroBalance/images/powers/",
         "EZMicroBalance/images/card_portraits/",

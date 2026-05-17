@@ -700,7 +700,7 @@ Implementation notes:
 
 Manual retest:
 
-- Host a multiplayer lobby with BaseLib and EZ Micro Balance enabled.
+- Host a multiplayer lobby with BaseLib and Spire Plus / `EZMicroBalance` enabled.
 - Confirm A11-A20 selection is available by default with no Ascension env var.
 - Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` and confirm A1-A10 behavior is restored for comparison.
 - Clear the disable variable and confirm the lobby can select A11-A20 again.

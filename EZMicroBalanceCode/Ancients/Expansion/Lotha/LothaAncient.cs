@@ -170,16 +170,25 @@ internal sealed class EzmbLotha : CustomAncientModel
     {
         if (Owner != null)
         {
-            LothaBlessingService.SetSelectedBlessing(Owner, blessingId);
-            await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(Owner, blessingId);
-            if (blessingId == LothaBlessingIds.MirrorRebuttal)
-            {
-                await SelectMirrorRebuttalCard(Owner);
-            }
+            await LothaRewardSelectionService.SelectBlessing<T>(Owner, blessingId);
         }
 
         MainFile.Logger.Info($"[EZMicroBalance] Lotha blessing selected: {blessingId}.");
         Done();
+    }
+}
+
+internal static class LothaRewardSelectionService
+{
+    public static async Task SelectBlessing<T>(Player owner, string blessingId)
+        where T : RelicModel
+    {
+        LothaBlessingService.SetSelectedBlessing(owner, blessingId);
+        await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(owner, blessingId);
+        if (blessingId == LothaBlessingIds.MirrorRebuttal)
+        {
+            await SelectMirrorRebuttalCard(owner);
+        }
     }
 
     private static async Task SelectMirrorRebuttalCard(Player owner)

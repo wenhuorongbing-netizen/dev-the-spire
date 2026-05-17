@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Rewards;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Map;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -110,6 +111,15 @@ internal static class UrdaBlessingService
     private const int RootSightStartingEyes = 5;
     private const int SeedBankMaxSeeds = 3;
     private const int SeedBankMaxSettlementCards = 2;
+    private static readonly HashSet<RoomType> RootSightUnknownBlacklist =
+    [
+        RoomType.Shop,
+        RoomType.Treasure,
+        RoomType.RestSite,
+        RoomType.Boss
+    ];
+
+    private static Player? RootSightSelectionPlayer;
 
     private sealed class CardRewardContext
     {
@@ -146,7 +156,8 @@ internal static class UrdaBlessingService
         bool RootSightFirstPotionGranted,
         string RootSightMarkedCoords,
         string SeedBankCardIds,
-        bool SeedBankSettled)
+        bool SeedBankSettled,
+        string RootSightPreviewRecords)
     {
         public static Progress Default => new(
             0,
@@ -174,8 +185,16 @@ internal static class UrdaBlessingService
             false,
             string.Empty,
             string.Empty,
-            false);
+            false,
+            string.Empty);
     }
+
+    private sealed record RootSightPreview(
+        int ActIndex,
+        string Coord,
+        MapPointType PointType,
+        RoomType RoomType,
+        string ModelId);
 
     private static readonly ConditionalWeakTable<CardReward, CardRewardContext> CardRewardContexts = new();
 
@@ -396,6 +415,7 @@ internal static class UrdaBlessingService
         seedIds.Add(selected.Id.ToString());
         progress = progress with { SeedBankCardIds = string.Join(",", seedIds.Take(SeedBankMaxSeeds)) };
         SetProgress(player, progress);
+        RefreshSeedBankRelicStatus(player);
         MainFile.Logger.Info(
             $"[EZMicroBalance] Urda Seed Bank stored {selected.Id.Entry}; stored {seedIds.Count}/{SeedBankMaxSeeds}. The source-safe slice consumes this card reward to store the Seed.");
     }
@@ -510,10 +530,11 @@ internal static class UrdaBlessingService
         {
             RootSightEyes = RootSightStartingEyes,
             RootSightFirstPotionGranted = false,
-            RootSightMarkedCoords = string.Empty
+            RootSightMarkedCoords = string.Empty,
+            RootSightPreviewRecords = string.Empty
         });
-
-        await TryUseRootSightFallback(player, "selection");
+        RefreshRootSightRelicStatus(player);
+        await Task.CompletedTask;
     }
 
     public static async Task ApplyMolting(Player player)
@@ -594,15 +615,8 @@ internal static class UrdaBlessingService
                 await CompensateAfterRainAtActTwo(player);
             }
 
-            if (selectedBlessing == UrdaBlessingIds.SeedBank && !progress.SeedBankSettled)
-            {
-                SetProgress(player, progress with
-                {
-                    SeedBankCardIds = string.Empty,
-                    SeedBankSettled = true
-                });
-                MainFile.Logger.Info("[EZMicroBalance] Urda Seed Bank cleared unclaimed Seeds at Act 2 start.");
-            }
+            RefreshSeedBankRelicStatus(player);
+            RefreshRootSightRelicStatus(player);
         }
     }
 
@@ -622,10 +636,7 @@ internal static class UrdaBlessingService
                 await CheckRootedRouteBeforeRoom(player);
             }
 
-            if (selectedBlessing == UrdaBlessingIds.SeedBank && room.RoomType == RoomType.Boss)
-            {
-                await SettleSeedBankBeforeActOneBoss(player);
-            }
+            RefreshSeedBankRelicStatus(player);
         }
     }
 
@@ -656,13 +667,6 @@ internal static class UrdaBlessingService
             progress = progress with { MossRoomMask = progress.MossRoomMask | roomMask };
             SetProgress(player, progress);
             await ApplyMossMapRoomReward(player, room.RoomType);
-        }
-
-        foreach (var player in runState.Players.Where(player =>
-            player.IsActiveForHooks &&
-            GetSelectedBlessing(player) == UrdaBlessingIds.RootSight))
-        {
-            await TryUseRootSightFallback(player, $"after entering {room.RoomType}");
         }
     }
 
@@ -1042,37 +1046,79 @@ internal static class UrdaBlessingService
             $"[EZMicroBalance] Urda After the Rain Act 2 compensation granted {AfterRainCompensationHeal} HP and {AfterRainCompensationGold} Gold.");
     }
 
-    private static async Task TryUseRootSightFallback(Player player, string source)
+    internal static int GetRootSightEyes(Player player) =>
+        GetProgress(player).RootSightEyes;
+
+    internal static bool IsRootSightSelectionActive =>
+        RootSightSelectionPlayer != null;
+
+    internal static bool TryBeginRootSightSelection(Player player)
     {
         var progress = GetProgress(player);
-        if (progress.RootSightEyes <= 0 || player.RunState.CurrentActIndex != 0)
+        if (GetSelectedBlessing(player) != UrdaBlessingIds.RootSight ||
+            progress.RootSightEyes <= 0 ||
+            player.RunState.CurrentActIndex != 0)
+        {
+            return false;
+        }
+
+        if (player.RunState.Players.Count > 1)
+        {
+            MainFile.Logger.Warn("[EZMicroBalance] Urda Root Eyes preview is single-player only until host-authoritative map preview sync is implemented.");
+            return false;
+        }
+
+        RootSightSelectionPlayer = player;
+        RefreshRootSightRelicStatus(player);
+        MainFile.Logger.Info("[EZMicroBalance] Urda Root Eyes selection started; choose a reachable Monster, Unknown, or Elite map node.");
+        return true;
+    }
+
+    internal static bool CanRootSightTarget(MapPoint point) =>
+        RootSightSelectionPlayer != null &&
+        IsRootSightTarget(RootSightSelectionPlayer, point);
+
+    internal static async Task TryCommitRootSightSelection(MapPoint point)
+    {
+        var player = RootSightSelectionPlayer;
+        if (player == null)
         {
             return;
         }
 
+        if (!IsRootSightTarget(player, point))
+        {
+            MainFile.Logger.Info(
+                $"[EZMicroBalance] Urda Root Eyes ignored invalid map target {point.coord.col},{point.coord.row} ({point.PointType}).");
+            return;
+        }
+
+        if (!TryCreateRootSightPreview(player.RunState, point, out var preview))
+        {
+            MainFile.Logger.Warn(
+                $"[EZMicroBalance] Urda Root Eyes could not create a preview for {point.coord.col},{point.coord.row} ({point.PointType}).");
+            return;
+        }
+
+        RootSightSelectionPlayer = null;
+        var progress = GetProgress(player);
+        var coord = FormatCoord(point.coord);
         var marked = GetCoordSet(progress.RootSightMarkedCoords);
-        var current = player.RunState.CurrentMapPoint ?? player.RunState.Map.StartingMapPoint;
-        var target = MapTravel.GetTravelablePointsFrom(player.RunState, current)
-            .Where(point => point.PointType != MapPointType.Boss)
-            .Where(point => !marked.Contains(FormatCoord(point.coord)))
-            .OrderBy(point => point.Quests.Count == 0 ? 0 : 1)
-            .ThenBy(point => point.coord.row)
-            .ThenBy(point => point.coord.col)
-            .FirstOrDefault();
-        if (target == null)
-        {
-            return;
-        }
-
-        var coord = FormatCoord(target.coord);
         marked.Add(coord);
-        EnsureQuestMarker<UrdaRootSightMapQuestMarker>(target);
+
+        var previews = GetRootSightPreviews(progress.RootSightPreviewRecords)
+            .Where(existing => existing.ActIndex != player.RunState.CurrentActIndex || existing.Coord != coord)
+            .Append(preview)
+            .ToList();
         progress = progress with
         {
-            RootSightEyes = progress.RootSightEyes - 1,
-            RootSightMarkedCoords = string.Join("|", marked)
+            RootSightEyes = Math.Max(0, progress.RootSightEyes - 1),
+            RootSightMarkedCoords = string.Join("|", marked),
+            RootSightPreviewRecords = FormatRootSightPreviews(previews)
         };
         SetProgress(player, progress);
+        EnsureQuestMarker<UrdaRootSightMapQuestMarker>(point);
+        RefreshRootSightRelicStatus(player);
 
         if (!progress.RootSightFirstPotionGranted)
         {
@@ -1081,10 +1127,100 @@ internal static class UrdaBlessingService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Root-Sight source-safe fallback used from {source}: marked reachable non-Boss node {target.coord.col},{target.coord.row}; eyes left={progress.RootSightEyes - 1}.");
+            $"[EZMicroBalance] Urda Root Eyes previewed {preview.RoomType} {preview.ModelId} at {point.coord.col},{point.coord.row}; eyes left={progress.RootSightEyes}.");
     }
 
-    private static async Task SettleSeedBankBeforeActOneBoss(Player player)
+    internal static bool TryGetRootSightHoverTip(MapPoint point, out HoverTip hoverTip)
+    {
+        var runState = RunManager.Instance.DebugOnlyGetState();
+        if (runState != null)
+        {
+            foreach (var player in runState.Players.Where(player => GetSelectedBlessing(player) == UrdaBlessingIds.RootSight))
+            {
+                var progress = GetProgress(player);
+                if (TryFindRootSightPreview(progress, runState.CurrentActIndex, FormatCoord(point.coord), out var preview) &&
+                    TryGetRootSightPreviewTitle(preview, out var title))
+                {
+                    hoverTip = new HoverTip(title, new LocString("ancients", "EZMB_URDA.root_sight.map_hover.preview_description"));
+                    return true;
+                }
+            }
+        }
+
+        if (CanRootSightTarget(point))
+        {
+            hoverTip = new HoverTip(
+                new LocString("ancients", "EZMB_URDA.root_sight.selection_hover.title"),
+                new LocString("ancients", "EZMB_URDA.root_sight.selection_hover.description"));
+            return true;
+        }
+
+        hoverTip = new HoverTip(
+            new LocString("ancients", "EZMB_URDA.root_sight.map_hover.title"),
+            new LocString("ancients", "EZMB_URDA.root_sight.map_hover.description"));
+        return point.Quests.Any(quest => quest is UrdaRootSightMapQuestMarker);
+    }
+
+    internal static bool TryGetRootSightRoomTypeForCurrentPoint(
+        RunManager runManager,
+        MapPointType pointType,
+        out RoomType roomType)
+    {
+        roomType = RoomType.Unassigned;
+        if (!TryFindRootSightPreviewForCurrentPoint(runManager, pointType, out var preview))
+        {
+            return false;
+        }
+
+        roomType = preview.RoomType;
+        return true;
+    }
+
+    internal static bool TryGetRootSightModelForCurrentPoint(
+        RunManager runManager,
+        RoomType roomType,
+        MapPointType pointType,
+        out AbstractModel? model)
+    {
+        model = null;
+        if (!TryFindRootSightPreviewForCurrentPoint(runManager, pointType, out var preview) ||
+            preview.RoomType != roomType)
+        {
+            return false;
+        }
+
+        try
+        {
+            var id = ModelId.Deserialize(preview.ModelId);
+            if (roomType == RoomType.Event)
+            {
+                var eventModel = ModelDb.GetByIdOrNull<EventModel>(id);
+                if (eventModel == null)
+                {
+                    return false;
+                }
+
+                runManager.DebugOnlyGetState()?.AddVisitedEvent(eventModel);
+                model = eventModel;
+                return true;
+            }
+
+            var encounter = ModelDb.GetByIdOrNull<EncounterModel>(id);
+            if (encounter == null)
+            {
+                return false;
+            }
+
+            model = encounter.ToMutable();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static async Task TryExtractSeedBankFromRelicClick(Player player)
     {
         var progress = GetProgress(player);
         var seedIds = GetSeedBankCardIds(progress);
@@ -1118,6 +1254,17 @@ internal static class UrdaBlessingService
                 RequireManualConfirmation = true
             })).ToList();
 
+        if (selected.Count == 0)
+        {
+            foreach (var card in cards)
+            {
+                AncientCardHelpers.RemoveUnpiledRunCard(card);
+            }
+
+            MainFile.Logger.Info("[EZMicroBalance] Urda Seed Bank extraction was canceled; stored Seeds remain available.");
+            return;
+        }
+
         foreach (var unchosen in cards.Where(card => !selected.Contains(card)))
         {
             AncientCardHelpers.RemoveUnpiledRunCard(unchosen);
@@ -1147,8 +1294,9 @@ internal static class UrdaBlessingService
             SeedBankCardIds = string.Empty,
             SeedBankSettled = true
         });
+        RefreshSeedBankRelicStatus(player);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Seed Bank settled before Act 1 Boss: added {Math.Min(selected.Count, SeedBankMaxSettlementCards)} Seed card(s).");
+            $"[EZMicroBalance] Urda Seed Bank extracted by relic click: added {Math.Min(selected.Count, SeedBankMaxSettlementCards)} Seed card(s).");
     }
 
     private static async Task ApplyMossMapRoomReward(Player player, RoomType roomType)
@@ -1281,6 +1429,165 @@ internal static class UrdaBlessingService
         }
     }
 
+    private static bool IsRootSightTarget(Player player, MapPoint point)
+    {
+        var progress = GetProgress(player);
+        if (GetSelectedBlessing(player) != UrdaBlessingIds.RootSight ||
+            progress.RootSightEyes <= 0 ||
+            player.RunState.CurrentActIndex != 0 ||
+            point.PointType is not (MapPointType.Monster or MapPointType.Unknown or MapPointType.Elite) ||
+            GetCoordSet(progress.RootSightMarkedCoords).Contains(FormatCoord(point.coord)))
+        {
+            return false;
+        }
+
+        var current = player.RunState.CurrentMapPoint ?? player.RunState.Map.StartingMapPoint;
+        return MapTravel.GetTravelablePointsFrom(player.RunState, current)
+            .Any(candidate => SameCoord(candidate.coord, point.coord));
+    }
+
+    private static bool TryCreateRootSightPreview(
+        IRunState runState,
+        MapPoint point,
+        out RootSightPreview preview)
+    {
+        preview = new RootSightPreview(0, string.Empty, MapPointType.Unassigned, RoomType.Unassigned, string.Empty);
+        var roomType = point.PointType switch
+        {
+            MapPointType.Monster => RoomType.Monster,
+            MapPointType.Elite => RoomType.Elite,
+            MapPointType.Unknown => RollRootSightUnknownRoomType(runState, point),
+            _ => RoomType.Unassigned
+        };
+        var modelId = roomType switch
+        {
+            RoomType.Monster or RoomType.Elite => runState.Act.PullNextEncounter(roomType).Id.ToString(),
+            RoomType.Event => TryPeekNextValidEvent(runState)?.Id.ToString() ?? string.Empty,
+            _ => string.Empty
+        };
+        if (string.IsNullOrWhiteSpace(modelId))
+        {
+            return false;
+        }
+
+        preview = new RootSightPreview(
+            runState.CurrentActIndex,
+            FormatCoord(point.coord),
+            point.PointType,
+            roomType,
+            modelId);
+        return true;
+    }
+
+    private static RoomType RollRootSightUnknownRoomType(IRunState runState, MapPoint point)
+    {
+        var blacklist = RunManager.BuildRoomTypeBlacklist(runState.CurrentMapPointHistoryEntry, point.Children)
+            .Concat(RootSightUnknownBlacklist)
+            .ToHashSet();
+        return runState.Odds.UnknownMapPoint.Roll(blacklist, runState);
+    }
+
+    private static EventModel? TryPeekNextValidEvent(IRunState runState)
+    {
+        if (runState is not RunState concreteRunState ||
+            TryGetActRoomSet(runState.Act) is not { events.Count: > 0 } rooms)
+        {
+            return null;
+        }
+
+        for (var i = 0; i < rooms.events.Count; i++)
+        {
+            var candidate = rooms.events[(rooms.eventsVisited + i) % rooms.events.Count];
+            if (candidate.IsAllowed(runState) && !concreteRunState.VisitedEventIds.Contains(candidate.Id))
+            {
+                return candidate;
+            }
+        }
+
+        return rooms.NextEvent;
+    }
+
+    private static RoomSet? TryGetActRoomSet(ActModel act) =>
+        AccessTools.Field(typeof(ActModel), "_rooms")?.GetValue(act) as RoomSet;
+
+    private static bool TryFindRootSightPreviewForCurrentPoint(
+        RunManager runManager,
+        MapPointType pointType,
+        out RootSightPreview preview)
+    {
+        preview = new RootSightPreview(0, string.Empty, MapPointType.Unassigned, RoomType.Unassigned, string.Empty);
+        var runState = runManager.DebugOnlyGetState();
+        var current = runState?.CurrentMapPoint;
+        if (runState == null || current == null)
+        {
+            return false;
+        }
+
+        var coord = FormatCoord(current.coord);
+        foreach (var player in runState.Players.Where(player => GetSelectedBlessing(player) == UrdaBlessingIds.RootSight))
+        {
+            var progress = GetProgress(player);
+            if (TryFindRootSightPreview(progress, runState.CurrentActIndex, coord, out preview) &&
+                preview.PointType == pointType)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryFindRootSightPreview(
+        Progress progress,
+        int actIndex,
+        string coord,
+        out RootSightPreview preview)
+    {
+        var match = GetRootSightPreviews(progress.RootSightPreviewRecords)
+            .FirstOrDefault(candidate => candidate.ActIndex == actIndex && candidate.Coord == coord);
+        if (match == null)
+        {
+            preview = new RootSightPreview(0, string.Empty, MapPointType.Unassigned, RoomType.Unassigned, string.Empty);
+            return false;
+        }
+
+        preview = match;
+        return true;
+    }
+
+    private static bool TryGetRootSightPreviewTitle(RootSightPreview preview, out LocString title)
+    {
+        title = new LocString("ancients", "EZMB_URDA.root_sight.map_hover.title");
+        try
+        {
+            var id = ModelId.Deserialize(preview.ModelId);
+            if (preview.RoomType == RoomType.Event)
+            {
+                var eventModel = ModelDb.GetByIdOrNull<EventModel>(id);
+                if (eventModel == null)
+                {
+                    return false;
+                }
+
+                title = eventModel.Title;
+                return true;
+            }
+
+            var encounter = ModelDb.GetByIdOrNull<EncounterModel>(id);
+            if (encounter == null)
+            {
+                return false;
+            }
+
+            title = encounter.Title;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     private static MapPoint? FindPointByCoord(IRunState runState, string coordText)
     {
         return TryParseCoord(coordText, out var col, out var row)
@@ -1308,6 +1615,18 @@ internal static class UrdaBlessingService
             int.TryParse(parts[1], out row);
     }
 
+    internal static IReadOnlyList<CardModel> GetSeedBankStoredCards(Player player) =>
+        GetSeedBankCardIds(GetProgress(player))
+            .Select(TryGetStoredCard)
+            .OfType<CardModel>()
+            .ToList();
+
+    internal static int GetSeedBankStoredCount(Player player) =>
+        GetSeedBankCardIds(GetProgress(player)).Count;
+
+    internal static bool IsSeedBankSettled(Player player) =>
+        GetProgress(player).SeedBankSettled;
+
     private static List<string> GetSeedBankCardIds(Progress progress) =>
         SplitList(progress.SeedBankCardIds, ',').Take(SeedBankMaxSeeds).ToList();
 
@@ -1318,6 +1637,32 @@ internal static class UrdaBlessingService
         string.IsNullOrWhiteSpace(value)
             ? []
             : value.Split(separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    private static IReadOnlyList<RootSightPreview> GetRootSightPreviews(string value) =>
+        SplitList(value, '|')
+            .Select(TryParseRootSightPreview)
+            .OfType<RootSightPreview>()
+            .ToList();
+
+    private static RootSightPreview? TryParseRootSightPreview(string value)
+    {
+        var parts = value.Split('~', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length != 5 ||
+            !int.TryParse(parts[0], out var actIndex) ||
+            !Enum.TryParse<MapPointType>(parts[2], out var pointType) ||
+            !Enum.TryParse<RoomType>(parts[3], out var roomType) ||
+            string.IsNullOrWhiteSpace(parts[1]) ||
+            string.IsNullOrWhiteSpace(parts[4]))
+        {
+            return null;
+        }
+
+        return new RootSightPreview(actIndex, parts[1], pointType, roomType, parts[4]);
+    }
+
+    private static string FormatRootSightPreviews(IEnumerable<RootSightPreview> previews) =>
+        string.Join("|", previews.Select(preview =>
+            $"{preview.ActIndex}~{preview.Coord}~{preview.PointType}~{preview.RoomType}~{preview.ModelId}"));
 
     private static CardModel? TryGetStoredCard(string id)
     {
@@ -1348,6 +1693,39 @@ internal static class UrdaBlessingService
         player.Relics.FirstOrDefault(relic =>
             relic.Id.ToString().Equals(id, StringComparison.Ordinal) ||
             relic.Id.Entry.Equals(id, StringComparison.Ordinal));
+
+    private static void RefreshSeedBankRelicStatus(Player player)
+    {
+        var relic = player.Relics.OfType<UrdaSeedBankOptionRelic>().FirstOrDefault();
+        if (relic == null)
+        {
+            return;
+        }
+
+        var progress = GetProgress(player);
+        var storedCount = GetSeedBankCardIds(progress).Count;
+        relic.Status = progress.SeedBankSettled
+            ? RelicStatus.Disabled
+            : storedCount > 0
+                ? RelicStatus.Active
+                : RelicStatus.Normal;
+        relic.RefreshStoredSeedDisplay();
+    }
+
+    private static void RefreshRootSightRelicStatus(Player player)
+    {
+        var relic = player.Relics.OfType<UrdaRootSightOptionRelic>().FirstOrDefault();
+        if (relic == null)
+        {
+            return;
+        }
+
+        var progress = GetProgress(player);
+        relic.Status = progress.RootSightEyes > 0 && player.RunState.CurrentActIndex == 0
+            ? RelicStatus.Active
+            : RelicStatus.Disabled;
+        relic.RefreshRootSightDisplay();
+    }
 
     private static void EnsureQuestMarker<TMarker>(MapPoint point)
         where TMarker : AbstractModel
@@ -1440,7 +1818,8 @@ internal static class UrdaBlessingService
             ParseBool(GetPart(parts, baseIndex + 14)),
             GetPart(parts, baseIndex + 15),
             GetPart(parts, baseIndex + 16),
-            ParseBool(GetPart(parts, baseIndex + 17)));
+            ParseBool(GetPart(parts, baseIndex + 17)),
+            GetPart(parts, baseIndex + 18));
     }
 
     private static void SetProgress(Player player, Progress progress)
@@ -1484,7 +1863,8 @@ internal static class UrdaBlessingService
                 progress.RootSightFirstPotionGranted ? 1 : 0,
                 SanitizeStateField(progress.RootSightMarkedCoords),
                 SanitizeStateField(progress.SeedBankCardIds),
-                progress.SeedBankSettled ? 1 : 0),
+                progress.SeedBankSettled ? 1 : 0,
+                SanitizeStateField(progress.RootSightPreviewRecords)),
             AncientSavedStateFields.UrdaStateKey,
             AncientSavedStateFields.UrdaDeckStateKey);
     }

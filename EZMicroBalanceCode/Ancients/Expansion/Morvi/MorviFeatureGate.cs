@@ -1,3 +1,4 @@
+using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 using MegaCrit.Sts2.Core.Unlocks;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -6,34 +7,24 @@ internal static class MorviFeatureGate
 {
     public const string DisableEnvironmentVariable = "EZMB_DISABLE_MORVI";
     public const string SpirePlusDisableEnvironmentVariable = "SPIREPLUS_DISABLE_MORVI";
-    public const string LegacyEnableEnvironmentVariable = "EZMB_ENABLE_MORVI_V22";
     public const string ForceAncientEnvironmentVariable = "EZMB_FORCE_ANCIENT";
     public const string SpirePlusForceAncientEnvironmentVariable = "SPIREPLUS_FORCE_ANCIENT";
     public const string ForceBlessingEnvironmentVariable = "EZMB_FORCE_MORVI_BLESSING";
     public const string SpirePlusForceBlessingEnvironmentVariable = "SPIREPLUS_FORCE_MORVI_BLESSING";
 
     public static string? ForcedAncient =>
-        Environment.GetEnvironmentVariable(SpirePlusForceAncientEnvironmentVariable) ??
-        Environment.GetEnvironmentVariable(ForceAncientEnvironmentVariable);
+        AncientFeatureGate.FirstRawEnvironmentValue(SpirePlusForceAncientEnvironmentVariable, ForceAncientEnvironmentVariable);
 
     public static string? ForcedBlessing =>
-        Environment.GetEnvironmentVariable(SpirePlusForceBlessingEnvironmentVariable) ??
-        Environment.GetEnvironmentVariable(ForceBlessingEnvironmentVariable);
+        AncientFeatureGate.FirstRawEnvironmentValue(SpirePlusForceBlessingEnvironmentVariable, ForceBlessingEnvironmentVariable);
 
     public static bool ShouldForceMorvi =>
         IsForcedAncient("MORVI") || IsForcedAncient("EZMB_MORVI");
 
     public static bool IsMorviEnabled(UnlockState _) =>
-        !IsTruthy(Environment.GetEnvironmentVariable(DisableEnvironmentVariable)) &&
-        !IsTruthy(Environment.GetEnvironmentVariable(SpirePlusDisableEnvironmentVariable));
+        !AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable) &&
+        !AncientFeatureGate.IsTruthyEnvironmentVariable(SpirePlusDisableEnvironmentVariable);
 
     private static bool IsForcedAncient(string value) =>
-        string.Equals(ForcedAncient?.Trim(), value, StringComparison.OrdinalIgnoreCase);
-
-    private static bool IsTruthy(string? value) =>
-        !string.IsNullOrWhiteSpace(value) &&
-        (value.Equals("1", StringComparison.OrdinalIgnoreCase) ||
-         value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
-         value.Equals("yes", StringComparison.OrdinalIgnoreCase) ||
-         value.Equals("on", StringComparison.OrdinalIgnoreCase));
+        AncientFeatureGate.IsForcedAncient(ForcedAncient, value);
 }

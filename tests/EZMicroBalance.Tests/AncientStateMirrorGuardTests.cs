@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -221,52 +221,4 @@ public sealed class AncientStateMirrorGuardTests
         throw new InvalidOperationException($"Could not find end of method: {methodName}");
     }
 
-    private static void AssertBefore(string source, string first, string second)
-    {
-        var firstIndex = source.IndexOf(first, StringComparison.Ordinal);
-        var secondIndex = source.IndexOf(second, StringComparison.Ordinal);
-        Assert.True(firstIndex >= 0, $"Missing first marker: {first}");
-        Assert.True(secondIndex >= 0, $"Missing second marker: {second}");
-        Assert.True(firstIndex < secondIndex, $"Expected '{first}' to appear before '{second}'.");
-    }
-
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string ToRepoRelativePath(string path)
-    {
-        return Path.GetRelativePath(FindRepoRoot(), path).Replace('\\', '/');
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

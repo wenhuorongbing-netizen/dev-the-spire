@@ -1,48 +1,52 @@
 # Spire Plus Issues
 
-Latest verification note, 2026-05-15: the browser GPTimage2 art rebuild replaced the rejected simplified small-art pass with painterly transparent Ancient/Ascension UI icons, neutral fallback power/relic assets, and custom Ancient card portraits; the event-background repair then promoted the Lotha first-preview mirror ensemble, reframed Urda to 1831x859, kept Morvi at 1831x859, and changed all three Ancient background scenes to full-frame cover fitting. Build passed with 0 warnings/errors; normal tests passed with 153 passed, 18 skipped, 0 failed; art audit passed with 69 `final_generated`, 0 generic temporary records, 0 missing final assets, and 0 hash/export/generation-mode issues; targeted event-background/art tests passed; publish/package succeeded with the known nested `source code/project.godot` warning. Current package hashes after publish/package refresh are zip `32076EE57C8FF3809F6733FED8D2C26DFF2D79488A2675083DA86BDF6D6E384B`, DLL `D5852972FD5EB59CBE93B505ECEA341A30936EFFCB86A7DE2D7E1C4C4FB72BD4`, PCK `CD5C9254887C30C449D195798A999E699B73CD6F62EF0D67C86F065FD074E05F`, manifest `659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2`, and README `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4`. This supports a cleaner manual-test handoff, not a release-ready closeout: current-build live gameplay, save-load, natural A11 route-click traversal, death/failure path, co-op, clicked Ancient UI/manual feature results, and Rootblight manual proof remain pending.
+Current target: test-ready manual build, not release-ready.
+
+Latest source pass, 2026-05-17:
+
+- The ten live-test feedback items from `.tools/runtime-evidence/user-feedback-openlogs-20260517-022541/godot.log` have source fixes or source research recorded in `docs/toreview.md`.
+- `docs/review.md` keeps the full review notes. The older bulky issue index was archived to `docs/archive/implementation-records/2026-05-17-issues-before-test-ready-review-loop.md`.
+- Remaining blockers are manual proof gates, not known source implementation gaps.
+- Current package hashes from the latest verified package snapshot: zip `EA0EC3611DC21FD33C9B87E592326A9000ECE593512554D720843D7490CC589C`, DLL `5A9573E2BF3982D9B6F2D4296D2F52345968118FE0D6D17595E499B4A21CE707`, PCK `E6D7E3AA888824C50EAC7A380303D179F4D6AAE6E8BA36E7FD49CBC2C3A10A15`, manifest `659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2`, README `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4`.
 
 ## Active blockers
 
 | ID | Feature | Severity | Status | Blocker |
 | --- | --- | --- | --- | --- |
 | URDA-PROTOTYPE | Ancient expansion | P0 | open | Urda is default-on for private-beta testing with ten source-backed blessing ids plus packaged custom Ancient asset paths; live gameplay/save-load verification is still pending, so do not make a release-ready gameplay claim. |
-| ANCIENT-UI-BLACKSCREEN | Ancient expansion UI/art | P0 | resource-smoke clean / live-pending | Urda, Morvi, and Lotha use Control-compatible custom background scenes, separate event/map/run-history art, option art through source-backed marker relics, dialogue keys, force-Ancient gates, and logged fallback paths for invalid forced blessings or undersized option pools. Ancient selections now obtain their marker relics so the chosen blessing remains visible in the relic bar. Urda presents four source options; Morvi and Lotha present three. `scripts/collect-ancient-ui-evidence.ps1` prepares forced Ancient evidence folders for the human tester, but live UI verification must still prove the clicked Ancient screens render choices before this blocker can close. |
-| MORVI-DEFAULT-ON-TEST | Ancient expansion Morvi | P1 | source-hardened / live-pending | Morvi is default-on for direct Act 2 private-beta testing with all eight v2.2 ids, including `morvi_forbidden_loan`, plus emergency disable gates, force-Ancient gates, and force-blessing gates. Latest source hardening added generated-card empty-result cleanup, Forbidden Loan add-result checks, Open-Book sealed-card markers, Red Ink visible-power debt fallback, Red Ink full-hand/wrong-pile guards, and nonlethal Red Ink/Debt Settlement HP fallback. Live UI, gameplay, save/load, and co-op evidence remain pending. |
-| LOTHA-DEFAULT-ON-TEST | Ancient expansion Lotha | P1 | source-polished / reprieve restore-pending / live-pending | Lotha is default-on for direct private-beta testing with all eight source-safe v2.2 blessings, including `lotha_death_reprieve`, plus emergency disable and force gates. Power-card replacement now uses cost-0 hooks plus draw/Energy follow-ups: only Mirror Rebuttal grants Energy after the 0-cost Power play; Mirror Hall Echo, Deferred Verdict, and Single Sentence draw 1 with no Energy gain. Death Reprieve now source-persists the once-per-run used flag plus pending/active/resolved phase through Lotha player/deck state and rehydrates protection state, but exact active-turn restore is still live-pending. Post-Lotha live load, live gameplay, lethal-path, save/load, and co-op evidence remain pending. |
-| VAKUU-FIGHT-TEST | Ancient expansion Vakuu | P1 | source-risk reduced / live-pending | Fight Vakuu is implemented as a default-on single-player Act 3 test option with disable/force gates. It awaits the combat transition, adds Temptation status pressure after the normal hand draw on turns 1/3/5+, states no normal combat rewards in option/relic text, resumes Vakuu to offer three non-Vakuu Act 3 Ancient blessings on victory when enough remain, and has an explicit fallback. Source review found the active fight no longer assigns `ParentEventId` while unfinished, avoiding Core's known rejected parent-linked serialization shape; prefinished restore/no-normal-reward behavior still needs live save/load proof. Live UI/gameplay, save/load, failure/death, and co-op evidence remain pending. |
-| SPIREPLUS-TECH-ID | Naming/package | P1 | planned | Player-facing download should not look like `EZMicroBalance`. Safe immediate target is a `SpirePlus-v...zip`; full `SpirePlus` manifest/package migration must be explicit and not mutate the existing `EZMicroBalance` id in place. |
-| MULTI-LIVE-MATRIX | Ascension 11-20 multiplayer | P1 | open | Two-client Steam validation and co-op save/load matrix still pending. |
-| MULTI-ROUTE | Ascension 11 route checks | P1 | source-proof hardened / live-pending | A11 now patches the earlier `ActModel.CreateMap` geometry boundary in addition to the run map hook and logs target/actual width, rows, `insertedColumnRoute`, `originalRoutePreserved`, and `insertedColumnRouteChoices`. Source tests prove optional inserted-column route evidence and reject inserted-column chokepoints. Fresh current-build visible row/width comparison, natural click-by-click traversal, save-load, and co-op proof remain pending. |
-| ROOTBLIGHT-PROOF | Ancient/Rootblight manual matrix | P1 | v2.2 source-hardened / live-pending | Rootblight/Blight Sprout source is migrated to the v2.2 seed/root model with a 4-card cap, split-once lineage markers that persist through Rootblight III -> II -> I downgrades, source-correct existing Blight Sprout round normalization, and seen-unplayed Sprout growth. Runtime/manual validation matrix remains pending. |
+| ANCIENT-CLICKED-UI | Ancient UI | P0 | open | Urda, Morvi, and Lotha clicked screens still need live screenshots/logs. |
+| MORVI-DEFAULT-ON-TEST | Ancient expansion Morvi | P1 | live-pending | Morvi is default-on with all eight v2.2 ids, including `morvi_forbidden_loan`; live UI, gameplay, save/load, and co-op evidence remain pending. |
+| LOTHA-DEFAULT-ON-TEST | Ancient expansion Lotha | P1 | live-pending | Lotha is default-on with all eight source-safe v2.2 blessings, including `lotha_death_reprieve`; live UI, gameplay, save/load, and co-op evidence remain pending. |
+| VAKUU-FIGHT-TEST | Ancient expansion Vakuu | P0 | hidden-by-default / live-pending | Fight Vakuu remains hidden behind explicit enable/force gates. Source no longer stores `ParentEventId` on the active child combat room, avoiding the known Core serialization blocker; live victory return, failure/death, and save/load proof remain pending. |
 
-## Next development TODO
+## Manual Proof Gates
 
-These are the active implementation targets for the next pass. Keep details in `docs/test-ready-development-goal.md` and feature docs; do not expand this index into a giant design dump.
-
-| ID | Area | Status | Target |
+| ID | Area | Status | Next proof |
 | --- | --- | --- | --- |
-| V22-ART-FINAL | Ancient expansion art | small art final-generated / live preview pending | Clicked Ancient background scenes use cover-style TextureRect fit, and guard tests keep event backgrounds, map/run-history icons, option/relic icons, powers, and card portraits on separate resource paths with manifest dimensions matching PNG bytes. The active small-art set now uses browser ChatGPT/GPTimage2 oil-repaint `final_generated` assets for Urda/Morvi/Lotha/Vakuu option relics, identity icons, Lotha Verdict, Vakuu fight, Ascension indicators/banners/status icons, neutral fallback power/relic assets, and six custom card portraits. Remaining art work: decide the optional first-preview Lotha event-background replacement, correct Urda event-background provenance, and capture live clicked-UI previews. Audit with `scripts/audit-ancient-art-assets.ps1`. |
-| V22-LOTHA-POLISH | Lotha mechanics and text | source-guard closed / reprieve restore-pending / live-pending | Corrective pass replaced the prior v2.2 deviations across all eight blessings and this pass tightened Power-card replacement: Mirror Rebuttal chosen card costs 0 as a Power, then grants 2 Energy and draws 2; Mirror Hall Echo, Deferred Verdict, and Single Sentence Power replacements cost 0 and draw 1 with no Energy gain. Mirror Rebuttal full-hand handling and the branch-specific Single Sentence residual risk are closed by source guards. Single Sentence now states the four-card cap as normal player-played cards and the old Block/one-card wording is guarded out of active text. Pending/active Death Reprieve protection state is source-recoverable, but exact active-turn restore still needs live proof. Live gameplay/save-load/lethal-path/co-op verification remains pending. |
-| V22-TEXT-SCRUB | Localization and tooltips | source scrubbed / static-validated / live-pending | EN/zhs player-facing text has been scrubbed for Trial Branch, Rooted Route, Seed Bank, A12-A20, Firemarked Elite terms, Blight Sprout timing, Banner Room rewards, Royal Seal/King Brand, Holy Daze, Struggle Bait, Residual Sample, Morvi Open-Book, and key Lotha hover lines. Static guards now reject the stale development terms called out by player feedback. Live UI fit and hover readability still need manual clicked-screen verification. |
-| V22-RICH-TEXT | Localization and tooltips | source-polished / second scrub pending | Existing guard tests cover raw tokens, mojibake, dialogue coverage, canonical card-keyword duplication, Seed Bank source truth, Rootblight notices, Forge Token wording, and card-preview hovers. Keep the guards, but revise the actual player text again for readability and live UI fit; live UI hover verification remains pending. |
-| V22-MORVI-FULL | Morvi expansion | source-complete / live-pending | Full Morvi v2.2 is implemented as a default-on test slice with source evidence, art, dialogue, localization, save/load stance, and no Power-card copy/extra-play exploit; live UI/gameplay/save-load/co-op verification remains pending. |
-| V22-URDA-REST | Urda full pool | source-complete / live-pending | Ten Urda blessing ids are source-backed with documented source-safe deviations, option art placeholders, localization, and tests. Latest source hardening added `SPIREPLUS_*` Urda gate aliases and removed the stray Seed Bank Trial Plant marker assignment; live gameplay/save-load/co-op verification and bespoke icon art remain pending. |
-| V22-VAKUU-POLISH | Vakuu fight | source-risk reduced / live-pending | Fight readability, no-normal-reward text, awaited transition, deterministic Temptation status pressure, and victory fallback are source-polished. The active fight no longer uses the Core-rejected unfinished parent-linked combat serialization shape; the prefinished parent restore path remains live save/load pending. Live fight/failure/save-load verification plus final bespoke Vakuu/Temptation art remain pending. |
-| RELEASE-READY-GATE | Release readiness | open | After source polish, refresh package hashes and run actual live UI/gameplay/save-load/co-op/manual verification before any release-ready claim. |
+| ANCIENT-CLICKED-UI | Ancient UI | pending | Capture clicked Ancient UI screenshots/logs for Urda, Morvi, Lotha, and Vakuu. `scripts/collect-ancient-ui-evidence.ps1` creates `ancient-ui-evidence-plan.json`, `manual-instructions.md`, and commands such as `spireplus_test_ancient URDA confirm`. This helper and command prepare UI evidence. Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen screenshots/logs are captured. |
+| LIVE-GAMEPLAY | Full mod | pending | User manual run: Ancient choices, A11-A20 routes, Rootblight, Root Eyes, Seed Bank, Morvi cards, Lotha rewards, Vakuu gate/fight. No current live gameplay proof has been collected in this source-only loop. |
+| SAVE-LOAD | Ancient state | pending | Urda/Morvi/Lotha state mirrors are source-guarded, but live save/load remains pending. Do not mark live save/load as verified or ready until the user proves it in-game. |
+| VAKUU-FIGHT-LIVE | Vakuu | hidden-by-default / pending | Fight Vakuu remains behind explicit enable/force gates and single-player only. Live victory return, no-black-screen path, failure/death path, active-fight/pre-finished save-load behavior, and co-op evidence remain pending. |
+| CLAWS-TERM-MAP | Vakuu / Claws wording | source-mapped / manual confirm | The user phrase `原初之爪` / `Primal Claw` has no unique source object. The closest implemented object is base Ancient relic `Claws` / `枯爪`: choose 1 of 4 Curses, then add 2 Wish and 1 upgraded Wish+. If the user meant a different Vakuu reward, a new concrete object name is needed before code changes. |
+| CO-OP | Multiplayer | pending | Rooted Route research says shared map movement is host/vote driven; Root Eyes writeback is currently single-player only until host-authoritative preview sync exists. Co-op behavior remains a manual-test and design gate. |
+
+## Art And Text Gates
+
+- Final browser GPTimage2 small art generated this pass.
+- No `generic_temporary` or `final_required_before_release` art blockers remain.
+- Event backgrounds are active middle-draft resources.
+- Live clicked-UI review remains unresolved.
+- Current player-facing localization is source-scrubbed, but live UI fit and hover readability still need manual review.
 
 ## Issue detail links
 
-- `docs/issues/urda.md` (Urda prototype, blessed ids, and blockers)
-- `docs/issues/ancient-expansion-v2.2.md` (Urda stabilization, default-on Morvi source-complete slice, Lotha source-complete slice, and Vakuu fight source-complete/live-pending slice)
-- `docs/issues/waiting-tests.md` (current manual evidence queue)
-- `docs/features/ancients-rework-v4/manual-verification-matrix.md`
-- `docs/features/ascension-11-20/manual-test-checklist.md`
-- `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` (historical v2.2 audit archive; not a default next-development input)
-- `docs/archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md` (archived implementation summary)
-- `docs/archive/implementation-records/2026-05-13-urda-v22-ten-blessing-completion.md` (archived Urda v2.2 completion summary)
+- `docs/toreview.md` contains fixed items awaiting user retest.
+- `docs/review.md` contains the latest source review.
+- `docs/issues/ancient-expansion-v2.2.md` contains feature-level Ancient rows.
+- `docs/issues/urda.md` contains Urda-specific rows.
+- `docs/issues/waiting-tests.md` contains manual evidence rows.
+- `docs/features/ancient-expansion-v2.2/manual-test-checklist.md` is the current manual checklist.
 
-## Closing evidence rule
+## Closing Rule
 
-- Do not close a blocker without the linked source evidence, guard coverage, and the current manual test row marked done.
-- `docs/issues.md` is an index only; implementation details are kept in feature-level docs.
+Close a row only after source evidence, automated guard coverage, and the relevant manual proof exist. This project can be test-ready without being release-ready.

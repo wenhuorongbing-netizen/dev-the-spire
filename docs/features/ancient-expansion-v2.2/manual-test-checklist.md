@@ -1,13 +1,13 @@
 # Ancient Expansion v2.2 Manual Test Checklist
 
-Status: Urda ten-blessing rows, default-on Morvi source rows, default-on Lotha source rows, and default-on single-player Vakuu fight rows are source-backed but still require live validation. Vakuu's known unfinished parent-linked active-combat save shape is source-reduced, Lotha Death Reprieve phase is now deck-mirrored, and Urda/Morvi/Lotha encoded state mirror usage is source-guarded, but active live save/load restore remains pending. The latest player-facing polish pass removed legacy Urda option-marker wording and tightened key rich-text highlights; live hover readability remains pending until clicked UI screenshots/logs are captured.
+Status: Urda ten-blessing rows, default-on Morvi source rows, and default-on Lotha source rows are source-backed but still require live validation. Vakuu fight is hidden by default with a dedicated source enemy/scene because the reported post-victory black-screen path still needs live victory/save-load proof. Lotha Death Reprieve phase is deck-mirrored, and Urda/Morvi/Lotha encoded state mirror usage is source-guarded, but active live save/load restore remains pending. The latest player-facing polish pass removed legacy Urda option-marker wording, tightened key rich-text highlights, and added Root-Sight hover explanation; live hover readability remains pending until clicked UI screenshots/logs are captured.
 
 ## 0. Planning Integrity
 
 - [x] v2.2 design is stored outside `docs/issues.md`.
 - [x] Compact issue file exists at `docs/issues/ancient-expansion-v2.2.md`.
 - [x] Morvi is default-on for private-beta direct testing and can be hidden with `EZMB_DISABLE_MORVI=1` or `SPIREPLUS_DISABLE_MORVI=1`.
-- [x] Lotha is explicitly source-complete/live-pending; Vakuu fight is explicitly source-complete/live-pending for single-player testing only.
+- [x] Lotha is explicitly source-complete/live-pending; Vakuu fight is explicitly source-dedicated, hidden by default, and single-player only.
 - [x] User approved continuing into the next development round before live testing.
 - [x] Morvi/Lotha art direction is recorded in `art-direction.md`.
 - [x] Morvi source image files are copied into `EZMicroBalance/images/events/` and listed in export resources before Morvi is made visible.
@@ -15,7 +15,7 @@ Status: Urda ten-blessing rows, default-on Morvi source rows, default-on Lotha s
 
 ## 0A. Ancient Clicked UI Evidence Helper
 
-No safe automated clicked-Ancient UI path exists in the repo today. `scripts/collect-ancient-ui-evidence.ps1` prepares one forced-Ancient evidence folder, writes `ancient-ui-evidence-plan.json` plus `manual-instructions.md`, runs the window preflight unless `-NoPreflight` is used, and only launches through `scripts/spire-plus-live-session.ps1` when `-Launch` is explicitly present. This helper prepares evidence; it does not prove clicked UI by itself.
+`scripts/collect-ancient-ui-evidence.ps1` prepares one forced-Ancient evidence folder, writes `ancient-ui-evidence-plan.json` plus `manual-instructions.md`, runs the window preflight unless `-NoPreflight` is used, and only launches through `scripts/spire-plus-live-session.ps1` when `-Launch` is explicitly present. It now also prints a safer Spire Plus DevConsole smoke command that starts an unsaved single-player test run from the main menu and opens the requested Ancient. This helper and command prepare UI evidence; they do not prove natural routing, gameplay, save/load, or co-op by themselves.
 
 Static resource-routing guards added on 2026-05-14 confirm current source/resource/export wiring only: Urda, Morvi, and Lotha scene files are Control-root clicked backgrounds using event art; map/run-history icons and option marker relic art remain separate exported resources; and the latest art audit reports 0 missing targets, 0 hash mismatches, and 0 missing exports. No final bespoke art was integrated in the player-facing polish pass. Keep all clicked UI rows below pending until screenshots/logs prove the live screens.
 
@@ -31,9 +31,21 @@ Prepare without launching:
 
 Rerun the printed command with `-Launch` only when ready for a live session. The helper sets `SPIREPLUS_FORCE_ANCIENT=<Ancient>` and `EZMB_FORCE_ANCIENT=<Ancient>` for the launched process; for `VAKUU -ForceVakuuFight`, it also sets `SPIREPLUS_FORCE_VAKUU_FIGHT=1` and `EZMB_FORCE_VAKUU_FIGHT=1`.
 
-Expected visible option counts are Urda 4, Morvi 3, Lotha 3, and Vakuu 4 in normal single-player when the fight gate is enabled or 3 if the fight gate is disabled/ineligible. Current source changes the focused `-ForceVakuuFight` case to one fight option.
+Expected visible option counts are Urda 4, Morvi 3, Lotha 3, and Vakuu 3 by default. Vakuu shows 4 only when `EZMB_ENABLE_VAKUU_FIGHT=1` or `SPIREPLUS_ENABLE_VAKUU_FIGHT=1` is deliberately set. Current source keeps the focused `-ForceVakuuFight` case to one fight option.
 
-DevConsole render-smoke commands, only when natural routing would take too long and the row is marked as UI render smoke rather than gameplay proof:
+Preferred unsaved UI-smoke commands, run from the main menu after the live-session helper launches the game:
+
+```text
+spireplus_test_ancient URDA confirm
+spireplus_test_ancient MORVI confirm
+spireplus_test_ancient LOTHA confirm
+spireplus_test_ancient VAKUU confirm
+spireplus_test_ancient VAKUU confirm fight
+```
+
+The `fight` form sets the current game process's Vakuu force-fight gate before opening Vakuu. These commands use `shouldSave: false` and refuse to run while another run is already in progress, so they are safer for UI smoke than continuing a user run. They still count only as UI render smoke, not natural gameplay proof.
+
+Active-run DevConsole render-smoke commands, only after a run is already in progress. Do not run them from the main menu: local Core `AncientConsoleCmd.Process(...)` reads `issuingPlayer.RunState` and the 2026-05-15 `.tools/runtime-evidence/ancient-ui-click-vakuu-20260515-211824` attempt confirmed a main-menu command has no player context and is invalid evidence. Use these only when natural routing would take too long and the row is marked as UI render smoke rather than gameplay proof:
 
 ```text
 ancient EZMB_URDA
@@ -43,6 +55,8 @@ ancient VAKUU
 ```
 
 Follow the generated `manual-instructions.md` for exact screenshot/log filenames. Clicked UI evidence must include the screenshot, foreground `window-preflight.json`, copied `godot.log`, `godot-log-audit.json`, and `route-note.md` stating whether the route was natural map click or DevConsole render smoke.
+
+Use `scripts/send-spire-dev-console-command.ps1 -Command "spireplus_test_ancient URDA confirm"` only when Slay the Spire 2 is visible and ready for keyboard input. Use `scripts/capture-spire-window.ps1 -RequireSpireForeground` after `check-spire-window-preflight.ps1` passes so screenshots cannot silently capture another window.
 
 Restore after capture:
 
@@ -125,22 +139,27 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] Lotha save/load after selecting each blessing preserves the selected blessing and any persistent once-per-run/deck-card state.
 - [ ] Lotha co-op behavior is observed before any multiplayer-safe claim.
 
-## 4. Vakuu Fight Source Slice
+## 4. Vakuu Fight Unfinished Opt-In Slice
 
-- [ ] In single-player, extra Fight Vakuu option appears by default and is hidden with `EZMB_DISABLE_VAKUU_FIGHT=1` or `SPIREPLUS_DISABLE_VAKUU_FIGHT=1`.
+- [ ] In single-player, normal Vakuu shows only its three standard options by default.
+- [ ] `EZMB_ENABLE_VAKUU_FIGHT=1` or `SPIREPLUS_ENABLE_VAKUU_FIGHT=1` adds the gated fight as a fourth option; `EZMB_DISABLE_VAKUU_FIGHT=1` or `SPIREPLUS_DISABLE_VAKUU_FIGHT=1` hides it again.
 - [ ] `EZMB_FORCE_ANCIENT=VAKUU` or `SPIREPLUS_FORCE_ANCIENT=VAKUU` focuses Act 3 testing on Vakuu.
 - [ ] `EZMB_FORCE_VAKUU_FIGHT=1` or `SPIREPLUS_FORCE_VAKUU_FIGHT=1` limits Vakuu to the fight option for focused testing.
 - [ ] Declining the fight preserves current Vakuu behavior.
-- [ ] Selecting Fight Vakuu enters the custom combat and the option text warns that Temptation is added after the hand draw on turns 1/3/5+.
-- [ ] On turns 1, 3, 5, and onward, after the normal hand draw, one Temptation is added to the top of the Draw Pile and appears in combat history/log evidence.
-- [ ] Drawing Temptation shows a Status card with Ethereal and Unplayable hover tips and no duplicated keyword body text.
-- [ ] Exhausting Temptation, including via end-of-turn Ethereal, grants 1 Energy and loses 3 HP without softlock.
-- [ ] Victory offers three non-Vakuu Act 3 Ancient blessings when enough unclaimed choices remain; otherwise the fallback continue option appears.
+- [ ] Selecting Fight Vakuu enters the dedicated Vakuu trial combat and the option text says a random Contract is added after the hand draw on turns 1/3/5+.
+- [ ] On turns 1, 3, 5, and onward, after the normal hand draw, one random Contract is added to hand if there is hand space and appears in combat history/log evidence.
+- [ ] Contract cards show 0-cost Skill token behavior with Ethereal and Exhaust hover tips, plus Stolen Vault and Blood Debt hover tips, and no duplicated keyword body text.
+- [ ] Playing Knife Contract, Gold Contract, and Shelter Contract costs the listed HP, breaks one Stolen Vault lock if any remain, adds one Blood Debt, and resolves its listed effect without softlock.
+- [ ] Dealing at least 40 unblocked damage to Vakuu in one player turn breaks one Stolen Vault lock once for that turn.
+- [ ] Blood Debt increases each of Vakuu's powered attack hits by 3 damage per stack and the intent updates accordingly.
+- [ ] Victory offers 1/2/3 non-Vakuu Act 3 Ancient blessing choices based on broken locks when enough unclaimed choices remain; otherwise the fallback continue option appears.
+- [ ] Victory grants 50 Gold per broken lock when the chosen blessing or fallback continue option is accepted.
 - [ ] Combat victory does not show a normal combat reward screen before the Vakuu victory blessing choice.
+- [ ] Combat victory returns to the Vakuu event without a black screen. This row specifically verifies the direct parent-room stack transition and parent event `Node` cleanup added after the 2026-05-15 report.
 - [ ] Failure/death path is correct and does not softlock.
 - [ ] Save/load before choosing Fight Vakuu preserves the normal Vakuu event and choice availability.
-- [ ] Save/load during active Vakuu child combat no longer uses the known Core-rejected unfinished `ParentEventId` shape. If the game permits saving during this active fight, verify reload behavior directly; do not close this row until no-normal-reward flow and parent resume are proven.
-- [ ] Save/load after Vakuu combat victory/resume preserves the no-normal-reward victory flow and either three non-Vakuu Act 3 blessing choices or the fallback continue option. Source logs the explicit ownerless fallback path if restore reaches it, but that log is not live save/load proof by itself.
+- [ ] Save/load during active Vakuu child combat remains live-pending: the direct parent-room stack transition no longer stores active `ParentEventId`, avoiding local `CombatRoom.ToSerializable()`'s known active-parent exception. If the game permits saving during this active fight, verify reload behavior directly; do not close this row until no-normal-reward flow and parent resume are proven.
+- [ ] Save/load after Vakuu combat victory/resume preserves the no-normal-reward victory flow and either the broken-lock-based non-Vakuu Act 3 blessing choices or the fallback continue option, without applying a second Ancient heal from the reconstructed parent event. Source logs the explicit ownerless fallback path if restore reaches it, but that log is not live save/load proof by itself.
 - [ ] Co-op does not show the fight option unless a future explicit multiplayer-safe design replaces the current single-player gate.
 
 ## 5. Multiplayer / Save-Load

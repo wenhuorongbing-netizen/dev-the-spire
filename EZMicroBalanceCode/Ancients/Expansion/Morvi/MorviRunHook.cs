@@ -99,6 +99,8 @@ internal static class MorviBlessingService
 
         public int ProofreadRemaining { get; set; }
 
+        public bool BlueprintProofInitializedThisCombat { get; set; }
+
         public HashSet<CardModel> BlueprintTemporaryUpgradeCards { get; } = [];
 
         public HashSet<CardModel> BlueprintDrawAfterCards { get; } = [];
@@ -206,11 +208,7 @@ internal static class MorviBlessingService
                         PaperstormStatusTriggersPerTurn);
                     break;
                 case MorviBlessingIds.BlueprintProof:
-                    combatState.ProofreadRemaining = BlueprintProofStacks;
-                    await SetCounterPower<MorviProofreadPower>(
-                        new ThrowingPlayerChoiceContext(),
-                        player,
-                        BlueprintProofStacks);
+                    await EnsureBlueprintProofInitialized(player, combatState, "combat start");
                     break;
                 case MorviBlessingIds.DebtSettlement:
                     var progress = GetProgress(player);
@@ -376,13 +374,15 @@ internal static class MorviBlessingService
         }
 
         if (GetSelectedBlessing(player) == MorviBlessingIds.BlueprintProof &&
-            combatState.ProofreadRemaining > 0 &&
-            card.IsUpgraded &&
-            IsBlueprintProofEligible(card) &&
-            card.Pile?.Type == PileType.Hand)
+            card.Pile?.Type == PileType.Hand &&
+            IsBlueprintProofEligible(card))
         {
-            modifiedCost = Math.Max(0, originalCost - BlueprintProofCostReduction);
-            return modifiedCost != originalCost;
+            TryInitializeBlueprintProofState(player, combatState, "energy-cost guard");
+            if (combatState.ProofreadRemaining > 0 && card.IsUpgraded)
+            {
+                modifiedCost = Math.Max(0, originalCost - BlueprintProofCostReduction);
+                return modifiedCost != originalCost;
+            }
         }
 
         return false;
@@ -401,8 +401,13 @@ internal static class MorviBlessingService
         TryConsumeOverdueLibraryDiscount(card, combatState);
 
         if (GetSelectedBlessing(player) != MorviBlessingIds.BlueprintProof ||
-            combatState.ProofreadRemaining <= 0 ||
             !IsBlueprintProofEligible(card))
+        {
+            return;
+        }
+
+        await EnsureBlueprintProofInitialized(player, combatState, "before-card-play guard");
+        if (combatState.ProofreadRemaining <= 0)
         {
             return;
         }
@@ -819,6 +824,44 @@ internal static class MorviBlessingService
         }
     }
 
+    private static async Task EnsureBlueprintProofInitialized(
+        Player player,
+        MorviCombatState combatState,
+        string reason)
+    {
+        if (!TryInitializeBlueprintProofState(player, combatState, reason))
+        {
+            return;
+        }
+
+        await SetCounterPower<MorviProofreadPower>(
+            new ThrowingPlayerChoiceContext(),
+            player,
+            combatState.ProofreadRemaining);
+    }
+
+    private static bool TryInitializeBlueprintProofState(
+        Player player,
+        MorviCombatState combatState,
+        string reason)
+    {
+        if (combatState.BlueprintProofInitializedThisCombat ||
+            GetSelectedBlessing(player) != MorviBlessingIds.BlueprintProof ||
+            player.PlayerCombatState == null ||
+            player.Creature.CombatState == null)
+        {
+            return false;
+        }
+
+        var visibleProofread = player.Creature.GetPower<MorviProofreadPower>()?.Amount ?? 0;
+        combatState.ProofreadRemaining = visibleProofread > 0
+            ? visibleProofread
+            : BlueprintProofStacks;
+        combatState.BlueprintProofInitializedThisCombat = true;
+        MainFile.Logger.Info($"[EZMicroBalance] Morvi Blueprint Proof initialized {combatState.ProofreadRemaining} Proofread ({reason}).");
+        return true;
+    }
+
     private static async Task AutoSettleForbiddenLoan(Player player)
     {
         var progress = GetProgress(player);
@@ -955,6 +998,7 @@ internal static class MorviBlessingService
         combatState.OpenBookDrawnCards.Clear();
         combatState.OpenBookSealedCards.Clear();
         combatState.ProofreadRemaining = 0;
+        combatState.BlueprintProofInitializedThisCombat = false;
         combatState.BlueprintTemporaryUpgradeCards.Clear();
         combatState.BlueprintDrawAfterCards.Clear();
         combatState.BlueprintBlockAfterCards.Clear();

@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -7,10 +6,11 @@ namespace EZMicroBalance.Tests;
 public sealed class VakuuLothaSaveRiskGuardTests
 {
     [Fact]
-    public void CoreSourceStillMakesUnfinishedParentLinkedCombatASaveLoadBlocker()
+    public void CoreSourceStillRejectsActiveParentEventIdCombatSerialization()
     {
         var combatRoom = ReadRepoText("source code", "src", "Core", "Rooms", "CombatRoom.cs");
         var runManager = ReadRepoText("source code", "src", "Core", "Runs", "RunManager.cs");
+        var ancientEventModel = ReadRepoText("source code", "src", "Core", "Models", "AncientEventModel.cs");
         var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
 
         AssertSourceContains(
@@ -27,12 +27,17 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "State.CurrentRoom is CombatRoom { ShouldResumeParentEventAfterCombat: not false }",
             "await State.CurrentRoom.Resume(abstractRoom, State)");
         AssertSourceContains(
+            ancientEventModel,
+            "protected override async Task BeforeEventStarted(bool isPreFinished)",
+            "if (!isPreFinished)",
+            "await CreatureCmd.Heal(base.Owner.Creature, amount, playAnim: false)");
+        AssertSourceContains(
             apiResearch,
             "source code/src/Core/Rooms/CombatRoom.cs",
             "throws in `ToSerializable()`",
             "`ParentEventId`",
             "not pre-finished",
-            "unfinished parent-linked shape remains a source-level blocker");
+            "known active `ParentEventId` serialization blocker");
     }
 
     [Fact]
@@ -44,43 +49,106 @@ public sealed class VakuuLothaSaveRiskGuardTests
         var sourceDesign = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "source-design.md");
         var manualChecklist = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md");
 
-        var startFight = SliceFrom(patch, "private static async Task StartFight");
-        var usesUnsafeParentLinkedShape =
-            startFight.Contains("ParentEventId = vakuu.Id", StringComparison.Ordinal) ||
-            startFight.Contains("ShouldResumeParentEventAfterCombat = true", StringComparison.Ordinal);
+        var startFight = SliceBetween(patch, "private static async Task StartFight", "public static async Task AfterCreatureAddedToCombat");
+        var usesUnsafeActiveParentEventIdShape =
+            startFight.Contains("ParentEventId =", StringComparison.Ordinal) ||
+            startFight.Contains("EnterCombatWithoutExitingEventMethod.Invoke", StringComparison.Ordinal);
 
         var exposesDefaultFightOption =
+            !gate.Contains("ShouldEnableFight", StringComparison.Ordinal) &&
             patch.Contains("__result = __result.Concat([fightOption]).ToList()", StringComparison.Ordinal);
         var hasExplicitUnsafeForceGate =
-            Regex.IsMatch(gate, "Unsafe|SaveRisk|Debug", RegexOptions.IgnoreCase) &&
-            Regex.IsMatch(gate, "FORCE|DEBUG", RegexOptions.IgnoreCase);
+            gate.Contains("EnableEnvironmentVariable", StringComparison.Ordinal) &&
+            gate.Contains("SpirePlusEnableEnvironmentVariable", StringComparison.Ordinal) &&
+            gate.Contains("ShouldEnableFight", StringComparison.Ordinal) &&
+            gate.Contains("ShouldForceFight", StringComparison.Ordinal);
 
         Assert.False(
-            usesUnsafeParentLinkedShape && exposesDefaultFightOption,
-            "Vakuu still exposes the unfinished ParentEventId child-combat shape through the normal default option path. " +
-            "Remove the ParentEventId/ShouldResumeParentEventAfterCombat room shape, or make the fight unavailable by default " +
+            usesUnsafeActiveParentEventIdShape && exposesDefaultFightOption,
+            "Vakuu still exposes the active ParentEventId child-combat shape through the normal default option path. " +
+            "Remove the active ParentEventId room shape, or make the fight unavailable by default " +
             "and keep any unsafe remainder behind an explicit force/debug-only gate.");
+        Assert.False(
+            usesUnsafeActiveParentEventIdShape,
+            "Vakuu StartFight must not assign ParentEventId while the combat room is active; only the prefinished ToSerializable postfix may record the parent event.");
         Assert.True(
-            !usesUnsafeParentLinkedShape || hasExplicitUnsafeForceGate,
-            "If Vakuu retains the parent-linked child combat only for local testing, the gate/source names must make that save-risk/debug-only status explicit.");
+            !usesUnsafeActiveParentEventIdShape || hasExplicitUnsafeForceGate,
+            "If Vakuu retains the active ParentEventId child combat only for local testing, the gate/source names must make that save-risk/debug-only status explicit.");
 
         AssertSourceContains(
             patch,
             "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]",
-            "PreserveParentEventForPreFinishedSave",
+            "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]",
+            "EventNodeBackingField",
+            "ClearEventNode(vakuu)",
+            "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)",
+            "ShouldResumeParentEventAfterCombat = true",
+            "PreserveVakuuParentForPreFinishedSave",
+            "ArmPrefinishedParentRestoreHealSkip",
+            "[HarmonyPatch(typeof(AncientEventModel), \"BeforeEventStarted\")]",
+            "ShouldSkipPrefinishedParentRestoreHeal",
+            "__result = Task.CompletedTask",
+            "skipped duplicate Ancient heal",
+            "ProceedFromNoRewardVictory",
             "combatRoom.Encounter is not EzmbVakuuTrialEncounter",
             "!combatRoom.IsPreFinished",
             "serializableRoom.ParentEventId =",
             "serializableRoom.ShouldResumeParentEvent = true");
+        Assert.DoesNotContain("ParentEventId =", startFight, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", patch, StringComparison.Ordinal);
+        AssertSourceContains(
+            string.Join(Environment.NewLine, issueIndex, sourceDesign, manualChecklist),
+            "active fight no longer assigns `ParentEventId`",
+            "save/load",
+            "live");
+    }
 
-        if (usesUnsafeParentLinkedShape)
-        {
-            AssertSourceContains(
-                string.Join(Environment.NewLine, issueIndex, sourceDesign, manualChecklist),
-                "unfinished parent-linked",
-                "save/load",
-                "not proven safe");
-        }
+    [Fact]
+    public void VakuuActiveFightAvoidsCoreRejectedParentEventIdShapeAndDocsStayAccurate()
+    {
+        var eventModel = ReadRepoText("source code", "src", "Core", "Models", "EventModel.cs");
+        var combatRoom = ReadRepoText("source code", "src", "Core", "Rooms", "CombatRoom.cs");
+        var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var currentDocs = string.Join(
+            Environment.NewLine,
+            ReadRepoText("docs", "test-ready-development-goal.md"),
+            ReadRepoText("docs", "features", "ancient-expansion-v2.2", "source-design.md"),
+            ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md"),
+            ReadRepoText("docs", "issues.md"));
+
+        AssertSourceContains(
+            eventModel,
+            "protected void EnterCombatWithoutExitingEvent(EncounterModel mutableEncounter, IReadOnlyList<Reward> extraRewards, bool shouldResumeAfterCombat)",
+            "if (!IsShared)",
+            "Node = null",
+            "ShouldResumeParentEventAfterCombat = shouldResumeAfterCombat",
+            "ParentEventId = base.Id");
+        AssertSourceContains(
+            combatRoom,
+            "if (ParentEventId != null && !IsPreFinished)",
+            "Cannot serialize a CombatRoom with a ParentEventId that is not pre-finished.");
+        AssertSourceContains(
+            patch,
+            "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)",
+            "ClearEventNode(vakuu)",
+            "EventNodeBackingField",
+            "ShouldResumeParentEventAfterCombat = true",
+            "PreserveParentEventForPreFinishedSave");
+        var startFight = SliceBetween(patch, "private static async Task StartFight", "public static async Task AfterCreatureAddedToCombat");
+        Assert.DoesNotContain("ParentEventId =", startFight, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", patch, StringComparison.Ordinal);
+        AssertSourceContains(
+            currentDocs,
+            "does not call Core's `EnterCombatWithoutExitingEvent(...)`",
+            "clears the parent event `Node`",
+            "direct `EnterRoomWithoutExitingCurrentRoom(...)`",
+            "does not store `ParentEventId` while the combat room is active",
+            "active fight no longer assigns `ParentEventId`",
+            "live");
+
+        Assert.DoesNotContain("still creates an active parent-linked combat room", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("still uses an active parent-linked combat shape", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("active parent-linked shape remains a source-level blocker", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -88,6 +156,7 @@ public sealed class VakuuLothaSaveRiskGuardTests
     {
         var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
+        var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
         var vakuuSource = string.Join(
             Environment.NewLine,
             Directory.GetFiles(
@@ -95,29 +164,57 @@ public sealed class VakuuLothaSaveRiskGuardTests
                     "*.cs",
                     SearchOption.TopDirectoryOnly)
                 .Select(path => File.ReadAllText(path, Encoding.UTF8)));
-        var startFight = SliceBetween(patch, "private static async Task StartFight", "public static void PreserveParentEventForPreFinishedSave");
+        var startFight = SliceBetween(patch, "private static async Task StartFight", "public static async Task AfterCreatureAddedToCombat");
         var createVictoryOptions = SliceBetween(patch, "private static IEnumerable<EventOption> CreateVictoryOptions", "private static EventOption CreateVictoryFallbackOption");
 
         AssertSourceContains(
             encounter,
             "public override bool ShouldGiveRewards => false",
-            "base(RoomType.Event, autoAdd: false)");
+            "base(RoomType.Monster, autoAdd: false)");
         AssertSourceContains(
             startFight,
-            "new CombatRoom(ModelDb.Encounter<EzmbVakuuTrialEncounter>().ToMutable(), vakuu.Owner.RunState)",
+            "AncientRewardRelicService.ObtainSelectionRelicIfMissing<VakuuFightOptionRelic>",
+            "ModelDb.Encounter<EzmbVakuuTrialEncounter>().ToMutable()",
+            "new CombatRoom(encounter, vakuu.Owner.RunState)",
+            "ShouldResumeParentEventAfterCombat = true",
+            "ClearEventNode(vakuu)",
             "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)");
         Assert.DoesNotContain("ParentEventId =", startFight, StringComparison.Ordinal);
-        Assert.DoesNotContain("ShouldResumeParentEventAfterCombat = true", startFight, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", startFight, StringComparison.Ordinal);
+        Assert.DoesNotContain("Array.Empty<Reward>()", startFight, StringComparison.Ordinal);
 
         Assert.DoesNotContain("LinkedRewardSet", vakuuSource, StringComparison.Ordinal);
         Assert.DoesNotContain("AddExtraReward", vakuuSource, StringComparison.Ordinal);
         Assert.DoesNotContain("RewardsCmd", vakuuSource, StringComparison.Ordinal);
+        Assert.DoesNotContain(".ThatWillKillPlayerIf(_ => true)", vakuuSource, StringComparison.Ordinal);
+        AssertSourceContains(
+            patch,
+            "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]",
+            "SkipVakuuLoadedTerminalRewards",
+            "__instance.Encounter is not EzmbVakuuTrialEncounter",
+            "__result = VakuuFightService.ProceedFromNoRewardVictory(__instance)",
+            "combatRoom.CombatState.RunState.CurrentRoomCount <= 1",
+            "RunManager.Instance.ProceedFromTerminalRewardsScreen()");
         AssertSourceContains(
             createVictoryOptions,
             "owner is null",
             "using the explicit fallback path",
             "Live restore for this path remains pending",
-            "options.Count == 3 ? options : [CreateVictoryFallbackOption(vakuu)]");
+            "targetChoiceCount = encounter.VictoryChoiceCount",
+            "encounter.VictoryGold",
+            "options.Count > 0 ? options : [CreateVictoryFallbackOption(vakuu, combatRoom)]");
+        AssertSourceContains(
+            patch,
+            "IsEligibleSourceAncientReward(owner, relic)",
+            "BeautifulBracelet",
+            "ModelDb.Enchantment<Swift>().CanEnchant",
+            "TriBoomerang",
+            "ModelDb.Enchantment<Instinct>().CanEnchant");
+        AssertSourceContains(
+            apiResearch,
+            "CombatRoom.OfferRoomEndRewards()",
+            "does not itself respect `Encounter.ShouldGiveRewards`",
+            "VakuuFightNoRewardRestorePatch");
     }
 
     [Fact]
@@ -259,65 +356,4 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "or keep active docs/manual tests explicit that pending/active reprieve save/load is not proven safe.");
     }
 
-    private static string SliceFrom(string value, string start)
-    {
-        var startIndex = value.IndexOf(start, StringComparison.Ordinal);
-        Assert.True(startIndex >= 0, $"Missing start marker: {start}");
-        return value[startIndex..];
-    }
-
-    private static string SliceBetween(string source, string startMarker, string endMarker)
-    {
-        var start = source.IndexOf(startMarker, StringComparison.Ordinal);
-        Assert.True(start >= 0, $"Missing start marker: {startMarker}");
-
-        var end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
-        Assert.True(end >= 0, $"Missing end marker: {endMarker}");
-
-        return source[start..end];
-    }
-
-    private static void AssertBefore(string source, string first, string second)
-    {
-        var firstIndex = source.IndexOf(first, StringComparison.Ordinal);
-        var secondIndex = source.IndexOf(second, StringComparison.Ordinal);
-        Assert.True(firstIndex >= 0, $"Missing first marker: {first}");
-        Assert.True(secondIndex >= 0, $"Missing second marker: {second}");
-        Assert.True(firstIndex < secondIndex, $"Expected '{first}' to appear before '{second}'.");
-    }
-
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

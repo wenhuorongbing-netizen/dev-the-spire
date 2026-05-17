@@ -49,20 +49,16 @@ public sealed class ReleaseSafetyExpandedGuardTests
     [ReleaseArtifactFact]
     public void ActiveCoverArtAndInactiveModRealPolicyMatchExportPckAndPackage()
     {
-        var activeCover = RepoPath("EZMicroBalance", "mod_image.png");
-        var auditedCover = RepoPath("publish", "EZMicroBalance-cover-source.png");
-        var inactiveRootCover = RepoPath("EZMicroBalance", "mod_real.png");
-        var inactiveRootCoverImport = RepoPath("EZMicroBalance", "mod_real.png.import");
+        var activeCover = AssertRepoFileExists("EZMicroBalance", "mod_image.png");
+        var auditedCover = AssertRepoFileExists("publish", "EZMicroBalance-cover-source.png");
         var exportPreset = ReadRepoText("export_presets.cfg");
         var installedPck = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
         var packageZip = RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip");
 
-        Assert.True(File.Exists(activeCover), $"Missing active cover art: {activeCover}");
-        Assert.True(File.Exists(auditedCover), $"Missing audited cover source copy: {auditedCover}");
         Assert.Equal(Sha256(activeCover), Sha256(auditedCover));
 
-        Assert.False(File.Exists(inactiveRootCover), "Root-level EZMicroBalance/mod_real.png is banned from the active mod resource tree.");
-        Assert.False(File.Exists(inactiveRootCoverImport), "Root-level EZMicroBalance/mod_real.png.import is banned from the active mod resource tree.");
+        AssertRepoPathDoesNotExist("EZMicroBalance", "mod_real.png");
+        AssertRepoPathDoesNotExist("EZMicroBalance", "mod_real.png.import");
 
         var exported = ParseExportFiles(exportPreset);
         Assert.Contains("res://EZMicroBalance/mod_image.png", exported);
@@ -122,8 +118,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         foreach (var resource in exportedResources.Where(path => path.EndsWith(".png", StringComparison.Ordinal)))
         {
-            Assert.True(File.Exists(RepoPath(resource.Split('/'))), $"Export references missing PNG: {resource}");
-            Assert.True(File.Exists(RepoPath((resource + ".import").Split('/'))), $"Exported PNG has no import metadata: {resource}");
+            AssertRepoFileExists(resource.Split('/'));
+            AssertRepoFileExists((resource + ".import").Split('/'));
             Assert.Contains(resource + ".import", installedEntries);
             Assert.Contains(resource + ".import", zippedEntries);
         }
@@ -182,7 +178,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains(fields, field => field.Types == "RootBud, int");
         Assert.Contains(fields, field => field.Types == "RootFamilyCard, bool");
 
-        var currentDocs = ReadCurrentFacingDocs();
+        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         Assert.Contains("current source defines 22 SavedSpireFields", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Found 22 SavedSpireFields", currentDocs, StringComparison.Ordinal);
@@ -228,7 +224,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         var helper = ReadRepoText("scripts", "spire-plus-live-session.ps1");
         var windowPreflight = ReadRepoText("scripts", "check-spire-window-preflight.ps1");
         var scriptsReadme = ReadRepoText("scripts", "README.md");
-        var currentDocs = ReadCurrentFacingDocs();
+        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
 
         AssertSourceContains(
             helper,
@@ -299,11 +295,12 @@ public sealed class ReleaseSafetyExpandedGuardTests
             audit,
             "# Spire Plus Private Beta Release Completion Audit",
             "## Objective Restated",
+            "## Objective Coverage Recheck",
             "## Prompt-To-Artifact Checklist",
             "## Missing Or Weakly Verified Items",
             "## Conclusion",
-            "152 passed / 18 skipped",
-            "170 passed / 0 skipped",
+            "170 passed / 18 skipped",
+            "188 passed / 0 skipped",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",
             "window-preflight-smoke-20260513-135402",
@@ -311,10 +308,20 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Disable-mod gameplay behavior in an actual run",
             "Natural A11 click-by-click traversal",
             "Two-client multiplayer/co-op matrix",
+            "Vakuu dedicated combat loop",
+            "Ancient reward visibility",
+            "Player text, UI, and resource routing",
+            "failed as designed with 16 pending manual rows",
+            "release-ready-path-containment-smoke",
+            "evidence dirs outside the evidence root",
+            "required-file/screenshot paths that escape their row evidence dir",
             "Not achieved.",
             "It is not private-beta release-ready");
 
         Assert.Contains("| Ancient reward gameplay |", audit, StringComparison.Ordinal);
+        Assert.Contains("| Source/package guarded; not release-ready until live victory return, no-black-screen, active-fight/pre-finished save-load, and failure/death rows pass. |", audit, StringComparison.Ordinal);
+        Assert.Contains("| Source guarded; live relic-bar visibility and hover readability remain pending. |", audit, StringComparison.Ordinal);
+        Assert.Contains("| Static/resource guarded; clicked Ancient screenshots, combat-scene screenshots, and live tooltip fit remain pending. |", audit, StringComparison.Ordinal);
         Assert.Contains("| Not complete: runtime results remain pending |", audit, StringComparison.Ordinal);
         Assert.Contains("Invalid live screenshot attempts are not counted as gameplay evidence.", audit, StringComparison.Ordinal);
         Assert.Contains("they do not satisfy live Urda, Rootblight, or gameplay rows.", audit, StringComparison.Ordinal);
@@ -326,6 +333,130 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("private-beta-release-completion-audit.md", docsIndex, StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", audit, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotMatch(@"(?i)\b(?:is|are)\s+(?:private-beta\s+)?release-ready\b", audit);
+    }
+
+    [Fact]
+    public void ReleaseChecklistProofAuditKeepsManualTestRowsOpen()
+    {
+        var releaseChecklist = ReadRepoText("docs", "release-checklist.md");
+        var testReadyGoal = ReadRepoText("docs", "test-ready-development-goal.md");
+
+        AssertSourceContains(
+            testReadyGoal,
+            "Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test build",
+            "Current stop line: Codex should not chase release-ready evidence in this pass.",
+            "The user will run live/manual testing.",
+            "This is not a release-ready claim.");
+
+        AssertSourceContains(
+            releaseChecklist,
+            "## Proof Audit",
+            "Dedicated Vakuu combat loop",
+            "Ancient rewards visible to players",
+            "Player text and tooltip polish",
+            "UI and art resource routing",
+            "Automation and package parity",
+            "Documented publish blockers",
+            "live victory return",
+            "no-black-screen proof",
+            "active-fight/pre-finished save-load",
+            "death/failure path",
+            "co-op disposition",
+            "relic-bar visibility",
+            "hover readability",
+            "clicked Ancient screenshots",
+            "combat-scene screenshots",
+            "Current package is a user-test-ready handoff; publish-proof requires the open manual rows");
+
+        Assert.Contains("- [ ] Every implemented Ancient reward change has a completed manual runtime result.", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("- [ ] Save/load-sensitive behavior is tested.", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("- [ ] Multiplayer disposition is decided: verified, or release-noted as unsupported/unverified.", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("- [ ] Fight Vakuu remains hidden by default.", releaseChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", releaseChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", releaseChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("- [x] Multiplayer disposition is decided: verified, or release-noted as unsupported/unverified.", releaseChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("- [x] Fight Vakuu remains hidden by default.", releaseChecklist, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ReleaseEvidenceVerifierCoversManualBlockersBeforeReleaseClaims()
+    {
+        var verifier = ReadRepoText("scripts", "verify-spire-plus-release-evidence.ps1");
+        var scriptsReadme = ReadRepoText("scripts", "README.md");
+        var releaseChecklist = ReadRepoText("docs", "release-checklist.md");
+        var handoff = ReadRepoText("docs", "private-beta-verification-handoff.md");
+
+        AssertSourceContains(
+            verifier,
+            "PackageSha256 = \"EA0EC3611DC21FD33C9B87E592326A9000ECE593512554D720843D7490CC589C\"",
+            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.0.zip\"",
+            "MinScreenshotWidth = 800",
+            "MinScreenshotHeight = 450",
+            "Get-FileHash -LiteralPath $packageFull -Algorithm SHA256",
+            "ActualPackageSha256 = $actualPackageSha256",
+            "ManifestPath is outside EvidenceRoot",
+            "Test-PathWithin",
+            "Resolve-EvidenceFilePath",
+            "Merge-RequiredEvidenceFiles",
+            "DefaultFiles",
+            "RowFiles",
+            "Kind '$rowKind' does not match required kind",
+            "EvidenceDir is outside EvidenceRoot",
+            "required evidence file path escapes EvidenceDir",
+            "screenshot path escapes EvidenceDir",
+            "Add-Warning",
+            "$requiredRowIds",
+            "Release evidence manifest contains a row with no Id; it is ignored.",
+            "Unknown release evidence row id ignored",
+            "$requiredReleaseRows",
+            "command.txt",
+            "ancient-ui-urda",
+            "ancient-ui-morvi",
+            "ancient-ui-lotha",
+            "ancient-ui-vakuu-normal",
+            "ancient-ui-vakuu-fight",
+            "ancient-reward-visible-relics",
+            "player-text-tooltip-readability",
+            "art-resource-routing-live-preview",
+            "vakuu-victory-no-black-screen",
+            "vakuu-failure-death-path",
+            "vakuu-active-fight-save-load",
+            "ancient-state-save-load",
+            "rootblight-visual-behavior",
+            "a11-natural-route-traversal",
+            "disable-mod-gameplay",
+            "coop-disposition",
+            "godot-log-audit.json",
+            "SpireForeground",
+            "Clean",
+            "ExplicitOwnerDecision",
+            "ReleaseNote",
+            "AllowDeferred",
+            "Package under test does not exist",
+            "Actual package SHA256",
+            "Duplicate release evidence row id",
+            "$invalidEvidenceNotePattern",
+            "required evidence file is empty",
+            "requiredFileString.EndsWith('.md'",
+            "evidence note '$requiredFileString' is empty",
+            "evidence note '$requiredFileString' describes invalid or non-counting evidence",
+            "ResultNote describes invalid or non-counting evidence",
+            "screenshot file is empty",
+            "Test-PngSignature",
+            "Get-PngDimensions",
+            "Test-PngMinimumDimensions",
+            "screenshot file is not a valid PNG",
+            "screenshot file is too small",
+            "has no valid PNG screenshots at least",
+            "has no valid non-empty PNG screenshots",
+            "has only empty PNG screenshots",
+            "not counted|invalid|main menu|wrong surface|covered by|not gameplay evidence|do not satisfy|does not satisfy|loader health only");
+
+        Assert.Contains("verify-spire-plus-release-evidence.ps1", scriptsReadme, StringComparison.Ordinal);
+        Assert.Contains("verify-spire-plus-release-evidence.ps1", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("verify-spire-plus-release-evidence.ps1", handoff, StringComparison.Ordinal);
+        Assert.Contains("Deferred rows fail", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("Use `-AllowDeferred` only after an explicit owner-approved release-note deferral", handoff, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -547,36 +678,35 @@ public sealed class ReleaseSafetyExpandedGuardTests
         var fragments = new[]
         {
             "\uFFFD",
-            "妫卞僵",
-            "寮傝壊",
-            "鏀炬澗",
-            "鏀朵笅",
-            "鍖栦负",
-            "鍋胯繕",
-            "绁炲寲",
-            "璁告効",
-            "鎵ц糠",
-            "杩呴",
-            "鍥烘湁",
-            "鎰氳",
-            "姘告亽",
-            "瀹濈煶",
-            "鐏典綋",
-            "闈為",
-            "棣栭",
-            "鍊哄姟",
-            "娆犳",
-            "淇濈暀",
-            "铏氭棤",
-            "娑堣",
-            "鍔涢噺",
-            "鑾峰緱",
-            "鐐硅兘",
-            "澶卞幓",
-            "绗",
-            "绋充綇",
-            "涓涵",
-            "闇€瑕佽嚦"
+            "婵☆偄",
+            "鐎殿喖",
+            "闁衡偓",
+            "闁告牗",
+            "闁稿",
+            "缂佷胶",
+            "閻犱礁",
+            "闁圭瑳",
+            "閺夆晛",
+            "闁搞儳",
+            "闁圭増",
+            "婵ê",
+            "閻庤",
+            "闁诲繐",
+            "闂傚牏",
+            "濡絾",
+            "闁稿﹤",
+            "婵炲棛",
+            "濞ｅ洦",
+            "闁惧繑",
+            "婵炴垵",
+            "闁告梹",
+            "闁兼儳",
+            "闁绘劗",
+            "濠㈣泛",
+            "缂佹",
+            "缂佸",
+            "濞戞搩",
+            "闂傚洠"
         };
 
         var matches = fragments
@@ -589,7 +719,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
     [Fact]
     public void CurrentFacingDocsStillFailOnFalseReleaseClaims()
     {
-        var currentDocs = ReadCurrentFacingDocs();
+        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         var projectState = ReadRepoText("PROJECT_STATE.md");
 
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
@@ -687,7 +817,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             return;
         }
 
-        var logContent = ReadAllTextShared(recentLog);
+        var logContent = ReadSharedText(recentLog);
 
         var forbiddenSignatures = new[]
         {
@@ -732,7 +862,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.NotEmpty(candidates);
 
         var passingLogs = candidates
-            .Select(path => (path, summary: SmokeLogParser.Parse(ReadAllTextShared(path))))
+            .Select(path => (path, summary: SmokeLogParser.Parse(ReadSharedText(path))))
             .Where(candidate => IsControlledSmokePass(candidate.summary))
             .ToArray();
 
@@ -747,7 +877,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         if (File.Exists(logPath))
         {
-            var currentSummary = SmokeLogParser.Parse(ReadAllTextShared(logPath));
+            var currentSummary = SmokeLogParser.Parse(ReadSharedText(logPath));
             Assert.Empty(currentSummary.EzMicroBalanceErrorLines);
         }
     }
@@ -767,8 +897,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
     [ReleaseArtifactFact]
     public void DisabledSpirePlusPlugOffEvidenceSupportsDocs()
     {
-        var evidenceDir = RepoPath(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020");
-        Assert.True(Directory.Exists(evidenceDir), $"Missing plug-off evidence directory: {evidenceDir}");
+        AssertRepoDirectoryExists(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020");
 
         using var summary = JsonDocument.Parse(ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "disabled-startup-summary.json"));
         var root = summary.RootElement;
@@ -797,7 +926,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Equal(25, restore.RootElement.GetProperty("RestoredModCount").GetInt32());
         Assert.Equal(1, restore.RootElement.GetProperty("RestoredCurrentRunCount").GetInt32());
 
-        var currentDocs = ReadCurrentFacingDocs();
+        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         Assert.Contains("live-spire-plus-disabled-session-20260513-143020", currentDocs, StringComparison.Ordinal);
         Assert.Contains("settings-only disabled attempt", currentDocs, StringComparison.Ordinal);
         Assert.Contains("This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.", currentDocs, StringComparison.Ordinal);
@@ -852,123 +981,6 @@ public sealed class ReleaseSafetyExpandedGuardTests
         return string.Join(Environment.NewLine, CurrentFacingDocs.Select(path => ReadRepoText(path.Split('/'))));
     }
 
-    private static string ReadCurrentFacingDocs()
-    {
-        return string.Join(Environment.NewLine, CurrentFacingDocs.Select(path => ReadRepoText(path.Split('/'))));
-    }
-
-    private static string[] ParseExportFiles(string exportPreset)
-    {
-        var match = Regex.Match(exportPreset, @"export_files=PackedStringArray\((?<files>[^)]*)\)");
-        Assert.True(match.Success, "Could not find export_files in export_presets.cfg.");
-
-        return Regex.Matches(match.Groups["files"].Value, @"""(?<path>[^""]+)""")
-            .Cast<Match>()
-            .Select(match => match.Groups["path"].Value)
-            .OrderBy(path => path, StringComparer.Ordinal)
-            .ToArray();
-    }
-
-    private static bool IsActiveExportResource(string relativePath)
-    {
-        return IsActiveReleaseResource(relativePath) &&
-            (Path.GetExtension(relativePath) is ".json" or ".png" or ".txt" or ".tscn");
-    }
-
-    private static bool IsActiveReleaseResource(string relativePath)
-    {
-        return relativePath.StartsWith("EZMicroBalance/", StringComparison.Ordinal) &&
-            !relativePath.Equals("EZMicroBalance/mod_real.png", StringComparison.Ordinal) &&
-            !relativePath.Equals("EZMicroBalance/mod_real.png.import", StringComparison.Ordinal);
-    }
-
-    private static IReadOnlyList<string> ReadPckDirectory(string path)
-    {
-        Assert.True(File.Exists(path), $"Missing PCK: {path}");
-        return ReadPckDirectory(File.ReadAllBytes(path));
-    }
-
-    private static IReadOnlyList<string> ReadPckDirectory(byte[] bytes)
-    {
-        var directoryOffset = (int)BitConverter.ToUInt64(bytes, 0x20);
-        var count = (int)BitConverter.ToUInt32(bytes, directoryOffset);
-        var offset = directoryOffset + 4;
-        var entries = new List<string>(count);
-
-        for (var i = 0; i < count; i++)
-        {
-            var length = (int)BitConverter.ToUInt32(bytes, offset);
-            offset += 4;
-            entries.Add(Encoding.UTF8.GetString(bytes, offset, length).TrimEnd('\0'));
-            offset += length;
-            offset += 8 + 8 + 16 + 4;
-        }
-
-        return entries;
-    }
-
-    private static byte[] ReadZipBytes(ZipArchive archive, string entryName)
-    {
-        var entry = archive.Entries.FirstOrDefault(candidate =>
-            candidate.FullName.Replace('\\', '/').Equals(entryName, StringComparison.Ordinal));
-        Assert.NotNull(entry);
-
-        using var stream = entry.Open();
-        using var memory = new MemoryStream();
-        stream.CopyTo(memory);
-        return memory.ToArray();
-    }
-
-    private static IEnumerable<(string key, string value)> JsonStringValues(JsonElement element, string keyPrefix = "")
-    {
-        if (element.ValueKind == JsonValueKind.Object)
-        {
-            foreach (var property in element.EnumerateObject())
-            {
-                var key = string.IsNullOrEmpty(keyPrefix)
-                    ? property.Name
-                    : $"{keyPrefix}.{property.Name}";
-
-                foreach (var value in JsonStringValues(property.Value, key))
-                {
-                    yield return value;
-                }
-            }
-
-            yield break;
-        }
-
-        if (element.ValueKind == JsonValueKind.Array)
-        {
-            var index = 0;
-            foreach (var item in element.EnumerateArray())
-            {
-                foreach (var value in JsonStringValues(item, $"{keyPrefix}[{index}]"))
-                {
-                    yield return value;
-                }
-
-                index++;
-            }
-
-            yield break;
-        }
-
-        if (element.ValueKind == JsonValueKind.String)
-        {
-            yield return (keyPrefix, element.GetString() ?? string.Empty);
-        }
-    }
-
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
     private static void AssertEvidenceLabelOnlyReferencedAsInvalid(string source, string label)
     {
         var matchingLines = source
@@ -987,34 +999,6 @@ public sealed class ReleaseSafetyExpandedGuardTests
         }
     }
 
-    private static string ManifestVersion()
-    {
-        using var document = JsonDocument.Parse(ReadRepoText("EZMicroBalance.json"));
-        return document.RootElement.GetProperty("version").GetString() ?? throw new InvalidOperationException("Missing manifest version.");
-    }
-
-    private static string ReadSourceTree(params string[] parts)
-    {
-        var root = RepoPath(parts);
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(path => File.ReadAllText(path, Encoding.UTF8)));
-    }
-
-    private static string Sha256(string path)
-    {
-        Assert.True(File.Exists(path), $"Missing file to hash: {path}");
-        using var stream = File.OpenRead(path);
-        return Convert.ToHexString(SHA256.HashData(stream));
-    }
-
-    private static string Sha256(byte[] bytes)
-    {
-        return Convert.ToHexString(SHA256.HashData(bytes));
-    }
-
     private static string CurrentGodotLogPath()
     {
         return Path.Combine(
@@ -1024,52 +1008,4 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "godot.log");
     }
 
-    private static string ReadAllTextShared(string path)
-    {
-        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-        using var reader = new StreamReader(stream, Encoding.UTF8);
-        return reader.ReadToEnd();
-    }
-
-    private static string ToRepoRelativePath(string path)
-    {
-        return Path.GetRelativePath(FindRepoRoot(), path).Replace('\\', '/');
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string GamePath(params string[] parts)
-    {
-        var root = Environment.GetEnvironmentVariable("STS2_PATH");
-        if (string.IsNullOrWhiteSpace(root))
-        {
-            root = @"D:\Steam\steamapps\common\Slay the Spire 2";
-        }
-
-        return Path.Combine(new[] { root }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

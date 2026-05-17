@@ -1,4 +1,7 @@
-{
+﻿{
+  "OPTION_COOK.name": "切肉",
+  "OPTION_COOK.description": "移除2张牌。失去5点生命。",
+  "OPTION_COOK.descriptionDisabled": "需要至少2张可移除牌且生命值大于5。",
   "OPTION_COOK.ezDescription": "移除2张牌。失去5点生命。",
   "OPTION_COOK.ezDescriptionDisabled": "需要至少2张可移除牌且生命值大于5。"
 }

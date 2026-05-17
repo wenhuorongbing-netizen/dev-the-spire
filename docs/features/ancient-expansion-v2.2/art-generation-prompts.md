@@ -49,9 +49,11 @@ Use local source-code art only as read-only calibration. Do not copy, trace, rem
 
 ## Manual ChatGPT Style Anchor
 
-Primary manual ChatGPT style anchor: `.tools/art-generation/chatgpt/crystal-throne-of-shattered-visions.png`.
+Primary manual ChatGPT style anchor: `.tools/art-generation/lotha-background-repair-20260515-feedback/sources/lotha-horizontal-mirror-ensemble-upload-source.png`.
 
-This first manual preview is the current best user-approved style direction for both the mirror-event illustration and the smaller Ancient option/relic/card art review pass. Use it as the main look target: dark mirror-card finish, readable character silhouettes inside crystal shards, thick hand-painted acrylic and marker texture, restrained navy-purple base, dirty gold and cold blue accents, and a polished-but-not-glossy illustrated surface.
+This corrected user-uploaded horizontal mirror-ensemble source is the current best user-approved style direction for the Lotha mirror-event illustration and the broader dark mirror-card review pass. Use it as the main look target: wide vertical-crystal lineup, readable character silhouettes inside crystal shards, central obsidian oracle with handheld heart mirror, thick hand-painted acrylic and marker texture, restrained navy-purple base, dirty gold and cold blue accents, and a polished-but-not-glossy illustrated surface.
+
+The older `.tools/art-generation/chatgpt/crystal-throne-of-shattered-visions.png` file is a similarly named but rejected composition and must not be treated as the active Lotha source.
 
 Do not overcorrect toward later darker and emptier iterations. `crystalline-shrine-of-fractured-souls.png`, `ritual-in-a-shattered-mirror-hall.png`, and `the-mirror-hall-of-forgotten-souls.png` are review artifacts for aspect-ratio, Neow-like silhouette, and simplification lessons only; they are not the current style target. Small option relic sheets should inherit the first preview's dark mirror-card finish and broad painted material language, then simplify only enough to remain readable as small icons.
 
@@ -86,7 +88,7 @@ Reviewed style anchors:
 
 Style conclusions for prompt review:
 
-- Event/Ancient background source assets are wider than 16:9: event images are 3440x1616 and Ancient placeholders are 2560x1200, both about 2.13:1. Prefer a 2.13:1 wide composition for final backgrounds; 16:9 previews are acceptable only for manual ChatGPT tests, not as the final integration target.
+- Event/Ancient source assets include wider 2.13:1 calibration references, but live clicked-Ancient screenshots showed the active custom scene is effectively 16:9. Prefer a 16:9 composition for clicked Ancient event backgrounds and keep the scene fitting non-cropping. Wider 2.13:1 references remain useful for darkness, negative space, and broad shape language only.
 - Keep 60-80% of the image quiet and dark for final event backgrounds where the Ancient UI needs negative space. Do not apply this as a global small-icon rule, and do not let it erase the readable mirror-character ensemble that made the first manual preview work.
 - Avoid noisy equal-detail character grids. Secondary creatures should read as silhouettes, reflections, or icon-like clues, while preserving the first preview's clear group-image structure and memorable mirror inhabitants.
 - Reduce glossy crystal facets and high-frequency highlights. Source crystal/mirror scenes are graphic and flat, with only a few sharp accents.
@@ -215,7 +217,7 @@ Scene:
 [wide event scene]
 
 Composition:
-Wide 2.13:1 source-code event background composition, matching the proportions of `source code/images/events/reflections.png` and `source code/images/events/crystal_sphere.png`. Use a symmetrical but slightly irregular layout with one central boss-like figure or one clearly staged event focus, floating vertical shapes arranged left and right, and a dark reflective floor or deep void background. Keep large quiet negative-space regions for the Ancient event UI. Secondary elements should feel like reflections, silhouettes, or icon-like clues, not equally detailed character portraits.
+Wide 16:9 clicked Ancient event background composition. Use source-code event art such as `source code/images/events/reflections.png` and `source code/images/events/crystal_sphere.png` only for dark, sparse, broad-shape calibration, not for final aspect ratio. Use a symmetrical but slightly irregular layout with one central boss-like figure or one clearly staged event focus, floating vertical shapes arranged left and right, and a dark reflective floor or deep void background. Keep large quiet negative-space regions for the Ancient event UI. Secondary elements should feel like reflections, silhouettes, or icon-like clues, not equally detailed character portraits.
 
 Art style:
 Slay the Spire 2 inspired dark hand-painted roguelike event art, rough oil-gouache brushwork, thick acrylic paint and marker texture, painterly flat colors, thick uneven black outlines, strong silhouettes, limited palette, deep blue and purple shadows, cold highlights, small warm accents, ancient cursed atmosphere, slightly messy hand-drawn texture, not too polished. Favor flat block shadows, visible dry-brush marks, and broad readable masses over glossy crystal rendering or high-detail fantasy key art.

@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -8,6 +8,42 @@ namespace EZMicroBalance.Tests;
 
 public sealed class AscensionV2MilestoneGuardTests
 {
+    private static readonly string[] CurrentFacingDocs =
+    [
+        "README.md",
+        "docs/dev-environment.md",
+        "docs/private-beta-verification-handoff.md",
+        "docs/test-plan.md",
+        "docs/release-checklist.md",
+        "docs/features/ascension-11-20/api-research.md",
+        "docs/features/ascension-11-20/manual-test-checklist.md"
+    ];
+
+    [Fact]
+    public void CombatModifierEntryPointsShareNodeMetadataRefreshHelpers()
+    {
+        var combatModifiers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
+
+        AssertSourceContains(
+            combatModifiers,
+            "private static bool TryRefreshNodeMetadata(",
+            "tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState)",
+            "tracker.NodeMetadata = current",
+            "private static bool TryRefreshActiveBossSealMetadata(",
+            "TryRefreshNodeMetadata(combatState, tracker, out metadata) &&",
+            "HasActiveBossSeal(combatState, metadata)");
+        Assert.DoesNotContain(
+            "var metadata = tracker.NodeMetadata ?? AscensionMapService.TryGetCurrentMetadata(combatState.RunState);",
+            combatModifiers,
+            StringComparison.Ordinal);
+
+        var metadataLookupCount = Regex.Matches(
+            combatModifiers,
+            @"tracker\.NodeMetadata \?\? AscensionMapService\.TryGetCurrentMetadata\(combatState\.RunState\)",
+            RegexOptions.CultureInvariant).Count;
+        Assert.Equal(1, metadataLookupCount);
+    }
+
     [Fact]
     public void Milestone0FeatureFlagsAreIndependentAndAllOffIsANoOp()
     {
@@ -293,7 +329,7 @@ public sealed class AscensionV2MilestoneGuardTests
         var zhsEvents = JsonStringMap("EZMicroBalance", "localization", "zhs", "events.json");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
-        var currentDocs = ReadCurrentFacingDocs();
+        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
 
         AssertSourceContains(metadata, "Vanguard", "ShieldFormation", "Bounty", "BossSealDefinition?", "DeepBranchNodeKind", "IsBossBrand");
         AssertSourceContains(
@@ -489,7 +525,7 @@ public sealed class AscensionV2MilestoneGuardTests
     [Fact]
     public void CurrentDocsDoNotClaimAscensionReadiness()
     {
-        var currentDocs = ReadCurrentFacingDocs();
+        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
 
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", currentDocs, StringComparison.Ordinal);
@@ -498,114 +534,5 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("release ready", currentDocs, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static SortedDictionary<string, string> JsonStringMap(params string[] parts)
-    {
-        using var document = JsonDocument.Parse(ReadRepoText(parts));
-        var map = new SortedDictionary<string, string>(StringComparer.Ordinal);
-        foreach (var property in document.RootElement.EnumerateObject())
-        {
-            Assert.Equal(JsonValueKind.String, property.Value.ValueKind);
-            map.Add(property.Name, property.Value.GetString() ?? string.Empty);
-        }
 
-        return map;
-    }
-
-    private static IReadOnlyList<string> ReadPckDirectory(byte[] bytes)
-    {
-        var directoryOffset = (int)BitConverter.ToUInt64(bytes, 0x20);
-        var count = (int)BitConverter.ToUInt32(bytes, directoryOffset);
-        var offset = directoryOffset + 4;
-        var entries = new List<string>(count);
-
-        for (var i = 0; i < count; i++)
-        {
-            var length = (int)BitConverter.ToUInt32(bytes, offset);
-            offset += 4;
-            entries.Add(Encoding.UTF8.GetString(bytes, offset, length).TrimEnd('\0'));
-            offset += length;
-            offset += 8 + 8 + 16 + 4;
-        }
-
-        return entries;
-    }
-
-    private static byte[] ReadZipBytes(ZipArchive archive, string entryName)
-    {
-        var entry = archive.Entries.FirstOrDefault(candidate =>
-            candidate.FullName.Replace('\\', '/').Equals(entryName, StringComparison.Ordinal));
-        Assert.NotNull(entry);
-
-        using var stream = entry.Open();
-        using var memory = new MemoryStream();
-        stream.CopyTo(memory);
-        return memory.ToArray();
-    }
-
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static string ReadCurrentFacingDocs()
-    {
-        return string.Join(
-            Environment.NewLine,
-            new[]
-            {
-                "README.md",
-                "docs/dev-environment.md",
-                "docs/private-beta-verification-handoff.md",
-                "docs/test-plan.md",
-                "docs/release-checklist.md",
-                "docs/features/ascension-11-20/api-research.md",
-                "docs/features/ascension-11-20/manual-test-checklist.md"
-            }.Select(path => ReadRepoText(path.Split('/'))));
-    }
-
-    private static string ReadSourceTree(params string[] parts)
-    {
-        var root = RepoPath(parts);
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(path => File.ReadAllText(path, Encoding.UTF8)));
-    }
-
-    private static string ManifestVersion()
-    {
-        using var document = JsonDocument.Parse(ReadRepoText("EZMicroBalance.json"));
-        return document.RootElement.GetProperty("version").GetString() ?? throw new InvalidOperationException("Missing manifest version.");
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

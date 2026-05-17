@@ -2,9 +2,14 @@
 
 Append only short tester/player-facing entries here when behavior or release validation changes.
 
+## 2026-05-17
+
+- Vakuu's fight keeps the same Contract/lock/Blood Debt rewards, but its active combat room no longer stores a parent event id while the fight is in progress; parent restoration is now recorded only after victory for the saved prefinished-combat path.
+- Vakuu art assets were re-audited against the GPTimage2 manifest and export list; no replacement art was needed.
+
 ## 2026-05-14
 
-- Vakuu's fight now adds Temptation Status cards to the top of your draw pile after your hand draw on turns 1, 3, 5, and onward; exhausting one gives 1 Energy and costs 3 HP.
+- Vakuu's fight now adds random Temptation Contracts to hand after your hand draw on turns 1, 3, 5, and onward; Contracts cost HP, break Stolen Vault locks, add Blood Debt, and improve victory blessing choices plus Gold.
 - Urda now shows four initial blessing choices in the clicked Ancient screen instead of three.
 - Invalid forced blessing environment values now fall back to visible Urda, Morvi, or Lotha options with a clear log warning instead of silently falling through.
 - Morvi Debt Settlement now pays missing Gold with nonlethal HP and keeps Debt decreasing by the due amount.
@@ -37,7 +42,7 @@ Append only short tester/player-facing entries here when behavior or release val
 - Urda now has ten source-backed default-on v2.2 blessing ids: Seedbed, Humus Pact, Molting, Moss Map, Trial Branch, Shallow-Root Relic, Rooted Route, After the Rain, Root-Sight, and Seed Bank.
 - Urda source-safe tester notes: Trial Branch uses a simple 4-card selection grid, Shallow-Root Relic uses Act 2 removal/refund instead of the unproven `lose 6 Max HP` choice UI, Rooted Route auto-marks a reachable normal-combat node without graph mutation, Root-Sight auto-marks non-Boss nodes instead of adding a map button, and Seed Bank stores by consuming the reward.
 - Urda's six new option icons are temporary source-derived crops because `OPENAI_API_KEY` was not set; bespoke relic-style icons remain pending.
-- Fight Vakuu is source-complete/default-on for single-player private-beta testing with `EZMB_DISABLE_VAKUU_FIGHT` / `SPIREPLUS_DISABLE_VAKUU_FIGHT`, force-Ancient gates, force-fight gates, a custom Event combat, and three non-Vakuu Act 3 Ancient blessing choices on victory.
+- Fight Vakuu is hidden by default behind `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, or a force-fight gate. It now uses a dedicated Vakuu enemy and encounter scene, but still needs live post-victory, save-load, and failure-path proof before normal exposure.
 - Live gameplay, save/load, failure/death, and co-op verification for Urda, Lotha, and Vakuu remain pending.
 
 ## 2026-05-12

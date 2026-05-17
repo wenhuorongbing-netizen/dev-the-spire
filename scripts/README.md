@@ -10,9 +10,12 @@ Repository helper scripts live here. Keep scripts small, idempotent where possib
 | `check-installed-ezmb-package.ps1` | Check installed `EZMicroBalance` artifact hashes against the current handoff docs. Defaults are Windows-oriented; pass `-InstallRoot` explicitly for non-default or macOS paths. |
 | `check-spire-window-preflight.ps1` | Report the current foreground window, Slay the Spire 2 window state, and visible top-level windows before capturing live gameplay screenshots. Use `-RequireSpireForeground` to fail fast when another app is covering the game. |
 | `collect-ancient-ui-evidence.ps1` | Prepare or restore a forced Ancient clicked-UI evidence session for Urda, Morvi, Lotha, or Vakuu. Prepare mode writes `ancient-ui-evidence-plan.json` and `manual-instructions.md`, runs the preflight unless `-NoPreflight` is used, and launches only when `-Launch` is explicit. |
+| `capture-spire-window.ps1` | Capture the visible Slay the Spire 2 window to a PNG. Use with `-RequireSpireForeground` after the preflight passes. |
 | `invoke-ancient-art-gpt4free.ps1` | Build one Ancient art request from `art-generation-prompts.md` and `art-asset-manifest.json`, force `generation_mode`, `mode`, and `semantic_model` to `GPTimage2`, map the local g4f transport model to `gpt-image` by default, and POST it to `GPT4FREE_IMAGE_ENDPOINT`. Without an endpoint, it writes a dry-run request JSON only. |
 | `package-spire-plus.ps1` | Build the player-facing `publish\SpirePlus-v...zip` from the installed `EZMicroBalance` artifacts while keeping the inner install folder, manifest id, DLL, and PCK named `EZMicroBalance`. Run after `dotnet publish`; use `-NoRefreshFromInstalled` only to re-zip an already refreshed staging folder. |
+| `send-spire-dev-console-command.ps1` | Bring Slay the Spire 2 to the foreground and send one simple DevConsole command with `SendKeys`. Use only for short ASCII commands such as `spireplus_test_ancient URDA confirm`. |
 | `spire-plus-live-session.ps1` | Prepare and restore a restore-safe normal Steam live-test session with only BaseLib and Spire Plus / `EZMicroBalance` enabled. Use `-Mode Prepare -MoveOtherMods -MoveCurrentRuns -Launch` to create evidence state and launch, or add `-DisableSpirePlus` with `-MoveOtherMods` to temporarily isolate `EZMicroBalance` out of the mods folder for BaseLib-only plug-off comparison evidence. Then run `-Mode Restore -EvidenceDir <dir> -StopGameOnRestore -PreserveNewCurrentRunsOnRestore` after copying screenshots/log notes from any session that starts or continues a run. |
+| `verify-spire-plus-release-evidence.ps1` | Check a filled manual release evidence manifest before any release-ready claim. It hashes the package under test, rejects duplicate row ids, wrong row kinds, manifests/evidence dirs outside the evidence root, file/screenshot paths that escape their evidence dir, and empty evidence files, warns on unknown or blank manifest rows, keeps each row's default evidence files required even when extra files are listed, checks current package hash parity, requires `command.txt` for every passed row, clicked-UI screenshots with foreground preflight, valid non-empty PNG evidence at least 800x450 by default, clean `godot-log-audit.json` files, non-empty evidence notes that do not describe invalid/non-counting evidence, save/load rows, Vakuu rows, Rootblight/A11/disable-mod rows, and co-op disposition or an explicit owner-approved deferral. |
 
 ## Ancient UI evidence helper
 
@@ -28,4 +31,30 @@ Example:
 
 The helper does not click the game UI, capture screenshots, audit a fresh log, or prove clicked UI by itself. Follow the generated `manual-instructions.md` and keep the clicked UI rows pending until the screenshot and log evidence exists.
 
+Preferred main-menu UI-smoke command after launch:
+
+```text
+spireplus_test_ancient URDA confirm
+spireplus_test_ancient MORVI confirm
+spireplus_test_ancient LOTHA confirm
+spireplus_test_ancient VAKUU confirm
+spireplus_test_ancient VAKUU confirm fight
+```
+
+The Spire Plus command starts an unsaved single-player test run and refuses to run over an existing run. It is still only UI smoke; natural map routing, gameplay, save/load, and co-op rows need their own evidence.
+
+Vakuu shows three normal options by default. Use `-ForceVakuuFight` only for the unfinished one-option fight smoke, or set `EZMB_ENABLE_VAKUU_FIGHT=1` / `SPIREPLUS_ENABLE_VAKUU_FIGHT=1` deliberately when you need the fourth unfinished fight option.
+
 Do not put downloaded binaries or generated tool output in this folder. Use ignored local folders such as `.tools/`, `publish/`, or `source code/` for machine-specific material.
+
+## Release evidence verifier
+
+Use `verify-spire-plus-release-evidence.ps1` after manual testing has produced evidence folders. First write a template manifest, then fill every row with `Status`, `EvidenceDir`, screenshots, result notes, and any owner-approved deferrals:
+
+```powershell
+.\scripts\verify-spire-plus-release-evidence.ps1 -WriteTemplate
+.\scripts\verify-spire-plus-release-evidence.ps1
+```
+
+By default, deferred rows fail. Use `-AllowDeferred` only when the project owner has explicitly accepted a release-note deferral and the row has `ExplicitOwnerDecision: true` plus a non-empty `ReleaseNote`. Pass rows also fail on duplicate row ids, wrong row kinds, manifests or evidence dirs outside the evidence root, required-file or screenshot paths that escape the row evidence dir, empty required files, missing `command.txt`, empty, invalid, or undersized clicked-UI PNG screenshots, empty required Markdown note files, or notes that say the evidence is invalid, covered, main-menu-only, loader-health-only, or otherwise not counted. Default evidence files cannot be removed from a row; `RequiredFiles` only adds extra files. Unknown or blank manifest rows are ignored but reported in `Warnings`.
+The verifier also computes the SHA256 of `publish\SpirePlus-v0.1.0-private-beta.0.zip` by default; use `-PackagePath` only when intentionally auditing a different zip.

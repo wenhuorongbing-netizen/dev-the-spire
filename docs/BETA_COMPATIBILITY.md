@@ -1,4 +1,4 @@
-﻿# Beta Compatibility
+# Beta Compatibility
 
 ## Tested Baseline
 
@@ -14,7 +14,7 @@
 - Publish: `dotnet publish` succeeds.
 - Legacy manual verification: BaseLib and `EzDailyContent` appeared and were enabled in Mod Settings on `v0.104.0`.
 - Active controlled smoke verification: BaseLib and `EZMicroBalance` load with `--force-steam off`; exactly 2 mods loaded in the isolated smoke profile and the game reached main menu.
-- Active normal Steam-client startup/log verification: current Spire Plus / `EZMicroBalance` package reached main menu with exactly BaseLib and Spire Plus loaded under `.tools\runtime-evidence\current-package-smoke-20260514-015901`, `Registered config for mod EZMicroBalance`, `Found 22 SavedSpireFields`, and 0 `ERROR` / release-blocking / missing-resource signature hits. Current Mod Settings UI list screenshot shows `Spire Plus`; gameplay matrix remains pending.
+- Active normal Steam-client startup/log verification: current Spire Plus / `EZMicroBalance` package reached main menu with exactly BaseLib and Spire Plus loaded under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414`, `Registered config for mod EZMicroBalance`, `Found 22 SavedSpireFields`, `Time to main menu: 13,539ms`, and 0 `ERROR` / release-blocking signature hits. Current Mod Settings UI list screenshot shows `Spire Plus`; gameplay matrix remains pending.
 
 ## Compatibility Policy
 

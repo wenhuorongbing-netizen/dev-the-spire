@@ -17,7 +17,7 @@ Ascension 11-20 is available by default in the current private-beta multiplayer 
 | `localization-review-notes.md` | Localization review notes for Ascension strings. |
 | `work-log.md` | Chronological implementation and validation history. Older entries may be superseded. |
 
-Historical prompt/spec material lives in `archive/`.
+Historical prompt/spec material lives in `docs/archive/feature-inputs/ascension-11-20/`.
 
 ## Active Code Areas
 

@@ -13,7 +13,11 @@
 | `EZMicroBalance.json` | Current | Active mod manifest, display name `Spire Plus`, id `EZMicroBalance`. |
 | `EZMicroBalance/` | Current | Active Godot resources, images, and localization. |
 | `EZMicroBalanceCode/` | Current | Active C# source. See `EZMicroBalanceCode/README.md`. |
+| `EZMicroBalanceCode/Ancients/Common/` | Current | Shared Ancient saved state, card helpers, reward relic service, and feature-gate helper. |
 | `EZMicroBalanceCode/Ancients/Expansion/Urda/` | Current | Urda Ancient expansion feature implementation and gate control. |
+| `EZMicroBalanceCode/Ancients/Expansion/Morvi/` | Current | Morvi Ancient expansion feature implementation and gate control. |
+| `EZMicroBalanceCode/Ancients/Expansion/Lotha/` | Current | Lotha Ancient expansion feature implementation and gate control. |
+| `EZMicroBalanceCode/Ancients/Expansion/Vakuu/` | Current | Hidden-by-default Vakuu fight slice, encounter, monster, Temptation card, and fight gate. |
 | `tests/EZMicroBalance.Tests/` | Current | Source, localization, docs, package, and runtime-evidence guards. |
 | `export_presets.cfg` | Current | Selected-resource PCK export for active mod resources only. |
 | `Directory.Build.props.example` | Current | Template for local machine paths. |
@@ -21,10 +25,14 @@
 | `docs/` | Current | Documentation index, current release docs, feature records, and archive. |
 | `scripts/` | Current | Repository helper scripts. |
 | `docs/archive/` | Current | Historical planning, prompt material, release archaeology, archived audits, and implementation records. |
+| `docs/archive/feature-inputs/` | Archive | Historical feature prompts, superseded implementation specs, and old source-design inputs moved out of active feature folders. |
 | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Archive | Historical v2.2 source-audit matrices; do not use as default next-development input. |
 | `docs/archive/implementation-records/` | Archive | Compact implementation records moved out of the active reading path. |
+| `docs/archive/superseded/setup-spec-original-scaffold.md` | Archive | Historical original `EzDailyContent` setup specification; current setup starts from `README.md`, `docs/README.md`, and `docs/dev-environment.md`. |
+| `docs/archive/project-state-history-20260516.md` | Archive | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation/package history. |
 | `docs/issues/` | Current support | Compact issue follow-up plus manual evidence queue retained for guard/reference support (`docs/issues/waiting-tests.md`). |
-| `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi source slice, default-on Lotha source slice, and default-on single-player Vakuu fight source slice; live verification remains pending. |
+| `docs/worktree-cleanup-audit.md` | Current support | Current cleanup/refactor inventory, archive decisions, and owner-decision areas for this dirty worktree. |
+| `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi and Lotha source slices, and the hidden-by-default dedicated Vakuu fight slice; live verification remains pending. |
 
 ## Active Mod Surface
 
@@ -42,6 +50,9 @@ EZMicroBalanceCode/
     Patches/
     Expansion/
       Urda/
+      Morvi/
+      Lotha/
+      Vakuu/
   Ascension/
     Cards/
     Combat/
@@ -73,12 +84,16 @@ The private beta zip should contain only those three installable files plus `REA
 | `EzDailyContent.json` | Legacy | Original scaffold manifest id `EzDailyContent`; do not rename in-place. |
 | `EzDailyContent/` | Legacy | Original resource folder; not the active private beta surface. |
 | `EzDailyContentCode/` | Legacy | Original code folder; not part of the active release solution. |
-| `legacy/` | Legacy | Preserved project artifacts from earlier migration work. |
+| `docs/archive/legacy-planning/legacy-project-files/` | Archive | Preserved legacy project metadata from earlier migration work; top-level `legacy/` was removed during cleanup. |
 | `source code/` | Ignored local scratch | Current decompiled game source reference. Do not commit or package. |
 | `.tools/` | Ignored local tools | Downloaded GDRETools, Godot, ILSpy, and local helper binaries. |
 | `.godot/` | Ignored generated output | Godot import/build cache. |
 | `publish/` | Ignored release output | Package staging, versioned package, and private beta zip. |
-| `art_pipeline/`, `asset/` | Ignored local art/work files | Not part of the active PCK unless explicitly promoted later. |
+| `website/` | Removed ignored local draft | Root draft was deleted after snapshotting; `.gitignore` keeps future regenerated copies out of release-candidate diffs unless deliberately promoted. |
+| `.github/workflows/spire-plus-site.yml` | Removed ignored local draft | Website-only Pages workflow was deleted after snapshotting; promote only with repaired ownership/build docs. |
+| `.tools/archive/local-art-and-calibration-20260515/` | Ignored local archive | Former root `art_pipeline/` and `asset/` generated art/calibration material; not part of the active PCK unless explicitly revalidated and promoted later. |
+| `.tools/archive/local-root-clutter-20260515/` | Ignored local archive | Former root local-only package/source-analysis/website zip clutter preserved before any deletion decision. |
+| `.tools/archive/local-website-preview-20260516/` | Ignored local archive | Snapshot of the removed `website/` static preview and `.github` Pages workflow taken during cleanup; use only if the draft is deliberately promoted later. |
 
 ## Documentation Map
 

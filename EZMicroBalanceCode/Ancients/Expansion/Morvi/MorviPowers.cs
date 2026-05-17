@@ -67,12 +67,16 @@ internal sealed class MorviPaperstormPower : CustomPowerModel
     public override string CustomBigIconPath => MorviAssetPaths.PaperstormPowerIcon;
 }
 
-internal sealed class MorviBraveryPagePower : TemporaryStrengthPower, ICustomModel
+internal sealed class MorviBraveryPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveBraveryPage, StrengthPower>
 {
-    public override AbstractModel OriginModel => ModelDb.Card<MorviArchiveBraveryPage>();
+    public override string CustomPackedIconPath => MorviAssetPaths.ArchivePagePowerIcon;
+
+    public override string CustomBigIconPath => MorviAssetPaths.ArchivePagePowerIcon;
 }
 
-internal sealed class MorviDexterityPagePower : TemporaryDexterityPower, ICustomModel
+internal sealed class MorviDexterityPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveDexterityPage, DexterityPower>
 {
-    public override AbstractModel OriginModel => ModelDb.Card<MorviArchiveDexterityPage>();
+    public override string CustomPackedIconPath => MorviAssetPaths.ArchivePagePowerIcon;
+
+    public override string CustomBigIconPath => MorviAssetPaths.ArchivePagePowerIcon;
 }

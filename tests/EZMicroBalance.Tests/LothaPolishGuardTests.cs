@@ -1,5 +1,3 @@
-﻿using System.Text;
-using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -16,6 +14,21 @@ public sealed class LothaPolishGuardTests
         ("EZMB_LOTHA.pages.INITIAL.options.lotha_death_reprieve.description", "EZMICROBALANCE-LOTHA_DEATH_REPRIEVE_OPTION_RELIC.description"),
         ("EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description", "EZMICROBALANCE-LOTHA_SINGLE_SENTENCE_OPTION_RELIC.description"),
         ("EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description", "EZMICROBALANCE-LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC.description")
+    ];
+
+    private static readonly string[] MojibakeFragments =
+    [
+        "鐟佷礁",
+        "瀵偓",
+        "閺€",
+        "閼",
+        "閻",
+        "鐏",
+        "閸",
+        "缂",
+        "闁",
+        "閵",
+        "缁"
     ];
 
     [Fact]
@@ -357,12 +370,12 @@ public sealed class LothaPolishGuardTests
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
 
-        var shouldPlay = SourceSlice(runHook, "public static bool ShouldPlay", "public static async Task AfterCardPlayed");
-        var powerFallback = SourceSlice(runHook, "private static async Task TryResolveSingleSentencePowerFallback", "private static void TrackSingleSentenceRemainingPlays");
-        var playTracker = SourceSlice(runHook, "private static void TrackSingleSentenceRemainingPlays", "private static void TrackClosedCourtDiscountUse");
-        var powerEligibility = SourceSlice(runHook, "private static bool CanUseSingleSentencePowerReplacement", "private static bool IsEligibleCard");
-        var eligibleCard = SourceSlice(runHook, "private static bool IsEligibleCard", "private static bool IsPowerCard");
-        var powerCard = SourceSlice(runHook, "private static bool IsPowerCard", "private static bool IsDeferredVerdictConsumerCard");
+        var shouldPlay = SliceBetween(runHook, "public static bool ShouldPlay", "public static async Task AfterCardPlayed");
+        var powerFallback = SliceBetween(runHook, "private static async Task TryResolveSingleSentencePowerFallback", "private static void TrackSingleSentenceRemainingPlays");
+        var playTracker = SliceBetween(runHook, "private static void TrackSingleSentenceRemainingPlays", "private static void TrackClosedCourtDiscountUse");
+        var powerEligibility = SliceBetween(runHook, "private static bool CanUseSingleSentencePowerReplacement", "private static bool IsEligibleCard");
+        var eligibleCard = SliceBetween(runHook, "private static bool IsEligibleCard", "private static bool IsPowerCard");
+        var powerCard = SliceBetween(runHook, "private static bool IsPowerCard", "private static bool IsDeferredVerdictConsumerCard");
 
         AssertSourceContains(
             powerFallback,
@@ -459,11 +472,11 @@ public sealed class LothaPolishGuardTests
         var weak = ReadRepoText("source code", "src", "Core", "Models", "Powers", "WeakPower.cs");
         var vulnerable = ReadRepoText("source code", "src", "Core", "Models", "Powers", "VulnerablePower.cs");
         var frail = ReadRepoText("source code", "src", "Core", "Models", "Powers", "FrailPower.cs");
-        var helper = SourceSlice(runHook, "private static bool IsPublicEvidenceDebuffApplication", "private static bool IsPublicEvidenceExcludedDamageDebuff");
-        var excludedDamageDebuffs = SourceSlice(runHook, "private static bool IsPublicEvidenceExcludedDamageDebuff", "private static bool IsUnblockedEnemyAttackDamage");
-        var givenHook = SourceSlice(runHook, "public static decimal ModifyPowerAmountGiven", "public static bool TryModifyPowerAmountReceived");
-        var receivedHook = SourceSlice(runHook, "public static bool TryModifyPowerAmountReceived", "public static async Task AfterPowerAmountChanged");
-        var changedHook = SourceSlice(runHook, "public static async Task AfterPowerAmountChanged", "public static bool ShouldDieLate");
+        var helper = SliceBetween(runHook, "private static bool IsPublicEvidenceDebuffApplication", "private static bool IsPublicEvidenceExcludedDamageDebuff");
+        var excludedDamageDebuffs = SliceBetween(runHook, "private static bool IsPublicEvidenceExcludedDamageDebuff", "private static bool IsUnblockedEnemyAttackDamage");
+        var givenHook = SliceBetween(runHook, "public static decimal ModifyPowerAmountGiven", "public static bool TryModifyPowerAmountReceived");
+        var receivedHook = SliceBetween(runHook, "public static bool TryModifyPowerAmountReceived", "public static async Task AfterPowerAmountChanged");
+        var changedHook = SliceBetween(runHook, "public static async Task AfterPowerAmountChanged", "public static bool ShouldDieLate");
 
         AssertSourceContains(
             ancient,
@@ -658,7 +671,7 @@ public sealed class LothaPolishGuardTests
 
         foreach (var value in LothaOptionValues(zhsAncients, zhsRelics, zhsPowers))
         {
-            AssertNoMojibake(value);
+            AssertNoMojibake(value, MojibakeFragments);
             Assert.DoesNotContain("瀵偓", value, StringComparison.Ordinal);
             Assert.DoesNotContain("閺€", value, StringComparison.Ordinal);
             Assert.DoesNotContain("[gold]能力牌[/gold]改为获得[blue]1[/blue]点[gold]能量[/gold]并抽[blue]1[/blue]张牌", value, StringComparison.Ordinal);
@@ -730,107 +743,4 @@ public sealed class LothaPolishGuardTests
         }
     }
 
-    private static void AssertNoMojibake(string value)
-    {
-        foreach (var fragment in new[]
-        {
-            "\uFFFD",
-            "鐟佷礁",
-            "瀵偓",
-            "閺€",
-            "閼",
-            "閻",
-            "鐏",
-            "閸",
-            "缂",
-            "闁",
-            "閵",
-            "缁"
-        })
-        {
-            Assert.DoesNotContain(fragment, value, StringComparison.Ordinal);
-        }
-    }
-    private static SortedDictionary<string, string> JsonStringMap(params string[] parts)
-    {
-        using var document = JsonDocument.Parse(ReadRepoText(parts));
-        var map = new SortedDictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (var property in document.RootElement.EnumerateObject())
-        {
-            Assert.Equal(JsonValueKind.String, property.Value.ValueKind);
-            map.Add(property.Name, property.Value.GetString() ?? string.Empty);
-        }
-
-        return map;
-    }
-
-    private static void AssertLocalizedKeys(
-        IEnumerable<string> keys,
-        IReadOnlyDictionary<string, string> eng,
-        IReadOnlyDictionary<string, string> zhs,
-        string context)
-    {
-        foreach (var key in keys)
-        {
-            Assert.True(eng.ContainsKey(key), $"Missing English {context}: {key}");
-            Assert.True(zhs.ContainsKey(key), $"Missing zhs {context}: {key}");
-        }
-    }
-
-    private static void AssertSourceContains(string source, params string[] snippets)
-    {
-        var missing = snippets
-            .Where(snippet => !source.Contains(snippet, StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.True(missing.Length == 0, "Missing source evidence:" + Environment.NewLine + string.Join(Environment.NewLine, missing));
-    }
-
-    private static void AssertBefore(string source, string first, string second)
-    {
-        var firstIndex = source.IndexOf(first, StringComparison.Ordinal);
-        var secondIndex = source.IndexOf(second, StringComparison.Ordinal);
-
-        Assert.True(firstIndex >= 0, $"Missing source evidence: {first}");
-        Assert.True(secondIndex >= 0, $"Missing source evidence: {second}");
-        Assert.True(firstIndex < secondIndex, $"Expected `{first}` before `{second}`.");
-    }
-
-    private static string SourceSlice(string source, string startMarker, string endMarker)
-    {
-        var start = source.IndexOf(startMarker, StringComparison.Ordinal);
-        Assert.True(start >= 0, $"Missing source start marker: {startMarker}");
-
-        var end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
-        Assert.True(end > start, $"Missing source end marker after {startMarker}: {endMarker}");
-
-        return source[start..end];
-    }
-
-    private static string ReadRepoText(params string[] parts)
-    {
-        return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
-    }
-
-    private static string RepoPath(params string[] parts)
-    {
-        return Path.Combine(new[] { FindRepoRoot() }.Concat(parts).ToArray());
-    }
-
-    private static string FindRepoRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "EZMicroBalance.csproj")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not find repository root from test output directory.");
-    }
 }

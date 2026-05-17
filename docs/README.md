@@ -13,6 +13,7 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Open issues and TODO | `issues.md` | Compact active blocker and next-development issue index. |
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current feature status and focused doc map. |
 | Project map | `PROJECT_MAP.md` | Active, support, archive, and local-only path map. |
+| Cleanup audit | `worktree-cleanup-audit.md` | Current cleanup/refactor scope, archive decisions, and owner-decision areas. |
 
 Do not read archived prompt dumps or archived audit matrices by default. They are historical and only needed when investigating an old finding.
 
@@ -51,7 +52,7 @@ These files are current support records but are not part of the default next-dev
 | Document | Status |
 | --- | --- |
 | `REMOTE_DEVELOPMENT_SETUP.md` | Current setup guide for another machine. |
-| `SETUP_SPEC.md` | Historical setup specification from the original scaffold; keep for context, do not use as current status. |
+| `archive/superseded/setup-spec-original-scaffold.md` | Historical setup specification from the original scaffold; keep for context, do not use as current status. |
 | `codex-workflow.md` | Repeatable Codex workflow notes. |
 | `style/card-localization-style-guide.md` | Source-backed card text, keyword, preview, and bilingual terminology rules. |
 | `skills/sts2-godot-mod-development.md` | Repo-local StS2/Godot/.NET development reference. |
@@ -63,15 +64,17 @@ These files are current support records but are not part of the default next-dev
 | `../EZMicroBalanceCode/README.md` | Active C# module map and extension rules. |
 | `../tests/EZMicroBalance.Tests/README.md` | Test suite group map and commands. |
 | `../scripts/README.md` | Repository helper script map. |
-| `../legacy/README.md` | Preserved migration artifact map. |
+| `archive/legacy-planning/legacy-project-files/README.md` | Preserved migration artifact map. |
 
 ## Archived Support
 
 | Archive | Purpose |
 | --- | --- |
 | `archive/prompts/2026-05/` | Historical nightly/development prompts. |
+| `archive/feature-inputs/` | Historical feature prompts and superseded implementation specs moved out of active feature folders. |
 | `archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Historical v2.2 audit matrices moved out of the active reading path. |
 | `archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md` | Compact record of the source/test-ready implementation pass. |
+| `archive/project-state-history-20260516.md` | Historical `PROJECT_STATE.md` snapshot before the active file was reduced to current status. |
 
 ## Cleanup Rules
 

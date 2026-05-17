@@ -9,11 +9,13 @@ Archived documents are useful for context, but they are not current implementati
 | Folder | Contents |
 | --- | --- |
 | `legacy-planning/` | Pre-`EZMicroBalance` planning, old Ancient reward research, old Ascension 11-30 roadmap, and future custom character concepts. |
-| `superseded/` | Former current-facing docs that have been replaced by clearer indexes, checklists, or feature records. |
+| `superseded/` | Former current-facing docs that have been replaced by clearer indexes, checklists, feature records, or current setup docs. |
 | `prompts/2026-05/` | Nightly/overhaul prompt files and one-off issue addenda archived during the 2026-05 doc-operations pass. |
+| `feature-inputs/` | Historical feature prompts, superseded implementation specs, and old source-design inputs moved out of active feature folders. |
 | `feature-audits/ancient-expansion-v2.2/2026-05-13/` | Historical v2.2 overnight source-audit matrices. Current work should start from `docs/test-ready-development-goal.md`, not this archive. |
 | `implementation-records/` | Compact records of completed implementation passes that should not stay in the active reading path. |
 | `issues-archive.md` | Closed issue records and release-cycle traceability for previously active blocker items. |
+| `project-state-history-20260516.md` | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation and package history. |
 
 ## Rules
 
@@ -21,3 +23,10 @@ Archived documents are useful for context, but they are not current implementati
 - Add a short historical note when moving a document here.
 - Do not leave release-critical TODOs only in archived files.
 - Do not cite archive files in release docs without also naming the current replacement or status document.
+
+## Superseded Setup Records
+
+- `superseded/setup-spec-original-scaffold.md`: original `EzDailyContent` setup specification. It is retained for setup archaeology only; current setup and release status are in `README.md`, `docs/README.md`, `docs/dev-environment.md`, and `docs/test-plan.md`.
+- `project-state-history-20260516.md`: historical `PROJECT_STATE.md` snapshot retained after the active file was reduced to current status, blockers, commands, and next action.
+- `implementation-records/2026-05-15-current-package-verification-note.md`: historical long-form package verification note archived from `docs/issues.md`; current blockers remain in `docs/issues.md` and `docs/issues/waiting-tests.md`.
+- `legacy-planning/legacy-project-files/`: preserved old `EzDailyContent.csproj` metadata and migration note moved out of the repository root during cleanup.

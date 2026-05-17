@@ -133,10 +133,17 @@ internal sealed class EzmbUrda : CustomAncientModel
         OptionWithRelic<UrdaAfterRainOptionRelic>(UrdaBlessingIds.AfterRain);
 
     private EventOption RootSightSelectionOption =>
-        OptionWithRelic<UrdaRootSightOptionRelic>(UrdaBlessingIds.RootSight);
+        OptionWithRelic<UrdaRootSightOptionRelic>(UrdaBlessingIds.RootSight, RootSightHoverTips);
 
     private EventOption SeedBankSelectionOption =>
         OptionWithRelic<UrdaSeedBankOptionRelic>(UrdaBlessingIds.SeedBank);
+
+    private static IEnumerable<IHoverTip> RootSightHoverTips =>
+    [
+        new HoverTip(
+            new LocString("ancients", "EZMB_URDA.root_sight.hover.title"),
+            new LocString("ancients", "EZMB_URDA.root_sight.hover.description"))
+    ];
 
     private EventOption OptionWithRelic<T>(string blessingId, IEnumerable<IHoverTip>? hoverTips = null) where T : RelicModel
     {
