@@ -1,6 +1,6 @@
 using Godot;
 using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 
@@ -17,12 +17,16 @@ internal static class UrdaRootSightMapQuestIconInputPatch
         {
             questIcon.MouseFilter = Control.MouseFilterEnum.Ignore;
         }
+
+        UrdaRootSightMapPreviewVisuals.ApplyPreviewIcon(__instance);
+        UrdaRootSightMapPreviewVisuals.ApplyQuestIcon(__instance);
     }
 }
 
 [HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]
 internal static class UrdaRootSightMapHoverPatch
 {
+    [HarmonyPriority(Priority.Last)]
     [HarmonyPostfix]
     private static void Postfix(NNormalMapPoint __instance)
     {
@@ -42,18 +46,23 @@ internal static class UrdaRootSightMapHoverPatch
     }
 }
 
-[HarmonyPatch(typeof(NMapPoint), "OnRelease")]
-internal static class UrdaRootSightMapPointClickPatch
+[HarmonyPatch(typeof(NNormalMapPoint), "RefreshState")]
+internal static class UrdaRootSightMapPreviewIconPatch
 {
-    [HarmonyPrefix]
-    private static bool Prefix(NMapPoint __instance)
+    [HarmonyPriority(Priority.Last)]
+    [HarmonyPostfix]
+    private static void Postfix(NNormalMapPoint __instance)
     {
-        if (!UrdaBlessingService.IsRootSightSelectionActive)
-        {
-            return true;
-        }
-
-        _ = TaskHelper.RunSafely(UrdaBlessingService.TryCommitRootSightSelection(__instance.Point));
-        return false;
+        UrdaRootSightMapPreviewVisuals.ApplyPreviewIcon(__instance);
+        UrdaRootSightMapPreviewVisuals.ApplyQuestIcon(__instance);
     }
+}
+
+[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]
+internal static class UrdaRootSightMapQuestIconPatch
+{
+    [HarmonyPriority(Priority.Last)]
+    [HarmonyPostfix]
+    private static void Postfix(NNormalMapPoint __instance) =>
+        UrdaRootSightMapPreviewVisuals.ApplyQuestIcon(__instance);
 }

@@ -8,14 +8,14 @@ Ascension 11-20 is available by default in the current private-beta multiplayer 
 
 | File | Purpose |
 | --- | --- |
-| `development-checklist-v2.md` | Current feature checklist and forward-looking design map. |
+| `development-checklist-v2.md` | Compact current checklist. Full v2.0 design draft is archived under `docs/archive/feature-inputs/ascension-11-20/`. |
 | `source-design.md` | Behavior design and scope boundaries. |
 | `api-research.md` | Local v0.105.0 source evidence, safe APIs, and risky patch points. |
 | `implementation-plan.md` | Implementation phases and safety strategy. |
 | `manual-test-checklist.md` | Manual single-player and feature verification checklist. |
 | `multiplayer-test-runbook.md` | Two-PC multiplayer setup, test matrix, and log checks. |
 | `localization-review-notes.md` | Localization review notes for Ascension strings. |
-| `work-log.md` | Chronological implementation and validation history. Older entries may be superseded. |
+| `work-log.md` | Compact active summary. Long chronological history is archived under `docs/archive/feature-work-logs/ascension-11-20/`. |
 
 Historical prompt/spec material lives in `docs/archive/feature-inputs/ascension-11-20/`.
 
@@ -26,12 +26,22 @@ Historical prompt/spec material lives in `docs/archive/feature-inputs/ascension-
 | `EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.cs` | Environment gates and public/multiplayer disable switches. |
 | `EZMicroBalanceCode/Ascension/Core/AscensionInitializer.cs` | Feature registration and hook/model lookup. |
 | `EZMicroBalanceCode/Ascension/Core/AscensionSavedStateFields.cs` | Saved run fields for Ascension systems. |
-| `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.cs` | Optional multiplayer diagnostics only. |
-| `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs` | A11-A20 lobby selection exposure. |
+| `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics*.cs` | Optional multiplayer diagnostics only. |
+| `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs` and `AscensionSelectionRunStartPatches.cs` | A11-A20 lobby selection exposure and run-start gating. |
 | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | A20 boss path/courtyard hooks. |
-| `EZMicroBalanceCode/Ascension/Map/AscensionMapService.cs` | A11 map extension, A17 deep branches, A20 boss path metadata. |
-| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.cs` | Combat-time Ascension modifiers and Boss Seal effects. |
+| `EZMicroBalanceCode/Ascension/Map/AscensionMapService*.cs` | A11 map extension, A17 deep branches, A20 boss path metadata. |
+| `EZMicroBalanceCode/Ascension/Map/AscensionMapService.MarkerSelection.cs` | Stable map marker ordering, Firemarked Elite spacing, and kind assignment. |
+| `EZMicroBalanceCode/Ascension/Map/AscensionMapService.MapGraphHelpers.cs` | Shared map reachability, rest-row, and route-safety helpers. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.cs` | Combat-time Ascension modifier entrypoints and node metadata refresh. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners*.cs` | A16 Banner Room dispatch, single-enemy fallback, per-banner combat behavior, rewards, and per-turn Banner state. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals*.cs` | A19/A20 Boss Seal and King Brand lifecycle dispatch, turn flow, combat events, and effect groups. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.HolyDaze.cs`, `.MartyrOath.cs`, `.InkReturn.cs`, and `.StartledShell.cs` | A19/A20 monster-specific Boss Seal windows and enemy pressure effects. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.MarginalNote.cs`, `.MisalignedShell.cs`, and `.StruggleBait.cs` | A19/A20 card-pressure Boss Seal effects. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.PhaseCarryover.cs` | A19/A20 phase carryover and courtyard recovery effects. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks*.cs` | A12 Firemarked Elite host selection, per-Firemark rules, counterplay windows, and turn/damage handling. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Helpers.cs` | Shared Ascension combat activation checks, act-scaling values, enemy filters, and command helpers. |
 | `EZMicroBalanceCode/Ascension/Rewards/AscensionRewardService.cs` | Reward and room payout helpers. |
+| `EZMicroBalanceCode/Ascension/Rewards/RootDeckService*.cs` | A14-A18 Rootblight deck state, Rootblight lifecycle, combat-end growth, deck-removal reactions, and notices. |
 | `EZMicroBalanceCode/Ascension/Enchantments/FissionEnchantment.cs` | Fission card enchantment. |
 
 ## Safety Rules

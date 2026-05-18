@@ -69,9 +69,36 @@ public sealed class AscensionFeatureGuardTests
     }
 
     [Fact]
+    public void EnvironmentTruthyHelpersTrimWhitespaceForTesterRunFlags()
+    {
+        var ascensionConfig = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionExpansionConfig.cs");
+        var ascensionGate = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.cs");
+        var ancientGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientFeatureGate.cs");
+
+        AssertSourceContains(
+            ascensionConfig,
+            "var candidate = value?.Trim();",
+            "candidate.Equals(\"1\", StringComparison.OrdinalIgnoreCase)",
+            "candidate.Equals(\"true\", StringComparison.OrdinalIgnoreCase)",
+            "candidate.Equals(\"yes\", StringComparison.OrdinalIgnoreCase)",
+            "candidate.Equals(\"on\", StringComparison.OrdinalIgnoreCase)");
+        Assert.Contains("Environment.GetEnvironmentVariable(DebugLevelEnvironmentVariable)?.Trim()", ascensionGate, StringComparison.Ordinal);
+        AssertSourceContains(
+            ancientGate,
+            "IsTruthyEnvironmentVariable(string name, bool trimValue = true)",
+            "var candidate = trimValue ? value?.Trim() : value;");
+    }
+
+    [Fact]
     public void MultiplayerVersionMismatchDiagnosticsExposeModelHashHandshakeWithoutBypass()
     {
-        var diagnostics = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.cs");
+        var diagnostics = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.JoinFlow.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.Lobby.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.RunState.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.SaveQuit.cs"));
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var runbook = ReadRepoText("docs", "features", "ascension-11-20", "multiplayer-test-runbook.md");
 
@@ -99,13 +126,15 @@ public sealed class AscensionFeatureGuardTests
     public void RootStarterUsesSavedPlayerMarkerAndCommandDeckMutation()
     {
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
-        var service = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.cs");
+        var service = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var runHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
 
         AssertSourceContains(
             savedFields,
             "SavedSpireField<Player, bool> RootBeginsApplied",
-            "EZMicroBalanceAscensionRootBeginsApplied");
+            "EZMicroBalanceAscensionRootBeginsApplied",
+            "SavedSpireField<Player, string> RootblightPendingCombatDowngrades",
+            "EZMicroBalanceAscensionRootblightPendingCombatDowngrades");
 
         AssertSourceContains(
             service,
@@ -134,6 +163,13 @@ public sealed class AscensionFeatureGuardTests
             "TryShowEventRoomNotice(line)",
             "NEventRoom.Instance?.VfxContainer",
             "NThoughtBubbleVfx.Create(line.GetFormattedText(), DialogueSide.Left, RootblightNoticeSeconds)",
+            "TryFindRootblightDeckVersion(player, card)",
+            "had no unique master-deck card",
+            "matchingLevel.Count == 1",
+            "matchingSplitState.Count == 1 ? matchingSplitState[0] : null",
+            "QueuePendingCombatDowngrade(player, downgradedLevel, splitState)",
+            "ReadPendingCombatDowngrades(player)",
+            "ClearPendingCombatDowngrades(player)",
             "ignored Rootblight III split once",
             "ignored Rootblight III already split once; no Rootblight IV",
             "ThenBy(entry => entry.Index)",
@@ -156,8 +192,19 @@ public sealed class AscensionFeatureGuardTests
     public void RootBudSeedingUsesExistingPileScanAndSavedPerCardFlags()
     {
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
-        var combatHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs");
-        var cards = ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootCards.cs");
+        var combatHookMain = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs");
+        var combatHookCardFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CardFlow.cs");
+        var combatHookCombatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
+        var combatHookHelpers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Helpers.cs");
+        var combatHookLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs");
+        var combatHook = string.Join(
+            Environment.NewLine,
+            combatHookMain,
+            combatHookCardFlow,
+            combatHookCombatEvents,
+            combatHookHelpers,
+            combatHookLifecycle);
+        var rootBudCard = ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootBudCard.cs");
 
         AssertSourceContains(
             savedFields,
@@ -175,7 +222,8 @@ public sealed class AscensionFeatureGuardTests
             "var existingBuds = FindRootBudsInCombat(player)",
             "GetRootBudCountForCurrentRoom(state)",
             "NormalizeExistingRootBudRounds(state, existingBuds)",
-            "existingBuds[i].SproutRound = GetRootBudSproutRoundForCurrentRoom(state, i)",
+            "for (var i = 0; i < existingBuds.Count; i++)",
+            "existingBuds[i].SproutRound = targetRounds[i]",
             "GetRootBudSproutRoundForCurrentRoom(state, i)",
             "RootBud.BossSecondSproutRound",
             "player.Piles",
@@ -183,11 +231,97 @@ public sealed class AscensionFeatureGuardTests
             "await CardPileCmd.AddGeneratedCardToCombat(bud, PileType.Discard, player, CardPilePosition.Bottom)",
             "await CardPileCmd.Add(bud, PileType.Draw, CardPilePosition.Top)",
             "AfterCardDrawn(PlayerChoiceContext choiceContext, CardModel card, bool fromHandDraw)",
+            "public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)",
+            "await AscensionCombatModifierService.BeforeFlush(state, GetTracker(state), player)",
             "MarkEnteredHand(state, bud)",
             "Trackers.Remove(state)");
 
         AssertSourceContains(
-            cards,
+            combatHookMain,
+            "internal sealed partial class RootBudCombatHook : AbstractModel",
+            "public override bool ShouldReceiveCombatHooks => true");
+        AssertSourceContains(
+            combatHookCardFlow,
+            "internal sealed partial class RootBudCombatHook",
+            "public override async Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, ICombatState combatState)",
+            "public override async Task AfterCardDrawn(PlayerChoiceContext choiceContext, CardModel card, bool fromHandDraw)");
+        AssertSourceContains(
+            combatHookCombatEvents,
+            "internal sealed partial class RootBudCombatHook",
+            "public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)",
+            "public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, ICombatState combatState)",
+            "public override async Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)");
+        AssertSourceContains(
+            combatHookLifecycle,
+            "internal sealed partial class RootBudCombatHook",
+            "public override async Task BeforeCombatStart()",
+            "public override async Task AfterCombatEnd(CombatRoom room)");
+
+        AssertSourceContains(
+            combatHookHelpers,
+            "internal sealed partial class RootBudCombatHook",
+            "private static CombatState? CurrentCombatState()",
+            "private static IReadOnlyList<RootBud> FindRootBudsInCombat(Player player)",
+            "private static async Task ResolveRootblightForCombatEnd(CombatState state)");
+        Assert.DoesNotContain("targetRounds.Contains(bud.SproutRound)", combatHookHelpers, StringComparison.Ordinal);
+        Assert.DoesNotContain("usedRounds.Add(bud.SproutRound)", combatHookHelpers, StringComparison.Ordinal);
+        Assert.DoesNotContain("public override", combatHookHelpers, StringComparison.Ordinal);
+        Assert.DoesNotContain(": AbstractModel", combatHookHelpers, StringComparison.Ordinal);
+
+        var beforeCombatStart = SliceBetween(
+            combatHookLifecycle,
+            "public override async Task BeforeCombatStart()",
+            "public override async Task AfterCombatEnd");
+        AssertSourceContains(
+            beforeCombatStart,
+            "var state = CurrentCombatState();",
+            "var tracker = GetTracker(state);",
+            "var targetBudCount = GetRootBudCountForCurrentRoom(state);",
+            "NormalizeExistingRootBudRounds(state, existingBuds)",
+            "await CardPileCmd.AddGeneratedCardToCombat(bud, PileType.Discard, player, CardPilePosition.Bottom)");
+
+        var beforeHandDraw = SliceBetween(
+            combatHookCardFlow,
+            "public override async Task BeforeHandDraw",
+            "public override async Task AfterCardChangedPiles");
+        AssertSourceContains(
+            beforeHandDraw,
+            "combatState is not CombatState state",
+            "await SproutDueBudsBeforeHandDraw(state, player)");
+
+        var beforeSideTurnStart = SliceBetween(
+            combatHookCombatEvents,
+            "public override async Task BeforeSideTurnStart",
+            "public override async Task AfterTurnEnd");
+        AssertSourceContains(
+            beforeSideTurnStart,
+            "combatState is not CombatState state",
+            "await AscensionCombatModifierService.BeforeSideTurnStart(state, GetTracker(state), side)");
+        Assert.DoesNotContain("CurrentCombatState();", beforeSideTurnStart, StringComparison.Ordinal);
+
+        var afterCardDrawn = SliceBetween(
+            combatHookCardFlow,
+            "public override async Task AfterCardDrawn(PlayerChoiceContext choiceContext, CardModel card, bool fromHandDraw)",
+            "public override async Task AfterCardPlayed");
+        AssertSourceContains(
+            afterCardDrawn,
+            "MarkEnteredHand(state, bud)",
+            "await AscensionCombatModifierService.AfterCardEnteredHand(state, tracker, card)");
+
+        var afterCombatEnd = SliceFrom(
+            combatHookLifecycle,
+            "public override async Task AfterCombatEnd(CombatRoom room)");
+        AssertSourceContains(
+            afterCombatEnd,
+            "await ResolveRootblightForCombatEnd(state)",
+            "await RootDeckService.AddRootblightI(bud.Owner, \"Blight Sprout\")",
+            ".Where(bud => !bud.PlantedInSeedbed)",
+            "foreach (var bud in FindKnownBuds(state).Where(bud => bud.PlantedInSeedbed))",
+            "bud.PlantedInSeedbed = false;",
+            "Trackers.Remove(state)");
+
+        AssertSourceContains(
+            rootBudCard,
             "get => AscensionSavedStateFields.RootBudEnteredHand[this]",
             "get => AscensionSavedStateFields.RootBudPlayed[this]",
             "get => AscensionSavedStateFields.RootBudSprouted[this]",
@@ -202,7 +336,13 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void RootBudGameplayGateProtectsDiagnosticsActOneElitesAndPlayerDeath()
     {
-        var combatHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs");
+        var combatHook = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CardFlow.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Helpers.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs"));
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
@@ -225,8 +365,8 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void MapAndCombatSlicesStayWithinDocumentedA12AndA19Tuning()
     {
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
+        var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
+        var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
         AssertSourceContains(
@@ -263,9 +403,10 @@ public sealed class AscensionFeatureGuardTests
     public void AscensionMapModifierVarietyPreviewAndFissionDiagnosticsAreGuarded()
     {
         var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
-        var mapPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionMapUiPatches.cs");
-        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
+        var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
+        var mapPatch = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Patches");
+        var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
+        var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var playerGuide = ReadRepoText("docs", "features", "ascension-11-20", "player-facing-modifier-guide.md");
         var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
         var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
@@ -277,8 +418,10 @@ public sealed class AscensionFeatureGuardTests
             "ForgeArmor",
             "ConstantHeal",
             "Vanguard",
-            "ShieldFormation",
-            "Bounty");
+            "Shieldwall",
+            "BloodPrize",
+            "PressingLine",
+            "LastStand");
 
         AssertSourceContains(
             mapService,
@@ -298,6 +441,14 @@ public sealed class AscensionFeatureGuardTests
         Assert.DoesNotContain("(actIndex + markedCount) % Enum.GetValues<BannerKind>().Length", mapService, StringComparison.Ordinal);
 
         AssertSourceContains(
+            combatService,
+            "ResolveBannerForCombat(combatState, metadata)",
+            "RequiresMultiplePrimaryEnemies(banner)",
+            "metadata.Banner = fallback",
+            "BannerKind.BloodPrize",
+            "converted {banner} banner to {fallback}");
+
+        AssertSourceContains(
             mapPatch,
             "FiremarkedEliteMapHoverPatch",
             "GetFiremarkIndicator(firemark)",
@@ -308,8 +459,10 @@ public sealed class AscensionFeatureGuardTests
             "FIREMARK_CONSTANT_HEAL",
             "BannerRoomMapHoverPatch",
             "BANNER_VANGUARD",
-            "BANNER_SHIELD_FORMATION",
-            "BANNER_BOUNTY",
+            "BANNER_SHIELDWALL",
+            "BANNER_BLOOD_PRIZE",
+            "BANNER_PRESSING_LINE",
+            "BANNER_LAST_STAND",
             "BossMapPointHoverPatch",
             "CreateHoverTip(metadata.BossSeal, metadata.IsBossBrand)",
             "sourceFallbackDescription = isBossBrand ? definition.BrandSummary : definition.Summary");
@@ -319,11 +472,13 @@ public sealed class AscensionFeatureGuardTests
                      "FIREMARK_MIGHT",
                      "FIREMARK_GIANT",
                      "FIREMARK_FORGE_ARMOR",
-                     "FIREMARK_CONSTANT_HEAL",
-                     "BANNER_VANGUARD",
-                     "BANNER_SHIELD_FORMATION",
-                     "BANNER_BOUNTY"
-                 })
+                      "FIREMARK_CONSTANT_HEAL",
+                      "BANNER_VANGUARD",
+                     "BANNER_SHIELDWALL",
+                     "BANNER_BLOOD_PRIZE",
+                     "BANNER_PRESSING_LINE",
+                     "BANNER_LAST_STAND"
+                  })
         {
             Assert.True(englishAscension.ContainsKey($"{key}.title"), $"Missing English title: {key}");
             Assert.True(englishAscension.ContainsKey($"{key}.description"), $"Missing English description: {key}");
@@ -357,7 +512,7 @@ public sealed class AscensionFeatureGuardTests
     public void BossSealCatalogAvoidsHardRuntimeReferencesToOptionalEarlyAccessBossTypes()
     {
         var bossSealDefinition = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "BossSealDefinition.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
+        var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
 
         AssertSourceContains(
             bossSealDefinition,
@@ -396,7 +551,7 @@ public sealed class AscensionFeatureGuardTests
     {
         var featureGate = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.cs");
         var expansionConfig = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionExpansionConfig.cs");
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
         var mapProof = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "A11MapGeometryProof.cs");
         var rootRunHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
         var mapGenerationPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionMapGenerationPatches.cs");
@@ -520,12 +675,12 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void FiremarkTokenAndFissionPlayerFacingSurfacesAreGuarded()
     {
-        var mapPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionMapUiPatches.cs");
-        var forgeToken = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "ForgeTokenService.cs");
+        var mapPatch = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Patches");
+        var forgeToken = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var forgeRelic = ReadRepoText("EZMicroBalanceCode", "Ascension", "Relics", "ForgeTokenRelic.cs");
         var firemarkPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "FiremarkPowers.cs");
         var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "FissionEnchantment.cs");
-        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
+        var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
         var engAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
         var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
@@ -573,12 +728,12 @@ public sealed class AscensionFeatureGuardTests
         AssertSourceContains(
             fission,
             "CustomIconPath => AscensionAssetPaths.FissionEnchantmentIcon",
-            "这张牌[gold]耗能[/gold]降低[blue]1[/blue]，并获得[gold]消耗[/gold]。",
-            "[gold]耗能[/gold]降低[blue]1[/blue]。",
+            "这张牌的[gold]能量[/gold]费用降低[blue]1[/blue]，并获得[gold]消耗[/gold]。",
+            "[gold]能量[/gold]费用降低[blue]1[/blue]。",
             "HoverTipFactory.FromKeyword(CardKeyword.Exhaust)");
         Assert.DoesNotContain("energyPrefix:energyIcons", fission, StringComparison.Ordinal);
         Assert.Equal(1, CountOccurrences(fission, "[gold]消耗[/gold]"));
-        Assert.Equal(1, CountOccurrences(fission, "\"[gold]耗能[/gold]降低[blue]1[/blue]。\""));
+        Assert.Equal(1, CountOccurrences(fission, "\"[gold]能量[/gold]费用降低[blue]1[/blue]。\""));
 
         AssertSourceContains(
             rewardService,
@@ -619,8 +774,8 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void AscensionMapMetadataIsReappliedBeforeCombatLookup()
     {
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
+        var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
+        var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
 
         AssertSourceContains(
@@ -642,7 +797,12 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void RootFamilyCardsAreLocalizedAndGuardedAgainstKnownRandomGenerationPaths()
     {
-        var rootCards = ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootCards.cs");
+        var rootCards = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootCards.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootBudCard.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootFamilyCard.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootPortraitPaths.cs"));
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var englishCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
         var simplifiedChineseCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
@@ -693,6 +853,8 @@ public sealed class AscensionFeatureGuardTests
             "using Godot;",
             "using MegaCrit.Sts2.Core.HoverTips;",
             "internal static class RootPortraitPaths",
+            "public sealed class RootBud : CustomCardModel",
+            "public abstract class RootFamilyCard : CustomCardModel",
             "ResourceLoader.Exists(candidate) ? candidate : fallback",
             "rootblight_i",
             "rootblight_ii",

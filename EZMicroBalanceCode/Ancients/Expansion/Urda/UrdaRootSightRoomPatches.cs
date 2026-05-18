@@ -36,6 +36,9 @@ internal static class UrdaRootSightCreateRoomPatch
         if (UrdaBlessingService.TryGetRootSightModelForCurrentPoint(__instance, roomType, mapPointType, out var previewModel))
         {
             model = previewModel;
+            return;
         }
+
+        UrdaBlessingService.AvoidRootSightReservedModelForCurrentNonPreviewRoom(__instance, roomType, mapPointType);
     }
 }

@@ -33,7 +33,7 @@ internal static class AncientFeatureGate
     public static bool IsForcedAncient(string? forcedAncient, string value) =>
         string.Equals(forcedAncient?.Trim(), value, StringComparison.OrdinalIgnoreCase);
 
-    public static bool IsTruthyEnvironmentVariable(string name, bool trimValue = false) =>
+    public static bool IsTruthyEnvironmentVariable(string name, bool trimValue = true) =>
         IsTruthy(Environment.GetEnvironmentVariable(name), trimValue);
 
     private static bool IsTruthy(string? value, bool trimValue)

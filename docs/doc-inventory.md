@@ -77,6 +77,8 @@ Current support docs, not default reading path:
 - `docs/archive/prompts/2026-05/codex-ancient-expansion-v22-next-development-prompt.md`
 - `docs/issues/waiting-tests.md`
 - `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/README.md`
+- `docs/archive/feature-audits/review-pre-slim-20260518.md`
+- `docs/archive/feature-audits/toreview-pre-slim-20260518.md`
 - `docs/archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md`
 - `docs/archive/superseded/setup-spec-original-scaffold.md`
 - `docs/archive/feature-inputs/README.md`

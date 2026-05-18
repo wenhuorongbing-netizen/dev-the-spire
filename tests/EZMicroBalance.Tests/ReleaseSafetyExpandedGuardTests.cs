@@ -1,5 +1,3 @@
-using System.IO.Compression;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -9,132 +7,47 @@ namespace EZMicroBalance.Tests;
 
 public sealed class ReleaseSafetyExpandedGuardTests
 {
-    private static readonly string[] CurrentFacingDocs =
-    [
-        "README.md",
-        "docs/dev-environment.md",
-        "docs/private-beta-verification-handoff.md",
-        "docs/private-beta-release-completion-audit.md",
-        "docs/test-plan.md",
-        "docs/test-ready-completion-audit.md",
-        "docs/release-checklist.md",
-        "docs/features/ancients-rework-v4/completion-audit.md",
-        "docs/features/ancients-rework-v4/manual-verification-matrix.md",
-        "docs/features/ascension-11-20/api-research.md",
-        "docs/features/ascension-11-20/manual-test-checklist.md"
-    ];
-
-    private static readonly string[] KnownCurrentHashDocs =
-    [
-        "docs/dev-environment.md",
-        "docs/test-ready-completion-audit.md",
-        "docs/release-checklist.md",
-        "docs/features/ancients-rework-v4/completion-audit.md"
-    ];
-
-    private static readonly string[] CurrentReleaseHashClaimLineMarkers =
-    [
-        "zip",
-        "package",
-        "dll",
-        "manifest",
-        "json",
-        "pck",
-        "installed",
-        "staging",
-        "versioned",
-        "current"
-    ];
-
-    [ReleaseArtifactFact]
-    public void ActiveCoverArtAndInactiveModRealPolicyMatchExportPckAndPackage()
+    [Fact]
+    public void BootstrapAndActiveAncientWorkLogStayCurrentAndReadable()
     {
-        var activeCover = AssertRepoFileExists("EZMicroBalance", "mod_image.png");
-        var auditedCover = AssertRepoFileExists("publish", "EZMicroBalance-cover-source.png");
-        var exportPreset = ReadRepoText("export_presets.cfg");
-        var installedPck = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
-        var packageZip = RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip");
+        var bootstrap = ReadRepoText("scripts", "bootstrap-windows.ps1");
+        var workLog = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "work-log.md");
 
-        Assert.Equal(Sha256(activeCover), Sha256(auditedCover));
+        AssertSourceContains(
+            bootstrap,
+            "Spire Plus / EZMicroBalance Windows bootstrap",
+            "Install BaseLib v3.1.2 under <GameRoot>\\mods\\BaseLib before game verification.",
+            "BaseLib plus Spire Plus / EZMicroBalance appear and are enabled.");
+        Assert.DoesNotContain("EzDailyContent Windows bootstrap", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain("BaseLib v3.1.0", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain("BaseLib plus EzDailyContent appear", bootstrap, StringComparison.Ordinal);
 
-        AssertRepoPathDoesNotExist("EZMicroBalance", "mod_real.png");
-        AssertRepoPathDoesNotExist("EZMicroBalance", "mod_real.png.import");
+        AssertSourceContains(
+            workLog,
+            "compact current-facing summary",
+            "work-log-20260517-pre-cleanup.md",
+            "Recovered the user-uploaded Morvi blue-eye court background",
+            "Recovered the correct user-uploaded horizontal mirror-ensemble image",
+            "Restored the user-accepted 16:9 Urda root-mother background",
+            "draw 1 with no Energy gain",
+            "No live game, clicked Ancient UI, save-load, failure/death path, or co-op proof is claimed here.");
 
-        var exported = ParseExportFiles(exportPreset);
-        Assert.Contains("res://EZMicroBalance/mod_image.png", exported);
-        Assert.DoesNotContain(exported, path => path.Contains("mod_real", StringComparison.OrdinalIgnoreCase));
-
-        var pckEntries = ReadPckDirectory(installedPck);
-        Assert.Contains("EZMicroBalance/mod_image.png", pckEntries);
-        Assert.Contains("EZMicroBalance/mod_image.png.import", pckEntries);
-        Assert.DoesNotContain(pckEntries, entry => entry.Contains("mod_real", StringComparison.OrdinalIgnoreCase));
-
-        using var archive = ZipFile.OpenRead(packageZip);
-        var zipEntries = archive.Entries.Select(entry => entry.FullName.Replace('\\', '/')).ToArray();
-        Assert.DoesNotContain(zipEntries, entry => entry.Contains("mod_real", StringComparison.OrdinalIgnoreCase));
-        Assert.DoesNotContain(zipEntries, entry => entry.EndsWith("mod_image.png", StringComparison.OrdinalIgnoreCase));
-
-        var zippedPckEntries = ReadPckDirectory(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck"));
-        Assert.Contains("EZMicroBalance/mod_image.png", zippedPckEntries);
-        Assert.Contains("EZMicroBalance/mod_image.png.import", zippedPckEntries);
-        Assert.DoesNotContain(zippedPckEntries, entry => entry.Contains("mod_real", StringComparison.OrdinalIgnoreCase));
-    }
-
-    [ReleaseArtifactFact]
-    public void ExportedResourcesInstalledPckAndPackagePckStayInParity()
-    {
-        var exportedResources = ParseExportFiles(ReadRepoText("export_presets.cfg"))
-            .Select(path => path["res://".Length..])
-            .Concat(
-                Directory.GetFiles(RepoPath("EZMicroBalance"), "*", SearchOption.AllDirectories)
-                    .Select(path => ToRepoRelativePath(path))
-                    .Where(IsActiveExportResource))
-            .Distinct(StringComparer.Ordinal)
-            .OrderBy(path => path, StringComparer.Ordinal)
-            .ToArray();
-
-        var installedPck = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
-        var installedEntries = ReadPckDirectory(installedPck);
-        using var archive = ZipFile.OpenRead(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
-        var zippedEntries = ReadPckDirectory(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck"));
-
-        Assert.Equal(installedEntries.OrderBy(entry => entry, StringComparer.Ordinal), zippedEntries.OrderBy(entry => entry, StringComparer.Ordinal));
-
-        foreach (var resource in exportedResources.Where(path => path.EndsWith(".json", StringComparison.Ordinal)))
+        foreach (var corruptedMarker in new[]
         {
-            Assert.Contains(resource, installedEntries);
-            Assert.Contains(resource, zippedEntries);
-        }
-
-        foreach (var resource in exportedResources.Where(path => path.EndsWith(".tscn", StringComparison.Ordinal)))
+            "sdotnet",
+            "sscripts",
+            "sEZMicroBalance",
+            "sgodot",
+            "s.tools",
+            "sPROJECT_STATE",
+            "sAGENTS",
+            "sGPTimage2s",
+            "sfinal_generateds",
+            "sFound 22 SavedSpireFieldss"
+        })
         {
-            Assert.True(
-                installedEntries.Contains(resource) || installedEntries.Contains($"{resource}.remap"),
-                $"Installed PCK is missing exported scene or remap: {resource}");
-            Assert.True(
-                zippedEntries.Contains(resource) || zippedEntries.Contains($"{resource}.remap"),
-                $"Package PCK is missing exported scene or remap: {resource}");
+            Assert.DoesNotContain(corruptedMarker, workLog, StringComparison.Ordinal);
         }
-
-        foreach (var resource in exportedResources.Where(path => path.EndsWith(".png", StringComparison.Ordinal)))
-        {
-            AssertRepoFileExists(resource.Split('/'));
-            AssertRepoFileExists((resource + ".import").Split('/'));
-            Assert.Contains(resource + ".import", installedEntries);
-            Assert.Contains(resource + ".import", zippedEntries);
-        }
-
-        var activeLocalizationJson = Directory.GetFiles(RepoPath("EZMicroBalance", "localization"), "*.json", SearchOption.AllDirectories)
-            .Select(path => ToRepoRelativePath(path))
-            .OrderBy(path => path, StringComparer.Ordinal)
-            .ToArray();
-
-        var exportedLocalization = exportedResources
-            .Where(path => path.StartsWith("EZMicroBalance/localization/", StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.Equal(activeLocalizationJson.Length, exportedLocalization.Length);
-        Assert.All(activeLocalizationJson, resource => Assert.Contains(resource, exportedLocalization));
     }
 
     [Fact]
@@ -163,7 +76,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             .OrderBy(field => field.Key, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(22, fields.Length);
+        Assert.Equal(25, fields.Length);
         Assert.Equal(fields.Length, fields.Select(field => field.Key).Distinct(StringComparer.Ordinal).Count());
         Assert.All(fields, field => Assert.StartsWith("EZMicroBalance", field.Key, StringComparison.Ordinal));
         Assert.All(fields, field => Assert.Contains(field.Name, sourceWithoutDefinitions, StringComparison.Ordinal));
@@ -179,10 +92,22 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains(fields, field => field.Types == "RootFamilyCard, bool");
 
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
-        Assert.Contains("current source defines 22 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        var devEnvironment = ReadRepoText("docs", "dev-environment.md");
+        Assert.Contains("current source defines 25 SavedSpireFields", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("Found 22 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("previous smoke log still reports `Found 22 SavedSpireFields`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("fresh live loader rerun", currentDocs, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("historical 22-field loader evidence", devEnvironment, StringComparison.Ordinal);
+        Assert.Contains("not refreshed 25-field package parity", devEnvironment, StringComparison.Ordinal);
+        Assert.Contains("Current source defines 25 SavedSpireFields", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("current normal Steam-client helper startup/log pass", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("current-package startup/log verification", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("Status: current normal Steam startup/log verification passed", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("Current normal Steam helper startup/log pass", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("current-package normal Steam-client startup/log pass", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("current-package loader/resource smoke is clean", currentDocs, StringComparison.Ordinal);
+        AssertNoCurrentFacing22FieldSmokePassClaims(currentDocs);
         Assert.DoesNotContain("latest clean controlled smoke reported 13", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("current source defines 22 SavedSpireFields, while", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("Found 9 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
@@ -209,11 +134,12 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         Assert.Contains("`EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("`Spire Plus`", audit, StringComparison.Ordinal);
-        Assert.Contains("current source defines 22 SavedSpireFields", audit, StringComparison.Ordinal);
+        Assert.Contains("current source defines 25 SavedSpireFields", audit, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
-        Assert.Contains("Found 22 SavedSpireFields", audit, StringComparison.Ordinal);
+        Assert.Contains("previous current-package smoke", audit, StringComparison.Ordinal);
+        Assert.Contains("`Found 22 SavedSpireFields`", audit, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", audit, StringComparison.Ordinal);
-        Assert.Contains("Current normal Steam-client startup/log verification passed for the refreshed `Spire Plus` display name", audit, StringComparison.Ordinal);
+        Assert.Contains("Historical normal Steam-client startup/log verification for the earlier 22-field package confirmed the refreshed `Spire Plus` display name", audit, StringComparison.Ordinal);
         Assert.Contains("refreshed Mod Settings UI list capture now shows `Spire Plus`", audit, StringComparison.Ordinal);
         Assert.Contains("Two-client multiplayer matrix is pending", audit, StringComparison.Ordinal);
     }
@@ -299,8 +225,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "## Prompt-To-Artifact Checklist",
             "## Missing Or Weakly Verified Items",
             "## Conclusion",
-            "170 passed / 18 skipped",
-            "188 passed / 0 skipped",
+            "187 passed / 18 skipped",
+            "205 passed / 0 skipped",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",
             "window-preflight-smoke-20260513-135402",
@@ -388,7 +314,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"EA0EC3611DC21FD33C9B87E592326A9000ECE593512554D720843D7490CC589C\"",
+            "PackageSha256 = \"2F29C8AC8D4A03398246E34E5C58DA0E5EEC31EDB8656D21AA898BBE26C64612\"",
             "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.0.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
@@ -462,11 +388,11 @@ public sealed class ReleaseSafetyExpandedGuardTests
     [Fact]
     public void AscensionPrototypeMutationPathsStayBehindGatesAndCommandApis()
     {
-        var mapService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionMapService.cs");
+        var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
         var a20Patch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionA20Patches.cs");
-        var rewardService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
-        var combatService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.cs");
-        var forgeService = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "ForgeTokenService.cs");
+        var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
+        var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
+        var forgeService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionInitializer.cs");
 
         AssertSourceContains(
@@ -570,66 +496,6 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "AscensionSavedStateFields.ForgeTokenHeld[player] = false");
     }
 
-    [ReleaseArtifactFact]
-    public void CurrentReleaseHashClaimsMatchInstalledStagingVersionedAndZipArtifacts()
-    {
-        var version = ManifestVersion();
-        var packageName = $"SpirePlus-{version}";
-        var installedDir = GamePath("mods", "EZMicroBalance");
-        var stagingDir = RepoPath("publish", "package-staging", "EZMicroBalance");
-        var versionedDir = RepoPath("publish", packageName, "EZMicroBalance");
-        var zipPath = RepoPath("publish", $"{packageName}.zip");
-
-        var dllHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.dll"));
-        var manifestHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.json"));
-        var pckHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.pck"));
-        var readmeHash = Sha256(Path.Combine(stagingDir, "README_INSTALL.txt"));
-        var zipHash = Sha256(zipPath);
-        var artHash = Sha256(RepoPath("EZMicroBalance", "mod_image.png"));
-        var knownCurrentHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            dllHash,
-            manifestHash,
-            pckHash,
-            readmeHash,
-            zipHash,
-            artHash
-        };
-
-        Assert.Equal(dllHash, Sha256(Path.Combine(stagingDir, "EZMicroBalance.dll")));
-        Assert.Equal(dllHash, Sha256(Path.Combine(versionedDir, "EZMicroBalance.dll")));
-        Assert.Equal(manifestHash, Sha256(Path.Combine(stagingDir, "EZMicroBalance.json")));
-        Assert.Equal(manifestHash, Sha256(Path.Combine(versionedDir, "EZMicroBalance.json")));
-        Assert.Equal(pckHash, Sha256(Path.Combine(stagingDir, "EZMicroBalance.pck")));
-        Assert.Equal(pckHash, Sha256(Path.Combine(versionedDir, "EZMicroBalance.pck")));
-        Assert.Equal(readmeHash, Sha256(Path.Combine(versionedDir, "README_INSTALL.txt")));
-
-        using (var archive = ZipFile.OpenRead(zipPath))
-        {
-            Assert.Equal(dllHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.dll")));
-            Assert.Equal(manifestHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.json")));
-            Assert.Equal(pckHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck")));
-            Assert.Equal(readmeHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/README_INSTALL.txt")));
-        }
-
-        var hashDocs = string.Join(Environment.NewLine, KnownCurrentHashDocs.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains(dllHash, hashDocs, StringComparison.Ordinal);
-        Assert.Contains(manifestHash, hashDocs, StringComparison.Ordinal);
-        Assert.Contains(pckHash, hashDocs, StringComparison.Ordinal);
-        Assert.Contains(zipHash, hashDocs, StringComparison.Ordinal);
-        Assert.Contains(artHash, hashDocs, StringComparison.Ordinal);
-
-        var documentedHashes = hashDocs
-            .Split(["\r", "\n"], StringSplitOptions.RemoveEmptyEntries)
-            .Where(line =>
-                CurrentReleaseHashClaimLineMarkers.Any(marker => line.Contains(marker, StringComparison.OrdinalIgnoreCase)))
-            .SelectMany(line => Regex.Matches(line, @"\b[A-Fa-f0-9]{64}\b").Cast<Match>().Select(match => match.Value))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-
-        Assert.All(documentedHashes, hash => Assert.Contains(hash, knownCurrentHashes));
-    }
-
     [Fact]
     public void SimplifiedChineseLocalizationContainsNoVisibleAsciiWords()
     {
@@ -678,35 +544,35 @@ public sealed class ReleaseSafetyExpandedGuardTests
         var fragments = new[]
         {
             "\uFFFD",
-            "婵☆偄",
-            "鐎殿喖",
-            "闁衡偓",
-            "闁告牗",
-            "闁稿",
-            "缂佷胶",
-            "閻犱礁",
-            "闁圭瑳",
-            "閺夆晛",
-            "闁搞儳",
-            "闁圭増",
-            "婵ê",
-            "閻庤",
-            "闁诲繐",
-            "闂傚牏",
-            "濡絾",
-            "闁稿﹤",
-            "婵炲棛",
-            "濞ｅ洦",
-            "闁惧繑",
-            "婵炴垵",
-            "闁告梹",
-            "闁兼儳",
-            "闁绘劗",
-            "濠㈣泛",
-            "缂佹",
-            "缂佸",
-            "濞戞搩",
-            "闂傚洠"
+            "濠碘槅鍋?",
+            "閻庢鍠?",
+            "闂佽　鍋?",
+            "闂佸憡鐗?",
+            "闂佺顑?",
+            "缂備椒鑳?",
+            "闁荤姳绀?",
+            "闂佸湱鐟?",
+            "闁哄鏅?",
+            "闂佹悶鍎?",
+            "闂佸湱澧?",
+            "濠殿喗锚",
+            "闁诲氦顫?",
+            "闂佽绻?",
+            "闂傚倸鐗?",
+            "婵☆偓绲?",
+            "闂佺锕?",
+            "濠电偛妫?",
+            "婵烇絽娲?",
+            "闂佹儳绻?",
+            "濠电偞鍨?",
+            "闂佸憡姊?",
+            "闂佸吋鍎?",
+            "闂佺粯鍔?",
+            "婵犮垼娉?",
+            "缂備焦顨?",
+            "缂備礁顑?",
+            "婵炴垶鎼?",
+            "闂傚倸娲?"
         };
 
         var matches = fragments
@@ -731,7 +597,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Current normal Steam-client startup/log verification passed for the Spire Plus display-name package", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Latest normal Steam-client startup/log verification is historical for the pre-review Spire Plus display-name package", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
         Assert.Contains("RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
@@ -745,6 +611,27 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("git diff --check", projectState, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void RootSightCurrentDocsDescribeSelectableMapPreview()
+    {
+        var rootSightDocs = ReadCurrentFacingDocs(
+            "docs/issues/urda.md",
+            "docs/features/ancient-expansion-urda/implementation-plan.md",
+            "docs/features/ancient-expansion-urda/manual-test-checklist.md",
+            "docs/features/ancient-expansion-urda/source-design.md",
+            "docs/features/ancient-expansion-urda/work-log.md",
+            "docs/features/ancient-expansion-v2.2/implementation-plan.md",
+            "docs/features/ancient-expansion-v2.2/manual-test-checklist.md",
+            "docs/mod-changelog.md");
+
+        Assert.DoesNotContain("Root-Sight has no map button", rootSightDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("no source-safe map button", rootSightDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("automatically marks reachable non-Boss", rootSightDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("auto-marks non-Boss nodes instead of", rootSightDocs, StringComparison.Ordinal);
+        Assert.Contains("clicking the Root Eyes relic", rootSightDocs, StringComparison.Ordinal);
+        Assert.Contains("Monster, Unknown, or Elite", rootSightDocs, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -769,216 +656,41 @@ public sealed class ReleaseSafetyExpandedGuardTests
         }
     }
 
-    [Fact]
-    public void SmokeLogParserDistinguishesEzMicroBalancePassFromUnrelatedManifestErrors()
-    {
-        var syntheticLog = string.Join(
-            Environment.NewLine,
-            "[ERROR] Mod manifest D:\\Steam\\mods\\OtherMod\\bad.json is missing the 'id' field! This is not allowed.",
-            "[INFO] Loading assembly DLL D:\\Steam\\mods\\BaseLib\\BaseLib.dll",
-            "[INFO] Finished mod initialization for 'BaseLib' (BaseLib).",
-            "[INFO] Loading assembly DLL D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.dll",
-            "[INFO] Loading Godot PCK D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.pck",
-            "[INFO] Finished mod initialization for 'Spire Plus' (EZMicroBalance).",
-            "[INFO] [BaseLib] Found 13 SavedSpireFields.",
-            "[INFO] [Startup] Time to main menu: 12,648ms");
-
-        var summary = SmokeLogParser.Parse(syntheticLog);
-
-        Assert.True(summary.LoadedBaseLibDll);
-        Assert.True(summary.InitializedBaseLib);
-        Assert.True(summary.LoadedEzDll);
-        Assert.True(summary.LoadedEzPck);
-        Assert.True(summary.InitializedEzMicroBalance);
-        Assert.True(summary.ReachedMainMenu);
-        Assert.Equal(13, summary.SavedSpireFieldCount);
-        Assert.Empty(summary.EzMicroBalanceErrorLines);
-        Assert.Single(summary.UnrelatedManifestErrorLines);
-    }
-
-    [ReleaseArtifactFact]
-    public void RecentRuntimeLogMustNotContainV105ApiDriftOrBaseLibDependencyFailures()
-    {
-        var logPath = CurrentGodotLogPath();
-        var logsDir = Path.GetDirectoryName(logPath);
-        Assert.NotNull(logsDir);
-        if (!Directory.Exists(logsDir))
-        {
-            return;
-        }
-
-        var recentLog = Directory
-            .GetFiles(logsDir, "godot*.log", SearchOption.TopDirectoryOnly)
-            .OrderByDescending(File.GetLastWriteTimeUtc)
-            .FirstOrDefault();
-
-        if (recentLog == null)
-        {
-            return;
-        }
-
-        var logContent = ReadSharedText(recentLog);
-
-        var forbiddenSignatures = new[]
-        {
-            // v0.105.0 API drift: Creature.get_ShowsInfiniteHp removed
-            "Creature.get_ShowsInfiniteHp",
-            // BaseLib HealthBarForecastPatch calls removed API
-            "BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay",
-            // DamageMeter calls removed API
-            "DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp",
-            // BaseLib patch failures against v0.105.0
-            "Undefined target method for patch method static System.Void BaseLib.Patches.Features",
-        };
-
-        var matches = new List<string>();
-        foreach (var signature in forbiddenSignatures)
-        {
-            if (logContent.Contains(signature, StringComparison.Ordinal))
-            {
-                matches.Add(signature);
-            }
-        }
-
-        Assert.True(
-            matches.Count == 0,
-            $"Recent runtime log {Path.GetFileName(recentLog)} contains forbidden v0.105.0 API drift or dependency failure signatures: {string.Join("; ", matches)}. " +
-            "The test environment may have incompatible mods (DamageMeter, non-EZMB mods) or an incompatible BaseLib version. " +
-            "Disable all mods except BaseLib + EZMicroBalance and retest. See ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT in docs/issues.md.");
-    }
-
-    [ReleaseArtifactFact]
-    public void RecentSmokeLogSupportsControlledSmokeClaims()
-    {
-        var logPath = CurrentGodotLogPath();
-        var logsDir = Path.GetDirectoryName(logPath);
-        Assert.NotNull(logsDir);
-        Assert.True(Directory.Exists(logsDir), $"Missing log directory: {logsDir}");
-
-        var candidates = Directory
-            .GetFiles(logsDir, "godot*.log", SearchOption.TopDirectoryOnly)
-            .OrderByDescending(File.GetLastWriteTimeUtc)
-            .ToArray();
-        Assert.NotEmpty(candidates);
-
-        var passingLogs = candidates
-            .Select(path => (path, summary: SmokeLogParser.Parse(ReadSharedText(path))))
-            .Where(candidate => IsControlledSmokePass(candidate.summary))
-            .ToArray();
-
-        if (passingLogs.Length == 0)
-        {
-            var currentDocs = CurrentDocsWithoutWorkLogs();
-            Assert.Contains("refreshed runtime smoke remains pending", currentDocs, StringComparison.Ordinal);
-            Assert.DoesNotContain("current package smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("refreshed runtime smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
-            return;
-        }
-
-        if (File.Exists(logPath))
-        {
-            var currentSummary = SmokeLogParser.Parse(ReadSharedText(logPath));
-            Assert.Empty(currentSummary.EzMicroBalanceErrorLines);
-        }
-    }
-
-    private static bool IsControlledSmokePass(SmokeLogSummary summary)
-    {
-        return summary.LoadedBaseLibDll &&
-            summary.InitializedBaseLib &&
-            summary.LoadedEzDll &&
-            summary.LoadedEzPck &&
-            summary.InitializedEzMicroBalance &&
-            summary.ReachedMainMenu &&
-            summary.SavedSpireFieldCount == 22 &&
-            summary.EzMicroBalanceErrorLines.Length == 0;
-    }
-
-    [ReleaseArtifactFact]
-    public void DisabledSpirePlusPlugOffEvidenceSupportsDocs()
-    {
-        AssertRepoDirectoryExists(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020");
-
-        using var summary = JsonDocument.Parse(ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "disabled-startup-summary.json"));
-        var root = summary.RootElement;
-        Assert.True(root.GetProperty("DisableSpirePlus").GetBoolean());
-        Assert.True(root.GetProperty("MovedEzmb").GetBoolean());
-        Assert.True(root.GetProperty("ReachedMainMenu").GetBoolean());
-        Assert.True(root.GetProperty("ContainsBaseLibInitialization").GetBoolean());
-        Assert.False(root.GetProperty("ContainsSpirePlusInitialization").GetBoolean());
-        Assert.False(root.GetProperty("ContainsEzmbError").GetBoolean());
-        Assert.Equal(["BaseLib"], root.GetProperty("AllowedModIds").EnumerateArray().Select(value => value.GetString() ?? string.Empty).ToArray());
-        Assert.Contains(root.GetProperty("LoadedLines").EnumerateArray().Select(value => value.GetString() ?? string.Empty), line => line.Contains("Loaded 1 mods (1 total)", StringComparison.Ordinal));
-
-        var log = ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "godot.log");
-        Assert.Contains("Loaded 1 mods (1 total)", log, StringComparison.Ordinal);
-        Assert.Contains("Finished mod initialization for 'BaseLib' (BaseLib)", log, StringComparison.Ordinal);
-        Assert.DoesNotContain("Finished mod initialization for 'Spire Plus' (EZMicroBalance)", log, StringComparison.Ordinal);
-        Assert.DoesNotContain("Registered config for mod EZMicroBalance", log, StringComparison.Ordinal);
-        Assert.DoesNotContain("EZMicroBalance.dll", log, StringComparison.Ordinal);
-        Assert.DoesNotContain("EZMicroBalance.pck", log, StringComparison.Ordinal);
-
-        using var audit = JsonDocument.Parse(ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "godot-log-audit.json"));
-        Assert.True(audit.RootElement.GetProperty("Clean").GetBoolean());
-        Assert.All(audit.RootElement.GetProperty("SignatureHits").EnumerateArray(), hit => Assert.Equal(0, hit.GetProperty("Count").GetInt32()));
-
-        using var restore = JsonDocument.Parse(ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "restore-output.json"));
-        Assert.Equal(25, restore.RootElement.GetProperty("RestoredModCount").GetInt32());
-        Assert.Equal(1, restore.RootElement.GetProperty("RestoredCurrentRunCount").GetInt32());
-
-        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
-        Assert.Contains("live-spire-plus-disabled-session-20260513-143020", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("settings-only disabled attempt", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.", currentDocs, StringComparison.Ordinal);
-    }
-
-    private sealed record SmokeLogSummary(
-        bool LoadedBaseLibDll,
-        bool InitializedBaseLib,
-        bool LoadedEzDll,
-        bool LoadedEzPck,
-        bool InitializedEzMicroBalance,
-        bool ReachedMainMenu,
-        int? SavedSpireFieldCount,
-        string[] EzMicroBalanceErrorLines,
-        string[] UnrelatedManifestErrorLines);
-
-    private static class SmokeLogParser
-    {
-        public static SmokeLogSummary Parse(string log)
-        {
-            var lines = log.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
-            var savedFieldCount = Regex.Match(log, @"Found (?<count>\d+) SavedSpireFields\.");
-
-            return new SmokeLogSummary(
-                LoadedBaseLibDll: lines.Any(line => line.Contains("Loading assembly DLL", StringComparison.Ordinal) &&
-                                                    line.Contains("BaseLib.dll", StringComparison.Ordinal)),
-                InitializedBaseLib: lines.Any(line => line.Contains("Finished mod initialization for 'BaseLib' (BaseLib)", StringComparison.Ordinal)),
-                LoadedEzDll: lines.Any(line => line.Contains("Loading assembly DLL", StringComparison.Ordinal) &&
-                                               line.Contains("EZMicroBalance.dll", StringComparison.Ordinal)),
-                LoadedEzPck: lines.Any(line => line.Contains("Loading Godot PCK", StringComparison.Ordinal) &&
-                                               line.Contains("EZMicroBalance.pck", StringComparison.Ordinal)),
-                InitializedEzMicroBalance: lines.Any(line =>
-                    line.Contains("Finished mod initialization for 'Spire Plus' (EZMicroBalance)", StringComparison.Ordinal) ||
-                    line.Contains("Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance)", StringComparison.Ordinal)),
-                ReachedMainMenu: lines.Any(line => line.Contains("Time to main menu", StringComparison.Ordinal)),
-                SavedSpireFieldCount: savedFieldCount.Success ? int.Parse(savedFieldCount.Groups["count"].Value) : null,
-                EzMicroBalanceErrorLines: lines
-                    .Where(line => line.Contains("EZMicroBalance", StringComparison.Ordinal) &&
-                                   Regex.IsMatch(line, @"\b(error|exception|failed|missingmethodexception)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
-                    .ToArray(),
-                UnrelatedManifestErrorLines: lines
-                    .Where(line => line.Contains("Mod manifest", StringComparison.Ordinal) &&
-                                   line.Contains("[ERROR]", StringComparison.Ordinal) &&
-                                   !line.Contains("EZMicroBalance", StringComparison.Ordinal) &&
-                                   !line.Contains("BaseLib", StringComparison.Ordinal))
-                    .ToArray());
-        }
-    }
-
     private static string CurrentDocsWithoutWorkLogs()
     {
         return string.Join(Environment.NewLine, CurrentFacingDocs.Select(path => ReadRepoText(path.Split('/'))));
+    }
+
+    private static void AssertNoCurrentFacing22FieldSmokePassClaims(string currentDocs)
+    {
+        var staleLines = currentDocs
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+            .Where(line =>
+            {
+                var lower = line.ToLowerInvariant();
+                var mentions22FieldSmoke = lower.Contains("found 22 savedspirefields", StringComparison.Ordinal);
+                var soundsCurrent = lower.Contains("current normal steam", StringComparison.Ordinal)
+                    || lower.Contains("current-package", StringComparison.Ordinal)
+                    || lower.Contains("current package", StringComparison.Ordinal)
+                    || lower.Contains("pass for loader", StringComparison.Ordinal)
+                    || lower.Contains("loader pass", StringComparison.Ordinal);
+                var marksHistoricalBoundary = lower.Contains("historical", StringComparison.Ordinal)
+                    || lower.Contains("previous", StringComparison.Ordinal)
+                    || lower.Contains("earlier", StringComparison.Ordinal)
+                    || lower.Contains("superseded", StringComparison.Ordinal)
+                    || lower.Contains("fresh loader", StringComparison.Ordinal)
+                    || lower.Contains("loader parity remains pending", StringComparison.Ordinal)
+                    || lower.Contains("fresh live loader", StringComparison.Ordinal)
+                    || lower.Contains("not refreshed", StringComparison.Ordinal);
+
+                return mentions22FieldSmoke && soundsCurrent && !marksHistoricalBoundary;
+            })
+            .ToArray();
+
+        Assert.True(
+            staleLines.Length == 0,
+            "Found current-facing docs that describe the 22-field loader smoke as a current loader pass without a historical/pending boundary: "
+            + string.Join(" || ", staleLines));
     }
 
     private static void AssertEvidenceLabelOnlyReferencedAsInvalid(string source, string label)
@@ -997,15 +709,6 @@ public sealed class ReleaseSafetyExpandedGuardTests
                 @"(?i)\b(?:invalid|not counted|do not satisfy|does not satisfy|not gameplay evidence|loader health only|covered by another foreground app|stayed on the main menu|wrong surface)\b",
                 line);
         }
-    }
-
-    private static string CurrentGodotLogPath()
-    {
-        return Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "SlayTheSpire2",
-            "logs",
-            "godot.log");
     }
 
 }

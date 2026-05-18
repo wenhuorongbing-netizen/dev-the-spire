@@ -1,0 +1,922 @@
+﻿# Issues Waiting for Live/Manual Verification
+
+These issues are source-complete or source-patched and awaiting live/manual test evidence. They were moved out of `docs/issues.md` so implementation tracking stays focused.
+
+This file is the live-verification queue for all source-complete items. Keep this as the source of truth for manual execution order and do not duplicate these entries back into `docs/issues.md` unless they become source blockers again.
+
+Progress rule:
+- An issue closes when all required host/client evidence, screenshots, and log markers are attached.
+- Move closed items directly into the `Resolved / Player-Verified` section with the concrete evidence references.
+
+### ISSUE-2026-05-09-ROOTBLIGHT-CARD-TEXT-STYLE-PREVIEW-DUPLICATE-EXHAUST
+
+Priority: P1
+
+Status: source-complete and package-guarded; English and Simplified Chinese live hover/text verification passed for the four Rootblight-family cards. Keep guard coverage active while broader Rootblight combat behavior remains open.
+
+Area: A14/A15/A18 Rootblight / Blight Sprout card text, visible keyword display, rich text, card previews, localization
+
+Player report (2026-05-09):
+
+- Fission / 裂变 icon is currently acceptable and should not be changed in this pass.
+- Firemarked Elite marker is currently acceptable and should not be changed in this pass.
+- Rootblight I/II/III and Blight Sprout are mechanically present, but their card descriptions are confusing.
+- Rootblight cards already display the visible Exhaust / 消耗 keyword, but the description text also manually says `Play: Exhaust` / `打出：消耗`, causing duplicate Exhaust / 消耗 display.
+- Rootblight text lacks the official card-description style: important card names and pile names are not highlighted, and player-facing card references do not show previews.
+- “After combat, add Rootblight I/II” should show a card preview so the player can inspect the resulting card, similar to official cards that add Soul / 灵魂.
+
+Original source evidence that triggered the fix:
+
+- `EZMicroBalanceCode/Ascension/Cards/RootCards.cs`
+  - `RootFamilyCard.CanonicalKeywords => ExhaustKeyword`.
+  - `RootBud.CanonicalKeywords => ExhaustKeyword`.
+  - `RootFamilyCard` and `RootBud` therefore already expose visible Exhaust / 消耗.
+- `EZMicroBalance/localization/eng/cards.json`
+  - Original Rootblight descriptions included `Play: Exhaust`.
+- `EZMicroBalance/localization/zhs/cards.json`
+  - Original Rootblight descriptions included `打出：消耗`.
+- This combination causes duplicate keyword presentation and should be removed.
+
+Implementation notes (2026-05-09):
+
+- English and Simplified Chinese Rootblight/Blight Sprout descriptions no longer manually repeat Exhaust wording; visible Exhaust remains provided by `CanonicalKeywords`.
+- Important Rootblight card names and Draw Pile text now use `[gold]...[/gold]`.
+- Rootblight previews are implemented with `HoverTipFactory.FromCard<T>()`, following the source-backed official Soul preview pattern.
+- Automated guards cover duplicate Exhaust prevention, `[gold]` terms, preview source shape, localization parity, and package artifact freshness.
+- Normal Steam-client BaseLib+EZMB-only A14 English hover screenshots under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` and ZHS hover screenshots under `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516` verified Rootblight I/II/III and Blight Sprout show one visible Exhaust keyword, no raw `[gold]` tags, and expected Rootblight previews.
+
+Required source research:
+
+- Use current v0.105.0 `source code/src/Core/**` as primary evidence.
+- Search official cards/localization and card models for:
+  - `GRAVE_WARDEN`
+  - `SOUL`
+  - `Soul`
+  - `REAVE`
+  - `CAPTURE_SPIRIT`
+  - `GLIMPSE_BEYOND`
+  - `DIRGE`
+  - `SEVERANCE`
+  - `CardPreview`
+  - `PreviewCard`
+  - `HoverTips`
+  - `CanonicalCards`
+  - `CanonicalVars`
+  - `CanonicalKeywords`
+  - `DynamicVar`
+  - `CardModel`
+  - `ModelDb.Card`
+- Record source evidence in `docs/features/ascension-11-20/api-research.md` or `docs/features/ascension-11-20/work-log.md`.
+- Do not copy large source bodies. Summarize exact class/key/API names and conclusions only.
+
+Official style target:
+
+- Follow the same pattern used by official cards that create or add another card, especially Grave Warden / Soul examples.
+- Important card names should be gold-highlighted.
+- Important pile names such as Draw Pile / 抽牌堆 should be gold-highlighted.
+- Referenced cards should show previews where source-proven preview APIs allow it.
+- Do not manually write keywords already provided by `CanonicalKeywords`, such as Exhaust / 消耗.
+
+Required behavior:
+
+1. Remove duplicate manual Exhaust wording from Rootblight I/II/III and Blight Sprout descriptions.
+   - English must not contain `Play: Exhaust`.
+   - Simplified Chinese must not contain `打出：消耗`.
+   - Keep visible `CardKeyword.Exhaust` through source-backed `CanonicalKeywords`.
+2. Rewrite English and Simplified Chinese descriptions in shorter official-style lines.
+3. Use `[gold]...[/gold]` for important card names and pile names.
+4. Add source-backed card previews:
+   - Rootblight I previews Rootblight II.
+   - Rootblight II previews Rootblight I and Rootblight III.
+   - Rootblight III previews Rootblight I and Rootblight II.
+   - Blight Sprout previews Rootblight I.
+5. Preview cards must not pollute deck, run state, RNG, save data, or multiplayer state.
+6. Preview implementation must be safe in card library / hover / combat / reward contexts. If owner/run state is unavailable, use a safe fallback or no preview, not a crash.
+
+Suggested final English copy, after verifying exact behavior:
+
+- `EZMB_ROOT.description`:
+  - `Remove this from your deck.`
+  - `After combat, if this was not played or removed, it becomes [gold]Rootblight II[/gold].`
+- `EZMB_DEEP_ROOT.description`:
+  - `When played, remove this from your deck. After combat, add a [gold]Rootblight I[/gold].`
+  - `If not played or removed this combat, it becomes [gold]Rootblight III[/gold].`
+- `EZMB_ROOTBLIGHT_III.description`:
+  - `When played, remove this from your deck. After combat, add a [gold]Rootblight II[/gold].`
+  - `If not played or removed this combat, it remains [gold]Rootblight III[/gold].`
+- `EZMB_ROOT_BUD.description`:
+  - `Sprout 3/4: at that round's start, if this has not entered your hand, put it on top of your [gold]Draw Pile[/gold].`
+  - `If seen and not played, after combat add a [gold]Rootblight I[/gold].`
+
+Suggested final Simplified Chinese copy, after verifying exact behavior:
+
+- `EZMB_ROOT.description`:
+  - `将本牌从你的主牌组中移除。`
+  - `战斗后，若本牌未被打出或移除，变为[gold]根蚀 II[/gold]。`
+- `EZMB_DEEP_ROOT.description`:
+  - `打出时，将本牌从你的主牌组中移除；战斗后，加入1张[gold]根蚀 I[/gold]。`
+  - `若本战未打出或移除，战斗后变为[gold]根蚀 III[/gold]。`
+- `EZMB_ROOTBLIGHT_III.description`:
+  - `打出时，将本牌从你的主牌组中移除；战斗后，加入1张[gold]根蚀 II[/gold]。`
+  - `若本战未打出或移除，战斗后加入1张[gold]根蚀 I[/gold]，仅一次。`
+- `EZMB_ROOT_BUD.description`:
+  - `萌发3/4：对应回合开始时，若本牌还未进入手牌，将其置于你的[gold]抽牌堆[/gold]顶部。`
+  - `若见到后未打出，战斗后加入1张[gold]根蚀 I[/gold]。`
+
+Text correctness notes:
+
+- Do not use “upgrade” / “升级” unless the actual mechanic is a card upgrade. Prefer “becomes” / “变为” for Rootblight stage changes.
+- Do not describe both played and unplayed outcomes as if they happen together.
+- Rootblight II and III played outcomes should clearly say “When played...” / “打出时...” and unplayed growth should be a separate sentence.
+- If `打出时` itself appears with the visible keyword, that is acceptable; do not include `消耗` in the same phrase.
+
+Tests required:
+
+- English/ZHS descriptions must not contain `Play: Exhaust` or `打出：消耗`.
+- English/ZHS descriptions must contain `[gold]Rootblight I[/gold]`, `[gold]Rootblight II[/gold]`, `[gold]Rootblight III[/gold]`, `[gold]根蚀 I[/gold]`, `[gold]根蚀 II[/gold]`, `[gold]根蚀 III[/gold]` where applicable.
+- Blight Sprout text must contain `[gold]Draw Pile[/gold]` and `[gold]抽牌堆[/gold]`.
+- RootFamilyCard and RootBud must still expose `CardKeyword.Exhaust` via `CanonicalKeywords` or source-proven equivalent.
+- Add a source guard for preview implementation covering the preview matrix above.
+- Add a localization guard so raw unsupported tags or duplicated keywords cannot reappear.
+
+Manual verification required:
+
+- Hover Rootblight I: one visible Exhaust keyword only; Rootblight II preview visible.
+- Hover Rootblight II: one visible Exhaust keyword only; Rootblight I and III previews visible.
+- Hover Rootblight III: one visible Exhaust keyword only; Rootblight I and II previews visible.
+- Hover Blight Sprout: one visible Exhaust keyword only; Rootblight I preview visible.
+- English and Simplified Chinese render [gold] markup correctly, with no raw tags.
+
+
+### ISSUE-2026-05-09-CARD-TEXT-STYLE-GUIDE-FOR-EZMB
+
+Priority: P1/P2
+
+Status: source-complete and guard-covered; English and Simplified Chinese Rootblight live hover/text passes found no localization drift.
+
+Area: card localization style, naming conventions, dynamic variables, preview rules, bilingual text consistency
+
+Problem:
+
+- Rootblight text repeated a visible keyword that the card already displays from `CanonicalKeywords`.
+- Rootblight text did not use official-style rich text for important card/pile names.
+- Rootblight references to generated/added cards did not provide previews.
+- This class of mistake can reappear in future EZMB card text unless a local style guide exists.
+
+Required behavior:
+
+- Create `docs/style/card-localization-style-guide.md`.
+- If `docs/style/` does not exist, create it.
+- Add a short pointer in `AGENTS.md` or `docs/skills/sts2-godot-mod-development.md`.
+- The guide must be based on current v0.105.0 source/localization evidence, not only intuition.
+
+Required source research:
+
+- Search official `source code` localization and card models for the official patterns used by cards that create/add/preview other cards.
+- Include Grave Warden / Soul examples if source confirms them.
+- Record exact localization keys/classes discovered, such as `GRAVE_WARDEN`, `SOUL`, and related card model preview APIs.
+- Include English and Simplified Chinese examples.
+
+The guide must cover at least:
+
+1. **Visible keyword rule**
+   - If a card already exposes Exhaust / Retain / Innate / Eternal / similar through `CanonicalKeywords` or a source-proven keyword API, do not manually repeat the same keyword in the description.
+   - Example anti-pattern: `Play: Exhaust.` / `打出：消耗。` on a card that already has visible Exhaust.
+2. **Rich-text rule**
+   - Important card names, pile names, and official named concepts should use `[gold]...[/gold]` when official examples do so.
+   - Numbers should use dynamic vars where possible.
+3. **Dynamic variable rule**
+   - Use `{Cards:diff()}`, `{Damage:diff()}`, `{Energy:energyIcons()}`, etc. when values can change through upgrades/modifiers.
+   - Do not hard-code values that can become wrong after upgrade.
+4. **Preview rule**
+   - If text says “add a card”, “becomes a card”, “put a card into pile”, or equivalent, provide a card preview if a source-proven safe API exists.
+   - Preview cards must not alter game state, RNG, save data, or piles.
+5. **English/ZHS consistency rule**
+   - Behavior, counts, and conditions must match across English and Simplified Chinese.
+   - Do not over-compress Chinese to the point of ambiguity.
+6. **Terminology rule**
+   - Rootblight = 根蚀
+   - Blight Sprout / Root Bud = 根芽
+   - Draw Pile = 抽牌堆
+   - Discard Pile = 弃牌堆
+   - Exhaust Pile = 消耗牌堆
+   - Deck / master deck = 牌组 / 主牌组 depending on source context; use consistently.
+7. **Manual checklist rule**
+   - Each card text change must update manual checklist rows for hover, preview, text rendering, and raw-tag checks.
+
+Tests required:
+
+- Source/document guard checks that `docs/style/card-localization-style-guide.md` exists.
+- Guard checks that the guide mentions:
+  - `CanonicalKeywords`
+  - duplicate Exhaust prevention
+  - `[gold]`
+  - card preview
+  - English/Simplified Chinese consistency
+  - Rootblight terminology
+- Guard checks that AGENTS or the repo skill points to the guide.
+
+Implementation notes (2026-05-09):
+
+- Added `docs/style/card-localization-style-guide.md`.
+- Indexed the guide from `AGENTS.md`, `docs/README.md`, and `docs/skills/sts2-godot-mod-development.md`.
+- Added guard coverage for duplicate-keyword prevention, `[gold]`, card previews, English/Simplified Chinese consistency, and Rootblight terminology.
+
+
+### ISSUE-2026-05-09-ROOTBLIGHT-ADD-TO-DECK-NOTICE-MISSING
+
+Priority: P1/P2
+
+Status: source-patched and package-refreshed; A14 Neow starter notice live retests passed in English and Simplified Chinese after the event-room fallback. Combat-end notice source now prefers a top-level run overlay with high z-order, input passthrough, and a longer display duration before falling back to the run global UI container. Full combat-end behavior, Blight Sprout, non-paused notice timing, and co-op ownership/desync notice checks remain pending before close.
+
+Area: A14/A15/A18 Rootblight add-to-deck feedback, card gain notice, combat-end feedback, multiplayer safety
+
+Player report:
+
+- When Rootblight is added to the deck, the player receives no clear prompt, animation, curse-style notice, or visible feedback.
+- Player may not realize a Rootblight card was added.
+
+Current source evidence to verify:
+
+- `RootDeckService.AddRootblightCard(...)` currently adds cards with:
+  - `CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, source: null, skipVisuals: true)`
+- This likely suppresses the standard card-add visual path.
+- `ShowRootSystemFull(...)` already uses `ThinkCmd.Play(new LocString("ascension", "ROOT_SYSTEM_FULL"), player.Creature, 2.0)` for cap notices, proving a lightweight notice path exists.
+
+Required source research:
+
+- Search current v0.105.0 source for:
+  - `CardPileCmd.Add`
+  - `skipVisuals`
+  - `ThinkCmd.Play`
+  - card reward pickup
+  - curse added to deck
+  - event cards added to deck
+  - generated temporary card added to hand/draw/discard
+  - card obtain popup / preview / notification APIs
+- Record source evidence in `api-research.md` or `work-log.md`.
+- Identify which API is multiplayer-safe and command-safe.
+
+Required behavior:
+
+- When Rootblight I/II/III is successfully added to the player’s master deck, the affected player should receive a short player-facing notice or animation.
+- Notice should not spam or duplicate excessively if multiple Rootblights are added in one resolution; if multiple additions can happen, pick a clear but not overwhelming policy.
+- Notice must be per-player in co-op; it must not falsely show for other players.
+- Notice must not mutate game state other than the intended add-to-deck action.
+- If full card-add animation is source-proven safe, use it.
+- If not, keep `skipVisuals: true` but add a `ThinkCmd.Play` notice after successful add.
+
+Implementation notes (2026-05-09):
+
+- `RootDeckService.AddRootblightCard` now checks the `CardPileCmd.Add` result before returning success.
+- The add path keeps `skipVisuals: true` and shows a localized `ROOTBLIGHT_ADDED` notice only for `LocalContext.IsMe(player)`.
+- The notice uses the vanilla `ThinkCmd.Play(...)` path when the player's creature has a VFX container. A14 Neow runtime evidence showed this path is silent in event rooms, so the source now falls back to `NEventRoom.Instance?.VfxContainer` with `NThoughtBubbleVfx.Create(...)`, then to a run overlay notice if needed.
+- Combat-end additions pass `preferOverlayNotice: true`; that path now tries a top-level `NGame.Instance` thought bubble first, sets `MouseFilterEnum.Ignore`, sets `ZIndex = 4096`, uses a 5-second display duration, and falls back to `NRun.Instance.GlobalUi.AboveTopBarVfxContainer`.
+- English and Simplified Chinese notice localization are present; automated guards require the notice path and keys.
+- Normal Steam-client A14 English retest under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` verified `07-after-confirm-a14-neow.png`: Rootblight I is added at Neow, the deck count is 11, and the localized Rootblight-added bubble is visible.
+- Normal Steam-client A14 ZHS retest under `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455` verified `07-run-start-06.png`: Rootblight I is added at Neow, the deck count is 11, and the localized Rootblight-added bubble is visible.
+- Pre-final-hardening combat-end probe `.tools\runtime-evidence\rootblight-combat-end-overlay-eng-20260509-053834` captured the Rootblight III split notice above the loot/pause overlay and then restored settings/saves/22 moved mods. That probe is not enough to close the full combat-end requirement because it did not complete Blight Sprout coverage or a clean non-paused timing check.
+
+Suggested notice localization:
+
+- English:
+  - `ROOTBLIGHT_ADDED`: `[gold]Rootblight[/gold] added.`
+  - Optional level-specific if easy: `Rootblight {Level} added.`
+- Simplified Chinese:
+  - `ROOTBLIGHT_ADDED`: `[gold]根蚀[/gold]已加入。`
+  - Optional level-specific if easy: `根蚀 {Level} 已加入。`
+
+Implementation options:
+
+- **Option A:** Set `skipVisuals: false` only if source evidence proves this displays a safe standard card-add animation and does not break combat/save/multiplayer.
+- **Option B:** Keep `skipVisuals: true`, then call `ThinkCmd.Play(...)` with a short localized message for the affected player.
+- **Option C:** Use a source-proven card obtain popup / preview notice, if available and safe.
+
+Tests required:
+
+- Guard that Rootblight add path is not completely silent.
+- If `skipVisuals: true` remains, require `ThinkCmd.Play` or equivalent after successful add.
+- Require new localization keys in English and ZHS if a notice key is added.
+- Guard against adding notice in unrelated card-add paths.
+
+Manual verification required:
+
+- A14 new run: when Rootblight I is added, player sees a notice/animation.
+- Rootblight III split or RootBud seen-unplayed outcome: when Rootblight I is added after combat, player sees a notice/animation.
+- If multiplayer is later tested, confirm only the affected player’s Rootblight notice is shown and no ownership/desync warning appears.
+
+
+### ISSUE-2026-05-09-ROOTBLIGHT-CARD-ART-PENDING
+
+Priority: P2
+
+Status: source/package fixed with original generated art; live in-game visual verification pending.
+
+Area: Rootblight I/II/III and Blight Sprout card art
+
+Player report:
+
+- Rootblight I/II/III and Blight Sprout previously did not have independent pictures.
+- This pass generated original procedural portraits and packaged them under the documented per-card paths.
+- Fission / 裂变 icon is acceptable and should not be changed in this pass.
+- Firemarked Elite marker is acceptable and should not be changed in this pass.
+
+Current source evidence:
+
+- `RootBud.CustomPortraitPath` and `RootBud.PortraitPath` now try the documented `blight_sprout.png` / `big/blight_sprout.png` paths and fall back to generic `images/card_portraits/card.png` / `big/card.png` while art is absent.
+- `RootFamilyCard.CustomPortraitPath` and `RootFamilyCard.PortraitPath` now try the documented `rootblight_i.png`, `rootblight_ii.png`, and `rootblight_iii.png` paths and fall back to generic `card.png` while art is absent.
+- Therefore Rootblight I/II/III and Blight Sprout no longer display the shared placeholder art once the latest package is loaded; live visual verification still needs to confirm in-game rendering.
+
+Required behavior after art is provided:
+
+- Use original art only. Do not use official Slay the Spire 2 assets.
+- No text, numbers, logos, or official characters in generated art.
+- Add small and big portraits:
+  - `EZMicroBalance/images/card_portraits/rootblight_i.png`
+  - `EZMicroBalance/images/card_portraits/rootblight_ii.png`
+  - `EZMicroBalance/images/card_portraits/rootblight_iii.png`
+  - `EZMicroBalance/images/card_portraits/blight_sprout.png`
+  - `EZMicroBalance/images/card_portraits/big/rootblight_i.png`
+  - `EZMicroBalance/images/card_portraits/big/rootblight_ii.png`
+  - `EZMicroBalance/images/card_portraits/big/rootblight_iii.png`
+  - `EZMicroBalance/images/card_portraits/big/blight_sprout.png`
+- `RootCards.cs` already resolves these paths with a generic fallback; after art is provided, add the files, import/export/package them, and remove or update the placeholder release note.
+- Add/import Godot `.import` metadata as needed.
+- Update `export_presets.cfg` so the files are packaged.
+- Update package/PCK/hash docs after publish.
+- Record art SHA256 and source/provenance in release docs.
+
+Current pass expectation:
+
+- If user has not provided art yet, do not invent art unless user explicitly requests image generation.
+- Keep this issue open.
+- Release notes should say Rootblight-family generated portrait art is included, with live visual verification pending.
+
+Tests required after art integration:
+
+- Rootblight I/II/III and Blight Sprout must resolve to their specific portrait files once art is supplied, rather than falling back to generic `card.png`.
+- Export preset includes the new images.
+- PCK contains the new images and does not contain source/docs/art_pipeline material.
+- No official assets are packaged.
+
+
+### ISSUE-2026-05-08-PENDING-VISUALS-AND-DIAGNOSTICS
+
+Priority: P2/P3
+
+Status: partially superseded by the 2026-05-09 Rootblight source pass. Rootblight text/previews have English and Simplified Chinese live hover proof, the A14 Neow starter add notice has English and Simplified Chinese live proof after the event-room fallback, and generated portrait art is packaged. Combat-end notices, generated-art live visual verification, and co-op ownership/desync notice checks remain pending.
+
+Area: Rootblight visuals / A11 diagnostics / manual verification backlog
+
+Pending items deliberately left out of the current fix pass or requiring user decision:
+- Rootblight animation/feedback beyond the specific add-to-deck notice issue, unless implemented through `ISSUE-2026-05-09-ROOTBLIGHT-ADD-TO-DECK-NOTICE-MISSING`.
+- Rootblight I/II/III and Blight Sprout generated-art live visual verification.
+- Broader A11 map geometry diagnostics and natural traversal checks beyond the Act 1/2/3 width/row spot checks. Current normal Steam-client A11 map evidence is recorded in `docs/rc1-live-validation-log.md`.
+- Multiplayer matrix and Ancient/co-op save/load verification.
+
+
+### ISSUE-2026-05-08-MULTIPLAYER-A11-A20-RUN-START-HP0-NEOW-BLOCKED
+
+Priority: P0
+
+Status: diagnostics patch exists and is default-off; unsolved until live co-op retest. Controlled BaseLib+EZMB loader smoke is clean on BaseLib `v3.1.2`; host/client co-op Neow HP still needs live retest.
+
+Area: multiplayer A11-A20 run start / Neow initialization / player HP
+
+Player report (v0.105.0, 2026.05.08, co-op):
+- Two-player co-op entered Neow screen with Ascension >10 selected.
+- Local player HP displayed as 0/80.
+- Cannot select Neow blessing.
+- Singleplayer works fine with the same Ascension level.
+
+Current source analysis:
+
+- `AncientEventModel.BeforeEventStarted` (source code/src/Core/Models/AncientEventModel.cs:143-156) sets player HP to 0 via `SetCurrentHpInternal(0m)`, then heals via `CreatureCmd.Heal` to full (or 80% for A2+ WearyTraveler). This works in singleplayer.
+- Vanilla `AscensionManager` (`source code/src/Core/Entities/Ascension/AscensionManager.cs`) has `maxAscensionAllowed = 10` and only handles A4 (TightBelt -1 potion) and A10 (AscendersBane). No HP effects.
+- `RunManager.InitializeNewRun()` -> `ApplyAscensionEffects(player)` -> `AscensionManager.ApplyEffectsTo(player)` does not touch HP.
+- `Player.CreateForNewRun()` uses `character.StartingHp` for both current and max HP.
+- No EZMB gameplay slice touches player HP during run start or Neow.
+
+Hypotheses (in priority order):
+1. Vanilla multiplayer `CreatureCmd.Heal` or `SetCurrentHpInternal` fails/skips for the non-host player when `RunState.AscensionLevel > 10`, possibly because `NetService.Type.IsMultiplayer()` bypasses some initialization path.
+2. A multiplayer-specific runtime path prevents the v0.105.0 `AncientEventModel.BeforeEventStarted` / `CreatureCmd.Heal` flow from applying to the affected client, despite the refreshed source still showing the vanilla full-heal path.
+3. Our `AscensionSelectionPatches` expand `maxMultiplayerAscensionUnlocked` during `UpdateMaxMultiplayerAscension` in a way that corrupts some lobby/player state before the run starts. Our patches do not touch `BeginRunForAllPlayers` directly (only log a warning).
+4. A20 Dual King Brands warning patch or some other EZMB Harmony patch interferes with lobby cleanup or run setup in a non-obvious way.
+5. The Neow event fails to start properly in multiplayer, so `BeforeEventStarted` never fires, and HP remains at whatever value was set during player creation (which should still be `StartingHp`).
+
+Required evidence:
+- Run with `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` in co-op to capture lobby state, player HP at run start, `BeginRunLocally` HP, `AfterActEntered` HP, and Neow `BeforeEventStarted` HP.
+- Bisect via `EZMB_ASCENSION_DISABLE_ALL_SYSTEMS=1` to confirm whether EZMB gameplay slices are involved.
+- Test with `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` + vanilla A10 as control.
+
+
+### ISSUE-2026-05-08-MULTIPLAYER-SAVE-QUIT-NOT-PROPAGATING
+
+Priority: P0/P1
+
+Status: source-investigated; vanilla source path should propagate disconnect, but live co-op evidence is still pending
+
+Area: multiplayer save-and-quit / disconnect / host-client sync
+
+Player report: in co-op, when one player saves and quits, the other machine does not synchronously quit, disconnect, or return to menu.
+
+Current v0.105.0 source notes:
+- Pause-menu save-and-quit is handled by `NPauseMenu.OnSaveAndQuitButtonPressed()` / `CloseToMenu()`, which calls `NGame.ReturnToMainMenu()`.
+- `NGame.ReturnToMainMenu()` fades out, loads common/main-menu assets, calls `RunManager.Instance.CleanUp()`, and loads the main menu.
+- `NGame.Quit()` (source code/src/Core/Nodes/NGame.cs) saves settings/profile data and calls `GetTree().Quit()` but does not send a disconnect message to remote peers.
+- `RunManager.CleanUp(bool graceful = true)` disposes run synchronizers and calls `NetService.Disconnect(NetError.Quit, !graceful)`.
+- `NetHostGameService.Disconnect(...)` calls the active transport's `StopHost(...)`.
+- `SteamHost.StopHost(...)` closes every client connection with the quit reason, leaves the Steam lobby, and then reports local disconnection.
+- `ENetHost.StopHost(...)` sends an ENet disconnection packet to each client when not immediate, then disconnects each peer and reports local disconnection.
+- `RunLobby.OnDisconnected(...)` calls `RunManager.LocalPlayerDisconnected(...)`; for non-`QuitGameOver` reasons during an active run, `RunManager.LocalPlayerDisconnected(...)` queues `ReturnToMainMenuWithError(...)`.
+- `NErrorPopup.Create(...)` suppresses a popup only for self-initiated `Quit`; remote peer disconnects should still have a non-self-initiated reason.
+- Current EZMB Ascension patches do not patch `NPauseMenu`, `RunManager.CleanUp`, `RunLobby.OnDisconnected`, `NetHostGameService`, `NetClientGameService`, `SteamHost`, or `ENetHost`.
+
+Required investigation:
+- Live two-client logs still need to confirm whether the remote peer receives `NetError.Quit`, whether `RunLobby.OnDisconnected(...)` fires, and whether `ReturnToMainMenuWithError(...)` completes.
+- Run co-op with `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` and collect both host/client logs around Save & Quit.
+- If the remote peer never receives the disconnect, the defect is likely transport/session-state or vanilla runtime behavior rather than an EZMB save/quit patch.
+- If the remote peer receives the disconnect but does not return to menu, inspect `RunManager.LocalPlayerDisconnected(...)` and active UI state at that moment.
+- Do not add a speculative EZMB multiplayer save/quit fix without live evidence identifying which branch fails.
+
+
+### ISSUE-2026-05-08-MULTIPLAYER-RUN-START-BLACK-SCREEN
+
+Priority: P0/P1
+
+Status: dependency errors removed; still investigating until fresh host/client live logs prove whether the black screen is tied to HP0/Neow, A20 startup, transport sync, or another runtime exception.
+
+Area: multiplayer run start / screen transition / mod load / dependency compatibility
+
+Player report: multiplayer run start can still black-screen, even after the earlier `DoormakerBoss` TypeLoadException fix.
+
+Current status:
+- `ISSUE-2026-05-08-MULTIPLAYER-A20-BLACK-SCREEN-OPTIONAL-BOSS-TYPELOAD` was fixed by making `BossSealCatalog` use runtime-safe `ModelId` strings. This fixed the TypeLoadException for `DoormakerBoss`.
+- But the player report suggests black screen can still occur, potentially from other causes.
+
+Hypotheses:
+1. HP 0/80 -> Neow blocked -> screen transition never completes (same root cause as HP0-Neow issue).
+2. A different TypeLoadException or missing model for a different v0.105.0 API.
+3. Network desync during run start - host reaches Act 0 but client never receives the transition.
+4. Missing localization or model that causes a silent failure during lobby cleanup or run scene setup.
+
+Required evidence:
+- Collect host AND client `godot.log` covering the 200 lines before and after run start.
+- Look for exceptions, missing models, missing localization, network disconnect, desync, or timeout.
+- If black screen follows from HP0/Neow blocked, fix that root cause first.
+- If independent, add separate `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS` entries for screen transition sync.
+
+
+### ISSUE-2026-05-08-MULTIPLAYER-A20-BLACK-SCREEN-OPTIONAL-BOSS-TYPELOAD
+
+Priority: P0
+
+Status: source-patched and published locally; live co-op retest pending
+
+Area: A20 multiplayer run start / A19 Boss Royal Seal catalog / Early Access API compatibility
+
+Player report: starting a multiplayer A20 run can black-screen after the lobby begins the run.
+
+Observed log evidence:
+
+- Latest `godot.log` shows host multiplayer A20 run start reached `NGame.StartNewMultiplayerRun(...)` with Ascension 20.
+- Act 1 map generation applied A11/A12/A16 metadata, then failed in `AscensionMapService.MarkBossSeals(...)`.
+- Fatal mod stack: `System.TypeLoadException: Could not load type 'MegaCrit.Sts2.Core.Models.Encounters.DoormakerBoss'` from `BossSealCatalog..cctor()`.
+- The same local log also contains unrelated local-mod/BaseLib compatibility errors, but the A20 run-start abort is the `DoormakerBoss` type-load failure in EZ Micro Balance.
+
+Root cause:
+
+- Earlier source/API evidence proved optional Early Access boss and power types are not safe to reference directly; the refreshed v0.105.0 source does not expose the previously crashing `DoormakerBoss` type.
+- `BossSealCatalog` used hard generic references like `ModelDb.GetId<DoormakerBoss>()`; static initialization therefore crashed before the run could finish generating the first map.
+- Current build also proved adjacent API drift: direct `Doormaker` / `HungerPower` / `ScrutinyPower` / `GraspPower` references and direct `PumpkinCandle.ActiveAct` access are not safe against the installed DLL.
+
+- Earlier source fix:
+
+- `BossSealCatalog` previously used runtime-safe `ModelId` strings such as `ENCOUNTER.DOORMAKER_BOSS` instead of hard references to optional boss encounter classes.
+- Door Wedge combat checks previously used runtime `ModelId` checks for the Doormaker monster and phase powers, so missing optional types did not block compile/load.
+- v0.105.0 source later replaced the active Doormaker/Door Wedge scope with `AEONGLASS_BOSS`; current active EZMB source has no Door Wedge implementation and applies the temporary Aeonglass +5 Strength seal instead.
+- Debt patching was adjusted to avoid direct compile/accessibility assumptions that broke against the current installed game API.
+- Pumpkin Candle EZMB patching was removed; vanilla Pumpkin Candle behavior is restored for the v0.105.0 package, so no Pumpkin-only Harmony target participates in `PatchAll()`.
+- Added source guard tests to prevent reintroducing hard optional `DoormakerBoss` / `Doormaker` type references in the Boss Seal startup path.
+
+Manual retest:
+
+- Republish or confirm the installed `EZMicroBalance.dll` timestamp is newer than this fix.
+- Host multiplayer with BaseLib and EZ Micro Balance only if possible.
+- Select A20, let the client join, ready both players, and start the run.
+- Confirm the run leaves the lobby and reaches the Act 1 map instead of black-screening.
+- Inspect `godot.log` for no `EZMicroBalance` `TypeLoadException`, especially no `DoormakerBoss`, `Doormaker`, `HungerPower`, `ScrutinyPower`, or `GraspPower` load errors.
+- Keep A20 Dual King Brands co-op gameplay verification pending; this fix is a crash/compatibility fix, not a full live co-op balance pass.
+
+
+### ISSUE-2026-05-08-ASCENSION-PUBLIC-SELECTION-DEFAULT-ON-FOR-MP-TEST
+
+Priority: P0
+
+Status: source-patched; package/smoke refreshed; Steam-client/live co-op pending
+
+Area: A11-A20 selector gate / multiplayer pre-release testing
+
+Decision: A11-A20 selection is now default-on in this private-beta multiplayer test candidate so testers can immediately exercise single-player and host-multiplayer A11-A20 through the original lobby UI.
+
+Required behavior:
+
+- Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.
+- Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
+- `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
+- A20 multiplayer selection is not full A20 co-op support. Dual King Brands / second-boss Brand gameplay remains disabled or downgraded in co-op pending live verification.
+- Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
+
+Manual retest:
+
+- With no Ascension env vars, confirm single-player and host multiplayer can select A11-A20.
+- With `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, confirm single-player and multiplayer selection return to vanilla A1-A10.
+- With `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, confirm single-player A11-A20 remains available and host-multiplayer selection returns to the vanilla cap.
+- Confirm host-only multiplayer A20 selection logs the downgrade warning before any client joins, then logs again on run start after a client joins.
+- Keep live gameplay, save/load, and live co-op/desync verification pending until actually executed or explicitly accepted.
+
+
+### ISSUE-2026-05-07-A11-MAP-LENGTH-NOT-PLAYER-VISIBLE
+
+Priority: P1
+
+Status: source-patched again; Act 1 normal Steam-client map/save-load spot check passed; Act 2/3 normal Steam-client map-surface observation passed; broader natural traversal and boss-reachability verification pending
+
+Area: A11 Wide Tower, Long Road / map generation
+
+Player report: A11 still looks like the original map size. It was longer once, then regressed.
+
+Current source fix:
+
+- `AscensionFeatureGate` now sets A11 rows to Act 1 `+1`, Act 2 `+1`, Act 3 `+2`.
+- `AscensionMapService` now accepts old width-only adjusted maps and inserts missing late rows instead of returning early.
+- A11 still expands from 7 to 8 columns and inserts a reachable optional route node.
+- A11 no longer marks ordinary route nodes with a dedicated long-road marker or hover explanation; map growth is represented only by vanilla-looking rows, columns, nodes, and paths.
+
+RC1 live evidence:
+
+- Normal Steam-client BaseLib+EZMB-only run selected A11 through the original single-player Ascension arrows (`.tools\runtime-evidence\rc1-a11-map-save-20260508-110008\08-character-select-a11.png`).
+- The Act 1 map screenshot (`11-a11-act1-map-after-neow-continue.png`) renders the widened map with normal route nodes.
+- `a11-map-save-load-godot-live.log` records `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`.
+- `a11-save-map-dimensions.json` records `MapHeight: 17`, `BossRow: 17`, `RouteRowCount: 16`, `ColumnCount: 8`, and columns `0,1,2,3,4,5,6,7`.
+- After selecting the first monster node, the game wrote `current_run.save`; Save & Quit -> Continue loaded back into the A11 combat, and the map reopened with `columns=8; rows=17`.
+- A later normal Steam-client BaseLib+EZMB-only run selected A11 through the original UI and used DevConsole `act 2` / `act 3` only to observe later-act map surfaces. Evidence directory: `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355`.
+- `a11-act23-godot-live.log` records Act 2 `Ascension A11 applied ... inserted 1 late route row(s); actIndex=1; columns=8; rows=16` and Act 3 `Ascension A11 applied ... inserted 2 late route row(s); actIndex=2; columns=8; rows=16`, with 0 `ERROR` lines and 0 release-blocking signatures.
+- Act 2 screenshot `25-a11-act2-map-clean.png` and Act 3 screenshot `27-a11-act3-map-clean.png` render normal route nodes without an A11-specific marker or hover tooltip.
+
+Manual retest:
+
+- Act 1 fresh A11 route-width/row/save-load spot check is complete for RC1 evidence above.
+- Act 2/3 width/row/no-marker observation is complete for RC1 evidence above, using DevConsole act jumps rather than natural traversal.
+- Confirm the map still has a low-risk route and boss reachability through natural route traversal.
+- Future traversal helper: `win` may be used to end combats after clicking naturally reachable map nodes; do not use DevConsole `travel` as proof of reachability, because local source shows it enables jumping to any map room.
+
+
+### ISSUE-2026-05-07-A11-MAP-CHANGE-ANIMATION
+
+Priority: P3
+
+Status: controlled-smoke refreshed; Act 1/2/3 normal Steam-client A11 map surfaces observed; bespoke animation/A17 UI feedback still pending
+
+Area: A11/A17 map UI feedback
+
+Player report: map and visibility changes should not feel random; the player should clearly see that something changed.
+
+Current mitigation:
+
+- A17 deep-branch nodes still have map hover tips.
+- A11 long-road node tips were removed after player feedback; A11 now relies on normal map geometry instead of a special visible marker.
+
+Remaining work:
+
+- No bespoke map-generation animation or transition sequence has been implemented yet.
+- Live UI pass should decide whether hover tips are enough or whether a short map pulse/overlay is needed.
+
+
+### ISSUE-2026-05-07-A12-TOOLTIP-RICHTEXT-COLORS
+
+Priority: P2
+
+Status: source-patched; live tooltip/rich-text verification pending
+
+Area: A12 Firemark / Forge Token / Banner tooltip text
+
+Player report: A12 text works mechanically, but numbers should be blue and important words such as upgrade, Gold, Skill card, Firemark, Forge Token, Rest, and Smith should be gold.
+
+Current source fix:
+
+- `ForgeTokenRelic` English/ZHS relic text and rest-site extra text now use `[blue]` for values and `[gold]` for important terms.
+- Firemark power tooltips now color values and core terms.
+- Banner room power/localization strings now color values and core terms.
+- Ascension panel localization for A12/A13/Banners now uses the same markup.
+
+Manual retest:
+
+- Hover Forge Token, Firemark powers, Banner powers, A12/A13 ascension rows, and rest-site Forge Token extra text.
+- Confirm rich text renders instead of showing raw tags.
+- Confirm Chinese text wraps cleanly.
+
+
+### ISSUE-2026-05-07-A13-FISSION-TOO-RARE-AT-HIGH-ASCENSION
+
+Priority: P2
+
+Status: source-patched; live A13/A16 reward-frequency verification pending
+
+Area: A13 Fission Enchantment / A16 inherited ascension behavior
+
+Player report: A16 should include earlier ascension effects, but Fission nearly disappeared while testing A16.
+
+Current source evidence:
+
+- `AscensionFeatureGate.IsLevelEnabled(...)` uses `runState.AscensionLevel >= requiredAscensionLevel`, so A16 includes A13 when the public/debug gate is active.
+- Fission source chances are `10/15/20/5` for normal combat / Banner Room / Firemarked Elite / Boss rewards.
+
+Manual retest:
+
+- Test A16 with public/debug ascension enabled.
+- Check repeated normal combat rewards and Banner Room rewards.
+- Confirm Fission remains limited to eligible Attack/Skill cards and still appears at most once per reward screen.
+
+
+### ISSUE-2026-05-07-ROOTBUD-ROOTBLIGHT-REWORK
+
+Priority: P1
+
+Status: source-patched; English/Simplified Chinese hover/text and the A14 Neow starter add notice have live spot-check evidence; generated portrait art is packaged; full Rootblight/Blight Sprout behavior, combat-end notices, co-op ownership/desync, and generated-art visual verification remain pending
+
+Area: A14/A15/A18 Rootblight and Blight Sprout
+
+Player report: the old Root Bud / Rootblight wording was conceptually unclear, Boss Sprout count was too low, and Boss/Elite Sprout text was too long.
+
+Current source fix:
+
+- ZHS player-facing term is now `根芽`.
+- Boss fights in Acts 2/3 now seed 2 Blight Sprout cards.
+- Blight Sprout text is shortened: play to Exhaust; Boss sprouts use rounds 3/4 and elite sprouts use round 3; if seen and not played, add Rootblight I after combat.
+- Rootblight I/II/III costs are 2/3/4.
+- Played Rootblight removes its master-deck card and queues the downgrade card after combat.
+- Unplayed Rootblight I/II upgrades after combat; ignored Rootblight III stays III and does not add an extra Rootblight.
+- Rootblight is capped at 4 cards, and cap hits show `Root system full: max [blue]4[/blue] [gold]Rootblights[/gold].` / `根系已满：最多[blue]4[/blue]张[gold]根蚀[/gold]。`.
+- Rest removes exactly one highest-stage Rootblight instead of clearing all Rootblight.
+
+Manual retest:
+
+- A14 new run starts with Rootblight I.
+- A15 Act 2/3 Boss fights bury 2 Blight Sprouts.
+- A18 eligible Act 2/3 Elite fights bury 1 Blight Sprout.
+- Seen-but-unplayed Blight Sprout adds one Rootblight I after combat.
+- Rootblight I/II/III play and post-combat behavior matches the new card text.
+
+
+### ISSUE-2026-05-07-MULTIPLAYER-A11-A20-SELECTION-BLOCKED
+
+Priority: P1
+
+Status: source-patched; live co-op verification pending
+
+Area: A11-A20 Ascension selection / multiplayer lobby
+
+Player report: A11-A20 cannot be used in multiplayer, but co-op should eventually support the same expanded Ascension range instead of being single-player only.
+
+Desired behavior:
+
+- A11-A20 selection is available in multiplayer by default for this private-beta multiplayer test candidate.
+- `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection for comparison.
+- `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection.
+- `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
+- Multiplayer selection must not patch or corrupt vanilla A1-A10 progress.
+- Earlier Ascension effects still inherit normally at higher levels.
+- Per-player systems such as Rootblight and Blight Sprout remain independent and do not desync.
+- A21-A30 remains out of scope.
+
+Implementation notes:
+
+- Local source inspection found that `StartRunLobby.UpdateMaxMultiplayerAscension()` computes the multiplayer cap from each `LobbyPlayer.maxMultiplayerAscensionUnlocked`, while `UpdatePreferredAscension()` writes host selections to `PreferredMultiplayerAscension`.
+- Current source patch expands host multiplayer lobbies by default unless `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` or `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` is set. It temporarily raises in-memory lobby unlock caps only during max recomputation, restores them in a finalizer, and skips A11-A20 preferred-progress writes.
+- Host-multiplayer A11-A20 selection is independently disableable with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`.
+- A11-A20 gameplay, per-player Rootblight/Blight Sprout ownership, and desync behavior still require live co-op verification.
+- A20 Dual King Brands gameplay is still single-player gated through `IsDualKingBrandsSinglePlayerEnabled(...)`; the host multiplayer selector/start path now logs a development-testing downgrade warning, but live co-op verification is still pending.
+
+Manual retest:
+
+- Host a multiplayer lobby with BaseLib and Spire Plus / `EZMicroBalance` enabled.
+- Confirm A11-A20 selection is available by default with no Ascension env var.
+- Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` and confirm A1-A10 behavior is restored for comparison.
+- Clear the disable variable and confirm the lobby can select A11-A20 again.
+- Start a co-op run at A11/A12/A14/A16/A20 and confirm all players load without desync.
+- Confirm Rootblight/Blight Sprout ownership remains per-player in co-op.
+- Confirm A20 multiplayer selection does not imply that Dual King Brands gameplay is live co-op verified.
+
+
+### ISSUE-2026-05-07-A20-MULTIPLAYER-SELECTION-WARNING-MISSING
+
+Priority: P2
+
+Status: source-patched with log warning; live co-op verification pending
+
+Area: A20 Dual King Brands / multiplayer selector messaging
+
+Audit finding: host multiplayer can source-select A20 when the public development gate is enabled, but A20 Dual King Brands gameplay remains single-player gated by `AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(...)`.
+
+Desired behavior:
+
+- Multiplayer A20 selection must not make testers think A20 Dual King Brands is fully supported in co-op.
+- Add a clear runtime log, UI warning, or selector-side message before multiplayer A20 testing.
+- Keep A20 gameplay conservative until live co-op boss-path verification proves host/client behavior is safe.
+
+Planning notes:
+
+- Do not remove the current A20 single-player gameplay gate without local source evidence and live co-op test coverage.
+- Keep selection support, gameplay activation, progress writes, and live co-op verification documented as separate surfaces.
+- `AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(...)` now logs on host multiplayer A20 selection and host multiplayer A20 run start, including the host-only lobby case before a client joins.
+- Warning text says multiplayer A20 selection is for development testing, Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled.
+
+Manual retest:
+
+- In a host multiplayer lobby with no Ascension env vars, select A20 before any client joins.
+- Confirm the tester-visible warning or log appears on host-only selection.
+- Let a client join without changing Ascension, then start the A20 run.
+- Confirm the tester-visible warning or log appears on selection and run start.
+- Confirm the run does not silently apply single-player-only Dual King Brands behavior to co-op.
+
+
+### ISSUE-2026-05-07-LIVE-COOP-A11-A20-MATRIX-PENDING
+
+Priority: P1
+
+Status: source-patched; live co-op matrix pending
+
+Area: A11-A20 multiplayer runtime verification
+
+Audit finding: source guards prove selector and ownership shapes, but no live co-op matrix has verified lobby join, client view, run start, save/load, per-player state, or desync behavior.
+
+Minimum matrix:
+
+- Gate default-on: with no Ascension env vars, host can select A11-A20 and client sees the selected value.
+- Gate off: `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection.
+- Disable flag: `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` restores vanilla multiplayer cap.
+- A11: co-op run starts with widened/longer map and no A11 marker.
+- A12: Firemarked Elite route markers remain visible and host/client agree.
+- A14/A15/A18: Rootblight and Blight Sprout state remains player-owned.
+- A16: Banner Room markers and combat rules remain visible and synchronized.
+- A20: selection limitation or warning is visible; Dual King Brands remains treated as not live co-op verified.
+- Logs: no ownership warnings, checksum divergence, or multiplayer desync lines in `godot.log`.
+
+### ISSUE-2026-05-10-RUNTIME-TEST-ENV-POLLUTED-AND-EZMB-PACKAGE-MISMATCH
+
+Priority: P0/P1
+
+Status: source-complete; release evidence blocked by runtime pollution and package-hash ambiguity.
+
+Area: runtime test hygiene / installed-package validation
+
+Findings from uploaded player log `godot2026-05-10T06.07.51.log`:
+
+- Runtime version is `v0.105.1` (not the `v0.105.0` baseline used by some earlier notes).
+- Loaded mods is `Loaded 18 mods (19 total)` rather than a clean BaseLib + EZMicroBalance check.
+- Non-EZMB mods report manifest/API/runtime issues before gameplay:
+  - `RouteSuggestConfig.json` has no `mod id` entry.
+  - `mods\sts2-heybox-support\mod_mainfest.json` has no `mod id` entry.
+  - Heybox reports `ModManager.GetModNameList Method NotFound`.
+  - SpeedX reports undefined target patch on `NRewardsScreen`.
+  - Act4Heart reports `ConfigMessage.get_ShouldBuffer` `TypeLoadException` (`No implementation found`).
+- BaseLib `v3.1.2` and EZ Micro Balance initialize, but BaseLib reports `Found 12 SavedSpireFields`.
+- Current package expectation is 16 `SavedSpireFields` after the Urda/Morvi deck mirror state fields. The older A1.05.08 expectation was 13 fields. This uploaded log therefore cannot prove package/runtime consistency.
+- Gameplay conclusions from this file are invalid until the environment is cleaned and installed artifact hash is verified.
+
+Manual retest gates:
+
+1. Move all mods out of `<GameRoot>\mods` except:
+   - `BaseLib`
+   - `EZMicroBalance`
+2. Launch normal Steam-client test run and verify log contains:
+   - `Loaded 2 mods` (or `Loaded 2 mods (2 total)` depending on launch order), and
+   - `Found 20 SavedSpireFields` for the current post-Morvi source/package.
+3. Re-run install hash check using `scripts/check-installed-ezmb-package.ps1`.
+4. Do not use the polluted `godot2026-05-10T06.07.51.log` as release evidence again.
+5. If a clean hash-matching log reports anything other than the current source/package field count, investigate `AncientSavedStateFields` registration and BaseLib SavedSpireField discovery mismatch before any gameplay assertion.
+
+### ISSUE-2026-05-10-A12-A16-MARKER-VARIETY-DETERMINISTIC-MIGHT-VANGUARD
+
+Priority: P1
+
+Status: source-patched; live multi-seed and save/load verification pending.
+
+Area: A12 Firemarked Elite / A16 Banner Room map metadata variety
+
+Problem:
+
+- Previous deterministic assignment made the first Act 1 Firemark always `Might` and the first Act 1 Banner always `Vanguard`.
+- Player repeatedly saw Strength effects and could not meaningfully experience `Giant`, `ForgeArmor`, `ConstantHeal`, `ShieldFormation`, or `Bounty`.
+- This made the feature look like it only had one modifier.
+
+Current source fix:
+
+- Firemark and Banner node selection now use a stable hash over run seed, marker family, act index, and map coord.
+- Firemark and Banner kind assignment now uses an act-level shuffled order, so kinds avoid duplicates within an act until all kinds are used.
+- Assignment logs always include `actIndex`, coord, marker family, and kind.
+- `EZMB_ASCENSION_DIAGNOSTICS=1` logs compact per-map Firemark/Banner/Boss Seal distribution summaries.
+
+Manual verification:
+
+- Start multiple fresh runs/seeds at A12/A16 and confirm Act 1 Firemark is not always Might and Act 1 Banner is not always Vanguard.
+- Save and Continue from the same map and confirm assigned kinds do not change.
+- Confirm entering a marked node applies the hover-described effect.
+
+### ISSUE-2026-05-10-A12-A16-A19-MAP-PREVIEW-MISSING
+
+Priority: P1
+
+Status: source-patched; live hover rendering verification pending.
+
+Area: A12 Firemarked Elite / A16 Banner Room / A19-A20 Boss Seal map preview
+
+Problem:
+
+- Firemarked Elite and Banner markers existed, but players could not easily tell what exact modifier was on a node.
+- Boss Royal Seal / Brand strengthening was not clearly previewed before entering boss combat.
+
+Current source fix:
+
+- Firemarked Elite hover now names the exact Firemark kind and summary.
+- Banner Room hover keeps exact Banner kind names and player-facing summaries.
+- Boss node hover shows Royal Seal or King Brand title plus the matching seal/brand summary.
+- Aeonglass hover text states the +5 Strength seal before combat.
+- English and Simplified Chinese localization keys were added for Firemark names/summaries and the player guide line.
+
+Manual verification:
+
+- Hover Firemarked Elite, Banner Room, Boss Royal Seal, and Boss Brand nodes in English and Simplified Chinese.
+- Confirm text names the exact modifier and does not show raw localization keys or raw rich-text tags.
+- Confirm unmarked normal combat does not receive Banner effects.
+
+### ISSUE-2026-05-10-A13-FISSION-VISIBILITY-SAMPLING
+
+Priority: P2
+
+Status: diagnostics source-patched; live sampling pending.
+
+Area: A13 Fission reward visibility
+
+Problem:
+
+- Player reports Fission is hard to see.
+- Source chance remains probabilistic and filtered by eligibility, so a drought can be caused by low eligible candidate count rather than only probability.
+
+Current source fix:
+
+- Fission probabilities are unchanged.
+- With `EZMB_ASCENSION_DIAGNOSTICS=1`, reward rolls now log `sourceLabel`, `chancePercent`, eligible candidate count, roll value, applied yes/no, and applied card id when present.
+
+Manual verification:
+
+- Sample 20 normal combat reward screens, 10 Banner Room reward screens, 10 Firemarked Elite reward screens, and boss reward screens.
+- Record eligible candidate count and applied count per source type before changing probabilities.
+- Consider a future pity counter only if clean sampling proves long droughts despite eligible candidates.
+
+### ISSUE-2026-05-11-MULTIPLAYER-MAC-VERSION-MISMATCH-MODELDB-HASH
+
+Priority: P1
+
+Status: investigation documented; live host/Mac evidence pending.
+
+Area: cross-platform multiplayer join / misleading version-mismatch popup
+
+Player report:
+
+- Windows-to-Windows multiplayer appears to work.
+- macOS client cannot join and shows `你试图加入的游戏与您的杀戮尖塔2的版本不同。`
+- Tester believes both machines are on the same visible Slay the Spire 2 version.
+
+Source finding:
+
+- The visible popup corresponds to `NETWORK_ERROR.VERSION_MISMATCH`.
+- `JoinFlow.Begin(...)` throws this same failure both when the handshake version string differs and when the version string matches but `ModelIdSerializationCache.Hash` differs.
+- `ModelIdSerializationCache.Hash` is derived from base-game and loaded-mod `AbstractModel` IDs plus epoch IDs, so it can differ if the game build, loaded gameplay mods, BaseLib/EZMB binaries, or mod model graph differ.
+
+Current local evidence:
+
+- Latest local Windows `godot.log` shows a failed join with matching handshake version `v0.105.1`.
+- The actual failure was `ModelDb hash mismatch. Host: 3593977223 Ours: 150743674`.
+- That local run loaded `15 mods (21 total)`, which invalidates it as BaseLib+EZMB-only multiplayer evidence and strongly suggests a loaded-model mismatch surface.
+
+Manual evidence required:
+
+- Capture the host and macOS client `godot.log` from the same failed join attempt.
+- Record `release_info.json` on both machines: `version`, `commit`, `branch`, and `main_assembly_hash`.
+- Record both `Loaded X mods (Y total)` lines.
+- Record both `ModelIdSerializationCache initialized... Hash: ...` lines.
+- Record client-side `Got initial game info message. Version: ... Hash: ...` plus the exact subsequent failure line.
+- Repeat with only `BaseLib` and `EZMicroBalance` installed/enabled on both machines.
+- Verify BaseLib version/hash and EZMB DLL/PCK/JSON hashes match on both machines before concluding macOS runtime incompatibility.
+
+## Resolved / Player-Verified
+
+### Closed in source-repaired pass (archived)
+
+See [archive/issues-archive.md](archive/issues-archive.md) for closed issues.
+
+These issues were archived for traceability after implementation and documentation updates.
+
+

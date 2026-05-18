@@ -31,6 +31,8 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
 
     public override string? CustomScenePath => VakuuFightAssetPaths.EncounterScene;
 
+    public override bool HasScene => true;
+
     public override bool ShouldGiveRewards => false;
 
     public override IReadOnlyList<string> Slots => [VakuuSlot];

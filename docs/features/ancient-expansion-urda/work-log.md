@@ -10,11 +10,11 @@ Scope:
 - Promoted Urda from four active blessing ids to ten default-on source-backed ids: `urda_seedbed`, `urda_humus_pact`, `urda_molting`, `urda_moss_map`, `urda_trial_branch`, `urda_shallow_root_relic`, `urda_rooted_route`, `urda_after_rain`, `urda_root_sight`, and `urda_seed_bank`.
 - Kept `EZMB_DISABLE_URDA=1`, `EZMB_FORCE_ANCIENT=URDA`, and `EZMB_FORCE_URDA_BLESSING` behavior available for focused testing.
 - Preserved existing Seedbed, Humus Pact, Molting, and Moss Map source behavior.
-- Added Trial Branch with a 4-card common/uncommon source-safe grid, upgraded Trial Plant marker, three combat tracking window, two-success keep path, and removal path.
+- Added Trial Branch with a 4-card rare source-safe grid, visible Trial Branch enchantment/marker, three-combat tracking window, three-success keep path, and removal path after any missed combat.
 - Added Shallow-Root Relic with two common relic choices, 75 Gold, Act 1 elite rooting for 35 Gold, and a documented Act 2 removal/refund fallback instead of the unproven `lose 6 Max HP` settlement UI.
 - Added Rooted Route with automatic reachable normal-combat marking in the first seven floors, quest markers only, no map graph mutation, three card rewards plus potion-if-slot on success, and an 8 HP / 25 Gold wither fallback.
 - Added After the Rain through the source-backed death-prevention hooks, with 1 HP, 15 Block, draw 1, two Wounds, -3 Max HP, Act 2 unused compensation, and two elite-gold bonuses.
-- Added Root-Sight with 5 Root Eyes and automatic reachable non-Boss map marking; no map button is claimed in this source slice.
+- Root-Sight now uses the Root Eyes relic as its map control. Clicking it opens map selection, highlights future reachable Monster, Unknown, or Elite rooms, and stores the chosen room's concrete enemy group or event.
 - Added Seed Bank with a `Store Seed` reward alternative, max three stored Seeds, and pre-Boss settlement for up to two Seeds.
 - Added English/zhs player text, option relics, temporary source-derived option icons, export entries, and guard tests. `OPENAI_API_KEY` was not set, so no bespoke Image API icons were generated.
 

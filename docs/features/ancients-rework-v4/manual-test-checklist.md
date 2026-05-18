@@ -90,10 +90,10 @@ Record for each item:
 
 ### Meat Cleaver
 
-- Expected: Cook option removes 2 removable cards and costs 5 HP.
+- Expected: Cleaver / 切肉 option removes 2 removable cards and costs 5 HP.
 - Verify option disabled when too few removable cards.
 - Verify option disabled when HP is not greater than 5.
-- Verify no other Cook source is affected unexpectedly.
+- Verify no other rest-site source is affected unexpectedly.
 
 ### Debt / Seal of Gold
 
@@ -173,8 +173,8 @@ Verify pickup behavior and player-facing text for:
 - Simplified Chinese relic text matches behavior.
 - English card text matches behavior.
 - Simplified Chinese card text matches behavior.
-- Rest-site Cook text appears correctly in English.
-- Rest-site Cook text appears correctly in Simplified Chinese.
+- Rest-site Cleaver text appears correctly in English.
+- Rest-site 切肉 text appears correctly in Simplified Chinese.
 - In Simplified Chinese, Beautiful Bracelet shows `迅速2` and not raw `Swift 2`.
 - In Simplified Chinese, Jewelry Box shows `神化` and not raw `Apotheosis`.
 - In Simplified Chinese, Pael's Horn shows `放松` / `放松+` and not raw `Relax`.

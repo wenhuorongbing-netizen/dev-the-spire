@@ -2,7 +2,7 @@
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
-Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; current normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
+Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; historical 22-field normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. current source defines 25 SavedSpireFields and needs a fresh loader smoke. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
 Last updated: 2026-05-14
 
 ## Research-Mode Baseline
@@ -13,7 +13,7 @@ Last updated: 2026-05-14
 - [x] Run `git status --short --branch`.
 - [x] Check whether `SlayTheSpire2.exe` is running before build.
 - [x] Run `dotnet build EZMicroBalance.sln`.
-- [x] Historical bounded `--force-steam off` smoke verified `EZMicroBalance` loaded after Ascension implementation; current controlled smoke and normal Steam-client startup/log verification passed after the Spire Plus display-name package refresh.
+- [x] Historical bounded `--force-steam off` smoke verified `EZMicroBalance` loaded after Ascension implementation; historical controlled smoke and normal Steam-client startup/log verification passed for earlier Spire Plus package states.
 - [x] Inspect `godot.log` after Ascension implementation for startup errors.
 
 Baseline result on 2026-05-06:
@@ -23,8 +23,8 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Current normal Steam-client helper startup/log verification under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, found 0 release-blocking signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes.
-- Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the current-package 22-field smoke above.
+- Historical normal Steam-client helper startup/log verification under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, found 0 release-blocking signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes. current source defines 25 SavedSpireFields, so fresh loader parity remains pending.
+- Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the historical 22-field smoke plus the current 25-field source state.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded Boss Royal Seals, and A20 vanilla double-boss map path/Brand/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. The current source also patches `ActModel.CreateMap` as an earlier geometry boundary before the run hook. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
@@ -104,7 +104,7 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
 - [ ] Rootblight III has one visible Exhaust keyword, no duplicate `Play: Exhaust` body text, and Rootblight I / Rootblight II hover previews.
 - [ ] Rootblight card descriptions render `[gold]` card-name markup correctly and do not show raw tags.
 - [ ] Rootblight localization displays in Simplified Chinese when the game language is Simplified Chinese.
-- [ ] Simplified Chinese Rootblight descriptions have one visible 消�?keyword, no duplicate `打出：消耗` body text, and render `[gold]根蚀 I/II/III[/gold]` without raw tags.
+- [ ] Simplified Chinese Rootblight descriptions have one visible `消耗` keyword, no duplicate `打出：消耗` body text, and render `[gold]根蚀 I/II/III[/gold]` without raw tags.
 - [ ] The player sees the localized `[gold]Rootblight[/gold] added.` / `[gold]根蚀[/gold]已加入。` notice when Rootblight is added to the master deck.
 - [ ] Save and load the run before combat; Rootblight does not duplicate.
 - [ ] Save/load or re-enter Act 1 after Rootblight has been cleared; Rootblight is not re-added.
@@ -118,6 +118,7 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
 - [ ] A Rootblight III lineage that already split once keeps its hidden split marker through Rootblight III -> II -> I downgrades, so it cannot split again after growing back to III.
 - [ ] Rootblight IV never appears.
 - [ ] Each Rootblight lineage can split at most once.
+- [ ] If the four-card cap blocks a Rootblight III split, the failed add does not consume that card's split marker; it may split once after there is room.
 - [ ] The master deck never has more than 4 Rootblight cards; further additions show `Root system full: max [blue]4[/blue] [gold]Rootblights[/gold].` / `根系已满：最多[blue]4[/blue]张[gold]根蚀[/gold]。`.
 - [ ] Rootblight cards added during combat-end resolution do not grow again until the next combat.
 - [ ] If Rootblight is discarded normally, Rootblight level and the master-deck card remain unchanged.
@@ -166,7 +167,7 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=15` after A14 Rootblight behavior is ve
 - [ ] Blight Sprout does not appear in opening hand unless drawn naturally.
 - [ ] Boss Blight Sprouts sprout on rounds 3 and 4; each moves to the top of the draw pile if it has not entered hand.
 - [ ] If Blight Sprout enters hand and is not played before combat end, one Rootblight I is added to the master deck, capped by the 4-card Rootblight limit.
-- [ ] Blight Sprout has one visible Exhaust keyword, no duplicate `Play: Exhaust` / `打出：消耗` body text, gold-highlighted Draw Pile / 抽牌�?text, and a Rootblight I hover preview.
+- [ ] Blight Sprout has one visible Exhaust keyword, no duplicate `Play: Exhaust` / `打出：消耗` body text, gold-highlighted Draw Pile / `抽牌堆` text, and a Rootblight I hover preview.
 - [ ] Seen-but-unplayed Blight Sprout shows the localized rich-text Rootblight added notice when it adds Rootblight I after combat.
 - [ ] If Blight Sprout is played before combat end, Rootblight does not increase.
 - [ ] If Blight Sprout enters hand and is discarded or exhausted by a non-play effect, it still adds Rootblight I after combat.
@@ -251,11 +252,11 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 - [ ] Firemarked elite is not forced into the only route.
 - [ ] At least one route to the boss remains available that avoids all selected Firemarked Elite candidates.
 - [ ] Act 1 firemarked elite appears only after the first rest-site row.
-- [ ] Combat shows one Firemark Host with the active firemark type as a visible enemy power.
-- [ ] Might Mark grants only the host +2/+3/+4 Strength by act.
-- [ ] Giant Mark increases only the host's max/current HP by 30%.
-- [ ] Forge Armor Mark gives only the host 8/13/18 Block at the end of its turn by act.
-- [ ] Constant Heal Mark heals only the host for 6/10/14 HP at the end of its turn by act.
+- [ ] Combat shows one Firemarked Elite with the active firemark type as a visible enemy power.
+- [ ] Might Mark grants only the marked enemy +1/+2/+4 Strength by act; unblocked attack damage builds Heat, and 2 Heat makes the next first attack deal +1/+2/+4 damage.
+- [ ] Giant Mark increases only the marked enemy's max/current HP by +20%/+30%/+45% by act; dropping below half HP exposes Molten Core, which breaks after 20%/25%/30% original Max HP damage by act and removes 10% Max HP.
+- [ ] Forge Armor Mark gives only the marked enemy 5/10/20 Molten Armor after each enemy turn by act; fully breaking that armor makes the next armor gain skip, up to 2 times per combat.
+- [ ] Constant Heal Mark heals only the marked enemy for 4/8/16 HP at enemy turn end by act; dealing 12/24/48 damage to it that turn prevents that heal.
 - [ ] Firemarked Elite card rewards show one additional card option.
 - [ ] Defeating firemarked elite grants one visible Forge Token status relic with counter 1.
 - [ ] Forge Token hover text explains Rest, Smith, fallback heal, max-one cap, and random upgrade targeting, without claiming special-action payout.
@@ -297,9 +298,11 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 - [ ] Banner room hover text names the exact Banner kind and rule before route commitment.
 - [ ] Banner Room hover renders in English and Simplified Chinese without raw localization keys or raw rich-text tags.
 - [ ] Banner rooms do not stack with firemarked elites.
-- [ ] Vanguard Banner grants enemies 2 temporary Strength and removes it at the start of round 3.
-- [ ] Shield Formation Banner marks a non-minion bannerbearer and gives other enemies Block while the bannerbearer lives.
-- [ ] Bounty Banner marks one target, grants 15 Gold as an extra room-end reward if killed before round 3 ends, and grants the missed-deadline Block/Artifact if not.
+- [ ] Vanguard Banner grants enemies +1/+2/+4 temporary Strength by act and removes it at the start of round 3.
+- [ ] Shieldwall Banner only has an effect in multi-enemy fights: one bannerbearer protects the other enemies for 3/7/14 Block each enemy turn, then gives them 5/10/20 Block when it dies. If the combat has one primary enemy, it converts to Blood Prize instead of doing nothing.
+- [ ] Blood Prize Banner marks one target, grants 15/30/55 Gold by act if killed before round 3 ends, and gives lasting retaliation if missed: +1/+2/+4 Strength plus 1/1/2 Artifact, or half Strength rounded up to all primary enemies when the target is a support enemy.
+- [ ] Pressing Line Banner starts counting from each player's 4th card each turn, caps at 3 layers per player, resolves only the highest 2 players in co-op, and gives enemies 4/8/16 or 6/12/24 Block plus +1/+2/+4 next-attack damage at 3 layers.
+- [ ] Last Stand Banner only has an effect in multi-enemy fights: the first enemy death gives remaining enemies 6/12/24 Block and +1/+2/+4 temporary Strength next enemy turn. If the combat has one primary enemy, it converts to Blood Prize instead of doing nothing.
 - [ ] Banners do not modify monster action tables.
 - [ ] Banner modifiers apply only to the intended combat.
 - [ ] Banner modifiers do not persist into later combats.
@@ -368,6 +371,6 @@ Planning checks for the next release-engineering pass; do not mark these complet
 - [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
 - [ ] Publish the current package before runtime smoke.
 - [ ] Launch controlled `--force-steam off` with only BaseLib and Spire Plus enabled.
-- [x] Inspect `godot.log` and record the current SavedSpireField count; current source defines 22 SavedSpireFields, and `.tools\runtime-evidence\current-package-smoke-20260514-015901\godot.log` reports `Found 22 SavedSpireFields`. Rerun this check after future SavedSpireField, source, package, or BaseLib changes.
+- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source defines 25 SavedSpireFields after Seedbed root-suppression markers. The previous smoke log still reports `Found 22 SavedSpireFields`, so a fresh live loader rerun is required before claiming loader parity for this source state.
 - [ ] Confirm the controlled smoke has no Spire Plus / `EZMicroBalance` startup exception or error.
 - [ ] Keep normal Steam-client Mod Settings verification separate from controlled smoke.

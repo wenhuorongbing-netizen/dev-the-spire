@@ -1,98 +1,142 @@
-# Source-Only Review: 2026-05-17 Final Test-Ready Loop
+# Current Source Review
 
-Scope: current final worktree state in `D:\Game\FOTN\dev-the-spire`.
+Date: 2026-05-18
 
-Mode: source/package review only. The game was not launched.
+Scope: current source-only review notes for taking `Spire Plus` toward a test-ready candidate. The game was not opened for the latest source/refactor passes.
 
-## Conclusion
+Archive pointer: the full pre-slim review log is preserved at `docs/archive/feature-audits/review-pre-slim-20260518.md`. Keep this active file compact; archive detailed historical pass logs instead of appending another long journal.
 
-No new source/package blocker was found.
+## Current Conclusion
 
-Nothing from this review needs to be moved into `docs/issues.md`. The remaining open work is correctly framed as manual verification: clicked Ancient UI, live gameplay, save/load, Vakuu victory/failure/death paths, co-op, and broader feature matrix proof.
+No current static P0/P1 source blocker is known from the latest no-game review passes. This does not prove release readiness.
 
-## Reviewed User-Feedback Slice
+The remaining blocking evidence is live-only:
 
-### Urda Root Eyes
+- Vakuu victory return/no-black-screen, failure/death path, active-fight save/load, and co-op.
+- Urda Root Eyes hover/click/entry/save-load, Seed Bank click extraction, and clicked Ancient UI.
+- Morvi and Lotha live gameplay, card-play freeze reports, save/load, and co-op.
+- A11 route traversal, A12/A16/A19/A20 combat behavior, Rootblight combat-end behavior, and fresh current-package loader proof.
 
-Source review supports the requested redesign:
+## Fixed Static Findings
 
-- Clicking the Root Eyes relic starts map selection instead of auto-marking rooms.
-- Map clicks are intercepted only while Root Eyes selection is active.
-- Valid targets are current reachable Monster, Unknown, and Elite nodes.
-- Campfires, shops, treasure, and bosses are excluded.
-- The chosen node stores a concrete preview, and room-entry patches consume that stored result.
+These source issues were already repaired and remain part of the current test-ready baseline:
 
-Manual retest still needs to confirm hover text, click targeting, and the actual room entered.
+- Shieldwall Banner now grants protection on enemy-turn start instead of player-turn start.
+- Blood Prize now applies the missed-target penalty when round 3 ends, with player-turn-start catch-up only as a guard.
+- Ancient and Ascension environment truthy checks trim whitespace consistently.
+- Moss Map duplicate relic-description keys now share the exact room-reward mapping.
+- Current docs mark 22-field loader evidence as historical and keep current 25-field loader parity pending.
+- Root Eyes preview generation no longer consumes live Unknown-room rolls, encounter pulls, or event pulls during preview creation.
+- Lotha no longer has a misleading `LothaRunHook.cs` service file; hooks live in `LothaHooks.cs`, card play rules live in `LothaBlessingService.CardRules.cs`, cost rules live in `LothaBlessingService.CostRules.cs`, transient combat state lives in `LothaBlessingService.CombatState.cs`, lifecycle flow lives in `LothaBlessingService.CombatLifecycle.cs`, and reset helpers live in `LothaBlessingService.CombatStateReset.cs`.
+- A13 Fission reward mutation now lives in `AscensionRewardService.Fission.cs`; it applies to the current displayed reward card, so upgrade-only relic changes do not suppress Fission, while already-enchanted cards remain ineligible.
+- Banner temporary Strength removal now subtracts the recorded temporary amount directly, so Artifact cannot turn Vanguard or Last Stand into permanent Strength.
+- Morvi Debt and Red Ink Overdraft counters now use visible Buff counters, so Artifact cannot hide or consume the bookkeeping powers.
+- Morvi Overdue Library now records the exact Discount Page card that armed the next-card discount, instead of searching combat state by card id.
+- Seed Bank now preserves selected seed cards if adding them to the deck fails, and refreshes the relic after stale stored cards settle.
+- Urda, Morvi, and Lotha Ancient option rows now build from `EventOption.FromRelic`, so the visible option icon also carries the normal relic hover text plus any extra card/power tips.
+- Root Eyes Unknown previews are filtered again after Core hooks run, and stale saved previews now clear their map marker and refund one eye instead of showing misleading hover text.
+- Morvi Forbidden Loan is hidden when there is no eligible card, and a failed selection refreshes the Ancient choices instead of leaving an empty event state.
+- Lotha Mirror Rebuttal is hidden when the deck has no eligible card to mark.
+- Vakuu's post-fight Lotha reward pool now uses the same Mirror Rebuttal eligibility rule as the normal Lotha event, so it cannot offer an unmarkable Mirror Rebuttal reward.
+- Urda Seedbed hover now points to Seedbed, and Lotha Single Sentence has an explicit power icon path.
 
-### Urda Seed Bank
+## Recent Refactor Slices
 
-Source review supports the requested interactive relic behavior:
+Recent behavior-preserving cleanup slices with green no-game validation:
 
-- Boss-entry settlement is no longer the active path.
-- The relic shows stored-card count and card hovers.
-- Clicking the relic opens extraction only when stored cards exist and the relic is not used up.
-- Extraction allows up to 2 cards, upgrades the first selected card, clears storage, and disables the relic.
+| Slice | Result | Live proof |
+| --- | --- | --- |
+| Banner Temporary Strength Cleanup | Added `AscensionPowerAmountHelper.RemoveTemporaryStrength` and routed Vanguard/Last Stand removal through it to avoid Artifact blocking temporary Strength loss. | Pass: focused Ascension/release guards, full tests, format, diff-check, publish, package, artifact tests, and installed hash check passed. Live Banner timing proof remains pending. |
+| Morvi Debt Counter Artifact Safety | `MorviDebtPower` and `MorviOverdraftPower` now use Buff counter powers while payment math still routes through the saved Morvi state. | Pass: focused Morvi/release guards, full tests, format, diff-check, publish, package, artifact tests, and installed hash check passed. Live Morvi gameplay/save-load/co-op proof remains pending. |
+| Morvi Overdue Library Discount Source | The Discount Page now passes its own card instance into the service, so the next-card cost-0 effect skips that exact source card instead of searching by `MorviArchiveDiscountPage` id. | Pass: build, focused Morvi/release guards, full tests, format, diff-check, publish, package, and artifact tests passed. Live Morvi gameplay proof remains pending. |
+| Morvi Constant Ownership Split | Moved Forbidden Loan, Red Ink Overdraft, Debt Settlement, and Morvi progress constants out of the main hook and into the partial files that own those rules. Added a guard so they do not drift back into `MorviRunHook.cs`. | Pass: build, focused Morvi guards, full tests, format, diff-check, publish, package, and artifact tests passed. Live Morvi gameplay proof remains pending. |
+| Seed Bank Extraction Failure Guard | Seed Bank relic extraction now keeps failed selected seeds instead of clearing the relic when a deck-add command fails; stale stored IDs also refresh the relic after settlement. | Pass: focused Urda/player-facing/Vakuu/release guards, full tests, format, diff-check, publish, package, artifact tests, and installed hash check passed. Live Seed Bank click/save-load/Boss transition proof remains pending. |
+| Seed Bank Service Split | Split Seed Bank reward storage, relic-click extraction, and stored-card status/display helpers into separate partial service files. Save fields and player-facing behavior stay unchanged. | Pass: build and focused Urda/high-risk/player-facing/source-manifest guards passed. Live Seed Bank click/save-load/Boss transition proof remains pending. |
+| Root Eyes Map UI Split | Split Root Eyes map preview icon routing and selection click/close patches out of `UrdaMapUiPatches.cs`, leaving the original file focused on point ready/hover/refresh hooks. Player behavior and save fields are unchanged. | Pass: build, focused Urda/player-facing/source-manifest guards, full tests, format, and diff-check passed. Live Root Eyes map click/hover/save-load proof remains pending. |
+| Root Eyes Selection Split | Split Root Eyes target legality and preview-marker restoration/stale-preview cleanup out of the selection flow file. The reachable-node rule, invalid-preview refund, and saved marker restoration stay guarded. | Pass: build, focused Root Eyes/high-risk/player-facing/source-manifest guards, full tests, format, and diff-check passed. Live Root Eyes map click/hover/save-load proof remains pending. |
+| Root Eyes Entry Routing Split | Split current-node preview lookup and one-shot preview commit/consume state out of `UrdaBlessingService.RootSightRouting.cs`; the routing file now keeps the two Core hook-facing entry methods. Unknown RNG safety, event validity, visited-event marking, and marker removal stay guarded. | Pass: build, focused Root Eyes/high-risk/source-manifest guards, full tests, format, and diff-check passed. Live Root Eyes entry/save-load proof remains pending. |
+| Root Eyes Unknown Odds Split | Split Unknown-room odds reads, base-odds reflection, and odds writes out of `UrdaBlessingService.RootSightUnknown.cs`; preview selection and entry-time Unknown commitment logic stay unchanged. | Pass: build, focused Root Eyes/high-risk/source-manifest guards, full tests, format, and diff-check passed. Live Unknown preview/entry proof remains pending. |
+| Root Eyes Reservation Split | Split reserved preview id scanning and encounter/event queue-head avoidance helpers out of `UrdaBlessingService.RootSightReservations.cs`; the entry guard still prevents non-preview rooms from consuming future marked results. | Pass: build, focused Root Eyes/high-risk/source-manifest guards, full tests, format, and diff-check passed. Live reserved-preview traversal proof remains pending. |
+| Morvi Shared Helper Split | Moved the shared visible-counter power updater and natural-card eligibility helper out of `MorviRunHook.cs` into `MorviBlessingService.Helpers.cs`, keeping hook lifecycle flow separate from reusable rule helpers. | Pass: build, focused Morvi/high-risk/source-manifest guards, full tests, format, and diff-check passed. Live Morvi gameplay proof remains pending. |
+| Morvi Card Play Flow Split | Moved Morvi combat card-cost and before/after-card-play flow out of `MorviRunHook.cs` into `MorviBlessingService.CardPlayFlow.cs`; the remaining file now focuses on combat lifecycle and turn reset flow. | Pass: build, focused Morvi/high-risk/release/source-manifest guards, full tests, format, and diff-check passed. Live Morvi gameplay proof remains pending. |
+| Morvi Card Model Split | Split generated Morvi card models into `MorviArchivePageCards.cs` and `MorviCombatTokenCards.cs`; class names, card ids, pools, portraits, keywords, and play effects are unchanged. | Pass: build, focused Morvi/release/source-manifest guards, full tests, format, and diff-check passed. Live Morvi gameplay proof remains pending. |
+| Seedbed Combat Split | Split Seedbed reward acquisition from combat slot persistence and pollution-card catching. The Max HP cost, completion gain, planted-card deck markers, and saved combat-slot restoration stay guarded. | Pass: build, focused Urda/high-risk/source-manifest guards, full tests, format, and diff-check passed. Live Seedbed combat/save-load proof remains pending. |
+| Urda State Schema Split | Split the Urda progress record/schema and parsing helpers out of `UrdaBlessingService.State.cs` while leaving `GetProgress`, `SetProgress`, and `SetState` field order unchanged. | Pass: build, focused state-mirror/Urda/source-manifest guards, full tests, format, and diff-check passed. Live Urda save-load proof remains pending. |
+| Ascension Side-Turn State Source | `RootBudCombatHook.BeforeSideTurnStart` now uses Core's hook-provided `ICombatState` directly and calls a matching `BeforeSideTurnStart` service entry point. | Pass: focused Ascension/release guards, full tests, format, diff-check, publish, package, artifact tests, and installed hash check passed. Live Banner/Boss Seal timing proof remains pending. |
+| RootBud Card/Event Split | Split Blight Sprout card pile/draw/play hooks and combat event forwarding out of the root hook identity file. Seeding, growth, Seedbed catch, side-turn state source, and player-death protection stay guarded. | Pass: build, focused RootBud/Ascension/source-manifest guards, compact-doc guards, full tests, format, and diff-check passed. |
+| Vakuu Patch/Service Split | Moved Vakuu fight asset paths, start-fight entry flow, and pre-finished parent restore helpers out of `VakuuFightPatch.cs`; the patch file now only forwards Harmony hooks to service methods. | Pass: build, focused Vakuu/UI/player-facing/source-manifest guards, full tests, format, and diff-check passed. Live no-black-screen/save-load proof remains pending. |
+| Vakuu No-Reward Resume Split | Moved the no-normal-reward terminal resume and missing-parent-stack map fallback to `VakuuFightService.NoRewardResume.cs`. | Pass: focused guards, full tests, format, diff-check, publish, package, and artifact tests passed. Live no-black-screen proof remains pending. |
+| Vakuu No-Reward Parent Stack Guard | The no-reward victory path now resumes any valid parent event room stack; it falls back to the map only when that stack is missing. | Pass: build, focused Vakuu/release guards, full tests, format, and diff-check passed. Live no-black-screen proof remains pending. |
+| Vakuu Victory Choice Split | Vakuu victory choices filter Lotha Mirror Rebuttal through `HasMirrorRebuttalCandidates`; source/Lotha reward choice lookup now lives in `VakuuFightVictoryChoices.cs`, while `VakuuFightVictory.cs` owns event-state resume and fallback option flow. | Pass: build, focused Vakuu/release guards, full tests, format, and diff-check passed. Live victory reward proof remains pending. |
+| Vakuu Combat Hook Ownership | Removed the duplicate run-hook combat listener; Vakuu Contract injection, Stolen Vault setup, and damage-threshold lock breaks now route through the combat hook only. | Pass: source inspected and current full artifact-test run passed. Live Vakuu fight proof remains pending. |
+| Meat Cleaver Cleaver Text Audit | Verified the rest-site option is player-facing `Cleaver` / `切肉`, while internal source still patches Core `CookRestSiteOption`; active manual docs now use the same player terms and the 2-card / 5-HP behavior stays guarded. | Pass: build, focused Ancient/release guards, full tests, format, and diff-check passed. No package refresh needed because no shipped resource changed. Live rest-site proof remains pending. |
+| Active Docs Mojibake Cleanup | Repaired residual mojibake in `docs/test-ready-development-goal.md` and this review file for Trial Branch, Firemarked Elite, Royal Seal, King Brand, Cleaver, and Root Eyes terminology. | Pass: active-doc scan, focused player-facing doc guards, and diff-check passed. |
+| Morvi Payment Split | Split Forbidden Loan, Red Ink Overdraft, Debt Settlement, and shared nonlethal payment damage into dedicated partial service files. Debt numbers and player text stay unchanged. | Pass: focused Morvi guards, full tests, format, diff-check, publish, package, and artifact tests passed. Live Morvi gameplay proof remains pending. |
+| Ancient Option Hover Guard | Urda/Morvi/Lotha option rows now start from a mutable relic and append extra hover tips, preserving both icon identity and effect text. | Pass: source guards and current artifact tests passed. Live hover proof remains pending. |
+| Root Eyes Stale Preview Guard | Unknown previews are post-hook filtered to Monster, Unknown, and Elite, and stale saved previews clear/refund instead of lingering on the map. | Pass: source guards and current artifact tests passed. Live map proof remains pending. |
+| Root Eyes Preview Consumption | Entering a previewed Monster, Unknown, or Elite room now consumes that preview record and removes the map marker without refunding an eye, so later rooms do not keep treating the already-used enemy/event as reserved future content. | Pass: focused Root Eyes/Urda/player-facing guards, full tests, format, diff-check, publish, package, and artifact tests passed. Live map-click/hover proof remains pending. |
+| Root Eyes Duplicate Reservation Avoidance | New Root Eyes previews now avoid already-reserved future encounter/event ids when alternatives exist, reducing duplicate preview collisions before entry-time queue commitment. | Pass: build, focused Root Eyes/player-facing/release guards, format, and diff-check passed. Live repeated-preview proof remains pending. |
+| Future Peek Isolation Guard | Confirmed the Future Peek research plan stays out of active Spire Plus runtime folders; repaired its independent zhs settings text and changed transform preview suppression so vanilla cycling only stops after a predicted card is ready. | Pass: Future Peek build/tests passed in this pass; Spire Plus validation still runs separately for active-package changes. |
+| Ancient Patch Ownership Splits | Split mixed Crossbow, Toasty Mittens, and Whispering Earring turn-start/autoplay patches into relic-owned files, then split Pael's Tooth Harmony entries from stored-card return/clear/display service logic. Pumpkin Candle remains a documented vanilla/no-override case. | Pass: build, focused Ancient/source-manifest/release guards, full tests, format, publish/package refresh, and artifact tests passed. Live turn-start/autoplay and Pael's Tooth proof remain pending. |
+| Test Goal Doc Slimming | Reduced `docs/test-ready-development-goal.md` to current boundaries, source-evidence rules, live-pending rows, and validation commands; added a guard that keeps the file compact and blocks old prompt-style sections from returning. | Pass: build, focused infrastructure/UI/art/release-doc guards, format, and diff-check passed. |
+| Multiplayer Diagnostics Split | Split A11-A20 multiplayer diagnostic patch classes into JoinFlow, lobby, run-state, and save/quit files while keeping the gated logging service unchanged. | Pass: build, focused Ascension/source-manifest/infrastructure/release-doc guards, full tests, format, and diff-check passed. |
+| Combat Modifier Entry Split | Split `AscensionCombatModifierService` public hook entry points into combat lifecycle and combat event files, leaving the shared metadata-refresh helper in the core file. | Pass: build, focused Ascension/source-manifest guards, full tests, format, and diff-check passed. |
+| Ascension Selection Run-Start Split | Moved BeginRun, multiplayer unlock override, preferred-ascension skip, and A20 multiplayer warning patch classes out of `AscensionSelectionPatches.cs` into `AscensionSelectionRunStartPatches.cs`; selection policy helpers stay in the original service file. | Pass: build, focused Ascension/release/source-manifest guards, full tests, format, and diff-check passed. Live A11-A20 start-flow proof remains pending. |
+| Banner Rule Split | Split Vanguard, Shieldwall, Blood Prize, and Last Stand rule bodies out of the A16 Banner dispatcher so each banner owns its own combat-start/turn/death/reward logic. | Pass: build, focused Ascension/source-manifest/release guards, full tests, format, and diff-check passed. |
+| Boss Seal Dispatcher Split | Split A19/A20 Boss Seal combat-start, turn-flow, and combat-event dispatch out of the shared Boss Seal helper file, leaving only active-metadata refresh in the core file. | Pass: build, focused Ascension/source-manifest/release guards, full tests, format, and diff-check passed. |
+| Boss Seal Effect Splits | Split Misaligned Shell, Marginal Note, Struggle Bait, Holy Daze, Martyr Oath, Ink Return, and Startled Shell into focused Boss Seal partial files. Hook call sites and behavior stay unchanged. | Pass: build, focused Ascension/release/source-manifest guards, full tests, format, and diff-check passed. Live A19/A20 boss proof remains pending. |
+| Ascension Map UI Patch Split | Split firemark/banner/deep-branch/Boss Seal hover and normal-node icon replacement out of the old mixed map UI patch file into focused patch files. | Pass: build, focused Ascension/release/source-manifest guards, full tests, format, and diff-check passed. Live map hover/icon proof remains pending. |
+| Firemark Rule Split | Split Might, Giant, Forge Armor, and Constant Heal firemark rule bodies out of the A12 Firemark dispatcher so each counterplay window owns its own source file. | Pass: build, focused Ascension/source-manifest/release guards, full tests, format, and diff-check passed. |
+| Map Marker Helper Split | Kept metadata and quest-marker creation in `AscensionMapService.MarkerHelpers.cs`; marker ordering/hash logic now lives in `AscensionMapService.MarkerOrdering.cs`, with selection constraints still in `MarkerSelection.cs`. | Pass: build, focused Ascension/source-manifest/A11 map guards, full tests, format, and diff-check passed for this behavior-preserving slice. |
+| Ascension Marker Ownership Split | Split A12 Firemarked Elite marking, A16 Banner Room marking, A19/A20 Boss Seal marking, and marker diagnostics into focused map service files. Selection rules, metadata fields, quest markers, and logs stay unchanged. | Pass: build, focused Ascension/release/source-manifest guards, full tests, format, and diff-check passed. Live map marker proof remains pending. |
+| A11 Serializable Graph/Mutation Split | Split A11 saved-map graph traversal/proof conversion from saved-map coordinate mutation and bridge-edge helpers. A11 geometry and Deep Branch route-safety call sites are unchanged. | Pass: build, focused A11/Ascension/source-manifest guards, full tests, format, and diff-check passed. Live A11 route-click/save-load proof remains pending. |
+| A11 Geometry Orchestration Split | Kept A11 map-shape orchestration in `AscensionMapService.A11Geometry.cs`, with route-row/width mutations in `A11WidthAndRows.cs` and inserted-column route choice in `A11InsertedColumnChoice.cs`. | Pass: build, focused A11/Ascension/release/source-manifest guards, full tests, format, and diff-check passed. Live A11 route-click/save-load proof remains pending. |
+| Deep Branch Plan Boundary Split | Split A17 Deep Branch planning, existing-branch matching, layout rules, and route-safety proof into separate partial files. Branch length, act gating, node order, and safe-route checks stay unchanged. | Pass: build, focused Ascension/release/source-manifest guards, full tests, format, and diff-check passed. Live A17 traversal/save-load proof remains pending. |
+| Morvi/Lotha Empty Choice Guard | Forbidden Loan and Mirror Rebuttal are filtered out when their required card pools are empty; Morvi also refreshes choices if selection fails. | Pass: source guards and current artifact tests passed. Live event proof remains pending. |
+| Pickup Reward Patch Split | Moved Black Star compensation, temporary Sozu/Ectoplasm gate overrides, Claws' direct `AfterObtained` override, and the remaining War Hammer/Sozu/Ectoplasm/Seal of Gold/Jeweled Mask pickup bodies out of `PickupRewardPatches.cs`; the patch file now dispatches to focused owner/service files. | Pass: focused Ancient pickup/source-manifest/release guards, full tests, format, diff-check, publish, package, and artifact tests passed before the latest service split; live pickup gameplay proof remains pending. |
+| Velvet Choker Tracker Split | Moved Velvet Choker's soft-limit counter, owner lookup, X-cost suppression, and display refresh reflection out of `VelvetChokerPatches.cs` into `VelvetChokerSoftLimitTracker.cs`; patch classes now only bridge Core hooks to the tracker. | Pass: build, focused Ancient behavior/high-risk/release/source-manifest guards, full tests, format, and diff-check passed. Live Velvet Choker gameplay proof remains pending. |
+| Root Eyes Reservation and Text | Added future result reservation for marked Root Eyes rooms and unified the player term to `Root Eyes` / `根眼`; strict pass confirmed non-preview rooms avoid consuming reserved future preview models while the current preview room can still commit its own model. | Pass: source guards, build, full artifact tests, format, and diff-check passed. Live hover/click/save-load proof remains pending. |
+| Prismatic Gem Patch Split | Moved off-color pool selection, all-slot replacement, failed-replacement cleanup, and upgrade preservation to `PrismaticGemReplacementPatches.cs`; banner reflection/fallback helpers now live in `PrismaticGemRewardScreenHintBanner.cs`. | Pass: build, focused Ancient/release/source-manifest guards, full tests, format, diff-check, publish, package, and artifact tests passed. Live reward-screen proof remains pending. |
+| Morvi Ancient Support Split | Moved Morvi Act 2 Ancient injection, asset-path constants, and option generation/selection out of `MorviAncient.cs`; the event file now focuses on Ancient identity, resources, and dialogue. | Pass: build, focused Morvi/UI/source-manifest guards, full tests, format, and diff-check passed. Live clicked Ancient UI and Morvi gameplay proof remain pending. |
+| Lotha Ancient Support Split | Moved Lotha reward selection, Act 3 Ancient injection, and asset-path constants out of `LothaAncient.cs`; the event file now focuses on dialogue, option generation, and option selection. | Pass: build, focused Lotha/UI/source-manifest guards, full tests, format, and diff-check passed. Live clicked Ancient UI and Lotha gameplay proof remain pending. |
+| Urda Ancient Support Split | Moved Urda Act 1 Ancient injection, asset-path constants, and reward-selection side effects out of `UrdaAncient.cs`; the event file now focuses on dialogue, option generation, and option selection. | Pass: build, focused Urda/UI/source-manifest guards, full tests, format, and diff-check passed. Live clicked Ancient UI and Urda gameplay proof remain pending. |
+| Lotha Card Rules Split | Removed `LothaRunHook.cs`; kept card play/shared eligibility in `LothaBlessingService.CardRules.cs`, moved cost entry points to `LothaBlessingService.CostRules.cs`, reset helpers to `LothaBlessingService.CombatStateReset.cs`, and Power replacement to `LothaBlessingService.PowerReplacement.cs`. | Pass: build, focused Lotha/source-manifest guards, full tests, format, diff-check, publish, package, and artifact tests passed. Live Lotha gameplay proof remains pending. |
+| Boss Seal Soul Tide Split | Moved Soul Fysh Intangible tracking, Beckon hand-pressure settlement, and pending Block application to `AscensionCombatModifierService.BossSeals.SoulTide.cs`; fixed Beckon counting to run before Core flushes hands, so ordinary non-retained Beckon cards can produce the intended next enemy-turn Block. | Pass: build, focused Ascension/release guards, full tests, format, diff-check, publish, package rebuild, and artifact tests passed. Live Soul Fysh reward/combat proof remains pending. |
+| Boss Seal Boiling Critical Split | Moved Waterfall Giant Steam tracking and explosion Block telegraph to `AscensionCombatModifierService.BossSeals.BoilingCritical.cs`; corrected the shared Power tooltip so A20 Brand's reduced warning Block is not described as equal Block. | Pass: build, focused Ascension/release guards, full tests, format, diff-check, publish, package rebuild, and artifact tests passed. Live Waterfall Giant proof remains pending. |
+| Boss Seal Chosen Decree Split | Moved Chosen Decree Bound-card marking, play tracking, obedience/miss settlement, and Royal Decree cleanup to `AscensionCombatModifierService.BossSeals.ChosenDecree.cs`; corrected the boss-seal summary so normal Chosen Decree promises Queen Strength-buff reduction, not player Block. | Pass: build, focused Ascension/release guards, full tests, format, diff-check, publish, package rebuild, and artifact tests passed. Live Queen boss proof remains pending. |
+| Ascension Reward Service Split | Kept reward hook entry points in `AscensionRewardService.cs`; moved A12/A19 card-option widening to `AscensionRewardService.CardOptions.cs`, A17/A20 room reward additions to `AscensionRewardService.RoomRewards.cs`, A13 Fission mutation to `AscensionRewardService.Fission.cs`, and visible Forge Token relic sync/helpers to `ForgeTokenService.VisibleRelic.cs`. | Pass: build, focused Ascension/release guards, full tests, format, diff-check, publish, package rebuild, artifact tests, and installed hash check passed. Live reward-screen/Forge Token/save-load proof remains pending. |
+| Rootblight Card Ownership Split | Moved Blight Sprout state, Rootblight shared behavior, and optional portrait lookup into `RootBudCard.cs`, `RootFamilyCard.cs`, and `RootPortraitPaths.cs`; `RootCards.cs` now only declares the three Rootblight card identities. Combat lifecycle guards still cover Seedbed skips, dead-player skips, and no diagnostics-only seeding. | Pass: build, focused Ascension/source-manifest guards, full tests, format, diff-check, publish/package refresh, and artifact tests passed. Live Rootblight/Blight Sprout proof remains pending. |
+| A17 Deep Branch Planning Split | Moved branch planning and route-safety helpers to `AscensionMapService.DeepBranches.Planning.cs`; strict pass confirmed single-player Act 2/3 gating, empty-column selection near the inserted lane, branch entry/boss reachability, safe parent-to-reconnect bypass, and start-to-boss route preservation that avoids branch nodes. | Pass: build, full artifact tests, format, and diff-check passed. Live A17 map traversal/save-load/co-op proof remains pending. |
+| A11 Geometry Diagnostics Split | Moved A11 target-shape diagnostics/proof helpers to `AscensionMapService.A11GeometryDiagnostics.cs`; strict pass confirmed diagnostics prove boss reachability, an optional inserted-column route choice, and a start-to-boss path that avoids the inserted column without mutating map state. | Pass: build, full artifact tests, format, and diff-check passed. Live current-build map UI/traversal proof remains pending. |
+| Root Sight Unknown Split | Moved Unknown-room preview odds and entry commit helpers to `UrdaBlessingService.RootSightUnknown.cs`; strict pass confirmed Root Eyes selection only targets Monster, Unknown, or Elite nodes, Unknown previews are constrained to Monster/Elite/Event, Shop/Treasure/Rest/Boss are blacklisted, preview RNG is forked, and entry commitment advances the live Unknown odds once before consuming the preview. | Pass: build, full artifact tests, format, and diff-check passed. Live map-click/hover/save-load proof remains pending. |
+| Root Sight Preview Split | Moved Root Eyes enemy-group preview/commit helpers and event preview/commit helpers out of `UrdaBlessingService.RootSightPreviewGeneration.cs`; the original file now keeps only preview assembly plus shared room-set/RNG helpers. | Pass: build, focused Root Eyes/source-manifest guards, full tests, format, and diff-check passed. Live map-click/hover/save-load proof remains pending. |
+| RootDeck Service Split | Moved Rootblight start/combat-end lifecycle, deck-removal reactions, and saved diagnostic state helpers out of `RootDeckService.cs`; the original file now carries only constants and root-family card discovery. | Pass: build, focused Rootblight/source-manifest guards, full tests, format, and diff-check passed. Live Rootblight combat-end/save-load proof remains pending. |
+| Release Coverage Ancient Split | Moved Morvi, Lotha, and gated Vakuu release-coverage guards to `AncientExpansionReleaseCoverageGuardTests.cs`; `ReleaseCoverageGuardTests.cs` now stays closer to shared release/source/doc coverage. | Pass: focused release-coverage guards, full tests, build, format, and diff-check passed. |
+| Active Source Manifest Split | Moved the active `EZMicroBalanceCode` source-file manifest guard to `ActiveSourceManifestGuardTests.cs`, keeping source inventory separate from release/doc assertions. | Pass: focused guards, full tests, build, format, and diff-check passed. |
 
-Manual retest still needs to confirm relic-click extraction and Boss transition behavior.
+`docs/toreview.md` carries the user-facing retest queue for these implemented or researched items.
 
-### Morvi Text And State
+## Latest Validation
 
-Source and localization now match the feedback:
+Latest completed no-game validation for the source/refactor slices:
 
-- Overdue Library uses card/power variables that match its text.
-- Temporary archive powers use valid Morvi icons.
-- Blueprint Proof initializes at combat start and has late guards before cost/play consumption.
-- Misprint Press text matches the first eligible manual natural-deck Attack/Skill replay behavior.
-- Forbidden Loan and Debt Settlement text now explains the concrete card/gold/debt values.
+```powershell
+dotnet build EZMicroBalance.sln --no-restore
+dotnet test EZMicroBalance.sln --no-build --filter "FullyQualifiedName~AscensionFeatureGuardTests|FullyQualifiedName~ReleaseSafetyExpandedGuardTests|FullyQualifiedName~ActiveSourceManifestGuardTests"
+dotnet test EZMicroBalance.sln --no-build --filter "FullyQualifiedName~TestInfrastructureGuardTests|FullyQualifiedName~ReleaseCoverageGuardTests|FullyQualifiedName~ActiveSourceManifestGuardTests"
+dotnet test EZMicroBalance.sln --no-build
+dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+git diff --check
+dotnet publish EZMicroBalance.sln --no-restore
+.\scripts\package-spire-plus.ps1
+EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build
+```
 
-Runtime restore behavior for Morvi state remains a manual save/load gate.
+Result: build passed with 0 warnings/errors; focused Ascension/source-manifest guards passed with 22 passed / 1 skipped; full tests passed with 189 passed / 18 skipped; format passed; diff-check passed with existing CRLF/LF warnings only; publish/package passed; opt-in artifact tests passed with 207 passed. No game was opened and no live proof was added in this pass.
 
-### Vakuu Documentation Evidence
+## Review Rules
 
-Vakuu source and docs now line up with the save-risk stance:
-
-- Fight Vakuu remains hidden unless explicit enable/force gates are set.
-- Combat entry uses direct `EnterRoomWithoutExitingCurrentRoom(...)`.
-- It does not call Core's rejected non-shared `EnterCombatWithoutExitingEvent(...)` path.
-- The active fight no longer assigns `ParentEventId`.
-- The active combat room does not store `ParentEventId` while active.
-- Parent id is written only for prefinished serialization.
-
-This removes the previous source/doc mismatch. It does not prove live victory return or save/load safety.
-
-## Package Script Review
-
-`scripts/package-spire-plus.ps1` now creates deterministic zip files:
-
-- It writes entries with `System.IO.Compression.ZipArchive`.
-- Entries are sorted by file name.
-- Entry timestamps are fixed.
-- Entry names remain `EZMicroBalance/<file>`.
-- The zip contains only `EZMicroBalance.dll`, `EZMicroBalance.json`, `EZMicroBalance.pck`, and `README_INSTALL.txt`.
-
-The produced zip hash stayed stable across two consecutive package runs:
-
-`EA0EC3611DC21FD33C9B87E592326A9000ECE593512554D720843D7490CC589C`
-
-Artifact tests also verify installed/staging/versioned/zip parity and docs hash claims.
-
-## Docs Review
-
-`docs/issues.md` is compact and keeps remaining work as manual proof gates. It no longer reads like a source implementation backlog.
-
-`docs/toreview.md` lists implemented or researched items that need user retest: Root Eyes, Seed Bank, Morvi fixes, Vakuu gate/evidence, and the no-new-blockers source review note.
-
-## Validation
-
-These checks support source/package test-readiness only:
-
-- `dotnet build EZMicroBalance.sln`: passed, 0 warnings, 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: passed, 171 passed, 18 skipped, 0 failed.
-- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
-- `git diff --check`: passed with line-ending warnings only.
-- `dotnet publish EZMicroBalance.sln`: passed.
-- `.\scripts\package-spire-plus.ps1`: passed.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 189 passed, 0 skipped, 0 failed.
-- Deterministic zip replay: passed, same SHA256 on consecutive runs.
-
-These checks do not prove live gameplay, clicked UI, save/load, failure/death, or co-op behavior. The docs correctly leave those as pending manual gates.
+- Keep source moves behavior-preserving unless the slice is explicitly a bug fix.
+- When moving code between partial files, update source-tree guards before moving behavior-sensitive assertions.
+- Keep active docs compact. Archive long historical logs under `docs/archive/**`.
+- Do not claim live gameplay, save-load, death/failure, co-op, or release readiness without direct game evidence.

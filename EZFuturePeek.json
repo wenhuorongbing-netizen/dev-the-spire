@@ -1,0 +1,16 @@
+{
+  "id": "EZFuturePeek",
+  "name": "Future Peek",
+  "author": "wenhuorongbing-netizen",
+  "description": "Shows deterministic hidden information in selected UI screens. Requires BaseLib.",
+  "version": "v0.1.0-private-test.0",
+  "has_pck": false,
+  "has_dll": true,
+  "dependencies": [
+    {
+      "id": "BaseLib",
+      "min_version": "v3.1.2"
+    }
+  ],
+  "affects_gameplay": false
+}

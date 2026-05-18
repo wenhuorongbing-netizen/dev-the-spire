@@ -75,7 +75,7 @@ Use this protocol for post-fix Urda selection, reward-screen, save/load, and vis
 
 - [ ] Selecting Molting removes one removable Strike-like starter card and one removable Defend-like starter card when present.
 - [ ] Molting adds two `Withered Husk` cards.
-- [ ] Each Withered Husk is unplayable/ethereal and grants block when exhausted.
+- [ ] Each Withered Husk is a 0-cost Skill that grants 3 Block and exhausts.
 - [ ] All Withered Husk are removed on Act 2 start.
 - [ ] Act 1 save/load preserves pending Husk cards.
 
@@ -89,12 +89,13 @@ Use this protocol for post-fix Urda selection, reward-screen, save/load, and vis
 
 ## 7. Trial Branch checks
 
-- [ ] Selection offers four common/uncommon class cards through the source-safe card grid.
-- [ ] Chosen card is upgraded, added to deck, and marked as Trial Plant.
-- [ ] Over the next three combats, only combats where the marked card is player-played at least once count as successes.
-- [ ] After three combats, two or more successful combats keep the card and clear the marker.
-- [ ] After three combats, fewer than two successful combats removes the marked card from the deck.
-- [ ] Save/load preserves the selected Trial Plant card marker and combat counters.
+- [ ] Selection offers four rare class cards through the source-safe card grid.
+- [ ] Chosen card is upgraded, added to deck, and marked with the visible Trial Branch enchantment.
+- [ ] Over the next three combats, the marked card must be player-played at least once in each combat.
+- [ ] Trial Branch enchantment text shows combats left, current-combat play state, and remaining required plays.
+- [ ] After all three required plays, the card stays and the marker/enchantment clear.
+- [ ] Missing any one of the three combats removes the marked card from the deck.
+- [ ] Save/load preserves the selected Trial Branch card marker, enchantment text, and combat counters.
 
 ## 8. Shallow-Root Relic checks
 
@@ -122,7 +123,7 @@ Use this protocol for post-fix Urda selection, reward-screen, save/load, and vis
 ## 11. Root-Sight checks
 
 - [ ] Selection grants 5 Root Eyes.
-- [ ] Source-safe fallback automatically marks reachable visible non-Boss rooms; no unavailable map button is shown or claimed.
+- [ ] Clicking the Root Eyes relic opens map selection, highlights future reachable Monster, Unknown, or Elite rooms, stores the chosen room's concrete enemy group or event on hover, and excludes Rest Sites, Shops, Treasure, and Boss rooms.
 - [ ] Boss rooms are never marked.
 - [ ] First use grants one random potion if a slot exists.
 - [ ] Save/load preserves Root Eye count, first-potion state, and marked rooms.
@@ -132,10 +133,10 @@ Use this protocol for post-fix Urda selection, reward-screen, save/load, and vis
 - [ ] During Act 1 normal combat card rewards, `Store Seed` appears while fewer than three seeds are stored.
 - [ ] Source-safe behavior is honest: storing consumes the current card reward instead of also taking a card.
 - [ ] At most three Seeds can be stored.
-- [ ] Before the Act 1 Boss, the settlement picker allows choosing up to two Seeds.
+- [ ] Clicking the Seed Bank relic opens the extraction picker and allows choosing up to two Seeds.
 - [ ] First chosen Seed is upgraded and added to deck.
 - [ ] Second chosen Seed, if any, is added to deck without a Trial Plant marker.
-- [ ] Unchosen Seeds disappear, and settlement does not repeat.
+- [ ] Unchosen Seeds disappear after extraction, and extraction does not repeat.
 - [ ] Save/load preserves stored Seeds and settlement state.
 
 ## 13. Release gate

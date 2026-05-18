@@ -22,8 +22,8 @@ internal sealed class ForgeTokenRelic : CustomRelicModel, ILocalizationProvider
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new RelicLoc(
             "铸令",
-            "击败[gold]火印精英[/gold]后获得。下一个[gold]休息点[/gold]：[gold]休息[/gold]会随机升级[blue]1[/blue]张可升级的[gold]普通[/gold]或[gold]罕见[/gold]牌；[gold]锻造[/gold]会回复[blue]7[/blue]点生命。若休息时没有目标，改为回复[blue]5[/blue]点生命。只有[gold]休息[/gold]或[gold]锻造[/gold]会消耗铸令。最多持有[blue]1[/blue]枚。",
-            "[gold]火印[/gold]留下的短暂号令，只能在下一个营火使用[blue]1[/blue]次。",
+            "击败[gold]火印精英[/gold]后获得。下一个[gold]休息处[/gold]：若选择[gold]休息[/gold]，随机升级[blue]1[/blue]张可升级的[gold]普通[/gold]或[gold]罕见[/gold]牌；若选择[gold]锻造[/gold]，回复[blue]7[/blue]点生命。休息没有可升级目标时，改为回复[blue]5[/blue]点生命。只有[gold]休息[/gold]或[gold]锻造[/gold]会消耗铸令。最多持有[blue]1[/blue]枚。",
+            "下一个[gold]休息处[/gold]可用[blue]1[/blue]次。",
             ("additionalRestSiteHealText", "[gold]铸令[/gold]：[gold]休息[/gold]会随机升级[blue]1[/blue]张可升级的[gold]普通[/gold]或[gold]罕见[/gold]牌；若没有目标，回复[blue]5[/blue]点生命。"))
         : new RelicLoc(
             "Forge Token",

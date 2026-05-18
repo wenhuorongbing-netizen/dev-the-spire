@@ -1,6 +1,6 @@
 # Ascension 11-20 Source Design v1.0
 
-Current forward-looking design input: `development-checklist-v2.md` was added on 2026-05-07 and should be used as the next development checklist. This v1.0 document remains historical design context for existing prototype slices.
+Current checklist: `development-checklist-v2.md` is now a compact active triage file. The full v2.0 planning draft from 2026-05-07 is archived at `docs/archive/feature-inputs/ascension-11-20/development-checklist-v2-full-20260518.md`. This v1.0 source-design document remains historical design context for existing prototype slices.
 
 Document type: Feature GDD / local source design
 Project: Spire Plus workspace (`EZMicroBalance` manifest id), with legacy EzDailyContent scaffold preserved for traceability
@@ -159,14 +159,14 @@ Eligibility hypothesis:
 
 A visible elite map node modifier.
 
-Initial firemark types:
+Current v3.2 firemark types:
 
 | Firemark | Effect | Trigger |
 | --- | --- | --- |
-| Might | One host enemy gains Strength at combat start. | OnCombatStart |
-| Giant | One host enemy gains increased max/current HP at combat start. | OnCombatStart |
-| Forge Armor | One host enemy gains Block at the end of its side's turns. | AfterTurnEnd |
-| Constant Heal | One host enemy heals at the end of its side's turns. | AfterTurnEnd |
+| Might | One firemarked enemy gains +1/+2/+4 Strength by act. Unblocked attack damage builds Heat; 2 Heat makes the next attack deal +1/+2/+4 extra damage. | OnCombatStart / OnDamage |
+| Giant | One firemarked enemy gains +20%/+30%/+45% max/current HP by act. At half HP it exposes Molten Core; enough damage during the window removes 10% max HP, otherwise it gains 1 Artifact. | OnCombatStart / OnDamage / OnTurnEnd |
+| Forge Armor | One firemarked enemy gains 5/10/20 Molten Armor after enemy turns. Fully breaking that armor skips the next armor gain, up to twice per combat. | AfterTurnEnd |
+| Constant Heal | One firemarked enemy heals 4/8/16 HP at enemy turn end. Dealing 12/24/48 damage to it during the player turn interrupts that heal. | AfterTurnEnd |
 
 Generation rules:
 
@@ -183,17 +183,19 @@ Generation rules:
 
 A visible enhanced normal combat node.
 
-Initial banner types:
+Current v3.2 banner types:
 
 | Banner | Effect | Trigger |
 | --- | --- | --- |
-| Vanguard Banner | All enemies gain 2 temporary Strength; remove it at the start of turn 3. | OnCombatStart / OnTurnStart |
-| Shield Formation Banner | Choose a random non-summon bannerbearer. While alive, other enemies gain small Block at turn start; when it dies, other enemies gain a small one-time Block. | OnCombatStart / OnTurnStart / OnDeath |
-| Bounty Banner | Mark one bounty enemy. Killing it before the end of turn 3 grants extra gold after combat; missing the deadline gives it small Block and 1 Artifact. | OnCombatStart / OnTurnStart / OnReward |
+| Vanguard Banner | All primary enemies gain +1/+2/+4 temporary Strength by act for the first two rounds. | OnCombatStart / OnTurnStart |
+| Shield Formation Banner | Multi-enemy only. One bannerbearer protects other enemies for 3/7/14 Block by act each enemy turn; on death, the others gain 5/10/20 Block. | OnCombatStart / OnTurnStart / OnDeath |
+| Blood Prize Banner | Mark one bounty enemy. Killing it by the end of round 3 grants 15/30/55 Gold; missing the deadline gives it sustained retaliation. | OnCombatStart / OnTurnEnd / OnReward |
+| Pressing Line Banner | From each player's 4th card each turn, build up to 3 pressure layers; the highest two players resolve Block and possible extra attack damage. | OnCardPlayed / OnTurnEnd |
+| Last Stand Banner | Multi-enemy only. The first primary enemy death gives remaining primary enemies 6/12/24 Block and +1/+2/+4 next-turn Strength by act. | OnDeath |
 
 Generation:
 
-- Starts in Act 2 by default, with Act 1 at most one and never early if tested.
+- Banner rooms may appear as visible enhanced normal combats. Shield Formation and Last Stand require multi-enemy fights; if a single-enemy fight is reached, they convert to Blood Prize.
 - Does not stack with firemarked elites.
 - Banner rule is visible on map hover before commitment.
 - Bounty's direct bonus reward is the first implementation-batch reward and must use room reward APIs, not monster action table edits.
@@ -280,10 +282,15 @@ UI can be deferred behind console/log/manual validation for prototypes, but priv
 | Forge Token rest fallback heal | 5 HP |
 | Forge Token Smith heal | 7 HP |
 | Forge Token special rest-site heal | 5 HP |
-| Firemark Might | +2/+3/+4 Strength by act |
-| Firemark Giant | +30% max/current HP |
-| Firemark Forge Armor | 8/13/18 Block by act |
-| Firemark Constant Heal | 6/10/14 HP by act |
+| Firemark Might | +1/+2/+4 Strength by act; Heat burst +1/+2/+4 damage |
+| Firemark Giant | +20%/+30%/+45% max/current HP; Molten Core damage window 20%/25%/30% original max HP |
+| Firemark Forge Armor | 5/10/20 Block by act |
+| Firemark Constant Heal | 4/8/16 HP by act; interrupt threshold 12/24/48 damage |
+| Vanguard Banner | +1/+2/+4 temporary Strength by act |
+| Shieldwall Banner | 3/7/14 turn Block; 5/10/20 death Block |
+| Blood Prize Banner | 15/30/55 Gold; retaliation +1/+2/+4 Strength and 1/1/2 Artifact |
+| Pressing Line Banner | 4/8/16 partial Block; 6/12/24 full Block; +1/+2/+4 extra damage |
+| Last Stand Banner | 6/12/24 Block and +1/+2/+4 temporary Strength |
 | A20 intermission heal | 25% missing HP |
 
 All values are prototypes, not final balance.

@@ -27,8 +27,10 @@ Observed implementation baseline:
 Current Morvi source files:
 
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.Options.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingIds.cs`
-- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviCards.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviArchivePageCards.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviCombatTokenCards.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviFeatureGate.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviInitializer.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviOptionRelics.cs`
@@ -90,10 +92,10 @@ Local source findings:
 - Vakuu victory choices now combine source vanilla Act 3 Ancient reward relics with custom Lotha option relics through `LothaRewardSelectionService.SelectBlessing(...)`. This keeps Lotha victory rewards visible in the relic bar and uses the same blessing-state write path as the Lotha event instead of granting a hidden saved-field-only reward.
 - If filtering owned Act 3 Ancient blessings leaves no non-Vakuu options, the source falls back to a single continue option instead of presenting an empty reward choice set. If options remain, broken locks set the target choice count to 1/2/3, and each broken lock grants 50 Gold on the chosen victory option or fallback.
 - Local `source code/src/Core/Commands/PlayerCmd.cs` exposes `GainEnergy(...)`, local `source code/src/Core/Commands/CardPileCmd.cs` exposes hand draw, local `source code/src/Core/Commands/CreatureCmd.cs` exposes `GainBlock(...)` and `Damage(...)`, and local `source code/src/Core/Commands/DamageCmd.cs` exposes source-backed card attacks. Vakuu Contracts use those command paths for Knife/Gold/Shelter effects.
-- Local `source code/src/Core/Combat/CombatManager.cs` calls `Hook.AfterPlayerTurnStart(...)` after normal hand draw. The Vakuu run hook uses that timing to add a random Contract to hand after the hand draw on player turns 1, 3, 5, and onward when hand space allows.
+- Local `source code/src/Core/Combat/CombatManager.cs` calls `Hook.AfterPlayerTurnStart(...)` after normal hand draw. The Vakuu combat hook uses that timing to add a random Contract to hand after the hand draw on player turns 1, 3, 5, and onward when hand space allows.
 - Local damage hooks expose unblocked damage through `AfterDamageReceived(...)` and `DamageResult.UnblockedDamage`. Vakuu tracks player-turn unblocked damage and breaks one Stolen Vault lock when damage reaches 40 in a single player turn.
 - Local `PowerModel.ModifyDamageAdditive(...)` participates in powered attack intent/damage calculation. `VakuuBloodDebtPower` uses that hook to add 3 damage per stack to each powered Vakuu attack hit.
-- The hook is scoped by `combatState.Encounter is EzmbVakuuTrialEncounter` and the run-hook subscriber is gated through `VakuuFightFeatureGate.IsFightEnabledForRun(...)`, preserving the current single-player-only stance.
+- The hook is scoped by `combatState.Encounter is EzmbVakuuTrialEncounter` and the combat-hook subscriber is gated through `VakuuFightFeatureGate.IsFightEnabledForRun(...)`, preserving the current single-player-only stance.
 - `VakuuFightFeatureGate.IsFightEnabled(...)` now requires `ShouldEnableFight`, which is true only for `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, `EZMB_FORCE_VAKUU_FIGHT=1`, or `SPIREPLUS_FORCE_VAKUU_FIGHT=1`.
 - Multiplayer authority is not source-proven. `VakuuFightFeatureGate.IsFightEnabledForRun(...)` requires `runState.Players.Count == 1`.
 - Local `source code/src/Core/Rooms/CombatRoom.cs` throws in `ToSerializable()` when a combat room has `ParentEventId` and is not pre-finished. Current Vakuu source no longer stores `ParentEventId` while the combat room is active; prefinished parent recording remains isolated to the `CombatRoom.ToSerializable()` postfix. Live active-fight save/load is still pending because runtime behavior has not been exercised.
@@ -139,7 +141,7 @@ Vakuu parent-linked child combat evidence:
 
 Lotha Death Reprieve persistence evidence:
 
-- Current `EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRunHook.cs` still stores live booleans `DeathReprieveActive`, `DeathReprievePendingStart`, and `DeathReprieveStarted` in a private `LothaCombatState` held by `ConditionalWeakTable<Player, LothaCombatState>`, but it now mirrors the durable state as `Progress(bool DeathReprieveUsed, DeathReprievePhase DeathReprievePhase)`.
+- Current Lotha transient combat state lives in `LothaBlessingService.CombatState.cs`: live booleans `DeathReprieveActive`, `DeathReprievePendingStart`, and `DeathReprieveStarted` remain in a private `LothaCombatState` held by `ConditionalWeakTable<Player, LothaCombatState>`, while durable progress still lives in `LothaBlessingService.State.cs` as `Progress(bool DeathReprieveUsed, DeathReprievePhase DeathReprievePhase)`.
 - The same file encodes `DeathReprievePhase.None`, `PendingStart`, `Active`, and `Resolved` through `AncientSavedStateFields.LothaStateKey` and `AncientSavedStateFields.LothaDeckStateKey`; `SetProgress(...)` writes the used flag and phase before starting or pending the reprieve, and `HydrateDeathReprieveState(...)` rebuilds pending/active protection state from that encoded progress.
 - `EZMicroBalanceCode/Ancients/Common/AncientPlayerState.cs` mirrors encoded Ancient state from the `Player` field onto deck cards and can rebuild runtime state from the first nonempty deck-card mirror.
 - Local `source code/src/Core/Entities/Players/Player.cs` and `source code/src/Core/Saves/Runs/SerializablePlayer.cs` show player save data contains fixed HP, max HP, deck, relics, potions, RNG/odds, unlock state, discoveries, and fixed extra fields. It does not expose a general player `SavedProperties`/`Props` field.

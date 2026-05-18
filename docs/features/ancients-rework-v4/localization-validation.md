@@ -51,7 +51,7 @@ All active localization JSON files parse as explicit UTF-8:
 | Debt | 债务 | n/a | Base game `localization/zhs/cards.json`, `DEBT.title`. | High | Seal of Gold, Debt card |
 | off-color | n/a | 异色牌 | No base-game zhs match found locally. Existing mod zhs text already used `异色牌`; keep as temporary project glossary term. NEEDS_OFFICIAL_TERM before public release if the game adds an official term. | Medium | Prismatic Gem |
 | Boss | n/a | 首领 | Base `ROOM_BOSS.title` is still raw `Boss`; zhs descriptions call it the stage endpoint. User requirement permits `首领`, so player-facing mod text uses `首领` instead of raw English. | Medium | Pael's Tooth |
-| Cook | 烹饪 | n/a | Base game `localization/zhs/static_hover_tips.json`, `COOK.title`. | High | Meat Cleaver, rest site UI |
+| Cleaver | 切肉 | n/a | Mod override for base `COOK.title`; internal option id stays `COOK`. | High | Meat Cleaver, rest site UI |
 | Power | 能力牌 | n/a | Base game card text such as `CREATIVE_AI.description` and `WHITE_NOISE.description`. | High | Jeweled Mask, Crossbow/Music Box contrast |
 | Attack | 攻击牌 | n/a | Base game relic/card text such as Shuriken and Crossbow. | High | Crossbow, Music Box |
 | Rare | 稀有牌 | n/a | Base game relic/card text such as Arcane Scroll and White Star. | High | Choices Paradox |

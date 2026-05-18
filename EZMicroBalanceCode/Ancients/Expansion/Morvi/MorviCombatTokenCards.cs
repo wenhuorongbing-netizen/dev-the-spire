@@ -1,0 +1,80 @@
+using BaseLib.Utils.Attributes;
+using MegaCrit.Sts2.Core.HoverTips;
+
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
+
+[CustomID(CardId)]
+[Pool(typeof(ColorlessCardPool))]
+internal sealed class MorviRedInkOverdraftCard : CustomCardModel
+{
+    public const string CardId = "EZMB_MORVI_RED_INK_OVERDRAFT";
+
+    private static readonly CardKeyword[] OverdraftKeywords = [CardKeyword.Ethereal, CardKeyword.Exhaust];
+
+    public MorviRedInkOverdraftCard()
+        : base(0, CardType.Skill, CardRarity.Token, TargetType.None, showInCardLibrary: false)
+    {
+    }
+
+    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/morvi_red_ink_overdraft.png";
+
+    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/morvi_red_ink_overdraft.png";
+
+    public override string BetaPortraitPath => PortraitPath;
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords => OverdraftKeywords;
+
+    protected override bool IsPlayable => MorviBlessingService.CanUseRedInkOverdraft(Owner);
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+        [
+            HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
+            HoverTipFactory.FromKeyword(CardKeyword.Exhaust),
+            HoverTipFactory.FromPower<MorviOverdraftPower>()
+        ];
+
+    public override bool CanBeGeneratedInCombat => false;
+
+    public override bool CanBeGeneratedByModifiers => false;
+
+    public override int MaxUpgradeLevel => 0;
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await MorviBlessingService.UseRedInkOverdraft(choiceContext, Owner);
+    }
+}
+
+[CustomID(CardId)]
+[Pool(typeof(StatusCardPool))]
+internal sealed class MorviWastePaper : CustomCardModel
+{
+    public const string CardId = "EZMB_MORVI_WASTE_PAPER";
+
+    private static readonly CardKeyword[] WastePaperKeywords = [CardKeyword.Ethereal, CardKeyword.Unplayable];
+
+    public MorviWastePaper()
+        : base(-1, CardType.Status, CardRarity.Status, TargetType.None, showInCardLibrary: false)
+    {
+    }
+
+    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/morvi_waste_paper.png";
+
+    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/morvi_waste_paper.png";
+
+    public override string BetaPortraitPath => PortraitPath;
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords => WastePaperKeywords;
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+        [
+            HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
+            HoverTipFactory.FromKeyword(CardKeyword.Unplayable)
+        ];
+
+    public override bool CanBeGeneratedInCombat => false;
+
+    public override bool CanBeGeneratedByModifiers => false;
+
+    public override int MaxUpgradeLevel => 0;
+}

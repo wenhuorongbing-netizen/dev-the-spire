@@ -157,7 +157,7 @@ public sealed class ReleaseArtifactTests
     [Fact]
     public void JewelryBoxApotheosisNonInnateMarkerIsInstanceScopedAndSerializable()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
         Assert.Contains("HarmonyPatch(typeof(Apotheosis), \"get_CanonicalKeywords\")", source, StringComparison.Ordinal);
@@ -358,7 +358,7 @@ public sealed class ReleaseArtifactTests
     [Fact]
     public void PrismaticGemRerollFixHasDocumentedEvidenceAndManualCoverage()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var apiDiscovery = ReadRepoText("docs", "features", "ancients-rework-v4", "api-discovery.md");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
@@ -366,7 +366,9 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("ConditionalWeakTable<CardReward, RewardScreenState>", source, StringComparison.Ordinal);
         Assert.Contains("PrismaticGemNormalRewardCounter[prismaticGem] + 1", source, StringComparison.Ordinal);
         Assert.Contains("for (var slotIndex = 0; slotIndex < cardRewardOptions.Count; slotIndex++)", source, StringComparison.Ordinal);
-        Assert.Contains("GetOffColorRewardPool(player, originalCard.Rarity, excludedIds)", source, StringComparison.Ordinal);
+        Assert.Contains("GetOffColorRewardPool(player, originalCard.Rarity, originalCard.Type, excludedIds)", source, StringComparison.Ordinal);
+        Assert.Contains("listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions)", source, StringComparison.Ordinal);
+        Assert.Contains("listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)", source, StringComparison.Ordinal);
         Assert.Contains("creationOptions.Source == CardCreationSource.Encounter", source, StringComparison.Ordinal);
         Assert.Contains("PRISMATIC_GEM.countHint.title", source, StringComparison.Ordinal);
         Assert.Contains("PRISMATIC_GEM.rewardScreenHint", source, StringComparison.Ordinal);

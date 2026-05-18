@@ -229,7 +229,7 @@ Candidate order:
 1. `Sozu` class: fill empty potion slots on pickup, then block future potion gain.
 2. `Ectoplasm` class: grant 250 gold on pickup, then block future gold gain.
 3. `Pumpkin Candle`: no active EZMB override. Vanilla behavior is restored; keep only a no-override spot check in the manual matrix.
-4. `Meat Cleaver`: rest-site Cook action removes 2 cards and costs 5 HP.
+4. `Meat Cleaver`: rest-site Cleaver / 切肉 action removes 2 cards and costs 5 HP.
 5. `Prismatic Gem`: every second standard card reward changes all visible card options to off-color cards.
 
 Validation focus:

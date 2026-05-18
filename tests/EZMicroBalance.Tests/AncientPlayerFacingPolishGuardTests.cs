@@ -18,7 +18,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
     public void ActiveAncientDialogueSlotsHaveReachableBilingualText()
     {
         var urda = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.cs");
-        var morvi = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.cs");
+        var morvi = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
         var lotha = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
@@ -165,6 +165,77 @@ public sealed class AncientPlayerFacingPolishGuardTests
     }
 
     [Fact]
+    public void ActiveModSourceDoesNotContainKnownMojibakeFragments()
+    {
+        var source = ReadSourceTree("EZMicroBalanceCode");
+        var fragments = new[]
+        {
+            "\uFFFD",
+            "鐏",
+            "鎴",
+            "绗",
+            "鍥",
+            "浼",
+            "澶",
+            "鏁",
+            "銆",
+            "闂",
+            "瑁",
+            "閾",
+            "璇",
+            "鏈",
+            "寮€",
+            "鑾",
+            "缂",
+            "顭",
+            "娑",
+            "锟",
+            "铏"
+        };
+
+        var matches = fragments
+            .Where(fragment => source.Contains(fragment, StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.True(matches.Length == 0, "Found mojibake fragments in active C# source: " + string.Join(", ", matches));
+    }
+
+    [Fact]
+    public void ActiveCurrentDocsDoNotContainKnownMojibakeFragments()
+    {
+        var docs = Directory.GetFiles(RepoPath("docs"), "*.md", SearchOption.AllDirectories)
+            .Where(path => !ToRepoRelativePath(path).StartsWith("docs/archive/", StringComparison.Ordinal))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+        var fragments = new[]
+        {
+            "\uFFFD",
+            "涓",
+            "鑰",
+            "璇",
+            "鐜",
+            "鐏",
+            "閻",
+            "娑",
+            "鍋",
+            "婵",
+            "锟"
+        };
+
+        var matches = docs
+            .SelectMany(path =>
+            {
+                var text = File.ReadAllText(path, Encoding.UTF8);
+                return fragments
+                    .Where(fragment => text.Contains(fragment, StringComparison.Ordinal))
+                    .Select(fragment => $"{ToRepoRelativePath(path)}:{fragment}");
+            })
+            .ToArray();
+
+        Assert.True(matches.Length == 0, "Found mojibake fragments in active docs: " + string.Join(", ", matches));
+    }
+
+    [Fact]
     public void AncientOptionRelicTextDoesNotExposeMarkerImplementationWording()
     {
         var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
@@ -191,10 +262,18 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "[blue]15[/blue] [gold]Gold[/gold]");
         AssertSourceContains(
             engRelics["EZMICROBALANCE-UrdaSeedbedOptionRelic.description"],
-            "[gold]Seedling[/gold]",
+            "[gold]Seedbed[/gold]",
             "[blue]10[/blue] [gold]Max HP[/gold]",
             "The first is upgraded",
             "without healing current HP");
+        Assert.Equal(
+            engRelics["EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.description"],
+            engRelics["EZMICROBALANCE-UrdaMossMapOptionRelic.description"]);
+        AssertSourceContains(
+            engRelics["EZMICROBALANCE-UrdaMossMapOptionRelic.description"],
+            "Monster +[blue]25[/blue] [gold]Gold[/gold]",
+            "Event heal [blue]5[/blue]",
+            "Rest Site +[blue]3[/blue] [gold]Max HP[/gold]");
         AssertSourceContains(
             engRelics["EZMICROBALANCE-URDA_AFTER_RAIN_OPTION_RELIC.description"],
             "Act [blue]1[/blue] [gold]Elite[/gold] kills",
@@ -213,10 +292,18 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "[blue]15[/blue][gold]金币[/gold]");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-UrdaSeedbedOptionRelic.description"],
-            "[gold]幼芽[/gold]",
+            "[gold]苗床[/gold]",
             "[blue]10[/blue]点[gold]最大生命[/gold]",
             "第一张会升级",
             "不回复当前生命");
+        Assert.Equal(
+            zhsRelics["EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.description"],
+            zhsRelics["EZMICROBALANCE-UrdaMossMapOptionRelic.description"]);
+        AssertSourceContains(
+            zhsRelics["EZMICROBALANCE-UrdaMossMapOptionRelic.description"],
+            "怪物 +[blue]25[/blue] [gold]金币[/gold]",
+            "事件治疗[blue]5[/blue]",
+            "休息处 +[blue]3[/blue] [gold]最大生命[/gold]");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-URDA_AFTER_RAIN_OPTION_RELIC.description"],
             "击败第[blue]1[/blue]幕[gold]精英[/gold]",
@@ -244,7 +331,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description"],
             "[blue]15[/blue] [gold]Gold[/gold]",
-            "[blue]1[/blue] upgraded card");
+            "[blue]1[/blue] upgraded reward card");
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
             "max [blue]3[/blue]",
@@ -253,23 +340,31 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description"],
             "[blue]15[/blue][gold]金币[/gold]",
-            "[blue]1[/blue]张已升级牌");
+            "[blue]1[/blue]张已升级奖励牌");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
             "最多[blue]3[/blue]张",
             "第一张会升级");
         AssertSourceContains(
+            engAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.title"],
+            "Root Eyes");
+        AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"],
             "[gold]Root Eyes[/gold]",
             "Click this relic on the map",
             "Monster, Unknown, or Elite",
-            "enemy group or event");
+            "enemy group or event",
+            "Hover the marked room");
+        AssertSourceContains(
+            zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.title"],
+            "根眼");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_root_sight.description"],
             "[gold]根眼[/gold]",
             "点击此遗物",
             "怪物、随机或精英",
-            "敌群或事件");
+            "敌群或事件",
+            "悬停标记房间");
         AssertSourceContains(
             engAncients["EZMB_URDA.root_sight.map_hover.description"],
             "previewed this room");
@@ -281,6 +376,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
             engAncients["EZMB_URDA.root_sight.hover.description"],
             "click this relic",
             "Monster, Unknown, or Elite",
+            "Hover the marked room",
             "Rest Sites, Shops, Treasure, and Boss rooms cannot be chosen");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.root_sight.map_hover.description"],
@@ -293,7 +389,22 @@ public sealed class AncientPlayerFacingPolishGuardTests
             zhsAncients["EZMB_URDA.root_sight.hover.description"],
             "点击此遗物",
             "怪物、随机或精英",
+            "悬停标记房间",
             "不能选择篝火、商店、宝箱和首领");
+        AssertSourceContains(
+            engRelics["EZMICROBALANCE-URDA_ROOT_SIGHT_OPTION_RELIC.title"],
+            "Root Eyes");
+        AssertSourceContains(
+            engRelics["EZMICROBALANCE-URDA_ROOT_SIGHT_OPTION_RELIC.description"],
+            "Root Eyes",
+            "Hover the marked room");
+        AssertSourceContains(
+            zhsRelics["EZMICROBALANCE-URDA_ROOT_SIGHT_OPTION_RELIC.title"],
+            "根眼");
+        AssertSourceContains(
+            zhsRelics["EZMICROBALANCE-URDA_ROOT_SIGHT_OPTION_RELIC.description"],
+            "根眼",
+            "悬停标记房间");
 
         AssertSourceContains(
             engAncients["EZMB_MORVI.pages.INITIAL.options.morvi_forbidden_loan.description"],
@@ -407,13 +518,17 @@ public sealed class AncientPlayerFacingPolishGuardTests
     public void AncientOptionHoversPreviewNamedAddedCardsWhereSupported()
     {
         var urda = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.cs");
-        var urdaMapUiPatches = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaMapUiPatches.cs");
-        var morvi = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.cs");
-        var vakuu = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var urdaMapUiPatches = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaMapUiPatches.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapClickPatches.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapPreviewVisuals.cs"));
+        var morvi = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
+        var vakuu = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
 
         AssertSourceContains(
             urda,
-            "HoverTipFactory.FromCardWithCardHoverTips<UrdaSeedling>()",
+            "HoverTipFactory.FromCardWithCardHoverTips<UrdaSeedbed>()",
             "HoverTipFactory.FromCardWithCardHoverTips<WitheredHusk>()",
             "RootSightHoverTips",
             "EZMB_URDA.root_sight.hover.title",
@@ -423,10 +538,22 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "%QuestIcon",
             "MouseFilterEnum.Ignore",
             "UrdaBlessingService.TryGetRootSightHoverTip",
+            "TryGetRootSightPreviewRoomType",
+            "UrdaRootSightMapPreviewIconPatch",
+            "UrdaRootSightMapQuestIconPatch",
+            "UrdaRootSightMapPreviewVisuals.ApplyPreviewIcon",
+            "UrdaRootSightMapPreviewVisuals.ApplyQuestIcon",
+            "UnknownIconPath(roomType)",
+            "UnknownOutlinePath(roomType)",
             "NHoverTipSet.Remove(__instance)",
             "NHoverTipSet.CreateAndShow",
             "UrdaRootSightMapPointClickPatch",
             "HarmonyPatch(typeof(NMapPoint), \"OnRelease\")",
+            "UrdaRootSightDisabledMapPointClickPatch",
+            "HarmonyPatch(typeof(NClickableControl), nameof(NClickableControl._GuiInput))",
+            "__instance is not NMapPoint mapPoint",
+            "InputEventMouseButton { ButtonIndex: MouseButton.Left }",
+            "__instance.GetViewport()?.SetInputAsHandled()",
             "UrdaBlessingService.TryCommitRootSightSelection");
         AssertSourceContains(
             morvi,
@@ -446,14 +573,30 @@ public sealed class AncientPlayerFacingPolishGuardTests
     [Fact]
     public void UrdaSeedBankTextMatchesNoTrialPlantMarkerSource()
     {
-        var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
+        var seedBankSource = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"));
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
         var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
-        var seedBankSource = SliceBetween(urdaRunHook, "private static async Task ChooseSeedBankStore", "public static async Task ApplyTrialBranch");
 
         Assert.DoesNotContain("UrdaTrialPlantCard", seedBankSource, StringComparison.Ordinal);
+        AssertSourceContains(
+            seedBankSource,
+            "if (cards.Count == 0)",
+            "SeedBankCardIds = string.Empty",
+            "SeedBankSettled = true",
+            "RefreshSeedBankRelicStatus(player)",
+            "var addedCount = 0",
+            "var failedSelectedIds = new List<string>()",
+            "failedSelectedIds.Add(card.Id.ToString())",
+            "SeedBankCardIds = string.Join(\",\", failedSelectedIds.Take(SeedBankMaxSeeds))",
+            "finally",
+            "AncientCardHelpers.RemoveUnpiledRunCard(card)",
+            "Seed Bank extraction preserved");
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
             "max [blue]3[/blue]",
@@ -481,6 +624,8 @@ public sealed class AncientPlayerFacingPolishGuardTests
     public void VakuuFightTextAndSourceStayExplicitAboutRiskAndRewards()
     {
         var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var entry = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.Entry.cs");
+        var victory = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightVictory.cs");
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
         var gate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
@@ -489,15 +634,15 @@ public sealed class AncientPlayerFacingPolishGuardTests
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
 
         Assert.DoesNotContain("TaskHelper.RunSafely", patch, StringComparison.Ordinal);
-        Assert.Contains("EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)", patch, StringComparison.Ordinal);
-        Assert.Contains("ClearEventNode(vakuu)", patch, StringComparison.Ordinal);
-        Assert.Contains("EventNodeBackingField", patch, StringComparison.Ordinal);
-        Assert.Contains("CreateVictoryFallbackOption", patch, StringComparison.Ordinal);
-        Assert.Contains("VictoryFallbackDescriptionKey", patch, StringComparison.Ordinal);
-        Assert.Contains("targetChoiceCount = encounter.VictoryChoiceCount", patch, StringComparison.Ordinal);
-        Assert.Contains("encounter.VictoryGold", patch, StringComparison.Ordinal);
-        Assert.DoesNotContain("ExtraRewards", patch, StringComparison.Ordinal);
-        Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", patch, StringComparison.Ordinal);
+        Assert.Contains("EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)", entry, StringComparison.Ordinal);
+        Assert.Contains("ClearEventNode(vakuu)", entry, StringComparison.Ordinal);
+        Assert.Contains("EventNodeBackingField", entry, StringComparison.Ordinal);
+        Assert.Contains("CreateVictoryFallbackOption", victory, StringComparison.Ordinal);
+        Assert.Contains("VictoryFallbackDescriptionKey", victory, StringComparison.Ordinal);
+        Assert.Contains("targetChoiceCount = encounter.VictoryChoiceCount", victory, StringComparison.Ordinal);
+        Assert.Contains("encounter.VictoryGold", victory, StringComparison.Ordinal);
+        Assert.DoesNotContain("ExtraRewards", patch + entry + victory, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", patch + entry, StringComparison.Ordinal);
         Assert.Contains("base(RoomType.Monster, autoAdd: false)", encounter, StringComparison.Ordinal);
         Assert.Contains("ShouldGiveRewards => false", encounter, StringComparison.Ordinal);
         Assert.Contains("CustomScenePath => VakuuFightAssetPaths.EncounterScene", encounter, StringComparison.Ordinal);

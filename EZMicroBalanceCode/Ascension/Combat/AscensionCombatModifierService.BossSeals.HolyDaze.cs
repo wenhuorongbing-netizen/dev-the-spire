@@ -1,0 +1,44 @@
+using MegaCrit.Sts2.Core.Models.Monsters;
+
+namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+
+internal static partial class AscensionCombatModifierService
+{
+    private static async Task TryApplyHolyDaze(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        AscensionNodeMetadata metadata)
+    {
+        if (metadata.BossSeal?.Id != BossSealId.HolyDaze || tracker.HolyDazeTriggered)
+        {
+            return;
+        }
+
+        var beast = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is CeremonialBeast);
+        if (beast == null ||
+            beast.HasPower<PlowPower>() ||
+            beast.Monster?.NextMove.StateId != "STUN_MOVE")
+        {
+            return;
+        }
+
+        tracker.HolyDazeTriggered = true;
+        var strengthAfterDaze = metadata.IsBossBrand ? 2m : 1m;
+        await PowerCmd.Apply<HolyDazePower>(new BlockingPlayerChoiceContext(), beast, strengthAfterDaze, beast, null);
+        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Holy Daze capped Ceremonial Beast's first stun damage window.");
+    }
+
+    private static async Task EndHolyDaze(CombatState combatState, AscensionCombatTracker tracker)
+    {
+        var beast = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is CeremonialBeast);
+        var daze = beast?.GetPower<HolyDazePower>();
+        if (beast == null || daze == null)
+        {
+            return;
+        }
+
+        await PowerCmd.Remove(daze);
+        await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), beast, daze.Amount, beast, null);
+        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Holy Daze ended and granted Strength.");
+    }
+}

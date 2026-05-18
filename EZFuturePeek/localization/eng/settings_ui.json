@@ -1,0 +1,9 @@
+{
+  "EZFUTUREPEEK.mod_title": "Future Peek",
+  "EZFUTUREPEEK-CRYSTAL_SPHERE_PEEK_BUTTON.title": "Peek",
+  "EZFUTUREPEEK-ENABLE_CRYSTAL_SPHERE_PEEK.title": "Crystal Sphere peek button",
+  "EZFUTUREPEEK-CRYSTAL_SPHERE_MASK_ALPHA.title": "Crystal Sphere fog alpha",
+  "EZFUTUREPEEK-ENABLE_TRANSFORM_PREDICTION.title": "Reveal transform preview",
+  "EZFUTUREPEEK-TRANSFORM_PREDICTION_ALWAYS_ON.title": "Transform preview always on",
+  "EZFUTUREPEEK-SHOW_DEBUG_LOGS.title": "Debug logs"
+}

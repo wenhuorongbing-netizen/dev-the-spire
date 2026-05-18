@@ -8,7 +8,8 @@ public sealed class AncientStateMirrorGuardTests
 {
     private sealed record AncientStateMirrorSpec(
         string Name,
-        string RunHookPath,
+        string StateSourcePath,
+        string HookSourcePath,
         string RuntimeField,
         string DeckField);
 
@@ -16,17 +17,20 @@ public sealed class AncientStateMirrorGuardTests
     [
         new(
             "Urda",
+            "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.State.cs",
             "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRunHook.cs",
             "UrdaStateKey",
             "UrdaDeckStateKey"),
         new(
             "Morvi",
-            "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviRunHook.cs",
+            "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.State.cs",
+            "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviHooks.cs",
             "MorviStateKey",
             "MorviDeckStateKey"),
         new(
             "Lotha",
-            "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRunHook.cs",
+            "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.State.cs",
+            "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaHooks.cs",
             "LothaStateKey",
             "LothaDeckStateKey")
     ];
@@ -75,7 +79,7 @@ public sealed class AncientStateMirrorGuardTests
     {
         foreach (var spec in MirrorSpecs)
         {
-            var source = ReadRepoText(spec.RunHookPath.Split('/'));
+            var source = ReadRepoText(spec.StateSourcePath.Split('/'));
             var getSelectedBlessing = SliceMethod(source, "GetSelectedBlessing");
             var getProgress = SliceMethod(source, "GetProgress");
             var setProgress = SliceMethod(source, "SetProgress");
@@ -101,7 +105,7 @@ public sealed class AncientStateMirrorGuardTests
     {
         foreach (var spec in MirrorSpecs)
         {
-            var source = ReadRepoText(spec.RunHookPath.Split('/'));
+            var source = ReadRepoText(spec.HookSourcePath.Split('/'));
             var afterCardChangedPiles = SliceMethod(source, "AfterCardChangedPiles");
 
             AssertSourceContains(

@@ -140,7 +140,9 @@ public sealed class AncientUiReadinessGuardTests
 
         foreach (var roleSet in ActiveAncientArtRoles)
         {
-            var source = ReadRepoText(roleSet.SourcePath.Split('/'));
+            var source = roleSet.Ancient is "Urda" or "Morvi" or "Lotha"
+                ? ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", roleSet.Ancient)
+                : ReadRepoText(roleSet.SourcePath.Split('/'));
             AssertSourceContains(
                 source,
                 $"CustomScenePath => {roleSet.AssetPrefix}.BackgroundScene",
@@ -182,7 +184,9 @@ public sealed class AncientUiReadinessGuardTests
     {
         foreach (var (name, path, expectedCount) in SourceOptionCounts)
         {
-            var source = ReadRepoText(path.Split('/'));
+            var source = name is "Urda" or "Morvi" or "Lotha"
+                ? ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", name)
+                : ReadRepoText(path.Split('/'));
             AssertSourceContains(
                 source,
                 $"private const int ExpectedInitialOptionCount = {expectedCount};",
@@ -198,13 +202,16 @@ public sealed class AncientUiReadinessGuardTests
         }
 
         var vakuuPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var vakuuVictory = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightVictory.cs");
         var vakuuGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
         AssertSourceContains(
             vakuuPatch,
             "VakuuFightFeatureGate.IsFightEnabledForRun(runState)",
             "if (VakuuFightFeatureGate.ShouldForceFight)",
             "__result = [fightOption]",
-            "__result = __result.Concat([fightOption]).ToList()",
+            "__result = __result.Concat([fightOption]).ToList()");
+        AssertSourceContains(
+            vakuuVictory,
             "targetChoiceCount = encounter.VictoryChoiceCount",
             "options.Count > 0 ? options : [CreateVictoryFallbackOption(vakuu, combatRoom)]",
             "CreateVictoryFallbackOption");
@@ -278,6 +285,7 @@ public sealed class AncientUiReadinessGuardTests
     {
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
         var monster = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTrialMonster.cs");
+        var assetPaths = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightAssetPaths.cs");
         var scene = ReadRepoText("EZMicroBalance", "scenes", "encounters", "ezmb_vakuu_trial.tscn");
         var exportPreset = ReadRepoText("export_presets.cfg");
         var engMonsters = JsonStringMap("EZMicroBalance", "localization", "eng", "monsters.json");
@@ -286,6 +294,7 @@ public sealed class AncientUiReadinessGuardTests
         AssertSourceContains(
             encounter,
             "CustomScenePath => VakuuFightAssetPaths.EncounterScene",
+            "HasScene => true",
             "Slots => [VakuuSlot]",
             "ModelDb.Monster<EzmbVakuuTrialMonster>()");
         Assert.DoesNotContain("OwlMagistrate", encounter, StringComparison.Ordinal);
@@ -300,7 +309,7 @@ public sealed class AncientUiReadinessGuardTests
             "GildedHideMove",
             "DebtCallMove");
         AssertSourceContains(
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs"),
+            assetPaths,
             "OptionIcon => $\"{MainFile.ResPath}/images/ancients/vakuu/options/vakuu_fight.png\"",
             "MonsterVisual => $\"{MainFile.ResPath}/images/monsters/vakuu_trial.png\"");
         AssertSourceContains(
@@ -332,35 +341,57 @@ public sealed class AncientUiReadinessGuardTests
             "ModelDb.Relic<T>().ToMutable()",
             "await RelicCmd.Obtain(relic, owner)");
 
-        foreach (var sourcePath in new[]
-        {
-            "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs",
-            "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs"
-        })
-        {
-            var source = ReadRepoText(sourcePath.Split('/'));
-            AssertSourceContains(
-                source,
-                "() => SelectBlessing<T>(blessingId)",
-                "private async Task SelectBlessing<T>(string blessingId)",
-                "where T : RelicModel",
-                "await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(Owner, blessingId)");
-            Assert.DoesNotContain("() => SelectBlessing(blessingId)", source, StringComparison.Ordinal);
-        }
+        var urdaAncient = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
+        AssertSourceContains(
+            urdaAncient,
+            "() => SelectBlessing<T>(blessingId)",
+            "private async Task SelectBlessing<T>(string blessingId)",
+            "where T : RelicModel",
+            "ModelDb.Relic<T>().ToMutable()",
+            "EventOption.FromRelic(relic, this, () => SelectBlessing<T>(blessingId), InitialOptionKey(blessingId))",
+            "option.HoverTips = option.HoverTips.Concat(hoverTips ?? []).ToList()",
+            "UrdaRewardSelectionService.SelectBlessing<T>",
+            "await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(owner, blessingId)");
+        Assert.DoesNotContain("() => SelectBlessing(blessingId)", urdaAncient, StringComparison.Ordinal);
+        Assert.DoesNotContain("new EventOption(this, () => SelectBlessing<T>(blessingId), InitialOptionKey(blessingId), hoverTips ?? [])", urdaAncient, StringComparison.Ordinal);
 
-        var lothaAncient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
+        var morviAncientSelection = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
+        AssertSourceContains(
+            morviAncientSelection,
+            "() => SelectBlessing<T>(blessingId)",
+            "private async Task SelectBlessing<T>(string blessingId)",
+            "where T : RelicModel",
+            "ModelDb.Relic<T>().ToMutable()",
+            "EventOption.FromRelic(relic, this, () => SelectBlessing<T>(blessingId), InitialOptionKey(blessingId))",
+            "option.HoverTips = option.HoverTips.Concat(hoverTips ?? []).ToList()",
+            "await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(Owner, blessingId)");
+        Assert.DoesNotContain("() => SelectBlessing(blessingId)", morviAncientSelection, StringComparison.Ordinal);
+        Assert.DoesNotContain("new EventOption(this, () => SelectBlessing<T>(blessingId), InitialOptionKey(blessingId), hoverTips ?? [])", morviAncientSelection, StringComparison.Ordinal);
+
+        var lothaAncient = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha");
         AssertSourceContains(
             lothaAncient,
             "() => SelectBlessing<T>(blessingId)",
             "private async Task SelectBlessing<T>(string blessingId)",
             "where T : RelicModel",
+            "ModelDb.Relic<T>().ToMutable()",
+            "EventOption.FromRelic(relic, this, () => SelectBlessing<T>(blessingId), InitialOptionKey(blessingId))",
+            "option.HoverTips = option.HoverTips.Concat(hoverTips ?? []).ToList()",
+            ".Where(IsCurrentlyAvailableOption)",
+            "LothaBlessingService.HasMirrorRebuttalCandidates(Owner)",
             "LothaRewardSelectionService.SelectBlessing<T>",
             "await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(owner, blessingId)");
         Assert.DoesNotContain("() => SelectBlessing(blessingId)", lothaAncient, StringComparison.Ordinal);
+        Assert.DoesNotContain("new EventOption(this, () => SelectBlessing<T>(blessingId), InitialOptionKey(blessingId), hoverTips ?? [])", lothaAncient, StringComparison.Ordinal);
 
-        var vakuuPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var morviAncient = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
+        Assert.Contains("SetEventState(InitialDescription, GenerateInitialOptions())", morviAncient, StringComparison.Ordinal);
+        var lothaMirror = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.MirrorRebuttal.cs");
+        Assert.Contains("internal static bool HasMirrorRebuttalCandidates(Player player)", lothaMirror, StringComparison.Ordinal);
+
+        var vakuuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         AssertSourceContains(
-            vakuuPatch,
+            vakuuSource,
             "await AncientRewardRelicService.ObtainSelectionRelicIfMissing<VakuuFightOptionRelic>",
             "FightOptionKey",
             "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)",

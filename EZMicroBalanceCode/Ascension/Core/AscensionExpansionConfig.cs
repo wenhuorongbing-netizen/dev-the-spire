@@ -55,10 +55,11 @@ internal sealed class AscensionExpansionConfig
 
     public static bool IsTruthy(string? value)
     {
-        return value != null &&
-            (value.Equals("1", StringComparison.OrdinalIgnoreCase) ||
-             value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
-             value.Equals("yes", StringComparison.OrdinalIgnoreCase) ||
-             value.Equals("on", StringComparison.OrdinalIgnoreCase));
+        var candidate = value?.Trim();
+        return !string.IsNullOrWhiteSpace(candidate) &&
+            (candidate.Equals("1", StringComparison.OrdinalIgnoreCase) ||
+             candidate.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+             candidate.Equals("yes", StringComparison.OrdinalIgnoreCase) ||
+             candidate.Equals("on", StringComparison.OrdinalIgnoreCase));
     }
 }

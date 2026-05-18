@@ -16,21 +16,21 @@ internal static class VakuuFightInitializer
         }
 
         initialized = true;
-        ModHelper.SubscribeForRunStateHooks(
-            $"{MainFile.ModId}.VakuuFight.RunHooks",
-            CreateRunHookSubscribers);
+        ModHelper.SubscribeForCombatStateHooks(
+            $"{MainFile.ModId}.VakuuFight.CombatHooks",
+            CreateCombatHookSubscribers);
 
         MainFile.Logger.Info(
             $"[EZMicroBalance] Vakuu fight hooks registered but hidden by default; set {VakuuFightFeatureGate.EnableEnvironmentVariable}=1 or {VakuuFightFeatureGate.SpirePlusEnableEnvironmentVariable}=1 to opt in, or {VakuuFightFeatureGate.ForceFightEnvironmentVariable}=1 / {VakuuFightFeatureGate.SpirePlusForceFightEnvironmentVariable}=1 for focused debugging.");
     }
 
-    private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>
-        VakuuFightFeatureGate.IsFightEnabledForRun(runState)
-            ? [ModelDb.GetById<VakuuFightRunHook>(ModelDb.GetId<VakuuFightRunHook>())]
+    private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState) =>
+        VakuuFightFeatureGate.IsFightEnabledForRun(combatState.RunState)
+            ? [ModelDb.GetById<VakuuFightCombatHook>(ModelDb.GetId<VakuuFightCombatHook>())]
             : [];
 }
 
-internal sealed class VakuuFightRunHook : AbstractModel
+internal sealed class VakuuFightCombatHook : AbstractModel
 {
     public override bool ShouldReceiveCombatHooks => true;
 

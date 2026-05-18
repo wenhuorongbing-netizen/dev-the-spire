@@ -7,7 +7,7 @@ Last updated: 2026-05-14
 
 ## Current Development Checklist
 
-The current forward-looking development checklist is `docs/features/ascension-11-20/development-checklist-v2.md`.
+The current compact development checklist is `docs/features/ascension-11-20/development-checklist-v2.md`. The full v2.0 planning draft is archived at `docs/archive/feature-inputs/ascension-11-20/development-checklist-v2-full-20260518.md`.
 
 That v2.0 checklist defines the next target design for:
 
@@ -138,7 +138,7 @@ Status: Rootblight v2.2 source migration implemented; build/source-guard validat
 Scope:
 
 - Add Rootblight I at Act 1 start when A14+ is selected or forced by debug level.
-- Treat Rootblight as real master-deck pollution with a four-card cap. A14 starts with Rootblight I; ignored Rootblight I/II worsens after combat; ignored Rootblight III stays at III and, the first time per card, adds one Rootblight I; played Rootblight cards remove their master-deck version and queue the downgraded replacement after combat.
+- Treat Rootblight as real master-deck pollution with a four-card cap. A14 starts with Rootblight I; ignored Rootblight I/II worsens after combat; ignored Rootblight III stays at III and, the first time it successfully adds a Rootblight I, records its one-time split marker. If the four-card cap blocks that added card, the marker is not consumed. Played Rootblight cards remove their master-deck version and queue the downgraded replacement after combat.
 - Use Rootblight I/II/III display cards, with costs 2/3/4.
 - Playing Rootblight exhausts the combat copy, removes its master-deck card, and queues the downgrade card after combat when applicable.
 - Combat end upgrades only Rootblight cards that were present at combat start; newly added Rootblight cards do not grow until the next combat. Ignored Rootblight III has no IV path.
@@ -308,7 +308,7 @@ Required proof:
 Implemented:
 
 - `AscensionMapService` marks one optional existing monster node in Act 1 and two in later acts when another boss path remains available.
-- `BannerRoomMapQuestMarker` marks banner nodes, and `AscensionMapUiPatches` shows Vanguard, Shield Formation, or Bounty rule text on map hover.
+- `BannerRoomMapQuestMarker` marks banner nodes, and the focused Ascension map hover patches show Vanguard, Shield Formation, or Bounty rule text on map hover.
 - `AscensionCombatModifierService` applies Vanguard temporary Strength, Shield Formation bannerbearer Block once per round, and Bounty target/penalty behavior through command APIs.
 - Bounty success adds a 15 Gold room-end reward through `CombatRoom.AddExtraReward`; no monster action table edits are used.
 

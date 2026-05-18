@@ -110,7 +110,7 @@ Additional local APIs inspected:
 - `CardCmd.Enchant<T>(CardModel, decimal)` is save-compatible for persistent card markers but rejects already-enchanted cards. The implementation filters Jeweled Mask pickup choices to unenchanted powers rather than replacing existing enchantments.
 - `ChoicesParadox.AfterPlayerTurnStart(...)` already uses `CardFactory.GetDistinctForCombat(...)`, `CardCmd.ApplyKeyword(..., Retain)`, `CardSelectCmd.FromSimpleGrid(...)`, and `CardPileCmd.AddGeneratedCardToCombat(...)`. The finish batch reuses that flow with a rare-card filter over all character pools plus colorless.
 - `ToastyMittens.BeforeHandDraw(...)` is the local API name for the source-design "Baking Gloves" behavior. It already uses top-of-draw-pile exhaust plus `PowerCmd.Apply<StrengthPower>(...)`, so the safe rework is to insert the one-card skip prompt before exhausting.
-- `MeatCleaver.TryModifyRestSiteOptions(...)` adds the built-in `CookRestSiteOption`. `CookRestSiteOption.OnSelect()` is patchable, and `CreatureCmd.SetCurrentHp(...)` is the available command API for a current-HP loss that fires the current-HP hook. `RestSiteOption.Owner` is protected, so the patch reads it through Harmony reflection.
+- `MeatCleaver.TryModifyRestSiteOptions(...)` adds the built-in `CookRestSiteOption`; player-facing text is overridden to `Cleaver` / `切肉`. `CookRestSiteOption.OnSelect()` is patchable, and `CreatureCmd.SetCurrentHp(...)` is the available command API for a current-HP loss that fires the current-HP hook. `RestSiteOption.Owner` is protected, so the patch reads it through Harmony reflection.
 - `LocManager` loads localization files as flat `Dictionary<string,string>` tables and merges mod `localization/<language>/<table>.json` files into matching base tables. This supports the active resource pass in `EZMicroBalance/localization/eng/*.json` and `EZMicroBalance/localization/zhs/*.json`.
 - `LocManager` maps Simplified Chinese Weblate language `zh_Hans` to game language folder `zhs`; `Languages` includes `eng` and `zhs`, and `CultureInfoFromThreeLetterCode("zhs")` maps to `zh-hans`.
 
@@ -122,7 +122,7 @@ Implemented in finish batch:
 - `JeweledMask`: on pickup, select an unenchanted deck power or draft one generated character power; enchant it with a persistent custom marker that permanently sets energy cost to 0; combat start pulls the marked power from draw pile to hand.
 - `ChoicesParadox`: on combat round 1, offers five generated usable rare cards from all character card pools plus colorless, applies `Retain`, and adds the chosen generated card to hand only for the combat.
 - `ToastyMittens` / source-design Baking Gloves: before hand draw, offers the top draw-pile card; accepting exhausts it and grants 1 Strength, skipping keeps it.
-- `MeatCleaver`: built-in Cook rest option now removes exactly two cards and loses 5 current HP instead of gaining max HP; it is disabled when the player has fewer than two removable cards or current HP is not above 5.
+- `MeatCleaver`: built-in Cook rest option is shown as `Cleaver` / `切肉`, removes exactly two cards, and loses 5 current HP instead of gaining max HP; it is disabled when the player has fewer than two removable cards or current HP is not above 5.
 - `Folly`: canonical keywords are now `Unplayable`, `Innate`, and `Eternal`; `Ethereal` is removed globally for newly created/loaded canonical Folly instances.
 - `Debt`: end-of-turn in-hand gold loss is disabled; only `CardCmd.Exhaust(...)` loses up to 5 gold.
 - Localization/resources: flat English table overrides were added for changed relic/card/rest-site text plus the custom Jeweled Mask enchantment localization through `ILocalizationProvider`.
@@ -137,7 +137,7 @@ Additional local APIs inspected:
 - `CardReward` stores reward slots as `List<CardCreationResult>`, calls `CardFactory.CreateForReward(...)`, then applies `Hook.TryModifyCardRewardOptions(...)`. `CardCreationResult.ModifyCard(CardModel, RelicModel)` replaces a single populated reward result while recording the modifying relic.
 - `CardFactory.CreateForReward(Player, int, CardCreationOptions)` sets `CardCreationFlags.IsCardReward` for reward cards and calls `Hook.TryModifyCardRewardOptions(...)` after all reward cards are created. `CardCreationOptions.ForRoom(...)` marks Monster/Elite/Boss as `CardCreationSource.Encounter`; only normal monster rewards use `CardRarityOddsType.RegularEncounter`.
 - `CardCreationFlags` includes `NoCardPoolModifications`, `NoCardModelModifications`, `NoModifyHooks`, and `IsCardReward`. The Prismatic Gem patch skips no-pool/no-model modification rewards, custom pools, filtered pools, colorless pools, non-encounter sources, and non-regular encounter odds.
-- Vanilla `PrismaticGem.ModifyCardRewardCreationOptions(...)` broadens the whole card pool before card creation. The v4.3 rework no-ops that method and implements screen-scoped all-slot replacement in `AbstractModel.TryModifyCardRewardOptions(...)` for `PrismaticGem`.
+- Vanilla `PrismaticGem.ModifyCardRewardCreationOptions(...)` broadens the whole card pool before card creation. The v4.3 rework no-ops that method and inserts screen-scoped all-slot replacement inside `Hook.TryModifyCardRewardOptions(...)` after all early reward modifiers and before late reward modifiers. Early slot adders such as `LastingCandy` appear before Prismatic replacement; late modifiers such as Eggs and reward enchantment relics apply to the final off-color cards.
 - Vanilla `VelvetChoker.ShouldPlay(...)` enforces the hard six-card cap. The retained v4.2 patch no-ops that cap, uses a `CardEnergyCost.GetWithModifiers(...)` postfix so the +1 soft-limit tax is applied after local and global cost changes, and wraps X-cost resource spending so the extra energy does not increase the captured X value.
 - Vanilla `DistinguishedCape.AfterObtained()` loses a fixed 9 max HP through `CreatureCmd.LoseMaxHp(...)` and adds three `Apparition` cards. The v4.3 patch computes `max(ceil(currentMaxHp * 0.30), 18)`, patches `Vakuu.GenerateInitialOptions(...)` so an unaffordable Cape roll is replaced by a payable Pool 2 option instead of shrinking Vakuu's three visible options, keeps a localized locked Cape fallback if no replacement exists, lowers current HP with `CreatureCmd.SetCurrentHp(...)` before max-HP loss when needed, then calls `CreatureCmd.LoseMaxHp(...)` without routing the cost through damage.
 - `RelicModel.HoverTips` can be patched safely to append a count hover tip for Prismatic Gem. `NCardRewardSelectionScreen.RefreshOptions(...)` receives the visible `IReadOnlyList<CardCreationResult>` and owns a private `_banner`; the private `_banner` field type is runtime-guarded against the installed game API, the implementation falls back to the public `UI/Banner` node lookup when the field is missing, wrong-typed, null, or throws, and one-time diagnostics record the active path. Runtime visual placement still requires manual gameplay verification.
@@ -148,12 +148,12 @@ Additional local APIs inspected:
 
 Implemented after blocker finish:
 
-- `PrismaticGem`: save-backed standard card reward counter using `SavedSpireField<PrismaticGem,int>`; Every second standard card reward contains only off-color cards, preserving each slot's original rarity when available and relaxing rarity before failing. The vanilla pool broadening is skipped.
+- `PrismaticGem`: save-backed standard card reward counter using `SavedSpireField<PrismaticGem,int>`; Every second standard card reward contains only off-color cards, preserving each slot's original type and rarity when available. Fallbacks relax rarity first, then type, then both before failing. If no replacement set can be built, the saved counter is restored to its pre-trigger value. The vanilla pool broadening is skipped.
 - `VelvetChoker`: no hard six-card cap; every player turn counts non-autoplay first manual card-play series from hand, and the seventh and later from-hand plays cost +1 after other cost changes. X-cost cards require the extra energy without increasing captured X.
 - `DistinguishedCape`: pickup uses `lose 30% of current Max HP, at least 18`; current max HP must be greater than the calculated cost before the trade can be selected. When the player cannot pay, an otherwise rolled Cape is replaced by a payable Vakuu Pool 2 option, with a locked localized Cape fallback if replacement ever fails. It then loses max HP and adds three `Apparition` cards. The current-HP clamp is not implemented as damage.
 - `PaelsTooth`: save-backed non-boss combat counter using `SavedSpireField<PaelsTooth,int>`; pickup still uses the vanilla saved removed-card list. Every second non-boss combat offers the stored removed cards, returns the chosen card upgraded through command APIs, and removes that saved entry. Boss combat and act transition clear remaining saved cards.
 - `Quality Blade` / name-TBD: resolved locally as generated `SovereignBlade` from `ForgeCmd.Forge(...)`, not permanent `RefineBlade`. Forged temporary `SovereignBlade` cards with `CreatedThroughForge` now gain `Exhaust`; permanent `RefineBlade` and non-forged copies are not altered.
-- Chinese localization: Simplified Chinese `zhs` flat-table overrides were added for changed relics, cards, Prismatic Gem count/reward hints, and rest-site Cook UI. English relic text was also updated for `PrismaticGem`, `PaelsTooth`, `BloodSoakedRose`, `DistinguishedCape`, and `VelvetChoker`. v4.3 zhs player-facing text removes spaces between Chinese text, numbers, and units.
+- Chinese localization: Simplified Chinese `zhs` flat-table overrides were added for changed relics, cards, Prismatic Gem count/reward hints, and rest-site Cleaver / 切肉 UI. English relic text was also updated for `PrismaticGem`, `PaelsTooth`, `BloodSoakedRose`, `DistinguishedCape`, and `VelvetChoker`. v4.3 zhs player-facing text removes spaces between Chinese text, numbers, and units.
 
 No source-design item remains deferred for lack of local compile-time API evidence after this pass.
 
@@ -173,14 +173,14 @@ Chosen state strategy:
 - Add a per-screen state keyed by the active `CardReward` instance with `ConditionalWeakTable<CardReward, RewardScreenState>`.
 - Patch `CardReward.Populate()` only to expose the active reward screen through a thread-local stack while `CardFactory.CreateForReward(...)` and `Hook.TryModifyCardRewardOptions(...)` run.
 - The first Prismatic Gem evaluation for a `CardReward` decides the screen: eligible normal rewards increment the saved counter once and store whether this screen should replace all slots; ineligible rewards store a non-trigger decision and do not increment.
-- Rerolls reuse the same `CardReward` state. Trigger screens regenerate all-slot off-color replacements on every reroll; non-trigger screens stay non-trigger and do not increment the saved counter.
+- Rerolls reuse the same `CardReward` state. Trigger screens regenerate all-slot off-color replacements on every reroll; non-trigger screens stay non-trigger and do not increment the saved counter. Replacement runs after early reward modifiers and before late reward modifiers, so added slots are included and late modifiers apply to the final visible cards.
 - If a Prismatic Gem reward modification runs without a `CardReward.Populate()` context, it does not increment or replace. This prevents non-screen card generation from consuming the saved reward counter.
 
 Runtime-risk notes:
 
 - `JeweledMaskFreePower` is compile-verified and uses BaseLib's custom model registration path, but it still needs manual runtime verification that BaseLib prefixes and registers the custom enchantment before a Jeweled Mask pickup save/load cycle.
 - `Crossbow`, `ToastyMittens`, and `ChoicesParadox` use generated combat cards and selection screens; manual testing should verify skipped generated cards do not linger in combat state.
-- `MeatCleaver` patches the built-in `CookRestSiteOption`; manual testing should verify no other source creates Cook without Meat Cleaver.
+- `MeatCleaver` patches the built-in `CookRestSiteOption`; manual testing should verify no other source creates the rest-site Cleaver option without Meat Cleaver.
 - `PrismaticGem` should be manually tested across two normal monster card rewards and a non-normal reward (elite, boss, event, or colorless-only) to confirm the saved counter only affects the intended reward type.
 - `PaelsTooth` should be manually tested across pickup, one non-boss combat, two non-boss combats, and act boss completion to verify the saved counter, choice UI, upgraded return, and stored-card clear.
 
@@ -188,13 +188,13 @@ Runtime-risk notes:
 
 Timestamp: 2026-05-06.
 
-v4.3 is current. v4.2 rightmost-slot Prismatic Gem is historical only. v4.2 Distinguished Cape 40% min15 is historical only.
+v4.3 is current. The all-slot Prismatic Gem behavior is retained, with hook ordering hardened through the between-early-and-late Hook insertion. v4.2 rightmost-slot Prismatic Gem is historical only. v4.2 Distinguished Cape 40% min15 is historical only.
 
 No new public API surface was added beyond the hover/banner hooks documented above. The active v4.3 implementation uses the previously documented local APIs:
 
 - `VelvetChoker.ShouldPlay`, `CardEnergyCost.GetWithModifiers`, `PlayerCombatState.HasEnoughResourcesFor`, `CardModel.SpendResources`, and the relic turn/combat hooks for the no-hard-cap soft-limit implementation.
 - `Vakuu.GenerateInitialOptions`, same-pool replacement plus a locked `EventOption` fallback for unaffordable Cape choices, `DistinguishedCape.AfterObtained`, `CreatureCmd.SetCurrentHp`, and `CreatureCmd.LoseMaxHp` for pay-gated proportional max-HP loss without routing the cost through damage.
-- `CardReward.Populate`, `CardReward.Reroll`, `AbstractModel.TryModifyCardRewardOptions`, `CardCreationResult.ModifyCard`, and `SavedSpireField<PrismaticGem,int>` for screen-scoped Prismatic Gem all-slot replacement.
+- `CardReward.Populate`, `CardReward.Reroll`, `Hook.TryModifyCardRewardOptions`, `CardCreationResult.ModifyCard`, and `SavedSpireField<PrismaticGem,int>` for screen-scoped Prismatic Gem all-slot replacement.
 - `RelicModel.HoverTips`, `RelicModel.HoverTipsExcludingRelic`, and `NCardRewardSelectionScreen.RefreshOptions` for the Prismatic Gem count hover and reward-screen banner hint. The `_banner` contract is guarded by source and installed-API tests; runtime rejects missing, wrong-typed, null, detached, or throwing private-banner paths, falls back to the public `UI/Banner` node lookup plus log diagnostics, and treats visible all-off-color cards plus the relic hover count as fallback evidence if no banner can be updated. Runtime visual placement still requires manual gameplay verification.
 
 The archived v4.2 next-plan file at `../../archive/feature-inputs/ancients-rework-v4/sts2_ancients_rework_v4_2_next_plan.md` is byte-for-byte identical to `C:\Users\Jack\Downloads\sts2_ancients_rework_v4_2_next_plan.md` as of that preservation pass.

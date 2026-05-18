@@ -19,6 +19,10 @@ internal static class LothaInitializer
             $"{MainFile.ModId}.Lotha.RunHooks",
             CreateRunHookSubscribers);
 
+        ModHelper.SubscribeForCombatStateHooks(
+            $"{MainFile.ModId}.Lotha.CombatHooks",
+            CreateCombatHookSubscribers);
+
         MainFile.Logger.Info(
             $"[EZMicroBalance] Lotha hooks registered default-on; set {LothaFeatureGate.DisableEnvironmentVariable}=1 or {LothaFeatureGate.SpirePlusDisableEnvironmentVariable}=1 to disable.");
     }
@@ -26,5 +30,10 @@ internal static class LothaInitializer
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>
         LothaFeatureGate.IsLothaEnabled(runState.UnlockState)
             ? [ModelDb.GetById<LothaRunHook>(ModelDb.GetId<LothaRunHook>())]
+            : [];
+
+    private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState) =>
+        LothaFeatureGate.IsLothaEnabled(combatState.RunState.UnlockState)
+            ? [ModelDb.GetById<LothaCombatHook>(ModelDb.GetId<LothaCombatHook>())]
             : [];
 }

@@ -37,7 +37,7 @@ Baseline setup is complete on the local machine:
 - Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, and documentation freshness guards.
 - Current local source is refreshed from Slay the Spire 2 `v0.105.0`; BaseLib runtime/project package are aligned on `v3.1.2`.
 - Controlled `--force-steam off` smoke loading has verified only BaseLib and `EZMicroBalance` initialization to main menu from the final installed artifacts.
-- Normal Steam-client startup/log verification for the current `Spire Plus` display-name package has passed with exactly BaseLib and `EZMicroBalance` loaded, config registration, 16 SavedSpireFields, and 0 release-blocking log hits. Mod Settings UI screenshot evidence for `EZMicroBalance` is still historical under the old `EZ Micro Balance` display name. Live gameplay feature verification remains pending.
+- Normal Steam-client startup/log verification exists for earlier `Spire Plus` display-name packages with exactly BaseLib and `EZMicroBalance` loaded, config registration, and 0 release-blocking log hits. Current source defines 24 SavedSpireFields after the latest static fixes, while the latest live loader log still reports the earlier 22-field package; rerun live loader smoke before claiming current-package runtime parity. Mod Settings UI screenshot evidence for `EZMicroBalance` is still partly historical under the old `EZ Micro Balance` display name. Live gameplay feature verification remains pending.
 
 Revalidate build, publish, and game load before claiming private beta readiness.
 

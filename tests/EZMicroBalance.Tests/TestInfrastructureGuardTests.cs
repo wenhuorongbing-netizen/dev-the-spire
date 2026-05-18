@@ -9,7 +9,7 @@ public sealed class TestInfrastructureGuardTests
     public void GuardTestsUseSharedRepositoryPathHelpers()
     {
         var duplicateHelperPattern = new Regex(
-            @"\bprivate\s+static\s+(?:(?:[^(;\r\n]+)|(?:\([^)]*\)))\s+(ReadRepoText|ReadSharedText|ReadAllTextShared|RepoPath|GamePath|FindRepoRoot|ToRepoRelativePath|AssertRepoFileExists|AssertRepoDirectoryExists|AssertRepoPathDoesNotExist|AssertSourceContains|AssertLocalizedKeys|AssertNoMojibake|JsonStringMap|JsonStringValues|JsonKeys|ManifestVersion|ReadCurrentFacingDocs|SliceFrom|SliceBetween|SourceSlice|AssertBefore|CountOccurrences|ReadSourceTree|ReadAllTestSource|ReadZipBytes|ReadZipText|ReadPckDirectory|Sha256|NormalizeJson|ReadPngBytes|ReadPngDimensions|ReadPngSize|ReadBigEndianInt32|Unwrap|ReadAncientSource|ReadAscensionSource|ParseExportFiles|IsActiveExportResource|IsActiveReleaseResource)\s*\(",
+            @"\bprivate\s+static\s+(?:(?:[^(;\r\n]+)|(?:\([^)]*\)))\s+(ReadRepoText|ReadSharedText|ReadAllTextShared|RepoPath|GamePath|FindRepoRoot|ToRepoRelativePath|AssertRepoFileExists|AssertRepoDirectoryExists|AssertRepoPathDoesNotExist|AssertDirectoryContainsOnlyFiles|AssertSourceContains|AssertLocalizedKeys|AssertNoMojibake|JsonStringMap|JsonStringValues|JsonKeys|ManifestVersion|ReadCurrentFacingDocs|SliceFrom|SliceBetween|SourceSlice|AssertBefore|CountOccurrences|ReadSourceTree|ReadAllTestSource|ReadZipBytes|ReadZipText|ReadPckDirectory|Sha256|NormalizeJson|ReadPngBytes|ReadPngDimensions|ReadPngSize|AssertSmallUiPngHasAlpha|ReadBigEndianInt32|Unwrap|ReadAncientSource|ReadAscensionSource|ParseExportFiles|IsActiveExportResource|IsActiveReleaseResource)\s*\(",
             RegexOptions.CultureInvariant);
 
         var duplicateHelpers = Directory
@@ -42,7 +42,7 @@ public sealed class TestInfrastructureGuardTests
         Assert.Contains("Use the shared `AssertLocalizedKeys` helper", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared JSON/source-slicing helpers for common guard-test parsing", readme, StringComparison.Ordinal);
         Assert.Contains("`JsonKeys`", readme, StringComparison.Ordinal);
-        Assert.Contains("Use the shared manifest, PNG byte/dimension, JSON normalization, and exception-unwrapping helpers", readme, StringComparison.Ordinal);
+        Assert.Contains("Use the shared manifest, PNG byte/dimension, small-UI PNG alpha, JSON normalization, and exception-unwrapping helpers", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared export-preset parser", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared active release resource predicates", readme, StringComparison.Ordinal);
     }
@@ -101,6 +101,27 @@ public sealed class TestInfrastructureGuardTests
     }
 
     [Fact]
+    public void TestReadyDevelopmentGoalStaysCompactAndCurrent()
+    {
+        var goal = ReadRepoText("docs", "test-ready-development-goal.md");
+        var lineCount = goal.Split('\n').Length;
+
+        Assert.True(lineCount <= 120, $"docs/test-ready-development-goal.md should stay compact; current line count is {lineCount}.");
+        AssertSourceContains(
+            goal,
+            "Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test build",
+            "Current stop line: Codex should not chase release-ready evidence in this pass.",
+            "`source code/src/Core/**` is the primary source evidence",
+            "Future Peek is a separate mod idea",
+            "No live-game, save-load, death/failure, or co-op evidence may be claimed from these commands.");
+        Assert.DoesNotContain("One-Shot Prompt", goal, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("## Subagent Plan", goal, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("## P0:", goal, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("## P1:", goal, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("## P2:", goal, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void WebsitePreviewDraftStaysOutOfReleaseCandidateDiff()
     {
         var gitIgnore = ReadRepoText(".gitignore");
@@ -130,7 +151,7 @@ public sealed class TestInfrastructureGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("Current normal Steam-client startup/log verification passed for the Spire Plus display-name package", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest normal Steam-client startup/log evidence is historical for the pre-review Spire Plus package", projectState, StringComparison.Ordinal);
         Assert.Contains("Current manual-test package is not a release-readiness claim", projectState, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", projectState, StringComparison.Ordinal);
         Assert.Contains("git diff --check", projectState, StringComparison.Ordinal);
@@ -153,6 +174,30 @@ public sealed class TestInfrastructureGuardTests
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectMap, StringComparison.Ordinal);
         Assert.Contains("docs/archive/project-state-history-20260516.md", docInventory, StringComparison.Ordinal);
         Assert.Contains("project-state-history-20260516.md", archiveReadme, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ToReviewQueueStaysCompactAndHistoricalRowsAreArchived()
+    {
+        var toReview = ReadRepoText("docs", "toreview.md");
+        var archive = ReadRepoText("docs", "archive", "feature-audits", "toreview-pre-slim-20260518.md");
+        var docsIndex = ReadRepoText("docs", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
+
+        Assert.True(
+            toReview.Split('\n').Length <= 60,
+            "docs/toreview.md should stay a compact current manual retest queue; archive historical implementation rows.");
+        Assert.Contains("docs/archive/feature-audits/toreview-pre-slim-20260518.md", toReview, StringComparison.Ordinal);
+        Assert.Contains("BANNER-TEMP-STRENGTH-CLEANUP-20260518", archive, StringComparison.Ordinal);
+        Assert.DoesNotContain("BANNER-TEMP-STRENGTH-CLEANUP-20260518", toReview, StringComparison.Ordinal);
+        Assert.Contains("URDA-ROOT-EYES", toReview, StringComparison.Ordinal);
+        Assert.Contains("VAKUU-FIGHT", toReview, StringComparison.Ordinal);
+        Assert.Contains("toreview-pre-slim-20260518.md", docsIndex, StringComparison.Ordinal);
+        Assert.Contains("toreview-pre-slim-20260518.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("toreview-pre-slim-20260518.md", docInventory, StringComparison.Ordinal);
+        Assert.Contains("toreview-pre-slim-20260518.md", archiveReadme, StringComparison.Ordinal);
     }
 
     [Fact]

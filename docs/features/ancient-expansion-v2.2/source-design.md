@@ -54,11 +54,11 @@ Current source-backed blessings:
 | Humus Pact | `urda_humus_pact` | Source hook exists; live gameplay/save-load pending. |
 | Molting | `urda_molting` | Source hook exists with `Withered Husk`; live gameplay/save-load pending. |
 | Moss Map | `urda_moss_map` | Source hook exists; live gameplay/save-load pending. |
-| Trial Branch | `urda_trial_branch` | Source hook exists with 4-card grid, upgraded Trial Plant marker, and 3-combat/2-success settlement; live gameplay/save-load pending. |
+| Trial Branch | `urda_trial_branch` | Source hook exists with 4 rare-card grid, upgraded Trial Branch enchantment marker, and strict 3-combat/3-success settlement; missing any trial combat removes the card. Live gameplay/save-load pending. |
 | Shallow-Root Relic | `urda_shallow_root_relic` | Source hook exists with 2 common relic choices, gold/rooting, and deterministic Act 2 removal/refund fallback; live gameplay/save-load pending. |
 | Rooted Route | `urda_rooted_route` | Source hook exists with automatic reachable normal-combat mark, no map graph mutation, success rewards, and wither fallback; live gameplay/save-load pending. |
 | After the Rain | `urda_after_rain` | Source hook exists with Act 1 death prevention, elite gold, and Act 2 unused compensation; live gameplay/save-load pending. |
-| Root-Sight | `urda_root_sight` | Source hook exists with 5 Root Eyes, relic-click map selection, and stored previews for reachable Monster/Unknown/Elite nodes; live gameplay/save-load pending. |
+| Root-Sight | `urda_root_sight` | Source hook exists with 5 Root Eyes, relic-click map selection, and stored previews for future reachable Monster/Unknown/Elite nodes; live gameplay/save-load pending. |
 | Seed Bank | `urda_seed_bank` | Source hook exists with Store Seed reward alternative and relic-click extraction of up to 2 stored cards; live gameplay/save-load pending. |
 
 ## 4. Full Urda v2.2 Roadmap
@@ -76,7 +76,7 @@ Urda's full v2.2 design contains ten blessings. All ten are now source-backed fo
 | Rooted Route | `urda_rooted_route` | Current source-backed slice | Route commitment reward that never mutates the map graph. |
 | After the Rain | `urda_after_rain` | Current source-backed slice | Act 1 death prevention or unused compensation. |
 | Root-Sight | `urda_root_sight` | Current source-backed slice | Source-safe automatic preview marking, not hidden power. |
-| Seed Bank | `urda_seed_bank` | Current source-backed slice | Capped stored card value with pre-boss settlement. |
+| Seed Bank | `urda_seed_bank` | Current source-backed slice | Capped stored card value with player-triggered relic extraction. |
 
 Future Urda work must keep the ten active blessings stable unless a dedicated Urda refactor milestone says otherwise.
 
@@ -97,7 +97,7 @@ Morvi is default-on. It appears in Act 2 unless `EZMB_DISABLE_MORVI=1` or `SPIRE
 
 ## 6. Lotha v2.2 Source-Complete Test Slice
 
-Lotha is default-on. The source slice uses a custom Control-based Ancient background scene, separate map/run-history art, marker relic option art, English/zhs localization, and run-state hooks registered through canonical `ModelDb` instances. Source guards cover all eight blessings. Live gameplay, save/load, lethal-path, co-op, and post-publish game-load evidence remain pending.
+Lotha is default-on. The source slice uses a custom Control-based Ancient background scene, separate map/run-history art, marker relic option art, English/zhs localization, and run/combat hooks registered through canonical `ModelDb` instances. Source guards cover all eight blessings. Live gameplay, save/load, lethal-path, co-op, and post-publish game-load evidence remain pending.
 
 Implementation summary:
 
@@ -107,7 +107,7 @@ Implementation summary:
 - `lotha_closed_court`: for the rest of the run, post-combat card rewards are removed from combat reward sets only; gold, potions, and relic rewards are left intact. On the first player turn each combat, draw until the hand has 10 cards, gain 4 Energy, and make the first three player-played hand cards cost 1 less Energy for that play.
 - `lotha_deferred_verdict`: on turn 4, draw 4 cards, gain 4 Energy, and gain 3 player-owned Verdict stacks. This turn, each next non-Status card consumes 1 Verdict. Attack/Skill cards play one additional time. Power cards are not extra-played; they cost 0 for that play and draw 1. Verdict is removed at turn end and combat end. If combat ends before turn 4, heal 4 HP when source-safe.
 - `lotha_death_reprieve`: once per run, prevents death and sets HP to 1. During the reprieve player turn, draw 10, gain 10 Energy, all card costs are 0, and further death is prevented. At that player turn end, if enemies remain, the player is killed with `force: true`; if all enemies are dead, the run continues. Source-safe deviation: local turn-flow evidence did not prove a safe immediate interruption into a new player turn during enemy turn damage, so enemy-turn lethal starts the reprieve at the next player turn; player-turn lethal starts it immediately in the current player turn.
-- `lotha_single_sentence`: the first player-driven Attack/Skill each turn plays two additional times. After that ruling, the player can play at most four more normal player-played cards that turn. The first Power before that ruling costs 0 for that play and draws 1 without consuming the sentence. Autoplay, generated clones, and extra play executions do not consume the four-card cap.
+- `lotha_single_sentence`: the first player-driven Attack/Skill each turn plays two additional times. After that ruling, the player can play at most four more normal player-played cards that turn. A visible Single Sentence Power starts at 5 while the ruling is ready, switches to 4 after the ruling, counts down later normal plays, and reaches 0 when more plays are blocked. The first Power before that ruling costs 0 for that play and draws 1 without consuming the sentence. Autoplay, generated clones, and extra play executions do not consume the four-card cap.
 - `lotha_public_evidence`: when the player applies a non-damaging negative status to enemies, those layers double and the player gains Enlightenment. When enemies apply a non-damaging negative status to the player, those layers double and one Enlightenment is removed. At turn start, consume up to 3 Enlightenment; each consumed draws 1 and grants 4 Block. Source policy uses `PowerModel.GetTypeForAmount(amount) == PowerType.Debuff` as the base gate, keeps Weak, Vulnerable, Frail, and other non-damage Debuff applications eligible, and excludes source-proven damage/kill Debuffs such as Poison, Constrict, Demise, Disintegration, Doom, Magic Bomb, Strangle, and The Gambit.
 
 | Blessing | Planned Id | Design Notes |
@@ -118,7 +118,7 @@ Implementation summary:
 | Closed Court / 终审封庭 | `lotha_closed_court` | v2.2 removes hand-limit +3 and uses first-turn burst instead. |
 | Deferred Verdict / 延期判决 | `lotha_deferred_verdict` | Uses player-owned turn-4 Verdict stacks; does not auto-damage. |
 | Death Reprieve / 死刑缓期 | `lotha_death_reprieve` | High-risk death-prevention effect; source-safe implementation has an enemy-turn timing deviation and needs live lethal-path proof. |
-| Single Sentence / 单牌宣判 | `lotha_single_sentence` | First Attack/Skill judgment plus a four-card remaining cap; Powers use replacement reward. |
+| Single Sentence / 单牌宣判 | `lotha_single_sentence` | First Attack/Skill judgment plus a visible four-card remaining cap; Powers use replacement reward. |
 | Public Evidence / 公开罪证 | `lotha_public_evidence` | Non-damaging negative status/evidence detection uses source power-amount hooks; Poison, damage-over-time, countdown damage, and source-proven damage/kill Debuffs are excluded; consumes Enlightenment at turn start. |
 
 ## 7. Vakuu Fight Hidden Opt-In Slice
@@ -149,7 +149,7 @@ Source shape:
 - The custom encounter is `RoomType.Monster` and `ShouldGiveRewards => false`, matching Core's event-launched combat shape while avoiding normal combat rewards and nonserializable linked reward sets.
 - The prefinished Vakuu trial restore path patches `CombatRoom.OfferRoomEndRewards()` so it resumes the parent Vakuu event instead of generating normal combat rewards.
 - Parent-event resume patches `EventModel.Resume(...)` and calls the protected `SetEventState(...)` path by reflection to present the victory blessing choices.
-- A run-state combat hook, registered only when the single-player Vakuu fight gate is enabled, injects Contracts only when `combatState.Encounter is EzmbVakuuTrialEncounter`, applies the Stolen Vault power when Vakuu enters combat, and tracks player-turn unblocked damage for lock breaks.
+- Run-state hooks cover parent-room and run-level behavior, while combat-state hooks cover combat-only paths. For Vakuu, the gated combat hook injects Contracts only when `combatState.Encounter is EzmbVakuuTrialEncounter`, applies the Stolen Vault power when Vakuu enters combat, and tracks player-turn unblocked damage for lock breaks.
 - Contract cards are hidden 0-cost Skill tokens with Ethereal and Exhaust. They use normal card play commands plus a shared signing service for HP loss, Blood Debt, and lock breaks.
 - Multiplayer is gated off by requiring `runState.Players.Count == 1`.
 - Local `CombatRoom.ToSerializable()` throws for active combat rooms with `ParentEventId`; current Vakuu source no longer stores `ParentEventId` while the combat room is active, avoiding that known source-level blocker. Do not claim fight save/load readiness until live testing proves active-fight behavior if saving is available there, plus the patched prefinished no-reward parent-resume path.
@@ -158,7 +158,7 @@ Source shape:
 
 | Card / Status | Status | Purpose |
 | --- | --- | --- |
-| Withered Husk | Current Urda source-backed slice | Temporary/unplayable Molting card. Current live verification pending. |
+| Withered Husk | Current Urda source-backed slice | 0-cost Skill that grants 3 Block and exhausts. Current live verification pending. |
 | Waste Paper | Current Morvi source-backed slice | Temporary Status used by Paperstorm; no extra punishment beyond Paperstorm consuming drawn Status cards. |
 | Archive Pages | Current Morvi source-backed slice | Temporary 0-cost Ethereal/Exhaust pages from Overdue Library; unplayed pages have no extra punishment. |
 | Vakuu Contracts | Current Vakuu source-backed slice | Hidden 0-cost Skill token Contracts added by the Vakuu fight on turns 1/3/5+. Ethereal + Exhaust; playing one costs HP, breaks one Stolen Vault lock if any remain, adds one Blood Debt, and then applies Knife/Gold/Shelter effects. Uses the browser GPTimage2 rebuilt custom card portrait. |

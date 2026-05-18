@@ -43,7 +43,7 @@ These files are current support records but are not part of the default next-dev
 | `test-plan.md` | Automated, release-artifact, localization, manual, save/load, and disable checks. |
 | `BETA_COMPATIBILITY.md` | Version compatibility policy and compatibility log. |
 | `rc1-live-validation-log.md` | RC1 source/live-validation notes and remaining live gates. |
-| `issues/waiting-tests.md` | Manual evidence queue retained for guard/reference support. |
+| `issues/waiting-tests.md` | Compact manual evidence queue retained for guard/reference support. Full historical rows are archived under `archive/issues/`. |
 | `mod-changelog.md` | Player-facing change summary. Keep it short. |
 | `介绍.md` | Detailed feature and change summary for downstream web documentation. |
 
@@ -73,6 +73,8 @@ These files are current support records but are not part of the default next-dev
 | `archive/prompts/2026-05/` | Historical nightly/development prompts. |
 | `archive/feature-inputs/` | Historical feature prompts and superseded implementation specs moved out of active feature folders. |
 | `archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Historical v2.2 audit matrices moved out of the active reading path. |
+| `archive/feature-audits/review-pre-slim-20260518.md` | Full historical source-review log before `docs/review.md` was reduced to current findings. |
+| `archive/feature-audits/toreview-pre-slim-20260518.md` | Full historical retest queue before `docs/toreview.md` was reduced to the current manual queue. |
 | `archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md` | Compact record of the source/test-ready implementation pass. |
 | `archive/project-state-history-20260516.md` | Historical `PROJECT_STATE.md` snapshot before the active file was reduced to current status. |
 

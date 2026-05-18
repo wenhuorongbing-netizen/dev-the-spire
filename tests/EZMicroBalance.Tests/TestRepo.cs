@@ -17,6 +17,21 @@ internal static class TestRepo
 
     internal static string Root => LazyRoot.Value;
 
+    internal static readonly string[] CurrentFacingDocs =
+    [
+        "README.md",
+        "docs/dev-environment.md",
+        "docs/private-beta-verification-handoff.md",
+        "docs/private-beta-release-completion-audit.md",
+        "docs/test-plan.md",
+        "docs/test-ready-completion-audit.md",
+        "docs/release-checklist.md",
+        "docs/features/ancients-rework-v4/completion-audit.md",
+        "docs/features/ancients-rework-v4/manual-verification-matrix.md",
+        "docs/features/ascension-11-20/api-research.md",
+        "docs/features/ascension-11-20/manual-test-checklist.md"
+    ];
+
     internal static string ReadRepoText(params string[] parts)
     {
         return File.ReadAllText(RepoPath(parts), Encoding.UTF8);
@@ -87,6 +102,17 @@ internal static class TestRepo
     {
         var path = RepoPath(parts);
         Assert.False(File.Exists(path) || Directory.Exists(path), $"Repository path should not exist: {ToRepoRelativePath(path)}");
+    }
+
+    internal static void AssertDirectoryContainsOnlyFiles(string directory, IEnumerable<string> expectedRelativeFiles)
+    {
+        Assert.True(Directory.Exists(directory), $"Missing directory: {directory}");
+        var entries = Directory.GetFiles(directory, "*", SearchOption.AllDirectories)
+            .Select(path => Path.GetRelativePath(directory, path).Replace('\\', '/'))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(expectedRelativeFiles.OrderBy(file => file, StringComparer.Ordinal), entries);
     }
 
     internal static string FindRepoRoot()
@@ -329,6 +355,18 @@ internal static class TestRepo
         return (
             BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(16, 4)),
             BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(20, 4)));
+    }
+
+    internal static void AssertSmallUiPngHasAlpha(string path, string message)
+    {
+        var bytes = ReadPngBytes(path);
+        Assert.True(bytes.Length >= 33, $"PNG too small to contain IHDR: {path}");
+
+        var (width, height) = ReadPngDimensions(path);
+        var colorType = bytes[25];
+
+        Assert.True(width >= 96 && height >= 96, message);
+        Assert.Equal(6, colorType);
     }
 
     internal static Exception? Unwrap(Exception? exception)

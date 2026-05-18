@@ -7,10 +7,315 @@ namespace EZMicroBalance.Tests;
 public sealed class AncientHighRiskSourceGuardTests
 {
     [Fact]
+    public void AncientRunAndCombatHooksKeepSingleDispatchOwnership()
+    {
+        var morviHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviHooks.cs");
+        var lothaHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaHooks.cs");
+        var urdaHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
+
+        var morviRunHook = SliceBetween(morviHooks, "internal sealed class MorviRunHook", "internal sealed class MorviCombatHook");
+        var morviCombatHook = SliceFrom(morviHooks, "internal sealed class MorviCombatHook");
+        var lothaRunHook = SliceBetween(lothaHooks, "internal sealed class LothaRunHook", "internal sealed class LothaCombatHook");
+        var lothaCombatHook = SliceFrom(lothaHooks, "internal sealed class LothaCombatHook");
+        var urdaRunHook = SliceBetween(urdaHook, "internal sealed class UrdaRunHook", "internal sealed class UrdaCombatHook");
+        var urdaCombatHook = SliceFrom(urdaHook, "internal sealed class UrdaCombatHook");
+
+        AssertSourceContains(
+            morviRunHook,
+            "BeforeCombatStart",
+            "AfterCardChangedPiles",
+            "AfterCombatEnd");
+        Assert.DoesNotContain("AfterPlayerTurnStartEarly", morviRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("AfterTurnEnd", morviRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("ModifyCardPlayCount", morviRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("TryModifyEnergyCostInCombat", morviRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("BeforeCardPlayed", morviRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("AfterCardPlayed", morviRunHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("AfterCardDrawn", morviRunHook, StringComparison.Ordinal);
+        AssertSourceContains(
+            morviCombatHook,
+            "AfterPlayerTurnStartEarly",
+            "AfterTurnEnd",
+            "ModifyCardPlayCount",
+            "TryModifyEnergyCostInCombat",
+            "BeforeCardPlayed",
+            "AfterCardPlayed",
+            "AfterCardDrawn");
+
+        AssertSourceContains(
+            lothaRunHook,
+            "BeforeCombatStart",
+            "AfterCardChangedPiles",
+            "AfterCombatEnd",
+            "AfterDamageReceived",
+            "TryModifyRewardsLate",
+            "ShouldDieLate",
+            "ShouldDie",
+            "AfterPreventingDeath");
+        foreach (var combatOnly in new[]
+        {
+            "AfterPlayerTurnStartEarly",
+            "AfterTurnEnd",
+            "ModifyCardPlayCount",
+            "ShouldPlay",
+            "AfterCardPlayed",
+            "TryModifyEnergyCostInCombat",
+            "TryModifyStarCost",
+            "ModifyPowerAmountGiven",
+            "TryModifyPowerAmountReceived",
+            "AfterPowerAmountChanged"
+        })
+        {
+            Assert.DoesNotContain(combatOnly, lothaRunHook, StringComparison.Ordinal);
+        }
+
+        AssertSourceContains(
+            lothaCombatHook,
+            "AfterPlayerTurnStartEarly",
+            "AfterTurnEnd",
+            "ModifyCardPlayCount",
+            "ShouldPlay",
+            "AfterCardPlayed",
+            "TryModifyEnergyCostInCombat",
+            "TryModifyStarCost",
+            "ModifyPowerAmountGiven",
+            "TryModifyPowerAmountReceived",
+            "AfterPowerAmountChanged");
+
+        Assert.DoesNotContain("public override Task AfterCardPlayed", urdaRunHook, StringComparison.Ordinal);
+        Assert.Contains("public override Task AfterCardPlayed", urdaCombatHook, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void UrdaCombatVictoryUsesRoomScopedRunState()
+    {
+        var lifecycle = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RunLifecycle.cs");
+        var afterCombatVictory = SliceFrom(lifecycle, "public static async Task AfterCombatVictory(CombatRoom room)");
+
+        AssertSourceContains(
+            afterCombatVictory,
+            "var runState = room.CombatState.RunState;",
+            "runState.Players.Where(player => player.IsActiveForHooks)");
+        Assert.DoesNotContain("RunManager.Instance.DebugOnlyGetState()", afterCombatVictory, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void UrdaStateCleanupAvoidsGuessingAndRefreshesVisibleTrialBranchState()
+    {
+        var seedbed = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.Seedbed.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedCombat.cs"));
+        var seedBank = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"));
+        var state = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.State.cs");
+
+        Assert.DoesNotContain("FirstOrDefault(candidate => candidate.RootblightLevel == rootblight.RootblightLevel)", seedbed, StringComparison.Ordinal);
+        Assert.DoesNotContain("RootDeckService.FindRootFamilyCards(card.Owner)", seedbed, StringComparison.Ordinal);
+        AssertSourceContains(
+            seedbed,
+            "rootblight.DeckVersion is RootFamilyCard deckRootblight",
+            "skipped deck marker instead of guessing by Rootblight level");
+        AssertSourceContains(
+            seedBank,
+            "try",
+            "finally",
+            "foreach (var card in cards)",
+            "AncientCardHelpers.RemoveUnpiledRunCard(card)");
+        AssertSourceContains(
+            state,
+            "AncientPlayerState.SyncDeck(",
+            "GetSelectedBlessing(player) == UrdaBlessingIds.TrialBranch",
+            "RefreshTrialBranchEnchantment(player)");
+    }
+
+    [Fact]
+    public void UrdaRootSightPreviewsMapNodesWithoutConsumingRealUnknownRoomState()
+    {
+        var rootSight = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSight.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightMarkers.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightTargets.cs"));
+        var rootSightRouting = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightRouting.cs");
+        var rootSightEntryLookup = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEntryLookup.cs");
+        var rootSightEntryCommit = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEntryCommit.cs");
+        var rootSightRoutingSource = string.Join(
+            Environment.NewLine,
+            rootSightRouting,
+            rootSightEntryLookup,
+            rootSightEntryCommit);
+        var rootSightStatus = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightStatus.cs");
+        var rootSightHover = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightHover.cs");
+        var rootSightPreview = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightPreviewGeneration.cs");
+        var rootSightEncounters = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEncounters.cs");
+        var rootSightEvents = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEvents.cs");
+        var rootSightReservations = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightReservations.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightReservedIds.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightReservationQueues.cs"));
+        var rootSightUnknown = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightUnknown.cs");
+        var rootSightUnknownOdds = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightUnknownOdds.cs");
+        var rootSightRoomPatches = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightRoomPatches.cs");
+        var rootSightPreviewSource = string.Join(
+            Environment.NewLine,
+            rootSightPreview,
+            rootSightEncounters,
+            rootSightEvents,
+            rootSightUnknown,
+            rootSightUnknownOdds);
+        var runLifecycle = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RunLifecycle.cs");
+        var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
+        var rootSightRoomTypeLookup = SliceBetween(
+            rootSightRouting,
+            "internal static bool TryGetRootSightRoomTypeForCurrentPoint",
+            "internal static bool TryGetRootSightModelForCurrentPoint");
+
+        AssertSourceContains(
+            rootSightPreviewSource,
+            "RootSightUnknownBlacklist",
+            "RootSightAllowedUnknownRoomTypes",
+            "PeekRootSightUnknownRoomType(runState, point, blacklist)",
+            "Hook.ModifyUnknownMapPointRoomTypes(runState, roomTypes)",
+            ".Where(RootSightAllowedUnknownRoomTypes.Contains)",
+            "CreateRootSightPreviewRng(runState, point, \"unknown_room_type\")",
+            "GetRootSightUnknownRoomOdds(runState)",
+            "TryPeekRootSightEncounterForPoint(runState, point, roomType)",
+            "rooms.normalEncounters",
+            "rooms.normalEncountersVisited",
+            "rooms.eliteEncounters",
+            "rooms.eliteEncountersVisited",
+            "GetRootSightEncounterPreviewCandidates(rooms, roomType)",
+            "FilterRootSightReservedEncounterCandidates(",
+            "FilterRootSightReservedEventCandidates(",
+            "GetReservedRootSightModelIds(runState, roomType, FormatCoord(point.coord))",
+            "GetReservedRootSightModelIds(runState, RoomType.Event, FormatCoord(point.coord))",
+            "Where(candidate => !reservedIds.Contains(candidate.Id))",
+            "return unreserved.Count > 0 ? unreserved : candidates",
+            "fork.NextItem(candidates)",
+            "CommitRootSightEncounterQueueForEntry(",
+            "FindRootSightEncounterIndex(encounters, encounter.Id, currentIndex)",
+            "CommitRootSightUnknownRoomType(runState, committedRoomType, blacklist)",
+            "runState.Rng.UnknownMapPoint.NextFloat()",
+            "AccessTools.Field(typeof(UnknownMapPointOdds), \"_baseOdds\")",
+            "Hook.ModifyOddsIncreaseForUnrolledRoomType(runState, roomType, baseOdds)",
+            "Hook.ModifyNextEvent(concreteRunState, nextEvent)",
+            "PeekRootSightNextValidEvent(concreteRunState, rooms, point)",
+            "IsRootSightEventStillValidForEntry(RunState runState, EventModel eventModel)",
+            "AreRootSightUniqueEventsExhausted(runState, rooms)",
+            "!rooms.events.Any(candidate",
+            "rooms.EnsureNextEventIsValid(runState)",
+            "FindRootSightEventIndex(rooms.events, eventModel.Id, currentIndex)",
+            "(rooms.events[currentIndex], rooms.events[selectedIndex]) = (rooms.events[selectedIndex], rooms.events[currentIndex])",
+            "new Rng(",
+            "runState.Rng.UnknownMapPoint",
+            "root_sight_{scope}_act_{runState.CurrentActIndex}_coord_{point.coord.col}_{point.coord.row}_counter_{source.Counter}");
+        Assert.DoesNotContain(".Odds.UnknownMapPoint.Roll(", rootSightPreviewSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("runState.Odds.UnknownMapPoint.Roll(", rootSightPreviewSource, StringComparison.Ordinal);
+        Assert.DoesNotContain(".Roll(", rootSightPreviewSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("PullNextEncounter", rootSightPreviewSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("PullNextEvent", rootSightPreviewSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            rootSight,
+            "var mapScreen = NMapScreen.Instance",
+            "selection could not start because the map screen is not available",
+            "return false",
+            "mapScreen.Open(isOpenedFromTopBar: true)",
+            "mapScreen.RefreshAllPointVisuals()",
+            "ClearStaleRootSightPreview(",
+            "RootSightEyes = Math.Min(RootSightStartingEyes, progress.RootSightEyes + 1)",
+            "RemoveQuestMarker<UrdaRootSightMapQuestMarker>(point)",
+            "FormatRootSightMarkedCoord(player.RunState.CurrentActIndex, coord)",
+            "TryFindRootSightPreview(progress, actIndex, coord, out _)",
+            "RestoreRootSightPreviewMarkers(ActMap map, int actIndex)",
+            "GetRootSightPreviews(GetProgress(player).RootSightPreviewRecords)",
+            "map.GetPoint(coord)",
+            "!IsRootSightPreviewStillValidForEntry(concreteRunState, preview)",
+            "point.PointType != preview.PointType",
+            "EnsureQuestMarker<UrdaRootSightMapQuestMarker>(point)",
+            "point.PointType is not (MapPointType.Monster or MapPointType.Unknown or MapPointType.Elite)",
+            "IsFutureReachableRootSightTarget(player, point)",
+            "new Queue<MapPoint>(current.Children)",
+            "point.coord.row <= current.coord.row");
+        Assert.DoesNotContain("player.RunState.CurrentActIndex != 0", rootSight, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            runLifecycle,
+            "public static void AfterMapGenerated(ActMap map, int actIndex)",
+            "RestoreRootSightPreviewMarkers(map, actIndex)");
+        AssertSourceContains(
+            urdaRunHook,
+            "public override Task AfterMapGenerated(ActMap map, int actIndex)",
+            "UrdaBlessingService.AfterMapGenerated(map, actIndex)");
+
+        AssertSourceContains(
+            rootSightRoutingSource,
+            "if (pointType == MapPointType.Unknown)",
+            "CommitRootSightUnknownRoomType(runManager, preview.RoomType)",
+            "IsRootSightPreviewStillValidForEntry(runState, preview)",
+            "TryMarkRootSightCommittedForCurrentPoint(runState)",
+            "CommitRootSightEncounterQueueForEntry(runState, roomType, encounter)",
+            "ConditionalWeakTable<RunState, HashSet<string>>",
+            "RootSightCommittedEntryKeys.GetOrCreateValue(runState)",
+            "committedForRun.Add",
+            "IsRootSightEventStillValidForEntry(runState, eventModel)",
+            "CommitRootSightEventQueueForEntry(runState, eventModel)",
+            "runState.AddVisitedEvent(eventModel)",
+            "ConsumeRootSightPreviewForCurrentPoint(runState, preview)",
+            "private static void ConsumeRootSightPreviewForCurrentPoint(RunState runState, RootSightPreview preview)",
+            "RootSightPreviewRecords = FormatRootSightPreviews(previews)",
+            "RemoveQuestMarker<UrdaRootSightMapQuestMarker>(current)");
+        Assert.DoesNotContain("CommitRootSightUnknownRoomType", rootSightRoomTypeLookup, StringComparison.Ordinal);
+        Assert.DoesNotContain(".Odds.UnknownMapPoint.Roll(", rootSightRoutingSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            rootSightReservations,
+            "AvoidRootSightReservedModelForCurrentNonPreviewRoom",
+            "TryFindRootSightPreviewForCurrentPoint(runManager, pointType, out var currentPreview)",
+            "GetReservedRootSightModelIds(runState, roomType, currentCoord).ToHashSet()",
+            "preview.Coord != currentCoord",
+            "TryMoveReservedRootSightEncounterOffQueueHead(runState, roomType, reservedIds)",
+            "TryMoveReservedRootSightEventOffQueueHead(runState, reservedIds)",
+            "reservedIds.Contains(encounters[currentIndex].Id)",
+            "(encounters[currentIndex], encounters[candidateIndex]) = (encounters[candidateIndex], encounters[currentIndex])",
+            "rooms.EnsureNextEventIsValid(runState)",
+            "AreRootSightUniqueEventsExhausted(runState, rooms)",
+            "TryDeserializeModelId(preview.ModelId, out var id)");
+        AssertSourceContains(
+            rootSightRoomPatches,
+            "UrdaBlessingService.AvoidRootSightReservedModelForCurrentNonPreviewRoom(__instance, roomType, mapPointType)");
+
+        AssertSourceContains(
+            rootSightHover,
+            "TryGetRootSightPreviewTitle(preview, out var title)",
+            "IsRootSightPreviewStillValidForEntry(runState, preview)",
+            "ClearStaleRootSightPreview(player, runState.CurrentActIndex, preview.Coord, point)",
+            "ModelDb.GetByIdOrNull<EventModel>(id)",
+            "title = eventModel.Title",
+            "ModelDb.GetByIdOrNull<EncounterModel>(id)",
+            "title = encounter.Title");
+
+        AssertSourceContains(
+            rootSightStatus,
+            "ResetRootSightTransientState()",
+            "relic.Status = progress.RootSightEyes > 0",
+            "RelicStatus.Active",
+            "RelicStatus.Disabled");
+        Assert.DoesNotContain("CurrentActIndex == 0", rootSightStatus, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void PickupRewardCompensationAndLockoutPatchesStayScoped()
     {
         var hornSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsHornPhase1Patch.cs");
-        var pickupSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PickupRewardPatches.cs");
+        var pickupSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
+        var pickupDispatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PickupRewardPatches.cs");
+        var clawsSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "ClawsPatches.cs");
         var sealSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SealOfGoldPatches.cs");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
 
@@ -43,6 +348,14 @@ public sealed class AncientHighRiskSourceGuardTests
             "sealOfGold.Owner.RunState.CreateCard<Debt>(sealOfGold.Owner)",
             "DebtCardPatch.ConfigureDebt(debt)",
             "CardPileCmd.Add(debt, PileType.Deck)");
+        Assert.DoesNotContain("case Claws", pickupDispatch, StringComparison.Ordinal);
+        AssertSourceContains(
+            clawsSource,
+            "[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]",
+            "private static async Task ChooseCurseAndAddWishes(Claws claws)",
+            "CreateClawsCurseDraft(claws.Owner)",
+            "CreateCard<Wish>",
+            "CardCmd.Upgrade(upgradedWish)");
 
         AssertSourceContains(
             sealSource,
@@ -58,8 +371,8 @@ public sealed class AncientHighRiskSourceGuardTests
     [Fact]
     public void DraftAndGeneratedCardFlowsRemoveUnselectedTemporaryCards()
     {
-        var pickupSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PickupRewardPatches.cs");
-        var vakuSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var pickupSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
+        var vakuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var debtSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "DebtAndCardPatches.cs");
         var cards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
 
@@ -149,10 +462,17 @@ public sealed class AncientHighRiskSourceGuardTests
     [Fact]
     public void PrismaticGemOffColorReplacementKeepsNormalRewardBoundariesAllSlotsAndRunStateClean()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
 
         AssertSourceContains(
             source,
+            "[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]",
+            "HarmonyPrefix",
+            "player.Relics.OfType<PrismaticGem>().FirstOrDefault(relic => !relic.IsMelted)",
+            "foreach (var listener in runState.IterateHookListeners(null))",
+            "listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions)",
+            "TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions)",
+            "listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)",
             "if (!creationOptions.Flags.HasFlag(CardCreationFlags.IsCardReward))",
             "creationOptions.Flags.HasFlag(CardCreationFlags.NoCardPoolModifications)",
             "creationOptions.Flags.HasFlag(CardCreationFlags.NoCardModelModifications)",
@@ -165,6 +485,7 @@ public sealed class AncientHighRiskSourceGuardTests
             "ModelDb.AllCharacterCardPools",
             ".Where(pool => !pool.Id.Equals(homePool.Id) && !pool.IsColorless)",
             ".Where(card => rarity == null || card.Rarity == rarity)",
+            ".Where(card => type == null || card.Type == type)",
             ".Where(card => card.Type is not CardType.Curse and not CardType.Status and not CardType.Quest)",
             ".Where(card => card.CanBeGeneratedByModifiers)",
             ".Where(card => !excludedIds.Contains(card.Id))",
@@ -176,17 +497,41 @@ public sealed class AncientHighRiskSourceGuardTests
             "RewardResultHints.GetValue(reward, _ => new RewardResultHintState())",
             "excludedIds.Add(replacement.Id)",
             "player.RunState.RemoveCard(originalCard)",
-            "GetOffColorRewardPool(player, null, excludedIds)",
+            "RemoveUnpiledReplacements(replacements)",
+            "AncientCardHelpers.RemoveUnpiledRunCard(replacement)",
+            "RestoreCounterAfterFailedReplacement(prismaticGem, screenState)",
+            "GetOffColorRewardPool(player, originalCard.Rarity, originalCard.Type, excludedIds)",
+            "GetOffColorRewardPool(player, null, originalCard.Type, excludedIds)",
+            "GetOffColorRewardPool(player, originalCard.Rarity, null, excludedIds)",
+            "GetOffColorRewardPool(player, null, null, excludedIds)",
             "return player.RunState.CreateCard(replacementCanonical, player)");
 
         Assert.DoesNotContain("var slotIndex = cardRewardOptions.Count - 1", source, StringComparison.Ordinal);
         Assert.DoesNotContain("ReplaceRightmostRewardSlot", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.TryModifyCardRewardOptions))]", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void DirectAncientRelicPatchesRespectMeltedRelics()
+    {
+        var prismatic = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");
+        var fiddle = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "FiddlePatches.cs");
+
+        AssertSourceContains(
+            prismatic,
+            "FirstOrDefault(relic => !relic.IsMelted)");
+        AssertSourceContains(
+            fiddle,
+            "if (__instance.IsMelted)",
+            "__result = count;",
+            "__result = true;",
+            "player.GetRelic<Fiddle>() is not { IsMelted: false }");
     }
 
     [Fact]
     public void TurnStartAndAutoPlayAncientsKeepOwnerRoundAndTargetGuards()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TurnOfferAndRestPatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var helpers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientCardHelpers.cs");
 
         AssertSourceContains(
@@ -235,12 +580,12 @@ public sealed class AncientHighRiskSourceGuardTests
     {
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var prismaticSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");
-        var paelsToothSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsToothAndForgePatches.cs");
-        var jewelryBoxSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var paelsToothSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
+        var jewelryBoxSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var playerStateSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientPlayerState.cs");
-        var urdaSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
-        var morviSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
-        var lothaSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var urdaSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
+        var morviSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
+        var lothaSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha");
         var ancientSourceWithoutPlayerStateHelper = Directory
             .GetFiles(RepoPath("EZMicroBalanceCode", "Ancients"), "*.cs", SearchOption.AllDirectories)
             .Where(path => !path.EndsWith("AncientPlayerState.cs", StringComparison.Ordinal) &&

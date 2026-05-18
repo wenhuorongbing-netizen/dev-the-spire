@@ -3,7 +3,7 @@ param(
 
     [string]$ManifestPath,
 
-    [string]$PackageSha256 = "EA0EC3611DC21FD33C9B87E592326A9000ECE593512554D720843D7490CC589C",
+    [string]$PackageSha256 = "2F29C8AC8D4A03398246E34E5C58DA0E5EEC31EDB8656D21AA898BBE26C64612",
 
     [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.0.zip",
 

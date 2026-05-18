@@ -11,8 +11,10 @@ internal enum FiremarkKind
 internal enum BannerKind
 {
     Vanguard,
-    ShieldFormation,
-    Bounty
+    Shieldwall,
+    BloodPrize,
+    PressingLine,
+    LastStand
 }
 
 internal enum DeepBranchNodeKind

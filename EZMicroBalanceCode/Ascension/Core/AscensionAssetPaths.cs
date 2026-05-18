@@ -29,6 +29,10 @@ internal static class AscensionAssetPaths
     public static string BannerBountyIndicator =>
         System.IO.Path.Join(MainFile.ResPath, "images", "ascension", "banner_bounty_indicator.png");
 
+    public static string BannerPressingLineIndicator => BannerRoomIndicator;
+
+    public static string BannerLastStandIndicator => BannerShieldFormationIndicator;
+
     public static string BossSealIndicator =>
         System.IO.Path.Join(MainFile.ResPath, "images", "ascension", "boss_seal_indicator.png");
 
@@ -52,8 +56,10 @@ internal static class AscensionAssetPaths
     public static string GetBannerIndicator(BannerKind banner) => banner switch
     {
         BannerKind.Vanguard => BannerVanguardIndicator,
-        BannerKind.ShieldFormation => BannerShieldFormationIndicator,
-        BannerKind.Bounty => BannerBountyIndicator,
+        BannerKind.Shieldwall => BannerShieldFormationIndicator,
+        BannerKind.BloodPrize => BannerBountyIndicator,
+        BannerKind.PressingLine => BannerPressingLineIndicator,
+        BannerKind.LastStand => BannerLastStandIndicator,
         _ => BannerRoomIndicator
     };
 }

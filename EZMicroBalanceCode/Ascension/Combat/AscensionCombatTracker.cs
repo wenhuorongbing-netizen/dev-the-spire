@@ -11,15 +11,32 @@ internal sealed class AscensionCombatTracker
     public bool CombatModifiersInitialized { get; set; }
     public AscensionNodeMetadata? NodeMetadata { get; set; }
     public Creature? FiremarkHost { get; set; }
+    public decimal FiremarkBaseAmount { get; set; }
+    public decimal FiremarkOriginalMaxHp { get; set; }
+    public decimal FiremarkDamageThisPlayerTurn { get; set; }
+    public decimal FiremarkDamageThisEnemyCycle { get; set; }
+    public int FiremarkDamageTrackingRound { get; set; }
+    public bool FiremarkCoreExposed { get; set; }
+    public bool FiremarkCoreResolved { get; set; }
+    public decimal FiremarkCoreDamage { get; set; }
+    public decimal FiremarkCoreDamageNeeded { get; set; }
+    public bool FiremarkArmorSkippedNextTurn { get; set; }
+    public bool FiremarkArmorGeneratedThisTurn { get; set; }
+    public int FiremarkArmorBreaks { get; set; }
     public bool BannerRageApplied { get; set; }
     public bool VanguardStrengthRemoved { get; set; }
-    public Creature? ShieldFormationBearer { get; set; }
-    public int ShieldFormationLastBlockRound { get; set; }
-    public bool ShieldFormationDeathBlockApplied { get; set; }
-    public Creature? BountyTarget { get; set; }
-    public bool BountyKilledEarly { get; set; }
-    public bool BountyExpired { get; set; }
-    public bool BountyRewardAdded { get; set; }
+    public Creature? ShieldwallBearer { get; set; }
+    public int ShieldwallLastBlockRound { get; set; }
+    public bool ShieldwallDeathBlockApplied { get; set; }
+    public Creature? BloodPrizeTarget { get; set; }
+    public bool BloodPrizeKilledEarly { get; set; }
+    public bool BloodPrizeExpired { get; set; }
+    public bool BloodPrizeRewardAdded { get; set; }
+    public bool LastStandTriggered { get; set; }
+    public int PressingLineRound { get; set; }
+    public Dictionary<Player, int> PressingLineCardsPlayed { get; } = [];
+    public Dictionary<Player, int> PressingLineLayers { get; } = [];
+    public int PressingLineLastResolvedRound { get; set; }
     public bool BossRageRoundFiveApplied { get; set; }
     public bool BossRageRoundEightApplied { get; set; }
     public bool ChaosApplied { get; set; }
@@ -33,6 +50,7 @@ internal sealed class AscensionCombatTracker
     public bool StartledShellSoulSiphonTurn { get; set; }
     public bool SoulSiphonShellReduced { get; set; }
     public decimal PendingSoulTideBlock { get; set; }
+    public int SoulTideBeckonSettlementRound { get; set; }
     public int LastSoulFyshIntangibleAmount { get; set; }
     public int LastSteamEruptionMilestone { get; set; }
     public bool BoilingExplosionBlockGranted { get; set; }

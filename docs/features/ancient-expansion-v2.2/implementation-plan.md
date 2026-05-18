@@ -35,7 +35,7 @@ Urda current status:
 - Urda appears in Act 1 by default unless `EZMB_DISABLE_URDA=1` is set.
 - `EZMB_FORCE_ANCIENT=URDA` and `EZMB_FORCE_URDA_BLESSING` support focused testing.
 - All ten v2.2 blessing ids are implemented with source guards.
-- Source-safe deviations are documented in the Urda manual checklist and work log: Trial Branch uses a simple 4-card selection grid; Shallow-Root Relic has deterministic Act 2 removal/refund instead of an unproven settlement choice; Rooted Route auto-marks a reachable normal-combat node without map graph mutation; Root-Sight auto-marks reachable non-Boss nodes instead of exposing a map button; Seed Bank stores by consuming the reward.
+- Source-safe deviations are documented in the Urda manual checklist and work log: Trial Branch uses a simple 4-card selection grid; Shallow-Root Relic has deterministic Act 2 removal/refund instead of an unproven settlement choice; Rooted Route auto-marks a reachable normal-combat node without map graph mutation; Root-Sight uses the Root Eyes relic to choose a future reachable Monster, Unknown, or Elite room; Seed Bank stores by consuming the reward.
 
 Morvi current status:
 
@@ -96,11 +96,11 @@ Each blessing implementation packet should contain:
 
 ## 3. Recommended Future Order
 
-1. Fix visible art/text problems first, because the user is testing the current build and placeholder art/text blocks meaningful feedback.
+1. Fix visible art/text regressions first, because the user is testing the current build and unclear UI text blocks meaningful feedback.
 2. Live-verify Lotha against the documented source-safe v2.2 behavior, including the Death Reprieve timing deviation.
 3. Live-verify Morvi's full source slice, including Red Ink/Open Book restore-sensitive rows and Debt Settlement nonlethal HP fallback.
-4. Live-verify Urda's ten-blessing source slice and replace temporary Urda option icons.
-5. Replace temporary Vakuu/Contract/power art after Image API access or final user source files are available.
+4. Live-verify Urda's ten-blessing source slice, including option icon sizing and hover readability.
+5. Revisit Vakuu/Contract/power art only if live screenshots show readability or routing problems.
 6. Run live/save-load/co-op/manual validation and update release docs with actual evidence.
 
 ## 4. Acceptance Pattern

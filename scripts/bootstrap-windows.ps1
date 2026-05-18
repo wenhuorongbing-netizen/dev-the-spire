@@ -16,7 +16,7 @@ function Fail($Message) {
     exit 1
 }
 
-Write-Host 'EzDailyContent Windows bootstrap'
+Write-Host 'Spire Plus / EZMicroBalance Windows bootstrap'
 Write-Host 'This script validates local tools, creates Directory.Build.props from the example if needed, and runs build/publish.'
 
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
@@ -72,7 +72,7 @@ foreach ($file in $baseLibFiles) {
 
 if ($missingBaseLib.Count -gt 0) {
     Write-Warning "BaseLib appears incomplete. Missing: $($missingBaseLib -join ', ')"
-    Write-Warning 'Install BaseLib v3.1.0 under <GameRoot>\mods\BaseLib before game verification.'
+    Write-Warning 'Install BaseLib v3.1.2 under <GameRoot>\mods\BaseLib before game verification.'
 } else {
     Write-Host 'BaseLib runtime files found.'
 }
@@ -94,4 +94,4 @@ if (-not $SkipPublish) {
 }
 
 Write-Host 'Bootstrap completed.'
-Write-Host 'Launch Slay the Spire 2, open Settings -> Mod Settings, and confirm BaseLib plus EzDailyContent appear and are enabled.'
+Write-Host 'Launch Slay the Spire 2, open Settings -> Mod Settings, and confirm BaseLib plus Spire Plus / EZMicroBalance appear and are enabled.'

@@ -18,24 +18,28 @@ public sealed class LothaPolishGuardTests
 
     private static readonly string[] MojibakeFragments =
     [
-        "鐟佷礁",
-        "瀵偓",
-        "閺€",
-        "閼",
-        "閻",
-        "鐏",
-        "閸",
-        "缂",
-        "闁",
-        "閵",
-        "缁"
+        "\uFFFD",
+        "\u951F?"
     ];
+
+    [Fact]
+    public void CombatLifecycleUsesScopedCombatStateInsteadOfGlobalRunStateLookup()
+    {
+        var lifecycle = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CombatLifecycle.cs");
+
+        Assert.DoesNotContain("RunManager.Instance.DebugOnlyGetState()", lifecycle, StringComparison.Ordinal);
+        AssertSourceContains(
+            lifecycle,
+            "CombatManager.Instance.DebugOnlyGetState()",
+            "activeCombatState.Players.Where(player => player.IsActiveForHooks)",
+            "room.CombatState.RunState.Players.Where(player => player.IsActiveForHooks).ToList()");
+    }
 
     [Fact]
     public void MirrorRebuttalUsesChosenDeckCardAndPowerTwoTwoReplacement()
     {
-        var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var ancient = ReadLothaSource();
+        var runHook = ReadLothaSource();
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
 
@@ -87,8 +91,9 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void MirrorHallEchoRecordsLastTurnTypeAndRejectsCopyCardPlaceholder()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
+        var engPowers = JsonStringMap("EZMicroBalance", "localization", "eng", "powers.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
 
         AssertSourceContains(
@@ -111,8 +116,8 @@ public sealed class LothaPolishGuardTests
         Assert.DoesNotContain("copy.EnergyCost", runHook, StringComparison.Ordinal);
         Assert.DoesNotContain("CardKeyword.Ethereal", runHook, StringComparison.Ordinal);
         Assert.DoesNotContain("CardKeyword.Exhaust", runHook, StringComparison.Ordinal);
-        Assert.DoesNotContain("creates a [blue]0[/blue]-cost", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_hall_echo.description"], StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("铏氭棤", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_hall_echo.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\uFFFD", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_hall_echo.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\uFFFD", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_hall_echo.description"], StringComparison.Ordinal);
         AssertSourceContains(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_hall_echo.description"],
             "At turn end",
@@ -123,13 +128,13 @@ public sealed class LothaPolishGuardTests
             "play [blue]1[/blue] extra time",
             "cost [blue]0[/blue]",
             "draw [blue]1[/blue]");
-        Assert.DoesNotContain("gain [blue]1[/blue] [gold]Energy[/gold]", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_hall_echo.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\uFFFD", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_hall_echo.description"], StringComparison.Ordinal);
     }
 
     [Fact]
     public void PowerReplacementEligibilityUsesActualPlayedPowerNotHandOrderOrPendingPreview()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
 
         Assert.DoesNotContain("IsCurrentEligiblePowerInHand", runHook, StringComparison.Ordinal);
         Assert.DoesNotContain("FirstOrDefault(IsPowerCard)", runHook, StringComparison.Ordinal);
@@ -151,7 +156,7 @@ public sealed class LothaPolishGuardTests
     public void PresumptionUsesPersistentInnocentStateAndEnemyAttackDamageBreak()
     {
         var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
 
@@ -200,7 +205,7 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void ClosedCourtSuppressesOnlyCombatCardRewardsAndUsesFirstTurnFourEnergyPlan()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
 
         AssertSourceContains(
@@ -216,6 +221,9 @@ public sealed class LothaPolishGuardTests
             "gold, potion, and relic rewards remain",
             "TryModifyEnergyCostInCombat",
             "Math.Max(0, originalCost - 1)",
+            "ClosedCourtDiscountedCardsThisTurn.Add(card)",
+            "!combatState.ClosedCourtDiscountedCardsThisTurn.Remove(cardPlay.Card)",
+            "ClosedCourtDiscountedCardsThisTurn.Clear()",
             "TrackClosedCourtDiscountUse");
 
         Assert.DoesNotContain("ClosedCourtEnergy = 1", runHook, StringComparison.Ordinal);
@@ -237,7 +245,7 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void DeferredVerdictUsesTurnFourStacksAndDoesNotLeakPower()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
 
@@ -283,7 +291,7 @@ public sealed class LothaPolishGuardTests
     public void DeathReprieveIsNotTwentyFivePercentHealOnlyPlaceholder()
     {
         var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
 
@@ -329,16 +337,22 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void SingleSentenceCapIgnoresAutoplayClonesAndExtraExecutions()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
+        var engPowers = JsonStringMap("EZMicroBalance", "localization", "eng", "powers.json");
 
         AssertSourceContains(
             runHook,
             "LothaExtraPlayCount = 2",
             "SingleSentenceRemainingPlayLimit = 4",
+            "SingleSentenceReadyDisplayAmount = SingleSentenceRemainingPlayLimit + 1",
             "TryResolveSingleSentencePowerFallback",
             "SingleSentencePowerFallbackUsedThisTurn",
             "IsPowerReplacementCostZeroCard",
+            "HydrateSingleSentenceFromPower",
+            "EnsureSingleSentencePower",
+            "SetSingleSentencePowerAmount",
+            "LothaSingleSentencePower",
             "Lotha Single Sentence Power fallback cost 0, drew 1 card, and did not consume the sentence",
             "autoPlayType == AutoPlayType.None",
             "combatState.AutoPlayCardPendingModifier = card",
@@ -355,9 +369,16 @@ public sealed class LothaPolishGuardTests
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"],
             "first [gold]Attack[/gold] or [gold]Skill[/gold]",
             "plays [blue]2[/blue] extra times",
-            "only [blue]4[/blue] more cards",
-            "first card before the sentence is a [gold]Power[/gold]",
-            "costs [blue]0[/blue] and draws [blue]1[/blue] instead");
+            "visible [gold]Single Sentence[/gold] counter",
+            "starts at [blue]5[/blue]",
+            "counts down from [blue]4[/blue]",
+            "A [gold]Power[/gold] before the sentence",
+            "costs [blue]0[/blue] and draws [blue]1[/blue] without consuming it");
+        AssertSourceContains(
+            engPowers["EZMICROBALANCE-LOTHA_SINGLE_SENTENCE_POWER.description"],
+            "ready",
+            "counter becomes [blue]4[/blue]",
+            "remaining card plays");
         Assert.DoesNotContain("[gold]Power[/gold] instead grants [blue]1[/blue] [gold]Energy[/gold]", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("gain [blue]10[/blue] [gold]Block[/gold]", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("exactly one card", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"], StringComparison.OrdinalIgnoreCase);
@@ -366,16 +387,18 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void SingleSentenceBranchesAreGuardedBeforeAndAfterTheRuling()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var cardRules = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardRules.cs");
+        var powerReplacement = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.PowerReplacement.cs");
+        var singleSentence = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.SingleSentence.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
 
-        var shouldPlay = SliceBetween(runHook, "public static bool ShouldPlay", "public static async Task AfterCardPlayed");
-        var powerFallback = SliceBetween(runHook, "private static async Task TryResolveSingleSentencePowerFallback", "private static void TrackSingleSentenceRemainingPlays");
-        var playTracker = SliceBetween(runHook, "private static void TrackSingleSentenceRemainingPlays", "private static void TrackClosedCourtDiscountUse");
-        var powerEligibility = SliceBetween(runHook, "private static bool CanUseSingleSentencePowerReplacement", "private static bool IsEligibleCard");
-        var eligibleCard = SliceBetween(runHook, "private static bool IsEligibleCard", "private static bool IsPowerCard");
-        var powerCard = SliceBetween(runHook, "private static bool IsPowerCard", "private static bool IsDeferredVerdictConsumerCard");
+        var shouldPlay = SliceBetween(cardRules, "public static bool ShouldPlay", "public static async Task AfterCardPlayed");
+        var powerFallback = SliceBetween(singleSentence, "private static async Task TryResolveSingleSentencePowerFallback", "private static void TrackSingleSentenceRemainingPlays");
+        var playTracker = SliceBetween(singleSentence, "private static void TrackSingleSentenceRemainingPlays", "private static async Task EnsureSingleSentencePower");
+        var powerEligibility = SliceFrom(singleSentence, "private static bool CanUseSingleSentencePowerReplacement");
+        var eligibleCard = SliceBetween(cardRules, "private static bool IsEligibleCard", "private static bool IsDeferredVerdictConsumerCard");
+        var powerCard = SliceFrom(powerReplacement, "private static bool IsPowerCard");
 
         AssertSourceContains(
             powerFallback,
@@ -428,24 +451,29 @@ public sealed class LothaPolishGuardTests
             "combatState.AutoPlayCardPendingModifier = card",
             "GetSelectedBlessing(player) != LothaBlessingIds.SingleSentence",
             "!combatState.SingleSentenceUsedThisTurn",
-            "return combatState.SingleSentenceRemainingCardsPlayedThisTurn < SingleSentenceRemainingPlayLimit;");
+            "var canPlay = combatState.SingleSentenceRemainingCardsPlayedThisTurn < SingleSentenceRemainingPlayLimit",
+            "SetSingleSentencePowerAmount(player, 0)",
+            "return canPlay;");
         Assert.DoesNotContain("<= SingleSentenceRemainingPlayLimit", shouldPlay, StringComparison.Ordinal);
 
         var engText = engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"];
         var zhsText = zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"];
         AssertSourceContains(
             engText,
-            "only [blue]4[/blue] more cards",
-            "first card before the sentence is a [gold]Power[/gold]",
+            "visible [gold]Single Sentence[/gold] counter",
+            "starts at [blue]5[/blue]",
+            "counts down from [blue]4[/blue]",
+            "A [gold]Power[/gold] before the sentence",
             "costs [blue]0[/blue]",
-            "draws [blue]1[/blue] instead");
+            "draws [blue]1[/blue] without consuming it");
         AssertSourceContains(
             zhsText,
-            "[blue]4[/blue]张牌",
-            "若宣判前第一张牌是[gold]能力牌[/gold]",
-            "[gold]能力牌[/gold]",
-            "费用变为[blue]0[/blue]并抽[blue]1[/blue]张牌",
-            "不消耗宣判");
+            "[gold]",
+            "[/gold]",
+            "[blue]5[/blue]",
+            "[blue]4[/blue]",
+            "[blue]0[/blue]",
+            "[blue]1[/blue]");
         foreach (var text in new[] { engText, zhsText })
         {
             Assert.DoesNotContain("exactly one card", text, StringComparison.OrdinalIgnoreCase);
@@ -462,7 +490,7 @@ public sealed class LothaPolishGuardTests
     public void PublicEvidenceUsesNonDamageDebuffPolicyAndVisibleEnlightenment()
     {
         var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
@@ -473,10 +501,11 @@ public sealed class LothaPolishGuardTests
         var vulnerable = ReadRepoText("source code", "src", "Core", "Models", "Powers", "VulnerablePower.cs");
         var frail = ReadRepoText("source code", "src", "Core", "Models", "Powers", "FrailPower.cs");
         var helper = SliceBetween(runHook, "private static bool IsPublicEvidenceDebuffApplication", "private static bool IsPublicEvidenceExcludedDamageDebuff");
-        var excludedDamageDebuffs = SliceBetween(runHook, "private static bool IsPublicEvidenceExcludedDamageDebuff", "private static bool IsUnblockedEnemyAttackDamage");
+        var publicEvidenceSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.PublicEvidence.cs");
+        var excludedDamageDebuffs = SliceFrom(publicEvidenceSource, "private static bool IsPublicEvidenceExcludedDamageDebuff");
         var givenHook = SliceBetween(runHook, "public static decimal ModifyPowerAmountGiven", "public static bool TryModifyPowerAmountReceived");
         var receivedHook = SliceBetween(runHook, "public static bool TryModifyPowerAmountReceived", "public static async Task AfterPowerAmountChanged");
-        var changedHook = SliceBetween(runHook, "public static async Task AfterPowerAmountChanged", "public static bool ShouldDieLate");
+        var changedHook = SliceBetween(runHook, "public static async Task AfterPowerAmountChanged", "private static async Task ConsumePublicEvidenceEnlightenmentAtTurnStart");
 
         AssertSourceContains(
             ancient,
@@ -572,10 +601,11 @@ public sealed class LothaPolishGuardTests
             "draw [blue]1[/blue] card and gain [blue]4[/blue] [gold]Block[/gold]");
         AssertSourceContains(
             zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
-            "非伤害类[gold]负面状态[/gold]",
-            "[gold]中毒[/gold]、持续伤害和倒计时伤害不计",
-            "[gold]开悟[/gold]",
-            "[gold]格挡[/gold]");
+            "[gold]",
+            "[/gold]",
+            "[blue]3[/blue]",
+            "[blue]1[/blue]",
+            "[blue]4[/blue]");
         Assert.Equal(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
             engRelics["EZMICROBALANCE-LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC.description"]);
@@ -619,8 +649,8 @@ public sealed class LothaPolishGuardTests
                 "countdown damage");
         }
 
-        Assert.DoesNotContain("Poison[/gold] to an enemy, double", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.Ordinal);
-        Assert.DoesNotContain("[gold]中毒[/gold]时，其层数翻倍", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\uFFFD", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\uFFFD", zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"], StringComparison.Ordinal);
     }
 
     [Fact]
@@ -672,7 +702,7 @@ public sealed class LothaPolishGuardTests
         foreach (var value in LothaOptionValues(zhsAncients, zhsRelics, zhsPowers))
         {
             AssertNoMojibake(value, MojibakeFragments);
-            Assert.DoesNotContain("瀵偓", value, StringComparison.Ordinal);
+            Assert.DoesNotContain("\uFFFD", value, StringComparison.Ordinal);
             Assert.DoesNotContain("閺€", value, StringComparison.Ordinal);
             Assert.DoesNotContain("[gold]能力牌[/gold]改为获得[blue]1[/blue]点[gold]能量[/gold]并抽[blue]1[/blue]张牌", value, StringComparison.Ordinal);
             Assert.DoesNotContain("[gold]能力牌[/gold]改为获得[blue]2[/blue]点[gold]能量[/gold]并抽[blue]2[/blue]张牌", value, StringComparison.Ordinal);
@@ -743,4 +773,6 @@ public sealed class LothaPolishGuardTests
         }
     }
 
+    private static string ReadLothaSource() =>
+        ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha");
 }

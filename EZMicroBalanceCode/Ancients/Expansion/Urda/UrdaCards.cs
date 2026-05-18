@@ -1,6 +1,7 @@
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using BaseLib.Utils.Attributes;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using Godot;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
@@ -43,15 +44,67 @@ public sealed class UrdaSeedling : CustomCardModel
 }
 
 [CustomID(CardId)]
-[Pool(typeof(StatusCardPool))]
+[Pool(typeof(ColorlessCardPool))]
+public sealed class UrdaSeedbed : CustomCardModel
+{
+    public const string CardId = "EZMB_URDA_SEEDBED";
+
+    private static readonly CardKeyword[] SeedbedKeywords = [CardKeyword.Exhaust];
+
+    public UrdaSeedbed()
+        : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self, showInCardLibrary: false)
+    {
+    }
+
+    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/urda_seedling.png";
+    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/urda_seedling.png";
+    public override string BetaPortraitPath => PortraitPath;
+    public override IEnumerable<CardKeyword> CanonicalKeywords => SeedbedKeywords;
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+        new[]
+        {
+            HoverTipFactory.FromKeyword(CardKeyword.Exhaust),
+            HoverTipFactory.FromCard<RootBud>(),
+            HoverTipFactory.FromCard<Root>()
+        }.Concat(HoverTipFactory.FromCardWithCardHoverTips<WitheredHusk>());
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(4m, ValueProp.Move)];
+    public override bool CanBeGeneratedInCombat => false;
+    public override bool CanBeGeneratedByModifiers => false;
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ExhaustOnNextPlay = true;
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+        await UrdaBlessingService.SetupSeedbed(choiceContext, Owner, IsUpgraded ? 3 : 2, IsUpgraded, this);
+    }
+
+    protected override void AddExtraArgsToDescription(LocString description)
+    {
+        description.Add("Capacity", IsUpgraded ? 3m : 2m);
+        description.Add(
+            "UpgradeLine",
+            IsUpgraded
+                ? "\n" + new LocString("cards", "EZMB_URDA_SEEDBED.upgradeLine").GetFormattedText()
+                : string.Empty);
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Block.UpgradeValueBy(2m);
+    }
+}
+
+[CustomID(CardId)]
+[Pool(typeof(ColorlessCardPool))]
 public sealed class WitheredHusk : CustomCardModel
 {
     public const string CardId = "EZMB_WITHERED_HUSK";
 
-    private static readonly CardKeyword[] HuskKeywords = [CardKeyword.Ethereal, CardKeyword.Unplayable];
+    private static readonly CardKeyword[] HuskKeywords = [CardKeyword.Exhaust];
 
     public WitheredHusk()
-        : base(-1, CardType.Status, CardRarity.Status, TargetType.None, showInCardLibrary: false)
+        : base(0, CardType.Skill, CardRarity.Token, TargetType.Self, showInCardLibrary: false)
     {
     }
 
@@ -59,16 +112,15 @@ public sealed class WitheredHusk : CustomCardModel
     public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/withered_husk.png";
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => HuskKeywords;
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(6m, ValueProp.Move)];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromKeyword(CardKeyword.Exhaust)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(3m, ValueProp.Move)];
     public override bool CanBeGeneratedInCombat => false;
     public override bool CanBeGeneratedByModifiers => false;
     public override int MaxUpgradeLevel => 0;
 
-    public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (card == this)
-        {
-            await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
-        }
+        ExhaustOnNextPlay = true;
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
     }
 }

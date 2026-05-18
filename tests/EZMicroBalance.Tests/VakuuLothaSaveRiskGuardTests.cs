@@ -44,12 +44,15 @@ public sealed class VakuuLothaSaveRiskGuardTests
     public void VakuuFightDoesNotSilentlyExposeUnsafeParentLinkedChildCombatByDefault()
     {
         var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var entry = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.Entry.cs");
+        var parentRestore = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.ParentRestore.cs");
+        var noReward = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.NoRewardResume.cs");
         var gate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
         var issueIndex = ReadRepoText("docs", "issues.md");
         var sourceDesign = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "source-design.md");
         var manualChecklist = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md");
 
-        var startFight = SliceBetween(patch, "private static async Task StartFight", "public static async Task AfterCreatureAddedToCombat");
+        var startFight = SliceBetween(entry, "private static async Task StartFight", "private static void ClearEventNode");
         var usesUnsafeActiveParentEventIdShape =
             startFight.Contains("ParentEventId =", StringComparison.Ordinal) ||
             startFight.Contains("EnterCombatWithoutExitingEventMethod.Invoke", StringComparison.Ordinal);
@@ -76,7 +79,7 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "If Vakuu retains the active ParentEventId child combat only for local testing, the gate/source names must make that save-risk/debug-only status explicit.");
 
         AssertSourceContains(
-            patch,
+            string.Join(Environment.NewLine, patch, entry, parentRestore, noReward),
             "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]",
             "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]",
             "EventNodeBackingField",
@@ -91,9 +94,16 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "skipped duplicate Ancient heal",
             "ProceedFromNoRewardVictory",
             "combatRoom.Encounter is not EzmbVakuuTrialEncounter",
-            "!combatRoom.IsPreFinished",
             "serializableRoom.ParentEventId =",
             "serializableRoom.ShouldResumeParentEvent = true");
+        AssertSourceContains(
+            noReward,
+            "combatRoom.ShouldResumeParentEventAfterCombat",
+            "combatRoom.CombatState.RunState.CurrentRoomCount > 1",
+            "ProceedFromMissingParentStackNoRewardVictory(combatRoom)",
+            "NMapScreen.Instance?.Open()");
+        Assert.DoesNotContain("!combatRoom.IsPreFinished", noReward, StringComparison.Ordinal);
+        Assert.DoesNotContain("ProceedFromMalformedNoRewardVictory", noReward, StringComparison.Ordinal);
         Assert.DoesNotContain("ParentEventId =", startFight, StringComparison.Ordinal);
         Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", patch, StringComparison.Ordinal);
         AssertSourceContains(
@@ -109,6 +119,8 @@ public sealed class VakuuLothaSaveRiskGuardTests
         var eventModel = ReadRepoText("source code", "src", "Core", "Models", "EventModel.cs");
         var combatRoom = ReadRepoText("source code", "src", "Core", "Rooms", "CombatRoom.cs");
         var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var entry = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.Entry.cs");
+        var parentRestore = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.ParentRestore.cs");
         var currentDocs = string.Join(
             Environment.NewLine,
             ReadRepoText("docs", "test-ready-development-goal.md"),
@@ -128,15 +140,15 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "if (ParentEventId != null && !IsPreFinished)",
             "Cannot serialize a CombatRoom with a ParentEventId that is not pre-finished.");
         AssertSourceContains(
-            patch,
+            string.Join(Environment.NewLine, entry, parentRestore),
             "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)",
             "ClearEventNode(vakuu)",
             "EventNodeBackingField",
             "ShouldResumeParentEventAfterCombat = true",
             "PreserveParentEventForPreFinishedSave");
-        var startFight = SliceBetween(patch, "private static async Task StartFight", "public static async Task AfterCreatureAddedToCombat");
+        var startFight = SliceBetween(entry, "private static async Task StartFight", "private static void ClearEventNode");
         Assert.DoesNotContain("ParentEventId =", startFight, StringComparison.Ordinal);
-        Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", patch, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", string.Join(Environment.NewLine, patch, entry, parentRestore), StringComparison.Ordinal);
         AssertSourceContains(
             currentDocs,
             "does not call Core's `EnterCombatWithoutExitingEvent(...)`",
@@ -155,6 +167,10 @@ public sealed class VakuuLothaSaveRiskGuardTests
     public void VakuuFightKeepsNoNormalRewardAndFallbackSurfacesSourceVisible()
     {
         var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var entry = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.Entry.cs");
+        var victoryFlow = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightVictory.cs");
+        var victoryChoices = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightVictoryChoices.cs");
+        var noReward = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.NoRewardResume.cs");
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
         var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
         var vakuuSource = string.Join(
@@ -164,8 +180,8 @@ public sealed class VakuuLothaSaveRiskGuardTests
                     "*.cs",
                     SearchOption.TopDirectoryOnly)
                 .Select(path => File.ReadAllText(path, Encoding.UTF8)));
-        var startFight = SliceBetween(patch, "private static async Task StartFight", "public static async Task AfterCreatureAddedToCombat");
-        var createVictoryOptions = SliceBetween(patch, "private static IEnumerable<EventOption> CreateVictoryOptions", "private static EventOption CreateVictoryFallbackOption");
+        var startFight = SliceBetween(entry, "private static async Task StartFight", "private static void ClearEventNode");
+        var createVictoryOptions = SliceBetween(victoryFlow, "private static IEnumerable<EventOption> CreateVictoryOptions", "private static EventOption CreateVictoryFallbackOption");
 
         AssertSourceContains(
             encounter,
@@ -188,12 +204,14 @@ public sealed class VakuuLothaSaveRiskGuardTests
         Assert.DoesNotContain("RewardsCmd", vakuuSource, StringComparison.Ordinal);
         Assert.DoesNotContain(".ThatWillKillPlayerIf(_ => true)", vakuuSource, StringComparison.Ordinal);
         AssertSourceContains(
-            patch,
+            string.Join(Environment.NewLine, patch, noReward),
             "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]",
             "SkipVakuuLoadedTerminalRewards",
             "__instance.Encounter is not EzmbVakuuTrialEncounter",
             "__result = VakuuFightService.ProceedFromNoRewardVictory(__instance)",
-            "combatRoom.CombatState.RunState.CurrentRoomCount <= 1",
+            "combatRoom.CombatState.RunState.CurrentRoomCount > 1",
+            "ProceedFromMissingParentStackNoRewardVictory(combatRoom)",
+            "NMapScreen.Instance?.Open()",
             "RunManager.Instance.ProceedFromTerminalRewardsScreen()");
         AssertSourceContains(
             createVictoryOptions,
@@ -201,11 +219,14 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "using the explicit fallback path",
             "Live restore for this path remains pending",
             "targetChoiceCount = encounter.VictoryChoiceCount",
+            "choice.Relic.Owner = owner",
             "encounter.VictoryGold",
             "options.Count > 0 ? options : [CreateVictoryFallbackOption(vakuu, combatRoom)]");
         AssertSourceContains(
-            patch,
+            victoryChoices,
             "IsEligibleSourceAncientReward(owner, relic)",
+            "IsEligibleLothaVictoryChoice(owner, blessingId)",
+            "LothaBlessingService.HasMirrorRebuttalCandidates(owner)",
             "BeautifulBracelet",
             "ModelDb.Enchantment<Swift>().CanEnchant",
             "TriBoomerang",
@@ -220,11 +241,12 @@ public sealed class VakuuLothaSaveRiskGuardTests
     [Fact]
     public void LothaDeathReprieveOncePerRunAndDuplicateReprieveGuardsStaySourceVisible()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
+        var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var playerState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientPlayerState.cs");
-        var deathBlock = SliceBetween(runHook, "public static bool ShouldDieLate(Creature creature)", "private static void ResetCombatState");
-        var startBlock = SliceBetween(runHook, "private static async Task StartDeathReprieveTurn", "private static async Task EnsureDeathReprievePower");
+        var deathBlock = SliceBetween(deathReprieve, "public static bool ShouldDieLate(Creature creature)", "private static async Task EnsureDeathReprievePower");
+        var startBlock = SliceBetween(deathReprieve, "private static async Task StartDeathReprieveTurn", "private static async Task EnsureDeathReprievePower");
 
         AssertSourceContains(
             savedFields,
@@ -275,11 +297,11 @@ public sealed class VakuuLothaSaveRiskGuardTests
     [Fact]
     public void LothaDeathReprieveWritesPhaseBeforeStartingOrPendingReprieve()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
-        var preventBlock = SliceBetween(runHook, "public static async Task AfterPreventingDeath(Creature creature)", "private static void ResetCombatState");
+        var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
+        var preventBlock = SliceBetween(deathReprieve, "public static async Task AfterPreventingDeath(Creature creature)", "private static async Task StartDeathReprieveTurn");
         var playerTurnBranch = SliceBetween(preventBlock, "if (creature.CombatState?.CurrentSide == CombatSide.Player", "else");
         var pendingBranch = SliceFrom(preventBlock, "DeathReprievePhase = DeathReprievePhase.PendingStart");
-        var startBlock = SliceBetween(runHook, "private static async Task StartDeathReprieveTurn", "private static async Task EnsureDeathReprievePower");
+        var startBlock = SliceBetween(deathReprieve, "private static async Task StartDeathReprieveTurn", "private static async Task EnsureDeathReprievePower");
 
         AssertSourceContains(
             playerTurnBranch,
@@ -315,13 +337,14 @@ public sealed class VakuuLothaSaveRiskGuardTests
     [Fact]
     public void LothaDeathReprieveForceDeathAndPersistenceStanceRemainExplicit()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var runHook = ReadLothaSource();
+        var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
         var creatureCmd = ReadRepoText("source code", "src", "Core", "Commands", "CreatureCmd.cs");
         var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
         var riskRegister = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md");
         var manualChecklist = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md");
-        var deathBlock = SliceBetween(runHook, "public static bool ShouldDieLate(Creature creature)", "private static void ResetCombatState");
-        var resolveBlock = SliceBetween(runHook, "private static async Task ResolveDeathReprieveTurnEnd", "private static async Task ApplyPowerReplacementBenefit");
+        var deathBlock = SliceBetween(deathReprieve, "public static bool ShouldDieLate(Creature creature)", "private static async Task EnsureDeathReprievePower");
+        var resolveBlock = SliceBetween(deathReprieve, "private static async Task ResolveDeathReprieveTurnEnd", "private static bool IsDeathReprieveCostFree");
 
         AssertSourceContains(
             creatureCmd,
@@ -356,4 +379,6 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "or keep active docs/manual tests explicit that pending/active reprieve save/load is not proven safe.");
     }
 
+    private static string ReadLothaSource() =>
+        ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha");
 }

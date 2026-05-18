@@ -35,11 +35,11 @@ These ids are registered in the default-on Urda test candidate:
 
 Source-safe deviations:
 
-- Trial Branch uses a simple 4-card source-safe grid, upgrades the chosen card, and marks it as Trial Plant.
+- Trial Branch uses a simple 4-card rare-card source-safe grid, upgrades the chosen card, applies a visible Trial Branch enchantment, and removes the card if it is missed in any one of the next three combats.
 - Shallow-Root Relic offers two common relics and grants 75 Gold; if it is not rooted by an Act 1 elite, Act 2 removes the pending relic and refunds 75 Gold instead of opening the unproven `lose 6 Max HP to keep it` settlement UI.
 - Rooted Route automatically marks a reachable normal-combat node within the first seven floors and does not mutate the map graph.
-- Root-Sight has no map button in this slice; it automatically marks reachable non-Boss rooms and spends Root Eyes.
-- Seed Bank stores a selected reward card by consuming that reward, then settles before the Act 1 Boss. It does not yet store one unchosen card after taking another.
+- Root-Sight uses the Root Eyes relic as its map control: clicking the Root Eyes relic opens map selection, highlights future reachable Monster, Unknown, or Elite rooms, stores the chosen room's concrete enemy group or event, and spends one Root Eye.
+- Seed Bank stores a selected reward card by consuming that reward. The player now clicks the Seed Bank relic later to choose up to two stored cards; the first chosen card is upgraded. It does not yet store one unchosen card after taking another.
 
 ## Open blockers
 
@@ -67,4 +67,3 @@ Source-safe deviations:
 - Manual evidence that all ten Urda blessings match their documented source behavior and deviations.
 - Manual tests for save/load + selection + combat-safe behavior.
 - Runtime smoke and release checks updated.
-

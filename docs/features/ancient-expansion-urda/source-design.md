@@ -83,9 +83,9 @@ All ten remain disableable through the Urda feature gate. Runtime testing must u
 #### Molting (`urda_molting`)
 
 - On selection, remove one Strike and one Defend from deck, then add two `Withered Husk` cards.
-- `Withered Husk` is a temporary status-like effect card.
+- `Withered Husk` is a 0-cost Skill with Exhaust.
 - Deck `Withered Husk` cards are removed at Act 2 start.
-- `Withered Husk` is non-playable for long-term deck loops except its exhaust-to-block behavior.
+- Playing `Withered Husk` grants 3 Block and exhausts it.
 
 #### Moss Map (`urda_moss_map`)
 
@@ -101,10 +101,10 @@ All ten remain disableable through the Urda feature gate. Runtime testing must u
 
 #### Trial Branch (`urda_trial_branch`)
 
-- On selection, offer four common/uncommon class cards through the source-safe card grid.
-- Upgrade the chosen card, add it to the deck, and mark it as Trial Plant through `UrdaTrialPlantCard`.
-- Track the next three combats; a combat succeeds only if the marked deck card is player-played at least once.
-- After three combats, two or more successes keep the card and clear the marker; fewer than two successes remove the marked card.
+- On selection, offer four rare class cards through the source-safe card grid.
+- Upgrade the chosen card, add it to the deck, and apply a visible Trial Branch enchantment backed by the `UrdaTrialPlantCard` marker.
+- Track the next three combats; each combat succeeds only if the marked deck card is player-played at least once.
+- Missing any one of those three combats removes the marked card. Three successful combats keep the card and clear the marker/enchantment.
 
 #### Shallow-Root Relic (`urda_shallow_root_relic`)
 
@@ -129,7 +129,7 @@ All ten remain disableable through the Urda feature gate. Runtime testing must u
 #### Root-Sight (`urda_root_sight`)
 
 - Gain 5 Root Eyes.
-- Source-safe deviation: no map button is exposed. The hook automatically marks reachable visible non-Boss rooms and spends one Root Eye per mark.
+- Current source path: clicking the Root Eyes relic opens map selection. The player may choose any future reachable Monster, Unknown, or Elite room. The chosen room stores its concrete enemy group or event and spends one Root Eye.
 - The first mark grants one random potion if a slot exists.
 
 #### Seed Bank (`urda_seed_bank`)

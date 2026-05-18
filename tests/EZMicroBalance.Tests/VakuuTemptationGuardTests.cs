@@ -48,7 +48,7 @@ public sealed class VakuuTemptationGuardTests
     public void VakuuContractsUseSourceBackedCommandsAndSharedContractSigning()
     {
         var card = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTemptationCard.cs");
-        var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var vakuuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
 
         AssertSourceContains(
             card,
@@ -64,7 +64,7 @@ public sealed class VakuuTemptationGuardTests
             "new BlockVar(\"Block\", 24m, ValueProp.Move)",
             "CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay)");
         AssertSourceContains(
-            patch,
+            vakuuSource,
             "public static async Task SignContract",
             "CreatureCmd.Damage(",
             "ValueProp.Unblockable | ValueProp.Unpowered | ValueProp.Move",
@@ -79,17 +79,20 @@ public sealed class VakuuTemptationGuardTests
     {
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
         var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightRunHook.cs");
+        var vakuuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
         var gate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
+        var monster = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTrialMonster.cs");
         var battlewornDummy = ReadRepoText("source code", "src", "Core", "Models", "Encounters", "BattlewornDummyEventEncounter.cs");
 
         Assert.Contains("VakuuFightInitializer.Initialize();", mainFile, StringComparison.Ordinal);
         AssertSourceContains(
             runHook,
-            "ModHelper.SubscribeForRunStateHooks",
-            "ModelDb.GetById<VakuuFightRunHook>",
-            "VakuuFightFeatureGate.IsFightEnabledForRun(runState)",
+            "ModHelper.SubscribeForCombatStateHooks",
+            "ModelDb.GetById<VakuuFightCombatHook>",
+            "VakuuFightFeatureGate.IsFightEnabledForRun(combatState.RunState)",
             "public override bool ShouldReceiveCombatHooks => true",
+            "internal sealed class VakuuFightCombatHook",
             "public override Task AfterCreatureAddedToCombat",
             "public override Task AfterDamageReceived",
             "public override Task AfterPlayerTurnStart",
@@ -106,6 +109,9 @@ public sealed class VakuuTemptationGuardTests
             "AncientCardHelpers.TryAddGeneratedCardToCombat",
             "PileType.Hand",
             "Vakuu fight added a Contract to hand");
+        Assert.DoesNotContain("ModHelper.SubscribeForRunStateHooks", runHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class VakuuFightRunHook", runHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("ModelDb.GetById<VakuuFightRunHook>", runHook, StringComparison.Ordinal);
         AssertSourceContains(
             runHook,
             "private static bool IsVakuuTrialCombat(ICombatState combatState) =>",
@@ -120,8 +126,19 @@ public sealed class VakuuTemptationGuardTests
             "VictoryChoiceCount => Math.Clamp(BrokenLocks + 1, 1, MaxLocks)",
             "VictoryGold => BrokenLocks * GoldPerBrokenLock",
             "CustomScenePath => VakuuFightAssetPaths.EncounterScene",
+            "HasScene => true",
             "Slots => [VakuuSlot]",
             "ModelDb.Monster<EzmbVakuuTrialMonster>()");
+        AssertSourceContains(
+            vakuuSource,
+            "public static async Task EnsureStolenVaultPower(Creature creature)",
+            "PowerCmd.Apply<VakuuStolenVaultPower>",
+            "PowerCmd.ModifyAmount",
+            "PowerCmd.Remove(vault)");
+        AssertSourceContains(
+            monster,
+            "public override async Task AfterAddedToRoom()",
+            "VakuuFightService.EnsureStolenVaultPower(Creature)");
         AssertSourceContains(
             battlewornDummy,
             "public override RoomType RoomType => RoomType.Monster",

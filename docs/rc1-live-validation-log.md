@@ -96,7 +96,7 @@ This log records what was actually run or observed. It does not close the live g
 - Method: temporarily isolated all non-BaseLib/EZMB local mods, launched through the normal Steam client, selected A11 through the original single-player Ascension arrows, took the first Neow option, captured the Act 1 map, clicked a first-route monster node to force a run save, used in-game Save & Quit, then continued the saved run and opened the map again from combat.
 - Save/mod hygiene: copied the pre-test `modded/profile1/saves` directory, restored it afterward, restored the 23 temporarily moved local mod entries, and confirmed `SlayTheSpire2` was no longer running.
 - Evidence directory: `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008`.
-- Selection evidence: `08-character-select-a11.png` shows A11 selected through the live UI with the `瀹藉闀胯矾` description.
+- Selection evidence: `08-character-select-a11.png` shows A11 selected through the live UI with the `宽塔长路` description.
 - Initial map evidence: `11-a11-act1-map-after-neow-continue.png` shows the Act 1 A11 map rendered with normal route nodes and no A11-specific marker or hover tooltip.
 - Save/load evidence: `15-after-continue-load.png` shows the saved A11 run continuing into the selected first combat; `16-map-open-after-load-attempt.png` shows the map reopened after load with the same widened/longer Act 1 geometry.
 - Log evidence: `a11-map-save-load-godot-live.log` has `Loaded 2 mods (2 total)`, `Embarking on a singleplayer IRONCLAD run. Ascension: 11`, `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`, multiple `current_run.save` writes, `Continuing run with character: CHARACTER.IRONCLAD`, and a post-load `Ascension A11 gate active ... columns=8; rows=17` line.
@@ -109,7 +109,7 @@ This log records what was actually run or observed. It does not close the live g
 - Method: temporarily isolated all non-BaseLib/EZMB local mods, launched through the normal Steam client, selected A11 through the original single-player Ascension arrows, reached the Act 1 map normally, then used DevConsole `act 2` and `act 3` to observe the later-act map surfaces without adding gameplay code.
 - Save/mod hygiene: copied the pre-test `modded/profile1/saves` directory, restored it afterward, restored the 23 temporarily moved local mod entries, and confirmed `SlayTheSpire2` was no longer running.
 - Evidence directory: `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355`.
-- Selection evidence: `19-character-select-a11.png` shows A11 selected through the live UI with the `瀹藉闀胯矾` description.
+- Selection evidence: `19-character-select-a11.png` shows A11 selected through the live UI with the `宽塔长路` description.
 - Act 2 evidence: `25-a11-act2-map-clean.png` shows an A11 Act 2 map surface with normal route nodes and no A11-specific marker or hover tooltip.
 - Act 3 evidence: `27-a11-act3-map-clean.png` shows an A11 Act 3 map surface with normal route nodes and no A11-specific marker or hover tooltip.
 - Log evidence: `a11-act23-godot-live.log` has `Loaded 2 mods (2 total)`, `Embarking on a singleplayer IRONCLAD run. Ascension: 11`, `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`, `Ascension A11 applied ... inserted 1 late route row(s); actIndex=1; columns=8; rows=16`, and `Ascension A11 applied ... inserted 2 late route row(s); actIndex=2; columns=8; rows=16`.

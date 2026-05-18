@@ -27,10 +27,12 @@
 | `docs/archive/` | Current | Historical planning, prompt material, release archaeology, archived audits, and implementation records. |
 | `docs/archive/feature-inputs/` | Archive | Historical feature prompts, superseded implementation specs, and old source-design inputs moved out of active feature folders. |
 | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Archive | Historical v2.2 source-audit matrices; do not use as default next-development input. |
+| `docs/archive/feature-audits/review-pre-slim-20260518.md` | Archive | Full historical source-review log before the compact current `docs/review.md`. |
+| `docs/archive/feature-audits/toreview-pre-slim-20260518.md` | Archive | Full historical retest queue before the compact current `docs/toreview.md`. |
 | `docs/archive/implementation-records/` | Archive | Compact implementation records moved out of the active reading path. |
 | `docs/archive/superseded/setup-spec-original-scaffold.md` | Archive | Historical original `EzDailyContent` setup specification; current setup starts from `README.md`, `docs/README.md`, and `docs/dev-environment.md`. |
 | `docs/archive/project-state-history-20260516.md` | Archive | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation/package history. |
-| `docs/issues/` | Current support | Compact issue follow-up plus manual evidence queue retained for guard/reference support (`docs/issues/waiting-tests.md`). |
+| `docs/issues/` | Current support | Compact issue follow-up plus compact manual evidence queue retained for guard/reference support (`docs/issues/waiting-tests.md`). |
 | `docs/worktree-cleanup-audit.md` | Current support | Current cleanup/refactor inventory, archive decisions, and owner-decision areas for this dirty worktree. |
 | `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi and Lotha source slices, and the hidden-by-default dedicated Vakuu fight slice; live verification remains pending. |
 
@@ -106,7 +108,7 @@ Start at `docs/README.md`.
 | Tester handoff | `docs/private-beta-verification-handoff.md` |
 | Open issues | `docs/issues.md` |
 | Test-ready development goal | `docs/test-ready-development-goal.md` |
-| Manual evidence queue | `docs/issues/waiting-tests.md` (support only; next development starts from `docs/test-ready-development-goal.md`) |
+| Manual evidence queue | `docs/issues/waiting-tests.md` (compact support queue only; full historical rows are archived, and next development starts from `docs/test-ready-development-goal.md`) |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |
 | Ancient expansion v2.2 | `docs/features/ancient-expansion-v2.2/README.md` |
 | Ancient expansion v2.2 source audit archive | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/README.md` |

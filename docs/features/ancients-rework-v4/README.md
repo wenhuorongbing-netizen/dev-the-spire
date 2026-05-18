@@ -4,13 +4,13 @@ This folder is the active feature record for the `Spire Plus` Ancient reward reb
 
 ## Current Files
 
-- `source-design.md`: user-authored source design. Treat as the behavioral source of truth unless a later user decision supersedes it.
+- `source-design.md`: compact active v4.3 source-design summary. Treat it as the current behavior index; preserved raw/source inputs live under Reference And Archive.
 - `completion-audit.md`: current implementation/release audit for this feature, including package and validation evidence.
 - `manual-verification-matrix.md`: live manual gameplay matrix. Rows remain pending until actually tested.
 - `manual-test-checklist.md`: practical tester checklist derived from the matrix.
 - `implementation-plan.md`: phased implementation plan created from the source design.
 - `api-discovery.md`: local API evidence, patch-point rationale, state strategy, and runtime-risk notes.
-- `work-log.md`: chronological implementation and validation log.
+- `work-log.md`: compact active summary; long chronological history is archived under `docs/archive/feature-work-logs/ancients-rework-v4/`.
 - `external-references.md`: external modding references used during discovery.
 
 ## Reference And Archive
@@ -18,6 +18,7 @@ This folder is the active feature record for the `Spire Plus` Ancient reward reb
 - `reference-inputs/sts2_ancients_rework_v4_3_adjustment_plan.md`: v4.3 adjustment input copied from the local Downloads folder for traceability and annotated with current implementation/pending-runtime status. v4.3 is current.
 - `../../archive/feature-inputs/ancients-rework-v4/sts2_ancients_rework_v4_2_next_plan.md`: historical v4.2 next-plan input. v4.2 is superseded by v4.3.
 - `../../archive/feature-inputs/ancients-rework-v4/goal-prompts.md`: historical prompts used to drive prior implementation batches; not current source truth.
+- `../../archive/feature-inputs/ancients-rework-v4/source-design-mojibake-pre-slim-20260518.md`: archived corrupted long draft kept for traceability only. Do not use it as current source truth.
 
 For the global documentation map, use `../../README.md`.
 

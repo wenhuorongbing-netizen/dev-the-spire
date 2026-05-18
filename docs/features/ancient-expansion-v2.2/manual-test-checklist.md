@@ -1,6 +1,6 @@
 # Ancient Expansion v2.2 Manual Test Checklist
 
-Status: Urda ten-blessing rows, default-on Morvi source rows, and default-on Lotha source rows are source-backed but still require live validation. Vakuu fight is hidden by default with a dedicated source enemy/scene because the reported post-victory black-screen path still needs live victory/save-load proof. Lotha Death Reprieve phase is deck-mirrored, and Urda/Morvi/Lotha encoded state mirror usage is source-guarded, but active live save/load restore remains pending. The latest player-facing polish pass removed legacy Urda option-marker wording, tightened key rich-text highlights, and added Root-Sight hover explanation; live hover readability remains pending until clicked UI screenshots/logs are captured.
+Status: Urda ten-blessing rows, default-on Morvi source rows, and default-on Lotha source rows are source-backed but still require live validation. Vakuu fight is hidden by default with a dedicated source enemy/scene because the reported post-victory black-screen path still needs live victory/save-load proof. Lotha Death Reprieve phase is deck-mirrored, and Urda/Morvi/Lotha encoded state mirror usage is source-guarded, but active live save/load restore remains pending. The latest player-facing polish pass removed legacy Urda option-marker wording, tightened key rich-text highlights, added Root-Sight hover explanation, moved Ancient combat-only behavior onto combat-state hooks, and added visible Trial Branch / Single Sentence counters; live hover/readability remains pending until clicked UI screenshots/logs are captured.
 
 ## 0. Planning Integrity
 
@@ -17,7 +17,7 @@ Status: Urda ten-blessing rows, default-on Morvi source rows, and default-on Lot
 
 `scripts/collect-ancient-ui-evidence.ps1` prepares one forced-Ancient evidence folder, writes `ancient-ui-evidence-plan.json` plus `manual-instructions.md`, runs the window preflight unless `-NoPreflight` is used, and only launches through `scripts/spire-plus-live-session.ps1` when `-Launch` is explicitly present. It now also prints a safer Spire Plus DevConsole smoke command that starts an unsaved single-player test run from the main menu and opens the requested Ancient. This helper and command prepare UI evidence; they do not prove natural routing, gameplay, save/load, or co-op by themselves.
 
-Static resource-routing guards added on 2026-05-14 confirm current source/resource/export wiring only: Urda, Morvi, and Lotha scene files are Control-root clicked backgrounds using event art; map/run-history icons and option marker relic art remain separate exported resources; and the latest art audit reports 0 missing targets, 0 hash mismatches, and 0 missing exports. No final bespoke art was integrated in the player-facing polish pass. Keep all clicked UI rows below pending until screenshots/logs prove the live screens.
+Static resource-routing guards added on 2026-05-14 confirm current source/resource/export wiring only: Urda, Morvi, and Lotha scene files are Control-root clicked backgrounds using event art; map/run-history icons and option marker relic art remain separate exported resources; and the latest art audit reports 0 missing targets, 0 hash mismatches, and 0 missing exports. Later GPTimage2/browser art passes replaced the temporary small-art blockers for the current package. Keep all clicked UI rows below pending until screenshots/logs prove the live screens.
 
 Prepare without launching:
 
@@ -75,14 +75,16 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] Humus Pact live `Compost Reward` alternative, gold, remove flow, and upgraded-card payoff verified.
 - [ ] Humus Pact third payoff does not duplicate, disappear, or softlock.
 - [ ] Humus Pact does not trigger from ordinary reward-set skip/proceed or room-exit cleanup.
-- [ ] Molting / Withered Husk live card behavior verified.
+- [ ] Molting / Withered Husk live card behavior verified: 0-cost Skill, 3 Block, Exhaust.
 - [ ] Moss Map room-type reward behavior verified.
-- [ ] Trial Branch offers four common/uncommon class cards, upgrades and adds the chosen Trial Plant card, and after three combats keeps it only if played in at least two combats.
+- [ ] Trial Branch offers four rare class cards, upgrades and adds the chosen card, applies the visible `Trial Branch` enchantment, and shows combats left/current-combat play state/remaining required plays.
+- [ ] Trial Branch success path: the chosen card is played in each of the next three combats, then the card is kept and the Trial Branch marker/enchantment are cleared.
+- [ ] Trial Branch failure path: missing the chosen card in any one of the next three combats removes it immediately after that combat.
 - [ ] Shallow-Root Relic offers two common relics, grants the chosen relic plus 75 Gold, roots on an Act 1 elite for 35 Gold, and otherwise uses the documented Act 2 removal/refund fallback.
 - [ ] Rooted Route auto-marks a reachable normal-combat node within the first seven floors without changing the map graph, rewards reaching it, and withers for 8 HP loss plus 25 Gold if unreachable.
 - [ ] After the Rain prevents the first Act 1 lethal damage for 1 HP, 15 Block, draw 1, two Wounds, and -3 Max HP; if unused before Act 2 it heals 8 and grants 75 Gold.
-- [ ] Root-Sight starts with 5 Root Eyes, automatically marks reachable non-Boss rooms without a map button, and grants the first-use potion if a slot exists.
-- [ ] Seed Bank uses the source-safe `Store Seed` reward alternative, caps at three Seeds, and before the Act 1 Boss chooses up to two Seeds with the first upgraded. It must not mark Seed Bank cards as Trial Branch plants.
+- [ ] Root-Sight starts with 5 Root Eyes. Clicking the Root Eyes relic opens map selection, highlights future reachable Monster, Unknown, or Elite rooms, stores the chosen room's concrete enemy group or event on hover, excludes Rest Sites/Shops/Treasure/Boss rooms, and grants the first-use potion if a slot exists.
+- [ ] Seed Bank uses the source-safe `Store Seed` reward alternative, caps at three Seeds, and lets the player click the Seed Bank relic later to choose up to two Seeds with the first upgraded. It must not mark Seed Bank cards as Trial Branch plants.
 - [ ] Current Urda save/load verified; do not close from `SavedSpireField<Player,string>` source evidence alone.
 
 ## 2. Default-On Morvi Source Slice
@@ -134,6 +136,7 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] Death Reprieve save/load after lethal prevention records no duplicate trigger. Current source persists `DeathReprieveUsed` plus `DeathReprievePhase` through Lotha player/deck state, but this row remains pending until live restore proves it.
 - [ ] Death Reprieve save/load while reprieve start is pending or the reprieve turn is active remains a blocking live row. Current source can rehydrate pending/active protection state from the deck-mirrored phase and logs the restored phase/power state, but exact active-turn hand/energy/pile/power continuation is not source-proven; do not count this path as save-safe without direct live proof.
 - [ ] Single Sentence first player-played Attack/Skill each turn adds two plays, then only four more normal player-played cards can be played that turn.
+- [ ] Single Sentence visible Power/counter starts at 5 while the ruling is ready, becomes 4 after the Attack/Skill ruling, counts down each later normal play, and reaches 0 when additional card plays are blocked.
 - [ ] Single Sentence cap does not count extra-play executions, autoplay/generated cards, clones, or blocked play attempts; first Power before the sentence costs 0 for that play and draws 1 without consuming it.
 - [ ] Public Evidence doubles only non-damaging negative statuses in both directions, grants/removes Enlightenment, and consumes up to 3 Enlightenment at turn start for draw and Block. Verify Weak, Vulnerable, and Frail count; verify Poison, damage-over-time, countdown damage, and source-proven damage/kill Debuffs such as Constrict, Demise, Disintegration, Doom, Magic Bomb, Strangle, and The Gambit do not count.
 - [ ] Lotha save/load after selecting each blessing preserves the selected blessing and any persistent once-per-run/deck-card state.

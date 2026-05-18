@@ -14,8 +14,8 @@ internal sealed class FissionEnchantment : CustomEnchantmentModel, ILocalization
     public List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new CardModifierLoc(
             "裂变",
-            "这张牌[gold]耗能[/gold]降低[blue]1[/blue]，并获得[gold]消耗[/gold]。",
-            "[gold]耗能[/gold]降低[blue]1[/blue]。")
+            "这张牌的[gold]能量[/gold]费用降低[blue]1[/blue]，并获得[gold]消耗[/gold]。",
+            "[gold]能量[/gold]费用降低[blue]1[/blue]。")
         : new CardModifierLoc(
             "Fission",
             "This card costs [blue]1[/blue] less and gains [gold]Exhaust[/gold].",

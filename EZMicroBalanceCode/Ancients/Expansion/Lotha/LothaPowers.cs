@@ -37,6 +37,19 @@ internal sealed class LothaDeathReprievePower : CustomPowerModel
     public override string CustomBigIconPath => LothaAssetPaths.DeathReprievePowerIcon;
 }
 
+internal sealed class LothaSingleSentencePower : CustomPowerModel
+{
+    public override PowerType Type => PowerType.Buff;
+
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override int DisplayAmount => Amount;
+
+    public override string CustomPackedIconPath => LothaAssetPaths.SingleSentencePowerIcon;
+
+    public override string CustomBigIconPath => LothaAssetPaths.SingleSentencePowerIcon;
+}
+
 internal sealed class LothaEnlightenmentPower : CustomPowerModel
 {
     public override PowerType Type => PowerType.Buff;

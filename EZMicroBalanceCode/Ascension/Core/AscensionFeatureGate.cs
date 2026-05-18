@@ -121,7 +121,7 @@ internal static class AscensionFeatureGate
     {
         get
         {
-            var rawValue = Environment.GetEnvironmentVariable(DebugLevelEnvironmentVariable);
+            var rawValue = Environment.GetEnvironmentVariable(DebugLevelEnvironmentVariable)?.Trim();
             if (!int.TryParse(rawValue, out var level))
             {
                 return 0;

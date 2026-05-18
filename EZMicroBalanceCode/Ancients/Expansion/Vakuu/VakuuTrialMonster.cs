@@ -46,6 +46,12 @@ internal sealed class EzmbVakuuTrialMonster : CustomMonsterModel
         return visuals;
     }
 
+    public override async Task AfterAddedToRoom()
+    {
+        await base.AfterAddedToRoom();
+        await VakuuFightService.EnsureStolenVaultPower(Creature);
+    }
+
     protected override MonsterMoveStateMachine GenerateMoveStateMachine()
     {
         var openingOffer = new MoveState(

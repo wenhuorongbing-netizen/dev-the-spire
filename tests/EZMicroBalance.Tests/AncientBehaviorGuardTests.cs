@@ -220,7 +220,7 @@ public sealed class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(CardCmd), nameof(CardCmd.Exhaust))]",
             "[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]",
             "[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]",
-            "[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.TryModifyCardRewardOptions))]",
+            "[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]",
             "[HarmonyPatch(typeof(DistinguishedCape), \"get_CanonicalVars\")]",
             "[HarmonyPatch(typeof(Vakuu), \"GenerateInitialOptions\")]",
             "[HarmonyPatch(typeof(DistinguishedCape), nameof(DistinguishedCape.AfterObtained))]",
@@ -277,7 +277,7 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void PrismaticGemRerollStateIsScreenScopedCounterSafeAndReplacesAllSlots()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var apiDiscovery = ReadRepoText("docs", "features", "ancients-rework-v4", "api-discovery.md");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
 
@@ -289,7 +289,15 @@ public sealed class AncientBehaviorGuardTests
             "Stack<CardReward>",
             "HarmonyFinalizer",
             "PrismaticGemRewardScreenContextPatch.CurrentReward",
+            "HarmonyPrefix",
+            "player.Relics.OfType<PrismaticGem>().FirstOrDefault(relic => !relic.IsMelted)",
+            "foreach (var listener in runState.IterateHookListeners(null))",
+            "listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions)",
+            "TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions)",
+            "listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)",
+            "CleanupSupersededPrismaticReplacements(cardRewardOptions)",
             "ConditionalWeakTable<CardReward, RewardScreenState>",
+            "public CardModel? PrismaticReplacement { get; set; }",
             "var madeTriggerDecision = !screenState.HasTriggerDecision",
             "if (madeTriggerDecision)",
             "screenState.CounterAtDecision = AncientSavedStateFields.PrismaticGemNormalRewardCounter[prismaticGem] + 1",
@@ -303,10 +311,22 @@ public sealed class AncientBehaviorGuardTests
             "!creationOptions.CardPools.All(pool => pool.IsColorless)",
             "ReplaceAllRewardSlots",
             "for (var slotIndex = 0; slotIndex < cardRewardOptions.Count; slotIndex++)",
+            "RestoreCounterAfterFailedReplacement(prismaticGem, screenState)",
             "reward.ModifyCard(replacement, prismaticGem)",
-            "RewardResultHints.GetValue(reward, _ => new RewardResultHintState())",
+            "TrackPrismaticReplacement(reward, replacement)",
+            "RewardResultHints.GetValue(reward, _ => new RewardResultHintState()).PrismaticReplacement = replacement",
+            "if (!RewardResultHints.TryGetValue(reward, out var hintState)",
+            "ReferenceEquals(reward.Card, hintState.PrismaticReplacement)",
+            "AncientCardHelpers.RemoveUnpiledRunCard(hintState.PrismaticReplacement)",
             "excludedIds.Add(replacement.Id)",
-            "player.RunState.RemoveCard(originalCard)");
+            "player.RunState.RemoveCard(originalCard)",
+            "RemoveUnpiledReplacements(replacements)",
+            "AncientCardHelpers.RemoveUnpiledRunCard(replacement)",
+            ".Where(card => type == null || card.Type == type)",
+            "GetOffColorRewardPool(player, originalCard.Rarity, originalCard.Type, excludedIds)",
+            "GetOffColorRewardPool(player, null, originalCard.Type, excludedIds)",
+            "GetOffColorRewardPool(player, originalCard.Rarity, null, excludedIds)",
+            "GetOffColorRewardPool(player, null, null, excludedIds)");
 
         AssertSourceContains(
             source,
@@ -327,6 +347,7 @@ public sealed class AncientBehaviorGuardTests
 
         Assert.DoesNotContain("ShouldReplaceRightmostSlot", source, StringComparison.Ordinal);
         Assert.DoesNotContain("var slotIndex = cardRewardOptions.Count - 1", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.TryModifyCardRewardOptions))]", source, StringComparison.Ordinal);
 
         AssertSourceContains(
             apiDiscovery,
@@ -341,8 +362,8 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void VelvetChokerSoftLimitCountsOnlyManualFirstFromHandPlaysAndResetsEachTurn()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
-        var turnSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TurnOfferAndRestPatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
+        var turnSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
@@ -411,7 +432,7 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void DistinguishedCapeUsesV43MaxHpMathAndCannotBeSelectedWhenUnableToPay()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
@@ -470,7 +491,7 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void DistinguishedCapeUnaffordableVakuuPathPreservesVisibleOptionCount()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
         var replacementBranch = SliceBetween(
             source,
@@ -538,8 +559,11 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void PrismaticGemRewardScreenHintHasGuardedBannerFallbackDiagnostics()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");
-        var hintPatch = SliceFrom(source, "internal static class PrismaticGemRewardScreenHintPatch");
+        var source = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintPatch.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintBanner.cs"));
+        var hintPatch = SliceFrom(source, "internal static partial class PrismaticGemRewardScreenHintPatch");
         var applyHint = SliceBetween(
             hintPatch,
             "private static void ApplyRewardScreenHint",
@@ -639,7 +663,7 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("设为0", source, StringComparison.Ordinal);
         Assert.Contains("费用为0", source, StringComparison.Ordinal);
         Assert.DoesNotContain("能量降低 1", activeCode, StringComparison.Ordinal);
-        Assert.Contains("[gold]耗能[/gold]降低[blue]1[/blue]", activeCode, StringComparison.Ordinal);
+        Assert.Contains("[gold]能量[/gold]费用降低[blue]1[/blue]", activeCode, StringComparison.Ordinal);
         Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
     }
 
@@ -706,13 +730,14 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void CurrentAncientDocsDoNotPresentSupersededV42BehaviorAsCurrent()
     {
+        var sourceDesign = ReadRepoText("docs", "features", "ancients-rework-v4", "source-design.md");
         var currentDocs = string.Join(
             Environment.NewLine,
             [
                 ReadRepoText("README.md"),
                 ReadRepoText("docs", "test-plan.md"),
                 ReadRepoText("docs", "release-checklist.md"),
-                ReadRepoText("docs", "features", "ancients-rework-v4", "source-design.md"),
+                sourceDesign,
                 ReadRepoText("docs", "features", "ancients-rework-v4", "api-discovery.md"),
                 ReadRepoText("docs", "features", "ancients-rework-v4", "implementation-plan.md"),
                 ReadRepoText("docs", "features", "ancients-rework-v4", "high-risk-review.md"),
@@ -722,6 +747,11 @@ public sealed class AncientBehaviorGuardTests
                 ReadRepoText("docs", "features", "ancients-rework-v4", "localization-validation.md")
             ]);
 
+        Assert.Contains("compact active source-design summary", sourceDesign, StringComparison.Ordinal);
+        Assert.Contains("source-design-mojibake-pre-slim-20260518.md", sourceDesign, StringComparison.Ordinal);
+        Assert.True(sourceDesign.Split('\n').Length <= 80, "Keep active Ancients v4 source-design compact; move long design history to archive/reference inputs.");
+        Assert.DoesNotContain("銆", sourceDesign, StringComparison.Ordinal);
+        Assert.DoesNotContain("鍏", sourceDesign, StringComparison.Ordinal);
         Assert.Contains("v4.3 is current", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Every second standard card reward contains only off-color cards", currentDocs, StringComparison.Ordinal);
         Assert.Contains("lose 30% of current Max HP, at least 18", currentDocs, StringComparison.Ordinal);
@@ -747,8 +777,8 @@ public sealed class AncientBehaviorGuardTests
     public void JeweledMaskCustomEnchantmentIsPowerOnlyPersistentAndCombatStartScoped()
     {
         var enchantment = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "JeweledMaskFreePower.cs");
-        var pickupSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PickupRewardPatches.cs");
-        var combatSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var pickupSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
+        var combatSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
         AssertSourceContains(
@@ -782,7 +812,7 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void JewelryBoxApotheosisMarkerIsScopedToCreatedCardsAndHoverPreviews()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
 
         AssertSourceContains(
             source,
@@ -806,7 +836,7 @@ public sealed class AncientBehaviorGuardTests
     public void PaelsToothSavedCounterAndStoredCardReturnAreGuarded()
     {
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsToothAndForgePatches.cs");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
         AssertSourceContains(
@@ -840,7 +870,7 @@ public sealed class AncientBehaviorGuardTests
     public void DebtAndFollyPlayerTextMatchSourceBehavior()
     {
         var debtSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "DebtAndCardPatches.cs");
-        var vakuSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var vakuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var cards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
 
         Assert.Equal("Debt", cards["DEBT.title"]);
@@ -875,8 +905,8 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void TemporaryGeneratedCardPathsCleanUpOrSelfExpire()
     {
-        var turnSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TurnOfferAndRestPatches.cs");
-        var vakuSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "VakuRewardPatches.cs");
+        var turnSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
+        var vakuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
         AssertSourceContains(
@@ -912,7 +942,7 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void MeatCleaverCookRestSiteOptionIsSafeAndScoped()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TurnOfferAndRestPatches.cs");
+        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "MeatCleaverCookPatches.cs");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var restSite = JsonStringMap("EZMicroBalance", "localization", "eng", "rest_site_ui.json");
         var staticHovers = JsonStringMap("EZMicroBalance", "localization", "eng", "static_hover_tips.json");
@@ -959,7 +989,10 @@ public sealed class AncientBehaviorGuardTests
         Assert.DoesNotContain("MaxHp", source, StringComparison.Ordinal);
         Assert.Contains("Verify option disabled when too few removable cards.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Verify option disabled when HP is not greater than 5.", manualChecklist, StringComparison.Ordinal);
-        Assert.Contains("Verify no other Cook source is affected unexpectedly.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Expected: Cleaver / 切肉 option removes 2 removable cards and costs 5 HP.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Verify no other rest-site source is affected unexpectedly.", manualChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("Expected: Cook option", manualChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("烹饪", manualChecklist, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -990,7 +1023,7 @@ public sealed class AncientBehaviorGuardTests
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
             "- [ ] Push to `origin/main` is performed only after explicit user approval.",
-            "Current normal Steam-client startup/log verification passed for the Spire Plus display-name package",
+            "Latest normal Steam-client startup/log verification is historical for the pre-review Spire Plus display-name package",
             "Refreshed normal Steam-client Mod Settings UI evidence at `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` shows `Spire Plus`",
             "RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name",
             "Manual feature results are pending",
@@ -1009,7 +1042,7 @@ public sealed class AncientBehaviorGuardTests
             Assert.Contains($"| {row} |", manualMatrix, StringComparison.Ordinal);
         }
 
-        Assert.Contains("Status: automated gates passed; current normal Steam-client startup/log verification passed; refreshed normal Steam-client Mod Settings UI list screenshot shows Spire Plus; historical page-level Mod Settings UI passed under the old display name; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check and saved-map boss-reachability graph proof passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Status: automated gates passed; latest normal Steam-client startup/log verification is historical for the earlier 22-field package; refreshed normal Steam-client Mod Settings UI list screenshot shows Spire Plus; historical page-level Mod Settings UI passed under the old display name; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check and saved-map boss-reachability graph proof passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Natural route-click first-node path remains pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Result: pending.", manualMatrix, StringComparison.Ordinal);

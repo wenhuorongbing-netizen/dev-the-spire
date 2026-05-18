@@ -1,23 +1,32 @@
 # Spire Plus To Review
 
-These items were implemented or researched in the 2026-05-17 test-ready loop and need user manual retest.
+Current queue for user manual testing. The full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
 
-| ID | Result | Automated proof |
-| --- | --- | --- |
-| MORVI-OVERDUE-LIBRARY-CRASH | Archive Draw Page now uses `CardsVar`; Strength/Dexterity archive pages use matching variables; temporary archive powers use valid Morvi icons instead of NOPE. | `dotnet test EZMicroBalance.sln --no-build` passed in the Morvi worker pass. |
-| MORVI-BLUEPRINT-PROOF-NO-EFFECT | Blueprint Proof now initializes at combat start and has a late initialization guard before the first eligible play if the combat-start hook was missed. | Morvi guard tests passed in the worker pass. |
-| MORVI-MISPRINTED-PRESS-TEXT | Misprint Press text now says the first manual natural-deck Attack/Skill each turn repeats once, and draws only if that triggering card had base cost 1 or more. | Localization guard updated. |
-| MORVI-DEBT-WORDING | Debt text now states 220 Gold gained, 320 Debt recorded, 40 Gold due after each combat, and 3 nonlethal HP lost per missing 10 Gold. | Localization guard updated. |
-| MORVI-FORBIDDEN-LOAN-TEXT | Forbidden Loan starts from the card reward: choose and add 1 upgraded Ancient card, then explains the later 180 Gold settlement. | Localization guard updated. |
-| URDA-MOSS-MAP-TEXT | Moss Map text now maps all five first Act 1 room rewards: Monster +25 Gold; Event heal 5; Shop Potion; Elite random upgrade; Rest Site +3 Max HP. | Localization guard updated. |
-| URDA-SEED-BANK-INTERACTIVE-RELIC | Seed Bank no longer opens a Boss-entry picker. Stored cards appear on relic hover, the relic shows a counter, and clicking it lets the player choose up to 2 stored cards; the first selected card is upgraded, then the relic is used up. | Build and focused Urda coverage guard passed. |
-| URDA-ROOT-EYES-PREVIEW-REDESIGN | Root Eyes no longer auto-marks rooms. Clicking the relic enters map selection; only current reachable Monster, Unknown, or Elite nodes are valid. The chosen node stores a concrete next encounter/event preview, shows it on hover, and enters that result. Unknown nodes exclude Shop, Treasure, Rest Site, and Boss. | `AncientPlayerFacingPolishGuardTests` and `ReleaseCoverageGuardTests` focused pass: 37 passed, 3 skipped. |
-| URDA-ROOTED-ROUTE-MP-RESEARCH | Source research found Rooted Route can stay local-owned for now, but richer Root Eyes writeback must be host-authoritative and party-visible in co-op. | Review note in `docs/review.md`; no co-op implementation claimed. |
-| 2026-05-17-SOURCE-REVIEW-NO-NEW-BLOCKERS | Source review found no new Urda/Morvi P0/P1/P2 implementation blockers. Live gameplay, clicked UI, save-load, death/failure path, and co-op remain pending manual proof gates rather than source blockers. | `docs/review.md` conclusion; source-only review, no game run. |
-| URDA-ROOT-EYES-SOURCE-REVIEW | Root Eyes source path is confirmed: relic click enters map selection, map clicks are intercepted only while selection is active, only reachable Act 1 Monster/Unknown/Elite nodes are valid, disallowed Unknown outcomes exclude Shop/Treasure/Rest Site/Boss, and the chosen concrete preview is saved for room entry. | Reviewed in `docs/review.md`; no live UI claim. |
-| URDA-SEED-BANK-SOURCE-REVIEW | Seed Bank source path is confirmed: Boss-entry settlement is removed, relic hover/count expose stored cards, clicking the relic opens extraction only when cards are stored, up to 2 cards can be selected, the first is upgraded, storage is cleared, and the relic is marked settled. | Reviewed in `docs/review.md`; no live gameplay claim. |
-| MORVI-SOURCE-REVIEW | Morvi source paths are confirmed for Overdue Library variables/icons, Blueprint Proof combat-start and late guards, Misprint Press play-count behavior without hand-copy generation, Forbidden Loan reward/debt flow, and Debt Settlement 220/320/40/3 behavior and text coverage. | Reviewed in `docs/review.md`; no live gameplay/save-load/co-op claim. |
-| VAKUU-ENTRY-PRIMAL-CLAW | Vakuu fight entry is confirmed hidden by default and explicit-gated. `原初之爪` has no unique source object; current implemented matching object is `Claws` / `枯爪`. | Source search and review note in `docs/review.md`. |
-| VAKUU-DOC-GUARD-PHRASE | Vakuu current docs now include the exact `ParentEventId` evidence wording required by the save-risk guards, and no longer describe the active fight as using the old Core-rejected shape. | `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: 189 passed, 0 failed. |
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.0.zip`.
 
-Manual retest focus: Root Eyes hover and entry result, Seed Bank click/extract and Boss transition, Morvi Overdue Library pages, Blueprint Proof first three eligible plays, Misprint Press text, Debt/Forbidden Loan text, Vakuu explicit-gate entry, and Claws pickup text/effect.
+Current package hashes:
+
+| Artifact | SHA256 |
+| --- | --- |
+| ZIP | `5AEE65325C4248E8BFB86268E360E24BB68B428B2CBC6CDA96F8F86DA483228A` |
+| DLL | `54524355D5F6986A017E06E7F3EC996BF5B4F8A23870B518E40D38AB91EF1096` |
+| PCK | `9547FD17CEAC9719A3BA044A9E47D65A7F3F942C248559136D380EFD75AB2B86` |
+| Manifest | `659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2` |
+| README_INSTALL | `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4` |
+
+Latest no-game validation passed: build, focused guards, full tests `187 passed / 18 skipped`, format, diff-check, publish, package rebuild, artifact tests `205 passed / 0 skipped`, and installed package hash check.
+
+## Retest Queue
+
+| ID | Area | What changed | Manual proof needed |
+| --- | --- | --- | --- |
+| URDA-ROOT-EYES | Urda | Root Eyes uses a visible relic counter, selectable map nodes, forked preview RNG, saved markers, entry-time commitment for Monster/Unknown/Elite, preview-record consumption after entry, duplicate-reservation avoidance, post-hook Unknown filtering, stale-preview cleanup/refund, and map-screen null guard. | Click relic, select multiple valid future nodes, verify hover title/icon, enter marked rooms in order and out of order, then save/load before entry. |
+| URDA-SEED-BANK | Urda | Seed Bank stores cards on the relic, exposes stored card hover tips, supports relic-click extraction, preserves seeds if deck-add fails, and refreshes stale storage. | Store cards, hover relic, click extract, verify chosen cards enter deck, verify Boss transition does not hang. |
+| URDA-TRIAL-HUMUS | Urda | Trial Branch, Seedbed, Humus Pact, Moss Map, Rooted Route, After Rain, Molting, and Shallow-Root Relic have source guards, visible option relics, and normal relic hover text. | Check event text, relic hover text, card reward alternatives, map markers, and combat results. |
+| MORVI-REWARDS | Morvi | All Morvi choices now use visible option relics with relic hover text. Debt and Overdraft counters are Buff counters, Forbidden Loan hides when no card is eligible, and failed selection refreshes choices. | Test Forbidden Loan, Misprint Press, Red Ink, Overdue Library, Blueprint Proof, Paperstorm, Open Book, Debt Settlement. |
+| LOTHA-REWARDS | Lotha | All Lotha choices now use visible option relics with relic hover text, source-split card rules, transient state recovery, and Mirror Rebuttal candidate gating. | Test each Lotha blessing in combat, especially Single Sentence, Death Reprieve, Public Evidence, and Mirror Rebuttal. |
+| VAKUU-FIGHT | Vakuu | Vakuu fight has a visible fight relic, dedicated encounter scene/monster, no-normal-reward resume path, fallback exit path, and non-Vakuu victory relic choices. | Enable the gate, start the fight, win, confirm no black screen, choose reward, test failure/death and save/load. |
+| ASCENSION-A11-A20 | Ascension | A11 map geometry, A12 Firemarked Elites, A13 Fission rewards, A16 Banners, A17 Deep Branch, A19 seals, A20 brand path, and Rootblight have current source guards. Fission keeps upgrade-only reward relic changes; Soul Tide counts Beckon before Core flushes the hand; Boiling Critical no longer promises equal Block on the shared tooltip. | Play A11-A20 paths, verify map markers/hovers, Fission reward display and pickup, Soul Fysh/Soul Tide timing, Waterfall Giant/Boiling Critical tooltip and timing, combat powers, Rootblight timing, save/load, and co-op boundaries. |
+| ANCIENT-UI-ART | UI/art | Ancient clicked screens, option relic icons, map/run-history icons, card/power/relic art paths, and package resources are guarded. | Capture clicked Ancient UI and hover screenshots for Urda, Morvi, Lotha, and gated Vakuu. |
+
+Do not close these rows from source review alone. Close only after the matching live manual proof exists.

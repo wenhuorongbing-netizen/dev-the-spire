@@ -25,10 +25,23 @@ public sealed class MorviV22GuardTests
     ];
 
     [Fact]
+    public void CombatLifecycleUsesScopedCombatStateInsteadOfGlobalRunStateLookup()
+    {
+        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
+
+        Assert.DoesNotContain("RunManager.Instance.DebugOnlyGetState()", runHook, StringComparison.Ordinal);
+        AssertSourceContains(
+            runHook,
+            "CombatManager.Instance.DebugOnlyGetState()",
+            "activeCombatState.Players.Where(player => player.IsActiveForHooks)",
+            "room.CombatState.Players.Where(player => player.IsActiveForHooks)");
+    }
+
+    [Fact]
     public void MorviIsDefaultOnDisableableForceableAndHasEightBlessings()
     {
         var gate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviFeatureGate.cs");
-        var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.cs");
+        var ancient = ReadMorviSource();
         var blessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingIds.cs");
         var initializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviInitializer.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
@@ -60,7 +73,9 @@ public sealed class MorviV22GuardTests
         AssertSourceContains(
             initializer,
             "ModHelper.SubscribeForRunStateHooks",
+            "ModHelper.SubscribeForCombatStateHooks",
             "ModelDb.GetById<MorviRunHook>",
+            "ModelDb.GetById<MorviCombatHook>",
             "default-on");
         AssertSourceContains(
             savedFields,
@@ -79,8 +94,8 @@ public sealed class MorviV22GuardTests
     [Fact]
     public void MisprintPressUsesPlayCountNotHandCopiesAndBlocksPowerAutoplayRecursion()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
-        var misprint = SliceBetween(runHook, "public static int ModifyCardPlayCount", "public static bool TryModifyEnergyCostInCombat");
+        var runHook = ReadMorviSource();
+        var misprint = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.MisprintPress.cs");
 
         AssertSourceContains(
             misprint,
@@ -106,13 +121,17 @@ public sealed class MorviV22GuardTests
     [Fact]
     public void MorviSourceConstantsAndStatefulBlessingsMatchV22Numbers()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
+        var runHook = ReadMorviSource();
 
         AssertSourceContains(
             runHook,
             "ForbiddenLoanKeepGoldCost = 180",
             "ForbiddenLoanAttackSkillHpLoss = 1",
             "ForbiddenLoanPowerHpLoss = 8",
+            "HasForbiddenLoanCandidates(Player player)",
+            "TrySelectForbiddenLoanCard(player)",
+            "if (forbiddenLoanProgress == null)",
+            "return false",
             "player.Character.CardPool",
             "card.Rarity == CardRarity.Ancient",
             "CardSelectCmd.FromChooseACardScreen",
@@ -157,6 +176,7 @@ public sealed class MorviV22GuardTests
             "PaperstormStatusTriggersPerTurn = 2",
             "AncientCardHelpers.TryAddGeneratedCardToCombat(waste, PileType.Draw, player, CardPilePosition.Random)",
             "card.Type != CardType.Status",
+            "player.Creature.GetPower<MorviPaperstormPower>() is { Amount: > 0 } paperstormPower",
             "card.Pile?.Type != PileType.Hand",
             "CardCmd.Exhaust(choiceContext, card, skipVisuals: true)",
             "PlayerCmd.GainEnergy(1m, player)");
@@ -187,10 +207,80 @@ public sealed class MorviV22GuardTests
     }
 
     [Fact]
+    public void MorviPaymentSplitKeepsPublicApiBoundarySmall()
+    {
+        var forbiddenLoan = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoan.cs");
+        var redInk = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.RedInkOverdraft.cs");
+        var debtSettlement = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.DebtSettlement.cs");
+        var payments = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.Payments.cs");
+        var ancient = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
+        var cards = ReadMorviSource();
+        var state = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.State.cs");
+        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
+
+        AssertSourceContains(
+            forbiddenLoan,
+            "internal static bool HasForbiddenLoanCandidates(Player player)",
+            "private static async Task<Progress?> TrySelectForbiddenLoanCard",
+            "private static async Task ResolveBorrowedAncientPlayCost",
+            "private static async Task AutoSettleForbiddenLoan",
+            "private static void ClearBorrowedAncientCards");
+        AssertSourceContains(
+            redInk,
+            "public static bool CanUseRedInkOverdraft(Player player)",
+            "public static async Task UseRedInkOverdraft(PlayerChoiceContext choiceContext, Player player)",
+            "private static async Task AddRedInkOverdraftCard",
+            "private static async Task PayRedInkOverdraftDebts");
+        AssertSourceContains(
+            debtSettlement,
+            "private static async Task ResolveDebtSettlementPickup",
+            "private static async Task PayDebtSettlementDue");
+        AssertSourceContains(
+            payments,
+            "private static async Task DamagePlayerNonlethal");
+        AssertSourceContains(
+            cards,
+            "MorviBlessingService.CanUseRedInkOverdraft(Owner)",
+            "MorviBlessingService.UseRedInkOverdraft(choiceContext, Owner)");
+        Assert.Contains("MorviBlessingService.HasForbiddenLoanCandidates(Owner)", ancient, StringComparison.Ordinal);
+        AssertSourceContains(
+            state,
+            "private const char ProgressSeparator = ';'",
+            "TrySelectForbiddenLoanCard(player)",
+            "ResolveDebtSettlementPickup(player)");
+        AssertSourceContains(
+            forbiddenLoan,
+            "private const int ForbiddenLoanKeepGoldCost = 180",
+            "private const int ForbiddenLoanAttackSkillHpLoss = 1",
+            "private const int ForbiddenLoanPowerHpLoss = 8");
+        AssertSourceContains(
+            redInk,
+            "private const int RedInkOverdraftDraw = 2",
+            "private const int RedInkOverdraftEnergy = 1",
+            "private const int RedInkOverdraftGoldPerDebt = 12",
+            "private const int RedInkOverdraftHpPerUnpaidDebt = 3");
+        AssertSourceContains(
+            debtSettlement,
+            "private const int DebtSettlementImmediateGold = 220",
+            "private const int DebtSettlementStartingDebt = 320",
+            "private const int DebtSettlementCombatDue = 40",
+            "private const int DebtSettlementHpPerTenShortfall = 3");
+        Assert.DoesNotContain("ForbiddenLoanKeepGoldCost", runHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("RedInkOverdraftDraw", runHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("DebtSettlementImmediateGold", runHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("ProgressSeparator", runHook, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("public static async Task ResolveDebtSettlementPickup", debtSettlement, StringComparison.Ordinal);
+        Assert.DoesNotContain("public static async Task PayDebtSettlementDue", debtSettlement, StringComparison.Ordinal);
+        Assert.DoesNotContain("public static async Task AutoSettleForbiddenLoan", forbiddenLoan, StringComparison.Ordinal);
+        Assert.DoesNotContain("public static async Task DamagePlayerNonlethal", payments, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void OverdueLibraryCardsPowersAndCleanupAreSourceBacked()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
-        var cards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviCards.cs");
+        var runHook = ReadMorviSource();
+        var cards = ReadMorviSource();
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviPowers.cs");
         var engCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
         var zhsCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
@@ -221,9 +311,14 @@ public sealed class MorviV22GuardTests
             "CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner)",
             "CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay)",
             "TargetingAllOpponents(CombatState)",
-            "ArmOverdueLibraryDiscount(Owner)",
+            "ArmOverdueLibraryDiscount(Owner, this)",
             "PowerCmd.Apply<MorviBraveryPagePower>",
             "PowerCmd.Apply<MorviDexterityPagePower>");
+        AssertSourceContains(
+            runHook,
+            "ArmOverdueLibraryDiscount(Player player, CardModel sourceCard)",
+            "combatState.OverdueLibraryDiscountSourceCard = sourceCard");
+        Assert.DoesNotContain("MorviArchiveDiscountPage.CardId)", runHook, StringComparison.Ordinal);
         Assert.DoesNotContain("new IntVar(\"Cards\"", cards, StringComparison.Ordinal);
         AssertSourceContains(
             powers,
@@ -231,7 +326,7 @@ public sealed class MorviV22GuardTests
             "MorviDexterityPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveDexterityPage, DexterityPower>",
             "CustomPackedIconPath => MorviAssetPaths.ArchivePagePowerIcon",
             "CustomBigIconPath => MorviAssetPaths.ArchivePagePowerIcon");
-        Assert.Contains("ArchivePagePowerIcon", ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.cs"), StringComparison.Ordinal);
+        Assert.Contains("ArchivePagePowerIcon", ReadMorviSource(), StringComparison.Ordinal);
         Assert.Contains("{StrengthPower:diff()}", engCards["EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description"], StringComparison.Ordinal);
         Assert.Contains("{DexterityPower:diff()}", engCards["EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE.description"], StringComparison.Ordinal);
         Assert.Contains("{StrengthPower:diff()}", zhsCards["EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description"], StringComparison.Ordinal);
@@ -256,13 +351,38 @@ public sealed class MorviV22GuardTests
     }
 
     [Fact]
+    public void MorviDebtCountersAreVisibleCountersNotArtifactBlockedDebuffs()
+    {
+        var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviPowers.cs");
+        var redInk = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.RedInkOverdraft.cs");
+        var debtSettlement = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.DebtSettlement.cs");
+
+        var debtPower = SliceBetween(powers, "internal sealed class MorviDebtPower", "internal sealed class MorviProofreadPower");
+        var overdraftPower = SliceBetween(powers, "internal sealed class MorviOverdraftPower", "internal sealed class MorviPaperstormPower");
+
+        Assert.Contains("public override PowerType Type => PowerType.Buff", debtPower, StringComparison.Ordinal);
+        Assert.Contains("public override PowerType Type => PowerType.Buff", overdraftPower, StringComparison.Ordinal);
+        Assert.DoesNotContain("public override PowerType Type => PowerType.Debuff", debtPower, StringComparison.Ordinal);
+        Assert.DoesNotContain("public override PowerType Type => PowerType.Debuff", overdraftPower, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            redInk,
+            "await SetCounterPower<MorviOverdraftPower>(choiceContext, player, combatState.RedInkDebtsThisCombat)",
+            "visibleDebtCount = player.Creature.GetPower<MorviOverdraftPower>()?.Amount ?? 0");
+        AssertSourceContains(
+            debtSettlement,
+            "await SetCounterPower<MorviDebtPower>(",
+            "nextProgress.DebtRemaining");
+    }
+
+    [Fact]
     public void BlueprintProofHasPerCombatLateInitializationGuard()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
+        var runHook = ReadMorviSource();
         var beforeCombat = SliceBetween(runHook, "public static async Task BeforeCombatStart", "public static async Task AfterPlayerTurnStart");
         var costHook = SliceBetween(runHook, "public static bool TryModifyEnergyCostInCombat", "public static async Task BeforeCardPlayed");
         var beforeCard = SliceBetween(runHook, "public static async Task BeforeCardPlayed", "public static async Task AfterCardPlayed");
-        var initialization = SliceBetween(runHook, "private static async Task EnsureBlueprintProofInitialized", "private static async Task AutoSettleForbiddenLoan");
+        var initialization = SliceBetween(runHook, "private static async Task EnsureBlueprintProofInitialized", "private static async Task CleanupMorviTemporaryCards");
 
         AssertSourceContains(
             runHook,
@@ -300,7 +420,7 @@ public sealed class MorviV22GuardTests
     [Fact]
     public void MorviLocalizationAssetsAndHoverSupportArePresentAndReadable()
     {
-        var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.cs");
+        var ancient = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviPowers.cs");
         var exportPreset = ReadRepoText("export_presets.cfg");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
@@ -444,5 +564,8 @@ public sealed class MorviV22GuardTests
 
         yield return "EZMicroBalance/scenes/events/background_scenes/ezmb_morvi.tscn";
     }
+
+    private static string ReadMorviSource() =>
+        ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
 
 }
