@@ -48,7 +48,7 @@ public sealed class AscensionV2MilestoneGuardTests
     public void Milestone0FeatureFlagsAreIndependentAndAllOffIsANoOp()
     {
         var config = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionExpansionConfig.cs");
-        var gates = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.cs");
+        var gates = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
         var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionInitializer.cs");
         var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
@@ -347,7 +347,7 @@ public sealed class AscensionV2MilestoneGuardTests
         var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
         var powers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
-        var bossSealDefinition = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "BossSealDefinition.cs");
+        var bossSealSource = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
         var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
         var englishEvents = JsonStringMap("EZMicroBalance", "localization", "eng", "events.json");
@@ -486,7 +486,7 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("PowerCmd.Apply<StrengthPower>(choiceContext, Owner, -Amount", powers, StringComparison.Ordinal);
 
         AssertSourceContains(
-            bossSealDefinition,
+            bossSealSource,
             "BossSealImplementationStatus.SourceGuardedPendingLiveVerification",
             "RuntimeEvidence",
             "HolyDaze",
@@ -500,7 +500,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "adds a second Marginal Note",
             "Each unplayed generated Frantic Escape grants 5 Block",
             "ResidualSample");
-        Assert.DoesNotContain("Brand parameters are not designed for A20 yet", bossSealDefinition, StringComparison.Ordinal);
+        Assert.DoesNotContain("Brand parameters are not designed for A20 yet", bossSealSource, StringComparison.Ordinal);
 
         AssertSourceContains(
             rewardService,
@@ -513,7 +513,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "new CardReward(CardCreationOptions.ForRoom(player, RoomType.Boss), 3, player)");
         Assert.Equal("Banner Room", englishAscension["BANNER_ROOM.title"]);
         Assert.Contains("round [blue]3[/blue]", englishAscension["BANNER_VANGUARD.description"], StringComparison.Ordinal);
-        Assert.Contains("[blue]15[/blue]/[blue]30[/blue]/[blue]55[/blue] [gold]Gold[/gold]", englishAscension["BANNER_BLOOD_PRIZE.description"], StringComparison.Ordinal);
+        Assert.Contains("[blue]{Gold}[/blue] [gold]Gold[/gold]", englishAscension["BANNER_BLOOD_PRIZE.description"], StringComparison.Ordinal);
         Assert.Equal("Royal Seal", englishAscension["BOSS_ROYAL_SEAL.title"]);
         Assert.Contains("stronger [gold]King Brand[/gold]", englishAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
         Assert.Equal("Holy Daze", englishAscension["BOSS_SEAL_HOLY_DAZE.title"]);
@@ -562,6 +562,92 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Contains("Boss 1 reward screen opens the A20 courtyard event before the second Boss.", manualChecklist, StringComparison.Ordinal);
         Assert.DoesNotMatch(@"(?i)\bA20\b[^\r\n.]*\b(?:release-ready|fully verified|complete)\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bA11-A20\b[^\r\n.]*\b(?:release-ready|fully verified)\b", currentDocs);
+    }
+
+    [Fact]
+    public void SplitBossSealPowerFilesKeepBehaviorAndReadableLocalization()
+    {
+        var basePower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
+        var holyDaze = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "HolyDazePower.cs");
+        var boilingCritical = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BoilingCriticalPower.cs");
+        var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "ResidualSamplePower.cs");
+        var chosenDecree = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "ChosenDecreeReductionPower.cs");
+
+        AssertSourceContains(
+            basePower,
+            "internal abstract class BossSealPower : CustomPowerModel, ILocalizationProvider",
+            "public override PowerType Type => PowerType.Buff",
+            "public override PowerStackType StackType => PowerStackType.Single",
+            "public override int DisplayAmount => Amount",
+            "AscensionAssetPaths.BossSealIndicator");
+        Assert.DoesNotContain("internal sealed class HolyDazePower", basePower, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class BoilingCriticalPower", basePower, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class ResidualSamplePower", basePower, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class ChosenDecreeReductionPower", basePower, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            holyDaze,
+            "internal sealed class HolyDazePower : BossSealPower",
+            "PowerStackType.Counter",
+            "\"王印：圣昏\"",
+            "每次受到的伤害最多为[blue]1[/blue]",
+            "受击最多[blue]1[/blue]点",
+            "\"Royal Seal: Holy Daze\"",
+            "damage taken from each hit is capped at [blue]1[/blue]",
+            "Damage taken is capped at [blue]1[/blue].",
+            "ModifyDamageCap(Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource)",
+            "return target == Owner ? 1m : decimal.MaxValue;");
+
+        AssertSourceContains(
+            boilingCritical,
+            "internal sealed class BoilingCriticalPower : BossSealPower",
+            "\"王印：沸腾临界\"",
+            "死亡爆发每层额外造成[blue]2[/blue]点伤害",
+            "预警[gold]格挡[/gold]",
+            "\"Royal Seal: Boiling Critical\"",
+            "Death explosion deals [blue]2[/blue] more damage per stack",
+            "warning [gold]Block[/gold]",
+            "dealer != Owner",
+            "Owner.Monster is not WaterfallGiant",
+            "Owner.Monster.NextMove.StateId != \"EXPLODE_MOVE\"",
+            "return 0m;",
+            "return Amount * 2m;");
+
+        AssertSourceContains(
+            residualSample,
+            "internal sealed class ResidualSamplePower : BossSealPower",
+            "\"王印：残留样本\"",
+            "下个阶段会保留[blue]{Amount}[/blue]份[gold]削弱样本[/gold]",
+            "复苏后结算[gold]削弱样本[/gold]",
+            "\"Royal Seal: Residual Sample\"",
+            "The next phase keeps [blue]{Amount}[/blue] [gold]weakened sample(s)[/gold]",
+            "[gold]Weakened samples[/gold] resolve after respawn.",
+            "ShouldPowerBeRemovedAfterOwnerDeath()",
+            "return false;");
+
+        AssertSourceContains(
+            chosenDecree,
+            "internal sealed class ChosenDecreeReductionPower : BossSealPower",
+            "\"王印：择令\"",
+            "下一次由[gold]女王[/gold]给予的[gold]力量[/gold]减少[blue]1[/blue]",
+            "女王下一次[gold]力量[/gold]强化-[blue]1[/blue]",
+            "\"Royal Seal: Chosen Decree\"",
+            "The next [gold]Strength[/gold] gain from the [gold]Queen[/gold] is reduced by [blue]1[/blue]",
+            "Next Queen [gold]Strength[/gold] gain -[blue]1[/blue].",
+            "private sealed class Data",
+            "modifiedAmount = amount;",
+            "target != Owner",
+            "canonicalPower is not StrengthPower",
+            "amount <= 0m",
+            "applier?.Monster is not Queen",
+            "GetInternalData<Data>().Used",
+            "modifiedAmount = Math.Max(0m, amount - 1m);",
+            "await PowerCmd.Remove(this);");
+
+        foreach (var source in new[] { holyDaze, boilingCritical, residualSample, chosenDecree })
+        {
+            AssertNoMojibake(source, "鐏", "鎴", "绗", "鍥", "浼", "澶", "銆", "闂", "鏈", "寮€", "鑾", "缂", "锟", "铏", "鐑", "杈", "绉", "灞");
+        }
     }
 
     [ReleaseArtifactFact]

@@ -149,6 +149,11 @@ internal static class UrdaSeedBankRelicClickPatch
             return true;
         }
 
+        if (seedBank.Owner.RunState.Players.Count > 1)
+        {
+            return true;
+        }
+
         _ = TaskHelper.RunSafely(UrdaBlessingService.TryExtractSeedBankFromRelicClick(seedBank.Owner));
         return false;
     }

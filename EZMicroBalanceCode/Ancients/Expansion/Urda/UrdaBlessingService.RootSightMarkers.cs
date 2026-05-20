@@ -27,6 +27,13 @@ internal static partial class UrdaBlessingService
                     point.PointType != preview.PointType ||
                     point.PointType is not (MapPointType.Monster or MapPointType.Unknown or MapPointType.Elite))
                 {
+                    ClearStaleRootSightPreview(player, actIndex, preview.Coord, point);
+                    continue;
+                }
+
+                if (!IsFutureReachableRootSightTarget(runState, point))
+                {
+                    ClearStaleRootSightPreview(player, actIndex, preview.Coord, point);
                     continue;
                 }
 
@@ -84,5 +91,30 @@ internal static partial class UrdaBlessingService
 
         RefreshRootSightRelicStatus(player);
         MainFile.Logger.Warn($"[EZMicroBalance] Urda Root Eyes cleared stale preview at {coord} and restored one eye.");
+    }
+
+    private static void ClearUnreachableRootSightPreviews(Player player, IRunState runState)
+    {
+        if (GetSelectedBlessing(player) != UrdaBlessingIds.RootSight)
+        {
+            return;
+        }
+
+        foreach (var preview in GetRootSightPreviews(GetProgress(player).RootSightPreviewRecords)
+            .Where(preview => preview.ActIndex == runState.CurrentActIndex)
+            .ToList())
+        {
+            if (!TryParseCoord(preview.Coord, out var coord))
+            {
+                ClearStaleRootSightPreview(player, runState.CurrentActIndex, preview.Coord);
+                continue;
+            }
+
+            var point = runState.Map.GetPoint(coord);
+            if (point == null || !IsFutureReachableRootSightTarget(runState, point))
+            {
+                ClearStaleRootSightPreview(player, runState.CurrentActIndex, preview.Coord, point);
+            }
+        }
     }
 }

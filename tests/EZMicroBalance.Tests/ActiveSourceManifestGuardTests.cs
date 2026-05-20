@@ -30,10 +30,16 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Patches/PickupRewardService.cs",
         "EZMicroBalanceCode/Ancients/Patches/PickupRewardGatePatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/PrismaticGemHoverPatches.cs",
+        "EZMicroBalanceCode/Ancients/Patches/PrismaticGemNormalRewardDecision.cs",
         "EZMicroBalanceCode/Ancients/Patches/PrismaticGemPatches.cs",
+        "EZMicroBalanceCode/Ancients/Patches/PrismaticGemReplacementCleanup.cs",
         "EZMicroBalanceCode/Ancients/Patches/PrismaticGemReplacementPatches.cs",
+        "EZMicroBalanceCode/Ancients/Patches/PrismaticGemReplacementPool.cs",
         "EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs",
+        "EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardState.cs",
         "EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintBanner.cs",
+        "EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintBanner.Field.cs",
+        "EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintBanner.Node.cs",
         "EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintPatch.cs",
         "EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs",
@@ -44,12 +50,15 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Patches/WhisperingEarringPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAct3AncientService.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAncient.OptionRows.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAncient.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAncient.Options.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAssetPaths.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingIds.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CardRules.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CombatEnd.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CombatStart.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CombatState.cs",
-        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CombatLifecycle.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CombatStateReset.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CostRules.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.ClosedCourt.cs",
@@ -57,11 +66,13 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.DeferredVerdict.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.MirrorHallEcho.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.MirrorRebuttal.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.PlayerTurnStart.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.PowerReplacement.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.Presumption.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.PublicEvidence.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.SingleSentence.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.State.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.TurnEnd.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaFeatureGate.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaHooks.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaInitializer.cs",
@@ -84,6 +95,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuTemptationCard.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuTrialMonster.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAct2AncientService.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.OptionRows.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.Options.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAssetPaths.cs",
@@ -111,6 +123,8 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviRunHook.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAct1AncientService.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.OptionRows.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.Options.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAssetPaths.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingIds.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCards.cs",
@@ -165,10 +179,13 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRewardSelectionService.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRunHook.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaTrialBranchEnchantment.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaWitheredHuskTransformPatches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionA20RewardScreenPatches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionMapGenerationPatches.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionAssetPaths.cs",
+        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.ActiveModifiers.cs",
+        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.ActValues.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.PressingLine.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.BoilingCritical.cs",
@@ -190,18 +207,21 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.LastStand.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.Shieldwall.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.Vanguard.cs",
+        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Commands.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.CombatEvents.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.CombatLifecycle.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.cs",
+        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Enemies.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks.ConstantHeal.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks.ForgeArmor.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks.Giant.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks.Might.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks.cs",
-        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Helpers.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatTracker.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionDiagnostics.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionExpansionConfig.cs",
+        "EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.Environment.cs",
+        "EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.Systems.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionInitializer.cs",
         "EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.JoinFlow.cs",
@@ -244,6 +264,8 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs",
         "EZMicroBalanceCode/Ascension/Map/BannerRoomMapQuestMarker.cs",
+        "EZMicroBalanceCode/Ascension/Rewards/BossSealCatalog.Definitions.cs",
+        "EZMicroBalanceCode/Ascension/Rewards/BossSealCatalog.Localization.cs",
         "EZMicroBalanceCode/Ascension/Rewards/BossSealDefinition.cs",
         "EZMicroBalanceCode/Ascension/Cards/BossSealCards.cs",
         "EZMicroBalanceCode/Ascension/Cards/RootCards.cs",
@@ -254,9 +276,24 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Rewards/ForgeTokenService.VisibleRelic.cs",
         "EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.cs",
         "EZMicroBalanceCode/Ascension/Powers/AscensionPowerAmountHelper.cs",
+        "EZMicroBalanceCode/Ascension/Powers/BannerBloodPrizePowers.cs",
+        "EZMicroBalanceCode/Ascension/Powers/BannerLastStandPower.cs",
         "EZMicroBalanceCode/Ascension/Powers/BannerPowers.cs",
+        "EZMicroBalanceCode/Ascension/Powers/BannerPressingLinePower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/BannerShieldwallPower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/BannerVanguardPower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/BoilingCriticalPower.cs",
         "EZMicroBalanceCode/Ascension/Powers/BossSealPowers.cs",
+        "EZMicroBalanceCode/Ascension/Powers/ChosenDecreeReductionPower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/FiremarkConstantHealPower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/FiremarkForgeArmorPower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/FiremarkGiantPower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/FiremarkHeatPowers.cs",
+        "EZMicroBalanceCode/Ascension/Powers/FiremarkMightPower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/FiremarkMoltenCorePower.cs",
         "EZMicroBalanceCode/Ascension/Powers/FiremarkPowers.cs",
+        "EZMicroBalanceCode/Ascension/Powers/HolyDazePower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/ResidualSamplePower.cs",
         "EZMicroBalanceCode/Ascension/Relics/ForgeTokenRelic.cs",
         "EZMicroBalanceCode/Ascension/Enchantments/RoyalDecreeEnchantment.cs",
         "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.cs",
@@ -291,10 +328,20 @@ public sealed class ActiveSourceManifestGuardTests
 
         Assert.Equal(ExpectedActiveSourceFiles.OrderBy(path => path, StringComparer.Ordinal), activeSources);
 
-        var testSource = ReadAllTestSource();
-        foreach (var activeSource in activeSources)
+        var coverageRoots = IndependentCoverageRoots;
+        var uncoveredSources = activeSources
+            .Where(activeSource => !coverageRoots.Any(root => root.Covers(activeSource)))
+            .ToArray();
+
+        Assert.Empty(uncoveredSources);
+
+        foreach (var root in coverageRoots)
         {
-            Assert.Contains(Path.GetFileName(activeSource), testSource, StringComparison.Ordinal);
+            Assert.Contains(activeSources, activeSource => root.Covers(activeSource));
+            Assert.NotEqual($"{nameof(ActiveSourceManifestGuardTests)}.cs", root.GuardTestFile);
+
+            var guardSource = ReadRepoText("tests", "EZMicroBalance.Tests", root.GuardTestFile);
+            Assert.Contains(root.GuardEvidenceSnippet, guardSource, StringComparison.Ordinal);
         }
     }
 
@@ -346,5 +393,29 @@ public sealed class ActiveSourceManifestGuardTests
             ".cs" or ".csproj" or ".json" or ".tscn" or ".tres" or ".gd" or ".cfg" => true,
             _ => false
         };
+    }
+
+    private static readonly SourceCoverageRoot[] IndependentCoverageRoots =
+    [
+        new("EZMicroBalanceCode/Ancients/Common/", "ReleaseCoverageGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\")"),
+        new("EZMicroBalanceCode/Ancients/Patches/", "AncientBehaviorGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Patches\")"),
+        new("EZMicroBalanceCode/Ancients/Expansion/Urda/", "UrdaReleaseCoverageGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Urda\")"),
+        new("EZMicroBalanceCode/Ancients/Expansion/Morvi/", "MorviV22GuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Morvi\")"),
+        new("EZMicroBalanceCode/Ancients/Expansion/Lotha/", "LothaPolishGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Lotha\")"),
+        new("EZMicroBalanceCode/Ancients/Expansion/Vakuu/", "VakuuTemptationGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Vakuu\")"),
+        new("EZMicroBalanceCode/Ascension/", "AscensionFeatureGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ascension\")"),
+        new("EZMicroBalanceCode/Config/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
+        new("EZMicroBalanceCode/Diagnostics/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
+        new("EZMicroBalanceCode/MainFile.cs", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")")
+    ];
+
+    private sealed record SourceCoverageRoot(string PathPrefix, string GuardTestFile, string GuardEvidenceSnippet)
+    {
+        public bool Covers(string activeSource)
+        {
+            return PathPrefix.EndsWith(".cs", StringComparison.Ordinal)
+                ? activeSource.Equals(PathPrefix, StringComparison.Ordinal)
+                : activeSource.StartsWith(PathPrefix, StringComparison.Ordinal);
+        }
     }
 }

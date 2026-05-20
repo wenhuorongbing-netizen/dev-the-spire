@@ -171,7 +171,6 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var lothaGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaFeatureGate.cs");
-        var lothaAncient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
         var lothaSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha");
         var lothaRunHook = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha");
         var lothaOptionRelics = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaOptionRelics.cs");
@@ -303,6 +302,7 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
     {
         var gate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
         var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
+        var command = ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.cs");
         var vakuuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var victory = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var noReward = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.NoRewardResume.cs");
@@ -332,6 +332,12 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
             "SPIREPLUS_FORCE_VAKUU_FIGHT",
             "ShouldForceVakuu",
             "ShouldForceFight",
+            "ShouldForceFightForRun",
+            "ArmCommandForceFight",
+            "ConsumeCommandForceFightForRun",
+            "HasCommandForceFightForRun",
+            "ClearCommandForceFightWhenBeginEventCompletes",
+            "finally",
             "ShouldEnableFight",
             "runState.Players.Count == 1");
         AssertSourceContains(
@@ -339,9 +345,21 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
             "[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]",
             "ModelDb.AncientEvent<MegaCrit.Sts2.Core.Models.Events.Vakuu>()",
             "[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Models.Events.Vakuu), \"GenerateInitialOptions\")]",
-            "VakuuFightFeatureGate.ShouldForceFight",
+            "VakuuFightFeatureGate.ShouldForceFightForRun(runState)",
+            "VakuuFightFeatureGate.ConsumeCommandForceFightForRun(runState)",
+            "[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]",
+            "VakuuFightFeatureGate.HasCommandForceFightForRun(runState)",
+            "VakuuFightFeatureGate.ClearCommandForceFightWhenBeginEventCompletes(__result, runState)",
             "[HarmonyPatch(typeof(EventModel), nameof(EventModel.Resume))]",
             "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]");
+        var vakuuCommandSource = string.Join(Environment.NewLine, command, vakuuSource);
+        Assert.False(
+            Regex.IsMatch(
+                vakuuCommandSource,
+                @"\b(?:System\s*\.\s*)?Environment\s*\.\s*SetEnvironmentVariable\s*\(",
+                RegexOptions.CultureInvariant),
+            "Vakuu command force fight must not mutate process environment variables.");
+        Assert.DoesNotContain("ForceVakuuFightEnvironmentForCommand", vakuuCommandSource, StringComparison.Ordinal);
         AssertSourceContains(
             vakuuSource,
             "EventOption.FromRelic",
@@ -356,6 +374,15 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
             "PowerCmd.ModifyAmount",
             "SignContract",
             "BreakLock(choiceContext, combatState, \"contract\")");
+        AssertSourceContains(
+            vakuuSource,
+            "internal sealed class VakuuStolenVaultPower",
+            "internal sealed class VakuuBloodDebtPower",
+            "public override PowerStackType StackType => PowerStackType.Counter",
+            "public override int DisplayAmount => Amount");
+        Assert.True(
+            Regex.Matches(vakuuSource, "public override int DisplayAmount => Amount").Count >= 2,
+            "Vakuu fight amount-bearing powers should show their live counter values.");
         AssertSourceContains(
             noReward,
             "ProceedFromNoRewardVictory",

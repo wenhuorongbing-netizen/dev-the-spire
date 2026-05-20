@@ -11,9 +11,9 @@ internal sealed class VakuuStolenVaultPower : CustomPowerModel
 
     public override int DisplayAmount => Amount;
 
-    public override string CustomPackedIconPath => VakuuFightAssetPaths.PowerIcon;
+    public override string CustomPackedIconPath => VakuuFightAssetPaths.StolenVaultPowerIcon;
 
-    public override string CustomBigIconPath => VakuuFightAssetPaths.PowerIcon;
+    public override string CustomBigIconPath => VakuuFightAssetPaths.StolenVaultPowerBigIcon;
 }
 
 internal sealed class VakuuBloodDebtPower : CustomPowerModel
@@ -26,9 +26,9 @@ internal sealed class VakuuBloodDebtPower : CustomPowerModel
 
     public override int DisplayAmount => Amount;
 
-    public override string CustomPackedIconPath => VakuuFightAssetPaths.PowerIcon;
+    public override string CustomPackedIconPath => VakuuFightAssetPaths.BloodDebtPowerIcon;
 
-    public override string CustomBigIconPath => VakuuFightAssetPaths.PowerIcon;
+    public override string CustomBigIconPath => VakuuFightAssetPaths.BloodDebtPowerBigIcon;
 
     public override decimal ModifyDamageAdditive(
         Creature? target,

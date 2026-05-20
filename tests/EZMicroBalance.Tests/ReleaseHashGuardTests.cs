@@ -82,9 +82,12 @@ public sealed class ReleaseHashGuardTests
         const string stalePreForgeTokenVisibleRelicSplitDllHash = "A638AFAB07527377CF41529D54F93126D9FF1458F06B60FAAC3E827EFB67E81E";
         const string stalePreMarkerOrderingSplitZipHash = "3899E386C5F81AED2F2CB0143F71D64642DDD24B6136EDD05864AE2C38864C38";
         const string stalePreMarkerOrderingSplitDllHash = "A9DBC0B7FA71CC6EC0F76CE4BE8159339F9DEAB402C7517C676EEDE45DB30246";
-        const string currentZipHash = "5AEE65325C4248E8BFB86268E360E24BB68B428B2CBC6CDA96F8F86DA483228A";
-        const string currentDllHash = "54524355D5F6986A017E06E7F3EC996BF5B4F8A23870B518E40D38AB91EF1096";
-        const string currentPckHash = "9547FD17CEAC9719A3BA044A9E47D65A7F3F942C248559136D380EFD75AB2B86";
+        const string stalePreStrictSourceResourceAuditZipHash = "B30547BB7CF203B5A19217204EA6AAAC2569DE6DDFEFE74A80F696DD1D817441";
+        const string stalePreStrictSourceResourceAuditDllHash = "1FDDAE2B580C382B1E23588D608FFF793A84D4707D26836CB4FA28C2733CD00A";
+        const string stalePreStrictSourceResourceAuditPckHash = "B3EC1B0ECD6636997B5C50E539EB6098FB08A9899C2DA98C05470029CE1BB7FA";
+        const string currentZipHash = "B19620D8D8A15D5B96208D3DE8C3B372BCA0874E076DD2DEBEDE09422FF28BD2";
+        const string currentDllHash = "A1D86D01E57E0F58617ACA23EA8094B1AF35F525E3254007DE3675A1289B8159";
+        const string currentPckHash = "073CAF976C91D9E6CEA39FA90FB5A6417E66CD5E12DED5EDD8169C892A0F0538";
         const string currentManifestHash = "659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2";
         const string currentReadmeHash = "C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4";
 
@@ -140,6 +143,8 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreAscensionRewardServiceSplitZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreForgeTokenVisibleRelicSplitZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreMarkerOrderingSplitZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreStrictSourceResourceAuditZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreStrictSourceResourceAuditPckHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(oldDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightUiDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightMarkerDllHash, doc, StringComparison.Ordinal);
@@ -176,6 +181,7 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreAscensionRewardServiceSplitDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreForgeTokenVisibleRelicSplitDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreMarkerOrderingSplitDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreStrictSourceResourceAuditDllHash, doc, StringComparison.Ordinal);
         }
 
         AssertSourceContains(

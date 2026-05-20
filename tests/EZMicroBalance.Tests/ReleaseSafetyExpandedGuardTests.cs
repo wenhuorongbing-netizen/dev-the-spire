@@ -106,7 +106,14 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain("Status: current normal Steam startup/log verification passed", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Current normal Steam helper startup/log pass", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("current-package normal Steam-client startup/log pass", currentDocs, StringComparison.Ordinal);
-        Assert.DoesNotContain("current-package loader/resource smoke is clean", currentDocs, StringComparison.Ordinal);
+        foreach (var currentSmokeClaim in new[]
+        {
+            "current-package loader/resource smoke is clean",
+            "controlled smoke profile for the current package"
+        })
+        {
+            Assert.DoesNotContain(currentSmokeClaim, currentDocs, StringComparison.OrdinalIgnoreCase);
+        }
         AssertNoCurrentFacing22FieldSmokePassClaims(currentDocs);
         Assert.DoesNotContain("latest clean controlled smoke reported 13", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("current source defines 22 SavedSpireFields, while", currentDocs, StringComparison.Ordinal);
@@ -129,7 +136,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Phase 4 Lotha first slice",
             "Source-complete / live-pending",
             "Phase 8 required commands",
-            "current-package controlled smoke",
+            "fresh 25-field loader proof",
             "It is not private-beta release-ready");
 
         Assert.Contains("`EZMicroBalance`", audit, StringComparison.Ordinal);
@@ -138,6 +145,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
         Assert.Contains("previous current-package smoke", audit, StringComparison.Ordinal);
         Assert.Contains("`Found 22 SavedSpireFields`", audit, StringComparison.Ordinal);
+        Assert.Contains("Historical 22-field loader/resource verification is retained as historical evidence only", audit, StringComparison.Ordinal);
+        Assert.Contains("fresh 25-field loader proof", audit, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", audit, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log verification for the earlier 22-field package confirmed the refreshed `Spire Plus` display name", audit, StringComparison.Ordinal);
         Assert.Contains("refreshed Mod Settings UI list capture now shows `Spire Plus`", audit, StringComparison.Ordinal);
@@ -202,7 +211,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("live-spire-plus-disabled-session-20260513-143020", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Loaded 1 mods (1 total)", currentDocs, StringComparison.Ordinal);
         Assert.Contains("settings-only disabled attempt", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("This is a previous loader/helper validation pass, not live gameplay evidence.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("This is loader/helper evidence, not live gameplay evidence.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("This is loader/helper evidence only; gameplay/manual gates remain pending.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("manual feature matrix has runtime gameplay", currentDocs, StringComparison.Ordinal);
@@ -225,8 +234,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "## Prompt-To-Artifact Checklist",
             "## Missing Or Weakly Verified Items",
             "## Conclusion",
-            "187 passed / 18 skipped",
-            "205 passed / 0 skipped",
+            "202 passed / 18 skipped",
+            "220 passed / 0 skipped",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",
             "window-preflight-smoke-20260513-135402",
@@ -314,7 +323,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"2F29C8AC8D4A03398246E34E5C58DA0E5EEC31EDB8656D21AA898BBE26C64612\"",
+            "PackageSha256 = \"B19620D8D8A15D5B96208D3DE8C3B372BCA0874E076DD2DEBEDE09422FF28BD2\"",
             "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.0.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
@@ -546,7 +555,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "\uFFFD",
             "濠碘槅鍋?",
             "閻庢鍠?",
-            "闂佽　鍋?",
+            "闂佽　�?",
             "闂佸憡鐗?",
             "闂佺顑?",
             "缂備椒鑳?",

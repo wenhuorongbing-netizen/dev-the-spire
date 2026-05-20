@@ -224,6 +224,19 @@ public sealed class ReleaseArtifactParityGuardTests
         Assert.Contains("Failed to resolve custom scene", summary.EzMicroBalanceErrorLines[0], StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void ControlledSmokePassRequiresCurrentSourceSavedSpireFieldCount()
+    {
+        var expectedFieldCount = ExpectedCurrentSavedSpireFieldCount();
+        Assert.True(expectedFieldCount >= 25, $"Expected current source to define the refreshed 25-field package state or later, found {expectedFieldCount}.");
+
+        var currentLog = CreateControlledSmokeLog(expectedFieldCount);
+        var historicalLog = CreateControlledSmokeLog(22);
+
+        Assert.True(IsControlledSmokePass(SmokeLogParser.Parse(currentLog)));
+        Assert.False(IsControlledSmokePass(SmokeLogParser.Parse(historicalLog)));
+    }
+
     [ReleaseArtifactFact]
     public void RecentRuntimeLogMustNotContainV105ApiDriftOrBaseLibDependencyFailures()
     {
@@ -352,8 +365,32 @@ public sealed class ReleaseArtifactParityGuardTests
             summary.LoadedEzPck &&
             summary.InitializedEzMicroBalance &&
             summary.ReachedMainMenu &&
-            summary.SavedSpireFieldCount == 22 &&
+            summary.SavedSpireFieldCount == ExpectedCurrentSavedSpireFieldCount() &&
             summary.EzMicroBalanceErrorLines.Length == 0;
+    }
+
+    private static int ExpectedCurrentSavedSpireFieldCount()
+    {
+        var source = ReadSourceTree("EZMicroBalanceCode");
+        var count = Regex.Matches(
+            source,
+            @"\bpublic\s+static\s+readonly\s+SavedSpireField<",
+            RegexOptions.CultureInvariant).Count;
+        Assert.Equal(25, count);
+        return count;
+    }
+
+    private static string CreateControlledSmokeLog(int savedSpireFieldCount)
+    {
+        return string.Join(
+            Environment.NewLine,
+            "[INFO] Loading assembly DLL D:\\Steam\\mods\\BaseLib\\BaseLib.dll",
+            "[INFO] Finished mod initialization for 'BaseLib' (BaseLib).",
+            "[INFO] Loading assembly DLL D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.dll",
+            "[INFO] Loading Godot PCK D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.pck",
+            "[INFO] Finished mod initialization for 'Spire Plus' (EZMicroBalance).",
+            $"[INFO] [BaseLib] Found {savedSpireFieldCount} SavedSpireFields.",
+            "[INFO] [Startup] Time to main menu: 12,648ms");
     }
 
     private sealed record SmokeLogSummary(

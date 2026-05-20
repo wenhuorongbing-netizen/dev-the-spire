@@ -11,7 +11,7 @@
   "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title": "Humus Pact",
   "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description": "Act [blue]1[/blue] normal combat card rewards gain a [gold]Compost Reward[/gold] button. Taking it skips those cards and gives [blue]15[/blue] [gold]Gold[/gold]. The [blue]3[/blue]rd compost then removes up to [blue]2[/blue] deck cards and offers [blue]1[/blue] upgraded reward card.",
   "EZMB_URDA.pages.INITIAL.options.urda_molting.title": "Molting",
-  "EZMB_URDA.pages.INITIAL.options.urda_molting.description": "Remove [blue]1[/blue] Strike and [blue]1[/blue] Defend, then add [blue]2[/blue] [gold]Withered Husks[/gold]. Remaining Husks are removed at Act [blue]2[/blue] start.",
+  "EZMB_URDA.pages.INITIAL.options.urda_molting.description": "Remove [blue]1[/blue] Strike and [blue]1[/blue] Defend, then add [blue]2[/blue] [gold]Withered Husk[/gold] Curse cards. Remaining Husks are removed at Act [blue]2[/blue] start.",
   "EZMB_URDA.pages.INITIAL.options.urda_moss_map.title": "Moss Map",
   "EZMB_URDA.pages.INITIAL.options.urda_moss_map.description": "First Act [blue]1[/blue] rooms: Monster +[blue]25[/blue] [gold]Gold[/gold]; Event heal [blue]5[/blue]; Shop [gold]Potion[/gold]; [gold]Elite[/gold] upgrade [blue]1[/blue] random card; Rest Site +[blue]3[/blue] [gold]Max HP[/gold].",
   "EZMB_URDA.pages.INITIAL.options.urda_trial_branch.title": "Trial Branch",

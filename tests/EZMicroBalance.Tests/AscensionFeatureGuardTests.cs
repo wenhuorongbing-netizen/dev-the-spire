@@ -72,7 +72,7 @@ public sealed class AscensionFeatureGuardTests
     public void EnvironmentTruthyHelpersTrimWhitespaceForTesterRunFlags()
     {
         var ascensionConfig = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionExpansionConfig.cs");
-        var ascensionGate = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.cs");
+        var ascensionGate = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
         var ancientGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientFeatureGate.cs");
 
         AssertSourceContains(
@@ -394,6 +394,28 @@ public sealed class AscensionFeatureGuardTests
             "CreatureCmd.SetMaxAndCurrentHp",
             "tracker.FiremarkHost = host",
             "ApplyBossSealCombatStart(combatState, metadata)");
+        AssertSourceContains(
+            combatService,
+            "FiremarkArmorBlockBaseline",
+            "tracker.FiremarkArmorBlockBaseline = host.Block",
+            "tracker.FiremarkHost.Block > tracker.FiremarkArmorBlockBaseline");
+        Assert.DoesNotContain("host.Block > 0", combatService, StringComparison.Ordinal);
+        Assert.DoesNotContain("tracker.FiremarkArmorRemainingThisTurn - result.BlockedDamage", combatService, StringComparison.Ordinal);
+
+        var beforeSideTurnStart = SliceBetween(
+            combatService,
+            "public static async Task BeforeSideTurnStart",
+            "public static async Task AfterTurnEnd");
+        var afterTurnEnd = SliceBetween(
+            combatService,
+            "public static async Task AfterTurnEnd",
+            "public static async Task AfterCombatEnd");
+        Assert.DoesNotContain("ApplyShieldwallTurnBlock", beforeSideTurnStart, StringComparison.Ordinal);
+        AssertSourceContains(
+            afterTurnEnd,
+            "metadata.Banner == BannerKind.Shieldwall",
+            "side == CombatSide.Enemy",
+            "await ApplyShieldwallTurnBlock(combatState, tracker)");
 
         Assert.DoesNotContain("await ApplyStrengthToEnemies(combatState, 2m);", combatService, StringComparison.Ordinal);
         Assert.Contains("Act 1 firemarked elite appears only after the first rest-site row.", manualChecklist, StringComparison.Ordinal);
@@ -459,13 +481,25 @@ public sealed class AscensionFeatureGuardTests
             "FIREMARK_CONSTANT_HEAL",
             "BannerRoomMapHoverPatch",
             "BANNER_VANGUARD",
-            "BANNER_SHIELDWALL",
+            "RequiresKnownEnemyCount(banner)",
+            "BANNER_ROOM",
             "BANNER_BLOOD_PRIZE",
             "BANNER_PRESSING_LINE",
-            "BANNER_LAST_STAND",
+            "AddCurrentActFiremarkValues(description, firemark)",
+            "AddCurrentActBannerValues(description, banner)",
+            "RunManager.Instance.DebugOnlyGetState()?.CurrentActIndex",
+            "description.Add(\"Armor\", ActValue(actIndex, 5m, 10m, 20m))",
+            "description.Add(\"Gold\", ActValue(actIndex, 15m, 30m, 55m))",
             "BossMapPointHoverPatch",
             "CreateHoverTip(metadata.BossSeal, metadata.IsBossBrand)",
             "sourceFallbackDescription = isBossBrand ? definition.BrandSummary : definition.Summary");
+        AssertSourceContains(
+            combatService,
+            "var wasExposedBeforeThisHit = tracker.FiremarkCoreExposed",
+            "!wasExposedBeforeThisHit",
+            ".OrderByDescending(enemy => enemy.MaxHp)",
+            ".ThenBy(enemy => combatState.Enemies.IndexOf(enemy))");
+        Assert.DoesNotContain("RunState.Rng.Niche.NextItem(candidates)", combatService, StringComparison.Ordinal);
 
         foreach (var key in new[]
                  {
@@ -486,17 +520,37 @@ public sealed class AscensionFeatureGuardTests
             Assert.True(zhsAscension.ContainsKey($"{key}.description"), $"Missing zhs description: {key}");
         }
 
+        foreach (var key in new[]
+                 {
+                     "FIREMARK_MIGHT",
+                     "FIREMARK_GIANT",
+                     "FIREMARK_FORGE_ARMOR",
+                     "FIREMARK_CONSTANT_HEAL",
+                     "BANNER_VANGUARD",
+                     "BANNER_SHIELDWALL",
+                     "BANNER_BLOOD_PRIZE",
+                     "BANNER_PRESSING_LINE",
+                     "BANNER_LAST_STAND"
+                 })
+        {
+            Assert.DoesNotMatch("\\[blue\\][^\\[]+\\[/blue\\]/\\[blue\\]", englishAscension[$"{key}.description"]);
+            Assert.DoesNotMatch("\\[blue\\][^\\[]+\\[/blue\\]/\\[blue\\]", zhsAscension[$"{key}.description"]);
+        }
+
         Assert.Contains("+[blue]5[/blue] [gold]Strength[/gold]", englishAscension["BOSS_SEAL_AEONGLASS_STRENGTH.summary"], StringComparison.Ordinal);
         Assert.Contains("地图悬停", zhsAscension["MODIFIER_GUIDE.description"], StringComparison.Ordinal);
 
         AssertSourceContains(
             rewardService,
             "LogFissionDiagnostics(sourceLabel, chancePercent, candidates.Count, roll",
+            "var rewardRng = creationOptions.RngOverride ?? player.PlayerRng.Rewards",
             "sourceLabel={sourceLabel}",
             "chancePercent={chancePercent}",
             "eligibleCandidateCount={eligibleCandidateCount}",
             "applied={applied}",
             "cardId={cardId ?? \"<none>\"}");
+        Assert.DoesNotContain("player.PlayerRng.Rewards.NextInt", rewardService, StringComparison.Ordinal);
+        Assert.DoesNotContain("player.PlayerRng.Rewards.NextItem", rewardService, StringComparison.Ordinal);
 
         AssertSourceContains(
             playerGuide,
@@ -511,22 +565,22 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void BossSealCatalogAvoidsHardRuntimeReferencesToOptionalEarlyAccessBossTypes()
     {
-        var bossSealDefinition = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "BossSealDefinition.cs");
+        var bossSealSource = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
 
         AssertSourceContains(
-            bossSealDefinition,
+            bossSealSource,
             "private const string EncounterCategory = \"ENCOUNTER\"",
             "private static ModelId EncounterId(string entry)",
             "EncounterId(\"AEONGLASS_BOSS\")",
             "EncounterId(\"QUEEN_BOSS\")",
             "EncounterId(\"TEST_SUBJECT_BOSS\")");
 
-        Assert.DoesNotContain("using MegaCrit.Sts2.Core.Models.Encounters", bossSealDefinition, StringComparison.Ordinal);
-        Assert.DoesNotContain("ModelDb.GetId<", bossSealDefinition, StringComparison.Ordinal);
-        Assert.DoesNotContain("DoormakerBoss", bossSealDefinition, StringComparison.Ordinal);
-        Assert.DoesNotContain("QueenBoss", bossSealDefinition, StringComparison.Ordinal);
-        Assert.DoesNotContain("TestSubjectBoss", bossSealDefinition, StringComparison.Ordinal);
+        Assert.DoesNotContain("using MegaCrit.Sts2.Core.Models.Encounters", bossSealSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("ModelDb.GetId<", bossSealSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("DoormakerBoss", bossSealSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("QueenBoss", bossSealSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("TestSubjectBoss", bossSealSource, StringComparison.Ordinal);
 
         AssertSourceContains(
             combatService,
@@ -549,7 +603,7 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void A11AndA17MapGeometryStayGatedOptionalAndRouteSafe()
     {
-        var featureGate = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.cs");
+        var featureGate = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
         var expansionConfig = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionExpansionConfig.cs");
         var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
         var mapProof = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "A11MapGeometryProof.cs");
@@ -678,7 +732,7 @@ public sealed class AscensionFeatureGuardTests
         var mapPatch = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Patches");
         var forgeToken = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var forgeRelic = ReadRepoText("EZMicroBalanceCode", "Ascension", "Relics", "ForgeTokenRelic.cs");
-        var firemarkPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "FiremarkPowers.cs");
+        var firemarkPowers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
         var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "FissionEnchantment.cs");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
@@ -698,9 +752,10 @@ public sealed class AscensionFeatureGuardTests
             forgeToken,
             "await RelicCmd.Obtain<ForgeTokenRelic>(player)",
             "await RelicCmd.Remove(token)",
-            "player.RunState.Rng.Niche.NextItem(targets)",
+            "return targets.FirstOrDefault()",
             "SpecialRestSiteActionPayoutEnabled = false",
             "ModifyExtraRestSiteHealText");
+        Assert.DoesNotContain("player.RunState.Rng.Niche.NextItem(targets)", forgeToken, StringComparison.Ordinal);
         Assert.DoesNotContain("RestSiteSynchronizer", forgeToken, StringComparison.Ordinal);
         Assert.DoesNotContain("ApplyAfterSpecialRestSiteAction", forgeToken, StringComparison.Ordinal);
 

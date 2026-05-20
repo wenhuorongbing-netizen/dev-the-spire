@@ -111,8 +111,11 @@ public sealed class AncientStateMirrorGuardTests
             AssertSourceContains(
                 afterCardChangedPiles,
                 "CardModel card",
-                "SyncPersistentState(card.Owner)",
-                "return Task.CompletedTask");
+                "SyncPersistentState(card.Owner)");
+            Assert.True(
+                afterCardChangedPiles.Contains("return Task.CompletedTask", StringComparison.Ordinal) ||
+                afterCardChangedPiles.Contains("public override async Task AfterCardChangedPiles", StringComparison.Ordinal),
+                $"{spec.Name} AfterCardChangedPiles should either be a synchronous mirror hook or an async hook that still performs recurrent mirror sync.");
         }
     }
 

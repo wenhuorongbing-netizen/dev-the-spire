@@ -55,8 +55,17 @@ internal static class TransformPreviewCyclePatch
 
         try
         {
-            var realRng = transformations[0].Original.Owner.PlayerRng.Transformations;
-            var fork = new Rng(realRng.Seed, realRng.Counter);
+            var owner = transformations[0].Original.Owner;
+            if (!TransformPredictionRngContext.TryConsume(
+                    owner,
+                    out var fork,
+                    out var sourceName,
+                    out var upgradeReplacementPreview))
+            {
+                FuturePeekLog.Debug("Transform prediction skipped: no verified transform RNG source.");
+                return;
+            }
+
             var queue = new Queue<CardModel?>();
 
             foreach (var transformation in transformations)
@@ -66,11 +75,14 @@ internal static class TransformPreviewCyclePatch
                     continue;
                 }
 
-                queue.Enqueue(TransformPredictionService.PredictReplacementModel(transformation, fork));
+                queue.Enqueue(TransformPredictionService.PredictReplacementModel(
+                    transformation,
+                    fork,
+                    upgradeReplacementPreview));
             }
 
             pendingPredictions = queue;
-            FuturePeekLog.Debug($"Prepared {queue.Count} transform prediction(s).");
+            FuturePeekLog.Debug($"Prepared {queue.Count} transform prediction(s) from {sourceName}.");
         }
         catch (Exception exception)
         {

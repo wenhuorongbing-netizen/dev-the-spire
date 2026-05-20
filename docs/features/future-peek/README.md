@@ -10,6 +10,7 @@
 - Not used: RitsuLib
 - First test scope: Crystal Sphere peek and deterministic transform preview
 - Gameplay flag: `affects_gameplay=false` while the mod only reveals already-determined information and does not lock or replace results
+- Resource package: `has_pck=true` so the config and button localization files load through the normal mod resource path
 
 ## Source Rules
 
@@ -29,7 +30,7 @@ The first source slice adds:
 - `EZFuturePeek/localization/`
 - `tests/EZFuturePeek.Tests/`
 
-This is source/test ready only. It is not live-proven and is not packaged as a final local install yet. The current repository root Godot export preset still belongs to `EZMicroBalance`, so Future Peek packaging needs a separate export/package pass before live testing.
+This is source/test ready only. It is not live-proven. Future Peek publishes through `scripts/export-future-peek.ps1`, which builds a temporary Godot project under `.godot/` so the PCK contains Future Peek resources without pulling in Spire Plus assets from the root project.
 
 ## Manual Test Checklist
 

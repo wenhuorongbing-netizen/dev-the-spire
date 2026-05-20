@@ -33,6 +33,12 @@ internal static partial class UrdaBlessingService
 
     private static async Task TryExtractSeedBankFromRelicClickOnce(Player player)
     {
+        if (player.RunState.Players.Count > 1)
+        {
+            MainFile.Logger.Warn("[EZMicroBalance] Urda Seed Bank relic extraction is single-player only until host-authoritative reward selection sync is implemented.");
+            return;
+        }
+
         var progress = GetProgress(player);
         var seedIds = GetSeedBankCardIds(progress);
         if (progress.SeedBankSettled || seedIds.Count == 0)

@@ -108,39 +108,50 @@ internal sealed class SpirePlusAncientLiveTestConsoleCmd : AbstractConsoleCmd
             throw new InvalidOperationException("NGame is not initialized.");
         }
 
-        if (forceFight)
-        {
-            Environment.SetEnvironmentVariable(
-                VakuuFightFeatureGate.SpirePlusForceFightEnvironmentVariable,
-                "1",
-                EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable(
-                VakuuFightFeatureGate.ForceFightEnvironmentVariable,
-                "1",
-                EnvironmentVariableTarget.Process);
-        }
-
         MainFile.Logger.Info(
             $"[EZMicroBalance] Starting unsaved live-test run for {target.Name} Ancient UI evidence.");
 
-        await NGame.Instance.StartNewSingleplayerRun(
-            ModelDb.Character<Ironclad>(),
-            shouldSave: false,
-            ActModel.GetDefaultList(),
-            Array.Empty<ModifierModel>(),
-            TestSeed,
-            GameMode.Standard);
-
-        if (target.ActIndex > 0)
+        IRunState? commandForceFightRunState = null;
+        var commandForceFightArmed = false;
+        try
         {
-            await RunManager.Instance.EnterAct(target.ActIndex);
-        }
+            await NGame.Instance.StartNewSingleplayerRun(
+                ModelDb.Character<Ironclad>(),
+                shouldSave: false,
+                ActModel.GetDefaultList(),
+                Array.Empty<ModifierModel>(),
+                TestSeed,
+                GameMode.Standard);
 
-        await RunManager.Instance.EnterRoomDebug(
-            RoomType.Event,
-            MapPointType.Ancient,
-            target.Ancient,
-            showTransition: true);
+            if (forceFight)
+            {
+                commandForceFightRunState = RunManager.Instance.DebugOnlyGetState()
+                    ?? throw new InvalidOperationException("RunState is not initialized.");
+                VakuuFightFeatureGate.ArmCommandForceFight(commandForceFightRunState);
+                commandForceFightArmed = true;
+            }
+
+            if (target.ActIndex > 0)
+            {
+                await RunManager.Instance.EnterAct(target.ActIndex);
+            }
+
+            await RunManager.Instance.EnterRoomDebug(
+                RoomType.Event,
+                MapPointType.Ancient,
+                target.Ancient,
+                showTransition: true);
+            commandForceFightArmed = false;
+        }
+        catch
+        {
+            if (commandForceFightArmed && commandForceFightRunState != null)
+            {
+                VakuuFightFeatureGate.ClearCommandForceFight(commandForceFightRunState);
+            }
+
+            throw;
+        }
     }
 
     private static AncientUiTarget? ResolveTarget(string value)

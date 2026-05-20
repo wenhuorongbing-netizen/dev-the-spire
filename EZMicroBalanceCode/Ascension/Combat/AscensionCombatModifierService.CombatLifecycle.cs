@@ -111,12 +111,6 @@ internal static partial class AscensionCombatModifierService
             return;
         }
 
-        if (HasActiveBanner(combatState, metadata) &&
-            metadata.Banner == BannerKind.Shieldwall)
-        {
-            await ApplyShieldwallTurnBlock(combatState, tracker);
-        }
-
         if (HasActiveBossSeal(combatState, metadata))
         {
             await ApplyBossSealSideTurnStart(combatState, tracker, metadata, side);
@@ -150,6 +144,13 @@ internal static partial class AscensionCombatModifierService
             side == CombatSide.Player)
         {
             await ResolvePressingLineTurnEnd(combatState, tracker);
+        }
+
+        if (HasActiveBanner(combatState, metadata) &&
+            metadata.Banner == BannerKind.Shieldwall &&
+            side == CombatSide.Enemy)
+        {
+            await ApplyShieldwallTurnBlock(combatState, tracker);
         }
 
         if (HasActiveFiremark(combatState, metadata))

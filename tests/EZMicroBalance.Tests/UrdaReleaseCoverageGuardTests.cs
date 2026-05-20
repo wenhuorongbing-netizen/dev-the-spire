@@ -9,7 +9,7 @@ public sealed class UrdaReleaseCoverageGuardTests
     public void UrdaIsDefaultOnDisableableAndBlessingSliceSourceBacked()
     {
         var urdaGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaFeatureGate.cs");
-        var urdaAncient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.cs");
+        var urdaAncient = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
         var urdaBlessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingIds.cs");
         var urdaCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaCards.cs");
         var urdaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaInitializer.cs");
@@ -253,6 +253,16 @@ public sealed class UrdaReleaseCoverageGuardTests
         var seedbedRewardSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.Seedbed.cs");
         var seedbedCombatSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedCombat.cs");
         var seedbedSource = string.Join(Environment.NewLine, seedbedRewardSource, seedbedCombatSource);
+        AssertSourceContains(
+            urdaRunHook,
+            "public override async Task AfterCardChangedPiles",
+            "card.Pile?.Type == PileType.Hand",
+            "await UrdaBlessingService.TryCatchSeedbedCardFromHand(card, \"card entered hand\")",
+            "UrdaBlessingService.SyncPersistentState(card.Owner)");
+        AssertBefore(
+            urdaRunHook,
+            "TryCatchSeedbedCardFromHand(card, \"card entered hand\")",
+            "SyncPersistentState(card.Owner)");
         var seedbedAlternative = SliceBetween(seedbedRewardSource, "private static bool TryAddSeedbedAlternative", "private static async Task AcceptSeedbed");
         Assert.DoesNotContain("SeedbedChecks = progress.SeedbedChecks + 1", seedbedAlternative, StringComparison.Ordinal);
         AssertSourceContains(
@@ -261,10 +271,15 @@ public sealed class UrdaReleaseCoverageGuardTests
             "!CanPaySeedbedCost(player)",
             "PostAlternateCardRewardAction.EndSelectionAndCompleteReward");
         var seedbedAccept = SliceBetween(seedbedRewardSource, "private static async Task AcceptSeedbed", "private static bool CanPaySeedbedCost");
+        Assert.True(
+            seedbedAccept.IndexOf("var addResult = await CardPileCmd.Add(seedbed, PileType.Deck)", StringComparison.Ordinal) <
+            seedbedAccept.IndexOf("await CreatureCmd.LoseMaxHp", StringComparison.Ordinal),
+            "Seedbed must only charge Max HP after Core accepts the card into the deck.");
         AssertSourceContains(
             seedbedAccept,
             "!CanPaySeedbedCost(player)",
             "CreatureCmd.LoseMaxHp",
+            "cost and progress were not applied",
             "SeedbedChecks = progress.SeedbedChecks + 1",
             "CreatureCmd.SetMaxHp");
         Assert.DoesNotContain("CreatureCmd.GainMaxHp", seedbedAccept, StringComparison.Ordinal);
@@ -435,17 +450,35 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.Contains("skipped deck marker instead of guessing by Rootblight level", seedbedSource, StringComparison.Ordinal);
         Assert.DoesNotContain("SettleSeedBankBeforeActOneBoss", urdaRunHook, StringComparison.Ordinal);
         Assert.DoesNotContain("room.RoomType == RoomType.Boss", urdaRunHook, StringComparison.Ordinal);
+        var huskTransformPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaWitheredHuskTransformPatches.cs");
+        var normalizedUrdaCards = urdaCards.Replace("\r\n", "\n", StringComparison.Ordinal);
+        Assert.Contains(
+            "[Pool(typeof(CurseCardPool))]\npublic sealed class WitheredHusk",
+            normalizedUrdaCards,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain(
+            "[Pool(typeof(TokenCardPool))]\npublic sealed class WitheredHusk",
+            normalizedUrdaCards,
+            StringComparison.Ordinal);
+        AssertSourceContains(
+            huskTransformPatch,
+            "HarmonyPatch(typeof(CardModel), nameof(CardModel.IsTransformable), MethodType.Getter)",
+            "__instance is WitheredHusk",
+            "__result = false",
+            "HarmonyPatch(typeof(CardFactory), nameof(CardFactory.GetDefaultTransformationOptions))",
+            "__result.Where(card => card is not WitheredHusk)");
         var witheredHusk = SliceFrom(urdaCards, "public sealed class WitheredHusk");
         AssertSourceContains(
             witheredHusk,
             "WitheredHusk",
-            "base(0, CardType.Skill, CardRarity.Token, TargetType.Self",
+            "base(0, CardType.Curse, CardRarity.Curse, TargetType.Self",
+            "CardKeyword.Ethereal",
             "CardKeyword.Exhaust",
+            "HoverTipFactory.FromKeyword(CardKeyword.Ethereal)",
             "HoverTipFactory.FromKeyword(CardKeyword.Exhaust)",
             "protected override async Task OnPlay",
             "ExhaustOnNextPlay = true",
             "CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay)");
-        Assert.DoesNotContain("CardKeyword.Ethereal", witheredHusk, StringComparison.Ordinal);
         Assert.DoesNotContain("CardKeyword.Unplayable", witheredHusk, StringComparison.Ordinal);
         Assert.DoesNotContain("AfterCardExhausted", witheredHusk, StringComparison.Ordinal);
         AssertSourceContains(
@@ -567,8 +600,8 @@ public sealed class UrdaReleaseCoverageGuardTests
             v22Api,
             v22Risk);
 
-        Assert.Contains("| URDA-PROTOTYPE | Ancient expansion | P0 | open |", issueIndex, StringComparison.Ordinal);
-        Assert.Contains("live gameplay/save-load verification is still pending", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("`URDA-PROTOTYPE` P0 open", issueIndex, StringComparison.Ordinal);
+        Assert.Contains("live gameplay and save/load proof remain pending", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Live gameplay and save/load verification for current Urda remains pending", v22Readme, StringComparison.Ordinal);
         Assert.Contains("not source-proven as persisted", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("## 1A. Live evidence protocol", urdaChecklist, StringComparison.Ordinal);

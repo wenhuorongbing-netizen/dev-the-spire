@@ -103,9 +103,7 @@ internal static partial class ForgeTokenService
             .Where(card => card.Rarity is CardRarity.Common or CardRarity.Uncommon)
             .ToList();
 
-        return targets.Count == 0
-            ? null
-            : player.RunState.Rng.Niche.NextItem(targets);
+        return targets.FirstOrDefault();
     }
 
 }

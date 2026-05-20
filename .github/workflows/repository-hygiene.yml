@@ -1,0 +1,33 @@
+name: Repository Hygiene
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  hygiene:
+    name: Manifest, JSON, docs, and patch inventory checks
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate repository hygiene
+        shell: pwsh
+        run: .\scripts\validate-repository-hygiene.ps1
+
+      - name: Diff whitespace check
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "pull_request") {
+            git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+            git diff --check "origin/${{ github.base_ref }}...HEAD"
+          } else {
+            git show --check --format=short HEAD
+          }

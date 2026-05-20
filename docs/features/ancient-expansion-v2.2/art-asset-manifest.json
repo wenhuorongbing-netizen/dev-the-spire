@@ -831,14 +831,14 @@
       "target_path": "EZMicroBalance/images/powers/lotha_verdict.png",
       "source_status": "final_generated",
       "source_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/processed/batch3/lotha_verdict_power.png",
-      "sha256": "163079BB1E6F1941AB3DCC4E281EAD877183D5FD467AE02D9E8BD812507F1419",
+      "sha256": "7EABC124E688E495C44C6FC829C52BD5CD8657E8E2E56E72EFB35A1A1BC8E06E",
       "dimensions": {
-        "width": 128,
-        "height": 128
+        "width": 64,
+        "height": 64
       },
       "prompt_id": "oil_rebuild_20260515_batch3_identity_power_ascension",
       "final_required_before_release": false,
-      "notes": "Final browser ChatGPT/GPTimage2 oil repaint power icon with transparent padding and painterly black-contour finish.",
+      "notes": "Final browser ChatGPT/GPTimage2 oil repaint power icon normalized to the active 64px packed power-art route; 256px big icon is exported separately.",
       "source_review_path": ".tools/art-generation/chatgpt/oil-rebuild-20260515/active-small-art-contact.png",
       "generation_mode": "GPTimage2",
       "mode": "GPTimage2",

@@ -325,7 +325,7 @@ public sealed class MorviV22GuardTests
             "MorviBraveryPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveBraveryPage, StrengthPower>",
             "MorviDexterityPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveDexterityPage, DexterityPower>",
             "CustomPackedIconPath => MorviAssetPaths.ArchivePagePowerIcon",
-            "CustomBigIconPath => MorviAssetPaths.ArchivePagePowerIcon");
+            "CustomBigIconPath => MorviAssetPaths.ArchivePagePowerBigIcon");
         Assert.Contains("ArchivePagePowerIcon", ReadMorviSource(), StringComparison.Ordinal);
         Assert.Contains("{StrengthPower:diff()}", engCards["EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description"], StringComparison.Ordinal);
         Assert.Contains("{DexterityPower:diff()}", engCards["EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE.description"], StringComparison.Ordinal);

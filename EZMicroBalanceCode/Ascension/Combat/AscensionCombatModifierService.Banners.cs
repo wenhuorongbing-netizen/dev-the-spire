@@ -106,7 +106,10 @@ internal static partial class AscensionCombatModifierService
             candidates = AliveEnemies(combatState).ToList();
         }
 
-        return combatState.RunState.Rng.Niche.NextItem(candidates);
+        return candidates
+            .OrderByDescending(enemy => enemy.MaxHp)
+            .ThenBy(enemy => combatState.Enemies.IndexOf(enemy))
+            .FirstOrDefault();
     }
 
 }

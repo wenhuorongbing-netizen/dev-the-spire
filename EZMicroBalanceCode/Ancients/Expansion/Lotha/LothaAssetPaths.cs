@@ -28,13 +28,23 @@ internal static class LothaAssetPaths
 
     public static string VerdictPowerIcon => $"{MainFile.ResPath}/images/powers/lotha_verdict.png";
 
-    public static string PresumptionPowerIcon => PresumptionOptionIcon;
+    public static string VerdictPowerBigIcon => $"{MainFile.ResPath}/images/powers/big/lotha_verdict.png";
 
-    public static string DeathReprievePowerIcon => DeathReprieveOptionIcon;
+    public static string PresumptionPowerIcon => $"{MainFile.ResPath}/images/powers/lotha_presumption.png";
 
-    public static string SingleSentencePowerIcon => SingleSentenceOptionIcon;
+    public static string PresumptionPowerBigIcon => $"{MainFile.ResPath}/images/powers/big/lotha_presumption.png";
 
-    public static string EnlightenmentPowerIcon => PublicEvidenceOptionIcon;
+    public static string DeathReprievePowerIcon => $"{MainFile.ResPath}/images/powers/lotha_death_reprieve.png";
+
+    public static string DeathReprievePowerBigIcon => $"{MainFile.ResPath}/images/powers/big/lotha_death_reprieve.png";
+
+    public static string SingleSentencePowerIcon => $"{MainFile.ResPath}/images/powers/lotha_single_sentence.png";
+
+    public static string SingleSentencePowerBigIcon => $"{MainFile.ResPath}/images/powers/big/lotha_single_sentence.png";
+
+    public static string EnlightenmentPowerIcon => $"{MainFile.ResPath}/images/powers/lotha_enlightenment.png";
+
+    public static string EnlightenmentPowerBigIcon => $"{MainFile.ResPath}/images/powers/big/lotha_enlightenment.png";
 
     public static string BackgroundScene => $"{MainFile.ResPath}/scenes/events/background_scenes/ezmb_lotha.tscn";
 }

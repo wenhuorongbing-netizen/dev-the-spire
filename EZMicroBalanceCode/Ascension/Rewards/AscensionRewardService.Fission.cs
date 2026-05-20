@@ -39,14 +39,15 @@ internal static partial class AscensionRewardService
             return false;
         }
 
-        var roll = player.PlayerRng.Rewards.NextInt(100);
+        var rewardRng = creationOptions.RngOverride ?? player.PlayerRng.Rewards;
+        var roll = rewardRng.NextInt(100);
         if (roll >= chancePercent)
         {
             LogFissionDiagnostics(sourceLabel, chancePercent, candidates.Count, roll, applied: false, cardId: null);
             return false;
         }
 
-        var candidate = player.PlayerRng.Rewards.NextItem(candidates);
+        var candidate = rewardRng.NextItem(candidates);
         if (candidate == null)
         {
             LogFissionDiagnostics(sourceLabel, chancePercent, candidates.Count, roll, applied: false, cardId: null);

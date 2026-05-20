@@ -1,0 +1,102 @@
+using MegaCrit.Sts2.Core.Models;
+
+namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+
+internal static partial class BossSealCatalog
+{
+    private const string EncounterCategory = "ENCOUNTER";
+
+    private static readonly IReadOnlyDictionary<ModelId, BossSealDefinition> DefinitionsByEncounter =
+        new Dictionary<ModelId, BossSealDefinition>
+        {
+            [EncounterId("CEREMONIAL_BEAST_BOSS")] = new(
+                BossSealId.HolyDaze,
+                "Holy Daze",
+                "During the first stun, each hit deals at most 1 damage; afterward the Boss gains Strength.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Observed through PlowPower removal, CeremonialBeast.NextMove, settled damage hooks, and a custom damage-cap power; exact first-stun timing still needs live trace verification.",
+                "After the first stun ends, the Boss gains 2 Strength."),
+            [EncounterId("THE_KIN_BOSS")] = new(
+                BossSealId.MartyrOath,
+                "Martyr Oath",
+                "Follower deaths should strengthen Kin Priest with capped Block/Strength.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses AfterDeath on KinFollower and command APIs on the living KinPriest; live encounter ownership verification pending.",
+                "Trigger cap rises to 3 follower deaths and each trigger grants 14 Block."),
+            [EncounterId("VANTOM_BOSS")] = new(
+                BossSealId.InkReturn,
+                "Ink Return",
+                "First full Slippery removal should restore Slippery next turn.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses settled damage hooks plus player/enemy turn state scans for spent SlipperyPower; live power-removal timing verification pending.",
+                "Restores 2 Slippery and grants 1 Strength when it returns."),
+            [EncounterId("LAGAVULIN_MATRIARCH_BOSS")] = new(
+                BossSealId.StartledShell,
+                "Startled Shell",
+                "Wake-up timing should change starting Plating and later Plating reduction.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses settled damage, enemy move observation, and turn-end state scans for wake-up and Soul Siphon settlement; live wake-source timing verification pending.",
+                "Wake Plating rises to 10 and Soul Siphon only trims one-third."),
+            [EncounterId("SOUL_FYSH_BOSS")] = new(
+                BossSealId.SoulTide,
+                "Soul Tide",
+                "Intangible entries and Beckon settlement should grant Artifact/Block rhythm rewards.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses enemy/player turn state scans for IntangiblePower entries and end-of-player-turn Beckon-in-hand scans without mutating Soul Fysh actions; live Beckon timing verification pending.",
+                "Intangible Artifact +1 and increased Beckon Block cap."),
+            [EncounterId("WATERFALL_GIANT_BOSS")] = new(
+                BossSealId.BoilingCritical,
+                "Boiling Critical",
+                "Steam Eruption milestones should add Boiling and telegraphed explosion pressure.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses SteamEruptionPower state scans, WaterfallGiant.NextMove, and a custom additive-damage/block telegraph power; live terminal-flow verification pending.",
+                "Boiling milestones trigger every 10 Steam and the explosion warning Block is reduced."),
+            [EncounterId("KAISER_CRAB_BOSS")] = new(
+                BossSealId.MisalignedShell,
+                "Misaligned Shell",
+                "Back attacks and claw deaths should add capped shell protection.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses Crusher/Rocket back-attack powers, settled damage hooks, and delayed same-turn claw-death settlement; live direction timing verification pending.",
+                "Back-attack Block rises to 8 and the surviving claw gains 2 Artifact."),
+            [EncounterId("KNOWLEDGE_DEMON_BOSS")] = new(
+                BossSealId.MarginalNote,
+                "Marginal Note",
+                "Curse choices should add a temporary note card with end-turn pressure.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses post-Curse-of-Knowledge move observation and combat-only note cards; exact unchosen-curse identity remains unhooked and must be live-reviewed.",
+                "Curse of Knowledge adds a second Marginal Note."),
+            [EncounterId("THE_INSATIABLE_BOSS")] = new(
+                BossSealId.StruggleBait,
+                "Struggle Bait",
+                "When The Insatiable gains Strength or Sandpit, it adds Frantic Escape cards.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses Strength/Sandpit/heal observations on The Insatiable and generated Frantic Escape cards; live source-classification verification pending.",
+                "Each unplayed generated Frantic Escape grants 5 Block after 2 player turns."),
+            [EncounterId("AEONGLASS_BOSS")] = new(
+                BossSealId.AeonglassStrength,
+                "Temporary Royal Seal",
+                "This Boss starts with +5 Strength.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "v0.105.0 new boss Aeonglass. Simple +5 Strength via PowerCmd.Apply<StrengthPower>; no complex Brand/seal mechanics yet.",
+                "The second Boss version also starts with +5 Strength."),
+            [EncounterId("QUEEN_BOSS")] = new(
+                BossSealId.ChosenDecree,
+                "Chosen Decree",
+                "One Bound card should become a Royal Decree with capped Queen/Amalgam settlement.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses Bound-card hand observations, a temporary card enchantment, and a one-shot Amalgam Strength reducer; live card timing verification pending.",
+                "Higher Queen Block; playing Royal Decree also grants small Block."),
+            [EncounterId("TEST_SUBJECT_BOSS")] = new(
+                BossSealId.ResidualSample,
+                "Residual Sample",
+                "The second and third phases keep part of the previous phase's weakened samples.",
+                BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
+                "Uses TestSubject AdaptablePower death observation and a persistent custom sample power applied after respawn; exact phase UI timing needs live verification.",
+                "First phase change keeps 2 weakened samples, then 1 afterward.")
+        };
+
+    private static ModelId EncounterId(string entry)
+    {
+        return new ModelId(EncounterCategory, entry);
+    }
+}

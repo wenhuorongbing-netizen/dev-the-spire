@@ -559,29 +559,26 @@ public sealed class AncientBehaviorGuardTests
     [Fact]
     public void PrismaticGemRewardScreenHintHasGuardedBannerFallbackDiagnostics()
     {
-        var source = string.Join(
-            Environment.NewLine,
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintPatch.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintBanner.cs"));
-        var hintPatch = SliceFrom(source, "internal static partial class PrismaticGemRewardScreenHintPatch");
-        var applyHint = SliceBetween(
-            hintPatch,
-            "private static void ApplyRewardScreenHint",
-            "private static bool TryApplyBannerFieldHint");
+        var hintPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintPatch.cs");
+        var sharedBanner = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintBanner.cs");
+        var fieldSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintBanner.Field.cs");
+        var nodeSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintBanner.Node.cs");
+        var source = string.Join(Environment.NewLine, hintPatch, sharedBanner, fieldSource, nodeSource);
+        var applyHint = SliceFrom(hintPatch, "private static void ApplyRewardScreenHint");
         var fieldFallback = SliceBetween(
-            hintPatch,
+            fieldSource,
             "private static bool TryApplyBannerFieldHint(",
-            "private static bool TryApplyBannerNodeHint(");
+            "private static bool TryGetCompatibleBannerField(");
         var nodeFallback = SliceBetween(
-            hintPatch,
+            nodeSource,
             "private static bool TryApplyBannerNodeHint(",
-            "private static bool TryGetCompatibleBannerField");
+            "private static void ConfirmBannerNodeHintAfterFieldSuccess(");
         var testPlan = ReadRepoText("docs", "test-plan.md");
         var manualChecklist = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-test-checklist.md");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
         AssertSourceContains(
-            hintPatch,
+            source,
             "private static readonly System.Reflection.FieldInfo? BannerField",
             "if (TryApplyBannerFieldHint(screen, hintText))",
             "if (TryApplyBannerNodeHint(screen, hintText))",
@@ -604,9 +601,9 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("InfoOnce(", fieldFallback, StringComparison.Ordinal);
         Assert.Contains("catch (Exception exception)", fieldFallback, StringComparison.Ordinal);
         Assert.Contains("catch (Exception exception)", nodeFallback, StringComparison.Ordinal);
-        Assert.DoesNotContain("BannerField!.GetValue", hintPatch, StringComparison.Ordinal);
-        Assert.DoesNotContain("BannerField.GetValue(screen)", hintPatch, StringComparison.Ordinal);
-        Assert.DoesNotContain("catch {", hintPatch, StringComparison.Ordinal);
+        Assert.DoesNotContain("BannerField!.GetValue", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("BannerField.GetValue(screen)", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("catch {", source, StringComparison.Ordinal);
 
         Assert.Contains("banner fallback diagnostics", testPlan, StringComparison.Ordinal);
         Assert.Contains("manual-test coverage", testPlan, StringComparison.Ordinal);
@@ -1012,7 +1009,9 @@ public sealed class AncientBehaviorGuardTests
             "- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [x] `godot.log` reviewed after current normal Steam-client isolated startup/log verification.",
+            "- [ ] Fresh 25-field loader smoke confirms Spire Plus / `EZMicroBalance` loads from the current package.",
+            "- [ ] Fresh 25-field loader smoke confirms the game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded",
+            "- [ ] `godot.log` reviewed after fresh current-package normal Steam-client isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",

@@ -16,6 +16,7 @@ internal static partial class UrdaBlessingService
         }
 
         if (runManager.DebugOnlyGetState() is not { } runState ||
+            runState.Players.Count > 1 ||
             !IsRootSightPreviewStillValidForEntry(runState, preview))
         {
             return false;
@@ -41,6 +42,7 @@ internal static partial class UrdaBlessingService
         try
         {
             if (runManager.DebugOnlyGetState() is not { } runState ||
+                runState.Players.Count > 1 ||
                 !IsRootSightPreviewStillValidForEntry(runState, preview))
             {
                 return false;
@@ -91,8 +93,10 @@ internal static partial class UrdaBlessingService
             model = encounter.ToMutable();
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            MainFile.Logger.Warn(
+                $"[EZMicroBalance] Urda Root Eyes preview entry failed for {preview.RoomType} {preview.ModelId} at {preview.Coord}: {ex.GetType().Name}: {ex.Message}");
             return false;
         }
     }

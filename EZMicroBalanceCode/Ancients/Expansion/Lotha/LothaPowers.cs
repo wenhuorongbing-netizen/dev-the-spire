@@ -12,7 +12,7 @@ internal sealed class LothaVerdictPower : CustomPowerModel
 
     public override string CustomPackedIconPath => LothaAssetPaths.VerdictPowerIcon;
 
-    public override string CustomBigIconPath => LothaAssetPaths.VerdictPowerIcon;
+    public override string CustomBigIconPath => LothaAssetPaths.VerdictPowerBigIcon;
 }
 
 internal sealed class LothaPresumptionPower : CustomPowerModel
@@ -23,7 +23,7 @@ internal sealed class LothaPresumptionPower : CustomPowerModel
 
     public override string CustomPackedIconPath => LothaAssetPaths.PresumptionPowerIcon;
 
-    public override string CustomBigIconPath => LothaAssetPaths.PresumptionPowerIcon;
+    public override string CustomBigIconPath => LothaAssetPaths.PresumptionPowerBigIcon;
 }
 
 internal sealed class LothaDeathReprievePower : CustomPowerModel
@@ -34,7 +34,7 @@ internal sealed class LothaDeathReprievePower : CustomPowerModel
 
     public override string CustomPackedIconPath => LothaAssetPaths.DeathReprievePowerIcon;
 
-    public override string CustomBigIconPath => LothaAssetPaths.DeathReprievePowerIcon;
+    public override string CustomBigIconPath => LothaAssetPaths.DeathReprievePowerBigIcon;
 }
 
 internal sealed class LothaSingleSentencePower : CustomPowerModel
@@ -47,7 +47,7 @@ internal sealed class LothaSingleSentencePower : CustomPowerModel
 
     public override string CustomPackedIconPath => LothaAssetPaths.SingleSentencePowerIcon;
 
-    public override string CustomBigIconPath => LothaAssetPaths.SingleSentencePowerIcon;
+    public override string CustomBigIconPath => LothaAssetPaths.SingleSentencePowerBigIcon;
 }
 
 internal sealed class LothaEnlightenmentPower : CustomPowerModel
@@ -60,5 +60,5 @@ internal sealed class LothaEnlightenmentPower : CustomPowerModel
 
     public override string CustomPackedIconPath => LothaAssetPaths.EnlightenmentPowerIcon;
 
-    public override string CustomBigIconPath => LothaAssetPaths.EnlightenmentPowerIcon;
+    public override string CustomBigIconPath => LothaAssetPaths.EnlightenmentPowerBigIcon;
 }

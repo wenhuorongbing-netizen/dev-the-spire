@@ -35,19 +35,45 @@ internal static class VakuuFightOptionPatch
         ref IReadOnlyList<EventOption> __result)
     {
         if (__instance.Owner?.RunState is not RunState runState ||
-            !VakuuFightFeatureGate.IsFightEnabledForRun(runState))
+            runState.Players.Count != 1)
+        {
+            return;
+        }
+
+        var forceFight = VakuuFightFeatureGate.ShouldForceFightForRun(runState);
+        if (!VakuuFightFeatureGate.IsFightEnabledForRun(runState, forceFight))
         {
             return;
         }
 
         var fightOption = VakuuFightService.CreateFightOption(__instance);
-        if (VakuuFightFeatureGate.ShouldForceFight)
+        if (forceFight)
         {
+            VakuuFightFeatureGate.ConsumeCommandForceFightForRun(runState);
             __result = [fightOption];
             return;
         }
 
         __result = __result.Concat([fightOption]).ToList();
+    }
+}
+
+[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]
+internal static class VakuuFightCommandForceCleanupPatch
+{
+    [HarmonyPostfix]
+    private static void ClearCommandForceFightWhenVakuuBeginEventCompletes(
+        EventModel __instance,
+        ref Task __result)
+    {
+        if (__instance is not MegaCrit.Sts2.Core.Models.Events.Vakuu ||
+            __instance.Owner?.RunState is not RunState runState ||
+            !VakuuFightFeatureGate.HasCommandForceFightForRun(runState))
+        {
+            return;
+        }
+
+        __result = VakuuFightFeatureGate.ClearCommandForceFightWhenBeginEventCompletes(__result, runState);
     }
 }
 

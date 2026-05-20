@@ -55,4 +55,21 @@
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(AssemblyName).json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
     </Target>
+
+    <Target Name="NeedGodotForPublish" BeforeTargets="Publish">
+        <Error Text=" Godot path must be set up before publishing; Godot not found at path '$(GodotPath)'. Check Directory.Build.props file."
+               Condition="'$(GodotPath)' == '' or !Exists('$(GodotPath)')"/>
+    </Target>
+
+    <ItemGroup>
+        <GodotPublishInputs Include="EZFuturePeek/**"/>
+        <GodotPublishInputs Include="EZFuturePeek.json"/>
+        <GodotPublishInputs Include="scripts/export-future-peek.ps1"/>
+    </ItemGroup>
+
+    <Target Name="GodotPublish" AfterTargets="Publish" Condition="'$(GodotPath)' != '' and Exists('$(GodotPath)') and '$(IsInnerGodotExport)' != 'true'" Inputs="@(GodotPublishInputs)" Outputs="$(ModsPath)$(MSBuildProjectName)/$(MSBuildProjectName).pck">
+        <Message Text="Exporting EZFuturePeek Godot .pck to mods folder" Importance="high"/>
+        <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\scripts\export-future-peek.ps1&quot; -RepoRoot &quot;$(MSBuildProjectDirectory)&quot; -GodotPath &quot;$(GodotPath)&quot; -OutputPath &quot;$(ModsPath)$(MSBuildProjectName)\$(MSBuildProjectName).pck&quot;"
+              EnvironmentVariables="IsInnerGodotExport=true;MSBUILDDISABLENODEREUSE=1"/>
+    </Target>
 </Project>

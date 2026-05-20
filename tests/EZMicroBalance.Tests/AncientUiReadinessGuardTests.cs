@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -206,8 +207,13 @@ public sealed class AncientUiReadinessGuardTests
         var vakuuGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
         AssertSourceContains(
             vakuuPatch,
-            "VakuuFightFeatureGate.IsFightEnabledForRun(runState)",
-            "if (VakuuFightFeatureGate.ShouldForceFight)",
+            "var forceFight = VakuuFightFeatureGate.ShouldForceFightForRun(runState)",
+            "VakuuFightFeatureGate.IsFightEnabledForRun(runState, forceFight)",
+            "VakuuFightFeatureGate.ConsumeCommandForceFightForRun(runState)",
+            "[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]",
+            "VakuuFightFeatureGate.HasCommandForceFightForRun(runState)",
+            "VakuuFightFeatureGate.ClearCommandForceFightWhenBeginEventCompletes(__result, runState)",
+            "if (forceFight)",
             "__result = [fightOption]",
             "__result = __result.Concat([fightOption]).ToList()");
         AssertSourceContains(
@@ -222,6 +228,15 @@ public sealed class AncientUiReadinessGuardTests
             "SPIREPLUS_ENABLE_VAKUU_FIGHT",
             "EZMB_FORCE_VAKUU_FIGHT",
             "SPIREPLUS_FORCE_VAKUU_FIGHT",
+            "private static WeakReference<IRunState>? commandForcedFightRun",
+            "ShouldForceFightForRun(IRunState runState)",
+            "ArmCommandForceFight(IRunState runState)",
+            "ClearCommandForceFight(IRunState runState)",
+            "ConsumeCommandForceFightForRun(IRunState runState)",
+            "HasCommandForceFightForRun(IRunState runState)",
+            "ClearCommandForceFightWhenBeginEventCompletes(Task beginEventTask, IRunState runState)",
+            "finally",
+            "ReferenceEquals(target, runState)",
             "ShouldEnableFight");
     }
 
@@ -503,7 +518,11 @@ public sealed class AncientUiReadinessGuardTests
     [Fact]
     public void SpirePlusAncientUiSmokeCommandStartsOnlyUnsavedFreshRuns()
     {
-        var command = ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.cs");
+        var command = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs"));
         AssertSourceContains(
             command,
             "SpirePlusAncientLiveTestConsoleCmd",
@@ -521,8 +540,24 @@ public sealed class AncientUiReadinessGuardTests
             "ModelDb.AncientEvent<EzmbMorvi>()",
             "ModelDb.AncientEvent<EzmbLotha>()",
             "ModelDb.AncientEvent<Vakuu>()",
-            "VakuuFightFeatureGate.SpirePlusForceFightEnvironmentVariable",
-            "VakuuFightFeatureGate.ForceFightEnvironmentVariable");
+            "RunManager.Instance.DebugOnlyGetState()",
+            "VakuuFightFeatureGate.ArmCommandForceFight(commandForceFightRunState)",
+            "VakuuFightFeatureGate.ClearCommandForceFight(commandForceFightRunState)",
+            "var forceFight = VakuuFightFeatureGate.ShouldForceFightForRun(runState)",
+            "VakuuFightFeatureGate.IsFightEnabledForRun(runState, forceFight)",
+            "VakuuFightFeatureGate.ConsumeCommandForceFightForRun(runState)",
+            "[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]",
+            "VakuuFightFeatureGate.HasCommandForceFightForRun(runState)",
+            "VakuuFightFeatureGate.ClearCommandForceFightWhenBeginEventCompletes(__result, runState)",
+            "finally",
+            "commandForcedFightRun = new WeakReference<IRunState>(runState)",
+            "ReferenceEquals(target, runState)");
+
+        var vakuuCommandAndFeatureSource = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.cs"),
+            ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu"));
+        AssertNoProcessEnvironmentMutationForVakuuCommand(vakuuCommandAndFeatureSource);
 
         Assert.DoesNotContain("shouldSave: true", command, StringComparison.Ordinal);
 
@@ -579,6 +614,17 @@ public sealed class AncientUiReadinessGuardTests
         Assert.True(start >= 0, $"Missing scene node: {nodeHeader}");
         var next = sceneSource.IndexOf("\n[node ", start + nodeHeader.Length, StringComparison.Ordinal);
         return next < 0 ? sceneSource[start..] : sceneSource[start..next];
+    }
+
+    private static void AssertNoProcessEnvironmentMutationForVakuuCommand(string source)
+    {
+        Assert.False(
+            Regex.IsMatch(
+                source,
+                @"\b(?:System\s*\.\s*)?Environment\s*\.\s*SetEnvironmentVariable\s*\(",
+                RegexOptions.CultureInvariant),
+            "Vakuu command-scoped force fight must use a run-scoped marker, not process environment mutation.");
+        Assert.DoesNotContain("ForceVakuuFightEnvironmentForCommand", source, StringComparison.Ordinal);
     }
 
 }

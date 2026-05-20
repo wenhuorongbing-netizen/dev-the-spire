@@ -7,15 +7,16 @@ namespace EZFuturePeek.Tests;
 public sealed class FuturePeekGuardTests
 {
     [Fact]
-    public void ManifestStaysIndependentAndPreviewOnly()
+    public void ManifestStaysIndependentPreviewOnlyAndResourceBacked()
     {
         using var document = JsonDocument.Parse(ReadRepoText("EZFuturePeek.json"));
         var root = document.RootElement;
 
         Assert.Equal("EZFuturePeek", root.GetProperty("id").GetString());
         Assert.Equal("Future Peek", root.GetProperty("name").GetString());
+        Assert.Contains("without changing run state, rewards, cards, or RNG", root.GetProperty("description").GetString(), StringComparison.Ordinal);
         Assert.False(root.GetProperty("affects_gameplay").GetBoolean());
-        Assert.False(root.GetProperty("has_pck").GetBoolean());
+        Assert.True(root.GetProperty("has_pck").GetBoolean());
         Assert.True(root.GetProperty("has_dll").GetBoolean());
 
         var dependencies = root.GetProperty("dependencies").EnumerateArray().ToArray();
@@ -70,6 +71,10 @@ public sealed class FuturePeekGuardTests
         Assert.Contains("GetPeekButtonText()", source, StringComparison.Ordinal);
         Assert.Contains("Modulate", source, StringComparison.Ordinal);
         Assert.Contains("ToggleMode = true", source, StringComparison.Ordinal);
+        Assert.Contains("\"预知\"", source, StringComparison.Ordinal);
+        Assert.Contains("OnMinigameFinished", source, StringComparison.Ordinal);
+        Assert.Contains("HideForFinishedScreen", source, StringComparison.Ordinal);
+        Assert.Contains("OriginalMaskAlpha", source, StringComparison.Ordinal);
 
         Assert.DoesNotContain("ClearCell", source, StringComparison.Ordinal);
         Assert.DoesNotContain("RevealItem", source, StringComparison.Ordinal);
@@ -79,28 +84,81 @@ public sealed class FuturePeekGuardTests
     }
 
     [Fact]
-    public void TransformPredictionDoesNotCreateRealCards()
+    public void TransformPredictionDoesNotCreateRealCardsOrAdvanceRealRng()
     {
         var patchSource = ReadRepoText("EZFuturePeekCode", "Patches", "TransformPreviewPatch.cs");
         var predictionSource = ReadRepoText("EZFuturePeekCode", "Prediction", "TransformPredictionService.cs");
         var combined = patchSource + Environment.NewLine + predictionSource;
 
-        Assert.Contains("PlayerRng.Transformations", combined, StringComparison.Ordinal);
-        Assert.Contains("new Rng(realRng.Seed, realRng.Counter)", patchSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionRngContext.TryConsume", patchSource, StringComparison.Ordinal);
+        Assert.Contains("no verified transform RNG source", patchSource, StringComparison.Ordinal);
         Assert.Contains("pendingPredictions.Count == 0", patchSource, StringComparison.Ordinal);
         Assert.Contains("return true;", patchSource, StringComparison.Ordinal);
         Assert.Contains("holder.ReassignToCard", patchSource, StringComparison.Ordinal);
         Assert.Contains("CardFactory.GetDefaultTransformationOptions", predictionSource, StringComparison.Ordinal);
         Assert.Contains("rng.NextItem(optionArray)", predictionSource, StringComparison.Ordinal);
+        Assert.Contains("predicted.ToMutable()", predictionSource, StringComparison.Ordinal);
+        Assert.Contains("preview.UpgradeInternal()", predictionSource, StringComparison.Ordinal);
+        Assert.Contains("preview.FinalizeUpgradeInternal()", predictionSource, StringComparison.Ordinal);
 
         Assert.DoesNotContain("GetReplacement(", combined, StringComparison.Ordinal);
         Assert.DoesNotContain("CreateRandomCardForTransform", combined, StringComparison.Ordinal);
         Assert.DoesNotContain("RunState.CreateCard", combined, StringComparison.Ordinal);
         Assert.DoesNotContain("CombatState.CreateCard", combined, StringComparison.Ordinal);
+        Assert.DoesNotContain("Original.Owner.PlayerRng.Transformations", patchSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("realRng.Next", patchSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("realRng.FastForward", patchSource, StringComparison.Ordinal);
     }
 
     [Fact]
-    public void ConfigLocalizationContainsAllGeneratedRows()
+    public void TransformPredictionOnlyUsesSourceBackedRngContexts()
+    {
+        var contextSource = ReadRepoText("EZFuturePeekCode", "Patches", "TransformPredictionRngContext.cs");
+
+        foreach (var eventRngSource in new[]
+        {
+            "AromaOfChaos",
+            "EndlessConveyor",
+            "Symbiote",
+            "WhisperingHollow"
+        })
+        {
+            Assert.Contains(eventRngSource, contextSource, StringComparison.Ordinal);
+        }
+
+        Assert.Contains("RegisterEventRng(__instance", contextSource, StringComparison.Ordinal);
+        Assert.Contains("\"{sourceName}.Rng\"", contextSource, StringComparison.Ordinal);
+
+        foreach (var nicheRngSource in new[]
+        {
+            "MorphicGrove",
+            "Trial",
+            "NewLeaf",
+            "Astrolabe"
+        })
+        {
+            Assert.Contains(nicheRngSource, contextSource, StringComparison.Ordinal);
+        }
+
+        Assert.Contains("RegisterNicheRng(__instance.Owner", contextSource, StringComparison.Ordinal);
+        Assert.Contains("\"{sourceName}.RunState.Rng.Niche\"", contextSource, StringComparison.Ordinal);
+        Assert.Contains("upgradeReplacementPreview: true", contextSource, StringComparison.Ordinal);
+
+        Assert.Contains("new Rng(snapshot.Seed, snapshot.Counter)", contextSource, StringComparison.Ordinal);
+        Assert.Contains("snapshot.Source.Counter != snapshot.Counter", contextSource, StringComparison.Ordinal);
+        Assert.Contains("ConditionalWeakTable<Player, Snapshot>", contextSource, StringComparison.Ordinal);
+        Assert.Contains("SnapshotsByPlayer.TryGetValue(player", contextSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("Dictionary<Player, Snapshot>", contextSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("SnapshotsByPlayer.Remove(player, out var snapshot)", contextSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionSelectionLifetimePatch", contextSource, StringComparison.Ordinal);
+        Assert.Contains("ClearContextWhenSelectionCompletes", contextSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionRngContext.Clear(player)", contextSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("NextItem", contextSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("FastForward", contextSource, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ConfigLocalizationContainsReadableGeneratedRows()
     {
         var english = JsonStringMap("EZFuturePeek", "localization", "eng", "settings_ui.json");
         var simplifiedChinese = JsonStringMap("EZFuturePeek", "localization", "zhs", "settings_ui.json");
@@ -125,20 +183,38 @@ public sealed class FuturePeekGuardTests
 
         Assert.Equal("预知未来", simplifiedChinese["EZFUTUREPEEK.mod_title"]);
         Assert.Equal("预知", simplifiedChinese["EZFUTUREPEEK-CRYSTAL_SPHERE_PEEK_BUTTON.title"]);
-        Assert.Equal("占卜球预知按钮", simplifiedChinese["EZFUTUREPEEK-ENABLE_CRYSTAL_SPHERE_PEEK.title"]);
-        Assert.Equal("占卜球雾层透明度", simplifiedChinese["EZFUTUREPEEK-CRYSTAL_SPHERE_MASK_ALPHA.title"]);
+        Assert.Equal("水晶球预知按钮", simplifiedChinese["EZFUTUREPEEK-ENABLE_CRYSTAL_SPHERE_PEEK.title"]);
+        Assert.Equal("水晶球雾层透明度", simplifiedChinese["EZFUTUREPEEK-CRYSTAL_SPHERE_MASK_ALPHA.title"]);
+
+        var combinedZhs = string.Join('\n', simplifiedChinese.Values);
+        foreach (var mojibake in new[] { "棰", "鍗", "鏄", "鑷", "璋", "€", "?" })
+        {
+            Assert.DoesNotContain(mojibake, combinedZhs, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
-    public void ProjectUsesBaseLibHarmonyAndNoRitsuLib()
+    public void ProjectUsesBaseLibHarmonyNoRitsuLibAndSeparatePublishPck()
     {
         var project = ReadRepoText("EZFuturePeek.csproj");
+        var exportPreset = ReadRepoText("export_presets.cfg");
+        var exportScript = ReadRepoText("scripts", "export-future-peek.ps1");
 
         Assert.Contains("Alchyr.Sts2.BaseLib", project, StringComparison.Ordinal);
         Assert.Contains("0Harmony", project, StringComparison.Ordinal);
         Assert.DoesNotContain("RitsuLib", project, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("EZFuturePeekCode/**/*.cs", project, StringComparison.Ordinal);
         Assert.DoesNotContain("EZMicroBalanceCode/**/*.cs", project, StringComparison.Ordinal);
+
+        Assert.Contains("scripts\\export-future-peek.ps1", project, StringComparison.Ordinal);
+        Assert.Contains("Write-Utf8NoBom", exportScript, StringComparison.Ordinal);
+        Assert.Contains("FuturePeekExport", exportScript, StringComparison.Ordinal);
+        Assert.Contains("EZFuturePeek/localization/*/*.json", exportScript, StringComparison.Ordinal);
+        Assert.Contains("res://EZFuturePeek/mod_icon.svg", exportScript, StringComparison.Ordinal);
+        Assert.Contains("res://EZFuturePeek/localization/eng/settings_ui.json", exportScript, StringComparison.Ordinal);
+        Assert.Contains("res://EZFuturePeek/localization/zhs/settings_ui.json", exportScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("res://EZFuturePeek", exportPreset, StringComparison.Ordinal);
+        Assert.DoesNotContain("res://EZMicroBalance", exportScript, StringComparison.Ordinal);
     }
 
     [Fact]

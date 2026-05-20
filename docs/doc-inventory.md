@@ -9,6 +9,8 @@
 - `docs/PROJECT_MAP.md`
 - `docs/worktree-cleanup-audit.md`
 - `docs/issues.md`
+- `docs/patch-inventory.md`
+- `docs/release-evidence-status.md`
 - `docs/test-ready-development-goal.md`
 - `docs/features/ancient-expansion-v2.2/README.md`
 
@@ -21,6 +23,7 @@ Current support docs, not default reading path:
 - `docs/test-ready-completion-audit.md`
 - `docs/rc1-live-validation-log.md`
 - `docs/issues/waiting-tests.md`
+- `docs/adr/0000-template.md`
 
 ## B. Feature docs
 
@@ -34,6 +37,7 @@ Current support docs, not default reading path:
 - `docs/style/card-localization-style-guide.md`
 - `docs/skills/sts2-godot-mod-development.md`
 - `docs/skills` (current skill notes and references)
+- `docs/adr/` (architecture decision records; start new decisions from `0000-template.md`)
 
 ## D. Archive
 

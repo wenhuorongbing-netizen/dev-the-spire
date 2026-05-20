@@ -24,6 +24,8 @@
 | `Sts2PathDiscovery.props` | Current | Local path discovery helper used by build props. |
 | `docs/` | Current | Documentation index, current release docs, feature records, and archive. |
 | `scripts/` | Current | Repository helper scripts. |
+| `.github/workflows/repository-hygiene.yml` | Current | Hosted CI-safe manifest, JSON, docs, patch inventory, and whitespace checks. |
+| `.github/workflows/full-local-validation.yml` | Current | Self-hosted Windows full no-game validation lane; requires explicit StS2 and Godot paths. |
 | `docs/archive/` | Current | Historical planning, prompt material, release archaeology, archived audits, and implementation records. |
 | `docs/archive/feature-inputs/` | Archive | Historical feature prompts, superseded implementation specs, and old source-design inputs moved out of active feature folders. |
 | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Archive | Historical v2.2 source-audit matrices; do not use as default next-development input. |
@@ -34,6 +36,9 @@
 | `docs/archive/project-state-history-20260516.md` | Archive | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation/package history. |
 | `docs/issues/` | Current support | Compact issue follow-up plus compact manual evidence queue retained for guard/reference support (`docs/issues/waiting-tests.md`). |
 | `docs/worktree-cleanup-audit.md` | Current support | Current cleanup/refactor inventory, archive decisions, and owner-decision areas for this dirty worktree. |
+| `docs/patch-inventory.md` | Current support | Generated Harmony patch owner/risk inventory. Regenerate with `scripts/generate-patch-inventory.ps1`. |
+| `docs/release-evidence-status.md` | Current support | Compact current package and live/manual evidence dashboard. |
+| `docs/adr/` | Current support | Architecture decision records. Start with `docs/adr/0000-template.md`. |
 | `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi and Lotha source slices, and the hidden-by-default dedicated Vakuu fight slice; live verification remains pending. |
 
 ## Active Mod Surface
@@ -107,6 +112,9 @@ Start at `docs/README.md`.
 | Release gates | `docs/release-checklist.md` |
 | Tester handoff | `docs/private-beta-verification-handoff.md` |
 | Open issues | `docs/issues.md` |
+| Patch inventory | `docs/patch-inventory.md` |
+| Release evidence dashboard | `docs/release-evidence-status.md` |
+| Full local CI lane | `.github/workflows/full-local-validation.yml` and `scripts/ci-full-validation.ps1` |
 | Test-ready development goal | `docs/test-ready-development-goal.md` |
 | Manual evidence queue | `docs/issues/waiting-tests.md` (compact support queue only; full historical rows are archived, and next development starts from `docs/test-ready-development-goal.md`) |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |

@@ -18,6 +18,7 @@ internal static partial class AscensionCombatModifierService
         Creature host,
         decimal damage)
     {
+        var wasExposedBeforeThisHit = tracker.FiremarkCoreExposed;
         if (!tracker.FiremarkCoreExposed &&
             !tracker.FiremarkCoreResolved &&
             host.GetHpPercentRemaining() <= 0.5d)
@@ -30,7 +31,9 @@ internal static partial class AscensionCombatModifierService
             MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Giant firemark exposed Molten Core.");
         }
 
-        if (!tracker.FiremarkCoreExposed || tracker.FiremarkCoreResolved)
+        if (!wasExposedBeforeThisHit ||
+            !tracker.FiremarkCoreExposed ||
+            tracker.FiremarkCoreResolved)
         {
             return;
         }

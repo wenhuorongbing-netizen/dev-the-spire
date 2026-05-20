@@ -8,5 +8,11 @@ internal static class VakuuFightAssetPaths
 
     public static string EncounterScene => $"{MainFile.ResPath}/scenes/encounters/ezmb_vakuu_trial.tscn";
 
-    public static string PowerIcon => OptionIcon;
+    public static string StolenVaultPowerIcon => $"{MainFile.ResPath}/images/powers/vakuu_stolen_vault.png";
+
+    public static string StolenVaultPowerBigIcon => $"{MainFile.ResPath}/images/powers/big/vakuu_stolen_vault.png";
+
+    public static string BloodDebtPowerIcon => $"{MainFile.ResPath}/images/powers/vakuu_blood_debt.png";
+
+    public static string BloodDebtPowerBigIcon => $"{MainFile.ResPath}/images/powers/big/vakuu_blood_debt.png";
 }

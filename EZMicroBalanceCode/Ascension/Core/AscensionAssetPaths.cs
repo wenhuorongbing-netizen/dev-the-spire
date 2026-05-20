@@ -56,10 +56,10 @@ internal static class AscensionAssetPaths
     public static string GetBannerIndicator(BannerKind banner) => banner switch
     {
         BannerKind.Vanguard => BannerVanguardIndicator,
-        BannerKind.Shieldwall => BannerShieldFormationIndicator,
+        BannerKind.Shieldwall => BannerRoomIndicator,
         BannerKind.BloodPrize => BannerBountyIndicator,
         BannerKind.PressingLine => BannerPressingLineIndicator,
-        BannerKind.LastStand => BannerLastStandIndicator,
+        BannerKind.LastStand => BannerRoomIndicator,
         _ => BannerRoomIndicator
     };
 }

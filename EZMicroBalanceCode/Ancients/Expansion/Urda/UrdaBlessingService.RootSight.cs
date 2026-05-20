@@ -17,7 +17,7 @@ internal static partial class UrdaBlessingService
         GetProgress(player).RootSightEyes;
 
     internal static bool IsRootSightSelectionActive =>
-        RootSightSelectionPlayer != null;
+        GetActiveRootSightSelectionPlayer() != null;
 
     internal static void CancelRootSightSelection()
     {
@@ -63,7 +63,7 @@ internal static partial class UrdaBlessingService
 
     internal static async Task TryCommitRootSightSelection(MapPoint point)
     {
-        var player = RootSightSelectionPlayer;
+        var player = GetActiveRootSightSelectionPlayer();
         if (player == null)
         {
             return;
@@ -112,5 +112,26 @@ internal static partial class UrdaBlessingService
 
         MainFile.Logger.Info(
             $"[EZMicroBalance] Urda Root Eyes previewed {preview.RoomType} {preview.ModelId} at {point.coord.col},{point.coord.row}; eyes left={progress.RootSightEyes}.");
+    }
+
+    private static Player? GetActiveRootSightSelectionPlayer()
+    {
+        var player = RootSightSelectionPlayer;
+        if (player == null)
+        {
+            return null;
+        }
+
+        var runState = RunManager.Instance.DebugOnlyGetState();
+        if (runState == null ||
+            !ReferenceEquals(player.RunState, runState) ||
+            !runState.Players.Contains(player))
+        {
+            RootSightSelectionPlayer = null;
+            MainFile.Logger.Info("[EZMicroBalance] Urda Root Eyes selection cleared after run context changed.");
+            return null;
+        }
+
+        return player;
     }
 }

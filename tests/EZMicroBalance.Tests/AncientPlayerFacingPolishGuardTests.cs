@@ -17,9 +17,9 @@ public sealed class AncientPlayerFacingPolishGuardTests
     [Fact]
     public void ActiveAncientDialogueSlotsHaveReachableBilingualText()
     {
-        var urda = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.cs");
+        var urda = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
         var morvi = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
-        var lotha = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
+        var lotha = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
 
@@ -219,7 +219,22 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "娑",
             "鍋",
             "婵",
-            "锟"
+            "锟",
+            "妫",
+            "锛",
+            "鑾",
+            "鎵",
+            "閲",
+            "瀹",
+            "绁",
+            "鏀",
+            "璁",
+            "鍊",
+            "杩",
+            "鐐",
+            "寮傝壊",
+            "鐗",
+            "鎰"
         };
 
         var matches = docs
@@ -233,6 +248,44 @@ public sealed class AncientPlayerFacingPolishGuardTests
             .ToArray();
 
         Assert.True(matches.Length == 0, "Found mojibake fragments in active docs: " + string.Join(", ", matches));
+    }
+
+    [Fact]
+    public void ActiveCurrentDocsInlineCodeBackticksAreBalancedOutsideFences()
+    {
+        var docs = Directory.GetFiles(RepoPath("docs"), "*.md", SearchOption.AllDirectories)
+            .Where(path => !ToRepoRelativePath(path).StartsWith("docs/archive/", StringComparison.Ordinal))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+        var failures = new List<string>();
+
+        foreach (var path in docs)
+        {
+            var inFence = false;
+            var lineNumber = 0;
+            foreach (var line in File.ReadLines(path, Encoding.UTF8))
+            {
+                lineNumber++;
+                if (line.TrimStart().StartsWith("```", StringComparison.Ordinal))
+                {
+                    inFence = !inFence;
+                    continue;
+                }
+
+                if (inFence)
+                {
+                    continue;
+                }
+
+                var tickCount = line.Count(ch => ch == '`');
+                if (tickCount % 2 != 0)
+                {
+                    failures.Add($"{ToRepoRelativePath(path)}:{lineNumber} has unbalanced inline backticks: {line}");
+                }
+            }
+        }
+
+        Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
     }
 
     [Fact]
@@ -517,7 +570,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
     [Fact]
     public void AncientOptionHoversPreviewNamedAddedCardsWhereSupported()
     {
-        var urda = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.cs");
+        var urda = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
         var urdaMapUiPatches = string.Join(
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaMapUiPatches.cs"),
@@ -528,11 +581,13 @@ public sealed class AncientPlayerFacingPolishGuardTests
 
         AssertSourceContains(
             urda,
-            "HoverTipFactory.FromCardWithCardHoverTips<UrdaSeedbed>()",
-            "HoverTipFactory.FromCardWithCardHoverTips<WitheredHusk>()",
+            "HoverTipFactory.FromCard<UrdaSeedbed>()",
+            "HoverTipFactory.FromCard<WitheredHusk>()",
             "RootSightHoverTips",
             "EZMB_URDA.root_sight.hover.title",
             "EZMB_URDA.root_sight.hover.description");
+        Assert.DoesNotContain("HoverTipFactory.FromCardWithCardHoverTips<UrdaSeedbed>()", urda, StringComparison.Ordinal);
+        Assert.DoesNotContain("HoverTipFactory.FromCardWithCardHoverTips<WitheredHusk>()", urda, StringComparison.Ordinal);
         AssertSourceContains(
             urdaMapUiPatches,
             "%QuestIcon",

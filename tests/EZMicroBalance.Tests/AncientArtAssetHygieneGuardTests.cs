@@ -183,6 +183,64 @@ public sealed class AncientArtAssetHygieneGuardTests
     }
 
     [Fact]
+    public void AncientCombatPowerArtUsesDedicatedPackedAndBigRoutes()
+    {
+        var exportPreset = ReadRepoText("export_presets.cfg");
+        var exportedResources = ParseExportFiles(exportPreset).ToHashSet(StringComparer.Ordinal);
+        var expectedPowerArt = new Dictionary<string, (int Width, int Height)>(StringComparer.Ordinal)
+        {
+            ["EZMicroBalance/images/powers/lotha_verdict.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/lotha_verdict.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/lotha_presumption.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/lotha_presumption.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/lotha_death_reprieve.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/lotha_death_reprieve.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/lotha_single_sentence.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/lotha_single_sentence.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/lotha_enlightenment.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/lotha_enlightenment.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/morvi_debt.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/morvi_debt.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/morvi_proofread.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/morvi_proofread.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/morvi_open_book.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/morvi_open_book.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/morvi_overdraft.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/morvi_overdraft.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/morvi_paperstorm.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/morvi_paperstorm.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/morvi_archive_page.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/morvi_archive_page.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/vakuu_stolen_vault.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/vakuu_stolen_vault.png"] = (256, 256),
+            ["EZMicroBalance/images/powers/vakuu_blood_debt.png"] = (64, 64),
+            ["EZMicroBalance/images/powers/big/vakuu_blood_debt.png"] = (256, 256)
+        };
+
+        foreach (var (relativePath, expectedDimensions) in expectedPowerArt)
+        {
+            var path = AssertRepoFileExists(relativePath.Split('/'));
+            AssertRepoFileExists((relativePath + ".import").Split('/'));
+            Assert.Equal(expectedDimensions, ReadPngDimensions(path));
+            Assert.Contains($"res://{relativePath}", exportedResources);
+        }
+
+        var morvi = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviPowers.cs");
+        var lotha = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
+        var vakuu = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPowers.cs");
+        var source = string.Join(Environment.NewLine, morvi, lotha, vakuu);
+
+        AssertSourceContains(
+            source,
+            "MorviAssetPaths.ArchivePagePowerBigIcon",
+            "LothaAssetPaths.VerdictPowerBigIcon",
+            "VakuuFightAssetPaths.StolenVaultPowerBigIcon",
+            "VakuuFightAssetPaths.BloodDebtPowerBigIcon");
+        Assert.DoesNotContain("CustomBigIconPath => MorviAssetPaths.ArchivePagePowerIcon", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("VakuuFightAssetPaths.OptionIcon", vakuu, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ActiveSmallUiPngsKeepTransparentPadding()
     {
         using var document = JsonDocument.Parse(ReadRepoText(ManifestPath.Split('/')));

@@ -15,7 +15,12 @@ internal static partial class AscensionCombatModifierService
         tracker.ShieldwallBearer = PickBannerTarget(combatState);
         if (tracker.ShieldwallBearer != null)
         {
-            await PowerCmd.Apply<ShieldwallBannerbearerPower>(new BlockingPlayerChoiceContext(), tracker.ShieldwallBearer, 1m, tracker.ShieldwallBearer, null);
+            await PowerCmd.Apply<ShieldwallBannerbearerPower>(
+                new BlockingPlayerChoiceContext(),
+                tracker.ShieldwallBearer,
+                GetShieldwallTurnBlock(combatState),
+                tracker.ShieldwallBearer,
+                null);
             MainFile.Logger.Info(
                 $"[EZMicroBalance] Ascension A16 applied: Shieldwall bannerbearer set to {tracker.ShieldwallBearer.Name}.");
         }
@@ -60,5 +65,6 @@ internal static partial class AscensionCombatModifierService
         await ApplyBlockToEnemies(
             PrimaryAliveEnemies(combatState).Where(enemy => enemy != bearer),
             GetShieldwallTurnBlock(combatState));
+        MainFile.Logger.Info("[EZMicroBalance] Ascension A16 applied: Shieldwall bannerbearer protected other enemies at enemy turn end.");
     }
 }

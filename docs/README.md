@@ -14,6 +14,9 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current feature status and focused doc map. |
 | Project map | `PROJECT_MAP.md` | Active, support, archive, and local-only path map. |
 | Cleanup audit | `worktree-cleanup-audit.md` | Current cleanup/refactor scope, archive decisions, and owner-decision areas. |
+| Patch inventory | `patch-inventory.md` | Generated Harmony patch owner/risk inventory; refresh with `scripts/generate-patch-inventory.ps1`. |
+| Release evidence dashboard | `release-evidence-status.md` | Compact live/manual evidence state for the current test package. |
+| Full local CI lane | `../.github/workflows/full-local-validation.yml` | Self-hosted Windows workflow for build/test/format/publish/package/artifact validation with explicit StS2 and Godot paths. |
 
 Do not read archived prompt dumps or archived audit matrices by default. They are historical and only needed when investigating an old finding.
 
@@ -37,6 +40,7 @@ These files are current support records but are not part of the default next-dev
 | --- | --- |
 | `dev-environment.md` | Local versions, paths, latest build/publish/test/smoke evidence. |
 | `release-checklist.md` | Private beta checklist and explicit pending gates. |
+| `release-evidence-status.md` | Compact dashboard of current package hashes and live/manual proof rows. |
 | `private-beta-verification-handoff.md` | Concise package, validation, and manual-test handoff. |
 | `private-beta-release-completion-audit.md` | Release completion audit, strict release-readiness audit, and blocker evidence. |
 | `test-ready-completion-audit.md` | Source/test-ready completion audit from the previous pass. |
@@ -56,6 +60,7 @@ These files are current support records but are not part of the default next-dev
 | `codex-workflow.md` | Repeatable Codex workflow notes. |
 | `style/card-localization-style-guide.md` | Source-backed card text, keyword, preview, and bilingual terminology rules. |
 | `skills/sts2-godot-mod-development.md` | Repo-local StS2/Godot/.NET development reference. |
+| `adr/0000-template.md` | Template for architecture, patch-surface, saved-state, and release-scope decisions. |
 
 ## Code And Helper Indexes
 
@@ -64,6 +69,8 @@ These files are current support records but are not part of the default next-dev
 | `../EZMicroBalanceCode/README.md` | Active C# module map and extension rules. |
 | `../tests/EZMicroBalance.Tests/README.md` | Test suite group map and commands. |
 | `../scripts/README.md` | Repository helper script map. |
+| `patch-inventory.md` | Generated Harmony patch owner/risk map. |
+| `../scripts/ci-full-validation.ps1` | Full no-game validation entry point for self-hosted CI or a local release machine. |
 | `archive/legacy-planning/legacy-project-files/README.md` | Preserved migration artifact map. |
 
 ## Archived Support

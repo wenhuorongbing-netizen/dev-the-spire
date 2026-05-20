@@ -38,10 +38,14 @@ internal sealed class UrdaRunHook : AbstractModel
         return UrdaBlessingService.BeforeRoomEntered(room);
     }
 
-    public override Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
+    public override async Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
     {
+        if (card.Pile?.Type == PileType.Hand)
+        {
+            await UrdaBlessingService.TryCatchSeedbedCardFromHand(card, "card entered hand");
+        }
+
         UrdaBlessingService.SyncPersistentState(card.Owner);
-        return Task.CompletedTask;
     }
 
     public override Task AfterActEntered()

@@ -1,0 +1,49 @@
+name: Full Local Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      sts2_path:
+        description: Local Slay the Spire 2 root on the self-hosted Windows runner
+        required: true
+        type: string
+      godot_path:
+        description: Local Godot 4.5.1 Mono executable on the self-hosted Windows runner
+        required: true
+        type: string
+      include_future_peek:
+        description: Also build/test/publish the independent EZFuturePeek preview mod
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  full-local-validation:
+    name: Build, test, publish, package, and artifact checks
+    runs-on:
+      - self-hosted
+      - windows
+
+    env:
+      STS2_PATH: ${{ inputs.sts2_path }}
+      GODOT_PATH: ${{ inputs.godot_path }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Full validation
+        shell: pwsh
+        run: |
+          $includeFuturePeek = [System.Convert]::ToBoolean('${{ inputs.include_future_peek }}')
+          .\scripts\ci-full-validation.ps1 `
+            -Sts2Path '${{ inputs.sts2_path }}' `
+            -GodotPath '${{ inputs.godot_path }}' `
+            -IncludeFuturePeek:$includeFuturePeek

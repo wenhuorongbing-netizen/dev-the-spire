@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, SHA256 `5AEE65325C4248E8BFB86268E360E24BB68B428B2CBC6CDA96F8F86DA483228A` |
+| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, SHA256 `B19620D8D8A15D5B96208D3DE8C3B372BCA0874E076DD2DEBEDE09422FF28BD2` |
 
 ## Runtime Load Checklist
 
@@ -117,7 +117,6 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Debt | `债务`, no raw `Debt` | Pending |
 | Pael's Tooth | `首领`, no raw `Boss` | Pending |
 | Shared keywords | `保留`, `虚无`, `消耗`, `固有`, `永恒`, `力量` | Pending |
-
 ## Save/Load Sensitive Rows
 
 | Area | Manual Check | Result |

@@ -61,12 +61,10 @@ public sealed class UrdaSeedbed : CustomCardModel
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => SeedbedKeywords;
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        new[]
-        {
-            HoverTipFactory.FromKeyword(CardKeyword.Exhaust),
-            HoverTipFactory.FromCard<RootBud>(),
-            HoverTipFactory.FromCard<Root>()
-        }.Concat(HoverTipFactory.FromCardWithCardHoverTips<WitheredHusk>());
+    [
+        HoverTipFactory.FromKeyword(CardKeyword.Exhaust),
+        HoverTipFactory.FromCard<WitheredHusk>()
+    ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(4m, ValueProp.Move)];
     public override bool CanBeGeneratedInCombat => false;
@@ -96,15 +94,15 @@ public sealed class UrdaSeedbed : CustomCardModel
 }
 
 [CustomID(CardId)]
-[Pool(typeof(ColorlessCardPool))]
+[Pool(typeof(CurseCardPool))]
 public sealed class WitheredHusk : CustomCardModel
 {
     public const string CardId = "EZMB_WITHERED_HUSK";
 
-    private static readonly CardKeyword[] HuskKeywords = [CardKeyword.Exhaust];
+    private static readonly CardKeyword[] HuskKeywords = [CardKeyword.Ethereal, CardKeyword.Exhaust];
 
     public WitheredHusk()
-        : base(0, CardType.Skill, CardRarity.Token, TargetType.Self, showInCardLibrary: false)
+        : base(0, CardType.Curse, CardRarity.Curse, TargetType.Self, showInCardLibrary: false)
     {
     }
 
@@ -112,7 +110,11 @@ public sealed class WitheredHusk : CustomCardModel
     public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/withered_husk.png";
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => HuskKeywords;
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromKeyword(CardKeyword.Exhaust)];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
+        HoverTipFactory.FromKeyword(CardKeyword.Exhaust)
+    ];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(3m, ValueProp.Move)];
     public override bool CanBeGeneratedInCombat => false;
     public override bool CanBeGeneratedByModifiers => false;

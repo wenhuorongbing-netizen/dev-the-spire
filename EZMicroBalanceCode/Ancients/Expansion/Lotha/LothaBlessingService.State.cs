@@ -70,7 +70,7 @@ internal static partial class LothaBlessingService
 
         var alreadyHasPower = player.Creature.GetPower<LothaDeathReprievePower>() != null;
         combatState.DeathReprieveActive = true;
-        combatState.DeathReprievePendingStart = !alreadyHasPower;
+        combatState.DeathReprievePendingStart = progress.DeathReprievePhase == DeathReprievePhase.PendingStart;
         combatState.DeathReprieveStarted = progress.DeathReprievePhase == DeathReprievePhase.Active && alreadyHasPower;
         MainFile.Logger.Info(
             $"[EZMicroBalance] Lotha Death Reprieve restored {progress.DeathReprievePhase} combat state from deck-mirrored blessing progress; " +

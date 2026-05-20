@@ -12,7 +12,7 @@ internal sealed class MorviDebtPower : CustomPowerModel
 
     public override string CustomPackedIconPath => MorviAssetPaths.DebtPowerIcon;
 
-    public override string CustomBigIconPath => MorviAssetPaths.DebtPowerIcon;
+    public override string CustomBigIconPath => MorviAssetPaths.DebtPowerBigIcon;
 }
 
 internal sealed class MorviProofreadPower : CustomPowerModel
@@ -25,7 +25,7 @@ internal sealed class MorviProofreadPower : CustomPowerModel
 
     public override string CustomPackedIconPath => MorviAssetPaths.ProofreadPowerIcon;
 
-    public override string CustomBigIconPath => MorviAssetPaths.ProofreadPowerIcon;
+    public override string CustomBigIconPath => MorviAssetPaths.ProofreadPowerBigIcon;
 }
 
 internal sealed class MorviOpenBookPower : CustomPowerModel
@@ -38,7 +38,7 @@ internal sealed class MorviOpenBookPower : CustomPowerModel
 
     public override string CustomPackedIconPath => MorviAssetPaths.OpenBookPowerIcon;
 
-    public override string CustomBigIconPath => MorviAssetPaths.OpenBookPowerIcon;
+    public override string CustomBigIconPath => MorviAssetPaths.OpenBookPowerBigIcon;
 }
 
 internal sealed class MorviOverdraftPower : CustomPowerModel
@@ -51,7 +51,7 @@ internal sealed class MorviOverdraftPower : CustomPowerModel
 
     public override string CustomPackedIconPath => MorviAssetPaths.OverdraftPowerIcon;
 
-    public override string CustomBigIconPath => MorviAssetPaths.OverdraftPowerIcon;
+    public override string CustomBigIconPath => MorviAssetPaths.OverdraftPowerBigIcon;
 }
 
 internal sealed class MorviPaperstormPower : CustomPowerModel
@@ -64,19 +64,19 @@ internal sealed class MorviPaperstormPower : CustomPowerModel
 
     public override string CustomPackedIconPath => MorviAssetPaths.PaperstormPowerIcon;
 
-    public override string CustomBigIconPath => MorviAssetPaths.PaperstormPowerIcon;
+    public override string CustomBigIconPath => MorviAssetPaths.PaperstormPowerBigIcon;
 }
 
 internal sealed class MorviBraveryPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveBraveryPage, StrengthPower>
 {
     public override string CustomPackedIconPath => MorviAssetPaths.ArchivePagePowerIcon;
 
-    public override string CustomBigIconPath => MorviAssetPaths.ArchivePagePowerIcon;
+    public override string CustomBigIconPath => MorviAssetPaths.ArchivePagePowerBigIcon;
 }
 
 internal sealed class MorviDexterityPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveDexterityPage, DexterityPower>
 {
     public override string CustomPackedIconPath => MorviAssetPaths.ArchivePagePowerIcon;
 
-    public override string CustomBigIconPath => MorviAssetPaths.ArchivePagePowerIcon;
+    public override string CustomBigIconPath => MorviAssetPaths.ArchivePagePowerBigIcon;
 }

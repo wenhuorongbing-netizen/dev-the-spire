@@ -20,7 +20,6 @@ packages/
 
 # Local decompile/reference scratch material. Never commit copied game source or assets.
 /source code/
-.editorconfig
 *.user
 Directory.Build.props
 *.zip

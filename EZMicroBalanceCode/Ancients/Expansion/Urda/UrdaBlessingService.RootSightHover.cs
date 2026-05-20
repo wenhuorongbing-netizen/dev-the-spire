@@ -50,6 +50,12 @@ internal static partial class UrdaBlessingService
                 var progress = GetProgress(player);
                 if (TryFindRootSightPreview(progress, runState.CurrentActIndex, FormatCoord(point.coord), out preview))
                 {
+                    if (!IsFutureReachableRootSightTarget(runState, point))
+                    {
+                        ClearStaleRootSightPreview(player, runState.CurrentActIndex, preview.Coord, point);
+                        break;
+                    }
+
                     if (IsRootSightPreviewStillValidForEntry(runState, preview))
                     {
                         return true;

@@ -124,7 +124,9 @@ public sealed class AncientHighRiskSourceGuardTests
             "try",
             "finally",
             "foreach (var card in cards)",
-            "AncientCardHelpers.RemoveUnpiledRunCard(card)");
+            "AncientCardHelpers.RemoveUnpiledRunCard(card)",
+            "player.RunState.Players.Count > 1",
+            "single-player only until host-authoritative reward selection sync is implemented");
         AssertSourceContains(
             state,
             "AncientPlayerState.SyncDeck(",
@@ -227,6 +229,10 @@ public sealed class AncientHighRiskSourceGuardTests
             "return false",
             "mapScreen.Open(isOpenedFromTopBar: true)",
             "mapScreen.RefreshAllPointVisuals()",
+            "GetActiveRootSightSelectionPlayer()",
+            "selection cleared after run context changed",
+            "!ReferenceEquals(player.RunState, runState)",
+            "!runState.Players.Contains(player)",
             "ClearStaleRootSightPreview(",
             "RootSightEyes = Math.Min(RootSightStartingEyes, progress.RootSightEyes + 1)",
             "RemoveQuestMarker<UrdaRootSightMapQuestMarker>(point)",
@@ -235,11 +241,14 @@ public sealed class AncientHighRiskSourceGuardTests
             "RestoreRootSightPreviewMarkers(ActMap map, int actIndex)",
             "GetRootSightPreviews(GetProgress(player).RootSightPreviewRecords)",
             "map.GetPoint(coord)",
+            "ClearUnreachableRootSightPreviews(Player player, IRunState runState)",
+            "!IsFutureReachableRootSightTarget(runState, point)",
             "!IsRootSightPreviewStillValidForEntry(concreteRunState, preview)",
             "point.PointType != preview.PointType",
             "EnsureQuestMarker<UrdaRootSightMapQuestMarker>(point)",
             "point.PointType is not (MapPointType.Monster or MapPointType.Unknown or MapPointType.Elite)",
             "IsFutureReachableRootSightTarget(player, point)",
+            "IsFutureReachableRootSightTarget(IRunState runState, MapPoint point)",
             "new Queue<MapPoint>(current.Children)",
             "point.coord.row <= current.coord.row");
         Assert.DoesNotContain("player.RunState.CurrentActIndex != 0", rootSight, StringComparison.Ordinal);
@@ -248,6 +257,13 @@ public sealed class AncientHighRiskSourceGuardTests
             runLifecycle,
             "public static void AfterMapGenerated(ActMap map, int actIndex)",
             "RestoreRootSightPreviewMarkers(map, actIndex)");
+        AssertSourceContains(
+            runLifecycle,
+            "ClearUnreachableRootSightPreviews(player, runState)");
+        AssertBefore(
+            runLifecycle,
+            "ClearUnreachableRootSightPreviews(player, runState)",
+            "if (runState.CurrentActIndex != 0)");
         AssertSourceContains(
             urdaRunHook,
             "public override Task AfterMapGenerated(ActMap map, int actIndex)",
@@ -258,11 +274,14 @@ public sealed class AncientHighRiskSourceGuardTests
             "if (pointType == MapPointType.Unknown)",
             "CommitRootSightUnknownRoomType(runManager, preview.RoomType)",
             "IsRootSightPreviewStillValidForEntry(runState, preview)",
+            "runState.Players.Count > 1",
             "TryMarkRootSightCommittedForCurrentPoint(runState)",
             "CommitRootSightEncounterQueueForEntry(runState, roomType, encounter)",
             "ConditionalWeakTable<RunState, HashSet<string>>",
             "RootSightCommittedEntryKeys.GetOrCreateValue(runState)",
             "committedForRun.Add",
+            "catch (Exception ex)",
+            "Urda Root Eyes preview entry failed",
             "IsRootSightEventStillValidForEntry(runState, eventModel)",
             "CommitRootSightEventQueueForEntry(runState, eventModel)",
             "runState.AddVisitedEvent(eventModel)",
@@ -579,7 +598,7 @@ public sealed class AncientHighRiskSourceGuardTests
     public void SavedStateKeysAreUniqueSerializableAndScopedToActiveMod()
     {
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
-        var prismaticSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemPatches.cs");
+        var prismaticSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var paelsToothSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var jewelryBoxSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var playerStateSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientPlayerState.cs");

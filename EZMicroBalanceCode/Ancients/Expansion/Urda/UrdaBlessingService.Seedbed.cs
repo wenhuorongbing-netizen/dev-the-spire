@@ -39,7 +39,6 @@ internal static partial class UrdaBlessingService
             return;
         }
 
-        await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), player.Creature, SeedbedMaxHpCost, isFromCard: false);
         var seedbed = player.RunState.CreateCard<UrdaSeedbed>(player);
         if (progress.SeedbedAccepted == 0 && seedbed.IsUpgradable)
         {
@@ -54,8 +53,11 @@ internal static partial class UrdaBlessingService
         else
         {
             AncientCardHelpers.RemoveUnpiledRunCard(seedbed);
+            MainFile.Logger.Warn("[EZMicroBalance] Urda Seedbed was not added to deck; cost and progress were not applied.");
+            return;
         }
 
+        await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), player.Creature, SeedbedMaxHpCost, isFromCard: false);
         progress = progress with
         {
             SeedbedChecks = progress.SeedbedChecks + 1,

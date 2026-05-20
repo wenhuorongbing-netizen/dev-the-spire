@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using EZFuturePeek.EZFuturePeekCode.Config;
 using EZFuturePeek.EZFuturePeekCode.Diagnostics;
 using Godot;
@@ -10,7 +12,9 @@ namespace EZFuturePeek.EZFuturePeekCode.Patches;
 [HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]
 internal static class CrystalSpherePeekPatch
 {
-    private const string ButtonName = "EZFuturePeekCrystalSphereButton";
+    internal const string ButtonName = "EZFuturePeekCrystalSphereButton";
+
+    private static readonly ConditionalWeakTable<NCrystalSphereScreen, PeekState> PeekStates = new();
 
     private static void Postfix(NCrystalSphereScreen __instance)
     {
@@ -61,15 +65,49 @@ internal static class CrystalSpherePeekPatch
             }));
 
         rightControl.AddChild(button);
+        PeekStates.Remove(__instance);
+        PeekStates.Add(__instance, new PeekState(mask, originalAlpha, button));
+
         if (rightControl.GetChildCount() > 2)
         {
             rightControl.MoveChild(button, 2);
         }
     }
 
+    internal static void HideForFinishedScreen(NCrystalSphereScreen screen)
+    {
+        if (!PeekStates.TryGetValue(screen, out var state))
+        {
+            screen.GetNodeOrNull<Control>("Ui/RightUi")?.GetNodeOrNull<Button>(ButtonName)?.Hide();
+            return;
+        }
+
+        state.Button.Hide();
+        var color = state.Mask.Modulate;
+        color.A = state.OriginalMaskAlpha;
+        state.Mask.Modulate = color;
+    }
+
     private static string GetPeekButtonText()
     {
         return LocString.GetIfExists("settings_ui", "EZFUTUREPEEK-CRYSTAL_SPHERE_PEEK_BUTTON.title")?.GetFormattedText()
+            ?? (LocManager.Instance.Language == "zhs" ? "预知" : null)
             ?? "Peek";
+    }
+
+    private sealed record PeekState(Control Mask, float OriginalMaskAlpha, Button Button);
+}
+
+[HarmonyPatch]
+internal static class CrystalSpherePeekFinishedPatch
+{
+    private static MethodBase TargetMethod()
+    {
+        return AccessTools.Method(typeof(NCrystalSphereScreen), "OnMinigameFinished")!;
+    }
+
+    private static void Postfix(NCrystalSphereScreen __instance)
+    {
+        CrystalSpherePeekPatch.HideForFinishedScreen(__instance);
     }
 }

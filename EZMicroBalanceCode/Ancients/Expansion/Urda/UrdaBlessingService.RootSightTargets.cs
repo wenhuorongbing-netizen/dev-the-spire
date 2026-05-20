@@ -5,8 +5,8 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 internal static partial class UrdaBlessingService
 {
     internal static bool CanRootSightTarget(MapPoint point) =>
-        RootSightSelectionPlayer != null &&
-        IsRootSightTarget(RootSightSelectionPlayer, point);
+        GetActiveRootSightSelectionPlayer() is { } player &&
+        IsRootSightTarget(player, point);
 
     private static bool IsRootSightTarget(Player player, MapPoint point)
     {
@@ -24,7 +24,12 @@ internal static partial class UrdaBlessingService
 
     private static bool IsFutureReachableRootSightTarget(Player player, MapPoint point)
     {
-        var current = player.RunState.CurrentMapPoint ?? player.RunState.Map.StartingMapPoint;
+        return IsFutureReachableRootSightTarget(player.RunState, point);
+    }
+
+    private static bool IsFutureReachableRootSightTarget(IRunState runState, MapPoint point)
+    {
+        var current = runState.CurrentMapPoint ?? runState.Map.StartingMapPoint;
         if (point.coord.row <= current.coord.row)
         {
             return false;

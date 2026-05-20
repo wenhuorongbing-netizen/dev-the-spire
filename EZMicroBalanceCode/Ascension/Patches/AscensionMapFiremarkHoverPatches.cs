@@ -41,8 +41,41 @@ internal static class FiremarkedEliteMapHoverPatch
             _ => "FIREMARK_ELITE"
         };
 
+        var description = new LocString("ascension", $"{locKey}.description");
+        AddCurrentActFiremarkValues(description, firemark);
         return new HoverTip(
             new LocString("ascension", $"{locKey}.title"),
-            new LocString("ascension", $"{locKey}.description"));
+            description);
+    }
+
+    private static void AddCurrentActFiremarkValues(LocString description, FiremarkKind firemark)
+    {
+        var actIndex = Math.Clamp(RunManager.Instance.DebugOnlyGetState()?.CurrentActIndex ?? 0, 0, 2);
+        switch (firemark)
+        {
+            case FiremarkKind.Might:
+                description.Add("Strength", ActValue(actIndex, 1m, 2m, 4m));
+                break;
+            case FiremarkKind.Giant:
+                description.Add("MaxHpPercent", ActValue(actIndex, 20m, 30m, 45m));
+                break;
+            case FiremarkKind.ForgeArmor:
+                description.Add("Armor", ActValue(actIndex, 5m, 10m, 20m));
+                break;
+            case FiremarkKind.ConstantHeal:
+                description.Add("Heal", ActValue(actIndex, 4m, 8m, 16m));
+                description.Add("InterruptDamage", ActValue(actIndex, 12m, 24m, 48m));
+                break;
+        }
+    }
+
+    private static decimal ActValue(int actIndex, decimal actOne, decimal actTwo, decimal actThree)
+    {
+        return actIndex switch
+        {
+            0 => actOne,
+            1 => actTwo,
+            _ => actThree
+        };
     }
 }

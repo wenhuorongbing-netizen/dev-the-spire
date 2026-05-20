@@ -34,6 +34,8 @@ internal static partial class UrdaBlessingService
                     MainFile.Logger.Info(
                         $"[EZMicroBalance] Urda Molting applied: removed {husks.Count} Withered Husk card(s) at Act {runState.CurrentActIndex + 1} start.");
                 }
+
+                SetProgress(player, progress with { MoltingActive = false });
             }
 
             if (selectedBlessing == UrdaBlessingIds.ShallowRootRelic)
@@ -67,6 +69,11 @@ internal static partial class UrdaBlessingService
             }
         }
 
+        foreach (var player in runState.Players.Where(player => player.IsActiveForHooks))
+        {
+            ClearUnreachableRootSightPreviews(player, runState);
+        }
+
         if (runState.CurrentActIndex != 0)
         {
             return;
@@ -74,6 +81,7 @@ internal static partial class UrdaBlessingService
 
         foreach (var player in runState.Players.Where(player => player.IsActiveForHooks))
         {
+
             var selectedBlessing = GetSelectedBlessing(player);
             if (selectedBlessing == UrdaBlessingIds.RootedRoute)
             {

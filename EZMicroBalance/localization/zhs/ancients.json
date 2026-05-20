@@ -11,7 +11,7 @@
   "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title": "腐殖约定",
   "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description": "第[blue]1[/blue]幕普通战斗的卡牌奖励会出现[gold]化为腐殖[/gold]按钮。选择它会跳过本次卡牌，改拿[blue]15[/blue][gold]金币[/gold]。第[blue]3[/blue]次[gold]化为腐殖[/gold]后，移除至多[blue]2[/blue]张牌，并获得[blue]1[/blue]张已升级奖励牌。",
   "EZMB_URDA.pages.INITIAL.options.urda_molting.title": "脱壳",
-  "EZMB_URDA.pages.INITIAL.options.urda_molting.description": "移除[blue]1[/blue]张打击和[blue]1[/blue]张防御，加入[blue]2[/blue]张[gold]枯壳[/gold]。剩余[gold]枯壳[/gold]会在第[blue]2[/blue]幕开始时移除。",
+  "EZMB_URDA.pages.INITIAL.options.urda_molting.description": "移除[blue]1[/blue]张打击和[blue]1[/blue]张防御，加入[blue]2[/blue]张[gold]枯壳[/gold]诅咒牌。剩余[gold]枯壳[/gold]会在第[blue]2[/blue]幕开始时移除。",
   "EZMB_URDA.pages.INITIAL.options.urda_moss_map.title": "苔痕地图",
   "EZMB_URDA.pages.INITIAL.options.urda_moss_map.description": "第[blue]1[/blue]幕首次进入：怪物 +[blue]25[/blue] [gold]金币[/gold]；事件治疗[blue]5[/blue]；商店给[gold]药水[/gold]；[gold]精英[/gold]随机升级[blue]1[/blue]张牌；休息处 +[blue]3[/blue] [gold]最大生命[/gold]。",
   "EZMB_URDA.pages.INITIAL.options.urda_trial_branch.title": "试炼枝条",

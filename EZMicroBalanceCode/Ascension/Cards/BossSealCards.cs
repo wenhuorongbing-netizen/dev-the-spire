@@ -20,8 +20,8 @@ public sealed class MarginalNote : CustomCardModel
     {
     }
 
-    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/card.png";
-    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/card.png";
+    public override string CustomPortraitPath => $"{MainFile.ResPath}/images/card_portraits/big/morvi_archive_pages.png";
+    public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/morvi_archive_pages.png";
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => MarginalNoteKeywords;
     public override bool CanBeGeneratedInCombat => false;

@@ -23,6 +23,7 @@ internal static partial class AscensionCombatModifierService
         }
 
         tracker.FiremarkArmorGeneratedThisTurn = false;
+        tracker.FiremarkArmorBlockBaseline = 0m;
         if (tracker.FiremarkArmorSkippedNextTurn)
         {
             tracker.FiremarkArmorSkippedNextTurn = false;
@@ -32,6 +33,7 @@ internal static partial class AscensionCombatModifierService
 
         var block = GetForgeArmorBlock(combatState);
         tracker.FiremarkArmorGeneratedThisTurn = true;
+        tracker.FiremarkArmorBlockBaseline = host.Block;
         await CreatureCmd.GainBlock(host, block, ValueProp.Move, null, fast: true);
     }
 
@@ -39,13 +41,16 @@ internal static partial class AscensionCombatModifierService
     {
         if (!tracker.FiremarkArmorGeneratedThisTurn ||
             tracker.FiremarkArmorBreaks >= MaxForgeArmorShatters ||
-            tracker.FiremarkHost is not { IsAlive: true } host ||
-            host.Block > 0)
+            tracker.FiremarkHost is not { IsAlive: true } ||
+            tracker.FiremarkHost.Block > tracker.FiremarkArmorBlockBaseline)
         {
+            tracker.FiremarkArmorGeneratedThisTurn = false;
+            tracker.FiremarkArmorBlockBaseline = 0m;
             return;
         }
 
         tracker.FiremarkArmorGeneratedThisTurn = false;
+        tracker.FiremarkArmorBlockBaseline = 0m;
         tracker.FiremarkArmorBreaks++;
         tracker.FiremarkArmorSkippedNextTurn = true;
         MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Forge Armor shattered and will skip the next armor gain.");

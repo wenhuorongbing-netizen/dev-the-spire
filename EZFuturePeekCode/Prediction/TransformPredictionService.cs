@@ -9,7 +9,10 @@ namespace EZFuturePeek.EZFuturePeekCode.Prediction;
 
 internal static class TransformPredictionService
 {
-    public static CardModel? PredictReplacementModel(CardTransformation transformation, Rng rng)
+    public static CardModel? PredictReplacementModel(
+        CardTransformation transformation,
+        Rng rng,
+        bool upgradeReplacementPreview = false)
     {
         if (transformation.Replacement != null)
         {
@@ -26,7 +29,20 @@ internal static class TransformPredictionService
             : FilterLikeVanilla(transformation.Original, transformation.ReplacementOptions, transformation.IsInCombat);
 
         var optionArray = options.ToArray();
-        return optionArray.Length == 0 ? null : rng.NextItem(optionArray);
+        var predicted = optionArray.Length == 0 ? null : rng.NextItem(optionArray);
+        if (predicted == null || !upgradeReplacementPreview)
+        {
+            return predicted;
+        }
+
+        var preview = predicted.ToMutable();
+        if (preview.IsUpgradable)
+        {
+            preview.UpgradeInternal();
+            preview.FinalizeUpgradeInternal();
+        }
+
+        return preview;
     }
 
     private static IEnumerable<CardModel> FilterLikeVanilla(

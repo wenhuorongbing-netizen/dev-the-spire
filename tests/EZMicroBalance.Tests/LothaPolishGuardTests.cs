@@ -25,7 +25,7 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void CombatLifecycleUsesScopedCombatStateInsteadOfGlobalRunStateLookup()
     {
-        var lifecycle = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CombatLifecycle.cs");
+        var lifecycle = ReadLothaSource();
 
         Assert.DoesNotContain("RunManager.Instance.DebugOnlyGetState()", lifecycle, StringComparison.Ordinal);
         AssertSourceContains(
@@ -155,7 +155,7 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void PresumptionUsesPersistentInnocentStateAndEnemyAttackDamageBreak()
     {
-        var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
+        var ancient = ReadLothaSource();
         var runHook = ReadLothaSource();
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
@@ -290,7 +290,7 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void DeathReprieveIsNotTwentyFivePercentHealOnlyPlaceholder()
     {
-        var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
+        var ancient = ReadLothaSource();
         var runHook = ReadLothaSource();
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
@@ -489,7 +489,7 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void PublicEvidenceUsesNonDamageDebuffPolicyAndVisibleEnlightenment()
     {
-        var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
+        var ancient = ReadLothaSource();
         var runHook = ReadLothaSource();
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
@@ -656,7 +656,7 @@ public sealed class LothaPolishGuardTests
     [Fact]
     public void LothaLocalizationHoverAndRichTextAreReadable()
     {
-        var ancient = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.cs");
+        var ancient = ReadLothaSource();
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
         var engPowers = JsonStringMap("EZMicroBalance", "localization", "eng", "powers.json");

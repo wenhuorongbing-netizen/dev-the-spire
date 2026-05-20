@@ -513,8 +513,8 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("## Issue detail links", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/urda.md", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/waiting-tests.md", issues, StringComparison.Ordinal);
-        Assert.Contains("| ID |", issues, StringComparison.Ordinal);
-        Assert.Contains("| URDA-PROTOTYPE |", issues, StringComparison.Ordinal);
+        Assert.Contains("Current package hashes, 2026-05-20:", issues, StringComparison.Ordinal);
+        Assert.Contains("`URDA-PROTOTYPE` P0 open", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: resolved", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\uFFFD", issues, StringComparison.Ordinal);
 
@@ -544,7 +544,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("docs/issues/ancient-expansion-v2.2.md", issues, StringComparison.Ordinal);
         Assert.Contains("morvi_forbidden_loan", issues, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("lotha_death_reprieve", issues, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Fight Vakuu", issues, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Vakuu fight", issues, StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains("Lotha is default-on", v22Issues, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Vakuu fight", v22Issues, StringComparison.OrdinalIgnoreCase);
@@ -676,9 +676,11 @@ public sealed class ReleaseCoverageGuardTests
         Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("git log -1 --oneline --decorate", handoff, StringComparison.Ordinal);
+        Assert.Contains("git status --short --branch", handoff, StringComparison.Ordinal);
         Assert.DoesNotContain("f201508", handoff, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("b82023c", handoff, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Current git status before", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("Current git status before", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("A1.05.01", handoff, StringComparison.Ordinal);
         Assert.Contains("git diff --check", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("PROJECT_STATE.md", readme, StringComparison.Ordinal);
     }

@@ -90,6 +90,9 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "ArmPrefinishedParentRestoreHealSkip",
             "[HarmonyPatch(typeof(AncientEventModel), \"BeforeEventStarted\")]",
             "ShouldSkipPrefinishedParentRestoreHeal",
+            "ConditionalWeakTable<IRunState, ParentRestoreHealSkipState>",
+            "ancient.Owner?.RunState",
+            "ParentRestoreHealSkips.Remove(runState)",
             "__result = Task.CompletedTask",
             "skipped duplicate Ancient heal",
             "ProceedFromNoRewardVictory",
@@ -243,6 +246,7 @@ public sealed class VakuuLothaSaveRiskGuardTests
     {
         var runHook = ReadLothaSource();
         var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
+        var state = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.State.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var playerState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientPlayerState.cs");
         var deathBlock = SliceBetween(deathReprieve, "public static bool ShouldDieLate(Creature creature)", "private static async Task EnsureDeathReprievePower");
@@ -292,6 +296,11 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "Active-turn save/load continuation remains live-pending",
             "private static void ResolveDeathReprieveProgress(Player player)",
             "DeathReprievePhase = DeathReprievePhase.Resolved");
+        AssertSourceContains(
+            state,
+            "combatState.DeathReprievePendingStart = progress.DeathReprievePhase == DeathReprievePhase.PendingStart",
+            "combatState.DeathReprieveStarted = progress.DeathReprievePhase == DeathReprievePhase.Active && alreadyHasPower");
+        Assert.DoesNotContain("DeathReprievePendingStart = !alreadyHasPower", state, StringComparison.Ordinal);
     }
 
     [Fact]
