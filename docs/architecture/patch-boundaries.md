@@ -24,7 +24,7 @@ Current count: 137 Harmony patch declarations, including 22 high-risk patches.
 | Multiplayer diagnostics | `JoinFlow`, `StartRunLobby`, `NGame`, `SaveManager`, `RunManager.EnterAct` | Diagnostics may log only; they must not change join, save, quit, or act-entry state. |
 | Reward sync | `RewardsSetSynchronizer`, reward button/screen patches | Reward alternatives and hints must keep vanilla reward identity and avoid client-local reward state. |
 | Release evidence | scripts/tests/workflows | Release rows close only through evidence files and verifier rules. |
-| Future Peek | `NCrystalSphereScreen`, `NTransformPreview`, transform command contexts | Preview-only patches must not call reward, reveal, or real transform mutation paths. |
+| Preview tools | `NCrystalSphereScreen`, `NTransformPreview`, transform command contexts | Preview-only patches must not call reward, reveal, or real transform mutation paths. |
 
 ## Required Service Seams
 
@@ -34,7 +34,7 @@ Current count: 137 Harmony patch declarations, including 22 high-risk patches.
 | `BannerCombatPolicy` | Calculate Banner effects from act, enemy count, and player card count. | Shieldwall block lands on the useful side of turn timing. |
 | `FiremarkWindowPolicy` | Track Molten Core, Forge Armor, Constant Heal, and Heat windows. | Breaking Forge Armor suppresses only the intended next armor. |
 | `VakuuFightFlow` | Represent parent event, child combat, victory, failure, and fallback states. | Victory returns to a valid parent/fallback path in simulation. |
-| `FuturePeekTransformPolicy` | Predict transform results from a forked RNG. | Preview leaves the source transformation RNG counter unchanged. |
+| `PreviewTransformPolicy` | Predict transform results from a forked RNG. | Preview leaves the source transformation RNG counter unchanged. |
 
 ## Review Checklist
 

@@ -33,7 +33,8 @@ Use `features/README.md` as the compact feature index.
 | Ancient reward rebalance v4 | `features/ancients-rework-v4/README.md` | Active Spire Plus core feature. v4.3 is current. |
 | Ascension 11-20 | `features/ascension-11-20/README.md` | Active development track, default-on for private-beta multiplayer testing, not release-verified. |
 | Urda ancient expansion | `features/ancient-expansion-urda/README.md` | Current default-on Urda slice with ten source-backed blessings; live verification pending. |
-| Independent mod architecture | `architecture-ez-micro-balance.md` | Why `EZMicroBalance` exists separately from `EzDailyContent`. |
+| Preview tools | `features/preview-tools/README.md` | Crystal Sphere peek and transform preview now ship inside the single Spire Plus mod. |
+| Independent mod architecture | `architecture-ez-micro-balance.md` | Why `EZMicroBalance` is the single active deliverable. |
 
 ## Validation And Release Support
 

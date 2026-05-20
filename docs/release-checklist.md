@@ -1,13 +1,13 @@
-# Private Beta Release Checklist
+﻿# Private Beta Release Checklist
 
 Target mod: `Spire Plus`
 Target manifest id: `EZMicroBalance`
 
 ## Architecture
 
-- [x] Existing `EzDailyContent` manifest id remains unchanged.
+- [x] The active release surface is one mod: `Spire Plus / EZMicroBalance`.
+- [x] Legacy `EzDailyContent` and standalone `EZFuturePeek` root mod surfaces have been removed from the active tree.
 - [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.
-- [x] Enabling `EZMicroBalance` does not require enabling legacy `EzDailyContent`.
 - [x] Custom-character work is not included in this private beta.
 - [x] A11-A20 selection is now default-on in this private-beta multiplayer test candidate for single-player and host-multiplayer standard lobbies. Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison. Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection. `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required. Host multiplayer A20 selection/start logs a downgrade warning because Dual King Brands / second-boss Brand gameplay remains disabled or downgraded in co-op pending live verification. Full live Ascension and co-op verification is pending.
 
@@ -22,12 +22,12 @@ Target manifest id: `EZMicroBalance`
 - [x] Published `EZMicroBalance.pck` exists.
 - [x] Manifest declares structured `BaseLib` dependency with `min_version: v3.1.2`.
 - [x] Manifest has `affects_gameplay: true`.
-- [x] PCK audit excludes legacy `EzDailyContent`, C# source, docs, art, asset, and archive folders.
+- [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`; this does not claim a fresh 25-field loader smoke.
 - [x] `publish/SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts on 2026-05-20 and copied to the local game root for manual testing.
-  - Current package hashes: DLL `A1D86D01E57E0F58617ACA23EA8094B1AF35F525E3254007DE3675A1289B8159`; manifest `659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2`; PCK `073CAF976C91D9E6CEA39FA90FB5A6417E66CD5E12DED5EDD8169C892A0F0538`; README `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4`; zip `B19620D8D8A15D5B96208D3DE8C3B372BCA0874E076DD2DEBEDE09422FF28BD2`.
+  - Current package hashes: DLL `940F1FEA66B01CB54A1CCEC388D4F023693C947395C7B7F9922BF596A8586E1E`; manifest `A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF`; PCK `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392`; README `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906`; zip `CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 

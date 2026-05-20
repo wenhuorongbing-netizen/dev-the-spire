@@ -1,5 +1,7 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+
 internal static partial class RootDeckService
 {
     public static async Task EnsureStartingRoot(RunState runState)
@@ -22,6 +24,18 @@ internal static partial class RootDeckService
                 }
 
                 SetDiagnosticLevelFromDeck(player);
+                if (addedStartingRoot)
+                {
+                    ReleaseEvidenceLog.Log(
+                        "Rootblight",
+                        "rootblight_added",
+                        player,
+                        new Dictionary<string, object?>
+                        {
+                            ["level"] = 1,
+                            ["source"] = "Root Begins"
+                        });
+                }
                 MainFile.Logger.Info(
                     addedStartingRoot
                         ? $"[EZMicroBalance] Ascension A14 applied: Rootblight I added for player {runState.GetPlayerSlotIndex(player)}."
@@ -45,6 +59,15 @@ internal static partial class RootDeckService
         if (!await AddRootblightCard(player, 1, preferOverlayNotice: true))
         {
             ShowRootSystemFull(player);
+            ReleaseEvidenceLog.Log(
+                "Rootblight",
+                "deck_cap_enforced",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["source"] = source,
+                    ["cap"] = MaxRootblightCards
+                });
             MainFile.Logger.Info(
                 $"[EZMicroBalance] Ascension Rootblight capped: skipped Rootblight I from {source} because player {player.RunState.GetPlayerSlotIndex(player)} already has {MaxRootblightCards} Rootblight cards.");
             return;
@@ -52,6 +75,15 @@ internal static partial class RootDeckService
 
         SetDiagnosticLevelFromDeck(player);
 
+        ReleaseEvidenceLog.Log(
+            "Rootblight",
+            "rootblight_added",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["level"] = 1,
+                ["source"] = source
+            });
         MainFile.Logger.Info(
             $"[EZMicroBalance] Ascension Rootblight applied: added Rootblight I from {source} for player {player.RunState.GetPlayerSlotIndex(player)}.");
     }
@@ -87,6 +119,14 @@ internal static partial class RootDeckService
             if (card.PlantedInSeedbed)
             {
                 card.PlantedInSeedbed = false;
+                ReleaseEvidenceLog.Log(
+                    "Rootblight",
+                    "sprout_buried",
+                    player,
+                    new Dictionary<string, object?>
+                    {
+                        ["level"] = card.RootblightLevel
+                    });
                 MainFile.Logger.Info(
                     $"[EZMicroBalance] Ascension Rootblight held by Seedbed: skipped level {card.RootblightLevel} growth for player {player.RunState.GetPlayerSlotIndex(player)}.");
                 continue;
@@ -138,5 +178,6 @@ internal static partial class RootDeckService
         }
 
         SetDiagnosticLevelFromDeck(player);
+        ReleaseEvidenceLog.Log("Rootblight", "combat_end_notice_queued", player);
     }
 }

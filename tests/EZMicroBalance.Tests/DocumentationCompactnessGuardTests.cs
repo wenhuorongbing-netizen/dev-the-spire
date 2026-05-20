@@ -16,7 +16,7 @@ public sealed class DocumentationCompactnessGuardTests
             "Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test build",
             "Current stop line: Codex should not chase release-ready evidence in this pass.",
             "`source code/src/Core/**` is the primary source evidence",
-            "Future Peek is a separate mod idea",
+            "Preview tools are now part of the single `Spire Plus / EZMicroBalance` mod.",
             "No live-game, save-load, death/failure, or co-op evidence may be claimed from these commands.");
         Assert.DoesNotContain("One-Shot Prompt", goal, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("## Subagent Plan", goal, StringComparison.OrdinalIgnoreCase);

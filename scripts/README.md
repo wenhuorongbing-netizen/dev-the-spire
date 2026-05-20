@@ -9,7 +9,7 @@ Repository helper scripts live here. Keep scripts small, idempotent where possib
 | `bootstrap-windows.ps1` | Bootstrap local Windows setup for this workspace. Use with care because local paths and installed tools vary by machine. |
 | `check-installed-ezmb-package.ps1` | Check installed `EZMicroBalance` artifact hashes against the current handoff docs. Defaults are Windows-oriented; pass `-InstallRoot` explicitly for non-default or macOS paths. |
 | `check-spire-window-preflight.ps1` | Report the current foreground window, Slay the Spire 2 window state, and visible top-level windows before capturing live gameplay screenshots. Use `-RequireSpireForeground` to fail fast when another app is covering the game. |
-| `ci-full-validation.ps1` | Self-hosted Windows CI entry point for full no-game validation. Requires `STS2_PATH`/`GODOT_PATH`, writes a temporary ignored `Directory.Build.props` when needed, checks StS2 DLLs and BaseLib, then runs hygiene, build, tests, format, diff-check, publish, package, optional Future Peek checks, and opt-in artifact tests. |
+| `ci-full-validation.ps1` | Self-hosted Windows CI entry point for full no-game validation. Requires `STS2_PATH`/`GODOT_PATH`, writes a temporary ignored `Directory.Build.props` when needed, checks StS2 DLLs and BaseLib, then runs hygiene, build, tests, format, diff-check, publish, package, and opt-in artifact tests for the single Spire Plus mod. |
 | `collect-ancient-ui-evidence.ps1` | Prepare or restore a forced Ancient clicked-UI evidence session for Urda, Morvi, Lotha, or Vakuu. Prepare mode writes `ancient-ui-evidence-plan.json` and `manual-instructions.md`, runs the preflight unless `-NoPreflight` is used, and launches only when `-Launch` is explicit. |
 | `capture-spire-window.ps1` | Capture the visible Slay the Spire 2 window to a PNG. Use with `-RequireSpireForeground` after the preflight passes. |
 | `generate-patch-inventory.ps1` | Scan active C# source for Harmony patches and refresh `docs/patch-inventory.md` with owner/risk labels. Use `-Check` to fail when the inventory is stale. |
@@ -17,7 +17,7 @@ Repository helper scripts live here. Keep scripts small, idempotent where possib
 | `package-spire-plus.ps1` | Build the player-facing `publish\SpirePlus-v...zip` from the installed `EZMicroBalance` artifacts while keeping the inner install folder, manifest id, DLL, and PCK named `EZMicroBalance`. Run after `dotnet publish`; use `-NoRefreshFromInstalled` only to re-zip an already refreshed staging folder. |
 | `send-spire-dev-console-command.ps1` | Bring Slay the Spire 2 to the foreground and send one simple DevConsole command with `SendKeys`. Use only for short ASCII commands such as `spireplus_test_ancient URDA confirm`. |
 | `spire-plus-live-session.ps1` | Prepare and restore a restore-safe normal Steam live-test session with only BaseLib and Spire Plus / `EZMicroBalance` enabled. Use `-Mode Prepare -MoveOtherMods -MoveCurrentRuns -Launch` to create evidence state and launch, or add `-DisableSpirePlus` with `-MoveOtherMods` to temporarily isolate `EZMicroBalance` out of the mods folder for BaseLib-only plug-off comparison evidence. Then run `-Mode Restore -EvidenceDir <dir> -StopGameOnRestore -PreserveNewCurrentRunsOnRestore` after copying screenshots/log notes from any session that starts or continues a run. |
-| `validate-repository-hygiene.ps1` | CI-safe repository checks for manifest identity, JSON validity, Future Peek isolation from Spire Plus, ignored website clutter, and fresh patch inventory. |
+| `validate-repository-hygiene.ps1` | CI-safe repository checks for manifest identity, JSON validity, removed duplicate mod roots, ignored website clutter, and fresh patch inventory. |
 | `verify-spire-plus-release-evidence.ps1` | Check a filled manual release evidence manifest before any release-ready claim. It hashes the package under test, rejects duplicate row ids, wrong row kinds, manifests/evidence dirs outside the evidence root, file/screenshot paths that escape their evidence dir, and empty evidence files, warns on unknown or blank manifest rows, keeps each row's default evidence files required even when extra files are listed, checks current package hash parity, requires `command.txt` for every passed row, clicked-UI screenshots with foreground preflight, valid non-empty PNG evidence at least 800x450 by default, clean `godot-log-audit.json` files, non-empty evidence notes that do not describe invalid/non-counting evidence, save/load rows, Vakuu rows, Rootblight/A11/disable-mod rows, and co-op disposition or an explicit owner-approved deferral. |
 
 ## Ancient UI evidence helper
@@ -69,7 +69,7 @@ Use `ci-full-validation.ps1` directly on a machine with Slay the Spire 2, BaseLi
 ```powershell
 $env:STS2_PATH='D:\Steam\steamapps\common\Slay the Spire 2'
 $env:GODOT_PATH='D:\Game\FOTN\dev-the-spire\.tools\godot-4.5.1-mono\Godot_v4.5.1-stable_mono_win64\Godot_v4.5.1-stable_mono_win64.exe'
-.\scripts\ci-full-validation.ps1 -IncludeFuturePeek
+.\scripts\ci-full-validation.ps1
 ```
 
 This lane does not launch the game and does not satisfy live/manual rows. It only proves the local source, package, and artifact checks on a runner that has the required game dependencies.

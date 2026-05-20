@@ -78,11 +78,13 @@ Install:
 Test focus:
 - Urda, Morvi, Lotha, and Vakuu Ancient rewards.
 - A11-A20 progression: wider maps, Firemarked Elites, Rootblight, Banner Rooms, Royal Seals, and King Brands.
+- Preview tools: Crystal Sphere peek and transform preview now live inside this same Spire Plus mod.
 - Save/load, death/failure paths, and co-op still need manual proof.
 
 Notes:
 - This is a manual-test build, not release-ready.
 - EZMicroBalance stays as the technical id this cycle so existing saves, config, and env-var gates keep working.
+- There is no separate Future Peek install in this package.
 - Ancient selections now grant visible marker relics so the chosen blessing stays readable in the relic bar.
 - Ascension 21-30 and custom-character content are not included.
 "@ | Set-Content -LiteralPath $readmePath -Encoding UTF8

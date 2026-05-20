@@ -1,6 +1,6 @@
 # Worktree Cleanup Audit
 
-Last updated: 2026-05-16
+Last updated: 2026-05-20
 
 This document tracks cleanup/refactor scope for the current dirty worktree. It is not a release-readiness claim.
 
@@ -30,7 +30,8 @@ These paths are active private-beta source, resource, test, script, or documenta
 | Feature-local prompt/spec archives | `docs/archive/feature-inputs/` | Moved out of active feature folders. |
 | Superseded project-state validation history | `docs/archive/project-state-history-20260516.md` | Full pre-cleanup `PROJECT_STATE.md` snapshot retained; active `PROJECT_STATE.md` now carries current status, blockers, commands, and next action. |
 | Superseded issues package verification note | `docs/archive/implementation-records/2026-05-15-current-package-verification-note.md` | Long-form 2026-05-15 package verification detail was moved out of the active issues index; `docs/issues.md` keeps only the current hashes, evidence pointer, and pending manual gates. |
-| Top-level legacy project metadata | `docs/archive/legacy-planning/legacy-project-files/` | Former root `legacy/` folder moved into the existing legacy-planning archive; original `EzDailyContent` manifest/resources/source folders remain unchanged. |
+| Duplicate root mod surfaces | Removed from active root | `EzDailyContent*` and standalone `EZFuturePeek*` surfaces were removed after the project owner chose a single active mod surface. Historical metadata remains in `docs/archive/legacy-planning/`. |
+| Top-level legacy project metadata | `docs/archive/legacy-planning/legacy-project-files/` | Former root `legacy/` folder moved into the existing legacy-planning archive. |
 | Root local art/calibration folders | `.tools/archive/local-art-and-calibration-20260515/` | Ignored local archive. |
 | Root local clutter archives | `.tools/archive/local-root-clutter-20260515/` | Ignored local archive. |
 | Static website draft and Pages workflow | Deleted root `website/` and `.github/workflows/spire-plus-site.yml`; snapshot remains under `.tools/archive/local-website-preview-20260516/` | Not part of current private-beta release-candidate diff unless explicitly promoted and repaired. |
@@ -91,7 +92,7 @@ Goal restated as concrete deliverables:
 | Local regenerated website draft kept out of release-candidate diff | `.gitignore` ignores `/website/` and `/.github/workflows/spire-plus-site.yml`; active root copies were deleted after archive snapshot verification. | Complete unless the owner later promotes the website. |
 | Broad ignored-file deletion is unsafe | `git clean -ndX` | Current dry run shows ignored build/editor caches plus `.tools/`, `publish/`, `source code/`, and `Directory.Build.props`; do not run broad `git clean -fdX` for this workspace. | Complete as a cleanup boundary. |
 | Active release/source/test changes remain visible | `git status --short` still shows active `EZMicroBalance/`, `EZMicroBalanceCode/`, `tests/`, `scripts/`, and docs changes rather than hiding them. | Complete. |
-| Owner-sensitive material not deleted blindly | `EzDailyContent/`, `EzDailyContentCode/`, `source code/`, `publish/`, and retained `.tools/` evidence/tool folders are documented below. The old root `legacy/` folder was archived, the website draft was deleted only after confirming its archive snapshot, and generated `.tools` clutter was pruned by exact path. | Complete: remaining retained areas have current evidence or hard-rule justification. |
+| Owner-sensitive material not deleted blindly | `source code/`, `publish/`, and retained `.tools/` evidence/tool folders are documented below. The old root `legacy/` folder was archived, duplicate root mod surfaces were removed after the owner rule change, the website draft was deleted only after confirming its archive snapshot, and generated `.tools` clutter was pruned by exact path. | Complete: remaining retained areas have current evidence or hard-rule justification. |
 | Validation covers cleanup edits | Build, default tests, format verification, and diff whitespace checks pass as recorded below. | Complete for current cleanup edits. |
 
 Conclusion: the cleanup/refactor pass is validated. Remaining large ignored/local areas are retained intentionally because they are current package output, source evidence, runtime evidence, art provenance, or local tool installations rather than confirmed redundant clutter.
@@ -111,8 +112,8 @@ This maps the cleanup prompt to concrete artifacts and current evidence. Passing
 | Keep active `Spire Plus` source/resource/test/docs reviewable | `git status --short` | Active changes remain visible in `EZMicroBalance/`, `EZMicroBalanceCode/`, `tests/`, `scripts/`, docs, and `export_presets.cfg`; only local/generated drafts are ignored. | Complete. |
 | Prevent regression into feature-local archive clutter | `TestInfrastructureGuardTests.FeaturePromptArchivesStayInCentralArchive` | Guard checks that historical prompt/spec archives live under `docs/archive/feature-inputs` and current docs/tests do not reference old feature-local archive paths. | Complete. |
 | Keep local website draft out of private-beta release-candidate diff | `.gitignore`, `.tools/archive/local-website-preview-20260516/`, `Test-Path website`, `Test-Path .github/workflows/spire-plus-site.yml` | Ignore rules remain; root `website/` and the Pages workflow are absent; archive snapshot still contains the draft and workflow. | Complete unless owner promotes the website. |
-| Preserve project hard rules and legacy manifest boundary | `README.md`, `AGENTS.md`, `docs/architecture-ez-micro-balance.md`, release guard tests | `EzDailyContent` legacy scaffold is still present and documented; active mod id remains `EZMicroBalance`; deletion checklist blocks removing legacy material without a rule change. | Complete. |
-| Confirm whether every uncertain area is useless before permanent deletion | Owner Deletion Decision Checklist below | `legacy/`, website draft, transient browser profiles, stale redirected publish outputs, old install backup, and generated cache folders were archived/deleted after exact-path checks. `EzDailyContent`, `source code`, current `publish`, and retained `.tools` evidence/tool folders are kept with explicit justification. | Complete. |
+| Preserve project hard rules and active manifest boundary | `README.md`, `AGENTS.md`, `docs/architecture-ez-micro-balance.md`, release guard tests | Active mod id remains `EZMicroBalance`; duplicate root mod surfaces are blocked from returning by repository hygiene guards. | Complete. |
+| Confirm whether every uncertain area is useless before permanent deletion | Owner Deletion Decision Checklist below | `legacy/`, duplicate root mod surfaces, website draft, transient browser profiles, stale redirected publish outputs, old install backup, and generated cache folders were archived/deleted after exact-path checks. `source code`, current `publish`, and retained `.tools` evidence/tool folders are kept with explicit justification. | Complete. |
 | Final completion audit based on actual state | This document plus validation commands | Audit records inspected files, commands, status, and retained boundaries. | Complete as an audit artifact. |
 | Avoid broad ignored-file deletion | `git clean -ndX` dry run | Current dry run includes `.godot/`, `.tools/`, `Directory.Build.props`, `publish/`, `source code/`, and test `bin/obj`; cleanup must stay targeted. | Complete. |
 
@@ -122,7 +123,7 @@ Use this checklist before any permanent deletion. Do not delete a row unless the
 
 | Path / Area | Current evidence | Default recommendation | Owner choices | Verification before delete/promote |
 | --- | --- | --- | --- | --- |
-| `EzDailyContent/`, `EzDailyContentCode/`, `EzDailyContent.json` | Repository rules and `README.md` say the original scaffold and manifest id `EzDailyContent` must not be changed in-place; legacy Ancient work is kept for traceability. | Keep. Do not delete during this cycle. | Keep; archive copy only; delete only if project rules are rewritten first. | Before any future removal, update `AGENTS.md`, `README.md`, `PROJECT_STATE.md`, `docs/architecture-ez-micro-balance.md`, and all tests/docs that reference the legacy scaffold; run `rg -n "EzDailyContent" README.md PROJECT_STATE.md docs tests`; run default build/test. |
+| Removed duplicate root mod surfaces | `EzDailyContent*`, `EZFuturePeek*`, `tests/EZFuturePeek.Tests/`, and `scripts/export-future-peek.ps1` are absent from the active root. | Keep removed. | Restore only through a deliberate new-mod decision with a stable manifest id. | Repository hygiene guards must keep these paths absent; any future new mod needs its own architecture decision before files return. |
 | Former root `legacy/` | Top-level historical migration area contained only `.gdignore`, a README, and the old `EzDailyContent.csproj.legacy.xml`. | Archived. | Keep archived unless project history policy changes. | Moved to `docs/archive/legacy-planning/legacy-project-files/`; update docs/tests that referenced the old root path; run `rg -n "legacy/EzDailyContent|../legacy/README|`legacy/`" README.md PROJECT_STATE.md docs tests scripts --glob "!docs/archive/**"` and validation. |
 | `source code/` | `docs/test-ready-development-goal.md` names `source code/src/Core/**` as primary source evidence; multiple tests read files from this path directly. | Keep as ignored local reference. | Keep; refresh from current game version; delete after replacing evidence path. | First provide an alternate local game-source path or fixture strategy; update all `ReadRepoText("source code", ...)` tests and source-evidence docs; run `rg -n "source code" tests docs README.md PROJECT_STATE.md`; run `dotnet test EZMicroBalance.sln` without relying on the deleted tree. |
 | `publish/` | Package refresh scripts and opt-in release-artifact tests use `publish/SpirePlus-v0.1.0-private-beta.0.zip` and hash parity evidence. | Keep generated output ignored. | Keep; clean and rebuild; delete after package rebuild. | Run `dotnet publish EZMicroBalance.sln --no-restore`, `scripts/package-spire-plus.ps1`, and `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`; confirm package hashes/docs are refreshed before deleting stale artifacts. |
@@ -133,7 +134,7 @@ Owner decision statuses:
 
 | Path / Area | Status |
 | --- | --- |
-| `EzDailyContent/`, `EzDailyContentCode/`, `EzDailyContent.json` | Default keep. Awaiting explicit rule change before any deletion. |
+| Removed duplicate root mod surfaces | Removed after the 2026-05-20 owner rule change; keep absent from active root. |
 | Former root `legacy/` | Archived to `docs/archive/legacy-planning/legacy-project-files/`; top-level folder removed. |
 | `source code/` | Default keep because current tests/docs require it. |
 | `publish/` | Retained current package/staging/cover-source output; stale old-name package folder was deleted. Future prune should happen only after a new package rebuild/hash refresh. |

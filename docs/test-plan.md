@@ -60,7 +60,7 @@ Required artifact checks after publish:
 7. Confirm Spire Plus can be enabled.
 8. Open the card encyclopedia / Card Library and confirm card lists render, sort, and filter without errors.
 9. Start a run and reach Ancient rewards.
-10. Inspect `godot.log` for `EZMicroBalance`, `EzDailyContent`, `BaseLib`, `error`, and `exception`; specifically confirm no `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` appears after opening the card encyclopedia.
+10. Inspect `godot.log` for `EZMicroBalance`, `BaseLib`, old scaffold mod names, `error`, and `exception`; specifically confirm no `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` appears after opening the card encyclopedia.
 
 ## Spire Plus Feature Verification Matrix
 
@@ -110,7 +110,7 @@ Required for:
 - Disable Spire Plus / `EZMicroBalance`.
 - Start or load a run where possible.
 - Confirm no Spire Plus / `EZMicroBalance` logs or patches are active when the mod is disabled.
-- Confirm future mods remain independently enableable.
+- Confirm only the intended `Spire Plus / EZMicroBalance` mod is active for this private-beta package.
 
 ## Current Status
 

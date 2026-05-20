@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Runs;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -34,6 +35,18 @@ internal static partial class AscensionMapService
 
         if (!dualKingBrandsEnabled)
         {
+            if (AscensionFeatureGate.IsDualKingBrandsEnabled(runState))
+            {
+                ReleaseEvidenceLog.Log(
+                    "A20KingBrand",
+                    "second_boss_brand_gated",
+                    runState: runState,
+                    data: new Dictionary<string, object?>
+                    {
+                        ["reason"] = "multiplayer_policy"
+                    });
+            }
+
             return;
         }
 
@@ -55,6 +68,14 @@ internal static partial class AscensionMapService
         var secondBossMetadata = GetOrCreateMetadata(map.SecondBossMapPoint);
         secondBossMetadata.BossSeal = secondBossSeal;
         secondBossMetadata.IsBossBrand = true;
+        ReleaseEvidenceLog.Log(
+            "A20KingBrand",
+            "second_boss_brand_marked",
+            runState: runState,
+            data: new Dictionary<string, object?>
+            {
+                ["seal"] = secondBossSeal.Id.ToString()
+            });
         MainFile.Logger.Info(
             $"[EZMicroBalance] Ascension A20 armed: second boss node marked with {secondBossSeal.Name} Brand ({secondBossSeal.Id}); vanilla boss map icons reveal the boss order, and the fixed courtyard event is ready after Boss 1 rewards.");
     }

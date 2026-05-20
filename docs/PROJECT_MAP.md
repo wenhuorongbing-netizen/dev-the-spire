@@ -1,6 +1,6 @@
 # Project Map
 
-`Spire Plus` is the active private beta target. Its stable manifest id is `EZMicroBalance`. The original `EzDailyContent` scaffold remains for traceability and must not be renamed in-place.
+`Spire Plus` is the single active private beta target. Its stable manifest id is `EZMicroBalance`. The old `EzDailyContent` scaffold and standalone `EZFuturePeek` prototype are no longer active root mod surfaces.
 
 ## Top-Level Layout
 
@@ -18,6 +18,7 @@
 | `EZMicroBalanceCode/Ancients/Expansion/Morvi/` | Current | Morvi Ancient expansion feature implementation and gate control. |
 | `EZMicroBalanceCode/Ancients/Expansion/Lotha/` | Current | Lotha Ancient expansion feature implementation and gate control. |
 | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/` | Current | Hidden-by-default Vakuu fight slice, encounter, monster, Temptation card, and fight gate. |
+| `EZMicroBalanceCode/Preview/` | Current | Integrated preview tools: Crystal Sphere peek and transform preview. |
 | `tests/EZMicroBalance.Tests/` | Current | Source, localization, docs, package, and runtime-evidence guards. |
 | `export_presets.cfg` | Current | Selected-resource PCK export for active mod resources only. |
 | `Directory.Build.props.example` | Current | Template for local machine paths. |
@@ -75,6 +76,7 @@ EZMicroBalanceCode/
     Powers/
     Relics/
     Rewards/
+  Preview/
 ```
 
 Published runtime output should be:
@@ -92,9 +94,6 @@ The private beta zip should contain only those three installable files plus `REA
 
 | Path | Status | Notes |
 | --- | --- | --- |
-| `EzDailyContent.json` | Legacy | Original scaffold manifest id `EzDailyContent`; do not rename in-place. |
-| `EzDailyContent/` | Legacy | Original resource folder; not the active private beta surface. |
-| `EzDailyContentCode/` | Legacy | Original code folder; not part of the active release solution. |
 | `docs/archive/legacy-planning/legacy-project-files/` | Archive | Preserved legacy project metadata from earlier migration work; top-level `legacy/` was removed during cleanup. |
 | `source code/` | Ignored local scratch | Current decompiled game source reference. Do not commit or package. |
 | `.tools/` | Ignored local tools | Downloaded GDRETools, Godot, ILSpy, and local helper binaries. |
@@ -130,6 +129,7 @@ Start at `docs/README.md`.
 | Ancient expansion v2.2 source audit archive | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/README.md` |
 | Urda current test slice | `docs/features/ancient-expansion-urda/README.md` |
 | Ascension 11-20 | `docs/features/ascension-11-20/README.md` |
+| Preview tools | `docs/features/preview-tools/README.md` |
 | Architecture decision | `docs/architecture-ez-micro-balance.md` |
 | Historical planning | `docs/archive/README.md` |
 
@@ -137,6 +137,7 @@ Start at `docs/README.md`.
 
 - Add Ancient behavior under `EZMicroBalanceCode/Ancients/`, with shared state/helpers in `Ancients/Common/` and patch families in `Ancients/Patches/`.
 - Add Ascension behavior under `EZMicroBalanceCode/Ascension/`; use the existing `Core/`, `Map/`, `Combat/`, `Rewards/`, `Enchantments/`, `Patches/`, `Cards/`, `Powers/`, `Relics/`, and `Events/` boundaries, and keep public/multiplayer selection disableable with live-readiness claims gated.
+- Add preview helper behavior under `EZMicroBalanceCode/Preview/`; do not create a second manifest or publish path for it.
 - Add user-facing text in both `EZMicroBalance/localization/eng/` and `EZMicroBalance/localization/zhs/`.
 - Add or update tests in `tests/EZMicroBalance.Tests/` whenever source shape, localization, docs, package contents, or release evidence changes.
 - Update feature README files and `docs/dev-environment.md` when implementation status, validation evidence, versions, or package hashes change.

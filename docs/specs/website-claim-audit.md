@@ -26,7 +26,7 @@ The archived website is not an active release surface. It is retained only as a 
 | Vakuu fight | `content-data.js` Vakuu section | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/` | hidden | Hidden-by-default; do not advertise as playable until victory/failure/save/co-op live proof exists. |
 | Ascension A11-A20 | `content-data.js` ascensions array | `EZMicroBalanceCode/Ascension/`, guard tests | partial | A11 traversal, A20 flow, save/load, and co-op proof remain pending. |
 | Rootblight and Blight Sprout | `content-data.js` tokens/global mechanics | `EZMicroBalanceCode/Ascension/Cards/`, package art guards | partial | Live visual and combat-end proof remain pending. |
-| Future Peek | `docs/goal.md` includes separate Future Peek scope; archive site does not carry a clean Future Peek section | `EZFuturePeekCode/`, `tests/EZFuturePeek.Tests/` | partial | Separate beta only; do not mix into Spire Plus website claims. |
+| Preview tools | Crystal Sphere peek and transform preview are now part of Spire Plus | `EZMicroBalanceCode/Preview/`, `tests/EZMicroBalance.Tests/PreviewToolsGuardTests.cs` | partial | Preview tools now ship inside the Spire Plus page; live proof is still pending. |
 | Full co-op support | Implied by release plan goals, not proven by website | `docs/release-evidence-status.md` co-op row is pending | needs owner decision | Must be either proven with two clients or marked unsupported/gated. |
 
 ## Restoration Rule
@@ -35,4 +35,4 @@ A restored website must be generated from `docs/specs/release-scope-v1.md` and `
 
 ## Subagent Review Note
 
-The 2026-05-20 Product Spec Curator read the archived website and current docs in read-only mode. Their highest-risk findings match this file: old `EasyFirePlus` branding conflicts with `Spire Plus`, Vakuu must stay hidden until live proof exists, A11-A20 and Ancient blessings are partial because live proof is pending, and Future Peek must remain outside the Spire Plus release page.
+The 2026-05-20 Product Spec Curator read the archived website and current docs in read-only mode. Their highest-risk findings still apply to player claims: old `EasyFirePlus` branding conflicts with `Spire Plus`, Vakuu must stay hidden until live proof exists, A11-A20 and Ancient blessings are partial because live proof is pending, and Preview tools now ship inside the Spire Plus page with live proof still pending.

@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Gold;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
@@ -34,6 +35,14 @@ internal static partial class MorviBlessingService
         }
 
         SetProgress(player, new Progress(DebtSettlementStartingDebt, string.Empty, false));
+        ReleaseEvidenceLog.Log(
+            "MorviState",
+            "debt_created",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["debt"] = DebtSettlementStartingDebt
+            });
         MainFile.Logger.Info("[EZMicroBalance] Morvi Debt Settlement granted 220 Gold, resolved optional removal/upgrade selections, and set Debt to 320.");
     }
 
@@ -57,6 +66,15 @@ internal static partial class MorviBlessingService
         {
             var calculatedHpLoss = (int)Math.Ceiling(shortfall / 10m) * DebtSettlementHpPerTenShortfall;
             await DamagePlayerNonlethal(player, calculatedHpLoss);
+            ReleaseEvidenceLog.Log(
+                "MorviState",
+                "debt_unpaid_fallback",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["shortfall"] = shortfall,
+                    ["hpLoss"] = calculatedHpLoss
+                });
         }
 
         var nextProgress = progress with { DebtRemaining = Math.Max(0, progress.DebtRemaining - due) };
@@ -65,6 +83,16 @@ internal static partial class MorviBlessingService
             new ThrowingPlayerChoiceContext(),
             player,
             nextProgress.DebtRemaining);
+        ReleaseEvidenceLog.Log(
+            "MorviState",
+            "debt_paid",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["due"] = due,
+                ["goldPaid"] = goldPaid,
+                ["remaining"] = nextProgress.DebtRemaining
+            });
         MainFile.Logger.Info($"[EZMicroBalance] Morvi Debt Settlement paid due={due}; debt remaining={nextProgress.DebtRemaining}.");
     }
 }

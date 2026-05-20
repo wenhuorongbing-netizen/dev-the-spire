@@ -2,7 +2,7 @@
   "id": "EZMicroBalance",
   "name": "Spire Plus",
   "author": "wenhuorongbing-netizen",
-  "description": "Manual-test build with Ancient blessings, A11-A20 progression, Rootblight, and balance changes. Requires BaseLib.",
+  "description": "Manual-test build with Ancient blessings, A11-A20 progression, Rootblight, preview tools, and balance changes. Requires BaseLib.",
   "version": "v0.1.0-private-beta.0",
   "has_pck": true,
   "has_dll": true,

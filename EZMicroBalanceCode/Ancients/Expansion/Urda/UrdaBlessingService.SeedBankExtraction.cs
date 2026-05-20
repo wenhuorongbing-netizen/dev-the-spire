@@ -1,4 +1,6 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -33,7 +35,12 @@ internal static partial class UrdaBlessingService
 
     private static async Task TryExtractSeedBankFromRelicClickOnce(Player player)
     {
-        if (player.RunState.Players.Count > 1)
+        var hasMultiplayerRunState = player.RunState.Players.Count > 1;
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
+            player.RunState,
+            "UrdaSeedBank",
+            "Seed Bank extraction mutates deck from a local relic click") ||
+            hasMultiplayerRunState)
         {
             MainFile.Logger.Warn("[EZMicroBalance] Urda Seed Bank relic extraction is single-player only until host-authoritative reward selection sync is implemented.");
             return;
@@ -45,6 +52,16 @@ internal static partial class UrdaBlessingService
         {
             return;
         }
+
+        ReleaseEvidenceLog.Log(
+            "UrdaSeedBank",
+            "extract_opened",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["stored"] = seedIds.Count,
+                ["settled"] = progress.SeedBankSettled
+            });
 
         var cards = seedIds
             .Select(TryGetStoredCard)
@@ -85,6 +102,15 @@ internal static partial class UrdaBlessingService
                 return;
             }
 
+            ReleaseEvidenceLog.Log(
+                "UrdaSeedBank",
+                "cards_selected",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["selected"] = selected.Count
+                });
+
             foreach (var unchosen in cards.Where(card => !selected.Contains(card)))
             {
                 AncientCardHelpers.RemoveUnpiledRunCard(unchosen);
@@ -105,11 +131,27 @@ internal static partial class UrdaBlessingService
                 {
                     addedCount++;
                     CardCmd.PreviewCardPileAdd(addResult, 2f);
+                    ReleaseEvidenceLog.Log(
+                        "UrdaSeedBank",
+                        "deck_add_success",
+                        player,
+                        new Dictionary<string, object?>
+                        {
+                            ["card"] = card.Id.Entry
+                        });
                 }
                 else
                 {
                     failedSelectedIds.Add(card.Id.ToString());
                     AncientCardHelpers.RemoveUnpiledRunCard(card);
+                    ReleaseEvidenceLog.Log(
+                        "UrdaSeedBank",
+                        "deck_add_failure",
+                        player,
+                        new Dictionary<string, object?>
+                        {
+                            ["card"] = card.Id.Entry
+                        });
                 }
             }
 
@@ -130,6 +172,14 @@ internal static partial class UrdaBlessingService
                 SeedBankSettled = true
             });
             RefreshSeedBankRelicStatus(player);
+            ReleaseEvidenceLog.Log(
+                "UrdaSeedBank",
+                "storage_cleared",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["added"] = addedCount
+                });
             MainFile.Logger.Info(
                 $"[EZMicroBalance] Urda Seed Bank extracted by relic click: added {addedCount} Seed card(s).");
         }

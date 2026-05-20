@@ -1,5 +1,7 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Relics;
 using MegaCrit.Sts2.Core.Models.RelicPools;
@@ -120,6 +122,14 @@ internal sealed class UrdaSeedBankOptionRelic : UrdaOptionRelic
                 return [];
             }
 
+            ReleaseEvidenceLog.Log(
+                "UrdaSeedBank",
+                "relic_hover_count",
+                Owner,
+                new Dictionary<string, object?>
+                {
+                    ["stored"] = UrdaBlessingService.GetSeedBankStoredCount(Owner)
+                });
             return UrdaBlessingService
                 .GetSeedBankStoredCards(Owner)
                 .SelectMany(card => new[] { HoverTipFactory.FromCard(card) }.Concat(card.HoverTips))
@@ -149,7 +159,10 @@ internal static class UrdaSeedBankRelicClickPatch
             return true;
         }
 
-        if (seedBank.Owner.RunState.Players.Count > 1)
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
+            seedBank.Owner.RunState,
+            "UrdaSeedBank",
+            "Seed Bank relic extraction opens unsynced shared reward selection"))
         {
             return true;
         }

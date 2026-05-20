@@ -1,4 +1,4 @@
-# Spire Plus Private Beta Verification Handoff
+﻿# Spire Plus Private Beta Verification Handoff
 
 Date: 2026-05-15
 
@@ -16,7 +16,7 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest no-launch verification: `dotnet build EZMicroBalance.sln`, `dotnet test EZMicroBalance.sln --no-build` with 202 passed / 18 skipped, `dotnet build EZFuturePeek.sln`, `dotnet test EZFuturePeek.sln --no-build` with 8 passed, `dotnet format` for both solutions, `git diff --check`, `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, `dotnet publish EZFuturePeek.sln`, local game-root package copy/hash check, and opt-in artifact tests with 220 passed / 0 skipped all passed.
+- Latest no-launch verification: `dotnet build EZMicroBalance.sln`, `dotnet test EZMicroBalance.sln --no-build` with 209 passed / 18 skipped, `dotnet format`, `git diff --check`, `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, local game-root package copy/hash check, and opt-in artifact tests with 227 passed / 0 skipped all passed.
 - The latest normal Steam smoke under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` is historical for the earlier 22-field package. Current source defines 25 SavedSpireFields and needs a fresh loader smoke before any current-package runtime-parity claim.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
@@ -46,12 +46,12 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 - Package: `publish\SpirePlus-v0.1.0-private-beta.0.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `B19620D8D8A15D5B96208D3DE8C3B372BCA0874E076DD2DEBEDE09422FF28BD2`
+- Zip SHA256: `CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `A1D86D01E57E0F58617ACA23EA8094B1AF35F525E3254007DE3675A1289B8159`
-- Manifest SHA256: `659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2`
-- PCK SHA256: `073CAF976C91D9E6CEA39FA90FB5A6417E66CD5E12DED5EDD8169C892A0F0538`
-- README_INSTALL SHA256: `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4`
+- DLL SHA256: `940F1FEA66B01CB54A1CCEC388D4F023693C947395C7B7F9922BF596A8586E1E`
+- Manifest SHA256: `A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF`
+- PCK SHA256: `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392`
+- README_INSTALL SHA256: `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906`
 
 ## Known Automated Evidence
 
@@ -180,7 +180,7 @@ Resolved for this candidate: Rootblight I/II/III and Blight Sprout use original 
 
 ## Review Scope
 
-This handoff is not a commit manifest. Review the current diff directly before any release or push decision. Known broad surfaces include the independent `EZMicroBalance` project/resources/code, Ascension and Ancient feature code, localization, export/package docs, guard tests, and validation scripts.
+This handoff is not a commit manifest. Review the current diff directly before any release or push decision. Known broad surfaces include the single `EZMicroBalance` project/resources/code, Ascension and Ancient feature code, localization, export/package docs, guard tests, and validation scripts.
 
 ## Commit And Push Handoff
 
@@ -196,8 +196,8 @@ Treat the output of those commands as authoritative. Keep only intentional sourc
 
 Proposed commit scope after the remaining manual/user gates are resolved:
 
-- Include the independent `EZMicroBalance` project, manifest, solution, resource folder, code folder, localization, tests, and current release docs.
-- Include legacy preservation moves and historical doc archives needed to explain why `EzDailyContent` remains unchanged but inactive for this private beta.
+- Include the single `EZMicroBalance` project, manifest, solution, resource folder, code folder, localization, tests, and current release docs.
+- Include historical doc archives needed to explain why older scaffold work is not part of the active single-mod package.
 - Include `.gitignore` and export preset hardening for ignored local art, calibration, package output, tooling, and `source code/` scratch material.
 
 Do not include:

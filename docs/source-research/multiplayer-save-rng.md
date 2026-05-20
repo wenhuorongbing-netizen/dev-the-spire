@@ -1,6 +1,6 @@
 # Source Evidence - Multiplayer, Save, RNG
 
-Purpose: record multiplayer/save/RNG boundaries that affect Spire Plus, Ascension, Ancient rewards, and Future Peek.
+Purpose: record multiplayer/save/RNG boundaries that affect Spire Plus, Ascension, Ancient rewards, and preview tools.
 
 ## Vanilla Source Evidence
 
@@ -31,8 +31,8 @@ Purpose: record multiplayer/save/RNG boundaries that affect Spire Plus, Ascensio
 | Ascension map markers | `AscensionMapService*.cs` | Map metadata must regenerate deterministically from run/act/coord, not from local-only UI state. |
 | Banner and Firemark combat | `AscensionCombatModifierService*.cs` | Combat state must be owned by combat hooks and reset on combat lifecycle boundaries. |
 | Morvi/Lotha state | `MorviBlessingService.State.cs`, `LothaBlessingService.State.cs` | Deck/player mirrors mitigate transient state loss; live save/load still required. |
-| Future Peek Crystal Sphere | `EZFuturePeekCode/Patches/CrystalSpherePeekPatch.cs` | Only touch `%ScryMask` and local button state; never call `ClearCell`, `RevealItem`, `CellClicked`, or `AddReward`. |
-| Future Peek transforms | `EZFuturePeekCode/Patches/TransformPreviewPatch.cs`, `TransformPredictionRngContext.cs` | Use snapshot/forked transformation RNG; do not call real replacement creation paths for preview. |
+| Crystal Sphere preview | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | Only touch `%ScryMask` and local button state; never call `ClearCell`, `RevealItem`, `CellClicked`, or `AddReward`. |
+| Transform preview | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs`, `TransformPredictionRngContext.cs` | Use snapshot/forked transformation RNG; do not call real replacement creation paths for preview. |
 
 ## Desync Watchlist
 

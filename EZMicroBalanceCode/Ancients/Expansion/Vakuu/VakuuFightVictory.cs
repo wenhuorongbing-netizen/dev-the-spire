@@ -1,4 +1,5 @@
 using System.Reflection;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Localization;
@@ -24,6 +25,15 @@ internal static partial class VakuuFightService
         SetEventStateMethod.Invoke(
             vakuu,
             [new LocString("ancients", descriptionKey), options]);
+        ReleaseEvidenceLog.Log(
+            "VakuuFight",
+            options[0].TextKey == VictoryFallbackOptionKey ? "fallback_map_exit" : "parent_event_resume_success",
+            runState: combatRoom.CombatState.RunState,
+            data: new Dictionary<string, object?>
+            {
+                ["brokenLocks"] = GetEncounter(combatRoom).BrokenLocks,
+                ["options"] = options.Count
+            });
         MainFile.Logger.Info(
             options[0].TextKey == VictoryFallbackOptionKey
                 ? "[EZMicroBalance] Vakuu fight victory had no unclaimed non-Vakuu Act 3 Ancient blessing options; using explicit fallback."

@@ -1,4 +1,6 @@
 using MegaCrit.Sts2.Core.Map;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -16,6 +18,10 @@ internal static partial class UrdaBlessingService
         }
 
         if (runManager.DebugOnlyGetState() is not { } runState ||
+            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
+                runState,
+                "UrdaRootEyes",
+                "Root Eyes room-type routing mutates shared map RNG state") ||
             runState.Players.Count > 1 ||
             !IsRootSightPreviewStillValidForEntry(runState, preview))
         {
@@ -42,6 +48,10 @@ internal static partial class UrdaBlessingService
         try
         {
             if (runManager.DebugOnlyGetState() is not { } runState ||
+                MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
+                    runState,
+                    "UrdaRootEyes",
+                    "Root Eyes room model routing mutates shared map RNG state") ||
                 runState.Players.Count > 1 ||
                 !IsRootSightPreviewStillValidForEntry(runState, preview))
             {
@@ -59,6 +69,16 @@ internal static partial class UrdaBlessingService
 
                 if (TryMarkRootSightCommittedForCurrentPoint(runState))
                 {
+                    ReleaseEvidenceLog.Log(
+                        "UrdaRootEyes",
+                        "node_entered",
+                        runState: runState,
+                        data: new Dictionary<string, object?>
+                        {
+                            ["coord"] = preview.Coord,
+                            ["roomType"] = preview.RoomType,
+                            ["modelId"] = preview.ModelId
+                        });
                     if (pointType == MapPointType.Unknown)
                     {
                         CommitRootSightUnknownRoomType(runManager, preview.RoomType);
@@ -81,6 +101,16 @@ internal static partial class UrdaBlessingService
 
             if (TryMarkRootSightCommittedForCurrentPoint(runState))
             {
+                ReleaseEvidenceLog.Log(
+                    "UrdaRootEyes",
+                    "node_entered",
+                    runState: runState,
+                    data: new Dictionary<string, object?>
+                    {
+                        ["coord"] = preview.Coord,
+                        ["roomType"] = preview.RoomType,
+                        ["modelId"] = preview.ModelId
+                    });
                 CommitRootSightEncounterQueueForEntry(runState, roomType, encounter);
                 if (pointType == MapPointType.Unknown)
                 {

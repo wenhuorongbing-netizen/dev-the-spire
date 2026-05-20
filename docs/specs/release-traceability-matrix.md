@@ -13,7 +13,7 @@ This matrix maps player-visible promises to source, guard, and evidence state. I
 | Vakuu fight | Gated fight uses a dedicated enemy/scene and returns after victory. | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/` | Vakuu source guards | Victory/no-black-screen, failure/death, save/load, co-op pending | Hidden by default |
 | A11-A20 | Higher Ascension levels add map, combat, reward, boss, and root systems. | `EZMicroBalanceCode/Ascension/` | Ascension guards, A11 geometry tests | Natural traversal, combat, save/load, co-op pending | Development-test surface |
 | Rootblight | Rootblight/Sprout state is capped and source-hardened. | `EZMicroBalanceCode/Ascension/Cards/`, `Ascension/Combat/` | Rootdeck and release guards | Visual, combat-end, save/load, co-op pending | Manual-test candidate |
-| Future Peek | Crystal Sphere peek and transform preview are preview-only. | `EZFuturePeekCode/` | `EZFuturePeek.Tests` | Crystal Sphere and transform live proof pending | Separate beta decision |
+| Preview tools | Crystal Sphere peek and transform preview are preview-only helpers inside Spire Plus. | `EZMicroBalanceCode/Preview/` | `PreviewToolsGuardTests` | Crystal Sphere and transform live proof pending | Integrated into Spire Plus |
 | Website | Public claims match implemented and proven features. | Archived `.tools/archive/local-website-preview-20260516/` only | This audit | Not active | Not in release |
 | Co-op | Multiplayer support is safe where advertised. | `StartRunLobby`, `CombatStateSynchronizer`, mod selection diagnostics | Source/diagnostic guards | Two-client proof pending | Do not advertise full support |
 

@@ -16,7 +16,7 @@ This file freezes the release-candidate decision boundary requested by `docs/goa
 | Vakuu fight | Hidden by default | Source hardening exists, but victory/no-black-screen, failure/death, save/load, and co-op proof remain pending. |
 | Ancient Urda/Morvi/Lotha | Manual-test candidates | Source-backed and visible reward markers exist; live clicked UI, gameplay, save/load, and co-op proof remain pending. |
 | Rootblight / Blight Sprout | Manual-test candidate | Source and art are packaged; combat-end behavior and visual proof remain pending. |
-| Future Peek / `EZFuturePeek` | Separate beta decision, not part of Spire Plus | It has an independent project/manifest; live Crystal Sphere and transform-preview proof remain pending. |
+| Preview tools | Part of Spire Plus | Crystal Sphere peek and transform preview are integrated under `EZMicroBalance`; live proof remains pending. |
 | Website | Not in current release surface | The old static preview is archived only and contains stale/mojibake claims. Do not publish or advertise it until rebuilt from this scope. |
 
 ## Release Candidate Gate
@@ -39,9 +39,9 @@ If live proof is incomplete, the acceptable result is `NO-GO: release blocked, m
 
 Unproven features must stay gated, hidden, unadvertised, or explicitly marked unsupported. Source review, tests, and package hashes are not enough to close live rows.
 
-## Future Peek Decision
+## Preview Tools Decision
 
-`EZFuturePeek` remains independent. It can move toward a separate beta only after:
+Preview tools are no longer a separate mod. They ship inside `Spire Plus / EZMicroBalance` and stay isolated under `EZMicroBalanceCode/Preview/`. They can move from manual-test helper to release-candidate surface only after:
 
 - Crystal Sphere peek is proven live to only change mask opacity and never call reveal/reward paths.
 - Transform preview is proven live to match the actual transformation result without advancing real RNG.

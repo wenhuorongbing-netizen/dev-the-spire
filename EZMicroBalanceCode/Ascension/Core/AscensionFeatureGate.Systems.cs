@@ -48,9 +48,16 @@ internal static partial class AscensionFeatureGate
         IsLevelEnabled(runState, DoubleRoyalBrandLevel) &&
         AscensionExpansionConfig.Current.EnableDualKingBrands;
 
-    public static bool IsDualKingBrandsSinglePlayerEnabled(IRunState runState) =>
-        IsDualKingBrandsEnabled(runState) &&
-        runState.Players.Count == 1;
+    public static bool IsDualKingBrandsSinglePlayerEnabled(IRunState runState)
+    {
+        var hasVanillaSinglePlayerRunShape = runState.Players.Count == 1;
+        return IsDualKingBrandsEnabled(runState) &&
+            hasVanillaSinglePlayerRunShape &&
+            !MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
+                runState,
+                "A20KingBrand",
+                "dual King Brand and second boss routing are pending two-client proof");
+    }
 
     public static bool IsAnyImplementedSliceEnabled(IRunState runState)
     {

@@ -110,7 +110,7 @@ Expected published mod output:
 5. Confirm BaseLib is enabled.
 6. Confirm Spire Plus appears with manifest id `EZMicroBalance`.
 7. Confirm Spire Plus is enabled.
-8. Keep legacy `EzDailyContent` disabled while testing Spire Plus to avoid duplicate Ancient patches.
+8. Test with only BaseLib and `Spire Plus / EZMicroBalance` enabled; do not install or enable old scaffold packages.
 
 ## Local-only files that must not be committed
 

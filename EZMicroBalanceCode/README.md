@@ -1,6 +1,6 @@
 # EZMicroBalanceCode
 
-This is the active C# code for the independent `EZMicroBalance` mod. Legacy scaffold code under `EzDailyContentCode/` is kept for traceability and is not the active release target.
+This is the active C# code for the single `Spire Plus / EZMicroBalance` mod.
 
 ## Module Map
 
@@ -25,6 +25,7 @@ This is the active C# code for the independent `EZMicroBalance` mod. Legacy scaf
 | `Ascension/Powers/` | Firemark, Banner, and Boss Seal powers. |
 | `Ascension/Relics/` | Ascension-specific relic models. |
 | `Ascension/Events/` | Ascension-specific event models. |
+| `Preview/` | Crystal Sphere peek and transform-preview helpers. |
 
 ## Extension Rules
 

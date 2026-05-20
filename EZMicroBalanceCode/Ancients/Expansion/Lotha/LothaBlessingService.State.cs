@@ -2,6 +2,8 @@ using EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+
 internal static partial class LothaBlessingService
 {
     private const char ProgressSeparator = ';';
@@ -72,6 +74,16 @@ internal static partial class LothaBlessingService
         combatState.DeathReprieveActive = true;
         combatState.DeathReprievePendingStart = progress.DeathReprievePhase == DeathReprievePhase.PendingStart;
         combatState.DeathReprieveStarted = progress.DeathReprievePhase == DeathReprievePhase.Active && alreadyHasPower;
+        ReleaseEvidenceLog.Log(
+            "LothaDeathReprieve",
+            "save_hydrate",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["phase"] = progress.DeathReprievePhase,
+                ["pendingStart"] = combatState.DeathReprievePendingStart,
+                ["powerAlreadyPresent"] = alreadyHasPower
+            });
         MainFile.Logger.Info(
             $"[EZMicroBalance] Lotha Death Reprieve restored {progress.DeathReprievePhase} combat state from deck-mirrored blessing progress; " +
             $"pendingStart={combatState.DeathReprievePendingStart}, powerAlreadyPresent={alreadyHasPower}. Active-turn save/load continuation remains live-pending.");
@@ -86,6 +98,7 @@ internal static partial class LothaBlessingService
         if (progress.DeathReprieveUsed && progress.DeathReprievePhase != DeathReprievePhase.Resolved)
         {
             SetProgress(player, progress with { DeathReprievePhase = DeathReprievePhase.Resolved });
+            ReleaseEvidenceLog.Log("LothaDeathReprieve", "state_cleared", player);
         }
     }
 

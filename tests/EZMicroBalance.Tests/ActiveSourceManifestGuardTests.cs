@@ -224,6 +224,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.Systems.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionInitializer.cs",
+        "EZMicroBalanceCode/Ascension/Core/MultiplayerFeaturePolicy.cs",
         "EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.JoinFlow.cs",
         "EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.Lobby.cs",
         "EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.RunState.cs",
@@ -313,7 +314,13 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.cs",
         "EZMicroBalanceCode/Ascension/Patches/RootRunHook.cs",
         "EZMicroBalanceCode/Config/EZMicroBalanceModConfig.cs",
+        "EZMicroBalanceCode/Diagnostics/ReleaseEvidenceLog.cs",
         "EZMicroBalanceCode/Diagnostics/SpirePlusAncientLiveTestConsoleCmd.cs",
+        "EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs",
+        "EZMicroBalanceCode/Preview/PreviewLog.cs",
+        "EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs",
+        "EZMicroBalanceCode/Preview/TransformPredictionService.cs",
+        "EZMicroBalanceCode/Preview/TransformPreviewPatch.cs",
         "EZMicroBalanceCode/MainFile.cs"
     ];
 
@@ -346,53 +353,24 @@ public sealed class ActiveSourceManifestGuardTests
     }
 
     [Fact]
-    public void FuturePeekPrototypeStaysOutOfSpirePlusManifestAndRuntimeFolders()
+    public void OnlySpirePlusIsAnActiveRootModSurface()
     {
-        var activeRuntimeFiles = Directory
-            .GetFiles(RepoPath("EZMicroBalanceCode"), "*", SearchOption.AllDirectories)
-            .Concat(Directory.GetFiles(RepoPath("EZMicroBalance"), "*", SearchOption.AllDirectories))
-            .Concat(
-            [
-                RepoPath("EZMicroBalance.csproj"),
-                RepoPath("EZMicroBalance.json")
-            ])
-            .Where(File.Exists)
-            .Where(path => IsTextRuntimeFile(path))
-            .ToArray();
-
-        var forbiddenFragments = new[]
+        foreach (var removedRootSurface in new[]
         {
+            "EzDailyContent",
+            "EzDailyContentCode",
+            "EzDailyContent.json",
             "EZFuturePeek",
-            "Future Peek",
-            "FuturePeek",
-            "NCrystalSphere",
-            "CrystalSphere",
-            "ScryMask",
-            "NTransformPreview",
-            "CycleThroughCards",
-            "CreateRandomCardForTransform"
-        };
-
-        foreach (var path in activeRuntimeFiles)
+            "EZFuturePeekCode",
+            "EZFuturePeek.csproj",
+            "EZFuturePeek.json",
+            "EZFuturePeek.sln",
+            Path.Combine("tests", "EZFuturePeek.Tests")
+        })
         {
-            var text = File.ReadAllText(path);
-            foreach (var fragment in forbiddenFragments)
-            {
-                Assert.DoesNotContain(
-                    fragment,
-                    text,
-                    StringComparison.Ordinal);
-            }
+            Assert.False(Directory.Exists(RepoPath(removedRootSurface)), $"{removedRootSurface} should not remain as an active mod directory.");
+            Assert.False(File.Exists(RepoPath(removedRootSurface)), $"{removedRootSurface} should not remain as an active mod file.");
         }
-    }
-
-    private static bool IsTextRuntimeFile(string path)
-    {
-        return Path.GetExtension(path) switch
-        {
-            ".cs" or ".csproj" or ".json" or ".tscn" or ".tres" or ".gd" or ".cfg" => true,
-            _ => false
-        };
     }
 
     private static readonly SourceCoverageRoot[] IndependentCoverageRoots =
@@ -406,6 +384,7 @@ public sealed class ActiveSourceManifestGuardTests
         new("EZMicroBalanceCode/Ascension/", "AscensionFeatureGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ascension\")"),
         new("EZMicroBalanceCode/Config/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
         new("EZMicroBalanceCode/Diagnostics/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
+        new("EZMicroBalanceCode/Preview/", "PreviewToolsGuardTests.cs", "CrystalSpherePatchOnlyTouchesTheMaskAndButton"),
         new("EZMicroBalanceCode/MainFile.cs", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")")
     ];
 

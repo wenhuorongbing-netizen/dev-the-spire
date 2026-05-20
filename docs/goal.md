@@ -1,765 +1,816 @@
-# goal.md — 30 天发布级开发计划
+# goal-implementation-prompt.md — 严格执行版 Goal Prompt
 
-> 项目：`dev-the-spire` 现有 `Spire Plus / EZMicroBalance`，并行独立 `Future Peek / EZFuturePeek`。  
-> 时间：2026-05-20 至 2026-06-19。  
-> 总目标：把当前“源码/自动化通过的手动测试候选包”推进到“可审计、可回滚、可联机验证、可发布决策”的 Release Candidate。  
-> 核心原则：**没有 live 证据就不关闭 issue；没有联机证据就不声称联机支持；网站/宣传设计没有 traceability matrix 就不能当作已实现承诺。**
-
----
-
-## 0. 当前事实基线
-
-本计划以 2026-05-20 当前仓库状态为基线。
-
-当前状态不是 release-ready：
-
-- `docs/issues.md` 当前目标是 `test-ready manual build, not release-ready`。
-- `docs/review.md` 说明 latest validation 中 **No game was opened**，自动化验证通过不等于 live gameplay / save-load / co-op 通过。
-- `docs/release-evidence-status.md` 中 fresh current-package loader smoke、clicked Ancient UI、Ancient reward gameplay、Vakuu victory/failure/death、save/load、A11 route traversal、Rootblight combat-end、disable-mod gameplay、co-op disposition 仍为 pending。
-- `docs/patch-inventory.md` 显示 Harmony patch 总量很大，且有高风险 lifecycle / room / run / lobby / multiplayer patch；发布前必须做实机验证和回归矩阵。
-- `Future Peek` 已作为 `EZFuturePeek` 独立项目存在，但文档明确是 source/test ready only，Crystal Sphere 和 transform preview 仍需 live proof。
-- `website/` 当前不是活跃 release surface，旧网站草稿已被删除并只在本地 `.tools/archive/local-website-preview-*` 快照中保留。网站里出现过的设计必须重新整理成正式 spec，不能直接作为“已实现”宣传。
-
-本月计划的输出不是“多写功能”，而是：
-
-1. 把所有设计变成可测试的 spec。
-2. 把所有 spec 绑定到源码证据、实现、自动化 guard、live proof、联机 proof。
-3. 把高风险 patch 解耦成可维护边界。
-4. 完成缺口修复。
-5. 完成单机、存读档、失败路径、联机矩阵。
-6. 最终给出清晰发布判断：发布 / 延期 / 降级 / 关闭功能。
+> 用途：把上一轮只写文档的“完成 goal.md”纠偏为真正的实现推进。
+> 适用仓库：`D:\Game\FOTN\dev-the-spire` / `dev-the-spire`。
+> 当前日期基线：2026-05-20。
+> 目标：落实 `docs/goal.md`，而不是再次写一批说明文档。
+> 最高原则：**不能把“写了计划/规格/矩阵/审查结论”当作实现完成。**
 
 ---
 
-## 1. 一个月最终 Definition of Done
+## 0. 这次任务的第一句话必须承认的事实
 
-30 天结束时，必须满足下面任一结果。
+上一轮没有完成 `docs/goal.md`。
 
-### 1.1 理想结果：Release Candidate 可发布
+它只完成了“治理基线和文档化的一部分”，没有完成 goal 的核心交付：
 
-满足全部条件：
+- 没有启动游戏。
+- 没有 fresh current-package loader smoke。
+- 没有 clicked Ancient UI proof。
+- 没有 Ancient gameplay matrix。
+- 没有 save/load proof。
+- 没有 Vakuu victory/no-black-screen/failure/death proof。
+- 没有 co-op two-client proof。
+- 没有 Future Peek live proof。
+- 没有重新 publish/package。
+- 没有 release evidence manifest 通过。
+- 没有关闭 `GOV-WIP-SPLIT`。
+- 没有把 release traceability matrix 中的 pending live rows 变成 passed evidence rows。
 
-- `Spire Plus / EZMicroBalance` 当前包有 fresh loader smoke：
-  - 当前 SavedSpireField 数量和源码一致；
-  - 只启用 BaseLib + Spire Plus；
-  - `godot.log` clean；
-  - 主菜单加载成功；
-  - Mod Settings 可见。
-- 每个网站/设计文档承诺的功能都在 traceability matrix 中有状态：
-  - implemented + tested；或
-  - intentionally excluded with release note；或
-  - gated and not advertised。
-- Ancient reward rebalance、Urda、Morvi、Lotha、Vakuu、Ascension A11-A20、Rootblight、Future Peek 的范围全部有 spec、source evidence、自动化 guard、manual proof。
-- 联机支持完成：
-  - 双客户端 host/join 测试；
-  - A11-A20 host multiplayer 选择和实际战斗行为；
-  - Ancient choices / reward state / Root Eyes / Rooted Route / Rootblight ownership 不 desync；
-  - A20 double boss / King Brand 若发布则必须 live proof；若不能完整支持，必须不能声称完整联机支持。
-- Save/load 完成：
-  - Urda、Root Eyes、Seed Bank、Morvi state、Lotha Death Reprieve、Vakuu child combat、Rootblight 均有实际存读档证据。
-- Vakuu fight 完成：
-  - victory return 无黑屏；
-  - reward choice 正常；
-  - failure/death 不破坏 room/reward/combat state；
-  - active/pre-finished save-load 通过；
-  - co-op 通过，或明确不进发布。
-- `GOV-WIP-SPLIT` 关闭：
-  - 工作树按 bounded context 拆分；
-  - 每个大改动都有 reviewable commit；
-  - patch inventory 重新生成；
-  - release evidence manifest 通过。
-- `EZFuturePeek` 独立发布判断完成：
-  - Crystal Sphere live proof；
-  - transform preview live proof；
-  - 是否 `affects_gameplay=true` 完成产品决策；
-  - 不与 `EZMicroBalance` 混入。
+所以这次任务的目标不是“继续整理 docs”，而是：
 
-### 1.2 可接受结果：延期但状态完全清楚
-
-如果某些高风险内容未能证明，必须做到：
-
-- 不能发布为 full release。
-- 生成 `docs/release-blockers-final.md`，逐条列出阻塞项、剩余证据、下一步。
-- 所有未证明功能必须：
-  - gated；或
-  - hidden；或
-  - 从宣传/网站/README 中移除；或
-  - 明确标为 unsupported。
-- 仍可输出 `manual-test build`，但不能使用 `release-ready`、`full multiplayer support`、`feature complete` 等字眼。
+> **把 `docs/goal.md` 从规划推进到实现、验证、联机、证据和发布判断。**
 
 ---
 
-## 2. 核心 Approach
+## 1. 非协商约束
 
-本月采用“Spec → Source Research → Architecture Boundary → Implementation → Guard → Live Proof → Release Decision”的流水线。每一项功能都必须过同样的门。
+### 1.1 不能只改文档
 
-### 2.1 每个功能必须有一个 Spec
-
-每个 spec 使用同一模板，放入：
+这次 pass 如果只修改下面这些内容，必须判定为失败：
 
 ```text
-docs/specs/<feature-id>.md
+docs/**/*.md
+docs/specs/**/*.md
+docs/architecture/**/*.md
+docs/month-plan/**/*.md
+docs/review.md
+docs/issues.md
+docs/README.md
 ```
 
-模板：
+文档可以改，但只能作为实现、测试、脚本、证据的附属产物。
 
-```markdown
-# <Feature Name> Spec
-
-## Player Promise
-玩家看到什么、能做什么、结果是什么。
-
-## Non-goals
-明确不做什么，防止范围漂移。
-
-## Source Evidence
-- 游戏源码路径：source code/src/Core/...
-- 当前 Mod 源码路径：EZMicroBalanceCode/... 或 EZFuturePeekCode/...
-- 关键方法、状态、RNG、save/load、network surface。
-
-## Implementation Contract
-- 数据模型
-- 服务边界
-- Harmony patch 边界
-- UI 边界
-- RNG 边界
-- multiplayer authority
-- save/load contract
-
-## Acceptance Criteria
-- 自动化 guard
-- manual single-player proof
-- save/load proof
-- failure/death proof
-- co-op proof
-- log proof
-- screenshot proof
-
-## Rollback / Gate
-- env var
-- config toggle
-- disable path
-- release-note fallback
-```
-
-### 2.2 所有源码调研先于编码
-
-编码前必须调研：
-
-- `source code/src/Core/**` 中对应 vanilla 逻辑；
-- BaseLib / template API；
-- 当前 Mod 代码；
-- 当前测试和 guard；
-- 当前 issue / review / release evidence。
-
-输出：
+本次 pass 必须至少完成下面三类之一的实质变化：
 
 ```text
-docs/source-research/<feature-id>-source-evidence.md
+A. 源码实现变化
+   EZMicroBalanceCode/**/*.cs
+   EZFuturePeekCode/**/*.cs
+
+B. 自动化或证据脚本变化
+   scripts/**/*.ps1
+   .github/workflows/**/*.yml
+
+C. 测试变化，并且测试约束真实代码/证据，不是只检查文档存在
+   tests/**/*.cs
 ```
 
-每个 evidence 文件只记录：
-
-- 类名；
-- 方法名；
-- 字段名；
-- 状态流；
-- 风险；
-- 不复制大段反编译源码。
-
-### 2.3 先解耦，再修复，再扩展
-
-禁止在大型 monolithic patch 中继续堆逻辑。每个高风险功能必须拆成：
+最低可接受组合：
 
 ```text
-Patches/        只做入口和极薄转发
-Services/       业务逻辑
-State/          saved/transient state
-Models/         marker/card/relic/power models
-UI/             只做 UI 表现
-Diagnostics/    日志和证据
-Tests/          source guards / artifact guards
+源码实现 + guard tests + validation
 ```
 
-规则：
-
-- UI patch 不能改变 gameplay 状态。
-- gameplay service 不能直接依赖 Godot 节点。
-- preview 不能消耗真实 RNG。
-- 联机 gameplay 状态不能只存在本地 static 字段中。
-- save/load 敏感功能不能只靠 transient state。
-- 每个 Harmony patch 必须在 patch inventory 中有 owner / risk。
-
-### 2.4 发布前必须完成 Evidence Loop
-
-每个功能关闭前必须有：
+或者：
 
 ```text
-source evidence
-+ automated guard
-+ live manual proof
-+ save/load proof if stateful
-+ co-op proof if gameplay-relevant
-+ release evidence row
+运行证据脚本 + live evidence folder + release evidence row update
 ```
 
-Source review alone 不关闭 issue。
+如果无法启动游戏，也必须做源码、测试、脚本层面的真实推进，并明确说 live rows 仍 pending。不能写“goal 已完成”。
+
+### 1.2 不能把 source review 当 live proof
+
+禁止使用这些句式关闭任何 runtime row：
+
+```text
+source-backed
+source-complete
+guarded
+build passed
+tests passed
+no blocker known
+should work
+not observed in source
+```
+
+这些只能说明“源码层没有已知阻塞”，不能说明游戏里通过。
+
+### 1.3 不能把联机入口当联机支持
+
+`StartRunLobby` 能选 A11-A20 不等于 co-op gameplay 支持。
+
+只有满足下面条件，才能声称“联机支持”：
+
+```text
+two-client host/join proof
++ both clients clean logs
++ no desync
++ relevant state visible/consistent
++ save/load or reconnect behavior明确
++ release evidence row passed
+```
+
+否则必须写：
+
+```text
+co-op pending
+或
+co-op unsupported
+或
+feature gated in multiplayer
+```
+
+### 1.4 不能把 Future Peek 标为无 gameplay 影响而不做产品决策
+
+Future Peek 虽然不改 RNG / reward / card state，但它改变玩家决策信息。
+
+本次必须完成二选一：
+
+```text
+A. 把 EZFuturePeek.json affects_gameplay 改为 true，并更新测试和说明；
+```
+
+或者：
+
+```text
+B. 写出明确产品决策：为什么 preview-only 可以保持 false，并说明联机公平性风险。
+   这个决策必须进入 manifest/docs/tests，并不得宣传为公平联机功能。
+```
+
+默认建议：**改为 `affects_gameplay: true`**，因为它能让玩家提前知道水晶球和变换结果。
+
+### 1.5 不得标记 `docs/goal.md` 完成
+
+`docs/goal.md` 是一个 30 天计划，不是一次无启动游戏 pass 可以完成的任务。
+
+本次只能完成：
+
+```text
+goal.md implementation pass N
+```
+
+不能写：
+
+```text
+goal.md completed
+goal 已标记完成
+release-ready
+full co-op ready
+feature complete
+```
 
 ---
 
-## 3. Subagent 分工
+## 2. 本次 pass 的真正目标
 
-本月使用 subagent，但每个 subagent 的输出必须是文件、patch、测试或 evidence，不能只给口头建议。
-
-### 3.1 Product Spec Curator
-
-职责：
-
-- 收集网站草稿、现有 docs/features、README、handoff、archived design；
-- 做 `docs/specs/release-traceability-matrix.md`；
-- 标记每个设计：implemented / partial / hidden / not in release / needs owner decision。
-
-输出：
+本次 pass 目标是完成 **Goal Implementation Pass 1**：
 
 ```text
-docs/specs/release-traceability-matrix.md
-docs/specs/website-claim-audit.md
-docs/specs/release-scope-v1.md
+1. 审计上一轮 docs-only 结果，并把“未完成”写进工程治理。
+2. 加入防止以后 docs-only 冒充完成的自动化 guard。
+3. 做至少一个真实源码实现推进。
+4. 做至少一个真实 runtime-evidence 脚本推进。
+5. 对 Future Peek、co-op、save/load、Vakuu、Root Eyes 等高风险项做可执行实现推进。
+6. 跑完整 no-game 验证。
+7. 如果具备本地游戏启动条件，执行 fresh loader smoke；否则明确留下 live rows pending。
 ```
-
-关闭条件：
-
-- 网站或宣传上任何一句功能承诺都有对应 spec 或被删掉。
-
-### 3.2 Source Archaeologist
-
-职责：
-
-- 调研 vanilla 源码；
-- 记录 room/event/reward/save/multiplayer/RNG 源码路径；
-- 给每个高风险功能列出不可碰路径。
-
-输出：
-
-```text
-docs/source-research/ancient-events.md
-docs/source-research/vakuu-combat-room.md
-docs/source-research/run-save-load.md
-docs/source-research/multiplayer-lobby-run-state.md
-docs/source-research/reward-card-rng.md
-docs/source-research/future-peek-rng.md
-```
-
-关闭条件：
-
-- 每个 P0/P1 patch 的 source evidence 都能追溯到 vanilla 源码。
-
-### 3.3 Clean Code Architect
-
-职责：
-
-- 检查 137 个 Harmony patch 的 owner/risk；
-- 重构大 service；
-- 保证 feature 边界清晰；
-- 防止 UI / gameplay / save / network 混在一起。
-
-输出：
-
-```text
-docs/architecture/bounded-contexts.md
-docs/architecture/patch-boundaries.md
-docs/architecture/save-state-contracts.md
-```
-
-关闭条件：
-
-- patch inventory 更新；
-- 高风险 patch 都有薄入口和 service owner；
-- 工作树可拆 commit。
-
-### 3.4 Gameplay Feature Implementer
-
-职责：
-
-- Urda / Morvi / Lotha / Vakuu / Ancient reward rebalance；
-- 修复 live/manual 中发现的 gameplay bug；
-- 保持所有功能 player-facing 文本真实。
-
-输出：
-
-- feature code；
-- guard tests；
-- manual rows 更新。
-
-关闭条件：
-
-- 所有 Ancient 选择实机通过；
-- reward visible；
-- hover readable；
-- no black screen。
-
-### 3.5 Ascension Implementer
-
-职责：
-
-- A11-A20 所有设计落地；
-- A11 map traversal；
-- A12 Firemarked Elite；
-- A13 Fission；
-- A14/A15/A18 Rootblight；
-- A16 Banner；
-- A17 Deep Branch；
-- A19 Royal Seal；
-- A20 King Brand / double boss / courtyard。
-
-关闭条件：
-
-- 单机和联机都有 runbook evidence；
-- A20 不再只是 downgrade warning，除非明确从发布范围移除。
-
-### 3.6 Multiplayer / Co-op Engineer
-
-职责：
-
-- 设计 host authoritative contract；
-- 确认哪些状态同步、哪些只本地显示；
-- 消除本地-only gameplay state；
-- 实施 two-client runbook。
-
-输出：
-
-```text
-docs/specs/multiplayer-contract.md
-docs/features/ascension-11-20/multiplayer-test-runbook.md 更新
-docs/features/ancient-expansion-v2.2/multiplayer-test-runbook.md
-```
-
-关闭条件：
-
-- 双客户端日志和截图；
-- 无 desync；
-- 若 feature 不支持 co-op，必须 gated 或 release-note 标明 unsupported。
-
-### 3.7 Save/Load Reliability Engineer
-
-职责：
-
-- 检查 SavedSpireField、deck mirror、combat room serialization；
-- 设计 save/load matrix；
-- 专攻 Root Eyes、Seed Bank、Morvi、Lotha Death Reprieve、Vakuu child combat、Rootblight。
-
-关闭条件：
-
-- 每个 save/load row 有 live evidence；
-- 无 orphan transient state；
-- 读档后 UI、relic、marker、combat state 一致。
-
-### 3.8 Future Peek Engineer
-
-职责：
-
-- 完成 `EZFuturePeek` 独立发布标准；
-- Crystal Sphere 只改 UI，不触发 reveal/reward；
-- Transform preview 不消耗真实 RNG，不创建真实 card；
-- 评估 `affects_gameplay` 是否应设为 true；
-- 明确联机公平性策略。
-
-关闭条件：
-
-- live proof：Crystal Sphere toggle；
-- live proof：transform result matches preview；
-- 单卡、多卡、战斗、非战斗、取消/重开都通过；
-- 不混入 `EZMicroBalance`。
-
-### 3.9 QA Automation Engineer
-
-职责：
-
-- 扩充 guard tests；
-- 保证 active source manifest 不自证；
-- 补 package/artifact/hash/patch inventory tests；
-- 保证 release evidence verifier 严格。
-
-关闭条件：
-
-- default tests；
-- release artifact tests；
-- full local CI；
-- GitHub self-hosted lane first run。
-
-### 3.10 UI / Localization / Art Reviewer
-
-职责：
-
-- 检查 clicked UI；
-- 检查 English / zhs；
-- 检查 hover 不溢出、不遮挡；
-- 检查 art path、power icon、card/relic asset 区分。
-
-关闭条件：
-
-- clicked screenshots；
-- hover screenshots；
-- zhs/eng 都可读；
-- no mojibake；
-- no placeholder / generic temporary。
-
-### 3.11 Release Engineer
-
-职责：
-
-- package；
-- hash；
-- release evidence manifest；
-- zip parity；
-- install instructions；
-- final go/no-go。
-
-关闭条件：
-
-- `verify-spire-plus-release-evidence.ps1` 通过；
-- clean worktree；
-- commit；
-- release note 不夸大。
-
-### 3.12 Red-Team Reviewer
-
-职责：
-
-- 每周末攻击当前实现；
-- 重点攻击 save/load、death/failure、co-op desync、RNG preview 污染、UI reentry、old run restore、mod disabled。
-
-关闭条件：
-
-- 每周输出 `docs/reviews/red-team-week-N.md`；
-- P0/P1 问题进入 issue；
-- 不允许 source-only review 关闭 runtime rows。
 
 ---
 
-## 4. 30 天日程
+## 3. Pass 1 必须完成的交付物
 
-## Week 1：Spec 冻结、源码调研、发布边界澄清
+### 3.1 `goal.md` Completion Guard
 
-目标：**不急着写代码，先把“到底要发布什么”定死。**
+新增或扩展测试，防止 future agent 再次把 pending goal 标记完成。
 
-### Day 1 — Baseline Freeze
+建议文件：
+
+```text
+tests/EZMicroBalance.Tests/GoalCompletionGuardTests.cs
+```
+
+测试要求：
+
+1. 如果 `docs/goal.md` 或 `docs/review.md` 出现以下 claim，则必须失败，除非 release evidence verifier 已通过并有 final release review：
+
+```text
+goal completed
+goal 已完成
+release-ready
+full multiplayer support
+feature complete
+fully implemented
+```
+
+2. 如果 `docs/specs/release-traceability-matrix.md` 仍存在：
+
+```text
+pending
+Manual-test candidate
+Development-test surface
+Hidden by default
+Do not advertise full support
+```
+
+则 `docs/review.md` / `docs/issues.md` 不能声称 release-ready。
+
+3. `docs/goal.md` 必须保留“live proof required / source review 不关闭 runtime rows”的规则。
+
+4. `docs/issues.md` 中如果仍有 `Manual Proof Gates`，不得出现“当前 release-ready”。
+
+验收：
+
+```powershell
+dotnet test EZMicroBalance.sln --filter FullyQualifiedName~GoalCompletionGuardTests
+```
+
+### 3.2 Release Evidence Enforcement Guard
+
+新增或扩展测试，确保 release evidence 不是可选摆设。
+
+建议文件：
+
+```text
+tests/EZMicroBalance.Tests/ReleaseEvidenceGateTests.cs
+```
+
+测试要求：
+
+- 默认测试不要求 live evidence 已存在，但必须保证：
+  - pending rows 没被错误关闭；
+  - historical 16/22-field loader logs 不能算 current 25-field loader proof；
+  - release evidence dashboard 中 runtime rows 仍 pending 时，release checklist 不能 claim publish-proven。
+- 当设置环境变量时，严格要求证据：
+
+```powershell
+$env:EZMB_ENFORCE_RELEASE_READY='1'
+dotnet test EZMicroBalance.sln --filter FullyQualifiedName~ReleaseEvidenceGateTests
+Remove-Item Env:\EZMB_ENFORCE_RELEASE_READY
+```
+
+严格模式必须检查：
+
+```text
+fresh loader smoke evidence
+clicked Ancient UI evidence
+save/load evidence
+Vakuu evidence
+co-op evidence
+Future Peek evidence if shipping Future Peek
+verify-spire-plus-release-evidence.ps1 pass marker
+```
+
+如果证据不存在，严格模式应该失败，并明确告诉开发者缺哪一项。
+
+### 3.3 Runtime Evidence Logging 实现
+
+不要只写“需要证据”。要让游戏运行时更容易收集证据。
+
+新增一个轻量日志服务：
+
+```text
+EZMicroBalanceCode/Diagnostics/ReleaseEvidenceLog.cs
+```
+
+职责：
+
+- 只在环境变量开启时输出详细 release-evidence 日志。
+- 默认安静，不污染普通玩家日志。
+- 输出格式固定，方便 grep / audit：
+
+```text
+[EZMB-EVIDENCE] <Feature> <Event> run=<run-id?> player=<player?> net=<single/host/client?> data=<json-ish>
+```
+
+环境变量：
+
+```text
+EZMB_RELEASE_EVIDENCE_LOG=1
+```
+
+最低必须接入这些关键路径：
+
+#### Urda Root Eyes
+
+记录：
+
+```text
+selection opened
+node selected
+preview generated
+preview saved
+preview refunded
+node entered
+preview consumed
+save hydrate marker restored
+```
+
+#### Urda Seed Bank
+
+记录：
+
+```text
+card stored
+relic hover count
+extract opened
+cards selected
+deck add success/failure
+storage cleared
+save hydrate storage restored
+```
+
+#### Vakuu fight
+
+记录：
+
+```text
+fight option shown
+fight started
+child combat room entered
+combat room serialized
+prefinished restore
+victory rewards suppressed
+parent event resume attempted
+parent event resume success
+fallback map exit
+failure/death path
+```
+
+#### Lotha Death Reprieve
+
+记录：
+
+```text
+pending created
+active entered
+resolved
+save hydrate
+lethal prevented
+state cleared
+```
+
+#### Morvi state
+
+记录：
+
+```text
+debt created
+debt paid
+debt unpaid fallback
+open book restore
+blueprint proof initialized
+overdue library page created
+```
+
+#### Rootblight
+
+记录：
+
+```text
+rootblight added
+deck cap enforced
+combat-end notice queued
+sprout buried
+save hydrate
+```
+
+验收：
+
+- 测试检查这些 log marker 常量存在。
+- `docs/release-evidence-status.md` 增加“how to enable release evidence logs”，但不要把 row 标 passed。
+
+### 3.4 Runtime Evidence Collection Scripts
+
+不要只写 manual checklist。新增或强化脚本，能把 evidence folder 结构生成出来。
+
+建议新增：
+
+```text
+scripts/collect-release-evidence.ps1
+scripts/collect-future-peek-evidence.ps1
+scripts/collect-coop-evidence.ps1
+```
+
+#### `collect-release-evidence.ps1`
+
+功能：
+
+- 创建 evidence root：
+
+```text
+.tools/runtime-evidence/release-evidence-YYYYMMDD-HHMMSS/
+```
+
+- 写入：
+
+```text
+command.txt
+environment.json
+package-hashes.json
+enabled-mods-template.txt
+manual-rows-template.json
+```
+
+- 如果传入 `-Launch`，调用现有 live session helper 启动游戏。
+- 如果不传 `-Launch`，只生成 evidence plan，不声称通过。
+
+#### `collect-future-peek-evidence.ps1`
+
+功能：
+
+- 创建 Future Peek evidence folder。
+- 写入手动步骤：
+  - Crystal Sphere toggle；
+  - no charges spent；
+  - no reward；
+  - transform preview single/multi/combat/non-combat；
+  - cancel/reopen no RNG advance。
+- 收集 package hash / manifest / log audit template。
+
+#### `collect-coop-evidence.ps1`
+
+功能：
+
+- 创建 two-client evidence folder 模板。
+- 要求 host/client 两份：
+  - command.txt；
+  - godot.log；
+  - audit json；
+  - screenshots；
+  - result notes。
+- 明确列出 A11-A20、Ancients、Root Eyes、Rootblight、save/load rows。
+
+验收：
+
+```powershell
+.\scripts\collect-release-evidence.ps1 -NoLaunch
+.\scripts\collect-future-peek-evidence.ps1 -NoLaunch
+.\scripts\collect-coop-evidence.ps1 -NoLaunch
+```
+
+脚本必须能在不启动游戏时生成模板，但不能标记 row passed。
+
+### 3.5 Future Peek 真实推进
+
+必须完成以下至少两项，不能只写 spec。
+
+#### 3.5.1 Manifest 决策
+
+默认执行：
+
+```text
+EZFuturePeek.json: "affects_gameplay": true
+```
+
+同时更新：
+
+```text
+tests/EZFuturePeek.Tests/FuturePeekGuardTests.cs
+docs/features/future-peek/README.md
+```
+
+如果选择不改为 true，必须写出明确 release decision，并加测试保证文案包含“information advantage / multiplayer fairness risk / preview-only does not change state”。
+
+#### 3.5.2 Transform Preview Source Hardening
+
+审核并改进：
+
+```text
+EZFuturePeekCode/Patches/TransformPredictionRngContext.cs
+EZFuturePeekCode/Patches/TransformPreviewPatch.cs
+EZFuturePeekCode/Prediction/TransformPredictionService.cs
+```
+
+必须检查：
+
+- multi-card transform 顺序；
+- transformation.Replacement != null 的队列对齐；
+- stale RNG snapshot cleanup；
+- selection task exception cleanup；
+- combat vs non-combat transform context；
+- Astrolabe upgraded preview；
+- no real card creation；
+- no real RNG advance。
+
+新增测试：
+
+```text
+TransformPredictionQueueOrderIsGuarded
+TransformPredictionContextCannotBeReusedAfterSelection
+FuturePeekManifestDeclaresGameplayImpactOrFairnessDecision
+```
+
+#### 3.5.3 Crystal Sphere UI Hardening
+
+审核并改进：
+
+```text
+EZFuturePeekCode/Patches/CrystalSpherePeekPatch.cs
+```
+
+必须检查：
+
+- button duplicate 防护；
+- OnMinigameFinished 恢复 mask alpha；
+- screen reentry；
+- language fallback；
+- no ClearCell / RevealItem / CellClicked / AddReward；
+- no divination count mutation；
+- no item reveal event。
+
+新增测试检查这些 guard。
+
+### 3.6 Co-op Contract 真实推进
+
+新增一个中心化 co-op policy/helper，而不是在文档里说 pending。
+
+建议文件：
+
+```text
+EZMicroBalanceCode/Multiplayer/MultiplayerFeaturePolicy.cs
+```
+
+或在现有 Ascension/Core 下建立：
+
+```text
+EZMicroBalanceCode/Ascension/Core/MultiplayerFeaturePolicy.cs
+```
+
+职责：
+
+- 判断当前 run/lobby 是 singleplayer / host / client。
+- 提供统一方法：
+
+```csharp
+IsSingleplayer(...)
+IsHost(...)
+IsClient(...)
+CanMutateSharedRunState(...)
+ShouldDisableUnverifiedCoopFeature(...)
+LogCoopEvidence(...)
+```
+
+必须先应用到至少两个高风险 surface：
+
+```text
+A. A20 co-op / King Brand / second boss
+B. Urda Root Eyes shared map mutation
+```
+
+策略：
+
+- 如果能实现 host-authoritative mutation，就实现并记录 evidence log。
+- 如果不能保证同步，则在 multiplayer 下 gate 掉或降级，并且 release notes 不能声称支持。
+- 不能保持“看起来能选，但实际 gameplay downgraded 却宣传 full co-op”。
+
+新增测试：
+
+```text
+A20CoopCannotBeAdvertisedWhileDowngraded
+RootEyesSharedMapMutationRequiresHostAuthority
+MultiplayerPolicyHasEvidenceLogging
+```
+
+### 3.7 Vakuu Fight 实现推进
+
+不是只写 `vakuu-fight-spec.md`。必须触碰 source 或 tests。
+
+目标文件候选：
+
+```text
+EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs
+EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightService*.cs
+tests/EZMicroBalance.Tests/Vakuu*.cs
+```
+
+必须做：
+
+- 增加 `ReleaseEvidenceLog` markers。
+- 强化 source guard：
+  - active child combat 不存 `ParentEventId`；
+  - prefinished restore 才能记录 parent；
+  - victory no-reward path 不重复 Ancient heal；
+  - fallback map exit 有 log；
+  - failure/death path 有明确状态清理；
+  - co-op 未证明时 fight 不自动公开。
+- 如果发现实际代码没有 failure/death cleanup，补实现。
+
+### 3.8 Save/Load Contract 实现推进
+
+新增或扩展 source guards，要求每个 stateful feature 有：
+
+```text
+save field or deck mirror
+hydrate path
+clear path
+log marker
+manual test row
+```
+
+目标 features：
+
+```text
+Root Eyes
+Seed Bank
+Morvi Debt/OpenBook/BlueprintProof
+Lotha Death Reprieve
+Vakuu child combat
+Rootblight
+```
+
+建议新增测试：
+
+```text
+SaveStateContractsGuardTests.cs
+```
+
+测试不是只检查 docs，而要检查源码中存在：
+
+```text
+SavedSpireField
+FromSerializable / ToSerializable / hydrate / restore
+AfterRunLoaded / AfterCombatStarted / AfterRoomEntered 等恢复路径
+ReleaseEvidenceLog marker
+state clear/reset path
+```
+
+---
+
+## 4. Subagent 使用要求
+
+你必须使用 subagent，但 subagent 不能只输出审查结论。每个 subagent 必须绑定一个实物交付。
+
+### 4.1 Completion Auditor
 
 任务：
 
-- 记录当前 HEAD、package hash、test results、patch inventory。
-- 跑：
+- 对照 `docs/goal.md` 和上一轮报告。
+- 写出“不完成”的审计结论。
+- 新增 `GoalCompletionGuardTests`。
+
+交付：
+
+```text
+tests/EZMicroBalance.Tests/GoalCompletionGuardTests.cs
+docs/review.md 更新：上一轮 docs-only 不算完成
+```
+
+### 4.2 Source Implementation Agent
+
+任务：
+
+- 实现 `ReleaseEvidenceLog`。
+- 接入 Root Eyes、Seed Bank、Vakuu、Lotha/Morvi/Rootblight 至少三个 surface。
+
+交付：
+
+```text
+EZMicroBalanceCode/Diagnostics/ReleaseEvidenceLog.cs
+相关 feature source 修改
+相关 guard tests
+```
+
+### 4.3 Future Peek Agent
+
+任务：
+
+- 完成 Future Peek `affects_gameplay` 决策。
+- 强化 Crystal Sphere / Transform Preview。
+- 更新 tests。
+
+交付：
+
+```text
+EZFuturePeek.json
+EZFuturePeekCode/**/*.cs
+tests/EZFuturePeek.Tests/*.cs
+```
+
+### 4.4 Multiplayer Agent
+
+任务：
+
+- 建立 multiplayer policy。
+- 应用到 A20 co-op 和 Root Eyes。
+- 确保未证明 co-op 的 feature 不被宣传 full support。
+
+交付：
+
+```text
+EZMicroBalanceCode/**/MultiplayerFeaturePolicy.cs
+Ascension / Urda 相关修改
+co-op guard tests
+```
+
+### 4.5 Save/Load Agent
+
+任务：
+
+- 建立 `SaveStateContractsGuardTests`。
+- 加强 hydrate/reset/log paths。
+- 明确 runtime evidence markers。
+
+交付：
+
+```text
+tests/EZMicroBalance.Tests/SaveStateContractsGuardTests.cs
+相关 source 修改
+```
+
+### 4.6 Release Evidence Engineer
+
+任务：
+
+- 新增 evidence collection scripts。
+- 严格 release verifier 模式。
+- 不允许模板被当作 passed evidence。
+
+交付：
+
+```text
+scripts/collect-release-evidence.ps1
+scripts/collect-future-peek-evidence.ps1
+scripts/collect-coop-evidence.ps1
+tests/EZMicroBalance.Tests/ReleaseEvidenceGateTests.cs
+```
+
+### 4.7 Red-Team Reviewer
+
+任务：
+
+- 攻击本 pass 的实现。
+- 查找 docs-only、source-only、co-op false claim、Future Peek fairness、save/load transient-only 问题。
+
+交付：
+
+```text
+docs/reviews/red-team-goal-implementation-pass-1.md
+```
+
+注意：red-team 文档不能作为唯一交付。它只是审查附属物。
+
+---
+
+## 5. 执行顺序
+
+严格按顺序执行。
+
+### Step 0 — 工作树和基线
+
+运行：
 
 ```powershell
 git status --short --branch
 git log -1 --oneline --decorate
-dotnet build EZMicroBalance.sln
-dotnet test EZMicroBalance.sln --no-build
-dotnet build EZFuturePeek.sln
-dotnet test EZFuturePeek.sln --no-build
 ```
 
-产出：
+记录当前状态，但不要把它当完成。
+
+### Step 1 — 审计上一轮“完成”声明
+
+输出结论：
 
 ```text
-docs/month-plan/baseline-2026-05-20.md
+Result: NOT COMPLETE
+Reason: docs-only / governance-only pass did not satisfy goal.md implementation/live/co-op/evidence criteria.
 ```
 
-验收：
+更新 `docs/review.md` 或新增 review note。
 
-- 当前 blocker 全部列入矩阵；
-- 不允许把历史 loader smoke 当 current loader proof。
+### Step 2 — 防止重复偷懒
 
-### Day 2 — Website / Design Claim Audit
-
-任务：
-
-- 恢复或读取 `.tools/archive/local-website-preview-*` 中网站草稿。
-- 提取网站上所有功能承诺：Ancient、Ascension、Rootblight、Vakuu、Future Peek、联机、视觉、发布说明。
-- 建立 traceability matrix。
-
-产出：
+先写 guard tests：
 
 ```text
-docs/specs/website-claim-audit.md
-docs/specs/release-traceability-matrix.md
+GoalCompletionGuardTests
+ReleaseEvidenceGateTests
 ```
 
-验收：
+这些测试应该能阻止以后再用 docs-only 标完成。
 
-- 每条 claim 都有状态：
-  - implemented；
-  - partial；
-  - hidden；
-  - not in release；
-  - needs owner decision。
+### Step 3 — 做真实源码实现
 
-### Day 3 — Spec Freeze
-
-任务：
-
-- 写 `docs/specs/release-scope-v1.md`。
-- 规定本月发布范围：
-  - Spire Plus release candidate；
-  - Future Peek 是否同月发布；
-  - 网站是否恢复；
-  - 联机是否必须完整支持。
-
-必须做出产品决策：
-
-- A20 co-op 如果要发布，必须完整证明；否则不能宣传 full co-op。
-- Vakuu fight 如果不能 live 证明，继续 hidden-by-default。
-- Future Peek 如果影响玩家决策，要评估 `affects_gameplay=true`。
-
-产出：
+至少完成三项：
 
 ```text
-docs/specs/release-scope-v1.md
+ReleaseEvidenceLog 接入
+Future Peek manifest/gameplay impact 决策
+MultiplayerFeaturePolicy 接入
+Vakuu evidence/failure path hardening
+SaveStateContractsGuardTests + source markers
 ```
 
-### Day 4 — Vanilla Source Research: Run / Room / Event / Reward
+少于三项视为本 pass 不合格。
 
-任务：
+### Step 4 — 做真实脚本推进
 
-- 调研 `source code/src/Core/`：
-  - RunManager；
-  - EventRoom；
-  - CombatRoom；
-  - RewardsScreen；
-  - CardReward；
-  - RelicReward；
-  - AncientEventModel；
-  - SaveManager。
+新增 evidence collection scripts，至少能 `-NoLaunch` 生成 evidence folder 模板。
 
-产出：
+### Step 5 — 自动化验证
 
-```text
-docs/source-research/run-room-event-reward.md
-```
-
-验收：
-
-- Vakuu child combat、Ancient reward、Root Eyes room routing 都有 source-backed flow 图。
-
-### Day 5 — Vanilla Source Research: Multiplayer / Save / RNG
-
-任务：
-
-- 调研：
-  - StartRunLobby；
-  - NetGameType；
-  - multiplayer run start；
-  - ModelDb hash / mod mismatch；
-  - SavedSpireField；
-  - serializable rooms；
-  - RNG sets。
-
-产出：
-
-```text
-docs/source-research/multiplayer-save-rng.md
-```
-
-验收：
-
-- multiplayer host authority 的未知点全部列出；
-- RNG preview 的安全边界写清。
-
-### Day 6 — Architecture Boundary Design
-
-任务：
-
-- 设计 bounded contexts：
-  - AncientRewardRebalance；
-  - AncientExpansionUrda；
-  - AncientExpansionMorvi；
-  - AncientExpansionLotha；
-  - AncientExpansionVakuu；
-  - AscensionCore；
-  - RootDeck；
-  - FuturePeek；
-  - ReleaseEvidence。
-
-产出：
-
-```text
-docs/architecture/bounded-contexts.md
-docs/architecture/patch-boundaries.md
-```
-
-验收：
-
-- 每个高风险 Harmony patch 有 owner；
-- 每个 patch 只做转发，业务逻辑进 service。
-
-### Day 7 — Week 1 Red-Team Review
-
-任务：
-
-- Red-Team Reviewer 审核 spec 和 source evidence。
-- 标记 P0/P1 风险。
-- 决定 Week 2 代码优先级。
-
-产出：
-
-```text
-docs/reviews/red-team-week-1.md
-```
-
-验收：
-
-- 若 spec 不完整，不进入 Week 2 大规模编码。
-
----
-
-## Week 2：实现缺口、解耦重构、自动化 guard
-
-目标：**把 source-known blocker 修完，把架构拆到可 review。**
-
-### Day 8 — GOV-WIP-SPLIT / Commit Boundary
-
-任务：
-
-- 按 bounded context 拆工作树。
-- 建立 commit plan：
-  1. docs/specs/source-research；
-  2. governance/tests；
-  3. Future Peek；
-  4. Ancient fixes；
-  5. Ascension fixes；
-  6. release docs/package。
-
-产出：
-
-```text
-docs/month-plan/commit-boundaries.md
-```
-
-验收：
-
-- `GOV-WIP-SPLIT` 有可执行拆分路径。
-
-### Day 9 — Urda: Root Eyes / Seed Bank Source Completion
-
-任务：
-
-- 按 spec 审核 Root Eyes：
-  - map selection；
-  - future reachable Monster/Unknown/Elite；
-  - stale preview refund；
-  - save/load marker restore；
-  - co-op host authority。
-- 审核 Seed Bank：
-  - relic hover；
-  - extraction；
-  - boss transition；
-  - save/load。
-
-产出：
-
-- code fixes；
-- guard tests；
-- manual rows 更新。
-
-验收：
-
-- source tests 覆盖所有 state path；
-- co-op contract 明确。
-
-### Day 10 — Morvi / Lotha Source Completion
-
-任务：
-
-- Morvi：Forbidden Loan、Misprint Press、Red Ink、Overdue Library、Blueprint Proof、Open Book、Debt Settlement。
-- Lotha：Single Sentence、Death Reprieve、Public Evidence、Mirror Rebuttal、combat lifecycle、freeze report。
-- 检查是否存在只靠 local transient state 的 gameplay path。
-
-产出：
-
-- code fixes；
-- `docs/source-research/morvi-lotha-state.md`。
-
-验收：
-
-- save/load contract 明确；
-- card-play freeze 有可验证路径。
-
-### Day 11 — Vakuu Fight Hardening
-
-任务：
-
-- 审核 child combat flow；
-- 审核 victory no-reward resume；
-- 审核 fallback map exit；
-- 审核 failure/death；
-- 审核 pre-finished save/load；
-- 审核 co-op。
-
-产出：
-
-```text
-docs/specs/vakuu-fight-spec.md
-docs/source-research/vakuu-combat-room.md
-```
-
-验收：
-
-- 代码不再依赖不安全 active ParentEventId；
-- 所有 fallback 都有 log。
-
-### Day 12 — Ascension A11-A20 Completion Pass
-
-任务：
-
-- A11 natural traversal；
-- A12 Firemarked Elite；
-- A13 Fission reward；
-- A14/A15/A18 Rootblight；
-- A16 Banner；
-- A17 Deep Branch；
-- A19 Royal Seal；
-- A20 King Brand / double boss / courtyard。
-
-产出：
-
-```text
-docs/specs/ascension-11-20-release-spec.md
-```
-
-验收：
-
-- 每个 Ascension level 有：single-player proof row + co-op proof row + save/load row。
-
-### Day 13 — Future Peek Stabilization
-
-任务：
-
-- Crystal Sphere：
-  - 只改 `%ScryMask` opacity；
-  - OnMinigameFinished restore；
-  - UI 不 reentry 泄漏。
-- Transform preview：
-  - RNG source contexts；
-  - stale context cleanup；
-  - 多卡顺序；
-  - Astrolabe upgraded preview；
-  - 不创建真实卡。
-- 评估 `affects_gameplay`。
-
-产出：
-
-```text
-docs/specs/future-peek-release-spec.md
-```
-
-验收：
-
-- Future Peek 独立，不污染 Spire Plus；
-- live test checklist ready。
-
-### Day 14 — Week 2 Automated Gate + Red-Team
-
-任务：
+必须运行：
 
 ```powershell
 dotnet build EZMicroBalance.sln
@@ -769,660 +820,184 @@ dotnet test EZFuturePeek.sln --no-build
 dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
 dotnet format EZFuturePeek.sln --verify-no-changes --no-restore
 git diff --check
-.\scripts\generate-patch-inventory.ps1
 .\scripts\validate-repository-hygiene.ps1
 ```
 
-产出：
-
-```text
-docs/reviews/red-team-week-2.md
-docs/month-plan/week-2-validation.md
-```
-
-验收：
-
-- source P0/P1 blocker 为 0；
-- runtime blocker 仍不得关闭。
-
----
-
-## Week 3：Live 单机、Save/Load、失败路径、Future Peek 实机
-
-目标：**把“源码正确”变成“游戏里真的正确”。**
-
-### Day 15 — Fresh Current-Package Loader Smoke
-
-任务：
-
-- 重新 publish/package。
-- 正常 Steam-client 启动。
-- 只启用 BaseLib + Spire Plus。
-- 检查 current SavedSpireFields 数量。
-- `godot.log` audit。
-
-产出：
-
-```text
-.tools/runtime-evidence/live-spire-plus-session-<date>/
-docs/month-plan/fresh-loader-smoke.md
-```
-
-验收：
-
-- release-evidence-status 中 Fresh current-package loader smoke 可关闭。
-
-### Day 16 — Clicked Ancient UI Proof
-
-任务：
-
-- Urda、Morvi、Lotha、Vakuu normal、Vakuu fight。
-- 每个截图必须包含：
-  - event background；
-  - option art；
-  - dialogue；
-  - hover；
-  - relic marker visibility。
-
-产出：
-
-```text
-.tools/runtime-evidence/ancient-ui-click-smoke-<date>/
-docs/month-plan/ancient-ui-proof.md
-```
-
-验收：
-
-- clicked UI row 关闭或列出修复项。
-
-### Day 17 — Ancient Gameplay Matrix
-
-任务：
-
-- Urda：Root Eyes、Seed Bank、Trial Branch、Seedbed、Humus Pact、Moss Map、Rooted Route、After Rain、Molting。
-- Morvi：八个 blessing。
-- Lotha：八个 blessing。
-- Vanilla rebalance：Cape、Gem、Choker 等关键 Ancient reward。
-
-产出：
-
-```text
-docs/month-plan/ancient-gameplay-proof.md
-```
-
-验收：
-
-- 每个 reward 有 result note、screenshot/log。
-
-### Day 18 — Save/Load Matrix
-
-任务：
-
-- 每个 stateful feature：保存、退出、重进、继续操作。
-- 重点：
-  - Root Eyes saved preview；
-  - Seed Bank storage；
-  - Morvi debt/open-book/blueprint；
-  - Lotha Death Reprieve；
-  - Vakuu active/pre-finished child combat；
-  - Rootblight deck state。
-
-产出：
-
-```text
-docs/month-plan/save-load-proof.md
-```
-
-验收：
-
-- save/load row 可关闭；或新 issue 进入 Week 4 修复。
-
-### Day 19 — Vakuu Victory / Failure / Death
-
-任务：
-
-- enabled gate；
-- start fight；
-- victory return；
-- reward choice；
-- no black screen；
-- failure/death；
-- log audit。
-
-产出：
-
-```text
-docs/month-plan/vakuu-live-proof.md
-```
-
-验收：
-
-- 如果失败，Vakuu 保持 hidden-by-default，不能 release 公开。
-
-### Day 20 — Ascension Single-Player Matrix
-
-任务：
-
-- A11 natural route traversal；
-- A12 Firemarked Elite；
-- A13 Fission；
-- A16 Banner；
-- A17 Deep Branch；
-- A19 Royal Seal；
-- A20 double boss / courtyard；
-- Rootblight combat-end。
-
-产出：
-
-```text
-docs/month-plan/ascension-single-player-proof.md
-```
-
-验收：
-
-- A11-A20 不再只靠 source guards。
-
-### Day 21 — Future Peek Live Proof
-
-任务：
-
-- Crystal Sphere：按钮出现、toggle on/off、no charges spent、no reward、minigame finish restore。
-- Transform preview：
-  - single-card；
-  - multi-card；
-  - combat transform；
-  - non-combat transform；
-  - cancel/reopen；
-  - actual result matches preview；
-  - RNG 不推进。
-
-产出：
-
-```text
-docs/month-plan/future-peek-live-proof.md
-```
-
-验收：
-
-- 决定 Future Peek 是否可单独 beta；
-- 决定 `affects_gameplay`。
-
----
-
-## Week 4：联机、回归、发布证据、最终审核
-
-目标：**两客户端验证、清理、打包、发布决策。**
-
-### Day 22 — Multiplayer Contract Implementation Review
-
-任务：
-
-- 审核所有 gameplay-relevant state：
-  - host authoritative；
-  - sync path；
-  - save path；
-  - RNG path；
-  - UI-only path。
-- 若发现 local-only gameplay state，必须修复或 gate。
-
-产出：
-
-```text
-docs/specs/multiplayer-contract.md
-```
-
-验收：
-
-- co-op runbook 可执行。
-
-### Day 23 — Two-Client Co-op: Lobby / Start / A11-A20
-
-任务：
-
-- host/join；
-- A11-A20 selection；
-- A20 warning 是否仍存在；
-- start run；
-- map traversal；
-- combat modifiers。
-
-产出：
-
-```text
-.tools/runtime-evidence/co-op-ascension-<date>/
-docs/month-plan/co-op-ascension-proof.md
-```
-
-验收：
-
-- 如果 A20 still downgraded，则不能宣传 full A20 co-op。
-
-### Day 24 — Two-Client Co-op: Ancient / Root Eyes / Rooted Route
-
-任务：
-
-- Ancient event 出现与选择；
-- reward state；
-- Root Eyes map preview；
-- Rooted Route map movement；
-- marker/hover 是否同步或正确本地化；
-- 不 desync。
-
-产出：
-
-```text
-.tools/runtime-evidence/co-op-ancients-<date>/
-docs/month-plan/co-op-ancient-proof.md
-```
-
-验收：
-
-- Ancient co-op disposition 关闭或明确 unsupported。
-
-### Day 25 — Two-Client Co-op: Rootblight / Save / Death
-
-任务：
-
-- Rootblight ownership；
-- combat-end behavior；
-- save/load in co-op；
-- death/failure paths；
-- reconnect if applicable。
-
-产出：
-
-```text
-docs/month-plan/co-op-save-death-proof.md
-```
-
-验收：
-
-- co-op row 可关闭；或 release note 明确不支持。
-
-### Day 26 — Fix Week 3/4 Findings
-
-任务：
-
-- 只修 live evidence 中暴露的问题。
-- 不添加新设计。
-- 每个修复必须有：
-  - source evidence；
-  - test；
-  - retest。
-
-产出：
-
-```text
-docs/month-plan/live-finding-fixes.md
-```
-
-验收：
-
-- P0/P1 live bug 清零，或功能 gate。
-
-### Day 27 — Clean Code Final Pass
-
-任务：
-
-- 移除 dead code；
-- 拆分 oversized services；
-- 检查 patch inventory；
-- 检查 docs bloat；
-- 检查 legacy / website / archive 边界；
-- 检查 no large decompiled source copied。
-
-命令：
+如果修改 manifest/resources/export/package，还必须运行：
 
 ```powershell
-.\scripts\generate-patch-inventory.ps1
-.\scripts\validate-repository-hygiene.ps1
-dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-dotnet format EZFuturePeek.sln --verify-no-changes --no-restore
-git diff --check
-```
-
-产出：
-
-```text
-docs/reviews/clean-code-final-review.md
-```
-
-验收：
-
-- 架构 reviewer 签字；
-- GOV-WIP-SPLIT 关闭或解释为何仍阻塞发布。
-
-### Day 28 — Release Package RC
-
-任务：
-
-```powershell
-dotnet build EZMicroBalance.sln
-dotnet test EZMicroBalance.sln --no-build
 dotnet publish EZMicroBalance.sln
 .\scripts\package-spire-plus.ps1
 $env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'
 dotnet test EZMicroBalance.sln --no-build
 Remove-Item Env:\EZMB_RUN_RELEASE_ARTIFACT_TESTS
 
-dotnet build EZFuturePeek.sln
-dotnet test EZFuturePeek.sln --no-build
 dotnet publish EZFuturePeek.sln
 ```
 
-产出：
+如果只改 Future Peek manifest/source/resources，必须 publish Future Peek。
+
+### Step 6 — 如果能启动游戏，做最小 live proof
+
+如果环境允许启动游戏，至少做：
 
 ```text
-docs/month-plan/rc-package-report.md
+fresh current-package loader smoke
+Future Peek Crystal Sphere smoke
+Future Peek transform preview smoke
 ```
 
-验收：
-
-- hashes 更新；
-- package parity；
-- install folder 正确；
-- no stale hash claims。
-
-### Day 29 — Release Evidence Manifest
-
-任务：
-
-- 填写 release evidence manifest。
-- 每个 passed row 必须有：
-  - command.txt；
-  - screenshot/log/result notes；
-  - clean godot-log-audit.json；
-  - row kind 正确；
-  - evidence dir 在 root 内。
-
-命令：
-
-```powershell
-.\scripts\verify-spire-plus-release-evidence.ps1
-```
-
-产出：
+如果不能启动游戏，必须写：
 
 ```text
-docs/release-evidence-status.md 更新
-docs/month-plan/release-evidence-final.md
+No game was opened.
+Live rows remain pending.
+This pass is implementation-hardening only, not goal completion.
 ```
 
-验收：
+### Step 7 — 最终报告
 
-- verifier 通过；
-- 若使用 `-AllowDeferred`，必须有 owner-approved release note。
-
-### Day 30 — Final Go / No-Go Review
-
-任务：
-
-- 所有 subagent 提交 final report。
-- Red-Team Reviewer 最后攻击。
-- Release Engineer 给出发布判断。
-- Product Spec Curator 确认网站/README/宣传无夸大。
-
-产出：
+最终报告必须包含：
 
 ```text
-docs/reviews/final-release-readiness-review.md
-docs/release-notes.md
+1. Completion judgment: NOT COMPLETE / PARTIAL IMPLEMENTATION PASS
+2. Source files changed
+3. Tests changed
+4. Scripts changed
+5. Docs changed
+6. Subagents used and concrete deliverables
+7. Validation commands and results
+8. Live proof status
+9. Remaining blockers
+10. Next exact pass
 ```
 
-最终判断只能是下面之一：
+禁止写：
 
 ```text
-GO: Release Candidate can be published.
-NO-GO: release blocked, manual-test build only.
-GO-WITH-GATES: release only with disabled/hidden/unsupported features clearly documented.
+goal completed
+goal 已完成
+release-ready
+all implemented
+co-op supported
+```
+
+除非 release evidence manifest 已全部通过。
+
+---
+
+## 6. 本 pass 的最低验收标准
+
+本 pass 成功的最低标准：
+
+```text
+- GoalCompletionGuardTests exists and passes.
+- ReleaseEvidenceGateTests exists and passes in default mode.
+- Strict release-ready mode fails clearly when evidence is missing.
+- ReleaseEvidenceLog exists and is used by at least three high-risk feature surfaces.
+- Future Peek affects_gameplay decision is implemented and tested.
+- Evidence collection scripts exist and can generate NoLaunch templates.
+- At least one multiplayer policy/source change exists, not only docs.
+- At least one save/load contract guard exists, not only docs.
+- Build/test/format/diff/hygiene pass.
+- Final report explicitly says goal.md is not complete unless live evidence exists.
+```
+
+本 pass 失败条件：
+
+```text
+- 只写 docs/specs/architecture/month-plan。
+- 只增加一个文档存在性测试。
+- 把 pending live rows 标 completed。
+- 不碰 EZMicroBalanceCode 或 EZFuturePeekCode 或 scripts。
+- 不新增能阻止 false completion 的 guard。
+- 声称 release-ready 但没有 live evidence。
+- 声称 co-op supported 但没有 two-client proof。
 ```
 
 ---
 
-## 5. Feature-by-Feature 发布门槛
+## 7. 建议的具体文件变更清单
 
-## 5.1 Ancient Reward Rebalance
-
-必须证明：
-
-- Distinguished Cape 数值、支付门槛、同池替换；
-- Prismatic Gem 每第二个标准 card reward 全 off-color，跳过 custom/filtered/colorless/no-pool/elite/boss/event；
-- Velvet Choker soft limit；
-- zhs number formatting；
-- save/load 后 relic state 正确；
-- co-op 下 reward state 不 desync。
-
-## 5.2 Urda
-
-必须证明：
-
-- 十个 blessing 都能选择；
-- Root Eyes 选择未来 Monster/Unknown/Elite node；
-- preview 与实际进入一致；
-- stale preview refund；
-- Seed Bank store / hover / extract / boss transition；
-- Trial Branch 3 combat prove/remove；
-- Rooted Route 路线和奖励；
-- save/load；
-- co-op。
-
-## 5.3 Morvi
-
-必须证明：
-
-- 八个 blessing 都能选择；
-- Forbidden Loan eligibility；
-- Misprint Press replay；
-- Red Ink debt；
-- Overdue Library pages；
-- Blueprint Proof timing；
-- Open Book restore；
-- Debt Settlement 数值；
-- save/load；
-- co-op。
-
-## 5.4 Lotha
-
-必须证明：
-
-- 八个 blessing 都能选择；
-- Single Sentence；
-- Death Reprieve；
-- Public Evidence；
-- Mirror Rebuttal；
-- combat lifecycle reset；
-- no freeze；
-- lethal path；
-- save/load；
-- co-op。
-
-## 5.5 Vakuu
-
-必须证明：
-
-- hidden-by-default gate 正常；
-- fight gate 正常；
-- dedicated enemy/scene 正常；
-- victory return 无黑屏；
-- no-normal-reward resume；
-- reward choices；
-- failure/death path；
-- save/load active/pre-finished；
-- co-op。
-
-若任一项失败，Vakuu fight 不进入公开发布。
-
-## 5.6 Ascension A11-A20
-
-必须证明：
-
-- A11 map 宽度、路线、自然点击通关；
-- A12 Firemarked Elite；
-- A13 Fission；
-- A14/A15/A18 Rootblight；
-- A16 Banner Room；
-- A17 Deep Branch；
-- A19 Royal Seal；
-- A20 double boss / King Brand / courtyard；
-- save/load；
-- co-op。
-
-如果 A20 co-op 仍是 downgraded，则不能宣传完整 A20 co-op。
-
-## 5.7 Future Peek
-
-必须证明：
-
-- `EZFuturePeek` 独立 manifest、DLL、PCK；
-- 不修改 `EZMicroBalance` runtime folders；
-- Crystal Sphere 只改 mask opacity；
-- 不调用 ClearCell / RevealItem / CellClicked / AddReward；
-- transform preview 不调用 GetReplacement / CreateRandomCardForTransform；
-- preview 不推进真实 RNG；
-- actual result matches preview；
-- 决定 `affects_gameplay`。
-
-## 5.8 Website / Public Claims
-
-必须做到：
-
-- 若恢复网站：
-  - website source 纳入 repo；
-  - Pages workflow 修复；
-  - 网站 build/smoke；
-  - 网站功能文案与 release scope 一致。
-- 若不恢复网站：
-  - 不发布网站；
-  - 不把网站旧草稿当成当前宣传；
-  - docs 说明 website draft archived only。
-
----
-
-## 6. 每日工作节奏
-
-每天必须输出：
+优先级从上到下。
 
 ```text
-1. 今日目标
-2. 修改文件
-3. 源码证据
-4. 自动化验证
-5. live 验证状态
-6. 新 blocker
-7. 明日计划
-```
+tests/EZMicroBalance.Tests/GoalCompletionGuardTests.cs
+tests/EZMicroBalance.Tests/ReleaseEvidenceGateTests.cs
+tests/EZMicroBalance.Tests/SaveStateContractsGuardTests.cs
 
-每天必须避免：
+EZMicroBalanceCode/Diagnostics/ReleaseEvidenceLog.cs
+EZMicroBalanceCode/Ascension/Core/MultiplayerFeaturePolicy.cs
+EZMicroBalanceCode/Ancients/Expansion/Urda/...
+EZMicroBalanceCode/Ancients/Expansion/Vakuu/...
+EZMicroBalanceCode/Ancients/Expansion/Lotha/...
+EZMicroBalanceCode/Ancients/Expansion/Morvi/...
+EZMicroBalanceCode/Ascension/Rewards/RootDeckService*.cs
 
-- 没 spec 就写大功能；
-- 没源码证据就 patch lifecycle；
-- 用 source review 关闭 live rows；
-- 宣称 co-op 支持但没有 two-client evidence；
-- 增加未 gate 的高风险功能；
-- 在 UI patch 写 gameplay；
-- 在 gameplay service 直接依赖 Godot node；
-- 预览功能消耗真实 RNG；
-- 把网站旧草稿当发布文案。
+EZFuturePeek.json
+EZFuturePeekCode/Patches/CrystalSpherePeekPatch.cs
+EZFuturePeekCode/Patches/TransformPreviewPatch.cs
+EZFuturePeekCode/Patches/TransformPredictionRngContext.cs
+EZFuturePeekCode/Prediction/TransformPredictionService.cs
+tests/EZFuturePeek.Tests/FuturePeekGuardTests.cs
 
----
+scripts/collect-release-evidence.ps1
+scripts/collect-future-peek-evidence.ps1
+scripts/collect-coop-evidence.ps1
 
-## 7. Issue 关闭规则
-
-任何 issue 关闭必须满足：
-
-```text
-Spec exists
-Source evidence exists
-Implementation exists
-Guard test exists
-Manual proof exists if live row
-Save/load proof exists if stateful
-Co-op proof exists if gameplay-relevant
-Release evidence row updated
-Docs updated
-```
-
-禁止关闭：
-
-- “source says should work”；
-- “tests passed”；
-- “no blocker known”；
-- “暂时看起来没问题”；
-- “联机应该一样”。
-
----
-
-## 8. Release Go/No-Go 表
-
-| Area | GO 标准 | NO-GO 标准 |
-| --- | --- | --- |
-| Loader | fresh current-package smoke clean | 只有历史 22-field / 16-field log |
-| UI | clicked screenshots + hover proof | 只有 PCK resource load |
-| Gameplay | full manual matrix pass | 只有 source guard |
-| Save/load | all stateful rows pass | deck mirror 未 live 证明 |
-| Vakuu | victory/failure/death/save/co-op pass | hidden fight 未证明 |
-| Ascension | A11-A20 single + co-op pass | A20 still downgraded but advertised |
-| Co-op | two-client logs clean | 只有 host selection patch |
-| Future Peek | live result matches preview | source/test only |
-| Website | claims match implementation | 旧草稿未审核 |
-| Governance | worktree split + clean commits | GOV-WIP-SPLIT open |
-
----
-
-## 9. 最终交付物清单
-
-月末必须有：
-
-```text
-docs/specs/release-scope-v1.md
-docs/specs/release-traceability-matrix.md
-docs/specs/website-claim-audit.md
-docs/specs/multiplayer-contract.md
-docs/specs/future-peek-release-spec.md
-docs/source-research/*.md
-docs/architecture/bounded-contexts.md
-docs/architecture/patch-boundaries.md
-docs/architecture/save-state-contracts.md
-docs/reviews/red-team-week-1.md
-docs/reviews/red-team-week-2.md
-docs/reviews/clean-code-final-review.md
-docs/reviews/final-release-readiness-review.md
-docs/month-plan/*.md
+docs/review.md
+docs/issues.md
 docs/release-evidence-status.md
-docs/release-notes.md
-```
-
-以及：
-
-```text
-fresh loader smoke evidence
-clicked Ancient UI evidence
-Ancient gameplay evidence
-save/load evidence
-Vakuu evidence
-Ascension evidence
-co-op evidence
-Future Peek evidence
-release evidence manifest
-verified package hashes
-clean commit plan
+docs/features/future-peek/README.md
+docs/reviews/red-team-goal-implementation-pass-1.md
 ```
 
 ---
 
-## 10. 本月最终原则
+## 8. 对上一轮报告的正确回应模板
 
-这个月的成功不是“写更多代码”，而是：
+你最后必须使用类似下面的措辞：
 
-- 每个设计都有 spec；
-- 每个 spec 都能追到源码；
-- 每个实现都有 guard；
-- 每个 gameplay claim 都有 live proof；
-- 每个联机 claim 都有 two-client proof；
-- 每个未证明功能都被 gated 或从发布文案移除；
-- 每个 high-risk patch 都有 owner 和边界；
-- 项目能被 review、回滚、发布。
+```text
+I audited the previous "goal completed" claim and rejected it.
+That pass completed documentation/governance groundwork only.
+This pass implemented concrete guards/source/scripts to prevent docs-only completion claims and advanced runtime-evidence readiness.
+No release-ready claim is made because live loader, clicked UI, save/load, Vakuu, co-op, and Future Peek live proof are still pending unless explicitly collected in this pass.
+```
 
-最终只有一个标准：
+中文报告：
 
-> **玩家看到的承诺、源码实现、测试证据、联机行为、发布文案必须完全一致。**
+```text
+我已审核上一轮“goal 已完成”的说法，并判定不成立。
+上一轮只完成了文档/治理基线，没有完成 goal.md 的实现、实机、存读档、联机和 release evidence 要求。
+本轮已通过源码、测试和脚本推进，防止以后再次用 docs-only 冒充完成。
+除非本轮实际收集了 live evidence，否则仍不得声称 release-ready。
+```
+
+---
+
+## 9. 最终目标
+
+这次不要再做“看起来很完整的计划”。
+
+真正目标是：
+
+> **让仓库开始强制执行 goal.md，而不是让 goal.md 变成另一个被标记完成的文档。**
+
+完成标准不是“写了更多 docs”，而是：
+
+```text
+false completion 被测试阻止
+release evidence 被脚本化
+高风险功能有 runtime markers
+Future Peek 产品属性被修正
+co-op 未证明不能被宣传
+save/load contracts 有源码和测试约束
+本轮有真实 source/test/script 变更
+```
+
+如果做不到，请诚实报告：
+
+```text
+Partial implementation only. Goal remains open.
+```

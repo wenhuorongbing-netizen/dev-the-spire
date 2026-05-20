@@ -1,4 +1,4 @@
-# Release Evidence Status
+﻿# Release Evidence Status
 
 Current target: `Spire Plus` manual-test build for user validation. This page is a compact dashboard for evidence state; it does not replace `docs/release-checklist.md`.
 
@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `B19620D8D8A15D5B96208D3DE8C3B372BCA0874E076DD2DEBEDE09422FF28BD2` |
-| DLL | `A1D86D01E57E0F58617ACA23EA8094B1AF35F525E3254007DE3675A1289B8159` |
-| PCK | `073CAF976C91D9E6CEA39FA90FB5A6417E66CD5E12DED5EDD8169C892A0F0538` |
-| Manifest | `659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2` |
-| README_INSTALL | `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4` |
+| ZIP | `CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62` |
+| DLL | `940F1FEA66B01CB54A1CCEC388D4F023693C947395C7B7F9922BF596A8586E1E` |
+| PCK | `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392` |
+| Manifest | `A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF` |
+| README_INSTALL | `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906` |
 
 ## Evidence Rows
 
@@ -41,3 +41,19 @@ When manual evidence folders are filled, run:
 ```
 
 Use `-AllowDeferred` only when the project owner explicitly accepts a release-note deferral for a row.
+
+## Runtime Evidence Logs
+
+Set this before launching the game to add grep-friendly evidence lines to `godot.log`:
+
+```powershell
+$env:EZMB_RELEASE_EVIDENCE_LOG='1'
+```
+
+Expected marker format:
+
+```text
+[EZMB-EVIDENCE] <Feature> <Event> run=<run> player=<player> net=<single/host/client> data=<json-ish>
+```
+
+The marker helps collect proof; it does not turn a pending row into passed evidence by itself.

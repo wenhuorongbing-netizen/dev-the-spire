@@ -1,4 +1,4 @@
-# Spire Plus Private Beta Release Completion Audit
+﻿# Spire Plus Private Beta Release Completion Audit
 
 Date: 2026-05-15
 
@@ -9,7 +9,7 @@ This audit maps the previous broad finish-project goal to concrete private-beta 
 Concrete private-beta completion criteria:
 
 - Keep `EZMicroBalance` as the stable manifest/package id and `Spire Plus` as the player-facing name.
-- Ship an independent package that can be enabled without the legacy `EzDailyContent` scaffold.
+- Ship one Spire Plus package as the only active mod surface.
 - Keep out-of-scope systems out of this cycle: no A21-A30, no custom character, no manifest-id migration, no copied official assets, and no large copied game-source bodies.
 - Package the current private-beta surfaces: Ancient reward rebalance v4.3, Urda default-on ten-blessing slice, Morvi default-on source-complete/live-pending slice, Lotha default-on source-complete/live-pending slice, the hidden-by-default dedicated Vakuu fight slice, Ascension A11-A20 slices, Rootblight/Blight Sprout behavior and art, English/zhs localization, release docs, and tester handoff.
 - Prove the installed package builds, publishes, hashes, loads through Steam with only BaseLib plus Spire Plus, and has no release-blocking loader errors.
@@ -32,10 +32,10 @@ Concrete private-beta completion criteria:
 | Requirement | Concrete evidence inspected | Status |
 | --- | --- | --- |
 | Stable manifest id | `EZMicroBalance.json` remains `id: EZMicroBalance`; docs state `Spire Plus` is the player-facing name only. | Pass |
-| Independent package | `EZMicroBalance/`, `EZMicroBalanceCode/`, `EZMicroBalance.csproj`, and `publish/SpirePlus-v0.1.0-private-beta.0.zip` with `EZMicroBalance/` as the install folder; release checklist records legacy `EzDailyContent` unchanged. | Pass |
+| Single package | `EZMicroBalance/`, `EZMicroBalanceCode/`, `EZMicroBalance.csproj`, and `publish/SpirePlus-v0.1.0-private-beta.0.zip` with `EZMicroBalance/` as the install folder; duplicate root mod surfaces are removed from the active tree. | Pass |
 | Build and publish | `dotnet build EZMicroBalance.sln --no-restore` and `dotnet publish EZMicroBalance.sln --no-restore` passed after the Ascension map marker ordering split; installed/staging/versioned/package hashes are in parity. | Pass for build/publish/package |
-| Latest source/package refresh | Source review confirms visible Ancient marker relics, current EN/zhs text guards, separate art/resource routes, dedicated gated Vakuu fight source, Root Eyes preview hardening, A11-A20 source guards, Future Peek isolation, and the short manual-test package README. Current zip SHA256 is `B19620D8D8A15D5B96208D3DE8C3B372BCA0874E076DD2DEBEDE09422FF28BD2`; detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/build/package artifact parity; gameplay verification pending |
-| Current automated tests | `dotnet build EZMicroBalance.sln` passes with 0 warnings/errors; `dotnet test EZMicroBalance.sln --no-build` passes with 202 passed / 18 skipped; `dotnet build EZFuturePeek.sln` and `dotnet test EZFuturePeek.sln --no-build` pass; `dotnet test EZMicroBalance.sln -c Release` previously passed with 81 passed / 18 skipped; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passes with 220 passed / 0 skipped after the package/hash refresh. | Automated build/test/artifact pass; live/manual evidence pending |
+| Latest source/package refresh | Source review confirms visible Ancient marker relics, current EN/zhs text guards, separate art/resource routes, dedicated gated Vakuu fight source, Root Eyes preview hardening, A11-A20 source guards, integrated preview-tool guards, and the short manual-test package README. Current zip SHA256 is `CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62`; detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/build/package artifact parity; gameplay verification pending |
+| Current automated tests | `dotnet build EZMicroBalance.sln` passes with 0 warnings/errors; `dotnet test EZMicroBalance.sln --no-build` passes with 202 passed / 18 skipped; `dotnet test EZMicroBalance.sln -c Release` previously passed with 81 passed / 18 skipped; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passes with 220 passed / 0 skipped after the package/hash refresh. | Automated build/test/artifact pass; live/manual evidence pending |
 | Formatting and diff hygiene | `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passes after the Ascension map marker ordering split; `git diff --check` passes with CRLF warnings only. | Pass |
 | Package hash parity | `scripts/check-installed-ezmb-package.ps1` confirms installed DLL, manifest, and PCK hashes match `docs/private-beta-verification-handoff.md`. | Pass |
 | Steam loader evidence | Historical normal Steam helper startup/log pass at `.tools/runtime-evidence/live-spire-plus-session-20260515-211414` loaded exactly BaseLib plus Spire Plus / `EZMicroBalance`, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean with 0 `ERROR` / release-blocking hits. current source defines 25 SavedSpireFields, so fresh loader parity remains pending for the current package. | Pass for historical loader; fresh loader pending |

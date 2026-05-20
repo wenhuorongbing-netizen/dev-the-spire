@@ -41,6 +41,7 @@ Current support docs, not default reading path:
 - `docs/features/ascension-11-20/`
 - `docs/features/ancient-expansion-urda/`
 - `docs/features/ancient-expansion-v2.2/` (current roadmap/prototype docs; Urda, Morvi, Lotha, and the single-player Vakuu fight are source-active/live-pending)
+- `docs/features/preview-tools/` (Crystal Sphere peek and transform preview integrated into Spire Plus)
 
 ## C. Style / agent docs
 
@@ -82,6 +83,7 @@ Current support docs, not default reading path:
 - superseded `PROJECT_STATE.md` per-pass validation history -> `docs/archive/project-state-history-20260516.md`
 - superseded `docs/issues.md` long-form 2026-05-15 package verification note -> `docs/archive/implementation-records/2026-05-15-current-package-verification-note.md`
 - top-level `legacy/` migration project metadata -> `docs/archive/legacy-planning/legacy-project-files/`
+- top-level `EzDailyContent*` and `EZFuturePeek*` mod surfaces removed from the active root; the single active deliverable is `Spire Plus / EZMicroBalance`.
 
 ## F. Archive entrypoints
 

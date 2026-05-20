@@ -34,7 +34,6 @@ function Normalize-InventoryForCheck {
 function Get-OwnerFromPath {
     param([Parameter(Mandatory = $true)][string]$RelativePath)
 
-    if ($RelativePath -like 'EZFuturePeekCode/*') { return 'Future Peek' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ancients/Expansion/Urda/*') { return 'Urda' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ancients/Expansion/Morvi/*') { return 'Morvi' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ancients/Expansion/Lotha/*') { return 'Lotha' }
@@ -46,6 +45,7 @@ function Get-OwnerFromPath {
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Rewards/*') { return 'Ascension rewards' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Patches/*') { return 'Ascension patches' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Events/*') { return 'Ascension events' }
+    if ($RelativePath -like 'EZMicroBalanceCode/Preview/*') { return 'Preview tools' }
     return 'Unclassified'
 }
 
@@ -62,7 +62,7 @@ function Get-RiskFromPatch {
     return 'Low'
 }
 
-$sourceRoots = @('EZMicroBalanceCode', 'EZFuturePeekCode')
+$sourceRoots = @('EZMicroBalanceCode')
 $patches = [System.Collections.Generic.List[object]]::new()
 
 foreach ($root in $sourceRoots) {

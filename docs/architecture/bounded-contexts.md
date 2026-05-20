@@ -1,6 +1,6 @@
 # Bounded Contexts
 
-This is the release-candidate boundary map for `Spire Plus` and the separate `Future Peek` mod.
+This is the release-candidate boundary map for the single `Spire Plus / EZMicroBalance` mod.
 
 | Context | Responsibility | Public surface | Internal details | Dependencies | Risk |
 | --- | --- | --- | --- | --- | --- |
@@ -11,7 +11,7 @@ This is the release-candidate boundary map for `Spire Plus` and the separate `Fu
 | AncientExpansionVakuu | Hidden fight, dedicated enemy/scene, post-fight choices. | Env-gated fight option and combat. | `Ancients/Expansion/Vakuu/`. | Event room, combat room, reward flow. | Very high; black screen, death, save, co-op. |
 | AscensionCore | A11-A20 selection, map markers, combat modifiers, boss seals. | Ascension UI, map hover, combat powers, rewards. | `EZMicroBalanceCode/Ascension/`. | Lobby, map, combat, reward, boss flow. | High; map traversal and co-op. |
 | RootDeck | Rootblight/Sprout cards and combat-end state. | Player deck/status cards and notices. | `Ascension/Cards`, `Ascension/Combat`. | Card model, piles, combat lifecycle. | High; save/load and combat-end behavior. |
-| FuturePeek | Separate preview-only mod. | Crystal Sphere peek and transform preview. | `EZFuturePeekCode/`. | UI nodes, transformation RNG. | Medium; RNG purity and live result match. |
+| PreviewTools | Preview-only helpers inside Spire Plus. | Crystal Sphere peek and transform preview. | `EZMicroBalanceCode/Preview/`. | UI nodes, transformation RNG. | Medium; RNG purity and live result match. |
 | ReleaseEvidence | Package, hash, CI, live/manual proof governance. | Docs, scripts, tests, workflows. | `docs/`, `scripts/`, `.github/`, tests. | Filesystem, GitHub runner, local game paths. | High for release decisions. |
 
 ## Dependency Direction
@@ -20,7 +20,7 @@ This is the release-candidate boundary map for `Spire Plus` and the separate `Fu
 - Feature services should own gameplay decisions and avoid direct Godot node dependencies.
 - UI code should present state and accept user intent; it should not mutate gameplay without a service boundary.
 - Saved state should be explicit through existing save/deck/run fields when behavior must survive reload.
-- Future Peek must not depend on, write to, or package inside `EZMicroBalance`.
+- Preview tools must stay isolated under `EZMicroBalanceCode/Preview/` and must not mutate rewards, reveal cells, create real cards, or advance committed RNG.
 
 ## Current Priority
 

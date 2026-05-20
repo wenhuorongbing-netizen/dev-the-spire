@@ -1,5 +1,7 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+
 internal static partial class LothaBlessingService
 {
     private const int DeathReprieveCards = 10;
@@ -87,6 +89,7 @@ internal static partial class LothaBlessingService
                 DeathReprieveUsed = true,
                 DeathReprievePhase = DeathReprievePhase.Active
             });
+            ReleaseEvidenceLog.Log("LothaDeathReprieve", "active_entered", player);
             await StartDeathReprieveTurn(new ThrowingPlayerChoiceContext(), player, combatState, "current player turn after lethal damage");
         }
         else
@@ -99,6 +102,7 @@ internal static partial class LothaBlessingService
             combatState.DeathReprievePendingStart = true;
             combatState.DeathReprieveActive = true;
             await EnsureDeathReprievePower(new ThrowingPlayerChoiceContext(), player);
+            ReleaseEvidenceLog.Log("LothaDeathReprieve", "pending_created", player);
             MainFile.Logger.Info("[EZMicroBalance] Lotha Death Reprieve prevented lethal damage; reprieve turn is pending at the next player turn.");
         }
     }
@@ -126,6 +130,14 @@ internal static partial class LothaBlessingService
         await EnsureDeathReprievePower(choiceContext, player);
         await CardPileCmd.Draw(choiceContext, DeathReprieveCards, player);
         await PlayerCmd.GainEnergy(DeathReprieveEnergy, player);
+        ReleaseEvidenceLog.Log(
+            "LothaDeathReprieve",
+            "lethal_prevented",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["source"] = source
+            });
         MainFile.Logger.Info($"[EZMicroBalance] Lotha Death Reprieve started the reprieve turn from {source}: draw 10, Energy 10, all costs 0.");
     }
 
@@ -150,6 +162,7 @@ internal static partial class LothaBlessingService
         combatState.DeathReprievePendingStart = false;
         ResolveDeathReprieveProgress(player);
         await PowerCmd.Remove<LothaDeathReprievePower>(player.Creature);
+        ReleaseEvidenceLog.Log("LothaDeathReprieve", "resolved", player);
 
         if (player.Creature.CombatState?.Enemies.Any(enemy => enemy.IsAlive) == true)
         {

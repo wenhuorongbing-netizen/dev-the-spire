@@ -4,9 +4,9 @@
 
 This repository is a Slay the Spire 2 mod workspace using C#/.NET, the Alchyr Slay the Spire 2 template, and BaseLib.
 
-The original scaffold project is `EzDailyContent`; its manifest id is `EzDailyContent` and must not be changed in-place.
+The original scaffold project was `EzDailyContent`; its manifest id must not be renamed in-place. Legacy top-level scaffold files are not part of the active deliverable.
 
-The active private beta deliverable is `Spire Plus`, a Slay the Spire 2 balance and progression expansion mod. Its stable independent manifest id remains `EZMicroBalance`.
+The active private beta deliverable is one mod: `Spire Plus`, a Slay the Spire 2 balance, progression, and preview-tools expansion. Its stable manifest id remains `EZMicroBalance`.
 
 ## Current Mission
 
@@ -15,7 +15,7 @@ Complete `Spire Plus` for private beta testing and eventual private beta release
 In scope:
 
 - Ancient reward rebalance from `docs/features/ancients-rework-v4/source-design.md`.
-- Independent plug-in / plug-off mod structure.
+- Single plug-in / plug-off mod structure under `EZMicroBalance`.
 - English and Simplified Chinese localization.
 - Release documentation, build, publish, and manual verification checklist.
 - Ascension 11-20 expansion work when explicitly requested, kept safely gated unless public selection/progress support is proven.
@@ -32,8 +32,8 @@ Baseline setup is complete on the local machine:
 
 - Build has succeeded.
 - Publish has succeeded.
-- Legacy `EzDailyContent` Mod Settings verification succeeded on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
-- Independent `EZMicroBalance` build and publish have succeeded.
+- Historical `EzDailyContent` Mod Settings verification succeeded on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
+- `EZMicroBalance` build and publish have succeeded.
 - Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, and documentation freshness guards.
 - Current local source is refreshed from Slay the Spire 2 `v0.105.0`; BaseLib runtime/project package are aligned on `v3.1.2`.
 - Controlled `--force-steam off` smoke loading has verified only BaseLib and `EZMicroBalance` initialization to main menu from the final installed artifacts.
@@ -103,17 +103,11 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 
 ## Directory Conventions
 
-Current legacy scaffold:
-
-- `EzDailyContent/` for legacy Godot resources and localization.
-- `EzDailyContentCode/` for legacy C# source.
-
 Private beta target:
 
 - `EZMicroBalance/` for Spire Plus resources and localization.
 - `EZMicroBalanceCode/` for Spire Plus C# source.
-
-Future mods should use their own independent resource/code folders and manifest ids.
+- `EZMicroBalanceCode/Preview/` for integrated preview tools such as Crystal Sphere peek and transform preview.
 
 ## Testing Expectations
 

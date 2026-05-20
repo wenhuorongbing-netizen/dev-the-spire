@@ -41,7 +41,6 @@ public sealed class ReleaseArtifactTests
     public void ActiveManifestHasStableReleaseIdentity()
     {
         using var active = JsonDocument.Parse(ReadRepoText("EZMicroBalance.json"));
-        using var legacy = JsonDocument.Parse(ReadRepoText("EzDailyContent.json"));
 
         Assert.Equal("EZMicroBalance", active.RootElement.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", active.RootElement.GetProperty("name").GetString());
@@ -56,7 +55,19 @@ public sealed class ReleaseArtifactTests
                 dependency.TryGetProperty("min_version", out var minVersion) &&
                 minVersion.GetString() == "v3.1.2");
 
-        Assert.Equal("EzDailyContent", legacy.RootElement.GetProperty("id").GetString());
+        foreach (var removedRootSurface in new[]
+        {
+            "EzDailyContent.json",
+            "EzDailyContent",
+            "EzDailyContentCode",
+            "EZFuturePeek.json",
+            "EZFuturePeek",
+            "EZFuturePeekCode"
+        })
+        {
+            Assert.False(File.Exists(RepoPath(removedRootSurface)), $"{removedRootSurface} must not return as a root file.");
+            Assert.False(Directory.Exists(RepoPath(removedRootSurface)), $"{removedRootSurface} must not return as a root directory.");
+        }
     }
 
     [ReleaseArtifactFact]
@@ -485,8 +496,8 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("export_filter=\"resources\"", exportPreset, StringComparison.Ordinal);
         Assert.Contains("res://EZMicroBalance.json", exportPreset, StringComparison.Ordinal);
         Assert.Contains("res://EZMicroBalance/localization/eng/relics.json", exportPreset, StringComparison.Ordinal);
-        Assert.Contains("EzDailyContent/*", exportPreset, StringComparison.Ordinal);
-        Assert.Contains("EzDailyContentCode/*", exportPreset, StringComparison.Ordinal);
+        Assert.DoesNotContain("EzDailyContent/*", exportPreset, StringComparison.Ordinal);
+        Assert.DoesNotContain("EzDailyContentCode/*", exportPreset, StringComparison.Ordinal);
         Assert.Contains("EZMicroBalanceCode/*", exportPreset, StringComparison.Ordinal);
         Assert.Contains("docs/*", exportPreset, StringComparison.Ordinal);
         Assert.Contains("legacy/*", exportPreset, StringComparison.Ordinal);

@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Map;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -45,6 +46,16 @@ internal static partial class UrdaBlessingService
                 }
 
                 EnsureQuestMarker<UrdaRootSightMapQuestMarker>(point);
+                ReleaseEvidenceLog.Log(
+                    "UrdaRootEyes",
+                    "save_hydrate_marker_restored",
+                    player,
+                    new Dictionary<string, object?>
+                    {
+                        ["coord"] = preview.Coord,
+                        ["roomType"] = preview.RoomType,
+                        ["modelId"] = preview.ModelId
+                    });
             }
         }
     }
@@ -90,6 +101,15 @@ internal static partial class UrdaBlessingService
         }
 
         RefreshRootSightRelicStatus(player);
+        ReleaseEvidenceLog.Log(
+            "UrdaRootEyes",
+            "preview_refunded",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["coord"] = coord,
+                ["actIndex"] = actIndex
+            });
         MainFile.Logger.Warn($"[EZMicroBalance] Urda Root Eyes cleared stale preview at {coord} and restored one eye.");
     }
 

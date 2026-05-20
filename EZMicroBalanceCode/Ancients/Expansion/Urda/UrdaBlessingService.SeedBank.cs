@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Rewards;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -70,6 +71,15 @@ internal static partial class UrdaBlessingService
         progress = progress with { SeedBankCardIds = string.Join(",", seedIds.Take(SeedBankMaxSeeds)) };
         SetProgress(player, progress);
         RefreshSeedBankRelicStatus(player);
+        ReleaseEvidenceLog.Log(
+            "UrdaSeedBank",
+            "card_stored",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["card"] = selected.Id.Entry,
+                ["stored"] = seedIds.Count
+            });
         MainFile.Logger.Info(
             $"[EZMicroBalance] Urda Seed Bank stored {selected.Id.Entry}; stored {seedIds.Count}/{SeedBankMaxSeeds}. The source-safe slice consumes this card reward to store the Seed.");
     }

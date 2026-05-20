@@ -1,5 +1,7 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+
 internal static partial class MorviBlessingService
 {
     private const int BlueprintProofStacks = 3;
@@ -66,6 +68,15 @@ internal static partial class MorviBlessingService
             ? visibleProofread
             : BlueprintProofStacks;
         combatState.BlueprintProofInitializedThisCombat = true;
+        ReleaseEvidenceLog.Log(
+            "MorviState",
+            "blueprint_proof_initialized",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["proofread"] = combatState.ProofreadRemaining,
+                ["reason"] = reason
+            });
         MainFile.Logger.Info($"[EZMicroBalance] Morvi Blueprint Proof initialized {combatState.ProofreadRemaining} Proofread ({reason}).");
         return true;
     }

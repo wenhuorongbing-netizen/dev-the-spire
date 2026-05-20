@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Random;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -35,6 +36,17 @@ internal static partial class UrdaBlessingService
             point.PointType,
             roomType,
             modelId);
+        ReleaseEvidenceLog.Log(
+            "UrdaRootEyes",
+            "preview_generated",
+            runState: runState,
+            data: new Dictionary<string, object?>
+            {
+                ["coord"] = FormatCoord(point.coord),
+                ["pointType"] = point.PointType,
+                ["roomType"] = roomType,
+                ["modelId"] = modelId
+            });
         return true;
     }
 

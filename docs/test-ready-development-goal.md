@@ -13,7 +13,7 @@ Current package target remains `publish/SpirePlus-v0.1.0-private-beta.0.zip`. Th
 - Ancient reward selections should remain visible from the relic bar whenever the design grants a lasting reward.
 - Final browser GPTimage2 small art generated this pass is the current small-art baseline. No `generic_temporary` or `final_required_before_release` art blockers remain. Event backgrounds are active middle-draft resources. Live clicked-UI review remains unresolved.
 - current source defines 25 SavedSpireFields. The earlier 22-field loader smoke is historical evidence only; a fresh live loader rerun is still pending for current-package runtime parity.
-- Future Peek is a separate mod idea. Do not add `EZFuturePeek`, Crystal Sphere preview, or transform-preview patches to `EZMicroBalance`; those belong in an independent manifest/project if requested later.
+- Preview tools are now part of the single `Spire Plus / EZMicroBalance` mod. Crystal Sphere peek and transform preview live under `EZMicroBalanceCode/Preview/`; live proof is still pending.
 
 ## Required Reading
 

@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Map;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -49,6 +50,18 @@ internal static partial class UrdaBlessingService
             }
 
             RefreshSeedBankRelicStatus(player);
+            if (GetSeedBankStoredCount(player) > 0)
+            {
+                ReleaseEvidenceLog.Log(
+                    "UrdaSeedBank",
+                    "save_hydrate_storage_restored",
+                    player,
+                    new Dictionary<string, object?>
+                    {
+                        ["stored"] = GetSeedBankStoredCount(player),
+                        ["settled"] = IsSeedBankSettled(player)
+                    });
+            }
             RefreshRootSightRelicStatus(player);
         }
     }

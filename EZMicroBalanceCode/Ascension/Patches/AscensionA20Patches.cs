@@ -1,5 +1,6 @@
 using HarmonyLib;
 using EZMicroBalance.EZMicroBalanceCode.Ascension.Events;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
 
@@ -33,6 +34,14 @@ internal static class AscensionA20GenerateRoomsPatch
         }
 
         finalAct.SetSecondBossEncounter(secondBoss);
+        ReleaseEvidenceLog.Log(
+            "A20KingBrand",
+            "second_boss_set",
+            runState: runState,
+            data: new Dictionary<string, object?>
+            {
+                ["encounter"] = secondBoss.Id.ToString()
+            });
         MainFile.Logger.Info(
             $"[EZMicroBalance] Ascension A20 applied: final act second boss set to {secondBoss.Id.Entry} through the vanilla double-boss map path.");
     }

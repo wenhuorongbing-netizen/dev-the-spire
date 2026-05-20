@@ -11,11 +11,6 @@ on:
         description: Local Godot 4.5.1 Mono executable on the self-hosted Windows runner
         required: true
         type: string
-      include_future_peek:
-        description: Also build/test/publish the independent EZFuturePeek preview mod
-        required: true
-        default: true
-        type: boolean
 
 jobs:
   full-local-validation:
@@ -42,8 +37,6 @@ jobs:
       - name: Full validation
         shell: pwsh
         run: |
-          $includeFuturePeek = [System.Convert]::ToBoolean('${{ inputs.include_future_peek }}')
           .\scripts\ci-full-validation.ps1 `
             -Sts2Path '${{ inputs.sts2_path }}' `
-            -GodotPath '${{ inputs.godot_path }}' `
-            -IncludeFuturePeek:$includeFuturePeek
+            -GodotPath '${{ inputs.godot_path }}'

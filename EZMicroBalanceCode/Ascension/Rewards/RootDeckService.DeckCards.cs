@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -40,6 +41,15 @@ internal static partial class RootDeckService
         await TrimRootblightDeckToCap(player, "pre-add cap check");
         if (FindRootFamilyCards(player).Count >= MaxRootblightCards)
         {
+            ReleaseEvidenceLog.Log(
+                "Rootblight",
+                "deck_cap_enforced",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["level"] = level,
+                    ["cap"] = MaxRootblightCards
+                });
             return false;
         }
 
@@ -95,6 +105,16 @@ internal static partial class RootDeckService
         }
 
         SetDiagnosticLevelFromDeck(player);
+        ReleaseEvidenceLog.Log(
+            "Rootblight",
+            "deck_cap_enforced",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["removed"] = cardsToRemove.Count,
+                ["reason"] = reason,
+                ["cap"] = MaxRootblightCards
+            });
         MainFile.Logger.Info(
             $"[EZMicroBalance] Ascension Rootblight trimmed by {reason}: kept {MaxRootblightCards} highest/oldest Rootblight card(s) and removed {cardsToRemove.Count} excess Rootblight card(s) for player {player.RunState.GetPlayerSlotIndex(player)}.");
     }

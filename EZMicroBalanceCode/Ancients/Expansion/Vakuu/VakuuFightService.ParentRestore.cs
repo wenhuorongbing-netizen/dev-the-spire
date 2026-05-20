@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using System.Runtime.CompilerServices;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
@@ -22,6 +23,14 @@ internal static partial class VakuuFightService
         serializableRoom.ParentEventId =
             ModelDb.AncientEvent<MegaCrit.Sts2.Core.Models.Events.Vakuu>().Id;
         serializableRoom.ShouldResumeParentEvent = true;
+        ReleaseEvidenceLog.Log(
+            "VakuuFight",
+            "combat_room_serialized",
+            runState: combatRoom.CombatState?.RunState,
+            data: new Dictionary<string, object?>
+            {
+                ["parentEventId"] = serializableRoom.ParentEventId.ToString()
+            });
         MainFile.Logger.Info("[EZMicroBalance] Vakuu pre-finished fight save records Vakuu as the resume parent event.");
     }
 
@@ -43,6 +52,14 @@ internal static partial class VakuuFightService
 
         var state = ParentRestoreHealSkips.GetOrCreateValue(runState);
         state.RemainingSkips = Math.Max(state.RemainingSkips, Math.Max(1, runState.Players.Count));
+        ReleaseEvidenceLog.Log(
+            "VakuuFight",
+            "prefinished_restore",
+            runState: runState,
+            data: new Dictionary<string, object?>
+            {
+                ["remainingSkips"] = state.RemainingSkips
+            });
         MainFile.Logger.Info(
             "[EZMicroBalance] Vakuu pre-finished fight restore armed duplicate Ancient heal skip for the parent event.");
     }

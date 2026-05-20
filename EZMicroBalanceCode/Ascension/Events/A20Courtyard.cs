@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using Godot;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Events;
@@ -119,6 +120,7 @@ internal static class AscensionA20CourtyardService
             var eventRoom = new EventRoom(ModelDb.Event<A20Courtyard>());
             await runManager.EnterRoomWithoutExitingCurrentRoom(eventRoom, fadeToBlack: true);
             await SaveManager.Instance.SaveRun(eventRoom, saveProgress: false);
+            ReleaseEvidenceLog.Log("A20KingBrand", "courtyard_entered", runState: runState);
             MainFile.Logger.Info("[EZMicroBalance] Ascension A20 applied: entered the fixed courtyard event between Boss 1 rewards and Boss 2.");
         }
         catch

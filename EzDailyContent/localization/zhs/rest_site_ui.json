@@ -1,4 +1,0 @@
-{
-  "OPTION_COOK.ezDescription": "移除 2 张牌。失去 5 点生命。",
-  "OPTION_COOK.ezDescriptionDisabled": "需要至少 2 张可移除牌且生命值大于 5。"
-}

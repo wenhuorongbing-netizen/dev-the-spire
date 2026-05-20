@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -56,6 +57,16 @@ internal static partial class UrdaBlessingService
                 RootSightMarkedCoords = string.Join("|", marked),
                 RootSightPreviewRecords = FormatRootSightPreviews(previews)
             });
+            ReleaseEvidenceLog.Log(
+                "UrdaRootEyes",
+                "preview_consumed",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["coord"] = coord,
+                    ["roomType"] = preview.RoomType,
+                    ["modelId"] = preview.ModelId
+                });
             RefreshRootSightRelicStatus(player);
         }
 

@@ -472,8 +472,6 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("include_filter=\"EZMicroBalance.json,EZMicroBalance/localization/*/*.json\"", exportPreset, StringComparison.Ordinal);
         AssertSourceContains(
             exportPreset,
-            "EzDailyContent/*",
-            "EzDailyContentCode/*",
             "EZMicroBalanceCode/*",
             "art_pipeline/*",
             "asset/*",

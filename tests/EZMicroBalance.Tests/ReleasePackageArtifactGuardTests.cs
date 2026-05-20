@@ -78,9 +78,8 @@ public sealed class ReleasePackageArtifactGuardTests
     {
         var packageHash = Sha256(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
         var modImageHash = Sha256(RepoPath("EZMicroBalance", "mod_image.png"));
-        var legacyModImageHash = Sha256(RepoPath("EzDailyContent", "mod_image.png"));
 
-        Assert.NotEqual(legacyModImageHash, modImageHash);
+        Assert.False(Directory.Exists(RepoPath("EzDailyContent")), "Legacy EzDailyContent resources should not return to the active root.");
 
         var docsByPath = CurrentFacingDocs.ToDictionary(path => path, path => ReadRepoText(path.Split('/')), StringComparer.Ordinal);
         var combinedDocs = string.Join(Environment.NewLine, docsByPath.Values);

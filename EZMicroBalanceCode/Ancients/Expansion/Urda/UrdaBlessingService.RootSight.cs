@@ -1,5 +1,7 @@
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -40,7 +42,12 @@ internal static partial class UrdaBlessingService
             return false;
         }
 
-        if (player.RunState.Players.Count > 1)
+        var hasMultiplayerRunState = player.RunState.Players.Count > 1;
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
+            player.RunState,
+            "UrdaRootEyes",
+            "Root Eyes shared map preview mutation is pending host-authoritative sync proof") ||
+            hasMultiplayerRunState)
         {
             MainFile.Logger.Warn("[EZMicroBalance] Urda Root Eyes preview is single-player only until host-authoritative map preview sync is implemented.");
             return false;
@@ -57,6 +64,7 @@ internal static partial class UrdaBlessingService
         RefreshRootSightRelicStatus(player);
         mapScreen.Open(isOpenedFromTopBar: true);
         mapScreen.RefreshAllPointVisuals();
+        ReleaseEvidenceLog.Log("UrdaRootEyes", "selection_opened", player);
         MainFile.Logger.Info("[EZMicroBalance] Urda Root Eyes selection started; choose a future reachable Monster, Unknown, or Elite map node.");
         return true;
     }
@@ -71,10 +79,31 @@ internal static partial class UrdaBlessingService
 
         if (!IsRootSightTarget(player, point))
         {
+            ReleaseEvidenceLog.Log(
+                "UrdaRootEyes",
+                "node_selected",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["coord"] = $"{point.coord.col},{point.coord.row}",
+                    ["valid"] = false,
+                    ["pointType"] = point.PointType
+                });
             MainFile.Logger.Info(
                 $"[EZMicroBalance] Urda Root Eyes ignored invalid map target {point.coord.col},{point.coord.row} ({point.PointType}).");
             return;
         }
+
+        ReleaseEvidenceLog.Log(
+            "UrdaRootEyes",
+            "node_selected",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["coord"] = $"{point.coord.col},{point.coord.row}",
+                ["valid"] = true,
+                ["pointType"] = point.PointType
+            });
 
         if (!TryCreateRootSightPreview(player.RunState, point, out var preview))
         {
@@ -100,6 +129,17 @@ internal static partial class UrdaBlessingService
             RootSightPreviewRecords = FormatRootSightPreviews(previews)
         };
         SetProgress(player, progress);
+        ReleaseEvidenceLog.Log(
+            "UrdaRootEyes",
+            "preview_saved",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["coord"] = coord,
+                ["roomType"] = preview.RoomType,
+                ["modelId"] = preview.ModelId,
+                ["eyesLeft"] = progress.RootSightEyes
+            });
         EnsureQuestMarker<UrdaRootSightMapQuestMarker>(point);
         RefreshRootSightRelicStatus(player);
         NMapScreen.Instance?.RefreshAllPointVisuals();

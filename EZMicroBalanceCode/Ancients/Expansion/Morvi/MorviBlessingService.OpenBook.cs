@@ -1,4 +1,5 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
@@ -116,6 +117,17 @@ internal static partial class MorviBlessingService
 
         combatState.OpenBookSealedCards.Clear();
         combatState.OpenBookSealedCards.AddRange(cards);
+        if (cards.Count > 0)
+        {
+            ReleaseEvidenceLog.Log(
+                "MorviState",
+                "open_book_restore",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["sealed"] = cards.Count
+                });
+        }
         return cards;
     }
 

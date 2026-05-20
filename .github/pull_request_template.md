@@ -7,7 +7,7 @@
 ## Required Checks
 
 - [ ] `EZMicroBalance` manifest id remains unchanged.
-- [ ] Legacy `EzDailyContent` manifest id remains unchanged.
+- [ ] Active deliverable remains one `Spire Plus / EZMicroBalance` mod; duplicate root mod surfaces are not restored.
 - [ ] No official Slay the Spire 2 assets or large decompiled code were copied.
 - [ ] New or moved Harmony patches are reflected in `docs/patch-inventory.md`.
 - [ ] English and Simplified Chinese localization keys/placeholders stay aligned when text changed.

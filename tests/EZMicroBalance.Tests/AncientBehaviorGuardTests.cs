@@ -1001,10 +1001,11 @@ public sealed class AncientBehaviorGuardTests
         AssertSourceContains(
             releaseChecklist,
             "Target manifest id: `EZMicroBalance`",
-            "- [x] Existing `EzDailyContent` manifest id remains unchanged.",
+            "- [x] The active release surface is one mod: `Spire Plus / EZMicroBalance`.",
+            "- [x] Legacy `EzDailyContent` and standalone `EZFuturePeek` root mod surfaces have been removed from the active tree.",
             "- [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.",
             "- [x] Manifest declares structured `BaseLib` dependency with `min_version: v3.1.2`.",
-            "- [x] PCK audit excludes legacy `EzDailyContent`, C# source, docs, art, asset, and archive folders.",
+            "- [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.",
             "- [x] BaseLib appears in Mod Settings.",
             "- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.",

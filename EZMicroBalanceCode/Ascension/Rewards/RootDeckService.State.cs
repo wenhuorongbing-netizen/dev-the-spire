@@ -1,5 +1,7 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+
 internal static partial class RootDeckService
 {
     public static int GetRootblightLevel(Player player)
@@ -25,6 +27,18 @@ internal static partial class RootDeckService
     private static void SetDiagnosticLevelFromDeck(Player player)
     {
         SetLevelFromCards(player, FindRootFamilyCards(player));
+        if (FindRootFamilyCards(player).Count > 0)
+        {
+            ReleaseEvidenceLog.Log(
+                "Rootblight",
+                "save_hydrate",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["level"] = GetLevel(player),
+                    ["cards"] = FindRootFamilyCards(player).Count
+                });
+        }
     }
 
     private static void SetLevelFromCards(Player player, IEnumerable<RootFamilyCard> cards)

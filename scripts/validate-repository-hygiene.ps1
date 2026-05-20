@@ -58,13 +58,6 @@ Assert-Equal $ezmbManifest.id 'EZMicroBalance' 'Spire Plus stable manifest id ch
 Assert-Equal $ezmbManifest.name 'Spire Plus' 'Spire Plus player-facing manifest name changed.'
 Assert-Equal $ezmbManifest.affects_gameplay $true 'Spire Plus must remain gameplay-affecting.'
 
-$futurePeekManifestPath = Join-Path $repoRoot 'EZFuturePeek.json'
-if (Test-Path -LiteralPath $futurePeekManifestPath) {
-    $futurePeekManifest = Read-JsonFile $futurePeekManifestPath
-    Assert-Equal $futurePeekManifest.id 'EZFuturePeek' 'Future Peek manifest id changed.'
-    Assert-Equal $futurePeekManifest.affects_gameplay $false 'Future Peek must remain preview-only.'
-}
-
 Get-ChildItem -LiteralPath $repoRoot -Recurse -File -Filter '*.json' |
     Where-Object {
         $_.FullName -notmatch '\\(\.git|\.godot|\.tools|bin|obj|publish|source code)\\'
@@ -76,33 +69,19 @@ Get-ChildItem -LiteralPath $repoRoot -Recurse -File -Filter '*.json' |
 Assert-PathMissing (Join-Path $repoRoot 'website') 'Ignored website draft returned to the active root. Restore it only through an explicit website promotion.'
 Assert-PathMissing (Join-Path $repoRoot '.github\workflows\spire-plus-site.yml') 'Ignored Pages workflow returned to the active workflow path. Promote the website deliberately before restoring it.'
 
-$futurePeekForbidden = @(
+foreach ($removedRootSurface in @(
+    'EzDailyContent',
+    'EzDailyContentCode',
+    'EzDailyContent.json',
     'EZFuturePeek',
-    'Future Peek',
-    'FuturePeek',
-    'NCrystalSphere',
-    'ScryMask',
-    'NTransformPreview',
-    'CycleThroughCards'
-)
-
-$activeSpirePlusFiles = @()
-foreach ($dir in @('EZMicroBalance', 'EZMicroBalanceCode')) {
-    $path = Join-Path $repoRoot $dir
-    if (Test-Path -LiteralPath $path) {
-        $activeSpirePlusFiles += Get-ChildItem -LiteralPath $path -Recurse -File |
-            Where-Object { $_.Extension -in '.cs', '.json', '.tscn', '.tres', '.cfg' }
-    }
-}
-
-foreach ($file in $activeSpirePlusFiles) {
-    $text = Get-Content -Raw -LiteralPath $file.FullName -Encoding UTF8
-    foreach ($fragment in $futurePeekForbidden) {
-        if ($text.IndexOf($fragment, [System.StringComparison]::Ordinal) -ge 0) {
-            $relative = Get-RepoRelativePath $file.FullName
-            throw "Future Peek implementation leaked into Spire Plus active surface: $relative contains '$fragment'."
-        }
-    }
+    'EZFuturePeekCode',
+    'EZFuturePeek.csproj',
+    'EZFuturePeek.json',
+    'EZFuturePeek.sln',
+    'tests\EZFuturePeek.Tests',
+    'scripts\export-future-peek.ps1'
+)) {
+    Assert-PathMissing (Join-Path $repoRoot $removedRootSurface) "Removed separate mod surface returned to the active root: $removedRootSurface"
 }
 
 if (-not $SkipPatchInventoryFreshness) {

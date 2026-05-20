@@ -1,7 +1,6 @@
 param(
     [string]$Sts2Path = $env:STS2_PATH,
-    [string]$GodotPath = $env:GODOT_PATH,
-    [switch]$IncludeFuturePeek
+    [string]$GodotPath = $env:GODOT_PATH
 )
 
 $ErrorActionPreference = 'Stop'
@@ -104,20 +103,6 @@ try {
         dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
     }
 
-    if ($IncludeFuturePeek) {
-        Invoke-Step 'Future Peek build' {
-            dotnet build EZFuturePeek.sln @msbuildProps
-        }
-
-        Invoke-Step 'Future Peek tests' {
-            dotnet test EZFuturePeek.sln --no-build
-        }
-
-        Invoke-Step 'Future Peek format check' {
-            dotnet format EZFuturePeek.sln --verify-no-changes --no-restore
-        }
-    }
-
     Invoke-Step 'Diff whitespace check' {
         git diff --check
     }
@@ -128,12 +113,6 @@ try {
 
     Invoke-Step 'Spire Plus package' {
         & .\scripts\package-spire-plus.ps1 -GameRoot $sts2FullPath
-    }
-
-    if ($IncludeFuturePeek) {
-        Invoke-Step 'Future Peek publish' {
-            dotnet publish EZFuturePeek.sln @msbuildProps
-        }
     }
 
     Invoke-Step 'Spire Plus artifact tests' {

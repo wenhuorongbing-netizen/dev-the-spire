@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -49,8 +49,7 @@ public sealed class EngineeringGovernanceGuardTests
             "dotnet format EZMicroBalance.sln --verify-no-changes --no-restore",
             "dotnet publish EZMicroBalance.sln @msbuildProps",
             "package-spire-plus.ps1 -GameRoot $sts2FullPath",
-            "EZMB_RUN_RELEASE_ARTIFACT_TESTS",
-            "dotnet test EZFuturePeek.sln --no-build");
+            "EZMB_RUN_RELEASE_ARTIFACT_TESTS");
 
         var pullRequestTemplate = ReadRepoText(".github", "pull_request_template.md");
         AssertSourceContains(
@@ -85,7 +84,6 @@ public sealed class EngineeringGovernanceGuardTests
         var inventory = ReadRepoText("docs", "patch-inventory.md");
         var sourcePatchCount = Directory
             .GetFiles(RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories)
-            .Concat(Directory.GetFiles(RepoPath("EZFuturePeekCode"), "*.cs", SearchOption.AllDirectories))
             .Sum(path => Regex.Matches(File.ReadAllText(path), @"\[HarmonyPatch").Count);
 
         Assert.Contains($"| Total patch declarations | {sourcePatchCount} |", inventory, StringComparison.Ordinal);
@@ -98,7 +96,7 @@ public sealed class EngineeringGovernanceGuardTests
             "Vakuu",
             "Ascension core",
             "Ascension patches",
-            "Future Peek",
+            "Preview tools",
             "High: run, room, save, lobby, multiplayer, or game lifecycle surface.");
     }
 
@@ -181,7 +179,7 @@ public sealed class EngineeringGovernanceGuardTests
             "HEAD | `25f99fb",
             "Total patch declarations | 137",
             "Fresh current-package loader smoke | Pending live run",
-            "README_INSTALL | `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4`");
+            "README_INSTALL | `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906`");
 
         AssertSourceContains(
             scope,
@@ -196,14 +194,14 @@ public sealed class EngineeringGovernanceGuardTests
             "The archived website is not an active release surface.",
             "EasyFirePlus",
             "needs owner decision",
-            "Future Peek must remain outside the Spire Plus release page");
+            "Preview tools now ship inside the Spire Plus page");
 
         AssertSourceContains(
             traceability,
             "This matrix maps player-visible promises to source, guard, and evidence state.",
             "Manual-test package only",
             "Hidden by default",
-            "Separate beta decision",
+            "Integrated into Spire Plus",
             "Do not advertise full support");
 
         AssertSourceContains(
@@ -229,7 +227,7 @@ public sealed class EngineeringGovernanceGuardTests
             boundedContexts,
             "AncientExpansionVakuu",
             "AscensionCore",
-            "FuturePeek",
+            "PreviewTools",
             "ReleaseEvidence");
 
         AssertSourceContains(
@@ -240,7 +238,7 @@ public sealed class EngineeringGovernanceGuardTests
             "StartRunLobby.SyncAscensionChange",
             "RootSightPreviewPolicy",
             "VakuuFightFlow",
-            "FuturePeekTransformPolicy");
+            "PreviewTransformPolicy");
 
         AssertSourceContains(
             saveContracts,
@@ -249,13 +247,13 @@ public sealed class EngineeringGovernanceGuardTests
             "Lotha Death Reprieve",
             "A20 dual boss/courtyard",
             "Reward alternatives",
-            "Future Peek",
+            "Preview tools",
             "They do not replace live save/load proof");
 
         AssertSourceContains(
             commitBoundaries,
             "GOV-WIP-SPLIT remains open",
-            "Do not mix Future Peek and Spire Plus runtime changes in one commit.",
+            "Keep preview-tool changes reviewable as their own Spire Plus batch.",
             "Do not close live/manual rows in a commit that has no live evidence folder.");
     }
 }

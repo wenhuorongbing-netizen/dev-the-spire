@@ -1,6 +1,6 @@
 # Save-State Contracts
 
-Purpose: identify which Spire Plus and Future Peek states must survive reload, which states are transient, and what proof is still required.
+Purpose: identify which Spire Plus states must survive reload, which states are transient, and what proof is still required.
 
 ## Contract Table
 
@@ -18,7 +18,7 @@ Purpose: identify which Spire Plus and Future Peek states must survive reload, w
 | Reward alternatives | Vanilla reward ids, alternative selection indexes, any mirrored blessing state. | Reward-screen node hints and transient UI banners. | Save on reward screen, reload, select each alternative without freeze. |
 | Ascension selector | Preferred ascension only when vanilla can represent it. | Temporary unlock/max-ascension overrides. | Start singleplayer A20, attempt multiplayer A20, verify downgrade/warning. |
 | Rootblight | Deck card markers and capped state. | Combat-end overlay state. | Play/discard/end combat around save/load. |
-| Future Peek | None intended for preview buttons. | Crystal Sphere UI peek state and transform prediction snapshots. | Close/reopen screens without leaked preview state. |
+| Preview tools | None intended for preview buttons. | Crystal Sphere UI peek state and transform prediction snapshots. | Close/reopen screens without leaked preview state. |
 
 ## Guard Boundary
 

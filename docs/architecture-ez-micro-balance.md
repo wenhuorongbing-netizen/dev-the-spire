@@ -4,13 +4,13 @@ Decision date: 2026-05-05
 
 ## Decision
 
-`Spire Plus` is the player-facing mod name for the independent mod project with stable manifest id `EZMicroBalance`.
+`Spire Plus` is the player-facing mod name for the single active mod project with stable manifest id `EZMicroBalance`.
 
 The existing `EzDailyContent` manifest id remains unchanged. It must not be renamed in-place because mod ids are persistent player-facing identifiers after project creation.
 
 ## Reason
 
-The repository is moving to multiple independent mods over time. Players should be able to enable or disable `Spire Plus`, future Ascension changes, and future custom-character work separately. Keeping the Ancient rebalance inside `EzDailyContent` would make future features share one mod toggle and one release identity.
+The private beta now ships as one player-visible mod. Ancient rebalance, A11-A20 development slices, Rootblight, Vakuu, and preview tools share one install folder and one Mod Settings entry. Keeping the stable `EZMicroBalance` id avoids save/config churn while removing duplicate root-level mod surfaces.
 
 ## Intended Release Shape
 
@@ -54,10 +54,10 @@ Current implementation decision:
 - `EZMicroBalance.sln` is the active solution for bare `dotnet build`.
 - `EZMicroBalance.csproj` is the active project.
 - The old `EzDailyContent.csproj` file has been archived at `docs/archive/legacy-planning/legacy-project-files/EzDailyContent/EzDailyContent.csproj.legacy.xml` so root `dotnet build` is unambiguous and top-level project clutter stays low.
-- Legacy `EzDailyContent` resources/code remain in the repository for traceability but are not part of the active solution.
+- Legacy `EzDailyContent` resources/code are removed from the active root; historical project metadata remains archived under `docs/archive/legacy-planning/`.
 - `export_presets.cfg` uses a selected-resource export so `EZMicroBalance.pck` contains active resources only and does not package legacy files, source files, docs, or art research folders.
 
-## Later Mods And Gated Expansion Work
+## Gated Expansion Work
 
 The original Ancient-only private beta scope excluded Ascension 11-20-30 and custom-character work. The 2026-05-06 overnight sprint goal opened Ascension 11-20 as an active implementation track. The current private-beta multiplayer test candidate exposes A11-A20 single-player and host-multiplayer selection through the original Ascension UI by default, keeps all selector expansion disableable with `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, keeps host-multiplayer selection separately disableable with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, accepts legacy `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` without requiring it, and does not claim release readiness until live behavior is verified.
 
