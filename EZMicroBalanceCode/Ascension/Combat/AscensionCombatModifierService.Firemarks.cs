@@ -78,6 +78,11 @@ internal static partial class AscensionCombatModifierService
         {
             await TrackMoltenCoreDamage(combatState, tracker, host, result.UnblockedDamage);
         }
+
+        if (firemark == FiremarkKind.ForgeArmor)
+        {
+            TrackForgeArmorBlockedDamage(tracker, target, result);
+        }
     }
 
     private static async Task ApplyFiremarkTurnEnd(

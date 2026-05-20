@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -32,6 +33,17 @@ internal static class TransformPredictionRngContext
             source.Counter,
             sourceName,
             upgradeReplacementPreview));
+        ReleaseEvidenceLog.Log(
+            "PreviewTransform",
+            "rng_context_registered",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["source"] = sourceName,
+                ["seed"] = source.Seed,
+                ["counter"] = source.Counter,
+                ["upgradePreview"] = upgradeReplacementPreview
+            });
         PreviewLog.Debug($"Registered transform prediction RNG source: {sourceName}.");
     }
 
@@ -55,6 +67,14 @@ internal static class TransformPredictionRngContext
             sourceName = string.Empty;
             upgradeReplacementPreview = false;
             Clear(player);
+            ReleaseEvidenceLog.Log(
+                "PreviewTransform",
+                "rng_context_stale",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["source"] = snapshot.SourceName
+                });
             PreviewLog.Debug($"Transform prediction skipped: stale RNG source {snapshot.SourceName}.");
             return false;
         }
@@ -70,6 +90,7 @@ internal static class TransformPredictionRngContext
         if (player != null)
         {
             SnapshotsByPlayer.Remove(player);
+            ReleaseEvidenceLog.Log("PreviewTransform", "rng_context_cleared", player);
         }
     }
 

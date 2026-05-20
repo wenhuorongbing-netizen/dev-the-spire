@@ -50,6 +50,15 @@ internal static partial class UrdaBlessingService
         var seedIds = GetSeedBankCardIds(progress);
         if (progress.SeedBankSettled || seedIds.Count == 0)
         {
+            ReleaseEvidenceLog.Log(
+                "UrdaSeedBank",
+                "settlement_empty",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["stored"] = seedIds.Count,
+                    ["settled"] = progress.SeedBankSettled
+                });
             return;
         }
 
@@ -70,6 +79,15 @@ internal static partial class UrdaBlessingService
             .ToList();
         if (cards.Count == 0)
         {
+            ReleaseEvidenceLog.Log(
+                "UrdaSeedBank",
+                "settlement_empty",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["stored"] = seedIds.Count,
+                    ["resolvedCards"] = 0
+                });
             SetProgress(player, progress with
             {
                 SeedBankCardIds = string.Empty,
@@ -98,6 +116,14 @@ internal static partial class UrdaBlessingService
                     AncientCardHelpers.RemoveUnpiledRunCard(card);
                 }
 
+                ReleaseEvidenceLog.Log(
+                    "UrdaSeedBank",
+                    "selection_cancelled",
+                    player,
+                    new Dictionary<string, object?>
+                    {
+                        ["stored"] = seedIds.Count
+                    });
                 MainFile.Logger.Info("[EZMicroBalance] Urda Seed Bank extraction was canceled; stored Seeds remain available.");
                 return;
             }
@@ -146,7 +172,7 @@ internal static partial class UrdaBlessingService
                     AncientCardHelpers.RemoveUnpiledRunCard(card);
                     ReleaseEvidenceLog.Log(
                         "UrdaSeedBank",
-                        "deck_add_failure",
+                        "deck_add_failed",
                         player,
                         new Dictionary<string, object?>
                         {
@@ -175,6 +201,14 @@ internal static partial class UrdaBlessingService
             ReleaseEvidenceLog.Log(
                 "UrdaSeedBank",
                 "storage_cleared",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["added"] = addedCount
+                });
+            ReleaseEvidenceLog.Log(
+                "UrdaSeedBank",
+                "extracted_by_relic_click",
                 player,
                 new Dictionary<string, object?>
                 {

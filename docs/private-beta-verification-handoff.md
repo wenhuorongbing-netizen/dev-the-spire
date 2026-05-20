@@ -1,4 +1,4 @@
-﻿# Spire Plus Private Beta Verification Handoff
+# Spire Plus Private Beta Verification Handoff
 
 Date: 2026-05-15
 
@@ -16,7 +16,7 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest no-launch verification: `dotnet build EZMicroBalance.sln`, `dotnet test EZMicroBalance.sln --no-build` with 209 passed / 18 skipped, `dotnet format`, `git diff --check`, `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, local game-root package copy/hash check, and opt-in artifact tests with 227 passed / 0 skipped all passed.
+- Latest no-launch verification: `dotnet build EZMicroBalance.sln`, `dotnet test EZMicroBalance.sln --no-build` with 232 passed / 18 skipped, `dotnet format`, `git diff --check`, `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, local game-root package copy/hash check, and opt-in artifact tests with 250 passed / 0 skipped all passed.
 - The latest normal Steam smoke under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` is historical for the earlier 22-field package. Current source defines 25 SavedSpireFields and needs a fresh loader smoke before any current-package runtime-parity claim.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
@@ -46,9 +46,9 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 - Package: `publish\SpirePlus-v0.1.0-private-beta.0.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62`
+- Zip SHA256: `921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `940F1FEA66B01CB54A1CCEC388D4F023693C947395C7B7F9922BF596A8586E1E`
+- DLL SHA256: `CCF61C5E9B69C53C9DFF5E61F0C87913B54A8D1486F97000CBD6125D90903DE4`
 - Manifest SHA256: `A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF`
 - PCK SHA256: `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392`
 - README_INSTALL SHA256: `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906`

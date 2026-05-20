@@ -28,8 +28,10 @@ internal static partial class UrdaBlessingService
             return;
         }
 
+        var player = RootSightSelectionPlayer;
         RootSightSelectionPlayer = null;
         NMapScreen.Instance?.RefreshAllPointVisuals();
+        ReleaseEvidenceLog.Log("UrdaRootEyes", "selection_cancelled", player);
         MainFile.Logger.Info("[EZMicroBalance] Urda Root Eyes selection cancelled.");
     }
 
@@ -168,6 +170,14 @@ internal static partial class UrdaBlessingService
             !runState.Players.Contains(player))
         {
             RootSightSelectionPlayer = null;
+            ReleaseEvidenceLog.Log(
+                "UrdaRootEyes",
+                "selection_cleared_context_changed",
+                player,
+                new Dictionary<string, object?>
+                {
+                    ["hasRunState"] = runState != null
+                });
             MainFile.Logger.Info("[EZMicroBalance] Urda Root Eyes selection cleared after run context changed.");
             return null;
         }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Models.Monsters;
@@ -108,7 +109,7 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
             [BrokenLocksKey] = BrokenLocks.ToString(),
             [BloodDebtKey] = BloodDebt.ToString(),
             [DamageRoundKey] = DamageRound.ToString(),
-            [DamageThisRoundKey] = DamageThisRound.ToString(),
+            [DamageThisRoundKey] = DamageThisRound.ToString(CultureInfo.InvariantCulture),
             [DamageLockRoundKey] = DamageLockRound.ToString()
         };
     }
@@ -128,7 +129,8 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
             : fallback;
 
     private static decimal ReadDecimal(IReadOnlyDictionary<string, string> state, string key) =>
-        state.TryGetValue(key, out var value) && decimal.TryParse(value, out var parsed)
+        state.TryGetValue(key, out var value) &&
+        decimal.TryParse(value, CultureInfo.InvariantCulture, out var parsed)
             ? parsed
             : 0m;
 }

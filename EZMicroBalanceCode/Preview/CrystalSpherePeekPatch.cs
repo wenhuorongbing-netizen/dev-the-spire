@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using EZMicroBalance.EZMicroBalanceCode.Config;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Localization;
@@ -60,6 +61,14 @@ internal static class CrystalSpherePeekPatch
                 var color = mask.Modulate;
                 color.A = pressed ? (float)EZMicroBalanceModConfig.CrystalSphereMaskAlpha : originalAlpha;
                 mask.Modulate = color;
+                ReleaseEvidenceLog.Log(
+                    "PreviewCrystalSphere",
+                    pressed ? "peek_enabled" : "peek_disabled",
+                    runState: RunManager.Instance?.DebugOnlyGetState(),
+                    data: new Dictionary<string, object?>
+                    {
+                        ["maskAlpha"] = color.A
+                    });
                 PreviewLog.Debug(pressed ? "Crystal Sphere peek enabled." : "Crystal Sphere peek disabled.");
             }));
 
@@ -71,6 +80,17 @@ internal static class CrystalSpherePeekPatch
         {
             rightControl.MoveChild(button, 2);
         }
+
+        ReleaseEvidenceLog.Log(
+            "PreviewCrystalSphere",
+            "peek_button_added",
+            runState: RunManager.Instance?.DebugOnlyGetState(),
+            data: new Dictionary<string, object?>
+            {
+                ["button"] = ButtonName,
+                ["originalAlpha"] = originalAlpha,
+                ["configuredAlpha"] = EZMicroBalanceModConfig.CrystalSphereMaskAlpha
+            });
     }
 
     internal static void HideForFinishedScreen(NCrystalSphereScreen screen)
@@ -78,6 +98,10 @@ internal static class CrystalSpherePeekPatch
         if (!PeekStates.TryGetValue(screen, out var state))
         {
             screen.GetNodeOrNull<Control>("Ui/RightUi")?.GetNodeOrNull<Button>(ButtonName)?.Hide();
+            ReleaseEvidenceLog.Log(
+                "PreviewCrystalSphere",
+                "peek_button_hidden_without_state",
+                runState: RunManager.Instance?.DebugOnlyGetState());
             return;
         }
 
@@ -85,6 +109,14 @@ internal static class CrystalSpherePeekPatch
         var color = state.Mask.Modulate;
         color.A = state.OriginalMaskAlpha;
         state.Mask.Modulate = color;
+        ReleaseEvidenceLog.Log(
+            "PreviewCrystalSphere",
+            "peek_hidden_after_minigame",
+            runState: RunManager.Instance?.DebugOnlyGetState(),
+            data: new Dictionary<string, object?>
+            {
+                ["maskAlpha"] = color.A
+            });
     }
 
     private static string GetPeekButtonText()

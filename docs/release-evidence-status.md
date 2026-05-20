@@ -1,4 +1,4 @@
-﻿# Release Evidence Status
+# Release Evidence Status
 
 Current target: `Spire Plus` manual-test build for user validation. This page is a compact dashboard for evidence state; it does not replace `docs/release-checklist.md`.
 
@@ -10,8 +10,8 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62` |
-| DLL | `940F1FEA66B01CB54A1CCEC388D4F023693C947395C7B7F9922BF596A8586E1E` |
+| ZIP | `921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91` |
+| DLL | `CCF61C5E9B69C53C9DFF5E61F0C87913B54A8D1486F97000CBD6125D90903DE4` |
 | PCK | `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392` |
 | Manifest | `A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF` |
 | README_INSTALL | `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906` |
@@ -49,6 +49,10 @@ Set this before launching the game to add grep-friendly evidence lines to `godot
 ```powershell
 $env:EZMB_RELEASE_EVIDENCE_LOG='1'
 ```
+
+Plain marker for scripts and test guards: `EZMB_RELEASE_EVIDENCE_LOG=1`.
+
+Current source guard expects markers on Vakuu fight return paths, Root Eyes, Seed Bank, Rootblight, preview tools, A20 map/combat paths, and co-op gates.
 
 Expected marker format:
 

@@ -23,6 +23,7 @@ internal sealed class AscensionCombatTracker
     public bool FiremarkArmorSkippedNextTurn { get; set; }
     public bool FiremarkArmorGeneratedThisTurn { get; set; }
     public decimal FiremarkArmorBlockBaseline { get; set; }
+    public decimal FiremarkArmorRemainingThisTurn { get; set; }
     public int FiremarkArmorBreaks { get; set; }
     public bool BannerRageApplied { get; set; }
     public bool VanguardStrengthRemoved { get; set; }

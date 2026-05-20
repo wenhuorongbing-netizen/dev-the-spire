@@ -31,7 +31,7 @@ internal static partial class RootDeckService
         {
             ReleaseEvidenceLog.Log(
                 "Rootblight",
-                "save_hydrate",
+                "state_hydrated_from_deck",
                 player,
                 new Dictionary<string, object?>
                 {

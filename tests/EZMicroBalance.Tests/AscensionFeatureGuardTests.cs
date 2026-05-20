@@ -398,9 +398,13 @@ public sealed class AscensionFeatureGuardTests
             combatService,
             "FiremarkArmorBlockBaseline",
             "tracker.FiremarkArmorBlockBaseline = host.Block",
-            "tracker.FiremarkHost.Block > tracker.FiremarkArmorBlockBaseline");
+            "FiremarkArmorRemainingThisTurn",
+            "TrackForgeArmorBlockedDamage(tracker, target, result)",
+            "tracker.FiremarkArmorRemainingThisTurn - result.BlockedDamage",
+            "tracker.FiremarkArmorRemainingThisTurn <= 0m ||",
+            "tracker.FiremarkHost.Block <= tracker.FiremarkArmorBlockBaseline");
         Assert.DoesNotContain("host.Block > 0", combatService, StringComparison.Ordinal);
-        Assert.DoesNotContain("tracker.FiremarkArmorRemainingThisTurn - result.BlockedDamage", combatService, StringComparison.Ordinal);
+        Assert.DoesNotContain("tracker.FiremarkHost.Block > tracker.FiremarkArmorBlockBaseline", combatService, StringComparison.Ordinal);
 
         var beforeSideTurnStart = SliceBetween(
             combatService,
@@ -733,6 +737,7 @@ public sealed class AscensionFeatureGuardTests
         var forgeToken = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var forgeRelic = ReadRepoText("EZMicroBalanceCode", "Ascension", "Relics", "ForgeTokenRelic.cs");
         var firemarkPowers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
+        var corePowerNode = ReadRepoText("source code", "src", "Core", "Nodes", "Combat", "NPower.cs");
         var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "FissionEnchantment.cs");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
@@ -777,8 +782,12 @@ public sealed class AscensionFeatureGuardTests
             "AscensionAssetPaths.FiremarkForgeArmorIndicator",
             "ConstantHealMarkFiremarkPower",
             "AscensionAssetPaths.FiremarkConstantHealIndicator",
+            "internal abstract class FiremarkPower",
+            "public override PowerStackType StackType => PowerStackType.Counter",
+            "public override int DisplayAmount => Amount",
             "Firemark: Might",
             "Firemark: Constant Heal");
+        Assert.Contains("Model.StackType == PowerStackType.Counter", corePowerNode, StringComparison.Ordinal);
 
         AssertSourceContains(
             fission,

@@ -242,6 +242,20 @@ public sealed class VakuuLothaSaveRiskGuardTests
     }
 
     [Fact]
+    public void VakuuEncounterCustomStateUsesCultureInvariantSaveValues()
+    {
+        var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
+
+        AssertSourceContains(
+            encounter,
+            "using System.Globalization;",
+            "DamageThisRound.ToString(CultureInfo.InvariantCulture)",
+            "decimal.TryParse(value, CultureInfo.InvariantCulture, out var parsed)");
+        Assert.DoesNotContain("DamageThisRound.ToString()", encounter, StringComparison.Ordinal);
+        Assert.DoesNotContain("decimal.TryParse(value, out var parsed)", encounter, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void LothaDeathReprieveOncePerRunAndDuplicateReprieveGuardsStaySourceVisible()
     {
         var runHook = ReadLothaSource();

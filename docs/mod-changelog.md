@@ -4,7 +4,7 @@ Append only short tester/player-facing entries here when behavior or release val
 
 ## 2026-05-17
 
-- Release-implementation review fixed two Banner Room timing issues: Shieldwall now protects enemies on the enemy-side turn start, and Blood Prize retaliation now starts when the round 3 deadline is missed.
+- Release-implementation review fixed two Banner Room timing issues: Shieldwall now protects enemies after the enemy turn, and Blood Prize retaliation now starts when the round 3 deadline is missed.
 - Tester environment flags now trim surrounding whitespace, so values like `1`, ` true `, `yes`, and `on` behave consistently across Ancient and Ascension gates.
 - Moss Map relic text now always shows the exact Act 1 room reward mapping, even if the game resolves the older class-name localization key.
 - Rebuilt the local manual-test package and refreshed package hashes after the static fixes. This is still not live gameplay, save-load, or co-op evidence.

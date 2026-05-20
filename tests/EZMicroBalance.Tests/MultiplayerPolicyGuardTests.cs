@@ -33,6 +33,26 @@ public sealed class MultiplayerPolicyGuardTests
     }
 
     [Fact]
+    public void A20CoopGateLogsBeforeSinglePlayerShapeShortCircuit()
+    {
+        var gate = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.Systems.cs");
+        var method = SliceBetween(
+            gate,
+            "public static bool IsDualKingBrandsSinglePlayerEnabled(IRunState runState)",
+            "public static bool IsAnyImplementedSliceEnabled(IRunState runState)");
+
+        AssertSourceContains(
+            method,
+            "if (!IsDualKingBrandsEnabled(runState))",
+            "if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(",
+            "\"A20KingBrand\"",
+            "return runState.Players.Count == 1;");
+        AssertBefore(method, "ShouldDisableUnverifiedCoopFeature", "return runState.Players.Count == 1;");
+        Assert.DoesNotContain("hasVanillaSinglePlayerRunShape &&", method, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsDualKingBrandsEnabled(runState) &&", method, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void RootEyesSharedMapMutationRequiresPolicyGate()
     {
         var urda = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");

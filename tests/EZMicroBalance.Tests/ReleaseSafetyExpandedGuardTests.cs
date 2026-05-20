@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -323,7 +323,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62\"",
+            "PackageSha256 = \"921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91\"",
             "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.0.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
@@ -553,35 +553,35 @@ public sealed class ReleaseSafetyExpandedGuardTests
         var fragments = new[]
         {
             "\uFFFD",
-            "濠碘槅鍋?",
-            "閻庢鍠?",
-            "闂佽　�?",
-            "闂佸憡鐗?",
-            "闂佺顑?",
-            "缂備椒鑳?",
-            "闁荤姳绀?",
-            "闂佸湱鐟?",
-            "闁哄鏅?",
-            "闂佹悶鍎?",
-            "闂佸湱澧?",
-            "濠殿喗锚",
-            "闁诲氦顫?",
-            "闂佽绻?",
-            "闂傚倸鐗?",
-            "婵☆偓绲?",
-            "闂佺锕?",
-            "濠电偛妫?",
-            "婵烇絽娲?",
-            "闂佹儳绻?",
-            "濠电偞鍨?",
-            "闂佸憡姊?",
-            "闂佸吋鍎?",
-            "闂佺粯鍔?",
-            "婵犮垼娉?",
-            "缂備焦顨?",
-            "缂備礁顑?",
-            "婵炴垶鎼?",
-            "闂傚倸娲?"
+            "婵☆�?",
+            "鐎殿�?",
+            "闁衡??",
+            "闁告�?",
+            "闁稿�?",
+            "缂佷�?",
+            "閻犱�?",
+            "闁圭�?",
+            "閺夆�?",
+            "闁搞�?",
+            "闁圭�?",
+            "婵ê",
+            "閻庤�?",
+            "闁诲�?",
+            "闂傚�?",
+            "濡�?",
+            "闁稿�?",
+            "婵炲�?",
+            "濞ｅ�?",
+            "闁惧�?",
+            "婵炴�?",
+            "闁告�?",
+            "闁兼�?",
+            "闁绘�?",
+            "濠㈣�?",
+            "缂佹�?",
+            "缂佸�?",
+            "濞戞�?",
+            "闂傚�?"
         };
 
         var matches = fragments

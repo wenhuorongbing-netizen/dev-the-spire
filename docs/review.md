@@ -1,4 +1,4 @@
-﻿# Current Source Review
+# Current Source Review
 
 Date: 2026-05-20
 
@@ -17,10 +17,12 @@ Live-only blockers remain:
 
 ## Latest Fixed Findings
 
+- 2026-05-20 source/API audit pass: Firemark powers now use Core-visible counter display semantics, Forge Armor tracks generated Molten Armor separately from unrelated Block, A20 co-op gating logs before the single-player shape return, and Vakuu fight custom state writes culture-invariant save values.
+- 2026-05-20 issue.md pass: expanded opt-in `ReleaseEvidenceLog` markers for Preview tools, Seed Bank extraction/cancel/failure, Root Eyes selection cleanup, Rootblight combat start/end, A20 map markers, and co-op gates; added a source guard for those marker surfaces. This is evidence collection support, not live proof.
 - 2026-05-20 governance pass: added CI-safe repository hygiene workflow, issue/PR templates, ADR template, committed `.editorconfig`, generated `docs/patch-inventory.md`, added `docs/release-evidence-status.md`, and guarded these with `EngineeringGovernanceGuardTests`.
 - 2026-05-20 governance pass: added self-hosted `.github/workflows/full-local-validation.yml` and `scripts/ci-full-validation.ps1` for full no-game validation with explicit `STS2_PATH` and `GODOT_PATH`; the script passed locally, and first GitHub self-hosted workflow run evidence remains pending.
 - 2026-05-20 release-planning pass: converted `docs/goal.md` into no-game baseline, release scope, website claim audit, traceability matrix, source-research, architecture-boundary, save-state, and commit-boundary docs. The pass keeps live/manual rows open.
-- 2026-05-20 governance pass: updated `scripts/verify-spire-plus-release-evidence.ps1` and `ReleaseSafetyExpandedGuardTests` so the verifier default package hash matches the current `CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62` package.
+- 2026-05-20 governance pass: updated `scripts/verify-spire-plus-release-evidence.ps1` and `ReleaseSafetyExpandedGuardTests` so the verifier default package hash matches the current `921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91` package.
 - 2026-05-20 subagent review pass: current smoke-log parity now computes the expected `SavedSpireField` count from source and rejects historical 22-field logs as current package evidence.
 - 2026-05-20 subagent review pass: tightened current smoke-log parity to count only static `SavedSpireField` declarations, so helper method generic references do not inflate the expected runtime loader count.
 - 2026-05-20 subagent review pass: active-source coverage no longer lets `ActiveSourceManifestGuardTests.cs` satisfy itself; every active source file must map to an independent guard root.
@@ -45,8 +47,8 @@ Live-only blockers remain:
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62` |
-| DLL | `940F1FEA66B01CB54A1CCEC388D4F023693C947395C7B7F9922BF596A8586E1E` |
+| ZIP | `921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91` |
+| DLL | `CCF61C5E9B69C53C9DFF5E61F0C87913B54A8D1486F97000CBD6125D90903DE4` |
 | PCK | `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392` |
 | Manifest | `A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF` |
 | README_INSTALL | `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906` |
@@ -68,11 +70,11 @@ $env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'; dotnet test EZMicroBalance.sln --no-bu
 Results:
 
 - Spire Plus build: 0 warnings/errors.
-- Spire Plus normal tests: 209 passed / 18 skipped.
+- Spire Plus normal tests: 232 passed / 18 skipped.
 - Format check: passed.
 - `git diff --check`: passed with existing CRLF/LF warnings only.
 - Spire Plus publish/package: passed.
-- Artifact tests: 227 passed / 0 skipped.
+- Artifact tests: 250 passed / 0 skipped.
 - Local game-root zip copy/hash check: passed.
 - New `scripts/ci-full-validation.ps1` lane: passed locally with explicit `STS2_PATH` and `GODOT_PATH`.
 

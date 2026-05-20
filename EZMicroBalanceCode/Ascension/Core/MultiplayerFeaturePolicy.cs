@@ -31,7 +31,7 @@ internal static class MultiplayerFeaturePolicy
 
         LogCoopEvidence(
             feature,
-            "gated",
+            "coop_gate_disabled",
             runState,
             new Dictionary<string, object?>
             {

@@ -6,7 +6,7 @@ internal abstract class FiremarkPower : CustomPowerModel, ILocalizationProvider
 {
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.Single;
+    public override PowerStackType StackType => PowerStackType.Counter;
 
     public override int DisplayAmount => Amount;
 

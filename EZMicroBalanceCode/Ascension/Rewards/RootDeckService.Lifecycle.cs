@@ -95,10 +95,21 @@ internal static partial class RootDeckService
             return;
         }
 
+        var marked = 0;
         foreach (var card in FindRootFamilyCards(player))
         {
             card.WasPresentAtCombatStart = true;
+            marked++;
         }
+
+        ReleaseEvidenceLog.Log(
+            "Rootblight",
+            "combat_start_marked",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["cards"] = marked
+            });
     }
 
     public static async Task ResolveCombatEndRootblight(Player player)

@@ -50,13 +50,20 @@ internal static partial class AscensionFeatureGate
 
     public static bool IsDualKingBrandsSinglePlayerEnabled(IRunState runState)
     {
-        var hasVanillaSinglePlayerRunShape = runState.Players.Count == 1;
-        return IsDualKingBrandsEnabled(runState) &&
-            hasVanillaSinglePlayerRunShape &&
-            !MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
+        if (!IsDualKingBrandsEnabled(runState))
+        {
+            return false;
+        }
+
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
                 runState,
                 "A20KingBrand",
-                "dual King Brand and second boss routing are pending two-client proof");
+                "dual King Brand and second boss routing are pending two-client proof"))
+        {
+            return false;
+        }
+
+        return runState.Players.Count == 1;
     }
 
     public static bool IsAnyImplementedSliceEnabled(IRunState runState)

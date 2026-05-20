@@ -1,4 +1,4 @@
-﻿# Development Environment
+# Development Environment
 
 ## Machine
 - OS: Windows 11 Pro (`10.0.26200`, `64-bit`)
@@ -69,9 +69,9 @@
 ## Last known commands
 - Last attempted default build: `dotnet build EZMicroBalance.sln --no-restore` on 2026-05-18 after the Ascension map marker ordering split package-hash sync. Default Debug builds no longer overwrite installed release artifacts; Release build/publish remains the installed-mod copy path. Result: succeeded with 0 warnings and 0 errors.
 - Last successful build: `dotnet build EZMicroBalance.sln --no-restore` on 2026-05-18 after the Ascension map marker ordering split package-hash sync. Result: succeeded with 0 warnings and 0 errors.
-- Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-20 after the single-mod merge/package refresh. Result: passed, 209 passed, 18 skipped release artifact/runtime evidence tests, 0 failed.
+- Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-20 after the source/API audit package refresh. Result: passed, 232 passed, 18 skipped release artifact/runtime evidence tests, 0 failed.
 - Last successful Release test run: `dotnet test EZMicroBalance.sln -c Release` on 2026-05-13 after the BaseLib-only plug-off startup/log refresh. Result: passed, 81 passed, 18 skipped release artifact/runtime evidence tests, 0 failed.
-- Latest opt-in artifact-validation run: `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-20 after the single-mod merge/package refresh. Result: passed, 227 passed, 0 skipped, 0 failed.
+- Latest opt-in artifact-validation run: `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-20 after the source/API audit package refresh. Result: passed, 250 passed, 0 skipped, 0 failed.
 - Latest full local CI-script run: `scripts\ci-full-validation.ps1` on 2026-05-20 with explicit `STS2_PATH` and `GODOT_PATH`. Result: passed. This is local no-game validation, not live loader or gameplay proof.
 - Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-20 after the local manual-test package refresh. Result: exit code 0.
 - Last required diff check: `git diff --check` on 2026-05-20 after the local manual-test package refresh. Result: exit code 0 with CRLF/LF warnings only.
@@ -79,13 +79,13 @@
 - Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-20. Result: command returned exit code 0. Spire Plus rebuilt `EZMicroBalance.dll`/manifest/PCK with the current source and resources included.
 - Publish/package note: package staging, the versioned package folder, installed artifacts, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.0.zip` were refreshed on 2026-05-20 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. Current-package startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` covers the previous same-manifest package build; live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending for this refreshed package.
 - Last PCK hash check: the 2026-05-20 local manual-test package refresh left the installed, staging, versioned, and zip-entry PCK at SHA256 `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392`.
-- Last staging/versioned DLL hash check: SHA256 `940F1FEA66B01CB54A1CCEC388D4F023693C947395C7B7F9922BF596A8586E1E`.
+- Last staging/versioned DLL hash check: SHA256 `CCF61C5E9B69C53C9DFF5E61F0C87913B54A8D1486F97000CBD6125D90903DE4`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
 - Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts on 2026-05-20.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `CE417F595E2CCE8435C0575D95A3A866CBDA8FD605DE3F40014639E9301EFF62`
-  - DLL SHA256: `940F1FEA66B01CB54A1CCEC388D4F023693C947395C7B7F9922BF596A8586E1E`
+  - Zip SHA256: `921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91`
+  - DLL SHA256: `CCF61C5E9B69C53C9DFF5E61F0C87913B54A8D1486F97000CBD6125D90903DE4`
   - README SHA256: `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906`
   - Manifest SHA256: `A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF`
   - PCK SHA256: `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392`

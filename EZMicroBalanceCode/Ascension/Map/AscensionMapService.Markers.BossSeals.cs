@@ -76,6 +76,15 @@ internal static partial class AscensionMapService
             {
                 ["seal"] = secondBossSeal.Id.ToString()
             });
+        ReleaseEvidenceLog.Log(
+            "A20KingBrand",
+            "boss_marker_applied",
+            runState: runState,
+            data: new Dictionary<string, object?>
+            {
+                ["seal"] = secondBossSeal.Id.ToString(),
+                ["boss"] = "second"
+            });
         MainFile.Logger.Info(
             $"[EZMicroBalance] Ascension A20 armed: second boss node marked with {secondBossSeal.Name} Brand ({secondBossSeal.Id}); vanilla boss map icons reveal the boss order, and the fixed courtyard event is ready after Boss 1 rewards.");
     }
