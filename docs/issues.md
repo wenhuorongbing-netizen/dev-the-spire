@@ -20,7 +20,7 @@ Current package hashes, 2026-05-20:
 
 ## Engineering governance blockers
 
-- `GOV-WIP-SPLIT` P0 open: current worktree is still too large for safe review/rollback. Next: split by bounded context before any commit or release handoff.
+- `GOV-WIP-SPLIT` P0 open: current worktree is still too large for safe review/rollback. Next: follow `docs/month-plan/commit-boundaries.md` before any commit or release handoff.
 - `GOV-CI-FIRST-RUN` P2 runner-pending: self-hosted `full-local-validation` lane exists with explicit `STS2_PATH`/`GODOT_PATH`; first CI run evidence is still pending.
 - 2026-05-20 fixed review rows: smoke parity, source-manifest coverage, patch inventory, full local CI lane, Forge Armor, Future Peek RNG, Root Eyes, and Vakuu restore scoping.
 

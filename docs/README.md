@@ -16,6 +16,9 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Cleanup audit | `worktree-cleanup-audit.md` | Current cleanup/refactor scope, archive decisions, and owner-decision areas. |
 | Patch inventory | `patch-inventory.md` | Generated Harmony patch owner/risk inventory; refresh with `scripts/generate-patch-inventory.ps1`. |
 | Release evidence dashboard | `release-evidence-status.md` | Compact live/manual evidence state for the current test package. |
+| Release scope | `specs/release-scope-v1.md` | Current release-candidate boundary and go/no-go rules from `goal.md`. |
+| Traceability matrix | `specs/release-traceability-matrix.md` | Player promise to source/guard/live evidence mapping. |
+| Baseline freeze | `month-plan/baseline-2026-05-20.md` | Current no-game baseline, package hashes, patch inventory, and blocker state. |
 | Full local CI lane | `../.github/workflows/full-local-validation.yml` | Self-hosted Windows workflow for build/test/format/publish/package/artifact validation with explicit StS2 and Godot paths. |
 
 Do not read archived prompt dumps or archived audit matrices by default. They are historical and only needed when investigating an old finding.
@@ -70,6 +73,14 @@ These files are current support records but are not part of the default next-dev
 | `../tests/EZMicroBalance.Tests/README.md` | Test suite group map and commands. |
 | `../scripts/README.md` | Repository helper script map. |
 | `patch-inventory.md` | Generated Harmony patch owner/risk map. |
+| `specs/release-scope-v1.md` | Current release boundary and product decisions. |
+| `specs/website-claim-audit.md` | Archived website/public-claim audit. |
+| `specs/release-traceability-matrix.md` | Claim-to-evidence traceability matrix. |
+| `source-research/run-room-event-reward.md` | Run, room, event, and reward source evidence. |
+| `source-research/multiplayer-save-rng.md` | Multiplayer, save, and RNG source evidence. |
+| `architecture/bounded-contexts.md` | Feature/context ownership map. |
+| `architecture/patch-boundaries.md` | Harmony patch boundary rules. |
+| `architecture/save-state-contracts.md` | Stateful feature save/load contract map. |
 | `../scripts/ci-full-validation.ps1` | Full no-game validation entry point for self-hosted CI or a local release machine. |
 | `archive/legacy-planning/legacy-project-files/README.md` | Preserved migration artifact map. |
 

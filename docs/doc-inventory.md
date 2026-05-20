@@ -11,6 +11,11 @@
 - `docs/issues.md`
 - `docs/patch-inventory.md`
 - `docs/release-evidence-status.md`
+- `docs/specs/release-scope-v1.md`
+- `docs/specs/release-traceability-matrix.md`
+- `docs/specs/website-claim-audit.md`
+- `docs/month-plan/baseline-2026-05-20.md`
+- `docs/month-plan/commit-boundaries.md`
 - `docs/test-ready-development-goal.md`
 - `docs/features/ancient-expansion-v2.2/README.md`
 
@@ -24,6 +29,11 @@ Current support docs, not default reading path:
 - `docs/rc1-live-validation-log.md`
 - `docs/issues/waiting-tests.md`
 - `docs/adr/0000-template.md`
+- `docs/source-research/run-room-event-reward.md`
+- `docs/source-research/multiplayer-save-rng.md`
+- `docs/architecture/bounded-contexts.md`
+- `docs/architecture/patch-boundaries.md`
+- `docs/architecture/save-state-contracts.md`
 
 ## B. Feature docs
 

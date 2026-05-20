@@ -123,24 +123,139 @@ public sealed class EngineeringGovernanceGuardTests
     {
         var docsReadme = ReadRepoText("docs", "README.md");
         var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
         var scriptsReadme = ReadRepoText("scripts", "README.md");
 
         AssertSourceContains(
             docsReadme,
             "`patch-inventory.md`",
             "`release-evidence-status.md`",
+            "`specs/release-scope-v1.md`",
+            "`specs/release-traceability-matrix.md`",
+            "`source-research/run-room-event-reward.md`",
+            "`architecture/patch-boundaries.md`",
             "`../scripts/README.md`");
 
         AssertSourceContains(
             projectMap,
             "`docs/patch-inventory.md`",
             "`docs/release-evidence-status.md`",
+            "`docs/specs/release-scope-v1.md`",
+            "`docs/specs/release-traceability-matrix.md`",
+            "`docs/month-plan/baseline-2026-05-20.md`",
+            "`docs/month-plan/commit-boundaries.md`",
             "`docs/adr/`",
             "Generated Harmony patch owner/risk inventory");
+
+        AssertSourceContains(
+            docInventory,
+            "`docs/specs/release-scope-v1.md`",
+            "`docs/specs/release-traceability-matrix.md`",
+            "`docs/specs/website-claim-audit.md`",
+            "`docs/source-research/multiplayer-save-rng.md`",
+            "`docs/architecture/save-state-contracts.md`");
 
         AssertSourceContains(
             scriptsReadme,
             "`generate-patch-inventory.ps1`",
             "`validate-repository-hygiene.ps1`");
+    }
+
+    [Fact]
+    public void ReleasePlanningDocsExistAndKeepLiveRowsOpen()
+    {
+        var baseline = ReadRepoText("docs", "month-plan", "baseline-2026-05-20.md");
+        var scope = ReadRepoText("docs", "specs", "release-scope-v1.md");
+        var websiteAudit = ReadRepoText("docs", "specs", "website-claim-audit.md");
+        var traceability = ReadRepoText("docs", "specs", "release-traceability-matrix.md");
+        var runEvidence = ReadRepoText("docs", "source-research", "run-room-event-reward.md");
+        var multiplayerEvidence = ReadRepoText("docs", "source-research", "multiplayer-save-rng.md");
+        var boundedContexts = ReadRepoText("docs", "architecture", "bounded-contexts.md");
+        var patchBoundaries = ReadRepoText("docs", "architecture", "patch-boundaries.md");
+        var saveContracts = ReadRepoText("docs", "architecture", "save-state-contracts.md");
+        var commitBoundaries = ReadRepoText("docs", "month-plan", "commit-boundaries.md");
+
+        AssertSourceContains(
+            baseline,
+            "This is not live evidence.",
+            "HEAD | `25f99fb",
+            "Total patch declarations | 137",
+            "Fresh current-package loader smoke | Pending live run",
+            "README_INSTALL | `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4`");
+
+        AssertSourceContains(
+            scope,
+            "This file freezes the release-candidate decision boundary",
+            "Manual-test build now; release candidate only after live evidence",
+            "Vakuu fight | Hidden by default",
+            "Website | Not in current release surface",
+            "Source review, tests, and package hashes are not enough to close live rows.");
+
+        AssertSourceContains(
+            websiteAudit,
+            "The archived website is not an active release surface.",
+            "EasyFirePlus",
+            "needs owner decision",
+            "Future Peek must remain outside the Spire Plus release page");
+
+        AssertSourceContains(
+            traceability,
+            "This matrix maps player-visible promises to source, guard, and evidence state.",
+            "Manual-test package only",
+            "Hidden by default",
+            "Separate beta decision",
+            "Do not advertise full support");
+
+        AssertSourceContains(
+            runEvidence,
+            "`source code/src/Core/Runs/RunManager.cs`",
+            "`source code/src/Core/Rooms/CombatRoom.cs`",
+            "`RewardsSetSynchronizer.SelectLocalReward`",
+            "A20 dual boss/courtyard",
+            "`ToSerializable` throws if `ParentEventId` is set on a non-prefinished combat room.",
+            "Source evidence can justify code shape and tests.");
+
+        AssertSourceContains(
+            multiplayerEvidence,
+            "`source code/src/Core/Multiplayer/Game/Lobby/StartRunLobby.cs`",
+            "`source code/src/Core/Random/PlayerRngSet.cs`",
+            "`source code/src/Core/Multiplayer/Game/RewardsSetSynchronizer.cs`",
+            "`source code/src/Core/Nodes/GodotExtensions/NClickableControl.cs`",
+            "`SyncAscensionChange` warnings",
+            "Preview systems that advance real RNG counters before the player commits.",
+            "A multiplayer claim requires two-client evidence.");
+
+        AssertSourceContains(
+            boundedContexts,
+            "AncientExpansionVakuu",
+            "AscensionCore",
+            "FuturePeek",
+            "ReleaseEvidence");
+
+        AssertSourceContains(
+            patchBoundaries,
+            "Current count: 137 Harmony patch declarations",
+            "A20 dual boss",
+            "RewardsSetSynchronizer",
+            "StartRunLobby.SyncAscensionChange",
+            "RootSightPreviewPolicy",
+            "VakuuFightFlow",
+            "FuturePeekTransformPolicy");
+
+        AssertSourceContains(
+            saveContracts,
+            "Root Eyes",
+            "Seed Bank",
+            "Lotha Death Reprieve",
+            "A20 dual boss/courtyard",
+            "Reward alternatives",
+            "Future Peek",
+            "They do not replace live save/load proof");
+
+        AssertSourceContains(
+            commitBoundaries,
+            "GOV-WIP-SPLIT remains open",
+            "Do not mix Future Peek and Spire Plus runtime changes in one commit.",
+            "Do not close live/manual rows in a commit that has no live evidence folder.");
     }
 }

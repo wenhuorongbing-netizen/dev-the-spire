@@ -19,6 +19,7 @@ Live-only blockers remain:
 
 - 2026-05-20 governance pass: added CI-safe repository hygiene workflow, issue/PR templates, ADR template, committed `.editorconfig`, generated `docs/patch-inventory.md`, added `docs/release-evidence-status.md`, and guarded these with `EngineeringGovernanceGuardTests`.
 - 2026-05-20 governance pass: added self-hosted `.github/workflows/full-local-validation.yml` and `scripts/ci-full-validation.ps1` for full no-game validation with explicit `STS2_PATH` and `GODOT_PATH`; the script passed locally, and first GitHub self-hosted workflow run evidence remains pending.
+- 2026-05-20 release-planning pass: converted `docs/goal.md` into no-game baseline, release scope, website claim audit, traceability matrix, source-research, architecture-boundary, save-state, and commit-boundary docs. The pass keeps live/manual rows open.
 - 2026-05-20 governance pass: updated `scripts/verify-spire-plus-release-evidence.ps1` and `ReleaseSafetyExpandedGuardTests` so the verifier default package hash matches the current `B19620D8D8A15D5B96208D3DE8C3B372BCA0874E076DD2DEBEDE09422FF28BD2` package.
 - 2026-05-20 subagent review pass: current smoke-log parity now computes the expected `SavedSpireField` count from source and rejects historical 22-field logs as current package evidence.
 - 2026-05-20 subagent review pass: tightened current smoke-log parity to count only static `SavedSpireField` declarations, so helper method generic references do not inflate the expected runtime loader count.

@@ -39,6 +39,10 @@
 | `docs/patch-inventory.md` | Current support | Generated Harmony patch owner/risk inventory. Regenerate with `scripts/generate-patch-inventory.ps1`. |
 | `docs/release-evidence-status.md` | Current support | Compact current package and live/manual evidence dashboard. |
 | `docs/adr/` | Current support | Architecture decision records. Start with `docs/adr/0000-template.md`. |
+| `docs/specs/` | Current support | Release scope, website claim audit, and release traceability matrix. |
+| `docs/source-research/` | Current support | Compact source evidence for high-risk run, room, reward, save, RNG, and multiplayer surfaces. |
+| `docs/architecture/` | Current support | Bounded context, patch boundary, and save-state contract maps. |
+| `docs/month-plan/` | Current support | 30-day plan outputs such as baseline freeze and commit boundaries. |
 | `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi and Lotha source slices, and the hidden-by-default dedicated Vakuu fight slice; live verification remains pending. |
 
 ## Active Mod Surface
@@ -114,6 +118,10 @@ Start at `docs/README.md`.
 | Open issues | `docs/issues.md` |
 | Patch inventory | `docs/patch-inventory.md` |
 | Release evidence dashboard | `docs/release-evidence-status.md` |
+| Release scope | `docs/specs/release-scope-v1.md` |
+| Traceability matrix | `docs/specs/release-traceability-matrix.md` |
+| Baseline freeze | `docs/month-plan/baseline-2026-05-20.md` |
+| Commit boundaries | `docs/month-plan/commit-boundaries.md` |
 | Full local CI lane | `.github/workflows/full-local-validation.yml` and `scripts/ci-full-validation.ps1` |
 | Test-ready development goal | `docs/test-ready-development-goal.md` |
 | Manual evidence queue | `docs/issues/waiting-tests.md` (compact support queue only; full historical rows are archived, and next development starts from `docs/test-ready-development-goal.md`) |
