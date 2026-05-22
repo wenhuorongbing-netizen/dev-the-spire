@@ -14,10 +14,6 @@ packages/
 /art_pipeline/
 /asset/
 
-# Local static website draft. Keep out of the private-beta release-candidate diff unless explicitly promoted.
-/website/
-/.github/workflows/spire-plus-site.yml
-
 # Local decompile/reference scratch material. Never commit copied game source or assets.
 /source code/
 *.user
