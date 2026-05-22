@@ -154,16 +154,16 @@ function detail(label, text, labelEn, textEn) {
 
 window.SPIRE_PLUS_DATA = {
   labels: {
-    brandSub: "《杀戮尖塔 2》平衡与内容扩展 · 温火融冰制作",
+    brandSub: "《杀戮尖塔 2》玩法扩展 · 温火融冰制作",
     navUpdates: "\u66f4\u65b0\u5185\u5bb9",
     navInstall: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     navForum: "\u8bba\u575b",
     navIssues: "\u5df2\u77e5\u95ee\u9898",
-    releaseLine: "\u5f53\u524d\u624b\u52a8\u6d4b\u8bd5\u5305 \u00b7 v0.1.0-private-beta.0",
+    releaseLine: "\u79c1\u4eba\u6d4b\u8bd5\u5305 \u00b7 v0.1.0-private-beta.0",
     heroTitle: "Spire Plus",
-    heroCopy: "面向玩家的改动记录。第一页只列原版与当前效果对比。",
-    introTitle: "模组说明",
-    introCopy: "Spire Plus 是《杀戮尖塔 2》的机制扩展与平衡重构包。当前重点是先古奖励、A11-A20、状态令牌和预览工具：让奖励更明确、更强，但同时保留代价、路线压力和战斗决策。",
+    heroCopy: "版本改动、下载方式、反馈入口与已知问题。",
+    introTitle: "关于 Spire Plus",
+    introCopy: "Spire Plus 是由温火融冰制作的《杀戮尖塔 2》玩法扩展。它重做先古奖励，扩展 A11-A20，并加入部分预览工具；目标是让强奖励拥有清晰代价，让路线、牌组和战斗选择更有重量。",
     download: "\u4e0b\u8f7d\u6a21\u7ec4",
     viewIssues: "\u67e5\u770b\u5df2\u77e5\u95ee\u9898",
     all: "\u5168\u90e8",
@@ -174,7 +174,7 @@ window.SPIRE_PLUS_DATA = {
     expandDetails: "\u5c55\u5f00\u5177\u4f53\u6548\u679c",
     sourceArtPlaceholder: "\u539f\u7248",
     installTitle: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
-    installLead: "\u5f53\u524d\u4e0b\u8f7d\u6307\u5411\u6700\u65b0\u624b\u52a8\u6d4b\u8bd5\u5305\u3002\u516c\u5f00\u7ad9\u9700\u8981 GitHub Release \u4e0a\u4f20\u540c\u540d\u538b\u7f29\u5305\u540e\u624d\u4f1a\u76f4\u8fbe\u4e0b\u8f7d\u3002",
+    installLead: "\u4e0b\u8f7d\u6700\u65b0\u79c1\u6d4b\u5305\uff0c\u5e76\u6309\u4e0b\u65b9\u8def\u5f84\u5b89\u88c5 BaseLib \u4e0e Spire Plus\u3002",
     currentDownload: "\u5f53\u524d\u4e0b\u8f7d",
     directDownload: "直链下载",
     openRelease: "\u6253\u5f00\u53d1\u5e03\u9875",
@@ -184,32 +184,32 @@ window.SPIRE_PLUS_DATA = {
     requirements: "\u8fd0\u884c\u8981\u6c42",
     assetPolicy: "\u56fe\u7247\u4e0e\u7248\u6743\u8fb9\u754c",
     forumTitle: "\u8bba\u575b",
-    forumLead: "公开发帖、反馈和回复使用 GitHub Issues / Discussions。本机区域只作为反馈模板和草稿，不会同步给其他玩家。",
-    forumPublicTitle: "公开讨论入口",
-    forumDraftTitle: "本机反馈模板",
+    forumLead: "Bug、建议和讨论统一通过 GitHub 提交。本页提供公开入口，也提供一个只保存在当前浏览器的反馈草稿框。",
+    forumPublicTitle: "公开反馈入口",
+    forumDraftTitle: "反馈草稿",
     postName: "名字",
     postNamePlaceholder: "名字，可留空",
     anonymous: "匿名玩家",
     postTitle: "\u6807\u9898",
     postBody: "\u5185\u5bb9",
     postTitlePlaceholder: "\u8f93\u5165\u6807\u9898",
-    postBodyPlaceholder: "\u672c\u5730\u533f\u540d\u7559\u8a00\uff0c\u53ea\u4fdd\u5b58\u5728\u5f53\u524d\u6d4f\u89c8\u5668\u3002",
+    postBodyPlaceholder: "\u5199\u4e0b\u73b0\u8c61\u3001\u7248\u672c\u3001\u622a\u56fe\u8bf4\u660e\u6216\u590d\u73b0\u6b65\u9aa4\u3002\u8349\u7a3f\u53ea\u4fdd\u5b58\u5728\u5f53\u524d\u6d4f\u89c8\u5668\u3002",
     replyPlaceholder: "写回复",
     replySubmit: "回复",
     postSubmit: "保存草稿",
     postClear: "清空草稿",
-    noPosts: "暂无本机草稿。",
+    noPosts: "暂无草稿。",
     issuesTitle: "\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55",
-    issuesLead: "\u5148\u5217\u963b\u585e\u548c\u5f85\u9a8c\u8bc1\u4e8b\u9879\uff0c\u518d\u5217\u5df2\u5b8c\u6210\u7684\u66f4\u65b0\u8bb0\u5f55\u3002\u4e0d\u8981\u628a\u5f85\u9a8c\u8bc1\u5185\u5bb9\u5199\u6210\u5df2\u53d1\u5e03\u627f\u8bfa\u3002",
+    issuesLead: "\u8fd9\u91cc\u8bb0\u5f55\u4ecd\u9700\u9a8c\u8bc1\u7684\u95ee\u9898\u548c\u5df2\u5b8c\u6210\u7684\u7248\u672c\u6539\u52a8\u3002\u72b6\u6001\u4f1a\u968f\u6d4b\u8bd5\u8fdb\u5ea6\u66f4\u65b0\u3002",
     knownIssues: "\u5df2\u77e5\u95ee\u9898",
     changeLog: "\u66f4\u65b0\u8bb0\u5f55",
     noTitle: "\u672a\u547d\u540d"
   },
   summary: [
-    ["更新内容", "原版与当前效果对比", "updates"],
-    ["下载安装", "测试包、依赖和安装路径", "install"],
-    ["论坛", "反馈、发帖和回复入口", "forum"],
-    ["已知问题", "阻塞项与更新记录", "issues"]
+    ["更新内容", "原版对比与当前效果", "updates"],
+    ["下载与安装", "版本、依赖和安装路径", "install"],
+    ["论坛", "反馈、建议和讨论入口", "forum"],
+    ["已知问题", "待验证项目与更新记录", "issues"]
   ],
   package: {
     localDownload: "../publish/SpirePlus-v0.1.0-private-beta.0.zip",
@@ -237,23 +237,23 @@ window.SPIRE_PLUS_DATA = {
     "模组最终位置：mods\\EZMicroBalance\\EZMicroBalance.json。",
     "BaseLib 最终位置：mods\\BaseLib\\BaseLib.json。",
     "\u542f\u52a8\u6e38\u620f\uff0c\u5728\u6a21\u7ec4\u5217\u8868\u91cc\u542f\u7528 Spire Plus\u3002",
-    "\u5f53\u524d\u6d4b\u8bd5\u5305\u4ecd\u9700\u5b9e\u673a\u9a8c\u8bc1\uff1b\u9047\u5230\u95ee\u9898\u8bf7\u4fdd\u7559 godot.log \u548c\u622a\u56fe\u3002"
+    "\u6b64\u7248\u672c\u4ecd\u5904\u4e8e\u79c1\u6d4b\uff1b\u53cd\u9988\u95ee\u9898\u65f6\u8bf7\u9644\u4e0a godot.log\u3001\u622a\u56fe\u548c\u590d\u73b0\u6b65\u9aa4\u3002"
   ],
   requirements: [
     "Slay the Spire 2 public beta v0.106.0\u3002",
-    "BaseLib v3.1.4；当前包按这个版本构建，不写成自动兼容后续 BaseLib。",
-    "\u4e0d\u8981\u628a\u65e7 EzDailyContent \u5f53\u6210\u5f53\u524d\u6a21\u7ec4\u542f\u7528\uff1b\u5f53\u524d\u6a21\u7ec4\u663e\u793a\u540d\u662f Spire Plus\u3002",
-    "\u6e05\u5355\u7f16\u53f7\u548c\u5b89\u88c5\u76ee\u5f55\u4fdd\u6301 EZMicroBalance\uff0c\u8fd9\u662f\u517c\u5bb9\u6027\u8981\u6c42\u3002"
+    "BaseLib v3.1.4；此版本按该依赖构建。",
+    "\u6a21\u7ec4\u5217\u8868\u4e2d\u7684\u663e\u793a\u540d\u5e94\u4e3a Spire Plus\u3002",
+    "\u6e05\u5355\u7f16\u53f7\u4e0e\u5b89\u88c5\u76ee\u5f55\u4fdd\u6301 EZMicroBalance\uff0c\u7528\u4e8e\u5b58\u6863\u4e0e\u517c\u5bb9\u6027\u7ee7\u627f\u3002"
   ],
   assetPolicy: [
-    "\u516c\u5f00\u7ad9\u70b9\u53ea\u5185\u7f6e\u672c\u4ed3\u5e93\u81ea\u6709\u6216\u751f\u6210\u56fe\u7247\uff0c\u4e3b\u8981\u6765\u81ea EZMicroBalance/images/\u3002",
-    "\u539f\u7248\u6e38\u620f\u56fe\u7247\u53ef\u4ee5\u5728\u672c\u673a\u53c2\u8003\uff0c\u4f46\u4e0d\u80fd\u590d\u5236\u8fdb\u4ed3\u5e93\u6216 GitHub Pages \u53d1\u5e03\u5305\u3002",
-    "本地预览会从 source code/images/ 读取原版遗物图标；公开 GitHub Pages 不内置这些原版图标。",
-    "\u5982\u679c\u540e\u7eed\u9700\u8981\u5c55\u793a\u539f\u7248\u5b9e\u673a\u622a\u56fe\uff0c\u9700\u7531\u9879\u76ee\u6240\u6709\u8005\u786e\u8ba4\u6388\u6743\u8fb9\u754c\u540e\u5355\u72ec\u653e\u5165\u5141\u8bb8\u53d1\u5e03\u7684\u7d20\u6750\u76ee\u5f55\u3002"
+    "\u672c\u7ad9\u53ea\u6253\u5305 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\uff0c\u4e3b\u8981\u6765\u81ea EZMicroBalance/images/\u3002",
+    "\u539f\u7248\u6e38\u620f\u56fe\u50cf\u4e0d\u968f\u516c\u5f00\u7ad9\u53d1\u5e03\u3002\u6d89\u53ca\u539f\u7248\u9057\u7269\u6216\u5361\u724c\u65f6\uff0c\u7ebf\u4e0a\u9875\u9762\u4f7f\u7528\u201c\u539f\u7248\u201d\u5360\u4f4d\u56fe\u5757\u3002",
+    "\u672c\u5730\u9884\u89c8\u53ef\u4ee5\u8bfb\u53d6 source code/images/ \u4e2d\u7684\u53c2\u8003\u56fe\uff1b\u8fd9\u4e9b\u6587\u4ef6\u4e0d\u8fdb\u5165 GitHub Pages \u53d1\u5e03\u5305\u3002",
+    "\u82e5\u540e\u7eed\u9700\u8981\u516c\u5f00\u5c55\u793a\u539f\u7248\u5b9e\u673a\u622a\u56fe\uff0c\u5c06\u5355\u72ec\u5904\u7406\u6388\u6743\u548c\u7d20\u6750\u6765\u6e90\u3002"
   ],
   forum: {
     notice:
-      "公开帖子请走 GitHub Issues / Discussions。本机草稿只保存在当前浏览器，用于整理反馈文本和截图，不代表已公开提交。",
+      "公开反馈请使用 GitHub Issues / Discussions。下方草稿只保存在当前浏览器，适合先整理复现步骤和截图说明。",
     links: [
       ["GitHub \u4ed3\u5e93", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
       ["GitHub Issues", "https://github.com/wenhuorongbing-netizen/dev-the-spire/issues"],
@@ -264,7 +264,7 @@ window.SPIRE_PLUS_DATA = {
     {
       short: "\u5956\u52b1",
       title: "\u73b0\u6709\u5148\u53e4\u5956\u52b1\u91cd\u6784",
-      note: "\u5bf9\u5df2\u6709\u9057\u7269\u548c\u5956\u52b1\u505a\u884c\u4e3a\u8986\u76d6\u3002",
+      note: "\u4ee5\u4e0b\u6761\u76ee\u5217\u51fa\u539f\u7248\u6548\u679c\u4e0e Spire Plus \u5f53\u524d\u6548\u679c\u3002",
       icon: "assets/relics/relic.png",
       defaultVanilla: "\u539f\u7248\u9057\u7269\u884c\u4e3a\u3002",
       items: [
@@ -392,18 +392,18 @@ window.SPIRE_PLUS_DATA = {
     }
   ],
   knownIssues: [
-    ["\u963b\u585e", "\u5f53\u524d\u5305\u5b9e\u673a\u52a0\u8f7d\u4ecd\u5f85\u5237\u65b0", "\u5f53\u524d\u6e90\u7801\u5b9a\u4e49 25 \u4e2a SavedSpireFields\uff1b\u6700\u65b0\u5b9e\u673a\u52a0\u8f7d\u8bc1\u636e\u4ecd\u662f\u8f83\u65e9\u5305\uff0c\u4e0d\u80fd\u58f0\u660e\u5f53\u524d\u5305\u8fd0\u884c\u65f6\u7b49\u4ef7\u3002"],
-    ["\u5f85\u9a8c\u8bc1", "\u5148\u53e4\u70b9\u51fb\u754c\u9762", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u3001\u666e\u901a\u74e6\u5e93\u548c\u9690\u85cf\u74e6\u5e93\u6218\u6597\u754c\u9762\u622a\u56fe\u3001\u65e5\u5fd7\u3001\u60ac\u505c\u53ef\u8bfb\u6027\u4ecd\u5f85\u8865\u8bc1\u3002"],
-    ["\u5f85\u9a8c\u8bc1", "\u74e6\u5e93\u8bd5\u70bc", "\u80dc\u5229\u8fd4\u56de\u7236\u4e8b\u4ef6\u3001\u65e0\u9ed1\u5c4f\u3001\u5931\u8d25/\u6b7b\u4ea1\u8def\u5f84\u3001\u5b58\u8bfb\u6863\u548c\u8054\u673a\u8fb9\u754c\u5747\u672a\u5b8c\u6210\u5b9e\u673a\u8bc1\u660e\u3002"],
-    ["\u5f85\u9a8c\u8bc1", "\u8fdb\u9636 11-20", "A11 \u81ea\u7136\u8def\u7ebf\u70b9\u51fb\u3001A12/A16/A19/A20 \u6218\u6597\u884c\u4e3a\u3001\u6839\u8680\u6218\u540e\u8868\u73b0\u3001\u5b58\u8bfb\u6863\u3001\u53cc\u4eba\u8054\u673a\u4ecd\u5f85\u9a8c\u8bc1\u3002"],
-    ["\u5f85\u9a8c\u8bc1", "\u516c\u5f00\u8bba\u575b", "GitHub Pages \u9759\u6001\u7ad9\u4e0d\u80fd\u5355\u72ec\u63d0\u4f9b\u771f\u6b63\u7684\u516c\u5171\u533f\u540d\u8bba\u575b\uff1b\u9700\u8981\u63a5\u5165 Discussions\u3001Giscus \u6216\u72ec\u7acb\u540e\u7aef\u3002"],
-    ["\u8fb9\u754c", "\u539f\u7248\u6e38\u620f\u56fe\u7247", "\u516c\u5f00\u4ed3\u5e93\u4e0d\u80fd\u590d\u5236\u539f\u7248\u6e38\u620f\u7d20\u6750\u3002\u5f53\u524d\u7f51\u9875\u4f7f\u7528\u672c\u6a21\u7ec4\u81ea\u6709\u56fe\u7247\uff1b\u539f\u7248\u56fe\u53ea\u80fd\u4f5c\u4e3a\u672c\u5730\u53c2\u8003\u6216\u7ecf\u6388\u6743\u540e\u53e6\u884c\u5904\u7406\u3002"]
+    ["\u9ad8\u4f18\u5148\u7ea7", "\u5b9e\u673a\u52a0\u8f7d\u8bb0\u5f55\u5f85\u66f4\u65b0", "\u5f53\u524d\u5305\u9700\u8981\u91cd\u65b0\u8dd1\u4e00\u6b21\u5b8c\u6574\u52a0\u8f7d\u6d4b\u8bd5\uff0c\u5e76\u4fdd\u7559\u4e0e\u6700\u65b0\u6784\u5efa\u5bf9\u5e94\u7684 godot.log\u3002"],
+    ["\u5f85\u9a8c\u8bc1", "\u5148\u53e4\u8282\u70b9\u754c\u9762", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u3001\u666e\u901a\u74e6\u5e93\u548c\u9690\u85cf\u74e6\u5e93\u6218\u6597\u9700\u8981\u8865\u5145\u622a\u56fe\u3001\u65e5\u5fd7\u548c\u60ac\u505c\u6587\u672c\u53ef\u8bfb\u6027\u8bc1\u660e\u3002"],
+    ["\u5f85\u9a8c\u8bc1", "\u74e6\u5e93\u8bd5\u70bc", "\u80dc\u5229\u8fd4\u56de\u4e8b\u4ef6\u3001\u5931\u8d25/\u6b7b\u4ea1\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u8054\u673a\u8fb9\u754c\u9700\u8981\u8fdb\u4e00\u6b65\u5b9e\u673a\u6d4b\u8bd5\u3002"],
+    ["\u5f85\u9a8c\u8bc1", "\u8fdb\u9636 11-20", "A11 \u8def\u7ebf\u70b9\u51fb\u3001A12/A16/A19/A20 \u6218\u6597\u89c4\u5219\u3001\u6839\u8680\u6218\u540e\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u53cc\u4eba\u8054\u673a\u8fd8\u9700\u8981\u5b8c\u6574\u8bb0\u5f55\u3002"],
+    ["\u5f85\u63a5\u5165", "\u516c\u5f00\u8bba\u575b", "\u5f53\u524d\u516c\u5f00\u4ea4\u6d41\u4f7f\u7528 GitHub Issues / Discussions\u3002\u82e5\u9700\u8981\u7ad9\u5185\u56de\u590d\u548c\u533f\u540d\u53d1\u5e16\uff0c\u9700\u8981\u63a5\u5165 Giscus \u6216\u72ec\u7acb\u540e\u7aef\u3002"],
+    ["\u7d20\u6750\u8bf4\u660e", "\u539f\u7248\u6e38\u620f\u56fe\u7247", "\u516c\u5f00\u7ad9\u4ec5\u4f7f\u7528 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\u3002\u539f\u7248\u56fe\u50cf\u4ec5\u5728\u672c\u5730\u9884\u89c8\u4e2d\u4f5c\u4e3a\u53c2\u8003\uff0c\u7ebf\u4e0a\u9875\u9762\u4ee5\u201c\u539f\u7248\u201d\u5360\u4f4d\u8868\u793a\u3002"]
   ],
   changeLog: [
-    ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u9875\u73a9\u5bb6\u7ed3\u6784\uff1a\u66f4\u65b0\u5bf9\u6bd4\u3001\u4e0b\u8f7d\u6559\u5b66\u3001\u8bba\u575b\u5165\u53e3\u3001\u5df2\u77e5\u95ee\u9898/\u66f4\u65b0\u8bb0\u5f55\u3002"],
+    ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
     ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.0.zip\uff0c\u6e05\u5355\u7f16\u53f7 EZMicroBalance\uff0c\u663e\u793a\u540d Spire Plus\u3002"],
-    ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u9ed8\u8ba4\u4f5c\u4e3a\u65b0\u589e\u5148\u53e4\u5185\u5bb9\uff1b\u74e6\u5e93\u8bd5\u70bc\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u6d4b\u8bd5\u3002"],
-    ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u4e3a\u5f53\u524d\u5f00\u53d1\u6d4b\u8bd5\u5019\u9009\uff0c\u5355\u4eba\u4e0e\u623f\u4e3b\u591a\u4eba\u9009\u62e9\u9762\u5df2\u6253\u5f00\uff0c\u8054\u673a\u5b8c\u6574\u73a9\u6cd5\u672a\u9a8c\u8bc1\u3002"],
+    ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
+    ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb Future Peek \u53d1\u5e03\u3002"]
   ],
   locFiles: {
@@ -666,15 +666,15 @@ function manual(title, vanilla, current, tags, icon) {
 window.SPIRE_PLUS_DATA.i18n = {
   en: {
     labels: {
-      brandSub: "Balance and content expansion for Slay the Spire 2",
+      brandSub: "Gameplay expansion for Slay the Spire 2 by Wenhuo Rongbing",
       navUpdates: "Updates",
       navInstall: "Download & Install",
       navForum: "Forum",
       navIssues: "Known Issues",
-      releaseLine: "Current manual test package · v0.1.0-private-beta.0",
-      heroCopy: "Player-facing change log. The first page lists vanilla behavior against current effects.",
-      introTitle: "Mod Scope",
-      introCopy: "Spire Plus is a balance and content expansion for Slay the Spire 2. The current package focuses on Ancient rewards, Ascension 11-20, token cards, and preview tools: stronger rewards, clearer costs, route pressure, and combat decisions.",
+      releaseLine: "Private test build · v0.1.0-private-beta.0",
+      heroCopy: "Patch notes, downloads, feedback links, and known issues.",
+      introTitle: "About Spire Plus",
+      introCopy: "Spire Plus is a gameplay expansion for Slay the Spire 2 by Wenhuo Rongbing. It rebuilds Ancient rewards, extends Ascension 11-20, and adds selected preview tools. The goal is simple: stronger rewards, clearer costs, and more meaningful route, deck, and combat decisions.",
       download: "Download Mod",
       viewIssues: "Known Issues",
       all: "All",
@@ -685,7 +685,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       expandDetails: "Expand exact effects",
       sourceArtPlaceholder: "Vanilla",
       installTitle: "Download & Install",
-      installLead: "The current download target is the latest manual test package. On the public site, direct downloads require the matching ZIP to be uploaded to GitHub Releases.",
+      installLead: "Download the latest private test build, then install BaseLib and Spire Plus in the paths below.",
       currentDownload: "Current Download",
       directDownload: "Direct Download",
       openRelease: "Open Releases",
@@ -695,23 +695,23 @@ window.SPIRE_PLUS_DATA.i18n = {
       requirements: "Requirements",
       assetPolicy: "Image and Asset Policy",
       forumTitle: "Forum",
-      forumLead: "Public posts, feedback, and replies should use GitHub Issues / Discussions. The local area is only a feedback template and draft space; it does not sync to other players.",
-      forumPublicTitle: "Public Discussion",
-      forumDraftTitle: "Local Feedback Template",
+      forumLead: "Bugs, suggestions, and discussion are handled through GitHub. This page links to the public channels and includes a browser-only feedback draft box.",
+      forumPublicTitle: "Public Feedback",
+      forumDraftTitle: "Feedback Draft",
       postName: "Name",
       postNamePlaceholder: "Name, optional",
       anonymous: "Anonymous player",
       postTitle: "Title",
       postBody: "Body",
       postTitlePlaceholder: "Enter title",
-      postBodyPlaceholder: "Local anonymous draft. It is stored only in this browser.",
+      postBodyPlaceholder: "Write the issue, version, screenshot notes, or reproduction steps. Drafts stay in this browser.",
       replyPlaceholder: "Write a reply",
       replySubmit: "Reply",
       postSubmit: "Save Draft",
       postClear: "Clear Drafts",
-      noPosts: "No local drafts.",
+      noPosts: "No drafts yet.",
       issuesTitle: "Known Issues & Changelog",
-      issuesLead: "Blocking and unverified items come first, followed by completed changes. Pending verification is not a release-ready claim.",
+      issuesLead: "Known issues and completed changes are tracked here. Status will update as testing continues.",
       knownIssues: "Known Issues",
       changeLog: "Changelog",
       noTitle: "Untitled",
@@ -719,10 +719,10 @@ window.SPIRE_PLUS_DATA.i18n = {
       issueSeparator: " · "
     },
     summary: [
-      ["Updates", "Vanilla vs current effects", "updates"],
-      ["Install", "Package, dependency, install path", "install"],
-      ["Forum", "Feedback and discussion links", "forum"],
-      ["Known Issues", "Blockers and changelog", "issues"]
+      ["Updates", "Vanilla comparison and current effects", "updates"],
+      ["Download & Install", "Build, dependencies, install paths", "install"],
+      ["Forum", "Feedback, suggestions, discussion", "forum"],
+      ["Known Issues", "Open checks and changelog", "issues"]
     ],
     locFiles: {
       relics: "assets/localization/eng/relics.json",
@@ -751,22 +751,22 @@ window.SPIRE_PLUS_DATA.i18n = {
       "Final mod path: mods\\EZMicroBalance\\EZMicroBalance.json.",
       "Final BaseLib path: mods\\BaseLib\\BaseLib.json.",
       "Start the game and enable Spire Plus in the mod list.",
-      "This test package still needs live verification. Keep godot.log and screenshots when reporting issues."
+      "This is a private test build. When reporting an issue, include godot.log, screenshots, and reproduction steps."
     ],
     requirements: [
       "Slay the Spire 2 public beta v0.106.0.",
-      "BaseLib v3.1.4. The package is built for this version; do not present it as automatically compatible with later BaseLib versions.",
-      "Do not enable the old EzDailyContent scaffold as the current mod. The player-facing mod name is Spire Plus.",
-      "The manifest id and install folder remain EZMicroBalance for compatibility."
+      "BaseLib v3.1.4. This build targets that dependency version.",
+      "The mod list should show Spire Plus.",
+      "The manifest id and install folder remain EZMicroBalance for save and compatibility continuity."
     ],
     assetPolicy: [
-      "The public site bundles only repo-owned or generated images, mainly from EZMicroBalance/images/.",
-      "Original game images may be referenced locally, but they must not be copied into the repository or GitHub Pages package.",
-      "Local preview may read original relic icons from source code/images/. Public GitHub Pages does not include those original icons.",
-      "If public screenshots from the base game are needed later, asset permission should be confirmed and handled separately."
+      "This site ships only Spire Plus-owned or publishable assets, mainly from EZMicroBalance/images/.",
+      "Original game images are not included in the public site. Entries that refer to vanilla relics or cards use a Vanilla placeholder online.",
+      "Local preview can read reference images from source code/images/. Those files are not included in the GitHub Pages build.",
+      "If base-game screenshots are published later, permission and asset source will be handled separately."
     ],
     forum: {
-      notice: "Use GitHub Issues / Discussions for public posts. Local drafts stay in the current browser and are only for preparing feedback text and screenshots.",
+      notice: "Use GitHub Issues / Discussions for public feedback. Drafts below stay in this browser and are useful for preparing reproduction steps and screenshot notes.",
       links: [
         ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
         ["GitHub Issues", "https://github.com/wenhuorongbing-netizen/dev-the-spire/issues"],
@@ -777,7 +777,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       {
         short: "Rewards",
         title: "Existing Ancient Reward Rework",
-        note: "Behavior overrides for existing relics and rewards.",
+        note: "Reworked effects for existing relics and rewards.",
         defaultVanilla: "Vanilla relic behavior."
       },
       {
@@ -789,13 +789,13 @@ window.SPIRE_PLUS_DATA.i18n = {
       {
         short: "Ascension",
         title: "Ascension 11-20",
-        note: "Vanilla currently ends at A10; this package adds A11-A20 test content.",
+        note: "Spire Plus adds a private-test A11-A20 ruleset beyond vanilla A10.",
         defaultVanilla: "No equivalent vanilla content."
       },
       {
         short: "Tokens",
         title: "New Cards, Statuses, and Preview Tools",
-        note: "Dedicated token cards and preview tools added by the mod.",
+        note: "Dedicated token cards, statuses, and preview tools added by the mod.",
         defaultVanilla: "No equivalent vanilla content."
       }
     ],
@@ -1052,18 +1052,18 @@ window.SPIRE_PLUS_DATA.i18n = {
       }
     },
     knownIssues: [
-      ["Blocker", "Current package live-load evidence is stale", "Current source defines 25 SavedSpireFields. The newest live loader evidence still comes from an earlier package, so current-package runtime parity cannot be claimed yet."],
-      ["Needs verification", "Ancient click UI", "Urda, Morvi, Lotha, normal Vakuu, and hidden Vakuu fight UI still need screenshots, logs, and hover readability proof."],
-      ["Needs verification", "Vakuu trial", "Victory return to parent event, no black screen, failure/death path, save/load, and multiplayer boundaries still need live proof."],
-      ["Needs verification", "Ascension 11-20", "A11 natural route clicks, A12/A16/A19/A20 combat behavior, Rootblight post-combat behavior, save/load, and two-player co-op still need verification."],
-      ["Needs verification", "Public forum", "A static GitHub Pages site cannot provide a true public anonymous forum by itself. Discussions, Giscus, or a separate backend is required."],
-      ["Boundary", "Original game images", "Public repositories must not copy original game assets. The site uses mod-owned images; original game images are local references only unless separately authorized."]
+      ["High priority", "Live-load evidence needs a refresh", "The current package needs a fresh full load test with a godot.log that matches the latest build."],
+      ["Needs verification", "Ancient node UI", "Urda, Morvi, Lotha, normal Vakuu, and hidden Vakuu combat need screenshots, logs, and hover text readability proof."],
+      ["Needs verification", "Vakuu trial", "Victory return, failure/death resolution, save-load behavior, and multiplayer boundaries need more live testing."],
+      ["Needs verification", "Ascension 11-20", "A11 route clicks, A12/A16/A19/A20 combat rules, Rootblight post-combat resolution, save-load behavior, and two-player co-op need full test records."],
+      ["Integration pending", "Public forum", "Public feedback currently uses GitHub Issues / Discussions. Site-native replies and anonymous posts would require Giscus or a separate backend."],
+      ["Asset note", "Original game images", "The public site uses only Spire Plus-owned or publishable assets. Vanilla images are local references only and appear online as Vanilla placeholders."]
     ],
     changeLog: [
-      ["2026-05-22 · Website rebuild", "Site structure changed to four player pages: update comparison, install guide, forum entry, known issues and changelog."],
+      ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
       ["Current package", "SpirePlus-v0.1.0-private-beta.0.zip, manifest id EZMicroBalance, display name Spire Plus."],
-      ["Ancient content", "Urda, Morvi, and Lotha are default-on new Ancient content. Vakuu trial remains hidden behind test gates."],
-      ["Ascension content", "A11-A20 is a current development test candidate. Single-player and host multiplayer selection are open; full co-op gameplay is not verified."],
+      ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
+      ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate Future Peek package."]
     ]
   }
