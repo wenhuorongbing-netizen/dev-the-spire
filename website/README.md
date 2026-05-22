@@ -30,6 +30,8 @@ http://127.0.0.1:4177/website/
 https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/latest/download/SpirePlus-v0.1.0-private-beta.0.zip
 ```
 
+当前仓库是 private 时，GitHub Pages 还取决于账号计划是否支持 private repository Pages。若 API 返回 `Your current plan does not support GitHub Pages for this repository`，需要把仓库改为 public、升级到支持 private Pages 的计划，或把 `website/` 发布到一个单独的 public Pages 仓库。
+
 发布页面前，需要在 GitHub Release 上传同名 zip 资产。
 
 ## 更新方式
