@@ -61,6 +61,97 @@ const ascDescOverrides = {
   BANNER_LAST_STAND: "多敌人战斗中，第一个敌人死亡时，剩余敌人获得格挡和临时力量；力量第1/2/3幕分别为1/2/4点。"
 };
 
+const ascensionDetails = {
+  LEVEL_11: [
+    detail("地图", "宽度+1；第一幕+1层，第二幕+1层，第三幕+2层。", "Map", "Width +1; Act 1 +1 row, Act 2 +1 row, Act 3 +2 rows."),
+    detail("路线", "插入路线必须可抵达，且保留一条不经过插入列的普通路线。", "Routing", "The inserted route must be reachable while a normal route that avoids the inserted column remains available.")
+  ],
+  LEVEL_12: [
+    detail("数量", "第一幕目标2个火印精英；第二幕以后目标3个；安全候选不足时至少尝试2个。", "Count", "Act 1 targets 2 Firemarked Elites; later acts target 3; the safe fallback attempts at least 2."),
+    detail("奖励", "击败后获得铸令；若已经持有铸令，改为15金币。火印精英卡牌奖励显示到4选。", "Reward", "Defeat one to gain a Forge Token. If already held, it converts to 15 Gold. Firemarked Elite card rewards show up to 4 cards."),
+    detail("铸令", "下个休息处：休息随机升级1张可升级普通/罕见牌；没有目标则回复5 HP。锻造则回复7 HP。", "Forge Token", "At the next rest site: Rest upgrades 1 upgradable Common/Uncommon card at random, or heals 5 HP if none exists. Smith heals 7 HP.")
+  ],
+  LEVEL_13: [
+    detail("出现率", "普通战10%；战旗房15%；火印精英20%；首领5%。", "Rates", "Normal combat 10%; Banner Room 15%; Firemarked Elite 20%; Boss 5%."),
+    detail("候选", "只作用于普通/罕见/稀有攻击或技能；排除X费、0费、已有附魔、消耗牌和不能生成附魔的牌。", "Eligible cards", "Only Common/Uncommon/Rare Attacks or Skills. X-cost, 0-cost, already enchanted, Exhaust, and non-enchantable cards are excluded."),
+    detail("效果", "裂变牌耗能-1，打出后消耗。", "Effect", "Fission reduces cost by 1 and Exhausts the card after play.")
+  ],
+  LEVEL_14: [
+    detail("开局", "开局加入根蚀 I。", "Start", "Start with Rootblight I."),
+    detail("恶化", "战后仍在主牌组中的根蚀会升级到下一阶段；最多4张根蚀。", "Worsening", "Rootblights left in the master deck after combat worsen to the next stage. Max 4 Rootblights."),
+    detail("休息", "休息处休息会移除最高等级的根蚀。", "Rest", "Resting removes the highest-level Rootblight.")
+  ],
+  LEVEL_15: [
+    detail("首领", "第二幕和第三幕首领战埋入2张根芽。", "Boss fights", "Act 2 and Act 3 Boss fights bury 2 Blight Sprouts."),
+    detail("萌发", "根芽分别在第3/4回合进入牌流；看见但不处理会在战后加入根蚀 I。", "Sprout timing", "They surface on rounds 3/4. If seen and left unresolved, they add Rootblight I after combat.")
+  ],
+  LEVEL_16: [
+    detail("地图", "战旗房是公开规则的强化普通战斗。", "Map", "Banner Rooms are visible enhanced normal combats."),
+    detail("战旗池", "先锋、盾阵、血赏、压阵、残阵。盾阵和残阵需要多敌人战；单敌人回退为血赏。", "Banner pool", "Vanguard, Shieldwall, Blood Prize, Pressing Line, Last Stand. Shieldwall and Last Stand require multi-enemy fights; single-enemy fights fall back to Blood Prize."),
+    detail("奖励", "战旗房卡牌奖励的裂变率为15%。", "Reward", "Banner Room card rewards use the 15% Fission chance.")
+  ],
+  LEVEL_17: [
+    detail("路线", "第二幕和第三幕各插入1条3-4节点深层支线，并在后方接回主路。", "Route", "Act 2 and Act 3 each insert one optional 3-4 node Deep Branch that reconnects later."),
+    detail("奖励", "深层支线奖励节点会额外补1个罕见遗物奖励；普通安全路线保留。", "Reward", "A Deep Branch reward node adds an Uncommon relic reward. A normal safe route remains.")
+  ],
+  LEVEL_18: [
+    detail("精英", "第二幕和第三幕中后段精英战埋入1张根芽。", "Elite fights", "Mid/late Act 2 and Act 3 Elite fights bury 1 Blight Sprout."),
+    detail("结算", "根芽规则沿用A15：看见但不处理会在战后加入根蚀 I。", "Resolution", "Uses the A15 Blight Sprout rule: if seen and unresolved, it adds Rootblight I after combat.")
+  ],
+  LEVEL_19: [
+    detail("首领", "每个首领获得对应王印。地图悬停和战斗提示显示具体王印名称。", "Bosses", "Each Boss gets its matching Royal Seal. Map hover and combat indicators show the exact Seal."),
+    detail("奖励", "首领牌奖励显示到4选，优先补稀有牌。", "Reward", "Boss card rewards show up to 4 choices, preferring Rare cards for the extra option."),
+    detail("列表", "下方每个首领条目列出王印和A20王烙印差异。", "List", "The Boss entries below list the Royal Seal and A20 King Brand differences.")
+  ],
+  LEVEL_20: [
+    detail("终局", "A20不新增第三个完整首领；沿用原版第三幕双首领流程。", "Finale", "A20 does not add a third full Boss. It uses the vanilla Act 3 double-Boss flow."),
+    detail("首领1", "第一个第三幕首领使用王印；战后若没有首领牌奖励，会补1个首领牌奖励。", "Boss 1", "The first Act 3 Boss uses its Royal Seal. After Boss 1, a Boss card reward is added if no card reward exists."),
+    detail("中庭", "首领1奖励后进入中庭，回复25%已损生命，然后进入第二个首领。", "Courtyard", "After Boss 1 rewards, the Courtyard heals 25% of missing HP before Boss 2."),
+    detail("首领2", "第二个第三幕首领提前显示，并把王印升级为更强的王烙印。", "Boss 2", "The second Act 3 Boss is revealed early and upgrades its Royal Seal into the stronger King Brand."),
+    detail("边界", "单人流程为主要目标；多人双王烙印仍按开发测试处理。", "Boundary", "Single-player is the primary target. Multiplayer dual King Brand behavior remains development-test scope.")
+  ],
+  FIREMARK_MIGHT: [
+    detail("数值", "力量：第一幕1，第二幕2，第三幕4。", "Values", "Strength: Act 1/2/3 = 1/2/4."),
+    detail("热势", "造成未被格挡攻击伤害后获得热势；2层热势使下一次攻击额外+1/+2/+4伤害。", "Heat", "Unblocked attack damage builds Heat. At 2 Heat, the next attack gains +1/+2/+4 damage.")
+  ],
+  FIREMARK_GIANT: [
+    detail("数值", "最大/当前生命提高：第一幕20%，第二幕30%，第三幕45%。", "Values", "Max/current HP increase: Act 1/2/3 = +20%/+30%/+45%."),
+    detail("熔核", "半血后暴露熔核；窗口内造成原最大生命20%/25%/30%的伤害可削弱，否则获得1层人工制品。", "Molten Core", "At half HP, Molten Core opens. Deal 20%/25%/30% of original Max HP during the window to weaken it; otherwise it gains 1 Artifact.")
+  ],
+  FIREMARK_FORGE_ARMOR: [
+    detail("数值", "敌方回合后获得8/14/24点熔甲。", "Values", "After enemy turns, gain 8/14/24 Molten Armor."),
+    detail("破甲", "首次完整打碎本次熔甲后，跳过下一次熔甲生成。", "Break", "The first full break skips the next armor gain.")
+  ],
+  FIREMARK_CONSTANT_HEAL: [
+    detail("数值", "敌方回合后回复4/8/16 HP。", "Values", "After enemy turns, heal 4/8/16 HP."),
+    detail("打断", "本轮对该精英造成20/40/80点伤害可阻止本次治疗。", "Interrupt", "Deal 20/40/80 damage to that Elite during the round to stop that heal.")
+  ],
+  BANNER_VANGUARD: [
+    detail("数值", "所有主要敌人开战获得1/2/4点临时力量。", "Values", "All primary enemies start with 1/2/4 temporary Strength."),
+    detail("移除", "第3回合开始时移除这些力量。", "Removal", "Removed at the start of round 3.")
+  ],
+  BANNER_SHIELDWALL: [
+    detail("数值", "旗手存活时，其他敌人每个敌方回合后获得3/7/14点格挡。", "Values", "While the bannerbearer lives, other enemies gain 3/7/14 Block after each enemy turn."),
+    detail("死亡", "旗手死亡时，其他敌人获得5/10/20点格挡。", "Death", "When the bannerbearer dies, other enemies gain 5/10/20 Block.")
+  ],
+  BANNER_BLOOD_PRIZE: [
+    detail("奖励", "第3回合结束前击杀标记敌人，战后获得15/30/55金币。", "Reward", "Kill the marked enemy before round 3 ends to gain 15/30/55 Gold after combat."),
+    detail("失败", "若标记敌人存活，它获得1/2/4力量和1/1/2层人工制品。", "Miss", "If it survives, it gains 1/2/4 Strength and 1/1/2 Artifact.")
+  ],
+  BANNER_PRESSING_LINE: [
+    detail("触发", "每回合第4/5/6张牌给敌阵充能，最多3层。", "Trigger", "Each turn, cards 4/5/6 charge the enemy line, max 3 layers."),
+    detail("数值", "充能给敌人4-6/8-12/16-24点格挡；满层使下一次攻击+1/2/4伤害。", "Values", "Charge gives 4-6/8-12/16-24 Block. Full charge adds +1/2/4 damage to the next attack.")
+  ],
+  BANNER_LAST_STAND: [
+    detail("触发", "仅多敌人战。第一个主要敌人死亡时触发一次。", "Trigger", "Multi-enemy fights only. Triggers once when the first primary enemy dies."),
+    detail("数值", "剩余主要敌人获得6/12/24点格挡和1/2/4点临时力量。", "Values", "Remaining primary enemies gain 6/12/24 Block and 1/2/4 temporary Strength.")
+  ]
+};
+
+function detail(label, text, labelEn, textEn) {
+  return { label, text, labelEn, textEn };
+}
+
 window.SPIRE_PLUS_DATA = {
   labels: {
     brandSub: "《杀戮尖塔 2》平衡与内容扩展 · 温火融冰制作",
@@ -80,6 +171,7 @@ window.SPIRE_PLUS_DATA = {
     searchPlaceholder: "\u9057\u7269\u3001\u5148\u53e4\u3001\u8fdb\u9636\u3001\u5173\u952e\u8bcd",
     vanilla: "\u539f\u7248",
     current: "\u5f53\u524d",
+    expandDetails: "\u5c55\u5f00\u5177\u4f53\u6548\u679c",
     installTitle: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     installLead: "\u5f53\u524d\u4e0b\u8f7d\u6307\u5411\u6700\u65b0\u624b\u52a8\u6d4b\u8bd5\u5305\u3002\u516c\u5f00\u7ad9\u9700\u8981 GitHub Release \u4e0a\u4f20\u540c\u540d\u538b\u7f29\u5305\u540e\u624d\u4f1a\u76f4\u8fbe\u4e0b\u8f7d\u3002",
     currentDownload: "\u5f53\u524d\u4e0b\u8f7d",
@@ -264,7 +356,8 @@ window.SPIRE_PLUS_DATA = {
         asc("BANNER_SHIELDWALL", ["A16"], "assets/ascension/banner_shield_formation_indicator.png"),
         asc("BANNER_BLOOD_PRIZE", ["A16"], "assets/ascension/banner_bounty_indicator.png"),
         asc("BANNER_PRESSING_LINE", ["A16"], "assets/ascension/banner_room_indicator.png"),
-        asc("BANNER_LAST_STAND", ["A16"], "assets/ascension/banner_room_indicator.png")
+        asc("BANNER_LAST_STAND", ["A16"], "assets/ascension/banner_room_indicator.png"),
+        ...bossSealItems()
       ]
     },
     {
@@ -369,8 +462,187 @@ function asc(id, tags, icon) {
     titleKey: `${id}.title`,
     descKey: `${id}.description`,
     desc: ascDescOverrides[id],
+    details: ascensionDetails[id],
     icon,
     tags
+  };
+}
+
+function bossSealItems() {
+  return [
+    bossSeal(
+      "ceremonial_beast_holy_daze",
+      "仪式兽",
+      "Ceremonial Beast",
+      "圣昏",
+      "Holy Daze",
+      "holy_daze",
+      "BOSS_SEAL_HOLY_DAZE",
+      [detail("王印数值", "首次眩晕窗口中每次受击最多1点伤害；窗口结束后获得1点力量。", "Royal value", "During the first stun window, each hit deals at most 1 damage. When it ends, gain 1 Strength.")]
+    ),
+    bossSeal(
+      "the_kin_martyr_oath",
+      "同族小队",
+      "The Kin",
+      "殉誓",
+      "Martyr Oath",
+      "martyr_oath",
+      "BOSS_SEAL_MARTYR_OATH",
+      [
+        detail("王印数值", "最多2名随从死亡触发；每次亲族祭司获得12格挡和1力量，半血以下额外1层人工制品。", "Royal value", "Up to 2 follower deaths trigger it. Each gives Kin Priest 12 Block and 1 Strength; below half HP, also 1 Artifact."),
+        detail("王烙印数值", "最多3名随从死亡触发；每次14格挡和1力量，半血以下额外1层人工制品。", "King Brand value", "Up to 3 follower deaths trigger it. Each gives 14 Block and 1 Strength; below half HP, also 1 Artifact.")
+      ]
+    ),
+    bossSeal(
+      "vantom_ink_return",
+      "墨影幻灵",
+      "Vantom",
+      "墨返",
+      "Ink Return",
+      "ink_return",
+      "BOSS_SEAL_INK_RETURN",
+      [
+        detail("王印数值", "首次把滑溜完全移除后，下个敌方回合返还1层滑溜。", "Royal value", "The first time Slippery is fully removed, 1 Slippery returns on the next enemy turn."),
+        detail("王烙印数值", "返还2层滑溜，并获得1点力量。", "King Brand value", "Returns 2 Slippery and grants 1 Strength.")
+      ]
+    ),
+    bossSeal(
+      "lagavulin_matriarch_startled_shell",
+      "乐加维林族母",
+      "Lagavulin Matriarch",
+      "惊壳",
+      "Startled Shell",
+      "startled_shell",
+      "BOSS_SEAL_STARTLED_SHELL",
+      [
+        detail("王印数值", "被伤害提前唤醒获得4层甲壳；正常唤醒获得8层甲壳；摄魂削去一半甲壳。", "Royal value", "Early wake from damage grants 4 Plating; normal wake grants 8 Plating. Soul Siphon removes half of Plating."),
+        detail("王烙印数值", "提前唤醒6层甲壳，正常唤醒10层甲壳；摄魂只削去三分之一。", "King Brand value", "Early wake grants 6 Plating; normal wake grants 10 Plating. Soul Siphon removes only one-third.")
+      ]
+    ),
+    bossSeal(
+      "soul_fysh_soul_tide",
+      "灵魂异鱼",
+      "Soul Fysh",
+      "魂潮",
+      "Soul Tide",
+      "soul_tide",
+      "BOSS_SEAL_SOUL_TIDE",
+      [
+        detail("王印数值", "进入或提高无形时获得1层人工制品；召唤压力按手中召唤牌每张2格挡结算，上限12。", "Royal value", "Entering or increasing Intangible grants 1 Artifact. Beckon pressure converts hand Beckons into 2 Block each, capped at 12."),
+        detail("王烙印数值", "无形给2层人工制品；召唤格挡上限16。", "King Brand value", "Intangible grants 2 Artifact. Beckon Block cap becomes 16.")
+      ]
+    ),
+    bossSeal(
+      "waterfall_giant_boiling_critical",
+      "瀑布巨兽",
+      "Waterfall Giant",
+      "沸临",
+      "Boiling Critical",
+      "boiling_critical",
+      "BOSS_SEAL_BOILING_CRITICAL",
+      [
+        detail("王印数值", "每12层蒸汽增加沸腾层数；死亡爆发每层沸腾+2伤害；爆发前获得无形并清除自身减益。", "Royal value", "Every 12 Steam adds Boiling. The death explosion gains +2 damage per Boiling. Before exploding, gain Intangible and clear debuffs."),
+        detail("王烙印数值", "改为每10层蒸汽增加沸腾。", "King Brand value", "Steam milestones trigger every 10 Steam instead.")
+      ]
+    ),
+    bossSeal(
+      "kaiser_crab_misaligned_shell",
+      "帝皇蟹",
+      "Kaiser Crab",
+      "错壳",
+      "Misaligned Shell",
+      "misaligned_shell",
+      "BOSS_SEAL_MISALIGNED_SHELL",
+      [
+        detail("王印数值", "每回合首次背击一只爪时，该爪获得6格挡；若本回合正好死1只爪，存活爪获得1层人工制品。", "Royal value", "The first back attack on each claw each turn gives that claw 6 Block. If exactly one claw dies that turn, the surviving claw gains 1 Artifact."),
+        detail("王烙印数值", "背击格挡提高到8；存活爪获得2层人工制品。", "King Brand value", "Back-attack Block rises to 8. The surviving claw gains 2 Artifact.")
+      ]
+    ),
+    bossSeal(
+      "knowledge_demon_marginal_note",
+      "知识恶魔",
+      "Knowledge Demon",
+      "旁注",
+      "Marginal Note",
+      "marginal_note",
+      "BOSS_SEAL_MARGINAL_NOTE",
+      [
+        detail("王印数值", "知识诅咒后，每名玩家弃牌堆加入1张临时旁注。旁注0费、保留、消耗；打出抽1张。", "Royal value", "After Curse of Knowledge, each player's discard pile gets 1 temporary Marginal Note. It costs 0, Retains, Exhausts, and draws 1 when played."),
+        detail("压力", "回合结束时，手里每留1张旁注，知识恶魔获得1点力量。", "Pressure", "At player turn end, each Marginal Note left in hand gives Knowledge Demon 1 Strength."),
+        detail("王烙印数值", "知识诅咒后加入2张旁注。", "King Brand value", "Curse of Knowledge adds 2 Marginal Notes.")
+      ]
+    ),
+    bossSeal(
+      "the_insatiable_struggle_bait",
+      "无厌沙虫",
+      "The Insatiable",
+      "挣扎饵",
+      "Struggle Bait",
+      "struggle_bait",
+      "BOSS_SEAL_STRUGGLE_BAIT",
+      [
+        detail("王印数值", "首领获得力量或沙坑层数时，将逃离加入玩家弃牌堆；累计打出3张生成的逃离后，首领获得1点力量。", "Royal value", "When the Boss gains Strength or Sandpit, add Frantic Escape to the player's discard pile. After 3 generated Escapes are played, the Boss gains 1 Strength."),
+        detail("王烙印数值", "生成的逃离若经过2个玩家回合仍未打出，首领获得5格挡。", "King Brand value", "A generated Escape left unplayed after 2 player turns gives the Boss 5 Block.")
+      ]
+    ),
+    bossSeal(
+      "aeonglass_hourglass",
+      "永世沙漏",
+      "Aeonglass",
+      "勇士沙漏",
+      "Warrior's Hourglass",
+      "aeonglass_hourglass",
+      "BOSS_SEAL_AEONGLASS_HOURGLASS",
+      [
+        detail("王印数值", "每个玩家回合独立计数；每打出5张牌，向该玩家弃牌堆加入1张枯萎，永世沙漏获得12格挡；计数重置。", "Royal value", "Each player has a separate per-turn counter. Every 5 cards played adds 1 Wither to that player's discard pile, gives Aeonglass 12 Block, then resets."),
+        detail("王烙印数值", "改为每4张牌触发；加入升级后的枯萎；永世沙漏获得18格挡。", "King Brand value", "Triggers every 4 cards instead. The Wither is upgraded and Aeonglass gains 18 Block.")
+      ]
+    ),
+    bossSeal(
+      "queen_chosen_decree",
+      "女王",
+      "Queen",
+      "择令",
+      "Chosen Decree",
+      "chosen_decree",
+      "BOSS_SEAL_CHOSEN_DECREE",
+      [
+        detail("王印数值", "一张束缚牌变为王令。本回合打出：女王8格挡，聚合体1力量；错过：女王14格挡，聚合体2力量。", "Royal value", "One Bound card becomes Royal Decree. If played this turn: Queen gains 8 Block and the Amalgam 1 Strength. If missed: Queen 14 Block and Amalgam 2 Strength."),
+        detail("王烙印数值", "遵从：女王12格挡，聚合体1力量；错过：女王20格挡，聚合体3力量。", "King Brand value", "Obey: Queen gains 12 Block and the Amalgam 1 Strength. Miss: Queen 20 Block and Amalgam 3 Strength.")
+      ]
+    ),
+    bossSeal(
+      "test_subject_residual_sample",
+      "实验体",
+      "Test Subject",
+      "残留样本",
+      "Residual Sample",
+      "residual_sample",
+      "BOSS_SEAL_RESIDUAL_SAMPLE",
+      [
+        detail("王印数值", "阶段变化时，下一阶段保留1份弱化样本；重生后每份样本结算为8格挡。", "Royal value", "On phase change, the next phase keeps 1 weakened sample. On respawn, each sample resolves as 8 Block."),
+        detail("王烙印数值", "第一次阶段变化保留2份弱化样本，之后每次保留1份。", "King Brand value", "The first phase change keeps 2 weakened samples; later phase changes keep 1.")
+      ]
+    )
+  ];
+}
+
+function bossSeal(id, bossName, bossNameEn, sealName, sealNameEn, iconName, locPrefix, extraDetails) {
+  return {
+    namespace: "ascension",
+    i18nKey: `boss_seal_${id}`,
+    title: `${bossName}：${sealName}`,
+    titleEn: `${bossNameEn}: ${sealNameEn}`,
+    descKey: `${locPrefix}.summary`,
+    vanilla: "原版首领没有王印或王烙印。",
+    vanillaEn: "Vanilla bosses do not have Royal Seals or King Brands.",
+    icon: `assets/ascension/boss_seals/${iconName}.png`,
+    tags: ["A19", "A20", "王印", "王烙印"],
+    details: [
+      { label: "王印", labelEn: "Royal Seal", key: `${locPrefix}.summary` },
+      { label: "王烙印", labelEn: "King Brand", key: `${locPrefix}.brand` },
+      ...extraDetails
+    ]
   };
 }
 
@@ -411,6 +683,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       searchPlaceholder: "Relic, Ancient, Ascension, keyword",
       vanilla: "Vanilla",
       current: "Current",
+      expandDetails: "Expand exact effects",
       installTitle: "Download & Install",
       installLead: "The current download target is the latest manual test package. On the public site, direct downloads require the matching ZIP to be uploaded to GitHub Releases.",
       currentDownload: "Current Download",
@@ -565,6 +838,8 @@ window.SPIRE_PLUS_DATA.i18n = {
       "首领": "Boss",
       "根芽": "Blight Sprout",
       "战旗": "Banner",
+      "王印": "Royal Seal",
+      "王烙印": "King Brand",
       "令牌": "Token",
       "状态": "Status",
       "预览工具": "Preview tool"
@@ -704,10 +979,10 @@ window.SPIRE_PLUS_DATA.i18n = {
         desc: "0-cost Skill. Exhaust. Gain 4 Block; upgraded gains 7 Block."
       },
       "EZMB_URDA_SEEDBED.description": {
-        desc: "1-cost Skill. Exhaust. Gain 4 Block and set up a 2-space Seedbed. Blight Sprout, Rootblight, Status, or Curse cards that enter hand are planted first; each planted card adds 1 Withered Husk. Upgraded: gain 6 Block and capacity becomes 3."
+        desc: "1-cost Skill. Exhaust. Gain 4 Block and set up a 2-space Seedbed. Later Temporary Status cards, Temporary Curse cards, or Blight Sprouts that enter hand are planted first; each planted card adds 1 Withered Husk. Upgraded: gain 6 Block, capacity becomes 3, and it plants 1 matching card from draw or discard."
       },
       "EZMB_WITHERED_HUSK.description": {
-        desc: "Curse. Ethereal, Exhaust. When exhausted, gain 3 Block."
+        desc: "Temporary Curse. Ethereal, Exhaust. When exhausted, gain 3 Block. Seedbed cannot plant this."
       },
       "EZMB_MORVI_ARCHIVE_DRAW_PAGE.description": {
         desc: "0-cost temporary page. Ethereal, Exhaust. Draw 2 cards."

@@ -95,11 +95,52 @@
   }
 
   function localize(item, field) {
-    const direct = item[field];
+    const direct = lang === "en" ? item[field + "En"] || item[field] : item[field];
     if (direct) return text(direct, item.replacements);
     const key = item[field + "Key"];
     const namespace = item.namespace;
     return text((loc[namespace] || {})[key] || key || "", item.replacements);
+  }
+
+  function detailLabel(entry) {
+    if (Array.isArray(entry)) return text(entry[0] || "");
+    const direct = lang === "en" ? entry.labelEn || entry.label : entry.label;
+    return text(direct || "");
+  }
+
+  function detailBody(item, entry) {
+    if (Array.isArray(entry)) return text(entry[1] || "", item.replacements);
+    const direct = lang === "en" ? entry.textEn || entry.text : entry.text;
+    if (direct) return text(direct, item.replacements);
+    if (entry.key) {
+      const namespace = entry.namespace || item.namespace;
+      return text((loc[namespace] || {})[entry.key] || entry.key, item.replacements);
+    }
+    return "";
+  }
+
+  function detailSearchText(item) {
+    return (item.details || [])
+      .map((entry) => [detailLabel(entry), detailBody(item, entry)].join(" "))
+      .join(" ");
+  }
+
+  function renderItemDetails(item) {
+    if (!item.details?.length) return null;
+    const details = el("details", "item-details");
+    details.appendChild(el("summary", "", labels.expandDetails));
+    const list = el("div", "detail-grid");
+    for (const entry of item.details) {
+      const label = detailLabel(entry);
+      const body = detailBody(item, entry);
+      if (!label && !body) continue;
+      const row = el("div", "detail-row");
+      row.appendChild(el("strong", "detail-title", label));
+      row.appendChild(el("span", "detail-copy", body));
+      list.appendChild(row);
+    }
+    details.appendChild(list);
+    return details;
   }
 
   function el(tag, className, value) {
@@ -265,9 +306,12 @@
       for (const item of group.items) {
         const title = localize(item, "title");
         const current = localize(item, "desc") || text(item.current);
-        const vanilla = text(item.vanilla || group.defaultVanilla);
+        const vanilla = text(lang === "en"
+          ? item.vanillaEn || item.vanilla || group.defaultVanillaEn || group.defaultVanilla
+          : item.vanilla || group.defaultVanilla);
+        const detailsText = detailSearchText(item);
         const card = el("article", "compare-card");
-        card.dataset.search = normalize([title, current, vanilla, (item.tags || []).join(" ")].join(" "));
+        card.dataset.search = normalize([title, current, vanilla, detailsText, (item.tags || []).join(" ")].join(" "));
         card.appendChild(image(item.icon || group.icon, title));
         const body = el("div", "");
         body.appendChild(el("h3", "", title));
@@ -280,6 +324,8 @@
         const tags = el("div", "tags");
         for (const tag of item.tags || []) tags.appendChild(el("span", "tag", tag));
         body.appendChild(tags);
+        const itemDetails = renderItemDetails(item);
+        if (itemDetails) body.appendChild(itemDetails);
         card.appendChild(body);
         list.appendChild(card);
       }

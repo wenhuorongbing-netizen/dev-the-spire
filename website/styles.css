@@ -482,6 +482,49 @@ p {
   font-size: 11px;
 }
 
+.item-details {
+  margin-top: 7px;
+  border-top: 1px solid rgba(231, 212, 173, 0.1);
+}
+
+.item-details summary {
+  cursor: pointer;
+  padding-top: 7px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  list-style-position: inside;
+}
+
+.detail-grid {
+  display: grid;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: minmax(64px, 0.28fr) 1fr;
+  gap: 8px;
+  align-items: start;
+  padding: 5px 6px;
+  border: 1px solid rgba(231, 212, 173, 0.08);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.detail-title {
+  color: #d3b36d;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.detail-copy {
+  color: #d9cdb8;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .page-head {
   margin: 14px 0 10px;
   padding: clamp(20px, 3vw, 38px);
