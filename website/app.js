@@ -151,8 +151,10 @@
   }
 
   function image(src, alt) {
+    const source = safeImageSource(src);
+    if (source.placeholder) return sourceArtPlaceholder(alt);
     const img = document.createElement("img");
-    img.src = safeImageSource(src);
+    img.src = source.src;
     img.alt = alt || "";
     img.loading = "lazy";
     img.decoding = "async";
@@ -163,10 +165,25 @@
   }
 
   function safeImageSource(src) {
-    if (!src) return fallbackIcon;
+    if (!src) return { src: fallbackIcon };
     const pointsToLocalSource = src.includes("source%20code") || src.includes("source code");
-    if (pointsToLocalSource && location.hostname.endsWith("github.io")) return fallbackIcon;
-    return src;
+    if (pointsToLocalSource && location.hostname.endsWith("github.io")) return { placeholder: true };
+    return { src };
+  }
+
+  function sourceArtPlaceholder(alt) {
+    const node = el("span", "source-art-placeholder");
+    node.setAttribute("role", "img");
+    node.setAttribute("aria-label", `${alt || labels.sourceArtPlaceholder} ${labels.sourceArtPlaceholder}`);
+    node.appendChild(el("strong", "", titleInitials(alt)));
+    node.appendChild(el("small", "", labels.sourceArtPlaceholder));
+    return node;
+  }
+
+  function titleInitials(value) {
+    const compact = Array.from(String(value || labels.sourceArtPlaceholder)
+      .replace(/[^\p{Letter}\p{Number}]/gu, ""));
+    return compact.slice(0, 2).join("") || labels.sourceArtPlaceholder.slice(0, 2);
   }
 
   async function loadLocalization() {
