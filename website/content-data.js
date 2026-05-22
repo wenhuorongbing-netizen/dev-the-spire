@@ -416,8 +416,6 @@ window.SPIRE_PLUS_DATA = {
 };
 
 function sourceRelicIcon(descKey) {
-  const isLocalPreview = ["", "localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
-  if (!isLocalPreview) return undefined;
   const fileName = sourceRelicIcons[descKey];
   return fileName ? `../source%20code/images/relics/${fileName}` : undefined;
 }
