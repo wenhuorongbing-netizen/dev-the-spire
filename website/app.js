@@ -152,7 +152,7 @@
 
   function image(src, alt) {
     const img = document.createElement("img");
-    img.src = src || fallbackIcon;
+    img.src = safeImageSource(src);
     img.alt = alt || "";
     img.loading = "lazy";
     img.decoding = "async";
@@ -160,6 +160,13 @@
       img.src = fallbackIcon;
     });
     return img;
+  }
+
+  function safeImageSource(src) {
+    if (!src) return fallbackIcon;
+    const pointsToLocalSource = src.includes("source%20code") || src.includes("source code");
+    if (pointsToLocalSource && location.hostname.endsWith("github.io")) return fallbackIcon;
+    return src;
   }
 
   async function loadLocalization() {
