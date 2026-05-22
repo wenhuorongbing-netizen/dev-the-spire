@@ -122,7 +122,7 @@ Result: pass.
 
 Fixes checked during this pass:
 
-- Corrected the creator name to `温火容命` in Chinese and `Wenhuo Rongming` in English.
+- Corrected the creator name to `温火融冰` in Chinese and `Wenhuo Rongbing` in English.
 - Replaced public vanilla placeholders with site-owned simplified SVG icons under `website/assets/vanilla-icons/`.
 - Added separate card-change entries for `愚行 / Folly` and `执迷 / Enthralled`.
 - Kept `至亮之焰 / Brightest Flame` as the public-facing English title and verified its Exhaust/draw change appears.

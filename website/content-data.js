@@ -170,7 +170,7 @@ function detail(label, text, labelEn, textEn) {
 
 window.SPIRE_PLUS_DATA = {
   labels: {
-    brandSub: "《杀戮尖塔 2》玩法扩展 · 温火容命制作",
+    brandSub: "《杀戮尖塔 2》玩法扩展 · 温火融冰制作",
     navUpdates: "\u66f4\u65b0\u5185\u5bb9",
     navInstall: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     navForum: "\u8bba\u575b",
@@ -179,7 +179,7 @@ window.SPIRE_PLUS_DATA = {
     heroTitle: "Spire Plus",
     heroCopy: "版本改动、下载方式、反馈入口与已知问题。",
     introTitle: "关于 Spire Plus",
-    introCopy: "Spire Plus 是由温火容命制作的《杀戮尖塔 2》玩法扩展。它重做先古奖励，扩展 A11-A20，并加入部分预览工具；目标是让强奖励拥有清晰代价，让路线、牌组和战斗选择更有重量。",
+    introCopy: "Spire Plus 是由温火融冰制作的《杀戮尖塔 2》玩法扩展。它重做先古奖励，扩展 A11-A20，并加入部分预览工具；目标是让强奖励拥有清晰代价，让路线、牌组和战斗选择更有重量。",
     download: "\u4e0b\u8f7d\u6a21\u7ec4",
     viewIssues: "\u67e5\u770b\u5df2\u77e5\u95ee\u9898",
     all: "\u5168\u90e8",
@@ -684,7 +684,7 @@ function manual(title, vanilla, current, tags, icon) {
 window.SPIRE_PLUS_DATA.i18n = {
   en: {
     labels: {
-      brandSub: "Gameplay expansion for Slay the Spire 2 by Wenhuo Rongming",
+      brandSub: "Gameplay expansion for Slay the Spire 2 by Wenhuo Rongbing",
       navUpdates: "Updates",
       navInstall: "Download & Install",
       navForum: "Forum",
@@ -692,7 +692,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       releaseLine: "Private test build · v0.1.0-private-beta.0",
       heroCopy: "Patch notes, downloads, feedback links, and known issues.",
       introTitle: "About Spire Plus",
-      introCopy: "Spire Plus is a gameplay expansion for Slay the Spire 2 by Wenhuo Rongming. It rebuilds Ancient rewards, extends Ascension 11-20, and adds selected preview tools. The goal is simple: stronger rewards, clearer costs, and more meaningful route, deck, and combat decisions.",
+      introCopy: "Spire Plus is a gameplay expansion for Slay the Spire 2 by Wenhuo Rongbing. It rebuilds Ancient rewards, extends Ascension 11-20, and adds selected preview tools. The goal is simple: stronger rewards, clearer costs, and more meaningful route, deck, and combat decisions.",
       download: "Download Mod",
       viewIssues: "Known Issues",
       all: "All",
