@@ -24,10 +24,16 @@ http://127.0.0.1:4177/website/
 
 ## 公开部署
 
-`.github/workflows/spire-plus-site.yml` 会把 `website/` 发布到 GitHub Pages。公开环境下“下载当前包”按钮会指向 GitHub Release 的 latest 资产：
+`.github/workflows/spire-plus-site.yml` 会把 `website/` 发布到 GitHub Pages。公开环境下“下载当前包”按钮会指向 GitHub Release 的 zip 资产：
 
 ```text
-https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/latest/download/SpirePlus-v0.1.0-private-beta.0.zip
+https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.0/SpirePlus-v0.1.0-private-beta.0.zip
+```
+
+发布页按钮指向具体版本页：
+
+```text
+https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.0
 ```
 
 当前仓库是 private 时，GitHub Pages 还取决于账号计划是否支持 private repository Pages。若 API 返回 `Your current plan does not support GitHub Pages for this repository`，需要把仓库改为 public、升级到支持 private Pages 的计划，或把 `website/` 发布到一个单独的 public Pages 仓库。
@@ -42,4 +48,4 @@ https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/latest/download
 - 渲染逻辑：`app.js`
 - 图片：`assets/`
 
-`assets/` 只放 `EZMicroBalance/images/` 下的自有或生成资源。不要复制 `source code/` 下的游戏原始图集。
+`assets/` 只放 `EZMicroBalance/images/` 下的自有或生成资源，以及站点自带的简化图标。不要复制 `source code/` 下的游戏原始图集。

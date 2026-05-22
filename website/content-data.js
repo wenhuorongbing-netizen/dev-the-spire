@@ -26,11 +26,27 @@ const sourceRelicIcons = {
   "BLOOD_SOAKED_ROSE.description": "blood_soaked_rose.png"
 };
 
+const vanillaIconPaths = {
+  relic: "assets/vanilla-icons/relic.svg",
+  curse: "assets/vanilla-icons/curse-card.svg",
+  event: "assets/vanilla-icons/event-card.svg"
+};
+
 const sourceCardOverrides = {
   "BRIGHTEST_FLAME.description": {
-    icon: "../source%20code/images/packed/card_portraits/event/brightest_flame.png",
+    icon: vanillaIconPaths.event,
     vanilla: "获得2点能量，抽2张牌，失去1点最大生命；升级后获得3点能量，抽3张牌，失去1点最大生命。",
     current: "新增消耗；获得2点能量，抽3张牌，失去1点最大生命；升级后获得3点能量，抽4张牌，失去1点最大生命。"
+  },
+  "FOLLY.description": {
+    icon: vanillaIconPaths.curse,
+    vanilla: "无法打出。固有。永恒。虚无。",
+    current: "无法打出。固有。永恒。"
+  },
+  "ENTHRALLED.description": {
+    icon: vanillaIconPaths.curse,
+    vanilla: "2费诅咒。永恒。在手牌中时，必须先打出执迷；打出后无其他效果。",
+    current: "2费诅咒。永恒。在手牌中时，必须先打出执迷；打出后获得10点格挡。"
   }
 };
 
@@ -154,7 +170,7 @@ function detail(label, text, labelEn, textEn) {
 
 window.SPIRE_PLUS_DATA = {
   labels: {
-    brandSub: "《杀戮尖塔 2》玩法扩展 · 温火融冰制作",
+    brandSub: "《杀戮尖塔 2》玩法扩展 · 温火容命制作",
     navUpdates: "\u66f4\u65b0\u5185\u5bb9",
     navInstall: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     navForum: "\u8bba\u575b",
@@ -163,7 +179,7 @@ window.SPIRE_PLUS_DATA = {
     heroTitle: "Spire Plus",
     heroCopy: "版本改动、下载方式、反馈入口与已知问题。",
     introTitle: "关于 Spire Plus",
-    introCopy: "Spire Plus 是由温火融冰制作的《杀戮尖塔 2》玩法扩展。它重做先古奖励，扩展 A11-A20，并加入部分预览工具；目标是让强奖励拥有清晰代价，让路线、牌组和战斗选择更有重量。",
+    introCopy: "Spire Plus 是由温火容命制作的《杀戮尖塔 2》玩法扩展。它重做先古奖励，扩展 A11-A20，并加入部分预览工具；目标是让强奖励拥有清晰代价，让路线、牌组和战斗选择更有重量。",
     download: "\u4e0b\u8f7d\u6a21\u7ec4",
     viewIssues: "\u67e5\u770b\u5df2\u77e5\u95ee\u9898",
     all: "\u5168\u90e8",
@@ -214,8 +230,8 @@ window.SPIRE_PLUS_DATA = {
   package: {
     localDownload: "../publish/SpirePlus-v0.1.0-private-beta.0.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/latest/download/SpirePlus-v0.1.0-private-beta.0.zip",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.0/SpirePlus-v0.1.0-private-beta.0.zip",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.0",
     baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/tag/v3.1.4",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
@@ -225,8 +241,8 @@ window.SPIRE_PLUS_DATA = {
       ["\u5b89\u88c5\u76ee\u5f55", "EZMicroBalance"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "15,228,395 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "B235DEA5219FFAB46905CE076664C0D3F2E7DF80B4B5C289AA9B1985525E942D"]
+      ["\u4f53\u79ef", "18,856,933 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "BA53D496F8EDEBBC9D971579EB66F6297B63C54C10A7B1E79E46550A1EA04AE3"]
     ]
   },
   installSteps: [
@@ -247,8 +263,8 @@ window.SPIRE_PLUS_DATA = {
   ],
   assetPolicy: [
     "\u672c\u7ad9\u53ea\u6253\u5305 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\uff0c\u4e3b\u8981\u6765\u81ea EZMicroBalance/images/\u3002",
-    "\u539f\u7248\u6e38\u620f\u56fe\u50cf\u4e0d\u968f\u516c\u5f00\u7ad9\u53d1\u5e03\u3002\u6d89\u53ca\u539f\u7248\u9057\u7269\u6216\u5361\u724c\u65f6\uff0c\u7ebf\u4e0a\u9875\u9762\u4f7f\u7528\u201c\u539f\u7248\u201d\u5360\u4f4d\u56fe\u5757\u3002",
-    "\u672c\u5730\u9884\u89c8\u53ef\u4ee5\u8bfb\u53d6 source code/images/ \u4e2d\u7684\u53c2\u8003\u56fe\uff1b\u8fd9\u4e9b\u6587\u4ef6\u4e0d\u8fdb\u5165 GitHub Pages \u53d1\u5e03\u5305\u3002",
+    "\u539f\u7248\u6e38\u620f\u56fe\u50cf\u4e0d\u968f\u516c\u5f00\u7ad9\u53d1\u5e03\u3002\u6d89\u53ca\u539f\u7248\u9057\u7269\u6216\u5361\u724c\u65f6\uff0c\u7ebf\u4e0a\u9875\u9762\u4f7f\u7528\u7ad9\u70b9\u81ea\u5e26\u7684\u7b80\u5316\u56fe\u6807\u3002",
+    "\u672c\u5730\u9884\u89c8\u53ef\u4ee5\u5bf9\u7167 source code/images/ \u4e2d\u7684\u53c2\u8003\u56fe\uff1b\u8fd9\u4e9b\u539f\u59cb\u7d20\u6750\u4e0d\u8fdb\u5165 GitHub Pages \u53d1\u5e03\u5305\u3002",
     "\u82e5\u540e\u7eed\u9700\u8981\u516c\u5f00\u5c55\u793a\u539f\u7248\u5b9e\u673a\u622a\u56fe\uff0c\u5c06\u5355\u72ec\u5904\u7406\u6388\u6743\u548c\u7d20\u6750\u6765\u6e90\u3002"
   ],
   forum: {
@@ -273,6 +289,7 @@ window.SPIRE_PLUS_DATA = {
         baseRelic("\u68f1\u5f69\u5b9d\u77f3", "PRISMATIC_GEM.description", ["\u80fd\u91cf", "\u5f02\u8272\u724c"], "每回合开始获得1点能量；卡牌奖励会包含其他颜色卡牌。", "每回合开始获得1点能量；每第2次标准卡牌奖励只出现异色牌。"),
         baseRelic("\u73e0\u5b9d\u76d2", "JEWELRY_BOX.description", ["\u795e\u5316"], "拾起时将1张神化加入牌组。", "拾起时将1张神化加入牌组；这张神化没有固有。"),
         baseRelic("\u4fdd\u5b58\u4e4b\u96fe", "PRESERVED_FOG.description", ["\u5220\u724c"], "拾起时从牌组移除3张牌；将1张愚行加入牌组。", "拾起时从牌组移除4张牌；将1张愚行加入牌组。"),
+        cardLoc("愚行", "FOLLY.description", ["\u8bc5\u5492", "\u5361\u724c\u672c\u4f53"], "无法打出。固有。永恒。虚无。"),
         baseRelic("\u67af\u722a", "CLAWS.description", ["\u8bc5\u5492", "\u8bb8\u613f"], "拾起时将至多6张牌变化为撕咬。", "从4张诅咒中选择1张加入牌组；加入2张许愿和1张已升级的许愿+。"),
         baseRelic("\u9009\u62e9\u6096\u8bba", "CHOICES_PARADOX.description", ["\u7a00\u6709\u724c"], "每场战斗第1回合开始时，从5张随机牌中选择1张加入手牌；该牌获得保留。", "每场战斗开始时，从5张可用稀有牌中选择1张加入手牌；获得保留，并在战斗后移除。"),
         baseRelic("\u5b9d\u77f3\u9762\u5177", "JEWELED_MASK.description", ["\u80fd\u529b\u724c"], "每场战斗第1回合抽牌前，将抽牌堆中1张随机能力牌移入手牌；本回合费用为0。", "拾起时选择1张能力牌永久变为0费；每场战斗开始时，将它从抽牌堆移入手牌。"),
@@ -292,7 +309,8 @@ window.SPIRE_PLUS_DATA = {
         baseRelic("\u6696\u70d8\u624b\u5957", "TOASTY_MITTENS.description", ["\u529b\u91cf"], "你的回合抽牌前，消耗抽牌堆顶牌并获得1点力量；第1回合优先避开固有牌。", "每回合抽牌前查看抽牌堆顶牌；可以消耗它以获得1点力量。"),
         baseRelic("\u4f4e\u8bed\u8033\u73af", "WHISPERING_EARRING.description", ["\u81ea\u52a8\u6253\u51fa"], "每回合开始获得1点能量；第1回合由瓦库自动打出至多13张可打出的牌。", "获得1点能量；每场战斗前3回合，抽牌后自动打出费用最高的可打出牌。"),
         baseRelic("\u5207\u8089\u5200", "MEAT_CLEAVER.description", ["\u4f11\u606f\u5904"], "休息处新增烹饪：移除2张牌并获得9点最大生命。", "休息处新增切肉：移除2张牌并失去5点生命。"),
-        baseRelic("\u8840\u67d3\u73ab\u7470", "BLOOD_SOAKED_ROSE.description", ["\u8bc5\u5492"], "遗物：拾起时将1张执迷加入牌组；每回合开始获得1点能量。执迷：2费诅咒，永恒；在手牌中时，必须先打出执迷。", "遗物本体仍为获得1点能量并加入1张执迷。执迷现在打出后获得10点格挡；仍会强制你先打出执迷。"),
+        baseRelic("\u8840\u67d3\u73ab\u7470", "BLOOD_SOAKED_ROSE.description", ["\u8bc5\u5492"], "遗物：拾起时将1张执迷加入牌组；每回合开始获得1点能量。执迷：2费诅咒，永恒；在手牌中时，必须先打出执迷。", "遗物本体仍为获得1点能量并加入1张执迷。"),
+        cardLoc("\u6267\u8ff7", "ENTHRALLED.description", ["\u8bc5\u5492", "\u5361\u724c\u672c\u4f53"], "2费诅咒。永恒。在手牌中时，必须先打出执迷；打出后无其他效果。"),
         cardLoc("\u81f3\u4eae\u4e4b\u7130", "BRIGHTEST_FLAME.description", ["\u62bd\u724c", "\u6d88\u8017"], "获得2点能量，抽2张牌，失去1点最大生命；升级后获得3点能量，抽3张牌，失去1点最大生命。")
       ]
     },
@@ -397,7 +415,7 @@ window.SPIRE_PLUS_DATA = {
     ["\u5f85\u9a8c\u8bc1", "\u74e6\u5e93\u8bd5\u70bc", "\u80dc\u5229\u8fd4\u56de\u4e8b\u4ef6\u3001\u5931\u8d25/\u6b7b\u4ea1\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u8054\u673a\u8fb9\u754c\u9700\u8981\u8fdb\u4e00\u6b65\u5b9e\u673a\u6d4b\u8bd5\u3002"],
     ["\u5f85\u9a8c\u8bc1", "\u8fdb\u9636 11-20", "A11 \u8def\u7ebf\u70b9\u51fb\u3001A12/A16/A19/A20 \u6218\u6597\u89c4\u5219\u3001\u6839\u8680\u6218\u540e\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u53cc\u4eba\u8054\u673a\u8fd8\u9700\u8981\u5b8c\u6574\u8bb0\u5f55\u3002"],
     ["\u5f85\u63a5\u5165", "\u516c\u5f00\u8bba\u575b", "\u5f53\u524d\u516c\u5f00\u4ea4\u6d41\u4f7f\u7528 GitHub Issues / Discussions\u3002\u82e5\u9700\u8981\u7ad9\u5185\u56de\u590d\u548c\u533f\u540d\u53d1\u5e16\uff0c\u9700\u8981\u63a5\u5165 Giscus \u6216\u72ec\u7acb\u540e\u7aef\u3002"],
-    ["\u7d20\u6750\u8bf4\u660e", "\u539f\u7248\u6e38\u620f\u56fe\u7247", "\u516c\u5f00\u7ad9\u4ec5\u4f7f\u7528 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\u3002\u539f\u7248\u56fe\u50cf\u4ec5\u5728\u672c\u5730\u9884\u89c8\u4e2d\u4f5c\u4e3a\u53c2\u8003\uff0c\u7ebf\u4e0a\u9875\u9762\u4ee5\u201c\u539f\u7248\u201d\u5360\u4f4d\u8868\u793a\u3002"]
+    ["\u7d20\u6750\u8bf4\u660e", "\u539f\u7248\u6e38\u620f\u56fe\u7247", "\u516c\u5f00\u7ad9\u4ec5\u4f7f\u7528 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\u3002\u539f\u7248\u6761\u76ee\u4f7f\u7528\u7ad9\u70b9\u81ea\u5e26\u7684\u7b80\u5316\u56fe\u6807\u3002"]
   ],
   changeLog: [
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
@@ -417,7 +435,7 @@ window.SPIRE_PLUS_DATA = {
 
 function sourceRelicIcon(descKey) {
   const fileName = sourceRelicIcons[descKey];
-  return fileName ? `../source%20code/images/relics/${fileName}` : undefined;
+  return fileName ? vanillaIconPaths.relic : undefined;
 }
 
 function baseRelic(title, descKey, tags, vanilla, current) {
@@ -666,7 +684,7 @@ function manual(title, vanilla, current, tags, icon) {
 window.SPIRE_PLUS_DATA.i18n = {
   en: {
     labels: {
-      brandSub: "Gameplay expansion for Slay the Spire 2 by Wenhuo Rongbing",
+      brandSub: "Gameplay expansion for Slay the Spire 2 by Wenhuo Rongming",
       navUpdates: "Updates",
       navInstall: "Download & Install",
       navForum: "Forum",
@@ -674,7 +692,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       releaseLine: "Private test build · v0.1.0-private-beta.0",
       heroCopy: "Patch notes, downloads, feedback links, and known issues.",
       introTitle: "About Spire Plus",
-      introCopy: "Spire Plus is a gameplay expansion for Slay the Spire 2 by Wenhuo Rongbing. It rebuilds Ancient rewards, extends Ascension 11-20, and adds selected preview tools. The goal is simple: stronger rewards, clearer costs, and more meaningful route, deck, and combat decisions.",
+      introCopy: "Spire Plus is a gameplay expansion for Slay the Spire 2 by Wenhuo Rongming. It rebuilds Ancient rewards, extends Ascension 11-20, and adds selected preview tools. The goal is simple: stronger rewards, clearer costs, and more meaningful route, deck, and combat decisions.",
       download: "Download Mod",
       viewIssues: "Known Issues",
       all: "All",
@@ -739,8 +757,8 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Install folder", "EZMicroBalance"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "15,228,395 bytes"],
-        ["Hash", "B235DEA5219FFAB46905CE076664C0D3F2E7DF80B4B5C289AA9B1985525E942D"]
+        ["Size", "18,856,933 bytes"],
+        ["Hash", "BA53D496F8EDEBBC9D971579EB66F6297B63C54C10A7B1E79E46550A1EA04AE3"]
       ]
     },
     installSteps: [
@@ -761,8 +779,8 @@ window.SPIRE_PLUS_DATA.i18n = {
     ],
     assetPolicy: [
       "This site ships only Spire Plus-owned or publishable assets, mainly from EZMicroBalance/images/.",
-      "Original game images are not included in the public site. Entries that refer to vanilla relics or cards use a Vanilla placeholder online.",
-      "Local preview can read reference images from source code/images/. Those files are not included in the GitHub Pages build.",
+      "Original game images are not included in the public site. Entries that refer to vanilla relics or cards use site-owned simplified icons.",
+      "Local preview can compare against reference images from source code/images/. Those original assets are not included in the GitHub Pages build.",
       "If base-game screenshots are published later, permission and asset source will be handled separately."
     ],
     forum: {
@@ -808,6 +826,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       "神化": "Apotheosis",
       "删牌": "Remove",
       "诅咒": "Curse",
+      "卡牌本体": "Card change",
       "许愿": "Wish",
       "稀有牌": "Rare card",
       "能力牌": "Power",
@@ -869,6 +888,11 @@ window.SPIRE_PLUS_DATA.i18n = {
         title: "Preserved Fog",
         vanilla: "On pickup, remove 3 cards from your deck and add 1 Folly.",
         desc: "On pickup, remove 4 cards from your deck and add 1 Folly."
+      },
+      "FOLLY.description": {
+        title: "Folly",
+        vanilla: "Unplayable. Innate. Eternal. Ethereal.",
+        desc: "Unplayable. Innate. Eternal."
       },
       "CLAWS.description": {
         title: "Claws",
@@ -968,10 +992,15 @@ window.SPIRE_PLUS_DATA.i18n = {
       "BLOOD_SOAKED_ROSE.description": {
         title: "Blood-Soaked Rose",
         vanilla: "Relic: on pickup, add 1 Enthralled to your deck; gain 1 Energy at the start of each turn. Enthralled: 2-cost Curse, Eternal; while in hand, it must be played first.",
-        desc: "Relic body remains +1 Energy and 1 Enthralled. Enthralled now gains 10 Block when played; it still forces you to play Enthralled first."
+        desc: "Relic body remains +1 Energy and 1 Enthralled."
+      },
+      "ENTHRALLED.description": {
+        title: "Enthralled",
+        vanilla: "2-cost Curse. Eternal. While in hand, it must be played before other cards; it has no effect after play.",
+        desc: "2-cost Curse. Eternal. While in hand, it must be played before other cards; when played, gain 10 Block."
       },
       "BRIGHTEST_FLAME.description": {
-        title: "Quality Flame",
+        title: "Brightest Flame",
         vanilla: "Gain 2 Energy, draw 2 cards, and lose 1 Max HP; upgraded gains 3 Energy and draws 3 cards.",
         desc: "Adds Exhaust. Gain 2 Energy, draw 3 cards, and lose 1 Max HP; upgraded gains 3 Energy and draws 4 cards."
       },
@@ -1057,7 +1086,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       ["Needs verification", "Vakuu trial", "Victory return, failure/death resolution, save-load behavior, and multiplayer boundaries need more live testing."],
       ["Needs verification", "Ascension 11-20", "A11 route clicks, A12/A16/A19/A20 combat rules, Rootblight post-combat resolution, save-load behavior, and two-player co-op need full test records."],
       ["Integration pending", "Public forum", "Public feedback currently uses GitHub Issues / Discussions. Site-native replies and anonymous posts would require Giscus or a separate backend."],
-      ["Asset note", "Original game images", "The public site uses only Spire Plus-owned or publishable assets. Vanilla images are local references only and appear online as Vanilla placeholders."]
+      ["Asset note", "Original game images", "The public site uses only Spire Plus-owned or publishable assets. Vanilla entries use site-owned simplified icons."]
     ],
     changeLog: [
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],

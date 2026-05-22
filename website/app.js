@@ -391,12 +391,12 @@
     app.appendChild(renderPageHead(labels.installTitle, labels.installLead));
     const grid = el("section", "install-grid");
     const local = isLocal();
-    const primaryDownloadUrl = local ? data.package.localDownload : data.package.releasesPage;
+    const primaryDownloadUrl = local ? data.package.localDownload : data.package.releaseDownload;
 
     const pkg = panel(labels.currentDownload);
     const actions = el("div", "download-actions");
-    actions.appendChild(button(local ? labels.download : labels.openRelease, primaryDownloadUrl, true));
-    if (!local) actions.appendChild(button(labels.directDownload, data.package.releaseDownload, false));
+    actions.appendChild(button(labels.download, primaryDownloadUrl, true));
+    if (!local) actions.appendChild(button(labels.openRelease, data.package.releasesPage, false));
     actions.appendChild(button(labels.openBaseLib, data.package.baseLibRelease, false));
     if (local) actions.appendChild(button(labels.openRelease, data.package.releasesPage, false));
     actions.appendChild(button(labels.openRepo, data.package.repository, false));

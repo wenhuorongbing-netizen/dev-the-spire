@@ -115,3 +115,40 @@ Targeted screenshot evidence:
 
 - `.tools/website-qa/target_blood_rose_zh_v1.png`
 - `.tools/website-qa/target_brightest_flame_zh_v1.png`
+
+## Review 5: Website Release Fix QA
+
+Result: pass.
+
+Fixes checked during this pass:
+
+- Corrected the creator name to `温火容命` in Chinese and `Wenhuo Rongming` in English.
+- Replaced public vanilla placeholders with site-owned simplified SVG icons under `website/assets/vanilla-icons/`.
+- Added separate card-change entries for `愚行 / Folly` and `执迷 / Enthralled`.
+- Kept `至亮之焰 / Brightest Flame` as the public-facing English title and verified its Exhaust/draw change appears.
+- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.0.zip`.
+- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.0`.
+
+Static checks:
+
+- `node --check website/content-data.js` passed.
+- `node --check website/app.js` passed.
+- `git diff --check -- website/content-data.js website/app.js website/README.md` passed.
+- `dotnet build` passed with 0 warnings and 0 errors.
+
+Rendered confirmation:
+
+- `output/playwright/spire-plus-updates-icons-v1.png`
+- `output/playwright/spire-plus-filter-enthralled-v1.png`
+- `output/playwright/spire-plus-install-release-v1.png`
+- `output/playwright/spire-plus-en-updates-v1.png`
+
+Rendered checks:
+
+- Chinese and English update pages render 106 update cards.
+- 28 vanilla-related entries use `assets/vanilla-icons/`.
+- `.source-art-placeholder` count is 0.
+- Search for `执迷` returns the Blood-Soaked Rose relic row and the Enthralled card row.
+- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.0.zip` and the release button to the concrete GitHub tag URL.
+- Public install page points the main download button to `releases/download/v0.1.0-private-beta.0/SpirePlus-v0.1.0-private-beta.0.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
+- Browser console warnings/errors: none.

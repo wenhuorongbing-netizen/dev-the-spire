@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Vanilla event card icon">
+  <rect x="9" y="4" width="46" height="56" rx="6" fill="#201a12" stroke="#8b6732" stroke-width="2"/>
+  <rect x="14" y="10" width="36" height="44" rx="4" fill="#3a2816" stroke="#d0a34b" stroke-width="1"/>
+  <path d="M32 15c4 7 10 14 10 23 0 7-5 12-10 12s-10-5-10-12c0-9 6-16 10-23Z" fill="#e2a744"/>
+  <path d="M32 25c2 5 5 8 5 13 0 4-2 7-5 7s-5-3-5-7c0-5 3-8 5-13Z" fill="#ffdf86"/>
+  <path d="M21 50h22" stroke="#d0a34b" stroke-width="3" stroke-linecap="round"/>
+</svg>
