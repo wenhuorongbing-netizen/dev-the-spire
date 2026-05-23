@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
@@ -18,28 +19,29 @@ namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 internal static class TransformPreviewInitializePatch
 {
     private static void Prefix(
+        NTransformPreview __instance,
         ref IEnumerable<CardTransformation> cardTransformations,
         out List<CardTransformation> __state)
     {
         __state = cardTransformations.ToList();
         cardTransformations = __state;
-        TransformPreviewCyclePatch.PreparePredictions(__state);
+        TransformPreviewCyclePatch.PreparePredictions(__instance, __state);
     }
 
-    private static void Finalizer()
+    private static void Finalizer(NTransformPreview __instance)
     {
-        TransformPreviewCyclePatch.ClearPredictions();
+        TransformPreviewCyclePatch.ClearPredictions(__instance);
     }
 }
 
 [HarmonyPatch]
 internal static class TransformPreviewCyclePatch
 {
-    private static Queue<CardModel?>? pendingPredictions;
+    private static readonly ConditionalWeakTable<NTransformPreview, PredictionQueue> PredictionsByPreview = new();
 
-    internal static void PreparePredictions(IReadOnlyList<CardTransformation> transformations)
+    internal static void PreparePredictions(NTransformPreview preview, IReadOnlyList<CardTransformation> transformations)
     {
-        pendingPredictions = null;
+        ClearPredictions(preview);
 
         if (!EZMicroBalanceModConfig.EnableTransformPrediction || !EZMicroBalanceModConfig.TransformPredictionAlwaysOn)
         {
@@ -83,7 +85,7 @@ internal static class TransformPreviewCyclePatch
                     upgradeReplacementPreview));
             }
 
-            pendingPredictions = queue;
+            PredictionsByPreview.Add(preview, new PredictionQueue(queue));
             ReleaseEvidenceLog.Log(
                 "PreviewTransform",
                 "prediction_prepared",
@@ -98,7 +100,7 @@ internal static class TransformPreviewCyclePatch
         }
         catch (Exception exception)
         {
-            pendingPredictions = null;
+            ClearPredictions(preview);
             ReleaseEvidenceLog.Log(
                 "PreviewTransform",
                 "prediction_skipped_exception",
@@ -111,9 +113,9 @@ internal static class TransformPreviewCyclePatch
         }
     }
 
-    internal static void ClearPredictions()
+    internal static void ClearPredictions(NTransformPreview preview)
     {
-        pendingPredictions = null;
+        PredictionsByPreview.Remove(preview);
     }
 
     private static MethodBase TargetMethod()
@@ -121,19 +123,20 @@ internal static class TransformPreviewCyclePatch
         return AccessTools.Method(typeof(NTransformPreview), "CycleThroughCards")!;
     }
 
-    private static bool Prefix(NPreviewCardHolder holder, CardPile cardPile, ref Task __result)
+    private static bool Prefix(NTransformPreview __instance, NPreviewCardHolder holder, CardPile cardPile, ref Task __result)
     {
         if (!EZMicroBalanceModConfig.EnableTransformPrediction || !EZMicroBalanceModConfig.TransformPredictionAlwaysOn)
         {
             return true;
         }
 
-        if (pendingPredictions == null || pendingPredictions.Count == 0)
+        if (!PredictionsByPreview.TryGetValue(__instance, out var predictions) ||
+            predictions.Pending.Count == 0)
         {
             return true;
         }
 
-        var predicted = pendingPredictions.Dequeue();
+        var predicted = predictions.Pending.Dequeue();
         if (predicted == null)
         {
             return true;
@@ -150,5 +153,15 @@ internal static class TransformPreviewCyclePatch
             });
         __result = Task.CompletedTask;
         return false;
+    }
+
+    private sealed class PredictionQueue
+    {
+        public PredictionQueue(Queue<CardModel?> pending)
+        {
+            Pending = pending;
+        }
+
+        public Queue<CardModel?> Pending { get; }
     }
 }

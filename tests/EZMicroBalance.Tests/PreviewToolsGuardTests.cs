@@ -96,7 +96,11 @@ public sealed class PreviewToolsGuardTests
 
         Assert.Contains("TransformPredictionRngContext.TryConsume", patchSource, StringComparison.Ordinal);
         Assert.Contains("no verified transform RNG source", patchSource, StringComparison.Ordinal);
-        Assert.Contains("pendingPredictions.Count == 0", patchSource, StringComparison.Ordinal);
+        Assert.Contains("ConditionalWeakTable<NTransformPreview, PredictionQueue>", patchSource, StringComparison.Ordinal);
+        Assert.Contains("PreparePredictions(__instance", patchSource, StringComparison.Ordinal);
+        Assert.Contains("ClearPredictions(__instance)", patchSource, StringComparison.Ordinal);
+        Assert.Contains("PredictionsByPreview.TryGetValue(__instance", patchSource, StringComparison.Ordinal);
+        Assert.Contains("predictions.Pending.Count == 0", patchSource, StringComparison.Ordinal);
         Assert.Contains("return true;", patchSource, StringComparison.Ordinal);
         Assert.Contains("holder.ReassignToCard", patchSource, StringComparison.Ordinal);
         Assert.Contains("CardFactory.GetDefaultTransformationOptions", predictionSource, StringComparison.Ordinal);
@@ -112,6 +116,7 @@ public sealed class PreviewToolsGuardTests
         Assert.DoesNotContain("Original.Owner.PlayerRng.Transformations", patchSource, StringComparison.Ordinal);
         Assert.DoesNotContain("realRng.Next", patchSource, StringComparison.Ordinal);
         Assert.DoesNotContain("realRng.FastForward", patchSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("private static Queue<CardModel?>? pendingPredictions", patchSource, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -12,6 +12,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Common/AncientRewardRelicService.cs",
         "EZMicroBalanceCode/Ancients/Common/AncientInitialOptionReroll.cs",
         "EZMicroBalanceCode/Ancients/Common/AncientSavedStateFields.cs",
+        "EZMicroBalanceCode/Ancients/Common/AncientSelectionEvidenceLog.cs",
         "EZMicroBalanceCode/Ancients/Common/JeweledMaskFreePower.cs",
         "EZMicroBalanceCode/Ancients/Patches/ChoicesParadoxPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/ClawsPatches.cs",

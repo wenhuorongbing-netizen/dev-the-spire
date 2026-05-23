@@ -90,11 +90,18 @@ public sealed class ReleaseHashGuardTests
         const string stalePreLocalizationQaPckHash = "CBFA4867F0EFEFAB35BC5CE463773022F76A27912DB1EA399DFDCC8399F19FB4";
         const string stalePreRootEyesComposerZipHash = "31F17BC1178A40E1E6A13A7A49F8C3B70B470BCDB9D8E02ED96E29278072F198";
         const string stalePreRootEyesComposerDllHash = "FA111B2854FF108505D78F7ECBA22A7BC997EEA0B25C96A9B82C046716731DC2";
-        const string currentZipHash = "EFDF43EBAD1A8A6AD9263E971B5CC0366E823739BA2660A69BDD747DF3425686";
-        const string currentDllHash = "BC79A2634F87314046C8C86120E2FD94030FDC650F5B432864E789AA6B888A4A";
-        const string currentPckHash = "6F5080524B57EC07F750D6DCFB6D6B274C5F5780EA60DBABB0E6B254D26D01C5";
+        const string stalePrePackageReadmeTerminologyZipHash = "1F94B5EFA08AE2F0692622B6FCB5180589FFF31B9E1255C9C49FCDA8306EE644";
+        const string stalePrePackageReadmeTerminologyReadmeHash = "C735AA228BBB5CD002BF618334A04483C0013328C82ECC33551C65B0A1165599";
+        const string stalePreTransformPreviewInstanceStateZipHash = "CC5AB95A7D744F416A2B430D4ECA0EBF4D1D2C5A2825E43FECB0874D97BD9FCA";
+        const string stalePreTransformPreviewInstanceStateDllHash = "5C5250D63C76A84A09D3127460F746ED1C704A8D574D7E3477966DBD8F55BB04";
+        const string stalePreSoulTideCapTextZipHash = "B365AE4A1EDDAEA72CEFDF604CED7C1DFB96D8B372E0B7FC5F6763E5E5453576";
+        const string stalePreSoulTideCapTextDllHash = "3A07F6E61447C4E6ECE0A97AB6AA1DAECFB63411B2168BFA3417ADF266CA79FB";
+        const string stalePreSoulTideCapTextPckHash = "B060A838D14A791E66FE36B34A74EC733E7F1B3ED1E923343AB47C2531BDE89C";
+        const string currentZipHash = "11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120";
+        const string currentDllHash = "C9030FCDC459E35256B00CE71925854AF44CFE97667DEB07F751CEA540C86522";
+        const string currentPckHash = "68F6DCCC5564AE402B3FFB1DD9A65B92555B58CF72282E8EC64FF273EEC4E0F8";
         const string currentManifestHash = "C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6";
-        const string currentReadmeHash = "C735AA228BBB5CD002BF618334A04483C0013328C82ECC33551C65B0A1165599";
+        const string currentReadmeHash = "2441D012F12D0FB81BCAF7E1C99B1E60F18187937B9911D7D4FD54ACC47BCC6A";
 
         var currentStatusDocs = new[]
         {
@@ -153,6 +160,11 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreLocalizationQaZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreLocalizationQaPckHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreRootEyesComposerZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePrePackageReadmeTerminologyZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePrePackageReadmeTerminologyReadmeHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreTransformPreviewInstanceStateZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSoulTideCapTextZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSoulTideCapTextPckHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(oldDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightUiDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightMarkerDllHash, doc, StringComparison.Ordinal);
@@ -192,6 +204,8 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreStrictSourceResourceAuditDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreLocalizationQaDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreRootEyesComposerDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreTransformPreviewInstanceStateDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSoulTideCapTextDllHash, doc, StringComparison.Ordinal);
         }
 
         AssertSourceContains(

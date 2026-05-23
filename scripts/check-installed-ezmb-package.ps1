@@ -1,6 +1,8 @@
 ﻿param(
     [string]$ModDirectory,
+    [string]$GameRootZipPath,
     [string]$HandoffPath = "$PSScriptRoot\..\docs\private-beta-verification-handoff.md",
+    [switch]$SkipGameRootZipCheck,
     [switch]$PassVerbose
 )
 
@@ -50,6 +52,27 @@ function Get-ExpectedHash {
     return $null
 }
 
+function Get-HandoffPackageFileName {
+    foreach ($line in $rawLines) {
+        if ($line -match 'SpirePlus-[^`\\/\s]+\.zip') {
+            return $Matches[0]
+        }
+    }
+
+    return $null
+}
+
+$expectedZipHash = Get-ExpectedHash 'Zip'
+$packageFileName = Get-HandoffPackageFileName
+
+if (-not $GameRootZipPath -and -not $SkipGameRootZipCheck -and $packageFileName) {
+    $resolvedModDirectory = Resolve-Path -LiteralPath $ModDirectory
+    $modDirectoryInfo = [System.IO.DirectoryInfo]$resolvedModDirectory.Path
+    if ($modDirectoryInfo.Name -eq 'EZMicroBalance' -and $modDirectoryInfo.Parent -and $modDirectoryInfo.Parent.Name -eq 'mods') {
+        $GameRootZipPath = Join-Path $modDirectoryInfo.Parent.Parent.FullName $packageFileName
+    }
+}
+
 $expected = @{
     'EZMicroBalance.dll' = Get-ExpectedHash 'DLL'
     'EZMicroBalance.pck' = Get-ExpectedHash 'PCK'
@@ -96,13 +119,34 @@ foreach ($kv in $files.GetEnumerator()) {
     }
 }
 
+if (-not $SkipGameRootZipCheck) {
+    if (-not $expectedZipHash) {
+        $rows += "Game root package zip | expected:<missing> | actual:<not checked> | FAIL"
+        $allPass = $false
+    } elseif (-not $GameRootZipPath) {
+        $rows += "Game root package zip | expected:$expectedZipHash | actual:<path not inferred> | FAIL"
+        $allPass = $false
+    } elseif (-not (Test-Path -LiteralPath $GameRootZipPath)) {
+        $rows += "Game root package zip | MISSING | expected:$expectedZipHash | path:$GameRootZipPath | FAIL"
+        $allPass = $false
+    } else {
+        $actualZipHash = (Get-FileHash -Algorithm SHA256 -Path $GameRootZipPath).Hash.ToUpperInvariant()
+        if ($actualZipHash -eq $expectedZipHash) {
+            $rows += "Game root package zip | expected:$expectedZipHash | actual:$actualZipHash | PASS"
+        } else {
+            $rows += "Game root package zip | expected:$expectedZipHash | actual:$actualZipHash | path:$GameRootZipPath | FAIL"
+            $allPass = $false
+        }
+    }
+}
+
 $rows | ForEach-Object { Write-Host $_ }
 
 if ($allPass) {
-    Write-Host "PASS: installed EZMicroBalance artifacts match handoff hashes."
+    Write-Host "PASS: installed EZMicroBalance artifacts and package zip match handoff hashes."
     exit 0
 }
 
-Write-Host "FAIL: one or more installed artifact hashes do not match handoff."
+Write-Host "FAIL: one or more installed artifact or package zip hashes do not match handoff."
 exit 1
 

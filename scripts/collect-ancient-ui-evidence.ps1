@@ -133,6 +133,42 @@ function Format-DisplayCommand {
     return (($Tokens | ForEach-Object { Format-DisplayToken -Value $_ }) -join ' ')
 }
 
+function Get-GitValue {
+    param([Parameter(Mandatory = $true)][string[]]$Arguments)
+
+    try {
+        $value = & git -C $repoRoot @Arguments 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            return ($value -join "`n").Trim()
+        }
+    } catch {
+    }
+
+    return $null
+}
+
+function Get-HashRow {
+    param([Parameter(Mandatory = $true)][string]$RelativePath)
+
+    $fullPath = Join-Path $repoRoot $RelativePath
+    if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
+        return [ordered]@{
+            Path = $RelativePath
+            Exists = $false
+            Sha256 = $null
+            Length = $null
+        }
+    }
+
+    $item = Get-Item -LiteralPath $fullPath
+    return [ordered]@{
+        Path = $RelativePath
+        Exists = $true
+        Sha256 = (Get-FileHash -LiteralPath $fullPath -Algorithm SHA256).Hash
+        Length = $item.Length
+    }
+}
+
 function Get-PowerShellExecutable {
     $processPath = (Get-Process -Id $PID).Path
     if ($processPath -and (Test-Path -LiteralPath $processPath)) {
@@ -322,6 +358,57 @@ function New-ManualInstructions {
     return ($lines | Where-Object { $null -ne $_ }) -join [Environment]::NewLine
 }
 
+function Get-ReleaseEvidenceRowId {
+    param(
+        [Parameter(Mandatory = $true)][string]$AncientName,
+        [switch]$VakuuFight
+    )
+
+    if ($AncientName -eq 'VAKUU') {
+        if ($VakuuFight) {
+            return 'ancient-ui-vakuu-fight'
+        }
+
+        return 'ancient-ui-vakuu-normal'
+    }
+
+    return "ancient-ui-$($AncientName.ToLowerInvariant())"
+}
+
+function New-ManualRows {
+    param(
+        [Parameter(Mandatory = $true)][string]$AncientName,
+        [Parameter(Mandatory = $true)][string]$EvidenceFull,
+        [Parameter(Mandatory = $true)][int]$ExpectedOptionCountForThisRun,
+        [Parameter(Mandatory = $true)][string]$UnsavedTestCommand,
+        [switch]$VakuuFight
+    )
+
+    $screenshotName = "01-$($AncientName.ToLowerInvariant())-clicked-ui.png"
+    return @(
+        [ordered]@{
+            Id = Get-ReleaseEvidenceRowId -AncientName $AncientName -VakuuFight:$VakuuFight
+            Feature = 'Clicked Ancient UI'
+            Kind = 'clicked-ui'
+            Status = 'pending'
+            EvidenceDir = $EvidenceFull
+            RequiredEvidence = @(
+                'command.txt',
+                'window-preflight.json',
+                'godot.log',
+                'godot-log-audit.json',
+                'route-note.md',
+                $screenshotName
+            )
+            ScreenshotFile = $screenshotName
+            ResultNote = ''
+            ExpectedOptionCount = $ExpectedOptionCountForThisRun
+            PreferredDevConsoleCommand = $UnsavedTestCommand
+            Notes = 'Fill this row only after live foreground screenshot and clean log evidence exist.'
+        }
+    )
+}
+
 function New-PreparePreflight {
     param(
         [Parameter(Mandatory = $true)][string]$EvidenceFull,
@@ -449,6 +536,14 @@ $wrapperLaunchArgs += '-Launch'
 $wrapperLaunchCommand = Format-DisplayCommand -Tokens (@('.\scripts\collect-ancient-ui-evidence.ps1') + $wrapperLaunchArgs)
 $restoreCommand = Format-DisplayCommand -Tokens @('.\scripts\collect-ancient-ui-evidence.ps1', '-Mode', 'Restore', '-EvidenceDir', $evidenceFull)
 
+$selfTokens = @('.\scripts\collect-ancient-ui-evidence.ps1', '-Mode', 'Prepare', '-Ancient', $ancientName, '-EvidenceDir', $evidenceFull)
+if ($ForceVakuuFight) { $selfTokens += '-ForceVakuuFight' }
+if ($MoveOtherMods) { $selfTokens += '-MoveOtherMods' }
+if ($MoveCurrentRuns) { $selfTokens += '-MoveCurrentRuns' }
+if ($NoPreflight) { $selfTokens += '-NoPreflight' }
+if ($Launch) { $selfTokens += '-Launch' }
+$selfCommand = Format-DisplayCommand -Tokens $selfTokens
+
 $livePrepareArgs = @('-Mode', 'Prepare', '-EvidenceDir', $evidenceFull)
 if ($MoveOtherMods) { $livePrepareArgs += '-MoveOtherMods' }
 if ($MoveCurrentRuns) { $livePrepareArgs += '-MoveCurrentRuns' }
@@ -459,6 +554,11 @@ $preflight = New-PreparePreflight -EvidenceFull $evidenceFull -Skip:$NoPreflight
 
 $planPath = Join-Path $evidenceFull 'ancient-ui-evidence-plan.json'
 $instructionsPath = Join-Path $evidenceFull 'manual-instructions.md'
+$commandPath = Join-Path $evidenceFull 'command.txt'
+$environmentPath = Join-Path $evidenceFull 'environment.json'
+$packageHashesPath = Join-Path $evidenceFull 'package-hashes.json'
+$manualRowsPath = Join-Path $evidenceFull 'manual-rows-template.json'
+$logAuditTemplatePath = Join-Path $evidenceFull 'log-audit-template.json'
 $plan = [ordered]@{
     Ancient = $ancientName
     CreatedAt = (Get-Date).ToString('o')
@@ -494,6 +594,72 @@ $plan = [ordered]@{
 }
 
 Save-Json -InputObject $plan -Path $planPath
+
+$environment = [ordered]@{
+    CreatedAt = (Get-Date).ToString('o')
+    EvidenceKind = 'ancient-ui-clicked-evidence'
+    RepositoryRoot = $repoRoot
+    GitHead = Get-GitValue -Arguments @('rev-parse', 'HEAD')
+    GitStatusShort = Get-GitValue -Arguments @('status', '--short')
+    Ancient = $ancientName
+    ForceVakuuFight = [bool]$ForceVakuuFight
+    LaunchRequested = [bool]$Launch
+    NoLaunch = -not [bool]$Launch
+    NoPreflight = [bool]$NoPreflight
+    MoveOtherMods = [bool]$MoveOtherMods
+    MoveCurrentRuns = [bool]$MoveCurrentRuns
+    ForceEnvironment = $forceEnvironment
+    ExpectedOptionCountForThisRun = $expectedOptionCountForThisRun
+    PreferredUnsavedDevConsoleCommand = $unsavedTestCommandForThisRun
+    ExpectedDevConsoleCommand = $devConsoleCommands[$ancientName]
+    ManualRouteInstruction = $manualRoutes[$ancientName]
+    Scripts = [ordered]@{
+        Preflight = $preflightScript
+        LiveSession = $liveSessionScript
+    }
+    LaunchCommandSummary = [ordered]@{
+        PrepareCommand = $selfCommand
+        TesterCommand = $wrapperLaunchCommand
+        LiveSessionCommand = $livePrepareCommand
+        RestoreCommand = $restoreCommand
+    }
+}
+
+$packageHashes = [ordered]@{
+    CreatedAt = (Get-Date).ToString('o')
+    Files = @(
+        Get-HashRow -RelativePath 'EZMicroBalance.json'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0.zip'
+        Get-HashRow -RelativePath 'publish\EZMicroBalance.dll'
+        Get-HashRow -RelativePath 'publish\EZMicroBalance.pck'
+    )
+}
+
+$commandLines = @(
+    "Prepare command: $selfCommand",
+    "Tester launch command: $wrapperLaunchCommand",
+    "Live-session command used by -Launch: $livePrepareCommand",
+    "Restore command: $restoreCommand",
+    "Preferred UI-smoke command: $unsavedTestCommandForThisRun",
+    "Active-run render-smoke command: $($devConsoleCommands[$ancientName])"
+)
+$commandLines -join [Environment]::NewLine | Set-Content -LiteralPath $commandPath -Encoding UTF8
+Save-Json -InputObject $environment -Path $environmentPath
+Save-Json -InputObject $packageHashes -Path $packageHashesPath
+Save-Json -InputObject ([ordered]@{
+    Rows = @(New-ManualRows `
+            -AncientName $ancientName `
+            -EvidenceFull $evidenceFull `
+            -ExpectedOptionCountForThisRun $expectedOptionCountForThisRun `
+            -UnsavedTestCommand $unsavedTestCommandForThisRun `
+            -VakuuFight:$ForceVakuuFight)
+}) -Path $manualRowsPath
+Save-Json -InputObject ([ordered]@{
+    Status = 'pending'
+    RequiredFiles = @('godot.log', 'godot-log-audit.json')
+    BlockingPatterns = @('ERROR', 'Exception', '[EZMB-EVIDENCE]')
+    Notes = 'Fill with audit output after copying live logs. This template is not a pass marker.'
+}) -Path $logAuditTemplatePath
 
 $instructions = New-ManualInstructions `
     -AncientName $ancientName `

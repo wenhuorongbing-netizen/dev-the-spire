@@ -60,7 +60,7 @@ public sealed class ReleaseEvidenceLogCoverageGuardTests
         AssertEvidenceSurface(
             source,
             "A11-A20 and co-op gates",
-            "A20KingBrand",
+            "A20BrandedForm",
             "coop_gate_disabled",
             "boss_marker_applied",
             "courtyard_entered");

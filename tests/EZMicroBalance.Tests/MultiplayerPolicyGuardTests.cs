@@ -26,7 +26,7 @@ public sealed class MultiplayerPolicyGuardTests
         var events = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Events");
 
         Assert.Contains("ShouldDisableUnverifiedCoopFeature", core, StringComparison.Ordinal);
-        Assert.Contains("A20KingBrand", core, StringComparison.Ordinal);
+        Assert.Contains("A20BrandedForm", core, StringComparison.Ordinal);
         Assert.Contains("second_boss_set", patches, StringComparison.Ordinal);
         Assert.Contains("second_boss_brand_gated", map, StringComparison.Ordinal);
         Assert.Contains("courtyard_entered", events, StringComparison.Ordinal);
@@ -38,18 +38,18 @@ public sealed class MultiplayerPolicyGuardTests
         var gate = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.Systems.cs");
         var method = SliceBetween(
             gate,
-            "public static bool IsDualKingBrandsSinglePlayerEnabled(IRunState runState)",
+            "public static bool IsBrandedFormSinglePlayerEnabled(IRunState runState)",
             "public static bool IsAnyImplementedSliceEnabled(IRunState runState)");
 
         AssertSourceContains(
             method,
-            "if (!IsDualKingBrandsEnabled(runState))",
+            "if (!IsBrandedFormEnabled(runState))",
             "if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(",
-            "\"A20KingBrand\"",
+            "\"A20BrandedForm\"",
             "return runState.Players.Count == 1;");
         AssertBefore(method, "ShouldDisableUnverifiedCoopFeature", "return runState.Players.Count == 1;");
         Assert.DoesNotContain("hasVanillaSinglePlayerRunShape &&", method, StringComparison.Ordinal);
-        Assert.DoesNotContain("IsDualKingBrandsEnabled(runState) &&", method, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsBrandedFormEnabled(runState) &&", method, StringComparison.Ordinal);
     }
 
     [Fact]

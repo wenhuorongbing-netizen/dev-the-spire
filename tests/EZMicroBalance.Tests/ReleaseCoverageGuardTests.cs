@@ -169,7 +169,7 @@ public sealed class ReleaseCoverageGuardTests
                 "AscensionA20RewardScreenReadyPatch",
                 "A20_INTERMISSION_HEADER",
                 "BossMapPointHoverPatch",
-                "BOSS_KING_BRAND",
+                "BOSS_BRANDED_FORM",
                 "TryAddBossSealRewardOption",
                 "BossRewardTargetOptionCount = 4",
                 "TryAddA20BossOneCardReward"

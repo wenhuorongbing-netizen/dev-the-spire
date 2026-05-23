@@ -1,4 +1,4 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -376,7 +376,7 @@ public sealed class ReleaseArtifactParityGuardTests
             source,
             @"\bpublic\s+static\s+readonly\s+SavedSpireField<",
             RegexOptions.CultureInvariant).Count;
-        Assert.Equal(26, count);
+        Assert.Equal(30, count);
         return count;
     }
 

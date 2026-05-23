@@ -101,18 +101,25 @@ public sealed class TestInfrastructureGuardTests
     }
 
     [Fact]
-    public void WebsitePreviewDraftStaysOutOfReleaseCandidateDiff()
+    public void WebsiteSurfaceIsPromotedAndGeneratedForumOutputStaysIgnored()
     {
         var gitIgnore = ReadRepoText(".gitignore");
+        var gitIgnoreLines = gitIgnore.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
         var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
         var docInventory = ReadRepoText("docs", "doc-inventory.md");
 
-        Assert.Contains("/website/", gitIgnore, StringComparison.Ordinal);
-        Assert.Contains("/.github/workflows/spire-plus-site.yml", gitIgnore, StringComparison.Ordinal);
-        Assert.Contains("Removed ignored local draft", projectMap, StringComparison.Ordinal);
+        Assert.DoesNotContain("/website/", gitIgnoreLines);
+        Assert.DoesNotContain("/.github/workflows/spire-plus-site.yml", gitIgnoreLines);
+        Assert.Contains("/website/forum/", gitIgnoreLines);
+        Assert.Contains("/website/**/*.import", gitIgnoreLines);
+        AssertRepoFileExists("website", "README.md");
+        AssertRepoFileExists("website", "content-data.js");
+        AssertRepoFileExists(".github", "workflows", "spire-plus-site.yml");
+        Assert.Contains("Promoted website source is tracked", projectMap, StringComparison.Ordinal);
         Assert.Contains(".tools/archive/local-website-preview-20260516", projectMap, StringComparison.Ordinal);
+        Assert.Contains("current public site source is tracked", docInventory, StringComparison.Ordinal);
         Assert.Contains("local-website-preview-20260516", docInventory, StringComparison.Ordinal);
-        Assert.Contains("deleted after preserving snapshot", docInventory, StringComparison.Ordinal);
+        Assert.Contains("generated `website/forum/` output is ignored", docInventory, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -134,12 +141,15 @@ public sealed class TestInfrastructureGuardTests
 
         Assert.Contains("/art_pipeline/", gitIgnore, StringComparison.Ordinal);
         Assert.Contains("/asset/", gitIgnore, StringComparison.Ordinal);
+        Assert.Contains("/output/playwright/", gitIgnore, StringComparison.Ordinal);
         Assert.Contains(".tools/archive/local-art-and-calibration-20260515", projectMap, StringComparison.Ordinal);
         Assert.Contains(".tools/archive/local-root-clutter-20260515", projectMap, StringComparison.Ordinal);
         Assert.Contains("local-art-and-calibration-20260515", docInventory, StringComparison.Ordinal);
         Assert.Contains("local-root-clutter-20260515", docInventory, StringComparison.Ordinal);
         Assert.Contains("Root local art/calibration folders", cleanupAudit, StringComparison.Ordinal);
         Assert.Contains("Root local clutter archives", cleanupAudit, StringComparison.Ordinal);
+        Assert.Contains("Local Playwright screenshots/logs", cleanupAudit, StringComparison.Ordinal);
+        Assert.Contains("new browser screenshots, HARs, logs, and PID files", cleanupAudit, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -153,6 +163,7 @@ public sealed class TestInfrastructureGuardTests
             gitIgnore,
             ".tools/",
             "publish/",
+            "/output/playwright/",
             "/source code/",
             "Directory.Build.props",
             "*.zip",
@@ -212,6 +223,6 @@ public sealed class TestInfrastructureGuardTests
 
         Assert.DoesNotContain("Status: Complete", cleanupAudit, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("| `source code/` | Default keep because current tests/docs require it. |", cleanupAudit, StringComparison.Ordinal);
-        Assert.Contains("| `website/` and `.github/workflows/spire-plus-site.yml` | Deleted local draft after verifying `.tools/archive/local-website-preview-20260516/` snapshot; keep deleted unless deliberately promoted later. |", cleanupAudit, StringComparison.Ordinal);
+        Assert.Contains("| `website/` and `.github/workflows/spire-plus-site.yml` | Promoted and tracked as current public site source and Pages workflow. Generated `website/forum/` output and `website/**/*.import` metadata remain ignored. |", cleanupAudit, StringComparison.Ordinal);
     }
 }

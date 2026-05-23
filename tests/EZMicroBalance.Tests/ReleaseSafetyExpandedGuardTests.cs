@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -76,7 +76,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             .OrderBy(field => field.Key, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(26, fields.Length);
+        Assert.Equal(30, fields.Length);
         Assert.Equal(fields.Length, fields.Select(field => field.Key).Distinct(StringComparer.Ordinal).Count());
         Assert.All(fields, field => Assert.StartsWith("EZMicroBalance", field.Key, StringComparison.Ordinal));
         Assert.All(fields, field => Assert.Contains(field.Name, sourceWithoutDefinitions, StringComparison.Ordinal));
@@ -93,14 +93,14 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         var devEnvironment = ReadRepoText("docs", "dev-environment.md");
-        Assert.Contains("current source defines 26 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current source defines 30 SavedSpireFields", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", currentDocs, StringComparison.Ordinal);
         Assert.Contains("previous smoke log still reports `Found 22 SavedSpireFields`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("fresh live loader rerun", currentDocs, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", currentDocs, StringComparison.Ordinal);
         Assert.Contains("historical 22-field loader evidence", devEnvironment, StringComparison.Ordinal);
-        Assert.Contains("not refreshed 26-field package parity", devEnvironment, StringComparison.Ordinal);
-        Assert.Contains("Current source defines 26 SavedSpireFields", devEnvironment, StringComparison.Ordinal);
+        Assert.Contains("not refreshed 30-field package parity", devEnvironment, StringComparison.Ordinal);
+        Assert.Contains("Current source defines 30 SavedSpireFields", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current normal Steam-client helper startup/log pass", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current-package startup/log verification", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: current normal Steam startup/log verification passed", devEnvironment, StringComparison.Ordinal);
@@ -136,17 +136,17 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Phase 4 Lotha first slice",
             "Source-complete / live-pending",
             "Phase 8 required commands",
-            "fresh 26-field loader proof",
+            "fresh 30-field loader proof",
             "It is not private-beta release-ready");
 
         Assert.Contains("`EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("`Spire Plus`", audit, StringComparison.Ordinal);
-        Assert.Contains("current source defines 26 SavedSpireFields", audit, StringComparison.Ordinal);
+        Assert.Contains("current source defines 30 SavedSpireFields", audit, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
         Assert.Contains("previous current-package smoke", audit, StringComparison.Ordinal);
         Assert.Contains("`Found 22 SavedSpireFields`", audit, StringComparison.Ordinal);
         Assert.Contains("Historical 22-field loader/resource verification is retained as historical evidence only", audit, StringComparison.Ordinal);
-        Assert.Contains("fresh 26-field loader proof", audit, StringComparison.Ordinal);
+        Assert.Contains("fresh 30-field loader proof", audit, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", audit, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log verification for the earlier 22-field package confirmed the refreshed `Spire Plus` display name", audit, StringComparison.Ordinal);
         Assert.Contains("refreshed Mod Settings UI list capture now shows `Spire Plus`", audit, StringComparison.Ordinal);
@@ -234,8 +234,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "## Prompt-To-Artifact Checklist",
             "## Missing Or Weakly Verified Items",
             "## Conclusion",
-            "202 passed / 18 skipped",
-            "220 passed / 0 skipped",
+            "258 passed / 18 skipped",
+            "276 passed / 0 skipped",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",
             "window-preflight-smoke-20260513-135402",
@@ -246,7 +246,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Vakuu dedicated combat loop",
             "Ancient reward visibility",
             "Player text, UI, and resource routing",
-            "failed as designed with 16 pending manual rows",
+            "failed as designed with 18 pending manual rows",
             "release-ready-path-containment-smoke",
             "evidence dirs outside the evidence root",
             "required-file/screenshot paths that escape their row evidence dir",
@@ -323,18 +323,38 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"124AF7C77B33CE5EAC5A7369519D90AD66EC4CFCDC887DD1E352CF4F24E7968C\"",
+            "PackageSha256 = \"11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120\"",
             "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.0.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
             "Get-FileHash -LiteralPath $packageFull -Algorithm SHA256",
             "ActualPackageSha256 = $actualPackageSha256",
+            "WritePassMarker",
+            "PassMarkerPath is outside EvidenceRoot",
+            "release-evidence-verifier-pass.json",
             "ManifestPath is outside EvidenceRoot",
             "Test-PathWithin",
             "Resolve-EvidenceFilePath",
             "Merge-RequiredEvidenceFiles",
             "DefaultFiles",
             "RowFiles",
+            "Get-RequiredRowExtraFiles",
+            "ExtraRequiredFiles",
+            "ancient-reward-relics-checklist.md",
+            "Test-AncientRewardRelicsChecklist",
+            "player-text-qa-checklist.md",
+            "Test-PlayerTextQaChecklist",
+            "art-resource-routing-checklist.md",
+            "Test-ArtResourceRoutingChecklist",
+            "rootblight-behavior-checklist.md",
+            "Test-RootblightBehaviorChecklist",
+            "vakuu-victory-checklist.md",
+            "vakuu-failure-death-checklist.md",
+            "vakuu-save-load-checklist.md",
+            "preview-tools-checklist.md",
+            "coop-disposition-checklist.md",
+            "Test-SimpleChecklistRows",
+            "boss-ability-checklist.md",
             "Kind '$rowKind' does not match required kind",
             "EvidenceDir is outside EvidenceRoot",
             "required evidence file path escapes EvidenceDir",
@@ -345,6 +365,9 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Unknown release evidence row id ignored",
             "$requiredReleaseRows",
             "command.txt",
+            "fresh-current-package-loader-smoke",
+            "loader",
+            "enabled-mods.txt",
             "ancient-ui-urda",
             "ancient-ui-morvi",
             "ancient-ui-lotha",
@@ -359,7 +382,10 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "ancient-state-save-load",
             "rootblight-visual-behavior",
             "a11-natural-route-traversal",
+            "a19-a20-dedicated-boss-abilities",
             "disable-mod-gameplay",
+            "preview-tools-live-proof",
+            "preview-tools",
             "coop-disposition",
             "godot-log-audit.json",
             "SpireForeground",
@@ -419,10 +445,10 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "if (!AscensionFeatureGate.IsFiremarkedEliteEnabled(runState))",
             "if (!AscensionFeatureGate.IsBannerRoomEnabled(runState))",
             "var bossSealsEnabled = AscensionFeatureGate.IsBossSealsEnabled(runState);",
-            "var dualKingBrandsEnabled = AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState);",
-            "if (!bossSealsEnabled && !dualKingBrandsEnabled)",
+            "var brandedFormEnabled = AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState);",
+            "if (!bossSealsEnabled && !brandedFormEnabled)",
             "if (bossSealsEnabled)",
-            "if (!dualKingBrandsEnabled)",
+            "if (!brandedFormEnabled)",
             "EnsureQuestMarker<FiremarkedEliteMapQuestMarker>(point)",
             "EnsureQuestMarker<AscensionMapQuestMarker>(point)",
             "point.AddQuest(ModelDb.GetById<TMarker>(ModelDb.GetId<TMarker>()))",
@@ -447,7 +473,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         AssertSourceContains(
             a20Patch,
             "HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))",
-            "AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState)",
+            "AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState)",
             "finalAct.HasSecondBoss",
             "finalAct.SetSecondBossEncounter(secondBoss)",
             "HarmonyPatch(typeof(RunManager), nameof(RunManager.ProceedFromTerminalRewardsScreen))",
@@ -468,7 +494,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "CardCreationFlags.NoModifyHooks | CardCreationFlags.NoCardPoolModifications",
             "TryModifyRewardsLate(Player player, List<Reward> rewards, AbstractRoom? room)",
             "TryAddA20BossOneCardReward(player, rewards, room)",
-            "AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState)",
+            "AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState)",
             "new CardReward(CardCreationOptions.ForRoom(player, RoomType.Boss), 3, player)",
             "metadata?.DeepBranch != DeepBranchNodeKind.EnhancedReward",
             "new RelicReward(RelicRarity.Uncommon, player)");
@@ -478,7 +504,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "AscensionFeatureGate.IsFiremarkedEliteEnabled(combatState.RunState)",
             "AscensionFeatureGate.IsBannerRoomEnabled(combatState.RunState)",
             "AscensionFeatureGate.IsBossSealsEnabled(combatState.RunState)",
-            "AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(combatState.RunState)",
+            "AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(combatState.RunState)",
             "await CreatureCmd.GainBlock",
             "FindFiremarkHost(combatState)",
             "PowerCmd.Apply<MightMarkFiremarkPower>",
@@ -560,33 +586,32 @@ public sealed class ReleaseSafetyExpandedGuardTests
         var fragments = new[]
         {
             "\uFFFD",
-            "涓",
-            "鑰",
-            "璇",
-            "鐜",
-            "鐏",
-            "閻",
-            "娑",
-            "鍋",
-            "婵",
-            "锟",
-            "妫",
-            "锛",
-            "鑾",
-            "鎵",
-            "閲",
-            "瀹",
-            "绁",
-            "鏀",
-            "璁",
-            "鍊",
-            "杩",
-            "鐐",
-            "寮傝壊",
-            "鐗",
-            "鎰"
+            "\u6D93",
+            "\u9470",
+            "\u7487",
+            "\u941C",
+            "\u940F",
+            "\u95BB",
+            "\u5A11",
+            "\u934B",
+            "\u5A75",
+            "\u951F",
+            "\u59AB",
+            "\u951B",
+            "\u947E",
+            "\u93B5",
+            "\u95B2",
+            "\u7039",
+            "\u7EC1",
+            "\u93C0",
+            "\u7481",
+            "\u934A",
+            "\u6769",
+            "\u9410",
+            "\u5BEE\u509D\u58CA",
+            "\u9417",
+            "\u93B0"
         };
-
         var matches = fragments
             .Where(fragment => allText.Contains(fragment, StringComparison.Ordinal))
             .ToArray();

@@ -1,9 +1,36 @@
-﻿using Xunit;
+using Xunit;
 
 namespace EZMicroBalance.Tests;
 
 public sealed class DocumentationCompactnessGuardTests
 {
+    [Fact]
+    public void ActiveGoalGuardStaysCompactAndReadable()
+    {
+        var goal = ReadRepoText("docs", "goal.md");
+        var archiveReadme = ReadRepoText("docs", "archive", "feature-inputs", "README.md");
+        var lineCount = goal.Split('\n').Length;
+
+        Assert.True(lineCount <= 40, $"docs/goal.md should stay a compact guardrail; current line count is {lineCount}.");
+        AssertSourceContains(
+            goal,
+            "# Spire Plus Goal Guard",
+            "Current target:",
+            "Closure rules:",
+            "Live proof required",
+            "Source review may close only source-level issues",
+            "Runtime rows need game logs, screenshots, manual notes, or two-client evidence",
+            "Crystal Sphere and transform-preview live proof inside Spire Plus",
+            "No source-only pass may mark this goal complete");
+        Assert.Contains("goal-md-mojibake-intake-20260523.md", goal, StringComparison.Ordinal);
+        Assert.Contains("goal-md-mojibake-intake-20260523.md", archiveReadme, StringComparison.Ordinal);
+
+        foreach (var stalePromptMarker in new[] { "## P0", "## P1", "One-Shot Prompt", "Phase 1", "sourcecodeonlyaianalysis" })
+        {
+            Assert.DoesNotContain(stalePromptMarker, goal, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
     [Fact]
     public void TestReadyDevelopmentGoalStaysCompactAndCurrent()
     {
@@ -41,9 +68,14 @@ public sealed class DocumentationCompactnessGuardTests
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
         Assert.Contains("Latest normal Steam-client startup/log evidence is historical for the pre-review Spire Plus package", projectState, StringComparison.Ordinal);
+        Assert.Contains("2026-05-23 after the package no-refresh guard update", projectState, StringComparison.Ordinal);
+        Assert.Contains("258 passed / 18 skipped", projectState, StringComparison.Ordinal);
+        Assert.Contains("fresh live loader parity remains pending for the 2026-05-23 package", projectState, StringComparison.Ordinal);
         Assert.Contains("Current manual-test package is not a release-readiness claim", projectState, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", projectState, StringComparison.Ordinal);
         Assert.Contains("git diff --check", projectState, StringComparison.Ordinal);
+        Assert.DoesNotContain("2026-05-18 package was not live-loader-smoked", projectState, StringComparison.Ordinal);
+        Assert.DoesNotContain("235 passed / 18 skipped", projectState, StringComparison.Ordinal);
 
         foreach (var stalePassMarker in new[]
         {
@@ -107,6 +139,7 @@ public sealed class DocumentationCompactnessGuardTests
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
+            "152 dirty entries and 0 unclassified paths",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source-split/refactor passes", issues, StringComparison.OrdinalIgnoreCase);
@@ -166,8 +199,8 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             devEnvironment,
             "Historical 22-field loader evidence:",
-            "Current source defines 26 SavedSpireFields",
-            "not refreshed 26-field package parity",
+            "Current source defines 30 SavedSpireFields",
+            "not refreshed 30-field package parity",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
             "Last private beta package:",
             "Zip SHA256:",
@@ -239,13 +272,80 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             testPlan,
             "Current automated suite count and command results are recorded",
-            "current source defines 26 SavedSpireFields",
+            "current source defines 30 SavedSpireFields",
             "manual feature matrix has runtime gameplay",
             "A20 multiplayer selection is not full A20 co-op support");
         AssertSourceContains(
             ancientCompletionAudit,
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "current source defines 26 SavedSpireFields",
+            "current source defines 30 SavedSpireFields",
             "historical loader/resource evidence only");
+    }
+
+    [Fact]
+    public void CurrentDocsAvoidStaleNormalValidationCounts()
+    {
+        var docsToCheck = new[]
+        {
+            "docs/dev-environment.md",
+            "docs/toreview.md",
+            "docs/test-ready-completion-audit.md",
+            "docs/private-beta-verification-handoff.md",
+            "docs/private-beta-release-completion-audit.md",
+            "docs/features/ancients-rework-v4/completion-audit.md",
+            "docs/review.md"
+        };
+        var staleCounts = new[]
+        {
+            "202 passed / 18 skipped",
+            "220 passed / 0 skipped",
+            "235 passed / 18 skipped",
+            "235 passed, 18 skipped",
+            "244 passed / 18 skipped",
+            "245 passed / 18 skipped",
+            "246 passed / 18 skipped",
+            "247 passed / 18 skipped",
+            "248 passed / 18 skipped",
+            "249 passed / 18 skipped",
+            "250 passed / 18 skipped",
+            "251 passed / 18 skipped",
+            "252 passed / 18 skipped",
+            "252 passed, 18 skipped",
+            "253 passed / 18 skipped",
+            "253 passed, 18 skipped",
+            "253 passed / 0 skipped",
+            "253 passed, 0 skipped",
+            "257 passed / 18 skipped",
+            "257 passed, 18 skipped",
+            "275 passed / 0 skipped",
+            "275 passed, 0 skipped",
+            "264 passed / 0 skipped",
+            "270 passed / 0 skipped",
+            "270 passed, 0 skipped",
+            "269 passed / 0 skipped",
+            "269 passed, 0 skipped"
+        };
+        var failures = new List<string>();
+
+        foreach (var path in docsToCheck)
+        {
+            var text = ReadRepoText(path.Split('/'));
+
+            foreach (var staleCount in staleCounts)
+            {
+                if (text.Contains(staleCount, StringComparison.Ordinal))
+                {
+                    failures.Add($"{path} contains stale validation count `{staleCount}`.");
+                }
+            }
+        }
+
+        Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
+
+        var currentDocs = string.Join(
+            Environment.NewLine,
+            docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
+        Assert.Contains("258 passed / 18 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("276 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
     }
 }

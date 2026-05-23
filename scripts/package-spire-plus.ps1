@@ -29,6 +29,7 @@ $versionedModDir = Join-Path $versionedRoot 'EZMicroBalance'
 $zipPath = Join-Path $publishRoot "SpirePlus-$($manifest.version).zip"
 $legacyZipPath = Join-Path $publishRoot "EZMicroBalance-$($manifest.version).zip"
 $installedModDir = Join-Path $GameRoot 'mods\EZMicroBalance'
+$requiredArtifactFiles = @('EZMicroBalance.dll', 'EZMicroBalance.json', 'EZMicroBalance.pck')
 
 function Assert-UnderPath {
     param(
@@ -43,6 +44,35 @@ function Assert-UnderPath {
     }
 }
 
+function Assert-RequiredArtifactFilesPresent {
+    param(
+        [Parameter(Mandatory)] [string]$Directory,
+        [Parameter(Mandatory)] [string[]]$FileNames,
+        [Parameter(Mandatory)] [string]$MissingMessagePrefix
+    )
+
+    foreach ($fileName in $FileNames) {
+        $path = Join-Path $Directory $fileName
+        if (-not (Test-Path -LiteralPath $path)) {
+            throw "${MissingMessagePrefix}: $path"
+        }
+    }
+}
+
+function Assert-StagedManifestMatchesRepository {
+    param(
+        [Parameter(Mandatory)] [string]$StagedManifestPath,
+        [Parameter(Mandatory)] [object]$RepositoryManifest
+    )
+
+    $stagedManifest = Get-Content -Raw -LiteralPath $StagedManifestPath | ConvertFrom-Json
+    foreach ($propertyName in @('id', 'name', 'version')) {
+        if ($stagedManifest.$propertyName -ne $RepositoryManifest.$propertyName) {
+            throw "Staged manifest $propertyName mismatch. Expected '$($RepositoryManifest.$propertyName)', found '$($stagedManifest.$propertyName)'."
+        }
+    }
+}
+
 New-Item -ItemType Directory -Force -Path $publishRoot, $stagingModDir | Out-Null
 
 if (-not $NoRefreshFromInstalled) {
@@ -50,15 +80,26 @@ if (-not $NoRefreshFromInstalled) {
         throw "Installed mod directory not found: $installedModDir. Run dotnet publish first or pass -NoRefreshFromInstalled."
     }
 
-    foreach ($fileName in @('EZMicroBalance.dll', 'EZMicroBalance.json', 'EZMicroBalance.pck')) {
-        $source = Join-Path $installedModDir $fileName
-        if (-not (Test-Path -LiteralPath $source)) {
-            throw "Installed artifact missing: $source"
-        }
+    Assert-RequiredArtifactFilesPresent `
+        -Directory $installedModDir `
+        -FileNames $requiredArtifactFiles `
+        -MissingMessagePrefix 'Installed artifact missing'
 
+    foreach ($fileName in $requiredArtifactFiles) {
+        $source = Join-Path $installedModDir $fileName
         Copy-Item -LiteralPath $source -Destination (Join-Path $stagingModDir $fileName) -Force
     }
 }
+else {
+    Assert-RequiredArtifactFilesPresent `
+        -Directory $stagingModDir `
+        -FileNames $requiredArtifactFiles `
+        -MissingMessagePrefix 'NoRefreshFromInstalled uses existing package staging, but required artifact is missing'
+}
+
+Assert-StagedManifestMatchesRepository `
+    -StagedManifestPath (Join-Path $stagingModDir 'EZMicroBalance.json') `
+    -RepositoryManifest $manifest
 
 $readmePath = Join-Path $stagingModDir 'README_INSTALL.txt'
 @"
@@ -77,7 +118,7 @@ Install:
 
 Test focus:
 - Urda, Morvi, Lotha, and Vakuu Ancient rewards.
-- A11-A20 progression: wider maps, Firemarked Elites, Rootblight, Banner Rooms, Royal Seals, and King Brands.
+- A11-A20 progression: wider maps, Firemarked Elites, Rootblight, Banner Rooms, boss dedicated abilities, and Branded Form.
 - Preview tools: Crystal Sphere peek and transform preview now live inside this same Spire Plus mod.
 - Save/load, death/failure paths, and co-op still need manual proof.
 

@@ -59,6 +59,9 @@ public sealed class ReleasePackageArtifactGuardTests
             .ToArray();
 
         Assert.Equal(PackagedFiles.Select(file => $"EZMicroBalance/{file}").OrderBy(file => file, StringComparer.Ordinal), zipEntries);
+        Assert.DoesNotContain("EZMicroBalance/BaseLib.dll", zipEntries);
+        Assert.DoesNotContain("EZMicroBalance/0Harmony.dll", zipEntries);
+        Assert.DoesNotContain("EZMicroBalance/sts2.dll", zipEntries);
 
         foreach (var fileName in InstallableArtifactFiles)
         {
@@ -71,6 +74,14 @@ public sealed class ReleasePackageArtifactGuardTests
         var stagingReadmeHash = Sha256(Path.Combine(stagingDir, "README_INSTALL.txt"));
         Assert.Equal(stagingReadmeHash, Sha256(Path.Combine(versionedDir, "README_INSTALL.txt")));
         Assert.Equal(stagingReadmeHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/README_INSTALL.txt")));
+
+        var packageReadme = File.ReadAllText(Path.Combine(stagingDir, "README_INSTALL.txt"));
+        Assert.Contains("boss dedicated abilities", packageReadme, StringComparison.Ordinal);
+        Assert.Contains("Branded Form", packageReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("Royal Seal", packageReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("Royal Seals", packageReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("King Brand", packageReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("King Brands", packageReadme, StringComparison.Ordinal);
     }
 
     [ReleaseArtifactFact]
@@ -160,6 +171,23 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Contains("archived local `art_pipeline` / `asset` material under `.tools/archive/local-art-and-calibration-20260515/`", handoff, StringComparison.Ordinal);
         Assert.Contains("`source code/` local scratch/reference folders", handoff, StringComparison.Ordinal);
         Assert.Contains("Push only after explicit user approval", handoff, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void PackageScriptRejectsNoRefreshWhenStagingArtifactsAreMissing()
+    {
+        var script = ReadRepoText("scripts", "package-spire-plus.ps1");
+
+        Assert.Contains("$requiredArtifactFiles = @('EZMicroBalance.dll', 'EZMicroBalance.json', 'EZMicroBalance.pck')", script, StringComparison.Ordinal);
+        Assert.Contains("function Assert-RequiredArtifactFilesPresent", script, StringComparison.Ordinal);
+        Assert.Contains("Installed artifact missing", script, StringComparison.Ordinal);
+        Assert.Contains("NoRefreshFromInstalled uses existing package staging, but required artifact is missing", script, StringComparison.Ordinal);
+        Assert.Contains("function Assert-StagedManifestMatchesRepository", script, StringComparison.Ordinal);
+        Assert.Contains("foreach ($propertyName in @('id', 'name', 'version'))", script, StringComparison.Ordinal);
+        Assert.Contains("Staged manifest $propertyName mismatch", script, StringComparison.Ordinal);
+        Assert.Contains("Assert-StagedManifestMatchesRepository `", script, StringComparison.Ordinal);
+        Assert.Contains("Assert-RequiredArtifactFilesPresent `", script, StringComparison.Ordinal);
+        Assert.Contains("foreach ($fileName in $requiredArtifactFiles)", script, StringComparison.Ordinal);
     }
 
     [Fact]

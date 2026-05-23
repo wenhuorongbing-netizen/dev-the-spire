@@ -245,10 +245,38 @@ $resultTemplate = @(
     '- release evidence row passed or explicitly deferred by owner'
 ) -join [Environment]::NewLine
 
+$manualInstructions = @(
+    '# Co-op Evidence Instructions',
+    '',
+    'Status: pending',
+    '',
+    'This helper does not launch co-op automatically. Co-op release evidence requires two real clients.',
+    '',
+    'Before testing:',
+    '',
+    '- Use exactly BaseLib plus Spire Plus / EZMicroBalance on host and client.',
+    '- Set `EZMB_RELEASE_EVIDENCE_LOG=1` for both clients.',
+    '- Record package hashes from `package-hashes.json` before the run.',
+    '',
+    'Required checks:',
+    '',
+    '1. Host and client can join with clean `godot.log` and clean `godot-log-audit.json`.',
+    '2. A11-A20 selection visibility and start-run behavior are recorded on host and client.',
+    '3. Urda, Morvi, Lotha, and gated Vakuu have explicit co-op disposition notes.',
+    '4. Root Eyes map previews either stay gated or show host/client-consistent state with no desync.',
+    '5. Rootblight ownership, combat/deck state, and save/reconnect behavior are recorded.',
+    '6. Crystal Sphere and transform preview tools have a fairness/disposition note.',
+    '',
+    'Put host logs under `host/`, client logs under `client/`, screenshots under `screenshots/`, and final notes under `notes/`.',
+    '',
+    'Do not mark co-op supported from lobby selection alone.'
+) -join [Environment]::NewLine
+
 Format-DisplayCommand -Tokens $selfTokens | Set-Content -LiteralPath (Join-Path $evidenceFull 'command.txt') -Encoding UTF8
 Save-Json -InputObject $environment -Path (Join-Path $evidenceFull 'environment.json')
 Save-Json -InputObject $packageHashes -Path (Join-Path $evidenceFull 'package-hashes.json')
 Save-Json -InputObject ([ordered]@{ Rows = $manualRows }) -Path (Join-Path $evidenceFull 'manual-rows-template.json')
+$manualInstructions | Set-Content -LiteralPath (Join-Path $evidenceFull 'manual-instructions.md') -Encoding UTF8
 $hostTemplate | Set-Content -LiteralPath (Join-Path $evidenceFull 'host\command.txt') -Encoding UTF8
 $clientTemplate | Set-Content -LiteralPath (Join-Path $evidenceFull 'client\command.txt') -Encoding UTF8
 $resultTemplate | Set-Content -LiteralPath (Join-Path $evidenceFull 'notes\result-notes-template.md') -Encoding UTF8

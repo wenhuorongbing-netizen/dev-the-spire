@@ -1,9 +1,9 @@
-﻿param(
+param(
     [string]$EvidenceRoot = ".tools\runtime-evidence\release-ready-manual",
 
     [string]$ManifestPath,
 
-    [string]$PackageSha256 = "124AF7C77B33CE5EAC5A7369519D90AD66EC4CFCDC887DD1E352CF4F24E7968C",
+    [string]$PackageSha256 = "11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120",
 
     [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.0.zip",
 
@@ -13,7 +13,11 @@
 
     [switch]$WriteTemplate,
 
-    [switch]$AllowDeferred
+    [switch]$AllowDeferred,
+
+    [switch]$WritePassMarker,
+
+    [string]$PassMarkerPath
 )
 
 $ErrorActionPreference = 'Stop'
@@ -22,25 +26,217 @@ Set-StrictMode -Version 3.0
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 
 $requiredReleaseRows = @(
+    @{ Id = 'fresh-current-package-loader-smoke'; Kind = 'loader'; Label = 'Fresh current-package loader smoke with current package hashes and clean log audit' },
     @{ Id = 'ancient-ui-urda'; Kind = 'clicked-ui'; Label = 'Urda clicked Ancient UI' },
     @{ Id = 'ancient-ui-morvi'; Kind = 'clicked-ui'; Label = 'Morvi clicked Ancient UI' },
     @{ Id = 'ancient-ui-lotha'; Kind = 'clicked-ui'; Label = 'Lotha clicked Ancient UI' },
     @{ Id = 'ancient-ui-vakuu-normal'; Kind = 'clicked-ui'; Label = 'Vakuu normal clicked Ancient UI' },
     @{ Id = 'ancient-ui-vakuu-fight'; Kind = 'clicked-ui'; Label = 'Vakuu force-fight clicked Ancient UI' },
-    @{ Id = 'ancient-reward-visible-relics'; Kind = 'gameplay'; Label = 'Selected Ancient rewards visible as relics with readable hover tips' },
-    @{ Id = 'player-text-tooltip-readability'; Kind = 'gameplay'; Label = 'Player-facing text, tooltip, and hover readability' },
-    @{ Id = 'art-resource-routing-live-preview'; Kind = 'clicked-ui'; Label = 'Live UI preview proves event art, map icons, run-history icons, relic art, card art, and power art are not misrouted' },
-    @{ Id = 'vakuu-victory-no-black-screen'; Kind = 'gameplay'; Label = 'Vakuu victory returns to the event without a black screen' },
-    @{ Id = 'vakuu-failure-death-path'; Kind = 'gameplay'; Label = 'Vakuu failure and death path does not softlock' },
-    @{ Id = 'vakuu-active-fight-save-load'; Kind = 'save-load'; Label = 'Vakuu active child-combat save/load' },
+    @{
+        Id = 'ancient-reward-visible-relics'
+        Kind = 'gameplay'
+        Label = 'Selected Ancient rewards visible as relics with readable hover tips'
+        ExtraRequiredFiles = @('ancient-reward-relics-checklist.md')
+    },
+    @{
+        Id = 'player-text-tooltip-readability'
+        Kind = 'gameplay'
+        Label = 'Player-facing text, tooltip, and hover readability'
+        ExtraRequiredFiles = @('player-text-qa-checklist.md')
+    },
+    @{
+        Id = 'art-resource-routing-live-preview'
+        Kind = 'clicked-ui'
+        Label = 'Live UI preview proves event art, map icons, run-history icons, relic art, card art, and power art are not misrouted'
+        ExtraRequiredFiles = @('art-resource-routing-checklist.md')
+    },
+    @{
+        Id = 'vakuu-victory-no-black-screen'
+        Kind = 'gameplay'
+        Label = 'Vakuu victory returns to the event without a black screen'
+        ExtraRequiredFiles = @('vakuu-victory-checklist.md')
+    },
+    @{
+        Id = 'vakuu-failure-death-path'
+        Kind = 'gameplay'
+        Label = 'Vakuu failure and death path does not softlock'
+        ExtraRequiredFiles = @('vakuu-failure-death-checklist.md')
+    },
+    @{
+        Id = 'vakuu-active-fight-save-load'
+        Kind = 'save-load'
+        Label = 'Vakuu active child-combat save/load'
+        ExtraRequiredFiles = @('vakuu-save-load-checklist.md')
+    },
     @{ Id = 'ancient-state-save-load'; Kind = 'save-load'; Label = 'Urda, Morvi, Lotha, and Ancient reward state save/load' },
-    @{ Id = 'rootblight-visual-behavior'; Kind = 'gameplay'; Label = 'Rootblight and Blight Sprout visual/gameplay behavior' },
+    @{
+        Id = 'rootblight-visual-behavior'
+        Kind = 'gameplay'
+        Label = 'Rootblight and Blight Sprout visual/gameplay behavior'
+        ExtraRequiredFiles = @('rootblight-behavior-checklist.md')
+    },
     @{ Id = 'a11-natural-route-traversal'; Kind = 'gameplay'; Label = 'Natural A11 route click traversal' },
+    @{
+        Id = 'a19-a20-dedicated-boss-abilities'
+        Kind = 'gameplay'
+        Label = 'A19/A20 dedicated boss abilities and Branded Form live combat proof'
+        ExtraRequiredFiles = @('boss-ability-checklist.md')
+    },
     @{ Id = 'disable-mod-gameplay'; Kind = 'gameplay'; Label = 'BaseLib-only disabled Spire Plus gameplay comparison' },
-    @{ Id = 'coop-disposition'; Kind = 'coop'; Label = 'Two-client co-op disposition or explicit release-note deferral' }
+    @{
+        Id = 'preview-tools-live-proof'
+        Kind = 'preview-tools'
+        Label = 'Live Preview tools evidence for Crystal Sphere and transform preview'
+        ExtraRequiredFiles = @('preview-tools-checklist.md')
+    },
+    @{
+        Id = 'coop-disposition'
+        Kind = 'coop'
+        Label = 'Two-client co-op disposition or explicit release-note deferral'
+        ExtraRequiredFiles = @('coop-disposition-checklist.md')
+    }
 )
 
 $invalidEvidenceNotePattern = '(?i)\b(not counted|invalid|main menu|wrong surface|covered by|not gameplay evidence|do not satisfy|does not satisfy|loader health only)\b'
+$invalidChecklistCellPattern = '(?i)^\s*(pending|todo|tbd|n/?a|none|not tested|untested|unknown|skip|skipped|-+)?\s*$'
+
+$requiredBossAbilityRows = @(
+    'Ceremonial Beast',
+    'The Kin',
+    'Vantom',
+    'Lagavulin Matriarch',
+    'Soul Fysh',
+    'Waterfall Giant',
+    'Crab',
+    'Knowledge Demon',
+    'Insatiable Sandworm',
+    'Aeonglass',
+    'Queen',
+    'Test Subject'
+)
+
+$requiredAncientRewardRows = @(
+    @{ Ancient = 'Urda'; Reward = 'seedbed' },
+    @{ Ancient = 'Urda'; Reward = 'humus_pact' },
+    @{ Ancient = 'Urda'; Reward = 'molting' },
+    @{ Ancient = 'Urda'; Reward = 'moss_map' },
+    @{ Ancient = 'Urda'; Reward = 'trial_branch' },
+    @{ Ancient = 'Urda'; Reward = 'shallow_root_relic' },
+    @{ Ancient = 'Urda'; Reward = 'rooted_route' },
+    @{ Ancient = 'Urda'; Reward = 'after_rain' },
+    @{ Ancient = 'Urda'; Reward = 'root_sight' },
+    @{ Ancient = 'Urda'; Reward = 'seed_bank' },
+    @{ Ancient = 'Morvi'; Reward = 'forbidden_loan' },
+    @{ Ancient = 'Morvi'; Reward = 'misprint_press' },
+    @{ Ancient = 'Morvi'; Reward = 'red_ink_overdraft' },
+    @{ Ancient = 'Morvi'; Reward = 'overdue_library' },
+    @{ Ancient = 'Morvi'; Reward = 'open_book_exam' },
+    @{ Ancient = 'Morvi'; Reward = 'paperstorm' },
+    @{ Ancient = 'Morvi'; Reward = 'blueprint_proof' },
+    @{ Ancient = 'Morvi'; Reward = 'debt_settlement' },
+    @{ Ancient = 'Lotha'; Reward = 'mirror_rebuttal' },
+    @{ Ancient = 'Lotha'; Reward = 'mirror_hall_echo' },
+    @{ Ancient = 'Lotha'; Reward = 'presumption' },
+    @{ Ancient = 'Lotha'; Reward = 'closed_court' },
+    @{ Ancient = 'Lotha'; Reward = 'deferred_verdict' },
+    @{ Ancient = 'Lotha'; Reward = 'death_reprieve' },
+    @{ Ancient = 'Lotha'; Reward = 'single_sentence' },
+    @{ Ancient = 'Lotha'; Reward = 'public_evidence' },
+    @{ Ancient = 'Vakuu'; Reward = 'fight_option' },
+    @{ Ancient = 'Vakuu'; Reward = 'victory_non_vakuu_choices' }
+)
+
+$requiredRootblightRows = @(
+    'rootblight-start-eligibility',
+    'normal-sprout-appearance',
+    'elite-single-sprout',
+    'boss-two-sprouts-staggered',
+    'combat-end-growth',
+    'rootblight-cap-four',
+    'rootblight-save-load',
+    'ui-hover-art-readability'
+)
+
+$requiredArtRoutingRows = @(
+    'title-home-preview',
+    'urda-clicked-background',
+    'morvi-clicked-background',
+    'lotha-clicked-background',
+    'vakuu-clicked-background',
+    'map-icons',
+    'run-history-icons',
+    'option-relic-icons',
+    'lasting-relic-icons',
+    'card-art',
+    'power-icons',
+    'no-placeholder-or-official-art'
+)
+
+$requiredPlayerTextRows = @(
+    'ascension-a11-a20',
+    'firemark-and-banner',
+    'boss-dedicated-abilities',
+    'ancient-choice-text',
+    'ancient-relic-hover',
+    'cards-status-curses',
+    'map-hover-stacks',
+    'preview-tools-text',
+    'vakuu-contracts',
+    'en-zhs-key-parity'
+)
+
+$requiredVakuuVictoryRows = @(
+    'fight-start-scene',
+    'contract-turns',
+    'locks-blood-debt',
+    'victory-return',
+    'non-vakuu-rewards',
+    'no-black-screen',
+    'log-clean'
+)
+
+$requiredVakuuFailureDeathRows = @(
+    'fight-start-scene',
+    'failure-path',
+    'death-path',
+    'room-state-after-exit',
+    'no-softlock',
+    'log-clean'
+)
+
+$requiredVakuuSaveLoadRows = @(
+    'active-combat-save',
+    'active-combat-load',
+    'parent-event-state',
+    'prefinished-save',
+    'prefinished-load',
+    'no-duplicate-heal-or-reward',
+    'log-clean'
+)
+
+$requiredPreviewToolsRows = @(
+    'crystal-sphere-button',
+    'crystal-sphere-mask-only',
+    'crystal-sphere-no-reward-claim',
+    'transform-preview-visible',
+    'transform-preview-matches-result',
+    'transform-preview-no-state-mutation',
+    'prismatic-gem-reward-hooks',
+    'save-reopen-stability',
+    'coop-gate-or-two-client-proof',
+    'log-clean'
+)
+
+$requiredCoopRows = @(
+    'coop-host-join-clean-logs',
+    'coop-a11-a20-selection',
+    'coop-ancients',
+    'coop-root-eyes',
+    'coop-rootblight',
+    'coop-save-load-or-reconnect',
+    'coop-preview-tools-disposition',
+    'coop-release-note-disposition'
+)
 
 function Resolve-WorkspacePath {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -98,6 +294,9 @@ function Get-DefaultRequiredFiles {
     param([Parameter(Mandatory = $true)][string]$Kind)
 
     switch ($Kind) {
+        'loader' {
+            return @('command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'enabled-mods.txt')
+        }
         'clicked-ui' {
             return @('command.txt', 'window-preflight.json', 'godot.log', 'godot-log-audit.json', 'route-note.md')
         }
@@ -107,10 +306,23 @@ function Get-DefaultRequiredFiles {
         'coop' {
             return @('command.txt', 'host-godot.log', 'host-godot-log-audit.json', 'client-godot.log', 'client-godot-log-audit.json', 'result-note.md')
         }
+        'preview-tools' {
+            return @('command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'result-note.md')
+        }
         default {
             return @('command.txt', 'godot.log', 'godot-log-audit.json', 'result-note.md')
         }
     }
+}
+
+function Get-RequiredRowExtraFiles {
+    param([Parameter(Mandatory = $true)]$RequiredRow)
+
+    if ($RequiredRow.ContainsKey('ExtraRequiredFiles')) {
+        return @($RequiredRow.ExtraRequiredFiles)
+    }
+
+    return @()
 }
 
 function Merge-RequiredEvidenceFiles {
@@ -134,6 +346,14 @@ function Merge-RequiredEvidenceFiles {
     }
 
     return @($merged)
+}
+
+function Get-RequiredEvidenceFilesForRow {
+    param([Parameter(Mandatory = $true)]$RequiredRow)
+
+    return @(Merge-RequiredEvidenceFiles `
+            -DefaultFiles (Get-DefaultRequiredFiles -Kind $RequiredRow.Kind) `
+            -RowFiles (Get-RequiredRowExtraFiles -RequiredRow $RequiredRow))
 }
 
 function Read-CleanLogAudit {
@@ -227,6 +447,259 @@ function Test-PngMinimumDimensions {
     return $dimensions.Width -ge $MinScreenshotWidth -and $dimensions.Height -ge $MinScreenshotHeight
 }
 
+function Test-ChecklistCellFilled {
+    param([string]$Value)
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return $false
+    }
+
+    return $Value -notmatch $invalidChecklistCellPattern
+}
+
+function Test-BossAbilityChecklist {
+    param(
+        [Parameter(Mandatory = $true)][string]$ChecklistPath,
+        [System.Collections.Generic.List[string]]$Failures,
+        [Parameter(Mandatory = $true)][string]$RowId
+    )
+
+    $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
+    if ($checklist -match 'Copy this file to `boss-ability-checklist.md`') {
+        Add-Failure -Failures $Failures -Message "Row $RowId boss-ability-checklist.md still contains the unfilled template instruction."
+    }
+
+    foreach ($boss in $requiredBossAbilityRows) {
+        $bossPattern = '^\|\s*' + [regex]::Escape($boss) + '\s*\|'
+        $line = @($checklist -split "`r?`n" | Where-Object { $_ -match $bossPattern } | Select-Object -First 1)
+        if ($line.Count -eq 0) {
+            Add-Failure -Failures $Failures -Message "Row $RowId boss-ability-checklist.md is missing Boss row: $boss."
+            continue
+        }
+
+        $cells = @(([string]$line[0]).Split('|') | ForEach-Object { $_.Trim() })
+        if ($cells.Count -lt 6) {
+            Add-Failure -Failures $Failures -Message "Row $RowId boss-ability-checklist.md row for $boss does not have the expected table cells."
+            continue
+        }
+
+        $liveResult = $cells[4]
+        $evidenceFiles = $cells[5]
+        if (-not (Test-ChecklistCellFilled -Value $liveResult)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId boss-ability-checklist.md row for $boss has no filled Live result cell."
+        }
+
+        if (-not (Test-ChecklistCellFilled -Value $evidenceFiles)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId boss-ability-checklist.md row for $boss has no filled Evidence file(s) cell."
+        }
+    }
+}
+
+function Test-AncientRewardRelicsChecklist {
+    param(
+        [Parameter(Mandatory = $true)][string]$ChecklistPath,
+        [System.Collections.Generic.List[string]]$Failures,
+        [Parameter(Mandatory = $true)][string]$RowId
+    )
+
+    $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
+    if ($checklist -match 'Copy this file to `ancient-reward-relics-checklist.md`') {
+        Add-Failure -Failures $Failures -Message "Row $RowId ancient-reward-relics-checklist.md still contains the unfilled template instruction."
+    }
+
+    foreach ($requiredReward in $requiredAncientRewardRows) {
+        $ancient = [string]$requiredReward.Ancient
+        $reward = [string]$requiredReward.Reward
+        $rowPattern = '^\|\s*' + [regex]::Escape($ancient) + '\s*\|\s*' + [regex]::Escape($reward) + '\s*\|'
+        $line = @($checklist -split "`r?`n" | Where-Object { $_ -match $rowPattern } | Select-Object -First 1)
+        if ($line.Count -eq 0) {
+            Add-Failure -Failures $Failures -Message "Row $RowId ancient-reward-relics-checklist.md is missing Ancient reward row: $ancient / $reward."
+            continue
+        }
+
+        $cells = @(([string]$line[0]).Split('|') | ForEach-Object { $_.Trim() })
+        if ($cells.Count -lt 8) {
+            Add-Failure -Failures $Failures -Message "Row $RowId ancient-reward-relics-checklist.md row for $ancient / $reward does not have the expected table cells."
+            continue
+        }
+
+        $screenResult = $cells[4]
+        $relicResult = $cells[5]
+        $evidenceFiles = $cells[6]
+        if (-not (Test-ChecklistCellFilled -Value $screenResult)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId ancient-reward-relics-checklist.md row for $ancient / $reward has no filled Screen option result cell."
+        }
+
+        if (-not (Test-ChecklistCellFilled -Value $relicResult)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId ancient-reward-relics-checklist.md row for $ancient / $reward has no filled Relic bar / hover result cell."
+        }
+
+        if (-not (Test-ChecklistCellFilled -Value $evidenceFiles)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId ancient-reward-relics-checklist.md row for $ancient / $reward has no filled Evidence file(s) cell."
+        }
+    }
+}
+
+function Test-RootblightBehaviorChecklist {
+    param(
+        [Parameter(Mandatory = $true)][string]$ChecklistPath,
+        [System.Collections.Generic.List[string]]$Failures,
+        [Parameter(Mandatory = $true)][string]$RowId
+    )
+
+    $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
+    if ($checklist -match 'Copy this file to `rootblight-behavior-checklist.md`') {
+        Add-Failure -Failures $Failures -Message "Row $RowId rootblight-behavior-checklist.md still contains the unfilled template instruction."
+    }
+
+    foreach ($scenario in $requiredRootblightRows) {
+        $rowPattern = '^\|\s*' + [regex]::Escape($scenario) + '\s*\|'
+        $line = @($checklist -split "`r?`n" | Where-Object { $_ -match $rowPattern } | Select-Object -First 1)
+        if ($line.Count -eq 0) {
+            Add-Failure -Failures $Failures -Message "Row $RowId rootblight-behavior-checklist.md is missing Rootblight scenario row: $scenario."
+            continue
+        }
+
+        $cells = @(([string]$line[0]).Split('|') | ForEach-Object { $_.Trim() })
+        if ($cells.Count -lt 6) {
+            Add-Failure -Failures $Failures -Message "Row $RowId rootblight-behavior-checklist.md row for $scenario does not have the expected table cells."
+            continue
+        }
+
+        $liveResult = $cells[3]
+        $evidenceFiles = $cells[4]
+        if (-not (Test-ChecklistCellFilled -Value $liveResult)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId rootblight-behavior-checklist.md row for $scenario has no filled Live result cell."
+        }
+
+        if (-not (Test-ChecklistCellFilled -Value $evidenceFiles)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId rootblight-behavior-checklist.md row for $scenario has no filled Evidence file(s) cell."
+        }
+    }
+}
+
+function Test-ArtResourceRoutingChecklist {
+    param(
+        [Parameter(Mandatory = $true)][string]$ChecklistPath,
+        [System.Collections.Generic.List[string]]$Failures,
+        [Parameter(Mandatory = $true)][string]$RowId
+    )
+
+    $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
+    if ($checklist -match 'Copy this file to `art-resource-routing-checklist.md`') {
+        Add-Failure -Failures $Failures -Message "Row $RowId art-resource-routing-checklist.md still contains the unfilled template instruction."
+    }
+
+    foreach ($surface in $requiredArtRoutingRows) {
+        $rowPattern = '^\|\s*' + [regex]::Escape($surface) + '\s*\|'
+        $line = @($checklist -split "`r?`n" | Where-Object { $_ -match $rowPattern } | Select-Object -First 1)
+        if ($line.Count -eq 0) {
+            Add-Failure -Failures $Failures -Message "Row $RowId art-resource-routing-checklist.md is missing art surface row: $surface."
+            continue
+        }
+
+        $cells = @(([string]$line[0]).Split('|') | ForEach-Object { $_.Trim() })
+        if ($cells.Count -lt 6) {
+            Add-Failure -Failures $Failures -Message "Row $RowId art-resource-routing-checklist.md row for $surface does not have the expected table cells."
+            continue
+        }
+
+        $liveResult = $cells[3]
+        $evidenceFiles = $cells[4]
+        if (-not (Test-ChecklistCellFilled -Value $liveResult)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId art-resource-routing-checklist.md row for $surface has no filled Live result cell."
+        }
+
+        if (-not (Test-ChecklistCellFilled -Value $evidenceFiles)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId art-resource-routing-checklist.md row for $surface has no filled Evidence file(s) cell."
+        }
+    }
+}
+
+function Test-PlayerTextQaChecklist {
+    param(
+        [Parameter(Mandatory = $true)][string]$ChecklistPath,
+        [System.Collections.Generic.List[string]]$Failures,
+        [Parameter(Mandatory = $true)][string]$RowId
+    )
+
+    $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
+    if ($checklist -match 'Copy this file to `player-text-qa-checklist.md`') {
+        Add-Failure -Failures $Failures -Message "Row $RowId player-text-qa-checklist.md still contains the unfilled template instruction."
+    }
+
+    foreach ($surface in $requiredPlayerTextRows) {
+        $rowPattern = '^\|\s*' + [regex]::Escape($surface) + '\s*\|'
+        $line = @($checklist -split "`r?`n" | Where-Object { $_ -match $rowPattern } | Select-Object -First 1)
+        if ($line.Count -eq 0) {
+            Add-Failure -Failures $Failures -Message "Row $RowId player-text-qa-checklist.md is missing player-text row: $surface."
+            continue
+        }
+
+        $cells = @(([string]$line[0]).Split('|') | ForEach-Object { $_.Trim() })
+        if ($cells.Count -lt 7) {
+            Add-Failure -Failures $Failures -Message "Row $RowId player-text-qa-checklist.md row for $surface does not have the expected table cells."
+            continue
+        }
+
+        $englishResult = $cells[3]
+        $chineseResult = $cells[4]
+        $evidenceFiles = $cells[5]
+        if (-not (Test-ChecklistCellFilled -Value $englishResult)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId player-text-qa-checklist.md row for $surface has no filled EN result cell."
+        }
+
+        if (-not (Test-ChecklistCellFilled -Value $chineseResult)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId player-text-qa-checklist.md row for $surface has no filled ZHS result cell."
+        }
+
+        if (-not (Test-ChecklistCellFilled -Value $evidenceFiles)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId player-text-qa-checklist.md row for $surface has no filled Evidence file(s) cell."
+        }
+    }
+}
+
+function Test-SimpleChecklistRows {
+    param(
+        [Parameter(Mandatory = $true)][string]$ChecklistPath,
+        [Parameter(Mandatory = $true)][string[]]$RequiredRows,
+        [Parameter(Mandatory = $true)][string]$TemplateInstruction,
+        [Parameter(Mandatory = $true)][string]$ChecklistName,
+        [System.Collections.Generic.List[string]]$Failures,
+        [Parameter(Mandatory = $true)][string]$RowId
+    )
+
+    $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
+    if ($checklist -match [regex]::Escape($TemplateInstruction)) {
+        Add-Failure -Failures $Failures -Message "Row $RowId $ChecklistName still contains the unfilled template instruction."
+    }
+
+    foreach ($requiredRow in $RequiredRows) {
+        $rowPattern = '^\|\s*' + [regex]::Escape($requiredRow) + '\s*\|'
+        $line = @($checklist -split "`r?`n" | Where-Object { $_ -match $rowPattern } | Select-Object -First 1)
+        if ($line.Count -eq 0) {
+            Add-Failure -Failures $Failures -Message "Row $RowId $ChecklistName is missing scenario row: $requiredRow."
+            continue
+        }
+
+        $cells = @(([string]$line[0]).Split('|') | ForEach-Object { $_.Trim() })
+        if ($cells.Count -lt 6) {
+            Add-Failure -Failures $Failures -Message "Row $RowId $ChecklistName row for $requiredRow does not have the expected table cells."
+            continue
+        }
+
+        $liveResult = $cells[3]
+        $evidenceFiles = $cells[4]
+        if (-not (Test-ChecklistCellFilled -Value $liveResult)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId $ChecklistName row for $requiredRow has no filled Live result cell."
+        }
+
+        if (-not (Test-ChecklistCellFilled -Value $evidenceFiles)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId $ChecklistName row for $requiredRow has no filled Evidence file(s) cell."
+        }
+    }
+}
+
 function New-TemplateManifest {
     param([Parameter(Mandatory = $true)][string]$OutputPath)
 
@@ -237,7 +710,7 @@ function New-TemplateManifest {
             Kind = $required.Kind
             Status = 'pending'
             EvidenceDir = ''
-            RequiredFiles = @(Get-DefaultRequiredFiles -Kind $required.Kind)
+            RequiredFiles = @(Get-RequiredEvidenceFilesForRow -RequiredRow $required)
             ScreenshotFile = if ($required.Kind -eq 'clicked-ui') { '' } else { $null }
             ResultNote = ''
             ReleaseNote = ''
@@ -258,6 +731,33 @@ function New-TemplateManifest {
     }
 
     $template | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $OutputPath -Encoding UTF8
+}
+
+function Write-PassMarker {
+    param(
+        [Parameter(Mandatory = $true)][string]$OutputPath,
+        [Parameter(Mandatory = $true)]$Summary
+    )
+
+    $parent = Split-Path -Parent $OutputPath
+    if ($parent) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+
+    [ordered]@{
+        Status = 'pass'
+        Verifier = 'verify-spire-plus-release-evidence.ps1'
+        ManifestPath = $Summary.ManifestPath
+        EvidenceRoot = $Summary.EvidenceRoot
+        PackageSha256 = $Summary.PackageSha256
+        PackagePath = $Summary.PackagePath
+        ActualPackageSha256 = $Summary.ActualPackageSha256
+        CheckedAt = $Summary.CheckedAt
+        AllowDeferred = $Summary.AllowDeferred
+        RequiredRowCount = $Summary.RequiredRowCount
+        WarningCount = $Summary.WarningCount
+        Warnings = @($Summary.Warnings)
+    } | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $OutputPath -Encoding UTF8
 }
 
 function Add-Failure {
@@ -286,6 +786,16 @@ if ([string]::IsNullOrWhiteSpace($ManifestPath)) {
 $manifestFull = Resolve-WorkspacePath -Path $ManifestPath
 if (-not (Test-PathWithin -BasePath $evidenceRootFull -ChildPath $manifestFull)) {
     Write-Error "ManifestPath is outside EvidenceRoot: $manifestFull."
+    exit 1
+}
+
+if ([string]::IsNullOrWhiteSpace($PassMarkerPath)) {
+    $PassMarkerPath = Join-Path $evidenceRootFull 'release-evidence-verifier-pass.json'
+}
+
+$passMarkerFull = Resolve-WorkspacePath -Path $PassMarkerPath
+if (-not (Test-PathWithin -BasePath $evidenceRootFull -ChildPath $passMarkerFull)) {
+    Write-Error "PassMarkerPath is outside EvidenceRoot: $passMarkerFull."
     exit 1
 }
 
@@ -400,7 +910,7 @@ foreach ($required in $requiredReleaseRows) {
         continue
     }
 
-    $defaultRequiredFiles = @(Get-DefaultRequiredFiles -Kind $required.Kind)
+    $defaultRequiredFiles = @(Get-RequiredEvidenceFilesForRow -RequiredRow $required)
     $rowRequiredFiles = @(Get-PropertyValue -Object $row -Name 'RequiredFiles' -Default @())
     $requiredFiles = @(Merge-RequiredEvidenceFiles -DefaultFiles $defaultRequiredFiles -RowFiles $rowRequiredFiles)
     foreach ($requiredFile in $requiredFiles) {
@@ -489,6 +999,116 @@ foreach ($required in $requiredReleaseRows) {
     } elseif ($resultNote -match $invalidEvidenceNotePattern) {
         Add-Failure -Failures $failures -Message "Row $($required.Id) ResultNote describes invalid or non-counting evidence."
     }
+
+    if ($required.Id -eq 'a19-a20-dedicated-boss-abilities') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'boss-ability-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-BossAbilityChecklist -ChecklistPath $checklistPath -Failures $failures -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'ancient-reward-visible-relics') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'ancient-reward-relics-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-AncientRewardRelicsChecklist -ChecklistPath $checklistPath -Failures $failures -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'rootblight-visual-behavior') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'rootblight-behavior-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-RootblightBehaviorChecklist -ChecklistPath $checklistPath -Failures $failures -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'art-resource-routing-live-preview') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'art-resource-routing-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-ArtResourceRoutingChecklist -ChecklistPath $checklistPath -Failures $failures -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'player-text-tooltip-readability') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'player-text-qa-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-PlayerTextQaChecklist -ChecklistPath $checklistPath -Failures $failures -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'vakuu-victory-no-black-screen') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'vakuu-victory-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-SimpleChecklistRows `
+                -ChecklistPath $checklistPath `
+                -RequiredRows $requiredVakuuVictoryRows `
+                -TemplateInstruction 'Copy this file to `vakuu-victory-checklist.md`' `
+                -ChecklistName 'vakuu-victory-checklist.md' `
+                -Failures $failures `
+                -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'vakuu-failure-death-path') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'vakuu-failure-death-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-SimpleChecklistRows `
+                -ChecklistPath $checklistPath `
+                -RequiredRows $requiredVakuuFailureDeathRows `
+                -TemplateInstruction 'Copy this file to `vakuu-failure-death-checklist.md`' `
+                -ChecklistName 'vakuu-failure-death-checklist.md' `
+                -Failures $failures `
+                -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'vakuu-active-fight-save-load') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'vakuu-save-load-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-SimpleChecklistRows `
+                -ChecklistPath $checklistPath `
+                -RequiredRows $requiredVakuuSaveLoadRows `
+                -TemplateInstruction 'Copy this file to `vakuu-save-load-checklist.md`' `
+                -ChecklistName 'vakuu-save-load-checklist.md' `
+                -Failures $failures `
+                -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'preview-tools-live-proof') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'preview-tools-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-SimpleChecklistRows `
+                -ChecklistPath $checklistPath `
+                -RequiredRows $requiredPreviewToolsRows `
+                -TemplateInstruction 'Copy this file to `preview-tools-checklist.md`' `
+                -ChecklistName 'preview-tools-checklist.md' `
+                -Failures $failures `
+                -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'coop-disposition') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'coop-disposition-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-SimpleChecklistRows `
+                -ChecklistPath $checklistPath `
+                -RequiredRows $requiredCoopRows `
+                -TemplateInstruction 'Copy this file to `coop-disposition-checklist.md`' `
+                -ChecklistName 'coop-disposition-checklist.md' `
+                -Failures $failures `
+                -RowId $required.Id
+        }
+    }
 }
 
 $summary = [ordered]@{
@@ -506,10 +1126,16 @@ $summary = [ordered]@{
     WarningCount = $warnings.Count
     Failures = @($failures)
     Warnings = @($warnings)
+    WritePassMarker = [bool]$WritePassMarker
+    PassMarkerPath = $passMarkerFull
 }
 
 $summary | ConvertTo-Json -Depth 20
 
 if ($failures.Count -gt 0) {
     exit 1
+}
+
+if ($WritePassMarker) {
+    Write-PassMarker -OutputPath $passMarkerFull -Summary $summary
 }
