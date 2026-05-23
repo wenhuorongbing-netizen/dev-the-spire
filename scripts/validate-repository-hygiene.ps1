@@ -53,6 +53,17 @@ function Assert-PathMissing {
     }
 }
 
+function Assert-PathPresent {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw $Message
+    }
+}
+
 $ezmbManifest = Read-JsonFile (Join-Path $repoRoot 'EZMicroBalance.json')
 Assert-Equal $ezmbManifest.id 'EZMicroBalance' 'Spire Plus stable manifest id changed.'
 Assert-Equal $ezmbManifest.name 'Spire Plus' 'Spire Plus player-facing manifest name changed.'
@@ -60,14 +71,15 @@ Assert-Equal $ezmbManifest.affects_gameplay $true 'Spire Plus must remain gamepl
 
 Get-ChildItem -LiteralPath $repoRoot -Recurse -File -Filter '*.json' |
     Where-Object {
-        $_.FullName -notmatch '\\(\.git|\.godot|\.tools|bin|obj|publish|source code)\\'
+        $_.FullName -notmatch '\\(\.git|\.godot|\.tools|bin|obj|publish|source code|node_modules)\\' -and
+        $_.Name -ne 'package-lock.json'
     } |
     ForEach-Object {
         [void](Read-JsonFile $_.FullName)
     }
 
-Assert-PathMissing (Join-Path $repoRoot 'website') 'Ignored website draft returned to the active root. Restore it only through an explicit website promotion.'
-Assert-PathMissing (Join-Path $repoRoot '.github\workflows\spire-plus-site.yml') 'Ignored Pages workflow returned to the active workflow path. Promote the website deliberately before restoring it.'
+Assert-PathPresent (Join-Path $repoRoot 'website\README.md') 'Promoted website source is missing website\README.md.'
+Assert-PathPresent (Join-Path $repoRoot '.github\workflows\spire-plus-site.yml') 'Promoted Pages workflow is missing.'
 
 foreach ($removedRootSurface in @(
     'EzDailyContent',
