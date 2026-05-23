@@ -1,282 +1,183 @@
 # Spire Plus 匿名论坛技术规格
 
+## 当前决策
+
+论坛改为 `GitHub Pages + Supabase`。
+
+上线操作清单见 `docs/features/forum/go-live-checklist.md`。
+
+原因：
+
+- GitHub Pages 只能发布静态文件，不能运行 Node 后端或 PostgreSQL。
+- 用户不想维护 Render，也不想让本机 24 小时开机。
+- Supabase 提供托管 PostgreSQL、REST API 和 RLS，适合第一版匿名文字论坛。
+
 ## 目标
 
-把 `website/#forum` 从 GitHub 反馈入口和本地草稿，改为真正可用的匿名论坛入口。
-
-论坛第一版必须支持：
-
-- 无需注册、无需登录。
-- 输入名字、标题、正文即可发帖；名字可留空，显示为“匿名玩家”。
-- 所有人都能看到帖子列表。
-- 点进帖子能查看正文和回复。
-- 可匿名回复帖子。
-- 现有 GitHub Pages 介绍站能跳转到公网论坛。
+- 玩家无需注册即可发帖和回复。
+- 名字可留空，显示为“匿名玩家”。
+- 论坛随 `website/` 一起部署到 GitHub Pages。
+- 帖子和回复持久化在 Supabase PostgreSQL。
+- 第一版只支持纯文本，不上传图片。
 
 ## 非目标
 
-- 不做账号、邮箱、OAuth、权限组。
-- 不做图片上传、富文本、私信、关注、精华、复杂管理后台。
-- 不把后端塞进 GitHub Pages。GitHub Pages 只能发布静态文件。
-- 不依赖 GitHub Issues / Discussions 作为论坛数据源。
+- 不做账号、邮箱、OAuth。
+- 不做富文本、图片上传、私信、关注。
+- 不做独立 Node 后端。
+- 不把 Supabase service role key 放到前端。
 
 ## 架构
 
-采用独立全栈论坛服务：
-
 ```text
-website/ GitHub Pages 静态站
-  -> 论坛入口按钮
-  -> 独立公网论坛服务
+GitHub Pages
+  website/
+    index.html
+    forum/
+      React forum build
 
-forum/ 服务
-  -> React + Vite 前端
-  -> Node.js + TypeScript API
-  -> PostgreSQL
+Supabase
+  forum_posts
+  forum_replies
+  Row Level Security
 ```
 
-生产环境下，Node 服务同时提供：
+构建流程：
 
-- `/api/v1/*` JSON API。
-- React 构建产物。
-- 非 API 路径回退到 `index.html`，支持前端路由。
+```text
+forum/ React source
+  npm run build
+  -> website/forum/
+  -> GitHub Pages upload website/
+```
 
 ## 技术栈
 
-- 前端：React、Vite、TypeScript。
-- 后端：Node.js、TypeScript、Fastify。
-- 数据库：PostgreSQL。
-- SQL：`pg` 参数化查询，不引入 ORM。
-- Migration：`forum/db/migrations/*.sql`，按文件名顺序执行并记录到 `schema_migrations`。
-- 部署：优先 Render Blueprint，一套 Node Web Service + PostgreSQL。
+- React + Vite + TypeScript。
+- `@supabase/supabase-js`。
+- Supabase PostgreSQL。
+- SQL schema 和 RLS 文件：`forum/supabase/schema.sql`。
 
-## 数据模型
+## 数据表
 
-```sql
-CREATE TABLE IF NOT EXISTS schema_migrations (
-  version text PRIMARY KEY,
-  applied_at timestamptz NOT NULL DEFAULT now()
-);
+### `forum_posts`
 
-CREATE TABLE IF NOT EXISTS forum_posts (
-  id bigserial PRIMARY KEY,
-  author_name varchar(32) NOT NULL DEFAULT '匿名玩家',
-  title varchar(120) NOT NULL,
-  body text NOT NULL,
-  status varchar(16) NOT NULL DEFAULT 'visible'
-    CHECK (status IN ('visible', 'hidden', 'deleted')),
-  ip_hash char(64),
-  user_agent_hash char(64),
-  reply_count integer NOT NULL DEFAULT 0 CHECK (reply_count >= 0),
-  last_activity_at timestamptz NOT NULL DEFAULT now(),
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now(),
-  CHECK (char_length(trim(title)) BETWEEN 1 AND 120),
-  CHECK (char_length(trim(body)) BETWEEN 1 AND 10000)
-);
+主要字段：
 
-CREATE TABLE IF NOT EXISTS forum_replies (
-  id bigserial PRIMARY KEY,
-  post_id bigint NOT NULL REFERENCES forum_posts(id) ON DELETE CASCADE,
-  author_name varchar(32) NOT NULL DEFAULT '匿名玩家',
-  body text NOT NULL,
-  status varchar(16) NOT NULL DEFAULT 'visible'
-    CHECK (status IN ('visible', 'hidden', 'deleted')),
-  ip_hash char(64),
-  user_agent_hash char(64),
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now(),
-  CHECK (char_length(trim(body)) BETWEEN 1 AND 5000)
-);
+- `id uuid`
+- `author_name`
+- `title`
+- `body`
+- `status`
+- `client_id`
+- `reply_count`
+- `last_activity_at`
+- `created_at`
+
+### `forum_replies`
+
+主要字段：
+
+- `id uuid`
+- `post_id`
+- `author_name`
+- `body`
+- `status`
+- `client_id`
+- `created_at`
+
+`client_id` 由浏览器生成并保存在 localStorage，只用于基础限频。它不是身份认证，不能作为安全边界。
+
+## RLS 和授权
+
+必须启用 RLS：
+
+- 匿名用户只能读取 `visible` 帖子和回复。
+- 匿名用户只能插入新帖和新回复。
+- 匿名用户不能更新、删除、隐藏帖子。
+- 匿名用户不能写入 `reply_count`、`status`、时间字段。
+
+列级授权：
+
+- `forum_posts` 只允许匿名插入 `author_name`、`title`、`body`、`client_id`。
+- `forum_replies` 只允许匿名插入 `post_id`、`author_name`、`body`、`client_id`。
+
+触发器：
+
+- 插入主帖前清理作者、标题、正文，并强制 `status = visible`。
+- 插入回复前清理作者和正文，并强制 `status = visible`。
+- 插入回复后自动增加主帖 `reply_count`，更新 `last_activity_at`。
+
+## 防刷策略
+
+第一版不做账号，也不做服务端 IP 限流。
+
+已有保护：
+
+- honeypot 字段。
+- 标题、正文长度限制。
+- 链接数量限制。
+- 同一 `client_id` 十分钟和一天内的发帖/回复数量限制。
+- 只读开关 `VITE_FORUM_READ_ONLY=1`。
+
+已知不足：
+
+- 用户清 localStorage 或换浏览器可以绕过 `client_id` 限频。
+- 真正可靠的 IP 限流需要 Supabase Edge Function 或独立后端。
+- 如果出现刷屏，短期处理方式是打开只读、手动 SQL 隐藏帖子，长期再做 Edge Function。
+
+## 免费档限制
+
+Supabase Free Plan 适合文字论坛起步，但有代价：
+
+- 低活跃项目可能被暂停，需要手动恢复。
+- 数据库、流量、存储有免费额度。
+- 免费档备份和恢复能力有限。
+- 不建议开放图片上传。
+
+如果论坛有稳定玩家使用，再评估升级 Supabase Pro 或迁移到独立后端。
+
+## 环境变量
+
+前端构建使用：
+
+```text
+VITE_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY
+VITE_FORUM_READ_ONLY
 ```
 
-必要索引：
+`VITE_SUPABASE_ANON_KEY` 是公开 key，不能当作秘密。安全规则必须写在 RLS 里。
 
-- `forum_posts(status, last_activity_at desc, id desc)` 的可见帖列表索引。
-- `forum_replies(post_id, created_at asc, id asc)` 的可见回复索引。
-- `forum_posts(ip_hash, created_at desc)` 和 `forum_replies(ip_hash, created_at desc)` 用于限流。
+## 页面
 
-## API
+论坛地址：
 
-Base URL: `/api/v1`
-
-### 健康检查
-
-`GET /healthz`
-
-返回：
-
-```json
-{ "ok": true, "db": "ok", "version": "0.1.0" }
+```text
+/forum/
 ```
 
-### 帖子列表
+页面：
 
-`GET /api/v1/posts?limit=20&cursor=...`
+- 首页：帖子列表、发帖按钮、加载更多。
+- 发帖页：名字、标题、正文。
+- 详情页：正文、回复列表、回复表单。
+- 未配置 Supabase 时：显示配置提示，不崩溃。
 
-- 按 `last_activity_at DESC, id DESC` 排序。
-- `limit` 限制在 1-50，默认 20。
-- `cursor` 使用 `lastActivityAt_id`。
+## 现有网站接入
 
-返回帖子摘要、回复数、创建时间、最后活动时间和下一页游标。
+`website/#forum` 不再显示本地草稿。它作为入口页：
 
-### 发帖
-
-`POST /api/v1/posts`
-
-请求：
-
-```json
-{
-  "authorName": "测试玩家",
-  "title": "标题",
-  "body": "正文",
-  "website": ""
-}
-```
-
-规则：
-
-- `authorName` 可空，空值保存为“匿名玩家”。
-- `title` 1-120 字。
-- `body` 1-10000 字。
-- `website` 是隐藏 honeypot 字段，非空拒绝。
-
-成功返回 `201` 和新帖子 id。
-
-### 帖子详情
-
-`GET /api/v1/posts/:id`
-
-返回帖子正文和可见回复。隐藏、删除或不存在返回 `404`。
-
-### 回复
-
-`POST /api/v1/posts/:id/replies`
-
-请求：
-
-```json
-{
-  "authorName": "",
-  "body": "回复内容",
-  "website": ""
-}
-```
-
-成功时在同一事务内插入回复，并更新主帖 `reply_count` 和 `last_activity_at`。
-
-## 前端页面
-
-### 首页
-
-- 标题：`Spire Plus 论坛`
-- 主按钮：`发帖`
-- 帖子列表显示：标题、作者、时间、回复数、正文摘要。
-- 空状态：`还没有帖子，发第一帖。`
-- 错误状态：`论坛暂时无法连接`，提供重试。
-- 分页：`加载更多`。
-
-### 发帖页
-
-- 路径：`/new`
-- 字段：名字、标题、正文。
-- 提交成功跳转到 `/posts/:id`。
-- `429` 显示“发帖太频繁，请稍后再试”。
-
-### 详情页
-
-- 路径：`/posts/:id`
-- 显示完整标题、作者、发布时间、正文、回复列表。
-- 底部回复框支持匿名回复。
-- 回复成功后刷新详情并清空表单。
-
-### 文本渲染
-
-- 只支持纯文本。
-- 保留换行。
-- 不解析 HTML，不使用 `dangerouslySetInnerHTML`。
-- 不自动转换链接，降低垃圾链接收益。
-
-## 匿名和安全
-
-匿名原则：
-
-- 不注册、不登录。
-- 展示名不代表身份。
-- 不公开 IP、UA。
-- 服务端只保存 HMAC-SHA256 后的 `ip_hash` 和 `user_agent_hash`。
-
-最低限度防刷：
-
-- JSON body 最大 32KB。
-- 同一 IP hash 每 10 分钟最多 3 个主帖，每日最多 20 个主帖。
-- 同一 IP hash 每 10 分钟最多 10 条回复，每日最多 80 条回复。
-- 正文 URL 超过 5 个拒绝。
-- honeypot 字段非空拒绝。
-- `FORUM_READ_ONLY=1` 时关闭发帖和回复，只保留浏览。
-
-安全要求：
-
-- 所有 SQL 使用参数化查询。
-- CORS 只允许生产站、论坛域名和 localhost。
-- 不使用 cookie 鉴权。
-- 返回通用错误，不暴露 SQL 细节。
-- 设置基础安全 header。
-
-## 本地开发
-
-```powershell
-cd forum
-npm ci
-npm run db:start
-npm run migrate
-npm run dev
-```
-
-默认端口：
-
-- 前端开发：`http://localhost:5173`
-- 后端 API：`http://localhost:8787`
-- 生产预览：`http://localhost:8787`
-
-## 部署
-
-首选 Render Blueprint：
-
-- 一个 Node Web Service。
-- 一个 Render PostgreSQL。
-- `DATABASE_URL` 来自 Render database。
-- `IP_HASH_SECRET` 在 Dashboard 中填写。
-- `CORS_ORIGINS` 包含 GitHub Pages 站点和论坛域名。
-- `buildCommand`: `cd forum && npm ci && npm run build`
-- `startCommand`: `cd forum && npm run migrate && npm start`
-- `healthCheckPath`: `/healthz`
-
-GitHub Pages 仍只部署 `website/`。它不能运行论坛后端，也不能保存 PostgreSQL 数据。
-
-## 与现有网站接入
-
-`website/#forum` 改为公网论坛入口页：
-
-- 删除本地草稿表单定位。
-- 显示 `进入 Spire Plus 论坛` 主按钮。
-- 文案说明论坛无需注册，可匿名发帖和回复。
-- 按钮指向 `content-data.js` 中的论坛公网地址。
-
-如果论坛尚未部署，入口按钮可先指向本地开发地址或 Render 待配置地址，但文档必须标明需要替换。
+- 说明论坛无需注册。
+- 按钮指向 `website/forum/`。
+- 说明论坛数据由 Supabase 保存。
 
 ## 验收标准
 
-- 从 GitHub Pages 网站能进入论坛。
-- 未登录用户可以发帖。
-- 新帖子刷新后仍存在。
-- 另一浏览器能看到帖子。
-- 能进入帖子详情。
-- 未登录用户可以回复。
-- 回复刷新后仍存在，列表回复数增加。
-- API 健康检查返回数据库可用。
-- 高频发帖或回复返回 `429`。
-- `<script>` 输入只显示文本，不执行。
-- `website/#forum` 不再显示“反馈草稿”。
-- README 记录 `DATABASE_URL`、`IP_HASH_SECRET`、`CORS_ORIGINS`、`FORUM_READ_ONLY`。
+- `npm run build` 成功，并生成 `website/forum/`。
+- `npm test` 通过 schema guard。
+- `website/#forum` 按钮能打开 `/forum/`。
+- 未配置 Supabase 时，论坛页面显示清楚的配置提示。
+- 配好 Supabase 后，能发帖、看帖、回复，刷新后数据仍存在。
+- RLS 禁止匿名更新和删除。
+- 截图覆盖桌面和移动端。

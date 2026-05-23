@@ -36,6 +36,7 @@ Use `features/README.md` as the compact feature index.
 | Ascension 11-20 | `features/ascension-11-20/README.md` | Active development track, default-on for private-beta multiplayer testing, not release-verified. |
 | Urda ancient expansion | `features/ancient-expansion-urda/README.md` | Current default-on Urda slice with ten source-backed blessings; live verification pending. |
 | Preview tools | `features/preview-tools/README.md` | Crystal Sphere peek and transform preview now ship inside the single Spire Plus mod. |
+| Public forum | `features/forum/technical-spec.md` | GitHub Pages + Supabase anonymous text forum; go-live steps are in `features/forum/go-live-checklist.md`. |
 | Independent mod architecture | `architecture-ez-micro-balance.md` | Why `EZMicroBalance` is the single active deliverable. |
 
 ## Validation And Release Support

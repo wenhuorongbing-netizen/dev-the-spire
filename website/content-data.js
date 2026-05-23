@@ -208,9 +208,9 @@ window.SPIRE_PLUS_DATA = {
     forumLead: "无需注册的公开讨论区。输入名字、标题和正文即可发帖，也可以直接匿名回复。",
     forumPublicTitle: "Spire Plus 论坛",
     openForum: "进入论坛",
-    forumHealth: "服务状态",
-    forumDeployTitle: "部署说明",
-    forumDeployCopy: "论坛是独立的 Node + PostgreSQL 服务，GitHub Pages 只保留入口。正式域名确定后，这里的按钮会指向公网论坛。",
+    forumHealth: "数据库状态",
+    forumDeployTitle: "运行方式",
+    forumDeployCopy: "论坛页面由 GitHub Pages 托管，帖子和回复写入 Supabase PostgreSQL。未配置 Supabase 时，论坛会显示连接说明。",
     postName: "名字",
     postNamePlaceholder: "名字，可留空",
     anonymous: "匿名玩家",
@@ -276,10 +276,10 @@ window.SPIRE_PLUS_DATA = {
     "\u82e5\u540e\u7eed\u9700\u8981\u516c\u5f00\u5c55\u793a\u66f4\u591a\u539f\u7248\u5b9e\u673a\u622a\u56fe\u6216\u539f\u56fe\uff0c\u5c06\u5355\u72ec\u8bb0\u5f55\u6765\u6e90\u548c\u4f7f\u7528\u8303\u56f4\u3002"
   ],
   forum: {
-    url: "https://spire-plus-forum.onrender.com",
-    localUrl: "http://localhost:8787",
+    url: "./forum/",
+    localUrl: "./forum/",
     notice:
-      "这里会是玩家讨论、Bug 反馈、构筑记录和版本建议的主入口。论坛不要求账号；填写名字只是显示用，留空会显示为匿名玩家。",
+      "这里会是玩家讨论、Bug 反馈、构筑记录和版本建议的主入口。论坛不要求账号；填写名字只是显示用，留空会显示为匿名玩家。数据由 Supabase 保存。",
     points: [
       "发帖：名字可留空，填写标题和正文即可发布。",
       "看帖：所有可见帖子按最后回复时间排序。",
@@ -428,7 +428,7 @@ window.SPIRE_PLUS_DATA = {
     ["\u5f85\u9a8c\u8bc1", "\u5148\u53e4\u8282\u70b9\u754c\u9762", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u3001\u666e\u901a\u74e6\u5e93\u548c\u9690\u85cf\u74e6\u5e93\u6218\u6597\u9700\u8981\u8865\u5145\u622a\u56fe\u3001\u65e5\u5fd7\u548c\u60ac\u505c\u6587\u672c\u53ef\u8bfb\u6027\u8bc1\u660e\u3002"],
     ["\u5f85\u9a8c\u8bc1", "\u74e6\u5e93\u8bd5\u70bc", "\u80dc\u5229\u8fd4\u56de\u4e8b\u4ef6\u3001\u5931\u8d25/\u6b7b\u4ea1\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u8054\u673a\u8fb9\u754c\u9700\u8981\u8fdb\u4e00\u6b65\u5b9e\u673a\u6d4b\u8bd5\u3002"],
     ["\u5f85\u9a8c\u8bc1", "\u8fdb\u9636 11-20", "A11 \u8def\u7ebf\u70b9\u51fb\u3001A12/A16/A19/A20 \u6218\u6597\u89c4\u5219\u3001\u6839\u8680\u6218\u540e\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u53cc\u4eba\u8054\u673a\u8fd8\u9700\u8981\u5b8c\u6574\u8bb0\u5f55\u3002"],
-    ["待部署", "公开论坛", "论坛已经改为独立后端方案；上线前需要完成 Node 服务和 PostgreSQL 部署。"],
+    ["待配置", "公开论坛", "论坛前端已接入 GitHub Pages；上线前需要创建 Supabase 项目、执行论坛 schema，并配置公开 anon key。"],
     ["\u7d20\u6750\u8bf4\u660e", "\u539f\u7248\u6e38\u620f\u56fe\u7247", "\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\u5df2\u83b7\u5f97\u7ad9\u70b9\u53d1\u5e03\u6388\u6743\u786e\u8ba4\uff0c\u5e76\u4ec5\u5206\u53d1\u5f53\u524d\u66f4\u65b0\u9875\u5b9e\u9645\u4f7f\u7528\u7684\u56fe\u50cf\u3002"]
   ],
   changeLog: [
@@ -730,9 +730,9 @@ window.SPIRE_PLUS_DATA.i18n = {
         forumLead: "A public no-account discussion board. Type a name, title, and body to post, or leave the name empty and reply anonymously.",
         forumPublicTitle: "Spire Plus Forum",
         openForum: "Open Forum",
-        forumHealth: "Service Status",
-        forumDeployTitle: "Deployment",
-        forumDeployCopy: "The forum runs as a separate Node + PostgreSQL service. GitHub Pages only links to it; the button will point to the public forum once the service is deployed.",
+        forumHealth: "Database Status",
+        forumDeployTitle: "Runtime",
+        forumDeployCopy: "The forum page is hosted by GitHub Pages. Posts and replies are stored in Supabase PostgreSQL. If Supabase is not configured yet, the forum page shows setup instructions.",
       postName: "Name",
       postNamePlaceholder: "Name, optional",
       anonymous: "Anonymous player",
@@ -801,9 +801,9 @@ window.SPIRE_PLUS_DATA.i18n = {
       "If more base-game screenshots or original art are published later, source and usage scope will be documented separately."
     ],
       forum: {
-        url: "https://spire-plus-forum.onrender.com",
-        localUrl: "http://localhost:8787",
-        notice: "This is the main place for player discussion, bug reports, run notes, and version feedback. No account is required; names are display-only, and empty names are shown as anonymous players.",
+        url: "./forum/",
+        localUrl: "./forum/",
+        notice: "This is the main place for player discussion, bug reports, run notes, and version feedback. No account is required; names are display-only, and empty names are shown as anonymous players. Data is stored in Supabase.",
         points: [
           "Post: name is optional; title and body are enough.",
           "Browse: visible posts are sorted by latest activity.",
@@ -1108,7 +1108,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       ["Needs verification", "Ancient node UI", "Urda, Morvi, Lotha, normal Vakuu, and hidden Vakuu combat need screenshots, logs, and hover text readability proof."],
       ["Needs verification", "Vakuu trial", "Victory return, failure/death resolution, save-load behavior, and multiplayer boundaries need more live testing."],
       ["Needs verification", "Ascension 11-20", "A11 route clicks, A12/A16/A19/A20 combat rules, Rootblight post-combat resolution, save-load behavior, and two-player co-op need full test records."],
-      ["Deployment pending", "Public forum", "The forum now targets a separate backend service. Public use requires deploying the Node service and PostgreSQL database."],
+      ["Configuration pending", "Public forum", "The forum front end is wired for GitHub Pages. Public use requires a Supabase project, the forum schema, and the public anon key."],
       ["Asset note", "Original game images", "Vanilla relic icons and card portraits are approved for this site and are included only for the update entries that use them."]
     ],
     changeLog: [

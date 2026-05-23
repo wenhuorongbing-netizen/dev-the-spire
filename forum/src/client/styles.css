@@ -1,8 +1,13 @@
 :root {
-  color: #1e252b;
-  background: #f7f4ee;
+  color-scheme: dark;
+  color: #f4ead8;
+  background: #10110e;
   font-family:
-    Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    "Segoe UI",
+    "Microsoft YaHei UI",
+    "Microsoft YaHei",
+    Arial,
+    sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -16,8 +21,9 @@ body {
   min-width: 320px;
   margin: 0;
   background:
-    linear-gradient(180deg, rgba(245, 237, 224, 0.8), rgba(247, 244, 238, 0) 320px),
-    #f7f4ee;
+    linear-gradient(180deg, rgba(17, 18, 15, 0.72), rgba(17, 18, 15, 1) 360px),
+    radial-gradient(circle at 20% -12%, rgba(216, 168, 77, 0.18), transparent 34rem),
+    #10110e;
 }
 
 button,
@@ -32,10 +38,14 @@ button {
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: 1;
 }
 
-.site-header {
+code {
+  color: #e2b45a;
+}
+
+.forum-header {
   position: sticky;
   top: 0;
   z-index: 10;
@@ -43,57 +53,66 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px clamp(18px, 5vw, 56px);
-  border-bottom: 1px solid rgba(38, 43, 47, 0.12);
-  background: rgba(247, 244, 238, 0.92);
+  padding: 14px clamp(16px, 4vw, 52px);
+  border-bottom: 1px solid rgba(231, 212, 173, 0.16);
+  background: rgba(16, 17, 14, 0.92);
   backdrop-filter: blur(16px);
 }
 
-.brand,
+.brand-button,
 .text-button {
   border: 0;
   padding: 0;
-  color: #303840;
+  color: #f4ead8;
   background: transparent;
-  font-weight: 760;
+  font-weight: 800;
 }
 
-.brand {
+.brand-button {
   font-size: 18px;
 }
 
 .text-button {
-  margin-bottom: 24px;
-  color: #815829;
+  margin-bottom: 22px;
+  color: #d8a84d;
 }
 
 .primary-button,
 .secondary-button {
-  min-height: 42px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 0 18px;
-  font-weight: 760;
+  min-height: 38px;
+  border: 1px solid rgba(231, 212, 173, 0.28);
+  border-radius: 5px;
+  padding: 0 15px;
+  font-weight: 800;
 }
 
 .primary-button {
-  color: #fffaf0;
-  background: #9b4b32;
-  box-shadow: 0 8px 20px rgba(99, 45, 28, 0.18);
+  border-color: #d8a84d;
+  color: #17120a;
+  background: #d8a84d;
 }
 
 .primary-button:hover {
-  background: #823d29;
+  background: #e7bd68;
+}
+
+.primary-button:disabled {
+  border-color: rgba(231, 212, 173, 0.18);
+  color: rgba(244, 234, 216, 0.48);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.primary-button:disabled:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .secondary-button {
-  color: #4c3a29;
-  border-color: rgba(73, 54, 37, 0.28);
-  background: #fffdf8;
+  color: #f4ead8;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .secondary-button:hover {
-  border-color: rgba(73, 54, 37, 0.46);
+  border-color: #e7d4ad;
 }
 
 .wide-button {
@@ -101,19 +120,19 @@ button:disabled {
 }
 
 .page {
-  width: min(960px, calc(100% - 32px));
+  width: min(1120px, calc(100% - 28px));
   margin: 0 auto;
-  padding: 52px 0 76px;
+  padding: 34px 0 64px;
 }
 
-.narrow-page {
-  width: min(720px, calc(100% - 32px));
+.narrow {
+  width: min(760px, calc(100% - 28px));
 }
 
 .page-title {
   display: grid;
-  gap: 12px;
-  margin-bottom: 32px;
+  gap: 8px;
+  margin-bottom: 22px;
 }
 
 h1,
@@ -123,13 +142,14 @@ p {
 }
 
 h1 {
-  color: #20272f;
-  font-size: clamp(34px, 5vw, 54px);
+  color: #fff5df;
+  font-size: 58px;
   line-height: 1.04;
+  overflow-wrap: anywhere;
 }
 
 h2 {
-  color: #273038;
+  color: #fff0d4;
   font-size: 24px;
   line-height: 1.2;
 }
@@ -138,55 +158,55 @@ h2 {
 .muted,
 .post-summary,
 .post-meta {
-  color: #6f746f;
+  color: #b9ad98;
 }
 
 .page-title p {
-  max-width: 680px;
-  font-size: 17px;
-  line-height: 1.7;
+  max-width: 760px;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 .notice {
   display: grid;
-  gap: 16px;
+  gap: 14px;
   justify-items: start;
-  margin: 24px 0;
-  border: 1px solid rgba(53, 61, 65, 0.14);
-  border-radius: 8px;
-  padding: 22px;
-  background: rgba(255, 253, 248, 0.86);
+  margin: 18px 0;
+  border: 1px solid rgba(231, 212, 173, 0.16);
+  border-radius: 7px;
+  padding: 18px;
+  background: rgba(33, 31, 25, 0.92);
 }
 
 .notice.error {
-  border-color: rgba(155, 75, 50, 0.35);
-  color: #7a2f22;
+  border-color: rgba(200, 107, 88, 0.44);
+  color: #efb0a1;
 }
 
 .post-list {
   display: grid;
-  gap: 12px;
+  gap: 9px;
 }
 
 .post-row,
 .post-detail,
 .reply,
 .form {
-  border: 1px solid rgba(38, 43, 47, 0.12);
-  border-radius: 8px;
-  background: #fffdf8;
-  box-shadow: 0 14px 36px rgba(68, 55, 38, 0.06);
+  border: 1px solid rgba(231, 212, 173, 0.14);
+  border-radius: 7px;
+  background: rgba(33, 31, 25, 0.94);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.22);
 }
 
 .post-row {
   display: grid;
-  gap: 14px;
-  padding: 20px;
+  gap: 11px;
+  padding: 16px;
 }
 
 .post-link {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   border: 0;
   padding: 0;
   color: inherit;
@@ -195,55 +215,55 @@ h2 {
 }
 
 .post-title {
-  color: #1f272d;
-  font-size: 20px;
+  color: #fff5df;
+  font-size: 19px;
   font-weight: 800;
   line-height: 1.35;
 }
 
 .post-link:hover .post-title {
-  color: #9b4b32;
+  color: #d8a84d;
 }
 
 .post-summary {
-  line-height: 1.65;
+  line-height: 1.55;
 }
 
 .post-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 14px;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 24px;
+  margin-top: 18px;
 }
 
 .form {
   display: grid;
-  gap: 18px;
-  margin-top: 22px;
-  padding: 24px;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 20px;
 }
 
 .form label {
   display: grid;
-  gap: 8px;
-  color: #2c343b;
-  font-weight: 760;
+  gap: 7px;
+  color: #f4ead8;
+  font-weight: 800;
 }
 
 .form input,
 .form textarea {
   width: 100%;
-  border: 1px solid rgba(53, 61, 65, 0.18);
-  border-radius: 8px;
-  padding: 12px 13px;
-  color: #1f272d;
-  background: #fff;
+  border: 1px solid rgba(231, 212, 173, 0.18);
+  border-radius: 6px;
+  padding: 11px 12px;
+  color: #fff7e8;
+  background: #151611;
   line-height: 1.5;
 }
 
@@ -253,8 +273,8 @@ h2 {
 
 .form input:focus,
 .form textarea:focus {
-  outline: 3px solid rgba(155, 75, 50, 0.2);
-  border-color: #9b4b32;
+  outline: 3px solid rgba(216, 168, 77, 0.18);
+  border-color: #d8a84d;
 }
 
 .honeypot {
@@ -266,59 +286,59 @@ h2 {
 }
 
 .form-error {
-  color: #9b2f22;
+  color: #ef927f;
   line-height: 1.5;
 }
 
 .post-detail {
   display: grid;
-  gap: 18px;
-  padding: clamp(22px, 4vw, 34px);
+  gap: 16px;
+  padding: clamp(20px, 4vw, 32px);
 }
 
 .plain-text {
-  color: #293137;
-  line-height: 1.8;
+  color: #e2d6c1;
+  line-height: 1.75;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 .replies {
   display: grid;
-  gap: 12px;
-  margin-top: 28px;
+  gap: 10px;
+  margin-top: 24px;
 }
 
 .reply {
   display: grid;
-  gap: 10px;
-  padding: 18px;
+  gap: 8px;
+  padding: 15px;
 }
 
 .reply-form {
-  margin-top: 28px;
+  margin-top: 24px;
 }
 
 @media (max-width: 640px) {
-  .site-header {
-    padding: 14px 16px;
+  .forum-header {
+    padding: 13px 14px;
   }
 
-  .brand {
+  .brand-button {
     font-size: 16px;
   }
 
   .page {
-    width: min(100% - 24px, 960px);
-    padding-top: 34px;
+    width: min(100% - 20px, 1120px);
+    padding-top: 26px;
   }
 
   h1 {
-    font-size: 36px;
+    font-size: 34px;
   }
 
   .post-row,
   .form {
-    padding: 18px;
+    padding: 15px;
   }
 }

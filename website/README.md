@@ -42,26 +42,27 @@ https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-priv
 
 ## 论坛
 
-`website/#forum` 只保留论坛入口。真正的论坛是独立的 `forum/` 全栈服务，需要 Node.js 和 PostgreSQL，不能直接运行在 GitHub Pages 上。
-
-本地论坛默认入口：
+`website/#forum` 是论坛入口。真正的论坛页面由 `forum/` React 项目构建到：
 
 ```text
-http://localhost:8787
+website/forum/
 ```
 
-计划公网入口：
+论坛本身仍然是 GitHub Pages 静态页面；帖子和回复存入 Supabase PostgreSQL。部署前需要创建 Supabase 项目，执行：
 
 ```text
-https://spire-plus-forum.onrender.com
+forum/supabase/schema.sql
 ```
 
-Render Blueprint 配置在仓库根目录 `render.yaml`。部署时需要在 Render Dashboard 设置：
+GitHub Actions 构建论坛时需要设置仓库 Variables：
 
-- `DATABASE_URL`：由 Render PostgreSQL 注入。
-- `IP_HASH_SECRET`：手动填写随机长字符串。
-- `CORS_ORIGINS`：包含 GitHub Pages 站点和论坛域名。
-- `FORUM_READ_ONLY`：紧急只读开关，默认 `0`。
+- `SPIRE_PLUS_SUPABASE_URL`
+- `SPIRE_PLUS_SUPABASE_ANON_KEY`
+- `SPIRE_PLUS_FORUM_READ_ONLY`，可选，设为 `1` 时只读。
+
+未配置 Supabase 时，`/forum/` 会显示配置说明，不会报错或显示假表单。
+
+完整上线步骤见 `../docs/features/forum/go-live-checklist.md`。
 
 ## 更新方式
 

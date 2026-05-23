@@ -2,17 +2,16 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  base: "./",
   plugins: [react()],
-  root: ".",
   build: {
-    outDir: "dist/client",
+    outDir: "../website/forum",
     emptyOutDir: true
   },
   server: {
-    port: 5173,
-    proxy: {
-      "/api": "http://localhost:8787",
-      "/healthz": "http://localhost:8787"
-    }
+    port: 5173
+  },
+  preview: {
+    port: 4178
   }
 });

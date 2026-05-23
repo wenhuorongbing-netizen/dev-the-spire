@@ -1,68 +1,70 @@
 # Spire Plus 论坛
 
-独立匿名论坛服务：React + Vite 前端、Fastify/Node TypeScript 后端、PostgreSQL 数据库。用户无需注册即可发帖和回复。
+这是 `Spire Plus` 的静态匿名论坛前端。它构建到 `website/forum/`，由 GitHub Pages 托管；帖子和回复存入 Supabase PostgreSQL。
 
-## 本地开发
+## 运行方式
 
 ```powershell
 cd forum
 npm ci
 Copy-Item .env.example .env
-npm run db:start
-npm run migrate
 npm run dev
 ```
 
-默认地址：
+开发地址：
 
-- 前端开发：`http://localhost:5173`
-- API：`http://localhost:8787`
-- 生产预览：`http://localhost:8787`
-
-## 环境变量
-
-- `DATABASE_URL`：PostgreSQL 连接字符串。
-- `IP_HASH_SECRET`：用于 HMAC-SHA256 哈希 IP 和 User-Agent 的长随机密钥。生产环境必须设置。
-- `CORS_ORIGINS`：允许跨域访问的公网网站和论坛域名，逗号分隔；本地 `localhost` 会自动允许。
-- `FORUM_READ_ONLY`：设为 `1` 时关闭发帖和回复，只保留浏览。
-- `DATABASE_SSL`：设为 `1` 时使用 PostgreSQL TLS，适合需要 SSL 的托管数据库。
-- `PORT` / `HOST`：Node 服务监听地址。
-
-## 数据库迁移
-
-迁移文件放在 `db/migrations/*.sql`，按文件名顺序执行，并写入 `schema_migrations`。
-
-```powershell
-npm run migrate
+```text
+http://127.0.0.1:5173
 ```
 
-## 构建和生产运行
+## Supabase 配置
+
+完整上线步骤见 `../docs/features/forum/go-live-checklist.md`。
+
+1. 新建 Supabase 项目。
+2. 打开 SQL Editor，执行 `supabase/schema.sql`。
+3. 在 `.env` 或 GitHub Actions Variables 中设置：
+
+```text
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-public-anon-key
+VITE_FORUM_READ_ONLY=0
+```
+
+`anon key` 会出现在浏览器里，这是 Supabase 的正常用法。安全边界在 `schema.sql` 的 RLS、列级授权和插入策略里，不在前端密钥里。
+
+## 构建
 
 ```powershell
 npm run build
-npm start
 ```
 
-生产模式下，Node 服务同时提供 `/api/v1/*` JSON API、React 构建产物和前端路由回退。
+构建产物写入：
 
-Render 部署建议：
+```text
+../website/forum/
+```
 
-- `buildCommand`: `cd forum && npm ci && npm run build`
-- `startCommand`: `cd forum && npm run migrate && npm start`
-- `healthCheckPath`: `/healthz`
-- Web Service 设置 `DATABASE_URL`、`IP_HASH_SECRET`、`CORS_ORIGINS`。
-- PostgreSQL 使用 Render PostgreSQL。
+现有 GitHub Pages workflow 会上传整个 `website/`，所以论坛地址会变成：
+
+```text
+https://wenhuorongbing-netizen.github.io/dev-the-spire/forum/
+```
+
+## 免费档限制
+
+Supabase Free Plan 足够用于第一版文字论坛，但有这些限制：
+
+- 免费项目长时间低活跃可能暂停，需要手动恢复。
+- 数据库、流量和存储都有额度。
+- 纯前端匿名论坛无法做可靠 IP 限流；当前只做 RLS、client id 频率限制、honeypot、长度限制和链接数限制。
+- 不建议第一版开放图片上传。
+- 正式公开前建议定期导出 SQL 备份。
 
 ## 测试
 
-API 测试需要 PostgreSQL。可直接使用本地 Docker 数据库：
-
 ```powershell
-cd forum
-npm run db:start
-npm run migrate
-$env:FORUM_TEST_DATABASE_URL="postgres://forum:forum@localhost:54329/forum"
 npm test
 ```
 
-测试会清空 `forum_posts` 和 `forum_replies`，不要指向生产数据库。
+当前测试是静态 schema guard，检查 RLS、匿名授权和基础防刷策略是否仍存在。真实发帖/回复需要连接 Supabase 项目后用浏览器手动验证。

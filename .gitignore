@@ -11,6 +11,7 @@ Properties/
 packages/
 node_modules/
 /forum/node_modules/
+/forum/dist/
 /forum/client/dist/
 /forum/server/dist/
 /website/

@@ -240,3 +240,45 @@ Static checks:
 - `node --check website/content-data.js` passed.
 - `node --check website/app.js` passed.
 - Source-art hash scan confirmed the 25 relic PNGs and 3 card portrait PNGs match their `source code/images/` originals.
+
+## Review 11: Supabase Forum Pivot QA
+
+Result: pending live Supabase project.
+
+Fixes checked during this pass:
+
+- Replaced the GitHub feedback draft page with a real forum entry page.
+- Replaced the earlier Render/Node deployment plan with GitHub Pages + Supabase.
+- `forum/` now builds a static React forum into `website/forum/`.
+- Added `forum/supabase/schema.sql` with RLS, column-level grants, insert policies, reply-count trigger, URL-count limit, and client-id frequency checks.
+
+Static checks:
+
+- `npm test` under `forum/` passed the schema guards.
+- `npm run build` under `forum/` passed and generated `website/forum/`.
+- `node --check website/app.js` passed.
+- `node --check website/content-data.js` passed.
+- `git diff --check -- forum website .github\workflows\spire-plus-site.yml docs\features\forum .gitignore website\localization_qa.md` passed.
+
+Rendered checks:
+
+- `output/playwright/website-forum-supabase-entry-v3.png`
+- `output/playwright/forum-supabase-unconfigured-v4.png`
+- `output/playwright/forum-supabase-unconfigured-mobile-v4.png`
+- `output/playwright/website-forum-supabase-entry-v4.png`
+- `output/playwright/forum-supabase-unconfigured-v5.png`
+- `output/playwright/forum-supabase-unconfigured-mobile-v5.png`
+
+Follow-up fixes from rendered QA:
+
+- Disabled the forum post button visually when Supabase is not configured.
+- Replaced stale public-facing Node/PostgreSQL deployment copy with Supabase setup copy.
+- Added `npm test` to the GitHub Pages forum build workflow.
+- Added `docs/features/forum/go-live-checklist.md` and linked it from the forum spec, forum README, website README, and docs index.
+
+Live checks still required:
+
+- Create a Supabase project.
+- Run `forum/supabase/schema.sql`.
+- Configure `SPIRE_PLUS_SUPABASE_URL` and `SPIRE_PLUS_SUPABASE_ANON_KEY` for GitHub Pages builds.
+- Verify public anonymous post and reply persistence.

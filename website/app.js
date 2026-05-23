@@ -448,13 +448,13 @@
     const actions = el("div", "forum-actions");
     const forumUrl = isLocal() ? data.forum.localUrl : data.forum.url;
     const primary = button(labels.openForum, forumUrl, true);
-    primary.target = "_blank";
-    primary.rel = "noopener";
     actions.appendChild(primary);
-    const status = button(labels.forumHealth, forumUrl.replace(/\/$/, "") + "/healthz", false);
-    status.target = "_blank";
-    status.rel = "noopener";
-    actions.appendChild(status);
+    if (data.forum.statusUrl) {
+      const status = button(labels.forumHealth, data.forum.statusUrl, false);
+      status.target = "_blank";
+      status.rel = "noopener";
+      actions.appendChild(status);
+    }
     for (const [label, href] of data.forum.links || []) {
       const link = button(label, href, false);
       link.target = "_blank";
