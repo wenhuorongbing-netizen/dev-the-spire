@@ -57,7 +57,7 @@ Current source-backed blessings:
 | Trial Branch | `urda_trial_branch` | Source hook exists with 4 rare-card grid, upgraded Trial Branch enchantment marker, and strict 3-combat/3-success settlement; missing any trial combat removes the card. Live gameplay/save-load pending. |
 | Shallow-Root Relic | `urda_shallow_root_relic` | Source hook exists with 2 common relic choices, gold/rooting, and deterministic Act 2 removal/refund fallback; live gameplay/save-load pending. |
 | Rooted Route | `urda_rooted_route` | Source hook exists with automatic reachable normal-combat mark, no map graph mutation, success rewards, and wither fallback; live gameplay/save-load pending. |
-| After the Rain | `urda_after_rain` | Source hook exists with Act 1 death prevention, elite gold, and Act 2 unused compensation; live gameplay/save-load pending. |
+| After the Rain | `urda_after_rain` | Source hook exists with Act 1 Rain Breath triggers and an Act 2 trigger-count payoff; live gameplay/save-load pending. |
 | Root-Sight | `urda_root_sight` | Source hook exists with 5 Root Eyes, relic-click map selection, and stored previews for future reachable Monster/Unknown/Elite nodes; live gameplay/save-load pending. |
 | Seed Bank | `urda_seed_bank` | Source hook exists with Store Seed reward alternative and relic-click extraction of up to 2 stored cards; live gameplay/save-load pending. |
 
@@ -74,7 +74,7 @@ Urda's full v2.2 design contains ten blessings. All ten are now source-backed fo
 | Trial Branch | `urda_trial_branch` | Current source-backed slice | Small early test that keeps an upgraded chosen card only after the player proves route discipline. |
 | Shallow-Root Relic | `urda_shallow_root_relic` | Current source-backed slice | A common relic choice with rooting and a deterministic Act 2 fallback. |
 | Rooted Route | `urda_rooted_route` | Current source-backed slice | Route commitment reward that never mutates the map graph. |
-| After the Rain | `urda_after_rain` | Current source-backed slice | Act 1 death prevention or unused compensation. |
+| After the Rain | `urda_after_rain` | Current source-backed slice | First unblocked enemy attack damage in each Act 1 combat adds Rain Breath; Act 2 grants 75 Gold if this triggered fewer than 3 times, otherwise heal 8 and upgrade 1 card. |
 | Root-Sight | `urda_root_sight` | Current source-backed slice | Source-safe automatic preview marking, not hidden power. |
 | Seed Bank | `urda_seed_bank` | Current source-backed slice | Capped stored card value with player-triggered relic extraction. |
 
@@ -89,10 +89,10 @@ Morvi is default-on. It appears in Act 2 unless `EZMB_DISABLE_MORVI=1` or `SPIRE
 | Forbidden Loan / 禁书借阅 | `morvi_forbidden_loan` | Source-complete: choose from three class Ancient cards, add the upgraded chosen card with a Borrowed Ancient marker, charge HP on borrowed-card plays, and auto-settle after the Act 2 boss by paying 180 Gold if possible or removing the borrowed card otherwise. Source-safe deviation: no post-boss choice UI is claimed. |
 | Misprint Press / 错页印刷机 | `morvi_misprint_press` | Source-complete: first player-played Attack or Skill each turn uses play-count modification on the original card, draws 1 when original/base cost is at least 1, and ignores Powers, Statuses, Curses, generated cards, autoplay, and recursive executions. |
 | Red Ink Overdraft / 红墨透支 | `morvi_red_ink_overdraft` | Source-complete with UI deviation: a temporary 0-cost Overdraft action card is added at player-turn start only when hand space allows and can be played only once per turn at 0 Energy; combat end pays 12 Gold per debt or 3 nonlethal HP per unpaid debt. |
-| Overdue Library / 逾期图书馆 | `morvi_overdue_library` | Source-complete: each combat adds three random temporary Archive Pages from Draw, Veil, Burn, Discount, Bravery, and Dexterity pages; unplayed pages carry no extra punishment. |
+| Overdue Library / 逾期书库 | `morvi_overdue_library` | Source-complete: each combat adds three random temporary Archive Pages from Draw, Veil, Burn, Discount, Bravery, and Dexterity pages; unplayed pages carry no extra punishment. |
 | Open-Book Exam / 开卷考试 | `morvi_open_book_exam` | Source-complete with tracking deviation: turn 1 draws up to five extra cards and gains 2 Energy; tracked Open Book cards still in hand at turn end are sealed through an Exhaust Pile holding path and return on turn 3 with cost 0 when hand space allows. Source now marks sealed cards so reload can attempt pile recovery, but live restore proof remains pending. |
-| Paperstorm / 纸灰风暴 | `morvi_paperstorm` | Source-complete: shuffle four Waste Paper status cards into the Draw Pile; the first two Status cards drawn from the Draw Pile each turn are consumed for draw 1 and Energy 1. |
-| Blueprint Proofreading / 蓝本校对 | `morvi_blueprint_proof` | Source-complete: gain 3 Proofread stacks; first three non-Status, non-Curse player-played deck cards temporarily upgrade and draw 1 if unupgraded, or cost 1 less and grant 4 Block if already upgraded. Power cards are never extra-played. |
+| Paperstorm / 纸屑风暴 | `morvi_paperstorm` | Source-complete: shuffle four Waste Paper status cards into the Draw Pile; the first two Status cards drawn from the Draw Pile each turn are consumed for draw 1 and Energy 1. |
+| Blueprint Proofreading / 蓝图校样 | `morvi_blueprint_proof` | Source-complete: gain 3 Proofread stacks; first three non-Status, non-Curse player-played deck cards temporarily upgrade and draw 1 if unupgraded, or cost 1 less and grant 4 Block if already upgraded. Power cards are never extra-played. |
 | Debt Settlement / 债务清算 | `morvi_debt_settlement` | Source-complete: immediately gain 220 Gold, remove up to two cards, upgrade two cards, set Debt to 320, then each combat end pays due `min(40, Debt)` with Gold first and nonlethal 3 HP per 10 Gold short rounded up while Debt decreases by the full due. |
 
 ## 6. Lotha v2.2 Source-Complete Test Slice

@@ -21,7 +21,7 @@ Current hard boundaries for claims:
 - Do not expose or expand Vakuu fight beyond the current hidden opt-in single-player slice until live UI/gameplay/save-load/failure evidence proves the dedicated source enemy/scene path is stable.
 - Do not expand Urda beyond the current ten v2.2 blessing ids in this cycle.
 - Morvi is default-on in the current private-beta test slice with all eight v2.2 blessing ids, event art, option/icon art, English/zhs localization, hover powers, disable gates, force-Ancient gates, and force-blessing gates. Live gameplay, save/load, and co-op evidence remain pending.
-- Do not change Ascension, Rootblight, Boss Seal, Fission, or multiplayer gameplay in this v2.2 Ancient pass.
+- Do not change Ascension, Rootblight, boss dedicated abilities, Fission, or multiplayer gameplay in this v2.2 Ancient pass.
 - Publish/package unless resource/localization/package inputs changed and the required build succeeds first.
 
 Allowed current-pass Urda work:

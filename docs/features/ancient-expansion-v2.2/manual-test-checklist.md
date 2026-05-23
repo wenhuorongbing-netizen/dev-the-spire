@@ -15,7 +15,7 @@ Status: Urda ten-blessing rows, default-on Morvi source rows, and default-on Lot
 
 ## 0A. Ancient Clicked UI Evidence Helper
 
-`scripts/collect-ancient-ui-evidence.ps1` prepares one forced-Ancient evidence folder, writes `ancient-ui-evidence-plan.json` plus `manual-instructions.md`, runs the window preflight unless `-NoPreflight` is used, and only launches through `scripts/spire-plus-live-session.ps1` when `-Launch` is explicitly present. It now also prints a safer Spire Plus DevConsole smoke command that starts an unsaved single-player test run from the main menu and opens the requested Ancient. This helper and command prepare UI evidence; they do not prove natural routing, gameplay, save/load, or co-op by themselves.
+`scripts/collect-ancient-ui-evidence.ps1` prepares one forced-Ancient evidence folder, writes `ancient-ui-evidence-plan.json`, `manual-instructions.md`, `command.txt`, `environment.json`, `package-hashes.json`, and a pending `manual-rows-template.json`, runs the window preflight unless `-NoPreflight` is used, and only launches through `scripts/spire-plus-live-session.ps1` when `-Launch` is explicitly present. It now also prints a safer Spire Plus DevConsole smoke command that starts an unsaved single-player test run from the main menu and opens the requested Ancient. This helper and command prepare UI evidence; they do not prove natural routing, gameplay, save/load, or co-op by themselves.
 
 Static resource-routing guards added on 2026-05-14 confirm current source/resource/export wiring only: Urda, Morvi, and Lotha scene files are Control-root clicked backgrounds using event art; map/run-history icons and option marker relic art remain separate exported resources; and the latest art audit reports 0 missing targets, 0 hash mismatches, and 0 missing exports. Later GPTimage2/browser art passes replaced the temporary small-art blockers for the current package. Keep all clicked UI rows below pending until screenshots/logs prove the live screens.
 
@@ -72,6 +72,11 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] Seedbed live selection and reward alternative verified, including no counter advance from reroll/reopen alone.
 - [ ] Seedbed does not offer the alternative when max HP is not greater than 2.
 - [ ] Seedbed fourth acceptance grants +10 max HP without healing current HP.
+- [ ] Seedbed card text and hover explain Temporary and Plant without crowding the tooltip.
+- [ ] Seedbed sets 2 slots; Seedbed+ sets 3 slots and can immediately plant one eligible draw/discard card.
+- [ ] Later Temporary Status cards, Temporary Curse cards, and Blight Sprouts are planted before entering hand; each planted card adds one Withered Husk.
+- [ ] Rootblight, permanent Curses, Withered Husk, and beneficial temporary pages are not planted.
+- [ ] Planted cards do not trigger play, discard, draw, or Exhaust synergies.
 - [ ] Humus Pact live `Compost Reward` alternative, gold, remove flow, and upgraded-card payoff verified.
 - [ ] Humus Pact third payoff does not duplicate, disappear, or softlock.
 - [ ] Humus Pact does not trigger from ordinary reward-set skip/proceed or room-exit cleanup.
