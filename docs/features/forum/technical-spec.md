@@ -176,6 +176,7 @@ VITE_FORUM_READ_ONLY
 
 - `npm run build` 成功，并生成 `website/forum/`。
 - `npm test` 通过 schema guard。
+- 配好 Supabase 后，`npm run test:live` 能用 anon key 发帖、回帖、读取，并用 service role key 隐藏测试帖。
 - `website/#forum` 按钮能打开 `/forum/`。
 - 未配置 Supabase 时，论坛页面显示清楚的配置提示。
 - 配好 Supabase 后，能发帖、看帖、回复，刷新后数据仍存在。

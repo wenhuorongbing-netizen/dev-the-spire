@@ -87,6 +87,19 @@ Pages 部署后，在浏览器里验证：
 8. 将 `SPIRE_PLUS_FORUM_READ_ONLY=1`，重新运行 Pages，确认发帖和回复被关闭。
 9. 将 `SPIRE_PLUS_FORUM_READ_ONLY=0`，重新运行 Pages，确认发帖和回复恢复。
 
+也可以在本机运行一次 live smoke test。它会用 anon key 发帖和回帖，再用 service role key 把测试帖隐藏：
+
+```powershell
+cd forum
+$env:SPIRE_PLUS_FORUM_LIVE_TEST="1"
+$env:VITE_SUPABASE_URL="https://your-project-ref.supabase.co"
+$env:VITE_SUPABASE_ANON_KEY="your-public-anon-key"
+$env:SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+npm run test:live
+```
+
+不要把 `SUPABASE_SERVICE_ROLE_KEY` 配到 GitHub Pages 或任何前端构建变量里。它只能留在本机或受控 CI 环境，用于测试后的管理清理。
+
 ## 6. 管理和恢复
 
 第一版没有公开管理后台。需要隐藏内容时，用 Supabase SQL 或 table editor：

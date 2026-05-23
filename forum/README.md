@@ -68,3 +68,15 @@ npm test
 ```
 
 当前测试是静态 schema guard，检查 RLS、匿名授权和基础防刷策略是否仍存在。真实发帖/回复需要连接 Supabase 项目后用浏览器手动验证。
+
+配置 Supabase 后，可以运行 live smoke test 验证匿名发帖、回帖和刷新读取：
+
+```powershell
+$env:SPIRE_PLUS_FORUM_LIVE_TEST="1"
+$env:VITE_SUPABASE_URL="https://your-project-ref.supabase.co"
+$env:VITE_SUPABASE_ANON_KEY="your-public-anon-key"
+$env:SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+npm run test:live
+```
+
+`SUPABASE_SERVICE_ROLE_KEY` 只用于测试结束后隐藏 smoke-test 帖子，不要放到前端、GitHub Pages 或任何公开构建变量里。没有 service role key 时，必须额外设置 `SPIRE_PLUS_FORUM_ALLOW_VISIBLE_SMOKE_POST=1`，脚本才会留下可见测试帖。

@@ -275,10 +275,12 @@ Follow-up fixes from rendered QA:
 - Replaced stale public-facing Node/PostgreSQL deployment copy with Supabase setup copy.
 - Added `npm test` to the GitHub Pages forum build workflow.
 - Added `docs/features/forum/go-live-checklist.md` and linked it from the forum spec, forum README, website README, and docs index.
+- Added optional `npm run test:live` for real Supabase post/reply/read verification after repository Variables are configured.
 
 Live checks still required:
 
 - Create a Supabase project.
 - Run `forum/supabase/schema.sql`.
 - Configure `SPIRE_PLUS_SUPABASE_URL` and `SPIRE_PLUS_SUPABASE_ANON_KEY` for GitHub Pages builds.
+- Run `npm run test:live` with a local `SUPABASE_SERVICE_ROLE_KEY` to verify and clean up an actual anonymous post and reply.
 - Verify public anonymous post and reply persistence.
