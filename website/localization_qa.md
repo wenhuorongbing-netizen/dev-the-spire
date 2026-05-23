@@ -155,7 +155,7 @@ Rendered checks:
 
 ## Review 6: Local Redraw Icon QA
 
-Result: pass.
+Result: superseded by Review 7.
 
 Fixes checked during this pass:
 
@@ -168,3 +168,19 @@ Static checks:
 - `node --check website/content-data.js` passed.
 - `node --check website/app.js` passed.
 - Update-page icon existence scan passed with no missing icon files.
+
+## Review 7: Source Relic Icon QA
+
+Result: pass.
+
+Fixes checked during this pass:
+
+- Removed the relic-specific SVG redraw icons generated for the previous website pass.
+- Changed vanilla relic entries to load their local preview icons from `../source code/images/relics/*.png`.
+- Kept public-site behavior from shipping original base-game art by default; GitHub Pages falls back through the existing source-art guard.
+
+Static checks:
+
+- `node --check website/content-data.js` passed.
+- `node --check website/app.js` passed.
+- Source relic icon existence scan passed for all 25 vanilla relic update entries.
