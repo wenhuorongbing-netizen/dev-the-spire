@@ -5,7 +5,26 @@ import type { ForumCategory, ForumPost, ForumReply, Route } from "./types";
 const PAGE_SIZE = 20;
 const CLIENT_ID_KEY = "spire-plus-forum-client-id";
 const URL_PATTERN = /\b(?:https?:\/\/|www\.)\S+/gi;
-const EMBEDDED_MODE = new URLSearchParams(window.location.search).get("embedded") === "1";
+const queryParams = new URLSearchParams(window.location.search);
+const EMBEDDED_MODE = queryParams.get("embedded") === "1";
+
+function redirectStandaloneForumToSite() {
+  const cleanPath = window.location.pathname.replace(/\/+$/, "");
+  if (EMBEDDED_MODE || !cleanPath.endsWith("/forum")) return;
+
+  const current = new URL(window.location.href);
+  const target = new URL("../", current);
+  current.searchParams.forEach((value, key) => {
+    if (key !== "embedded") target.searchParams.set(key, value);
+  });
+
+  const forumRoute = current.hash.replace(/^#/, "");
+  if (forumRoute && forumRoute !== "/") target.searchParams.set("forumRoute", forumRoute);
+  target.hash = "forum";
+  window.location.replace(target.toString());
+}
+
+redirectStandaloneForumToSite();
 
 const CATEGORIES: Array<{ id: ForumCategory; label: string; hint: string }> = [
   { id: "discussion", label: "讨论", hint: "体验、想法、一般问题" },
@@ -96,6 +115,13 @@ function authorInitial(name: string): string {
 }
 
 function postUrl(id: string): string {
+  if (EMBEDDED_MODE) {
+    const url = new URL("../", window.location.href);
+    url.searchParams.set("forumRoute", `/posts/${id}`);
+    url.hash = "forum";
+    return url.toString();
+  }
+
   const url = new URL(window.location.href);
   url.searchParams.delete("embedded");
   url.hash = `/posts/${id}`;

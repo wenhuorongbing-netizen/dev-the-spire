@@ -208,7 +208,11 @@
 
   function forumEmbedHref() {
     const url = new URL(forumHref(), location.href);
+    const forumRoute = new URLSearchParams(location.search).get("forumRoute");
     url.searchParams.set("embedded", "1");
+    if (/^\/(?:new|posts\/[0-9a-f-]{36})$/i.test(forumRoute || "")) {
+      url.hash = forumRoute;
+    }
     return url.href;
   }
 
