@@ -9,12 +9,18 @@ test("Supabase schema keeps anonymous forum tables under RLS", () => {
   assert.match(schema, /create table if not exists public\.forum_replies/i);
   assert.match(schema, /alter table public\.forum_posts enable row level security/i);
   assert.match(schema, /alter table public\.forum_replies enable row level security/i);
+  assert.match(schema, /add column if not exists category text not null default 'discussion'/i);
 });
 
 test("anonymous users cannot update or delete through granted columns", () => {
   assert.match(schema, /revoke all on table public\.forum_posts from anon, authenticated/i);
-  assert.match(schema, /grant insert \(author_name, title, body, client_id\)\s+on public\.forum_posts/i);
+  assert.match(schema, /grant insert \(author_name, title, body, category, client_id\)\s+on public\.forum_posts/i);
   assert.match(schema, /grant insert \(post_id, author_name, body, client_id\)\s+on public\.forum_replies/i);
+});
+
+test("forum posts support a fixed public category set", () => {
+  assert.match(schema, /forum_posts_category_check/i);
+  assert.match(schema, /category in \('discussion', 'bug', 'balance', 'build', 'install'\)/i);
 });
 
 test("schema includes basic spam limits", () => {

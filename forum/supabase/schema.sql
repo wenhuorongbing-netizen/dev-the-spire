@@ -8,6 +8,7 @@ create table if not exists public.forum_posts (
   author_name text not null default '匿名玩家',
   title text not null,
   body text not null,
+  category text not null default 'discussion',
   status text not null default 'visible' check (status in ('visible', 'hidden', 'deleted')),
   client_id uuid not null,
   reply_count integer not null default 0 check (reply_count >= 0),
@@ -16,7 +17,8 @@ create table if not exists public.forum_posts (
   updated_at timestamptz not null default now(),
   check (char_length(trim(author_name)) between 1 and 32),
   check (char_length(trim(title)) between 1 and 120),
-  check (char_length(trim(body)) between 1 and 10000)
+  check (char_length(trim(body)) between 1 and 10000),
+  constraint forum_posts_category_check check (category in ('discussion', 'bug', 'balance', 'build', 'install'))
 );
 
 create table if not exists public.forum_replies (
@@ -32,12 +34,26 @@ create table if not exists public.forum_replies (
   check (char_length(trim(body)) between 1 and 5000)
 );
 
+alter table public.forum_posts
+  add column if not exists category text not null default 'discussion';
+
+alter table public.forum_posts
+  drop constraint if exists forum_posts_category_check;
+
+alter table public.forum_posts
+  add constraint forum_posts_category_check
+  check (category in ('discussion', 'bug', 'balance', 'build', 'install'));
+
 create index if not exists forum_posts_visible_activity_idx
   on public.forum_posts (last_activity_at desc, id desc)
   where status = 'visible';
 
 create index if not exists forum_posts_client_recent_idx
   on public.forum_posts (client_id, created_at desc);
+
+create index if not exists forum_posts_visible_category_activity_idx
+  on public.forum_posts (category, last_activity_at desc, id desc)
+  where status = 'visible';
 
 create index if not exists forum_replies_post_visible_idx
   on public.forum_replies (post_id, created_at asc, id asc)
@@ -99,6 +115,9 @@ begin
   new.author_name := public.forum_normalize_author(new.author_name);
   new.title := trim(new.title);
   new.body := trim(new.body);
+  if new.category is null or new.category not in ('discussion', 'bug', 'balance', 'build', 'install') then
+    new.category := 'discussion';
+  end if;
   new.status := 'visible';
   new.reply_count := 0;
   new.created_at := now();
@@ -159,9 +178,9 @@ alter table public.forum_replies enable row level security;
 revoke all on table public.forum_posts from anon, authenticated;
 revoke all on table public.forum_replies from anon, authenticated;
 
-grant select (id, author_name, title, body, status, reply_count, last_activity_at, created_at)
+grant select (id, author_name, title, body, category, status, reply_count, last_activity_at, created_at)
   on public.forum_posts to anon, authenticated;
-grant insert (author_name, title, body, client_id)
+grant insert (author_name, title, body, category, client_id)
   on public.forum_posts to anon, authenticated;
 
 grant select (id, post_id, author_name, body, status, created_at)
@@ -188,6 +207,7 @@ to anon, authenticated
 with check (
   status = 'visible'
   and client_id is not null
+  and category in ('discussion', 'bug', 'balance', 'build', 'install')
   and char_length(trim(title)) between 1 and 120
   and char_length(trim(body)) between 1 and 10000
   and public.forum_url_count(body) <= 5

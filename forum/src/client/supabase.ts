@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { ForumPost, ForumReply } from "./types";
+import type { ForumCategory, ForumPost, ForumReply } from "./types";
 
 type Database = {
   public: {
@@ -10,6 +10,7 @@ type Database = {
           author_name?: string;
           title: string;
           body: string;
+          category?: ForumCategory;
           client_id: string;
         };
         Update: never;

@@ -1,8 +1,11 @@
+export type ForumCategory = "discussion" | "bug" | "balance" | "build" | "install";
+
 export type ForumPost = {
   id: string;
   author_name: string;
   title: string;
   body: string;
+  category: ForumCategory;
   reply_count: number;
   last_activity_at: string;
   created_at: string;
