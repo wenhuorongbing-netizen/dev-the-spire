@@ -6,7 +6,16 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: "../website/forum",
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: "assets/forum.js",
+        chunkFileNames: "assets/[name].js",
+        assetFileNames: (assetInfo) => {
+          return assetInfo.name?.endsWith(".css") ? "assets/forum.css" : "assets/[name][extname]";
+        }
+      }
+    }
   },
   server: {
     port: 5173
