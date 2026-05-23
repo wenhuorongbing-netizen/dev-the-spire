@@ -18,11 +18,11 @@ This is the active C# code for the single `Spire Plus / EZMicroBalance` mod.
 | `Ascension/Core/` | Gates, initialization, diagnostics, asset paths, and saved fields. |
 | `Ascension/Map/` | Map generation/mutation services and map markers. |
 | `Ascension/Combat/` | Combat trackers, combat modifiers, and combat hooks. |
-| `Ascension/Rewards/` | Reward mutation helpers, Forge Token service, Root deck service, and Boss Seal definitions. |
+| `Ascension/Rewards/` | Reward mutation helpers, Forge Token service, Root deck service, and boss dedicated ability definitions. |
 | `Ascension/Enchantments/` | Ascension-specific card enchantments. |
 | `Ascension/Patches/` | Harmony patches for lobby, map UI, run hooks, and A20 flow. |
-| `Ascension/Cards/` | Rootblight, Boss Seal, and related card models. |
-| `Ascension/Powers/` | Firemark, Banner, and Boss Seal powers. |
+| `Ascension/Cards/` | Rootblight, boss dedicated ability, and related card models. |
+| `Ascension/Powers/` | Firemark, Banner, and boss dedicated ability powers. |
 | `Ascension/Relics/` | Ascension-specific relic models. |
 | `Ascension/Events/` | Ascension-specific event models. |
 | `Preview/` | Crystal Sphere peek and transform-preview helpers. |
