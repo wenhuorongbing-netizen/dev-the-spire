@@ -31,9 +31,9 @@ const vanillaIconPaths = {
   curse: "assets/vanilla-icons/curse-card.svg",
   event: "assets/vanilla-icons/event-card.svg",
   cards: {
-    brightestFlame: "assets/vanilla-icons/cards/brightest_flame.png",
-    folly: "assets/vanilla-icons/cards/folly.png",
-    enthralled: "assets/vanilla-icons/cards/enthralled.png"
+    brightestFlame: "assets/source-art/card_portraits/event/brightest_flame.png",
+    folly: "assets/source-art/card_portraits/curse/folly.png",
+    enthralled: "assets/source-art/card_portraits/curse/enthralled.png"
   }
 };
 
@@ -269,7 +269,7 @@ window.SPIRE_PLUS_DATA = {
   assetPolicy: [
     "\u672c\u7ad9\u53ea\u6253\u5305 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\uff0c\u4e3b\u8981\u6765\u81ea EZMicroBalance/images/\u3002",
     "\u539f\u7248\u6e38\u620f\u975e\u7f8e\u672f\u8d44\u4ea7\u4e0d\u8fdb\u5165\u4ed3\u5e93\u3002\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\u5df2\u7531\u9879\u76ee\u8d1f\u8d23\u4eba\u786e\u8ba4\u53ef\u7528\u4e8e\u672c\u7ad9\u53d1\u5e03\u3002",
-    "\u672c\u7ad9\u4ec5\u968f\u5305\u53d1\u5e03\u5f53\u524d\u66f4\u65b0\u9875\u5b9e\u9645\u5f15\u7528\u7684\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\u3002",
+    "\u672c\u7ad9\u4ec5\u968f\u5305\u53d1\u5e03\u5f53\u524d\u66f4\u65b0\u9875\u5b9e\u9645\u5f15\u7528\u7684\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\uff0c\u7edf\u4e00\u653e\u5728 website/assets/source-art/\u3002",
     "\u82e5\u540e\u7eed\u9700\u8981\u516c\u5f00\u5c55\u793a\u66f4\u591a\u539f\u7248\u5b9e\u673a\u622a\u56fe\u6216\u539f\u56fe\uff0c\u5c06\u5355\u72ec\u8bb0\u5f55\u6765\u6e90\u548c\u4f7f\u7528\u8303\u56f4\u3002"
   ],
   forum: {
@@ -440,7 +440,7 @@ window.SPIRE_PLUS_DATA = {
 
 function sourceRelicIcon(descKey) {
   const fileName = sourceRelicIcons[descKey];
-  return fileName ? `assets/vanilla-icons/relics/${fileName}` : undefined;
+  return fileName ? `assets/source-art/relics/${fileName}` : undefined;
 }
 
 function baseRelic(title, descKey, tags, vanilla, current) {
@@ -785,7 +785,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     assetPolicy: [
       "This site ships only Spire Plus-owned or publishable assets, mainly from EZMicroBalance/images/.",
       "Original non-art game assets are not committed. The project owner has confirmed permission to publish the vanilla relic icons and card portraits used on this site.",
-      "Only the vanilla images referenced by the current update page are shipped.",
+      "Only the vanilla images referenced by the current update page are shipped, under website/assets/source-art/.",
       "If more base-game screenshots or original art are published later, source and usage scope will be documented separately."
     ],
     forum: {

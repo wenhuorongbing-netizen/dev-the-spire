@@ -207,7 +207,7 @@ Static checks:
 
 ## Review 9: Published Vanilla Card Portrait QA
 
-Result: pass.
+Result: superseded by Review 10.
 
 Permission record:
 
@@ -224,3 +224,19 @@ Static checks:
 - `node --check website/content-data.js` passed.
 - `node --check website/app.js` passed.
 - Asset scan found 25 relic PNG files, 3 card portrait PNG files, and no relic/card SVG replacement files.
+
+## Review 10: Source Art Asset Layout QA
+
+Result: pass.
+
+Fixes checked during this pass:
+
+- Moved the approved vanilla art files from `website/assets/vanilla-icons/` into `website/assets/source-art/`.
+- Updated the update page to read relic icons from `assets/source-art/relics/`.
+- Updated Brightest Flame, Enthralled, and Folly to read portraits from `assets/source-art/card_portraits/`.
+
+Static checks:
+
+- `node --check website/content-data.js` passed.
+- `node --check website/app.js` passed.
+- Source-art hash scan confirmed the 25 relic PNGs and 3 card portrait PNGs match their `source code/images/` originals.
