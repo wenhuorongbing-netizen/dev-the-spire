@@ -1,4 +1,4 @@
-﻿# Spire Plus Test-Ready Development Goal
+# Spire Plus Test-Ready Development Goal
 
 Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test build, with source, resources, package, docs, and automated guards aligned for the user's manual test pass.
 
@@ -12,8 +12,10 @@ Current package target remains `publish/SpirePlus-v0.1.0-private-beta.0.zip`. Th
 - Vakuu fight is hidden by default and can be enabled only through explicit fight gates. It has a dedicated source enemy and scene, but victory return, no-black-screen, save-load, failure/death path, and co-op behavior still need live proof.
 - Ancient reward selections should remain visible from the relic bar whenever the design grants a lasting reward.
 - Final browser GPTimage2 small art generated this pass is the current small-art baseline. No `generic_temporary` or `final_required_before_release` art blockers remain. Event backgrounds are active middle-draft resources. Live clicked-UI review remains unresolved.
-- current source defines 26 SavedSpireFields. The earlier 22-field loader smoke is historical evidence only; a fresh live loader rerun is still pending for current-package runtime parity.
+- current source defines 30 SavedSpireFields. The earlier 22-field loader smoke is historical evidence only; a fresh live loader rerun is still pending for current-package runtime parity.
 - Preview tools are now part of the single `Spire Plus / EZMicroBalance` mod. Crystal Sphere peek and transform preview live under `EZMicroBalanceCode/Preview/`; live proof is still pending.
+
+Manual test controls do not prove live behavior by themselves: `SPIREPLUS_FORCE_ANCIENT=URDA|MORVI|LOTHA|VAKUU`, `SPIREPLUS_FORCE_URDA_BLESSING=seedbed`, `SPIREPLUS_FORCE_MORVI_BLESSING=morvi_forbidden_loan`, `SPIREPLUS_FORCE_LOTHA_BLESSING=lotha_death_reprieve`, `SPIREPLUS_DISABLE_URDA=1`, `SPIREPLUS_DISABLE_MORVI=1`, `SPIREPLUS_DISABLE_LOTHA=1`, `SPIREPLUS_DISABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, and `SPIREPLUS_FORCE_VAKUU_FIGHT=1`. Legacy `EZMB_FORCE_*`, `EZMB_DISABLE_*`, and `EZMB_ENABLE_*` aliases still work. Set `EZMB_RELEASE_EVIDENCE_LOG=1` to capture evidence logs. Ancient reward/fight option selection logs include the Ancient, blessing id or option id, selected marker relic type, forced flag, run id, player slot, and network mode.
 
 ## Required Reading
 
@@ -29,7 +31,7 @@ Approach: fix proven logic issues first, then reduce coupling in small source-pr
 
 Active documents have narrow jobs: `docs/issues.md` tracks open blockers, `docs/toreview.md` tracks fixed items awaiting user retest, `docs/review.md` tracks source review and validation history, and this file tracks only the current goal and boundaries.
 
-Next source cleanup candidates: keep Root Sight, Seed Bank, Seedbed, Trial Branch, Rooted Route, Morvi card-state, Lotha combat-state, Vakuu child-combat, Banner, Firemark, and Boss Seal ownership split by feature. Extract one helper group at a time, preserve save-field formats unless a bug requires migration, replace single-file assertions with source-tree assertions before moving partial files, and keep release artifact tests opt-in when they depend on installed package files.
+Next source cleanup candidates: keep Root Sight, Seed Bank, Seedbed, Trial Branch, Rooted Route, Morvi card-state, Lotha combat-state, Vakuu child-combat, Banner, Firemark, and boss dedicated ability ownership split by feature. Extract one helper group at a time, preserve save-field formats unless a bug requires migration, replace single-file assertions with source-tree assertions before moving partial files, and keep release artifact tests opt-in when they depend on installed package files.
 
 Validation rule: code/config changes run build, normal tests, format, and diff check. Resource, localization, manifest, export, or package changes also run publish, package refresh, and opt-in artifact tests. Live claims require live evidence.
 
@@ -50,7 +52,7 @@ These are source-sensitive areas. Touch them only with local source evidence and
 - Morvi Red Ink, Open Book, Blueprint Proof, Overdue Library, and Debt Settlement are source-hardened, but live restore and card-play freeze reports remain pending until user tests confirm.
 - Urda Root Sight now opens map selection from the Root Eyes relic, lets the player choose any future reachable Monster/Unknown/Elite node, and stores a concrete enemy group or event on that node. Normal/elite previews pick from the generated Act room set; Unknown previews use a fork of `runState.Rng.UnknownMapPoint`, exclude Shop/Treasure/Rest/Boss, commit one live Unknown RNG/odds step only when the marked node is entered, respect event-selection hooks, reserve marked future results from earlier non-preview rooms where possible, and accept repeated events only when Core would allow repeats after unique events are exhausted. Map clicks are caught even when normal travel is disabled, selected Unknown nodes show the stored Monster/Elite/Event-style icon, saved markers restore when the map is generated or loaded, and closing the map cancels selection. Root Sight can share a node with Firemarked Elite, Banner, and Deep Branch markers; one shared map hover stack shows every contributed marker text, while the icon lane keeps the original marker and adds a small Root Eyes badge when needed. Root Sight's one-shot entry commits are scoped to the current `RunState` instance and transient state resets when Root Sight is granted. Multiplayer queue mutation remains gated until host-authoritative preview sync is proven. Seed Bank, Seedbed, Trial Branch, and Rooted Route are source-backed. Live hover, map click, Boss entry, and save-load behavior remain pending.
 - Ancient RunHook cleanup is in place: Morvi, Lotha, and Urda RunHooks own run lifecycle, reward, damage, death, and cleanup paths, while CombatHooks own combat-only card, turn, cost, draw, and Power paths. Keep this ownership split guarded during later refactors.
-- Inline Simplified Chinese power hover text for Banner, Firemark, and Boss Seal source `PowerLoc` strings is readable and should stay aligned with the v3.2 player terms.
+- Inline Simplified Chinese power hover text for Banner, Firemark, and boss dedicated ability source `PowerLoc` strings is readable and should stay aligned with the current player terms.
 - A11-A20 Ascension slices are development-test features. Do not claim release readiness for A11-A20 without runtime evidence.
 
 ## Player Text Rules
@@ -71,8 +73,8 @@ Known wording commitments:
 - A15 says Act 2 and Act 3 Boss combats bury two Blight Sprouts.
 - A16 says Banner Rooms have extra rewards.
 - A17 says the special route is more dangerous and more rewarding.
-- A19 says each Boss gains a Royal Seal / 王印.
-- A20 says the final Act 3 Boss upgrades its Royal Seal into a King Brand / 王烙印.
+- A19 says each Boss gains its own dedicated ability / 首领专属能力.
+- A20 says only the second Act 3 Boss enters Branded Form / 烙印形态 and strengthens that Boss's dedicated ability.
 - Holy Daze, Struggle Bait, and Residual Sample need concrete effect text, not design commentary.
 
 ## Manual Evidence Still Pending
@@ -81,7 +83,7 @@ Keep these rows open until the user supplies runtime evidence:
 - clicked Ancient UI screenshots, relic-bar visibility, and hover readability for Urda, Morvi, Lotha, Vakuu normal, and Vakuu fight;
 - live gameplay for Urda, Morvi, Lotha, gated Vakuu fight, Vakuu victory/no-black-screen, failure/death paths, disable-mod gameplay, and co-op disposition;
 - save/load for Ancient player state, deck mirrors, Root Sight, Seed Bank, Morvi state, Lotha Death Reprieve, Vakuu child combat, and Rootblight;
-- A11 natural route traversal, Ascension map hover behavior, Rootblight visual behavior, and fresh live loader smoke for the current 26-field package.
+- A11 natural route traversal, Ascension map hover behavior, Rootblight visual behavior, and fresh live loader smoke for the current 30-field package.
 
 ## Validation Commands
 

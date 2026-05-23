@@ -1,4 +1,4 @@
-﻿# Beta Compatibility
+# Beta Compatibility
 
 ## Tested Baseline
 

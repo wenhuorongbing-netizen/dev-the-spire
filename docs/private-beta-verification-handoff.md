@@ -10,13 +10,13 @@ Current display-name note: the player-facing name is now `Spire Plus`, while man
 
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
-Latest package note, 2026-05-22: the package hashes below identify the current manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**`, `docs/review.md`, and feature work logs; this handoff keeps only current tester-facing facts.
+Latest package note, 2026-05-23: the package hashes below identify the current manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**`, `docs/review.md`, and feature work logs; this handoff keeps only current tester-facing facts.
 
 Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest no-launch verification: `dotnet build EZMicroBalance.sln`, `dotnet test EZMicroBalance.sln --no-build` with 235 passed / 18 skipped, `dotnet format`, `git diff --check`, `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, opt-in artifact tests with 253 passed / 0 skipped, and installed game-root artifact hash check all passed. Artifact tests confirmed installed/staging/versioned/zip hash parity.
+- Latest no-launch verification: `dotnet build EZMicroBalance.sln`, `dotnet test EZMicroBalance.sln --no-build` with 258 passed / 18 skipped, `dotnet format`, `git diff --check`, website syntax checks, and Vakuu/co-op evidence-helper no-launch template smokes passed after the package no-refresh guard update. Latest package refresh evidence also includes `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, `scripts/package-spire-plus.ps1 -NoRefreshFromInstalled`, opt-in artifact tests with 276 passed / 0 skipped, and installed game-root artifact hash parity.
 - The latest normal Steam smoke under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` is historical for the earlier 22-field package. Current source defines 26 SavedSpireFields and needs a fresh loader smoke before any current-package runtime-parity claim.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
@@ -46,12 +46,12 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 - Package: `publish\SpirePlus-v0.1.0-private-beta.0.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `EFDF43EBAD1A8A6AD9263E971B5CC0366E823739BA2660A69BDD747DF3425686`
+- Zip SHA256: `11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `BC79A2634F87314046C8C86120E2FD94030FDC650F5B432864E789AA6B888A4A`
+- DLL SHA256: `C9030FCDC459E35256B00CE71925854AF44CFE97667DEB07F751CEA540C86522`
 - Manifest SHA256: `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`
-- PCK SHA256: `6F5080524B57EC07F750D6DCFB6D6B274C5F5780EA60DBABB0E6B254D26D01C5`
-- README_INSTALL SHA256: `C735AA228BBB5CD002BF618334A04483C0013328C82ECC33551C65B0A1165599`
+- PCK SHA256: `68F6DCCC5564AE402B3FFB1DD9A65B92555B58CF72282E8EC64FF273EEC4E0F8`
+- README_INSTALL SHA256: `2441D012F12D0FB81BCAF7E1C99B1E60F18187937B9911D7D4FD54ACC47BCC6A`
 
 ## Known Automated Evidence
 
@@ -76,7 +76,7 @@ Clicked Ancient UI handoff, 2026-05-15:
 - `dotnet publish EZMicroBalance.sln --no-restore`: passed on 2026-05-14 after the source red-team hardening pass; refreshed the installed/package DLL, manifest, PCK, package README, and `SpirePlus` private-beta zip.
 - `git diff --check`: exit 0 after the current-package smoke/log/resource documentation update, with CRLF normalization warnings only.
 - Previous package hash parity: `.tools\runtime-evidence\current-package-smoke-20260514-015901\artifact-hash-parity.json` verifies installed, staging, versioned, and zip-entry DLL/PCK/manifest/README hashes for the earlier package. The refreshed package above has automated artifact parity; the latest live loader smoke is historical for the earlier 22-field package, and gameplay proof remains pending.
-- Historical installed-PCK Ancient resource verification: `.tools\runtime-evidence\current-package-smoke-20260514-015901\godot-ancient-resource-load-summary.json` reports exit code 0, `HasOkMarker: true`, 0 error lines, and 0 warning lines while loading Urda/Morvi/Lotha scenes and Ancient textures from the installed PCK. Static coverage in `ancient-resource-localization-coverage.json` found 0 missing assets and 0 missing EN/zhs localization keys. This is resource-load evidence, not fresh 26-field loader parity.
+- Historical installed-PCK Ancient resource verification: `.tools\runtime-evidence\current-package-smoke-20260514-015901\godot-ancient-resource-load-summary.json` reports exit code 0, `HasOkMarker: true`, 0 error lines, and 0 warning lines while loading Urda/Morvi/Lotha scenes and Ancient textures from the installed PCK. Static coverage in `ancient-resource-localization-coverage.json` found 0 missing assets and 0 missing EN/zhs localization keys. This is resource-load evidence, not fresh 30-field loader parity.
 - Historical normal Steam-client helper startup/log evidence under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` used `scripts/spire-plus-live-session.ps1 -Mode Prepare -MoveOtherMods -MoveCurrentRuns -Launch`, audited `godot.log`, then restored with `-StopGameOnRestore -PreserveNewCurrentRunsOnRestore`.
   Positive evidence: BaseLib `177 patches successfully, 0 failed`, config registered for `EZMicroBalance`, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 22 SavedSpireFields`, and `Time to main menu: 13,539ms`. Scans found 0 `ERROR`, BaseLib patch-failure, or Spire Plus / `EZMicroBalance` exception hits. Current source defines 26 SavedSpireFields, so this remains historical until a fresh live loader smoke is run.
 - Previous controlled `--force-steam off` smoke evidence under `.tools\runtime-evidence\current-package-smoke-20260513-044306` temporarily enabled BaseLib and Spire Plus / EZMicroBalance in the default profile, loaded exactly 2 mods (`Loaded 2 mods (22 total)`), initialized BaseLib and Spire Plus, reported `Found 16 SavedSpireFields`, reached main menu in `13,884ms`, found 0 Spire Plus / EZMicroBalance error signatures, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or removed-API signatures, and restored `settings.save` plus `settings.save.backup` byte-for-byte. The audit is not fully clean because unrelated disabled local-mod manifest/name noise from RouteSuggest, sts2-heybox-support, and DamageMeter remains in this developer mods folder.
@@ -86,7 +86,7 @@ Clicked Ancient UI handoff, 2026-05-15:
   Positive evidence: config registered, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 16 SavedSpireFields`, `Time to main menu: 13,849ms`, and clean `godot-log-audit.json`. This is loader/helper evidence, not live gameplay evidence.
 - BaseLib-only plug-off normal Steam startup/log evidence under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` used the helper with `-DisableSpirePlus` to temporarily isolate `EZMicroBalance` out of the mods folder, launched through Steam, and restored settings, the current-run save, and 25 moved entries afterward. Positive evidence: `Loaded 1 mods (1 total)`, `Finished mod initialization for 'BaseLib' (BaseLib)`, no Spire Plus / `EZMicroBalance` initialization markers in `disabled-startup-summary.json`, and a clean `godot-log-audit.json`. This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.
 - RC1 normal Steam-client isolated startup log started Slay the Spire 2 through `D:\Steam\steam.exe -applaunch 2868840`, temporarily isolated non-BaseLib/EZMB local mod entries, loaded to main menu with `Loaded 2 mods (2 total)`, BaseLib `v3.1.2`, BaseLib `177 patches successfully, 0 failed`, EZ Micro Balance initialization, `Found 13 SavedSpireFields`, 0 startup `ERROR` lines, and 0 release-blocking signatures. Snapshot: `.tools\runtime-evidence\rc1-normal-steam-clean-godot-20260508-090122.log`. The moved mod entries and `settings.save` were restored afterward.
-- Current Mod Settings UI list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` launched through Steam with non-BaseLib/EZMB mods temporarily moved aside, enabled only BaseLib and `EZMicroBalance`, reached main menu, captured `02-mod-config-list.png` with `Spire Plus` visible in the Mods list, copied `godot.log`, restored settings byte-for-byte, and restored moved mods. That UI-capture log has `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 16 SavedSpireFields`, 0 `ERROR` lines, and 0 release-blocking signatures; its field count is historical and superseded by the current 26-field source state.
+- Current Mod Settings UI list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` launched through Steam with non-BaseLib/EZMB mods temporarily moved aside, enabled only BaseLib and `EZMicroBalance`, reached main menu, captured `02-mod-config-list.png` with `Spire Plus` visible in the Mods list, copied `godot.log`, restored settings byte-for-byte, and restored moved mods. That UI-capture log has `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 16 SavedSpireFields`, 0 `ERROR` lines, and 0 release-blocking signatures; its field count is historical and superseded by the current 30-field source state.
 - Current A14 Rootblight generated-art hover probe under `.tools\runtime-evidence\current-rootblight-art-hover-20260513-114103` is negative evidence: it reached the default-on Urda Ancient event before combat and exposed missing vanilla-derived Urda asset paths.
   Source/package now use BaseLib `CustomAncientModel` custom Urda icon/background-scene paths and include the Urda background scene resource. Headless installed-PCK resource-load evidence under `.tools\runtime-evidence\urda-pck-resource-load-20260513-123345` resolved the Urda scene/image, emitted `URDA_RESOURCE_LOAD_OK`, and had 0 `ERROR` / `WARNING` lines. Post-fix live Urda and Rootblight visual/gameplay verification remains pending.
 - RC1 normal Steam-client Mod Settings verification passed after adding the no-op BaseLib config page under the historical EZ Micro Balance display name. Evidence screenshots: `.tools\runtime-evidence\rc1-modsettings-attempt-20260508-092717-modconfig.png` for BaseLib, `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-modconfig-list.png` for the historical localized page entry, and `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-ezmb-page.png` for that settings page. Log snapshot `.tools\runtime-evidence\rc1-normal-steam-modsettings-page-godot-20260508-095137.log` has `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
@@ -103,11 +103,11 @@ Clicked Ancient UI handoff, 2026-05-15:
 ## Required Manual Results
 
 Record results in `docs/features/ancients-rework-v4/manual-verification-matrix.md` and update `docs/release-checklist.md`.
-Historical RC1 notes now live at `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`. Current live/manual evidence should be summarized in `docs/release-evidence-status.md` and the evidence manifest generated by `scripts/verify-spire-plus-release-evidence.ps1 -WriteTemplate`.
+Historical RC1 notes now live at `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`. Current live/manual evidence should be summarized in `docs/release-evidence-status.md` and the evidence manifest generated by `scripts/collect-release-evidence.ps1 -NoLaunch` or `scripts/verify-spire-plus-release-evidence.ps1 -WriteTemplate`.
 
 Current manual-proof summary:
 
-- Historical normal Steam-client startup/log verification passed for an earlier Spire Plus display-name package and remains loader evidence only until rerun for the current 26-field package.
+- Historical normal Steam-client startup/log verification passed for an earlier Spire Plus display-name package and remains loader evidence only until rerun for the current 30-field package.
 - Current Mod Settings list screenshot shows `Spire Plus`; page-level BaseLib/old-display-name evidence remains historical.
 - Normal Steam-client A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, saved-map boss-reachability graph proof, Act 2/3 A11 map-surface checks, and targeted A14 Rootblight hover/starter-notice spot checks passed.
 - Live Ancient reward gameplay, Urda gameplay, Rootblight combat-end behavior/notices, natural A11 click-by-click traversal, disable-gameplay, broader save/load, and multiplayer checks remain pending.
@@ -122,7 +122,7 @@ Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplay
 7. Execute the Ancient reward matrix, including Velvet Choker soft-limit counting, Distinguished Cape v4.3 max-HP math/pay gate with same-pool replacement and locked fallback for unaffordable Vakuu Cape rolls, Prismatic Gem all-off-color reroll/exclusion checks plus reward-screen hint fallback log checks, zhs numeric formatting, and the save/load rows.
 8. Execute disable-mod gameplay verification.
 9. Inspect `%APPDATA%\SlayTheSpire2\logs\godot.log` after the Steam-client pass.
-10. Fill `.tools\runtime-evidence\release-ready-manual\release-evidence-manifest.json` and run `scripts\verify-spire-plus-release-evidence.ps1` before treating the package as release-proven. Use `-WriteTemplate` to create the manifest.
+10. Fill `.tools\runtime-evidence\release-ready-manual\release-evidence-manifest.json` and run `scripts\verify-spire-plus-release-evidence.ps1 -WritePassMarker` before treating the package as release-proven. Use `scripts\collect-release-evidence.ps1 -NoLaunch` to create the evidence folder plus manifest, or `-WriteTemplate` to create only the manifest.
     Keep the manifest, each row `EvidenceDir`, required file, screenshot path, and `command.txt` inside the evidence root. Unknown or blank rows appear in `Warnings` and do not satisfy any release row. The verifier hashes `publish\SpirePlus-v0.1.0-private-beta.0.zip` by default; pass `-PackagePath` only for a deliberate alternate package. Use `-AllowDeferred` only after an explicit owner-approved release-note deferral.
 
 ## Ascension Verification
@@ -133,9 +133,9 @@ Run `docs/features/ascension-11-20/manual-test-checklist.md` with default-on sel
 
 - Use the original Ascension arrows to select A11-A20.
 - `EZMB_ASCENSION_DIAGNOSTICS=1` remains available for read-only diagnostics.
-- A20 host multiplayer selection/start should log: multiplayer A20 selection is enabled for development testing, Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled.
+- A20 host multiplayer selection/start should log: multiplayer A20 selection is enabled for development testing, A20 Branded Form / second-boss enhanced dedicated ability gameplay is disabled or downgraded in co-op pending live verification, and A11-A19 inherited systems may still apply if their gates are enabled.
 
-A20 multiplayer selection is not full A20 co-op support. Dual King Brands / second-boss Brand gameplay remains disabled or downgraded in co-op pending live verification. Co-op gameplay remains unverified. Execute `docs/features/ascension-11-20/multiplayer-test-runbook.md` for the two-PC matrix, ownership/desync checks, save/load rows, and result template, or keep release notes clear that the candidate has source-patched host selection but no live co-op verification.
+A20 multiplayer selection is not full A20 co-op support. A20 Branded Form / second-boss enhanced dedicated ability gameplay remains disabled or downgraded in co-op pending live verification. Co-op gameplay remains unverified. Execute `docs/features/ascension-11-20/multiplayer-test-runbook.md` for the two-PC matrix, ownership/desync checks, save/load rows, and result template, or keep release notes clear that the candidate has source-patched host selection but no live co-op verification.
 
 ## Log Audit Helper
 

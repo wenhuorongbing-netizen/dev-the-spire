@@ -1,4 +1,4 @@
-﻿# Test Plan
+# Test Plan
 
 ## Automated Checks
 
@@ -120,7 +120,7 @@ v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.
 - Historical package smoke/log/resource evidence under `.tools/runtime-evidence/current-package-smoke-20260514-015901` covers the earlier 22-field package, installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a clean normal Steam helper startup with BaseLib plus Spire Plus / `EZMicroBalance`.
-- current source defines 26 SavedSpireFields after the 2026-05-17 static fixes, so fresh live loader parity remains pending for the refreshed package. Older 16-field startup/log passes are historical.
+- current source defines 30 SavedSpireFields after the 2026-05-17 static fixes, so fresh live loader parity remains pending for the refreshed package. Older 16-field startup/log passes are historical.
 - BaseLib-only plug-off evidence under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` loaded `1 mods (1 total)` and did not initialize Spire Plus / `EZMicroBalance`. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
 - Current Mod Settings UI list evidence, historical Mod Settings page evidence, A11 map/save-load spot checks, saved-map boss-reachability proof, Act 2/3 A11 map-surface observation, and targeted A14 Rootblight hover/starter-notice checks have evidence.
 - The A14 Rootblight art-hover probe found pre-fix Urda missing asset paths before combat. Urda now uses custom Ancient icon/background-scene paths and the current package resolves Ancient scene/art resources in headless installed-PCK verification, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.
@@ -133,7 +133,7 @@ Ascension 11-20 is now an active development track.
 
 - A11-A20 selection is now default-on in this private-beta multiplayer test candidate. Source tests keep the patch on standard lobby paths and reject global progress getter/save validation patches.
 - Gate controls: `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, legacy-compatible `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`, and forced internal checks through `EZMB_ASCENSION_DEBUG_LEVEL`.
-- Host multiplayer A20 selection/start logs a warning that Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification. A20 multiplayer selection is not full A20 co-op support.
+- Host multiplayer A20 selection/start logs a warning that A20 Branded Form / second-boss enhanced dedicated ability gameplay is disabled or downgraded in co-op pending live verification. A20 multiplayer selection is not full A20 co-op support.
 - Current normal Steam-client startup/log and historical Mod Settings UI have separate evidence; startup/log checks are not the same as live co-op verification.
 - A11 Act 1 map/save-load spot check passed with `columns=8; rows=17`; saved-map graph proof shows a boss path from post-load coord `(3,1)` to boss `(3,17)`.
 - Act 2/3 map-surface observation passed with Act 2 `columns=8; rows=16` and Act 3 `columns=8; rows=16`. Targeted A14 Rootblight English/ZHS hover/starter-notice checks passed.

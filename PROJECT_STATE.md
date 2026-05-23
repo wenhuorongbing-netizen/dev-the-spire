@@ -1,4 +1,4 @@
-﻿# PROJECT_STATE
+# PROJECT_STATE
 
 ## Active target
 
@@ -23,14 +23,15 @@
 
 - `dotnet build`, `dotnet publish`, default `dotnet test`, and package refresh pass locally after the `v0.106.0` / BaseLib `v3.1.4` API update.
 - Release artifact checks pass when `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is enabled.
-- The latest script-packaged artifacts were hash-parity synced (`DLL`, `manifest`, `PCK`, `zip`) on 2026-05-22 after the `v0.106.0` source refresh, BaseLib `v3.1.4` alignment, side-turn hook API update, and `CardPileCmd.Add(..., clonedBy:)` update.
+- Latest no-game validation on 2026-05-23 after the package no-refresh guard update: build passed, normal tests passed with 258 passed / 18 skipped, format passed, website syntax checks passed, and the Vakuu/co-op evidence helpers passed no-launch template smokes. `git diff --check` passed with CRLF/LF warnings only.
+- The latest script-packaged artifacts were hash-parity synced (`DLL`, `manifest`, `PCK`, `zip`) on 2026-05-23 after the package refresh. Current package hashes are recorded in `docs/issues.md`, `docs/toreview.md`, and `docs/review.md`.
 - Current package scope includes the Spire Plus display-name refresh, A11-A20 hardening, multiplayer mismatch diagnostics, Ancient reward rebalance v4.3, Urda/Morvi/Lotha source-ready v2.2 slices, hidden-by-default Vakuu fight source slice, preview tools, Ancient player-facing text polish, promoted generated/source-local art, and the `SpirePlus` archive name.
 - Current manual-test package is not a release-readiness claim: live gameplay, clicked Ancient UI, save-load, route-click, death/failure-path, disable-gameplay, and co-op verification remain pending.
 - Current cleanup/refactor audit is `docs/worktree-cleanup-audit.md`; top-level legacy project metadata was moved into `docs/archive/legacy-planning/legacy-project-files/`, targeted `.tools/` clutter was pruned, and the ignored website draft was deleted after preserving the `.tools/archive/local-website-preview-20260516/` snapshot. The current `publish/` package output, local game `source code/`, and remaining `.tools/` evidence/tool folders are intentionally retained.
 
 ### Runtime
 
-- Latest normal Steam-client startup/log evidence is historical for the pre-review Spire Plus package under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414`: exactly BaseLib plus Spire Plus / `EZMicroBalance` loaded, config registered, `Found 22 SavedSpireFields`, main menu reached, 0 release-blocking log signatures found, and helper restore completed. Current source defines 26 SavedSpireFields and the 2026-05-18 package was not live-loader-smoked after the static fixes and RootDeck cleanup passes, so fresh live loader parity remains pending.
+- Latest normal Steam-client startup/log evidence is historical for the pre-review Spire Plus package under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414`: exactly BaseLib plus Spire Plus / `EZMicroBalance` loaded, config registered, `Found 22 SavedSpireFields`, main menu reached, 0 release-blocking log signatures found, and helper restore completed. Current source defines 30 SavedSpireFields, and fresh live loader parity remains pending for the 2026-05-23 package before any current-package runtime claim.
 - Headless installed-PCK Ancient resource verification passed under `.tools/runtime-evidence/current-package-smoke-20260514-015901`: Urda, Morvi, and Lotha background scenes instantiate, Ancient textures load from the installed PCK, option marker paths exist/export, and referenced EN/zhs localization keys exist. This is resource-load evidence, not clicked live Ancient UI evidence.
 - BaseLib-only plug-off startup/log verification passed under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020`; this proves loader isolation only. Disable-mod gameplay in an actual run remains pending.
 - Refreshed Mod Settings UI list evidence for the current display-name package is under `.tools/runtime-evidence/current-spire-plus-modsettings-20260513-111342/02-mod-config-list.png`; historical page-level Mod Settings UI evidence remains under the old `EZ Micro Balance` display name.

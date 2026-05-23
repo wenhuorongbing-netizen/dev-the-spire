@@ -1,4 +1,4 @@
-﻿# Spire Plus Changelog
+# Spire Plus Changelog
 
 Append only short tester/player-facing entries here when behavior or release validation changes.
 
@@ -77,14 +77,14 @@ Append only short tester/player-facing entries here when behavior or release val
 
 ## 2026-05-08
 
-- Multiplayer A20: fixed a black-screen run-start crash caused by hard references to optional Early Access Boss Seal types missing from the current installed game DLL.
+- Multiplayer A20: fixed a black-screen run-start crash caused by hard references to optional Early Access dedicated ability types missing from the current installed game DLL.
 - Compatibility: Debt patch paths avoid direct assumptions about game members that changed across local Early Access builds. Pumpkin Candle and Door Wedge EZMB overrides are removed from the active v0.106.0 package; Pumpkin Candle is vanilla and Doormaker/Door Wedge is replaced by Aeonglass Time Sand Reflow.
 - A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
 - Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.
 - Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
-- A20 multiplayer selection is not full A20 co-op support. Dual King Brands / second-boss Brand gameplay remains disabled or downgraded in co-op pending live verification.
-- Normal Steam-client Mod Settings has historical RC1 UI evidence for BaseLib and the old EZ Micro Balance display name. Later historical startup/log evidence confirms a Spire Plus display-name package reached main menu, but the current 26-field package still needs a fresh live loader rerun. Startup/log checks are not the same as live co-op or gameplay verification.
+- A20 multiplayer selection is not full A20 co-op support. A20 Branded Form / second-boss enhanced dedicated ability gameplay remains disabled or downgraded in co-op pending live verification.
+- Normal Steam-client Mod Settings has historical RC1 UI evidence for BaseLib and the old EZ Micro Balance display name. Later historical startup/log evidence confirms a Spire Plus display-name package reached main menu, but the current 30-field package still needs a fresh live loader rerun. Startup/log checks are not the same as live co-op or gameplay verification.
 
 ## 2026-05-07
 
@@ -99,7 +99,7 @@ Append only short tester/player-facing entries here when behavior or release val
 - A14/A15/A18: Rootblight and Blight Sprout were migrated to the v2.0 card-state design and still need live verification.
 - A16: Banner Rooms are visible enhanced normal combats with public rule text.
 - A17: Deep Branches are optional Act 2/3 side branches in single-player only until route-voting behavior is proven.
-- A19/A20: Boss Royal Seal / King Brand map hover text remains available; A20 Dual King Brands gameplay remains single-player gated.
-- Multiplayer A20: host selection is enabled only for development testing when the public Ascension gate is on; logs now warn that Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification.
+- A19/A20: boss dedicated ability / Branded Form map hover text remains available; A20 Branded Form gameplay remains single-player gated.
+- Multiplayer A20: host selection is enabled only for development testing when the public Ascension gate is on; logs now warn that A20 Branded Form / second-boss enhanced dedicated ability gameplay is disabled or downgraded in co-op pending live verification.
 - Tests: release artifact/package/runtime-smoke checks are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`; normal developer tests no longer require ignored `publish/` package artifacts.
-- Status: historical 2026-05-14 package helper startup/log/resource verification under `.tools/runtime-evidence/current-package-smoke-20260514-015901` passed with BaseLib and Spire Plus / `EZMicroBalance` loaded, `Found 22 SavedSpireFields`, clean audit/manual scans, and installed-PCK Ancient resource coverage. current source defines 26 SavedSpireFields after later static fixes, so fresh live loader parity remains pending for the refreshed package; the refreshed Mod Settings UI list screenshot shows `Spire Plus`. Live feature verification, save-load, and live co-op verification remain pending until actually executed.
+- Status: historical 2026-05-14 package helper startup/log/resource verification under `.tools/runtime-evidence/current-package-smoke-20260514-015901` passed with BaseLib and Spire Plus / `EZMicroBalance` loaded, `Found 22 SavedSpireFields`, clean audit/manual scans, and installed-PCK Ancient resource coverage. current source defines 30 SavedSpireFields after later static fixes, so fresh live loader parity remains pending for the refreshed package; the refreshed Mod Settings UI list screenshot shows `Spire Plus`. Live feature verification, save-load, and live co-op verification remain pending until actually executed.

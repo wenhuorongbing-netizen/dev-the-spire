@@ -2,7 +2,7 @@
 
 Date: 2026-05-23
 
-Scope: current no-game source/resource review notes for taking `Spire Plus` to a user-test-ready build. Full historical review details are archived at `docs/archive/feature-audits/review-pre-slim-20260518.md`.
+Scope: compact no-game source/resource review notes for taking `Spire Plus` to a user-test-ready build. Full historical review details are archived at `docs/archive/feature-audits/review-pre-slim-20260518.md`; the pre-compaction 2026-05-23 detail log is archived at `docs/archive/feature-audits/review-2026-05-23-pre-compact.md`.
 
 ## Current Conclusion
 
@@ -17,43 +17,49 @@ Live-only blockers remain:
 
 ## Latest Fixed Findings
 
-- 2026-05-23 A19/A20 Boss Seal v4.1 pass: replaced the older repeated Block/Strength/Artifact-style seal designs with boss-specific dedicated abilities and explicit multiplayer rules. Current source now uses Martyr Oath, percentage Slippery Ink Return, Plating Wake with Core multiplayer scaling, Soul Tide Block caps, Waterfall explosion Vulnerable, Kaiser Claw Calibration, Marginal Note/Deep Thought side costs, Escape Fatigue/Vigor, Aeonglass Time Sand Reflow into extra Wither plus intent-visible Eye Laser echo, Queen Royal Decree/Majesty, and Test Subject Experimental Record samples. EN/ZHS hovers and no-game guards were updated; live boss-by-boss proof remains pending.
-- 2026-05-23 Firemark overflow pass: A12 Firemarked Elites now keep one Firemark Host with the full mark while overflow affects at most one secondary non-summon enemy. Might overflow grants temporary Strength to one attacker; Giant core break splashes one target; Forge Armor protects one target and now starts on player turns; Constant Heal uses the v3.3.1 interrupt line 12/24/48 and splashes one damaged ally only when the host successfully heals. Live multi-enemy elite proof remains pending.
-- 2026-05-23 Ink Return / Plating / Martyr source-alignment pass: Core `SlipperyPower`, `PlatingPower`, and `ArtifactPower` scale in multiplayer. v4.1 restores Slippery by percentage after final displayed removal, lets Plating use Core multiplayer scaling, and keeps Artifact fixed. Core `TheKinBoss` still proves exactly two followers, so Martyr Oath remains capped at two real deaths.
-- 2026-05-23 Pael's Horn text pass: EN/ZHS relic descriptions and current manual verification docs now say Pael's Horn adds 1 `Relax` / `放松` and 1 `Relax+` / `放松+` without the redundant "upgraded Relax+" wording. A guard now locks the Simplified Chinese wording. Live hover proof remains pending.
-- 2026-05-23 Rootblight starter repair: A14 starter Rootblight no longer treats `CurrentMapCoord`, `ActFloor`, or map history as proof that Root Begins already applied. The run hook now retries before room entry, so first-room combat setup can copy Rootblight into combat piles, and the saved applied marker is written only after a real Rootblight card exists or the add succeeds. This should also repair affected live runs on the next room/act hook; live confirmation remains pending.
-- 2026-05-22 Royal Seal text and Ancient reroll pass: Boss Seal / King Brand map and combat hover text now states concrete numbers for each seal. Urda, Morvi, and Lotha initial Ancient reward screens now include a one-use dice-style reroll option that refreshes the visible choices, records the spend in saved player state, and keeps run-history choice data aligned after reroll. Live clicked-UI proof remains pending.
-- 2026-05-22 Temporary/Seedbed pass: added custom `Temporary` and `Plant` hover tips, updated EN/ZHS text, and rebuilt Urda Seedbed as a combat slot state. Seedbed now plants Blight Sprout and generated temporary Status/Curse cards that enter hand, skips Rootblight, permanent Curses, Withered Husk, and beneficial temporary pages, adds Withered Husk per planted card, persists slot count for save hydration, clears it at combat boundaries, and suppresses `AfterCardDrawn` for planted cards. Live tooltip and combat timing proof remain pending.
-- 2026-05-22 v3.3 design pass closeout: implemented the current source-solvable v3.3 issues for Vakuu, Lotha, Urda, and localization. Final subagent review found no P0/P1. Follow-up findings were fixed: Vakuu damage-lock tracking now uses `AfterDamageGiven` so lethal player hits still count, Seedbed text now says "up to" to match the optional selector, Cash Out has a hand-full immediate-choice fallback, Mirror Rebuttal no longer says "draw" when it moves the card, and the visible Vakuu text now says Contract choices appear on turns 1/3/5. Live proof is still required.
-- 2026-05-22 Aeonglass Hourglass text alignment: superseded by the 2026-05-23 v4.1 Time Sand Reflow pass. Aeonglass now converts uncleared Time Sand into extra Wither on the next Increasing Intensity.
-- 2026-05-22 Root Eyes marker composition pass: replaced competing NNormalMapPoint hover patches with one shared map hover composer. Root Eyes, Firemarked Elite, Banner, and Deep Branch each contribute their own hover entry; marked or selectable Root Eyes nodes can coexist with existing quest markers, and a small Root Eyes badge appears when the main quest icon is already occupied. Multiplayer preview queue mutation remains gated and needs live two-client proof.
-- 2026-05-22 localization QA pass: added missing Simplified Chinese `card_keywords.json`, exported it in `export_presets.cfg`, corrected active style-guide mojibake terms, tightened Misprint Press wording in EN/ZHS, aligned Ascension rich-text highlights, and added a bilingual localization parity guard for file/key coverage, dynamic variables, empty values, and balanced `[blue]`/`[gold]` tags.
-- 2026-05-22 strict preview/relic/seal pass: subagents reviewed Root Eyes/Crystal Sphere/transform preview multiplayer risk, new reward-card/relic hook interactions, and Firemark/Banner/Boss Seal visibility against local Core source. Fixed Root Eyes marked-node conflicts, hover-side mutations, and multiplayer queue mutation; fixed Prismatic Gem listener tracking and documented its Core hook order; added combat-start Boss Seal / King Brand marker powers for previously hidden seal effects; routed Shieldwall and Last Stand to dedicated banner icons. Existing Boss Seal indicator art was sufficient, so no new generated buff image was required.
-- 2026-05-22 issues sprint: fixed source-solvable player findings for Husk exhaust timing, Root Eyes encounter/event queue preview, current-act Firemark/Banner hovers, A20 boss sprouts, Constant-Heal dynamic threshold text, Waterfall explosion handling, the older Aeonglass Hourglass design, Queen Royal Decree, and Forge Armor tuning/tooltip behavior. The Aeonglass entry is now superseded by the 2026-05-23 Time Sand Reflow pass. The Constant-Heal hover now follows the later v3.3.1 12/24/48 threshold.
-- 2026-05-22 package closeout: `package-spire-plus.ps1` now syncs `README_INSTALL.txt` to the installed game-root mod folder, and `check-installed-ezmb-package.ps1` verifies the installed README hash alongside DLL, manifest, and PCK.
-- 2026-05-20 source/API audit pass: Firemark powers now use Core-visible counter display semantics, Forge Armor tracks generated Molten Armor separately from unrelated Block, A20 co-op gating logs before the single-player shape return, and Vakuu fight custom state writes culture-invariant save values.
-- 2026-05-20 issue.md pass: expanded opt-in `ReleaseEvidenceLog` markers for Preview tools, Seed Bank extraction/cancel/failure, Root Eyes selection cleanup, Rootblight combat start/end, A20 map markers, and co-op gates; added a source guard for those marker surfaces. This is evidence collection support, not live proof.
-- 2026-05-20 governance pass: added CI-safe repository hygiene workflow, issue/PR templates, ADR template, committed `.editorconfig`, generated `docs/patch-inventory.md`, added `docs/release-evidence-status.md`, and guarded these with `EngineeringGovernanceGuardTests`.
-- 2026-05-20 governance pass: added self-hosted `.github/workflows/full-local-validation.yml` and `scripts/ci-full-validation.ps1` for full no-game validation with explicit `STS2_PATH` and `GODOT_PATH`; the script passed locally, and first GitHub self-hosted workflow run evidence remains pending.
-- 2026-05-20 release-planning pass: converted `docs/goal.md` into no-game baseline, release scope, website claim audit, traceability matrix, source-research, architecture-boundary, save-state, and commit-boundary docs. The pass keeps live/manual rows open.
-- 2026-05-20 governance pass: updated `scripts/verify-spire-plus-release-evidence.ps1` and `ReleaseSafetyExpandedGuardTests` so the verifier default package hash matches the current `EFDF43EBAD1A8A6AD9263E971B5CC0366E823739BA2660A69BDD747DF3425686` package.
-- 2026-05-20 subagent review pass: current smoke-log parity now computes the expected `SavedSpireField` count from source and rejects historical 22-field logs as current package evidence.
-- 2026-05-20 subagent review pass: tightened current smoke-log parity to count only static `SavedSpireField` declarations, so helper method generic references do not inflate the expected runtime loader count.
-- 2026-05-20 subagent review pass: active-source coverage no longer lets `ActiveSourceManifestGuardTests.cs` satisfy itself; every active source file must map to an independent guard root.
-- 2026-05-20 subagent review pass: patch-inventory freshness checks now ignore the generated date, fail if the inventory is missing, and CI whitespace checks inspect committed/PR changes rather than an empty working tree.
-- 2026-05-20 subagent review pass: Forge Armor shatter now uses the host's pre-Molten-Armor Block baseline instead of subtracting shared `BlockedDamage`.
-- 2026-05-20 subagent review pass: fixed low-risk lifetime/scope issues in the transform-preview RNG context, Urda Root Eyes transient selection state, Root Eyes failure logging, and Vakuu pre-finished parent restore heal skips.
-- 2026-05-20 subagent review pass: Root Eyes now refunds previews that become unreachable after the player chooses another map branch, including marker restore and hover cleanup paths.
-- 2026-05-20 goal guard pass: added completion-claim and save-state contract guard tests plus `docs/reviews/red-team-goal-implementation-pass-1.md`; this is not a release-ready claim and live loader, clicked UI, save-load, Vakuu, co-op, and preview proof remain pending.
-- Seedbed now catches eligible cards that enter the hand through Urda's hand-change hook, not only through the RootBud combat hook.
-- Lotha Death Reprieve save hydration now restores pending-start state from the saved phase instead of inferring it from the current power list.
-- Urda Molting act-entry cleanup clears its active flag after removing generated husks.
-- Firemark Giant's Molten Core window no longer counts the threshold-crossing hit as window damage.
-- Banner and Forge Token target selection no longer consumes live run RNG for source-testable deterministic cases.
-- Multi-enemy-only banner map previews now use generic banner text/icon until combat knows the enemy count.
-- Preview tools are integrated under Spire Plus; Crystal Sphere preview restores/hides its UI after the minigame finishes, and transform preview remains preview-only.
-- Morvi, Lotha, and Vakuu combat powers now use dedicated 64px/256px power art paths instead of option, card, or fallback art.
-- `export_presets.cfg` was restored to UTF-8 without BOM after Godot rejected the export preset during publish.
+- 2026-05-23 package no-refresh guard: `scripts/package-spire-plus.ps1 -NoRefreshFromInstalled` now refuses to reuse package staging unless `EZMicroBalance.dll`, `EZMicroBalance.json`, and `EZMicroBalance.pck` are present, and the staged manifest matches the repository manifest id, display name, and version. This prevents a stale or partially cleaned staging folder from being re-zipped as the current manual-test package. The package hash stayed unchanged after re-zipping from validated staging. No game was opened.
+- 2026-05-23 installed package ZIP parity guard: `scripts/check-installed-ezmb-package.ps1` now verifies the copied game-root `SpirePlus` ZIP hash against `docs/private-beta-verification-handoff.md` in addition to installed DLL, manifest, PCK, and README hashes. Non-default testers can pass `-GameRootZipPath` or `-SkipGameRootZipCheck`. No game was opened.
+- 2026-05-23 Royal Decree restore hardening: before assigning a new visible Decree to a player's current Bound cards, the source now hydrates Royal Decree marked/played state from that player's combat cards. This prevents mid-turn save/load from losing "already played a Bound card" state and assigning a second Decree in the same round. No game was opened.
+- 2026-05-23 A19/A20 v4.1 final hardening: attack-changing powers now refresh enemy intent after apply/remove so Martyr Oath, Claw Calibration, Firemark Heat, Pressing Line, and Aeonglass Branded Form damage changes are visible before damage resolves. Aeonglass pending Wither and laser-use state are recoverable from powers, and Royal Decree mid-turn marked/played state is recoverable from card saved fields. No game was opened.
+- 2026-05-23 manual-test handoff manifest cleanup: release evidence row generation now filters empty required-file entries before writing `release-evidence-manifest.json`, and verifier template generation uses the same merge path. `ReleaseEvidenceGateTests` now rejects null `RequiredFiles` entries. The current no-launch handoff was regenerated with the new package hash and contains 0 null/empty required-file entries. No game was opened.
+- 2026-05-23 A19/A20 evidence-template name sync: the live boss-ability checklist verifier and generated template now use the source/current localization names `Soul Fysh` and `Waterfall Giant` instead of older source-mismatched labels. The co-op evidence test fixture now supplies synthetic host/client logs for pass-contract tests, matching the real verifier requirements for a co-op pass. No game was opened.
+- 2026-05-23 A19/A20 Unweakenable lifecycle hardening: Waterfall Giant's explosion-turn Artifact is now source-tracked by the amount this mod added and cleared at enemy turn end, so the protection is limited to the explosion window instead of reading like a permanent Artifact grant. Player-facing EN/zhs text now says the Artifact is for this turn / until the explosion resolves. No game was opened.
+- 2026-05-23 A19/A20 multi-hit damage wording sync: Martyr Oath and Claw Calibration use the same powered-attack additive hook as Core damage powers, so the player-facing text now says the bonus applies to each hit of the next attack. The manual checklist now requires multi-hit intent to show the boosted per-hit value. No game was opened.
+- 2026-05-23 Ancient reward relic evidence hardening: `collect-release-evidence.ps1` now generates an `ancient-reward-relics-checklist-template.md` for `ancient-reward-visible-relics`, and the verifier requires a filled `ancient-reward-relics-checklist.md`. The checklist covers Urda's ten rewards, Morvi's eight, Lotha's eight, Vakuu's fight option, and Vakuu's post-victory non-Vakuu reward choices. Empty/template rows and placeholder live results are rejected. No game was opened.
+- 2026-05-23 player-text evidence hardening: `player-text-tooltip-readability` now requires a filled `player-text-qa-checklist.md`. The checklist separates Ascension, Firemark/Banner, boss abilities, Ancient choices, relic hovers, cards/statuses, map hover stacks, preview tools, Vakuu contracts, and EN/ZHS parity, so one language or one surface cannot stand in for the whole text pass. No game was opened.
+- 2026-05-23 Art routing evidence hardening: `art-resource-routing-live-preview` now requires a filled `art-resource-routing-checklist.md`. The checklist separates title/home preview, each Ancient clicked background, map/run-history icons, option and lasting relic icons, card art, power icons, and placeholder/official-art checks, so large art and small UI art cannot be treated as one generic screenshot. No game was opened.
+- 2026-05-23 Rootblight live-evidence hardening: `rootblight-visual-behavior` now requires a filled `rootblight-behavior-checklist.md`. The checklist separates start/repair eligibility, normal/elite/Boss Blight Sprout appearance, combat-end growth, cap/split behavior, save-load, and hover/art readability, so "no Blight Sprout appeared" cannot be hidden in a broad result note. No game was opened.
+- 2026-05-23 Vakuu live-evidence hardening: `vakuu-victory-no-black-screen`, `vakuu-failure-death-path`, and `vakuu-active-fight-save-load` now require filled victory, failure/death, and save-load checklists. The rows separate fight start, contract/lock/debt state, victory return, non-Vakuu rewards, black-screen checks, failure/death exit, active reload, prefinished reload, duplicate heal/reward, and clean logs. No game was opened.
+- 2026-05-23 preview-tools evidence hardening: `preview-tools-live-proof` now requires a filled `preview-tools-checklist.md`. The checklist separates Crystal Sphere button/mask-only/no-claim behavior, transform preview visibility/result match/no state mutation, Prismatic Gem reward hooks, save/reopen stability, multiplayer gate or two-client proof, and clean logs. No game was opened.
+- 2026-05-23 co-op evidence hardening: `coop-disposition` now requires a filled `coop-disposition-checklist.md`. The checklist separates host/client clean logs, A11-A20 selection, Ancient reward state, Root Eyes, Rootblight, save-load or reconnect, preview-tools fairness, and the final release-note disposition, so lobby selection alone cannot be treated as multiplayer support. No game was opened.
+- 2026-05-23 A19/A20 checklist verifier hardening: `verify-spire-plus-release-evidence.ps1` now rejects `a19-a20-dedicated-boss-abilities` pass attempts when `boss-ability-checklist.md` is still the unfilled template, omits any required Boss row, or leaves Live result / Evidence file(s) cells blank or placeholder-like. Focused verifier contract tests cover blank-template rejection and filled-checklist acceptance. No game was opened.
+- 2026-05-23 A19/A20 live-evidence row split: `collect-release-evidence.ps1` and `verify-spire-plus-release-evidence.ps1` now require a separate `a19-a20-dedicated-boss-abilities` gameplay row. The generated handoff includes a `boss-ability-checklist-template.md` covering every v4.1 Boss ability and Branded Form check, so A19/A20 proof cannot be folded into broad A11 route traversal notes. The row remains pending until live logs/notes are filled. No game was opened.
+- 2026-05-23 A19/A20 v4.1 handoff verification: rechecked the current source implementation against the v4.1 Boss Dedicated Ability / Branded Form design. The source keeps A19 as per-Boss dedicated abilities, limits Branded Form to the second Act 3 Boss path, keeps attack-changing effects on intent-aware powers or the Aeonglass intent patch, and preserves capped multiplayer handling for Slippery, Plating, Artifact, Vigor, Majesty, Time Sand, and per-player hand triggers. `dotnet build`, default tests, format, diff check, publish, package refresh, and opt-in artifact tests passed. No game was opened.
+- 2026-05-23 manual-test evidence handoff: `scripts/prepare-current-manual-test-handoff.ps1` now rebuilds the full no-launch template set under `.tools/runtime-evidence/manual-test-handoff-20260523-current/` for release rows, Ancient UI, Vakuu fight, preview tools, and co-op. It also confirms pending release rows fail closed in the verifier. Ancient UI has focused folders for Urda, Morvi, Lotha, Vakuu normal, and Vakuu force-fight. The generated rows remain `pending` and are ready for live screenshots/logs/manual notes. No game was opened.
+- 2026-05-23 Soul Tide cap readability: Soul Tide boss dedicated ability hover text now spells out solo / 2-player / 3-4-player Block caps instead of compact slash tables. The same EN/ZHS text is synced to the website localization, and guard tests reject the old `8/12/16` and `12/16/20` strings. No game was opened.
+- 2026-05-23 Transform preview instance-state hardening: transform prediction queues are now bound to the active `NTransformPreview` instance with a `ConditionalWeakTable` instead of one global pending queue. This reduces reentry/multi-preview cross-talk risk while keeping the preview RNG fork-only. Focused preview guard tests passed. No game was opened.
+- 2026-05-23 Deep Thought hover clarity: the Deep Thought power hover now states that Branded Form caps Sloth and Waste Away side costs to one resolution per Knowledge curse, so the player-facing hover matches the v4.1 source behavior. The package was refreshed after this DLL text change. No game was opened.
+- 2026-05-23 Deep Thought side-cost alignment: `DeepThoughtPower` now lets A19 Marginal Note apply Sloth and Waste Away side costs per Deep Thought stack, while Branded Form caps those two side costs to one resolution per Knowledge curse as specified by v4.1. The focused A19/A20 guard locks the source shape. No game was opened.
+- 2026-05-23 Seedbed manual-test checklist sync: the v2.2 manual checklist now includes the current Temporary/Plant Seedbed behavior: 2/3 slots, Seedbed+ immediate draw/discard planting, future Temporary Status/Curse and Blight Sprout planting, Rootblight/Withered Husk exclusions, and no play/discard/draw/Exhaust synergy triggers for planted cards. The Ancient polish guard locks those manual rows. No game was opened.
+- 2026-05-23 validation-count doc sync: current-facing status docs now report the latest no-game normal test total as 258 passed / 18 skipped after the package no-refresh guard update. Stale lower totals are guarded out of current docs. No game was opened.
+- 2026-05-23 Seedbed issue-doc sync: `docs/issues/v3.3-design-review.md` now matches the current Temporary/Plant Seedbed source behavior instead of the superseded draw/discard Rootblight-bury draft. The Ancient polish guard prevents the old Seedbed issue text from returning. No game was opened.
+- 2026-05-23 Ancient doc naming/scope cleanup: the active v2.2 source design now keeps readable Morvi/Lotha Chinese names such as `逾期书库`, `蓝图校样`, `纸屑风暴`, `反证之镜`, and `终审封庭`; the Urda issue page now describes Seed Bank's current selected-card storage path as the deliberate test-slice behavior rather than an unclosed unchosen-card promise. A player-facing polish guard prevents those active docs from regressing. No game was opened.
+- 2026-05-23 Marginal Note design-source cleanup: the boss dedicated ability catalog now describes the v4.1 Deep Thought side-cost design as intentionally independent of the exact unchosen Knowledge curse identity, avoiding a brittle patch of `KnowledgeDemon.ChooseCurse` local state. A guard prevents the old "unchosen identity unhooked" wording from returning. No game was opened.
+- 2026-05-23 After Rain current-doc conflict cleanup: `ancient-expansion-v2.2/source-design.md`, the Urda manual checklist, and the Urda work log now describe the current v3.3 Rain Breath and Act 2 trigger-count payoff instead of the older death-prevention/elite-gold draft. The player-facing polish guard now covers these current docs. No game was opened.
+- 2026-05-23 issues snapshot sync: `docs/issues.md` now matches the current worktree batch report at 151 dirty entries and 0 unclassified paths, and the compactness guard locks that current governance number. Focused A19/A20/documentation/governance tests and the normal no-game test suite passed after rebuild. No game was opened.
+- 2026-05-23 Urda support-doc conflict cleanup: the older `ancient-expansion-urda/source-design.md` now marks itself as support evidence and no longer describes superseded v1 Seedbed/After the Rain behavior as current. A guard test locks that active goal/issues/v2.2/v3.3 docs override older Urda behavior when they conflict. No game was opened.
+- 2026-05-23 Martyr Oath turn-boundary hardening: the Branded Form same-turn double-follower bonus now resets on every side-turn boundary, so poison, thorns, or delayed damage cannot carry one Kin Follower death into the next team turn and grant Artifact incorrectly. Focused A19/A20 guard tests passed after rebuild. No game was opened.
+- 2026-05-23 Holy Daze helper cleanup: repeated Ceremonial Beast lookup for Holy Daze was extracted into `FindCeremonialBeast`, preserving behavior while reducing the local edit surface for the Ceremonial Beast dedicated-ability window. Package hashes were refreshed after rebuild/package. No game was opened.
+- 2026-05-23 Aeonglass Time Sand helper cleanup: repeated live-enemy lookup for the Aeonglass boss was extracted into `FindAeonglass`, preserving behavior while narrowing the future edit surface for Time Sand Reflow / Eye Lasers changes. Package hashes were refreshed after rebuild/package. No game was opened.
+- 2026-05-23 A19/A20 dedicated-ability route cleanup: A19 player-facing hover/default localization now routes through `BOSS_DEDICATED_ABILITY` instead of the old compatibility key, while old keys remain aliases. A20's current config/feature gate now uses `EZMB_ASCENSION_ENABLE_BRANDED_FORM` and keeps `EZMB_ASCENSION_ENABLE_DUAL_KING_BRANDS` as a documented compatibility gate. No game was opened.
+- 2026-05-23 A19/A20 v4.1 intent/selection follow-up: Royal Decree now refreshes the visible marked Bound card from the full current hand whenever Bound cards enter hand. Time Sand Reflow now arms/removes the Branded Form Eye Lasers extra-hit preview before the player acts, so damage intent reflects the decision-window risk. Soul Tide caps now count active hook players rather than inactive run-state entries. No game was opened.
+- 2026-05-23 Rootblight add-marker hardening pass: `AddRootblightI` writes the Root Begins applied marker only after the new Rootblight card is actually added, or after an existing Rootblight proves the starter already exists. No game was opened.
+- 2026-05-23 release evidence hardening pass: evidence helpers and verifier rows now use exact row IDs, per-row folders, pass markers, current package hashes, preview-tool rows, fresh loader rows, and no-launch templates without closing manual rows. No game was opened.
+- 2026-05-23 website and package terminology sync: website, package README, hover keys, and guards now use boss dedicated ability / Branded Form wording instead of stale A19/A20 wording. No game was opened.
+- 2026-05-23 A19/A20 v4.1 source-lock pass: guard coverage now locks boss-specific dedicated abilities, attack-intent visibility, and multiplayer scaling rules for Slippery, Plating, Artifact, Soul Tide, Deep Thought, Escape Fatigue, Majesty, and Time Sand. No live boss proof was claimed.
+- 2026-05-23 Firemark overflow pass: A12 Firemarked Elites now keep one full Firemark Host while overflow affects at most one secondary non-summon enemy. Live multi-enemy elite proof remains pending.
+- 2026-05-23 Rootblight starter repair: A14 starter Rootblight no longer treats map/floor history as proof that Root Begins already applied; the run hook can retry until a real Rootblight card exists. Live confirmation remains pending.
+- 2026-05-22 Temporary/Seedbed pass: added `Temporary` and `Plant` hover tips and rebuilt Urda Seedbed as combat slot state that plants eligible temporary negative cards while skipping Rootblight, permanent Curses, Withered Husk, and beneficial temporary pages. Live tooltip and combat timing proof remain pending.
 
 ## Package Under Test
 
@@ -61,45 +67,26 @@ Live-only blockers remain:
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `EFDF43EBAD1A8A6AD9263E971B5CC0366E823739BA2660A69BDD747DF3425686` |
-| DLL | `BC79A2634F87314046C8C86120E2FD94030FDC650F5B432864E789AA6B888A4A` |
-| PCK | `6F5080524B57EC07F750D6DCFB6D6B274C5F5780EA60DBABB0E6B254D26D01C5` |
+| ZIP | `11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120` |
+| DLL | `C9030FCDC459E35256B00CE71925854AF44CFE97667DEB07F751CEA540C86522` |
+| PCK | `68F6DCCC5564AE402B3FFB1DD9A65B92555B58CF72282E8EC64FF273EEC4E0F8` |
 | Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
-| README_INSTALL | `C735AA228BBB5CD002BF618334A04483C0013328C82ECC33551C65B0A1165599` |
+| README_INSTALL | `2441D012F12D0FB81BCAF7E1C99B1E60F18187937B9911D7D4FD54ACC47BCC6A` |
 
 ## Latest Validation
 
 No game was opened.
 
-```powershell
-dotnet build EZMicroBalance.sln
-dotnet test EZMicroBalance.sln --no-build
-dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-git diff --check
-dotnet publish EZMicroBalance.sln
-.\scripts\package-spire-plus.ps1
-$env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'; dotnet test EZMicroBalance.sln --no-build
-.\scripts\check-installed-ezmb-package.ps1
-```
-
 Results:
 
-- Spire Plus build: 0 warnings/errors.
-- Spire Plus normal tests: 235 passed / 18 skipped.
-- Format check: passed.
+- `dotnet build EZMicroBalance.sln`: passed, 0 warnings/errors.
+- `dotnet test EZMicroBalance.sln --no-build`: passed, 258 passed / 18 skipped.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
 - `git diff --check`: passed with existing CRLF/LF warnings only.
-- Spire Plus publish/package: passed.
-- Artifact tests: 253 passed / 0 skipped.
-- Installed/staging/versioned/zip artifact parity: passed.
-- Installed game-root artifact hash check: passed.
-- New `scripts/ci-full-validation.ps1` lane: passed locally with explicit `STS2_PATH` and `GODOT_PATH`.
-
-## Manual Retest Queue
-
-Use `docs/toreview.md` as the current tester queue. Do not close those rows from source review alone. Close only after the matching live manual proof exists.
-
-## Review Rules
-
-- Keep source moves behavior-preserving unless the slice is explicitly a bug fix.
-- Keep active docs compact and archive historical logs under `docs/archive/**`.
-- Do not claim live gameplay, save-load, death/failure, co-op, or release readiness without direct game evidence.
+- `dotnet publish EZMicroBalance.sln`: passed.
+- `scripts/package-spire-plus.ps1`: passed and copied the ZIP to the game root.
+- `scripts/package-spire-plus.ps1 -NoRefreshFromInstalled`: passed and copied the ZIP to the game root without changing the package hash.
+- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 276 passed / 0 skipped.
+- `scripts/check-installed-ezmb-package.ps1`: passed.
+- `scripts/report-worktree-batches.ps1 -FailOnUnclassified -Format Json`: passed with 0 unclassified paths.
+- Strict UTF-8 scan over active docs/tests/scripts/code: passed after repairing the affected manual checklist/docs/test-source encodings.

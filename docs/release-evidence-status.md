@@ -1,4 +1,4 @@
-﻿# Release Evidence Status
+# Release Evidence Status
 
 Current target: `Spire Plus` manual-test build for user validation. This page is a compact dashboard for evidence state; it does not replace `docs/release-checklist.md`.
 
@@ -10,37 +10,56 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `124AF7C77B33CE5EAC5A7369519D90AD66EC4CFCDC887DD1E352CF4F24E7968C` |
-| DLL | `8D026922BD4348029948B0B25FD12D98E57833F7115051BF085AD86DB3C8A3E2` |
-| PCK | `208CFFDC66B735FF2E98C862E418A236E9041A0AE1AB7877B594BE0F7634899C` |
+| ZIP | `11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120` |
+| DLL | `C9030FCDC459E35256B00CE71925854AF44CFE97667DEB07F751CEA540C86522` |
+| PCK | `68F6DCCC5564AE402B3FFB1DD9A65B92555B58CF72282E8EC64FF273EEC4E0F8` |
 | Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
-| README_INSTALL | `C735AA228BBB5CD002BF618334A04483C0013328C82ECC33551C65B0A1165599` |
+| README_INSTALL | `2441D012F12D0FB81BCAF7E1C99B1E60F18187937B9911D7D4FD54ACC47BCC6A` |
 
-## Evidence Rows
+## Automation Summary
+
+This row is not a live verifier row. It records the latest no-game package automation status only.
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
 | Current package automation | Passed | Codex | Build, tests, format, publish, package, artifact tests | Latest hashes are in `docs/issues.md`; rerun after package changes. |
-| Fresh current-package loader smoke | Pending | User/Codex with game launch approval | Current 26-field loader log and clean `godot.log` audit | Historical loader evidence is for older field count. |
-| Clicked Ancient UI | Pending | User | Urda, Morvi, Lotha, Vakuu normal, Vakuu fight screenshots and logs | Must prove event art, option art, dialogue, marker relic visibility, and hover readability. |
-| Ancient reward gameplay | Pending | User | Manual runs for Urda, Morvi, Lotha, and vanilla rebalance rewards | Source guards are green; gameplay proof remains open. |
-| Vakuu fight victory | Pending | User | Victory returns to parent event without black screen | Fight remains hidden by default. |
-| Vakuu fight failure/death | Pending | User | Failure/death path logs and result note | Must not corrupt room/reward/combat state. |
-| Save/load | Pending | User | Urda, Morvi, Lotha, Vakuu, Root Sight, Seed Bank, Rootblight restore rows | Deck mirrors are source mitigation, not live proof. |
-| A11 natural route traversal | Pending | User | Click-by-click map traversal, width/row proof, logs | Source graph proof exists; natural UI route proof remains open. |
-| Rootblight visuals and combat-end behavior | Pending | User | In-game art, hover, combat-end notice timing, Blight Sprout behavior | Generated art is packaged. |
-| Disable-mod gameplay | Pending | User | Actual run with Spire Plus disabled and BaseLib enabled | Existing evidence covers startup only. |
-| Co-op disposition | Pending | User | Two-client runbook logs or explicit unsupported release note | A20 co-op remains downgraded/unverified. |
+
+## Verifier Row IDs
+
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep every row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`.
+
+| Row ID | Kind | Status | Owner | Evidence Needed |
+| --- | --- | --- | --- | --- |
+| fresh-current-package-loader-smoke | loader | Pending | User/Codex with game launch approval | Current package command, environment, hashes, `enabled-mods.txt`, `godot.log`, and clean `godot-log-audit.json`. |
+| ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
+| ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
+| ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
+| ancient-ui-vakuu-normal | clicked-ui | Pending | User | Vakuu normal reward-screen screenshot, foreground preflight, route note, log, and log audit. |
+| ancient-ui-vakuu-fight | clicked-ui | Pending | User | Vakuu fight option screenshot, foreground preflight, route note, log, and log audit. |
+| ancient-reward-visible-relics | gameplay | Pending | User | Urda, Morvi, Lotha, and Vakuu reward choices appear as visible option relics; selected lasting rewards appear in the relic bar with readable hover text; `ancient-reward-relics-checklist.md` has every reward row filled. |
+| player-text-tooltip-readability | gameplay | Pending | User | Player-facing card, relic, power, map-hover, event, and tooltip text fits and reads clearly in English and Simplified Chinese; `player-text-qa-checklist.md` has every row filled. |
+| art-resource-routing-live-preview | clicked-ui | Pending | User | Title/home, Ancient screens, large art, thumbnails, option relic art, card art, and power art route to the intended assets; `art-resource-routing-checklist.md` has every surface row filled. |
+| vakuu-victory-no-black-screen | gameplay | Pending | User | Gated Vakuu fight victory returns to the parent event or map without black screen or soft lock; `vakuu-victory-checklist.md` has every scenario row filled. |
+| vakuu-failure-death-path | gameplay | Pending | User | Vakuu failure and death paths log cleanly and do not corrupt room, reward, or combat state; `vakuu-failure-death-checklist.md` has every scenario row filled. |
+| vakuu-active-fight-save-load | save-load | Pending | User | Save/load during active and post-fight Vakuu child-combat flows restores safely or has an owner-approved deferral; `vakuu-save-load-checklist.md` has every scenario row filled. |
+| ancient-state-save-load | save-load | Pending | User | Urda, Morvi, Lotha, Root Sight, Seed Bank, Rootblight, and related deck mirrors restore correctly. |
+| rootblight-visual-behavior | gameplay | Pending | User | Rootblight and Blight Sprout visuals, hover, combat-end notice timing, combat behavior, cap/split behavior, and save-load persistence work in game; `rootblight-behavior-checklist.md` has every scenario row filled. |
+| a11-natural-route-traversal | gameplay | Pending | User | A11 natural map traversal, route clicks, width/row layout, and logs behave correctly. |
+| a19-a20-dedicated-boss-abilities | gameplay | Pending | User | Every A19/A20 v4.1 Boss ability is tested on its matching Boss, attack-changing effects show final intent, Branded Form applies only to the second Act 3 Boss, and `boss-ability-checklist.md` has every Boss row filled with live result and evidence files. |
+| disable-mod-gameplay | gameplay | Pending | User | A run with Spire Plus disabled and BaseLib enabled behaves as expected beyond startup. |
+| preview-tools-live-proof | preview-tools | Pending | User | Crystal Sphere, transform preview, Prismatic Gem preview, save/reopen, and multiplayer gate/proof match live behavior; `preview-tools-checklist.md` has every scenario row filled. |
+| coop-disposition | coop | Pending | User | Two-client runbook evidence or explicit unsupported/unverified release-note deferral; `coop-disposition-checklist.md` has every scenario row filled. |
 
 ## Verification Command
 
 When manual evidence folders are filled, run:
 
 ```powershell
-.\scripts\verify-spire-plus-release-evidence.ps1
+.\scripts\collect-release-evidence.ps1 -NoLaunch
+.\scripts\verify-spire-plus-release-evidence.ps1 -WritePassMarker
 ```
 
-Use `-AllowDeferred` only when the project owner explicitly accepts a release-note deferral for a row.
+Use `collect-release-evidence.ps1` to create the verifier-readable manifest and one pending evidence subfolder per required row. Use `-AllowDeferred` only when the project owner explicitly accepts a release-note deferral for a row. `-WritePassMarker` writes `release-evidence-verifier-pass.json` only after all rows pass or are accepted deferrals.
 
 ## Runtime Evidence Logs
 
