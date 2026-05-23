@@ -259,6 +259,17 @@ public sealed class LothaPolishGuardTests
             "PowerCmd.Decrement(verdict)",
             "PowerCmd.Remove<LothaVerdictPower>(player.Creature)",
             "CreatureCmd.Heal(player.Creature, DeferredVerdictEarlyEndHeal");
+        var deferredExtraPlayBlock = SliceBetween(
+            runHook,
+            "selectedBlessing == LothaBlessingIds.DeferredVerdict",
+            "selectedBlessing == LothaBlessingIds.SingleSentence");
+        AssertSourceContains(
+            runHook,
+            "private static bool IsDeferredVerdictConsumerCard(CardModel card) =>",
+            "private static bool IsDeferredVerdictExtraPlayCard(CardModel card) =>",
+            "IsEligibleCard(card)");
+        Assert.Contains("IsDeferredVerdictExtraPlayCard(card)", deferredExtraPlayBlock, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsDeferredVerdictConsumerCard(card)", deferredExtraPlayBlock, StringComparison.Ordinal);
         AssertSourceContains(
             powers,
             "internal sealed class LothaVerdictPower",

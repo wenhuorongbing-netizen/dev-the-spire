@@ -12,6 +12,7 @@ internal static partial class UrdaBlessingService
 
     private static bool TryAddSeedbedAlternative(
         Player player,
+        CardReward cardReward,
         List<CardRewardAlternative> alternatives)
     {
         var progress = GetProgress(player);
@@ -24,13 +25,19 @@ internal static partial class UrdaBlessingService
 
         alternatives.Add(new CardRewardAlternative(
             "EZMB_URDA_SEEDBED",
-            () => AcceptSeedbed(player),
+            () => AcceptSeedbed(player, cardReward),
             PostAlternateCardRewardAction.EndSelectionAndCompleteReward));
         return true;
     }
 
-    private static async Task AcceptSeedbed(Player player)
+    private static async Task AcceptSeedbed(Player player, CardReward cardReward)
     {
+        if (!CardRewardContexts.TryGetValue(cardReward, out var context) ||
+            !context.IsNormalActOneCombatCardReward)
+        {
+            return;
+        }
+
         var progress = GetProgress(player);
         if (progress.SeedbedTransformed ||
             progress.SeedbedAccepted >= MaxSeedbedChecks ||
@@ -38,6 +45,14 @@ internal static partial class UrdaBlessingService
         {
             return;
         }
+
+        if (context.SeedbedHandled)
+        {
+            MainFile.Logger.Info("[EZMicroBalance] Urda Seedbed duplicate reward alternative click ignored.");
+            return;
+        }
+
+        context.SeedbedHandled = true;
 
         var seedbed = player.RunState.CreateCard<UrdaSeedbed>(player);
         if (progress.SeedbedAccepted == 0 && seedbed.IsUpgradable)

@@ -1,5 +1,7 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+
 internal static partial class MorviBlessingService
 {
     private const int MisprintExtraPlayCount = 1;
@@ -40,6 +42,7 @@ internal static partial class MorviBlessingService
         var combatState = CombatStates.GetOrCreateValue(player);
         if (TryConsumeAutoPlayModifierBlock(card, combatState))
         {
+            LogMisprintExtraPlayAttempt(player, card, allowed: false, reason: "autoplay", extraPlayCount: 0);
             return playCount;
         }
 
@@ -57,6 +60,7 @@ internal static partial class MorviBlessingService
             combatState.MisprintDrawAfterCards.Add(card);
         }
 
+        LogMisprintExtraPlayAttempt(player, card, allowed: true, reason: "misprint_press", extraPlayCount: MisprintExtraPlayCount);
         MainFile.Logger.Info($"[EZMicroBalance] Morvi Misprint Press added one play to {card.Id.Entry}.");
         return playCount + MisprintExtraPlayCount;
     }
@@ -85,4 +89,26 @@ internal static partial class MorviBlessingService
         combatState.AutoPlayCardPendingModifier = null;
         return true;
     }
+
+    private static void LogMisprintExtraPlayAttempt(
+        Player player,
+        CardModel card,
+        bool allowed,
+        string reason,
+        int extraPlayCount) =>
+        ReleaseEvidenceLog.Log(
+            "AncientExtraPlay",
+            "morvi_extra_play_attempt",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["ancient"] = "Morvi",
+                ["blessing"] = MorviBlessingIds.MisprintPress,
+                ["card"] = card.Id.Entry,
+                ["cardType"] = card.Type,
+                ["isClone"] = card.IsClone,
+                ["allowed"] = allowed,
+                ["reason"] = reason,
+                ["extraPlayCount"] = extraPlayCount
+            });
 }

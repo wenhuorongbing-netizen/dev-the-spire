@@ -1,4 +1,4 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -1026,8 +1026,8 @@ public sealed class AncientBehaviorGuardTests
             "- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [ ] Fresh 26-field loader smoke confirms Spire Plus / `EZMicroBalance` loads from the current package.",
-            "- [ ] Fresh 26-field loader smoke confirms the game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded",
+            "- [ ] Fresh 30-field loader smoke confirms Spire Plus / `EZMicroBalance` loads from the current package.",
+            "- [ ] Fresh 30-field loader smoke confirms the game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded",
             "- [ ] `godot.log` reviewed after fresh current-package normal Steam-client isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",

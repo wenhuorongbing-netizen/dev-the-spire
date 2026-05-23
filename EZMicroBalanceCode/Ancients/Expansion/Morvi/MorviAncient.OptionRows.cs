@@ -91,15 +91,24 @@ internal sealed partial class EzmbMorvi
         {
             if (!await MorviBlessingService.TrySetSelectedBlessing(Owner, blessingId))
             {
-                MainFile.Logger.Warn($"[EZMicroBalance] Morvi blessing selection failed before completion: {blessingId}.");
+                AncientSelectionEvidenceLog.LogBlessingSelectionFailed(
+                    Owner,
+                    "Morvi",
+                    blessingId,
+                    "selection_rejected",
+                    !string.IsNullOrWhiteSpace(MorviFeatureGate.ForcedBlessing));
                 SetEventState(InitialDescription, GenerateInitialOptions());
                 return;
             }
 
             await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(Owner, blessingId);
+            AncientSelectionEvidenceLog.LogBlessingSelected(
+                Owner,
+                "Morvi",
+                blessingId,
+                typeof(T).Name,
+                !string.IsNullOrWhiteSpace(MorviFeatureGate.ForcedBlessing));
         }
-
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi blessing selected: {blessingId}.");
         Done();
     }
 }

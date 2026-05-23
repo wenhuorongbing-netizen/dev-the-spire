@@ -72,6 +72,11 @@ internal static partial class LothaBlessingService
         {
             if (combatState.DeathReprieveActive || combatState.DeathReprievePendingStart)
             {
+                ReleaseEvidenceLog.Log(
+                    "LothaDeathReprieve",
+                    "duplicate_prevented",
+                    player,
+                    DeathReprieveDiagnostics(player, combatState, progress, "duplicate lethal damage during reprieve"));
                 await CreatureCmd.SetCurrentHp(creature, 1m);
                 MainFile.Logger.Info("[EZMicroBalance] Lotha Death Reprieve kept the player at 1 HP during the reprieve turn.");
             }
@@ -84,25 +89,32 @@ internal static partial class LothaBlessingService
         if (creature.CombatState?.CurrentSide == CombatSide.Player &&
             CombatManager.Instance.IsPartOfPlayerTurn(player))
         {
-            SetProgress(player, progress with
+            var activeProgress = progress with
             {
                 DeathReprieveUsed = true,
                 DeathReprievePhase = DeathReprievePhase.Active
-            });
-            ReleaseEvidenceLog.Log("LothaDeathReprieve", "active_entered", player);
-            await StartDeathReprieveTurn(new ThrowingPlayerChoiceContext(), player, combatState, "current player turn after lethal damage");
+            };
+            SetProgress(player, activeProgress);
+            const string source = "current player turn after lethal damage";
+            ReleaseEvidenceLog.Log("LothaDeathReprieve", "active_entered", player, DeathReprieveDiagnostics(player, combatState, activeProgress, source));
+            await StartDeathReprieveTurn(new ThrowingPlayerChoiceContext(), player, combatState, source);
         }
         else
         {
-            SetProgress(player, progress with
+            var pendingProgress = progress with
             {
                 DeathReprieveUsed = true,
                 DeathReprievePhase = DeathReprievePhase.PendingStart
-            });
+            };
+            SetProgress(player, pendingProgress);
             combatState.DeathReprievePendingStart = true;
             combatState.DeathReprieveActive = true;
             await EnsureDeathReprievePower(new ThrowingPlayerChoiceContext(), player);
-            ReleaseEvidenceLog.Log("LothaDeathReprieve", "pending_created", player);
+            ReleaseEvidenceLog.Log(
+                "LothaDeathReprieve",
+                "pending_created",
+                player,
+                DeathReprieveDiagnostics(player, combatState, pendingProgress, "enemy or non-player turn lethal damage"));
             MainFile.Logger.Info("[EZMicroBalance] Lotha Death Reprieve prevented lethal damage; reprieve turn is pending at the next player turn.");
         }
     }
@@ -121,11 +133,12 @@ internal static partial class LothaBlessingService
         combatState.DeathReprieveStarted = true;
         combatState.DeathReprieveActive = true;
         combatState.DeathReprievePendingStart = false;
-        SetProgress(player, GetProgress(player) with
+        var activeProgress = GetProgress(player) with
         {
             DeathReprieveUsed = true,
             DeathReprievePhase = DeathReprievePhase.Active
-        });
+        };
+        SetProgress(player, activeProgress);
         await CreatureCmd.SetCurrentHp(player.Creature, 1m);
         await EnsureDeathReprievePower(choiceContext, player);
         await CardPileCmd.Draw(choiceContext, DeathReprieveCards, player);
@@ -134,10 +147,7 @@ internal static partial class LothaBlessingService
             "LothaDeathReprieve",
             "lethal_prevented",
             player,
-            new Dictionary<string, object?>
-            {
-                ["source"] = source
-            });
+            DeathReprieveDiagnostics(player, combatState, activeProgress, source));
         MainFile.Logger.Info($"[EZMicroBalance] Lotha Death Reprieve started the reprieve turn from {source}: draw 10, Energy 10, all costs 0.");
     }
 
@@ -162,17 +172,45 @@ internal static partial class LothaBlessingService
         combatState.DeathReprievePendingStart = false;
         ResolveDeathReprieveProgress(player);
         await PowerCmd.Remove<LothaDeathReprievePower>(player.Creature);
-        ReleaseEvidenceLog.Log("LothaDeathReprieve", "resolved", player);
 
         if (player.Creature.CombatState?.Enemies.Any(enemy => enemy.IsAlive) == true)
         {
+            ReleaseEvidenceLog.Log(
+                "LothaDeathReprieve",
+                "resolved",
+                player,
+                DeathReprieveDiagnostics(player, combatState, GetProgress(player), "turn end with enemies alive", forcedDeath: true));
             MainFile.Logger.Info("[EZMicroBalance] Lotha Death Reprieve ended with enemies alive; killing the player with force=true.");
             await CreatureCmd.Kill(player.Creature, force: true);
             return;
         }
 
+        ReleaseEvidenceLog.Log(
+            "LothaDeathReprieve",
+            "resolved",
+            player,
+            DeathReprieveDiagnostics(player, combatState, GetProgress(player), "turn end after victory"));
         MainFile.Logger.Info("[EZMicroBalance] Lotha Death Reprieve ended after victory; the run continues.");
     }
+
+    private static Dictionary<string, object?> DeathReprieveDiagnostics(
+        Player player,
+        LothaCombatState combatState,
+        Progress progress,
+        string source,
+        bool forcedDeath = false) =>
+        new()
+        {
+            ["source"] = source,
+            ["hp"] = player.Creature.CurrentHp,
+            ["currentSide"] = player.Creature.CombatState?.CurrentSide.ToString() ?? "none",
+            ["used"] = progress.DeathReprieveUsed,
+            ["phase"] = progress.DeathReprievePhase,
+            ["active"] = combatState.DeathReprieveActive,
+            ["pendingStart"] = combatState.DeathReprievePendingStart,
+            ["started"] = combatState.DeathReprieveStarted,
+            ["forcedDeath"] = forcedDeath
+        };
 
     private static bool IsDeathReprieveCostFree(Player player, LothaCombatState combatState) =>
         GetSelectedBlessing(player) == LothaBlessingIds.DeathReprieve &&

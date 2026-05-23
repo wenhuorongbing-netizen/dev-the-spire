@@ -1,5 +1,12 @@
 # Urda Ancient Source Design v1
 
+Status / authority note, 2026-05-23: this file is retained as Urda support
+evidence for the original vertical slice. When player-visible behavior conflicts
+with `docs/test-ready-development-goal.md`, `docs/issues.md`,
+`docs/issues/v3.3-design-review.md`, or current source/localization, use the
+current files and code. In particular, v3.3 Seedbed and After the Rain supersede
+the older behavior in this document.
+
 ## 1. One-line goal
 
 Add a directly playable Urda vertical slice for private beta:
@@ -58,7 +65,7 @@ The active v2.2 source pool contains:
 9. Root-Sight (`urda_root_sight`)
 10. Seed Bank (`urda_seed_bank`)
 
-All ten remain disableable through the Urda feature gate. Runtime testing must use the source-safe behavior and deviations documented here rather than the richer unproven UI from the original design.
+All ten remain disableable through the Urda feature gate. Runtime testing must use the current source-safe behavior and deviations documented in the active goal/issues/v2.2/v3.3 docs rather than richer unproven UI from the original design.
 
 ### 3.3 Blessing behavior
 
@@ -69,7 +76,10 @@ All ten remain disableable through the Urda feature gate. Runtime testing must u
 - Tracks four accepted Seedbed choices; reward generation, reroll, and screen refresh do not spend a check by themselves.
 - On accepting a reward, lose 2 max HP.
 - On all four accepted rewards, set the transformed latch and gain +10 max HP with no heal.
-- A visible `Seedbed's Herald` display state is not implemented in the current source slice.
+- Current v3.3 behavior: the reward alternative adds the `Seedbed` card itself.
+- In combat, `Seedbed` sets 2/3 slots and plants later seedable temporary negative cards before they enter hand.
+- Eligible planted cards are temporary Status cards, temporary Curse cards, and Blight Sprouts. Rootblight, permanent Curses, Withered Husk, and beneficial temporary pages are not planted.
+- Planting does not play, discard, or exhaust the card and does not trigger those synergies. Each planted card adds one Withered Husk.
 
 #### Humus Pact (`urda_humus_pact`)
 
@@ -122,9 +132,9 @@ All ten remain disableable through the Urda feature gate. Runtime testing must u
 #### After the Rain (`urda_after_rain`)
 
 - Act 1 only.
-- First lethal damage prevents death, sets/keeps 1 HP, grants 15 Block, draws 1, adds two Wounds to discard, loses 3 Max HP, and spends the blessing.
-- Before spending, up to two Act 1 elite kills grant 20 Gold.
-- If unused at Act 2 start, heal 8 HP and gain 75 Gold once.
+- Current v3.3 behavior: after the first unblocked enemy attack damage each combat, add one `Rain Breath` to hand.
+- `Rain Breath` is Temporary, gains 5 Block, draws 1, and exhausts.
+- At Act 2 start, fewer than 3 Act 1 triggers grants 75 Gold. Three or more triggers heals 8 HP and upgrades 1 card.
 
 #### Root-Sight (`urda_root_sight`)
 
@@ -157,7 +167,7 @@ Encoded fields:
 - Trial Branch combat/success counters, played-this-combat latch, and settlement latch,
 - Shallow-Root pending/rooted/relic id,
 - Rooted Route coordinate/resolved/withered state,
-- After the Rain spent/compensated/elite-gold counters,
+- After the Rain per-combat trigger latch, Act 2 compensation latch, and trigger count,
 - Root-Sight eye count, first-potion latch, and marked coordinates,
 - Seed Bank stored card ids and settlement latch.
 

@@ -558,6 +558,12 @@ public sealed class AncientUiReadinessGuardTests
             "This helper and command prepare UI evidence",
             "Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen screenshots/logs are captured.");
 
+        var issues = ReadRepoText("docs", "issues.md");
+        AssertSourceContains(
+            issues,
+            "ANCIENT-CLICKED-UI/LIVE-GAMEPLAY",
+            "scripts/collect-ancient-ui-evidence.ps1");
+
         Assert.DoesNotContain("helper verifies clicked UI", docs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("helper proves clicked UI", docs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("clicked UI verified by the helper", docs, StringComparison.OrdinalIgnoreCase);
@@ -646,6 +652,70 @@ public sealed class AncientUiReadinessGuardTests
         {
             Assert.DoesNotContain(prohibited, activeDocs, StringComparison.OrdinalIgnoreCase);
         }
+    }
+
+    [Fact]
+    public void AncientSelectionLogsCarryRunPlayerAndForcedContext()
+    {
+        var helper = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSelectionEvidenceLog.cs");
+        var urdaRows = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.OptionRows.cs");
+        var morviRows = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.OptionRows.cs");
+        var lothaRows = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.OptionRows.cs");
+        var vakuuEntry = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.Entry.cs");
+        var testReadyGoal = ReadRepoText("docs", "test-ready-development-goal.md");
+
+        AssertSourceContains(
+            helper,
+            "ReleaseEvidenceLog.Log",
+            "\"AncientSelection\"",
+            "\"blessing_selected\"",
+            "\"blessing_selection_failed\"",
+            "\"option_selected\"",
+            "[\"ancient\"] = ancientId",
+            "[\"blessing\"] = blessingId",
+            "[\"option\"] = optionId",
+            "[\"relic\"] = relicType",
+            "[\"forced\"] = forced",
+            "playerSlot={PlayerSlot(player)}",
+            "run={RunId(player)}",
+            "player.RunState.GetPlayerSlotIndex(player)");
+        AssertSourceContains(
+            urdaRows,
+            "AncientSelectionEvidenceLog.LogBlessingSelected",
+            "\"Urda\"",
+            "typeof(T).Name",
+            "!string.IsNullOrWhiteSpace(UrdaFeatureGate.ForcedBlessing)");
+        AssertSourceContains(
+            morviRows,
+            "AncientSelectionEvidenceLog.LogBlessingSelected",
+            "AncientSelectionEvidenceLog.LogBlessingSelectionFailed",
+            "\"Morvi\"",
+            "selection_rejected",
+            "!string.IsNullOrWhiteSpace(MorviFeatureGate.ForcedBlessing)");
+        AssertSourceContains(
+            lothaRows,
+            "AncientSelectionEvidenceLog.LogBlessingSelected",
+            "\"Lotha\"",
+            "typeof(T).Name",
+            "!string.IsNullOrWhiteSpace(LothaFeatureGate.ForcedBlessing)");
+        AssertSourceContains(
+            vakuuEntry,
+            "var forcedOption = vakuu.Owner?.RunState is RunState runState",
+            "VakuuFightFeatureGate.ShouldForceFightForRun(runState)",
+            "() => StartFight(vakuu, forcedOption)",
+            "AncientSelectionEvidenceLog.LogOptionSelected",
+            "\"Vakuu\"",
+            "nameof(VakuuFightOptionRelic)",
+            "forcedOption");
+        AssertSourceContains(
+            testReadyGoal,
+            "SPIREPLUS_FORCE_ANCIENT=URDA",
+            "SPIREPLUS_FORCE_MORVI_BLESSING=morvi_forbidden_loan",
+            "SPIREPLUS_FORCE_LOTHA_BLESSING=lotha_death_reprieve",
+            "SPIREPLUS_DISABLE_URDA=1",
+            "SPIREPLUS_ENABLE_VAKUU_FIGHT=1",
+            "EZMB_RELEASE_EVIDENCE_LOG=1",
+            "Ancient reward/fight option selection logs include the Ancient, blessing id or option id, selected marker relic type, forced flag, run id, player slot, and network mode.");
     }
 
     private static void AssertLocalizedValue(IReadOnlyDictionary<string, string> values, string key)

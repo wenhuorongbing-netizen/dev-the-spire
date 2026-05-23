@@ -54,10 +54,10 @@ Use this protocol for post-fix Urda selection, reward-screen, save/load, and vis
 - [ ] Each normal Act 1 combat card reward can either take its regular card reward path or the Seedbed alternative while Seedbed has remaining checks.
 - [ ] Rerolling or reopening a reward does not consume a Seedbed check before accepting Seedbed.
 - [ ] Seedbed alternative is absent when max HP is 2 or lower.
-- [ ] Accepting consumes 2 max HP and adds one Seedling card.
-- [ ] First accepted Seedling is upgraded.
+- [ ] Accepting consumes 2 max HP and adds one Seedbed card.
+- [ ] First accepted Seedbed is upgraded.
 - [ ] Four successful accepts set the transformed latch and grant +10 max HP without healing current HP.
-- [ ] No visible `Seedbed's Herald` name is expected in the current source slice.
+- [ ] Seedbed card text says it catches later Temporary Status cards, Temporary Curse cards, and Blight Sprouts.
 - [ ] Save/load preserves `UrdaSeedbed` counters and transformed state.
 
 ## 4. Humus Pact checks
@@ -114,11 +114,11 @@ Use this protocol for post-fix Urda selection, reward-screen, save/load, and vis
 
 ## 10. After the Rain checks
 
-- [ ] In Act 1 only, the first lethal damage prevents death, leaves/sets 1 HP, grants 15 Block, draws 1 card, adds two Wounds to discard, loses 3 Max HP, and spends the blessing.
-- [ ] Further lethal damage after the blessing is spent is not prevented by After the Rain.
-- [ ] If unused before Act 2, the player heals 8 HP and gains 75 Gold once.
-- [ ] Before spending, each Act 1 elite kill grants 20 Gold, maximum two times.
-- [ ] Save/load preserves spent, compensation, and elite-bonus counters.
+- [ ] In Act 1 only, the first unblocked enemy attack damage each combat adds 1 Rain Breath to hand.
+- [ ] Rain Breath gains 5 Block, draws 1 card, has Exhaust, and is removed after combat.
+- [ ] At Act 2 start, fewer than 3 Act 1 triggers grants 75 Gold.
+- [ ] At Act 2 start, 3 or more Act 1 triggers heals 8 HP and upgrades 1 card.
+- [ ] Save/load preserves the per-combat trigger latch, Act 2 payoff latch, and trigger count.
 
 ## 11. Root-Sight checks
 

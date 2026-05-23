@@ -13,6 +13,8 @@ internal static partial class UrdaBlessingService
 
         public bool HumusPactHandled { get; set; }
 
+        public bool SeedbedHandled { get; set; }
+
         public bool SeedBankHandled { get; set; }
     }
 
@@ -45,7 +47,7 @@ internal static partial class UrdaBlessingService
 
         return GetSelectedBlessing(player) switch
         {
-            UrdaBlessingIds.Seedbed => TryAddSeedbedAlternative(player, alternatives),
+            UrdaBlessingIds.Seedbed => TryAddSeedbedAlternative(player, cardReward, alternatives),
             UrdaBlessingIds.HumusPact => TryAddHumusPactAlternative(player, cardReward, alternatives),
             UrdaBlessingIds.SeedBank => TryAddSeedBankAlternative(player, cardReward, alternatives),
             _ => false

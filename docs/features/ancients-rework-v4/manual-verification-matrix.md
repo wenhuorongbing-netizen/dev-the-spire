@@ -1,4 +1,4 @@
-﻿# Ancient Rework v4 Manual Verification Matrix
+# Ancient Rework v4 Manual Verification Matrix
 
 Prepared: 2026-05-07
 Updated: 2026-05-18
@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, SHA256 `124AF7C77B33CE5EAC5A7369519D90AD66EC4CFCDC887DD1E352CF4F24E7968C` |
+| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, SHA256 `11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120` |
 
 ## Runtime Load Checklist
 
@@ -56,7 +56,7 @@ Expected result: the first normal reward increments the counter and stays non-tr
 3. Open the reward screen.
 4. Confirm every visible option is off-color / `异色牌`, preserving original type and rarity when a matching replacement exists.
 5. Reroll if available and confirm the reward remains all off-color.
-6. Confirm the relic hover shows `棱彩计数：1/2` or `棱彩计数：0/2`, depending on the live reset timing.
+6. Confirm the relic hover shows `棱彩计数：0/2` or `棱彩计数：1/2`, depending on the live reset timing.
 7. If the reward banner is visible, confirm it shows `棱彩奖励：本次只出现异色牌。`.
 8. Review `godot.log`. If the trigger reward banner is not visible, confirm `PrismaticGem reward-screen hint fallback` is logged with the `_banner` reason or the `UI/Banner fallback`. If both banner paths fail, relic hover count plus every visible reward card being off-color remain the available confirmation surfaces; the log should say visible all-off-color cards and relic hover count remain the available confirmation surfaces.
 
@@ -69,7 +69,6 @@ Expected result: the second normal reward triggers all-slot off-color replacemen
 3. Confirm none of these screens replace visible card options.
 
 Expected result: only standard monster card rewards advance and trigger Prismatic Gem.
-
 ## Ancient Reward Matrix
 
 | Ancient / Relic | Manual Check | Expected Result | Result |

@@ -275,6 +275,8 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.DoesNotContain("SeedbedChecks = progress.SeedbedChecks + 1", seedbedAlternative, StringComparison.Ordinal);
         AssertSourceContains(
             seedbedAlternative,
+            "CardReward cardReward",
+            "AcceptSeedbed(player, cardReward)",
             "progress.SeedbedAccepted >= MaxSeedbedChecks",
             "!CanPaySeedbedCost(player)",
             "PostAlternateCardRewardAction.EndSelectionAndCompleteReward");
@@ -285,11 +287,17 @@ public sealed class UrdaReleaseCoverageGuardTests
             "Seedbed must only charge Max HP after Core accepts the card into the deck.");
         AssertSourceContains(
             seedbedAccept,
+            "CardReward cardReward",
+            "CardRewardContexts.TryGetValue(cardReward, out var context)",
+            "context.SeedbedHandled",
+            "context.SeedbedHandled = true",
+            "duplicate reward alternative click ignored",
             "!CanPaySeedbedCost(player)",
             "CreatureCmd.LoseMaxHp",
             "cost and progress were not applied",
             "SeedbedChecks = progress.SeedbedChecks + 1",
             "CreatureCmd.SetMaxHp");
+        Assert.Contains("public bool SeedbedHandled { get; set; }", urdaSource, StringComparison.Ordinal);
         Assert.DoesNotContain("CreatureCmd.GainMaxHp", seedbedAccept, StringComparison.Ordinal);
         var chooseHumus = SliceBetween(urdaHumusPact, "private static async Task ChooseHumusPact", "private static async Task<bool> ResolveHumusCompletion");
         AssertSourceContains(

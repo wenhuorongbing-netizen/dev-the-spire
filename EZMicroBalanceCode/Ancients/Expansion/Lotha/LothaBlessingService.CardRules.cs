@@ -1,4 +1,5 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -16,12 +17,13 @@ internal static partial class LothaBlessingService
         }
 
         var combatState = CombatStates.GetOrCreateValue(player);
+        var selectedBlessing = GetSelectedBlessing(player);
         if (TryConsumeAutoPlayModifierBlock(card, combatState))
         {
+            LogExtraPlayAttempt(player, selectedBlessing, card, allowed: false, reason: "autoplay", extraPlayCount: 0);
             return playCount;
         }
 
-        var selectedBlessing = GetSelectedBlessing(player);
         HydrateSingleSentenceFromPower(player, combatState);
         if (selectedBlessing == LothaBlessingIds.MirrorRebuttal &&
             !combatState.MirrorRebuttalResolved &&
@@ -29,6 +31,7 @@ internal static partial class LothaBlessingService
             IsEligibleCard(card))
         {
             combatState.MirrorRebuttalResolved = true;
+            LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "mirror_rebuttal", extraPlayCount: MirrorRebuttalExtraPlayCount);
             MainFile.Logger.Info($"[EZMicroBalance] Lotha Mirror Rebuttal extra-played {card.Id.Entry} one additional time.");
             return playCount + MirrorRebuttalExtraPlayCount;
         }
@@ -40,6 +43,7 @@ internal static partial class LothaBlessingService
         {
             combatState.MirrorHallEchoConsumedThisTurn = true;
             combatState.MirrorHallEchoArmedType = null;
+            LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "mirror_hall_echo", extraPlayCount: MirrorHallEchoExtraPlayCount);
             MainFile.Logger.Info($"[EZMicroBalance] Lotha Mirror Hall Echo extra-played {card.Id.Entry} one additional time.");
             return playCount + MirrorHallEchoExtraPlayCount;
         }
@@ -47,9 +51,9 @@ internal static partial class LothaBlessingService
         if (selectedBlessing == LothaBlessingIds.DeferredVerdict &&
             combatState.DeferredVerdictActiveThisTurn &&
             HasDeferredVerdictStacks(player) &&
-            IsDeferredVerdictConsumerCard(card) &&
-            IsEligibleCard(card))
+            IsDeferredVerdictExtraPlayCard(card))
         {
+            LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "deferred_verdict", extraPlayCount: DeferredVerdictExtraPlayCount);
             MainFile.Logger.Info($"[EZMicroBalance] Lotha Deferred Verdict extra-played {card.Id.Entry} one additional time.");
             return playCount + DeferredVerdictExtraPlayCount;
         }
@@ -61,6 +65,7 @@ internal static partial class LothaBlessingService
             combatState.SingleSentenceUsedThisTurn = true;
             combatState.SingleSentenceRulingCard = card;
             SetSingleSentencePowerAmount(player, SingleSentenceRemainingPlayLimit);
+            LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "single_sentence", extraPlayCount: LothaExtraPlayCount);
             MainFile.Logger.Info($"[EZMicroBalance] Lotha Single Sentence extra-played {card.Id.Entry} two additional times.");
             return playCount + LothaExtraPlayCount;
         }
@@ -157,4 +162,30 @@ internal static partial class LothaBlessingService
 
     private static bool IsDeferredVerdictConsumerCard(CardModel card) =>
         card.Type != CardType.Status && !card.IsClone;
+
+    private static bool IsDeferredVerdictExtraPlayCard(CardModel card) =>
+        IsEligibleCard(card);
+
+    private static void LogExtraPlayAttempt(
+        Player player,
+        string blessing,
+        CardModel card,
+        bool allowed,
+        string reason,
+        int extraPlayCount) =>
+        ReleaseEvidenceLog.Log(
+            "AncientExtraPlay",
+            "lotha_extra_play_attempt",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["ancient"] = "Lotha",
+                ["blessing"] = blessing,
+                ["card"] = card.Id.Entry,
+                ["cardType"] = card.Type,
+                ["isClone"] = card.IsClone,
+                ["allowed"] = allowed,
+                ["reason"] = reason,
+                ["extraPlayCount"] = extraPlayCount
+            });
 }

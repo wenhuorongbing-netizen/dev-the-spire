@@ -16,6 +16,8 @@ internal static partial class VakuuFightService
 
     public static EventOption CreateFightOption(MegaCrit.Sts2.Core.Models.Events.Vakuu vakuu)
     {
+        var forcedOption = vakuu.Owner?.RunState is RunState runState &&
+            VakuuFightFeatureGate.ShouldForceFightForRun(runState);
         if (vakuu.Owner?.RunState != null)
         {
             ReleaseEvidenceLog.Log("VakuuFight", "fight_option_shown", vakuu.Owner);
@@ -24,7 +26,7 @@ internal static partial class VakuuFightService
         var option = EventOption.FromRelic(
             ModelDb.Relic<VakuuFightOptionRelic>().ToMutable(),
             vakuu,
-            () => StartFight(vakuu),
+            () => StartFight(vakuu, forcedOption),
             FightOptionKey);
         option.HoverTips = option.HoverTips
             .Concat(HoverTipFactory.FromCardWithCardHoverTips<VakuuKnifeContract>())
@@ -35,12 +37,19 @@ internal static partial class VakuuFightService
         return option;
     }
 
-    private static async Task StartFight(MegaCrit.Sts2.Core.Models.Events.Vakuu vakuu)
+    private static async Task StartFight(MegaCrit.Sts2.Core.Models.Events.Vakuu vakuu, bool forcedOption)
     {
         if (vakuu.Owner is null)
         {
             return;
         }
+
+        AncientSelectionEvidenceLog.LogOptionSelected(
+            vakuu.Owner,
+            "Vakuu",
+            FightOptionKey,
+            nameof(VakuuFightOptionRelic),
+            forcedOption);
 
         await AncientRewardRelicService.ObtainSelectionRelicIfMissing<VakuuFightOptionRelic>(
             vakuu.Owner,

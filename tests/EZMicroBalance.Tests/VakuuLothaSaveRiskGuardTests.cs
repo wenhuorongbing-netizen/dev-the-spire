@@ -333,11 +333,12 @@ public sealed class VakuuLothaSaveRiskGuardTests
 
         AssertSourceContains(
             playerTurnBranch,
-            "SetProgress(player, progress with",
+            "var activeProgress = progress with",
+            "SetProgress(player, activeProgress)",
             "DeathReprieveUsed = true",
             "DeathReprievePhase = DeathReprievePhase.Active",
             "StartDeathReprieveTurn");
-        AssertBefore(playerTurnBranch, "SetProgress(player, progress with", "StartDeathReprieveTurn");
+        AssertBefore(playerTurnBranch, "SetProgress(player, activeProgress)", "StartDeathReprieveTurn");
 
         AssertSourceContains(
             pendingBranch,
@@ -345,21 +346,26 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "combatState.DeathReprievePendingStart = true",
             "EnsureDeathReprievePower");
         var pendingPhaseIndex = preventBlock.IndexOf("DeathReprievePhase = DeathReprievePhase.PendingStart", StringComparison.Ordinal);
-        var pendingSetProgressIndex = preventBlock.LastIndexOf("SetProgress(player, progress with", pendingPhaseIndex, StringComparison.Ordinal);
+        var pendingProgressIndex = preventBlock.LastIndexOf("var pendingProgress = progress with", pendingPhaseIndex, StringComparison.Ordinal);
+        var pendingSetProgressIndex = preventBlock.IndexOf("SetProgress(player, pendingProgress)", pendingPhaseIndex, StringComparison.Ordinal);
         var pendingFlagIndex = preventBlock.IndexOf("combatState.DeathReprievePendingStart = true", pendingPhaseIndex, StringComparison.Ordinal);
+        Assert.True(pendingProgressIndex >= 0, "Pending reprieve branch must build progress from the prior progress record.");
+        Assert.True(pendingProgressIndex < pendingPhaseIndex, "Pending reprieve progress record must wrap the PendingStart phase.");
         Assert.True(pendingSetProgressIndex >= 0, "Pending reprieve branch must write progress through SetProgress.");
-        Assert.True(pendingSetProgressIndex < pendingPhaseIndex, "Pending reprieve progress write must wrap the PendingStart phase.");
+        Assert.True(pendingPhaseIndex < pendingSetProgressIndex, "PendingStart phase must be part of the pending progress record before SetProgress writes it.");
         Assert.True(pendingPhaseIndex < pendingFlagIndex, "PendingStart phase must be written before transient pending-start flags are set.");
+        Assert.True(pendingSetProgressIndex < pendingFlagIndex, "Pending reprieve progress must be written before transient pending-start flags are set.");
 
         AssertSourceContains(
             startBlock,
             "if (combatState.DeathReprieveStarted)",
             "return;",
             "combatState.DeathReprieveStarted = true",
-            "SetProgress(player, GetProgress(player) with",
+            "var activeProgress = GetProgress(player) with",
+            "SetProgress(player, activeProgress)",
             "DeathReprieveUsed = true",
             "DeathReprievePhase = DeathReprievePhase.Active");
-        AssertBefore(startBlock, "SetProgress(player, GetProgress(player) with", "CardPileCmd.Draw(choiceContext, DeathReprieveCards, player)");
+        AssertBefore(startBlock, "SetProgress(player, activeProgress)", "CardPileCmd.Draw(choiceContext, DeathReprieveCards, player)");
     }
 
     [Fact]
@@ -380,7 +386,11 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "if (force || creature.MaxHp <= 0 || Hook.ShouldDie(runState, combatState, creature, out preventer))");
         AssertSourceContains(
             resolveBlock,
+            "ResolveDeathReprieveProgress(player)",
+            "PowerCmd.Remove<LothaDeathReprievePower>(player.Creature)",
             "CreatureCmd.Kill(player.Creature, force: true)");
+        AssertBefore(resolveBlock, "ResolveDeathReprieveProgress(player)", "PowerCmd.Remove<LothaDeathReprievePower>(player.Creature)");
+        AssertBefore(resolveBlock, "PowerCmd.Remove<LothaDeathReprievePower>(player.Creature)", "CreatureCmd.Kill(player.Creature, force: true)");
         Assert.DoesNotContain("ShouldDie(player.Creature)", resolveBlock, StringComparison.Ordinal);
         Assert.DoesNotContain("AfterPreventingDeath(player.Creature)", resolveBlock, StringComparison.Ordinal);
 

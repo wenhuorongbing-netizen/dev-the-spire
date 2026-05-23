@@ -85,9 +85,13 @@ internal sealed partial class EzmbLotha
         if (Owner != null)
         {
             await LothaRewardSelectionService.SelectBlessing<T>(Owner, blessingId);
+            AncientSelectionEvidenceLog.LogBlessingSelected(
+                Owner,
+                "Lotha",
+                blessingId,
+                typeof(T).Name,
+                !string.IsNullOrWhiteSpace(LothaFeatureGate.ForcedBlessing));
         }
-
-        MainFile.Logger.Info($"[EZMicroBalance] Lotha blessing selected: {blessingId}.");
         Done();
     }
 }

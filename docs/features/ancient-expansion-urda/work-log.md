@@ -13,7 +13,7 @@ Scope:
 - Added Trial Branch with a 4-card rare source-safe grid, visible Trial Branch enchantment/marker, three-combat tracking window, three-success keep path, and removal path after any missed combat.
 - Added Shallow-Root Relic with two common relic choices, 75 Gold, Act 1 elite rooting for 35 Gold, and a documented Act 2 removal/refund fallback instead of the unproven `lose 6 Max HP` settlement UI.
 - Added Rooted Route with automatic reachable normal-combat marking in the first seven floors, quest markers only, no map graph mutation, three card rewards plus potion-if-slot on success, and an 8 HP / 25 Gold wither fallback.
-- Added After the Rain through the source-backed death-prevention hooks, with 1 HP, 15 Block, draw 1, two Wounds, -3 Max HP, Act 2 unused compensation, and two elite-gold bonuses.
+- Added After the Rain. Current v3.3 source behavior supersedes the original death-prevention draft: Act 1 combat triggers add Rain Breath after the first unblocked enemy attack damage, and Act 2 pays out 75 Gold or heal 8 plus one upgrade based on trigger count.
 - Root-Sight now uses the Root Eyes relic as its map control. Clicking it opens map selection, highlights future reachable Monster, Unknown, or Elite rooms, and stores the chosen room's concrete enemy group or event.
 - Added Seed Bank with a `Store Seed` reward alternative, max three stored Seeds, and pre-Boss settlement for up to two Seeds.
 - Added English/zhs player text, option relics, temporary source-derived option icons, export entries, and guard tests. `OPENAI_API_KEY` was not set, so no bespoke Image API icons were generated.

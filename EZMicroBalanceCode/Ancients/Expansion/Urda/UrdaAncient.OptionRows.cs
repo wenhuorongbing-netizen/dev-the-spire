@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using BaseLib.Abstracts;
 using BaseLib.Utils;
+using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.HoverTips;
 
@@ -71,9 +72,13 @@ internal sealed partial class EzmbUrda
         if (Owner != null)
         {
             await UrdaRewardSelectionService.SelectBlessing<T>(Owner, blessingId);
+            AncientSelectionEvidenceLog.LogBlessingSelected(
+                Owner,
+                "Urda",
+                blessingId,
+                typeof(T).Name,
+                !string.IsNullOrWhiteSpace(UrdaFeatureGate.ForcedBlessing));
         }
-
-        MainFile.Logger.Info($"[EZMicroBalance] Urda blessing selected: {blessingId}.");
         Done();
     }
 }
