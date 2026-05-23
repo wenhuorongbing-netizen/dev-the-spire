@@ -92,7 +92,7 @@ Current support docs, not default reading path:
 - `docs/features/ascension-11-20/archive/` -> `docs/archive/feature-inputs/ascension-11-20/`
 - root `art_pipeline/` and `asset/` local generated/calibration folders -> ignored `.tools/archive/local-art-and-calibration-20260515/`
 - root local-only package/source-analysis/website zip clutter -> ignored `.tools/archive/local-root-clutter-20260515/`
-- root `website/` and `.github` Pages workflow draft -> older snapshot under `.tools/archive/local-website-preview-20260516/`; local draft deleted after preserving snapshot.
+- older website draft snapshot -> `.tools/archive/local-website-preview-20260516/`; current public site source is tracked under root `website/` with `.github/workflows/spire-plus-site.yml`, while generated `website/forum/` output is ignored.
 - superseded `PROJECT_STATE.md` per-pass validation history -> `docs/archive/project-state-history-20260516.md`
 - superseded `docs/issues.md` long-form 2026-05-15 package verification note -> `docs/archive/implementation-records/2026-05-15-current-package-verification-note.md`
 - top-level `legacy/` migration project metadata -> `docs/archive/legacy-planning/legacy-project-files/`

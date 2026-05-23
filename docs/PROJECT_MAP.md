@@ -107,7 +107,7 @@ The private beta zip should contain only those three installable files plus `REA
 | `.github/workflows/spire-plus-site.yml` | Promoted current workflow | Pages workflow was deliberately promoted with `website/` as the only uploaded artifact path. |
 | `.tools/archive/local-art-and-calibration-20260515/` | Ignored local archive | Former root `art_pipeline/` and `asset/` generated art/calibration material; not part of the active PCK unless explicitly revalidated and promoted later. |
 | `.tools/archive/local-root-clutter-20260515/` | Ignored local archive | Former root local-only package/source-analysis/website zip clutter preserved before any deletion decision. |
-| `.tools/archive/local-website-preview-20260516/` | Ignored local archive | Snapshot of the removed `website/` static preview and `.github` Pages workflow taken during cleanup; use only if the draft is deliberately promoted later. |
+| `.tools/archive/local-website-preview-20260516/` | Ignored local archive | Older snapshot of the pre-promotion website draft and Pages workflow; the current tracked source lives at root `website/` and `.github/workflows/spire-plus-site.yml`. |
 
 ## Documentation Map
 
@@ -148,7 +148,7 @@ Authority note: `docs/features/ancient-expansion-urda/` and `docs/features/ancie
 - Add user-facing text in both `EZMicroBalance/localization/eng/` and `EZMicroBalance/localization/zhs/`.
 - Add or update tests in `tests/EZMicroBalance.Tests/` whenever source shape, localization, docs, package contents, or release evidence changes.
 - Update feature README files and `docs/dev-environment.md` when implementation status, validation evidence, versions, or package hashes change.
-- Removed ignored local draft website snapshot: `.tools/archive/local-website-preview-20260516`; `/website/` and the Pages workflow stay out of release-candidate diffs.
+- Promoted website source is tracked at `website/` with `.github/workflows/spire-plus-site.yml`; generated forum build output under `website/forum/` stays ignored.
 
 ## Milestones
 

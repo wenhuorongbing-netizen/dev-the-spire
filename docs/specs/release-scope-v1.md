@@ -17,7 +17,7 @@ This file freezes the release-candidate decision boundary requested by `docs/goa
 | Ancient Urda/Morvi/Lotha | Manual-test candidates | Source-backed and visible reward markers exist; live clicked UI, gameplay, save/load, and co-op proof remain pending. |
 | Rootblight / Blight Sprout | Manual-test candidate | Source and art are packaged; combat-end behavior and visual proof remain pending. |
 | Preview tools | Part of Spire Plus | Crystal Sphere peek and transform preview are integrated under `EZMicroBalance`; live proof remains pending. |
-| Website | Not in current release surface | The old static preview is archived only and contains stale/mojibake claims. Do not publish or advertise it until rebuilt from this scope. |
+| Website | Public-info surface, not mod-release proof | Current source is tracked under `website/` with a Pages workflow. It may describe the manual-test package, but it must not turn pending live rows into release-ready claims. |
 
 ## Release Candidate Gate
 
@@ -49,12 +49,12 @@ Preview tools are no longer a separate mod. They ship inside `Spire Plus / EZMic
 
 ## Website Decision
 
-The archived website preview under `.tools/archive/local-website-preview-20260516/` is a claim source, not a publishing source.
+The current website source lives under tracked `website/` and `.github/workflows/spire-plus-site.yml`. The archived preview under `.tools/archive/local-website-preview-20260516/` is historical claim evidence only.
 
-To restore a website:
+Website rules:
 
-1. Promote source into a tracked `website/` folder.
-2. Replace stale names and mojibake text.
+1. Keep source changes visible in `git status`.
+2. Keep generated `website/forum/` output ignored.
 3. Make every claim match `docs/specs/release-traceability-matrix.md`.
-4. Add a build/smoke workflow.
+4. Keep the Pages workflow build/test step aligned with `forum/`.
 5. Keep download/install text aligned with current package hashes and release state.

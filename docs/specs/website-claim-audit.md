@@ -1,24 +1,24 @@
 # Website Claim Audit
 
-Source: `.tools/archive/local-website-preview-20260516/`.
+Current source: `website/` and `.github/workflows/spire-plus-site.yml`.
 
-The archived website is not an active release surface. It is retained only as a source of old claims that must be accepted, corrected, or excluded before any public page is restored.
+The archived website under `.tools/archive/local-website-preview-20260516/` is historical comparison material. The active website is a public-info surface, not release-readiness proof.
 
 ## Source Condition
 
 | Source | Observation | Decision |
 | --- | --- | --- |
-| `website/content-data.js` | Contains old `EasyFirePlus` naming and visible mojibake text. | Do not publish as-is. |
-| `website/README.md` | Describes static preview and a deleted Pages workflow. | Historical only. |
-| `.github/workflows/spire-plus-site.yml` | Archived with the removed website draft. | Not active CI. |
-| `website/assets/**` | Contains draft icons/cards/events copied into the local website snapshot. | Not release evidence. |
+| `website/content-data.js` | Current tracked website data for public effect tables and package metadata. | Keep aligned with current docs and manual-test status. |
+| `website/README.md` | Current site maintenance notes for GitHub Pages and the forum entry. | Active support doc. |
+| `.github/workflows/spire-plus-site.yml` | Current Pages workflow; builds `forum/` before uploading `website/`. | Active CI for the website only. |
+| `.tools/archive/local-website-preview-20260516/` | Historical pre-promotion website snapshot. | Comparison source only. |
 
 ## Claim Audit
 
 | Claim | Source | Current evidence | Status | Release risk |
 | --- | --- | --- | --- | --- |
 | Download package `SpirePlus-v0.1.0-private-beta.0.zip` | `content-data.js` download block | `docs/issues.md`, `publish/SpirePlus-v0.1.0-private-beta.0.zip` | partial | Hash can go stale; website must read from release docs or be updated during package. |
-| Product name `EasyFirePlus` / mojibake Ancient v2.3 label | `content-data.js`, `website/README.md` | Current player name is `Spire Plus`; manifest id is `EZMicroBalance` | needs owner decision | Wrong name/version must be removed or explicitly rebranded before website restoration. |
+| Product name / stale terminology / mojibake page copy | `content-data.js`, `website/README.md` | Current player name is `Spire Plus`; manifest id is `EZMicroBalance`; README is readable; A19/A20 website copy now uses dedicated abilities / Branded Form. | source-fixed / live-site-pending | Keep guarded because public pages can drift from current mod localization and package hashes. |
 | Ancient reward rebalance details | `content-data.js` rework groups | `EZMicroBalanceCode/Ancients/`, `docs/features/ancients-rework-v4/` | partial | Some claims are source-backed but live reward proof remains pending. |
 | Urda ten blessings | `content-data.js` Urda section | `EZMicroBalanceCode/Ancients/Expansion/Urda/`, guard tests | partial | Live clicked UI, Root Eyes, Seed Bank, save/load, and co-op proof remain pending. |
 | Morvi eight blessings | `content-data.js` Morvi section | `EZMicroBalanceCode/Ancients/Expansion/Morvi/`, guard tests | partial | Live freeze reports, save/load, and co-op proof remain pending. |
@@ -35,4 +35,4 @@ A restored website must be generated from `docs/specs/release-scope-v1.md` and `
 
 ## Subagent Review Note
 
-The 2026-05-20 Product Spec Curator read the archived website and current docs in read-only mode. Their highest-risk findings still apply to player claims: old `EasyFirePlus` branding conflicts with `Spire Plus`, Vakuu must stay hidden until live proof exists, A11-A20 and Ancient blessings are partial because live proof is pending, and Preview tools now ship inside the Spire Plus page with live proof still pending.
+The 2026-05-20 Product Spec Curator read the archived website and current docs in read-only mode. The same release-risk standard still applies to the active site: Vakuu must stay hidden until live proof exists, A11-A20 and Ancient blessings are partial because live proof is pending, and Preview tools now ship inside the Spire Plus page with live proof still pending.

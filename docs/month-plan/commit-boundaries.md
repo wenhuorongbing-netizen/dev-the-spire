@@ -4,6 +4,42 @@ Purpose: turn `GOV-WIP-SPLIT` into a reviewable split plan before any release ha
 
 Current status: `GOV-WIP-SPLIT` remains open. GOV-WIP-SPLIT remains open until these batches are separated or owner-accepted. This file is a plan, not a closure.
 
+Refresh command:
+
+```powershell
+.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
+```
+
+The script reads `git status --short`, classifies every dirty path into the batches below, and fails if a new path does not have an explicit owner batch.
+
+To prepare review/staging inputs without staging anything:
+
+```powershell
+.\scripts\report-worktree-batches.ps1 -FailOnUnclassified -PathspecDirectory .tools\worktree-batches\current
+```
+
+That writes `batch-0.pathspec` through `batch-8.pathspec` and `manifest.json`. The manifest includes the exact `git add --pathspec-from-file=<pathspec>` command for each batch. Review a file first, then use that command only when intentionally staging that batch.
+
+## Current Dirty Snapshot
+
+Snapshot command: `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified`, 2026-05-23 after the A19/A20 package hash sync.
+
+This snapshot is not a commit manifest. Rerun `git status --short` before staging, committing, or release handoff.
+
+| Batch | Current dirty entries | Primary paths | Review risk | Focused validation |
+| --- | ---: | --- | --- | --- |
+| 0 | 3 | `.gitignore`, `output/.gdignore`, tracked `output/playwright/` evidence | Local browser/Godot output hygiene can hide useful evidence if over-broadened. | `git check-ignore -v output/playwright/new.log output/.gdignore` plus default tests. |
+| 1 | 16 | `PROJECT_STATE.md`, `README.md`, compact status/release docs | Stale hashes or release-ready wording can mislead testers. | `DocumentationCompactnessGuardTests`, `ReleaseHashGuardTests`. |
+| 2 | 14 | `docs/architecture/**`, `docs/specs/**`, `docs/month-plan/**`, archive/index docs | Governance docs can drift from actual patch/source state. | `EngineeringGovernanceGuardTests`, patch inventory freshness checks. |
+| 3 | 21 | `EZMicroBalanceCode/Ancients/**`, Ancient support docs, Ancient shared evidence/tests | Ancient reward behavior, save state, and option relic visibility are high-risk. | Ancient/Urda/Morvi/Lotha/Vakuu focused guards plus full build/test. |
+| 4 | 42 | `EZMicroBalanceCode/Ascension/**`, `EZMicroBalance/localization/*/ascension.json`, Ascension docs/tests | A11-A20 map/combat/save/co-op paths have broad runtime surface. | `AscensionV2MilestoneGuardTests`, `BossDedicatedAbilityV41GuardTests`, full build/test. |
+| 5 | 30 | `scripts/**`, `EZMicroBalanceCode/Preview/**`, release/CI/test-infrastructure tests | Validation tooling and preview helpers can create false confidence if hashes, RNG guards, or gates drift. | preview guards, release package/artifact guards, `check-installed-ezmb-package.ps1`, script syntax checks. |
+| 6 | 5 | Ancient art/resource docs and waiting-test docs | Art/resource claims can outpace live UI proof. | art/resource guards plus manual screenshot queue remains open. |
+| 7 | 9 | `website/**`, `forum/**` | Public-info surfaces can accidentally imply release readiness. | website/forum syntax check plus website claim/localization guards. |
+| 8 | 3 | `EZMicroBalanceCode/README.md`, `docs/audits/**`, localized intro doc | Stray docs can escape the planned review batches. | docs index/map/inventory guards and reviewer read-through. |
+
+Minimum split order: land batches 0, 1, 2, and 5 before gameplay batches, then split Ancient batch 3 from Ascension batch 4, then package/website evidence. Do not mix live-proof closure into these batches unless the matching screenshots/logs/two-client notes are included.
+
 ## Proposed Order
 
 | Batch | Scope | Files | Validation |

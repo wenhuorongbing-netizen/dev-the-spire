@@ -17,6 +17,7 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Architecture boundaries | `architecture/bounded-contexts.md` | Bounded contexts, dependency direction, extension rules, and refactor priorities. |
 | Patch inventory | `patch-inventory.md` | Generated Harmony patch owner/risk inventory; refresh with `scripts/generate-patch-inventory.ps1`. |
 | Release evidence dashboard | `release-evidence-status.md` | Compact live/manual evidence state for the current test package. |
+| v0.106 source/API audit | `audits/v0.106-source-api-drift.md` | Current local Core evidence for high-risk patch surfaces and API drift. |
 | Release scope | `specs/release-scope-v1.md` | Current release-candidate boundary and go/no-go rules from `goal.md`. |
 | Traceability matrix | `specs/release-traceability-matrix.md` | Player promise to source/guard/live evidence mapping. |
 | Baseline freeze | `month-plan/baseline-2026-05-20.md` | Current no-game baseline, package hashes, patch inventory, and blocker state. |
@@ -34,7 +35,7 @@ Use `features/README.md` as the compact feature index.
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current Urda, Morvi, Lotha, and Vakuu roadmap/status. |
 | Ancient reward rebalance v4 | `features/ancients-rework-v4/README.md` | Active Spire Plus core feature. v4.3 is current. |
 | Ascension 11-20 | `features/ascension-11-20/README.md` | Active development track, default-on for private-beta multiplayer testing, not release-verified. |
-| Urda ancient expansion | `features/ancient-expansion-urda/README.md` | Current default-on Urda slice with ten source-backed blessings; live verification pending. |
+| Urda ancient expansion support | `features/ancient-expansion-urda/README.md` | Support evidence for the current default-on Urda slice with ten source-backed blessings; active goal/issues/v2.2/v3.3 docs override older behavior if they conflict. |
 | Preview tools | `features/preview-tools/README.md` | Crystal Sphere peek and transform preview now ship inside the single Spire Plus mod. |
 | Public forum | `features/forum/technical-spec.md` | GitHub Pages + Supabase anonymous text forum; go-live steps are in `features/forum/go-live-checklist.md`. |
 | Independent mod architecture | `architecture-ez-micro-balance.md` | Why `EZMicroBalance` is the single active deliverable. |
@@ -48,6 +49,7 @@ These files are current support records but are not part of the default next-dev
 | `dev-environment.md` | Local versions, paths, latest build/publish/test/smoke evidence. |
 | `release-checklist.md` | Private beta checklist and explicit pending gates. |
 | `release-evidence-status.md` | Compact dashboard of current package hashes and live/manual proof rows. |
+| `platform-testing.md` | Windows/macOS package hash, log path, and environment-variable testing notes. |
 | `private-beta-verification-handoff.md` | Concise package, validation, and manual-test handoff. |
 | `private-beta-release-completion-audit.md` | Release completion audit, strict release-readiness audit, and blocker evidence. |
 | `test-ready-completion-audit.md` | Source/test-ready completion audit from the previous pass. |
@@ -87,6 +89,7 @@ These files are current support records but are not part of the default next-dev
 | `architecture/bounded-contexts.md` | Feature/context ownership map. |
 | `architecture/patch-boundaries.md` | Harmony patch boundary rules. |
 | `architecture/save-state-contracts.md` | Stateful feature save/load contract map. |
+| `audits/v0.106-source-api-drift.md` | Source/API drift audit for the refreshed `v0.106.0` Core snapshot. |
 | `../scripts/ci-full-validation.ps1` | Full no-game validation entry point for self-hosted CI or a local release machine. |
 | `archive/legacy-planning/legacy-project-files/README.md` | Preserved migration artifact map. |
 
