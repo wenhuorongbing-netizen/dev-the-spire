@@ -1,23 +1,22 @@
-# Spire Plus 论坛页面 UI/UX 第三轮复查
+# Spire Plus 网站论坛集成 QA
 
-审核范围：`forum/src/client/App.tsx`、`forum/src/client/styles.css`、`web_issue.md`，以及截图 `output/playwright/forum-new-composer-v6.png`、`output/playwright/forum-mobile-edit-v6.png`、`output/playwright/forum-mobile-preview-v6.png`、`output/playwright/forum-topic-detail-v6.png`、`output/playwright/forum-topic-reply-anchor-v6.png`、`output/playwright/forum-topic-replied-v6.png`。
+审核范围：主站 `#forum` 页面、直接访问 `/forum/` 的玩家路径、论坛发帖页嵌入效果。
 
-结论：未发现需要继续处理的问题 / 审核通过。
+结论：无必须修复项。
 
-## 上一轮 P3 复查
+## 已复查
 
-- 筛选语义：已解决。分类筛选现在是带 `aria-label="主题筛选"` 的普通按钮组，并通过 `aria-pressed` 表达当前筛选状态；不再使用未补齐语义的 `tablist`。
-- 移动端编辑 / 预览：已解决。移动端发帖页提供“编辑 / 预览”分段切换，截图中两个模式的触控目标、宽度、层级和内容状态都清晰，没有发现横向溢出或互相遮挡。
-- 帖子详情页主行动：已解决。详情页顶部把“回帖”作为主按钮，“发新帖”降级为次级入口；回帖锚点和回帖后状态截图显示主流程可读、可达。
+- 主站导航中的“论坛”现在直接显示论坛内容，不再显示“进入论坛”式跳转入口。
+- 直接访问 `/forum/` 会回到主站 `#forum` 页面，避免玩家进入另一套独立外壳。
+- `/forum/#/new` 会回到主站并保留发帖页状态，最终 iframe 地址为 `/forum/?embedded=1#/new`。
+- 嵌入模式隐藏论坛自己的独立页头，保留主站品牌、导航和语言切换。
+- 公开站点验证无浏览器 console error。
 
-## P1
+## 截图证据
 
-- 未发现。
+- `output/playwright/forum-public-main-tab-aff471a.png`
+- `output/playwright/forum-public-direct-redirect-aff471a.png`
 
-## P2
+## 待后续
 
-- 未发现。
-
-## P3
-
-- 未发现需要继续处理的问题。
+- 论坛真实运营前，仍需持续观察匿名发帖刷屏风险；当前方案依赖 Supabase RLS、honeypot、长度限制和基础速率约束。
