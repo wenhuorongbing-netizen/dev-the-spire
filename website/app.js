@@ -202,6 +202,18 @@
     return routes.has(hash) ? hash : "updates";
   }
 
+  function forumHref() {
+    return isLocal() ? data.forum.localUrl : data.forum.url;
+  }
+
+  function forumHashRequested() {
+    return location.hash.slice(1) === "forum";
+  }
+
+  function redirectToForumApp() {
+    location.replace(forumHref());
+  }
+
   function renderHeader(activeRoute) {
     header.replaceChildren();
     const brand = el("a", "brand");
@@ -223,8 +235,12 @@
       ["issues", labels.navIssues]
     ]) {
       const link = el("a", id === activeRoute ? "active" : "", label);
-      link.href = "#" + id;
-      link.dataset.route = id;
+      if (id === "forum") {
+        link.href = forumHref();
+      } else {
+        link.href = "#" + id;
+        link.dataset.route = id;
+      }
       nav.appendChild(link);
     }
     header.appendChild(nav);
@@ -282,8 +298,12 @@
     const summary = el("section", "summary-strip quick-nav");
     for (const [value, label, routeId] of data.summary) {
       const card = el("a", "stat-card quick-card");
-      card.href = "#" + routeId;
-      card.dataset.route = routeId;
+      if (routeId === "forum") {
+        card.href = forumHref();
+      } else {
+        card.href = "#" + routeId;
+        card.dataset.route = routeId;
+      }
       card.appendChild(el("strong", "", value));
       card.appendChild(el("span", "", label));
       summary.appendChild(card);
@@ -502,6 +522,11 @@
   }
 
   function render() {
+    if (forumHashRequested()) {
+      redirectToForumApp();
+      return;
+    }
+
     const current = route();
     document.title = "Spire Plus | " + (
       current === "install" ? labels.navInstall :
