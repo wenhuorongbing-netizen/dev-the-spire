@@ -187,7 +187,7 @@ Static checks:
 
 ## Review 8: Published Vanilla Relic Icon QA
 
-Result: pass.
+Result: superseded by Review 9.
 
 Permission record:
 
@@ -204,3 +204,23 @@ Static checks:
 - `node --check website/content-data.js` passed.
 - `node --check website/app.js` passed.
 - Site asset scan found 25 shipped relic PNG files and no relic SVG files.
+
+## Review 9: Published Vanilla Card Portrait QA
+
+Result: pass.
+
+Permission record:
+
+- Project owner confirmed on 2026-05-23 that original game art may be distributed on the public website.
+
+Fixes checked during this pass:
+
+- Copied `brightest_flame.png`, `enthralled.png`, and `folly.png` from `source code/images/packed/card_portraits/` to `website/assets/vanilla-icons/cards/`.
+- Changed Brightest Flame, Enthralled, and Folly update entries to use the shipped public-site PNG paths.
+- Deleted the generated card SVG files for these entries.
+
+Static checks:
+
+- `node --check website/content-data.js` passed.
+- `node --check website/app.js` passed.
+- Asset scan found 25 relic PNG files, 3 card portrait PNG files, and no relic/card SVG replacement files.

@@ -48,4 +48,4 @@ https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-priv
 - 渲染逻辑：`app.js`
 - 图片：`assets/`
 
-`assets/` 只放 `EZMicroBalance/images/` 下的自有或生成资源、站点自带的通用图标，以及已确认可用于本站发布的原版遗物图标。当前授权确认来自项目负责人在 2026-05-23 的明确说明；只分发更新页实际引用的 25 个遗物图标，位置为 `assets/vanilla-icons/relics/`。不要复制 `source code/` 下的原版非美术资产。
+`assets/` 只放 `EZMicroBalance/images/` 下的自有或生成资源、站点自带的通用图标，以及已确认可用于本站发布的原版遗物图标和卡牌立绘。当前授权确认来自项目负责人在 2026-05-23 的明确说明；只分发更新页实际引用的 25 个遗物图标和 3 个卡牌立绘，位置为 `assets/vanilla-icons/`。不要复制 `source code/` 下的原版非美术资产。
