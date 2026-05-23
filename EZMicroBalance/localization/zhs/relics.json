@@ -5,7 +5,7 @@
   "BRILLIANT_SCARF.description": "每回合，你打出的第6张牌费用变为0。",
   "CHOICES_PARADOX.description": "每场战斗开始时，从5张可用的稀有牌中选择1张加入手牌。它获得保留，并在战斗后移除。",
   "CHOICES_PARADOX.selectionScreenPrompt": "选择1张稀有牌加入你的手牌。",
-  "CLAWS.description": "从4张诅咒中选择1张加入你的牌组。加入2张许愿和1张已升级的许愿+。",
+  "CLAWS.description": "从4张诅咒中选择1张加入你的牌组。加入2张许愿和1张升级后的许愿。",
   "CROSSBOW.description": "每回合开始时，你可以将1张随机攻击牌加入手牌。它本回合费用降低1，并获得虚无和消耗。",
   "DISTINGUISHED_CAPE.description": "拾取时，失去当前最大生命的30%，至少18点。加入3张灵体。",
   "DISTINGUISHED_CAPE.eventDescription": "失去当前最大生命的30%，至少18点。加入3张灵体。",

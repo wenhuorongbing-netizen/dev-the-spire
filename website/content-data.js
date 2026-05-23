@@ -304,7 +304,7 @@ window.SPIRE_PLUS_DATA = {
         baseRelic("\u73e0\u5b9d\u76d2", "JEWELRY_BOX.description", ["\u795e\u5316"], "拾起时将1张神化加入牌组。", "拾起时将1张神化加入牌组；这张神化没有固有。"),
         baseRelic("\u4fdd\u5b58\u4e4b\u96fe", "PRESERVED_FOG.description", ["\u5220\u724c"], "拾起时从牌组移除3张牌；将1张愚行加入牌组。", "拾起时从牌组移除4张牌；将1张愚行加入牌组。"),
         cardLoc("愚行", "FOLLY.description", ["\u8bc5\u5492", "\u5361\u724c\u672c\u4f53"], "无法打出。固有。永恒。虚无。"),
-        baseRelic("\u67af\u722a", "CLAWS.description", ["\u8bc5\u5492", "\u8bb8\u613f"], "拾起时将至多6张牌变化为撕咬。", "从4张诅咒中选择1张加入牌组；加入2张许愿和1张已升级的许愿+。"),
+        baseRelic("\u67af\u722a", "CLAWS.description", ["\u8bc5\u5492", "\u8bb8\u613f"], "拾起时将至多6张牌变化为撕咬。", "从4张诅咒中选择1张加入牌组；加入2张许愿和1张升级后的许愿。"),
         baseRelic("\u9009\u62e9\u6096\u8bba", "CHOICES_PARADOX.description", ["\u7a00\u6709\u724c"], "每场战斗第1回合开始时，从5张随机牌中选择1张加入手牌；该牌获得保留。", "每场战斗开始时，从5张可用稀有牌中选择1张加入手牌；获得保留，并在战斗后移除。"),
         baseRelic("\u5b9d\u77f3\u9762\u5177", "JEWELED_MASK.description", ["\u80fd\u529b\u724c"], "每场战斗第1回合抽牌前，将抽牌堆中1张随机能力牌移入手牌；本回合费用为0。", "拾起时选择1张能力牌永久变为0费；每场战斗开始时，将它从抽牌堆移入手牌。"),
         baseRelic("\u5e15\u5c14\u4e4b\u89d2", "PAELS_HORN.description", ["\u653e\u677e"], "拾起时将2张放松加入牌组。", "拾起时将1张放松和1张已升级的放松+加入牌组。"),
@@ -920,7 +920,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       "CLAWS.description": {
         title: "Claws",
         vanilla: "On pickup, transform up to 6 cards into Mauls.",
-        desc: "Choose 1 of 4 Curses to add to your deck. Add 2 Wishes and 1 upgraded Wish+."
+        desc: "Choose 1 of 4 Curses to add to your deck. Add 2 Wishes and 1 upgraded Wish."
       },
       "CHOICES_PARADOX.description": {
         title: "Choices Paradox",

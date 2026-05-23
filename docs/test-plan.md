@@ -73,7 +73,7 @@ Each implemented Ancient reward change needs a manual result before private beta
 - War Hammer: pickup chooses two cards to upgrade; elite kill upgrades remain.
 - Jewelry Box: adds Apotheosis without Innate.
 - Preserved Fog / Folly: removes four cards and adds Folly with Unplayable, Innate, Eternal.
-- Claws: chooses one curse from four and adds two Wish plus one upgraded Wish+.
+- Claws: chooses one curse from four and adds two Wish plus one upgraded Wish.
 - Choices Paradox: combat-start five rare choices, Retain, combat temporary.
 - Jeweled Mask: selected/drafted power permanently costs 0 and is moved from draw pile to hand at combat start.
 - Prismatic Gem: Every second standard card reward contains only off-color cards; reroll preserves trigger/non-trigger state; non-normal rewards do not count; the reward-screen hint logs a fallback if the banner cannot be updated.

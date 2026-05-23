@@ -44,7 +44,7 @@ internal static class ClawsAfterObtainedPatch
         addedCards.Add(await CardPileCmd.Add(upgradedWish, PileType.Deck));
 
         CardCmd.PreviewCardPileAdd(addedCards, 2f);
-        MainFile.Logger.Info($"[EZMicroBalance] Claws applied: added curse {selectedCurse?.Id.Entry ?? "NONE"}, 2 Wish, and 1 upgraded Wish+.");
+        MainFile.Logger.Info($"[EZMicroBalance] Claws applied: added curse {selectedCurse?.Id.Entry ?? "NONE"}, 2 Wish, and 1 upgraded Wish.");
     }
 
     private static List<CardModel> CreateClawsCurseDraft(Player owner)

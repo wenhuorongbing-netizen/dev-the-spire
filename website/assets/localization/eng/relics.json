@@ -5,7 +5,7 @@
   "BRILLIANT_SCARF.description": "Every turn, the 6th card you play costs 0.",
   "CHOICES_PARADOX.description": "At the start of each combat, choose 1 of 5 usable Rare cards to add to your hand. It gains Retain and is removed after combat.",
   "CHOICES_PARADOX.selectionScreenPrompt": "Choose 1 Rare card to add to your hand.",
-  "CLAWS.description": "Choose 1 of 4 Curses to add to your deck. Add 2 Wish and 1 upgraded Wish+.",
+  "CLAWS.description": "Choose 1 of 4 Curses to add to your deck. Add 2 Wish and 1 upgraded Wish.",
   "CROSSBOW.description": "At the start of each turn, you may add a random Attack to your hand. It costs 1 less this turn and gains Ethereal and Exhaust.",
   "DISTINGUISHED_CAPE.description": "On pickup, lose 30% of current Max HP, at least 18. Add 3 Apparitions.",
   "DISTINGUISHED_CAPE.eventDescription": "Lose 30% of current Max HP, at least 18. Add 3 Apparitions.",
