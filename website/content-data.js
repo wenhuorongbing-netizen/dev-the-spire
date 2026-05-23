@@ -182,7 +182,7 @@ function detail(label, text, labelEn, textEn) {
 
 window.SPIRE_PLUS_DATA = {
   labels: {
-    brandSub: "《杀戮尖塔 2》玩法扩展 · 温火融冰制作",
+    brandSub: "更平衡、更有选择的《杀戮尖塔 2》玩法扩展 · 温火融冰制作",
     navUpdates: "\u66f4\u65b0\u5185\u5bb9",
     navInstall: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     navForum: "\u8bba\u575b",
@@ -191,7 +191,7 @@ window.SPIRE_PLUS_DATA = {
     heroTitle: "Spire Plus",
     heroCopy: "版本改动、下载方式、反馈入口与已知问题。",
     introTitle: "关于 Spire Plus",
-    introCopy: "Spire Plus 是由温火融冰制作的《杀戮尖塔 2》玩法扩展。它重做先古奖励，扩展 A11-A20，并加入部分预览工具；目标是让强奖励拥有清晰代价，让路线、牌组和战斗选择更有重量。",
+    introCopy: "Spire Plus 不是单纯的加强包。它在加入更多路线、遗物、先古和卡牌选择的同时，保留代价与风险，避免把游戏直接变简单；并提供 A11-A20，尤其是 A20 的挑战难度。目标是让《杀戮尖塔 2》更平衡、更耐玩，也更有意思。",
     download: "\u4e0b\u8f7d\u6a21\u7ec4",
     viewIssues: "\u67e5\u770b\u5df2\u77e5\u95ee\u9898",
     all: "\u5168\u90e8",
@@ -253,19 +253,18 @@ window.SPIRE_PLUS_DATA = {
       ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.0.zip"],
       ["\u7248\u672c", "v0.1.0-private-beta.0"],
       ["\u663e\u793a\u540d", "Spire Plus"],
-      ["\u5b89\u88c5\u76ee\u5f55", "EZMicroBalance"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,879,504 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "6651D766B2E0BB4CEAE8BC5DB902A1785B2545EFDEE4FD886DC9CC9657EBBCB9"]
+      ["\u4f53\u79ef", "18,879,498 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "1D294871C211B48EAE9DA246BC94E8BF5422985A3FC589D62048BAF32469BB26"]
     ]
   },
   installSteps: [
     "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.0.zip\u3002",
     "下载 BaseLib v3.1.4；版本页应显示 BaseLib-StS2 v3.1.4。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
-    "\u89e3\u538b\u540e\u786e\u8ba4\u6839\u76ee\u5f55\u662f EZMicroBalance \u6587\u4ef6\u5939\u3002",
-    "模组最终位置：mods\\EZMicroBalance\\EZMicroBalance.json。",
+    "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
+    "当前技术路径：mods\\EZMicroBalance\\EZMicroBalance.json。",
     "BaseLib 最终位置：mods\\BaseLib\\BaseLib.json。",
     "\u542f\u52a8\u6e38\u620f\uff0c\u5728\u6a21\u7ec4\u5217\u8868\u91cc\u542f\u7528 Spire Plus\u3002",
     "\u6b64\u7248\u672c\u4ecd\u5904\u4e8e\u79c1\u6d4b\uff1b\u53cd\u9988\u95ee\u9898\u65f6\u8bf7\u9644\u4e0a godot.log\u3001\u622a\u56fe\u548c\u590d\u73b0\u6b65\u9aa4\u3002"
@@ -274,10 +273,10 @@ window.SPIRE_PLUS_DATA = {
     "Slay the Spire 2 public beta v0.106.0\u3002",
     "BaseLib v3.1.4；此版本按该依赖构建。",
     "\u6a21\u7ec4\u5217\u8868\u4e2d\u7684\u663e\u793a\u540d\u5e94\u4e3a Spire Plus\u3002",
-    "\u6e05\u5355\u7f16\u53f7\u4e0e\u5b89\u88c5\u76ee\u5f55\u4fdd\u6301 EZMicroBalance\uff0c\u7528\u4e8e\u5b58\u6863\u4e0e\u517c\u5bb9\u6027\u7ee7\u627f\u3002"
+    "为兼容现有存档，压缩包内的技术目录名暂不手动修改；玩家看到的模组名应为 Spire Plus。"
   ],
   assetPolicy: [
-    "\u672c\u7ad9\u53ea\u6253\u5305 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\uff0c\u4e3b\u8981\u6765\u81ea EZMicroBalance/images/\u3002",
+    "本站只打包 Spire Plus 自有或可发布素材。",
     "\u539f\u7248\u6e38\u620f\u975e\u7f8e\u672f\u8d44\u4ea7\u4e0d\u8fdb\u5165\u4ed3\u5e93\u3002\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\u5df2\u7531\u9879\u76ee\u8d1f\u8d23\u4eba\u786e\u8ba4\u53ef\u7528\u4e8e\u672c\u7ad9\u53d1\u5e03\u3002",
     "\u672c\u7ad9\u4ec5\u968f\u5305\u53d1\u5e03\u5f53\u524d\u66f4\u65b0\u9875\u5b9e\u9645\u5f15\u7528\u7684\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\uff0c\u7edf\u4e00\u653e\u5728 website/assets/source-art/\u3002",
     "\u82e5\u540e\u7eed\u9700\u8981\u516c\u5f00\u5c55\u793a\u66f4\u591a\u539f\u7248\u5b9e\u673a\u622a\u56fe\u6216\u539f\u56fe\uff0c\u5c06\u5355\u72ec\u8bb0\u5f55\u6765\u6e90\u548c\u4f7f\u7528\u8303\u56f4\u3002"
@@ -401,9 +400,9 @@ window.SPIRE_PLUS_DATA = {
       ]
     },
     {
-      short: "\u4ee4\u724c",
-      title: "\u65b0\u589e\u724c\u3001\u72b6\u6001\u4e0e\u9884\u89c8\u5de5\u5177",
-      note: "\u539f\u7248\u6ca1\u6709\u8fd9\u4e9b\u4e13\u7528\u4ee4\u724c\u548c\u9884\u89c8\u5de5\u5177\u3002",
+      short: "\u5361\u724c",
+      title: "\u65b0\u589e\u5361\u724c\u3001\u72b6\u6001\u4e0e\u9884\u89c8\u5de5\u5177",
+      note: "\u539f\u7248\u6ca1\u6709\u8fd9\u4e9b\u65b0\u589e\u5361\u724c\u3001\u72b6\u6001\u548c\u9884\u89c8\u5de5\u5177\u3002",
       icon: "assets/card_portraits/rootblight_i.png",
       defaultVanilla: "\u539f\u7248\u65e0\u6b64\u65b0\u589e\u5185\u5bb9\u3002",
       items: [
@@ -444,7 +443,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.0.zip\uff0c\u6e05\u5355\u7f16\u53f7 EZMicroBalance\uff0c\u663e\u793a\u540d Spire Plus\u3002"],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.0.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb Future Peek \u53d1\u5e03\u3002"]
@@ -565,7 +564,7 @@ function manual(title, vanilla, current, tags, icon) {
 window.SPIRE_PLUS_DATA.i18n = {
   en: {
     labels: {
-      brandSub: "Gameplay expansion for Slay the Spire 2 by Wenhuo Rongbing",
+      brandSub: "A more balanced, more choice-driven Slay the Spire 2 expansion by Wenhuo Rongbing",
       navUpdates: "Updates",
       navInstall: "Download & Install",
       navForum: "Forum",
@@ -573,7 +572,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       releaseLine: "Private test build · v0.1.0-private-beta.0",
       heroCopy: "Patch notes, downloads, feedback links, and known issues.",
       introTitle: "About Spire Plus",
-      introCopy: "Spire Plus is a gameplay expansion for Slay the Spire 2 by Wenhuo Rongbing. It rebuilds Ancient rewards, extends Ascension 11-20, and adds selected preview tools. The goal is simple: stronger rewards, clearer costs, and more meaningful route, deck, and combat decisions.",
+      introCopy: "Spire Plus is not a pure power-up pack. It adds more route, relic, Ancient, and card choices while keeping real costs and risks, so the game does not simply become easier. It also adds the A11-A20 challenge set, with A20 as the top-end test. The goal is a Slay the Spire 2 run that feels more balanced, more replayable, and more interesting.",
       download: "Download Mod",
       viewIssues: "Known Issues",
       all: "All",
@@ -638,19 +637,18 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["File", "SpirePlus-v0.1.0-private-beta.0.zip"],
         ["Version", "v0.1.0-private-beta.0"],
         ["Display name", "Spire Plus"],
-        ["Install folder", "EZMicroBalance"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,879,504 bytes"],
-        ["Hash", "6651D766B2E0BB4CEAE8BC5DB902A1785B2545EFDEE4FD886DC9CC9657EBBCB9"]
+        ["Size", "18,879,498 bytes"],
+        ["Hash", "1D294871C211B48EAE9DA246BC94E8BF5422985A3FC589D62048BAF32469BB26"]
       ]
     },
     installSteps: [
       "Download SpirePlus-v0.1.0-private-beta.0.zip.",
       "Download BaseLib v3.1.4; the release page should show BaseLib-StS2 v3.1.4.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
-      "After extraction, confirm the root folder is EZMicroBalance.",
-      "Final mod path: mods\\EZMicroBalance\\EZMicroBalance.json.",
+      "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
+      "Current technical path: mods\\EZMicroBalance\\EZMicroBalance.json.",
       "Final BaseLib path: mods\\BaseLib\\BaseLib.json.",
       "Start the game and enable Spire Plus in the mod list.",
       "This is a private test build. When reporting an issue, include godot.log, screenshots, and reproduction steps."
@@ -659,10 +657,10 @@ window.SPIRE_PLUS_DATA.i18n = {
       "Slay the Spire 2 public beta v0.106.0.",
       "BaseLib v3.1.4. This build targets that dependency version.",
       "The mod list should show Spire Plus.",
-      "The manifest id and install folder remain EZMicroBalance for save and compatibility continuity."
+      "For save compatibility, do not manually rename the technical folder inside the zip. The in-game mod name should be Spire Plus."
     ],
     assetPolicy: [
-      "This site ships only Spire Plus-owned or publishable assets, mainly from EZMicroBalance/images/.",
+      "This site ships only Spire Plus-owned or publishable assets.",
       "Original non-art game assets are not committed. The project owner has confirmed permission to publish the vanilla relic icons and card portraits used on this site.",
       "Only the vanilla images referenced by the current update page are shipped, under website/assets/source-art/.",
       "If more base-game screenshots or original art are published later, source and usage scope will be documented separately."
@@ -701,9 +699,9 @@ window.SPIRE_PLUS_DATA.i18n = {
         defaultVanilla: "No equivalent vanilla content."
       },
       {
-        short: "Tokens",
+        short: "Cards",
         title: "New Cards, Statuses, and Preview Tools",
-        note: "Dedicated token cards, statuses, and preview tools added by the mod.",
+        note: "New cards, statuses, and preview tools added by the mod.",
         defaultVanilla: "No equivalent vanilla content."
       }
     ],
@@ -749,7 +747,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       "战旗": "Banner",
       "专属能力": "Dedicated Ability",
       "烙印形态": "Branded Form",
-      "令牌": "Token",
+      "卡牌": "Card",
       "状态": "Status",
       "预览工具": "Preview tool"
     },
@@ -990,7 +988,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.0.zip, manifest id EZMicroBalance, display name Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.0.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate Future Peek package."]
