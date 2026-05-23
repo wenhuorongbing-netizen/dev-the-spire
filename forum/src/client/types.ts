@@ -6,6 +6,7 @@ export type ForumPost = {
   title: string;
   body: string;
   category: ForumCategory;
+  status?: "visible" | "hidden" | "deleted";
   reply_count: number;
   last_activity_at: string;
   created_at: string;
@@ -16,6 +17,7 @@ export type ForumReply = {
   post_id: string;
   author_name: string;
   body: string;
+  status?: "visible" | "hidden" | "deleted";
   created_at: string;
 };
 

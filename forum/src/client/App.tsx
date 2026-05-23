@@ -351,7 +351,8 @@ function HomePage() {
     const to = from + PAGE_SIZE;
     let query = supabase
       .from("forum_posts")
-      .select("id,author_name,title,body,category,reply_count,last_activity_at,created_at");
+      .select("id,author_name,title,body,category,reply_count,last_activity_at,created_at")
+      .eq("status", "visible");
 
     if (selectedCategory !== "all") {
       query = query.eq("category", selectedCategory);
@@ -678,30 +679,50 @@ function PostPage({ id }: { id: string }) {
   const [replies, setReplies] = useState<ForumReply[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [replyError, setReplyError] = useState("");
   const [copyState, setCopyState] = useState("复制链接");
 
   const loadPost = useCallback(async () => {
     if (!supabase) return;
     setError("");
-    const [{ data: postData, error: postError }, { data: replyData, error: replyError }] = await Promise.all([
-      supabase
-        .from("forum_posts")
-        .select("id,author_name,title,body,category,reply_count,last_activity_at,created_at")
-        .eq("id", id)
-        .single(),
-      supabase
-        .from("forum_replies")
-        .select("id,post_id,author_name,body,created_at")
-        .eq("post_id", id)
-        .order("created_at", { ascending: true })
-        .order("id", { ascending: true })
-    ]);
+    setReplyError("");
+    const { data: postData, error: postError } = await supabase
+      .from("forum_posts")
+      .select("id,author_name,title,body,category,reply_count,last_activity_at,created_at")
+      .eq("id", id)
+      .eq("status", "visible")
+      .maybeSingle();
+
     setLoading(false);
-    if (postError || replyError || !postData) {
-      setError("帖子不存在或论坛暂时无法连接。");
+    if (postError) {
+      setPost(null);
+      setReplies([]);
+      setError("论坛暂时无法连接，请稍后重试。");
       return;
     }
+    if (!postData) {
+      setPost(null);
+      setReplies([]);
+      setError("帖子不存在，可能已被隐藏、删除，或链接不是最新。");
+      return;
+    }
+
     setPost(postData);
+
+    const { data: replyData, error: repliesError } = await supabase
+      .from("forum_replies")
+      .select("id,post_id,author_name,body,created_at")
+      .eq("post_id", id)
+      .eq("status", "visible")
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true });
+
+    if (repliesError) {
+      setReplies([]);
+      setReplyError("回帖暂时无法加载，主帖仍可阅读。");
+      return;
+    }
+
     setReplies(replyData ?? []);
   }, [id]);
 
@@ -750,6 +771,7 @@ function PostPage({ id }: { id: string }) {
           <h2>回帖</h2>
           <span>{replies.length} 条</span>
         </div>
+        {replyError ? <ErrorPanel message={replyError} onRetry={() => void loadPost()} /> : null}
         {replies.length === 0 ? <p className="muted">还没有回帖。</p> : null}
         {replies.map((reply, index) => (
           <ForumMessage key={reply.id} author={reply.author_name} time={reply.created_at} floor={index + 2}>
