@@ -1,75 +1,77 @@
 # Spire Plus Website
 
-这是 `Spire Plus` 的静态介绍站点。站点内容以当前仓库文档、源码和本地化文本为准，定位是“效果记录”和“下载入口”，不是发布就绪声明。
+This is the static public-info site for `Spire Plus`. It records current player-facing effects, download links, known issues, and forum setup notes. It is not a release-ready claim.
 
-## 本地预览
+## Local Preview
 
-从仓库根目录启动静态服务器：
+From the repository root:
 
 ```powershell
 python -m http.server 4177 --bind 127.0.0.1
 ```
 
-打开：
+Open:
 
 ```text
 http://127.0.0.1:4177/website/
 ```
 
-本地环境下“下载当前包”按钮会指向：
+In local preview, the current download button points to:
 
 ```text
 ../publish/SpirePlus-v0.1.0-private-beta.0.zip
 ```
 
-## 公开部署
+## Public Deploy
 
-`.github/workflows/spire-plus-site.yml` 会把 `website/` 发布到 GitHub Pages。公开环境下“下载当前包”按钮会指向 GitHub Release 的 zip 资产：
+`.github/workflows/spire-plus-site.yml` publishes `website/` to GitHub Pages.
+
+In the public site, the current download button points to the versioned GitHub Release asset:
 
 ```text
 https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.0/SpirePlus-v0.1.0-private-beta.0.zip
 ```
 
-发布页按钮指向具体版本页：
+The release-page button points to:
 
 ```text
 https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.0
 ```
 
-当前仓库是 private 时，GitHub Pages 还取决于账号计划是否支持 private repository Pages。若 API 返回 `Your current plan does not support GitHub Pages for this repository`，需要把仓库改为 public、升级到支持 private Pages 的计划，或把 `website/` 发布到一个单独的 public Pages 仓库。
+If the repository is private, GitHub Pages availability depends on the account plan. If GitHub reports that private Pages are unsupported, use a public Pages repository, make this repository public, or upgrade the plan before publishing the site.
 
-发布页面前，需要在 GitHub Release 上传同名 zip 资产。
+Upload the zip asset to the matching GitHub Release before publishing the page.
 
-## 论坛
+## Forum
 
-`website/#forum` 是论坛入口。真正的论坛页面由 `forum/` React 项目构建到：
+`website/#forum` links to the forum entry page. The forum UI is built into:
 
 ```text
 website/forum/
 ```
 
-论坛本身仍然是 GitHub Pages 静态页面；帖子和回复存入 Supabase PostgreSQL。部署前需要创建 Supabase 项目，执行：
+The forum is still a static GitHub Pages page. Posts and replies are stored in Supabase PostgreSQL. Before enabling writes, create a Supabase project and run:
 
 ```text
 forum/supabase/schema.sql
 ```
 
-GitHub Actions 构建论坛时需要设置仓库 Variables：
+The GitHub Actions build expects these repository variables:
 
 - `SPIRE_PLUS_SUPABASE_URL`
 - `SPIRE_PLUS_SUPABASE_ANON_KEY`
-- `SPIRE_PLUS_FORUM_READ_ONLY`，可选，设为 `1` 时只读。
+- `SPIRE_PLUS_FORUM_READ_ONLY`, optional; set to `1` for read-only mode.
 
-未配置 Supabase 时，`/forum/` 会显示配置说明，不会报错或显示假表单。
+Without Supabase configuration, `/forum/` shows setup instructions instead of a fake form.
 
-完整上线步骤见 `../docs/features/forum/go-live-checklist.md`。
+Full go-live steps are in `../docs/features/forum/go-live-checklist.md`.
 
-## 更新方式
+## Editing
 
-- 主要内容：`content-data.js`
-- 页面结构：`index.html`
-- 视觉样式：`styles.css`
-- 渲染逻辑：`app.js`
-- 图片：`assets/`
+- Main content: `content-data.js`
+- Page shell: `index.html`
+- Styles: `styles.css`
+- Rendering logic: `app.js`
+- Images: `assets/`
 
-`assets/` 只放 `EZMicroBalance/images/` 下的自有或生成资源、站点自带的通用图标，以及已确认可用于本站发布的原版源美术文件。当前授权确认来自项目负责人在 2026-05-23 的明确说明；只分发更新页实际引用的 25 个遗物图标和 3 个卡牌立绘，位置为 `assets/source-art/`。不要复制 `source code/` 下的原版非美术资产。
+`assets/` may contain Spire Plus-owned or generated resources, plus original game art only when permission and scope are documented. Current permission was confirmed by the project owner on 2026-05-23 for the vanilla relic icons and card portraits used on this site under `assets/source-art/`. Do not copy original non-art source materials from `source code/`.

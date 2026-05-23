@@ -284,3 +284,26 @@ Live checks still required:
 - Configure `SPIRE_PLUS_SUPABASE_URL` and `SPIRE_PLUS_SUPABASE_ANON_KEY` for GitHub Pages builds.
 - Run `npm run test:live` with a local `SUPABASE_SERVICE_ROLE_KEY` to verify and clean up an actual anonymous post and reply.
 - Verify public anonymous post and reply persistence.
+
+## Review 12: A19/A20 Dedicated Ability Page Sync
+
+Result: static pass, live page render still pending.
+
+Fixes checked during this pass:
+
+- Synced `website/assets/localization/eng/ascension.json` and `website/assets/localization/zhs/ascension.json` from the current mod localization.
+- Updated the public Ascension A19/A20 details from the old wording to boss dedicated abilities and Branded Form.
+- Simplified the boss-specific page data so each boss row reads the current v4.1 A19/A20 summaries from localization keys.
+- Updated package size and SHA-256 in `website/content-data.js`.
+- Rewrote `website/README.md` into readable maintenance notes and kept the site framed as public-info, not release-ready evidence.
+
+Static checks:
+
+- `node --check website/content-data.js` passed.
+- `node --check website/app.js` passed.
+- `dotnet test EZMicroBalance.sln --no-build --filter BossDedicatedAbilityV41GuardTests` passed.
+
+Live checks still required:
+
+- Render the update page in both languages and inspect A19/A20 cards.
+- Confirm public GitHub Pages uses the current package metadata after deployment.

@@ -120,16 +120,16 @@ const ascensionDetails = {
     detail("结算", "根芽规则沿用A15：看见但不处理会在战后加入根蚀 I。", "Resolution", "Uses the A15 Blight Sprout rule: if seen and unresolved, it adds Rootblight I after combat.")
   ],
   LEVEL_19: [
-    detail("首领", "每个首领获得对应王印。地图悬停和战斗提示显示具体王印名称。", "Bosses", "Each Boss gets its matching Royal Seal. Map hover and combat indicators show the exact Seal."),
-    detail("奖励", "首领牌奖励显示到4选，优先补稀有牌。", "Reward", "Boss card rewards show up to 4 choices, preferring Rare cards for the extra option."),
-    detail("列表", "下方每个首领条目列出王印和A20王烙印差异。", "List", "The Boss entries below list the Royal Seal and A20 King Brand differences.")
+    detail("\u9996\u9886", "\u6bcf\u540d\u9996\u9886\u83b7\u5f97\u81ea\u5df1\u7684\u4e13\u5c5e\u80fd\u529b\u3002\u5730\u56fe\u60ac\u505c\u548c\u6218\u6597\u63d0\u793a\u4f1a\u663e\u793a\u5177\u4f53\u80fd\u529b\u3002", "Bosses", "Each Boss gets its own dedicated ability. Map hover and combat indicators show the exact ability."),
+    detail("\u5956\u52b1", "\u9996\u9886\u724c\u5956\u52b1\u591a\u663e\u793a1\u5f20\u724c\uff0c\u5e76\u4f18\u5148\u8865\u7a00\u6709\u724c\u3002", "Reward", "Boss card rewards show 1 extra card, preferring Rare cards for the extra option."),
+    detail("\u5217\u8868", "\u4e0b\u65b9\u6bcf\u4e2a\u9996\u9886\u6761\u76ee\u5217\u51faA19\u4e13\u5c5e\u80fd\u529b\u548cA20\u70d9\u5370\u5f62\u6001\u5dee\u5f02\u3002", "List", "The Boss entries below list the A19 dedicated ability and A20 Branded Form differences.")
   ],
   LEVEL_20: [
-    detail("终局", "A20不新增第三个完整首领；沿用原版第三幕双首领流程。", "Finale", "A20 does not add a third full Boss. It uses the vanilla Act 3 double-Boss flow."),
-    detail("首领1", "第一个第三幕首领使用王印；战后若没有首领牌奖励，会补1个首领牌奖励。", "Boss 1", "The first Act 3 Boss uses its Royal Seal. After Boss 1, a Boss card reward is added if no card reward exists."),
-    detail("中庭", "首领1奖励后进入中庭，回复25%已损生命，然后进入第二个首领。", "Courtyard", "After Boss 1 rewards, the Courtyard heals 25% of missing HP before Boss 2."),
-    detail("首领2", "第二个第三幕首领提前显示，并把王印升级为更强的王烙印。", "Boss 2", "The second Act 3 Boss is revealed early and upgrades its Royal Seal into the stronger King Brand."),
-    detail("边界", "单人流程为主要目标；多人双王烙印仍按开发测试处理。", "Boundary", "Single-player is the primary target. Multiplayer dual King Brand behavior remains development-test scope.")
+    detail("\u7ec8\u5c40", "A20\u4e0d\u65b0\u589e\u7b2c\u4e09\u4e2a\u5b8c\u6574\u9996\u9886\uff0c\u6cbf\u7528\u539f\u7248\u7b2c\u4e09\u5e55\u53cc\u9996\u9886\u6d41\u7a0b\u3002", "Finale", "A20 does not add a third full Boss. It uses the vanilla Act 3 double-Boss flow."),
+    detail("\u9996\u98861", "\u7b2c\u4e09\u5e55\u7b2c\u4e00\u4e2a\u9996\u9886\u4f7f\u7528\u666e\u901a\u4e13\u5c5e\u80fd\u529b\u3002\u6218\u540e\u82e5\u6ca1\u6709\u9996\u9886\u724c\u5956\u52b1\uff0c\u4f1a\u88651\u4e2a\u9996\u9886\u724c\u5956\u52b1\u3002", "Boss 1", "The first Act 3 Boss uses its normal dedicated ability. After Boss 1, a Boss card reward is added if no card reward exists."),
+    detail("\u4e2d\u5ead", "\u9996\u98861\u5956\u52b1\u540e\u8fdb\u5165\u4e2d\u5ead\uff0c\u56de\u590d25%\u5df2\u635f\u751f\u547d\uff0c\u7136\u540e\u8fdb\u5165\u7b2c\u4e8c\u4e2a\u9996\u9886\u3002", "Courtyard", "After Boss 1 rewards, the Courtyard heals 25% of missing HP before Boss 2."),
+    detail("\u9996\u98862", "\u7b2c\u4e09\u5e55\u7b2c\u4e8c\u4e2a\u9996\u9886\u63d0\u524d\u663e\u793a\uff0c\u5e76\u8fdb\u5165\u70d9\u5370\u5f62\u6001\uff0c\u5f3a\u5316\u81ea\u5df1\u7684\u4e13\u5c5e\u80fd\u529b\u3002", "Boss 2", "The second Act 3 Boss is revealed early and enters Branded Form, strengthening its own dedicated ability."),
+    detail("\u8fb9\u754c", "\u5355\u4eba\u6d41\u7a0b\u4e3a\u4e3b\u8981\u76ee\u6807\uff1b\u591a\u4ebaA20\u70d9\u5370\u5f62\u6001\u4ecd\u6309\u5f00\u53d1\u6d4b\u8bd5\u5904\u7406\u3002", "Boundary", "Single-player is the primary target. Multiplayer A20 Branded Form behavior remains development-test scope.")
   ],
   FIREMARK_MIGHT: [
     detail("数值", "力量：第一幕1，第二幕2，第三幕4。", "Values", "Strength: Act 1/2/3 = 1/2/4."),
@@ -249,8 +249,8 @@ window.SPIRE_PLUS_DATA = {
       ["\u5b89\u88c5\u76ee\u5f55", "EZMicroBalance"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,856,933 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "BA53D496F8EDEBBC9D971579EB66F6297B63C54C10A7B1E79E46550A1EA04AE3"]
+      ["\u4f53\u79ef", "18,874,569 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605"]
     ]
   },
   installSteps: [
@@ -501,182 +501,38 @@ function asc(id, tags, icon) {
 
 function bossSealItems() {
   return [
-    bossSeal(
-      "ceremonial_beast_holy_daze",
-      "仪式兽",
-      "Ceremonial Beast",
-      "圣昏",
-      "Holy Daze",
-      "holy_daze",
-      "BOSS_SEAL_HOLY_DAZE",
-      [detail("王印数值", "首次眩晕窗口中每次受击最多1点伤害；窗口结束后获得1点力量。", "Royal value", "During the first stun window, each hit deals at most 1 damage. When it ends, gain 1 Strength.")]
-    ),
-    bossSeal(
-      "the_kin_martyr_oath",
-      "同族小队",
-      "The Kin",
-      "殉誓",
-      "Martyr Oath",
-      "martyr_oath",
-      "BOSS_SEAL_MARTYR_OATH",
-      [
-        detail("王印数值", "最多2名随从死亡触发；每次亲族祭司获得12格挡和1力量，半血以下额外1层人工制品。", "Royal value", "Up to 2 follower deaths trigger it. Each gives Kin Priest 12 Block and 1 Strength; below half HP, also 1 Artifact."),
-        detail("王烙印数值", "最多3名随从死亡触发；每次14格挡和1力量，半血以下额外1层人工制品。", "King Brand value", "Up to 3 follower deaths trigger it. Each gives 14 Block and 1 Strength; below half HP, also 1 Artifact.")
-      ]
-    ),
-    bossSeal(
-      "vantom_ink_return",
-      "墨影幻灵",
-      "Vantom",
-      "墨返",
-      "Ink Return",
-      "ink_return",
-      "BOSS_SEAL_INK_RETURN",
-      [
-        detail("王印数值", "首次把滑溜完全移除后，下个敌方回合返还1层滑溜。", "Royal value", "The first time Slippery is fully removed, 1 Slippery returns on the next enemy turn."),
-        detail("王烙印数值", "返还2层滑溜，并获得1点力量。", "King Brand value", "Returns 2 Slippery and grants 1 Strength.")
-      ]
-    ),
-    bossSeal(
-      "lagavulin_matriarch_startled_shell",
-      "乐加维林族母",
-      "Lagavulin Matriarch",
-      "惊壳",
-      "Startled Shell",
-      "startled_shell",
-      "BOSS_SEAL_STARTLED_SHELL",
-      [
-        detail("王印数值", "被伤害提前唤醒获得4层甲壳；正常唤醒获得8层甲壳；摄魂削去一半甲壳。", "Royal value", "Early wake from damage grants 4 Plating; normal wake grants 8 Plating. Soul Siphon removes half of Plating."),
-        detail("王烙印数值", "提前唤醒6层甲壳，正常唤醒10层甲壳；摄魂只削去三分之一。", "King Brand value", "Early wake grants 6 Plating; normal wake grants 10 Plating. Soul Siphon removes only one-third.")
-      ]
-    ),
-    bossSeal(
-      "soul_fysh_soul_tide",
-      "灵魂异鱼",
-      "Soul Fysh",
-      "魂潮",
-      "Soul Tide",
-      "soul_tide",
-      "BOSS_SEAL_SOUL_TIDE",
-      [
-        detail("王印数值", "进入或提高无形时获得1层人工制品；召唤压力按手中召唤牌每张2格挡结算，上限12。", "Royal value", "Entering or increasing Intangible grants 1 Artifact. Beckon pressure converts hand Beckons into 2 Block each, capped at 12."),
-        detail("王烙印数值", "无形给2层人工制品；召唤格挡上限16。", "King Brand value", "Intangible grants 2 Artifact. Beckon Block cap becomes 16.")
-      ]
-    ),
-    bossSeal(
-      "waterfall_giant_boiling_critical",
-      "瀑布巨兽",
-      "Waterfall Giant",
-      "沸临",
-      "Boiling Critical",
-      "boiling_critical",
-      "BOSS_SEAL_BOILING_CRITICAL",
-      [
-        detail("王印数值", "每12层蒸汽增加沸腾层数；死亡爆发每层沸腾+2伤害；爆发前获得无形并清除自身减益。", "Royal value", "Every 12 Steam adds Boiling. The death explosion gains +2 damage per Boiling. Before exploding, gain Intangible and clear debuffs."),
-        detail("王烙印数值", "改为每10层蒸汽增加沸腾。", "King Brand value", "Steam milestones trigger every 10 Steam instead.")
-      ]
-    ),
-    bossSeal(
-      "kaiser_crab_misaligned_shell",
-      "帝皇蟹",
-      "Kaiser Crab",
-      "错壳",
-      "Misaligned Shell",
-      "misaligned_shell",
-      "BOSS_SEAL_MISALIGNED_SHELL",
-      [
-        detail("王印数值", "每回合首次背击一只爪时，该爪获得6格挡；若本回合正好死1只爪，存活爪获得1层人工制品。", "Royal value", "The first back attack on each claw each turn gives that claw 6 Block. If exactly one claw dies that turn, the surviving claw gains 1 Artifact."),
-        detail("王烙印数值", "背击格挡提高到8；存活爪获得2层人工制品。", "King Brand value", "Back-attack Block rises to 8. The surviving claw gains 2 Artifact.")
-      ]
-    ),
-    bossSeal(
-      "knowledge_demon_marginal_note",
-      "知识恶魔",
-      "Knowledge Demon",
-      "旁注",
-      "Marginal Note",
-      "marginal_note",
-      "BOSS_SEAL_MARGINAL_NOTE",
-      [
-        detail("王印数值", "知识诅咒后，每名玩家弃牌堆加入1张临时旁注。旁注0费、保留、消耗；打出抽1张。", "Royal value", "After Curse of Knowledge, each player's discard pile gets 1 temporary Marginal Note. It costs 0, Retains, Exhausts, and draws 1 when played."),
-        detail("压力", "回合结束时，手里每留1张旁注，知识恶魔获得1点力量。", "Pressure", "At player turn end, each Marginal Note left in hand gives Knowledge Demon 1 Strength."),
-        detail("王烙印数值", "知识诅咒后加入2张旁注。", "King Brand value", "Curse of Knowledge adds 2 Marginal Notes.")
-      ]
-    ),
-    bossSeal(
-      "the_insatiable_struggle_bait",
-      "无厌沙虫",
-      "The Insatiable",
-      "挣扎饵",
-      "Struggle Bait",
-      "struggle_bait",
-      "BOSS_SEAL_STRUGGLE_BAIT",
-      [
-        detail("王印数值", "首领获得力量或沙坑层数时，将逃离加入玩家弃牌堆；累计打出3张生成的逃离后，首领获得1点力量。", "Royal value", "When the Boss gains Strength or Sandpit, add Frantic Escape to the player's discard pile. After 3 generated Escapes are played, the Boss gains 1 Strength."),
-        detail("王烙印数值", "生成的逃离若经过2个玩家回合仍未打出，首领获得5格挡。", "King Brand value", "A generated Escape left unplayed after 2 player turns gives the Boss 5 Block.")
-      ]
-    ),
-    bossSeal(
-      "aeonglass_hourglass",
-      "永世沙漏",
-      "Aeonglass",
-      "勇士沙漏",
-      "Warrior's Hourglass",
-      "aeonglass_hourglass",
-      "BOSS_SEAL_AEONGLASS_HOURGLASS",
-      [
-        detail("王印数值", "每个玩家回合独立计数；每打出5张牌，向该玩家弃牌堆加入1张枯萎，永世沙漏获得12格挡；计数重置。", "Royal value", "Each player has a separate per-turn counter. Every 5 cards played adds 1 Wither to that player's discard pile, gives Aeonglass 12 Block, then resets."),
-        detail("王烙印数值", "改为每4张牌触发；加入升级后的枯萎；永世沙漏获得18格挡。", "King Brand value", "Triggers every 4 cards instead. The Wither is upgraded and Aeonglass gains 18 Block.")
-      ]
-    ),
-    bossSeal(
-      "queen_chosen_decree",
-      "女王",
-      "Queen",
-      "择令",
-      "Chosen Decree",
-      "chosen_decree",
-      "BOSS_SEAL_CHOSEN_DECREE",
-      [
-        detail("王印数值", "一张束缚牌变为王令。本回合打出：女王8格挡，聚合体1力量；错过：女王14格挡，聚合体2力量。", "Royal value", "One Bound card becomes Royal Decree. If played this turn: Queen gains 8 Block and the Amalgam 1 Strength. If missed: Queen 14 Block and Amalgam 2 Strength."),
-        detail("王烙印数值", "遵从：女王12格挡，聚合体1力量；错过：女王20格挡，聚合体3力量。", "King Brand value", "Obey: Queen gains 12 Block and the Amalgam 1 Strength. Miss: Queen 20 Block and Amalgam 3 Strength.")
-      ]
-    ),
-    bossSeal(
-      "test_subject_residual_sample",
-      "实验体",
-      "Test Subject",
-      "残留样本",
-      "Residual Sample",
-      "residual_sample",
-      "BOSS_SEAL_RESIDUAL_SAMPLE",
-      [
-        detail("王印数值", "阶段变化时，下一阶段保留1份弱化样本；重生后每份样本结算为8格挡。", "Royal value", "On phase change, the next phase keeps 1 weakened sample. On respawn, each sample resolves as 8 Block."),
-        detail("王烙印数值", "第一次阶段变化保留2份弱化样本，之后每次保留1份。", "King Brand value", "The first phase change keeps 2 weakened samples; later phase changes keep 1.")
-      ]
-    )
+    bossSeal("ceremonial_beast_holy_daze", "仪式兽", "Ceremonial Beast", "圣昏", "Holy Daze", "holy_daze", "BOSS_SEAL_HOLY_DAZE"),
+    bossSeal("the_kin_martyr_oath", "同族小队", "The Kin", "殉誓", "Martyr Oath", "martyr_oath", "BOSS_SEAL_MARTYR_OATH"),
+    bossSeal("vantom_ink_return", "墨影幻灵", "Vantom", "墨返", "Ink Return", "ink_return", "BOSS_SEAL_INK_RETURN"),
+    bossSeal("lagavulin_matriarch_plating_wake", "乐加维林族母", "Lagavulin Matriarch", "多重护甲苏醒", "Plating Wake", "startled_shell", "BOSS_SEAL_STARTLED_SHELL"),
+    bossSeal("soul_fysh_soul_tide", "灵魂异鱼", "Soul Fysh", "魂潮", "Soul Tide", "soul_tide", "BOSS_SEAL_SOUL_TIDE"),
+    bossSeal("waterfall_giant_unweakenable", "瀑布巨兽", "Waterfall Giant", "不可削弱", "Unweakenable", "boiling_critical", "BOSS_SEAL_BOILING_CRITICAL"),
+    bossSeal("kaiser_crab_claw_calibration", "帝皇蟹", "Kaiser Crab", "错壳校准", "Claw Calibration", "misaligned_shell", "BOSS_SEAL_MISALIGNED_SHELL"),
+    bossSeal("knowledge_demon_marginal_note", "知识恶魔", "Knowledge Demon", "旁注", "Marginal Note", "marginal_note", "BOSS_SEAL_MARGINAL_NOTE"),
+    bossSeal("the_insatiable_escape_fatigue", "无厌沙虫", "The Insatiable", "逃亡疲劳", "Escape Fatigue", "struggle_bait", "BOSS_SEAL_STRUGGLE_BAIT"),
+    bossSeal("aeonglass_hourglass", "永世沙漏", "Aeonglass", "时砂回流", "Time Sand Reflow", "aeonglass_hourglass", "BOSS_SEAL_AEONGLASS_HOURGLASS"),
+    bossSeal("queen_royal_decree", "女王", "Queen", "御令", "Royal Decree", "chosen_decree", "BOSS_SEAL_CHOSEN_DECREE"),
+    bossSeal("test_subject_experimental_record", "实验体", "Test Subject", "实验记录", "Experimental Record", "residual_sample", "BOSS_SEAL_RESIDUAL_SAMPLE")
   ];
 }
 
-function bossSeal(id, bossName, bossNameEn, sealName, sealNameEn, iconName, locPrefix, extraDetails) {
+function bossSeal(id, bossName, bossNameEn, abilityName, abilityNameEn, iconName, locPrefix) {
   return {
     namespace: "ascension",
     i18nKey: `boss_seal_${id}`,
-    title: `${bossName}：${sealName}`,
-    titleEn: `${bossNameEn}: ${sealNameEn}`,
+    title: `${bossName}：${abilityName}`,
+    titleEn: `${bossNameEn}: ${abilityNameEn}`,
     descKey: `${locPrefix}.summary`,
-    vanilla: "原版首领没有王印或王烙印。",
-    vanillaEn: "Vanilla bosses do not have Royal Seals or King Brands.",
+    vanilla: "原版首领没有 A19 专属能力或 A20 烙印形态。",
+    vanillaEn: "Vanilla bosses do not have A19 dedicated abilities or A20 Branded Form.",
     icon: `assets/ascension/boss_seals/${iconName}.png`,
-    tags: ["A19", "A20", "王印", "王烙印"],
+    tags: ["A19", "A20", "专属能力", "烙印形态"],
     details: [
-      { label: "王印", labelEn: "Royal Seal", key: `${locPrefix}.summary` },
-      { label: "王烙印", labelEn: "King Brand", key: `${locPrefix}.brand` },
-      ...extraDetails
+      { label: "专属能力", labelEn: "Dedicated Ability", key: `${locPrefix}.summary` },
+      { label: "烙印形态", labelEn: "Branded Form", key: `${locPrefix}.brand` }
     ]
   };
 }
-
 function card(id, tags, icon) {
   return {
     namespace: "cards",
@@ -774,8 +630,8 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Install folder", "EZMicroBalance"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,856,933 bytes"],
-        ["Hash", "BA53D496F8EDEBBC9D971579EB66F6297B63C54C10A7B1E79E46550A1EA04AE3"]
+        ["Size", "18,874,569 bytes"],
+        ["Hash", "2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605"]
       ]
     },
     installSteps: [
@@ -880,8 +736,8 @@ window.SPIRE_PLUS_DATA.i18n = {
       "首领": "Boss",
       "根芽": "Blight Sprout",
       "战旗": "Banner",
-      "王印": "Royal Seal",
-      "王烙印": "King Brand",
+      "专属能力": "Dedicated Ability",
+      "烙印形态": "Branded Form",
       "令牌": "Token",
       "状态": "Status",
       "预览工具": "Preview tool"
