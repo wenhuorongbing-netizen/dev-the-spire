@@ -14,8 +14,9 @@ node_modules/
 /forum/dist/
 /forum/client/dist/
 /forum/server/dist/
-/website/
-/.github/workflows/spire-plus-site.yml
+/output/playwright/
+/website/forum/
+/website/**/*.import
 
 # Local/generated art and calibration material. Not part of the active release package.
 /art_pipeline/
