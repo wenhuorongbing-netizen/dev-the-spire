@@ -159,12 +159,12 @@ alter table public.forum_replies enable row level security;
 revoke all on table public.forum_posts from anon, authenticated;
 revoke all on table public.forum_replies from anon, authenticated;
 
-grant select (id, author_name, title, body, reply_count, last_activity_at, created_at)
+grant select (id, author_name, title, body, status, reply_count, last_activity_at, created_at)
   on public.forum_posts to anon, authenticated;
 grant insert (author_name, title, body, client_id)
   on public.forum_posts to anon, authenticated;
 
-grant select (id, post_id, author_name, body, created_at)
+grant select (id, post_id, author_name, body, status, created_at)
   on public.forum_replies to anon, authenticated;
 grant insert (post_id, author_name, body, client_id)
   on public.forum_replies to anon, authenticated;
