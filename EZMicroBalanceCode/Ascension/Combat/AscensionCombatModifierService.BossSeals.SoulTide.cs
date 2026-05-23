@@ -57,7 +57,7 @@ internal static partial class AscensionCombatModifierService
 
     private static int SoulTideBlockCap(CombatState combatState, bool isBossBrand)
     {
-        var playerCount = combatState.Players.Count;
+        var playerCount = combatState.Players.Count(player => player.IsActiveForHooks);
         if (isBossBrand)
         {
             return playerCount <= 1 ? 12 : playerCount == 2 ? 16 : 20;

@@ -69,6 +69,7 @@ internal static partial class AscensionCombatModifierService
             metadata.IsBossBrand ? 5m : 4m,
             higherHpClaw,
             null);
+        await RefreshEnemyIntent(higherHpClaw);
         tracker.MisalignedShellClawsDiedThisTurn.Clear();
         MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Claw Calibration armed the healthier claw's next attack.");
     }

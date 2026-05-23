@@ -32,20 +32,22 @@ internal static partial class AscensionCombatModifierService
         }
 
         tracker.BoilingExplosionFortified = true;
+        var artifactBefore = giant.GetPower<ArtifactPower>()?.Amount ?? 0m;
         await ApplyPowerWithFinalDisplayedGain<ArtifactPower>(
             giant,
             10,
             giant,
             null);
+        var artifactAfter = giant.GetPower<ArtifactPower>()?.Amount ?? 0m;
+        tracker.BoilingExplosionArtifactAdded = Math.Max(0, (int)(artifactAfter - artifactBefore));
 
-        // The Waterfall Giant's explosion turn is source-backed by EXPLODE_MOVE; clear debuffs here,
-        // before the player warning turn can carry Weak, negative Strength, or similar effects into the blast.
-        var debuffs = giant.Powers
-            .Where(power => power.GetTypeForAmount(power.Amount) == PowerType.Debuff)
-            .ToList();
-        foreach (var debuff in debuffs)
+        // EXPLODE_MOVE reads the final attack modifiers. Remove only the effects
+        // that would directly lower that explosion, then let Artifact block any
+        // fresh attempts during the warning turn.
+        var weak = giant.GetPower<WeakPower>();
+        if (weak != null)
         {
-            await PowerCmd.Remove(debuff);
+            await PowerCmd.Remove(weak);
         }
 
         var strength = giant.GetPower<StrengthPower>();
@@ -57,7 +59,7 @@ internal static partial class AscensionCombatModifierService
         await ApplyBoilingExplosionVulnerability(combatState, tracker, metadata, giant);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A19 applied: Boiling Critical fortified the explosion turn with Artifact, Vulnerable pressure, and cleared {debuffs.Count} debuff(s).");
+            "[EZMicroBalance] Ascension A19 applied: Boiling Critical fortified the explosion turn with Artifact, Vulnerable pressure, Weak cleanup, and negative-Strength cleanup.");
     }
 
     private static async Task ApplyBoilingExplosionVulnerability(
@@ -80,5 +82,38 @@ internal static partial class AscensionCombatModifierService
 
         MainFile.Logger.Info(
             $"[EZMicroBalance] Ascension A19 applied: Boiling Critical applied {vulnerable} Vulnerable before the explosion.");
+    }
+
+    private static async Task ClearBoilingExplosionFortification(
+        CombatState combatState,
+        AscensionCombatTracker tracker)
+    {
+        if (!tracker.BoilingExplosionFortified)
+        {
+            return;
+        }
+
+        var artifactToRemove = tracker.BoilingExplosionArtifactAdded;
+        tracker.BoilingExplosionFortified = false;
+        tracker.BoilingExplosionArtifactAdded = 0;
+        if (artifactToRemove <= 0)
+        {
+            return;
+        }
+
+        var giant = combatState.Enemies.FirstOrDefault(enemy => enemy.Monster is WaterfallGiant);
+        var artifact = giant?.GetPower<ArtifactPower>();
+        if (giant == null ||
+            giant.IsDead ||
+            artifact == null)
+        {
+            return;
+        }
+
+        var removal = -Math.Min(artifact.Amount, artifactToRemove);
+        if (removal != 0)
+        {
+            await PowerCmd.ModifyAmount(new BlockingPlayerChoiceContext(), artifact, removal, giant, null);
+        }
     }
 }

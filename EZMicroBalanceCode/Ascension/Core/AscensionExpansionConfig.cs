@@ -12,6 +12,9 @@ internal sealed class AscensionExpansionConfig
     public const string EnableBannerRoomsEnvironmentVariable = "EZMB_ASCENSION_ENABLE_BANNER_ROOMS";
     public const string EnableDeepBranchesEnvironmentVariable = "EZMB_ASCENSION_ENABLE_DEEP_BRANCHES";
     public const string EnableBossSealsEnvironmentVariable = "EZMB_ASCENSION_ENABLE_BOSS_SEALS";
+    public const string EnableBrandedFormEnvironmentVariable = "EZMB_ASCENSION_ENABLE_BRANDED_FORM";
+    // Legacy local scripts used the original design name. Keep it as an alias,
+    // while new code and logs use the player-facing Branded Form term.
     public const string EnableDualKingBrandsEnvironmentVariable = "EZMB_ASCENSION_ENABLE_DUAL_KING_BRANDS";
 
     public static AscensionExpansionConfig Current => new();
@@ -25,7 +28,8 @@ internal sealed class AscensionExpansionConfig
     public bool EnableBannerRooms => IsEnabled(EnableBannerRoomsEnvironmentVariable);
     public bool EnableDeepBranches => IsEnabled(EnableDeepBranchesEnvironmentVariable);
     public bool EnableBossSeals => IsEnabled(EnableBossSealsEnvironmentVariable);
-    public bool EnableDualKingBrands => IsEnabled(EnableDualKingBrandsEnvironmentVariable);
+    public bool EnableBrandedForm => IsEnabled(EnableBrandedFormEnvironmentVariable) && IsEnabled(EnableDualKingBrandsEnvironmentVariable);
+    public bool EnableDualKingBrands => EnableBrandedForm;
 
     public bool AnyGameplaySystemEnabled =>
         EnableMapGeometry ||
@@ -37,10 +41,10 @@ internal sealed class AscensionExpansionConfig
         EnableBannerRooms ||
         EnableDeepBranches ||
         EnableBossSeals ||
-        EnableDualKingBrands;
+        EnableBrandedForm;
 
     public string Summary =>
-        $"map={EnableMapGeometry}; rootblight={EnableRootblight}; sprout={EnableBlightSprout}; firemarks={EnableFiremarkedElites}; forgeToken={EnableForgeToken}; fission={EnableFission}; banners={EnableBannerRooms}; deepBranches={EnableDeepBranches}; bossSeals={EnableBossSeals}; dualBrands={EnableDualKingBrands}";
+        $"map={EnableMapGeometry}; rootblight={EnableRootblight}; sprout={EnableBlightSprout}; firemarks={EnableFiremarkedElites}; forgeToken={EnableForgeToken}; fission={EnableFission}; banners={EnableBannerRooms}; deepBranches={EnableDeepBranches}; bossSeals={EnableBossSeals}; brandedForm={EnableBrandedForm}";
 
     private static bool IsEnabled(string environmentVariable)
     {

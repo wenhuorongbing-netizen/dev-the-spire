@@ -1,4 +1,4 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -65,10 +65,12 @@ public sealed class AscensionV2MilestoneGuardTests
             "EnableBannerRoomsEnvironmentVariable = \"EZMB_ASCENSION_ENABLE_BANNER_ROOMS\"",
             "EnableDeepBranchesEnvironmentVariable = \"EZMB_ASCENSION_ENABLE_DEEP_BRANCHES\"",
             "EnableBossSealsEnvironmentVariable = \"EZMB_ASCENSION_ENABLE_BOSS_SEALS\"",
+            "EnableBrandedFormEnvironmentVariable = \"EZMB_ASCENSION_ENABLE_BRANDED_FORM\"",
             "EnableDualKingBrandsEnvironmentVariable = \"EZMB_ASCENSION_ENABLE_DUAL_KING_BRANDS\"",
+            "EnableBrandedForm => IsEnabled(EnableBrandedFormEnvironmentVariable) && IsEnabled(EnableDualKingBrandsEnvironmentVariable)",
             "return false;",
             "rootblight={EnableRootblight}",
-            "dualBrands={EnableDualKingBrands}");
+            "brandedForm={EnableBrandedForm}");
 
         AssertSourceContains(
             gates,
@@ -83,8 +85,8 @@ public sealed class AscensionV2MilestoneGuardTests
             "IsBannerRoomEnabled",
             "IsDeepBranchesEnabled",
             "IsBossSealsEnabled",
-            "IsDualKingBrandsEnabled",
-            "IsDualKingBrandsSinglePlayerEnabled",
+            "IsBrandedFormEnabled",
+            "IsBrandedFormSinglePlayerEnabled",
             "runState.Players.Count == 1");
 
         AssertSourceContains(
@@ -355,9 +357,12 @@ public sealed class AscensionV2MilestoneGuardTests
         var a20Courtyard = ReadRepoText("EZMicroBalanceCode", "Ascension", "Events", "A20Courtyard.cs");
         var a20RewardScreenPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionA20RewardScreenPatches.cs");
         var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
+        var marginalNoteSource = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.MarginalNote.cs");
+        var aeonglassIntentPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AeonglassIntentPatches.cs");
         var powers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var bossSealSource = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
+        var attackIntentSource = ReadRepoText("source code", "src", "Core", "MonsterMoves", "Intents", "AttackIntent.cs");
         var kinBossSource = ReadRepoText("source code", "src", "Core", "Models", "Encounters", "TheKinBoss.cs");
         var kinPriestSource = ReadRepoText("source code", "src", "Core", "Models", "Monsters", "KinPriest.cs");
         var slipperyPowerSource = ReadRepoText("source code", "src", "Core", "Models", "Powers", "SlipperyPower.cs");
@@ -384,17 +389,17 @@ public sealed class AscensionV2MilestoneGuardTests
             "runState.Players.Count > 1",
             "BossSealCatalog.TryGetForEncounter",
             "var bossSealsEnabled = AscensionFeatureGate.IsBossSealsEnabled(runState);",
-            "var dualKingBrandsEnabled = AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState);",
-            "if (!bossSealsEnabled && !dualKingBrandsEnabled)",
+            "var brandedFormEnabled = AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState);",
+            "if (!bossSealsEnabled && !brandedFormEnabled)",
             "if (bossSealsEnabled)",
-            "if (!dualKingBrandsEnabled)",
+            "if (!brandedFormEnabled)",
             "IsBossBrand = true",
             "vanilla boss map icons reveal the boss order");
 
         AssertSourceContains(
             a20Patch,
             "HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))",
-            "AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState)",
+            "AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState)",
             "finalAct.HasSecondBoss",
             "finalAct.SetSecondBossEncounter(secondBoss)",
             "HarmonyPatch(typeof(RunManager), nameof(RunManager.ProceedFromTerminalRewardsScreen))",
@@ -425,7 +430,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "IsA20BossOneIntermission",
             "A20_INTERMISSION_HEADER",
             "A20_INTERMISSION_PROCEED",
-            "AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState)",
+            "AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState)",
             "TryGetFieldValue",
             "WarnOnce",
             "runState.Map.SecondBossMapPoint != null",
@@ -435,8 +440,8 @@ public sealed class AscensionV2MilestoneGuardTests
             mapUiPatches,
             "HarmonyPatch(typeof(NBossMapPoint), \"OnFocus\")",
             "BossMapPointHoverPatch",
-            "BOSS_ROYAL_SEAL",
-            "BOSS_KING_BRAND",
+            "BOSS_DEDICATED_ABILITY",
+            "BOSS_BRANDED_FORM",
             "CreateHoverTip(metadata.BossSeal, metadata.IsBossBrand)",
             "BossSealCatalog.GetLocalizationKey(definition.Id)",
             "PreloadManager.Cache.GetTexture2D(AscensionAssetPaths.GetBossSealIndicator(definition.Id))",
@@ -466,8 +471,10 @@ public sealed class AscensionV2MilestoneGuardTests
             "tracker.InkReturnLastObservedSlippery",
             "tracker.InkReturnRestoreAmount",
             "ApplyPowerWithFinalDisplayedGain<SlipperyPower>(vantom, slippery, vantom, null)",
-            "var plating = metadata.IsBossBrand ? 6 : 4;",
-            "var platingAmount = metadata.IsBossBrand ? 10 : 8;",
+            "StartledShellWakeByPlayerDamagePending",
+            "wokeFromPlayerDamage",
+            "metadata.IsBossBrand ? 6 : 4",
+            "metadata.IsBossBrand ? 10 : 8",
             "PowerCmd.Apply<PlatingPower>",
             "var divisor = metadata.IsBossBrand ? 3m : 2m;",
             "await ApplyBoilingExplosionFortification(combatState, tracker, metadata)",
@@ -475,8 +482,9 @@ public sealed class AscensionV2MilestoneGuardTests
             "metadata.IsBossBrand ? 2m : 1m",
             "PowerCmd.Apply<VulnerablePower>",
             "tracker.BoilingExplosionVulnerabilityRound = combatState.RoundNumber",
-            "power.GetTypeForAmount(power.Amount) == PowerType.Debuff",
-            "PowerCmd.Remove(debuff)",
+            "giant.GetPower<WeakPower>()",
+            "PowerCmd.Remove(weak)",
+            "strength is { Amount: < 0 }",
             "ApplySoulTidePendingBlock",
             "tracker.PendingSoulTideBlock",
             "SoulTideBlockCap",
@@ -527,6 +535,7 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("triggerCap = metadata.IsBossBrand ? 3 : 2", combatService, StringComparison.Ordinal);
         Assert.DoesNotContain("triggers up to [blue]3[/blue] times", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("SettleSoulTideBeckons(combatState, tracker, metadata)", combatService, StringComparison.Ordinal);
+        Assert.DoesNotContain("PowerCmd.Apply<StrengthPower>", marginalNoteSource, StringComparison.Ordinal);
         var playerTurnStartBannerSlice = SliceBetween(
             combatService,
             "private static async Task ApplyBannerTurnStart(",
@@ -545,6 +554,16 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("equal [gold]Block[/gold]", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("等量[gold]格挡[/gold]", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("PowerCmd.Apply<StrengthPower>(choiceContext, Owner, -Amount", powers, StringComparison.Ordinal);
+        AssertSourceContains(
+            attackIntentSource,
+            "Hook.ModifyDamage(",
+            "ValueProp.Move",
+            "ModifyDamageHookType.All");
+        AssertSourceContains(
+            aeonglassIntentPatch,
+            "HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))",
+            "__instance.Repeats + 1",
+            "HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))");
 
         AssertSourceContains(
             bossSealSource,
@@ -556,7 +575,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "source-confirmed two KinFollower deaths",
             "Restores 35% of the cleared Slippery",
             "natural wake grants 10",
-            "clear debuffs and attack reduction",
+            "clear Weak and attack reduction",
             "claws' HP percentages differ",
             "Unplayed Notes become Deep Thought",
             "Every 3 ability-made Frantic Escapes played gives 3 Vigor",
@@ -569,18 +588,19 @@ public sealed class AscensionV2MilestoneGuardTests
             "BossRewardTargetOptionCount = 4",
             "TryAddBossSealRewardOption",
             "TryAddA20BossOneCardReward",
-            "AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState)",
+            "AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState)",
             "runState.Map.SecondBossMapPoint == null",
             "runState.CurrentMapCoord != runState.Map.BossMapPoint.coord",
             "new CardReward(CardCreationOptions.ForRoom(player, RoomType.Boss), 3, player)");
         Assert.Equal("Banner Room", englishAscension["BANNER_ROOM.title"]);
         Assert.Contains("round [blue]3[/blue]", englishAscension["BANNER_VANGUARD.description"], StringComparison.Ordinal);
         Assert.Contains("[blue]{Gold}[/blue] [gold]Gold[/gold]", englishAscension["BANNER_BLOOD_PRIZE.description"], StringComparison.Ordinal);
-        Assert.Equal("Boss Dedicated Ability", englishAscension["BOSS_ROYAL_SEAL.title"]);
+        Assert.Equal("Boss Dedicated Ability", englishAscension["BOSS_DEDICATED_ABILITY.title"]);
         Assert.Equal("Boss Dedicated Abilities", englishAscension["LEVEL_19.title"]);
         Assert.Equal("Branded Form", englishAscension["LEVEL_20.title"]);
-        Assert.Contains("Attack changes from this ability are shown in intent", englishAscension["BOSS_ROYAL_SEAL.description"], StringComparison.Ordinal);
-        Assert.Contains("second Act [blue]3[/blue] Boss enters [gold]Branded Form[/gold]", englishAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
+        Assert.Contains("Attack changes from this ability are shown in intent", englishAscension["BOSS_DEDICATED_ABILITY.description"], StringComparison.Ordinal);
+        Assert.Equal("Branded Form", englishAscension["BOSS_BRANDED_FORM.title"]);
+        Assert.Contains("second Act [blue]3[/blue] Boss enters [gold]Branded Form[/gold]", englishAscension["BOSS_BRANDED_FORM.description"], StringComparison.Ordinal);
         Assert.Equal("Holy Daze", englishAscension["BOSS_SEAL_HOLY_DAZE.title"]);
         Assert.Contains("capped at [blue]2[/blue]", englishAscension["BOSS_SEAL_MARTYR_OATH.brand"], StringComparison.Ordinal);
         Assert.Contains("+[blue]4[/blue] damage per Oath", englishAscension["BOSS_SEAL_MARTYR_OATH.brand"], StringComparison.Ordinal);
@@ -589,7 +609,7 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Contains("max [blue]18[/blue]", englishAscension["BOSS_SEAL_INK_RETURN.brand"], StringComparison.Ordinal);
         Assert.Contains("[blue]10[/blue]", englishAscension["BOSS_SEAL_STARTLED_SHELL.brand"], StringComparison.Ordinal);
         Assert.Contains("one-third", englishAscension["BOSS_SEAL_STARTLED_SHELL.brand"], StringComparison.Ordinal);
-        Assert.Contains("Team cap: [blue]12/16/20[/blue]", englishAscension["BOSS_SEAL_SOUL_TIDE.brand"], StringComparison.Ordinal);
+        Assert.Contains("Team cap: solo [blue]12[/blue], 2 players [blue]16[/blue], 3-4 players [blue]20[/blue]", englishAscension["BOSS_SEAL_SOUL_TIDE.brand"], StringComparison.Ordinal);
         Assert.Contains("[blue]2[/blue] turns of [gold]Vulnerable[/gold]", englishAscension["BOSS_SEAL_BOILING_CRITICAL.brand"], StringComparison.Ordinal);
         Assert.Contains("[blue]30%[/blue] HP difference", englishAscension["BOSS_SEAL_MISALIGNED_SHELL.brand"], StringComparison.Ordinal);
         Assert.Contains("Deep Thought", englishAscension["BOSS_SEAL_MARGINAL_NOTE.brand"], StringComparison.Ordinal);
@@ -612,8 +632,9 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Equal("Courtyard Ahead", englishAscension["A20_INTERMISSION_HEADER"]);
         Assert.Equal("Enter the Courtyard", englishAscension["A20_INTERMISSION_PROCEED"]);
         Assert.Equal("\u6218\u65d7\u623f", zhsAscension["BANNER_ROOM.title"]);
-        Assert.Equal("\u9996\u9886\u4e13\u5c5e\u80fd\u529b", zhsAscension["BOSS_ROYAL_SEAL.title"]);
-        Assert.Contains("\u7b2c[blue]3[/blue]\u5e55\u7b2c\u4e8c\u540d\u9996\u9886\u8fdb\u5165[gold]\u70d9\u5370\u5f62\u6001[/gold]", zhsAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
+        Assert.Equal("\u9996\u9886\u4e13\u5c5e\u80fd\u529b", zhsAscension["BOSS_DEDICATED_ABILITY.title"]);
+        Assert.Equal("\u70d9\u5370\u5f62\u6001", zhsAscension["BOSS_BRANDED_FORM.title"]);
+        Assert.Contains("\u7b2c[blue]3[/blue]\u5e55\u7b2c\u4e8c\u540d\u9996\u9886\u8fdb\u5165[gold]\u70d9\u5370\u5f62\u6001[/gold]", zhsAscension["BOSS_BRANDED_FORM.description"], StringComparison.Ordinal);
         Assert.Equal("\u524d\u65b9\u4e2d\u5ead", zhsAscension["A20_INTERMISSION_HEADER"]);
         Assert.Equal("\u8fdb\u5165\u4e2d\u5ead", zhsAscension["A20_INTERMISSION_PROCEED"]);
         Assert.Equal("Courtyard Before the Second King", englishEvents["A20_COURTYARD.title"]);
@@ -626,12 +647,15 @@ public sealed class AscensionV2MilestoneGuardTests
         {
             Assert.Contains("source-guarded through supported hooks", apiResearch, StringComparison.Ordinal);
             Assert.Contains("Armor/Rage/Barrier/Chaos", apiResearch, StringComparison.Ordinal);
-            Assert.Contains("Boss 2 Brand metadata", apiResearch, StringComparison.Ordinal);
+            Assert.Contains("Boss 2 Branded Form metadata", apiResearch, StringComparison.Ordinal);
         }
 
         Assert.Contains("A20 creates the final-act second Boss through the vanilla double-boss map path when the A20 gate is active.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("A20 Boss 1 reward screen offers one Boss card reward before the second Boss.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Boss 1 reward screen opens the A20 courtyard event before the second Boss.", manualChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("Royal Seal / King Brand", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("Royal Seal / 王印", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("King Brand / 王烙印", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotMatch(@"(?i)\bA20\b[^\r\n.]*\b(?:release-ready|fully verified|complete)\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bA11-A20\b[^\r\n.]*\b(?:release-ready|fully verified)\b", currentDocs);
     }

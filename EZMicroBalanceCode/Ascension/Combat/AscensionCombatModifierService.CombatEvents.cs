@@ -42,6 +42,27 @@ internal static partial class AscensionCombatModifierService
         await TryApplyHolyDaze(combatState, tracker, metadata);
     }
 
+    public static Task BeforeDamageReceived(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        Creature target,
+        decimal amount,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource)
+    {
+        if (amount <= 0m ||
+            !TryRefreshNodeMetadata(combatState, tracker, out var metadata) ||
+            !HasActiveBossSeal(combatState, metadata) ||
+            metadata.BossSeal?.Id != BossSealId.StartledShell)
+        {
+            return Task.CompletedTask;
+        }
+
+        TrackStartledShellDamageStart(tracker, target);
+        return Task.CompletedTask;
+    }
+
     public static Task BeforePowerAmountChanged(
         CombatState combatState,
         AscensionCombatTracker tracker,
@@ -166,7 +187,11 @@ internal static partial class AscensionCombatModifierService
             return Task.CompletedTask;
         }
 
-        TryAssignChosenDecree(combatState, tracker, metadata, card);
+        if (card.Owner is { } owner)
+        {
+            TryAssignChosenDecreeInHandForPlayer(combatState, tracker, metadata, owner);
+        }
+
         return Task.CompletedTask;
     }
 }

@@ -65,10 +65,15 @@ internal static partial class RootDeckService
             return;
         }
 
-        MarkRootBeginsApplied(player);
         await TrimRootblightDeckToCap(player, $"{source} add");
+        var hadRootblightBeforeAdd = FindRootFamilyCards(player).Count > 0;
         if (!await AddRootblightCard(player, 1, preferOverlayNotice: true))
         {
+            if (hadRootblightBeforeAdd || FindRootFamilyCards(player).Count > 0)
+            {
+                MarkRootBeginsApplied(player);
+            }
+
             ShowRootSystemFull(player);
             ReleaseEvidenceLog.Log(
                 "Rootblight",
@@ -84,6 +89,7 @@ internal static partial class RootDeckService
             return;
         }
 
+        MarkRootBeginsApplied(player);
         SetDiagnosticLevelFromDeck(player);
 
         ReleaseEvidenceLog.Log(

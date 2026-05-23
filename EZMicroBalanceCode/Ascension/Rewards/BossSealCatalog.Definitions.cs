@@ -19,10 +19,10 @@ internal static partial class BossSealCatalog
             [EncounterId("THE_KIN_BOSS")] = new(
                 BossSealId.MartyrOath,
                 "Martyr Oath",
-                "Follower deaths give Kin Priest Martyr Oath, up to 2. Its next debuff lasts longer, or its next attack deals 3 extra damage per Oath.",
+                "Follower deaths give Kin Priest Martyr Oath, up to 2. Its next debuff lasts longer, or each hit of its next attack deals 3 extra damage per Oath.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
                 "Uses the source-confirmed two KinFollower deaths, custom next-debuff/next-attack powers, and final displayed Artifact correction for the same-turn Brand bonus; live encounter ownership verification pending.",
-                "Each Oath adds 4 attack damage instead. If both followers die in one player turn, Kin Priest gains exactly 1 Artifact."),
+                "Each Oath adds 4 damage to each hit instead. If both followers die in one player turn, Kin Priest gains exactly 1 Artifact."),
             [EncounterId("VANTOM_BOSS")] = new(
                 BossSealId.InkReturn,
                 "Ink Return",
@@ -47,23 +47,23 @@ internal static partial class BossSealCatalog
             [EncounterId("WATERFALL_GIANT_BOSS")] = new(
                 BossSealId.BoilingCritical,
                 "Unweakenable",
-                "On the explosion turn, clear debuffs and attack reduction. The explosion ignores Weak and Strength loss, and affected players gain 1 Vulnerable.",
+                "On the explosion turn, clear Weak and attack reduction. The explosion ignores Weak and Strength loss, and affected players gain 1 Vulnerable.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
-                "Uses WaterfallGiant.NextMove EXPLODE_MOVE, ArtifactPower final-display correction, VulnerablePower, debuff removal, and negative-Strength cleanup; live terminal-flow verification pending.",
+                "Uses WaterfallGiant.NextMove EXPLODE_MOVE, ArtifactPower final-display correction, VulnerablePower, Weak cleanup, and negative-Strength cleanup; live terminal-flow verification pending.",
                 "Affected players gain 2 Vulnerable on the explosion turn. Base explosion damage is not increased."),
             [EncounterId("KAISER_CRAB_BOSS")] = new(
                 BossSealId.MisalignedShell,
                 "Claw Calibration",
-                "At player turn end, if the two claws' HP percentages differ by at least 35%, the higher-HP claw gains Calibration. At 2 Calibration, its next attack deals 4 extra damage.",
+                "At player turn end, if the two claws' HP percentages differ by at least 35%, the higher-HP claw gains Calibration. At 2 Calibration, each hit of its next attack deals 4 extra damage.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
                 "Uses the source-confirmed Crusher/Rocket pair, shared end-of-player-turn HP-ratio checks, and per-claw once-per-combat next-attack powers; live direction and timing verification pending.",
-                "The HP gap threshold becomes 30%, and the calibrated attack deals 5 extra damage."),
+                "The HP gap threshold becomes 30%, and each hit of the calibrated attack deals 5 extra damage."),
             [EncounterId("KNOWLEDGE_DEMON_BOSS")] = new(
                 BossSealId.MarginalNote,
                 "Marginal Note",
                 "Curse of Knowledge adds 1 temporary Marginal Note to each player's discard pile. Unplayed Notes become Deep Thought, which adds side costs to the next Knowledge curse.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
-                "Uses post-Curse-of-Knowledge move observation, combat-only note cards, per-round Deep Thought cap, and source-backed Disintegration/Mind Rot/Sloth/Waste Away side effects; exact unchosen-curse identity remains unhooked and must be live-reviewed.",
+                "Uses post-Curse-of-Knowledge move observation, combat-only note cards, per-round Deep Thought cap, and source-backed Disintegration/Mind Rot/Sloth/Waste Away side effects. The v4.1 side-cost design deliberately does not depend on exact unchosen curse identity, avoiding a brittle patch of KnowledgeDemon.ChooseCurse local state; live timing verification pending.",
                 "Deep Thought cap rises to 3. Sloth and Waste Away side costs still resolve once per Knowledge curse."),
             [EncounterId("THE_INSATIABLE_BOSS")] = new(
                 BossSealId.StruggleBait,

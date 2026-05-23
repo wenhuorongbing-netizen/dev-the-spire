@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -54,7 +54,7 @@ public sealed class AscensionFeatureGuardTests
             "HarmonyPatch(typeof(StartRunLobby), \"BeginRunForAllPlayers\")",
             "host multiplayer ascension selection",
             "host multiplayer run start",
-            "IsDualKingBrandsSinglePlayerEnabled(IRunState runState)",
+            "IsBrandedFormSinglePlayerEnabled(IRunState runState)",
             "runState.Players.Count == 1",
             "__state.Stats.MaxAscension = __state.OriginalMaxAscension");
 
@@ -217,6 +217,14 @@ public sealed class AscensionFeatureGuardTests
             "MainFile.Logger.Info(");
         AssertBefore(firstApplyBlock, "addedStartingRoot = await AddRootblightCard(player, 1);", "MarkRootBeginsApplied(player);");
         Assert.Contains("the next room/act hook will retry", firstApplyBlock, StringComparison.Ordinal);
+
+        var blightSproutAddBlock = SliceBetween(
+            serviceLifecycle,
+            "public static async Task AddRootblightI(Player player, string source)",
+            "public static void MarkCombatStartRootblight(Player player)");
+        AssertBefore(blightSproutAddBlock, "if (!await AddRootblightCard(player, 1, preferOverlayNotice: true))", "MarkRootBeginsApplied(player);");
+        Assert.Contains("hadRootblightBeforeAdd || FindRootFamilyCards(player).Count > 0", blightSproutAddBlock, StringComparison.Ordinal);
+        Assert.Equal(2, CountOccurrences(blightSproutAddBlock, "MarkRootBeginsApplied(player);"));
     }
 
     [Fact]

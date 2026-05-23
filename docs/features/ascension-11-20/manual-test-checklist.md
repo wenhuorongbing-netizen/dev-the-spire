@@ -1,9 +1,9 @@
-﻿# Ascension 11-20 Manual Test Checklist
+# Ascension 11-20 Manual Test Checklist
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
-Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; historical 22-field normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. current source defines 26 SavedSpireFields and needs a fresh loader smoke. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
-Last updated: 2026-05-14
+Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; historical 22-field normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. current source defines 30 SavedSpireFields and needs a fresh loader smoke. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
+Last updated: 2026-05-23
 
 ## Research-Mode Baseline
 
@@ -23,8 +23,8 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Historical normal Steam-client helper startup/log verification under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, found 0 release-blocking signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes. current source defines 26 SavedSpireFields, so fresh loader parity remains pending.
-- Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the historical 22-field smoke plus the current 26-field source state.
+- Historical normal Steam-client helper startup/log verification under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, found 0 release-blocking signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes. current source defines 30 SavedSpireFields, so fresh loader parity remains pending.
+- Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the historical 22-field smoke plus the current 30-field source state.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded boss dedicated abilities, and A20 vanilla double-boss map path/Branded Form/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. The current source also patches `ActModel.CreateMap` as an earlier geometry boundary before the run hook. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
@@ -45,8 +45,8 @@ Baseline result on 2026-05-06:
 - A16 Banner Rooms: set `EZMB_ASCENSION_DEBUG_LEVEL=16`.
 - A17 Deep Branch route test: set `EZMB_ASCENSION_DEBUG_LEVEL=17` or select A17+ from the original single-player UI. Use single-player; multiplayer branch insertion is skipped until route voting is proven.
 - A18 elite Blight Sprout internal test: set `EZMB_ASCENSION_DEBUG_LEVEL=18`.
-- A19 Boss Seal source-guarded runtime hooks and fourth boss reward option: set `EZMB_ASCENSION_DEBUG_LEVEL=19`.
-- A20 vanilla double-boss path, Boss 2 Brand metadata/parameters, Boss 1 recovery, Boss 1 reward, Boss 1 reward-screen prompt, and fixed courtyard event: set `EZMB_ASCENSION_DEBUG_LEVEL=20`; this uses the vanilla second-boss map path and inserts the courtyard through the vanilla terminal reward/map pause.
+- A19 dedicated ability source-guarded runtime hooks and fourth boss reward option: set `EZMB_ASCENSION_DEBUG_LEVEL=19`.
+- A20 vanilla double-boss path, Boss 2 Branded Form metadata/parameters, Boss 1 recovery, Boss 1 reward, Boss 1 reward-screen prompt, and fixed courtyard event: set `EZMB_ASCENSION_DEBUG_LEVEL=20`; this uses the vanilla second-boss map path and inserts the courtyard through the vanilla terminal reward/map pause.
 - Disable A11 map geometry for comparison: set `EZMB_ASCENSION_ENABLE_MAP_GEOMETRY=0`.
 - Disable A17 Deep Branches for comparison: set `EZMB_ASCENSION_ENABLE_DEEP_BRANCHES=0`.
 - Read-only hook/state diagnostics: set `EZMB_ASCENSION_DIAGNOSTICS=1`.
@@ -333,12 +333,23 @@ Gated implementation present as BossSeal definitions plus source-guarded runtime
 - [ ] A19 boss-specific dedicated ability metadata is assigned at map generation.
 - [ ] The assigned ability name matches the active boss encounter in `BossSealCatalog`.
 - [ ] Boss map point hover previews the current dedicated ability name and summary before entering combat.
-- [ ] Aeonglass Boss hover states Time Sand Reflow before entering combat: after Ebb, 2 shared Time Sand appears; each energy spent clears 1, and remaining Time Sand adds extra Wither to the next Increasing Intensity.
 - [ ] Boss combat logs the dedicated ability / Branded Form as armed with source-guarded evidence before applying only the currently guarded hook path.
 - [ ] Boss map point hover text names the dedicated ability or Branded Form and includes the matching per-boss summary without raw localization keys.
 - [ ] Boss card rewards improve as documented.
-- [ ] Holy Daze, Martyr Oath, Ink Return, Plating Wake, Soul Tide, Unweakenable, Claw Calibration, Marginal Note, Escape Fatigue, Time Sand Reflow, Royal Decree, and Experimental Record each trigger only on the matching boss and remain documented as pending live verification. Aeonglass Time Sand should be created after Ebb, cleared by energy spent, converted into extra Wither for the next Increasing Intensity at player turn end, and add Branded Form Eye Laser extra hits only when Time Sand remains.
-- [ ] No generic Armor/Rage/Barrier/Chaos placeholder effect applies.
+- [ ] Attack-changing dedicated abilities show final enemy intent before damage resolves: Martyr Oath attacks, Claw Calibration attacks, Escape Fatigue Vigor attacks, and Branded Form Eye Lasers extra hit. Martyr Oath and Claw Calibration add damage to each hit of the next attack, so multi-hit intents must show the boosted per-hit value.
+- [ ] Holy Daze triggers only for Ceremonial Beast's first stun: each hit is capped at 1 damage, then the Boss gains 1 Strength; Branded Form grants 2 Strength instead.
+- [ ] Martyr Oath triggers only for The Kin: each of the two real followers can grant 1 Oath, up to 2. Oath extends the next debuff by 1 per stack or adds 3 damage per hit per stack to the next attack. Branded Form changes the hit bonus to 4 and grants exactly 1 Artifact if both followers die in one player turn.
+- [ ] Ink Return triggers only for Vantom: the first full Slippery removal returns 25% of the cleared amount next enemy turn, min 3, max 12. Branded Form returns 35%, min 5, max 18.
+- [ ] Plating Wake triggers only for Lagavulin Matriarch: player-hit wake grants 4 Plating, natural wake grants 8, and the first Soul Siphon halves current Plating. Branded Form changes this to 6/10 Plating and removes only one third. Multiplayer uses the game's boss Plating scaling and the visible final value is sensible.
+- [ ] Soul Tide triggers only for Soul Fysh: entering Intangible grants exactly 1 Artifact. Beckons left in hand grant next-enemy-turn Block at 2 each with team caps solo 8, 2 players 12, 3-4 players 16. Branded Form uses 3 Block each with caps solo 12, 2 players 16, 3-4 players 20.
+- [ ] Unweakenable triggers only for Waterfall Giant's explosion turn: Weak and attack-down are cleared, the explosion ignores those attack reductions, the temporary Artifact protection does not persist after the explosion resolves, and affected players gain 1 Vulnerable. Branded Form applies 2 Vulnerable and does not raise base explosion damage.
+- [ ] Claw Calibration triggers only for Kaiser Crab: if claw HP percentages differ by at least 35% at player turn end, the healthier claw gains Calibration. At 2 Calibration, that claw's next attack gains 4 damage per hit, once per claw. Branded Form uses a 30% threshold and 5 damage per hit.
+- [ ] Marginal Note triggers only for Knowledge Demon: Curse of Knowledge adds temporary Marginal Notes to discard. Unplayed Notes become Deep Thought, capped at 2 and at most 2 gained per turn. Deep Thought adds side costs to the next Knowledge curse. Branded Form cap is 3, while Sloth and Waste Away side costs resolve at most once per Knowledge curse.
+- [ ] Escape Fatigue triggers only for The Insatiable: Strength gain or Sandpit advance adds ability-made Frantic Escape to one affected player's discard. Every third ability-made Escape played by the team grants 2 Vigor, at most once each player turn. Branded Form grants 3 Vigor.
+- [ ] Time Sand Reflow triggers only for Aeonglass: after Ebb, 2 shared Time Sand appears; each energy spent clears 1, and remaining Time Sand adds extra Wither to the next Increasing Intensity. Branded Form creates 3 Time Sand and gives Eye Lasers 1 extra hit when Time Sand remains, at most twice per fight.
+- [ ] Royal Decree triggers only for Queen: one visible Bound card per active player receives Royal Decree. Playing it avoids penalty, playing another Bound card grants Majesty, and playing no Bound card grants Majesty plus Torch Head Strength. Majesty caps at 2, with per-round team caps. Branded Form Majesty cap is 3 and one defense action can spend at most 2.
+- [ ] Experimental Record triggers only for Test Subject phase changes: the next phase receives one sample from Strength Residue, Skill Adaptation, Attack Adaptation, Antibody Sample, or Contaminated Sample, with a visible short notice. Branded Form receives two different samples.
+- [ ] No dedicated ability applies to the wrong boss, persists into later combats, or uses generic placeholder Armor/Rage/Barrier/Chaos behavior.
 - [ ] A20 creates the final-act second Boss through the vanilla double-boss map path when the A20 gate is active.
 - [ ] The Act 3 map shows both Boss map points with vanilla Boss icons/names before route commitment.
 - [ ] Boss 2 receives Branded Form metadata and parameters.
@@ -372,6 +383,6 @@ Planning checks for the next release-engineering pass; do not mark these complet
 - [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
 - [ ] Publish the current package before runtime smoke.
 - [ ] Launch controlled `--force-steam off` with only BaseLib and Spire Plus enabled.
-- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source defines 26 SavedSpireFields after Seedbed root-suppression markers. The previous smoke log still reports `Found 22 SavedSpireFields`, so a fresh live loader rerun is required before claiming loader parity for this source state.
+- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source defines 30 SavedSpireFields after Seedbed root-suppression markers. The previous smoke log still reports `Found 22 SavedSpireFields`, so a fresh live loader rerun is required before claiming loader parity for this source state.
 - [ ] Confirm the controlled smoke has no Spire Plus / `EZMicroBalance` startup exception or error.
 - [ ] Keep normal Steam-client Mod Settings verification separate from controlled smoke.

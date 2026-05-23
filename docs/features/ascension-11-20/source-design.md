@@ -317,7 +317,7 @@ Expected modules, subject to API research:
 - Firemark elite node module.
 - Banner room node module.
 - Deep branch map template module.
-- Boss Seal module.
+- Boss dedicated ability module.
 - A20 intermission flow module.
 - Localization module.
 - Debug/dev-console testing notes.
@@ -392,7 +392,7 @@ Research must answer before coding each system:
 
 - A17 map generation branch template.
 
-### Phase 8: Boss Seal and A20 MVP
+### Phase 8: Boss dedicated abilities and A20 MVP
 
 - A19 seals and boss reward +1 option.
 - A20 reveal/intermission/Branded Form state.

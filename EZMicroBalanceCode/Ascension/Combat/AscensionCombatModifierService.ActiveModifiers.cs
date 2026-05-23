@@ -21,7 +21,7 @@ internal static partial class AscensionCombatModifierService
         return metadata.BossSeal != null &&
             combatState.RunState.CurrentRoom?.RoomType == RoomType.Boss &&
             (metadata.IsBossBrand
-                ? AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(combatState.RunState)
+                ? AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(combatState.RunState)
                 : AscensionFeatureGate.IsBossSealsEnabled(combatState.RunState));
     }
 }

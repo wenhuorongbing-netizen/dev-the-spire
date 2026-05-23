@@ -17,6 +17,7 @@ internal sealed class A20Courtyard : EventModel
     private const string InitialDescriptionKey = "A20_COURTYARD.pages.INITIAL.description";
     private const string ReadyDescriptionKey = "A20_COURTYARD.pages.READY.description";
     private const string ContinueOptionKey = "A20_COURTYARD.pages.INITIAL.options.CONTINUE";
+    private const string BrandedFormKey = "BOSS_BRANDED_FORM";
 
     public override bool IsAllowed(IRunState runState) => false;
 
@@ -63,13 +64,13 @@ internal sealed class A20Courtyard : EventModel
 
         var runState = Owner?.RunState;
         var secondBoss = runState?.Act.SecondBossEncounter;
-        description.Add("BossName", secondBoss?.Title.GetFormattedText() ?? new LocString("ascension", "BOSS_KING_BRAND.title").GetFormattedText());
+        description.Add("BossName", secondBoss?.Title.GetFormattedText() ?? new LocString("ascension", $"{BrandedFormKey}.title").GetFormattedText());
 
         var definition = TryGetSecondBossBrandDefinition(runState);
         if (definition == null)
         {
-            description.Add("SealName", new LocString("ascension", "BOSS_KING_BRAND.title").GetFormattedText());
-            description.Add("SealSummary", new LocString("ascension", "BOSS_KING_BRAND.description").GetFormattedText());
+            description.Add("SealName", new LocString("ascension", $"{BrandedFormKey}.title").GetFormattedText());
+            description.Add("SealSummary", new LocString("ascension", $"{BrandedFormKey}.description").GetFormattedText());
             return;
         }
 
@@ -105,7 +106,7 @@ internal static class AscensionA20CourtyardService
     public static bool ShouldEnterCourtyard(IRunState? runState)
     {
         return runState != null &&
-            AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState) &&
+            AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState) &&
             runState.CurrentRoomCount == 1 &&
             runState.CurrentRoom?.RoomType == RoomType.Boss &&
             runState.CurrentActIndex == runState.Acts.Count - 1 &&
@@ -128,7 +129,7 @@ internal static class AscensionA20CourtyardService
             var eventRoom = new EventRoom(ModelDb.Event<A20Courtyard>());
             await runManager.EnterRoomWithoutExitingCurrentRoom(eventRoom, fadeToBlack: true);
             await SaveManager.Instance.SaveRun(eventRoom, saveProgress: false);
-            ReleaseEvidenceLog.Log("A20KingBrand", "courtyard_entered", runState: runState);
+            ReleaseEvidenceLog.Log("A20BrandedForm", "courtyard_entered", runState: runState);
             MainFile.Logger.Info("[EZMicroBalance] Ascension A20 applied: entered the fixed courtyard event between Boss 1 rewards and Boss 2.");
         }
         catch

@@ -5,7 +5,7 @@ internal static partial class AscensionRewardService
     private static bool TryAddA20BossOneCardReward(Player player, List<Reward> rewards, AbstractRoom? room)
     {
         var runState = player.RunState;
-        if (!AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState) ||
+        if (!AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState) ||
             room?.RoomType != RoomType.Boss ||
             runState.CurrentActIndex != runState.Acts.Count - 1 ||
             runState.Map.SecondBossMapPoint == null ||

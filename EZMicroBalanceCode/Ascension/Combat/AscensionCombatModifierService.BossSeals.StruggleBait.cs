@@ -91,6 +91,7 @@ internal static partial class AscensionCombatModifierService
         var escape = combatState.CreateCard<FranticEscape>(player);
         await CardPileCmd.AddGeneratedCardToCombat(escape, PileType.Discard, player, CardPilePosition.Bottom);
         tracker.StruggleBaitGeneratedEscapes.Add(escape);
+        AscensionSavedStateFields.StruggleBaitGeneratedEscape[escape] = true;
         MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Escape Fatigue added a dedicated-ability Frantic Escape to the affected player.");
     }
 
@@ -100,11 +101,15 @@ internal static partial class AscensionCombatModifierService
         AscensionNodeMetadata metadata,
         FranticEscape escape)
     {
-        if (!tracker.StruggleBaitGeneratedEscapes.Remove(escape))
+        var generatedByDedicatedAbility =
+            tracker.StruggleBaitGeneratedEscapes.Remove(escape) ||
+            AscensionSavedStateFields.StruggleBaitGeneratedEscape[escape];
+        if (!generatedByDedicatedAbility)
         {
             return;
         }
 
+        AscensionSavedStateFields.StruggleBaitGeneratedEscape[escape] = false;
         tracker.RoyalEscapesPlayed++;
         if (tracker.RoyalEscapesPlayed % 3 != 0 ||
             tracker.StruggleBaitVigorGainRound == combatState.RoundNumber)

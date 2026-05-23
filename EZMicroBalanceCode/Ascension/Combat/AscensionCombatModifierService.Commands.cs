@@ -2,6 +2,30 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
+    private static async Task RefreshEnemyIntent(Creature? creature)
+    {
+        if (creature is not { IsMonster: true, IsAlive: true } ||
+            creature.CombatState is not { } combatState)
+        {
+            return;
+        }
+
+        var node = creature.GetCreatureNode();
+        if (node == null)
+        {
+            return;
+        }
+
+        try
+        {
+            await node.UpdateIntent(combatState.Allies);
+        }
+        catch (ObjectDisposedException ex)
+        {
+            MainFile.Logger.Warn($"[EZMicroBalance] Ascension intent refresh skipped for {creature.LogName}: {ex.Message}");
+        }
+    }
+
     private static async Task ApplyBlockAndArtifactToEnemies(CombatState combatState, decimal block, decimal artifact)
     {
         foreach (var enemy in AliveEnemies(combatState))

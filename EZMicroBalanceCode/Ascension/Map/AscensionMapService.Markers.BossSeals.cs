@@ -9,8 +9,8 @@ internal static partial class AscensionMapService
     private static void MarkBossSeals(IRunState runState, ActMap map, int actIndex)
     {
         var bossSealsEnabled = AscensionFeatureGate.IsBossSealsEnabled(runState);
-        var dualKingBrandsEnabled = AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState);
-        if (!bossSealsEnabled && !dualKingBrandsEnabled)
+        var brandedFormEnabled = AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState);
+        if (!bossSealsEnabled && !brandedFormEnabled)
         {
             return;
         }
@@ -33,12 +33,12 @@ internal static partial class AscensionMapService
             }
         }
 
-        if (!dualKingBrandsEnabled)
+        if (!brandedFormEnabled)
         {
-            if (AscensionFeatureGate.IsDualKingBrandsEnabled(runState))
+            if (AscensionFeatureGate.IsBrandedFormEnabled(runState))
             {
                 ReleaseEvidenceLog.Log(
-                    "A20KingBrand",
+                    "A20BrandedForm",
                     "second_boss_brand_gated",
                     runState: runState,
                     data: new Dictionary<string, object?>
@@ -69,7 +69,7 @@ internal static partial class AscensionMapService
         secondBossMetadata.BossSeal = secondBossSeal;
         secondBossMetadata.IsBossBrand = true;
         ReleaseEvidenceLog.Log(
-            "A20KingBrand",
+            "A20BrandedForm",
             "second_boss_brand_marked",
             runState: runState,
             data: new Dictionary<string, object?>
@@ -77,7 +77,7 @@ internal static partial class AscensionMapService
                 ["seal"] = secondBossSeal.Id.ToString()
             });
         ReleaseEvidenceLog.Log(
-            "A20KingBrand",
+            "A20BrandedForm",
             "boss_marker_applied",
             runState: runState,
             data: new Dictionary<string, object?>

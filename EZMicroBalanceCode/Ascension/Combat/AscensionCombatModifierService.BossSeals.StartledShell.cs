@@ -4,22 +4,53 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
-    private static async Task TryApplyStartledShellFromDamage(
-        AscensionCombatTracker tracker,
-        AscensionNodeMetadata metadata,
-        Creature target)
+    private static void TrackStartledShellDamageStart(AscensionCombatTracker tracker, Creature target)
     {
         if (tracker.StartledShellApplied ||
             target.Monster is not LagavulinMatriarch ||
-            target.HasPower<AsleepPower>())
+            !target.HasPower<AsleepPower>())
         {
             return;
         }
 
-        tracker.StartledShellApplied = true;
-        var plating = metadata.IsBossBrand ? 6 : 4;
-        await PowerCmd.Apply<PlatingPower>(new BlockingPlayerChoiceContext(), target, plating, target, null);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Startled Shell added early-wake Plating.");
+        tracker.StartledShellWakeByPlayerDamagePending = true;
+    }
+
+    private static void ClearStartledShellDamageStart(AscensionCombatTracker tracker)
+    {
+        tracker.StartledShellWakeByPlayerDamagePending = false;
+    }
+
+    private static async Task TryApplyStartledShellFromDamage(
+        AscensionCombatTracker tracker,
+        AscensionNodeMetadata metadata,
+        Creature target,
+        DamageResult result)
+    {
+        if (result.UnblockedDamage <= 0m)
+        {
+            tracker.StartledShellWakeByPlayerDamagePending = false;
+            return;
+        }
+
+        if (tracker.StartledShellApplied ||
+            target.Monster is not LagavulinMatriarch)
+        {
+            return;
+        }
+
+        if (target.HasPower<AsleepPower>())
+        {
+            // AsleepPower may remove its starting Plating later in the same damage hook.
+            // Defer the v4.1 early-wake Plating until the wake is observable.
+            tracker.StartledShellWakeByPlayerDamagePending = true;
+            return;
+        }
+
+        if (tracker.StartledShellWakeByPlayerDamagePending)
+        {
+            await ApplyStartledShellPlating(tracker, metadata, target, wokeFromPlayerDamage: true);
+        }
     }
 
     private static async Task TryApplyStartledShellFromWake(
@@ -35,10 +66,27 @@ internal static partial class AscensionCombatModifierService
             return;
         }
 
+        await ApplyStartledShellPlating(
+            tracker,
+            metadata,
+            matriarch,
+            tracker.StartledShellWakeByPlayerDamagePending);
+    }
+
+    private static async Task ApplyStartledShellPlating(
+        AscensionCombatTracker tracker,
+        AscensionNodeMetadata metadata,
+        Creature matriarch,
+        bool wokeFromPlayerDamage)
+    {
         tracker.StartledShellApplied = true;
-        var platingAmount = metadata.IsBossBrand ? 10 : 8;
+        tracker.StartledShellWakeByPlayerDamagePending = false;
+        var platingAmount = wokeFromPlayerDamage
+            ? metadata.IsBossBrand ? 6 : 4
+            : metadata.IsBossBrand ? 10 : 8;
         await PowerCmd.Apply<PlatingPower>(new BlockingPlayerChoiceContext(), matriarch, platingAmount, matriarch, null);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Startled Shell added wake Plating.");
+        var wakeSource = wokeFromPlayerDamage ? "early-wake" : "natural-wake";
+        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Startled Shell added {wakeSource} Plating.");
     }
 
     private static void TrackStartledShellEnemyMove(CombatState combatState, AscensionCombatTracker tracker)

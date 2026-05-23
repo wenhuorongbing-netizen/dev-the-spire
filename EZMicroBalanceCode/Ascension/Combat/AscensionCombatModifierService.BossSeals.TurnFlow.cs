@@ -10,7 +10,8 @@ internal static partial class AscensionCombatModifierService
     {
         if (metadata.BossSeal?.Id == BossSealId.ChosenDecree)
         {
-            ResetChosenDecreeRoundCaps(tracker);
+            ResetChosenDecreeRoundCaps(tracker, combatState.RoundNumber);
+            TryAssignChosenDecreeInHandForPlayer(combatState, tracker, metadata, player);
         }
 
         if (metadata.BossSeal?.Id == BossSealId.HolyDaze)
@@ -47,6 +48,11 @@ internal static partial class AscensionCombatModifierService
         if (metadata.BossSeal?.Id == BossSealId.ResidualSample)
         {
             await TryApplyResidualSamples(combatState, tracker, metadata);
+        }
+
+        if (metadata.BossSeal?.Id == BossSealId.AeonglassHourglass)
+        {
+            await ArmAeonglassLaserEchoPreviewIfEligible(combatState, tracker, metadata);
         }
     }
 
@@ -107,7 +113,6 @@ internal static partial class AscensionCombatModifierService
             await SettleMarginalNotes(combatState, tracker, metadata);
             await SettleAeonglassTimeSand(combatState, tracker, metadata);
             await SettleChosenDecree(combatState, tracker, metadata);
-            ResetMartyrOathTurnCounters(tracker);
         }
         else if (side == CombatSide.Enemy)
         {
@@ -122,6 +127,7 @@ internal static partial class AscensionCombatModifierService
                     break;
                 case BossSealId.BoilingCritical:
                     await TrackBoilingCriticalSteam(combatState, tracker, metadata);
+                    await ClearBoilingExplosionFortification(combatState, tracker);
                     break;
                 case BossSealId.StruggleBait:
                     await TrackStruggleBaitObservations(combatState, tracker, metadata);
@@ -140,5 +146,10 @@ internal static partial class AscensionCombatModifierService
                     break;
             }
         }
+
+        // The Branded Form double-follower bonus is a same-turn reward. Reset on
+        // every side-turn boundary so poison, thorns, or delayed damage cannot
+        // carry one follower death into the next team turn.
+        ResetMartyrOathTurnCounters(tracker);
     }
 }

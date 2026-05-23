@@ -38,8 +38,8 @@ The current implementation uses the selected run Ascension level after the selec
 - A16 also enables Banner Room marking and generic banner combat modifiers.
 - A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available; enhanced treasure nodes add a guarded Uncommon relic reward.
 - A18 also enables elite Blight Sprout.
-- A19 also enables Boss Seal definition lookup, source-guarded boss-specific dedicated ability hooks, and a fourth boss card reward option; all boss-specific mechanics still require live verification.
-- A20 also enables the single-player vanilla double-boss map path, Boss 2 Branded Form metadata/parameters independent of the A19 Boss Seal feature flag, Boss 1 post-combat recovery, one Boss card reward before Boss 2, narrow Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2 with an immediate pre-finished-room save. It does not create a bespoke full custom intermission screen.
+- A19 also enables dedicated ability definition lookup, source-guarded boss-specific dedicated ability hooks, and a fourth boss card reward option; all boss-specific mechanics still require live verification.
+- A20 also enables the single-player vanilla double-boss map path, Boss 2 Branded Form metadata/parameters independent of the A19 dedicated ability feature flag, Boss 1 post-combat recovery, one Boss card reward before Boss 2, narrow Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2 with an immediate pre-finished-room save. It does not create a bespoke full custom intermission screen.
 - A11-A20 selection is now default-on in this private-beta multiplayer test candidate for standard single-player and host-multiplayer lobbies.
 - `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection for comparison testing.
 - `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
@@ -346,7 +346,7 @@ Remaining:
 
 ## Phase 8: A19 Boss Dedicated Abilities and A20
 
-Status: A19 BossSeal data table plus source-guarded boss-specific runtime hooks and Boss-map hover text are implemented behind the A19 gate; A20 uses the vanilla double-boss map path for final-act Boss 1/Boss 2 reveal, Boss 2 Branded Form metadata/parameters and hover text, Boss 1 post-combat recovery, one Boss card reward after Boss 1, Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2. A bespoke full custom intermission screen remains deferred and high risk.
+Status: A19 dedicated ability data table plus source-guarded boss-specific runtime hooks and Boss-map hover text are implemented behind the A19 gate; A20 uses the vanilla double-boss map path for final-act Boss 1/Boss 2 reveal, Boss 2 Branded Form metadata/parameters and hover text, Boss 1 post-combat recovery, one Boss card reward after Boss 1, Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2. A bespoke full custom intermission screen remains deferred and high risk.
 
 Scope:
 
@@ -359,7 +359,7 @@ Implemented:
 - A19 boss nodes receive boss-specific dedicated ability metadata from the active boss encounter instead of the older generic Armor/Rage/Barrier/Chaos placeholder set.
 - A19 combat logs the armed dedicated ability and source evidence, then applies only the current source-guarded hook paths; live runtime verification is still required before release-readiness claims.
 - A19 boss card rewards add a fourth option through `CardFactory.CreateForReward` with hook recursion disabled.
-- A20 sets a final-act second Boss through a `RunManager.GenerateRooms()` postfix when the single-player vanilla double-boss path has not already done so; `StandardActMap` then exposes `SecondBossMapPoint`, Boss 2 receives Branded Form metadata plus source-guarded Branded Form parameter variants even if the A19 Boss Seal feature flag is disabled, Boss-map hover text, Boss 1 post-combat recovery restores 25% missing HP, Boss 1 terminal rewards include one Boss card reward, the Boss 1 reward screen uses second-Boss header/proceed wording, and `RunManager.ProceedFromTerminalRewardsScreen` opens `A20Courtyard` through `EnterRoomWithoutExitingCurrentRoom` followed by `SaveRun(eventRoom, saveProgress: false)`. A bespoke full custom intermission screen remains deferred.
+- A20 sets a final-act second Boss through a `RunManager.GenerateRooms()` postfix when the single-player vanilla double-boss path has not already done so; `StandardActMap` then exposes `SecondBossMapPoint`, Boss 2 receives Branded Form metadata plus source-guarded Branded Form parameter variants even if the A19 dedicated ability feature flag is disabled, Boss-map hover text, Boss 1 post-combat recovery restores 25% missing HP, Boss 1 terminal rewards include one Boss card reward, the Boss 1 reward screen uses second-Boss header/proceed wording, and `RunManager.ProceedFromTerminalRewardsScreen` opens `A20Courtyard` through `EnterRoomWithoutExitingCurrentRoom` followed by `SaveRun(eventRoom, saveProgress: false)`. A bespoke full custom intermission screen remains deferred.
 
 Required proof:
 

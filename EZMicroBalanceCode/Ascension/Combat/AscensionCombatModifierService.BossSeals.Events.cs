@@ -23,6 +23,11 @@ internal static partial class AscensionCombatModifierService
         Creature? dealer,
         CardModel? cardSource)
     {
+        if (metadata.BossSeal?.Id == BossSealId.StartledShell && result.UnblockedDamage <= 0m)
+        {
+            ClearStartledShellDamageStart(tracker);
+        }
+
         if (result.UnblockedDamage <= 0m && result.TotalDamage <= 0m)
         {
             return;
@@ -37,7 +42,7 @@ internal static partial class AscensionCombatModifierService
                 TrackInkReturnFromDamage(tracker, metadata, target);
                 break;
             case BossSealId.StartledShell:
-                await TryApplyStartledShellFromDamage(tracker, metadata, target);
+                await TryApplyStartledShellFromDamage(tracker, metadata, target, result);
                 break;
         }
     }

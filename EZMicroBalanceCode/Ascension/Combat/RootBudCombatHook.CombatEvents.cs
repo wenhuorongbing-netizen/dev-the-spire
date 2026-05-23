@@ -38,6 +38,23 @@ internal sealed partial class RootBudCombatHook
         await AscensionCombatModifierService.AfterDamageReceived(state, GetTracker(state), target, result, props, dealer, cardSource);
     }
 
+    public override async Task BeforeDamageReceived(
+        PlayerChoiceContext choiceContext,
+        Creature target,
+        decimal amount,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource)
+    {
+        var state = CurrentCombatState();
+        if (state == null)
+        {
+            return;
+        }
+
+        await AscensionCombatModifierService.BeforeDamageReceived(state, GetTracker(state), target, amount, props, dealer, cardSource);
+    }
+
     public override async Task AfterCurrentHpChanged(Creature creature, decimal delta)
     {
         var state = CurrentCombatState();

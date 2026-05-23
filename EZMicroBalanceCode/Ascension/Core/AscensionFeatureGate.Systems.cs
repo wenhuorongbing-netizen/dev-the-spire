@@ -44,20 +44,20 @@ internal static partial class AscensionFeatureGate
         IsLevelEnabled(runState, BossSealsLevel) &&
         AscensionExpansionConfig.Current.EnableBossSeals;
 
-    public static bool IsDualKingBrandsEnabled(IRunState runState) =>
+    public static bool IsBrandedFormEnabled(IRunState runState) =>
         IsLevelEnabled(runState, DoubleRoyalBrandLevel) &&
-        AscensionExpansionConfig.Current.EnableDualKingBrands;
+        AscensionExpansionConfig.Current.EnableBrandedForm;
 
-    public static bool IsDualKingBrandsSinglePlayerEnabled(IRunState runState)
+    public static bool IsBrandedFormSinglePlayerEnabled(IRunState runState)
     {
-        if (!IsDualKingBrandsEnabled(runState))
+        if (!IsBrandedFormEnabled(runState))
         {
             return false;
         }
 
         if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
                 runState,
-                "A20KingBrand",
+                "A20BrandedForm",
                 "A20 Branded Form and second boss routing are pending two-client proof"))
         {
             return false;
@@ -65,6 +65,10 @@ internal static partial class AscensionFeatureGate
 
         return runState.Players.Count == 1;
     }
+
+    public static bool IsDualKingBrandsEnabled(IRunState runState) => IsBrandedFormEnabled(runState);
+
+    public static bool IsDualKingBrandsSinglePlayerEnabled(IRunState runState) => IsBrandedFormSinglePlayerEnabled(runState);
 
     public static bool IsAnyImplementedSliceEnabled(IRunState runState)
     {
@@ -78,6 +82,6 @@ internal static partial class AscensionFeatureGate
             IsDeepBranchesEnabled(runState) ||
             IsEliteBlightSproutEnabled(runState) ||
             IsBossSealsEnabled(runState) ||
-            IsDualKingBrandsEnabled(runState);
+            IsBrandedFormEnabled(runState);
     }
 }

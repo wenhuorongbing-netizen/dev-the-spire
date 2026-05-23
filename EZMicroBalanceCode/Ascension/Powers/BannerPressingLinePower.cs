@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -33,15 +34,9 @@ internal sealed class PressingLineStrikePower : BannerPower
             : 0m;
     }
 
-    public override async Task AfterDamageGiven(
-        PlayerChoiceContext choiceContext,
-        Creature? dealer,
-        DamageResult result,
-        ValueProp props,
-        Creature target,
-        CardModel? cardSource)
+    public override async Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)
     {
-        if (dealer == Owner && props.IsPoweredAttack())
+        if (command.Attacker == Owner && command.DamageProps.IsPoweredAttack())
         {
             await PowerCmd.Remove(this);
         }

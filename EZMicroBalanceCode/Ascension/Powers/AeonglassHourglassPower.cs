@@ -11,7 +11,7 @@ internal sealed class AeonglassHourglassPower : BossSealPower
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
             "时砂回流",
-            "剩余[blue]{Amount}[/blue]枚时砂。玩家每花费[blue]1[/blue]点能量，移除[blue]1[/blue]枚。玩家回合结束时，每剩余[blue]1[/blue]枚时砂，使下一次[gold]加大力度[/gold]额外加入[blue]1[/blue]张[gold]枯萎[/gold]。[gold]A20烙印[/gold]下，若眼部激光开始时仍有时砂，眼部激光额外命中[blue]1[/blue]次。",
+            "剩余[blue]{Amount}[/blue]枚时砂。玩家每花费[blue]1[/blue]点能量，移除[blue]1[/blue]枚。玩家回合结束时，每剩余[blue]1[/blue]枚时砂，使下一次[gold]加大力度[/gold]额外加入[blue]1[/blue]张[gold]枯萎[/gold]。[gold]烙印形态[/gold]下，若眼部激光开始时仍有时砂，眼部激光额外命中[blue]1[/blue]次。",
             "花费能量可以清除时砂。")
         : new PowerLoc(
             "Time Sand Reflow",

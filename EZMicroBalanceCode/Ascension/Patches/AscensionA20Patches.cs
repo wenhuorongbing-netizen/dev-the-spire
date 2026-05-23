@@ -13,7 +13,7 @@ internal static class AscensionA20GenerateRoomsPatch
     {
         var runState = __instance.DebugOnlyGetState();
         if (runState == null ||
-            !AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState) ||
+            !AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState) ||
             runState.Acts.Count == 0)
         {
             return;
@@ -35,7 +35,7 @@ internal static class AscensionA20GenerateRoomsPatch
 
         finalAct.SetSecondBossEncounter(secondBoss);
         ReleaseEvidenceLog.Log(
-            "A20KingBrand",
+            "A20BrandedForm",
             "second_boss_set",
             runState: runState,
             data: new Dictionary<string, object?>

@@ -45,6 +45,7 @@ internal static partial class AscensionCombatModifierService
 
         await PowerCmd.Remove(host.GetPower<FiremarkHeatPower>());
         await PowerCmd.Apply<FiremarkHeatStrikePower>(new BlockingPlayerChoiceContext(), host, tracker.FiremarkBaseAmount, host, null);
+        await RefreshEnemyIntent(host);
         MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Might firemark Heat is full; next attack is empowered.");
     }
 }

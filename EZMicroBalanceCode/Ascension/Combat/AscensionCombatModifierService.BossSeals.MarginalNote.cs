@@ -75,10 +75,6 @@ internal static partial class AscensionCombatModifierService
         tracker.MarginalDeepThoughtAddedThisRound += deepThoughtGain;
         await PowerCmd.Apply<DeepThoughtPower>(new BlockingPlayerChoiceContext(), demon, deepThoughtGain, demon, null);
         await ClampPowerAmount<DeepThoughtPower>(demon, metadata.IsBossBrand ? 3 : 2, demon, null);
-        if (metadata.IsBossBrand)
-        {
-            await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), demon, deepThoughtGain, demon, null);
-        }
 
         MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: unplayed Marginal Note became Deep Thought.");
     }

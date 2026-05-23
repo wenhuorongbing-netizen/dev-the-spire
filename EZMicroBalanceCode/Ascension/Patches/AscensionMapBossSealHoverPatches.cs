@@ -34,7 +34,7 @@ internal static class BossMapPointHoverPatch
 
     private static HoverTip CreateHoverTip(BossSealDefinition definition, bool isBossBrand)
     {
-        var locKey = isBossBrand ? "BOSS_KING_BRAND" : "BOSS_ROYAL_SEAL";
+        var locKey = isBossBrand ? "BOSS_BRANDED_FORM" : "BOSS_DEDICATED_ABILITY";
         var sealKey = BossSealCatalog.GetLocalizationKey(definition.Id);
         var baseDescription = new LocString("ascension", $"{locKey}.description").GetFormattedText();
         var sealTitle = new LocString("ascension", $"{sealKey}.title").GetFormattedText();

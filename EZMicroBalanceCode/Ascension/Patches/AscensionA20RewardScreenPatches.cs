@@ -83,7 +83,7 @@ internal static class AscensionA20RewardScreenReadyPatch
             return false;
         }
 
-        return AscensionFeatureGate.IsDualKingBrandsSinglePlayerEnabled(runState) &&
+        return AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState) &&
             runState.CurrentRoom?.RoomType == RoomType.Boss &&
             runState.CurrentActIndex == runState.Acts.Count - 1 &&
             runState.Map.SecondBossMapPoint != null &&

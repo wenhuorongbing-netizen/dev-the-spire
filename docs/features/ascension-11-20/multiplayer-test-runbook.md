@@ -303,7 +303,9 @@ If Row B passes (HP normal with all systems disabled), disable systems one at a 
 4. `EZMB_ASCENSION_ENABLE_FIRE_MARK_ELITES=0` — A12 default
 5. `EZMB_ASCENSION_ENABLE_BANNER_ROOMS=0` — A16 default
 6. `EZMB_ASCENSION_ENABLE_BOSS_SEALS=0` — A19 default
-7. `EZMB_ASCENSION_ENABLE_DUAL_KING_BRANDS=0` — A20 default
+7. `EZMB_ASCENSION_ENABLE_BRANDED_FORM=0` — A20 Branded Form default
+
+Legacy alias: `EZMB_ASCENSION_ENABLE_DUAL_KING_BRANDS=0` still disables the same A20 slice for older local scripts.
 
 Note: These env vars default to enabled when unset. Setting to `0` disables them. Confirm behavior via `AscensionExpansionConfig.IsEnabled`.
 

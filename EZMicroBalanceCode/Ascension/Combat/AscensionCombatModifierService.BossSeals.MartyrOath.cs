@@ -29,6 +29,7 @@ internal static partial class AscensionCombatModifierService
         var strikeDamage = metadata.IsBossBrand ? 4m : 3m;
         await PowerCmd.Apply<MartyrOathPower>(new BlockingPlayerChoiceContext(), priest, 1m, priest, null);
         await PowerCmd.Apply<MartyrOathStrikePower>(new BlockingPlayerChoiceContext(), priest, strikeDamage, priest, null);
+        await RefreshEnemyIntent(priest);
 
         tracker.MartyrOathFollowerDeathsThisTurn++;
         if (metadata.IsBossBrand &&

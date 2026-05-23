@@ -82,6 +82,7 @@ internal static partial class AscensionCombatModifierService
         foreach (var enemy in PrimaryAliveEnemies(combatState))
         {
             await PowerCmd.Apply<PressingLineStrikePower>(new BlockingPlayerChoiceContext(), enemy, damage, enemy, null);
+            await RefreshEnemyIntent(enemy);
         }
     }
 }

@@ -31,7 +31,7 @@ Use this file for current development triage. Use the archived full draft only w
 ## Current Refactor Notes
 
 - `AscensionCombatModifierService.cs` keeps lifecycle dispatch and shared modifier entrypoints.
-- Banner, Firemark, Boss Seal, Boss card-pressure, Boss monster-window, and Boss phase-carryover logic live in separate partial files.
+- Banner, Firemark, dedicated ability, Boss card-pressure, Boss monster-window, and Boss phase-carryover logic live in separate partial files.
 - `AscensionMapService.cs` keeps entry flow and metadata lookup.
 - A11 geometry, A17 branches, and map marker assignment live in separate map partial files.
 - Future refactor cuts should move only one behavior group at a time and preserve serialized state layouts.

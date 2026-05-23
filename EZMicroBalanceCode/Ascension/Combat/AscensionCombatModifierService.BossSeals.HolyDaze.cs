@@ -1,9 +1,14 @@
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
+    private static Creature? FindCeremonialBeast(CombatState combatState) =>
+        AliveEnemies(combatState)
+            .FirstOrDefault(enemy => enemy.Monster is CeremonialBeast);
+
     private static async Task TryApplyHolyDaze(
         CombatState combatState,
         AscensionCombatTracker tracker,
@@ -14,7 +19,7 @@ internal static partial class AscensionCombatModifierService
             return;
         }
 
-        var beast = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is CeremonialBeast);
+        var beast = FindCeremonialBeast(combatState);
         if (beast == null ||
             beast.HasPower<PlowPower>() ||
             beast.Monster?.NextMove.StateId != "STUN_MOVE")
@@ -30,7 +35,7 @@ internal static partial class AscensionCombatModifierService
 
     private static async Task EndHolyDaze(CombatState combatState, AscensionCombatTracker tracker)
     {
-        var beast = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is CeremonialBeast);
+        var beast = FindCeremonialBeast(combatState);
         var daze = beast?.GetPower<HolyDazePower>();
         if (beast == null || daze == null)
         {

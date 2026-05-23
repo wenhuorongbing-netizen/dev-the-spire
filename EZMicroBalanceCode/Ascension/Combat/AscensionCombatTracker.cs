@@ -49,6 +49,7 @@ internal sealed class AscensionCombatTracker
     public int InkReturnLastObservedSlippery { get; set; }
     public int InkReturnRestoreAmount { get; set; }
     public bool StartledShellApplied { get; set; }
+    public bool StartledShellWakeByPlayerDamagePending { get; set; }
     public bool StartledShellSoulSiphonTurn { get; set; }
     public bool SoulSiphonShellReduced { get; set; }
     public decimal PendingSoulTideBlock { get; set; }
@@ -56,6 +57,7 @@ internal sealed class AscensionCombatTracker
     public int LastSoulFyshIntangibleAmount { get; set; }
     public int LastSteamEruptionMilestone { get; set; }
     public bool BoilingExplosionFortified { get; set; }
+    public int BoilingExplosionArtifactAdded { get; set; }
     public int BoilingExplosionVulnerabilityRound { get; set; }
     public int MartyrOathTriggers { get; set; }
     public int MartyrOathFollowerDeathsThisTurn { get; set; }
@@ -73,9 +75,10 @@ internal sealed class AscensionCombatTracker
     public bool StruggleBaitBaselineCaptured { get; set; }
     public int LastInsatiableStrengthAmount { get; set; }
     public Dictionary<Player, decimal> LastInsatiableSandpitByPlayer { get; } = [];
-    public CardModel? ChosenDecreeCard { get; set; }
-    public bool ChosenDecreePlayed { get; set; }
-    public bool ChosenDecreeAnyBoundPlayed { get; set; }
+    public Dictionary<Player, CardModel> ChosenDecreeCardsByPlayer { get; } = [];
+    public HashSet<Player> ChosenDecreePlayersWhoPlayedDecree { get; } = [];
+    public HashSet<Player> ChosenDecreePlayersWhoPlayedAnyBound { get; } = [];
+    public int ChosenDecreeRoundCapRound { get; set; }
     public int ChosenDecreeMajestyGainedThisRound { get; set; }
     public int ChosenDecreeAmalgamStrengthThisRound { get; set; }
     public bool AeonglassEbbMoveActive { get; set; }
