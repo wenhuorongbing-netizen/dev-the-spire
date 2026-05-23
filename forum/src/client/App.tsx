@@ -5,6 +5,7 @@ import type { ForumCategory, ForumPost, ForumReply, Route } from "./types";
 const PAGE_SIZE = 20;
 const CLIENT_ID_KEY = "spire-plus-forum-client-id";
 const URL_PATTERN = /\b(?:https?:\/\/|www\.)\S+/gi;
+const EMBEDDED_MODE = new URLSearchParams(window.location.search).get("embedded") === "1";
 
 const CATEGORIES: Array<{ id: ForumCategory; label: string; hint: string }> = [
   { id: "discussion", label: "讨论", hint: "体验、想法、一般问题" },
@@ -50,6 +51,15 @@ function scrollToReplyForm() {
   document.getElementById("reply-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function postEmbeddedHeight() {
+  if (!EMBEDDED_MODE || window.parent === window) return;
+  const height = Math.max(
+    document.documentElement.scrollHeight,
+    document.body.scrollHeight
+  );
+  window.parent.postMessage({ type: "spire-plus-forum-height", height }, window.location.origin);
+}
+
 function formatTime(value: string): string {
   return new Intl.DateTimeFormat("zh-CN", {
     month: "2-digit",
@@ -87,6 +97,7 @@ function authorInitial(name: string): string {
 
 function postUrl(id: string): string {
   const url = new URL(window.location.href);
+  url.searchParams.delete("embedded");
   url.hash = `/posts/${id}`;
   return url.toString();
 }
@@ -739,6 +750,19 @@ export function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!EMBEDDED_MODE) return;
+    postEmbeddedHeight();
+    const observer = new ResizeObserver(() => postEmbeddedHeight());
+    observer.observe(document.documentElement);
+    observer.observe(document.body);
+    window.addEventListener("load", postEmbeddedHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("load", postEmbeddedHeight);
+    };
+  }, [route]);
+
   const page = useMemo(() => {
     if (!forumConfigured) return <NotConfigured />;
     if (route.name === "new") return <NewPostPage />;
@@ -747,9 +771,9 @@ export function App() {
   }, [route]);
 
   return (
-    <>
-      <Header routeName={route.name} />
+    <div className={EMBEDDED_MODE ? "forum-embed-root" : ""}>
+      {EMBEDDED_MODE ? null : <Header routeName={route.name} />}
       {page}
-    </>
+    </div>
   );
 }

@@ -133,6 +133,16 @@ code {
   padding: 26px 0 64px;
 }
 
+.forum-embed-root .page {
+  width: min(1280px, calc(100% - 8px));
+  padding-top: 10px;
+  padding-bottom: 36px;
+}
+
+.forum-embed-root .forum-home {
+  padding-top: 6px;
+}
+
 .narrow {
   width: min(760px, calc(100% - 28px));
 }

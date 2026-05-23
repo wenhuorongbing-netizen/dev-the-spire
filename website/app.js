@@ -206,12 +206,10 @@
     return isLocal() ? data.forum.localUrl : data.forum.url;
   }
 
-  function forumHashRequested() {
-    return location.hash.slice(1) === "forum";
-  }
-
-  function redirectToForumApp() {
-    location.replace(forumHref());
+  function forumEmbedHref() {
+    const url = new URL(forumHref(), location.href);
+    url.searchParams.set("embedded", "1");
+    return url.href;
   }
 
   function renderHeader(activeRoute) {
@@ -235,12 +233,8 @@
       ["issues", labels.navIssues]
     ]) {
       const link = el("a", id === activeRoute ? "active" : "", label);
-      if (id === "forum") {
-        link.href = forumHref();
-      } else {
-        link.href = "#" + id;
-        link.dataset.route = id;
-      }
+      link.href = "#" + id;
+      link.dataset.route = id;
       nav.appendChild(link);
     }
     header.appendChild(nav);
@@ -298,12 +292,8 @@
     const summary = el("section", "summary-strip quick-nav");
     for (const [value, label, routeId] of data.summary) {
       const card = el("a", "stat-card quick-card");
-      if (routeId === "forum") {
-        card.href = forumHref();
-      } else {
-        card.href = "#" + routeId;
-        card.dataset.route = routeId;
-      }
+      card.href = "#" + routeId;
+      card.dataset.route = routeId;
       card.appendChild(el("strong", "", value));
       card.appendChild(el("span", "", label));
       summary.appendChild(card);
@@ -454,41 +444,28 @@
   }
 
   function renderForum() {
-    app.appendChild(renderPageHead(labels.forumTitle, labels.forumLead));
-    const layout = el("section", "forum-board");
-    const entry = el("div", "forum-entry");
-    const copy = el("div", "");
-    copy.appendChild(el("h2", "", labels.forumPublicTitle));
-    copy.appendChild(el("p", "", data.forum.notice));
-    const bullets = el("ul", "forum-points");
-    for (const point of data.forum.points || []) bullets.appendChild(el("li", "", point));
-    copy.appendChild(bullets);
-    entry.appendChild(copy);
-
-    const actions = el("div", "forum-actions");
-    const forumUrl = isLocal() ? data.forum.localUrl : data.forum.url;
-    const primary = button(labels.openForum, forumUrl, true);
-    actions.appendChild(primary);
-    if (data.forum.statusUrl) {
-      const status = button(labels.forumHealth, data.forum.statusUrl, false);
-      status.target = "_blank";
-      status.rel = "noopener";
-      actions.appendChild(status);
-    }
-    for (const [label, href] of data.forum.links || []) {
-      const link = button(label, href, false);
-      link.target = "_blank";
-      link.rel = "noopener";
-      actions.appendChild(link);
-    }
-    entry.appendChild(actions);
-    layout.appendChild(entry);
-
-    const note = el("div", "forum-deploy-note");
-    note.appendChild(el("strong", "", labels.forumDeployTitle));
-    note.appendChild(el("p", "", labels.forumDeployCopy));
-    layout.appendChild(note);
-    app.appendChild(layout);
+    const shell = el("section", "forum-integrated");
+    Object.assign(shell.style, {
+      width: "min(1280px, calc(100% - 32px))",
+      margin: "0 auto",
+      padding: "8px 0 0"
+    });
+    const frame = document.createElement("iframe");
+    frame.id = "forumFrame";
+    frame.className = "forum-frame";
+    frame.title = labels.forumPublicTitle || labels.navForum;
+    frame.src = forumEmbedHref();
+    frame.loading = "eager";
+    Object.assign(frame.style, {
+      display: "block",
+      width: "100%",
+      minHeight: "calc(100vh - 82px)",
+      border: "0",
+      background: "#10110e"
+    });
+    frame.addEventListener("load", () => resizeForumFrame(frame));
+    shell.appendChild(frame);
+    app.appendChild(shell);
   }
 
   function renderIssues() {
@@ -521,12 +498,31 @@
     app.appendChild(grid);
   }
 
-  function render() {
-    if (forumHashRequested()) {
-      redirectToForumApp();
-      return;
+  function resizeForumFrame(frame) {
+    try {
+      const doc = frame.contentDocument;
+      if (!doc) return;
+      const minimum = Math.max(640, window.innerHeight - header.getBoundingClientRect().height);
+      const height = Math.max(
+        minimum,
+        doc.documentElement.scrollHeight,
+        doc.body?.scrollHeight || 0
+      );
+      frame.style.height = `${height}px`;
+    } catch {
+      frame.style.height = "calc(100vh - 82px)";
     }
+  }
 
+  window.addEventListener("message", (event) => {
+    if (event.origin !== location.origin || event.data?.type !== "spire-plus-forum-height") return;
+    const frame = document.getElementById("forumFrame");
+    if (!frame) return;
+    const minimum = Math.max(640, window.innerHeight - header.getBoundingClientRect().height);
+    frame.style.height = `${Math.max(minimum, Number(event.data.height) || 0)}px`;
+  });
+
+  function render() {
     const current = route();
     document.title = "Spire Plus | " + (
       current === "install" ? labels.navInstall :
