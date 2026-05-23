@@ -307,3 +307,32 @@ Live checks still required:
 
 - Render the update page in both languages and inspect A19/A20 cards.
 - Confirm public GitHub Pages uses the current package metadata after deployment.
+
+## Review 13: Gameplay Text Resync
+
+Result: static pass and rendered browser pass.
+
+Fixes checked during this pass:
+
+- Synced website-side EN/ZHS `cards.json`, `relics.json`, `powers.json`, `ancients.json`, and `ascension.json` from the current mod localization.
+- Updated hardcoded website summaries that intentionally replace dynamic variables with concrete values: Seedbed, Rain Breath, Withered Husk, Vakuu contracts, A12 Firemark overflow, Forge Armor timing, and Constant Heal interrupt values.
+- Added current Vakuu Trial cards for Fraud Contract and Cash Out to the update page.
+- Updated install metadata to the current local package size and SHA-256.
+- Added a localization JSON cache buster tied to the current script version so GitHub Pages and local browsers do not keep stale card titles.
+
+Static checks:
+
+- `node --check website/content-data.js` passed.
+- `node --check website/app.js` passed.
+- `dotnet test EZMicroBalance.sln --filter WebsiteContentGuardTests` passed.
+
+Rendered checks:
+
+- Browser rendered `#updates` in Chinese and English.
+- Token filter displays Rain Breath / Fraud Contract / Cash Out as localized titles, not localization keys.
+- Vakuu contract text shows 24 damage for Knife Contract and 22 Block for Shelter Contract, with old 22-damage / 24-Block text absent.
+- Ascension filter shows current A12 Firemark host, Overflow, Forge Armor start-of-player-turn timing, and Constant Heal 12/24/48 interrupt values.
+
+Live checks still required:
+
+- Confirm the public GitHub Pages cache serves the refreshed `content-data.js` after deployment.

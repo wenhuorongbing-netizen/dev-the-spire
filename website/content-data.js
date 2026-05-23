@@ -57,24 +57,27 @@ const sourceCardOverrides = {
 
 const cardDescOverrides = {
   EZMB_URDA_SEEDLING: "0费技能。消耗。获得4点格挡；升级后获得7点格挡。",
-  EZMB_URDA_SEEDBED: "1费技能。消耗。获得4点格挡，设置2格苗床；之后进入手牌的根芽、根蚀、状态牌或诅咒牌会先种入苗床，每种入1张加入1张枯壳。升级后获得6点格挡，容量变为3格。",
-  EZMB_WITHERED_HUSK: "诅咒。虚无，消耗。被消耗时获得3点格挡。",
+  EZMB_URDA_SEEDBED: "1费技能。消耗。获得4点格挡，设置2格苗床；之后进入手牌的临时状态牌、临时诅咒牌或根芽会优先种下，每种下1张加入1张枯壳。升级后获得6点格挡，设置3格苗床，并立即从抽牌堆或弃牌堆种下1张同类牌。",
+  EZMB_URDA_RAIN_BREATH: "0费临时技能。消耗。获得5点格挡，抽1张牌。",
+  EZMB_WITHERED_HUSK: "临时诅咒。虚无，消耗。被消耗时获得3点格挡；苗床不能种下这张牌。",
   EZMB_MORVI_ARCHIVE_DRAW_PAGE: "0费临时页。虚无，消耗。抽2张牌。",
   EZMB_MORVI_ARCHIVE_VEIL_PAGE: "0费临时页。虚无，消耗。获得14点格挡。",
   EZMB_MORVI_ARCHIVE_BURN_PAGE: "0费临时页。虚无，消耗。对所有敌人造成10点伤害。",
   EZMB_MORVI_ARCHIVE_DISCOUNT_PAGE: "0费临时页。虚无，消耗。本回合下一张牌费用变为0。",
   EZMB_MORVI_ARCHIVE_BRAVERY_PAGE: "0费临时页。虚无，消耗。获得2点临时力量。",
   EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE: "0费临时页。虚无，消耗。获得2点临时敏捷。",
-  EZMB_VAKUU_KNIFE_CONTRACT: "0费契约。虚无，消耗。对瓦库造成22点伤害，失去4点生命；若仍有赃物锁，打破1把并增加1层血债。",
-  EZMB_VAKUU_TEMPTATION: "0费契约。虚无，消耗。获得2点能量，抽2张牌，失去5点生命；若仍有赃物锁，打破1把并增加1层血债。",
-  EZMB_VAKUU_SHELTER_CONTRACT: "0费契约。虚无，消耗。获得24点格挡，失去3点生命；若仍有赃物锁，打破1把并增加1层血债。"
+  EZMB_VAKUU_KNIFE_CONTRACT: "0费契约。临时，虚无，消耗。对瓦库造成24点伤害，失去4点生命；若仍有赃物锁，打破1把并增加1层血债。",
+  EZMB_VAKUU_TEMPTATION: "0费契约。临时，虚无，消耗。获得2点能量，抽2张牌，失去5点生命；若仍有赃物锁，打破1把并增加1层血债。",
+  EZMB_VAKUU_SHELTER_CONTRACT: "0费契约。临时，虚无，消耗。获得22点格挡，移除1层血债。",
+  EZMB_VAKUU_TRICK_CONTRACT: "0费契约。临时，虚无，消耗。打破1把赃物锁，增加2层血债；瓦库行动前，它的攻击额外造成6点伤害。",
+  EZMB_VAKUU_CASH_OUT_CONTRACT: "0费契约。临时，虚无，消耗。结束瓦库战斗并拿走破锁赃物；至少打破1把锁后可打出。"
 };
 
 const ascDescOverrides = {
-  FIREMARK_MIGHT: "火印精英开局获得力量。第1/2/3幕分别为1/2/4点；造成未被格挡的攻击伤害后积累热势，2层后下次攻击更危险。",
-  FIREMARK_GIANT: "火印精英最大生命提高。第1/2/3幕分别为20%/30%/45%；半血时暴露熔核，窗口内造成足够伤害可削弱它。",
-  FIREMARK_FORGE_ARMOR: "火印精英每个敌方回合后获得熔甲。第1/2/3幕分别为8/14/24点；首次打碎本次熔甲后，下次熔甲不会生成。",
-  FIREMARK_CONSTANT_HEAL: "火印精英每个敌方回合回复生命。第1/2/3幕分别回复4/8/16点；本轮造成20/40/80点伤害可阻止治疗。",
+  FIREMARK_MIGHT: "火印宿主开局获得1/2/4点力量；未被格挡的攻击伤害会积累热势，2层后下次攻击+1/2/4伤害；溢火给1名正在攻击的副目标1/1/2点临时力量。",
+  FIREMARK_GIANT: "火印宿主最大生命提高20%/30%/45%；半血时暴露熔核，窗口内造成原最大生命20%/25%/30%的伤害可打破；打破后削弱宿主，并对1名副目标造成6/12/24点溢火伤害。",
+  FIREMARK_FORGE_ARMOR: "你的回合开始时，火印宿主获得8/14/24点熔甲；若回合结束时宿主没有格挡，下一次熔甲跳过；溢火给1名副目标3/6/12点格挡。",
+  FIREMARK_CONSTANT_HEAL: "敌方回合结束时，火印宿主回复4/8/16点生命；本轮造成12/24/48点伤害可中断治疗；治疗成功时，溢火为1名受伤副目标回复2/4/8点生命。",
   BANNER_VANGUARD: "敌人开战时获得临时力量。第1/2/3幕分别为1/2/4点；第3回合开始时失去这些力量。",
   BANNER_SHIELDWALL: "多敌人战斗中，一名敌人成为旗手。旗手存活时，敌方回合结束后其他敌人获得格挡；旗手死亡时，其他敌人获得5/10/20点格挡。",
   BANNER_BLOOD_PRIZE: "第3回合结束前击杀标记敌人，战斗后获得15/30/55金币。若它存活，它会获得1/2/4点力量和1/1/2层人工制品。",
@@ -133,19 +136,23 @@ const ascensionDetails = {
   ],
   FIREMARK_MIGHT: [
     detail("数值", "力量：第一幕1，第二幕2，第三幕4。", "Values", "Strength: Act 1/2/3 = 1/2/4."),
-    detail("热势", "造成未被格挡攻击伤害后获得热势；2层热势使下一次攻击额外+1/+2/+4伤害。", "Heat", "Unblocked attack damage builds Heat. At 2 Heat, the next attack gains +1/+2/+4 damage.")
+    detail("热势", "造成未被格挡攻击伤害后获得热势；2层热势使下一次攻击额外+1/+2/+4伤害。", "Heat", "Unblocked attack damage builds Heat. At 2 Heat, the next attack gains +1/+2/+4 damage."),
+    detail("溢火", "1名正在攻击的副目标获得1/1/2点临时力量。", "Overflow", "1 attacking secondary enemy gains 1/1/2 temporary Strength.")
   ],
   FIREMARK_GIANT: [
     detail("数值", "最大/当前生命提高：第一幕20%，第二幕30%，第三幕45%。", "Values", "Max/current HP increase: Act 1/2/3 = +20%/+30%/+45%."),
-    detail("熔核", "半血后暴露熔核；窗口内造成原最大生命20%/25%/30%的伤害可削弱，否则获得1层人工制品。", "Molten Core", "At half HP, Molten Core opens. Deal 20%/25%/30% of original Max HP during the window to weaken it; otherwise it gains 1 Artifact.")
+    detail("熔核", "半血后暴露熔核；窗口内造成原最大生命20%/25%/30%的伤害可打破并削弱它，否则获得1层人工制品。", "Molten Core", "At half HP, Molten Core opens. Deal 20%/25%/30% of original Max HP during the window to break and weaken it; otherwise it gains 1 Artifact."),
+    detail("溢火", "打破熔核时，对1名副目标造成6/12/24点溢火伤害。", "Overflow", "Breaking the core deals 6/12/24 overflow damage to 1 secondary enemy.")
   ],
   FIREMARK_FORGE_ARMOR: [
-    detail("数值", "敌方回合后获得8/14/24点熔甲。", "Values", "After enemy turns, gain 8/14/24 Molten Armor."),
-    detail("破甲", "首次完整打碎本次熔甲后，跳过下一次熔甲生成。", "Break", "The first full break skips the next armor gain.")
+    detail("数值", "你的回合开始时，宿主获得8/14/24点熔甲。", "Values", "At the start of your turn, the host gains 8/14/24 Molten Armor."),
+    detail("破甲", "回合结束时宿主没有格挡，则跳过下一次熔甲；每场最多触发2次。", "Break", "If the host has no Block at turn end, the next Molten Armor is skipped. Max 2 skips per combat."),
+    detail("溢火", "1名副目标获得3/6/12点格挡。", "Overflow", "1 secondary enemy gains 3/6/12 Block.")
   ],
   FIREMARK_CONSTANT_HEAL: [
-    detail("数值", "敌方回合后回复4/8/16 HP。", "Values", "After enemy turns, heal 4/8/16 HP."),
-    detail("打断", "本轮对该精英造成20/40/80点伤害可阻止本次治疗。", "Interrupt", "Deal 20/40/80 damage to that Elite during the round to stop that heal.")
+    detail("数值", "敌方回合结束时回复4/8/16 HP。", "Values", "At enemy turn end, heal 4/8/16 HP."),
+    detail("打断", "本轮对宿主造成12/24/48点伤害可中断本次治疗。", "Interrupt", "Deal 12/24/48 damage to the host during the round to interrupt that heal."),
+    detail("溢火", "治疗成功时，为1名受伤副目标回复2/4/8 HP。", "Overflow", "If the heal succeeds, 1 damaged secondary enemy heals 2/4/8 HP.")
   ],
   BANNER_VANGUARD: [
     detail("数值", "所有主要敌人开战获得1/2/4点临时力量。", "Values", "All primary enemies start with 1/2/4 temporary Strength."),
@@ -249,8 +256,8 @@ window.SPIRE_PLUS_DATA = {
       ["\u5b89\u88c5\u76ee\u5f55", "EZMicroBalance"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,874,569 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605"]
+      ["\u4f53\u79ef", "18,879,494 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "209226DF15AB8B53A5E1FC9C9BBC965E05D7B53104ABEF84EBBBBAC16641240F"]
     ]
   },
   installSteps: [
@@ -402,6 +409,7 @@ window.SPIRE_PLUS_DATA = {
       items: [
         card("EZMB_URDA_SEEDLING", ["\u4e4c\u5c14\u59b2"], "assets/card_portraits/urda_seedling.png"),
         card("EZMB_URDA_SEEDBED", ["\u4e4c\u5c14\u59b2"], "assets/card_portraits/urda_seedling.png"),
+        card("EZMB_URDA_RAIN_BREATH", ["\u4e4c\u5c14\u59b2"], "assets/card_portraits/urda_seedling.png"),
         card("EZMB_WITHERED_HUSK", ["\u8bc5\u5492"], "assets/card_portraits/withered_husk.png"),
         card("EZMB_MORVI_ARCHIVE_DRAW_PAGE", ["\u83ab\u5c14\u7ef4"], "assets/card_portraits/morvi_archive_pages.png"),
         card("EZMB_MORVI_ARCHIVE_VEIL_PAGE", ["\u83ab\u5c14\u7ef4"], "assets/card_portraits/morvi_archive_pages.png"),
@@ -418,6 +426,8 @@ window.SPIRE_PLUS_DATA = {
         card("EZMB_VAKUU_KNIFE_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
         card("EZMB_VAKUU_TEMPTATION", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
         card("EZMB_VAKUU_SHELTER_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
+        card("EZMB_VAKUU_TRICK_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
+        card("EZMB_VAKUU_CASH_OUT_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
         manual("\u6c34\u6676\u7403\u9884\u77e5", "\u539f\u7248\u65e0\u9884\u77e5\u6309\u94ae\u3002", "\u6c34\u6676\u7403\u5c0f\u6e38\u620f\u4e2d\u663e\u793a\u9884\u77e5\u6309\u94ae\uff1b\u53ea\u6539\u53d8\u906e\u7f69\u53ef\u89c1\u6027\uff0c\u4e0d\u53d1\u653e\u5956\u52b1\u3002", ["\u9884\u89c8\u5de5\u5177"]),
         manual("\u53d8\u6362\u771f\u5b9e\u9884\u89c8", "\u539f\u7248\u4e0d\u663e\u793a\u786e\u5b9a\u7ed3\u679c\u3002", "\u4f7f\u7528\u590d\u5236\u7684\u968f\u673a\u6570\u5feb\u7167\u9884\u6d4b\u53d8\u6362\u7ed3\u679c\uff1b\u4e0d\u521b\u5efa\u5361\u724c\uff0c\u4e0d\u63a8\u8fdb\u771f\u5b9e\u968f\u673a\u6570\u3002", ["\u9884\u89c8\u5de5\u5177"])
       ]
@@ -428,10 +438,11 @@ window.SPIRE_PLUS_DATA = {
     ["\u5f85\u9a8c\u8bc1", "\u5148\u53e4\u8282\u70b9\u754c\u9762", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u3001\u666e\u901a\u74e6\u5e93\u548c\u9690\u85cf\u74e6\u5e93\u6218\u6597\u9700\u8981\u8865\u5145\u622a\u56fe\u3001\u65e5\u5fd7\u548c\u60ac\u505c\u6587\u672c\u53ef\u8bfb\u6027\u8bc1\u660e\u3002"],
     ["\u5f85\u9a8c\u8bc1", "\u74e6\u5e93\u8bd5\u70bc", "\u80dc\u5229\u8fd4\u56de\u4e8b\u4ef6\u3001\u5931\u8d25/\u6b7b\u4ea1\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u8054\u673a\u8fb9\u754c\u9700\u8981\u8fdb\u4e00\u6b65\u5b9e\u673a\u6d4b\u8bd5\u3002"],
     ["\u5f85\u9a8c\u8bc1", "\u8fdb\u9636 11-20", "A11 \u8def\u7ebf\u70b9\u51fb\u3001A12/A16/A19/A20 \u6218\u6597\u89c4\u5219\u3001\u6839\u8680\u6218\u540e\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u53cc\u4eba\u8054\u673a\u8fd8\u9700\u8981\u5b8c\u6574\u8bb0\u5f55\u3002"],
-    ["待配置", "公开论坛", "论坛前端已接入 GitHub Pages；上线前需要创建 Supabase 项目、执行论坛 schema，并配置公开 anon key。"],
+    ["监控中", "公开论坛", "论坛已接入 GitHub Pages 与 Supabase；继续观察免费项目休眠、缓存刷新、匿名刷屏和简单管理后台缺失问题。"],
     ["\u7d20\u6750\u8bf4\u660e", "\u539f\u7248\u6e38\u620f\u56fe\u7247", "\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\u5df2\u83b7\u5f97\u7ad9\u70b9\u53d1\u5e03\u6388\u6743\u786e\u8ba4\uff0c\u5e76\u4ec5\u5206\u53d1\u5f53\u524d\u66f4\u65b0\u9875\u5b9e\u9645\u4f7f\u7528\u7684\u56fe\u50cf\u3002"]
   ],
   changeLog: [
+    ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
     ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.0.zip\uff0c\u6e05\u5355\u7f16\u53f7 EZMicroBalance\uff0c\u663e\u793a\u540d Spire Plus\u3002"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
@@ -630,8 +641,8 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Install folder", "EZMicroBalance"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,874,569 bytes"],
-        ["Hash", "2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605"]
+        ["Size", "18,879,494 bytes"],
+        ["Hash", "209226DF15AB8B53A5E1FC9C9BBC965E05D7B53104ABEF84EBBBBAC16641240F"]
       ]
     },
     installSteps: [
@@ -889,6 +900,9 @@ window.SPIRE_PLUS_DATA.i18n = {
       "EZMB_URDA_SEEDBED.description": {
         desc: "1-cost Skill. Exhaust. Gain 4 Block and set up a 2-space Seedbed. Later Temporary Status cards, Temporary Curse cards, or Blight Sprouts that enter hand are planted first; each planted card adds 1 Withered Husk. Upgraded: gain 6 Block, capacity becomes 3, and it plants 1 matching card from draw or discard."
       },
+      "EZMB_URDA_RAIN_BREATH.description": {
+        desc: "0-cost temporary Skill. Exhaust. Gain 5 Block and draw 1 card."
+      },
       "EZMB_WITHERED_HUSK.description": {
         desc: "Temporary Curse. Ethereal, Exhaust. When exhausted, gain 3 Block. Seedbed cannot plant this."
       },
@@ -911,25 +925,31 @@ window.SPIRE_PLUS_DATA.i18n = {
         desc: "0-cost temporary page. Ethereal, Exhaust. Gain 2 temporary Dexterity."
       },
       "EZMB_VAKUU_KNIFE_CONTRACT.description": {
-        desc: "0-cost Contract. Ethereal, Exhaust. Deal 22 damage to Vakuu and lose 4 HP. If any Stolen Lock remains, break 1 and add 1 Blood Debt."
+        desc: "0-cost temporary Contract. Ethereal, Exhaust. Deal 24 damage to Vakuu and lose 4 HP. If any Stolen Lock remains, break 1 and add 1 Blood Debt."
       },
       "EZMB_VAKUU_TEMPTATION.description": {
-        desc: "0-cost Contract. Ethereal, Exhaust. Gain 2 Energy, draw 2 cards, and lose 5 HP. If any Stolen Lock remains, break 1 and add 1 Blood Debt."
+        desc: "0-cost temporary Contract. Ethereal, Exhaust. Gain 2 Energy, draw 2 cards, and lose 5 HP. If any Stolen Lock remains, break 1 and add 1 Blood Debt."
       },
       "EZMB_VAKUU_SHELTER_CONTRACT.description": {
-        desc: "0-cost Contract. Ethereal, Exhaust. Gain 24 Block and lose 3 HP. If any Stolen Lock remains, break 1 and add 1 Blood Debt."
+        desc: "0-cost temporary Contract. Ethereal, Exhaust. Gain 22 Block and remove 1 Blood Debt."
+      },
+      "EZMB_VAKUU_TRICK_CONTRACT.description": {
+        desc: "0-cost temporary Contract. Ethereal, Exhaust. Break 1 Stolen Lock and add 2 Blood Debt. Until Vakuu acts, its attacks deal 6 more damage."
+      },
+      "EZMB_VAKUU_CASH_OUT_CONTRACT.description": {
+        desc: "0-cost temporary Contract. Ethereal, Exhaust. End the Vakuu fight and take the loot from broken locks. Can be played after at least 1 lock is broken."
       },
       "FIREMARK_MIGHT.description": {
-        desc: "Firemarked Elites start with Strength. Act 1/2/3 values are 1/2/4. Unblocked attack damage builds Heat; at 2 Heat, the next attack is more dangerous."
+        desc: "The Firemark host starts with 1/2/4 Strength. Unblocked attack damage builds Heat; at 2 Heat, the next attack gains +1/+2/+4 damage. Overflow gives 1 attacking secondary enemy 1/1/2 temporary Strength."
       },
       "FIREMARK_GIANT.description": {
-        desc: "Firemarked Elites have increased Max HP. Act 1/2/3 values are +20%/+30%/+45%. At half HP, they expose a Molten Core window."
+        desc: "The Firemark host has +20%/+30%/+45% Max HP. At half HP, a Molten Core opens; deal 20%/25%/30% original Max HP during the window to break it. A broken core weakens the host and deals 6/12/24 overflow damage to 1 secondary enemy."
       },
       "FIREMARK_FORGE_ARMOR.description": {
-        desc: "Firemarked Elites gain Molten Armor after each enemy turn. Act 1/2/3 values are 8/14/24. Breaking that armor once skips the next armor gain."
+        desc: "At the start of your turn, the Firemark host gains 8/14/24 Molten Armor. If the host has no Block at turn end, the next Molten Armor is skipped. Overflow gives 1 secondary enemy 3/6/12 Block."
       },
       "FIREMARK_CONSTANT_HEAL.description": {
-        desc: "Firemarked Elites heal after each enemy turn. Act 1/2/3 values are 4/8/16 HP. Dealing 20/40/80 damage in the round stops the heal."
+        desc: "At enemy turn end, the Firemark host heals 4/8/16 HP. Deal 12/24/48 damage in the round to interrupt the heal. If it heals, overflow heals 1 damaged secondary enemy for 2/4/8 HP."
       },
       "BANNER_VANGUARD.description": {
         desc: "Enemies start with temporary Strength. Act 1/2/3 values are 1/2/4. It is removed at the start of round 3."
@@ -964,10 +984,11 @@ window.SPIRE_PLUS_DATA.i18n = {
       ["Needs verification", "Ancient node UI", "Urda, Morvi, Lotha, normal Vakuu, and hidden Vakuu combat need screenshots, logs, and hover text readability proof."],
       ["Needs verification", "Vakuu trial", "Victory return, failure/death resolution, save-load behavior, and multiplayer boundaries need more live testing."],
       ["Needs verification", "Ascension 11-20", "A11 route clicks, A12/A16/A19/A20 combat rules, Rootblight post-combat resolution, save-load behavior, and two-player co-op need full test records."],
-      ["Configuration pending", "Public forum", "The forum front end is wired for GitHub Pages. Public use requires a Supabase project, the forum schema, and the public anon key."],
+      ["Monitoring", "Public forum", "The forum now uses GitHub Pages and Supabase. Remaining operational risks are free-plan sleep, cache refreshes, anonymous spam, and the lack of a public moderation UI."],
       ["Asset note", "Original game images", "Vanilla relic icons and card portraits are approved for this site and are included only for the update entries that use them."]
     ],
     changeLog: [
+      ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
       ["Current package", "SpirePlus-v0.1.0-private-beta.0.zip, manifest id EZMicroBalance, display name Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],

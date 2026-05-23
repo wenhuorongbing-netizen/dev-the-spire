@@ -7,6 +7,7 @@
   const header = document.getElementById("siteHeader");
   const routes = new Set(["updates", "install", "forum", "issues"]);
   const fallbackIcon = "assets/relics/relic.png";
+  const appVersion = new URL(document.currentScript?.src || location.href, location.href).searchParams.get("v") || "local";
   let loc = await loadLocalization();
   document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
 
@@ -190,7 +191,9 @@
     const result = {};
     await Promise.all(
       Object.entries(data.locFiles).map(async ([name, url]) => {
-        const response = await fetch(url);
+        const requestUrl = new URL(url, location.href);
+        requestUrl.searchParams.set("v", appVersion);
+        const response = await fetch(requestUrl, { cache: "no-cache" });
         result[name] = await response.json();
       })
     );
