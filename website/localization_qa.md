@@ -171,7 +171,7 @@ Static checks:
 
 ## Review 7: Source Relic Icon QA
 
-Result: pass.
+Result: superseded by Review 8.
 
 Fixes checked during this pass:
 
@@ -184,3 +184,23 @@ Static checks:
 - `node --check website/content-data.js` passed.
 - `node --check website/app.js` passed.
 - Source relic icon existence scan passed for all 25 vanilla relic update entries.
+
+## Review 8: Published Vanilla Relic Icon QA
+
+Result: pass.
+
+Permission record:
+
+- Project owner confirmed on 2026-05-23 that the vanilla relic icons may be distributed on the public website.
+
+Fixes checked during this pass:
+
+- Copied only the 25 vanilla relic PNG files referenced by the update page from `source code/images/relics/` to `website/assets/vanilla-icons/relics/`.
+- Changed vanilla relic entries to use the shipped public-site PNG paths.
+- Confirmed no generated relic SVG files remain in `website/assets/vanilla-icons/relics/`.
+
+Static checks:
+
+- `node --check website/content-data.js` passed.
+- `node --check website/app.js` passed.
+- Site asset scan found 25 shipped relic PNG files and no relic SVG files.
