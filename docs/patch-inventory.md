@@ -136,7 +136,7 @@ Regenerate:
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 11 | `[HarmonyPatch(typeof(SaveManager), nameof(SaveManager.SaveRun), typeof(AbstractRoom), typeof(bool))]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 26 | `[HarmonyPatch(typeof(NGame), "ReturnToMainMenu")]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 38 | `[HarmonyPatch(typeof(NGame), "Quit")]` |
-| Ascension events | Low | `EZMicroBalanceCode/Ascension/Events/A20Courtyard.cs` | 147 | `[HarmonyPatch(typeof(EventModel), nameof(EventModel.CreateInitialPortrait))]` |
+| Ascension events | Low | `EZMicroBalanceCode/Ascension/Events/A20Courtyard.cs` | 148 | `[HarmonyPatch(typeof(EventModel), nameof(EventModel.CreateInitialPortrait))]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AeonglassIntentPatches.cs` | 8 | `[HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AeonglassIntentPatches.cs` | 31 | `[HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 9 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))]` |
@@ -166,6 +166,6 @@ Regenerate:
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 145 | `[HarmonyPatch(typeof(NewLeaf), nameof(NewLeaf.AfterObtained))]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 150 | `[HarmonyPatch(typeof(Astrolabe), nameof(Astrolabe.AfterObtained))]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 166 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
-| Preview tools | Medium | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 17 | `[HarmonyPatch(typeof(NTransformPreview), nameof(NTransformPreview.Initialize))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 35 | `[HarmonyPatch]` |
+| Preview tools | Medium | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 18 | `[HarmonyPatch(typeof(NTransformPreview), nameof(NTransformPreview.Initialize))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 37 | `[HarmonyPatch]` |
 
