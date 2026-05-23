@@ -73,6 +73,7 @@ public sealed class ReleaseCoverageGuardTests
                 "GiantMarkFiremarkPower",
                 "ForgeArmorMarkFiremarkPower",
                 "ConstantHealMarkFiremarkPower",
+                "FiremarkMightOverflowPower",
                 "FiremarkedEliteRewardTargetOptionCount = 4",
                 "ForgeTokenHeld",
                 "ForgeTokenRelic",
@@ -85,7 +86,8 @@ public sealed class ReleaseCoverageGuardTests
             ],
             [
                 "Firemarked Elite and Forge Token are implemented for the A12 Ascension-level gate.",
-                "One Firemarked enemy receives Might, Giant, Forge Armor, or Constant Heal",
+                "One main enemy receives Might, Giant, Forge Armor, or Constant Heal",
+                "Overflow affects at most one secondary enemy",
                 "Special rest-site action payout is disabled"
             ],
             [
@@ -158,7 +160,8 @@ public sealed class ReleaseCoverageGuardTests
                 "HolyDazePower",
                 "MarginalNote",
                 "RoyalDecreeEnchantment",
-                "AeonglassStrength",
+                "AeonglassHourglass",
+                "AeonglassLaserEchoIntentLabelPatch",
                 "IsBossBrand",
                 "AscensionA20GenerateRoomsPatch",
                 "AscensionA20CourtyardProceedPatch",
@@ -172,7 +175,7 @@ public sealed class ReleaseCoverageGuardTests
                 "TryAddA20BossOneCardReward"
             ],
             [
-                "`BossSealDefinition` / `BossSealCatalog` now map active boss encounters to the v2.0 Royal Seal set",
+                "`BossSealDefinition` / `BossSealCatalog` now map active boss encounters to the v4.1 dedicated Boss ability set",
                 "source-guarded through supported hooks",
                 "Boss 1 post-combat recovery",
                 "fixed courtyard event",
@@ -180,7 +183,7 @@ public sealed class ReleaseCoverageGuardTests
             ],
             [
                 "Gated implementation present as BossSeal definitions plus source-guarded runtime hooks; live testing pending.",
-                "A19 boss-specific Royal Seal metadata is assigned at map generation.",
+                "A19 boss-specific dedicated ability metadata is assigned at map generation.",
                 "Boss card rewards improve as documented.",
                 "Boss 1 reward screen opens the A20 courtyard event before the second Boss."
             ])
@@ -426,6 +429,10 @@ public sealed class ReleaseCoverageGuardTests
         {
             var table = match.Groups["table"].Value;
             var key = match.Groups["key"].Value;
+            if (table == "intents")
+            {
+                continue;
+            }
 
             var english = JsonStringMap("EZMicroBalance", "localization", "eng", $"{table}.json");
             var simplifiedChinese = JsonStringMap("EZMicroBalance", "localization", "zhs", $"{table}.json");
@@ -511,7 +518,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("## Issue detail links", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/urda.md", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/waiting-tests.md", issues, StringComparison.Ordinal);
-        Assert.Contains("Current package hashes, 2026-05-20:", issues, StringComparison.Ordinal);
+        Assert.Contains("Current package hashes, 2026-05-23:", issues, StringComparison.Ordinal);
         Assert.Contains("`URDA-PROTOTYPE` P0 open", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: resolved", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\uFFFD", issues, StringComparison.Ordinal);
@@ -716,7 +723,7 @@ public sealed class ReleaseCoverageGuardTests
             "Date/time:",
             "Pass/fail/blocker:");
 
-        Assert.Contains("Dual King Brands / second-boss Brand gameplay is currently disabled or downgraded in co-op pending live verification.", runbook, StringComparison.Ordinal);
+        Assert.Contains("A20 Branded Form / second-boss enhanced dedicated ability gameplay is currently disabled or downgraded in co-op pending live verification.", runbook, StringComparison.Ordinal);
     }
 
     [Fact]

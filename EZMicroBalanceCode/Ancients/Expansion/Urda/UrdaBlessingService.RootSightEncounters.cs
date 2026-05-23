@@ -29,8 +29,10 @@ internal static partial class UrdaBlessingService
             return null;
         }
 
-        var fork = CreateRootSightPreviewRng(runState, point, $"{roomType.ToString().ToLowerInvariant()}_encounter");
-        return fork.NextItem(candidates);
+        // Core pulls the next encounter from RoomSet.NextNormalEncounter /
+        // NextEliteEncounter. Root Eyes must preview that queue head instead of
+        // rolling across the whole pool, or early weak-room previews can lie.
+        return candidates[0];
     }
 
     private static IReadOnlyList<EncounterModel> GetRootSightEncounterPreviewCandidates(
@@ -51,12 +53,11 @@ internal static partial class UrdaBlessingService
         var visited = roomType == RoomType.Monster
             ? rooms.normalEncountersVisited
             : rooms.eliteEncountersVisited;
-        if (visited <= 0 || visited >= source.Count)
-        {
-            return source;
-        }
-
-        return source.Skip(visited).ToList();
+        var startIndex = visited % source.Count;
+        var count = visited < source.Count ? source.Count - visited : source.Count;
+        return Enumerable.Range(0, count)
+            .Select(offset => source[(startIndex + offset) % source.Count])
+            .ToList();
     }
 
     private static IReadOnlyList<EncounterModel> FilterRootSightReservedEncounterCandidates(

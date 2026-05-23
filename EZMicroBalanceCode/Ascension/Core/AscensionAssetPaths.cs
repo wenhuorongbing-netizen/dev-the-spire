@@ -1,3 +1,5 @@
+using Godot;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static class AscensionAssetPaths
@@ -56,10 +58,42 @@ internal static class AscensionAssetPaths
     public static string GetBannerIndicator(BannerKind banner) => banner switch
     {
         BannerKind.Vanguard => BannerVanguardIndicator,
-        BannerKind.Shieldwall => BannerRoomIndicator,
+        BannerKind.Shieldwall => BannerShieldFormationIndicator,
         BannerKind.BloodPrize => BannerBountyIndicator,
         BannerKind.PressingLine => BannerPressingLineIndicator,
-        BannerKind.LastStand => BannerRoomIndicator,
+        BannerKind.LastStand => BannerLastStandIndicator,
         _ => BannerRoomIndicator
     };
+
+    public static string GetBossSealIndicator(BossSealId seal) => ExistingOrSharedBossSeal(seal switch
+    {
+        BossSealId.HolyDaze => BossSealIcon("holy_daze.png"),
+        BossSealId.MartyrOath => BossSealIcon("martyr_oath.png"),
+        BossSealId.InkReturn => BossSealIcon("ink_return.png"),
+        BossSealId.StartledShell => BossSealIcon("startled_shell.png"),
+        BossSealId.SoulTide => BossSealIcon("soul_tide.png"),
+        BossSealId.BoilingCritical => BossSealIcon("boiling_critical.png"),
+        BossSealId.MisalignedShell => BossSealIcon("misaligned_shell.png"),
+        BossSealId.MarginalNote => BossSealIcon("marginal_note.png"),
+        BossSealId.StruggleBait => BossSealIcon("struggle_bait.png"),
+        BossSealId.ChosenDecree => BossSealIcon("chosen_decree.png"),
+        BossSealId.ResidualSample => BossSealIcon("residual_sample.png"),
+        BossSealId.AeonglassHourglass => BossSealIcon("aeonglass_hourglass.png"),
+        _ => BossSealIndicator
+    });
+
+    private static string BossSealIcon(string fileName) =>
+        System.IO.Path.Join(MainFile.ResPath, "images", "ascension", "boss_seals", fileName);
+
+    private static string ExistingOrSharedBossSeal(string candidate)
+    {
+        try
+        {
+            return ResourceLoader.Exists(candidate) ? candidate : BossSealIndicator;
+        }
+        catch
+        {
+            return BossSealIndicator;
+        }
+    }
 }

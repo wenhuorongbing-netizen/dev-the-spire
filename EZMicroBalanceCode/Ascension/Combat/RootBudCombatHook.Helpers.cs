@@ -53,7 +53,7 @@ internal sealed partial class RootBudCombatHook
     {
         return state.RunState.CurrentRoom?.RoomType switch
         {
-            RoomType.Boss when IsActTwoOrThree(state) && !IsSecondBossFight(state) => AscensionFeatureGate.BossRootBudLevel,
+            RoomType.Boss when IsActTwoOrThree(state) => AscensionFeatureGate.BossRootBudLevel,
             RoomType.Elite when IsEligibleEliteSproutFight(state) => AscensionFeatureGate.EliteRootBudLevel,
             _ => null
         };
@@ -62,12 +62,6 @@ internal sealed partial class RootBudCombatHook
     private static bool IsActTwoOrThree(CombatState state)
     {
         return state.RunState.CurrentActIndex is 1 or 2;
-    }
-
-    private static bool IsSecondBossFight(CombatState state)
-    {
-        return state.RunState.Map.SecondBossMapPoint != null &&
-            state.RunState.CurrentMapCoord == state.RunState.Map.SecondBossMapPoint.coord;
     }
 
     private static bool IsEligibleEliteSproutFight(CombatState state)

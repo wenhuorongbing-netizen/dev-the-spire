@@ -14,7 +14,7 @@ Current-state constraints:
 - Lotha no longer uses the geometric placeholder event art. It uses the recovered mirror-tribunal background, and Urda/Morvi/Lotha option/icon art now uses browser GPTimage2 rebuilt transparent PNGs recorded in the art manifest. Live UI preview remains pending.
 - Lotha live gameplay, save/load, lethal-path, and co-op verification are still pending. Death Reprieve has one documented source-safe deviation: enemy-turn lethal starts the reprieve on the next player turn because local source did not prove safe immediate enemy-turn interruption.
 - Vakuu fight is hidden by default while runtime proof is pending. It can be enabled with `EZMB_ENABLE_VAKUU_FIGHT=1` / `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, can be focused with `EZMB_FORCE_ANCIENT=VAKUU` / `SPIREPLUS_FORCE_ANCIENT=VAKUU`, and can be forced to the fight option with `EZMB_FORCE_VAKUU_FIGHT=1` / `SPIREPLUS_FORCE_VAKUU_FIGHT=1`.
-- Vakuu fight now includes a dedicated Vakuu monster, a custom encounter scene, and source-backed Contract/Stolen Vault/Blood Debt pressure after the normal hand draw on turns 1, 3, 5, and onward. Source also clears the parent event `Node` before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips the duplicate Ancient heal when Core reconstructs the parent event below the finished combat. Live UI/gameplay, victory return, save/load, failure/death, and co-op verification are still pending. The current source gate requires single-player (`runState.Players.Count == 1`) and does not claim multiplayer safety.
+- Vakuu fight now includes a dedicated Vakuu monster, a custom encounter scene, and source-backed Contract/Stolen Vault/Blood Debt pressure after the normal hand draw on turns 1, 3, and 5. Source also clears the parent event `Node` before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips the duplicate Ancient heal when Core reconstructs the parent event below the finished combat. Live UI/gameplay, victory return, save/load, failure/death, and co-op verification are still pending. The current source gate requires single-player (`runState.Players.Count == 1`) and does not claim multiplayer safety.
 - Morvi active event art uses the recovered user-uploaded blue-eye court/scribe background; option/icon art uses browser ChatGPT/GPTimage2 oil-repaint transparent PNGs recorded in the art manifest. Live UI/gameplay evidence remains pending.
 - v2.2 must not be represented as release-ready until source/live/save-load checks pass.
 
@@ -59,17 +59,17 @@ Required blessing ids:
 Safety:
 
 - Power cards must not be copied, replayed, or extra-played.
-- Lotha Power-card fallbacks do not copy, replay, or extra-play Power cards. Mirror Rebuttal Power fallback makes the marked Power cost 0 for that play, then grants 2 Energy and draws 2. Mirror Hall Echo, Deferred Verdict, and Single Sentence Power fallbacks make the current eligible Power cost 0 for that play and draw 1 with no Energy gain.
+- Lotha Power-card fallbacks do not copy, replay, or extra-play Power cards. Mirror Rebuttal Power fallback makes the marked Power cost 0 for that play. Mirror Hall Echo, Deferred Verdict, and Single Sentence Power fallbacks make the current eligible Power cost 0 for that play and draw 1 with no Energy gain.
 - Lotha extra-play rulings use `ModifyCardPlayCount` on the original player-driven Attack/Skill instead of generated replay copies.
 - Generated copies must not recurse.
 - `lotha_death_reprieve` uses the source-backed `ShouldDieLate` / `AfterPreventingDeath` path, modeled after local death-prevention source. Runtime lethal-path verification remains pending.
 
 Corrective source-polish completed 2026-05-13:
 
-- `lotha_mirror_rebuttal`: selecting the blessing opens a source-safe deck-card picker for one non-Curse, non-Status card and marks that real deck card. At the start of each combat, if the matching combat card is not already in hand, it is moved to hand through `CardPileCmd.Add(..., PileType.Hand)`. The first time that marked card is played each combat, Attack/Skill cards play two additional times; Power cards cost 0 for that play, then grant 2 Energy and draw 2.
+- `lotha_mirror_rebuttal`: selecting the blessing opens a source-safe deck-card picker for one non-Curse, non-Status card and marks that real deck card. On the first player turn after normal draw, if the matching combat card is not already in hand, it is moved to hand through `CardPileCmd.Add(..., PileType.Hand)`. The first time that marked card is played each combat, Attack/Skill cards play one additional time; Power cards cost 0 for that play.
 - `lotha_mirror_hall_echo`: player-turn end records the last player-played non-Status Attack/Skill/Power; the next player turn's first player-played matching type consumes the echo. Attack/Skill adds one play; Power costs 0 for that play and draws 1 with no Energy gain; autoplay/generated clone cards are excluded from setting or consuming the echo.
 - `lotha_presumption`: combat start applies visible Innocent state; each player-turn start while Innocent draws 2, grants 1 Energy, and grants 8 Block. Conservative Core-backed break detection uses unblocked enemy `ValueProp.Move` damage with no card source; when it breaks, Innocent is removed and the player loses 8 HP.
-- `lotha_closed_court`: combat reward mutation removes only `CardReward` from combat rewards so gold, potion, and relic rewards remain. First player turn each combat draws to the 10-card hand cap, grants 4 Energy, and discounts the first three player-played hand cards by 1 Energy for that play.
+- `lotha_closed_court`: combat reward mutation removes only `CardReward` from combat rewards so gold, potion, and relic rewards remain. Turn 1 draws 4 and grants 2 Energy; turn 4 draws 2 and grants 2 Energy. It no longer discounts the first three cards.
 - `lotha_deferred_verdict`: on turn 4, the player draws 4, gains 4 Energy, and gains 3 player-owned Verdict stacks. This turn, each next non-Status card consumes 1 player-owned Verdict; Attacks/Skills play one additional time and Powers cost 0 for that play and draw 1 with no Energy gain. If combat ends before turn 4, `AfterCombatEnd` heals 4 HP when the player is alive.
 - `lotha_death_reprieve`: once per run prevents death, sets HP to 1, starts a reprieve player turn with draw 10, Energy 10, cost 0 cards, and temporary death prevention, then force-kills the player at turn end if enemies remain. Source-safe deviation: enemy-turn lethal starts on the next player turn rather than interrupting immediately. Rehydration from deck-mirrored pending/active phase now logs the restored phase and keeps active-turn save/load continuation explicitly live-pending.
 - `lotha_single_sentence`: the first player-driven Attack/Skill each turn plays two additional times, then only four more normal player-played cards can be played that turn; the first Power before that ruling costs 0 for that play, draws 1, and does not consume the sentence.
@@ -99,9 +99,9 @@ Implemented source evidence:
 - Victory routing patches `EventModel.Resume(...)` for the Vakuu parent event after `EzmbVakuuTrialEncounter`, then uses the protected `SetEventState(...)` path by reflection to offer 1/2/3 non-Vakuu Act 3 Ancient relic options from Nonupeipe/Tanx plus custom Lotha option relics based on broken Stolen Vault locks. Lotha victory choices use `LothaRewardSelectionService.SelectBlessing(...)`, so the visible marker relic and Lotha blessing state are granted together.
 - If no unclaimed non-Vakuu reward options remain, victory uses an explicit fallback page instead of passing zero options and silently finishing. If a restored victory resume has no owner, source now logs that the explicit fallback path was used and keeps live restore proof pending.
 - The custom encounter has `ShouldGiveRewards => false` and does not put `LinkedRewardSet` or extra rewards into the combat room, avoiding the nonserializable parent-event combat reward path discovered in source. `CombatRoom.OfferRoomEndRewards()` is patched for the prefinished Vakuu trial restore path so it resumes the parent event instead of generating normal combat rewards. Live save/load proof remains pending.
-- The visible option/relic text now says the player fights Vakuu, says random Contracts enter hand after draw on turns 1/3/5+, says Contracts cost HP, break Stolen Vault locks while any remain, and add Blood Debt, says broken locks grant more blessing choices and 50 Gold each, says normal combat rewards are disabled, and says death ends the run.
+- The visible option/relic text now says the player fights Vakuu, says Contract choices appear after draw on turns 1/3/5, says Contracts can break Stolen Vault locks or manage Blood Debt, says broken locks create extra blessing choices and loot Gold, says Cash Out appears after a broken lock, says normal combat rewards are disabled, and says death ends the run.
 - `EZMB_VAKUU_KNIFE_CONTRACT`, `EZMB_VAKUU_TEMPTATION`, and `EZMB_VAKUU_SHELTER_CONTRACT` are hidden 0-cost Skill token Contracts with Ethereal and Exhaust. Playing one signs the Contract, costs HP, breaks a lock if any remain, adds Blood Debt, and then resolves Knife/Gold/Shelter command effects.
-- A dedicated run-state combat hook injects Contracts only while `combatState.Encounter is EzmbVakuuTrialEncounter`, applies Stolen Vault to Vakuu on combat entry, and tracks 40 unblocked player-turn damage lock breaks. It is gated to single-player by `VakuuFightFeatureGate.IsFightEnabledForRun(...)`.
+- A dedicated run-state combat hook offers Contracts only while `combatState.Encounter is EzmbVakuuTrialEncounter`, applies Stolen Vault to Vakuu on combat entry, and tracks Act-scaled unblocked player-turn damage lock breaks through `AfterDamageGiven` so lethal hits count. It is gated to single-player by `VakuuFightFeatureGate.IsFightEnabledForRun(...)`.
 
 Next target:
 
@@ -191,7 +191,7 @@ Area: Act 3 Ancient / Lotha
 
 Implemented v2.2 changes:
 
-- Closed Court removes hand-limit +3 and uses first-turn burst.
+- Closed Court removes hand-limit +3 and now uses split turn resources: turn 1 draw 4 and gain 2 Energy; turn 4 draw 2 and gain 2 Energy.
 - Deferred Verdict is now a turn-4 player-owned Verdict + draw 4 + Energy 4 + player-driven extra-play ruling; it does not auto-damage and no longer uses enemy Verdict as its main mechanic.
 - Single Sentence now gives the first Attack/Skill each turn two additional plays, then caps later cards that turn at four.
 - Mirror Rebuttal now chooses and marks one real non-Curse, non-Status deck card, moves the matching combat card to hand at combat start when needed, and resolves on the first play of that marked card.
@@ -211,10 +211,10 @@ Implemented first slice:
 
 - Add a Vakuu fight option only when the explicit enable/force gate is set.
 - The fight uses a dedicated Vakuu monster and encounter scene in source; live victory and restore behavior are still unproven.
-- During the fight, after the normal player-turn hand draw on turns 1, 3, 5, and onward, add one random Contract to hand if there is hand space.
+- During the fight, after the normal player-turn hand draw on turns 1, 3, and 5, offer three Contract choices when source-safe.
 - Victory offers 1/2/3 non-Vakuu Act 3 Ancient blessings from existing Act 3 Ancient reward pools plus custom Lotha option relics based on broken Stolen Vault locks, and each broken lock grants 50 Gold.
 - Failure is still described as lethal by the option text; live failure/death verification is pending.
-- Vakuu Contracts are source-backed as hidden 0-cost Skill token cards: Ethereal + Exhaust, hidden from the card library, not normally generatable, and on play they cost HP, break Stolen Vault locks, add Blood Debt, and resolve their listed effect.
+- Vakuu Contracts are source-backed as hidden 0-cost Skill token cards: Ethereal + Exhaust, hidden from the card library, and not normally generatable. Individual contracts either push lock breaking, reduce Blood Debt, or add higher-risk Blood Debt pressure.
 
 Do not claim multiplayer, save/load, or death/failure readiness until live evidence exists.
 

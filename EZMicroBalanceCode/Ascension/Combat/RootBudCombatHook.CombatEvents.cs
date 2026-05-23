@@ -18,7 +18,7 @@ internal sealed partial class RootBudCombatHook
         }
 
         var tracker = GetTracker(state);
-        await AscensionCombatModifierService.AfterPlayerTurnStart(state, tracker);
+        await AscensionCombatModifierService.AfterPlayerTurnStart(state, tracker, player);
     }
 
     public override async Task AfterDamageReceived(
@@ -49,6 +49,17 @@ internal sealed partial class RootBudCombatHook
         await AscensionCombatModifierService.AfterCurrentHpChanged(state, GetTracker(state), creature, delta);
     }
 
+    public override async Task BeforePowerAmountChanged(PowerModel power, decimal amount, Creature target, Creature? applier, CardModel? cardSource)
+    {
+        var state = CurrentCombatState();
+        if (state == null)
+        {
+            return;
+        }
+
+        await AscensionCombatModifierService.BeforePowerAmountChanged(state, GetTracker(state), power, amount, target, applier, cardSource);
+    }
+
     public override async Task AfterShuffle(PlayerChoiceContext choiceContext, Player shuffler)
     {
         var state = CurrentCombatState();
@@ -71,7 +82,11 @@ internal sealed partial class RootBudCombatHook
         await AscensionCombatModifierService.BeforeFlush(state, GetTracker(state), player);
     }
 
-    public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, ICombatState combatState)
+    public override async Task BeforeSideTurnStart(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IReadOnlyList<Creature> participants,
+        ICombatState combatState)
     {
         if (combatState is not CombatState state)
         {
@@ -81,7 +96,7 @@ internal sealed partial class RootBudCombatHook
         await AscensionCombatModifierService.BeforeSideTurnStart(state, GetTracker(state), side);
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         var state = CurrentCombatState();
         if (state == null)

@@ -40,4 +40,7 @@ internal static class AncientSavedStateFields
 
     public static readonly SavedSpireField<CardModel, bool> LothaMirrorRebuttalCard =
         new(() => false, "EZMicroBalanceLothaMirrorRebuttalCard");
+
+    public static readonly SavedSpireField<Player, string> AncientInitialOptionRerollStateKey =
+        new(() => string.Empty, "EZMicroBalanceAncientInitialOptionRerollStateKey");
 }

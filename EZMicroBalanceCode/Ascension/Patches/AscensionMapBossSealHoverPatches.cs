@@ -1,4 +1,5 @@
 using Godot;
+using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Map;
@@ -40,9 +41,11 @@ internal static class BossMapPointHoverPatch
         var sealDescriptionKey = isBossBrand ? "brand" : "summary";
         var sourceFallbackDescription = isBossBrand ? definition.BrandSummary : definition.Summary;
         var sealDescription = GetLocalizedOrFallback($"{sealKey}.{sealDescriptionKey}", sourceFallbackDescription);
+        var icon = PreloadManager.Cache.GetTexture2D(AscensionAssetPaths.GetBossSealIndicator(definition.Id));
         return new HoverTip(
             new LocString("ascension", $"{locKey}.title"),
-            $"{baseDescription}\n{sealTitle}: {sealDescription}");
+            $"{baseDescription}\n{sealTitle}: {sealDescription}",
+            icon);
     }
 
     private static string GetLocalizedOrFallback(string key, string fallback)

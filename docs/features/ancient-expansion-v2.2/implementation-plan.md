@@ -50,7 +50,7 @@ Lotha current status:
 
 Vakuu current status:
 
-- Local Core source supports a hidden opt-in single-player slice that enters a custom `RoomType.Monster` combat from Vakuu with normal rewards disabled, resumes the parent event on victory, and offers 1/2/3 non-Vakuu Act 3 Ancient blessing choices based on how many Stolen Vault locks the player breaks. The transition is awaited, normal combat rewards are disabled, a no-unclaimed-blessings fallback prevents an empty victory state, the parent event `Node` is cleared before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips normal combat rewards and the duplicate reconstructed-parent Ancient heal before resuming the parent event. The fight now adds a random hidden 0-cost Contract to hand after the normal hand draw on turns 1, 3, 5, and onward; Contracts cost HP, break locks while any remain, add Blood Debt, and each broken lock grants 50 Gold on victory. The slice requires `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, or a force-fight gate, and uses a dedicated Vakuu monster plus custom encounter scene. Save/load during the parent-linked child-combat flow remains a runtime risk; live UI/gameplay/save-load/failure and co-op evidence remain pending.
+- Local Core source supports a hidden opt-in single-player slice that enters a custom `RoomType.Monster` combat from Vakuu with normal rewards disabled, resumes the parent event on victory, and offers extra non-Vakuu Act 3 Ancient blessing choices based on how many Stolen Vault locks the player breaks. The transition is awaited, normal combat rewards are disabled, a no-unclaimed-blessings fallback prevents an empty victory state, the parent event `Node` is cleared before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips normal combat rewards and the duplicate reconstructed-parent Ancient heal before resuming the parent event. The fight now offers 0-cost Contract choices after the normal hand draw on turns 1, 3, and 5; broken locks create 50 loot Gold each, Blood Debt removes 15 loot Gold per stack at victory, and unpaid debt costs nonlethal HP. Cash Out is offered after a lock break, including a hand-full immediate choice fallback. The slice requires `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, or a force-fight gate, and uses a dedicated Vakuu monster plus custom encounter scene. Save/load during the parent-linked child-combat flow remains a runtime risk; live UI/gameplay/save-load/failure and co-op evidence remain pending.
 
 ## 1.5 Next Full-Implementation Track
 
@@ -62,7 +62,7 @@ The next development pass should not create more audit files before improving th
    - Urda option/card polish for Withered Husk and temporary v2.2 blessing art;
    - Vakuu fight option art and bespoke Contract/power art.
 2. Verify Lotha mechanics live instead of claiming release readiness from source guards:
-   - Mirror Rebuttal selected-card pull and 2/2 Power fallback;
+   - Mirror Rebuttal selected-card first-turn pull and cost-0 Power fallback;
    - Mirror Hall Echo turn-end type recording and next-turn one-shot trigger;
    - Presumption Innocent state and conservative enemy attack damage break;
    - Closed Court card-reward suppression that leaves gold, potion, and relic rewards intact;

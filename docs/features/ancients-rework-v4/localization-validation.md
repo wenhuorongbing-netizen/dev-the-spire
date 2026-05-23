@@ -98,7 +98,7 @@ Tooltip/localization-only code:
 
 ## Tooltip Findings
 
-- `card_keywords.json` controls keyword tooltip names/descriptions. No Spire Plus keyword override is required because the base game already localizes `Retain`, `Ethereal`, `Exhaust`, `Innate`, and `Eternal` in zhs.
+- `card_keywords.json` controls keyword tooltip names/descriptions. Spire Plus adds its own `Temporary` and `Plant` hover tips there; base game keywords such as `Retain`, `Ethereal`, `Exhaust`, `Innate`, and `Eternal` still come from the base localization.
 - `static_hover_tips.json` controls static hover tips and dynamic-var hover surfaces, but Swift is not a static hover tip or a card keyword.
 - Swift is an enchantment. Its zhs name and tooltip come from base game `localization/zhs/enchantments.json` (`SWIFT.title = 迅速`). Beautiful Bracelet text should reference the localized term, not raw `Swift`.
 - `DynamicVar("Swift", 2m)` remains a numeric variable provider for relic text if a `{Swift}` placeholder is used. It is not the localized display name and does not need replacement for this pass.

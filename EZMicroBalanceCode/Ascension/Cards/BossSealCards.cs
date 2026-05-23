@@ -1,8 +1,10 @@
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using BaseLib.Utils.Attributes;
+using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.CardPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -16,7 +18,7 @@ public sealed class MarginalNote : CustomCardModel
     private static readonly CardKeyword[] MarginalNoteKeywords = [CardKeyword.Retain, CardKeyword.Exhaust];
 
     public MarginalNote()
-        : base(0, CardType.Status, CardRarity.Status, TargetType.None, showInCardLibrary: false)
+        : base(1, CardType.Skill, CardRarity.Status, TargetType.None, showInCardLibrary: false)
     {
     }
 
@@ -24,6 +26,7 @@ public sealed class MarginalNote : CustomCardModel
     public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/morvi_archive_pages.png";
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => MarginalNoteKeywords;
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [AncientCardHelpers.TemporaryHoverTip()];
     public override bool CanBeGeneratedInCombat => false;
     public override bool CanBeGeneratedByModifiers => false;
     public override int MaxUpgradeLevel => 0;

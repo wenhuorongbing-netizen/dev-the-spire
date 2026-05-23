@@ -12,7 +12,7 @@ Live pages rechecked on 2026-05-05:
 Tutorial mismatch:
 
 - RitsuLib guidance uses `ModAncientEventTemplate`, registration attributes such as `RegisterActAncient` / `RegisterSharedAncient`, `CreateModRelicOption<T>()`, `AllPossibleOptions`, and `GenerateInitialOptions()`.
-- The active `EZMicroBalance.csproj` references `Alchyr.Sts2.BaseLib` `3.1.2`; no RitsuLib package is referenced. Earlier discovery work started from the legacy `EzDailyContent.csproj`, which is now archived outside the active solution.
+- The active `EZMicroBalance.csproj` references `Alchyr.Sts2.BaseLib` `3.1.4`; no RitsuLib package is referenced. Earlier discovery work started from the legacy `EzDailyContent.csproj`, which is now archived outside the active solution.
 - The BaseLib tutorial aligns with the current project dependency and shows `CustomAncientModel`, `OptionPools`, `MakePool(...)`, and `AncientOption<T>()` for custom Ancients.
 - Phase 1 does not add a custom Ancient. It patches an existing game Ancient relic reward, so the tutorial pages are context for Ancient option structure rather than the direct implementation API.
 
@@ -21,13 +21,13 @@ Tutorial mismatch:
 Evidence source:
 
 - Local game assembly: `D:\Steam\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll`
-- Runtime target in `docs/dev-environment.md`: public beta `v0.105.0`, installed locally on `2026-05-08`
-- Local project package: `Alchyr.Sts2.BaseLib` `3.1.2`
+- Runtime target in `docs/dev-environment.md`: public beta `v0.106.0`, source-refreshed locally on `2026-05-22`
+- Local project package: `Alchyr.Sts2.BaseLib` `3.1.4`
 - Tooling used for API inspection: local ignored `.tools/ilspy` install of `ilspycmd` `8.2.0.7535`
 
 Findings:
 
-- 2026-05-08 v0.105.0 source refresh: `BrightestFlame` exposes canonical `CardsVar` draw text and `CardKeyword.Exhaust` can be surfaced through canonical keyword patching. EZMB adjusts Quality Flame by adding the Exhaust keyword and increasing the existing dynamic draw var by 1, so vanilla upgrade scaling remains dynamic instead of adding a second post-play draw command.
+- 2026-05-22 v0.106.0 source refresh: `BrightestFlame` still exposes canonical `CardsVar` draw text and `CardKeyword.Exhaust` can be surfaced through canonical keyword patching. EZMB adjusts Quality Flame by adding the Exhaust keyword and increasing the existing dynamic draw var by 1, so vanilla upgrade scaling remains dynamic instead of adding a second post-play draw command.
 - `MegaCrit.Sts2.Core.Models.Events.Pael` is the Pael Ancient event model.
 - Pael's first option pool includes `MegaCrit.Sts2.Core.Models.Relics.PaelsHorn`.
 - `MegaCrit.Sts2.Core.Events.EventOption` stores the option `TextKey`, optional `Relic`, and private `OnChosen` callback. `Chosen()` invokes the callback after any `BeforeChosen` hook.
@@ -59,7 +59,7 @@ Reason:
 Historical phase-1 limits from before the finish batches:
 
 - The exact Pael's Horn in-game `TextKey` and rendered option text originally needed runtime confirmation via `[AncientRewardNoopProbe]` log lines. Current source guards and localization overrides now cover the active `EZMicroBalance` implementation; manual gameplay verification is still pending.
-- Manual verification should still confirm the deck receives exactly one normal `Relax` and one upgraded `Relax+` after choosing Pael's Horn.
+- Manual verification should still confirm the deck receives exactly one `Relax` and one `Relax+` after choosing Pael's Horn.
 - The phase-1 pass did not update localization text. The later active localization pass added English and Simplified Chinese overrides for the changed Ancient behavior.
 
 ## Batch 2 API Evidence
@@ -104,7 +104,7 @@ Additional local APIs inspected:
 
 - `CardSelectCmd.FromChooseABundleScreen(Player, IReadOnlyList<IReadOnlyList<CardModel>>)` can present four one-card curse bundles without a combat `PlayerChoiceContext`, so `Claws` can safely draft one curse on pickup.
 - `CardSelectCmd.FromChooseACardScreen(PlayerChoiceContext, IReadOnlyList<CardModel>, Player, bool canSkip)` accepts one card and a skip option. This supports `Crossbow` and `ToastyMittens` lightweight accept/skip prompts.
-- `RelicModel.BeforeSideTurnStart(PlayerChoiceContext, CombatSide, ICombatState)` is inherited by `Crossbow`, while `Crossbow.AfterSideTurnStart(...)` contains the vanilla unconditional generated-attack add. The finish batch patches the inherited before-turn hook for the offer and no-ops the vanilla after-turn add.
+- `AbstractModel.BeforeSideTurnStart(PlayerChoiceContext, CombatSide, IReadOnlyList<Creature>, ICombatState)` is inherited by `Crossbow`, while `Crossbow.AfterSideTurnStart(...)` contains the vanilla unconditional generated-attack add. The finish batch patches the inherited before-turn hook for the offer and no-ops the vanilla after-turn add.
 - `Fiddle.ModifyHandDrawLate(...)` and `Fiddle.ShouldDraw(...)` are narrow relic hooks for replacing the vanilla draw-to-7 behavior and removing the old blanket draw prevention. `CardPileCmd.Draw(...)` is the command-level draw path; prefixing it allows a player-turn non-hand-draw cap of 7 while leaving draw effects callable.
 - `JeweledMask.BeforeHandDraw(...)` is the combat-start pull hook. A custom `CustomEnchantmentModel` can persist on a selected power through the game's `SerializableEnchantment` path, and `ModelDb.AllAbstractModelSubtypes` includes mod `AbstractModel` subtypes discovered by reflection.
 - `CardCmd.Enchant<T>(CardModel, decimal)` is save-compatible for persistent card markers but rejects already-enchanted cards. The implementation filters Jeweled Mask pickup choices to unenchanted powers rather than replacing existing enchantments.

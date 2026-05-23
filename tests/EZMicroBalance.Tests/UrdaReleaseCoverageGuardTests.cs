@@ -17,7 +17,8 @@ public sealed class UrdaReleaseCoverageGuardTests
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaMapUiPatches.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapClickPatches.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapPreviewVisuals.cs"));
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapPreviewVisuals.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Map", "SpirePlusMapPointHoverComposer.cs"));
         var urdaOptionRelics = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaOptionRelics.cs");
         var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var urdaAfterRain = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.AfterRain.cs");
@@ -82,7 +83,8 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.Contains("OptionWithRelic<UrdaRootSightOptionRelic>", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("OptionWithRelic<UrdaSeedBankOptionRelic>", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("ExpectedInitialOptionCount = 4", urdaAncient, StringComparison.Ordinal);
-        Assert.Contains("options.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("candidates.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("AncientInitialOptionReroll.CanOffer", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("base(autoAdd: false)", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("AllPossibleOptions", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("UrdaBlessingIds.Seedbed", urdaAncient, StringComparison.Ordinal);
@@ -189,8 +191,7 @@ public sealed class UrdaReleaseCoverageGuardTests
             "BeforeRoomEntered",
             "AfterCardPlayed",
             "AfterCombatVictory",
-            "ShouldDieLate",
-            "AfterPreventingDeath",
+            "AfterDamageReceived",
             "PostAlternateCardRewardAction.EndSelectionAndCompleteReward",
             "AcceptSeedbed",
             "CanPaySeedbedCost",
@@ -226,25 +227,22 @@ public sealed class UrdaReleaseCoverageGuardTests
             "RootedRouteWitherGold = 25",
             "MapPointType.Monster",
             "EnsureQuestMarker<UrdaRootedRouteMapQuestMarker>",
-            "AfterRainBlock = 15",
-            "AfterRainDraw = 1",
-            "AfterRainWounds = 2",
-            "AfterRainMaxHpLoss = 3",
-            "AfterRainCompensationHeal = 8",
-            "AfterRainCompensationGold = 75",
-            "AfterRainEliteGold = 20",
-            "AfterRainEliteGoldLimit = 2",
+            "AfterRainGoldPayoff = 75",
+            "AfterRainRecoveryHeal = 8",
+            "AfterRainCleanActOneThreshold = 3",
+            "UrdaRainBreath",
+            "AfterRainTriggerCount",
             "RootSightStartingEyes = 5",
             "MapPointType.Unknown",
             "MapPointType.Elite",
             "RoomType.Boss",
             "SeedBankMaxSeeds = 3",
             "SeedBankMaxSettlementCards = 2",
+            "SetupSeedbed",
+            "TryPlantSeedbedCardFromHand",
+            "IsSeedbedSeedableCard",
             "SeedbedCombatSlots",
-            "GetOrRestoreSeedbed",
-            "PersistSeedbed",
-            "progress.SeedbedCombatSlots > 0",
-            "SetProgress(player, progress with { SeedbedCombatSlots = 0 })",
+            "CardPileCmd.RemoveFromCombat",
             "TryAddSeedBankAlternative",
             "EZMB_URDA_SEED_BANK_STORE",
             "UrdaStateKey");
@@ -256,13 +254,23 @@ public sealed class UrdaReleaseCoverageGuardTests
         AssertSourceContains(
             urdaRunHook,
             "public override async Task AfterCardChangedPiles",
-            "card.Pile?.Type == PileType.Hand",
-            "await UrdaBlessingService.TryCatchSeedbedCardFromHand(card, \"card entered hand\")",
+            "UrdaBlessingService.TryPlantSeedbedCardFromHand(card, \"card entered hand\")",
             "UrdaBlessingService.SyncPersistentState(card.Owner)");
-        AssertBefore(
-            urdaRunHook,
-            "TryCatchSeedbedCardFromHand(card, \"card entered hand\")",
-            "SyncPersistentState(card.Owner)");
+        Assert.DoesNotContain("TryCatchSeedbedCardFromHand", urdaRunHook, StringComparison.Ordinal);
+        AssertSourceContains(
+            seedbedCombatSource,
+            "CardSelectorPrefs(new LocString(\"cards\", \"EZMB_URDA_SEEDBED.selectionScreenPrompt\"), 1, 1)",
+            "card is WitheredHusk or RootFamilyCard",
+            "card.DeckVersion == null",
+            "CardPileCmd.RemoveFromCombat(card, skipVisuals: true)",
+            "TryAddGeneratedCardToCombat(husk, PileType.Hand, player)",
+            "HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))",
+            "WasPlantedBySeedbed(card)",
+            "Planting skipped play, discard, and Exhaust synergies");
+        Assert.Contains(
+            "Set up a [blue]{Capacity}[/blue]-space [gold]Seedbed[/gold]",
+            JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json")["EZMB_URDA_SEEDBED.description"],
+            StringComparison.Ordinal);
         var seedbedAlternative = SliceBetween(seedbedRewardSource, "private static bool TryAddSeedbedAlternative", "private static async Task AcceptSeedbed");
         Assert.DoesNotContain("SeedbedChecks = progress.SeedbedChecks + 1", seedbedAlternative, StringComparison.Ordinal);
         AssertSourceContains(
@@ -384,17 +392,33 @@ public sealed class UrdaReleaseCoverageGuardTests
             "TryPeekNextValidEvent",
             "TryGetRootSightRoomTypeForCurrentPoint",
             "TryGetRootSightModelForCurrentPoint");
+        var rootSightEncounters = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEncounters.cs");
+        var rootSightEvents = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEvents.cs");
+        AssertSourceContains(
+            rootSightEncounters,
+            "return candidates[0];",
+            "var startIndex = visited % source.Count",
+            "source[(startIndex + offset) % source.Count]");
+        Assert.DoesNotContain("NextItem(candidates)", rootSightEncounters, StringComparison.Ordinal);
+        AssertSourceContains(
+            rootSightEvents,
+            "return candidates[0];");
+        Assert.DoesNotContain("NextItem(candidates)", rootSightEvents, StringComparison.Ordinal);
         AssertSourceContains(
             urdaMapUiPatches,
             "UrdaRootSightMapHoverPatch",
             "HarmonyPatch(typeof(NNormalMapPoint), \"OnFocus\")",
+            "SpirePlusMapPointHoverComposer",
             "UrdaBlessingService.TryGetRootSightHoverTip",
+            "FiremarkedEliteMapHoverPatch.TryCreateHoverTip",
+            "BannerRoomMapHoverPatch.TryCreateHoverTip",
             "TryGetRootSightPreviewRoomType",
             "UrdaRootSightMapPreviewIconPatch",
             "UrdaRootSightMapQuestIconPatch",
             "UrdaRootSightMapPreviewVisuals.ApplyPreviewIcon",
             "UrdaRootSightMapPreviewVisuals.ApplyQuestIcon",
             "UrdaBlessingService.CanRootSightTarget(pointNode.Point)",
+            "ApplyRootSightOverlay(pointNode, hasRootSightMarker || canTargetWithRootSight)",
             "questIcon.Visible = true",
             "NHoverTipSet.CreateAndShow",
             "UrdaRootSightMapPointClickPatch",
@@ -421,12 +445,14 @@ public sealed class UrdaReleaseCoverageGuardTests
         AssertSourceContains(
             afterRain,
             "player.RunState.CurrentActIndex != 0",
-            "return GetProgress(player).AfterRainSpent",
-            "CreatureCmd.SetCurrentHp(creature, 1m)",
-            "CreatureCmd.GainBlock(creature, AfterRainBlock",
-            "CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), AfterRainDraw, player)",
-            "CreateCard<Wound>",
-            "CreatureCmd.LoseMaxHp");
+            "AfterRainTriggeredThisCombat",
+            "IsAfterRainTrigger",
+            "CreateCard<UrdaRainBreath>",
+            "CardPileCmd.AddGeneratedCardToCombat",
+            "CompensateAfterRainAtActTwo",
+            "PlayerCmd.GainGold(AfterRainGoldPayoff",
+            "CreatureCmd.Heal(player.Creature, AfterRainRecoveryHeal",
+            "CardSelectCmd.FromDeckForUpgrade");
         var seedBank = string.Join(
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"),
@@ -447,7 +473,7 @@ public sealed class UrdaReleaseCoverageGuardTests
             "SeedBankCardIds");
         Assert.DoesNotContain("UrdaTrialPlantCard", seedBank, StringComparison.Ordinal);
         Assert.DoesNotContain("RootDeckService.FindRootFamilyCards(card.Owner)", seedbedSource, StringComparison.Ordinal);
-        Assert.Contains("skipped deck marker instead of guessing by Rootblight level", seedbedSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("rootblight.PlantedInSeedbed = true", seedbedSource, StringComparison.Ordinal);
         Assert.DoesNotContain("SettleSeedBankBeforeActOneBoss", urdaRunHook, StringComparison.Ordinal);
         Assert.DoesNotContain("room.RoomType == RoomType.Boss", urdaRunHook, StringComparison.Ordinal);
         var huskTransformPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaWitheredHuskTransformPatches.cs");
@@ -476,11 +502,12 @@ public sealed class UrdaReleaseCoverageGuardTests
             "CardKeyword.Exhaust",
             "HoverTipFactory.FromKeyword(CardKeyword.Ethereal)",
             "HoverTipFactory.FromKeyword(CardKeyword.Exhaust)",
-            "protected override async Task OnPlay",
-            "ExhaustOnNextPlay = true",
-            "CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay)");
+            "public override async Task AfterCardExhausted",
+            "if (card != this",
+            "CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null)");
         Assert.DoesNotContain("CardKeyword.Unplayable", witheredHusk, StringComparison.Ordinal);
-        Assert.DoesNotContain("AfterCardExhausted", witheredHusk, StringComparison.Ordinal);
+        Assert.DoesNotContain("protected override async Task OnPlay", witheredHusk, StringComparison.Ordinal);
+        Assert.DoesNotContain("ExhaustOnNextPlay = true", witheredHusk, StringComparison.Ordinal);
         AssertSourceContains(
             engCards,
             "EZMB_URDA_SEEDLING.title",
@@ -567,6 +594,7 @@ public sealed class UrdaReleaseCoverageGuardTests
                 "EZMB_URDA.root_sight.map_hover.title",
                 "EZMB_URDA.root_sight.map_hover.description",
                 "EZMB_URDA.root_sight.map_hover.preview_description",
+                "EZMB_URDA.root_sight.map_hover.event_preview_description",
                 "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.title",
                 "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description",
                 "EZMB_URDA.pages.INITIAL.options.urda_seed_bank.storeSelectionPrompt",

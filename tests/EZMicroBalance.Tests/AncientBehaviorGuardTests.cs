@@ -179,7 +179,7 @@ public sealed class AncientBehaviorGuardTests
                 dependency.TryGetProperty("id", out var id) &&
                 id.GetString() == "BaseLib" &&
                 dependency.TryGetProperty("min_version", out var minVersion) &&
-                minVersion.GetString() == "v3.1.2");
+                minVersion.GetString() == "v3.1.4");
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);
@@ -293,6 +293,9 @@ public sealed class AncientBehaviorGuardTests
             "player.Relics.OfType<PrismaticGem>().FirstOrDefault(relic => !relic.IsMelted)",
             "foreach (var listener in runState.IterateHookListeners(null))",
             "listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions)",
+            "if (listenerModified)",
+            "modifiers.Add(listener)",
+            "Prismatic replacement sits between Core's early and late reward hooks",
             "TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions)",
             "listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)",
             "CleanupSupersededPrismaticReplacements(cardRewardOptions)",
@@ -327,6 +330,18 @@ public sealed class AncientBehaviorGuardTests
             "GetOffColorRewardPool(player, null, originalCard.Type, excludedIds)",
             "GetOffColorRewardPool(player, originalCard.Rarity, null, excludedIds)",
             "GetOffColorRewardPool(player, null, null, excludedIds)");
+        AssertBefore(
+            source,
+            "listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions)",
+            "TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions)");
+        AssertBefore(
+            source,
+            "TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions)",
+            "listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)");
+        AssertBefore(
+            source,
+            "listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)",
+            "CleanupSupersededPrismaticReplacements(cardRewardOptions)");
 
         AssertSourceContains(
             source,
@@ -684,7 +699,8 @@ public sealed class AncientBehaviorGuardTests
         Assert.DoesNotContain("鍊哄姟", zhsLocalizationText, StringComparison.Ordinal);
 
         Assert.Contains("迅速2", zhsRelics["BEAUTIFUL_BRACELET.description"], StringComparison.Ordinal);
-        Assert.Contains("放松", zhsRelics["PAELS_HORN.description"], StringComparison.Ordinal);
+        Assert.Equal("将1张放松与1张放松+加入你的牌组。", zhsRelics["PAELS_HORN.description"]);
+        Assert.DoesNotContain("已升级的放松+", zhsRelics["PAELS_HORN.description"], StringComparison.Ordinal);
         Assert.Contains("神化", zhsRelics["JEWELRY_BOX.description"], StringComparison.Ordinal);
         Assert.Contains("固有", zhsRelics["JEWELRY_BOX.description"], StringComparison.Ordinal);
         Assert.Contains("许愿", zhsRelics["CLAWS.description"], StringComparison.Ordinal);
@@ -1004,14 +1020,14 @@ public sealed class AncientBehaviorGuardTests
             "- [x] The active release surface is one mod: `Spire Plus / EZMicroBalance`.",
             "- [x] Legacy `EzDailyContent` and standalone `EZFuturePeek` root mod surfaces have been removed from the active tree.",
             "- [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.",
-            "- [x] Manifest declares structured `BaseLib` dependency with `min_version: v3.1.2`.",
+            "- [x] Manifest declares structured `BaseLib` dependency with `min_version: v3.1.4`.",
             "- [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.",
             "- [x] BaseLib appears in Mod Settings.",
             "- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [ ] Fresh 25-field loader smoke confirms Spire Plus / `EZMicroBalance` loads from the current package.",
-            "- [ ] Fresh 25-field loader smoke confirms the game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded",
+            "- [ ] Fresh 26-field loader smoke confirms Spire Plus / `EZMicroBalance` loads from the current package.",
+            "- [ ] Fresh 26-field loader smoke confirms the game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded",
             "- [ ] `godot.log` reviewed after fresh current-package normal Steam-client isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",

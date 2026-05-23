@@ -42,7 +42,7 @@ internal sealed class UrdaRunHook : AbstractModel
     {
         if (card.Pile?.Type == PileType.Hand)
         {
-            await UrdaBlessingService.TryCatchSeedbedCardFromHand(card, "card entered hand");
+            await UrdaBlessingService.TryPlantSeedbedCardFromHand(card, "card entered hand");
         }
 
         UrdaBlessingService.SyncPersistentState(card.Owner);
@@ -69,15 +69,14 @@ internal sealed class UrdaRunHook : AbstractModel
         return UrdaBlessingService.AfterCombatVictory(room);
     }
 
-    public override bool ShouldDieLate(Creature creature)
-    {
-        return UrdaBlessingService.ShouldDieLate(creature);
-    }
-
-    public override Task AfterPreventingDeath(Creature creature)
-    {
-        return UrdaBlessingService.AfterPreventingDeath(creature);
-    }
+    public override Task AfterDamageReceived(
+        PlayerChoiceContext choiceContext,
+        Creature target,
+        DamageResult result,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource) =>
+        UrdaBlessingService.AfterDamageReceived(choiceContext, target, result, props, dealer, cardSource);
 }
 
 internal sealed class UrdaCombatHook : AbstractModel

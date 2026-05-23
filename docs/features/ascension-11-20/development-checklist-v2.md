@@ -25,8 +25,8 @@ Use this file for current development triage. Use the archived full draft only w
 | A16 | Banner Rooms | Banner logic is split into its own combat partial with single/multi-enemy rules and rewards. | Single-enemy and multi-enemy live proof. |
 | A17 | Deep Branches | Acts 2/3 get optional high-risk route branches when map geometry is safe. | Live route-click and reward proof. |
 | A18 | Elite Blight Sprout | Mid/late Act 2 and Act 3 Elites bury a Blight Sprout. | Live Elite combat proof. |
-| A19 | Boss Royal Seals | Boss Seal lifecycle and effect groups are split by responsibility. | Boss-specific live combat proof. |
-| A20 | Dual King Brands | Single-player double-Boss path, Boss 2 Brand metadata, Boss 1 recovery, card reward, and fixed courtyard are source-backed. | Final Act live proof; co-op remains downgraded/unverified. |
+| A19 | Boss Dedicated Abilities | Boss dedicated ability lifecycle and effect groups are split by responsibility. | Boss-specific live combat proof. |
+| A20 | Branded Form | Single-player double-Boss path, Boss 2 Branded Form metadata, Boss 1 recovery, card reward, and fixed courtyard are source-backed. | Final Act live proof; co-op remains downgraded/unverified. |
 
 ## Current Refactor Notes
 
@@ -43,7 +43,7 @@ Use this file for current development triage. Use the archived full draft only w
 - A14-A18 Rootblight growth, notices, visuals, and save-load.
 - A16 Banner single-enemy and multi-enemy cases.
 - A17 Deep Branch routing and reward payout.
-- A19/A20 Boss Seal and King Brand behavior.
+- A19/A20 boss dedicated ability and Branded Form behavior.
 - Host multiplayer A20 warning and downgraded second-Boss behavior.
 - Full co-op ownership/desync verification.
 

@@ -15,6 +15,7 @@ Archived documents are useful for context, but they are not current implementati
 | `feature-audits/ancient-expansion-v2.2/2026-05-13/` | Historical v2.2 overnight source-audit matrices. Current work should start from `docs/test-ready-development-goal.md`, not this archive. |
 | `feature-audits/review-pre-slim-20260518.md` | Full source-review history before the active review file was slimmed to current findings. |
 | `feature-audits/toreview-pre-slim-20260518.md` | Full retest-queue history before the active to-review file was slimmed to current manual proof gates. |
+| `feature-audits/architecture-clean-code-management-audit-2026-05-19.md` | Historical architecture/clean-code audit. Superseded `EZFuturePeek` separation advice remains only as context. |
 | `implementation-records/` | Compact records of completed implementation passes that should not stay in the active reading path. |
 | `issues-archive.md` | Closed issue records and release-cycle traceability for previously active blocker items. |
 | `project-state-history-20260516.md` | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation and package history. |
@@ -32,3 +33,4 @@ Archived documents are useful for context, but they are not current implementati
 - `project-state-history-20260516.md`: historical `PROJECT_STATE.md` snapshot retained after the active file was reduced to current status, blockers, commands, and next action.
 - `implementation-records/2026-05-15-current-package-verification-note.md`: historical long-form package verification note archived from `docs/issues.md`; current blockers remain in `docs/issues.md` and `docs/issues/waiting-tests.md`.
 - `legacy-planning/legacy-project-files/`: preserved old `EzDailyContent.csproj` metadata and migration note moved out of the repository root during cleanup.
+- `implementation-records/rc1-live-validation-log-20260508-20260513.md`: historical live-validation log for older package states. Current package evidence is tracked in `docs/release-evidence-status.md` and `docs/dev-environment.md`.

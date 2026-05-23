@@ -17,10 +17,10 @@ That v2.0 checklist defines the next target design for:
 - Fission reward rates, UI, and eligibility.
 - Banner Rooms with Vanguard, Shield Formation, and Bounty first.
 - Deep Branches as optional Act 2/3 high-risk routes.
-- Boss-specific Royal Seals.
-- A20 Dual King Brands and the fixed courtyard.
+- Boss-specific dedicated abilities.
+- A20 Branded Form and the fixed courtyard.
 
-Current code under `EZMicroBalanceCode/Ascension/` has been migrated toward this v2.0 checklist where safe APIs exist. Milestones 0-6 are build/source-guard proven but still need live runtime verification; Milestone 7 now has source-guarded boss-specific Royal Seal hooks plus Boss-map hover text pending live boss verification; Milestone 8 now reuses the vanilla double-boss map path for final-act Boss 1/Boss 2 reveal, Boss 2 Brand metadata/parameters and hover text, Boss 1 post-combat recovery, one Boss card reward after Boss 1, Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2. A bespoke full custom intermission screen remains deferred.
+Current code under `EZMicroBalanceCode/Ascension/` has been migrated toward this checklist where safe APIs exist. Milestones 0-6 are build/source-guard proven but still need live runtime verification; Milestone 7 now has source-guarded boss-specific dedicated ability hooks plus Boss-map hover text pending live boss verification; Milestone 8 now reuses the vanilla double-boss map path for final-act Boss 1/Boss 2 reveal, Boss 2 Branded Form metadata/parameters and hover text, Boss 1 post-combat recovery, one Boss card reward after Boss 1, Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2. A bespoke full custom intermission screen remains deferred.
 
 ## Current Decision
 
@@ -38,15 +38,15 @@ The current implementation uses the selected run Ascension level after the selec
 - A16 also enables Banner Room marking and generic banner combat modifiers.
 - A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available; enhanced treasure nodes add a guarded Uncommon relic reward.
 - A18 also enables elite Blight Sprout.
-- A19 also enables Boss Seal definition lookup, source-guarded boss-specific Royal Seal hooks, and a fourth boss card reward option; all boss-specific mechanics still require live verification.
-- A20 also enables the single-player vanilla double-boss map path, Boss 2 Brand metadata/parameters independent of the A19 Boss Seal feature flag, Boss 1 post-combat recovery, one Boss card reward before Boss 2, narrow Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2 with an immediate pre-finished-room save. It does not create a bespoke full custom intermission screen.
+- A19 also enables Boss Seal definition lookup, source-guarded boss-specific dedicated ability hooks, and a fourth boss card reward option; all boss-specific mechanics still require live verification.
+- A20 also enables the single-player vanilla double-boss map path, Boss 2 Branded Form metadata/parameters independent of the A19 Boss Seal feature flag, Boss 1 post-combat recovery, one Boss card reward before Boss 2, narrow Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2 with an immediate pre-finished-room save. It does not create a bespoke full custom intermission screen.
 - A11-A20 selection is now default-on in this private-beta multiplayer test candidate for standard single-player and host-multiplayer lobbies.
 - `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection for comparison testing.
 - `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
 - `EZMB_ASCENSION_DEBUG_LEVEL=11` through `20` can still force slice gates for internal checks.
 - `EZMB_ASCENSION_DIAGNOSTICS=1` enables read-only internal run/combat diagnostics without enabling gameplay systems. It must not mutate restored Blight Sprout card state or raise Rootblight by itself.
-- Host multiplayer A20 selection/start now logs a development-testing warning because A20 Dual King Brands / second-boss Brand gameplay remains single-player gated. A20 multiplayer selection is not full A20 co-op support.
+- Host multiplayer A20 selection/start now logs a development-testing warning because A20 Branded Form / second-boss enhanced dedicated ability gameplay remains single-player gated. A20 multiplayer selection is not full A20 co-op support.
 - Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
 
 The diagnostics gate is intentionally non-mutating. It logs hook reachability and Rootblight state only.
@@ -344,27 +344,27 @@ Remaining:
 - Live map UI placement, route traversal, save/load restoration, and metadata/marker visibility are not verified.
 - Multiplayer route voting is not proven; branch insertion is skipped in multiplayer until a separate proof exists.
 
-## Phase 8: A19 Boss Seals and A20
+## Phase 8: A19 Boss Dedicated Abilities and A20
 
-Status: A19 BossSeal data table plus source-guarded boss-specific runtime hooks and Boss-map hover text are implemented behind the A19 gate; A20 uses the vanilla double-boss map path for final-act Boss 1/Boss 2 reveal, Boss 2 Brand metadata/parameters and hover text, Boss 1 post-combat recovery, one Boss card reward after Boss 1, Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2. A bespoke full custom intermission screen remains deferred and high risk.
+Status: A19 BossSeal data table plus source-guarded boss-specific runtime hooks and Boss-map hover text are implemented behind the A19 gate; A20 uses the vanilla double-boss map path for final-act Boss 1/Boss 2 reveal, Boss 2 Branded Form metadata/parameters and hover text, Boss 1 post-combat recovery, one Boss card reward after Boss 1, Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2. A bespoke full custom intermission screen remains deferred and high risk.
 
 Scope:
 
-- A19 boss-specific Royal Seal definitions and improved boss card reward options.
-- A20 revealed double boss, Boss 2 Brand mode, and courtyard/intermission between bosses.
+- A19 boss-specific dedicated ability definitions and improved boss card reward options.
+- A20 revealed double boss, Boss 2 Branded Form mode, and courtyard/intermission between bosses.
 
 Implemented:
 
-- `BossSealDefinition` and `BossSealCatalog` define all active v2.0 Boss Royal Seals by boss encounter: Holy Daze, Martyr Oath, Ink Return, Startled Shell, Soul Tide, Boiling Critical, Misaligned Shell, Marginal Note, Struggle Bait, Aeonglass Strength, Chosen Decree, and Residual Sample. Door Wedge is removed from active v0.105.0 scope because Doormaker was replaced by Aeonglass.
-- A19 boss nodes receive boss-specific Royal Seal metadata from the active boss encounter instead of the older generic Armor/Rage/Barrier/Chaos placeholder set.
-- A19 combat logs the armed Royal Seal and source evidence, then applies only the current source-guarded hook paths; live runtime verification is still required before release-readiness claims.
+- `BossSealDefinition` and `BossSealCatalog` define all active v4.1 Boss dedicated abilities by boss encounter: Holy Daze, Martyr Oath, Ink Return, Plating Wake, Soul Tide, Unweakenable, Claw Calibration, Marginal Note, Escape Fatigue, Time Sand Reflow, Royal Decree, and Experimental Record. Door Wedge is removed from active v0.106.0 scope because Doormaker was replaced by Aeonglass.
+- A19 boss nodes receive boss-specific dedicated ability metadata from the active boss encounter instead of the older generic Armor/Rage/Barrier/Chaos placeholder set.
+- A19 combat logs the armed dedicated ability and source evidence, then applies only the current source-guarded hook paths; live runtime verification is still required before release-readiness claims.
 - A19 boss card rewards add a fourth option through `CardFactory.CreateForReward` with hook recursion disabled.
-- A20 sets a final-act second Boss through a `RunManager.GenerateRooms()` postfix when the single-player vanilla double-boss path has not already done so; `StandardActMap` then exposes `SecondBossMapPoint`, Boss 2 receives Brand metadata plus source-guarded Brand parameter variants even if the A19 Boss Seal feature flag is disabled, Boss-map hover text, Boss 1 post-combat recovery restores 25% missing HP, Boss 1 terminal rewards include one Boss card reward, the Boss 1 reward screen uses second-Boss header/proceed wording, and `RunManager.ProceedFromTerminalRewardsScreen` opens `A20Courtyard` through `EnterRoomWithoutExitingCurrentRoom` followed by `SaveRun(eventRoom, saveProgress: false)`. A bespoke full custom intermission screen remains deferred.
+- A20 sets a final-act second Boss through a `RunManager.GenerateRooms()` postfix when the single-player vanilla double-boss path has not already done so; `StandardActMap` then exposes `SecondBossMapPoint`, Boss 2 receives Branded Form metadata plus source-guarded Branded Form parameter variants even if the A19 Boss Seal feature flag is disabled, Boss-map hover text, Boss 1 post-combat recovery restores 25% missing HP, Boss 1 terminal rewards include one Boss card reward, the Boss 1 reward screen uses second-Boss header/proceed wording, and `RunManager.ProceedFromTerminalRewardsScreen` opens `A20Courtyard` through `EnterRoomWithoutExitingCurrentRoom` followed by `SaveRun(eventRoom, saveProgress: false)`. A bespoke full custom intermission screen remains deferred.
 
 Required proof:
 
 - Boss identity/order trace in Act 3 A10.
-- Safe boss-specific Royal Seal display/notice.
+- Safe boss-specific dedicated ability display/notice.
 - Runtime evidence for each boss-specific trigger before applying mechanics.
 - Safe intermission insertion point after boss 1 and before boss 2.
 - Reward/heal flow that does not duplicate or skip room-end rewards.

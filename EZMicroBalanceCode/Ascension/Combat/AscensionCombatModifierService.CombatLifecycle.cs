@@ -34,7 +34,7 @@ internal static partial class AscensionCombatModifierService
         }
     }
 
-    public static async Task AfterPlayerTurnStart(CombatState combatState, AscensionCombatTracker tracker)
+    public static async Task AfterPlayerTurnStart(CombatState combatState, AscensionCombatTracker tracker, Player player)
     {
         if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
         {
@@ -43,7 +43,7 @@ internal static partial class AscensionCombatModifierService
 
         if (HasActiveBossSeal(combatState, metadata))
         {
-            await ApplyBossSealPlayerTurnStart(combatState, tracker, metadata);
+            await ApplyBossSealPlayerTurnStart(combatState, tracker, metadata, player);
         }
 
         if (HasActiveFiremark(combatState, metadata))
@@ -54,6 +54,8 @@ internal static partial class AscensionCombatModifierService
                 tracker.FiremarkDamageThisPlayerTurn = 0m;
                 tracker.FiremarkDamageThisEnemyCycle = 0m;
             }
+
+            await ApplyFiremarkPlayerTurnStart(combatState, tracker, metadata.Firemark!.Value);
         }
 
         if (HasActiveBanner(combatState, metadata))
@@ -114,6 +116,11 @@ internal static partial class AscensionCombatModifierService
         if (HasActiveBossSeal(combatState, metadata))
         {
             await ApplyBossSealSideTurnStart(combatState, tracker, metadata, side);
+        }
+
+        if (HasActiveFiremark(combatState, metadata))
+        {
+            await ApplyFiremarkSideTurnStart(combatState, tracker, metadata.Firemark!.Value, side);
         }
     }
 

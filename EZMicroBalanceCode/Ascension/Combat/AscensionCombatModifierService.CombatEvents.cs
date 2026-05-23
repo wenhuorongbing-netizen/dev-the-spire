@@ -1,3 +1,6 @@
+using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.Models.Monsters;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
@@ -37,6 +40,29 @@ internal static partial class AscensionCombatModifierService
         }
 
         await TryApplyHolyDaze(combatState, tracker, metadata);
+    }
+
+    public static Task BeforePowerAmountChanged(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        PowerModel power,
+        decimal amount,
+        Creature target,
+        Creature? applier,
+        CardModel? cardSource)
+    {
+        if (amount <= 0m ||
+            target.Monster is not TestSubject ||
+            power.GetTypeForAmount(amount) != PowerType.Debuff ||
+            !TryRefreshNodeMetadata(combatState, tracker, out var metadata) ||
+            !HasActiveBossSeal(combatState, metadata) ||
+            metadata.BossSeal?.Id != BossSealId.ResidualSample)
+        {
+            return Task.CompletedTask;
+        }
+
+        tracker.TestSubjectDebuffAppliedThisPhase = true;
+        return Task.CompletedTask;
     }
 
     public static async Task AfterDamageReceived(
@@ -109,6 +135,24 @@ internal static partial class AscensionCombatModifierService
         if (HasActiveBossSeal(combatState, metadata))
         {
             await AfterBossSealCardPlayed(combatState, tracker, metadata, cardPlay);
+        }
+    }
+
+    public static async Task AfterEnergySpent(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        CardModel card,
+        int amount)
+    {
+        if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
+        {
+            return;
+        }
+
+        if (HasActiveBossSeal(combatState, metadata) &&
+            metadata.BossSeal?.Id == BossSealId.AeonglassHourglass)
+        {
+            await TrackAeonglassEnergySpent(combatState, tracker, card, amount);
         }
     }
 

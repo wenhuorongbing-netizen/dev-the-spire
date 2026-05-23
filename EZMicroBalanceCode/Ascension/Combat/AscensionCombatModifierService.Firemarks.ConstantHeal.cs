@@ -26,6 +26,18 @@ internal static partial class AscensionCombatModifierService
         }
 
         await CreatureCmd.Heal(host, GetConstantHealAmount(combatState));
+        await ApplyConstantHealOverflow(combatState, tracker);
         tracker.FiremarkDamageThisEnemyCycle = 0m;
+    }
+
+    private static async Task ApplyConstantHealOverflow(CombatState combatState, AscensionCombatTracker tracker)
+    {
+        var target = LowestHpRatioOverflowTarget(combatState, tracker, damagedOnly: true);
+        if (target == null)
+        {
+            return;
+        }
+
+        await CreatureCmd.Heal(target, GetConstantHealOverflowHeal(combatState));
     }
 }

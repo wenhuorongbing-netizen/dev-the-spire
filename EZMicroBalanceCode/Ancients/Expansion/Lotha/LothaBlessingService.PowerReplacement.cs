@@ -5,40 +5,29 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 internal static partial class LothaBlessingService
 {
     private const int PowerFallbackCards = 1;
-    private const int MirrorRebuttalPowerFallbackEnergy = 2;
-    private const int MirrorRebuttalPowerFallbackCards = 2;
 
-    private static async Task TryResolveMirrorRebuttalPowerFallback(
+    private static Task TryResolveMirrorRebuttalPowerFallback(
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay,
         LothaCombatState combatState)
     {
+        _ = choiceContext;
         if (combatState.MirrorRebuttalResolved ||
             !cardPlay.IsFirstInSeries ||
             cardPlay.IsAutoPlay ||
             !CanUseMirrorRebuttalPowerReplacement(cardPlay.Card, combatState))
         {
-            return;
+            return Task.CompletedTask;
         }
 
         combatState.MirrorRebuttalResolved = true;
         combatState.PowerReplacementCardPendingBenefit = null;
-        await ApplyPowerReplacementBenefit(
-            choiceContext,
-            cardPlay.Card.Owner,
-            MirrorRebuttalPowerFallbackEnergy,
-            MirrorRebuttalPowerFallbackCards);
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Mirror Rebuttal used the Power-card replacement benefit: cost 0, Energy 2, and draw 2.");
+        MainFile.Logger.Info("[EZMicroBalance] Lotha Mirror Rebuttal used the Power-card replacement benefit: cost 0.");
+        return Task.CompletedTask;
     }
 
     private static async Task ApplyPowerReplacementBenefit(PlayerChoiceContext choiceContext, Player player) =>
         await CardPileCmd.Draw(choiceContext, PowerFallbackCards, player);
-
-    private static async Task ApplyPowerReplacementBenefit(PlayerChoiceContext choiceContext, Player player, int energy, int cards)
-    {
-        await PlayerCmd.GainEnergy(energy, player);
-        await CardPileCmd.Draw(choiceContext, cards, player);
-    }
 
     private static bool IsPowerReplacementCostZeroCard(CardModel card, Player player, LothaCombatState combatState)
     {

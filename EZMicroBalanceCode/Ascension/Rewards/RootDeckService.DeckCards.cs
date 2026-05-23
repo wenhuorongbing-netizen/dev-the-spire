@@ -60,7 +60,7 @@ internal static partial class RootDeckService
             rootFamilyCard.WasPresentAtCombatStart = false;
         }
 
-        var addResult = await CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, source: null, skipVisuals: true);
+        var addResult = await CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, clonedBy: null, skipVisuals: true);
         if (!addResult.success)
         {
             return false;

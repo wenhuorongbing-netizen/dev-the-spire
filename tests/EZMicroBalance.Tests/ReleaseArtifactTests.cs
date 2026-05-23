@@ -53,7 +53,7 @@ public sealed class ReleaseArtifactTests
                 dependency.TryGetProperty("id", out var id) &&
                 id.GetString() == "BaseLib" &&
                 dependency.TryGetProperty("min_version", out var minVersion) &&
-                minVersion.GetString() == "v3.1.2");
+                minVersion.GetString() == "v3.1.4");
 
         foreach (var removedRootSurface in new[]
         {
@@ -501,6 +501,8 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("EZMicroBalanceCode/*", exportPreset, StringComparison.Ordinal);
         Assert.Contains("docs/*", exportPreset, StringComparison.Ordinal);
         Assert.Contains("legacy/*", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("forum/*", exportPreset, StringComparison.Ordinal);
+        Assert.Contains("output/*", exportPreset, StringComparison.Ordinal);
     }
 
     private static void AssertSameKeys(string fileName)

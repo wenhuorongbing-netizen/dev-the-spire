@@ -32,7 +32,7 @@ Manifest:
   "dependencies": [
     {
       "id": "BaseLib",
-      "min_version": "v3.1.2"
+      "min_version": "v3.1.4"
     }
   ],
   "affects_gameplay": true

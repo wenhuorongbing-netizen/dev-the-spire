@@ -7,6 +7,8 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static class UrdaRootSightMapPreviewVisuals
 {
+    private const string RootSightOverlayIconName = "EZMBRootSightOverlayIcon";
+
     internal static void ApplyPreviewIcon(NNormalMapPoint pointNode)
     {
         if (pointNode.Point.PointType != MapPointType.Unknown ||
@@ -42,12 +44,19 @@ internal static class UrdaRootSightMapPreviewVisuals
             return;
         }
 
+        var canTargetWithRootSight = UrdaBlessingService.CanRootSightTarget(pointNode.Point);
         var hasRootSightMarker = pointNode.Point.Quests.Any(quest => quest is UrdaRootSightMapQuestMarker);
         var hasOtherMarker = pointNode.Point.Quests.Any(quest => quest is not UrdaRootSightMapQuestMarker);
-        if ((!hasRootSightMarker && !UrdaBlessingService.CanRootSightTarget(pointNode.Point)) ||
-            hasOtherMarker)
+        if (hasOtherMarker)
         {
-            if (!hasRootSightMarker && pointNode.Point.Quests.Count == 0)
+            ApplyRootSightOverlay(pointNode, hasRootSightMarker || canTargetWithRootSight);
+            return;
+        }
+
+        ApplyRootSightOverlay(pointNode, visible: false);
+        if (!hasRootSightMarker && !canTargetWithRootSight)
+        {
+            if (pointNode.Point.Quests.Count == 0)
             {
                 questIcon.Visible = false;
             }
@@ -60,6 +69,49 @@ internal static class UrdaRootSightMapPreviewVisuals
             UrdaAssetPaths.RootSightOptionIcon,
             null,
             ResourceLoader.CacheMode.Reuse);
+    }
+
+    private static void ApplyRootSightOverlay(NNormalMapPoint pointNode, bool visible)
+    {
+        var iconContainer = pointNode.GetNodeOrNull<Control>("%IconContainer");
+        if (iconContainer == null)
+        {
+            return;
+        }
+
+        var overlay = iconContainer.GetNodeOrNull<TextureRect>(RootSightOverlayIconName);
+        if (!visible)
+        {
+            if (overlay != null)
+            {
+                overlay.Visible = false;
+            }
+
+            return;
+        }
+
+        if (overlay == null)
+        {
+            overlay = new TextureRect
+            {
+                Name = RootSightOverlayIconName,
+                MouseFilter = Control.MouseFilterEnum.Ignore,
+                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+                CustomMinimumSize = new Vector2(22f, 22f),
+                Size = new Vector2(22f, 22f),
+                Position = new Vector2(34f, 30f),
+                PivotOffset = new Vector2(11f, 11f),
+                ZIndex = 20
+            };
+            iconContainer.AddChildSafely(overlay);
+        }
+
+        overlay.Texture = ResourceLoader.Load<Texture2D>(
+            UrdaAssetPaths.RootSightOptionIcon,
+            null,
+            ResourceLoader.CacheMode.Reuse);
+        overlay.Visible = true;
     }
 
     private static string UnknownIconPath(RoomType roomType)

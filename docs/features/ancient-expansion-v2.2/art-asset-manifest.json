@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_date": "2026-05-15",
+  "updated_date": "2026-05-22",
   "required_generation_mode": "GPTimage2",
   "notes": [
     "Active Ancient and related card/power/relic art manifest for Spire Plus / EZMicroBalance.",
@@ -848,105 +848,381 @@
       "id": "rootblight_i_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/rootblight_i.png",
-      "source_status": "source_local_generated",
-      "sha256": "37E06A6BCEB585478F681D41A4AC14B0988C6067BE7DC983A7867C8D1A824536",
+      "source_status": "final_generated",
+      "sha256": "226E8C92F4E51E58C1DFC41C4B8A5BF1612DA56749623A19BE63152B152496FB",
       "dimensions": {
         "width": 250,
         "height": 190
       },
       "final_required_before_release": false,
-      "notes": "Active local generated Rootblight I small portrait. Live visual verification remains pending."
+      "notes": "Final subagent GPTimage2 repaint for Rootblight I small card portrait; rectangular card art intentionally keeps an opaque painted background. Live clicked/card UI proof remains pending.",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/card_portraits/rootblight_i.png",
+      "prompt_id": "gptimage2_rootboss_20260522_rootblight_sheet",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "rootblight_ii_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/rootblight_ii.png",
-      "source_status": "source_local_generated",
-      "sha256": "6A307787999AF2D154BB320A4D8DCA4079D9060602B73B1AA6BC6E1A22F59D58",
+      "source_status": "final_generated",
+      "sha256": "2B476FF4D8351A5BF6BD96B16A83E8EFB1174D2EB637D27E37C34E5FAEB4A69B",
       "dimensions": {
         "width": 250,
         "height": 190
       },
       "final_required_before_release": false,
-      "notes": "Active local generated Rootblight II small portrait. Live visual verification remains pending."
+      "notes": "Final subagent GPTimage2 repaint for Rootblight II small card portrait; rectangular card art intentionally keeps an opaque painted background. Live clicked/card UI proof remains pending.",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/card_portraits/rootblight_ii.png",
+      "prompt_id": "gptimage2_rootboss_20260522_rootblight_sheet",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "rootblight_iii_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/rootblight_iii.png",
-      "source_status": "source_local_generated",
-      "sha256": "0C1784FD117A48D47D448972AB3F95BA92B4528A296FC2AE557B58B5AA5F4E4E",
+      "source_status": "final_generated",
+      "sha256": "49E9040DE1B0EDE647A725F8E17C0C5A75EF32CF28035B1C1C2090F90886FD1C",
       "dimensions": {
         "width": 250,
         "height": 190
       },
       "final_required_before_release": false,
-      "notes": "Active local generated Rootblight III small portrait. Live visual verification remains pending."
+      "notes": "Final subagent GPTimage2 repaint for Rootblight III small card portrait; rectangular card art intentionally keeps an opaque painted background. Live clicked/card UI proof remains pending.",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/card_portraits/rootblight_iii.png",
+      "prompt_id": "gptimage2_rootboss_20260522_rootblight_sheet",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "blight_sprout_card_portrait_small",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/blight_sprout.png",
-      "source_status": "source_local_generated",
-      "sha256": "9BCEE9AD668F2D5DDA6842CBB3D189E8CA42045D51C38C134EECCF9DFF397DE3",
+      "source_status": "final_generated",
+      "sha256": "DDF355BD50DEDCB83BD2EF04BF089F5D5FB2B0C4749713C1614C02BA23632F06",
       "dimensions": {
         "width": 250,
         "height": 190
       },
       "final_required_before_release": false,
-      "notes": "Active local generated Blight Sprout small portrait. Live visual verification remains pending."
+      "notes": "Final subagent GPTimage2 repaint for Blight Sprout small card portrait; rectangular card art intentionally keeps an opaque painted background. Live clicked/card UI proof remains pending.",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/card_portraits/blight_sprout.png",
+      "prompt_id": "gptimage2_rootboss_20260522_rootblight_sheet",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "rootblight_i_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/rootblight_i.png",
-      "source_status": "source_local_generated",
-      "sha256": "52AE2A50E1EB6A64FFA243EA061A2B2B5A8EDE7A076C3503FE15F8460F70C97A",
+      "source_status": "final_generated",
+      "sha256": "166BBBCFF5A33C00F565F754A058F8021269C0EBED681AE322B865AFABFBDF56",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
       "final_required_before_release": false,
-      "notes": "Active local generated Rootblight I large portrait. Live visual verification remains pending."
+      "notes": "Final subagent GPTimage2 repaint for Rootblight I large card portrait; normalized to the active 1000x760 route. Live clicked/card UI proof remains pending.",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/card_portraits/big/rootblight_i.png",
+      "prompt_id": "gptimage2_rootboss_20260522_rootblight_sheet",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "rootblight_ii_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/rootblight_ii.png",
-      "source_status": "source_local_generated",
-      "sha256": "92EA23513D739DFA9ECB2B95949002346AD4E8D43AB323EF9E7AA949DEB5EC7D",
+      "source_status": "final_generated",
+      "sha256": "BC7E2F630A93E979D85CFCEBCD4D4E1E8EAD7BBF2738FE94AC7EC44ACF4B795F",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
       "final_required_before_release": false,
-      "notes": "Active local generated Rootblight II large portrait. Live visual verification remains pending."
+      "notes": "Final subagent GPTimage2 repaint for Rootblight II large card portrait; normalized to the active 1000x760 route. Live clicked/card UI proof remains pending.",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/card_portraits/big/rootblight_ii.png",
+      "prompt_id": "gptimage2_rootboss_20260522_rootblight_sheet",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "rootblight_iii_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/rootblight_iii.png",
-      "source_status": "source_local_generated",
-      "sha256": "4A99EAD43F719D3BB514F6DEF31B72C131D67BE57E2A7B5184B6D788161AAF6E",
+      "source_status": "final_generated",
+      "sha256": "9A3FFA1E2E4B26310C667A9036E157C888FB50CB34C1B7ACDFF3A3E968B7B6D4",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
       "final_required_before_release": false,
-      "notes": "Active local generated Rootblight III large portrait. Live visual verification remains pending."
+      "notes": "Final subagent GPTimage2 repaint for Rootblight III large card portrait; normalized to the active 1000x760 route. Live clicked/card UI proof remains pending.",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/card_portraits/big/rootblight_iii.png",
+      "prompt_id": "gptimage2_rootboss_20260522_rootblight_sheet",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "blight_sprout_card_portrait_big",
       "role": "card_portrait",
       "target_path": "EZMicroBalance/images/card_portraits/big/blight_sprout.png",
-      "source_status": "source_local_generated",
-      "sha256": "D2ADB90836972A6903752BC26264A440947797E5CACD4642059B9A98C84DA808",
+      "source_status": "final_generated",
+      "sha256": "68CA060B0732D27C69647B67156A65B11C229D369B651E0B1931BD537D6F70EE",
       "dimensions": {
         "width": 1000,
         "height": 760
       },
       "final_required_before_release": false,
-      "notes": "Active local generated Blight Sprout large portrait. Live visual verification remains pending."
+      "notes": "Final subagent GPTimage2 repaint for Blight Sprout large card portrait; normalized to the active 1000x760 route. Live clicked/card UI proof remains pending.",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/card_portraits/big/blight_sprout.png",
+      "prompt_id": "gptimage2_rootboss_20260522_rootblight_sheet",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_holy_daze_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/holy_daze.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/holy_daze.png",
+      "sha256": "B46F72F269D958B050F4DD380A6CDDFDF960D47E770704B688F80D0523A0886C",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_martyr_oath_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/martyr_oath.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/martyr_oath.png",
+      "sha256": "09593AB6566129C3F33585ADA5816A388521797EA0EA96B7BCA8CA69FF93A8BF",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_ink_return_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/ink_return.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/ink_return.png",
+      "sha256": "2E0B4E7A342F82618D0F368C3B6DEE16D768ACC5873F45951BC70B953E66E4AA",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_startled_shell_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/startled_shell.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/startled_shell.png",
+      "sha256": "64F9353D2FC5AE35103A51F74849296252AA5E10137A8B97E783C8FC2C87F390",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_soul_tide_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/soul_tide.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/soul_tide.png",
+      "sha256": "3C07B6C0C302CA16EE5F5EA3CBA8D837FAEAD1E2C82066AC07B60A82B7B4E1DD",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_boiling_critical_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/boiling_critical.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/boiling_critical.png",
+      "sha256": "F5FFA876E4227DD81707BB6198104C383DF3461A2B0B2CF11E1F3B84F6764335",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_misaligned_shell_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/misaligned_shell.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/misaligned_shell.png",
+      "sha256": "7D312875E6DE00182CE7A82F3D267B7D0C81A9CCEA17B6D67AB8E51EECC372CA",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_marginal_note_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/marginal_note.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/marginal_note.png",
+      "sha256": "DEB2D3B1E195FC06BC82250EDD6AAE4BB35E946F4651866037D34223C458193B",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_struggle_bait_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/struggle_bait.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/struggle_bait.png",
+      "sha256": "427120348D36DDA7A4C6607869F25CB581A3A0323484F599361D1033882971BA",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_aeonglass_hourglass_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/aeonglass_hourglass.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/aeonglass_hourglass.png",
+      "sha256": "1D15747BFF1AB82C1D0F183DE82B20E2A75FD6D46C1A9A48227C48E7D2138C1F",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_chosen_decree_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/chosen_decree.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/chosen_decree.png",
+      "sha256": "F16D1081C05A70673C8EA9D281BD37C5B3382489AEEEBF6062848F3E2B17C504",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "boss_seal_residual_sample_indicator",
+      "role": "ascension_ui_icon",
+      "target_path": "EZMicroBalance/images/ascension/boss_seals/residual_sample.png",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed/EZMicroBalance/images/ascension/boss_seals/residual_sample.png",
+      "sha256": "5E5FF0E4C3163C11F49927BD70627AA607A339B035E92620104DC5F672F66983",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "gptimage2_rootboss_20260522_boss_seal_sheet",
+      "final_required_before_release": false,
+      "notes": "Final subagent GPTimage2 per-boss Royal Seal / King Brand icon. Transparent 128px UI art with painterly black contour; live boss hover/combat proof remains pending.",
+      "source_review_path": ".tools/art-generation/gptimage2-rootboss-20260522/processed-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "generic_power_icon",

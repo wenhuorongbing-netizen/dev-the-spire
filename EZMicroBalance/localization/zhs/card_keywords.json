@@ -1,0 +1,6 @@
+﻿{
+  "EZMB_TEMPORARY.title": "临时",
+  "EZMB_TEMPORARY.description": "本牌只存在于本场战斗。战斗结束后移除。",
+  "EZMB_PLANTED.title": "种下",
+  "EZMB_PLANTED.description": "被种下的牌不会进入手牌，并移出本场战斗。种下不是打出、丢弃或消耗。"
+}

@@ -15,7 +15,7 @@ internal enum BossSealId
     StruggleBait,
     ChosenDecree,
     ResidualSample,
-    AeonglassStrength
+    AeonglassHourglass
 }
 
 internal enum BossSealImplementationStatus

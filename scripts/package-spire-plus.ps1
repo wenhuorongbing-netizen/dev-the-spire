@@ -68,7 +68,7 @@ Archive: SpirePlus-$($manifest.version).zip
 Display name: Spire Plus
 Technical id / install folder: EZMicroBalance
 Version: $($manifest.version)
-Requires: BaseLib v3.1.2
+Requires: BaseLib v3.1.4
 
 Install:
 1. Place this EZMicroBalance folder under the Slay the Spire 2 mods folder.
@@ -88,6 +88,10 @@ Notes:
 - Ancient selections now grant visible marker relics so the chosen blessing stays readable in the relic bar.
 - Ascension 21-30 and custom-character content are not included.
 "@ | Set-Content -LiteralPath $readmePath -Encoding UTF8
+
+if (-not $NoRefreshFromInstalled -and (Test-Path -LiteralPath $installedModDir)) {
+    Copy-Item -LiteralPath $readmePath -Destination (Join-Path $installedModDir 'README_INSTALL.txt') -Force
+}
 
 foreach ($target in @($versionedRoot, $zipPath, $legacyZipPath)) {
     Assert-UnderPath -Candidate $target -Parent $publishRoot
@@ -136,4 +140,8 @@ finally {
     $zipStream.Dispose()
 }
 
+$gameRootZipPath = Join-Path $GameRoot "SpirePlus-$($manifest.version).zip"
+Copy-Item -LiteralPath $zipPath -Destination $gameRootZipPath -Force
+
 Write-Host "Created $zipPath"
+Write-Host "Copied $gameRootZipPath"

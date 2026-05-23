@@ -1,4 +1,5 @@
 using BaseLib.Utils.Attributes;
+using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -23,7 +24,8 @@ internal abstract class MorviArchivePageCard : CustomCardModel
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         [
             HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
-            HoverTipFactory.FromKeyword(CardKeyword.Exhaust)
+            HoverTipFactory.FromKeyword(CardKeyword.Exhaust),
+            AncientCardHelpers.TemporaryHoverTip()
         ];
 
     public override bool CanBeGeneratedInCombat => false;

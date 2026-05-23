@@ -44,6 +44,9 @@ internal static class CrystalSpherePeekPatch
             return;
         }
 
+        // This preview intentionally changes only the mask alpha. It must not use
+        // source reveal, cell-resolution, or reward APIs because those mutate the
+        // minigame result instead of merely letting the player inspect it.
         var originalAlpha = mask.Modulate.A;
         var button = new Button
         {
@@ -58,18 +61,7 @@ internal static class CrystalSpherePeekPatch
             BaseButton.SignalName.Toggled,
             Callable.From<bool>(pressed =>
             {
-                var color = mask.Modulate;
-                color.A = pressed ? (float)EZMicroBalanceModConfig.CrystalSphereMaskAlpha : originalAlpha;
-                mask.Modulate = color;
-                ReleaseEvidenceLog.Log(
-                    "PreviewCrystalSphere",
-                    pressed ? "peek_enabled" : "peek_disabled",
-                    runState: RunManager.Instance?.DebugOnlyGetState(),
-                    data: new Dictionary<string, object?>
-                    {
-                        ["maskAlpha"] = color.A
-                    });
-                PreviewLog.Debug(pressed ? "Crystal Sphere peek enabled." : "Crystal Sphere peek disabled.");
+                ApplyPeekMaskState(mask, pressed, originalAlpha);
             }));
 
         rightControl.AddChild(button);
@@ -124,6 +116,22 @@ internal static class CrystalSpherePeekPatch
         return LocString.GetIfExists("settings_ui", "EZMICROBALANCE-CRYSTAL_SPHERE_PEEK_BUTTON.title")?.GetFormattedText()
             ?? (LocManager.Instance.Language == "zhs" ? "预知" : null)
             ?? "Peek";
+    }
+
+    private static void ApplyPeekMaskState(Control mask, bool pressed, float originalAlpha)
+    {
+        var color = mask.Modulate;
+        color.A = pressed ? (float)EZMicroBalanceModConfig.CrystalSphereMaskAlpha : originalAlpha;
+        mask.Modulate = color;
+        ReleaseEvidenceLog.Log(
+            "PreviewCrystalSphere",
+            pressed ? "peek_enabled" : "peek_disabled",
+            runState: RunManager.Instance?.DebugOnlyGetState(),
+            data: new Dictionary<string, object?>
+            {
+                ["maskAlpha"] = color.A
+            });
+        PreviewLog.Debug(pressed ? "Crystal Sphere peek enabled." : "Crystal Sphere peek disabled.");
     }
 
     private sealed record PeekState(Control Mask, float OriginalMaskAlpha, Button Button);

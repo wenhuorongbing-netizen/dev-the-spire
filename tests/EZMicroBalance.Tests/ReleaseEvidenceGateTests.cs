@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.Json;
 using Xunit;
 
@@ -120,7 +120,7 @@ public sealed class ReleaseEvidenceGateTests
         }
 
         var projectState = ReadRepoText("PROJECT_STATE.md");
-        Assert.Contains("current source defines 25 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("current source defines 26 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("live loader parity remains pending", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Found 22 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
     }

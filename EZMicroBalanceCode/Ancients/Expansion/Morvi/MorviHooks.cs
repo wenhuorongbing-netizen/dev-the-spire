@@ -24,7 +24,7 @@ internal sealed class MorviCombatHook : AbstractModel
     public override Task AfterPlayerTurnStartEarly(PlayerChoiceContext choiceContext, Player player) =>
         MorviBlessingService.AfterPlayerTurnStart(choiceContext, player);
 
-    public override Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side) =>
+    public override Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants) =>
         MorviBlessingService.AfterTurnEnd(choiceContext, side);
 
     public override bool ShouldPlay(CardModel card, AutoPlayType autoPlayType) =>

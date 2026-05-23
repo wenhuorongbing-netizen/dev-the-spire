@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -16,7 +16,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         AssertSourceContains(
             bootstrap,
             "Spire Plus / EZMicroBalance Windows bootstrap",
-            "Install BaseLib v3.1.2 under <GameRoot>\\mods\\BaseLib before game verification.",
+            "Install BaseLib v3.1.4 under <GameRoot>\\mods\\BaseLib before game verification.",
             "BaseLib plus Spire Plus / EZMicroBalance appear and are enabled.");
         Assert.DoesNotContain("EzDailyContent Windows bootstrap", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain("BaseLib v3.1.0", bootstrap, StringComparison.Ordinal);
@@ -76,7 +76,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             .OrderBy(field => field.Key, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(25, fields.Length);
+        Assert.Equal(26, fields.Length);
         Assert.Equal(fields.Length, fields.Select(field => field.Key).Distinct(StringComparer.Ordinal).Count());
         Assert.All(fields, field => Assert.StartsWith("EZMicroBalance", field.Key, StringComparison.Ordinal));
         Assert.All(fields, field => Assert.Contains(field.Name, sourceWithoutDefinitions, StringComparison.Ordinal));
@@ -93,14 +93,14 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         var devEnvironment = ReadRepoText("docs", "dev-environment.md");
-        Assert.Contains("current source defines 25 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current source defines 26 SavedSpireFields", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", currentDocs, StringComparison.Ordinal);
         Assert.Contains("previous smoke log still reports `Found 22 SavedSpireFields`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("fresh live loader rerun", currentDocs, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", currentDocs, StringComparison.Ordinal);
         Assert.Contains("historical 22-field loader evidence", devEnvironment, StringComparison.Ordinal);
-        Assert.Contains("not refreshed 25-field package parity", devEnvironment, StringComparison.Ordinal);
-        Assert.Contains("Current source defines 25 SavedSpireFields", devEnvironment, StringComparison.Ordinal);
+        Assert.Contains("not refreshed 26-field package parity", devEnvironment, StringComparison.Ordinal);
+        Assert.Contains("Current source defines 26 SavedSpireFields", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current normal Steam-client helper startup/log pass", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current-package startup/log verification", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: current normal Steam startup/log verification passed", devEnvironment, StringComparison.Ordinal);
@@ -136,17 +136,17 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Phase 4 Lotha first slice",
             "Source-complete / live-pending",
             "Phase 8 required commands",
-            "fresh 25-field loader proof",
+            "fresh 26-field loader proof",
             "It is not private-beta release-ready");
 
         Assert.Contains("`EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("`Spire Plus`", audit, StringComparison.Ordinal);
-        Assert.Contains("current source defines 25 SavedSpireFields", audit, StringComparison.Ordinal);
+        Assert.Contains("current source defines 26 SavedSpireFields", audit, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
         Assert.Contains("previous current-package smoke", audit, StringComparison.Ordinal);
         Assert.Contains("`Found 22 SavedSpireFields`", audit, StringComparison.Ordinal);
         Assert.Contains("Historical 22-field loader/resource verification is retained as historical evidence only", audit, StringComparison.Ordinal);
-        Assert.Contains("fresh 25-field loader proof", audit, StringComparison.Ordinal);
+        Assert.Contains("fresh 26-field loader proof", audit, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", audit, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log verification for the earlier 22-field package confirmed the refreshed `Spire Plus` display name", audit, StringComparison.Ordinal);
         Assert.Contains("refreshed Mod Settings UI list capture now shows `Spire Plus`", audit, StringComparison.Ordinal);
@@ -323,7 +323,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91\"",
+            "PackageSha256 = \"124AF7C77B33CE5EAC5A7369519D90AD66EC4CFCDC887DD1E352CF4F24E7968C\"",
             "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.0.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
@@ -485,14 +485,21 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "PowerCmd.Apply<GiantMarkFiremarkPower>",
             "PowerCmd.Apply<ForgeArmorMarkFiremarkPower>",
             "PowerCmd.Apply<ConstantHealMarkFiremarkPower>",
+            "PowerCmd.Apply<FiremarkMightOverflowPower>",
             "await PowerCmd.Apply<ArtifactPower>",
+            "await PowerCmd.Apply<VulnerablePower>",
             "await PowerCmd.Apply<StrengthPower>",
             "var definition = metadata.BossSeal",
-            "TrackInkReturnIfSlipperySpent",
+            "TrackInkReturnFromDamage",
+            "CalculateInkReturnRestoreAmount",
             "TrackKnowledgeDemonEnemyMove",
-            "BossSealId.AeonglassStrength",
-            "FirstOrDefault(enemy => enemy.ModelId == AeonglassMonsterId)",
-            "AeonglassStrengthAmount = 5m",
+            "BossSealId.AeonglassHourglass",
+            "enemy.Monster is Aeonglass",
+            "tracker.AeonglassTimeSand = metadata.IsBossBrand ? 3 : 2",
+            "TrackAeonglassEnergySpent",
+            "SettleAeonglassTimeSand",
+            "tracker.AeonglassExtraWitherFromSands",
+            "CardPileCmd.AddToCombatAndPreview<Wither>",
             "TryApplyResidualSamples");
 
         AssertSourceContains(
@@ -553,35 +560,31 @@ public sealed class ReleaseSafetyExpandedGuardTests
         var fragments = new[]
         {
             "\uFFFD",
-            "婵☆�?",
-            "鐎殿�?",
-            "闁衡??",
-            "闁告�?",
-            "闁稿�?",
-            "缂佷�?",
-            "閻犱�?",
-            "闁圭�?",
-            "閺夆�?",
-            "闁搞�?",
-            "闁圭�?",
-            "婵ê",
-            "閻庤�?",
-            "闁诲�?",
-            "闂傚�?",
-            "濡�?",
-            "闁稿�?",
-            "婵炲�?",
-            "濞ｅ�?",
-            "闁惧�?",
-            "婵炴�?",
-            "闁告�?",
-            "闁兼�?",
-            "闁绘�?",
-            "濠㈣�?",
-            "缂佹�?",
-            "缂佸�?",
-            "濞戞�?",
-            "闂傚�?"
+            "涓",
+            "鑰",
+            "璇",
+            "鐜",
+            "鐏",
+            "閻",
+            "娑",
+            "鍋",
+            "婵",
+            "锟",
+            "妫",
+            "锛",
+            "鑾",
+            "鎵",
+            "閲",
+            "瀹",
+            "绁",
+            "鏀",
+            "璁",
+            "鍊",
+            "杩",
+            "鐐",
+            "寮傝壊",
+            "鐗",
+            "鎰"
         };
 
         var matches = fragments

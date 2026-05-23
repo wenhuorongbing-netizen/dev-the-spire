@@ -115,10 +115,12 @@ public sealed class AncientHighRiskSourceGuardTests
 
         Assert.DoesNotContain("FirstOrDefault(candidate => candidate.RootblightLevel == rootblight.RootblightLevel)", seedbed, StringComparison.Ordinal);
         Assert.DoesNotContain("RootDeckService.FindRootFamilyCards(card.Owner)", seedbed, StringComparison.Ordinal);
+        Assert.DoesNotContain("rootblight.PlantedInSeedbed = true", seedbed, StringComparison.Ordinal);
         AssertSourceContains(
             seedbed,
-            "rootblight.DeckVersion is RootFamilyCard deckRootblight",
-            "skipped deck marker instead of guessing by Rootblight level");
+            "card is WitheredHusk or RootFamilyCard",
+            "card.DeckVersion == null",
+            "Planting skipped play, discard, and Exhaust synergies");
         AssertSourceContains(
             seedBank,
             "try",
@@ -152,6 +154,7 @@ public sealed class AncientHighRiskSourceGuardTests
             rootSightEntryCommit);
         var rootSightStatus = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightStatus.cs");
         var rootSightHover = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightHover.cs");
+        var mapHoverComposer = ReadRepoText("EZMicroBalanceCode", "Map", "SpirePlusMapPointHoverComposer.cs");
         var rootSightPreview = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightPreviewGeneration.cs");
         var rootSightEncounters = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEncounters.cs");
         var rootSightEvents = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEvents.cs");
@@ -198,7 +201,9 @@ public sealed class AncientHighRiskSourceGuardTests
             "GetReservedRootSightModelIds(runState, RoomType.Event, FormatCoord(point.coord))",
             "Where(candidate => !reservedIds.Contains(candidate.Id))",
             "return unreserved.Count > 0 ? unreserved : candidates",
-            "fork.NextItem(candidates)",
+            "return candidates[0]",
+            "var startIndex = visited % source.Count",
+            "source[(startIndex + offset) % source.Count]",
             "CommitRootSightEncounterQueueForEntry(",
             "FindRootSightEncounterIndex(encounters, encounter.Id, currentIndex)",
             "CommitRootSightUnknownRoomType(runState, committedRoomType, blacklist)",
@@ -251,6 +256,7 @@ public sealed class AncientHighRiskSourceGuardTests
             "IsFutureReachableRootSightTarget(IRunState runState, MapPoint point)",
             "new Queue<MapPoint>(current.Children)",
             "point.coord.row <= current.coord.row");
+        Assert.DoesNotContain("HasBlockingRootSightQuestMarker(point)", rootSight, StringComparison.Ordinal);
         Assert.DoesNotContain("player.RunState.CurrentActIndex != 0", rootSight, StringComparison.Ordinal);
 
         AssertSourceContains(
@@ -296,6 +302,8 @@ public sealed class AncientHighRiskSourceGuardTests
             rootSightReservations,
             "AvoidRootSightReservedModelForCurrentNonPreviewRoom",
             "TryFindRootSightPreviewForCurrentPoint(runManager, pointType, out var currentPreview)",
+            "MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature",
+            "runState.Players.Count > 1",
             "GetReservedRootSightModelIds(runState, roomType, currentCoord).ToHashSet()",
             "preview.Coord != currentCoord",
             "TryMoveReservedRootSightEncounterOffQueueHead(runState, roomType, reservedIds)",
@@ -313,11 +321,21 @@ public sealed class AncientHighRiskSourceGuardTests
             rootSightHover,
             "TryGetRootSightPreviewTitle(preview, out var title)",
             "IsRootSightPreviewStillValidForEntry(runState, preview)",
-            "ClearStaleRootSightPreview(player, runState.CurrentActIndex, preview.Coord, point)",
             "ModelDb.GetByIdOrNull<EventModel>(id)",
             "title = eventModel.Title",
             "ModelDb.GetByIdOrNull<EncounterModel>(id)",
             "title = encounter.Title");
+        Assert.DoesNotContain("ClearStaleRootSightPreview(", rootSightHover, StringComparison.Ordinal);
+        AssertSourceContains(
+            mapHoverComposer,
+            "SpirePlusMapPointHoverComposer",
+            "CollectHoverTips(__instance).ToList()",
+            "UrdaBlessingService.TryGetRootSightHoverTip(pointNode.Point, out var rootSightTip)",
+            "FiremarkedEliteMapHoverPatch.TryCreateHoverTip(pointNode.Point, out var firemarkTip)",
+            "BannerRoomMapHoverPatch.TryCreateHoverTip(pointNode.Point, out var bannerTip)",
+            "TryCreateDeepBranchHoverTip(pointNode.Point, out var deepBranchTip)",
+            "NHoverTipSet.Remove(__instance)",
+            "NHoverTipSet.CreateAndShow(__instance, hoverTips)");
 
         AssertSourceContains(
             rootSightStatus,
@@ -490,6 +508,8 @@ public sealed class AncientHighRiskSourceGuardTests
             "player.Relics.OfType<PrismaticGem>().FirstOrDefault(relic => !relic.IsMelted)",
             "foreach (var listener in runState.IterateHookListeners(null))",
             "listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions)",
+            "if (listenerModified)",
+            "modifiers.Add(listener)",
             "TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions)",
             "listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)",
             "if (!creationOptions.Flags.HasFlag(CardCreationFlags.IsCardReward))",
@@ -615,7 +635,7 @@ public sealed class AncientHighRiskSourceGuardTests
             .Select(match => match.Groups["key"].Value)
             .ToArray();
 
-        Assert.Equal(13, keys.Length);
+        Assert.Equal(14, keys.Length);
         Assert.Equal(keys.Length, keys.Distinct(StringComparer.Ordinal).Count());
         Assert.All(keys, key => Assert.StartsWith("EZMicroBalance", key, StringComparison.Ordinal));
         Assert.DoesNotContain("EzDailyContent", savedFields, StringComparison.Ordinal);
@@ -635,6 +655,7 @@ public sealed class AncientHighRiskSourceGuardTests
             "SavedSpireField<Player, string> LothaStateKey",
             "SavedSpireField<CardModel, string> LothaDeckStateKey",
             "SavedSpireField<CardModel, bool> LothaMirrorRebuttalCard",
+            "SavedSpireField<Player, string> AncientInitialOptionRerollStateKey",
             "\"EZMicroBalanceNormalRewardCounter\"",
             "\"EZMicroBalanceNonBossCombatCounter\"",
             "\"EZMicroBalanceJewelryBoxNonInnateApotheosis\"",
@@ -647,7 +668,8 @@ public sealed class AncientHighRiskSourceGuardTests
             "\"EZMicroBalanceMorviOpenBookSealedCard\"",
             "\"EZMicroBalanceLothaStateKey\"",
             "\"EZMicroBalanceLothaDeckStateKey\"",
-            "\"EZMicroBalanceLothaMirrorRebuttalCard\"");
+            "\"EZMicroBalanceLothaMirrorRebuttalCard\"",
+            "\"EZMicroBalanceAncientInitialOptionRerollStateKey\"");
 
         AssertSourceContains(
             playerStateSource,

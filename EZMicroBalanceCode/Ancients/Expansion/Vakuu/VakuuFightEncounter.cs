@@ -12,18 +12,24 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
     public const int MaxLocks = 3;
     public const int DamageLockThreshold = 40;
     public const int GoldPerBrokenLock = 50;
+    public const int GoldCostPerBloodDebt = 15;
+    public const int HpLossPerDebtShortfall = 3;
 
     private const string BrokenLocksKey = "BrokenLocks";
     private const string BloodDebtKey = "BloodDebt";
     private const string DamageRoundKey = "DamageRound";
     private const string DamageThisRoundKey = "DamageThisRound";
     private const string DamageLockRoundKey = "DamageLockRound";
+    private const string CashOutOfferedLockKey = "CashOutOfferedLock";
+    private const string CashedOutKey = "CashedOut";
 
     private int brokenLocks;
     private int bloodDebt;
     private int damageRound = -1;
     private decimal damageThisRound;
     private int damageLockRound = -1;
+    private int cashOutOfferedLock;
+    private bool cashedOut;
 
     public EzmbVakuuTrialEncounter()
         : base(RoomType.Monster, autoAdd: false)
@@ -90,9 +96,35 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
         }
     }
 
+    public int CashOutOfferedLock
+    {
+        get => cashOutOfferedLock;
+        set
+        {
+            AssertMutable();
+            cashOutOfferedLock = Math.Clamp(value, 0, MaxLocks);
+        }
+    }
+
+    public bool CashedOut
+    {
+        get => cashedOut;
+        set
+        {
+            AssertMutable();
+            cashedOut = value;
+        }
+    }
+
     public int VictoryChoiceCount => Math.Clamp(BrokenLocks + 1, 1, MaxLocks);
 
-    public decimal VictoryGold => BrokenLocks * GoldPerBrokenLock;
+    public decimal VictoryLootGold => BrokenLocks * GoldPerBrokenLock;
+
+    public decimal BloodDebtGoldCost => BloodDebt * GoldCostPerBloodDebt;
+
+    public decimal VictoryGold => Math.Max(0m, VictoryLootGold - BloodDebtGoldCost);
+
+    public decimal BloodDebtShortfall => Math.Max(0m, BloodDebtGoldCost - VictoryLootGold);
 
     public override IEnumerable<MonsterModel> AllPossibleMonsters =>
         [ModelDb.Monster<EzmbVakuuTrialMonster>()];
@@ -110,7 +142,9 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
             [BloodDebtKey] = BloodDebt.ToString(),
             [DamageRoundKey] = DamageRound.ToString(),
             [DamageThisRoundKey] = DamageThisRound.ToString(CultureInfo.InvariantCulture),
-            [DamageLockRoundKey] = DamageLockRound.ToString()
+            [DamageLockRoundKey] = DamageLockRound.ToString(),
+            [CashOutOfferedLockKey] = CashOutOfferedLock.ToString(),
+            [CashedOutKey] = CashedOut ? "1" : "0"
         };
     }
 
@@ -121,6 +155,8 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
         DamageRound = ReadInt(state, DamageRoundKey, -1);
         DamageThisRound = ReadDecimal(state, DamageThisRoundKey);
         DamageLockRound = ReadInt(state, DamageLockRoundKey, -1);
+        CashOutOfferedLock = ReadInt(state, CashOutOfferedLockKey);
+        CashedOut = ReadBool(state, CashedOutKey);
     }
 
     private static int ReadInt(IReadOnlyDictionary<string, string> state, string key, int fallback = 0) =>
@@ -133,4 +169,8 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
         decimal.TryParse(value, CultureInfo.InvariantCulture, out var parsed)
             ? parsed
             : 0m;
+
+    private static bool ReadBool(IReadOnlyDictionary<string, string> state, string key) =>
+        state.TryGetValue(key, out var value) &&
+        (value == "1" || bool.TryParse(value, out var parsed) && parsed);
 }

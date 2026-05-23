@@ -74,6 +74,7 @@ public sealed class AncientUiReadinessGuardTests
 
     private static readonly OptionMarker[] OptionMarkers =
     [
+        new("AncientInitialRerollOptionRelic", "AncientRerollAssetPaths.OptionIcon", "EZMicroBalance/images/ancients/common/ancient_reroll_die.png", "EZMICROBALANCE-ANCIENT_INITIAL_REROLL_OPTION_RELIC"),
         new("UrdaSeedbedOptionRelic", "UrdaAssetPaths.SeedbedOptionIcon", "EZMicroBalance/images/ancients/urda/options/urda_seedbed.png", "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC"),
         new("UrdaHumusPactOptionRelic", "UrdaAssetPaths.HumusPactOptionIcon", "EZMicroBalance/images/ancients/urda/options/urda_humus_pact.png", "EZMICROBALANCE-URDA_HUMUS_PACT_OPTION_RELIC"),
         new("UrdaMoltingOptionRelic", "UrdaAssetPaths.MoltingOptionIcon", "EZMicroBalance/images/ancients/urda/options/urda_molting.png", "EZMICROBALANCE-URDA_MOLTING_OPTION_RELIC"),
@@ -191,13 +192,14 @@ public sealed class AncientUiReadinessGuardTests
             AssertSourceContains(
                 source,
                 $"private const int ExpectedInitialOptionCount = {expectedCount};",
-                "return TakeFallbackOptions(options);",
+                "TakeFallbackOptions(options, includeReroll: true)",
                 "forced blessing",
                 "did not match any option; showing fallback options.",
                 "options.Count == 0",
                 "event will finish instead of presenting a blank Ancient screen",
                 "source-backed option(s), expected",
-                "options.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()");
+                "candidates.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()",
+                "AncientInitialOptionReroll.CanOffer");
             Assert.DoesNotContain("Take(3).ToList()", source, StringComparison.Ordinal);
             Assert.Contains(name, source, StringComparison.Ordinal);
         }
@@ -270,7 +272,7 @@ public sealed class AncientUiReadinessGuardTests
     [Fact]
     public void OptionMarkerRelicsHaveArtAndBilingualLocalizationCoverage()
     {
-        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion");
+        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients");
         var exportPreset = ReadRepoText("export_presets.cfg");
         var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
@@ -292,6 +294,52 @@ public sealed class AncientUiReadinessGuardTests
                 AssertLocalizedValue(engRelics, marker.RelicKey + suffix);
                 AssertLocalizedValue(zhsRelics, marker.RelicKey + suffix);
             }
+        }
+    }
+
+    [Fact]
+    public void InitialAncientRewardsExposeOneUseRerollOption()
+    {
+        var reroll = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientInitialOptionReroll.cs");
+        var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
+        var urda = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.Options.cs");
+        var morvi = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.Options.cs");
+        var lotha = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.Options.cs");
+        var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
+        var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
+
+        AssertSourceContains(
+            reroll,
+            "OptionId = \"ezmb_reroll_initial_options\"",
+            "AncientInitialOptionRerollStateKey",
+            "BuildEventKey",
+            "ThatWontSaveToChoiceHistory",
+            "AncientRerollAssetPaths.OptionIcon",
+            "AncientInitialRerollOptionRelic");
+        Assert.Contains("SavedSpireField<Player, string> AncientInitialOptionRerollStateKey", savedFields, StringComparison.Ordinal);
+
+        foreach (var source in new[] { urda, morvi, lotha })
+        {
+            AssertSourceContains(
+                source,
+                "AncientInitialOptionReroll.CanOffer",
+                "AncientInitialOptionReroll.CreateOption",
+                "AncientInitialOptionReroll.TrySpend",
+                "RerollInitialOptions",
+                "includeReroll: false");
+        }
+
+        foreach (var key in new[]
+        {
+            "EZMB_URDA.pages.INITIAL.options.ezmb_reroll_initial_options",
+            "EZMB_MORVI.pages.INITIAL.options.ezmb_reroll_initial_options",
+            "EZMB_LOTHA.pages.INITIAL.options.ezmb_reroll_initial_options"
+        })
+        {
+            AssertLocalizedValue(engAncients, key + ".title");
+            AssertLocalizedValue(engAncients, key + ".description");
+            AssertLocalizedValue(zhsAncients, key + ".title");
+            AssertLocalizedValue(zhsAncients, key + ".description");
         }
     }
 

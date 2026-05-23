@@ -22,7 +22,7 @@ Current status, 2026-05-17: this active work log is a compact current-facing sum
 
 - Root Eyes source path: clicking the Root Eyes relic starts map selection, only reachable Act 1 Monster, Unknown, or Elite nodes are valid, Unknown outcomes exclude Shop, Treasure, Rest Site, and Boss, and the chosen concrete encounter/event preview is saved for that node.
 - Seed Bank source path: stored cards appear on relic hover, the relic shows a counter, and clicking it lets the player take up to two stored cards. The first chosen card is upgraded, then the relic is used up.
-- Seedbed source path: Seedbed stores remaining combat slots in Urda progress state, catches Root Bud, Rootblight, Status, and Curse cards entering hand, adds Withered Husk, and clears combat slots on combat entry/victory.
+- Seedbed source path: Seedbed now sets combat slots that plant later Blight Sprouts and generated Temporary Status/Curse cards entering hand. It excludes Rootblight, permanent Curses, Withered Husk, and beneficial temporary pages; planted cards use `CardPileCmd.RemoveFromCombat(...)`, add Withered Husk, and suppress `AfterCardDrawn` hooks.
 - Morvi source path: Overdue Library generated pages use valid dynamic variables and icons; Blueprint Proof initializes at combat start and has a late guard; Debt Settlement records 320 Debt, pays 40 Gold after combat, and converts each missing 10 Gold into 3 nonlethal HP loss.
 - Ascension v3.2 source path: Withered Husk is 3 Block, Banner timing/scaling and single-enemy fallback are source-guarded, and Firemarked Elites expose counterplay windows through powers and map hover text.
 

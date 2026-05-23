@@ -22,8 +22,6 @@ internal sealed class AscensionCombatTracker
     public decimal FiremarkCoreDamageNeeded { get; set; }
     public bool FiremarkArmorSkippedNextTurn { get; set; }
     public bool FiremarkArmorGeneratedThisTurn { get; set; }
-    public decimal FiremarkArmorBlockBaseline { get; set; }
-    public decimal FiremarkArmorRemainingThisTurn { get; set; }
     public int FiremarkArmorBreaks { get; set; }
     public bool BannerRageApplied { get; set; }
     public bool VanguardStrengthRemoved { get; set; }
@@ -48,6 +46,8 @@ internal sealed class AscensionCombatTracker
     public bool HolyDazeTriggered { get; set; }
     public bool InkReturnTriggered { get; set; }
     public bool InkReturnPending { get; set; }
+    public int InkReturnLastObservedSlippery { get; set; }
+    public int InkReturnRestoreAmount { get; set; }
     public bool StartledShellApplied { get; set; }
     public bool StartledShellSoulSiphonTurn { get; set; }
     public bool SoulSiphonShellReduced { get; set; }
@@ -55,19 +55,47 @@ internal sealed class AscensionCombatTracker
     public int SoulTideBeckonSettlementRound { get; set; }
     public int LastSoulFyshIntangibleAmount { get; set; }
     public int LastSteamEruptionMilestone { get; set; }
-    public bool BoilingExplosionBlockGranted { get; set; }
+    public bool BoilingExplosionFortified { get; set; }
+    public int BoilingExplosionVulnerabilityRound { get; set; }
     public int MartyrOathTriggers { get; set; }
-    public HashSet<Creature> MisalignedShellBlockedTargetsThisTurn { get; } = [];
+    public int MartyrOathFollowerDeathsThisTurn { get; set; }
+    public bool MartyrOathSameTurnArtifactGranted { get; set; }
+    public Dictionary<Creature, int> MisalignedShellCalibration { get; } = [];
+    public HashSet<Creature> MisalignedShellCalibrationUsed { get; } = [];
     public List<Creature> MisalignedShellClawsDiedThisTurn { get; } = [];
-    public bool MisalignedShellArtifactApplied { get; set; }
     public bool KnowledgeDemonCurseMoveActive { get; set; }
-    public int FranticEscapesPlayed { get; set; }
-    public Dictionary<CardModel, int> StruggleBaitBrandEscapeAges { get; } = [];
+    public int MarginalDeepThoughtAddedThisRound { get; set; }
+    public int MarginalDeepThoughtRound { get; set; }
+    public int RoyalEscapesPlayed { get; set; }
+    public HashSet<CardModel> StruggleBaitGeneratedEscapes { get; } = [];
+    public int StruggleBaitVigorGainRound { get; set; }
     public bool SuppressStruggleBaitStrengthTrigger { get; set; }
     public bool StruggleBaitBaselineCaptured { get; set; }
     public int LastInsatiableStrengthAmount { get; set; }
-    public decimal LastInsatiableSandpitAmount { get; set; }
+    public Dictionary<Player, decimal> LastInsatiableSandpitByPlayer { get; } = [];
     public CardModel? ChosenDecreeCard { get; set; }
     public bool ChosenDecreePlayed { get; set; }
+    public bool ChosenDecreeAnyBoundPlayed { get; set; }
+    public int ChosenDecreeMajestyGainedThisRound { get; set; }
+    public int ChosenDecreeAmalgamStrengthThisRound { get; set; }
+    public bool AeonglassEbbMoveActive { get; set; }
+    public bool AeonglassIncreasingIntensityMoveActive { get; set; }
+    public int AeonglassTimeSand { get; set; }
+    public int AeonglassExtraWitherFromSands { get; set; }
+    public int AeonglassLaserEchoesUsed { get; set; }
     public int TestSubjectPhaseChanges { get; set; }
+    public int TestSubjectAttackCardsThisPhase { get; set; }
+    public int TestSubjectSkillCardsThisPhase { get; set; }
+    public bool TestSubjectDebuffAppliedThisPhase { get; set; }
+    public List<TestSubjectSampleKind> PendingTestSubjectSamples { get; } = [];
+    public decimal PendingTestSubjectStrengthResidue { get; set; }
+}
+
+internal enum TestSubjectSampleKind
+{
+    StrengthResidue,
+    SkillAdaptation,
+    AttackAdaptation,
+    AntibodySample,
+    ContaminatedSample
 }

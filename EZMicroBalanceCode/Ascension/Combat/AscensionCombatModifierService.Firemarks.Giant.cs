@@ -48,7 +48,28 @@ internal static partial class AscensionCombatModifierService
         tracker.FiremarkCoreExposed = false;
         await PowerCmd.Remove(host.GetPower<MoltenCoreFiremarkPower>());
         await CreatureCmd.SetMaxHp(host, Math.Max(1m, host.MaxHp - Math.Ceiling(host.MaxHp * 0.1m)));
+        await ApplyGiantOverflowDamage(combatState, tracker, host);
         MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Molten Core broke and reduced Firemarked enemy max HP.");
+    }
+
+    private static async Task ApplyGiantOverflowDamage(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        Creature host)
+    {
+        var target = LowestHpRatioOverflowTarget(combatState, tracker);
+        if (target == null)
+        {
+            return;
+        }
+
+        await CreatureCmd.Damage(
+            new BlockingPlayerChoiceContext(),
+            target,
+            GetGiantOverflowDamage(combatState),
+            ValueProp.Move,
+            host,
+            null);
     }
 
     private static async Task ResolveMoltenCoreWindow(AscensionCombatTracker tracker)

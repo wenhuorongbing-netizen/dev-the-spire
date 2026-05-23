@@ -40,6 +40,29 @@ https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-priv
 
 发布页面前，需要在 GitHub Release 上传同名 zip 资产。
 
+## 论坛
+
+`website/#forum` 只保留论坛入口。真正的论坛是独立的 `forum/` 全栈服务，需要 Node.js 和 PostgreSQL，不能直接运行在 GitHub Pages 上。
+
+本地论坛默认入口：
+
+```text
+http://localhost:8787
+```
+
+计划公网入口：
+
+```text
+https://spire-plus-forum.onrender.com
+```
+
+Render Blueprint 配置在仓库根目录 `render.yaml`。部署时需要在 Render Dashboard 设置：
+
+- `DATABASE_URL`：由 Render PostgreSQL 注入。
+- `IP_HASH_SECRET`：手动填写随机长字符串。
+- `CORS_ORIGINS`：包含 GitHub Pages 站点和论坛域名。
+- `FORUM_READ_ONLY`：紧急只读开关，默认 `0`。
+
 ## 更新方式
 
 - 主要内容：`content-data.js`

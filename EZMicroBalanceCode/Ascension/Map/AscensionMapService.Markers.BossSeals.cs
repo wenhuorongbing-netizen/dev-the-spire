@@ -21,7 +21,7 @@ internal static partial class AscensionMapService
             if (bossSeal == null)
             {
                 MainFile.Logger.Info(
-                    $"[EZMicroBalance] Ascension A19 gate active: no Boss Royal Seal definition was found for {runState.Act.BossEncounter.Id}.");
+                    $"[EZMicroBalance] Ascension A19 gate active: no boss dedicated ability definition was found for {runState.Act.BossEncounter.Id}.");
             }
             else
             {
@@ -61,7 +61,7 @@ internal static partial class AscensionMapService
         if (secondBossSeal == null)
         {
             MainFile.Logger.Info(
-                "[EZMicroBalance] Ascension A20 gate active: second boss map point exists, but no second boss Royal Seal definition was found.");
+                "[EZMicroBalance] Ascension A20 gate active: second boss map point exists, but no second boss dedicated ability definition was found.");
             return;
         }
 

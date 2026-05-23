@@ -29,6 +29,9 @@ internal static class MultiplayerFeaturePolicy
             return false;
         }
 
+        // Until a feature has two-client proof, client-side mutation is more
+        // dangerous than disabling the feature. The evidence log makes the gate
+        // visible during manual co-op tests instead of silently diverging state.
         LogCoopEvidence(
             feature,
             "coop_gate_disabled",

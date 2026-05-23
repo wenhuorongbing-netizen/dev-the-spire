@@ -16,11 +16,19 @@ internal static partial class AscensionCombatModifierService
 
     private static decimal GetMightFiremarkStrength(CombatState combatState) => GetFiremarkCoefficient(combatState);
 
+    private static decimal GetMightOverflowStrength(CombatState combatState) => GetActValue(combatState, 1m, 1m, 2m);
+
     private static decimal GetGiantFiremarkMaxHpPercent(CombatState combatState) => GetActValue(combatState, 20m, 30m, 45m);
 
-    private static decimal GetForgeArmorBlock(CombatState combatState) => GetActValue(combatState, 5m, 10m, 20m);
+    private static decimal GetGiantOverflowDamage(CombatState combatState) => GetActValue(combatState, 6m, 12m, 24m);
+
+    private static decimal GetForgeArmorBlock(CombatState combatState) => GetActValue(combatState, 8m, 14m, 24m);
+
+    private static decimal GetForgeArmorOverflowBlock(CombatState combatState) => GetActValue(combatState, 3m, 6m, 12m);
 
     private static decimal GetConstantHealAmount(CombatState combatState) => GetActValue(combatState, 4m, 8m, 16m);
+
+    private static decimal GetConstantHealOverflowHeal(CombatState combatState) => GetActValue(combatState, 2m, 4m, 8m);
 
     private static decimal GetMoltenCoreDamagePercent(CombatState combatState) => GetActValue(combatState, 20m, 25m, 30m);
 

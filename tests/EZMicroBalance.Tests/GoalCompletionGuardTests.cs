@@ -83,7 +83,7 @@ public sealed class GoalCompletionGuardTests
         Assert.Contains("source review", goal, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runtime rows", goal, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("No release-ready claim is made", goal, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("live loader, clicked UI, save/load, Vakuu, co-op, and Future Peek live proof", goal, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Crystal Sphere and transform-preview live proof inside Spire Plus", goal, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

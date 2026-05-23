@@ -34,7 +34,7 @@ The default-on Morvi source slice follows this rule without generated autoplay r
 
 The corrective Lotha slice follows this rule without generated autoplay replays:
 
-- Mirror Rebuttal marks one real Attack, Skill, or Power deck card through a source-safe deck selector. The matching combat card is moved to hand at combat start when needed. If the marked card is an Attack or Skill, `ModifyCardPlayCount` adds two plays; if it is a Power, it costs 0 for that play, then grants 2 Energy and draws 2 instead.
+- Mirror Rebuttal marks one real Attack, Skill, or Power deck card through a source-safe deck selector. The matching combat card is moved to hand on the first player turn after normal draw when needed. If the marked card is an Attack or Skill, `ModifyCardPlayCount` adds one play; if it is a Power, it costs 0 for that play.
 - Mirror Hall Echo records the last player-played non-Status Attack, Skill, or Power at player-turn end. The next player turn's first player-played card of that type consumes the echo. Attack/Skill adds one play; Power costs 0 for that play and draws 1. Autoplay and clone plays are excluded from both recording and consuming.
 - Deferred Verdict creates player-owned Verdict stacks on turn 4. Each next non-Status card consumes one stack that turn. Attacks and Skills add one play; Powers cost 0 for that play and draw 1 instead.
 - Single Sentence adds two plays to the first Attack or Skill each turn, then caps the rest of that turn at four more normal player-played cards. A first Power before that ruling costs 0 for that play and draws 1 without consuming the sentence.

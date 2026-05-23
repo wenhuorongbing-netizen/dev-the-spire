@@ -11,12 +11,7 @@ internal static partial class AscensionCombatModifierService
         Creature creature,
         decimal delta)
     {
-        if (metadata.BossSeal?.Id == BossSealId.StruggleBait &&
-            creature.Monster is TheInsatiable &&
-            delta > 0m)
-        {
-            await AddStruggleBaitEscape(combatState, tracker, metadata);
-        }
+        await Task.CompletedTask;
     }
 
     private static async Task AfterBossSealDamageReceived(
@@ -39,13 +34,10 @@ internal static partial class AscensionCombatModifierService
                 await TryApplyHolyDaze(combatState, tracker, metadata);
                 break;
             case BossSealId.InkReturn:
-                TrackInkReturnFromDamage(tracker, target);
+                TrackInkReturnFromDamage(tracker, metadata, target);
                 break;
             case BossSealId.StartledShell:
                 await TryApplyStartledShellFromDamage(tracker, metadata, target);
-                break;
-            case BossSealId.MisalignedShell:
-                await TryApplyMisalignedBackAttackBlock(tracker, metadata, target, dealer);
                 break;
         }
     }
@@ -70,7 +62,7 @@ internal static partial class AscensionCombatModifierService
         }
     }
 
-    private static Task AfterBossSealCardPlayed(
+    private static async Task AfterBossSealCardPlayed(
         CombatState combatState,
         AscensionCombatTracker tracker,
         AscensionNodeMetadata metadata,
@@ -79,15 +71,17 @@ internal static partial class AscensionCombatModifierService
         switch (metadata.BossSeal?.Id)
         {
             case BossSealId.StruggleBait:
-                if (cardPlay.Card is FranticEscape)
+                if (cardPlay.Card is FranticEscape escape)
                 {
-                    tracker.FranticEscapesPlayed++;
-                    tracker.StruggleBaitBrandEscapeAges.Remove(cardPlay.Card);
+                    await TrackRoyalEscapePlayed(combatState, tracker, metadata, escape);
                 }
 
                 break;
             case BossSealId.ChosenDecree:
                 TrackChosenDecreePlayed(tracker, cardPlay.Card);
+                break;
+            case BossSealId.ResidualSample:
+                TrackResidualSampleCardPlayed(tracker, cardPlay.Card);
                 break;
         }
 
@@ -95,7 +89,5 @@ internal static partial class AscensionCombatModifierService
         {
             MainFile.Logger.Info("[EZMicroBalance] Ascension A19 tracked: Marginal Note was played.");
         }
-
-        return Task.CompletedTask;
     }
 }

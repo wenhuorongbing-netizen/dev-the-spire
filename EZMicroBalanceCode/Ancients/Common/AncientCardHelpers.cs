@@ -4,6 +4,16 @@ internal static class AncientCardHelpers
 {
     public const int FiddleHandLimit = 7;
 
+    public static MegaCrit.Sts2.Core.HoverTips.IHoverTip TemporaryHoverTip() =>
+        new MegaCrit.Sts2.Core.HoverTips.HoverTip(
+            new MegaCrit.Sts2.Core.Localization.LocString("card_keywords", "EZMB_TEMPORARY.title"),
+            new MegaCrit.Sts2.Core.Localization.LocString("card_keywords", "EZMB_TEMPORARY.description"));
+
+    public static MegaCrit.Sts2.Core.HoverTips.IHoverTip PlantedHoverTip() =>
+        new MegaCrit.Sts2.Core.HoverTips.HoverTip(
+            new MegaCrit.Sts2.Core.Localization.LocString("card_keywords", "EZMB_PLANTED.title"),
+            new MegaCrit.Sts2.Core.Localization.LocString("card_keywords", "EZMB_PLANTED.description"));
+
     public static void EnsureKeywordsInitialized(CardModel card)
     {
         _ = card.Keywords.Count;
@@ -122,4 +132,3 @@ internal static class AncientCardHelpers
         return result;
     }
 }
-

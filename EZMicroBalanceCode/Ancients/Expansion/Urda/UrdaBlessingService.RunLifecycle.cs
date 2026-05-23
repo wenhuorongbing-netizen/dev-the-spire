@@ -79,6 +79,7 @@ internal static partial class UrdaBlessingService
             foreach (var player in runState.Players.Where(player => player.IsActiveForHooks))
             {
                 ClearSeedbed(player);
+                ResetAfterRainCombatTrigger(player);
             }
         }
 
@@ -156,11 +157,6 @@ internal static partial class UrdaBlessingService
             if (selectedBlessing == UrdaBlessingIds.ShallowRootRelic && room.RoomType == RoomType.Elite)
             {
                 await RootShallowRelicFromElite(player);
-            }
-
-            if (selectedBlessing == UrdaBlessingIds.AfterRain && room.RoomType == RoomType.Elite)
-            {
-                await GrantAfterRainEliteGold(player);
             }
 
             if (selectedBlessing == UrdaBlessingIds.RootedRoute)

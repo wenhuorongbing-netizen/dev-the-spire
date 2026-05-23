@@ -1,52 +1,43 @@
-using Godot;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
-using MegaCrit.Sts2.Core.Nodes.HoverTips;
-using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using MegaCrit.Sts2.Core.Map;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]
 internal static class BannerRoomMapHoverPatch
 {
-    [HarmonyPostfix]
-    private static void Postfix(NNormalMapPoint __instance)
+    internal static bool TryCreateHoverTip(MapPoint point, out HoverTip hoverTip)
     {
-        if (!__instance.Point.Quests.Any(quest => quest is BannerRoomMapQuestMarker))
+        hoverTip = default;
+        if (!point.Quests.Any(quest => quest is BannerRoomMapQuestMarker))
         {
-            return;
+            return false;
         }
 
-        var metadata = AscensionMapService.TryGetMetadata(__instance.Point);
+        var metadata = AscensionMapService.TryGetMetadata(point);
         if (metadata?.Banner == null)
         {
-            return;
+            return false;
         }
 
-        var hoverTipSet = NHoverTipSet.CreateAndShow(__instance, CreateHoverTip(metadata.Banner.Value));
-        if (hoverTipSet != null)
-        {
-            Callable.From(() => hoverTipSet.SetAlignment(__instance, HoverTip.GetHoverTipAlignment(__instance))).CallDeferred();
-        }
+        hoverTip = CreateHoverTip(metadata.Banner.Value);
+        return true;
     }
 
     private static HoverTip CreateHoverTip(BannerKind banner)
     {
-        var locKey = RequiresKnownEnemyCount(banner)
-            ? "BANNER_ROOM"
-            : banner switch
-            {
-                BannerKind.Vanguard => "BANNER_VANGUARD",
-                BannerKind.BloodPrize => "BANNER_BLOOD_PRIZE",
-                BannerKind.PressingLine => "BANNER_PRESSING_LINE",
-                _ => "BANNER_ROOM"
-            };
+        var locKey = banner switch
+        {
+            BannerKind.Vanguard => "BANNER_VANGUARD",
+            BannerKind.Shieldwall => "BANNER_SHIELDWALL",
+            BannerKind.BloodPrize => "BANNER_BLOOD_PRIZE",
+            BannerKind.PressingLine => "BANNER_PRESSING_LINE",
+            BannerKind.LastStand => "BANNER_LAST_STAND",
+            _ => "BANNER_ROOM"
+        };
 
         var description = new LocString("ascension", $"{locKey}.description");
-        if (!RequiresKnownEnemyCount(banner))
-        {
-            AddCurrentActBannerValues(description, banner);
-        }
+        AddCurrentActBannerValues(description, banner);
 
         return new HoverTip(
             new LocString("ascension", $"{locKey}.title"),

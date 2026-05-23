@@ -17,7 +17,7 @@ internal static partial class AscensionCombatModifierService
         }
 
         tracker.StartledShellApplied = true;
-        var plating = metadata.IsBossBrand ? 6m : 4m;
+        var plating = metadata.IsBossBrand ? 6 : 4;
         await PowerCmd.Apply<PlatingPower>(new BlockingPlayerChoiceContext(), target, plating, target, null);
         MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Startled Shell added early-wake Plating.");
     }
@@ -36,7 +36,7 @@ internal static partial class AscensionCombatModifierService
         }
 
         tracker.StartledShellApplied = true;
-        var platingAmount = metadata.IsBossBrand ? 10m : 8m;
+        var platingAmount = metadata.IsBossBrand ? 10 : 8;
         await PowerCmd.Apply<PlatingPower>(new BlockingPlayerChoiceContext(), matriarch, platingAmount, matriarch, null);
         MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Startled Shell added wake Plating.");
     }

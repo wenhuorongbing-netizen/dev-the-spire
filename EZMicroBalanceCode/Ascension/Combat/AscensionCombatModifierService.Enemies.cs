@@ -18,7 +18,7 @@ internal static partial class AscensionCombatModifierService
 
     private static bool IsLikelyAttacker(Creature enemy)
     {
-        return enemy.Monster?.NextMove?.Intents.Any(intent => intent is AttackIntent) != false;
+        return enemy.Monster?.NextMove?.Intents.Any(intent => intent is AttackIntent) == true;
     }
 
     private static bool IsPrimaryEnemy(Creature enemy)

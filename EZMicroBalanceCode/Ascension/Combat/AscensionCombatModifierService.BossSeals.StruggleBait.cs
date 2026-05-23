@@ -16,108 +16,100 @@ internal static partial class AscensionCombatModifierService
         }
 
         var strength = insatiable.GetPowerAmount<StrengthPower>();
-        var sandpit = insatiable.Powers
+        var sandpits = insatiable.Powers
             .OfType<SandpitPower>()
-            .Sum(power => power.Amount);
+            .Where(power => power.Target?.Player is { } player && player.IsActiveForHooks)
+            .ToList();
 
         if (!tracker.StruggleBaitBaselineCaptured)
         {
             tracker.StruggleBaitBaselineCaptured = true;
             tracker.LastInsatiableStrengthAmount = strength;
-            tracker.LastInsatiableSandpitAmount = sandpit;
+            foreach (var sandpit in sandpits)
+            {
+                if (sandpit.Target?.Player is { } player)
+                {
+                    tracker.LastInsatiableSandpitByPlayer[player] = sandpit.Amount;
+                }
+            }
+
             return;
         }
 
-        var shouldAddEscape = !tracker.SuppressStruggleBaitStrengthTrigger &&
-            (strength > tracker.LastInsatiableStrengthAmount ||
-                sandpit > tracker.LastInsatiableSandpitAmount);
+        var targetPlayers = new HashSet<Player>();
+        if (!tracker.SuppressStruggleBaitStrengthTrigger &&
+            strength > tracker.LastInsatiableStrengthAmount)
+        {
+            foreach (var player in CurrentInsatiableTargetPlayers(combatState, sandpits))
+            {
+                targetPlayers.Add(player);
+            }
+        }
 
         tracker.LastInsatiableStrengthAmount = strength;
-        tracker.LastInsatiableSandpitAmount = sandpit;
 
-        if (shouldAddEscape)
+        foreach (var sandpit in sandpits)
         {
-            await AddStruggleBaitEscape(combatState, tracker, metadata);
+            if (sandpit.Target?.Player is not { } player)
+            {
+                continue;
+            }
+
+            tracker.LastInsatiableSandpitByPlayer.TryGetValue(player, out var previousAmount);
+            if (sandpit.Amount > previousAmount)
+            {
+                targetPlayers.Add(player);
+            }
+
+            tracker.LastInsatiableSandpitByPlayer[player] = sandpit.Amount;
         }
+
+        foreach (var player in targetPlayers.Take(1))
+        {
+            await AddStruggleBaitEscape(combatState, tracker, metadata, player);
+        }
+    }
+
+    private static IEnumerable<Player> CurrentInsatiableTargetPlayers(CombatState combatState, IReadOnlyList<SandpitPower> sandpits)
+    {
+        var sandpitTargets = sandpits
+            .Select(power => power.Target?.Player)
+            .Where(player => player?.IsActiveForHooks == true)
+            .Cast<Player>()
+            .ToList();
+        return sandpitTargets.Count > 0
+            ? sandpitTargets
+            : combatState.Players.Where(player => player.IsActiveForHooks).Take(1);
     }
 
     private static async Task AddStruggleBaitEscape(
         CombatState combatState,
         AscensionCombatTracker tracker,
-        AscensionNodeMetadata metadata)
+        AscensionNodeMetadata metadata,
+        Player player)
     {
-        var insatiable = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is TheInsatiable);
-        if (insatiable == null)
-        {
-            return;
-        }
-
-        foreach (var player in combatState.Players.Where(player => player.IsActiveForHooks))
-        {
-            var escape = combatState.CreateCard<FranticEscape>(player);
-            await CardPileCmd.AddGeneratedCardToCombat(escape, PileType.Discard, player, CardPilePosition.Bottom);
-            if (metadata.IsBossBrand)
-            {
-                tracker.StruggleBaitBrandEscapeAges[escape] = 0;
-            }
-        }
-
-        if (tracker.FranticEscapesPlayed >= 3)
-        {
-            tracker.SuppressStruggleBaitStrengthTrigger = true;
-            await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), insatiable, 1m, insatiable, null);
-            tracker.SuppressStruggleBaitStrengthTrigger = false;
-        }
-
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Struggle Bait added Frantic Escape pressure.");
+        var escape = combatState.CreateCard<FranticEscape>(player);
+        await CardPileCmd.AddGeneratedCardToCombat(escape, PileType.Discard, player, CardPilePosition.Bottom);
+        tracker.StruggleBaitGeneratedEscapes.Add(escape);
+        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Escape Fatigue added a dedicated-ability Frantic Escape to the affected player.");
     }
 
-    private static async Task SettleStruggleBaitBrandEscapes(
+    private static async Task TrackRoyalEscapePlayed(
         CombatState combatState,
         AscensionCombatTracker tracker,
-        AscensionNodeMetadata metadata)
+        AscensionNodeMetadata metadata,
+        FranticEscape escape)
     {
-        if (metadata.BossSeal?.Id != BossSealId.StruggleBait ||
-            !metadata.IsBossBrand ||
-            tracker.StruggleBaitBrandEscapeAges.Count == 0)
+        if (!tracker.StruggleBaitGeneratedEscapes.Remove(escape))
         {
             return;
         }
 
-        var combatCards = combatState.Players
-            .Where(player => player.IsActiveForHooks)
-            .SelectMany(player => player.Piles)
-            .SelectMany(pile => pile.Cards)
-            .ToHashSet();
-
-        var maturedEscapes = new List<CardModel>();
-        foreach (var card in tracker.StruggleBaitBrandEscapeAges.Keys.ToArray())
-        {
-            if (!combatCards.Contains(card))
-            {
-                tracker.StruggleBaitBrandEscapeAges.Remove(card);
-                continue;
-            }
-
-            var age = tracker.StruggleBaitBrandEscapeAges[card] + 1;
-            if (age >= 2)
-            {
-                maturedEscapes.Add(card);
-            }
-            else
-            {
-                tracker.StruggleBaitBrandEscapeAges[card] = age;
-            }
-        }
-
-        if (maturedEscapes.Count == 0)
+        tracker.RoyalEscapesPlayed++;
+        if (tracker.RoyalEscapesPlayed % 3 != 0 ||
+            tracker.StruggleBaitVigorGainRound == combatState.RoundNumber)
         {
             return;
-        }
-
-        foreach (var card in maturedEscapes)
-        {
-            tracker.StruggleBaitBrandEscapeAges.Remove(card);
         }
 
         var insatiable = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is TheInsatiable);
@@ -126,8 +118,9 @@ internal static partial class AscensionCombatModifierService
             return;
         }
 
-        var block = maturedEscapes.Count * 5m;
-        await CreatureCmd.GainBlock(insatiable, block, ValueProp.Move, null, fast: true);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A20 applied: Struggle Bait Brand converted unplayed Frantic Escape pressure into Block.");
+        tracker.StruggleBaitVigorGainRound = combatState.RoundNumber;
+        var vigorGain = metadata.IsBossBrand ? 3m : 2m;
+        await PowerCmd.Apply<VigorPower>(new BlockingPlayerChoiceContext(), insatiable, vigorGain, insatiable, null);
+        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Escape Fatigue converted three dedicated-ability escapes into Vigor.");
     }
 }

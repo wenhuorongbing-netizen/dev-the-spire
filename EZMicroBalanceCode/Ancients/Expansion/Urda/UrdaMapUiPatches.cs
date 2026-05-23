@@ -1,7 +1,5 @@
 using Godot;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
-using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -23,27 +21,11 @@ internal static class UrdaRootSightMapQuestIconInputPatch
     }
 }
 
-[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]
 internal static class UrdaRootSightMapHoverPatch
 {
-    [HarmonyPriority(Priority.Last)]
-    [HarmonyPostfix]
-    private static void Postfix(NNormalMapPoint __instance)
-    {
-        if (!UrdaBlessingService.TryGetRootSightHoverTip(__instance.Point, out var hoverTip))
-        {
-            return;
-        }
-
-        NHoverTipSet.Remove(__instance);
-        var hoverTipSet = NHoverTipSet.CreateAndShow(
-            __instance,
-            hoverTip);
-        if (hoverTipSet != null)
-        {
-            Callable.From(() => hoverTipSet.SetAlignment(__instance, HoverTip.GetHoverTipAlignment(__instance))).CallDeferred();
-        }
-    }
+    // Root Eyes contributes one hover entry to the shared map hover composer.
+    // Keeping a single owner tip set prevents Firemark, Banner, and Root Eyes
+    // from deleting or duplicating each other's map text.
 }
 
 [HarmonyPatch(typeof(NNormalMapPoint), "RefreshState")]

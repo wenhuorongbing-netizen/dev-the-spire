@@ -28,13 +28,17 @@ public sealed class VakuuTemptationGuardTests
             "[Pool(typeof(ColorlessCardPool))]",
             "public const string CardId = \"EZMB_VAKUU_KNIFE_CONTRACT\"",
             "public const string CardId = \"EZMB_VAKUU_TEMPTATION\"",
-            "public const string CardId = \"EZMB_VAKUU_SHELTER_CONTRACT\"");
+            "public const string CardId = \"EZMB_VAKUU_SHELTER_CONTRACT\"",
+            "public const string CardId = \"EZMB_VAKUU_TRICK_CONTRACT\"",
+            "public const string CardId = \"EZMB_VAKUU_CASH_OUT_CONTRACT\"");
         AssertSourceContains(
             powers,
             "VakuuStolenVaultPower",
             "VakuuBloodDebtPower",
-            "DamagePerDebt = 3",
-            "props.IsPoweredAttack()");
+            "VakuuBacklashPower",
+            "DamagePerDebt = 2",
+            "props.IsPoweredAttack()",
+            "AfterSideTurnEnd");
         Assert.DoesNotContain("StatusCardPool", card, StringComparison.Ordinal);
         Assert.DoesNotContain("CardType.Status", card, StringComparison.Ordinal);
         Assert.DoesNotContain("CardKeyword.Unplayable", card, StringComparison.Ordinal);
@@ -53,7 +57,7 @@ public sealed class VakuuTemptationGuardTests
         AssertSourceContains(
             card,
             "VakuuFightService.SignContract(choiceContext, Owner, this, hpLoss)",
-            "new DamageVar(\"Damage\", 22m, ValueProp.Move)",
+            "new DamageVar(\"Damage\", 24m, ValueProp.Move)",
             "DynamicVars.Damage.BaseValue",
             "DamageCmd.Attack",
             "Targeting(target)",
@@ -61,17 +65,22 @@ public sealed class VakuuTemptationGuardTests
             "new IntVar(\"Cards\", 2m)",
             "PlayerCmd.GainEnergy(DynamicVars.Energy.BaseValue, Owner)",
             "CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner)",
-            "new BlockVar(\"Block\", 24m, ValueProp.Move)",
-            "CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay)");
+            "new BlockVar(\"Block\", 22m, ValueProp.Move)",
+            "CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay)",
+            "VakuuFightService.ReduceBloodDebt",
+            "VakuuFightService.BreakLockFromContract",
+            "VakuuFightService.CashOut");
         AssertSourceContains(
             vakuuSource,
             "public static async Task SignContract",
             "CreatureCmd.Damage(",
             "ValueProp.Unblockable | ValueProp.Unpowered | ValueProp.Move",
-            "encounter.BloodDebt++",
+            "AddBloodDebt",
             "PowerCmd.Apply<VakuuBloodDebtPower>",
             "BreakLock(choiceContext, combatState, \"contract\")",
-            "Vakuu contract signed");
+            "Vakuu contract signed",
+            "OfferCashOutAfterLockBreak",
+            "CreatureCmd.Kill(vakuu, force: true)");
     }
 
     [Fact]
@@ -94,21 +103,28 @@ public sealed class VakuuTemptationGuardTests
             "public override bool ShouldReceiveCombatHooks => true",
             "internal sealed class VakuuFightCombatHook",
             "public override Task AfterCreatureAddedToCombat",
-            "public override Task AfterDamageReceived",
+            "public override Task AfterDamageGiven",
             "public override Task AfterPlayerTurnStart",
             "FirstContractTurn = 1",
             "ContractTurnCadence = 2",
+            "LastContractOfferTurn = 5",
+            "ContractOfferCount = 3",
             "typeof(VakuuKnifeContract)",
             "typeof(VakuuTemptation)",
             "typeof(VakuuShelterContract)",
+            "typeof(VakuuTrickContract)",
             "player.Creature.CombatState is not { } combatState",
             "!IsVakuuTrialCombat(combatState)",
             "combatState.RunState.Players.Count != 1",
             "PileType.Hand.GetPile(player).Cards.Count >= CardPile.MaxCardsInHand",
-            "player.RunState.Rng.CombatCardSelection.NextItem(ContractTypes)",
+            "CardSelectCmd.FromSimpleGrid",
+            "EZMB_VAKUU_CASH_OUT.selectionScreenPrompt",
+            "OfferImmediateCashOutChoice",
+            "UnstableShuffle(player.RunState.Rng.CombatCardSelection)",
             "AncientCardHelpers.TryAddGeneratedCardToCombat",
             "PileType.Hand",
-            "Vakuu fight added a Contract to hand");
+            "Vakuu fight added a chosen Contract to hand",
+            "OfferCashOutAfterLockBreak");
         Assert.DoesNotContain("ModHelper.SubscribeForRunStateHooks", runHook, StringComparison.Ordinal);
         Assert.DoesNotContain("internal sealed class VakuuFightRunHook", runHook, StringComparison.Ordinal);
         Assert.DoesNotContain("ModelDb.GetById<VakuuFightRunHook>", runHook, StringComparison.Ordinal);
@@ -123,8 +139,12 @@ public sealed class VakuuTemptationGuardTests
             "MaxLocks = 3",
             "DamageLockThreshold = 40",
             "GoldPerBrokenLock = 50",
+            "GoldCostPerBloodDebt = 15",
+            "HpLossPerDebtShortfall = 3",
             "VictoryChoiceCount => Math.Clamp(BrokenLocks + 1, 1, MaxLocks)",
-            "VictoryGold => BrokenLocks * GoldPerBrokenLock",
+            "VictoryLootGold => BrokenLocks * GoldPerBrokenLock",
+            "VictoryGold => Math.Max(0m, VictoryLootGold - BloodDebtGoldCost)",
+            "BloodDebtShortfall => Math.Max(0m, BloodDebtGoldCost - VictoryLootGold)",
             "CustomScenePath => VakuuFightAssetPaths.EncounterScene",
             "HasScene => true",
             "Slots => [VakuuSlot]",
@@ -132,6 +152,8 @@ public sealed class VakuuTemptationGuardTests
         AssertSourceContains(
             vakuuSource,
             "public static async Task EnsureStolenVaultPower(Creature creature)",
+            "public static async Task AfterDamageGiven",
+            "Core skips AfterDamageReceived for lethal hits",
             "PowerCmd.Apply<VakuuStolenVaultPower>",
             "PowerCmd.ModifyAmount",
             "PowerCmd.Remove(vault)");
@@ -179,8 +201,8 @@ public sealed class VakuuTemptationGuardTests
             "public override Task AfterPlayerTurnStart",
             "VakuuContractService.AfterPlayerTurnStart(choiceContext, player)",
             "PileType.Hand");
-        Assert.Contains("after your hand is drawn", engAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"], StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("抽完起始手牌后", zhsAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"], StringComparison.Ordinal);
+        Assert.Contains("greed trial", engAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"], StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("赃物试炼", zhsAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"], StringComparison.Ordinal);
         AssertSourceContains(
             apiResearch,
             "CombatManager.cs",
@@ -201,75 +223,73 @@ public sealed class VakuuTemptationGuardTests
 
         AssertLocalizedCard(engCards, "EZMB_VAKUU_KNIFE_CONTRACT", "Knife Contract", "Deal {Damage:diff()} damage to Vakuu", "If a [gold]Stolen Lock[/gold] remains", "[gold]Blood Debt[/gold]");
         AssertLocalizedCard(engCards, "EZMB_VAKUU_TEMPTATION", "Gold Contract", "Gain {Energy:energyIcons()}", "Draw {Cards:diff()} cards", "[gold]Stolen Lock[/gold]");
-        AssertLocalizedCard(engCards, "EZMB_VAKUU_SHELTER_CONTRACT", "Shelter Contract", "Gain {Block:diff()} [gold]Block[/gold]", "[gold]Blood Debt[/gold]");
+        AssertLocalizedCard(engCards, "EZMB_VAKUU_SHELTER_CONTRACT", "Avoid Debt", "Gain {Block:diff()} [gold]Block[/gold]", "Remove {Debt:diff()} [gold]Blood Debt[/gold]");
+        AssertLocalizedCard(engCards, "EZMB_VAKUU_TRICK_CONTRACT", "Fraud Contract", "Break [blue]1[/blue] [gold]Stolen Lock[/gold]", "Add {Debt:diff()} [gold]Blood Debt[/gold]", "Vakuu's attacks deal {Backlash:diff()} more damage");
+        AssertLocalizedCard(engCards, "EZMB_VAKUU_CASH_OUT_CONTRACT", "Cash Out", "End the Vakuu fight", "take the loot from broken locks");
         AssertLocalizedCard(zhsCards, "EZMB_VAKUU_KNIFE_CONTRACT", "刀契", "对瓦库造成{Damage:diff()}点伤害", "[gold]赃物锁[/gold]", "[gold]血债[/gold]");
         AssertLocalizedCard(zhsCards, "EZMB_VAKUU_TEMPTATION", "金契", "获得{Energy:energyIcons()}", "抽{Cards:diff()}张牌", "[gold]赃物锁[/gold]");
-        AssertLocalizedCard(zhsCards, "EZMB_VAKUU_SHELTER_CONTRACT", "避债契", "获得{Block:diff()}点[gold]格挡[/gold]", "[gold]血债[/gold]");
+        AssertLocalizedCard(zhsCards, "EZMB_VAKUU_SHELTER_CONTRACT", "避债契", "获得{Block:diff()}点[gold]格挡[/gold]", "移除{Debt:diff()}层[gold]血债[/gold]");
+        AssertLocalizedCard(zhsCards, "EZMB_VAKUU_TRICK_CONTRACT", "诈契", "打破[blue]1[/blue]把[gold]赃物锁[/gold]", "增加{Debt:diff()}层[gold]血债[/gold]");
+        AssertLocalizedCard(zhsCards, "EZMB_VAKUU_CASH_OUT_CONTRACT", "收手契", "结束瓦库战斗", "带走已破锁的赃物");
 
         AssertSourceContains(
             engAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"],
             "Fight Vakuu",
-            "after your hand is drawn",
-            "turns [blue]1[/blue], [blue]3[/blue], [blue]5[/blue]",
-            "random [gold]Contract[/gold]",
-            "while any remain",
+            "greed trial",
             "[gold]Stolen Locks[/gold]",
+            "loot Gold",
+            "extra blessing choices",
             "[gold]Blood Debt[/gold]",
-            "[blue]40[/blue] unblocked damage",
-            "[blue]50[/blue] [gold]Gold[/gold]",
+            "cash out",
             "Death ends the run");
         AssertSourceContains(
             engRelics["EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.description"],
             "Fight Vakuu",
-            "after your hand is drawn",
-            "random [gold]Contract[/gold]",
-            "while any remain",
+            "greed trial",
             "[gold]Stolen Locks[/gold]",
+            "extra blessing choices",
             "[gold]Blood Debt[/gold]",
+            "cash out",
             "No normal combat rewards",
-            "[blue]50[/blue] [gold]Gold[/gold]",
             "Death ends the run");
         AssertSourceContains(
             zhsAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"],
-            "与瓦库战斗",
-            "抽完起始手牌后",
+            "与瓦库进行赃物试炼",
+            "额外祝福选择",
             "本场没有普通战斗奖励",
             "死亡会结束本局",
-            "[blue]1[/blue]",
-            "[blue]3[/blue]",
-            "[blue]5[/blue]",
-            "随机[gold]契约[/gold]",
+            "[gold]契约[/gold]",
             "[gold]赃物锁[/gold]",
-            "[gold]血债[/gold]",
-            "[blue]50[/blue][gold]金币[/gold]");
+            "[gold]血债[/gold]");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.description"],
-            "与瓦库战斗",
-            "抽完起始手牌后",
+            "与瓦库进行赃物试炼",
+            "额外祝福选择",
             "本场没有普通战斗奖励",
             "死亡会结束本局",
-            "随机[gold]契约[/gold]",
+            "[gold]契约[/gold]",
             "[gold]赃物锁[/gold]",
-            "[gold]血债[/gold]",
-            "[blue]50[/blue][gold]金币[/gold]");
+            "[gold]血债[/gold]");
         AssertSourceContains(
             engPowers["EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.description"],
             "[gold]Stolen Vault[/gold]",
             "[blue]40[/blue] unblocked damage",
-            "[blue]50[/blue] [gold]Gold[/gold]");
+            "[gold]Cash Out[/gold]");
         AssertSourceContains(
             engPowers["EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.description"],
             "[gold]Blood Debt[/gold]",
-            "[blue]3[/blue] more damage");
+            "[blue]2[/blue] more damage",
+            "[blue]15[/blue] loot Gold");
         AssertSourceContains(
             zhsPowers["EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.description"],
             "[gold]赃物库[/gold]",
             "[blue]40[/blue]点未被格挡伤害",
-            "[blue]50[/blue][gold]金币[/gold]");
+            "[gold]收手[/gold]");
         AssertSourceContains(
             zhsPowers["EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.description"],
             "[gold]血债[/gold]",
-            "[blue]3[/blue]点");
+            "[blue]2[/blue]点",
+            "[blue]15[/blue]赃物金币");
 
         foreach (var value in new[]
         {

@@ -50,8 +50,7 @@ internal static partial class UrdaBlessingService
         }
 
         candidates = FilterRootSightReservedEventCandidates(runState, point, candidates).ToList();
-        var fork = CreateRootSightPreviewRng(runState, point, "event");
-        return fork.NextItem(candidates);
+        return candidates[0];
     }
 
     private static IReadOnlyList<EventModel> FilterRootSightReservedEventCandidates(

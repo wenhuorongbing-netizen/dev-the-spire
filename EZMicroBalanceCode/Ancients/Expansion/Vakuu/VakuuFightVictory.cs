@@ -67,11 +67,7 @@ internal static partial class VakuuFightService
                     async () =>
                     {
                         await choice.OnChosen();
-                        if (encounter.VictoryGold > 0)
-                        {
-                            await PlayerCmd.GainGold(encounter.VictoryGold, owner);
-                        }
-
+                        await SettleVakuuRewards(owner, encounter);
                         vakuu.StartPreFinished();
                     },
                     $"EZMB_VAKUU_FIGHT.pages.VICTORY.options.{choice.Relic.Id.Entry}");
@@ -91,11 +87,7 @@ internal static partial class VakuuFightService
             {
                 if (vakuu.Owner != null)
                 {
-                    var gold = GetEncounter(combatRoom).VictoryGold;
-                    if (gold > 0)
-                    {
-                        await PlayerCmd.GainGold(gold, vakuu.Owner);
-                    }
+                    await SettleVakuuRewards(vakuu.Owner, GetEncounter(combatRoom));
                 }
 
                 vakuu.StartPreFinished();
@@ -115,5 +107,28 @@ internal static partial class VakuuFightService
                 2 => "EZMB_VAKUU_FIGHT.pages.VICTORY_TWO.description",
                 _ => VictoryDescriptionKey
             };
+
+    private static async Task SettleVakuuRewards(Player owner, EzmbVakuuTrialEncounter encounter)
+    {
+        if (encounter.VictoryGold > 0)
+        {
+            await PlayerCmd.GainGold(encounter.VictoryGold, owner);
+        }
+
+        if (encounter.BloodDebtShortfall > 0 && owner.Creature.CurrentHp > 1)
+        {
+            var chunks = Math.Ceiling(encounter.BloodDebtShortfall / EzmbVakuuTrialEncounter.GoldCostPerBloodDebt);
+            var hpLoss = Math.Min(
+                owner.Creature.CurrentHp - 1,
+                chunks * EzmbVakuuTrialEncounter.HpLossPerDebtShortfall);
+            if (hpLoss > 0)
+            {
+                await CreatureCmd.SetCurrentHp(owner.Creature, owner.Creature.CurrentHp - hpLoss);
+            }
+        }
+
+        MainFile.Logger.Info(
+            $"[EZMicroBalance] Vakuu rewards settled: locks={encounter.BrokenLocks}, lootGold={encounter.VictoryLootGold}, bloodDebt={encounter.BloodDebt}, paidGold={encounter.VictoryGold}, shortfall={encounter.BloodDebtShortfall}.");
+    }
 
 }

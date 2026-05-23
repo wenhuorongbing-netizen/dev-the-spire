@@ -20,7 +20,7 @@ Notes:
 
 Notes:
 
-- This repo currently references `Alchyr.Sts2.BaseLib` `3.1.2`, so BaseLib-compatible APIs are the first implementation target.
+- This repo currently references `Alchyr.Sts2.BaseLib` `3.1.4`, so BaseLib-compatible APIs are the first implementation target.
 - The BaseLib page shows `CustomAncientModel`, `IsValidForAct(ActModel act)`, `CustomScenePath`, map/run-history icon paths, `OptionPools`, `MakePool(...)`, and `AncientOption<T>()`.
 - Prefer current local compile-time API evidence over tutorial assumptions when they conflict. If BaseLib blocks the implementation and RitsuLib solves it cleanly, document the reason and switch only through a build-verified migration step.
 

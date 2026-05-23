@@ -2,88 +2,101 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static partial class UrdaBlessingService
 {
-    private const int AfterRainBlock = 15;
-    private const int AfterRainDraw = 1;
-    private const int AfterRainWounds = 2;
-    private const int AfterRainMaxHpLoss = 3;
-    private const int AfterRainCompensationHeal = 8;
-    private const int AfterRainCompensationGold = 75;
-    private const int AfterRainEliteGold = 20;
-    private const int AfterRainEliteGoldLimit = 2;
+    private const int AfterRainGoldPayoff = 75;
+    private const int AfterRainRecoveryHeal = 8;
+    private const int AfterRainCleanActOneThreshold = 3;
 
-    public static bool ShouldDieLate(Creature creature)
+    public static async Task AfterDamageReceived(
+        PlayerChoiceContext choiceContext,
+        Creature target,
+        DamageResult result,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource)
     {
-        if (!creature.IsPlayer ||
-            creature.Player is not { } player ||
+        if (!target.IsPlayer ||
+            target.Player is not { } player ||
+            !player.IsActiveForHooks ||
             player.RunState.CurrentActIndex != 0 ||
-            GetSelectedBlessing(player) != UrdaBlessingIds.AfterRain)
-        {
-            return true;
-        }
-
-        return GetProgress(player).AfterRainSpent;
-    }
-
-    public static async Task AfterPreventingDeath(Creature creature)
-    {
-        if (!creature.IsPlayer ||
-            creature.Player is not { } player ||
-            player.RunState.CurrentActIndex != 0 ||
-            GetSelectedBlessing(player) != UrdaBlessingIds.AfterRain)
+            GetSelectedBlessing(player) != UrdaBlessingIds.AfterRain ||
+            !IsAfterRainTriggerDamage(result, props, dealer, cardSource))
         {
             return;
         }
 
         var progress = GetProgress(player);
-        if (progress.AfterRainSpent)
+        if (progress.AfterRainTriggeredThisCombat)
         {
-            await CreatureCmd.SetCurrentHp(creature, 1m);
             return;
         }
 
-        SetProgress(player, progress with { AfterRainSpent = true });
-        await CreatureCmd.SetCurrentHp(creature, 1m);
-        await CreatureCmd.GainBlock(creature, AfterRainBlock, ValueProp.Move, null, fast: true);
-        await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), AfterRainDraw, player);
+        SetProgress(
+            player,
+            progress with
+            {
+                AfterRainTriggeredThisCombat = true,
+                AfterRainTriggerCount = progress.AfterRainTriggerCount + 1
+            });
+
         if (player.Creature.CombatState is { } combatState)
         {
-            for (var i = 0; i < AfterRainWounds; i++)
-            {
-                var wound = combatState.CreateCard<Wound>(player);
-                await CardPileCmd.AddGeneratedCardToCombat(wound, PileType.Discard, player);
-            }
+            var rainBreath = combatState.CreateCard<UrdaRainBreath>(player);
+            await CardPileCmd.AddGeneratedCardToCombat(rainBreath, PileType.Hand, player);
         }
 
-        await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), creature, AfterRainMaxHpLoss, isFromCard: false);
-        MainFile.Logger.Info("[EZMicroBalance] Urda After the Rain prevented lethal Act 1 damage and spent the blessing.");
+        MainFile.Logger.Info("[EZMicroBalance] Urda After the Rain triggered: added Rain Breath after first unblocked enemy attack damage this combat.");
     }
 
-    private static async Task GrantAfterRainEliteGold(Player player)
+    private static void ResetAfterRainCombatTrigger(Player player)
     {
         var progress = GetProgress(player);
-        if (progress.AfterRainSpent || progress.AfterRainEliteGoldCount >= AfterRainEliteGoldLimit)
+        if (progress.AfterRainTriggeredThisCombat)
         {
-            return;
+            SetProgress(player, progress with { AfterRainTriggeredThisCombat = false });
         }
-
-        SetProgress(player, progress with { AfterRainEliteGoldCount = progress.AfterRainEliteGoldCount + 1 });
-        await PlayerCmd.GainGold(AfterRainEliteGold, player);
-        MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda After the Rain Elite bonus granted {AfterRainEliteGold} Gold ({progress.AfterRainEliteGoldCount + 1}/{AfterRainEliteGoldLimit}).");
     }
 
     private static async Task CompensateAfterRainAtActTwo(Player player)
     {
         var progress = GetProgress(player);
-        if (progress.AfterRainSpent || progress.AfterRainCompensated)
+        if (progress.AfterRainCompensated)
         {
             return;
         }
 
-        SetProgress(player, progress with { AfterRainCompensated = true });
-        await CreatureCmd.Heal(player.Creature, AfterRainCompensationHeal);
-        await PlayerCmd.GainGold(AfterRainCompensationGold, player);
+        SetProgress(player, progress with { AfterRainCompensated = true, AfterRainTriggeredThisCombat = false });
+        if (progress.AfterRainTriggerCount < AfterRainCleanActOneThreshold)
+        {
+            await PlayerCmd.GainGold(AfterRainGoldPayoff, player);
+            MainFile.Logger.Info(
+                $"[EZMicroBalance] Urda After the Rain Act 2 payoff granted {AfterRainGoldPayoff} Gold after {progress.AfterRainTriggerCount} Act 1 trigger(s).");
+            return;
+        }
+
+        await CreatureCmd.Heal(player.Creature, AfterRainRecoveryHeal);
+        var selected = (await CardSelectCmd.FromDeckForUpgrade(
+            player,
+            new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, 0, 1)
+            {
+                RequireManualConfirmation = true
+            })).FirstOrDefault();
+        if (selected != null)
+        {
+            CardCmd.Upgrade(selected);
+        }
+
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda After the Rain Act 2 compensation granted {AfterRainCompensationHeal} HP and {AfterRainCompensationGold} Gold.");
+            $"[EZMicroBalance] Urda After the Rain Act 2 payoff healed {AfterRainRecoveryHeal} HP and upgraded 1 card after {progress.AfterRainTriggerCount} Act 1 trigger(s).");
     }
+
+    private static bool IsAfterRainTriggerDamage(
+        DamageResult result,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource) =>
+        result.UnblockedDamage > 0 &&
+        !result.WasFullyBlocked &&
+        dealer is { IsEnemy: true } &&
+        cardSource == null &&
+        props.HasFlag(ValueProp.Move);
 }

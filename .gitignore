@@ -9,6 +9,12 @@ obj/
 publish/
 Properties/
 packages/
+node_modules/
+/forum/node_modules/
+/forum/client/dist/
+/forum/server/dist/
+/website/
+/.github/workflows/spire-plus-site.yml
 
 # Local/generated art and calibration material. Not part of the active release package.
 /art_pipeline/

@@ -67,7 +67,7 @@ Urda's full v2.2 design contains ten blessings. All ten are now source-backed fo
 
 | Blessing | Planned Id | Status | Design Intent |
 | --- | --- | --- | --- |
-| Seedbed | `urda_seedbed` | Current source-backed slice | Trade max HP for seeded growth rewards. |
+| Seedbed | `urda_seedbed` | Current source-backed slice | Trade max HP for a Seedbed that catches later Temporary negative cards and Blight Sprouts. |
 | Humus Pact | `urda_humus_pact` | Current source-backed slice | Skip card rewards for gold/removal/upgraded-card payoff. |
 | Molting | `urda_molting` | Current source-backed slice | Remove starter basics and accept temporary Husk clutter. |
 | Moss Map | `urda_moss_map` | Current source-backed slice | First-time room-type memory rewards. |
@@ -101,10 +101,10 @@ Lotha is default-on. The source slice uses a custom Control-based Ancient backgr
 
 Implementation summary:
 
-- `lotha_mirror_rebuttal`: choose one Attack, Skill, or Power card from the deck when taking the blessing. At the start of each combat, if the matching combat card is not in hand, move it to hand when source-safe. The first time that marked card is played each combat, Attack/Skill cards play two additional times. Power cards are not extra-played; the marked Power costs 0 for that play, then gains 2 Energy and draws 2 cards.
+- `lotha_mirror_rebuttal`: choose one Attack, Skill, or Power card from the deck when taking the blessing. On the first player turn each combat, after normal draw, move the matching combat card to hand when source-safe. The first time that marked card is played each combat, Attack/Skill cards play one additional time. Power cards are not extra-played; the marked Power costs 0 for that play.
 - `lotha_mirror_hall_echo`: at the end of each player turn, record the last player-played non-Status Attack, Skill, or Power. On the next player turn, the first player-played card of that type triggers once and clears the echo. Attack/Skill plays one additional time; Power is not extra-played, costs 0 for that play, and draws 1. Autoplay/generated clone plays neither set nor consume the echo.
 - `lotha_presumption`: at combat start, apply visible Innocent state. At each player turn start while Innocent, draw 2, gain 1 Energy, and gain 8 Block. When source-detected unblocked enemy attack damage is taken, Innocent is removed, the player loses 8 HP immediately, and Innocent cannot be regained that combat. Source detection is conservative: enemy dealer, `ValueProp.Move`, unblocked damage, and no card source.
-- `lotha_closed_court`: for the rest of the run, post-combat card rewards are removed from combat reward sets only; gold, potions, and relic rewards are left intact. On the first player turn each combat, draw until the hand has 10 cards, gain 4 Energy, and make the first three player-played hand cards cost 1 less Energy for that play.
+- `lotha_closed_court`: for the rest of the run, post-combat card rewards are removed from combat reward sets only; gold, potions, and relic rewards are left intact. On turn 1, draw 4 and gain 2 Energy. On turn 4, draw 2 and gain 2 Energy. It no longer discounts the first three cards.
 - `lotha_deferred_verdict`: on turn 4, draw 4 cards, gain 4 Energy, and gain 3 player-owned Verdict stacks. This turn, each next non-Status card consumes 1 Verdict. Attack/Skill cards play one additional time. Power cards are not extra-played; they cost 0 for that play and draw 1. Verdict is removed at turn end and combat end. If combat ends before turn 4, heal 4 HP when source-safe.
 - `lotha_death_reprieve`: once per run, prevents death and sets HP to 1. During the reprieve player turn, draw 10, gain 10 Energy, all card costs are 0, and further death is prevented. At that player turn end, if enemies remain, the player is killed with `force: true`; if all enemies are dead, the run continues. Source-safe deviation: local turn-flow evidence did not prove a safe immediate interruption into a new player turn during enemy turn damage, so enemy-turn lethal starts the reprieve at the next player turn; player-turn lethal starts it immediately in the current player turn.
 - `lotha_single_sentence`: the first player-driven Attack/Skill each turn plays two additional times. After that ruling, the player can play at most four more normal player-played cards that turn. A visible Single Sentence Power starts at 5 while the ruling is ready, switches to 4 after the ruling, counts down later normal plays, and reaches 0 when more plays are blocked. The first Power before that ruling costs 0 for that play and draws 1 without consuming the sentence. Autoplay, generated clones, and extra play executions do not consume the four-card cap.
@@ -115,7 +115,7 @@ Implementation summary:
 | Mirror Rebuttal / 反证之镜 | `lotha_mirror_rebuttal` | Chosen-card rebuttal with strict source-state marker and Power fallback. |
 | Mirror Hall Echo / 镜厅回声 | `lotha_mirror_hall_echo` | Echo-style effect with strict recursion and Power-card exclusions. |
 | Presumption of Innocence / 无罪推定 | `lotha_presumption` | Defensive/legal framing; must show condition clearly. |
-| Closed Court / 终审封庭 | `lotha_closed_court` | v2.2 removes hand-limit +3 and uses first-turn burst instead. |
+| Closed Court / 终审封庭 | `lotha_closed_court` | Removes standard card rewards and splits combat resources between turn 1 and turn 4. |
 | Deferred Verdict / 延期判决 | `lotha_deferred_verdict` | Uses player-owned turn-4 Verdict stacks; does not auto-damage. |
 | Death Reprieve / 死刑缓期 | `lotha_death_reprieve` | High-risk death-prevention effect; source-safe implementation has an enemy-turn timing deviation and needs live lethal-path proof. |
 | Single Sentence / 单牌宣判 | `lotha_single_sentence` | First Attack/Skill judgment plus a visible four-card remaining cap; Powers use replacement reward. |
@@ -129,12 +129,12 @@ Implemented behavior:
 
 - When explicitly enabled and Vakuu appears, add an extra fight option.
 - The current encounter uses a dedicated `EzmbVakuuTrialMonster`, a custom `ezmb_vakuu_trial.tscn` encounter scene, and a simple four-move Vakuu action loop. Live victory and restore behavior still need proof.
-- The option text tells the player Vakuu adds a random Contract after the hand draw on turns 1/3/5+, normal combat rewards are disabled, Contracts cost HP, break Stolen Vault locks while any remain, and add Blood Debt, broken Stolen Vault locks improve victory rewards, and death ends the run.
-- On player turns 1, 3, 5, and onward, after the normal hand draw, the fight adds one random 0-cost Contract to hand if hand space allows: Knife Contract, Gold Contract, or Shelter Contract.
+- The option text tells the player Vakuu is a Stolen Locks trial: Contracts are chosen on turns 1/3/5, Cash Out can end the fight after a lock breaks, normal combat rewards are disabled, Blood Debt reduces loot and raises attack pressure, and death ends the run.
+- On player turns 1, 3, and 5, after the normal hand draw, the fight offers three 0-cost Contracts when source-safe. Knife and Gold support lock breaking, Avoid Debt reduces Blood Debt, and Fraud breaks a lock at higher risk.
 - The Gold Contract is the localized face of the internal `EZMB_VAKUU_TEMPTATION` / Temptation card; it is implemented as a hidden Contract token, not future content.
-- Vakuu starts with three Stolen Vault locks. Playing a Contract breaks one lock, and dealing 40 unblocked damage to Vakuu in one player turn breaks one lock once for that turn.
-- Each Contract adds one Blood Debt stack. Blood Debt increases each of Vakuu's powered attack hits by 3 damage, so the cost of signing multiple Contracts is visible in intents.
-- Victory resumes the parent Vakuu event and offers 1/2/3 non-Vakuu Act 3 Ancient blessing choices based on broken locks, from existing Nonupeipe/Tanx rewards plus custom Lotha option relics when unclaimed choices remain. Each broken lock also grants 50 Gold when the victory option or fallback is accepted. Custom Lotha victory choices route through the same Lotha selection service as the Lotha event, so the player receives the visible marker relic and the run hook state together.
+- Vakuu starts with three Stolen Vault locks. Contracts can break locks, and dealing at least 40 unblocked damage to Vakuu in one player turn can also break one lock without adding Blood Debt.
+- Blood Debt increases each of Vakuu's powered attack hits by 2 damage per stack. At victory settlement, each Blood Debt removes 15 loot Gold. If loot is not enough, each unpaid 15 Gold costs 3 nonlethal HP.
+- Victory resumes the parent Vakuu event and offers extra non-Vakuu Act 3 Ancient blessing choices based on broken locks, from existing Nonupeipe/Tanx rewards plus custom Lotha option relics when unclaimed choices remain. Each broken lock creates 50 loot Gold before Blood Debt settlement. Custom Lotha victory choices route through the same Lotha selection service as the Lotha event, so the player receives the visible marker relic and the run hook state together.
 - If no unclaimed non-Vakuu options are available, the victory page uses an explicit fallback instead of silently finishing the event with zero options; broken-lock Gold is still granted through that fallback.
 - Failure is presented as lethal; live failure/death verification is pending.
 
@@ -158,10 +158,10 @@ Source shape:
 
 | Card / Status | Status | Purpose |
 | --- | --- | --- |
-| Withered Husk | Current Urda source-backed slice | 0-cost Skill that grants 3 Block and exhausts. Current live verification pending. |
+| Withered Husk | Current Urda source-backed slice | 0-cost Ethereal/Exhaust Curse. It gives 3 Block when exhausted. Current live verification pending. |
 | Waste Paper | Current Morvi source-backed slice | Temporary Status used by Paperstorm; no extra punishment beyond Paperstorm consuming drawn Status cards. |
 | Archive Pages | Current Morvi source-backed slice | Temporary 0-cost Ethereal/Exhaust pages from Overdue Library; unplayed pages have no extra punishment. |
-| Vakuu Contracts | Current Vakuu source-backed slice | Hidden 0-cost Skill token Contracts added by the Vakuu fight on turns 1/3/5+. Ethereal + Exhaust; playing one costs HP, breaks one Stolen Vault lock if any remain, adds one Blood Debt, and then applies Knife/Gold/Shelter effects. Uses the browser GPTimage2 rebuilt custom card portrait. |
+| Vakuu Contracts | Current Vakuu source-backed slice | Hidden 0-cost Skill token Contracts offered by the Vakuu fight on turns 1/3/5. Ethereal + Exhaust; individual contracts either push lock breaking, reduce Blood Debt, or add higher-risk Blood Debt pressure. Uses the browser GPTimage2 rebuilt custom card portrait. |
 
 ## 9. Hook Requirements
 

@@ -54,11 +54,7 @@ internal static partial class RootDeckService
     private static bool HasRootBeginsApplied(Player player)
     {
         return AscensionSavedStateFields.RootBeginsApplied[player] ||
-            FindRootFamilyCards(player).Count > 0 ||
-            player.RunState.CurrentActIndex > 0 ||
-            player.RunState.ActFloor > 0 ||
-            player.RunState.CurrentMapCoord.HasValue ||
-            player.RunState.MapPointHistory.Any(actHistory => actHistory.Count > 0);
+            FindRootFamilyCards(player).Count > 0;
     }
 
     private static void MarkRootBeginsApplied(Player player)

@@ -11,6 +11,23 @@ internal static partial class AscensionCombatModifierService
             $"[EZMicroBalance] Ascension A12 applied: Might firemark host {host.Name} gained {strength} Strength.");
     }
 
+    private static async Task ApplyMightOverflow(CombatState combatState, AscensionCombatTracker tracker)
+    {
+        var target = FiremarkOverflowCandidates(combatState, tracker)
+            .FirstOrDefault(IsLikelyAttacker);
+        if (target == null)
+        {
+            return;
+        }
+
+        await PowerCmd.Apply<FiremarkMightOverflowPower>(
+            new BlockingPlayerChoiceContext(),
+            target,
+            GetMightOverflowStrength(combatState),
+            tracker.FiremarkHost,
+            null);
+    }
+
     private static async Task AddFiremarkHeat(Creature host, AscensionCombatTracker tracker)
     {
         var heat = host.GetPower<FiremarkHeatPower>();

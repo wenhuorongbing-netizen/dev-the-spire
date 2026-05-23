@@ -85,11 +85,16 @@ public sealed class ReleaseHashGuardTests
         const string stalePreStrictSourceResourceAuditZipHash = "B30547BB7CF203B5A19217204EA6AAAC2569DE6DDFEFE74A80F696DD1D817441";
         const string stalePreStrictSourceResourceAuditDllHash = "1FDDAE2B580C382B1E23588D608FFF793A84D4707D26836CB4FA28C2733CD00A";
         const string stalePreStrictSourceResourceAuditPckHash = "B3EC1B0ECD6636997B5C50E539EB6098FB08A9899C2DA98C05470029CE1BB7FA";
-        const string currentZipHash = "921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91";
-        const string currentDllHash = "CCF61C5E9B69C53C9DFF5E61F0C87913B54A8D1486F97000CBD6125D90903DE4";
-        const string currentPckHash = "3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392";
-        const string currentManifestHash = "A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF";
-        const string currentReadmeHash = "BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906";
+        const string stalePreLocalizationQaZipHash = "08D10282B44833283883F08FB12E299B54D55593EDFC9F621F2577A0F636FA6D";
+        const string stalePreLocalizationQaDllHash = "3C71ECA207AED2E709BBFA8F7070559D53A4D9FFCA9AC003D1BBC00842E4BE70";
+        const string stalePreLocalizationQaPckHash = "CBFA4867F0EFEFAB35BC5CE463773022F76A27912DB1EA399DFDCC8399F19FB4";
+        const string stalePreRootEyesComposerZipHash = "31F17BC1178A40E1E6A13A7A49F8C3B70B470BCDB9D8E02ED96E29278072F198";
+        const string stalePreRootEyesComposerDllHash = "FA111B2854FF108505D78F7ECBA22A7BC997EEA0B25C96A9B82C046716731DC2";
+        const string currentZipHash = "EFDF43EBAD1A8A6AD9263E971B5CC0366E823739BA2660A69BDD747DF3425686";
+        const string currentDllHash = "BC79A2634F87314046C8C86120E2FD94030FDC650F5B432864E789AA6B888A4A";
+        const string currentPckHash = "6F5080524B57EC07F750D6DCFB6D6B274C5F5780EA60DBABB0E6B254D26D01C5";
+        const string currentManifestHash = "C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6";
+        const string currentReadmeHash = "C735AA228BBB5CD002BF618334A04483C0013328C82ECC33551C65B0A1165599";
 
         var currentStatusDocs = new[]
         {
@@ -145,6 +150,9 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreMarkerOrderingSplitZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreStrictSourceResourceAuditZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreStrictSourceResourceAuditPckHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreLocalizationQaZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreLocalizationQaPckHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreRootEyesComposerZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(oldDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightUiDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightMarkerDllHash, doc, StringComparison.Ordinal);
@@ -182,6 +190,8 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreForgeTokenVisibleRelicSplitDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreMarkerOrderingSplitDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreStrictSourceResourceAuditDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreLocalizationQaDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreRootEyesComposerDllHash, doc, StringComparison.Ordinal);
         }
 
         AssertSourceContains(

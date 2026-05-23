@@ -10,7 +10,10 @@ internal static partial class AscensionCombatModifierService
         AscensionNodeMetadata metadata,
         Creature creature)
     {
-        var triggerCap = metadata.IsBossBrand ? 3 : 2;
+        // The Kin Boss source encounter contains exactly two KinFollower enemies.
+        // Branded Form strengthens those real follower deaths instead of relying on
+        // a third trigger that cannot happen unless the base game adds summons.
+        const int triggerCap = 2;
         if (creature.Monster is not KinFollower || tracker.MartyrOathTriggers >= triggerCap)
         {
             return;
@@ -23,14 +26,25 @@ internal static partial class AscensionCombatModifierService
         }
 
         tracker.MartyrOathTriggers++;
-        var block = metadata.IsBossBrand ? 14m : 12m;
-        await CreatureCmd.GainBlock(priest, block, ValueProp.Move, null, fast: true);
-        await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), priest, 1m, priest, null);
-        if (priest.GetHpPercentRemaining() <= 0.5d)
+        var strikeDamage = metadata.IsBossBrand ? 4m : 3m;
+        await PowerCmd.Apply<MartyrOathPower>(new BlockingPlayerChoiceContext(), priest, 1m, priest, null);
+        await PowerCmd.Apply<MartyrOathStrikePower>(new BlockingPlayerChoiceContext(), priest, strikeDamage, priest, null);
+
+        tracker.MartyrOathFollowerDeathsThisTurn++;
+        if (metadata.IsBossBrand &&
+            tracker.MartyrOathFollowerDeathsThisTurn >= 2 &&
+            !tracker.MartyrOathSameTurnArtifactGranted)
         {
-            await PowerCmd.Apply<ArtifactPower>(new BlockingPlayerChoiceContext(), priest, 1m, priest, null);
+            tracker.MartyrOathSameTurnArtifactGranted = true;
+            await ApplyPowerWithFinalDisplayedGain<ArtifactPower>(priest, 1, priest, null);
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Martyr Oath strengthened Kin Priest after a follower death.");
+        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Martyr Oath armed Kin Priest's next debuff or attack.");
+    }
+
+    private static void ResetMartyrOathTurnCounters(AscensionCombatTracker tracker)
+    {
+        tracker.MartyrOathFollowerDeathsThisTurn = 0;
+        tracker.MartyrOathSameTurnArtifactGranted = false;
     }
 }

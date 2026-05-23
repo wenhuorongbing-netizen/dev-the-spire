@@ -58,7 +58,7 @@ internal static partial class AscensionFeatureGate
         if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
                 runState,
                 "A20KingBrand",
-                "dual King Brand and second boss routing are pending two-client proof"))
+                "A20 Branded Form and second boss routing are pending two-client proof"))
         {
             return false;
         }

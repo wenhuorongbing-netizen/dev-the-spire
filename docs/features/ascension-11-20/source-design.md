@@ -5,8 +5,8 @@ Current checklist: `development-checklist-v2.md` is now a compact active triage 
 Document type: Feature GDD / local source design
 Project: Spire Plus workspace (`EZMicroBalance` manifest id), with legacy EzDailyContent scaffold preserved for traceability
 Original target game: Slay the Spire 2 public beta v0.104.0, 2026.04.23
-Current implementation target: Slay the Spire 2 public beta v0.105.0, installed/tested locally on 2026-05-08
-Current dependency baseline: BaseLib v3.1.2
+Current implementation target: Slay the Spire 2 public beta v0.106.0, source-refreshed locally on 2026-05-22
+Current dependency baseline: BaseLib v3.1.4
 Status: design source only; not implementation proof
 
 ## 1. One-line Goal
@@ -41,7 +41,7 @@ Do not duplicate A1-A10 pressure axes:
 - Early turns should not become death lotteries.
 - Recovery and rebuild space must remain available for skilled play.
 - Multiplayer penalties must be capped so 3-4 player runs do not become shared punishment loops.
-- Prefer generic modifiers over per-monster or per-boss scripts.
+- Prefer hook-based dedicated modifiers over enemy AI or action-table rewrites.
 
 ## 4. A11-A20 Overview
 
@@ -55,8 +55,8 @@ Do not duplicate A1-A10 pressure axes:
 | A16 | Banner Rooms | Visible enhanced normal fights appear on the map. | Route pressure in normal combats. |
 | A17 | Deep Branches | Acts 2/3 can contain optional high-risk/high-reward branches. | Growth ceiling and route mastery. |
 | A18 | Elite Root Bud | Act 2/3 elites bury a Root Bud. | Elite fights create long-term risk. |
-| A19 | Boss Seals | Bosses gain a visible generic seal; boss card rewards improve. | Fairer boss difficulty with compensation. |
-| A20 | Double Royal Brand | Act 3 double bosses are revealed; second boss gets a light seal; intermission exists between bosses. | Endgame sustained build test. |
+| A19 | Boss Dedicated Abilities | Each Boss gains its own visible dedicated ability; boss card rewards improve. | Bosses ask more of their own existing mechanics. |
+| A20 | Branded Form | Act 3 double bosses are revealed; only the second Boss upgrades its dedicated ability into Branded Form; intermission exists between bosses. | Endgame sustained build test with one strengthened final Boss. |
 
 ## 5. Core Systems
 
@@ -165,8 +165,9 @@ Current v3.2 firemark types:
 | --- | --- | --- |
 | Might | One firemarked enemy gains +1/+2/+4 Strength by act. Unblocked attack damage builds Heat; 2 Heat makes the next attack deal +1/+2/+4 extra damage. | OnCombatStart / OnDamage |
 | Giant | One firemarked enemy gains +20%/+30%/+45% max/current HP by act. At half HP it exposes Molten Core; enough damage during the window removes 10% max HP, otherwise it gains 1 Artifact. | OnCombatStart / OnDamage / OnTurnEnd |
-| Forge Armor | One firemarked enemy gains 5/10/20 Molten Armor after enemy turns. Fully breaking that armor skips the next armor gain, up to twice per combat. | AfterTurnEnd |
-| Constant Heal | One firemarked enemy heals 4/8/16 HP at enemy turn end. Dealing 12/24/48 damage to it during the player turn interrupts that heal. | AfterTurnEnd |
+| Firemark Overflow | One Firemark Host receives the full mark. Overflow affects at most one secondary non-summon enemy at a time: Might gives 1/1/2 temporary Strength to an attacker, Giant core break deals 6/12/24 splash damage, Forge Armor gives 3/6/12 Block, Constant Heal restores 2/4/8 HP to one damaged ally. | BeforeSideTurnStart / AfterPlayerTurnStart / damage and heal windows |
+| Forge Armor | The Firemark Host gains 8/14/24 Molten Armor at player turn start. If the host has no Block at turn end, the next Molten Armor is skipped. This can happen at most twice per combat. | AfterPlayerTurnStart / AfterSideTurnEnd |
+| Constant Heal | One firemarked enemy heals 4/8/16 HP at enemy turn end. Dealing 12/24/48 damage to it before its next heal interrupts that heal. | AfterSideTurnEnd |
 
 Generation rules:
 
@@ -212,24 +213,31 @@ Structure:
 - Reconnects to main route.
 - Must preserve a parallel safer route.
 
-### 5.10 Boss Seal and Light Boss Seal
+### 5.10 A19/A20 Boss Dedicated Abilities
 
-Generic boss modifiers that do not alter action tables.
+A19 gives each Boss one visible dedicated ability. It is not a shared generic seal. A20 only strengthens the second Act 3 Boss.
 
-Initial Boss Seals:
-
-| Seal | Effect | Trigger |
+| Boss | A19 ability | A20 brand change |
 | --- | --- | --- |
-| Armor Seal | Boss gains block and 1 Artifact at combat start. | OnCombatStart |
-| Rage Seal | Boss gains +1 Strength around turns 5 and 8. | OnTurnStart |
-| Barrier Seal | Boss gains block once below 50% HP. | OnHpThreshold |
-| Chaos Seal | First shuffle adds one Dazed. | OnFirstShuffle |
+| Kin Priest | Martyr Oath: follower deaths strengthen the next debuff or attack. | Higher attack bonus; killing both followers in one turn grants 1 Artifact. |
+| Vantom | Ink Return: the first full Slippery removal returns a percentage next enemy turn. | Higher percentage and cap. |
+| Lagavulin Matriarch | Plating Wake: wake-up grants Plating; first Soul Siphon trims it. | More Plating; Soul Siphon trims less. |
+| Soul Fysh | Soul Tide: unanswered Beckons grant next-turn Block; Intangible grants 1 Artifact. | More Block per Beckon and a higher team cap. |
+| Waterfall Giant | Unweakenable: explosion ignores Weak/attack-down and applies Vulnerable. | Vulnerable lasts longer. |
+| Kaiser | Claw Calibration: uneven claw HP strengthens the healthier claw's next attack. | Lower HP-gap threshold and higher attack bonus. |
+| Knowledge Demon | Marginal Note: unplayed notes become Deep Thought for the next Knowledge curse. | Higher Deep Thought cap with per-turn gain cap. |
+| The Insatiable | Escape Fatigue: ability-made Frantic Escapes grant Vigor after enough are played. | More Vigor. |
+| Aeonglass | Time Sand Reflow: Ebb creates Time Sand; leftover sand adds extra Wither. | More Time Sand and limited extra Eye Lasers hits. |
+| Queen | Royal Decree: one Bound card avoids penalty; wrong or missed Bound cards give Majesty. | Majesty cap increases. |
+| Test Subject | Experimental Record: the previous phase leaves a residual sample. | Two different samples per phase change. |
 
-A20 Light Seals:
+Attack-changing abilities must show final intent. This includes Martyr Oath, Claw Calibration, Vigor, Aeonglass's extra Eye Lasers hit, and any future Brand damage changes.
 
-- Lower-strength variants for second Act 3 boss.
-- Must not duplicate the second boss main seal.
-- Must be visible from Act 3 start.
+Multiplayer scaling rules:
+
+- Strength, Artifact, Vigor, shared counters, Time Sand, Majesty, and Martyr Oath do not multiply by player count.
+- Slippery, Plating, Boss HP, and player-hand cards use the current fight's actual values.
+- Per-player triggers such as Beckon, Marginal Note, Frantic Escape, Bound, and Test Subject phase statistics use team caps so 3-4 player runs do not scale linearly.
 
 ### 5.11 A20 Intermission
 
@@ -238,7 +246,7 @@ Between Act 3 boss 1 and boss 2:
 - Heal 25% of missing HP.
 - Grant a boss card reward.
 - Apply A19 reward option increase if active.
-- Re-show boss 2 seal and light seal.
+- Re-show boss 2 dedicated ability and Branded Form state.
 - No complex menu.
 
 ## 6. Multiplayer Rules
@@ -260,7 +268,7 @@ Needed UI surfaces or equivalents:
 - Firemark elite map border/icon.
 - Banner room map icon.
 - Deep branch/rift route marker.
-- Boss seal and light seal map/boss preview marker.
+- Boss dedicated ability and Branded Form map/boss preview marker.
 - A20 intermission marker.
 - Root Bud combat notice.
 - Root growth combat-end notice.
@@ -284,7 +292,7 @@ UI can be deferred behind console/log/manual validation for prototypes, but priv
 | Forge Token special rest-site heal | 5 HP |
 | Firemark Might | +1/+2/+4 Strength by act; Heat burst +1/+2/+4 damage |
 | Firemark Giant | +20%/+30%/+45% max/current HP; Molten Core damage window 20%/25%/30% original max HP |
-| Firemark Forge Armor | 5/10/20 Block by act |
+| Firemark Forge Armor | 8/14/24 Molten Armor by act |
 | Firemark Constant Heal | 4/8/16 HP by act; interrupt threshold 12/24/48 damage |
 | Vanguard Banner | +1/+2/+4 temporary Strength by act |
 | Shieldwall Banner | 3/7/14 turn Block; 5/10/20 death Block |
@@ -387,7 +395,7 @@ Research must answer before coding each system:
 ### Phase 8: Boss Seal and A20 MVP
 
 - A19 seals and boss reward +1 option.
-- A20 reveal/intermission/light seal.
+- A20 reveal/intermission/Branded Form state.
 
 ## 12. Validation Metrics
 
@@ -416,7 +424,7 @@ Track manually first, automate later:
 | Fission too strong | High | Lower appearance, restrict rarity/card types, no 0-cost floor if needed. |
 | Banner rooms are annoying taxes | Medium | Add modest reward, reduce values, avoid clustering. |
 | Map generation breaks routes | High | Start with logged/no-op map probe and conservative node marking. |
-| A20 second boss too hard | High | Increase intermission heal, delay light seal, improve intermission reward. |
+| A20 second boss too hard | High | Increase intermission heal, reduce Branded Form tuning, improve intermission reward. |
 | Multiplayer scales punishment too hard | High | Cap target count for pollution effects. |
 | Early Access API changes | High | Keep patch-point evidence docs and isolated modules. |
 

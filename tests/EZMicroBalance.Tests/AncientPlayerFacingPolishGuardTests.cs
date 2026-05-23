@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -110,6 +111,45 @@ public sealed class AncientPlayerFacingPolishGuardTests
             Assert.DoesNotMatch("(?i)not\\s+.+\\s+but", value);
             Assert.DoesNotContain("TODO", value, StringComparison.OrdinalIgnoreCase);
             Assert.False(string.IsNullOrWhiteSpace(value), $"Empty active localization value: {key}");
+        }
+    }
+
+    [Fact]
+    public void EnglishAndSimplifiedChineseLocalizationStayInParity()
+    {
+        var engDir = RepoPath("EZMicroBalance", "localization", "eng");
+        var zhsDir = RepoPath("EZMicroBalance", "localization", "zhs");
+        var engFiles = Directory.GetFiles(engDir, "*.json")
+            .Select(Path.GetFileName)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToArray();
+        var zhsFiles = Directory.GetFiles(zhsDir, "*.json")
+            .Select(Path.GetFileName)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(engFiles, zhsFiles);
+
+        foreach (var fileName in engFiles)
+        {
+            var eng = JsonStringMap("EZMicroBalance", "localization", "eng", fileName!);
+            var zhs = JsonStringMap("EZMicroBalance", "localization", "zhs", fileName!);
+
+            Assert.Equal(
+                eng.Keys.OrderBy(key => key, StringComparer.Ordinal),
+                zhs.Keys.OrderBy(key => key, StringComparer.Ordinal));
+
+            foreach (var key in eng.Keys.OrderBy(key => key, StringComparer.Ordinal))
+            {
+                var engValue = eng[key];
+                var zhsValue = zhs[key];
+
+                Assert.False(string.IsNullOrWhiteSpace(engValue), $"Empty English localization: {fileName}:{key}");
+                Assert.False(string.IsNullOrWhiteSpace(zhsValue), $"Empty zhs localization: {fileName}:{key}");
+                AssertBalancedRichTextTags(fileName!, key, engValue);
+                AssertBalancedRichTextTags(fileName!, key, zhsValue);
+                Assert.Equal(DynamicVariableNames(engValue), DynamicVariableNames(zhsValue));
+            }
         }
     }
 
@@ -316,9 +356,10 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             engRelics["EZMICROBALANCE-UrdaSeedbedOptionRelic.description"],
             "[gold]Seedbed[/gold]",
-            "[blue]10[/blue] [gold]Max HP[/gold]",
-            "The first is upgraded",
-            "without healing current HP");
+            "[blue]2[/blue] [gold]Max HP[/gold]",
+            "[gold]Temporary[/gold] Status cards",
+            "[gold]Temporary[/gold] Curse cards",
+            "[gold]Blight Sprouts[/gold]");
         Assert.Equal(
             engRelics["EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.description"],
             engRelics["EZMICROBALANCE-UrdaMossMapOptionRelic.description"]);
@@ -329,9 +370,11 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "Rest Site +[blue]3[/blue] [gold]Max HP[/gold]");
         AssertSourceContains(
             engRelics["EZMICROBALANCE-URDA_AFTER_RAIN_OPTION_RELIC.description"],
-            "Act [blue]1[/blue] [gold]Elite[/gold] kills",
-            "[blue]20[/blue] [gold]Gold[/gold]",
-            "max [blue]2[/blue]");
+            "Act [blue]1[/blue]",
+            "[gold]Rain Breath[/gold]",
+            "fewer than [blue]3[/blue] triggers",
+            "[blue]75[/blue] [gold]Gold[/gold]",
+            "heal [blue]8[/blue] HP");
         AssertSourceContains(
             engRelics["EZMICROBALANCE-MORVI_FORBIDDEN_LOAN_OPTION_RELIC.description"],
             "[blue]1[/blue] HP",
@@ -346,9 +389,10 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-UrdaSeedbedOptionRelic.description"],
             "[gold]苗床[/gold]",
-            "[blue]10[/blue]点[gold]最大生命[/gold]",
-            "第一张会升级",
-            "不回复当前生命");
+            "[blue]2[/blue]点[gold]最大生命[/gold]",
+            "[gold]临时[/gold]状态牌",
+            "[gold]临时[/gold]诅咒牌",
+            "[gold]根芽[/gold]");
         Assert.Equal(
             zhsRelics["EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.description"],
             zhsRelics["EZMICROBALANCE-UrdaMossMapOptionRelic.description"]);
@@ -359,9 +403,11 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "休息处 +[blue]3[/blue] [gold]最大生命[/gold]");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-URDA_AFTER_RAIN_OPTION_RELIC.description"],
-            "击败第[blue]1[/blue]幕[gold]精英[/gold]",
-            "[blue]20[/blue][gold]金币[/gold]",
-            "最多[blue]2[/blue]次");
+            "第[blue]1[/blue]幕",
+            "[gold]雨息[/gold]",
+            "少于[blue]3[/blue]次",
+            "[blue]75[/blue][gold]金币[/gold]",
+            "回复[blue]8[/blue]点生命");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-MORVI_FORBIDDEN_LOAN_OPTION_RELIC.description"],
             "[gold]攻击牌[/gold]和[gold]技能牌[/gold]失去[blue]1[/blue]点生命",
@@ -426,6 +472,10 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "previewed this result",
             "Enter this room");
         AssertSourceContains(
+            engAncients["EZMB_URDA.root_sight.map_hover.event_preview_description"],
+            "previewed this event",
+            "{Options}");
+        AssertSourceContains(
             engAncients["EZMB_URDA.root_sight.hover.description"],
             "click this relic",
             "Monster, Unknown, or Elite",
@@ -438,6 +488,10 @@ public sealed class AncientPlayerFacingPolishGuardTests
             zhsAncients["EZMB_URDA.root_sight.map_hover.preview_description"],
             "根眼预见了这个结果",
             "进入该房间");
+        AssertSourceContains(
+            zhsAncients["EZMB_URDA.root_sight.map_hover.event_preview_description"],
+            "根眼预见了这个事件",
+            "{Options}");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.root_sight.hover.description"],
             "点击此遗物",
@@ -530,8 +584,8 @@ public sealed class AncientPlayerFacingPolishGuardTests
 
         Assert.Contains("{Block:diff()} [gold]Block[/gold]", engCards["EZMB_URDA_SEEDLING.description"], StringComparison.Ordinal);
         Assert.Contains("{Block:diff()}点[gold]格挡[/gold]", zhsCards["EZMB_URDA_SEEDLING.description"], StringComparison.Ordinal);
-        Assert.Contains("{Block:diff()} [gold]Block[/gold]", engCards["EZMB_WITHERED_HUSK.description"], StringComparison.Ordinal);
-        Assert.Contains("{Block:diff()}点[gold]格挡[/gold]", zhsCards["EZMB_WITHERED_HUSK.description"], StringComparison.Ordinal);
+        Assert.Contains("When exhausted, gain {Block:diff()} [gold]Block[/gold]", engCards["EZMB_WITHERED_HUSK.description"], StringComparison.Ordinal);
+        Assert.Contains("被消耗时，获得{Block:diff()}点[gold]格挡[/gold]", zhsCards["EZMB_WITHERED_HUSK.description"], StringComparison.Ordinal);
 
         foreach (var key in new[]
         {
@@ -575,7 +629,8 @@ public sealed class AncientPlayerFacingPolishGuardTests
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaMapUiPatches.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapClickPatches.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapPreviewVisuals.cs"));
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapPreviewVisuals.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Map", "SpirePlusMapPointHoverComposer.cs"));
         var morvi = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
         var vakuu = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
 
@@ -592,12 +647,16 @@ public sealed class AncientPlayerFacingPolishGuardTests
             urdaMapUiPatches,
             "%QuestIcon",
             "MouseFilterEnum.Ignore",
+            "SpirePlusMapPointHoverComposer",
             "UrdaBlessingService.TryGetRootSightHoverTip",
+            "FiremarkedEliteMapHoverPatch.TryCreateHoverTip",
+            "BannerRoomMapHoverPatch.TryCreateHoverTip",
             "TryGetRootSightPreviewRoomType",
             "UrdaRootSightMapPreviewIconPatch",
             "UrdaRootSightMapQuestIconPatch",
             "UrdaRootSightMapPreviewVisuals.ApplyPreviewIcon",
             "UrdaRootSightMapPreviewVisuals.ApplyQuestIcon",
+            "ApplyRootSightOverlay(pointNode, hasRootSightMarker || canTargetWithRootSight)",
             "UnknownIconPath(roomType)",
             "UnknownOutlinePath(roomType)",
             "NHoverTipSet.Remove(__instance)",
@@ -710,44 +769,40 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             engAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"],
             "Fight Vakuu",
-            "after your hand is drawn",
+            "greed trial",
             "No normal combat rewards",
-            "random [gold]Contract[/gold]",
-            "while any remain",
+            "[gold]Contracts[/gold]",
+            "cash out",
             "[gold]Stolen Locks[/gold]",
             "[gold]Blood Debt[/gold]",
-            "[blue]50[/blue] [gold]Gold[/gold]",
             "Death ends the run");
         AssertSourceContains(
             zhsAncients["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description"],
-            "与瓦库战斗",
-            "抽完起始手牌后",
+            "与瓦库进行赃物试炼",
             "本场没有普通战斗奖励",
-            "随机[gold]契约[/gold]",
+            "[gold]契约[/gold]",
+            "收手",
             "[gold]赃物锁[/gold]",
             "[gold]血债[/gold]",
-            "[blue]50[/blue][gold]金币[/gold]",
             "死亡会结束本局");
         AssertSourceContains(
             engRelics["EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.description"],
             "Fight Vakuu",
-            "after your hand is drawn",
-            "random [gold]Contract[/gold]",
-            "while any remain",
+            "greed trial",
+            "[gold]Contracts[/gold]",
+            "cash out",
             "[gold]Stolen Locks[/gold]",
             "[gold]Blood Debt[/gold]",
             "No normal combat rewards",
-            "[blue]50[/blue] [gold]Gold[/gold]",
             "Death ends the run");
         AssertSourceContains(
             zhsRelics["EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.description"],
-            "与瓦库战斗",
-            "抽完起始手牌后",
-            "随机[gold]契约[/gold]",
+            "与瓦库进行赃物试炼",
+            "[gold]契约[/gold]",
+            "收手",
             "[gold]赃物锁[/gold]",
             "[gold]血债[/gold]",
             "本场没有普通战斗奖励",
-            "[blue]50[/blue][gold]金币[/gold]",
             "死亡会结束本局");
         AssertNonEmpty(engAncients, zhsAncients, "EZMB_VAKUU_FIGHT.pages.VICTORY_FALLBACK.description");
         AssertNonEmpty(engAncients, zhsAncients, "EZMB_VAKUU_FIGHT.pages.VICTORY_FALLBACK.options.CONTINUE.title");
@@ -835,19 +890,20 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "[gold]Firemarked Elite[/gold]");
         AssertSourceContains(
             engAscension["BOSS_ROYAL_SEAL.description"],
-            "[gold]Royal Seal[/gold]");
+            "[gold]dedicated ability[/gold]");
         AssertSourceContains(
             engAscension["BOSS_KING_BRAND.description"],
-            "[gold]King Brand[/gold]");
+            "[gold]Branded Form[/gold]");
         AssertSourceContains(
             engAscension["BOSS_SEAL_MARTYR_OATH.brand"],
-            "[blue]3[/blue]",
-            "[blue]14[/blue]",
-            "[gold]Block[/gold]");
+            "[blue]2[/blue]",
+            "+[blue]4[/blue]",
+            "[gold]Artifact[/gold]");
         AssertSourceContains(
-            engAscension["BOSS_SEAL_AEONGLASS_STRENGTH.summary"],
-            "+[blue]5[/blue]",
-            "[gold]Strength[/gold]");
+            engAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.summary"],
+            "After [gold]Ebb[/gold]",
+            "[blue]2[/blue] Time Sand",
+            "[gold]Wither[/gold]");
         AssertSourceContains(
             engAscension["ROOTBLIGHT_ADDED"],
             "[gold]Rootblight[/gold]");
@@ -881,13 +937,20 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "[gold]");
         AssertSourceContains(
             zhsAscension["BOSS_SEAL_MARTYR_OATH.brand"],
-            "[blue]3[/blue]",
-            "[blue]14[/blue]",
-            "[gold]");
+            "[blue]2[/blue]",
+            "[blue]4[/blue]",
+            "[gold]人工制品[/gold]");
         AssertSourceContains(
-            zhsAscension["BOSS_SEAL_AEONGLASS_STRENGTH.summary"],
-            "+[blue]5[/blue]",
-            "[gold]");
+            zhsAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.summary"],
+            "[gold]消退[/gold]",
+            "[blue]2[/blue]",
+            "时砂",
+            "[gold]枯萎[/gold]");
+        Assert.Equal("Royal Decree", engAscension["BOSS_SEAL_CHOSEN_DECREE.title"]);
+        Assert.Equal("御令", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.title"]);
+        Assert.Contains("[gold]御令[/gold]", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.DoesNotContain("王令", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.DoesNotContain("择令", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.title"], StringComparison.Ordinal);
         AssertSourceContains(
             zhsAscension["ROOTBLIGHT_ADDED"],
             "[gold]根蚀[/gold]");
@@ -986,6 +1049,25 @@ public sealed class AncientPlayerFacingPolishGuardTests
         Assert.True(zhs.TryGetValue(key, out var zhsValue), $"Missing zhs localization key: {key}");
         Assert.False(string.IsNullOrWhiteSpace(engValue), $"Empty English localization key: {key}");
         Assert.False(string.IsNullOrWhiteSpace(zhsValue), $"Empty zhs localization key: {key}");
+    }
+
+    private static string[] DynamicVariableNames(string value) =>
+        Regex.Matches(value, @"\{(?<name>[A-Za-z0-9_]+)(?::[^}]*)?\}")
+            .Select(match => match.Groups["name"].Value)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToArray();
+
+    private static void AssertBalancedRichTextTags(string fileName, string key, string value)
+    {
+        foreach (var tag in new[] { "blue", "gold" })
+        {
+            var open = Regex.Matches(value, $@"\[{tag}\]").Count;
+            var close = Regex.Matches(value, $@"\[/{tag}\]").Count;
+
+            Assert.True(
+                open == close,
+                $"{fileName}:{key} has unbalanced [{tag}] rich-text tags.");
+        }
     }
 
 }

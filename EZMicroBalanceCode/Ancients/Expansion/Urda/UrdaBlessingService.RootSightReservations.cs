@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Map;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -11,7 +12,12 @@ internal static partial class UrdaBlessingService
     {
         if (roomType is not (RoomType.Monster or RoomType.Elite or RoomType.Event) ||
             runManager.DebugOnlyGetState() is not { } runState ||
-            runState.CurrentMapPoint == null)
+            runState.CurrentMapPoint == null ||
+            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopFeature(
+                runState,
+                "UrdaRootEyes",
+                "Root Eyes reservation queue mutation is single-player only until host-authoritative preview sync exists") ||
+            runState.Players.Count > 1)
         {
             return;
         }

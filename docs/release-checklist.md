@@ -20,14 +20,14 @@ Target manifest id: `EZMicroBalance`
 - [x] Published `EZMicroBalance.json` exists.
 - [x] Published `EZMicroBalance.dll` exists.
 - [x] Published `EZMicroBalance.pck` exists.
-- [x] Manifest declares structured `BaseLib` dependency with `min_version: v3.1.2`.
+- [x] Manifest declares structured `BaseLib` dependency with `min_version: v3.1.4`.
 - [x] Manifest has `affects_gameplay: true`.
 - [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh.
-- [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`; this does not claim a fresh 25-field loader smoke.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts on 2026-05-20 and copied to the local game root for manual testing.
-  - Current package hashes: DLL `CCF61C5E9B69C53C9DFF5E61F0C87913B54A8D1486F97000CBD6125D90903DE4`; manifest `A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF`; PCK `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392`; README `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906`; zip `921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91`.
+- [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`; this does not claim a fresh 26-field loader smoke.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts on 2026-05-22 and copied to the local game root for manual testing.
+  - Current package hashes: DLL `BC79A2634F87314046C8C86120E2FD94030FDC650F5B432864E789AA6B888A4A`; manifest `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`; PCK `6F5080524B57EC07F750D6DCFB6D6B274C5F5780EA60DBABB0E6B254D26D01C5`; README `C735AA228BBB5CD002BF618334A04483C0013328C82ECC33551C65B0A1165599`; zip `EFDF43EBAD1A8A6AD9263E971B5CC0366E823739BA2660A69BDD747DF3425686`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
@@ -38,9 +38,9 @@ Target manifest id: `EZMicroBalance`
 - [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
 - [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.
 - [x] Historical EZ Micro Balance display-name Mod Settings evidence exists for the same `EZMicroBalance` manifest id.
-- [ ] Fresh 25-field loader smoke confirms Spire Plus / `EZMicroBalance` loads from the current package.
-- [ ] Fresh 25-field loader smoke confirms the game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded; unrelated disabled local-mod manifest/name noise in the developer mods folder must stay non-blocking.
-- [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib and Spire Plus / `EZMicroBalance`, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. current source defines 25 SavedSpireFields after the 2026-05-17 static fixes, so a fresh live loader smoke is pending for the current package.
+- [ ] Fresh 26-field loader smoke confirms Spire Plus / `EZMicroBalance` loads from the current package.
+- [ ] Fresh 26-field loader smoke confirms the game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded; unrelated disabled local-mod manifest/name noise in the developer mods folder must stay non-blocking.
+- [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib and Spire Plus / `EZMicroBalance`, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. current source defines 26 SavedSpireFields after the 2026-05-17 static fixes, so a fresh live loader smoke is pending for the current package.
 - [x] Repeat helper-driven normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` reached main menu with only BaseLib and Spire Plus / `EZMicroBalance`, reported `Found 16 SavedSpireFields`, restored settings plus 24 moved mod entries, and audited clean.
 - [x] BaseLib-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with `EZMicroBalance` temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus / `EZMicroBalance`, restored settings plus 25 moved entries and the current-run save, and audited clean.
 - [x] `godot.log` reviewed for controlled smoke-test initializer errors.
@@ -95,7 +95,7 @@ The verifier hashes the package under test and requires current package hash par
 ## Known Issues
 
 - Latest normal Steam-client startup/log verification is historical for the pre-review Spire Plus display-name package.
-  - Evidence under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded exactly BaseLib and `EZMicroBalance`, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, and had 0 release-blocking hits. current source defines 25 SavedSpireFields, so fresh live loader parity remains pending.
+  - Evidence under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded exactly BaseLib and `EZMicroBalance`, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, and had 0 release-blocking hits. current source defines 26 SavedSpireFields, so fresh live loader parity remains pending.
   - The 2026-05-13 helper startup/log pass is historical 16-field evidence. BaseLib-only plug-off evidence loaded only BaseLib; the earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
   - Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list. RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name.
 - Manual feature results are pending; `docs/features/ancients-rework-v4/manual-verification-matrix.md`, `docs/features/ancient-expansion-urda/manual-test-checklist.md`, and `docs/features/ascension-11-20/manual-test-checklist.md` remain the current manual surfaces.

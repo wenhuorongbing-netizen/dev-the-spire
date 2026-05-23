@@ -27,7 +27,7 @@ internal sealed class A20Courtyard : EventModel
             : new[]
             {
                 "res://scenes/events/default_event_layout.tscn",
-                AscensionAssetPaths.BossSealIndicator
+                GetSecondBossBrandIconPath(runState)
             };
     }
 
@@ -88,6 +88,14 @@ internal sealed class A20Courtyard : EventModel
         return AscensionMapService.TryGetMetadata(runState.Map.SecondBossMapPoint)?.BossSeal ??
             BossSealCatalog.TryGetForEncounter(runState.Act.SecondBossEncounter);
     }
+
+    internal static string GetSecondBossBrandIconPath(IRunState? runState)
+    {
+        var definition = TryGetSecondBossBrandDefinition(runState);
+        return definition == null
+            ? AscensionAssetPaths.BossSealIndicator
+            : AscensionAssetPaths.GetBossSealIndicator(definition.Id);
+    }
 }
 
 internal static class AscensionA20CourtyardService
@@ -147,7 +155,7 @@ internal static class AscensionA20CourtyardPortraitPatch
             return true;
         }
 
-        __result = PreloadManager.Cache.GetTexture2D(AscensionAssetPaths.BossSealIndicator);
+        __result = PreloadManager.Cache.GetTexture2D(A20Courtyard.GetSecondBossBrandIconPath(__instance.Owner?.RunState));
         return false;
     }
 }

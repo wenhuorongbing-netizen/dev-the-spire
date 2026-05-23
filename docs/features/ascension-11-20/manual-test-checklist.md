@@ -1,8 +1,8 @@
-# Ascension 11-20 Manual Test Checklist
+﻿# Ascension 11-20 Manual Test Checklist
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
-Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; historical 22-field normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. current source defines 25 SavedSpireFields and needs a fresh loader smoke. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
+Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; historical 22-field normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. current source defines 26 SavedSpireFields and needs a fresh loader smoke. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
 Last updated: 2026-05-14
 
 ## Research-Mode Baseline
@@ -23,10 +23,10 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Historical normal Steam-client helper startup/log verification under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, found 0 release-blocking signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes. current source defines 25 SavedSpireFields, so fresh loader parity remains pending.
-- Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the historical 22-field smoke plus the current 25-field source state.
+- Historical normal Steam-client helper startup/log verification under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, found 0 release-blocking signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes. current source defines 26 SavedSpireFields, so fresh loader parity remains pending.
+- Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the historical 22-field smoke plus the current 26-field source state.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
-- Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded Boss Royal Seals, and A20 vanilla double-boss map path/Brand/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
+- Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded boss dedicated abilities, and A20 vanilla double-boss map path/Branded Form/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. The current source also patches `ActModel.CreateMap` as an earlier geometry boundary before the run hook. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
 - Read-only diagnostics are implemented behind `EZMB_ASCENSION_DIAGNOSTICS=1`.
 - Full Ascension gameplay has not been live-tested yet beyond the A11 map spot checks, saved-map boss-reachability graph proof, and targeted A14 Rootblight English/ZHS hover/starter-notice spot checks.
@@ -73,7 +73,7 @@ Use this protocol for A11-A20 live evidence, especially Rootblight/Blight Sprout
 
 Execute with `EZMB_ASCENSION_DIAGNOSTICS=1` and no gameplay debug level unless the test case explicitly needs Rootblight behavior.
 
-- [ ] Game loads with BaseLib v3.1.2 and Spire Plus enabled.
+- [ ] Game loads with BaseLib v3.1.4 and Spire Plus enabled.
 - [ ] Starting a normal run with only diagnostics enabled does not add Rootblight.
 - [ ] `godot.log` records run Ascension, act index, debug/public gate state, Rootblight level/card counts, room type, round, and combat Blight Sprout counts.
 - [ ] Diagnostics logs appear from the run/combat hook path without mutating gameplay beyond the selected Ascension level.
@@ -87,7 +87,7 @@ Execute only after Rootblight MVP is implemented.
 
 - [x] Build succeeds after implementation.
 - [x] Publish succeeds after localization/resources changed.
-- [ ] Game loads with BaseLib v3.1.2 and Spire Plus enabled.
+- [ ] Game loads with BaseLib v3.1.4 and Spire Plus enabled.
 - [ ] Starting a normal run with the debug/internal gate disabled does not add Rootblight.
 - [ ] Existing Ancient reward rebalance behavior still loads and does not throw.
 - [ ] `godot.log` has no Spire Plus / `EZMicroBalance` Ascension errors.
@@ -231,9 +231,9 @@ Default-on implementation present; live co-op testing pending. Use `docs/feature
 - [ ] Multiplayer A16 Banner marker/hover remains visible and host/client agree on the marked node.
 - [ ] Multiplayer A14/A15/A18 Rootblight and Blight Sprout state remains independently owned per player.
 - [ ] Starting a two-player A11/A12/A14/A16 run reaches run load without ownership warnings, checksum divergence, or desync in `godot.log`.
-- [ ] A20 multiplayer selection logs a clear limitation: multiplayer A20 selection is enabled for development testing; Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification; A11-A19 inherited systems may still apply if their gates are enabled.
+- [ ] A20 multiplayer selection logs a clear limitation: multiplayer A20 selection is enabled for development testing; A20 Branded Form / second-boss enhanced dedicated ability gameplay is disabled or downgraded in co-op pending live verification; A11-A19 inherited systems may still apply if their gates are enabled.
 - [ ] A20 multiplayer selection is not treated as full A20 co-op support.
-- [ ] Starting a two-player A20 run does not silently apply single-player-only Dual King Brands behavior without warning.
+- [ ] Starting a two-player A20 run does not silently apply single-player-only Branded Form behavior without warning.
 - [ ] `godot.log` has no desync, checksum divergence, ownership, or multiplayer state warnings after the co-op pass.
 
 ## A12 Firemarked Elite and Forge Token
@@ -255,8 +255,9 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 - [ ] Combat shows one Firemarked Elite with the active firemark type as a visible enemy power.
 - [ ] Might Mark grants only the marked enemy +1/+2/+4 Strength by act; unblocked attack damage builds Heat, and 2 Heat makes the next first attack deal +1/+2/+4 damage.
 - [ ] Giant Mark increases only the marked enemy's max/current HP by +20%/+30%/+45% by act; dropping below half HP exposes Molten Core, which breaks after 20%/25%/30% original Max HP damage by act and removes 10% Max HP.
-- [ ] Forge Armor Mark gives only the marked enemy 5/10/20 Molten Armor after each enemy turn by act; fully breaking that armor makes the next armor gain skip, up to 2 times per combat.
-- [ ] Constant Heal Mark heals only the marked enemy for 4/8/16 HP at enemy turn end by act; dealing 12/24/48 damage to it that turn prevents that heal.
+- [ ] Firemarked Elite picks one Firemark Host. Overflow affects at most one secondary non-summon enemy at a time and stops after the host dies.
+- [ ] Forge Armor Mark gives only the host 8/14/24 Molten Armor at player turn start; if the host has no Block at turn end, the next armor gain is skipped, up to twice.
+- [ ] Constant Heal Mark heals only the marked enemy for 4/8/16 HP at enemy turn end by act; dealing 12/24/48 damage before its next heal prevents that heal.
 - [ ] Firemarked Elite card rewards show one additional card option.
 - [ ] Defeating firemarked elite grants one visible Forge Token status relic with counter 1.
 - [ ] Forge Token hover text explains Rest, Smith, fallback heal, max-one cap, and random upgrade targeting, without claiming special-action payout.
@@ -329,21 +330,21 @@ Gated implementation present; live testing pending. Execute in single-player by 
 
 Gated implementation present as BossSeal definitions plus source-guarded runtime hooks; live testing pending. Execute A19 with `EZMB_ASCENSION_DEBUG_LEVEL=19`; execute A20 partial checks with `EZMB_ASCENSION_DEBUG_LEVEL=20` only after a second boss map point exists through vanilla/proven flow.
 
-- [ ] A19 boss-specific Royal Seal metadata is assigned at map generation.
-- [ ] The assigned Seal name matches the active boss encounter in `BossSealCatalog`.
-- [ ] Boss map point hover previews the current Royal Seal name and summary before entering combat.
-- [ ] Aeonglass Boss hover states the temporary +5 Strength Royal Seal before entering combat.
-- [ ] Boss combat logs the Royal Seal/Brand as armed with source-guarded evidence before applying only the currently guarded hook path.
-- [ ] Boss map point hover text names Royal Seal or King Brand and includes the matching per-boss Royal Seal or Brand summary without raw localization keys.
+- [ ] A19 boss-specific dedicated ability metadata is assigned at map generation.
+- [ ] The assigned ability name matches the active boss encounter in `BossSealCatalog`.
+- [ ] Boss map point hover previews the current dedicated ability name and summary before entering combat.
+- [ ] Aeonglass Boss hover states Time Sand Reflow before entering combat: after Ebb, 2 shared Time Sand appears; each energy spent clears 1, and remaining Time Sand adds extra Wither to the next Increasing Intensity.
+- [ ] Boss combat logs the dedicated ability / Branded Form as armed with source-guarded evidence before applying only the currently guarded hook path.
+- [ ] Boss map point hover text names the dedicated ability or Branded Form and includes the matching per-boss summary without raw localization keys.
 - [ ] Boss card rewards improve as documented.
-- [ ] Holy Daze, Martyr Oath, Ink Return, Startled Shell, Soul Tide, Boiling Critical, Misaligned Shell, Marginal Note, Struggle Bait, Aeonglass Strength, Chosen Decree, and Residual Sample each trigger only on the matching boss and remain documented as pending live verification. Aeonglass Strength should apply exactly +5 Strength to the `AEONGLASS` monster at combat start; no complex Brand/Seal mechanic is implemented for Aeonglass yet.
+- [ ] Holy Daze, Martyr Oath, Ink Return, Plating Wake, Soul Tide, Unweakenable, Claw Calibration, Marginal Note, Escape Fatigue, Time Sand Reflow, Royal Decree, and Experimental Record each trigger only on the matching boss and remain documented as pending live verification. Aeonglass Time Sand should be created after Ebb, cleared by energy spent, converted into extra Wither for the next Increasing Intensity at player turn end, and add Branded Form Eye Laser extra hits only when Time Sand remains.
 - [ ] No generic Armor/Rage/Barrier/Chaos placeholder effect applies.
 - [ ] A20 creates the final-act second Boss through the vanilla double-boss map path when the A20 gate is active.
 - [ ] The Act 3 map shows both Boss map points with vanilla Boss icons/names before route commitment.
-- [ ] Boss 2 receives Brand metadata and Brand parameters.
-- [ ] Boss 2 Brand parameters differ from A19 Royal Seal parameters where documented: Martyr Oath trigger cap/block, Ink Return restored Slippery/Strength, Startled Shell Plating/Soul Siphon reduction, Soul Tide Artifact/Beckon cap, Boiling Critical Steam threshold/warning Block, Misaligned Shell Block/Artifact, Marginal Note count, Struggle Bait timer Block, Aeonglass +5 Strength, Chosen Decree Queen/player Block, and Residual Sample first phase count.
-- [ ] Boss 2 map point hover text warns that the stronger Brand is active.
-- [ ] Boss 2 map point hover shows the exact King Brand name and summary before entering combat.
+- [ ] Boss 2 receives Branded Form metadata and parameters.
+- [ ] Boss 2 Branded Form parameters differ from A19 dedicated ability parameters where documented: Martyr Oath attack bonus/same-turn Artifact, Ink Return final Slippery percentage, Plating Wake Plating/Soul Siphon reduction, Soul Tide Block cap, Unweakenable explosion Vulnerable, Claw Calibration threshold/damage, Deep Thought side-cost cap, Escape Fatigue Vigor, Time Sand/Wither/Eye Laser echo, Royal Decree Majesty cap, and Experimental Record sample count.
+- [ ] Boss 2 map point hover text warns that Branded Form is active.
+- [ ] Boss 2 map point hover shows the exact Branded Form name and summary before entering combat.
 - [ ] A20 Boss 1 reward screen offers one Boss card reward before the second Boss.
 - [ ] Boss 1 reward screen shows the A20 intermission header and second-Boss proceed text.
 - [ ] Boss 1 reward screen opens the A20 courtyard event before the second Boss.
@@ -371,6 +372,6 @@ Planning checks for the next release-engineering pass; do not mark these complet
 - [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
 - [ ] Publish the current package before runtime smoke.
 - [ ] Launch controlled `--force-steam off` with only BaseLib and Spire Plus enabled.
-- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source defines 25 SavedSpireFields after Seedbed root-suppression markers. The previous smoke log still reports `Found 22 SavedSpireFields`, so a fresh live loader rerun is required before claiming loader parity for this source state.
+- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source defines 26 SavedSpireFields after Seedbed root-suppression markers. The previous smoke log still reports `Found 22 SavedSpireFields`, so a fresh live loader rerun is required before claiming loader parity for this source state.
 - [ ] Confirm the controlled smoke has no Spire Plus / `EZMicroBalance` startup exception or error.
 - [ ] Keep normal Steam-client Mod Settings verification separate from controlled smoke.

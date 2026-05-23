@@ -223,8 +223,13 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "Live restore for this path remains pending",
             "targetChoiceCount = encounter.VictoryChoiceCount",
             "choice.Relic.Owner = owner",
-            "encounter.VictoryGold",
+            "SettleVakuuRewards(owner, encounter)",
             "options.Count > 0 ? options : [CreateVictoryFallbackOption(vakuu, combatRoom)]");
+        AssertSourceContains(
+            victoryFlow,
+            "encounter.VictoryGold",
+            "encounter.BloodDebtShortfall",
+            "CreatureCmd.SetCurrentHp");
         AssertSourceContains(
             victoryChoices,
             "IsEligibleSourceAncientReward(owner, relic)",

@@ -10,7 +10,7 @@ Ascension 11-20 is available by default in the current private-beta multiplayer 
 | --- | --- |
 | `development-checklist-v2.md` | Compact current checklist. Full v2.0 design draft is archived under `docs/archive/feature-inputs/ascension-11-20/`. |
 | `source-design.md` | Behavior design and scope boundaries. |
-| `api-research.md` | Local v0.105.0 source evidence, safe APIs, and risky patch points. |
+| `api-research.md` | Local v0.106.0 source evidence, safe APIs, and risky patch points. |
 | `implementation-plan.md` | Implementation phases and safety strategy. |
 | `manual-test-checklist.md` | Manual single-player and feature verification checklist. |
 | `multiplayer-test-runbook.md` | Two-PC multiplayer setup, test matrix, and log checks. |
@@ -34,7 +34,7 @@ Historical prompt/spec material lives in `docs/archive/feature-inputs/ascension-
 | `EZMicroBalanceCode/Ascension/Map/AscensionMapService.MapGraphHelpers.cs` | Shared map reachability, rest-row, and route-safety helpers. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.cs` | Combat-time Ascension modifier entrypoints and node metadata refresh. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners*.cs` | A16 Banner Room dispatch, single-enemy fallback, per-banner combat behavior, rewards, and per-turn Banner state. |
-| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals*.cs` | A19/A20 Boss Seal and King Brand lifecycle dispatch, turn flow, combat events, and effect groups. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals*.cs` | A19/A20 boss dedicated ability and Branded Form lifecycle dispatch, turn flow, combat events, and effect groups. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.HolyDaze.cs`, `.MartyrOath.cs`, `.InkReturn.cs`, and `.StartledShell.cs` | A19/A20 monster-specific Boss Seal windows and enemy pressure effects. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.MarginalNote.cs`, `.MisalignedShell.cs`, and `.StruggleBait.cs` | A19/A20 card-pressure Boss Seal effects. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.PhaseCarryover.cs` | A19/A20 phase carryover and courtyard recovery effects. |

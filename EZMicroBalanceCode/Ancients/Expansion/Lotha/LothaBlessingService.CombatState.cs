@@ -16,13 +16,9 @@ internal static partial class LothaBlessingService
 
         public bool MirrorHallEchoConsumedThisTurn { get; set; }
 
-        public bool ClosedCourtUsed { get; set; }
+        public bool ClosedCourtFirstTurnUsed { get; set; }
 
-        public bool ClosedCourtDiscountActiveThisTurn { get; set; }
-
-        public int ClosedCourtDiscountsRemainingThisTurn { get; set; }
-
-        public HashSet<CardModel> ClosedCourtDiscountedCardsThisTurn { get; } = [];
+        public bool ClosedCourtSecondPulseUsed { get; set; }
 
         public bool PresumptionLost { get; set; }
 

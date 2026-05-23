@@ -1,33 +1,27 @@
-using Godot;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
-using MegaCrit.Sts2.Core.Nodes.HoverTips;
-using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using MegaCrit.Sts2.Core.Map;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]
 internal static class FiremarkedEliteMapHoverPatch
 {
-    [HarmonyPostfix]
-    private static void Postfix(NNormalMapPoint __instance)
+    internal static bool TryCreateHoverTip(MapPoint point, out HoverTip hoverTip)
     {
-        if (!__instance.Point.Quests.Any(quest => quest is FiremarkedEliteMapQuestMarker))
+        hoverTip = default;
+        if (!point.Quests.Any(quest => quest is FiremarkedEliteMapQuestMarker))
         {
-            return;
+            return false;
         }
 
-        var metadata = AscensionMapService.TryGetMetadata(__instance.Point);
+        var metadata = AscensionMapService.TryGetMetadata(point);
         if (metadata?.Firemark == null)
         {
-            return;
+            return false;
         }
 
-        var hoverTipSet = NHoverTipSet.CreateAndShow(__instance, CreateHoverTip(metadata.Firemark.Value));
-        if (hoverTipSet != null)
-        {
-            Callable.From(() => hoverTipSet.SetAlignment(__instance, HoverTip.GetHoverTipAlignment(__instance))).CallDeferred();
-        }
+        hoverTip = CreateHoverTip(metadata.Firemark.Value);
+        return true;
     }
 
     private static HoverTip CreateHoverTip(FiremarkKind firemark)
@@ -55,16 +49,20 @@ internal static class FiremarkedEliteMapHoverPatch
         {
             case FiremarkKind.Might:
                 description.Add("Strength", ActValue(actIndex, 1m, 2m, 4m));
+                description.Add("OverflowStrength", ActValue(actIndex, 1m, 1m, 2m));
                 break;
             case FiremarkKind.Giant:
                 description.Add("MaxHpPercent", ActValue(actIndex, 20m, 30m, 45m));
+                description.Add("OverflowDamage", ActValue(actIndex, 6m, 12m, 24m));
                 break;
             case FiremarkKind.ForgeArmor:
-                description.Add("Armor", ActValue(actIndex, 5m, 10m, 20m));
+                description.Add("Armor", ActValue(actIndex, 8m, 14m, 24m));
+                description.Add("OverflowBlock", ActValue(actIndex, 3m, 6m, 12m));
                 break;
             case FiremarkKind.ConstantHeal:
                 description.Add("Heal", ActValue(actIndex, 4m, 8m, 16m));
                 description.Add("InterruptDamage", ActValue(actIndex, 12m, 24m, 48m));
+                description.Add("OverflowHeal", ActValue(actIndex, 2m, 4m, 8m));
                 break;
         }
     }

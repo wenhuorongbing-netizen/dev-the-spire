@@ -50,7 +50,7 @@ internal sealed class LothaCombatHook : AbstractModel
     public override Task AfterPlayerTurnStartEarly(PlayerChoiceContext choiceContext, Player player) =>
         LothaBlessingService.AfterPlayerTurnStart(choiceContext, player);
 
-    public override Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side) =>
+    public override Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants) =>
         LothaBlessingService.AfterTurnEnd(choiceContext, side);
 
     public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount) =>

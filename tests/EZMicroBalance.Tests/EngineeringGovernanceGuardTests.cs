@@ -177,9 +177,9 @@ public sealed class EngineeringGovernanceGuardTests
             baseline,
             "This is not live evidence.",
             "HEAD | `25f99fb",
-            "Total patch declarations | 137",
+            "Total patch declarations | 135",
             "Fresh current-package loader smoke | Pending live run",
-            "README_INSTALL | `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906`");
+            "README_INSTALL | `C735AA228BBB5CD002BF618334A04483C0013328C82ECC33551C65B0A1165599`");
 
         AssertSourceContains(
             scope,
@@ -232,7 +232,7 @@ public sealed class EngineeringGovernanceGuardTests
 
         AssertSourceContains(
             patchBoundaries,
-            "Current count: 137 Harmony patch declarations",
+            "Current count: 134 Harmony patch declarations",
             "A20 dual boss",
             "RewardsSetSynchronizer",
             "StartRunLobby.SyncAscensionChange",

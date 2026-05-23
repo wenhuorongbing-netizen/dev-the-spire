@@ -28,11 +28,6 @@ internal static partial class LothaBlessingService
             return true;
         }
 
-        if (TryApplyClosedCourtEnergyDiscount(card, originalCost, combatState, out modifiedCost))
-        {
-            return true;
-        }
-
         return false;
     }
 

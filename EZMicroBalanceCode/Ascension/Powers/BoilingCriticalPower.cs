@@ -1,29 +1,22 @@
 using MegaCrit.Sts2.Core.Entities.Powers;
-using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal sealed class BoilingCriticalPower : BossSealPower
 {
+    protected override BossSealId? SealId => BossSealId.BoilingCritical;
+
     public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override int DisplayAmount => 0;
 
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
-            "王印：沸腾临界",
-            "死亡爆发每层额外造成[blue]2[/blue]点伤害。爆发回合开始时，玩家获得预警[gold]格挡[/gold]。",
-            "爆发更强；爆发前会给出预警[gold]格挡[/gold]。")
+            "不可削弱",
+            "爆发回合，瀑布巨兽清除自身[gold]虚弱[/gold]、攻击降低和其他减益，并获得足够[gold]人工制品[/gold]。本次爆发伤害不会被虚弱或攻击降低压低，并会使受影响玩家[gold]易伤[/gold]。",
+            "爆发不能被虚弱或降攻压低，并施加易伤。")
         : new PowerLoc(
-            "Royal Seal: Boiling Critical",
-            "Death explosion deals [blue]2[/blue] more damage per stack. At the start of the explosion turn, players gain warning [gold]Block[/gold].",
-            "Explosion is stronger and gives warning [gold]Block[/gold].");
-
-    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
-    {
-        if (dealer != Owner || Owner.Monster is not WaterfallGiant || Owner.Monster.NextMove.StateId != "EXPLODE_MOVE")
-        {
-            return 0m;
-        }
-
-        return Amount * 2m;
-    }
+            "Unweakenable",
+            "On the explosion turn, Waterfall Giant clears [gold]Weak[/gold], attack reduction, and other debuffs, then gains enough [gold]Artifact[/gold]. The explosion cannot be reduced by Weak or attack reduction, and affected players become [gold]Vulnerable[/gold].",
+            "The explosion ignores Weak and applies Vulnerable.");
 }

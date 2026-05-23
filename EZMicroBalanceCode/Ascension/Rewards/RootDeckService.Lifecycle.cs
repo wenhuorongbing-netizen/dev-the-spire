@@ -16,7 +16,6 @@ internal static partial class RootDeckService
             await TrimRootblightDeckToCap(player, "run-state sync");
             if (!HasRootBeginsApplied(player))
             {
-                MarkRootBeginsApplied(player);
                 var addedStartingRoot = false;
                 if (FindRootFamilyCards(player).Count == 0)
                 {
@@ -26,6 +25,7 @@ internal static partial class RootDeckService
                 SetDiagnosticLevelFromDeck(player);
                 if (addedStartingRoot)
                 {
+                    MarkRootBeginsApplied(player);
                     ReleaseEvidenceLog.Log(
                         "Rootblight",
                         "rootblight_added",
@@ -36,6 +36,17 @@ internal static partial class RootDeckService
                             ["source"] = "Root Begins"
                         });
                 }
+                else if (FindRootFamilyCards(player).Count > 0)
+                {
+                    MarkRootBeginsApplied(player);
+                }
+                else
+                {
+                    MainFile.Logger.Warn(
+                        $"[EZMicroBalance] Ascension A14 delayed: Rootblight I could not be added for player {runState.GetPlayerSlotIndex(player)}; the next room/act hook will retry.");
+                    continue;
+                }
+
                 MainFile.Logger.Info(
                     addedStartingRoot
                         ? $"[EZMicroBalance] Ascension A14 applied: Rootblight I added for player {runState.GetPlayerSlotIndex(player)}."

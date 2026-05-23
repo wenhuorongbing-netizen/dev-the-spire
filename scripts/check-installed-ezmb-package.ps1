@@ -53,6 +53,7 @@ function Get-ExpectedHash {
 $expected = @{
     'EZMicroBalance.dll' = Get-ExpectedHash 'DLL'
     'EZMicroBalance.pck' = Get-ExpectedHash 'PCK'
+    'README_INSTALL.txt' = Get-ExpectedHash 'README_INSTALL'
 }
 $expected['EZMicroBalance.json'] = Get-ExpectedHash 'Manifest'
 if (-not $expected['EZMicroBalance.json']) {
@@ -63,6 +64,7 @@ $files = [ordered]@{
     'EZMicroBalance.dll' = 'DLL'
     'EZMicroBalance.json' = 'JSON'
     'EZMicroBalance.pck' = 'PCK'
+    'README_INSTALL.txt' = 'README_INSTALL'
 }
 
 $allPass = $true

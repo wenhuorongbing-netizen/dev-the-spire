@@ -35,11 +35,6 @@ internal sealed partial class RootBudCombatHook
         var tracker = GetTracker(state);
         if (card.Pile?.Type == PileType.Hand)
         {
-            if (await UrdaBlessingService.TryCatchSeedbedCardFromHand(card, "card entered hand"))
-            {
-                return;
-            }
-
             await AscensionCombatModifierService.AfterCardEnteredHand(state, tracker, card);
         }
 
@@ -78,8 +73,7 @@ internal sealed partial class RootBudCombatHook
             }
         }
 
-        if (card.Pile?.Type == PileType.Hand &&
-            !await UrdaBlessingService.TryCatchSeedbedCardFromHand(card, "card drawn"))
+        if (card.Pile?.Type == PileType.Hand)
         {
             await AscensionCombatModifierService.AfterCardEnteredHand(state, tracker, card);
         }
@@ -103,5 +97,16 @@ internal sealed partial class RootBudCombatHook
         }
 
         await AscensionCombatModifierService.AfterCardPlayed(state, tracker, cardPlay);
+    }
+
+    public override async Task AfterEnergySpent(CardModel card, int amount)
+    {
+        var state = CurrentCombatState();
+        if (state == null)
+        {
+            return;
+        }
+
+        await AscensionCombatModifierService.AfterEnergySpent(state, GetTracker(state), card, amount);
     }
 }

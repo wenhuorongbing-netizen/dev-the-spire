@@ -6,6 +6,7 @@ Last updated: 2026-05-13
 
 - `Urda, Loamweaver` is a vertical-scope Ancient expansion feature in the private-beta prototype lane.
 - Refactor scope: keep source refactor clean, reduce future reading cost, and keep runtime claims truthful.
+- Authority note, 2026-05-22: this folder is Urda support evidence. Current combined Ancient behavior is governed by `docs/issues.md`, `docs/test-ready-development-goal.md`, `docs/features/ancient-expansion-v2.2/source-design.md`, and `docs/issues/v3.3-design-review.md`; older Seedbed reward-alternative rows here are historical unless repeated there.
 
 ## Status: Prototype / Default-on ten-blessing source candidate
 

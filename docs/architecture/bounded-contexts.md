@@ -22,6 +22,26 @@ This is the release-candidate boundary map for the single `Spire Plus / EZMicroB
 - Saved state should be explicit through existing save/deck/run fields when behavior must survive reload.
 - Preview tools must stay isolated under `EZMicroBalanceCode/Preview/` and must not mutate rewards, reveal cells, create real cards, or advance committed RNG.
 
+## Extension Rules
+
+- Add new behavior inside the owning context first. Promote shared code to `Ancients/Common`, `Ascension/Core`, or a local helper only after two active contexts need the same rule.
+- Keep Harmony patches as adapters: locate source objects, validate the gate, call a feature service, and exit. Put policy, RNG choices, save-field formatting, and player-visible text outside the patch when practical.
+- Use comments to explain why a feature touches a risky source seam, such as map entry, reward generation, save/load, combat-room transitions, or multiplayer state. Avoid comments that restate the statement below them.
+- Preserve save-field formats unless a bug requires migration. If a format changes, document the migration in the feature README and add a source guard.
+- For multiplayer-sensitive code, state whether it is single-player-only, host-authoritative, or read-only preview behavior. Do not silently mutate shared run state from a client path.
+- Keep preview behavior pure. Preview code may fork RNG or dim a mask; it must not call source APIs that sound like reveal, reward, enter, pull, add, or resolve unless the live result is intentionally being committed.
+
 ## Current Priority
 
 The highest-value next refactors are behavior seams for Root Eyes, Banner/Firemark, and Vakuu flow. These are the places where source tests can move away from snippet-only assertions toward deterministic policy tests.
+
+## Decoupling Backlog
+
+Extract seams only from high-risk behavior, not as broad managers. Keep patches as adapters and keep save-field formats stable unless a migration is tested.
+
+| Seam | Split out | Acceptance |
+| --- | --- | --- |
+| `RootSightPreviewPolicy` | Node eligibility, encounter/event preview, reservation, entry commit. | Unit-test preview choices without Godot UI patches; co-op mutation stays gated. |
+| `VakuuFightFlow` | Parent event restore, child combat state, rewardless victory, save restore. | State transitions have source tests and live evidence rows. |
+| `BannerCombatPolicy` / `FiremarkWindowPolicy` | Act-scaled values, trigger timing, current-act text, marker hovers. | One policy owns numbers used by powers, map hover, and localization variables. |
+| `PreviewTransformPolicy` | Transform prediction filtering and forked RNG. | Prediction stays read-only and never creates mutable cards or advances committed RNG. |

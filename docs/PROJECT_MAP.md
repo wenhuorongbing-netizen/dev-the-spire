@@ -25,14 +25,18 @@
 | `Sts2PathDiscovery.props` | Current | Local path discovery helper used by build props. |
 | `docs/` | Current | Documentation index, current release docs, feature records, and archive. |
 | `scripts/` | Current | Repository helper scripts. |
+| `website/` | Current | GitHub Pages static site for the Spire Plus change log, effect tables, validation state, and download entry. |
 | `.github/workflows/repository-hygiene.yml` | Current | Hosted CI-safe manifest, JSON, docs, patch inventory, and whitespace checks. |
 | `.github/workflows/full-local-validation.yml` | Current | Self-hosted Windows full no-game validation lane; requires explicit StS2 and Godot paths. |
+| `.github/workflows/spire-plus-site.yml` | Current | Publishes `website/` to GitHub Pages. |
 | `docs/archive/` | Current | Historical planning, prompt material, release archaeology, archived audits, and implementation records. |
 | `docs/archive/feature-inputs/` | Archive | Historical feature prompts, superseded implementation specs, and old source-design inputs moved out of active feature folders. |
 | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Archive | Historical v2.2 source-audit matrices; do not use as default next-development input. |
 | `docs/archive/feature-audits/review-pre-slim-20260518.md` | Archive | Full historical source-review log before the compact current `docs/review.md`. |
 | `docs/archive/feature-audits/toreview-pre-slim-20260518.md` | Archive | Full historical retest queue before the compact current `docs/toreview.md`. |
+| `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md` | Archive | Historical architecture/clean-code audit; superseded `EZFuturePeek` separation advice is not current direction. |
 | `docs/archive/implementation-records/` | Archive | Compact implementation records moved out of the active reading path. |
+| `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Archive | Historical RC1 live-validation log for older package states; current evidence is in `docs/release-evidence-status.md`. |
 | `docs/archive/superseded/setup-spec-original-scaffold.md` | Archive | Historical original `EzDailyContent` setup specification; current setup starts from `README.md`, `docs/README.md`, and `docs/dev-environment.md`. |
 | `docs/archive/project-state-history-20260516.md` | Archive | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation/package history. |
 | `docs/issues/` | Current support | Compact issue follow-up plus compact manual evidence queue retained for guard/reference support (`docs/issues/waiting-tests.md`). |
@@ -99,8 +103,8 @@ The private beta zip should contain only those three installable files plus `REA
 | `.tools/` | Ignored local tools | Downloaded GDRETools, Godot, ILSpy, and local helper binaries. |
 | `.godot/` | Ignored generated output | Godot import/build cache. |
 | `publish/` | Ignored release output | Package staging, versioned package, and private beta zip. |
-| `website/` | Removed ignored local draft | Root draft was deleted after snapshotting; `.gitignore` keeps future regenerated copies out of release-candidate diffs unless deliberately promoted. |
-| `.github/workflows/spire-plus-site.yml` | Removed ignored local draft | Website-only Pages workflow was deleted after snapshotting; promote only with repaired ownership/build docs. |
+| `website/` | Promoted current site | Root static site was deliberately promoted from local-draft status for public reading and download entry. |
+| `.github/workflows/spire-plus-site.yml` | Promoted current workflow | Pages workflow was deliberately promoted with `website/` as the only uploaded artifact path. |
 | `.tools/archive/local-art-and-calibration-20260515/` | Ignored local archive | Former root `art_pipeline/` and `asset/` generated art/calibration material; not part of the active PCK unless explicitly revalidated and promoted later. |
 | `.tools/archive/local-root-clutter-20260515/` | Ignored local archive | Former root local-only package/source-analysis/website zip clutter preserved before any deletion decision. |
 | `.tools/archive/local-website-preview-20260516/` | Ignored local archive | Snapshot of the removed `website/` static preview and `.github` Pages workflow taken during cleanup; use only if the draft is deliberately promoted later. |
@@ -122,16 +126,19 @@ Start at `docs/README.md`.
 | Baseline freeze | `docs/month-plan/baseline-2026-05-20.md` |
 | Commit boundaries | `docs/month-plan/commit-boundaries.md` |
 | Full local CI lane | `.github/workflows/full-local-validation.yml` and `scripts/ci-full-validation.ps1` |
+| Public change log website | `website/README.md` and `.github/workflows/spire-plus-site.yml` |
 | Test-ready development goal | `docs/test-ready-development-goal.md` |
 | Manual evidence queue | `docs/issues/waiting-tests.md` (compact support queue only; full historical rows are archived, and next development starts from `docs/test-ready-development-goal.md`) |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |
 | Ancient expansion v2.2 | `docs/features/ancient-expansion-v2.2/README.md` |
 | Ancient expansion v2.2 source audit archive | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/README.md` |
-| Urda current test slice | `docs/features/ancient-expansion-urda/README.md` |
+| Urda support evidence | `docs/features/ancient-expansion-urda/README.md` |
 | Ascension 11-20 | `docs/features/ascension-11-20/README.md` |
 | Preview tools | `docs/features/preview-tools/README.md` |
 | Architecture decision | `docs/architecture-ez-micro-balance.md` |
 | Historical planning | `docs/archive/README.md` |
+
+Authority note: `docs/features/ancient-expansion-urda/` and `docs/features/ancients-rework-v4/reference-inputs/` are retained for tests and traceability. If they conflict with `docs/issues.md`, `docs/test-ready-development-goal.md`, or current combined Ancient docs, use the current docs.
 
 ## Extension Landmarks
 
@@ -141,6 +148,7 @@ Start at `docs/README.md`.
 - Add user-facing text in both `EZMicroBalance/localization/eng/` and `EZMicroBalance/localization/zhs/`.
 - Add or update tests in `tests/EZMicroBalance.Tests/` whenever source shape, localization, docs, package contents, or release evidence changes.
 - Update feature README files and `docs/dev-environment.md` when implementation status, validation evidence, versions, or package hashes change.
+- Removed ignored local draft website snapshot: `.tools/archive/local-website-preview-20260516`; `/website/` and the Pages workflow stay out of release-candidate diffs.
 
 ## Milestones
 
@@ -149,5 +157,5 @@ Start at `docs/README.md`.
 | M0 | Local setup and baseline build/publish established. |
 | M1 | Ancient reward rebalance implemented from the original scaffold. |
 | M2 | Independent `EZMicroBalance` project created and root build succeeds. |
-| M3 | Current v0.105.0/BaseLib v3.1.2 source, build, publish, package, and controlled smoke evidence refreshed. |
+| M3 | Current v0.106.0/BaseLib v3.1.4 source, build, publish, and package evidence refreshed; controlled live smoke remains pending for this package. |
 | M4 | Private beta release after normal Steam-client Mod Settings, live gameplay/manual matrix, clean handoff, and user-approved push. |

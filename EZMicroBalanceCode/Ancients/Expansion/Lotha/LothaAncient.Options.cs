@@ -1,3 +1,4 @@
+using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Events;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
@@ -26,7 +27,7 @@ internal sealed partial class EzmbLotha
         var forcedBlessing = LothaFeatureGate.ForcedBlessing;
         if (string.IsNullOrWhiteSpace(forcedBlessing))
         {
-            return TakeFallbackOptions(options);
+            return TakeFallbackOptions(options, includeReroll: true);
         }
 
         var normalized = forcedBlessing.Trim().ToLowerInvariant();
@@ -42,10 +43,13 @@ internal sealed partial class EzmbLotha
         }
 
         MainFile.Logger.Warn($"[EZMicroBalance] Lotha forced blessing '{forcedBlessing}' did not match any option; showing fallback options.");
-        return TakeFallbackOptions(options);
+        return TakeFallbackOptions(options, includeReroll: true);
     }
 
-    private IReadOnlyList<EventOption> TakeFallbackOptions(List<EventOption> options)
+    private IReadOnlyList<EventOption> TakeFallbackOptions(
+        List<EventOption> options,
+        bool includeReroll,
+        IReadOnlySet<string>? excludedTextKeys = null)
     {
         if (options.Count == 0)
         {
@@ -58,7 +62,45 @@ internal sealed partial class EzmbLotha
             MainFile.Logger.Warn($"[EZMicroBalance] Lotha only has {options.Count} source-backed option(s), expected {ExpectedInitialOptionCount}; showing all available options.");
         }
 
-        return options.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList();
+        var candidates = excludedTextKeys is { Count: > 0 }
+            ? options.Where(option => !excludedTextKeys.Contains(option.TextKey)).ToList()
+            : options;
+        if (candidates.Count < ExpectedInitialOptionCount)
+        {
+            candidates = options;
+        }
+
+        var selected = candidates.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList();
+        if (includeReroll && AncientInitialOptionReroll.CanOffer(this, options.Count, ExpectedInitialOptionCount))
+        {
+            selected.Add(AncientInitialOptionReroll.CreateOption(
+                this,
+                InitialOptionKey(AncientInitialOptionReroll.OptionId),
+                RerollInitialOptions));
+        }
+
+        return selected;
+    }
+
+    private Task RerollInitialOptions()
+    {
+        if (!AncientInitialOptionReroll.TrySpend(this))
+        {
+            return Task.CompletedTask;
+        }
+
+        var previousChoices = CurrentOptions
+            .Where(option => option.TextKey != InitialOptionKey(AncientInitialOptionReroll.OptionId))
+            .Select(option => option.TextKey)
+            .ToHashSet(StringComparer.Ordinal);
+        var options = AllPossibleOptions
+            .Where(IsCurrentlyAvailableOption)
+            .ToList();
+        var rerolled = TakeFallbackOptions(options, includeReroll: false, previousChoices);
+        AncientInitialOptionReroll.ReplaceGeneratedOptionsForHistory(this, rerolled);
+        SetEventState(InitialDescription, rerolled);
+        MainFile.Logger.Info("[EZMicroBalance] Lotha initial Ancient rewards rerolled once.");
+        return Task.CompletedTask;
     }
 
     private bool IsCurrentlyAvailableOption(EventOption option)

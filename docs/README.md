@@ -14,12 +14,14 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current feature status and focused doc map. |
 | Project map | `PROJECT_MAP.md` | Active, support, archive, and local-only path map. |
 | Cleanup audit | `worktree-cleanup-audit.md` | Current cleanup/refactor scope, archive decisions, and owner-decision areas. |
+| Architecture boundaries | `architecture/bounded-contexts.md` | Bounded contexts, dependency direction, extension rules, and refactor priorities. |
 | Patch inventory | `patch-inventory.md` | Generated Harmony patch owner/risk inventory; refresh with `scripts/generate-patch-inventory.ps1`. |
 | Release evidence dashboard | `release-evidence-status.md` | Compact live/manual evidence state for the current test package. |
 | Release scope | `specs/release-scope-v1.md` | Current release-candidate boundary and go/no-go rules from `goal.md`. |
 | Traceability matrix | `specs/release-traceability-matrix.md` | Player promise to source/guard/live evidence mapping. |
 | Baseline freeze | `month-plan/baseline-2026-05-20.md` | Current no-game baseline, package hashes, patch inventory, and blocker state. |
 | Full local CI lane | `../.github/workflows/full-local-validation.yml` | Self-hosted Windows workflow for build/test/format/publish/package/artifact validation with explicit StS2 and Godot paths. |
+| Public website | `../website/README.md` | Static GitHub Pages site for effect tables, validation status, and download links. |
 
 Do not read archived prompt dumps or archived audit matrices by default. They are historical and only needed when investigating an old finding.
 
@@ -50,10 +52,11 @@ These files are current support records but are not part of the default next-dev
 | `test-ready-completion-audit.md` | Source/test-ready completion audit from the previous pass. |
 | `test-plan.md` | Automated, release-artifact, localization, manual, save/load, and disable checks. |
 | `BETA_COMPATIBILITY.md` | Version compatibility policy and compatibility log. |
-| `rc1-live-validation-log.md` | RC1 source/live-validation notes and remaining live gates. |
+| `archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Historical RC1 source/live-validation notes for older packages. Current evidence is summarized in `release-evidence-status.md` and `dev-environment.md`. |
 | `issues/waiting-tests.md` | Compact manual evidence queue retained for guard/reference support. Full historical rows are archived under `archive/issues/`. |
 | `mod-changelog.md` | Player-facing change summary. Keep it short. |
 | `介绍.md` | Detailed feature and change summary for downstream web documentation. |
+| `../website/README.md` | Public static site maintenance notes. |
 
 ## Setup And Workflow
 
@@ -76,6 +79,7 @@ These files are current support records but are not part of the default next-dev
 | `patch-inventory.md` | Generated Harmony patch owner/risk map. |
 | `specs/release-scope-v1.md` | Current release boundary and product decisions. |
 | `specs/website-claim-audit.md` | Archived website/public-claim audit. |
+| `../website/content-data.js` | Current public website effect data and download metadata. |
 | `specs/release-traceability-matrix.md` | Claim-to-evidence traceability matrix. |
 | `source-research/run-room-event-reward.md` | Run, room, event, and reward source evidence. |
 | `source-research/multiplayer-save-rng.md` | Multiplayer, save, and RNG source evidence. |
@@ -94,7 +98,9 @@ These files are current support records but are not part of the default next-dev
 | `archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Historical v2.2 audit matrices moved out of the active reading path. |
 | `archive/feature-audits/review-pre-slim-20260518.md` | Full historical source-review log before `docs/review.md` was reduced to current findings. |
 | `archive/feature-audits/toreview-pre-slim-20260518.md` | Full historical retest queue before `docs/toreview.md` was reduced to the current manual queue. |
+| `archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md` | Historical architecture/clean-code audit. It contains superseded Future Peek separation advice and should not be used as current implementation direction. |
 | `archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md` | Compact record of the source/test-ready implementation pass. |
+| `archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Historical RC1 live-validation log for older package states. |
 | `archive/project-state-history-20260516.md` | Historical `PROJECT_STATE.md` snapshot before the active file was reduced to current status. |
 
 ## Cleanup Rules

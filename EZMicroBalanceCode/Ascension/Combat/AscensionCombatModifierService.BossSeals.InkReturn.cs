@@ -4,27 +4,69 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
-    private static void TrackInkReturnFromDamage(AscensionCombatTracker tracker, Creature target)
+    private static void TrackInkReturnFromDamage(
+        AscensionCombatTracker tracker,
+        AscensionNodeMetadata metadata,
+        Creature target)
     {
-        if (tracker.InkReturnTriggered ||
-            target.Monster is not Vantom ||
-            target.GetPower<SlipperyPower>() is { Amount: > 0 })
+        if (target.Monster is not Vantom)
+        {
+            return;
+        }
+
+        ObserveInkReturnSlippery(tracker, metadata, target);
+    }
+
+    private static void TrackInkReturnIfSlipperySpent(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        AscensionNodeMetadata metadata)
+    {
+        var vantom = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is Vantom);
+        if (vantom != null)
+        {
+            ObserveInkReturnSlippery(tracker, metadata, vantom);
+        }
+    }
+
+    private static void ObserveInkReturnSlippery(
+        AscensionCombatTracker tracker,
+        AscensionNodeMetadata metadata,
+        Creature target)
+    {
+        if (tracker.InkReturnTriggered)
+        {
+            return;
+        }
+
+        var currentSlippery = (int)(target.GetPower<SlipperyPower>()?.Amount ?? 0m);
+        if (currentSlippery > 0)
+        {
+            tracker.InkReturnLastObservedSlippery = Math.Max(tracker.InkReturnLastObservedSlippery, currentSlippery);
+            return;
+        }
+
+        if (tracker.InkReturnLastObservedSlippery <= 0)
         {
             return;
         }
 
         tracker.InkReturnTriggered = true;
         tracker.InkReturnPending = true;
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 tracked: Ink Return will restore Slippery next enemy turn.");
+        tracker.InkReturnRestoreAmount = CalculateInkReturnRestoreAmount(
+            tracker.InkReturnLastObservedSlippery,
+            metadata.IsBossBrand);
+        MainFile.Logger.Info(
+            $"[EZMicroBalance] Ascension A19 tracked: Ink Return will restore {tracker.InkReturnRestoreAmount} Slippery from {tracker.InkReturnLastObservedSlippery} cleared Slippery.");
     }
 
-    private static void TrackInkReturnIfSlipperySpent(CombatState combatState, AscensionCombatTracker tracker)
+    private static int CalculateInkReturnRestoreAmount(int clearedSlippery, bool isBossBrand)
     {
-        var vantom = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is Vantom);
-        if (vantom != null)
-        {
-            TrackInkReturnFromDamage(tracker, vantom);
-        }
+        var ratio = isBossBrand ? 0.35m : 0.25m;
+        var minimum = isBossBrand ? 5 : 3;
+        var maximum = isBossBrand ? 18 : 12;
+        var amount = (int)Math.Ceiling(clearedSlippery * ratio);
+        return Math.Clamp(amount, minimum, maximum);
     }
 
     private static async Task ApplyInkReturnIfPending(
@@ -44,16 +86,17 @@ internal static partial class AscensionCombatModifierService
         }
 
         tracker.InkReturnPending = false;
-        var slippery = metadata.IsBossBrand ? 2m : 1m;
-        await PowerCmd.Apply<SlipperyPower>(new BlockingPlayerChoiceContext(), vantom, slippery, vantom, null);
-        if (metadata.IsBossBrand)
+        var slippery = tracker.InkReturnRestoreAmount;
+        if (slippery <= 0)
         {
-            await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), vantom, 1m, vantom, null);
+            return;
         }
 
-        var resultText = metadata.IsBossBrand
-            ? "restored extra Slippery and granted Strength"
-            : "restored Slippery";
-        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Ink Return {resultText}.");
+        // Slippery scales on enemies in multiplayer. Ink Return restores a
+        // percentage of the displayed Slippery that was cleared, so correct back
+        // to the final amount players should see.
+        await ApplyPowerWithFinalDisplayedGain<SlipperyPower>(vantom, slippery, vantom, null);
+
+        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Ink Return restored {slippery} final Slippery.");
     }
 }

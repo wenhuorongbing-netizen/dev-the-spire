@@ -10,7 +10,7 @@ Do not treat the feature as private-beta ready until these checks are complete o
 
 - Game branch: public beta
 - Verified baseline target: `v0.104.0`, `2026.04.23`
-- BaseLib runtime: `v3.1.2`
+- BaseLib runtime: `v3.1.4`
 - Expected BaseLib folder: `<GameRoot>\mods\BaseLib`
 - Expected mod folder: `<GameRoot>\mods\EZMicroBalance`
 
@@ -42,7 +42,7 @@ Record for each item:
 
 ### Pael's Horn
 
-- Expected: on pickup, add 1 `Relax` / `放松` and 1 upgraded `Relax+` / `放松+` to deck.
+- Expected: on pickup, add 1 `Relax` / `放松` and 1 `Relax+` / `放松+` to deck.
 - Verify deck count and upgraded state.
 
 ### Pael's Tooth

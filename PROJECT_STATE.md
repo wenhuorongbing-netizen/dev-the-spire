@@ -13,24 +13,24 @@
 
 ## Game and BaseLib target
 
-- Slay the Spire 2 game snapshot: `v0.105.0`.
-- Latest live startup log observed release `v0.105.1`.
-- BaseLib runtime: `v3.1.2` under `<GameRoot>\mods\BaseLib`.
+- Slay the Spire 2 game snapshot: `v0.106.0` from the installed public-beta build.
+- Local `source code/` was cleaned and regenerated on 2026-05-22 from `SlayTheSpire2.pck` plus `sts2.dll` using GDRE Tools `v2.5.0-beta.5`.
+- BaseLib runtime/project package: `v3.1.4` under `<GameRoot>\mods\BaseLib` and `Alchyr.Sts2.BaseLib` `3.1.4`.
 
 ## Top-level status
 
 ### Build / test / package
 
-- `dotnet build`, `dotnet publish`, and default `dotnet test` pass locally.
+- `dotnet build`, `dotnet publish`, default `dotnet test`, and package refresh pass locally after the `v0.106.0` / BaseLib `v3.1.4` API update.
 - Release artifact checks pass when `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is enabled.
-- The latest script-packaged artifacts were hash-parity synced (`DLL`, `manifest`, `PCK`, `zip`) on 2026-05-18 after the strict source audit follow-up, RootDeck notice split, Lotha combat lifecycle split, RootDeck deck-card split, RootDeck pending-downgrade split, Banner Pressing Line split, Vakuu combat-state split, Prismatic Gem hover split, and Root Sight event queue fix.
+- The latest script-packaged artifacts were hash-parity synced (`DLL`, `manifest`, `PCK`, `zip`) on 2026-05-22 after the `v0.106.0` source refresh, BaseLib `v3.1.4` alignment, side-turn hook API update, and `CardPileCmd.Add(..., clonedBy:)` update.
 - Current package scope includes the Spire Plus display-name refresh, A11-A20 hardening, multiplayer mismatch diagnostics, Ancient reward rebalance v4.3, Urda/Morvi/Lotha source-ready v2.2 slices, hidden-by-default Vakuu fight source slice, preview tools, Ancient player-facing text polish, promoted generated/source-local art, and the `SpirePlus` archive name.
 - Current manual-test package is not a release-readiness claim: live gameplay, clicked Ancient UI, save-load, route-click, death/failure-path, disable-gameplay, and co-op verification remain pending.
 - Current cleanup/refactor audit is `docs/worktree-cleanup-audit.md`; top-level legacy project metadata was moved into `docs/archive/legacy-planning/legacy-project-files/`, targeted `.tools/` clutter was pruned, and the ignored website draft was deleted after preserving the `.tools/archive/local-website-preview-20260516/` snapshot. The current `publish/` package output, local game `source code/`, and remaining `.tools/` evidence/tool folders are intentionally retained.
 
 ### Runtime
 
-- Latest normal Steam-client startup/log evidence is historical for the pre-review Spire Plus package under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414`: exactly BaseLib plus Spire Plus / `EZMicroBalance` loaded, config registered, `Found 22 SavedSpireFields`, main menu reached, 0 release-blocking log signatures found, and helper restore completed. Current source defines 25 SavedSpireFields and the 2026-05-18 package was not live-loader-smoked after the static fixes and RootDeck cleanup passes, so fresh live loader parity remains pending.
+- Latest normal Steam-client startup/log evidence is historical for the pre-review Spire Plus package under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414`: exactly BaseLib plus Spire Plus / `EZMicroBalance` loaded, config registered, `Found 22 SavedSpireFields`, main menu reached, 0 release-blocking log signatures found, and helper restore completed. Current source defines 26 SavedSpireFields and the 2026-05-18 package was not live-loader-smoked after the static fixes and RootDeck cleanup passes, so fresh live loader parity remains pending.
 - Headless installed-PCK Ancient resource verification passed under `.tools/runtime-evidence/current-package-smoke-20260514-015901`: Urda, Morvi, and Lotha background scenes instantiate, Ancient textures load from the installed PCK, option marker paths exist/export, and referenced EN/zhs localization keys exist. This is resource-load evidence, not clicked live Ancient UI evidence.
 - BaseLib-only plug-off startup/log verification passed under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020`; this proves loader isolation only. Disable-mod gameplay in an actual run remains pending.
 - Refreshed Mod Settings UI list evidence for the current display-name package is under `.tools/runtime-evidence/current-spire-plus-modsettings-20260513-111342/02-mod-config-list.png`; historical page-level Mod Settings UI evidence remains under the old `EZ Micro Balance` display name.

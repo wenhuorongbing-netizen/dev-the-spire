@@ -5,9 +5,13 @@ internal static partial class AscensionCombatModifierService
     private static async Task ApplyBossSealPlayerTurnStart(
         CombatState combatState,
         AscensionCombatTracker tracker,
-        AscensionNodeMetadata metadata)
+        AscensionNodeMetadata metadata,
+        Player player)
     {
-        tracker.MisalignedShellBlockedTargetsThisTurn.Clear();
+        if (metadata.BossSeal?.Id == BossSealId.ChosenDecree)
+        {
+            ResetChosenDecreeRoundCaps(tracker);
+        }
 
         if (metadata.BossSeal?.Id == BossSealId.HolyDaze)
         {
@@ -16,7 +20,7 @@ internal static partial class AscensionCombatModifierService
 
         if (metadata.BossSeal?.Id == BossSealId.InkReturn)
         {
-            TrackInkReturnIfSlipperySpent(combatState, tracker);
+            TrackInkReturnIfSlipperySpent(combatState, tracker, metadata);
         }
 
         if (metadata.BossSeal?.Id == BossSealId.StartledShell)
@@ -32,6 +36,7 @@ internal static partial class AscensionCombatModifierService
         if (metadata.BossSeal?.Id == BossSealId.BoilingCritical)
         {
             await TrackBoilingCriticalSteam(combatState, tracker, metadata);
+            await ApplyBoilingExplosionFortification(combatState, tracker, metadata);
         }
 
         if (metadata.BossSeal?.Id == BossSealId.StruggleBait)
@@ -59,21 +64,24 @@ internal static partial class AscensionCombatModifierService
         switch (metadata.BossSeal.Id)
         {
             case BossSealId.InkReturn:
-                TrackInkReturnIfSlipperySpent(combatState, tracker);
+                TrackInkReturnIfSlipperySpent(combatState, tracker, metadata);
                 await ApplyInkReturnIfPending(combatState, tracker, metadata);
                 break;
             case BossSealId.StartledShell:
                 TrackStartledShellEnemyMove(combatState, tracker);
                 break;
             case BossSealId.SoulTide:
-                await ApplySoulTidePendingBlock(combatState, tracker);
+                await ApplySoulTidePendingBlock(combatState, tracker, metadata);
                 break;
             case BossSealId.BoilingCritical:
                 await TrackBoilingCriticalSteam(combatState, tracker, metadata);
-                await ApplyBoilingExplosionBlock(combatState, tracker, metadata);
+                await ApplyBoilingExplosionFortification(combatState, tracker, metadata);
                 break;
             case BossSealId.MarginalNote:
                 TrackKnowledgeDemonEnemyMove(combatState, tracker);
+                break;
+            case BossSealId.AeonglassHourglass:
+                TrackAeonglassEnemyMove(combatState, tracker);
                 break;
             case BossSealId.ResidualSample:
                 await TryApplyResidualSamples(combatState, tracker, metadata);
@@ -95,10 +103,11 @@ internal static partial class AscensionCombatModifierService
         if (side == CombatSide.Player)
         {
             await EndHolyDaze(combatState, tracker);
-            await SettleMisalignedShellClawDeaths(combatState, tracker, metadata);
-            await SettleMarginalNotes(combatState, metadata);
-            await SettleStruggleBaitBrandEscapes(combatState, tracker, metadata);
+            await SettleMisalignedShellCalibration(combatState, tracker, metadata);
+            await SettleMarginalNotes(combatState, tracker, metadata);
+            await SettleAeonglassTimeSand(combatState, tracker, metadata);
             await SettleChosenDecree(combatState, tracker, metadata);
+            ResetMartyrOathTurnCounters(tracker);
         }
         else if (side == CombatSide.Enemy)
         {
@@ -124,6 +133,10 @@ internal static partial class AscensionCombatModifierService
                         await AddMarginalNotes(combatState, metadata);
                     }
 
+                    break;
+                case BossSealId.AeonglassHourglass:
+                    await ApplyAeonglassExtraWitherAfterIncreasingIntensity(combatState, tracker, metadata);
+                    await ApplyAeonglassTimeSandAfterEbb(combatState, tracker, metadata);
                     break;
             }
         }

@@ -195,7 +195,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "GetRootBudCountForCurrentRoom(state)",
             "GetRootBudSproutRoundForCurrentRoom(state, i)",
             "RootBud.BossSecondSproutRound",
-            "RoomType.Boss when IsActTwoOrThree(state) && !IsSecondBossFight(state)",
+            "RoomType.Boss when IsActTwoOrThree(state)",
             "RoomType.Elite when IsEligibleEliteSproutFight(state)");
     }
 
@@ -235,7 +235,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "for (var i = 0; i < existingBuds.Count; i++)",
             "existingBuds[i].SproutRound = targetRounds[i]",
             "RootBud.BossSecondSproutRound",
-            "RoomType.Boss when IsActTwoOrThree(state) && !IsSecondBossFight(state)",
+            "RoomType.Boss when IsActTwoOrThree(state)",
             "RoomType.Elite when IsEligibleEliteSproutFight(state)",
             "return state.RunState.CurrentActIndex is 1 or 2;",
             "currentRow >= 3",
@@ -285,17 +285,27 @@ public sealed class AscensionV2MilestoneGuardTests
             "FindFiremarkHost(combatState)",
             "tracker.FiremarkHost = host",
             "GetMightFiremarkStrength(combatState)",
+            "GetMightOverflowStrength(combatState)",
             "GetGiantFiremarkMaxHpPercent(combatState)",
+            "GetGiantOverflowDamage(combatState)",
             "GetForgeArmorBlock(combatState)",
+            "GetForgeArmorOverflowBlock(combatState)",
             "GetConstantHealAmount(combatState)",
+            "GetConstantHealOverflowHeal(combatState)",
             "AddFiremarkHeat(host, tracker)",
+            "ApplyMightOverflow(combatState, tracker)",
             "TrackMoltenCoreDamage(combatState, tracker, host",
+            "ApplyGiantOverflowDamage(combatState, tracker, host)",
             "ResolveForgeArmorShatter(tracker)",
+            "ApplyForgeArmorOverflow(combatState, tracker)",
             "ResolveConstantHeal(combatState, tracker)",
+            "ApplyConstantHealOverflow(combatState, tracker)",
             "PowerCmd.Apply<MightMarkFiremarkPower>",
             "PowerCmd.Apply<GiantMarkFiremarkPower>",
             "PowerCmd.Apply<ForgeArmorMarkFiremarkPower>",
-            "PowerCmd.Apply<ConstantHealMarkFiremarkPower>");
+            "PowerCmd.Apply<ConstantHealMarkFiremarkPower>",
+            "PowerCmd.Apply<FiremarkMightOverflowPower>",
+            "FiremarkOverflowCandidates(combatState, tracker)");
 
         AssertSourceContains(
             rewardService,
@@ -348,6 +358,10 @@ public sealed class AscensionV2MilestoneGuardTests
         var powers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var bossSealSource = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
+        var kinBossSource = ReadRepoText("source code", "src", "Core", "Models", "Encounters", "TheKinBoss.cs");
+        var kinPriestSource = ReadRepoText("source code", "src", "Core", "Models", "Monsters", "KinPriest.cs");
+        var slipperyPowerSource = ReadRepoText("source code", "src", "Core", "Models", "Powers", "SlipperyPower.cs");
+        var platingPowerSource = ReadRepoText("source code", "src", "Core", "Models", "Powers", "PlatingPower.cs");
         var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
         var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
         var englishEvents = JsonStringMap("EZMicroBalance", "localization", "eng", "events.json");
@@ -399,6 +413,9 @@ public sealed class AscensionV2MilestoneGuardTests
             "SaveManager.Instance.SaveRun(eventRoom, saveProgress: false)",
             "HarmonyPatch(typeof(EventModel), nameof(EventModel.CreateInitialPortrait))",
             "AscensionAssetPaths.BossSealIndicator",
+            "GetSecondBossBrandIconPath(runState)",
+            "AscensionAssetPaths.GetBossSealIndicator(definition.Id)",
+            "PreloadManager.Cache.GetTexture2D(A20Courtyard.GetSecondBossBrandIconPath(__instance.Owner?.RunState))",
             "BossSealCatalog.GetLocalizationKey(definition.Id)");
 
         AssertSourceContains(
@@ -422,6 +439,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "BOSS_KING_BRAND",
             "CreateHoverTip(metadata.BossSeal, metadata.IsBossBrand)",
             "BossSealCatalog.GetLocalizationKey(definition.Id)",
+            "PreloadManager.Cache.GetTexture2D(AscensionAssetPaths.GetBossSealIndicator(definition.Id))",
             "sealDescriptionKey = isBossBrand ? \"brand\" : \"summary\"",
             "metadata.IsBossBrand");
 
@@ -439,21 +457,43 @@ public sealed class AscensionV2MilestoneGuardTests
             "metadata.BossSeal != null",
             "metadata.IsBossBrand",
             "HolyDazePower",
-            "var triggerCap = metadata.IsBossBrand ? 3 : 2;",
-            "var block = metadata.IsBossBrand ? 14m : 12m;",
-            "var slippery = metadata.IsBossBrand ? 2m : 1m;",
-            "var plating = metadata.IsBossBrand ? 6m : 4m;",
-            "var platingAmount = metadata.IsBossBrand ? 10m : 8m;",
+            "const int triggerCap = 2;",
+            "var strikeDamage = metadata.IsBossBrand ? 4m : 3m;",
+            "PowerCmd.Apply<MartyrOathPower>",
+            "PowerCmd.Apply<MartyrOathStrikePower>",
+            "ApplyPowerWithFinalDisplayedGain<ArtifactPower>(priest, 1, priest, null)",
+            "CalculateInkReturnRestoreAmount",
+            "tracker.InkReturnLastObservedSlippery",
+            "tracker.InkReturnRestoreAmount",
+            "ApplyPowerWithFinalDisplayedGain<SlipperyPower>(vantom, slippery, vantom, null)",
+            "var plating = metadata.IsBossBrand ? 6 : 4;",
+            "var platingAmount = metadata.IsBossBrand ? 10 : 8;",
+            "PowerCmd.Apply<PlatingPower>",
             "var divisor = metadata.IsBossBrand ? 3m : 2m;",
-            "var steamThreshold = metadata.IsBossBrand ? 10m : 12m;",
-            "var blockPerStack = metadata.IsBossBrand ? 1m : 2m;",
-            "var block = metadata.IsBossBrand ? 8m : 6m;",
-            "var artifact = metadata.IsBossBrand ? 2m : 1m;",
-            "var noteCount = metadata.IsBossBrand ? 2 : 1;",
-            "tracker.StruggleBaitBrandEscapeAges[escape] = 0;",
-            "SettleStruggleBaitBrandEscapes",
-            "age >= 2",
-            "var block = maturedEscapes.Count * 5m;",
+            "await ApplyBoilingExplosionFortification(combatState, tracker, metadata)",
+            "await ApplyBoilingExplosionVulnerability(combatState, tracker, metadata, giant)",
+            "metadata.IsBossBrand ? 2m : 1m",
+            "PowerCmd.Apply<VulnerablePower>",
+            "tracker.BoilingExplosionVulnerabilityRound = combatState.RoundNumber",
+            "power.GetTypeForAmount(power.Amount) == PowerType.Debuff",
+            "PowerCmd.Remove(debuff)",
+            "ApplySoulTidePendingBlock",
+            "tracker.PendingSoulTideBlock",
+            "SoulTideBlockCap",
+            "CreatureCmd.GainBlock",
+            "var threshold = metadata.IsBossBrand ? 0.30m : 0.35m;",
+            "PowerCmd.Apply<KaiserCalibrationStrikePower>",
+            "var roundRoom = Math.Max(0, 2 - tracker.MarginalDeepThoughtAddedThisRound)",
+            "PowerCmd.Apply<DeepThoughtPower>",
+            "tracker.StruggleBaitGeneratedEscapes.Add(escape)",
+            "TrackRoyalEscapePlayed",
+            "PowerCmd.Apply<VigorPower>",
+            "tracker.AeonglassTimeSand = metadata.IsBossBrand ? 3 : 2",
+            "TrackAeonglassEnergySpent",
+            "tracker.AeonglassExtraWitherFromSands",
+            "INCREASING_INTENSITY_MOVE",
+            "CardPileCmd.AddToCombatAndPreview<Wither>",
+            "PowerCmd.Apply<AeonglassLaserEchoPower>",
             "metadata.Banner == BannerKind.BloodPrize",
             "ApplyBloodPrizePenaltyIfExpired(combatState, tracker, includeCurrentRound: true)",
             "ApplyBloodPrizePenaltyIfExpired(combatState, tracker, includeCurrentRound: false)",
@@ -464,7 +504,28 @@ public sealed class AscensionV2MilestoneGuardTests
             "combatState.RoundNumber < BountyDeadlineRound",
             "!includeCurrentRound && combatState.RoundNumber <= BountyDeadlineRound",
             "TrackBoilingCriticalSteam",
-            "RoyalDecreeEnchantment");
+            "RoyalDecreeEnchantment",
+            "TrackAeonglassEnemyMove",
+            "SettleAeonglassTimeSand",
+            "ApplyAeonglassTimeSandAfterEbb");
+        AssertSourceContains(
+            kinBossSource,
+            "new string[3] { \"slot1\", \"slot2\", \"leaderSlot\" }",
+            "(kinFollower, \"slot1\")",
+            "(ModelDb.Monster<KinFollower>().ToMutable(), \"slot2\")",
+            "(ModelDb.Monster<KinPriest>().ToMutable(), \"leaderSlot\")");
+        Assert.DoesNotContain("Summon", kinBossSource + kinPriestSource, StringComparison.OrdinalIgnoreCase);
+        AssertSourceContains(
+            slipperyPowerSource,
+            "public override bool ShouldScaleInMultiplayer => true",
+            "return amount * (decimal)combatState.Players.Count");
+        AssertSourceContains(
+            platingPowerSource,
+            "public override bool ShouldScaleInMultiplayer => true",
+            "base.DynamicVars[\"Decrement\"].BaseValue = base.Owner.CombatState.RunState.Players.Count",
+            "return (decimal)((combatState.Players.Count - 1) * 2 + 1) * amount");
+        Assert.DoesNotContain("triggerCap = metadata.IsBossBrand ? 3 : 2", combatService, StringComparison.Ordinal);
+        Assert.DoesNotContain("triggers up to [blue]3[/blue] times", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("SettleSoulTideBeckons(combatState, tracker, metadata)", combatService, StringComparison.Ordinal);
         var playerTurnStartBannerSlice = SliceBetween(
             combatService,
@@ -479,8 +540,8 @@ public sealed class AscensionV2MilestoneGuardTests
             "internal static class AscensionPowerAmountHelper",
             "strength.SetAmount(strength.Amount - (int)amount, silent: true)",
             "AscensionPowerAmountHelper.RemoveTemporaryStrength(Owner, Amount)");
-        Assert.Contains("warning [gold]Block[/gold]", powers, StringComparison.Ordinal);
-        Assert.Contains("预警[gold]格挡[/gold]", powers, StringComparison.Ordinal);
+        Assert.Contains("[gold]Intangible[/gold]", powers, StringComparison.Ordinal);
+        Assert.Contains("[gold]无形[/gold]", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("equal [gold]Block[/gold]", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("等量[gold]格挡[/gold]", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("PowerCmd.Apply<StrengthPower>(choiceContext, Owner, -Amount", powers, StringComparison.Ordinal);
@@ -492,13 +553,14 @@ public sealed class AscensionV2MilestoneGuardTests
             "HolyDaze",
             "BOSS_SEAL_HOLY_DAZE",
             "BOSS_SEAL_STRUGGLE_BAIT",
-            "Trigger cap rises to 3 follower deaths",
-            "Restores 2 Slippery",
-            "Wake Plating rises to 10",
-            "Boiling milestones trigger every 10 Steam",
-            "Back-attack Block rises to 8",
-            "adds a second Marginal Note",
-            "Each unplayed generated Frantic Escape grants 5 Block",
+            "source-confirmed two KinFollower deaths",
+            "Restores 35% of the cleared Slippery",
+            "natural wake grants 10",
+            "clear debuffs and attack reduction",
+            "claws' HP percentages differ",
+            "Unplayed Notes become Deep Thought",
+            "Every 3 ability-made Frantic Escapes played gives 3 Vigor",
+            "Time Sand Reflow",
             "ResidualSample");
         Assert.DoesNotContain("Brand parameters are not designed for A20 yet", bossSealSource, StringComparison.Ordinal);
 
@@ -514,24 +576,34 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Equal("Banner Room", englishAscension["BANNER_ROOM.title"]);
         Assert.Contains("round [blue]3[/blue]", englishAscension["BANNER_VANGUARD.description"], StringComparison.Ordinal);
         Assert.Contains("[blue]{Gold}[/blue] [gold]Gold[/gold]", englishAscension["BANNER_BLOOD_PRIZE.description"], StringComparison.Ordinal);
-        Assert.Equal("Royal Seal", englishAscension["BOSS_ROYAL_SEAL.title"]);
-        Assert.Contains("stronger [gold]King Brand[/gold]", englishAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
+        Assert.Equal("Boss Dedicated Ability", englishAscension["BOSS_ROYAL_SEAL.title"]);
+        Assert.Equal("Boss Dedicated Abilities", englishAscension["LEVEL_19.title"]);
+        Assert.Equal("Branded Form", englishAscension["LEVEL_20.title"]);
+        Assert.Contains("Attack changes from this ability are shown in intent", englishAscension["BOSS_ROYAL_SEAL.description"], StringComparison.Ordinal);
+        Assert.Contains("second Act [blue]3[/blue] Boss enters [gold]Branded Form[/gold]", englishAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
         Assert.Equal("Holy Daze", englishAscension["BOSS_SEAL_HOLY_DAZE.title"]);
-        Assert.Contains("[blue]3[/blue] follower deaths", englishAscension["BOSS_SEAL_MARTYR_OATH.brand"], StringComparison.Ordinal);
-        Assert.Contains("[blue]2[/blue] [gold]Slippery[/gold]", englishAscension["BOSS_SEAL_INK_RETURN.brand"], StringComparison.Ordinal);
+        Assert.Contains("capped at [blue]2[/blue]", englishAscension["BOSS_SEAL_MARTYR_OATH.brand"], StringComparison.Ordinal);
+        Assert.Contains("+[blue]4[/blue] damage per Oath", englishAscension["BOSS_SEAL_MARTYR_OATH.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]1[/blue] [gold]Artifact[/gold]", englishAscension["BOSS_SEAL_MARTYR_OATH.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]35%[/blue]", englishAscension["BOSS_SEAL_INK_RETURN.brand"], StringComparison.Ordinal);
+        Assert.Contains("max [blue]18[/blue]", englishAscension["BOSS_SEAL_INK_RETURN.brand"], StringComparison.Ordinal);
         Assert.Contains("[blue]10[/blue]", englishAscension["BOSS_SEAL_STARTLED_SHELL.brand"], StringComparison.Ordinal);
-        Assert.Contains("[blue]16[/blue]", englishAscension["BOSS_SEAL_SOUL_TIDE.brand"], StringComparison.Ordinal);
-        Assert.Contains("[blue]10[/blue] [gold]Steam[/gold]", englishAscension["BOSS_SEAL_BOILING_CRITICAL.brand"], StringComparison.Ordinal);
-        Assert.Contains("[blue]2[/blue] [gold]Artifact[/gold]", englishAscension["BOSS_SEAL_MISALIGNED_SHELL.brand"], StringComparison.Ordinal);
-        Assert.Contains("second [gold]Marginal Note[/gold]", englishAscension["BOSS_SEAL_MARGINAL_NOTE.brand"], StringComparison.Ordinal);
-        Assert.Contains("[blue]5[/blue] [gold]Block[/gold]", englishAscension["BOSS_SEAL_STRUGGLE_BAIT.brand"], StringComparison.Ordinal);
-        Assert.Contains("+[blue]5[/blue] [gold]Strength[/gold]", englishAscension["BOSS_SEAL_AEONGLASS_STRENGTH.brand"], StringComparison.Ordinal);
-        Assert.Contains("weaken the Queen's next Strength buff", englishAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.Contains("one-third", englishAscension["BOSS_SEAL_STARTLED_SHELL.brand"], StringComparison.Ordinal);
+        Assert.Contains("Team cap: [blue]12/16/20[/blue]", englishAscension["BOSS_SEAL_SOUL_TIDE.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]2[/blue] turns of [gold]Vulnerable[/gold]", englishAscension["BOSS_SEAL_BOILING_CRITICAL.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]30%[/blue] HP difference", englishAscension["BOSS_SEAL_MISALIGNED_SHELL.brand"], StringComparison.Ordinal);
+        Assert.Contains("Deep Thought", englishAscension["BOSS_SEAL_MARGINAL_NOTE.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]3[/blue] [gold]Vigor[/gold]", englishAscension["BOSS_SEAL_STRUGGLE_BAIT.brand"], StringComparison.Ordinal);
+        Assert.Contains("Eye Lasers", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]3[/blue] Time Sand", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.brand"], StringComparison.Ordinal);
+        Assert.Contains("extra [gold]Wither[/gold]", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.brand"], StringComparison.Ordinal);
+        Assert.Contains("avoid punishment", englishAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
         Assert.DoesNotContain("Play it for player Block", englishAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
-        Assert.Contains("players [blue]5[/blue] [gold]Block[/gold]", englishAscension["BOSS_SEAL_CHOSEN_DECREE.brand"], StringComparison.Ordinal);
-        Assert.Contains("削弱女王下一次力量强化", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.Contains("Majesty can reach [blue]3[/blue]", englishAscension["BOSS_SEAL_CHOSEN_DECREE.brand"], StringComparison.Ordinal);
+        Assert.Contains("打出御令不会追加惩罚", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.DoesNotContain("王令", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
         Assert.DoesNotContain("打出它获得格挡", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
-        Assert.Contains("[blue]2[/blue] [gold]weakened samples[/gold]", englishAscension["BOSS_SEAL_RESIDUAL_SAMPLE.brand"], StringComparison.Ordinal);
+        Assert.Contains("[blue]2[/blue] different samples", englishAscension["BOSS_SEAL_RESIDUAL_SAMPLE.brand"], StringComparison.Ordinal);
         foreach (var key in englishAscension.Keys.Where(key => key.StartsWith("BOSS_SEAL_", StringComparison.Ordinal)))
         {
             Assert.True(zhsAscension.ContainsKey(key), $"Missing zhs Boss Seal key: {key}");
@@ -540,8 +612,8 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Equal("Courtyard Ahead", englishAscension["A20_INTERMISSION_HEADER"]);
         Assert.Equal("Enter the Courtyard", englishAscension["A20_INTERMISSION_PROCEED"]);
         Assert.Equal("\u6218\u65d7\u623f", zhsAscension["BANNER_ROOM.title"]);
-        Assert.Equal("\u738b\u5370", zhsAscension["BOSS_ROYAL_SEAL.title"]);
-        Assert.Contains("\u66f4\u5f3a\u7684[gold]\u738b\u70d9\u5370[/gold]", zhsAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
+        Assert.Equal("\u9996\u9886\u4e13\u5c5e\u80fd\u529b", zhsAscension["BOSS_ROYAL_SEAL.title"]);
+        Assert.Contains("\u7b2c[blue]3[/blue]\u5e55\u7b2c\u4e8c\u540d\u9996\u9886\u8fdb\u5165[gold]\u70d9\u5370\u5f62\u6001[/gold]", zhsAscension["BOSS_KING_BRAND.description"], StringComparison.Ordinal);
         Assert.Equal("\u524d\u65b9\u4e2d\u5ead", zhsAscension["A20_INTERMISSION_HEADER"]);
         Assert.Equal("\u8fdb\u5165\u4e2d\u5ead", zhsAscension["A20_INTERMISSION_PROCEED"]);
         Assert.Equal("Courtyard Before the Second King", englishEvents["A20_COURTYARD.title"]);
@@ -568,10 +640,11 @@ public sealed class AscensionV2MilestoneGuardTests
     public void SplitBossSealPowerFilesKeepBehaviorAndReadableLocalization()
     {
         var basePower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
+        var combatStart = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.CombatStart.cs");
         var holyDaze = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "HolyDazePower.cs");
         var boilingCritical = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BoilingCriticalPower.cs");
         var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "ResidualSamplePower.cs");
-        var chosenDecree = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "ChosenDecreeReductionPower.cs");
+        var aeonglassHourglass = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassPower.cs");
 
         AssertSourceContains(
             basePower,
@@ -579,20 +652,71 @@ public sealed class AscensionV2MilestoneGuardTests
             "public override PowerType Type => PowerType.Buff",
             "public override PowerStackType StackType => PowerStackType.Single",
             "public override int DisplayAmount => Amount",
+            "protected virtual BossSealId? SealId => null",
+            "AscensionAssetPaths.GetBossSealIndicator(id)",
+            "public override string CustomPackedIconPath => BossSealIconPath",
+            "public override string CustomBigIconPath => BossSealIconPath",
             "AscensionAssetPaths.BossSealIndicator");
+        AssertSourceContains(
+            basePower,
+            "internal abstract class BossSealMarkerPower : BossSealPower",
+            "public override int DisplayAmount => 0",
+            "HolyDazeBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.HolyDaze",
+            "MartyrOathBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.MartyrOath",
+            "InkReturnBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.InkReturn",
+            "StartledShellBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.StartledShell",
+            "SoulTideBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.SoulTide",
+            "BoilingCriticalBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.BoilingCritical",
+            "MisalignedShellBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.MisalignedShell",
+            "MarginalNoteBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.MarginalNote",
+            "StruggleBaitBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.StruggleBait",
+            "AeonglassHourglassBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.AeonglassHourglass",
+            "ChosenDecreeBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.ChosenDecree",
+            "ResidualSampleBossSealMarkerPower",
+            "protected override BossSealId? SealId => BossSealId.ResidualSample",
+            "Dedicated Ability");
+        AssertSourceContains(
+            combatStart,
+            "await ApplyBossSealVisibilityMarker(combatState, definition)",
+            "FindBossSealVisibilityOwner(combatState, definition.Id)",
+            "PowerCmd.Apply<HolyDazeBossSealMarkerPower>",
+            "PowerCmd.Apply<MartyrOathBossSealMarkerPower>",
+            "PowerCmd.Apply<InkReturnBossSealMarkerPower>",
+            "PowerCmd.Apply<StartledShellBossSealMarkerPower>",
+            "PowerCmd.Apply<SoulTideBossSealMarkerPower>",
+            "PowerCmd.Apply<BoilingCriticalBossSealMarkerPower>",
+            "PowerCmd.Apply<MisalignedShellBossSealMarkerPower>",
+            "PowerCmd.Apply<MarginalNoteBossSealMarkerPower>",
+            "PowerCmd.Apply<StruggleBaitBossSealMarkerPower>",
+            "PowerCmd.Apply<AeonglassHourglassBossSealMarkerPower>",
+            "PowerCmd.Apply<ChosenDecreeBossSealMarkerPower>",
+            "PowerCmd.Apply<ResidualSampleBossSealMarkerPower>");
         Assert.DoesNotContain("internal sealed class HolyDazePower", basePower, StringComparison.Ordinal);
         Assert.DoesNotContain("internal sealed class BoilingCriticalPower", basePower, StringComparison.Ordinal);
         Assert.DoesNotContain("internal sealed class ResidualSamplePower", basePower, StringComparison.Ordinal);
         Assert.DoesNotContain("internal sealed class ChosenDecreeReductionPower", basePower, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class AeonglassHourglassPower", basePower, StringComparison.Ordinal);
 
         AssertSourceContains(
             holyDaze,
             "internal sealed class HolyDazePower : BossSealPower",
+            "protected override BossSealId? SealId => BossSealId.HolyDaze",
             "PowerStackType.Counter",
-            "\"王印：圣昏\"",
+            "\"圣昏\"",
             "每次受到的伤害最多为[blue]1[/blue]",
             "受击最多[blue]1[/blue]点",
-            "\"Royal Seal: Holy Daze\"",
+            "\"Holy Daze\"",
             "damage taken from each hit is capped at [blue]1[/blue]",
             "Damage taken is capped at [blue]1[/blue].",
             "ModifyDamageCap(Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource)",
@@ -601,50 +725,45 @@ public sealed class AscensionV2MilestoneGuardTests
         AssertSourceContains(
             boilingCritical,
             "internal sealed class BoilingCriticalPower : BossSealPower",
-            "\"王印：沸腾临界\"",
-            "死亡爆发每层额外造成[blue]2[/blue]点伤害",
-            "预警[gold]格挡[/gold]",
-            "\"Royal Seal: Boiling Critical\"",
-            "Death explosion deals [blue]2[/blue] more damage per stack",
-            "warning [gold]Block[/gold]",
-            "dealer != Owner",
-            "Owner.Monster is not WaterfallGiant",
-            "Owner.Monster.NextMove.StateId != \"EXPLODE_MOVE\"",
-            "return 0m;",
-            "return Amount * 2m;");
+            "protected override BossSealId? SealId => BossSealId.BoilingCritical",
+            "\"不可削弱\"",
+            "爆发回合",
+            "[gold]虚弱[/gold]",
+            "[gold]易伤[/gold]",
+            "[gold]人工制品[/gold]",
+            "\"Unweakenable\"",
+            "On the explosion turn",
+            "[gold]Weak[/gold]",
+            "[gold]Vulnerable[/gold]",
+            "[gold]Artifact[/gold]",
+            "public override int DisplayAmount => 0");
 
         AssertSourceContains(
             residualSample,
             "internal sealed class ResidualSamplePower : BossSealPower",
-            "\"王印：残留样本\"",
-            "下个阶段会保留[blue]{Amount}[/blue]份[gold]削弱样本[/gold]",
-            "复苏后结算[gold]削弱样本[/gold]",
-            "\"Royal Seal: Residual Sample\"",
-            "The next phase keeps [blue]{Amount}[/blue] [gold]weakened sample(s)[/gold]",
-            "[gold]Weakened samples[/gold] resolve after respawn.",
+            "protected override BossSealId? SealId => BossSealId.ResidualSample",
+            "\"实验记录\"",
+            "下个阶段会保留[blue]{Amount}[/blue]份[gold]残留样本[/gold]",
+            "复苏后结算残留样本",
+            "\"Experimental Record\"",
+            "The next phase keeps [blue]{Amount}[/blue] [gold]Residual Sample[/gold]",
+            "Residual samples resolve after respawn.",
             "ShouldPowerBeRemovedAfterOwnerDeath()",
             "return false;");
 
         AssertSourceContains(
-            chosenDecree,
-            "internal sealed class ChosenDecreeReductionPower : BossSealPower",
-            "\"王印：择令\"",
-            "下一次由[gold]女王[/gold]给予的[gold]力量[/gold]减少[blue]1[/blue]",
-            "女王下一次[gold]力量[/gold]强化-[blue]1[/blue]",
-            "\"Royal Seal: Chosen Decree\"",
-            "The next [gold]Strength[/gold] gain from the [gold]Queen[/gold] is reduced by [blue]1[/blue]",
-            "Next Queen [gold]Strength[/gold] gain -[blue]1[/blue].",
-            "private sealed class Data",
-            "modifiedAmount = amount;",
-            "target != Owner",
-            "canonicalPower is not StrengthPower",
-            "amount <= 0m",
-            "applier?.Monster is not Queen",
-            "GetInternalData<Data>().Used",
-            "modifiedAmount = Math.Max(0m, amount - 1m);",
-            "await PowerCmd.Remove(this);");
+            aeonglassHourglass,
+            "internal sealed class AeonglassHourglassPower : BossSealPower",
+            "protected override BossSealId? SealId => BossSealId.AeonglassHourglass",
+            "\"时砂回流\"",
+            "剩余[blue]{Amount}[/blue]枚时砂",
+            "每花费[blue]1[/blue]点能量",
+            "\"Time Sand Reflow\"",
+            "[blue]{Amount}[/blue] Time Sand remaining",
+            "Each energy spent removes [blue]1[/blue]",
+            "Eye Lasers hits [blue]1[/blue] extra time");
 
-        foreach (var source in new[] { holyDaze, boilingCritical, residualSample, chosenDecree })
+        foreach (var source in new[] { basePower, holyDaze, boilingCritical, residualSample, aeonglassHourglass })
         {
             AssertNoMojibake(source, "鐏", "鎴", "绗", "鍥", "浼", "澶", "銆", "闂", "鏈", "寮€", "鑾", "缂", "锟", "铏", "鐑", "杈", "绉", "灞");
         }

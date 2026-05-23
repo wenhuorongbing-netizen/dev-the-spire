@@ -67,6 +67,9 @@ public sealed class AncientArtAssetHygieneGuardTests
             "rootblight_i_card_portrait_small",
             "rootblight_iii_card_portrait_big",
             "blight_sprout_card_portrait_small",
+            "boss_seal_holy_daze_indicator",
+            "boss_seal_aeonglass_hourglass_indicator",
+            "boss_seal_residual_sample_indicator",
             "generic_power_icon",
             "generic_relic_outline",
             "urda_seedling_card_portrait_small",
@@ -251,7 +254,7 @@ public sealed class AncientArtAssetHygieneGuardTests
             .Where(asset =>
             {
                 var role = RequiredString(asset, "role");
-                return role is "map_icon" or "map_icon_outline" or "run_history_icon" or "run_history_outline" or "option_relic";
+                return role is "map_icon" or "map_icon_outline" or "run_history_icon" or "run_history_outline" or "option_relic" or "ascension_ui_icon";
             })
             .Select(asset => RequiredString(asset, "target_path"));
 

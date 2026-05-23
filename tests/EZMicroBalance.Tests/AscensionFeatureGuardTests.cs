@@ -44,7 +44,7 @@ public sealed class AscensionFeatureGuardTests
             "not writing it to vanilla progress",
             "MultiplayerA20DowngradeWarning",
             "Multiplayer A20 selection is enabled for development testing.",
-            "Dual King Brands / second-boss Brand gameplay is currently disabled or downgraded in co-op pending live verification.",
+            "A20 Branded Form / second-boss enhanced dedicated ability gameplay is currently disabled or downgraded in co-op pending live verification.",
             "A11-A19 inherited systems may still apply if their gates are enabled, subject to live verification.",
             "WarnIfA20MultiplayerDowngraded",
             "ShouldWarnA20MultiplayerDowngrade",
@@ -140,15 +140,13 @@ public sealed class AscensionFeatureGuardTests
             service,
             "AscensionSavedStateFields.RootblightLevel[player]",
             "AscensionSavedStateFields.RootBeginsApplied[player] = true;",
-            "player.RunState.CurrentMapCoord.HasValue",
-            "player.RunState.MapPointHistory.Any(actHistory => actHistory.Count > 0)",
             "player.RunState.CreateCard<Root>(player)",
             "player.RunState.CreateCard<DeepRoot>(player)",
             "player.RunState.CreateCard<RootblightIII>(player)",
             "private static async Task<bool> AddRootblightCard(Player player, int level, bool hasSplit = false, bool preferOverlayNotice = false)",
             "MaxRootblightCards = 4",
             "TrimRootblightDeckToCap(player",
-            "CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, source: null, skipVisuals: true)",
+            "CardPileCmd.Add(rootblightCard, PileType.Deck, CardPilePosition.Bottom, clonedBy: null, skipVisuals: true)",
             "if (!addResult.success)",
             "ShowRootblightAdded(player, preferOverlayNotice)",
             "LocalContext.IsMe(player)",
@@ -180,12 +178,45 @@ public sealed class AscensionFeatureGuardTests
             runHook,
             "public RootRunHook()",
             "AfterActEntered()",
+            "BeforeRoomEntered(AbstractRoom room)",
+            "HandleBeforeRoomEntered(AbstractRoom room)",
             "RunManager.Instance.DebugOnlyGetState()",
             "AscensionFeatureGate.IsRootblightEnabled(runState)");
+        Assert.DoesNotContain("player.RunState.CurrentMapCoord.HasValue", service, StringComparison.Ordinal);
+        Assert.DoesNotContain("player.RunState.MapPointHistory.Any", service, StringComparison.Ordinal);
+        Assert.DoesNotContain("player.RunState.ActFloor > 0", service, StringComparison.Ordinal);
 
         var initializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionInitializer.cs");
         Assert.Contains("ModelDb.GetById<RootRunHook>(ModelDb.GetId<RootRunHook>())", initializer, StringComparison.Ordinal);
         Assert.DoesNotContain("new RootRunHook(", initializer, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RootStarterDoesNotMistakeFirstEnteredRoomForAppliedRoot()
+    {
+        var serviceState = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.State.cs");
+        var serviceLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.Lifecycle.cs");
+        var runHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
+
+        AssertSourceContains(
+            runHook,
+            "public override Task BeforeRoomEntered(AbstractRoom room)",
+            "HandleBeforeRoomEntered(room)",
+            "await RootDeckService.EnsureStartingRoot(runState)");
+        AssertSourceContains(
+            serviceState,
+            "AscensionSavedStateFields.RootBeginsApplied[player]",
+            "FindRootFamilyCards(player).Count > 0");
+        Assert.DoesNotContain("CurrentMapCoord", serviceState, StringComparison.Ordinal);
+        Assert.DoesNotContain("MapPointHistory", serviceState, StringComparison.Ordinal);
+        Assert.DoesNotContain("ActFloor", serviceState, StringComparison.Ordinal);
+
+        var firstApplyBlock = SliceBetween(
+            serviceLifecycle,
+            "if (!HasRootBeginsApplied(player))",
+            "MainFile.Logger.Info(");
+        AssertBefore(firstApplyBlock, "addedStartingRoot = await AddRootblightCard(player, 1);", "MarkRootBeginsApplied(player);");
+        Assert.Contains("the next room/act hook will retry", firstApplyBlock, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -249,7 +280,9 @@ public sealed class AscensionFeatureGuardTests
             combatHookCombatEvents,
             "internal sealed partial class RootBudCombatHook",
             "public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)",
-            "public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, ICombatState combatState)",
+            "public override async Task BeforeSideTurnStart",
+            "IReadOnlyList<Creature> participants",
+            "ICombatState combatState",
             "public override async Task AfterDeath(PlayerChoiceContext choiceContext, Creature creature, bool wasRemovalPrevented, float deathAnimLength)");
         AssertSourceContains(
             combatHookLifecycle,
@@ -292,7 +325,7 @@ public sealed class AscensionFeatureGuardTests
         var beforeSideTurnStart = SliceBetween(
             combatHookCombatEvents,
             "public override async Task BeforeSideTurnStart",
-            "public override async Task AfterTurnEnd");
+            "public override async Task AfterSideTurnEnd");
         AssertSourceContains(
             beforeSideTurnStart,
             "combatState is not CombatState state",
@@ -391,20 +424,22 @@ public sealed class AscensionFeatureGuardTests
             "PowerCmd.Apply<GiantMarkFiremarkPower>",
             "PowerCmd.Apply<ForgeArmorMarkFiremarkPower>",
             "PowerCmd.Apply<ConstantHealMarkFiremarkPower>",
+            "PowerCmd.Apply<FiremarkMightOverflowPower>",
             "CreatureCmd.SetMaxAndCurrentHp",
             "tracker.FiremarkHost = host",
+            "FiremarkOverflowCandidates(combatState, tracker)",
+            "LowestHpRatioOverflowTarget(combatState, tracker)",
             "ApplyBossSealCombatStart(combatState, metadata)");
         AssertSourceContains(
             combatService,
-            "FiremarkArmorBlockBaseline",
-            "tracker.FiremarkArmorBlockBaseline = host.Block",
-            "FiremarkArmorRemainingThisTurn",
-            "TrackForgeArmorBlockedDamage(tracker, target, result)",
-            "tracker.FiremarkArmorRemainingThisTurn - result.BlockedDamage",
-            "tracker.FiremarkArmorRemainingThisTurn <= 0m ||",
-            "tracker.FiremarkHost.Block <= tracker.FiremarkArmorBlockBaseline");
-        Assert.DoesNotContain("host.Block > 0", combatService, StringComparison.Ordinal);
-        Assert.DoesNotContain("tracker.FiremarkHost.Block > tracker.FiremarkArmorBlockBaseline", combatService, StringComparison.Ordinal);
+            "MaxForgeArmorShatters = 2",
+            "ApplyFiremarkPlayerTurnStart(combatState, tracker, metadata.Firemark!.Value)",
+            "ApplyForgeArmorGain(combatState, tracker)",
+            "ApplyForgeArmorOverflow(combatState, tracker)",
+            "tracker.FiremarkHost.Block > 0",
+            "tracker.FiremarkArmorSkippedNextTurn = true");
+        Assert.DoesNotContain("TrackForgeArmorBlockedDamage", combatService, StringComparison.Ordinal);
+        Assert.DoesNotContain("FiremarkArmorBlockBaseline", combatService, StringComparison.Ordinal);
 
         var beforeSideTurnStart = SliceBetween(
             combatService,
@@ -485,17 +520,24 @@ public sealed class AscensionFeatureGuardTests
             "FIREMARK_CONSTANT_HEAL",
             "BannerRoomMapHoverPatch",
             "BANNER_VANGUARD",
-            "RequiresKnownEnemyCount(banner)",
-            "BANNER_ROOM",
+            "BANNER_SHIELDWALL",
             "BANNER_BLOOD_PRIZE",
             "BANNER_PRESSING_LINE",
+            "BANNER_LAST_STAND",
             "AddCurrentActFiremarkValues(description, firemark)",
             "AddCurrentActBannerValues(description, banner)",
             "RunManager.Instance.DebugOnlyGetState()?.CurrentActIndex",
-            "description.Add(\"Armor\", ActValue(actIndex, 5m, 10m, 20m))",
+            "description.Add(\"OverflowStrength\", ActValue(actIndex, 1m, 1m, 2m))",
+            "description.Add(\"OverflowDamage\", ActValue(actIndex, 6m, 12m, 24m))",
+            "description.Add(\"OverflowBlock\", ActValue(actIndex, 3m, 6m, 12m))",
+            "description.Add(\"OverflowHeal\", ActValue(actIndex, 2m, 4m, 8m))",
+            "description.Add(\"Armor\", ActValue(actIndex, 8m, 14m, 24m))",
+            "description.Add(\"InterruptDamage\", ActValue(actIndex, 12m, 24m, 48m))",
+            "description.Add(\"DeathBlock\", ActValue(actIndex, 5m, 10m, 20m))",
             "description.Add(\"Gold\", ActValue(actIndex, 15m, 30m, 55m))",
             "BossMapPointHoverPatch",
             "CreateHoverTip(metadata.BossSeal, metadata.IsBossBrand)",
+            "PreloadManager.Cache.GetTexture2D(AscensionAssetPaths.GetBossSealIndicator(definition.Id))",
             "sourceFallbackDescription = isBossBrand ? definition.BrandSummary : definition.Summary");
         AssertSourceContains(
             combatService,
@@ -541,7 +583,10 @@ public sealed class AscensionFeatureGuardTests
             Assert.DoesNotMatch("\\[blue\\][^\\[]+\\[/blue\\]/\\[blue\\]", zhsAscension[$"{key}.description"]);
         }
 
-        Assert.Contains("+[blue]5[/blue] [gold]Strength[/gold]", englishAscension["BOSS_SEAL_AEONGLASS_STRENGTH.summary"], StringComparison.Ordinal);
+        Assert.Contains("After [gold]Ebb[/gold], create [blue]2[/blue] Time Sand", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.summary"], StringComparison.Ordinal);
+        Assert.Contains("extra [gold]Wither[/gold]", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.summary"], StringComparison.Ordinal);
+        Assert.Contains("花费能量清时砂；剩余时砂会增加枯萎", ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs"), StringComparison.Ordinal);
+        Assert.DoesNotContain("剩余时砂会增加根蚀", ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs"), StringComparison.Ordinal);
         Assert.Contains("地图悬停", zhsAscension["MODIFIER_GUIDE.description"], StringComparison.Ordinal);
 
         AssertSourceContains(
@@ -560,8 +605,8 @@ public sealed class AscensionFeatureGuardTests
             playerGuide,
             "Firemarked Elite",
             "Banner Room",
-            "Boss Royal Seal",
-            "Boss Brand",
+            "Boss Dedicated Ability",
+            "Branded Form",
             "Fission reward enchantment",
             "Map hover previews");
     }
@@ -588,11 +633,17 @@ public sealed class AscensionFeatureGuardTests
 
         AssertSourceContains(
             combatService,
-            "BossSealId.AeonglassStrength",
-            "private static readonly ModelId AeonglassMonsterId = new(\"MONSTER\", \"AEONGLASS\")",
-            "FirstOrDefault(enemy => enemy.ModelId == AeonglassMonsterId)",
-            "AeonglassStrengthAmount = 5m",
-            "Ascension AeonglassStrength: applied +5 Strength");
+            "BossSealId.AeonglassHourglass",
+            "enemy.Monster is Aeonglass",
+            "tracker.AeonglassTimeSand = metadata.IsBossBrand ? 3 : 2",
+            "PowerCmd.Apply<AeonglassHourglassPower>",
+            "TrackAeonglassEnergySpent",
+            "SettleAeonglassTimeSand",
+            "tracker.AeonglassExtraWitherFromSands",
+            "INCREASING_INTENSITY_MOVE",
+            "CardPileCmd.AddToCombatAndPreview<Wither>",
+            "PowerCmd.Apply<AeonglassLaserEchoPower>",
+            "Time Sand Reflow created");
 
         Assert.DoesNotContain(
             "var boss = AliveEnemies(combatState)\n                .OrderByDescending(enemy => enemy.MaxHp)\n                .FirstOrDefault();",
@@ -782,6 +833,12 @@ public sealed class AscensionFeatureGuardTests
             "AscensionAssetPaths.FiremarkForgeArmorIndicator",
             "ConstantHealMarkFiremarkPower",
             "AscensionAssetPaths.FiremarkConstantHealIndicator",
+            "FiremarkMightOverflowPower",
+            "Overflow: Might",
+            "protected override IEnumerable<DynamicVar> CanonicalVars => [new InterruptDamageDynamicVar()]",
+            "description.Add(InterruptDamageVar, InterruptDamage)",
+            "private int InterruptDamage => Amount switch",
+            "Taking [blue]{InterruptDamage}[/blue] damage interrupts its next heal.",
             "internal abstract class FiremarkPower",
             "public override PowerStackType StackType => PowerStackType.Counter",
             "public override int DisplayAmount => Amount",
@@ -924,7 +981,8 @@ public sealed class AscensionFeatureGuardTests
             "rootblight_ii",
             "rootblight_iii",
             "blight_sprout.png",
-            "protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Root>()];",
+            "AncientCardHelpers.TemporaryHoverTip()",
+            "HoverTipFactory.FromCard<Root>()",
             "1 => [HoverTipFactory.FromCard<DeepRoot>()]",
             "2 => [HoverTipFactory.FromCard<Root>(), HoverTipFactory.FromCard<RootblightIII>()]",
             "_ => [HoverTipFactory.FromCard<Root>(), HoverTipFactory.FromCard<DeepRoot>()]");

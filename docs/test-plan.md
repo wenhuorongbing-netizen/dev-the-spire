@@ -1,4 +1,4 @@
-# Test Plan
+﻿# Test Plan
 
 ## Automated Checks
 
@@ -68,7 +68,7 @@ Detailed execution rows are tracked in `docs/features/ancients-rework-v4/manual-
 
 Each implemented Ancient reward change needs a manual result before private beta:
 
-- Pael's Horn: adds one `Relax` and one upgraded `Relax+`.
+- Pael's Horn: adds one `Relax` and one `Relax+`.
 - Black Star: act 3+ pickup immediately grants one random relic; normal elite bonus remains.
 - War Hammer: pickup chooses two cards to upgrade; elite kill upgrades remain.
 - Jewelry Box: adds Apotheosis without Innate.
@@ -92,7 +92,7 @@ Each implemented Ancient reward change needs a manual result before private beta
 - Crossbow: turn-start random attack offer can be accepted or skipped; skipped generated card does not linger.
 - Toasty Mittens: top draw-pile card can be exhausted for Strength or kept.
 - Whispering Earring: first three turns auto-play one highest-cost playable hand card after draw.
-- Meat Cleaver: Cleaver / 切肉 removes two cards and loses five current HP; disabled when unavailable.
+- Meat Cleaver: Cleaver / 鍒囪倝 removes two cards and loses five current HP; disabled when unavailable.
 - Blood-Soaked Rose / Enthralled: Enthralled gains 10 Block while preserving forced-priority behavior.
 
 ## Save/Load Checks
@@ -120,7 +120,7 @@ v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.
 - Historical package smoke/log/resource evidence under `.tools/runtime-evidence/current-package-smoke-20260514-015901` covers the earlier 22-field package, installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a clean normal Steam helper startup with BaseLib plus Spire Plus / `EZMicroBalance`.
-- current source defines 25 SavedSpireFields after the 2026-05-17 static fixes, so fresh live loader parity remains pending for the refreshed package. Older 16-field startup/log passes are historical.
+- current source defines 26 SavedSpireFields after the 2026-05-17 static fixes, so fresh live loader parity remains pending for the refreshed package. Older 16-field startup/log passes are historical.
 - BaseLib-only plug-off evidence under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` loaded `1 mods (1 total)` and did not initialize Spire Plus / `EZMicroBalance`. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
 - Current Mod Settings UI list evidence, historical Mod Settings page evidence, A11 map/save-load spot checks, saved-map boss-reachability proof, Act 2/3 A11 map-surface observation, and targeted A14 Rootblight hover/starter-notice checks have evidence.
 - The A14 Rootblight art-hover probe found pre-fix Urda missing asset paths before combat. Urda now uses custom Ancient icon/background-scene paths and the current package resolves Ancient scene/art resources in headless installed-PCK verification, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.

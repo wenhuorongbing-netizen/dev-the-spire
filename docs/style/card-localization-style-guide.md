@@ -3,7 +3,7 @@
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Applies to: `EZMicroBalance/localization/{eng,zhs}/cards.json` and matching `CardModel` source.
 
-This guide follows local Slay the Spire 2 `v0.105.0` source behavior.
+This guide follows local Slay the Spire 2 `v0.106.0` source behavior.
 
 ## Source evidence
 
@@ -66,10 +66,12 @@ protected override IEnumerable<IHoverTip> ExtraHoverTips =>
 
 - Rootblight = 根蚀
 - Blight Sprout / Root Bud = 根芽
-- Draw Pile = draw pile
-- Discard Pile = discard pile
-- Exhaust Pile = exhaust pile
-- Deck = deck, master deck = main deck
+- Withered Husk = 枯壳
+- Root Eyes = 根眼
+- Draw Pile = 抽牌堆
+- Discard Pile = 弃牌堆
+- Exhaust Pile = 消耗牌堆
+- Deck = 牌组, master deck = 主牌组
 
 ## 7) Manual checklist rule
 

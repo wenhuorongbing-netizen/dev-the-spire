@@ -17,6 +17,11 @@ internal sealed class RootRunHook : AbstractModel
         return HandleAfterActEntered();
     }
 
+    public override Task BeforeRoomEntered(AbstractRoom room)
+    {
+        return HandleBeforeRoomEntered(room);
+    }
+
     public override Task AfterRoomEntered(AbstractRoom room)
     {
         return HandleAfterRoomEntered();
@@ -81,6 +86,20 @@ internal sealed class RootRunHook : AbstractModel
             }
 
             AscensionDiagnostics.LogRunState(runState, "after act entered after root seed");
+        }
+    }
+
+    private static async Task HandleBeforeRoomEntered(AbstractRoom room)
+    {
+        var runState = RunManager.Instance.DebugOnlyGetState();
+        if (runState == null)
+        {
+            return;
+        }
+
+        if (AscensionFeatureGate.IsRootblightEnabled(runState))
+        {
+            await RootDeckService.EnsureStartingRoot(runState);
         }
     }
 

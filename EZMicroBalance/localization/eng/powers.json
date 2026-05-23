@@ -29,10 +29,13 @@
   "EZMICROBALANCE-MORVI_PAPERSTORM_POWER.description": "[gold]Paperstorm[/gold]: each turn, the first [blue]2[/blue] Status cards drawn from the [gold]Draw Pile[/gold] are consumed. Each draws [blue]1[/blue] card and grants [blue]1[/blue] [gold]Energy[/gold].",
   "EZMICROBALANCE-MORVI_PAPERSTORM_POWER.smartDescription": "[gold]Paperstorm[/gold]: drawn Status cards are converted into draw and [gold]Energy[/gold].",
   "EZMICROBALANCE-MORVI_PAPERSTORM_POWER.title": "Paperstorm",
-  "EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.description": "[gold]Stolen Vault[/gold]: each broken lock improves Vakuu victory rewards. Playing a [gold]Contract[/gold] breaks [blue]1[/blue] lock. Dealing [blue]40[/blue] unblocked damage to Vakuu in one player turn breaks [blue]1[/blue] lock. Each broken lock grants [blue]50[/blue] [gold]Gold[/gold] on victory.",
-  "EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.smartDescription": "[gold]Stolen Vault[/gold]: break locks with [gold]Contracts[/gold] or [blue]40[/blue] unblocked damage in one turn for more rewards.",
+  "EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.description": "[gold]Stolen Vault[/gold]: each broken lock improves Vakuu victory rewards. Break locks with [gold]Contracts[/gold] or by dealing [blue]40[/blue] unblocked damage to Vakuu in one player turn. After breaking a lock, you may [gold]Cash Out[/gold].",
+  "EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.smartDescription": "[gold]Stolen Vault[/gold]: break locks for more rewards, then choose whether to [gold]Cash Out[/gold].",
   "EZMICROBALANCE-VAKUU_STOLEN_VAULT_POWER.title": "Stolen Vault",
-  "EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.description": "[gold]Blood Debt[/gold]: Vakuu's attack hits deal [blue]3[/blue] more damage for each stack. [gold]Contracts[/gold] add [blue]1[/blue] stack.",
-  "EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.smartDescription": "[gold]Blood Debt[/gold]: Vakuu's attack hits deal more damage for each stack.",
-  "EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.title": "Blood Debt"
+  "EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.description": "[gold]Blood Debt[/gold]: each stack makes Vakuu's attack hits deal [blue]2[/blue] more damage. At trial end, each stack removes [blue]15[/blue] loot Gold first; unpaid debt costs nonlethal HP.",
+  "EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.smartDescription": "[gold]Blood Debt[/gold]: Vakuu hits harder. Trial loot pays debt before you keep the rest.",
+  "EZMICROBALANCE-VAKUU_BLOOD_DEBT_POWER.title": "Blood Debt",
+  "EZMICROBALANCE-VAKUU_BACKLASH_POWER.description": "[gold]Backlash[/gold]: Vakuu's attacks deal [blue]{Amount}[/blue] more damage until it acts.",
+  "EZMICROBALANCE-VAKUU_BACKLASH_POWER.smartDescription": "[gold]Backlash[/gold]: Vakuu's next attacks hit harder.",
+  "EZMICROBALANCE-VAKUU_BACKLASH_POWER.title": "Backlash"
 }

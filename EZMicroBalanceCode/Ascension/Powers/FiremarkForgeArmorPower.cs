@@ -6,11 +6,11 @@ internal sealed class ForgeArmorMarkFiremarkPower : FiremarkPower
 
     public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new PowerLoc(
-            "火印：铸甲",
-            "[gold]火印精英[/gold]在每个敌方回合后获得[blue]{Amount}[/blue]点[gold]熔甲[/gold]。下个玩家回合打掉这些熔甲后，下次熔甲不会生成。",
-            "打掉本次熔甲后，下次熔甲不会生成。")
+            "火印：锻甲",
+            "你的回合开始时，火印宿主获得[blue]{Amount}[/blue]点[gold]熔甲[/gold]。若本回合结束时宿主没有格挡，下一次熔甲跳过。",
+            "清空宿主格挡，可跳过下一次[gold]熔甲[/gold]。")
         : new PowerLoc(
             "Firemark: Forge Armor",
-            "After each enemy turn, the [gold]Firemarked enemy[/gold] gains [blue]{Amount}[/blue] [gold]Molten Armor[/gold]. If you remove that armor next player turn, it skips the next armor gain.",
-            "Remove this armor to skip the next armor gain.");
+            "At the start of your turn, the Firemark Host gains [blue]{Amount}[/blue] [gold]Molten Armor[/gold]. If the host has no Block at turn end, the next Molten Armor is skipped.",
+            "Clear the host's Block to skip the next [gold]Molten Armor[/gold].");
 }

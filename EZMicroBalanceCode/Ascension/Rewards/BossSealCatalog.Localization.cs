@@ -17,7 +17,7 @@ internal static partial class BossSealCatalog
             BossSealId.StruggleBait => "BOSS_SEAL_STRUGGLE_BAIT",
             BossSealId.ChosenDecree => "BOSS_SEAL_CHOSEN_DECREE",
             BossSealId.ResidualSample => "BOSS_SEAL_RESIDUAL_SAMPLE",
-            BossSealId.AeonglassStrength => "BOSS_SEAL_AEONGLASS_STRENGTH",
+            BossSealId.AeonglassHourglass => "BOSS_SEAL_AEONGLASS_HOURGLASS",
             _ => "BOSS_ROYAL_SEAL"
         };
     }

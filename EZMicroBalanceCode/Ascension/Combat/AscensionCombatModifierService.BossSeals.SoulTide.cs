@@ -24,8 +24,7 @@ internal static partial class AscensionCombatModifierService
         }
 
         tracker.LastSoulFyshIntangibleAmount = (int)intangibleAmount;
-        var artifact = metadata.IsBossBrand ? 2m : 1m;
-        await PowerCmd.Apply<ArtifactPower>(new BlockingPlayerChoiceContext(), soulFysh, artifact, soulFysh, null);
+        await ApplyPowerWithFinalDisplayedGain<ArtifactPower>(soulFysh, 1, soulFysh, null);
         MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Soul Tide added Artifact on Intangible entry.");
     }
 
@@ -51,11 +50,23 @@ internal static partial class AscensionCombatModifierService
             .SelectMany(pile => pile.Cards)
             .Count(card => card is Beckon);
 
-        var cap = metadata.IsBossBrand ? 16m : 12m;
-        tracker.PendingSoulTideBlock = Math.Min(cap, tracker.PendingSoulTideBlock + (beckonsInHand * 2m));
+        var blockPerBeckon = metadata.IsBossBrand ? 3m : 2m;
+        var cap = SoulTideBlockCap(combatState, metadata.IsBossBrand);
+        tracker.PendingSoulTideBlock = Math.Min(cap, tracker.PendingSoulTideBlock + beckonsInHand * blockPerBeckon);
     }
 
-    private static async Task ApplySoulTidePendingBlock(CombatState combatState, AscensionCombatTracker tracker)
+    private static int SoulTideBlockCap(CombatState combatState, bool isBossBrand)
+    {
+        var playerCount = combatState.Players.Count;
+        if (isBossBrand)
+        {
+            return playerCount <= 1 ? 12 : playerCount == 2 ? 16 : 20;
+        }
+
+        return playerCount <= 1 ? 8 : playerCount == 2 ? 12 : 16;
+    }
+
+    private static async Task ApplySoulTidePendingBlock(CombatState combatState, AscensionCombatTracker tracker, AscensionNodeMetadata metadata)
     {
         if (tracker.PendingSoulTideBlock <= 0m)
         {
@@ -70,7 +81,7 @@ internal static partial class AscensionCombatModifierService
 
         var block = tracker.PendingSoulTideBlock;
         tracker.PendingSoulTideBlock = 0m;
-        await CreatureCmd.GainBlock(soulFysh, block, ValueProp.Move, null, fast: true);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Soul Tide converted Beckon hand pressure into Block.");
+        await CreatureCmd.GainBlock(soulFysh, block, ValueProp.Move, null);
+        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Soul Tide converted Beckon hand pressure into {block} Block.");
     }
 }

@@ -11,7 +11,7 @@ internal static class AscensionSelectionPatches
 {
     public const string MultiplayerA20DowngradeWarning =
         "Multiplayer A20 selection is enabled for development testing. " +
-        "Dual King Brands / second-boss Brand gameplay is currently disabled or downgraded in co-op pending live verification. " +
+        "A20 Branded Form / second-boss enhanced dedicated ability gameplay is currently disabled or downgraded in co-op pending live verification. " +
         "A11-A19 inherited systems may still apply if their gates are enabled, subject to live verification.";
 
     private static readonly FieldInfo? MaxAscensionBackingField =

@@ -75,14 +75,14 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] Humus Pact live `Compost Reward` alternative, gold, remove flow, and upgraded-card payoff verified.
 - [ ] Humus Pact third payoff does not duplicate, disappear, or softlock.
 - [ ] Humus Pact does not trigger from ordinary reward-set skip/proceed or room-exit cleanup.
-- [ ] Molting / Withered Husk live card behavior verified: 0-cost Skill, 3 Block, Exhaust.
+- [ ] Molting / Withered Husk live card behavior verified: 0-cost Ethereal/Exhaust Curse; when exhausted it gives 3 Block.
 - [ ] Moss Map room-type reward behavior verified.
 - [ ] Trial Branch offers four rare class cards, upgrades and adds the chosen card, applies the visible `Trial Branch` enchantment, and shows combats left/current-combat play state/remaining required plays.
 - [ ] Trial Branch success path: the chosen card is played in each of the next three combats, then the card is kept and the Trial Branch marker/enchantment are cleared.
 - [ ] Trial Branch failure path: missing the chosen card in any one of the next three combats removes it immediately after that combat.
 - [ ] Shallow-Root Relic offers two common relics, grants the chosen relic plus 75 Gold, roots on an Act 1 elite for 35 Gold, and otherwise uses the documented Act 2 removal/refund fallback.
 - [ ] Rooted Route auto-marks a reachable normal-combat node within the first seven floors without changing the map graph, rewards reaching it, and withers for 8 HP loss plus 25 Gold if unreachable.
-- [ ] After the Rain prevents the first Act 1 lethal damage for 1 HP, 15 Block, draw 1, two Wounds, and -3 Max HP; if unused before Act 2 it heals 8 and grants 75 Gold.
+- [ ] After Rain gains 1 Rain Breath after the first unblocked enemy attack damage in each Act 1 combat; if the hand is full, verify Core's normal generated-card fallback is readable. At Act 2 start, fewer than 3 triggers gives 75 Gold, otherwise heal 8 and upgrade 1 card.
 - [ ] Root-Sight starts with 5 Root Eyes. Clicking the Root Eyes relic opens map selection, highlights future reachable Monster, Unknown, or Elite rooms, stores the chosen room's concrete enemy group or event on hover, excludes Rest Sites/Shops/Treasure/Boss rooms, and grants the first-use potion if a slot exists.
 - [ ] Seed Bank uses the source-safe `Store Seed` reward alternative, caps at three Seeds, and lets the player click the Seed Bank relic later to choose up to two Seeds with the first upgraded. It must not mark Seed Bank cards as Trial Branch plants.
 - [ ] Current Urda save/load verified; do not close from `SavedSpireField<Player,string>` source evidence alone.
@@ -116,14 +116,14 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] `EZMB_FORCE_ANCIENT=LOTHA` or `SPIREPLUS_FORCE_ANCIENT=LOTHA` focuses Act 3 testing on Lotha.
 - [ ] Lotha event UI renders event art, dialogue, three options, option/relic icons, and hover tips.
 - [ ] Mirror Rebuttal selection screen chooses exactly one Attack, Skill, or Power deck card.
-- [ ] Mirror Rebuttal combat start moves the selected combat card to hand when it starts in a combat pile outside the hand.
-- [ ] Mirror Rebuttal first selected Attack/Skill play adds two plays, does not recurse from autoplay/generated executions, and selected Power costs 0 for that play, then grants 2 Energy plus draw 2 instead of extra-playing.
+- [ ] Mirror Rebuttal moves the selected combat card to hand on the first player turn after normal draw when it starts in a combat pile outside the hand; if the hand is full, it goes to the top of the draw pile.
+- [ ] Mirror Rebuttal first selected Attack/Skill play adds one extra play, does not recurse from autoplay/generated executions, and selected Power costs 0 for that play instead of extra-playing.
 - [ ] Mirror Hall Echo records the last player-played non-Status Attack/Skill/Power at player-turn end and only the next turn's first matching player-played card consumes the echo.
 - [ ] Mirror Hall Echo Attack/Skill consumes the echo for one extra play; Power consumes it by costing 0 for that play and drawing 1, with no Energy gain; autoplay/generated cards do not set or consume it.
 - [ ] Presumption applies visible Innocent state at combat start and each turn while active draws 2, grants 1 Energy, and grants 8 Block.
 - [ ] Presumption breaks only from unblocked enemy attack damage in normal combat testing, then removes Innocent, applies immediate 8 HP loss, and does not return this combat.
 - [ ] Closed Court removes post-combat card rewards for the rest of the run while gold, potions, and relic rewards still appear.
-- [ ] Closed Court first player turn draws until hand has 10, grants 4 Energy, and makes the first three player-played hand cards cost 1 less Energy for that play.
+- [ ] Closed Court turn 1 draws 4 and grants 2 Energy; turn 4 draws 2 and grants 2 Energy.
 - [ ] Deferred Verdict turn 4 grants draw 4, Energy 4, and 3 player-owned Verdict; each next non-Status card consumes 1 Verdict.
 - [ ] Deferred Verdict Attack/Skill adds one play, Power costs 0 for that play and draws 1 with no Energy gain, Verdict clears after turn 4/combat, and combat ending before turn 4 heals 4 HP.
 - [ ] Death Reprieve player-turn lethal trigger sets HP to 1 and starts the reprieve immediately in the current player turn.
@@ -149,14 +149,16 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] `EZMB_FORCE_ANCIENT=VAKUU` or `SPIREPLUS_FORCE_ANCIENT=VAKUU` focuses Act 3 testing on Vakuu.
 - [ ] `EZMB_FORCE_VAKUU_FIGHT=1` or `SPIREPLUS_FORCE_VAKUU_FIGHT=1` limits Vakuu to the fight option for focused testing.
 - [ ] Declining the fight preserves current Vakuu behavior.
-- [ ] Selecting Fight Vakuu enters the dedicated Vakuu trial combat and the option text says a random Contract is added after the hand draw on turns 1/3/5+.
-- [ ] On turns 1, 3, 5, and onward, after the normal hand draw, one random Contract is added to hand if there is hand space and appears in combat history/log evidence.
+- [ ] Selecting Fight Vakuu enters the dedicated Vakuu trial combat and the option text explains Stolen Locks, Contracts, Blood Debt, Cash Out, no normal rewards, and death risk.
+- [ ] On turns 1, 3, and 5, after the normal hand draw, Vakuu shows contract choices; the chosen Contract is added to hand if there is hand space.
 - [ ] Contract cards show 0-cost Skill token behavior with Ethereal and Exhaust hover tips, plus Stolen Vault and Blood Debt hover tips, and no duplicated keyword body text.
-- [ ] Playing Knife Contract, Gold Contract, and Shelter Contract costs the listed HP, breaks one Stolen Vault lock if any remain, adds one Blood Debt, and resolves its listed effect without softlock.
-- [ ] Dealing at least 40 unblocked damage to Vakuu in one player turn breaks one Stolen Vault lock once for that turn.
-- [ ] Blood Debt increases each of Vakuu's powered attack hits by 3 damage per stack and the intent updates accordingly.
+- [ ] Playing Knife Contract and Gold Contract costs HP, breaks one Stolen Vault lock if any remain, adds one Blood Debt, and resolves its listed effect without softlock.
+- [ ] Playing Avoid Debt grants Block and removes Blood Debt; playing Fraud Contract breaks a lock, adds two Blood Debt, and applies one-turn Backlash.
+- [ ] Breaking at least one lock adds Cash Out when there is hand space; playing it ends the fight through the normal Vakuu victory path.
+- [ ] Dealing at least 40 unblocked damage to Vakuu in one player turn breaks one Stolen Vault lock once for that turn, including lethal hits.
+- [ ] Blood Debt increases each of Vakuu's powered attack hits by 2 damage per stack and the intent updates accordingly.
 - [ ] Victory offers 1/2/3 non-Vakuu Act 3 Ancient blessing choices based on broken locks when enough unclaimed choices remain; otherwise the fallback continue option appears.
-- [ ] Victory grants 50 Gold per broken lock when the chosen blessing or fallback continue option is accepted.
+- [ ] Victory grants 50 loot Gold per broken lock, then Blood Debt removes 15 loot Gold per stack before the remainder is awarded; unpaid debt costs nonlethal HP.
 - [ ] Combat victory does not show a normal combat reward screen before the Vakuu victory blessing choice.
 - [ ] Combat victory returns to the Vakuu event without a black screen. This row specifically verifies the direct parent-room stack transition and parent event `Node` cleanup added after the 2026-05-15 report.
 - [ ] Failure/death path is correct and does not softlock.

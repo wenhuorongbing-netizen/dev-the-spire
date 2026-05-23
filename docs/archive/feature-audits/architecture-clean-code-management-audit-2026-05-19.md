@@ -2,8 +2,10 @@
 
 Date: 2026-05-19  
 Repository: `D:\Game\FOTN\dev-the-spire`  
-Product: `Spire Plus` private beta candidate, technical manifest id `EZMicroBalance`; separate preview mod `EZFuturePeek`; legacy scaffold `EzDailyContent` retained for traceability.  
+Product: `Spire Plus` private beta candidate, technical manifest id `EZMicroBalance`; preview tools are integrated into the same mod; legacy scaffold `EzDailyContent` is archived for traceability.
 Audit mode: source, docs, tests, scripts, package configuration, and local git state. The game was not launched. No production code was changed by this audit.
+
+2026-05-22 compatibility note: the active project has since been consolidated into one `Spire Plus / EZMicroBalance` mod. Any older `EZFuturePeek` separation recommendations below are historical context, not current implementation guidance.
 
 ## 1. Executive Summary
 
@@ -13,16 +15,16 @@ This repository is a serious local mod workspace with strong source-guard discip
 
 | Item | Finding |
 | --- | --- |
-| Project Type | Slay the Spire 2 mod workspace with two independent mod projects plus one legacy scaffold. |
-| Tech Stack | C# / .NET 9, Godot .NET SDK 4.5.1, Slay the Spire 2 Core API, BaseLib 3.1.2, Harmony, xUnit, PowerShell. |
-| Runtime | Slay the Spire 2 public beta target `v0.105.0`, BaseLib under game `mods\BaseLib`. |
+| Project Type | Slay the Spire 2 mod workspace with one active integrated mod plus archived legacy scaffold history. |
+| Tech Stack | C# / .NET 9, Godot .NET SDK 4.5.1, Slay the Spire 2 Core API, BaseLib 3.1.4, Harmony, xUnit, PowerShell. |
+| Runtime | Slay the Spire 2 public beta target `v0.106.0`, BaseLib under game `mods\BaseLib`. |
 | Package Manager | NuGet through SDK-style `.csproj`. |
 | Build Tool | `dotnet build`, `dotnet publish`, Godot export-pack through project publish targets. |
 | Test Framework | xUnit, `Microsoft.NET.Test.Sdk`; release artifact tests gated by `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`. |
 | Lint / Format | `dotnet format --verify-no-changes`; `git diff --check`. |
 | CI/CD Setup | No active `.github/workflows` files. A website workflow is archived and ignored. |
-| Deployment Model | Local game `mods\EZMicroBalance`, `mods\EZFuturePeek`, plus `publish\SpirePlus-v0.1.0-private-beta.0.zip`. |
-| Entry Points | `EZMicroBalanceCode\MainFile.cs`, `EZFuturePeekCode\MainFile.cs`, legacy `EzDailyContentCode\MainFile.cs`. |
+| Deployment Model | Local game `mods\EZMicroBalance` plus `publish\SpirePlus-v0.1.0-private-beta.0.zip`. |
+| Entry Points | `EZMicroBalanceCode\MainFile.cs`; legacy entry points are archived only. |
 | Config Files | `Directory.Build.props.example`, local ignored `Directory.Build.props`, `EZMicroBalance.json`, `EZFuturePeek.json`, `export_presets.cfg`, project files. |
 | Main Documentation | `PROJECT_STATE.md`, `AGENTS.md`, `docs\README.md`, `docs\issues.md`, `docs\test-ready-development-goal.md`, feature docs under `docs\features`. |
 | Main Directories | `EZMicroBalanceCode`, `EZMicroBalance`, `EZFuturePeekCode`, `EZFuturePeek`, `tests`, `scripts`, `docs`, `source code`, `publish`, `.tools`. |

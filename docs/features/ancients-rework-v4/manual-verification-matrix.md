@@ -1,4 +1,4 @@
-# Ancient Rework v4 Manual Verification Matrix
+﻿# Ancient Rework v4 Manual Verification Matrix
 
 Prepared: 2026-05-07
 Updated: 2026-05-18
@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, SHA256 `921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91` |
+| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, SHA256 `124AF7C77B33CE5EAC5A7369519D90AD66EC4CFCDC887DD1E352CF4F24E7968C` |
 
 ## Runtime Load Checklist
 
@@ -74,7 +74,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 
 | Ancient / Relic | Manual Check | Expected Result | Result |
 | --- | --- | --- | --- |
-| Pael's Horn | Pick up the reward and inspect the added cards. | Adds one `Relax` / `放松` and one upgraded `Relax+` / `放松+`. Regression text includes `获得1点能量`, `手牌有7张`, `至少18点`. | Pending |
+| Pael's Horn | Pick up the reward and inspect the added cards. | Adds one `Relax` / `放松` and one `Relax+` / `放松+`. Regression text includes `获得1点能量`, `手牌有7张`, `至少18点`. | Pending |
 | Black Star | Pick up in Act 3 or later, then kill an elite. | Pickup immediately grants one random relic; normal elite bonus remains. | Pending |
 | War Hammer | Pick up reward, then kill an elite. | Pickup chooses two cards to upgrade; elite kill upgrades remain. | Pending |
 | Jewelry Box | Pick up reward, inspect deck, then save/load or enter the next combat. | Adds `Apotheosis` / `神化` without `Innate` / `固有`; the added card must not start in opening hand from Innate. | Pending |

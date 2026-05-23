@@ -32,6 +32,6 @@ internal static class PaelsHornPhase1Patch
         };
 
         CardCmd.PreviewCardPileAdd(results, 2f);
-        MainFile.Logger.Info("[EZMicroBalance] PaelsHornPhase1 applied: added Relax and upgraded Relax+.");
+        MainFile.Logger.Info("[EZMicroBalance] PaelsHornPhase1 applied: added Relax and Relax+.");
     }
 }

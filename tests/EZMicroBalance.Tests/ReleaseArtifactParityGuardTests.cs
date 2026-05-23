@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -228,7 +228,7 @@ public sealed class ReleaseArtifactParityGuardTests
     public void ControlledSmokePassRequiresCurrentSourceSavedSpireFieldCount()
     {
         var expectedFieldCount = ExpectedCurrentSavedSpireFieldCount();
-        Assert.True(expectedFieldCount >= 25, $"Expected current source to define the refreshed 25-field package state or later, found {expectedFieldCount}.");
+        Assert.True(expectedFieldCount >= 26, $"Expected current source to define the refreshed 26-field package state or later, found {expectedFieldCount}.");
 
         var currentLog = CreateControlledSmokeLog(expectedFieldCount);
         var historicalLog = CreateControlledSmokeLog(22);
@@ -376,7 +376,7 @@ public sealed class ReleaseArtifactParityGuardTests
             source,
             @"\bpublic\s+static\s+readonly\s+SavedSpireField<",
             RegexOptions.CultureInvariant).Count;
-        Assert.Equal(25, count);
+        Assert.Equal(26, count);
         return count;
     }
 

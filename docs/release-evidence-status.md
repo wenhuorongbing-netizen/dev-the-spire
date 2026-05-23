@@ -1,4 +1,4 @@
-# Release Evidence Status
+﻿# Release Evidence Status
 
 Current target: `Spire Plus` manual-test build for user validation. This page is a compact dashboard for evidence state; it does not replace `docs/release-checklist.md`.
 
@@ -10,18 +10,18 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `921EEB0468E9D9110405C4AADD958A64E6DED5D648A6DA8346CFD6B2A9956F91` |
-| DLL | `CCF61C5E9B69C53C9DFF5E61F0C87913B54A8D1486F97000CBD6125D90903DE4` |
-| PCK | `3CDB72F1225FF2492F536091772979983653865F2902E2B485BBCB16B4FD1392` |
-| Manifest | `A41EBF8ABEDCFC09DBB02CB655D7E50465888065ABA77F8EF087E87206F276CF` |
-| README_INSTALL | `BA885193452EBA22A78433304F383A87A0830FA5E935A20B63BBAA08ABEBB906` |
+| ZIP | `124AF7C77B33CE5EAC5A7369519D90AD66EC4CFCDC887DD1E352CF4F24E7968C` |
+| DLL | `8D026922BD4348029948B0B25FD12D98E57833F7115051BF085AD86DB3C8A3E2` |
+| PCK | `208CFFDC66B735FF2E98C862E418A236E9041A0AE1AB7877B594BE0F7634899C` |
+| Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
+| README_INSTALL | `C735AA228BBB5CD002BF618334A04483C0013328C82ECC33551C65B0A1165599` |
 
 ## Evidence Rows
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
 | Current package automation | Passed | Codex | Build, tests, format, publish, package, artifact tests | Latest hashes are in `docs/issues.md`; rerun after package changes. |
-| Fresh current-package loader smoke | Pending | User/Codex with game launch approval | Current 25-field loader log and clean `godot.log` audit | Historical loader evidence is for older field count. |
+| Fresh current-package loader smoke | Pending | User/Codex with game launch approval | Current 26-field loader log and clean `godot.log` audit | Historical loader evidence is for older field count. |
 | Clicked Ancient UI | Pending | User | Urda, Morvi, Lotha, Vakuu normal, Vakuu fight screenshots and logs | Must prove event art, option art, dialogue, marker relic visibility, and hover readability. |
 | Ancient reward gameplay | Pending | User | Manual runs for Urda, Morvi, Lotha, and vanilla rebalance rewards | Source guards are green; gameplay proof remains open. |
 | Vakuu fight victory | Pending | User | Victory returns to parent event without black screen | Fight remains hidden by default. |

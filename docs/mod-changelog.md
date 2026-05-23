@@ -1,4 +1,4 @@
-# Spire Plus Changelog
+﻿# Spire Plus Changelog
 
 Append only short tester/player-facing entries here when behavior or release validation changes.
 
@@ -17,7 +17,7 @@ Append only short tester/player-facing entries here when behavior or release val
 
 ## 2026-05-14
 
-- Vakuu's fight now adds random Temptation Contracts to hand after your hand draw on turns 1, 3, 5, and onward; Contracts cost HP, break Stolen Vault locks, add Blood Debt, and improve victory blessing choices plus Gold.
+- Vakuu's fight now offers three Contract choices after your hand draw on turns 1, 3, and 5; Contracts cost HP, break Stolen Vault locks, add Blood Debt, and improve victory blessing choices plus Gold.
 - Urda now shows four initial blessing choices in the clicked Ancient screen instead of three.
 - Invalid forced blessing environment values now fall back to visible Urda, Morvi, or Lotha options with a clear log warning instead of silently falling through.
 - Morvi Debt Settlement now pays missing Gold with nonlethal HP and keeps Debt decreasing by the due amount.
@@ -41,7 +41,7 @@ Append only short tester/player-facing entries here when behavior or release val
 - At that point Lotha event art used the local generated mirror-tribunal background and temporary source-derived map/option/power crops; the later GPTimage2/browser art pass superseded the temporary-crop note for the current package.
 - Repaired broken Simplified Chinese Ancient expansion localization JSON so the active zhs files parse again.
 - Lotha is source-complete/default-on for private-beta testing with eight blessing options and `EZMB_DISABLE_LOTHA` / `SPIREPLUS_DISABLE_LOTHA` emergency gates.
-- Lotha corrective polish now covers all eight blessings: Mirror Rebuttal chosen-card setup with 2 Energy / draw 2 Power fallback; Mirror Hall Echo turn-end type recording; Presumption Innocent state; Closed Court no-card-rewards plus first-turn burst; Deferred Verdict player-owned turn-4 Verdict stacks; Death Reprieve reprieve turn; Single Sentence first Attack/Skill ruling plus four-card cap; and Public Evidence Debuff/Enlightenment hooks.
+- Lotha corrective polish now covers all eight blessings: Mirror Rebuttal chosen-card setup with a 0-cost Power fallback; Mirror Hall Echo turn-end type recording; Presumption Innocent state; Closed Court no-card-rewards plus split turn-1 and turn-4 resources; Deferred Verdict player-owned turn-4 Verdict stacks; Death Reprieve reprieve turn; Single Sentence first Attack/Skill ruling plus four-card cap; and Public Evidence Debuff/Enlightenment hooks.
 - Death Reprieve has a source-safe timing note for testers: player-turn lethal starts the reprieve immediately, while enemy-turn lethal starts it on the next player turn because safe enemy-turn interruption is not proven by local source.
 - Lotha English and Simplified Chinese option/relic/power text now highlights Attack/Skill/Power, Energy, Block, Verdict, Debuff, Enlightenment, Innocent, and Death Reprieve terms.
 - Morvi is source-complete/default-on for private-beta Act 2 testing with all eight v2.2 blessing options, custom event art, option icons, English/Simplified Chinese localization, hover powers, `EZMB_DISABLE_MORVI` / `SPIREPLUS_DISABLE_MORVI`, force-Ancient gates, and force-blessing gates.
@@ -78,13 +78,13 @@ Append only short tester/player-facing entries here when behavior or release val
 ## 2026-05-08
 
 - Multiplayer A20: fixed a black-screen run-start crash caused by hard references to optional Early Access Boss Seal types missing from the current installed game DLL.
-- Compatibility: Debt patch paths avoid direct assumptions about game members that changed across local Early Access builds. Pumpkin Candle and Door Wedge EZMB overrides are removed from the active v0.105.0 package; Pumpkin Candle is vanilla and Doormaker/Door Wedge is replaced by Aeonglass +5 Strength.
+- Compatibility: Debt patch paths avoid direct assumptions about game members that changed across local Early Access builds. Pumpkin Candle and Door Wedge EZMB overrides are removed from the active v0.106.0 package; Pumpkin Candle is vanilla and Doormaker/Door Wedge is replaced by Aeonglass Time Sand Reflow.
 - A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
 - Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.
 - Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
 - A20 multiplayer selection is not full A20 co-op support. Dual King Brands / second-boss Brand gameplay remains disabled or downgraded in co-op pending live verification.
-- Normal Steam-client Mod Settings has historical RC1 UI evidence for BaseLib and the old EZ Micro Balance display name. Later historical startup/log evidence confirms a Spire Plus display-name package reached main menu, but the current 25-field package still needs a fresh live loader rerun. Startup/log checks are not the same as live co-op or gameplay verification.
+- Normal Steam-client Mod Settings has historical RC1 UI evidence for BaseLib and the old EZ Micro Balance display name. Later historical startup/log evidence confirms a Spire Plus display-name package reached main menu, but the current 26-field package still needs a fresh live loader rerun. Startup/log checks are not the same as live co-op or gameplay verification.
 
 ## 2026-05-07
 
@@ -102,4 +102,4 @@ Append only short tester/player-facing entries here when behavior or release val
 - A19/A20: Boss Royal Seal / King Brand map hover text remains available; A20 Dual King Brands gameplay remains single-player gated.
 - Multiplayer A20: host selection is enabled only for development testing when the public Ascension gate is on; logs now warn that Dual King Brands / second-boss Brand gameplay is disabled or downgraded in co-op pending live verification.
 - Tests: release artifact/package/runtime-smoke checks are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`; normal developer tests no longer require ignored `publish/` package artifacts.
-- Status: historical 2026-05-14 package helper startup/log/resource verification under `.tools/runtime-evidence/current-package-smoke-20260514-015901` passed with BaseLib and Spire Plus / `EZMicroBalance` loaded, `Found 22 SavedSpireFields`, clean audit/manual scans, and installed-PCK Ancient resource coverage. current source defines 25 SavedSpireFields after later static fixes, so fresh live loader parity remains pending for the refreshed package; the refreshed Mod Settings UI list screenshot shows `Spire Plus`. Live feature verification, save-load, and live co-op verification remain pending until actually executed.
+- Status: historical 2026-05-14 package helper startup/log/resource verification under `.tools/runtime-evidence/current-package-smoke-20260514-015901` passed with BaseLib and Spire Plus / `EZMicroBalance` loaded, `Found 22 SavedSpireFields`, clean audit/manual scans, and installed-PCK Ancient resource coverage. current source defines 26 SavedSpireFields after later static fixes, so fresh live loader parity remains pending for the refreshed package; the refreshed Mod Settings UI list screenshot shows `Spire Plus`. Live feature verification, save-load, and live co-op verification remain pending until actually executed.

@@ -67,7 +67,8 @@ public sealed class MorviV22GuardTests
             "unlockedAncients = [morvi]",
             "list.Add(morvi)",
             "ExpectedInitialOptionCount = 3",
-            "options.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()",
+            "candidates.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()",
+            "AncientInitialOptionReroll.CanOffer",
             "MorviAssetPaths.BackgroundScene");
         Assert.Contains("MorviInitializer.Initialize();", mainFile, StringComparison.Ordinal);
         AssertSourceContains(

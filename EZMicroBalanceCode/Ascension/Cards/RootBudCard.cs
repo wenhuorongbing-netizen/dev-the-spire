@@ -1,6 +1,7 @@
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using BaseLib.Utils.Attributes;
+using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
@@ -57,7 +58,11 @@ public sealed class RootBud : CustomCardModel
     public override string PortraitPath => RootPortraitPaths.BlightSprout;
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => ExhaustKeyword;
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Root>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        AncientCardHelpers.TemporaryHoverTip(),
+        HoverTipFactory.FromCard<Root>()
+    ];
     public override bool CanBeGeneratedInCombat => false;
     public override bool CanBeGeneratedByModifiers => false;
     public override int MaxUpgradeLevel => 0;

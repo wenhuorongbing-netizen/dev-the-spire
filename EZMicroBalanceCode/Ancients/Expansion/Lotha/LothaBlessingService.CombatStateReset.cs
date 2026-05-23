@@ -9,10 +9,8 @@ internal static partial class LothaBlessingService
         combatState.MirrorHallEchoRecordedType = null;
         combatState.MirrorHallEchoArmedType = null;
         combatState.MirrorHallEchoConsumedThisTurn = false;
-        combatState.ClosedCourtUsed = false;
-        combatState.ClosedCourtDiscountActiveThisTurn = false;
-        combatState.ClosedCourtDiscountsRemainingThisTurn = 0;
-        combatState.ClosedCourtDiscountedCardsThisTurn.Clear();
+        combatState.ClosedCourtFirstTurnUsed = false;
+        combatState.ClosedCourtSecondPulseUsed = false;
         combatState.PresumptionLost = false;
         combatState.DeferredVerdictGranted = false;
         combatState.DeferredVerdictActiveThisTurn = false;
@@ -33,9 +31,6 @@ internal static partial class LothaBlessingService
         combatState.MirrorHallEchoArmedType = combatState.MirrorHallEchoRecordedType;
         combatState.MirrorHallEchoRecordedType = null;
         combatState.MirrorHallEchoConsumedThisTurn = false;
-        combatState.ClosedCourtDiscountActiveThisTurn = false;
-        combatState.ClosedCourtDiscountsRemainingThisTurn = 0;
-        combatState.ClosedCourtDiscountedCardsThisTurn.Clear();
         combatState.SingleSentenceUsedThisTurn = false;
         combatState.SingleSentencePowerFallbackUsedThisTurn = false;
         combatState.SingleSentenceRemainingCardsPlayedThisTurn = 0;

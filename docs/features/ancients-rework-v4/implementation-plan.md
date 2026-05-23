@@ -96,7 +96,7 @@ Before gameplay changes, discover and document the following in `docs/features/a
 
 Phase 1 should implement `Pael's Horn` only:
 
-> `Pael's Horn`: add 1 `Relax` and 1 upgraded `Relax+` to the deck.
+> `Pael's Horn`: add 1 `Relax` and 1 `Relax+` to the deck.
 
 Why this is the safest first playable increment:
 
@@ -151,7 +151,7 @@ Validation:
 
 - `dotnet build`.
 - `dotnet publish` only if packaging/resource changes are made or if manual verification requires a fresh installed artifact.
-- Manual test: start a run that can select `Pael's Horn`, choose it, and confirm the deck receives exactly one normal `Relax` and one upgraded `Relax+`.
+- Manual test: start a run that can select `Pael's Horn`, choose it, and confirm the deck receives exactly one `Relax` and one `Relax+`.
 
 Definition of done:
 
@@ -269,7 +269,7 @@ The prompt below is preserved for traceability only. Do not execute it as curren
 
 Read AGENTS.md first. Preserve the dirty worktree. Do not implement any behavior outside phase 1.
 
-Phase 1 target: the safest first playable increment, Pael's Horn. Change only that Ancient reward so it adds 1 Relax and 1 upgraded Relax+ to the deck.
+Phase 1 target: the safest first playable increment, Pael's Horn. Change only that Ancient reward so it adds 1 Relax and 1 Relax+ to the deck.
 
 Tasks:
 1. Re-read docs/features/ancients-rework-v4/source-design.md and docs/features/ancients-rework-v4/implementation-plan.md.

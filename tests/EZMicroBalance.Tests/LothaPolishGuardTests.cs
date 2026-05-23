@@ -36,7 +36,7 @@ public sealed class LothaPolishGuardTests
     }
 
     [Fact]
-    public void MirrorRebuttalUsesChosenDeckCardAndPowerTwoTwoReplacement()
+    public void MirrorRebuttalUsesChosenDeckCardAndPowerZeroReplacement()
     {
         var ancient = ReadLothaSource();
         var runHook = ReadLothaSource();
@@ -57,8 +57,7 @@ public sealed class LothaPolishGuardTests
             "\"EZMicroBalanceLothaMirrorRebuttalCard\"");
         AssertSourceContains(
             runHook,
-            "MirrorRebuttalPowerFallbackEnergy = 2",
-            "MirrorRebuttalPowerFallbackCards = 2",
+            "MirrorRebuttalExtraPlayCount = 1",
             "TryMoveMirrorRebuttalCardToHand",
             "CardPileCmd.Add(selectedCard, PileType.Hand)",
             "PileType.Hand.GetPile(player).Cards.Count >= CardPile.MaxCardsInHand",
@@ -70,22 +69,19 @@ public sealed class LothaPolishGuardTests
             "TryResolveMirrorRebuttalPowerFallback",
             "IsPowerReplacementCostZeroCard",
             "PowerReplacementCardPendingBenefit",
-            "ApplyPowerReplacementBenefit(",
-            "MirrorRebuttalPowerFallbackEnergy",
-            "MirrorRebuttalPowerFallbackCards");
+            "used the Power-card replacement benefit: cost 0");
 
         Assert.DoesNotContain("MirrorRebuttalMinimumBlock", runHook, StringComparison.Ordinal);
         Assert.DoesNotContain("MirrorRebuttalArmed", runHook, StringComparison.Ordinal);
         Assert.DoesNotContain("after unblocked damage", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_rebuttal.description"], StringComparison.OrdinalIgnoreCase);
         AssertSourceContains(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_rebuttal.description"],
-            "Choose [blue]1[/blue] [gold]Attack[/gold], [gold]Skill[/gold], or [gold]Power[/gold] from your deck",
+            "Choose [blue]1[/blue] mirror card from your deck",
             "[gold]Attack[/gold]",
             "[gold]Skill[/gold]",
             "[gold]Power[/gold]",
-            "costs [blue]0[/blue]",
-            "gives [blue]2[/blue] [gold]Energy[/gold]",
-            "draws [blue]2[/blue]");
+            "cost [blue]0[/blue]",
+            "play [blue]1[/blue] extra time");
     }
 
     [Fact]
@@ -98,7 +94,7 @@ public sealed class LothaPolishGuardTests
 
         AssertSourceContains(
             runHook,
-            "public override Task AfterTurnEnd",
+            "public override Task AfterSideTurnEnd",
             "MirrorHallEchoRecordedType",
             "MirrorHallEchoArmedType",
             "MirrorHallEchoExtraPlayCount = 1",
@@ -203,28 +199,25 @@ public sealed class LothaPolishGuardTests
     }
 
     [Fact]
-    public void ClosedCourtSuppressesOnlyCombatCardRewardsAndUsesFirstTurnFourEnergyPlan()
+    public void ClosedCourtSuppressesOnlyCombatCardRewardsAndUsesSplitTurnResourcePlan()
     {
         var runHook = ReadLothaSource();
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
 
         AssertSourceContains(
             runHook,
-            "ClosedCourtEnergy = 4",
-            "ClosedCourtDiscountCount = 3",
-            "CardPile.MaxCardsInHand",
-            "PlayerCmd.GainEnergy(ClosedCourtEnergy, player)",
-            "ClosedCourtDiscountActiveThisTurn = true",
+            "ClosedCourtFirstTurnCards = 4",
+            "ClosedCourtFirstTurnEnergy = 2",
+            "ClosedCourtSecondPulseTurn = 4",
+            "ClosedCourtSecondPulseCards = 2",
+            "ClosedCourtSecondPulseEnergy = 2",
+            "TryApplyClosedCourtTurnStart",
+            "PlayerCmd.GainEnergy(ClosedCourtFirstTurnEnergy, player)",
+            "PlayerCmd.GainEnergy(ClosedCourtSecondPulseEnergy, player)",
             "TryModifyRewardsLate",
             "room is not CombatRoom",
             "rewards.RemoveAll(reward => reward is CardReward)",
-            "gold, potion, and relic rewards remain",
-            "TryModifyEnergyCostInCombat",
-            "Math.Max(0, originalCost - 1)",
-            "ClosedCourtDiscountedCardsThisTurn.Add(card)",
-            "!combatState.ClosedCourtDiscountedCardsThisTurn.Remove(cardPlay.Card)",
-            "ClosedCourtDiscountedCardsThisTurn.Clear()",
-            "TrackClosedCourtDiscountUse");
+            "gold, potion, and relic rewards remain");
 
         Assert.DoesNotContain("ClosedCourtEnergy = 1", runHook, StringComparison.Ordinal);
         Assert.DoesNotContain("ClosedCourtCards = 2", runHook, StringComparison.Ordinal);
@@ -235,9 +228,11 @@ public sealed class LothaPolishGuardTests
         AssertSourceContains(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_closed_court.description"],
             "Post-combat card rewards no longer appear",
-            "draw [blue]10[/blue] cards",
-            "gain [blue]4[/blue] [gold]Energy[/gold]",
-            "first [blue]3[/blue] player-played cards");
+            "Turn [blue]1[/blue]",
+            "draw [blue]4[/blue]",
+            "gain [blue]2[/blue] [gold]Energy[/gold]",
+            "Turn [blue]4[/blue]",
+            "draw [blue]2[/blue]");
         Assert.DoesNotContain("[gold]Gold[/gold], potions, and relics remain", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_closed_court.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("draw until your hand has", engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_closed_court.description"], StringComparison.Ordinal);
     }
@@ -275,10 +270,10 @@ public sealed class LothaPolishGuardTests
         Assert.DoesNotContain("DeferredVerdictDamagePerStack", runHook, StringComparison.Ordinal);
         AssertSourceContains(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_deferred_verdict.description"],
-            "draw [blue]4[/blue] cards",
+            "draw [blue]4[/blue]",
             "gain [blue]4[/blue] [gold]Energy[/gold]",
-            "gain [blue]3[/blue] [gold]Verdict[/gold]",
-            "each next non-Status card consumes [blue]1[/blue] [gold]Verdict[/gold]",
+            "[blue]3[/blue] [gold]Verdict[/gold]",
+            "each non-Status card spends [blue]1[/blue] [gold]Verdict[/gold]",
             "[gold]Power[/gold] cards cost [blue]0[/blue]",
             "draw [blue]1[/blue]",
             "heal [blue]4[/blue] HP");
@@ -326,9 +321,8 @@ public sealed class LothaPolishGuardTests
         AssertSourceContains(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_death_reprieve.description"],
             "set HP to [blue]1[/blue]",
-            "current player turn",
-            "next player turn if this triggers outside your turn",
-            "draw [blue]10[/blue] cards",
+            "Take one final turn",
+            "draw [blue]10[/blue]",
             "gain [blue]10[/blue] [gold]Energy[/gold]",
             "cards cost [blue]0[/blue]",
             "if any enemies remain, die");
@@ -369,11 +363,10 @@ public sealed class LothaPolishGuardTests
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"],
             "first [gold]Attack[/gold] or [gold]Skill[/gold]",
             "plays [blue]2[/blue] extra times",
-            "visible [gold]Single Sentence[/gold] counter",
-            "starts at [blue]5[/blue]",
-            "counts down from [blue]4[/blue]",
-            "A [gold]Power[/gold] before the sentence",
-            "costs [blue]0[/blue] and draws [blue]1[/blue] without consuming it");
+            "play up to [blue]4[/blue] more cards",
+            "[gold]Power[/gold] cards do not count",
+            "cost [blue]0[/blue]",
+            "draw [blue]1[/blue]");
         AssertSourceContains(
             engPowers["EZMICROBALANCE-LOTHA_SINGLE_SENTENCE_POWER.description"],
             "ready",
@@ -460,17 +453,16 @@ public sealed class LothaPolishGuardTests
         var zhsText = zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"];
         AssertSourceContains(
             engText,
-            "visible [gold]Single Sentence[/gold] counter",
-            "starts at [blue]5[/blue]",
-            "counts down from [blue]4[/blue]",
-            "A [gold]Power[/gold] before the sentence",
-            "costs [blue]0[/blue]",
-            "draws [blue]1[/blue] without consuming it");
+            "first [gold]Attack[/gold] or [gold]Skill[/gold]",
+            "plays [blue]2[/blue] extra times",
+            "play up to [blue]4[/blue] more cards",
+            "[gold]Power[/gold] cards do not count",
+            "cost [blue]0[/blue]",
+            "draw [blue]1[/blue]");
         AssertSourceContains(
             zhsText,
             "[gold]",
             "[/gold]",
-            "[blue]5[/blue]",
             "[blue]4[/blue]",
             "[blue]0[/blue]",
             "[blue]1[/blue]");
@@ -541,7 +533,7 @@ public sealed class LothaPolishGuardTests
             "or MagicBombPower",
             "or StranglePower",
             "or TheGambitPower",
-            "Core v0.105.0 models these as Debuffs");
+            "Core v0.106.0 models these as Debuffs");
         AssertSourceContains(
             powers,
             "internal sealed class LothaEnlightenmentPower",
@@ -593,12 +585,12 @@ public sealed class LothaPolishGuardTests
 
         AssertSourceContains(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
-            "When you apply a non-damaging [gold]negative status[/gold] to an enemy, double its stacks",
-            "gain [blue]1[/blue] [gold]Enlightenment[/gold]",
-            "When an enemy applies a non-damaging [gold]negative status[/gold] to you, double its stacks",
-            "[gold]Poison[/gold], damage-over-time, and countdown damage do not count",
-            "consume up to [blue]3[/blue] [gold]Enlightenment[/gold]",
-            "draw [blue]1[/blue] card and gain [blue]4[/blue] [gold]Block[/gold]");
+            "Your non-damaging [gold]negative status[/gold] stacks apply twice",
+            "grant [blue]1[/blue] [gold]Enlightenment[/gold]",
+            "Enemy non-damaging [gold]negative status[/gold] stacks on you also apply twice",
+            "remove [blue]1[/blue] [gold]Enlightenment[/gold]",
+            "spend up to [blue]3[/blue] [gold]Enlightenment[/gold]",
+            "draws [blue]1[/blue] and gives [blue]4[/blue] [gold]Block[/gold]");
         AssertSourceContains(
             zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
             "[gold]",
@@ -725,9 +717,8 @@ public sealed class LothaPolishGuardTests
             "[gold]Attack[/gold]",
             "[gold]Skill[/gold]",
             "[gold]Power[/gold]",
-            "[gold]Energy[/gold]",
             "[blue]1[/blue]",
-            "[blue]2[/blue]");
+            "[blue]0[/blue]");
         AssertSourceContains(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_deferred_verdict.description"],
             "[gold]Verdict[/gold]",
@@ -738,7 +729,6 @@ public sealed class LothaPolishGuardTests
         AssertSourceContains(
             engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
             "[gold]negative status[/gold]",
-            "[gold]Poison[/gold]",
             "[gold]Enlightenment[/gold]",
             "[gold]Block[/gold]",
             "[blue]3[/blue]");
@@ -746,8 +736,7 @@ public sealed class LothaPolishGuardTests
             zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_mirror_rebuttal.description"],
             "[gold]攻击牌[/gold]",
             "[gold]技能牌[/gold]",
-            "[gold]能力牌[/gold]",
-            "[gold]能量[/gold]");
+            "[gold]能力牌[/gold]");
         AssertSourceContains(
             zhsPowers["EZMICROBALANCE-LOTHA_VERDICT_POWER.description"],
             "[gold]裁决[/gold]",

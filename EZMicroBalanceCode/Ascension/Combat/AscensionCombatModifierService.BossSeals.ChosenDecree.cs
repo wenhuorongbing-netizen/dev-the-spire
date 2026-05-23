@@ -23,7 +23,7 @@ internal static partial class AscensionCombatModifierService
         CardCmd.Enchant<RoyalDecreeEnchantment>(card, 1m);
         tracker.ChosenDecreeCard = card;
         tracker.ChosenDecreePlayed = false;
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Chosen Decree marked one Bound card.");
+        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Royal Decree marked one Bound card.");
     }
 
     private static void TryAssignChosenDecreeInHands(
@@ -31,22 +31,35 @@ internal static partial class AscensionCombatModifierService
         AscensionCombatTracker tracker,
         AscensionNodeMetadata metadata)
     {
-        foreach (var card in combatState.Players
+        var boundCards = combatState.Players
                      .Where(player => player.IsActiveForHooks)
                      .SelectMany(player => player.Piles)
                      .Where(pile => pile.Type == PileType.Hand)
-                     .SelectMany(pile => pile.Cards))
+                     .SelectMany(pile => pile.Cards)
+                     .Where(card => card.Affliction is Bound && card.Enchantment == null)
+                     .ToList();
+
+        if (boundCards.Count == 0)
         {
-            TryAssignChosenDecree(combatState, tracker, metadata, card);
-            if (tracker.ChosenDecreeCard != null)
-            {
-                return;
-            }
+            return;
         }
+
+        var chosenCard = combatState.RunState.Rng.CombatCardSelection.NextItem(boundCards);
+        if (chosenCard == null)
+        {
+            return;
+        }
+
+        TryAssignChosenDecree(combatState, tracker, metadata, chosenCard);
     }
 
     private static void TrackChosenDecreePlayed(AscensionCombatTracker tracker, CardModel card)
     {
+        if (card.Affliction is Bound)
+        {
+            tracker.ChosenDecreeAnyBoundPlayed = true;
+        }
+
         if (tracker.ChosenDecreeCard == card ||
             card.Enchantment is RoyalDecreeEnchantment)
         {
@@ -74,34 +87,23 @@ internal static partial class AscensionCombatModifierService
         var amalgam = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is TorchHeadAmalgam);
         if (tracker.ChosenDecreePlayed)
         {
-            if (amalgam != null)
-            {
-                await PowerCmd.Apply<ChosenDecreeReductionPower>(new BlockingPlayerChoiceContext(), amalgam, 1m, queen, null);
-            }
-
-            if (metadata.IsBossBrand)
-            {
-                foreach (var player in combatState.Players.Where(player => player.IsActiveForHooks))
-                {
-                    await CreatureCmd.GainBlock(player.Creature, 5m, ValueProp.Move, null, fast: true);
-                }
-            }
-
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Chosen Decree was obeyed.");
+            MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Royal Decree was obeyed; no extra penalty was applied.");
+        }
+        else if (tracker.ChosenDecreeAnyBoundPlayed)
+        {
+            await AddQueenMajesty(combatState, tracker, metadata, queen, 1);
+            MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: non-Decree Bound card granted Queen Majesty.");
         }
         else
         {
-            if (queen != null)
+            await AddQueenMajesty(combatState, tracker, metadata, queen, 1);
+            if (amalgam != null && tracker.ChosenDecreeAmalgamStrengthThisRound < 2)
             {
-                await CreatureCmd.GainBlock(queen, metadata.IsBossBrand ? 14m : 10m, ValueProp.Move, null, fast: true);
-            }
-
-            if (amalgam != null)
-            {
+                tracker.ChosenDecreeAmalgamStrengthThisRound++;
                 await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), amalgam, 1m, queen, null);
             }
 
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: missed Chosen Decree strengthened the Queen's side.");
+            MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: missed Royal Decree granted Majesty and Torch Head Strength.");
         }
 
         if (tracker.ChosenDecreeCard.Enchantment is RoyalDecreeEnchantment)
@@ -111,5 +113,35 @@ internal static partial class AscensionCombatModifierService
 
         tracker.ChosenDecreeCard = null;
         tracker.ChosenDecreePlayed = false;
+        tracker.ChosenDecreeAnyBoundPlayed = false;
+    }
+
+    private static async Task AddQueenMajesty(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        AscensionNodeMetadata metadata,
+        Creature? queen,
+        int amount)
+    {
+        if (queen == null)
+        {
+            return;
+        }
+
+        if (tracker.ChosenDecreeMajestyGainedThisRound >= 2)
+        {
+            return;
+        }
+
+        var gain = Math.Min(amount, 2 - tracker.ChosenDecreeMajestyGainedThisRound);
+        tracker.ChosenDecreeMajestyGainedThisRound += gain;
+        await PowerCmd.Apply<RoyalMajestyPower>(new BlockingPlayerChoiceContext(), queen, gain, queen, null);
+        await ClampPowerAmount<RoyalMajestyPower>(queen, metadata.IsBossBrand ? 3 : 2, queen, null);
+    }
+
+    private static void ResetChosenDecreeRoundCaps(AscensionCombatTracker tracker)
+    {
+        tracker.ChosenDecreeMajestyGainedThisRound = 0;
+        tracker.ChosenDecreeAmalgamStrengthThisRound = 0;
     }
 }

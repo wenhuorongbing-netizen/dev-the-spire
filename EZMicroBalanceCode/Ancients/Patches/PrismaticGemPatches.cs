@@ -22,16 +22,27 @@ internal static partial class PrismaticGemRewardPatch
         modifiers = [];
         foreach (var listener in runState.IterateHookListeners(null))
         {
-            modified = listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions) || modified;
-            modifiers.Add(listener);
+            var listenerModified = listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions);
+            modified = listenerModified || modified;
+            if (listenerModified)
+            {
+                modifiers.Add(listener);
+            }
         }
 
+        // Prismatic replacement sits between Core's early and late reward hooks.
+        // Late model modifiers such as Eggs, Silver Crucible, and Silken Tress
+        // then modify the off-color cards instead of being erased by a later swap.
         modified = TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions) || modified;
 
         foreach (var listener in runState.IterateHookListeners(null))
         {
-            modified = listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions) || modified;
-            modifiers.Add(listener);
+            var listenerModified = listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions);
+            modified = listenerModified || modified;
+            if (listenerModified)
+            {
+                modifiers.Add(listener);
+            }
         }
 
         CleanupSupersededPrismaticReplacements(cardRewardOptions);

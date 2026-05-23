@@ -13,7 +13,7 @@ internal static class JewelryBoxPatch
     private static async Task AddNonInnateApotheosis(JewelryBox jewelryBox)
     {
         var card = CreateNonInnateApotheosis(jewelryBox.Owner);
-        var result = await CardPileCmd.Add(card, PileType.Deck, source: jewelryBox);
+        var result = await CardPileCmd.Add(card, PileType.Deck, clonedBy: jewelryBox);
         JewelryBoxApotheosisMarker.Mark(result.cardAdded);
         CardCmd.PreviewCardPileAdd(result, 2f);
         MainFile.Logger.Info("[EZMicroBalance] JewelryBox applied: added Apotheosis without Innate.");

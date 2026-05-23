@@ -1,4 +1,5 @@
 using BaseLib.Utils.Attributes;
+using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -30,6 +31,7 @@ internal sealed class MorviRedInkOverdraftCard : CustomCardModel
         [
             HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
             HoverTipFactory.FromKeyword(CardKeyword.Exhaust),
+            AncientCardHelpers.TemporaryHoverTip(),
             HoverTipFactory.FromPower<MorviOverdraftPower>()
         ];
 
@@ -69,7 +71,8 @@ internal sealed class MorviWastePaper : CustomCardModel
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         [
             HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
-            HoverTipFactory.FromKeyword(CardKeyword.Unplayable)
+            HoverTipFactory.FromKeyword(CardKeyword.Unplayable),
+            AncientCardHelpers.TemporaryHoverTip()
         ];
 
     public override bool CanBeGeneratedInCombat => false;

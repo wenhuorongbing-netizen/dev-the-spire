@@ -436,147 +436,39 @@
   function renderForum() {
     app.appendChild(renderPageHead(labels.forumTitle, labels.forumLead));
     const layout = el("section", "forum-board");
-    layout.appendChild(el("h2", "forum-section-title", labels.forumPublicTitle));
-    const links = el("div", "forum-links");
-    links.appendChild(el("div", "local-note", data.forum.notice));
-    data.forum.links.forEach(([label, href], index) => {
-      const link = el("a", index === 0 ? "forum-link primary-link" : "forum-link", label);
-      link.href = href;
-      links.appendChild(link);
-    });
-    layout.appendChild(links);
+    const entry = el("div", "forum-entry");
+    const copy = el("div", "");
+    copy.appendChild(el("h2", "", labels.forumPublicTitle));
+    copy.appendChild(el("p", "", data.forum.notice));
+    const bullets = el("ul", "forum-points");
+    for (const point of data.forum.points || []) bullets.appendChild(el("li", "", point));
+    copy.appendChild(bullets);
+    entry.appendChild(copy);
 
-    layout.appendChild(el("h2", "forum-section-title draft-title", labels.forumDraftTitle));
-    const form = el("form", "post-form");
-    form.id = "postForm";
-    const nameLabel = el("label", "");
-    nameLabel.appendChild(el("span", "", labels.postName));
-    const nameInput = el("input", "");
-    nameInput.id = "postName";
-    nameInput.maxLength = 32;
-    nameInput.placeholder = labels.postNamePlaceholder;
-    nameLabel.appendChild(nameInput);
-    form.appendChild(nameLabel);
-    const titleLabel = el("label", "");
-    titleLabel.appendChild(el("span", "", labels.postTitle));
-    const titleInput = el("input", "");
-    titleInput.id = "postTitle";
-    titleInput.required = true;
-    titleInput.maxLength = 80;
-    titleInput.placeholder = labels.postTitlePlaceholder;
-    titleLabel.appendChild(titleInput);
-    form.appendChild(titleLabel);
-    const bodyLabel = el("label", "");
-    bodyLabel.appendChild(el("span", "", labels.postBody));
-    const bodyInput = el("textarea", "");
-    bodyInput.id = "postBody";
-    bodyInput.required = true;
-    bodyInput.rows = 7;
-    bodyInput.placeholder = labels.postBodyPlaceholder;
-    bodyLabel.appendChild(bodyInput);
-    form.appendChild(bodyLabel);
-    const formActions = el("div", "form-actions");
-    const submit = el("button", "button primary", labels.postSubmit);
-    submit.type = "submit";
-    const clear = el("button", "button", labels.postClear);
-    clear.type = "button";
-    clear.id = "clearPosts";
-    formActions.append(submit, clear);
-    form.appendChild(formActions);
-    layout.appendChild(form);
+    const actions = el("div", "forum-actions");
+    const forumUrl = isLocal() ? data.forum.localUrl : data.forum.url;
+    const primary = button(labels.openForum, forumUrl, true);
+    primary.target = "_blank";
+    primary.rel = "noopener";
+    actions.appendChild(primary);
+    const status = button(labels.forumHealth, forumUrl.replace(/\/$/, "") + "/healthz", false);
+    status.target = "_blank";
+    status.rel = "noopener";
+    actions.appendChild(status);
+    for (const [label, href] of data.forum.links || []) {
+      const link = button(label, href, false);
+      link.target = "_blank";
+      link.rel = "noopener";
+      actions.appendChild(link);
+    }
+    entry.appendChild(actions);
+    layout.appendChild(entry);
 
-    const posts = el("div", "post-list");
-    posts.id = "postList";
-    layout.appendChild(posts);
+    const note = el("div", "forum-deploy-note");
+    note.appendChild(el("strong", "", labels.forumDeployTitle));
+    note.appendChild(el("p", "", labels.forumDeployCopy));
+    layout.appendChild(note);
     app.appendChild(layout);
-
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const rows = getPosts();
-      rows.unshift({
-        name: nameInput.value.trim() || labels.anonymous,
-        title: titleInput.value.trim(),
-        body: bodyInput.value.trim(),
-        time: new Date().toLocaleString(lang === "en" ? "en-US" : "zh-CN"),
-        replies: []
-      });
-      localStorage.setItem("spireplus-local-posts", JSON.stringify(rows.slice(0, 40)));
-      form.reset();
-      renderPosts();
-    });
-    clear.addEventListener("click", () => {
-      localStorage.removeItem("spireplus-local-posts");
-      renderPosts();
-    });
-    posts.addEventListener("submit", (event) => {
-      const replyForm = event.target.closest(".reply-form");
-      if (!replyForm) return;
-      event.preventDefault();
-      const index = Number(replyForm.dataset.index);
-      const rows = getPosts();
-      const post = rows[index];
-      if (!post) return;
-      const replyName = replyForm.querySelector("[name='replyName']").value.trim() || labels.anonymous;
-      const replyBody = replyForm.querySelector("[name='replyBody']").value.trim();
-      if (!replyBody) return;
-      post.replies = post.replies || [];
-      post.replies.push({
-        name: replyName,
-        body: replyBody,
-        time: new Date().toLocaleString(lang === "en" ? "en-US" : "zh-CN")
-      });
-      localStorage.setItem("spireplus-local-posts", JSON.stringify(rows));
-      renderPosts();
-    });
-    renderPosts();
-  }
-
-  function getPosts() {
-    try {
-      return JSON.parse(localStorage.getItem("spireplus-local-posts") || "[]");
-    } catch {
-      return [];
-    }
-  }
-
-  function renderPosts() {
-    const root = document.getElementById("postList");
-    root.replaceChildren();
-    const posts = getPosts();
-    if (!posts.length) {
-      root.appendChild(el("div", "local-note", labels.noPosts));
-      return;
-    }
-    posts.forEach((post, index) => {
-      const article = el("article", "post");
-      article.appendChild(el("h3", "", post.title || labels.noTitle));
-      article.appendChild(el("time", "", `${post.name || labels.anonymous}${labels.separator || " · "}${post.time || ""}`));
-      article.appendChild(el("p", "", post.body || ""));
-      const replies = el("div", "reply-list");
-      for (const reply of post.replies || []) {
-        const replyNode = el("div", "reply");
-        replyNode.appendChild(el("time", "", `${reply.name || labels.anonymous}${labels.separator || " · "}${reply.time || ""}`));
-        replyNode.appendChild(el("p", "", reply.body || ""));
-        replies.appendChild(replyNode);
-      }
-      article.appendChild(replies);
-      const replyForm = el("form", "reply-form");
-      replyForm.dataset.index = String(index);
-      const replyName = el("input", "");
-      replyName.name = "replyName";
-      replyName.maxLength = 32;
-      replyName.placeholder = labels.postNamePlaceholder;
-      const replyBody = el("input", "");
-      replyBody.name = "replyBody";
-      replyBody.required = true;
-      replyBody.maxLength = 220;
-      replyBody.placeholder = labels.replyPlaceholder;
-      const replySubmit = el("button", "button", labels.replySubmit);
-      replySubmit.type = "submit";
-      replyForm.append(replyName, replyBody, replySubmit);
-      article.appendChild(replyForm);
-      root.appendChild(article);
-    });
   }
 
   function renderIssues() {

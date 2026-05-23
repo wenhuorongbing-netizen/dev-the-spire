@@ -4,8 +4,8 @@
 
 Current dependency and architecture baseline:
 
-- Base game source refresh target: `v0.105.0`.
-- BaseLib package target: `v3.1.2`.
+- Base game source refresh target: `v0.106.0`.
+- BaseLib package target: `v3.1.4`.
 - Active private-beta project: `EZMicroBalance`.
 
 Urda work remains independently disableable and independent from other ancient families.

@@ -1,3 +1,5 @@
+using MegaCrit.Sts2.Core.Models.Afflictions;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
@@ -32,14 +34,80 @@ internal static partial class AscensionCombatModifierService
                 await ApplyConstantHealFiremarkCombatStart(combatState, host);
                 break;
         }
+
+        MainFile.Logger.Info(
+            $"[EZMicroBalance] Ascension A12 applied: Firemark Host is {host.Name}; overflow affects at most one secondary enemy at a time.");
     }
 
     private static Creature? FindFiremarkHost(CombatState combatState)
     {
-        return AliveEnemies(combatState)
+        var hostCandidates = PrimaryAliveEnemies(combatState).ToList();
+        if (hostCandidates.Count == 0)
+        {
+            hostCandidates = AliveEnemies(combatState)
+                .Where(enemy => !enemy.HasPower<MinionPower>())
+                .ToList();
+        }
+
+        return hostCandidates
             .OrderByDescending(enemy => enemy.MaxHp)
             .ThenBy(enemy => combatState.Enemies.IndexOf(enemy))
             .FirstOrDefault();
+    }
+
+    private static IEnumerable<Creature> FiremarkOverflowCandidates(
+        CombatState combatState,
+        AscensionCombatTracker tracker)
+    {
+        var host = tracker.FiremarkHost;
+        if (host is not { IsAlive: true })
+        {
+            return [];
+        }
+
+        return PrimaryAliveEnemies(combatState)
+            .Where(enemy => enemy != host)
+            .OrderBy(enemy => combatState.Enemies.IndexOf(enemy));
+    }
+
+    private static Creature? LowestHpRatioOverflowTarget(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        bool damagedOnly = false)
+    {
+        return FiremarkOverflowCandidates(combatState, tracker)
+            .Where(enemy => !damagedOnly || enemy.CurrentHp < enemy.MaxHp)
+            .OrderBy(enemy => enemy.GetHpPercentRemaining())
+            .ThenBy(enemy => combatState.Enemies.IndexOf(enemy))
+            .FirstOrDefault();
+    }
+
+    private static async Task ApplyFiremarkSideTurnStart(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        FiremarkKind firemark,
+        CombatSide side)
+    {
+        if (side != CombatSide.Enemy || firemark != FiremarkKind.Might)
+        {
+            return;
+        }
+
+        await ApplyMightOverflow(combatState, tracker);
+    }
+
+    private static async Task ApplyFiremarkPlayerTurnStart(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        FiremarkKind firemark)
+    {
+        if (firemark != FiremarkKind.ForgeArmor)
+        {
+            return;
+        }
+
+        await ApplyForgeArmorGain(combatState, tracker);
+        await ApplyForgeArmorOverflow(combatState, tracker);
     }
 
     private static async Task AfterFiremarkDamageReceived(
@@ -79,10 +147,6 @@ internal static partial class AscensionCombatModifierService
             await TrackMoltenCoreDamage(combatState, tracker, host, result.UnblockedDamage);
         }
 
-        if (firemark == FiremarkKind.ForgeArmor)
-        {
-            TrackForgeArmorBlockedDamage(tracker, target, result);
-        }
     }
 
     private static async Task ApplyFiremarkTurnEnd(
@@ -95,9 +159,6 @@ internal static partial class AscensionCombatModifierService
         {
             case FiremarkKind.Giant when side == CombatSide.Player:
                 await ResolveMoltenCoreWindow(tracker);
-                break;
-            case FiremarkKind.ForgeArmor when side == CombatSide.Enemy:
-                await ApplyForgeArmorGain(combatState, tracker);
                 break;
             case FiremarkKind.ForgeArmor when side == CombatSide.Player:
                 ResolveForgeArmorShatter(tracker);

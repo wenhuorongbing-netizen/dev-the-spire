@@ -21,7 +21,7 @@ Best release test setup:
 
 Same-PC multi-open is not reliable for real Steam multiplayer and should not be the primary release test. It can be useful for rough local investigation only if Steam permits it, but it does not replace the two-PC matrix.
 
-**Known-incompatible mods (as of v0.105.0, 2026-05-08):** DamageMeter calls removed `Creature.get_ShowsInfiniteHp()` and can interrupt combat startup. Do not enable DamageMeter during EZMB testing until an updated version is confirmed compatible.
+**Known-incompatible mods:** earlier v0.105.x logs showed DamageMeter calling removed `Creature.get_ShowsInfiniteHp()` and interrupting combat startup. Do not enable DamageMeter during EZMB v0.106.0 testing until an updated version is confirmed compatible.
 
 `--force-steam off` is valid for controlled loader smoke only. It is not a replacement for real multiplayer lobby, Steam-client Mod Settings, save/load, or co-op desync testing.
 
@@ -170,7 +170,7 @@ After changing User env vars, fully restart Steam and the game on the affected m
 - Host creates a multiplayer lobby.
 - Host selects A20 before any client joins.
 - Confirm `godot.log` immediately records that multiplayer A20 selection is enabled for development testing.
-- Confirm the same warning says Dual King Brands / second-boss Brand gameplay is currently disabled or downgraded in co-op pending live verification.
+- Confirm the same warning says A20 Branded Form / second-boss enhanced dedicated ability gameplay is currently disabled or downgraded in co-op pending live verification.
 - Confirm the warning says A11-A19 inherited systems may still apply if their gates are enabled, subject to live verification.
 - Client joins without changing Ascension.
 - Start the A20 run.
@@ -197,7 +197,7 @@ After changing User env vars, fully restart Steam and the game on the affected m
   - Record both `Got initial game info message. Version: ... Hash: ...` and local `ModelIdSerializationCache initialized... Hash: ...` lines.
   - Compare both machines' `release_info.json`, `Loaded X mods (Y total)`, BaseLib/EZMB versions, and installed package hashes.
 - Confirm no Spire Plus / `EZMicroBalance` error or exception lines.
-- Confirm no ownership warning for Rootblight, Blight Sprout, Forge Token, Firemark, Banner, Royal Seal, or Brand state.
+- Confirm no ownership warning for Rootblight, Blight Sprout, Forge Token, Firemark, Banner, dedicated ability, or Branded Form state.
 - Confirm no checksum, desync, disconnect, lobby clamp, or save/load exception lines.
 - Confirm A20 downgrade warning appears on host-only selection and on run start when A20 is selected in multiplayer.
 - Keep unrelated local invalid-manifest errors separate from Spire Plus / `EZMicroBalance` findings.

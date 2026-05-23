@@ -56,6 +56,9 @@ internal static partial class UrdaBlessingService
     private static Rng CreateRootSightPreviewRng(IRunState runState, MapPoint point, string scope)
     {
         var source = runState.Rng.UnknownMapPoint;
+        // Root Sight needs a stable preview for the selected coordinate without
+        // consuming the live Unknown-room RNG. The coordinate/scope suffix makes
+        // repeated peeks deterministic while keeping each marked node independent.
         return new Rng(
             source.Seed,
             $"root_sight_{scope}_act_{runState.CurrentActIndex}_coord_{point.coord.col}_{point.coord.row}_counter_{source.Counter}");

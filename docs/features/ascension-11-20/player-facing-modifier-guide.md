@@ -6,10 +6,10 @@ Status: player-facing guide for the current A12/A16/A19/A20 source pass. Live UI
 
 Firemarked Elite nodes use the Firemarked Elite map marker. Hover the node before choosing the route to see the exact Firemark:
 
-- Might: the Firemarked enemy starts with Strength.
-- Giant: the Firemarked enemy starts with increased max HP.
-- Forge Armor: the Firemarked enemy gains Block at the end of its turn.
-- Constant Heal: the Firemarked enemy heals at the end of its turn.
+- Might: the Firemark Host starts with Strength and can overflow temporary Strength to one attacking secondary enemy.
+- Giant: the Firemark Host starts with increased max HP; breaking Molten Core splashes one secondary enemy.
+- Forge Armor: the Firemark Host gains Molten Armor at player turn start. Clear all host Block by turn end to skip the next armor gain.
+- Constant Heal: the Firemark Host heals at enemy turn end. If that heal succeeds, one damaged secondary enemy also heals.
 
 The combat effect should match the hover text. Defeating the node still grants the Firemarked Elite reward upgrades documented in the manual checklist.
 
@@ -23,15 +23,15 @@ Banner Rooms are marked normal combats. Hover the node before route commitment t
 
 Unmarked normal combats should not receive Banner effects.
 
-## Boss Royal Seal
+## Boss Dedicated Ability
 
-At A19, Boss map nodes preview their Royal Seal on hover. The hover should show the Royal Seal name and the matching summary before combat. Aeonglass currently uses the temporary Royal Seal that starts the exact `MONSTER.AEONGLASS` boss with +5 Strength.
+At A19, Boss map nodes preview their dedicated ability on hover. The hover should show the ability name and the matching summary before combat. Aeonglass uses Time Sand Reflow: after Ebb, shared Time Sand appears; spending energy clears it, and any remaining Time Sand makes the next Increasing Intensity add extra Wither.
 
-## Boss Brand
+## Branded Form
 
-At A20 single-player, the second Boss uses a King Brand instead of the normal Royal Seal. Hover the second Boss node to see the stronger Brand summary before committing.
+At A20 single-player, the second Boss enters Branded Form. Hover the second Boss node to see the stronger ability summary before committing.
 
-A20 multiplayer selection is still a development test surface and is not full Dual King Brands co-op support.
+A20 multiplayer selection is still a development test surface and is not full Branded Form co-op support.
 
 ## Fission Reward Enchantment
 
@@ -52,6 +52,6 @@ Map hover previews are the source of truth before entering a marked room:
 
 - Firemarked Elite hover shows the exact Firemark kind.
 - Banner Room hover shows the exact Banner kind.
-- Boss hover shows the Royal Seal or King Brand summary.
+- Boss hover shows the dedicated ability or Branded Form summary.
 
 If a marker appears but hover text is missing, raw, or disagrees with combat behavior, record the screenshot and `godot.log` as manual evidence.

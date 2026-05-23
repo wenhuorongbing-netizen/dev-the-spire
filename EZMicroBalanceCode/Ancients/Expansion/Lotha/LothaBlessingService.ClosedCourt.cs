@@ -4,32 +4,41 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 internal static partial class LothaBlessingService
 {
-    private const int ClosedCourtEnergy = 4;
-    private const int ClosedCourtDiscountCount = 3;
+    private const int ClosedCourtFirstTurn = 1;
+    private const int ClosedCourtFirstTurnCards = 4;
+    private const int ClosedCourtFirstTurnEnergy = 2;
+    private const int ClosedCourtSecondPulseTurn = 4;
+    private const int ClosedCourtSecondPulseCards = 2;
+    private const int ClosedCourtSecondPulseEnergy = 2;
 
-    private static async Task TryOpenClosedCourtFirstTurn(
+    private static async Task TryApplyClosedCourtTurnStart(
         PlayerChoiceContext choiceContext,
         Player player,
         LothaCombatState combatState,
         string selectedBlessing)
     {
-        if (selectedBlessing != LothaBlessingIds.ClosedCourt || combatState.ClosedCourtUsed)
+        if (selectedBlessing != LothaBlessingIds.ClosedCourt ||
+            player.Creature.CombatState is not { } activeCombat)
         {
             return;
         }
 
-        combatState.ClosedCourtUsed = true;
-        combatState.ClosedCourtDiscountActiveThisTurn = true;
-        combatState.ClosedCourtDiscountsRemainingThisTurn = ClosedCourtDiscountCount;
-
-        var cardsToDraw = Math.Max(0, CardPile.MaxCardsInHand - PileType.Hand.GetPile(player).Cards.Count);
-        if (cardsToDraw > 0)
+        if (activeCombat.RoundNumber == ClosedCourtFirstTurn && !combatState.ClosedCourtFirstTurnUsed)
         {
-            await CardPileCmd.Draw(choiceContext, cardsToDraw, player);
+            combatState.ClosedCourtFirstTurnUsed = true;
+            await CardPileCmd.Draw(choiceContext, ClosedCourtFirstTurnCards, player);
+            await PlayerCmd.GainEnergy(ClosedCourtFirstTurnEnergy, player);
+            MainFile.Logger.Info("[EZMicroBalance] Lotha Closed Court turn 1 granted draw 4 and Energy 2.");
+            return;
         }
 
-        await PlayerCmd.GainEnergy(ClosedCourtEnergy, player);
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Closed Court filled the hand, granted Energy 4, and armed three Energy-cost discounts.");
+        if (activeCombat.RoundNumber == ClosedCourtSecondPulseTurn && !combatState.ClosedCourtSecondPulseUsed)
+        {
+            combatState.ClosedCourtSecondPulseUsed = true;
+            await CardPileCmd.Draw(choiceContext, ClosedCourtSecondPulseCards, player);
+            await PlayerCmd.GainEnergy(ClosedCourtSecondPulseEnergy, player);
+            MainFile.Logger.Info("[EZMicroBalance] Lotha Closed Court turn 4 granted draw 2 and Energy 2.");
+        }
     }
 
     public static bool TryModifyRewardsLate(Player player, List<Reward> rewards, AbstractRoom? room)
@@ -49,47 +58,5 @@ internal static partial class LothaBlessingService
 
         MainFile.Logger.Info($"[EZMicroBalance] Lotha Closed Court suppressed {removed} post-combat card reward(s); gold, potion, and relic rewards remain.");
         return true;
-    }
-
-    private static bool TryApplyClosedCourtEnergyDiscount(
-        CardModel card,
-        decimal originalCost,
-        LothaCombatState combatState,
-        out decimal modifiedCost)
-    {
-        modifiedCost = originalCost;
-        var player = card.Owner;
-        if (player == null ||
-            GetSelectedBlessing(player) != LothaBlessingIds.ClosedCourt ||
-            !combatState.ClosedCourtDiscountActiveThisTurn ||
-            combatState.ClosedCourtDiscountsRemainingThisTurn <= 0 ||
-            card.Pile?.Type != PileType.Hand)
-        {
-            return false;
-        }
-
-        modifiedCost = Math.Max(0, originalCost - 1);
-        if (modifiedCost == originalCost)
-        {
-            return false;
-        }
-
-        combatState.ClosedCourtDiscountedCardsThisTurn.Add(card);
-        return true;
-    }
-
-    private static void TrackClosedCourtDiscountUse(CardPlay cardPlay, LothaCombatState combatState)
-    {
-        if (!combatState.ClosedCourtDiscountActiveThisTurn ||
-            combatState.ClosedCourtDiscountsRemainingThisTurn <= 0 ||
-            !cardPlay.IsFirstInSeries ||
-            cardPlay.IsAutoPlay ||
-            !combatState.ClosedCourtDiscountedCardsThisTurn.Remove(cardPlay.Card))
-        {
-            return;
-        }
-
-        combatState.ClosedCourtDiscountsRemainingThisTurn--;
-        MainFile.Logger.Info($"[EZMicroBalance] Lotha Closed Court consumed a first-turn discount; {combatState.ClosedCourtDiscountsRemainingThisTurn} remain.");
     }
 }

@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 
 namespace EZMicroBalance.Tests;
 
@@ -103,7 +103,7 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-05-20:",
+            "Current package hashes, 2026-05-23:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
@@ -166,8 +166,8 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             devEnvironment,
             "Historical 22-field loader evidence:",
-            "Current source defines 25 SavedSpireFields",
-            "not refreshed 25-field package parity",
+            "Current source defines 26 SavedSpireFields",
+            "not refreshed 26-field package parity",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
             "Last private beta package:",
             "Zip SHA256:",
@@ -239,13 +239,13 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             testPlan,
             "Current automated suite count and command results are recorded",
-            "current source defines 25 SavedSpireFields",
+            "current source defines 26 SavedSpireFields",
             "manual feature matrix has runtime gameplay",
             "A20 multiplayer selection is not full A20 co-op support");
         AssertSourceContains(
             ancientCompletionAudit,
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "current source defines 25 SavedSpireFields",
+            "current source defines 26 SavedSpireFields",
             "historical loader/resource evidence only");
     }
 }

@@ -35,6 +35,9 @@ internal static class TransformPredictionService
             return predicted;
         }
 
+        // The preview uses a mutable copy only for rendering the upgraded face.
+        // Creating or replacing a live card here would advance game state before
+        // the source transformation flow commits the real result.
         var preview = predicted.ToMutable();
         if (preview.IsUpgradable)
         {
@@ -50,6 +53,8 @@ internal static class TransformPredictionService
         IEnumerable<CardModel> originalOptions,
         bool isInCombat)
     {
+        // Keep this filter close to the source transform preview rules. The caller
+        // owns the forked RNG, so this method must only reduce the option set.
         var source = originalOptions;
         var rarity = original.Rarity;
         if ((uint)(rarity - 8) > 1u)

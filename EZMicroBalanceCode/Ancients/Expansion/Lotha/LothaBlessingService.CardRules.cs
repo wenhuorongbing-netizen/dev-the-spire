@@ -5,6 +5,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 internal static partial class LothaBlessingService
 {
     private const int LothaExtraPlayCount = 2;
+    private const int MirrorRebuttalExtraPlayCount = 1;
 
     public static int ModifyCardPlayCount(CardModel card, int playCount)
     {
@@ -28,8 +29,8 @@ internal static partial class LothaBlessingService
             IsEligibleCard(card))
         {
             combatState.MirrorRebuttalResolved = true;
-            MainFile.Logger.Info($"[EZMicroBalance] Lotha Mirror Rebuttal extra-played {card.Id.Entry} two additional times.");
-            return playCount + LothaExtraPlayCount;
+            MainFile.Logger.Info($"[EZMicroBalance] Lotha Mirror Rebuttal extra-played {card.Id.Entry} one additional time.");
+            return playCount + MirrorRebuttalExtraPlayCount;
         }
 
         if (selectedBlessing == LothaBlessingIds.MirrorHallEcho &&
@@ -138,10 +139,6 @@ internal static partial class LothaBlessingService
             TrackSingleSentenceRemainingPlays(cardPlay, combatState);
         }
 
-        if (selectedBlessing == LothaBlessingIds.ClosedCourt)
-        {
-            TrackClosedCourtDiscountUse(cardPlay, combatState);
-        }
     }
 
     private static bool TryConsumeAutoPlayModifierBlock(CardModel card, LothaCombatState combatState)

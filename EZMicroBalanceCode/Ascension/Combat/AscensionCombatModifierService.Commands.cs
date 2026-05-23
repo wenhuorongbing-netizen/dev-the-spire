@@ -64,4 +64,48 @@ internal static partial class AscensionCombatModifierService
             await PowerCmd.Apply<ArtifactPower>(new BlockingPlayerChoiceContext(), creature, artifact, creature, null);
         }
     }
+
+    private static async Task<T?> ApplyPowerWithFinalDisplayedGain<T>(
+        Creature creature,
+        int displayedGain,
+        Creature? applier,
+        CardModel? cardSource)
+        where T : PowerModel
+    {
+        if (displayedGain <= 0)
+        {
+            return creature.GetPower<T>();
+        }
+
+        var existingAmount = creature.GetPower<T>()?.Amount ?? 0;
+        await PowerCmd.Apply<T>(new BlockingPlayerChoiceContext(), creature, 1m, applier, cardSource);
+        var power = creature.GetPower<T>();
+        if (power == null)
+        {
+            return null;
+        }
+
+        var targetAmount = existingAmount + displayedGain;
+        var correction = targetAmount - power.Amount;
+        if (correction != 0)
+        {
+            await PowerCmd.ModifyAmount(new BlockingPlayerChoiceContext(), power, correction, applier, cardSource);
+        }
+
+        return creature.GetPower<T>();
+    }
+
+    private static async Task ClampPowerAmount<T>(
+        Creature creature,
+        int maxAmount,
+        Creature? applier,
+        CardModel? cardSource)
+        where T : PowerModel
+    {
+        var power = creature.GetPower<T>();
+        if (power is { Amount: > 0 } && power.Amount > maxAmount)
+        {
+            await PowerCmd.ModifyAmount(new BlockingPlayerChoiceContext(), power, maxAmount - power.Amount, applier, cardSource);
+        }
+    }
 }

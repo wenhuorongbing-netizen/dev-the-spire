@@ -22,7 +22,7 @@ internal static partial class LothaBlessingService
         }
 
         await TryApplyPresumptionTurnStart(choiceContext, player, combatState, selectedBlessing);
-        await TryOpenClosedCourtFirstTurn(choiceContext, player, combatState, selectedBlessing);
+        await TryApplyClosedCourtTurnStart(choiceContext, player, combatState, selectedBlessing);
 
         if (selectedBlessing == LothaBlessingIds.MirrorRebuttal &&
             activeCombat?.RoundNumber == 1 &&
