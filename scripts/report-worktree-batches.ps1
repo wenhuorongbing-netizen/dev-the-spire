@@ -181,13 +181,14 @@ if ($PathspecDirectory) {
         New-Item -ItemType Directory -Path $pathspecFull -Force | Out-Null
     }
 
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
     foreach ($item in $summary) {
         if ($item.Batch -lt 0) {
             continue
         }
 
         $pathspecPath = Join-Path $pathspecFull ("batch-{0}.pathspec" -f $item.Batch)
-        @($item.Paths) | Set-Content -LiteralPath $pathspecPath -Encoding UTF8
+        [System.IO.File]::WriteAllLines($pathspecPath, [string[]]@($item.Paths), $utf8NoBom)
         $pathspecRecords += [ordered]@{
             Batch = $item.Batch
             Name = $item.Name
