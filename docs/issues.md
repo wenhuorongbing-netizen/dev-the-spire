@@ -34,7 +34,7 @@ Verdict: NO-GO for release readiness. Current state remains a manual-test candid
 - `STRICT-AUDIT-PATCH-SURFACE` P1 source-mapped / live-pending: high-risk lifecycle patches are mapped in `docs/architecture/patch-boundaries.md` to source evidence plus manual proof; live rows remain open.
 - `STRICT-AUDIT-EVIDENCE-LOG` P2 source-advanced / live-pending: opt-in markers cover Ancient reward selection and high-risk paths; keep open until `godot.log` captures them from live manual runs.
 ## Engineering governance blockers
-- `GOV-WIP-SPLIT` P0 source-advanced / still open: worktree remains large. Current pathspecs are in `.tools/worktree-batches/current`; latest generated snapshot has 151 dirty entries and 0 unclassified paths. Stage only by intentional review batch.
+- `GOV-WIP-SPLIT` P0 source-advanced / still open: worktree remains large. Current pathspecs are in `.tools/worktree-batches/current`; latest generated snapshot has 152 dirty entries and 0 unclassified paths. Stage only by intentional review batch.
 - `GOV-CI-FIRST-RUN` P2 runner-pending; `DOC-CONFLICT-GOVERNANCE` and `PLATFORM-PACKAGE-CHECKS` P2 source-fixed: CI first run and cross-platform live logs remain pending.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use `scripts/collect-ancient-ui-evidence.ps1`.
