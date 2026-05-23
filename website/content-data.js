@@ -29,22 +29,27 @@ const sourceRelicIcons = {
 const vanillaIconPaths = {
   relic: "assets/vanilla-icons/relic.svg",
   curse: "assets/vanilla-icons/curse-card.svg",
-  event: "assets/vanilla-icons/event-card.svg"
+  event: "assets/vanilla-icons/event-card.svg",
+  cards: {
+    brightestFlame: "assets/vanilla-icons/cards/brightest_flame.svg",
+    folly: "assets/vanilla-icons/cards/folly.svg",
+    enthralled: "assets/vanilla-icons/cards/enthralled.svg"
+  }
 };
 
 const sourceCardOverrides = {
   "BRIGHTEST_FLAME.description": {
-    icon: vanillaIconPaths.event,
+    icon: vanillaIconPaths.cards.brightestFlame,
     vanilla: "获得2点能量，抽2张牌，失去1点最大生命；升级后获得3点能量，抽3张牌，失去1点最大生命。",
     current: "新增消耗；获得2点能量，抽3张牌，失去1点最大生命；升级后获得3点能量，抽4张牌，失去1点最大生命。"
   },
   "FOLLY.description": {
-    icon: vanillaIconPaths.curse,
+    icon: vanillaIconPaths.cards.folly,
     vanilla: "无法打出。固有。永恒。虚无。",
     current: "无法打出。固有。永恒。"
   },
   "ENTHRALLED.description": {
-    icon: vanillaIconPaths.curse,
+    icon: vanillaIconPaths.cards.enthralled,
     vanilla: "2费诅咒。永恒。在手牌中时，必须先打出执迷；打出后无其他效果。",
     current: "2费诅咒。永恒。在手牌中时，必须先打出执迷；打出后获得10点格挡。"
   }
@@ -263,9 +268,9 @@ window.SPIRE_PLUS_DATA = {
   ],
   assetPolicy: [
     "\u672c\u7ad9\u53ea\u6253\u5305 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\uff0c\u4e3b\u8981\u6765\u81ea EZMicroBalance/images/\u3002",
-    "\u539f\u7248\u6e38\u620f\u56fe\u50cf\u4e0d\u968f\u516c\u5f00\u7ad9\u53d1\u5e03\u3002\u6d89\u53ca\u539f\u7248\u9057\u7269\u6216\u5361\u724c\u65f6\uff0c\u7ebf\u4e0a\u9875\u9762\u4f7f\u7528\u7ad9\u70b9\u81ea\u5e26\u7684\u7b80\u5316\u56fe\u6807\u3002",
-    "\u672c\u5730\u9884\u89c8\u53ef\u4ee5\u5bf9\u7167 source code/images/ \u4e2d\u7684\u53c2\u8003\u56fe\uff1b\u8fd9\u4e9b\u539f\u59cb\u7d20\u6750\u4e0d\u8fdb\u5165 GitHub Pages \u53d1\u5e03\u5305\u3002",
-    "\u82e5\u540e\u7eed\u9700\u8981\u516c\u5f00\u5c55\u793a\u539f\u7248\u5b9e\u673a\u622a\u56fe\uff0c\u5c06\u5355\u72ec\u5904\u7406\u6388\u6743\u548c\u7d20\u6750\u6765\u6e90\u3002"
+    "\u539f\u7248\u6e38\u620f\u975e\u7f8e\u672f\u8d44\u4ea7\u4e0d\u8fdb\u5165\u4ed3\u5e93\uff1b\u539f\u7248\u7f8e\u672f\u53ea\u6709\u5728\u786e\u8ba4\u53ef\u518d\u5206\u53d1\u6388\u6743\u540e\u624d\u4f1a\u8fdb\u5165\u516c\u5f00\u7ad9\u3002",
+    "\u6d89\u53ca\u539f\u7248\u9057\u7269\u6216\u5361\u724c\u65f6\uff0c\u7ebf\u4e0a\u9875\u9762\u4f7f\u7528\u7ad9\u5185\u91cd\u65b0\u7ed8\u5236\u7684\u672c\u5730\u56fe\u6807\uff0c\u4e0d\u5f15\u7528 source code/ \u8def\u5f84\u3002",
+    "\u82e5\u540e\u7eed\u9700\u8981\u516c\u5f00\u5c55\u793a\u539f\u7248\u5b9e\u673a\u622a\u56fe\u6216\u539f\u56fe\uff0c\u5c06\u5355\u72ec\u8bb0\u5f55\u6388\u6743\u3001\u6765\u6e90\u548c\u4f7f\u7528\u8303\u56f4\u3002"
   ],
   forum: {
     notice:
@@ -415,7 +420,7 @@ window.SPIRE_PLUS_DATA = {
     ["\u5f85\u9a8c\u8bc1", "\u74e6\u5e93\u8bd5\u70bc", "\u80dc\u5229\u8fd4\u56de\u4e8b\u4ef6\u3001\u5931\u8d25/\u6b7b\u4ea1\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u8054\u673a\u8fb9\u754c\u9700\u8981\u8fdb\u4e00\u6b65\u5b9e\u673a\u6d4b\u8bd5\u3002"],
     ["\u5f85\u9a8c\u8bc1", "\u8fdb\u9636 11-20", "A11 \u8def\u7ebf\u70b9\u51fb\u3001A12/A16/A19/A20 \u6218\u6597\u89c4\u5219\u3001\u6839\u8680\u6218\u540e\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u53cc\u4eba\u8054\u673a\u8fd8\u9700\u8981\u5b8c\u6574\u8bb0\u5f55\u3002"],
     ["\u5f85\u63a5\u5165", "\u516c\u5f00\u8bba\u575b", "\u5f53\u524d\u516c\u5f00\u4ea4\u6d41\u4f7f\u7528 GitHub Issues / Discussions\u3002\u82e5\u9700\u8981\u7ad9\u5185\u56de\u590d\u548c\u533f\u540d\u53d1\u5e16\uff0c\u9700\u8981\u63a5\u5165 Giscus \u6216\u72ec\u7acb\u540e\u7aef\u3002"],
-    ["\u7d20\u6750\u8bf4\u660e", "\u539f\u7248\u6e38\u620f\u56fe\u7247", "\u516c\u5f00\u7ad9\u4ec5\u4f7f\u7528 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\u3002\u539f\u7248\u6761\u76ee\u4f7f\u7528\u7ad9\u70b9\u81ea\u5e26\u7684\u7b80\u5316\u56fe\u6807\u3002"]
+    ["\u7d20\u6750\u8bf4\u660e", "\u539f\u7248\u6e38\u620f\u56fe\u7247", "\u516c\u5f00\u7ad9\u4ec5\u4f7f\u7528 Spire Plus \u81ea\u6709\u6216\u53ef\u53d1\u5e03\u7d20\u6750\u3002\u539f\u7248\u6761\u76ee\u4f7f\u7528\u7ad9\u5185\u91cd\u65b0\u7ed8\u5236\u7684\u672c\u5730\u56fe\u6807\u3002"]
   ],
   changeLog: [
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
@@ -435,7 +440,7 @@ window.SPIRE_PLUS_DATA = {
 
 function sourceRelicIcon(descKey) {
   const fileName = sourceRelicIcons[descKey];
-  return fileName ? vanillaIconPaths.relic : undefined;
+  return fileName ? `assets/vanilla-icons/relics/${fileName.replace(/\.png$/i, ".svg")}` : undefined;
 }
 
 function baseRelic(title, descKey, tags, vanilla, current) {
@@ -779,9 +784,9 @@ window.SPIRE_PLUS_DATA.i18n = {
     ],
     assetPolicy: [
       "This site ships only Spire Plus-owned or publishable assets, mainly from EZMicroBalance/images/.",
-      "Original game images are not included in the public site. Entries that refer to vanilla relics or cards use site-owned simplified icons.",
-      "Local preview can compare against reference images from source code/images/. Those original assets are not included in the GitHub Pages build.",
-      "If base-game screenshots are published later, permission and asset source will be handled separately."
+      "Original non-art game assets are not committed. Original art enters the public site only after redistribution permission is confirmed.",
+      "Entries that refer to vanilla relics or cards use locally saved, site-owned redraw icons and never reference source code/ paths.",
+      "If base-game screenshots or original art are published later, permission, source, and usage scope will be documented separately."
     ],
     forum: {
       notice: "Use GitHub Issues / Discussions for public feedback. Drafts below stay in this browser and are useful for preparing reproduction steps and screenshot notes.",
@@ -1086,7 +1091,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       ["Needs verification", "Vakuu trial", "Victory return, failure/death resolution, save-load behavior, and multiplayer boundaries need more live testing."],
       ["Needs verification", "Ascension 11-20", "A11 route clicks, A12/A16/A19/A20 combat rules, Rootblight post-combat resolution, save-load behavior, and two-player co-op need full test records."],
       ["Integration pending", "Public forum", "Public feedback currently uses GitHub Issues / Discussions. Site-native replies and anonymous posts would require Giscus or a separate backend."],
-      ["Asset note", "Original game images", "The public site uses only Spire Plus-owned or publishable assets. Vanilla entries use site-owned simplified icons."]
+      ["Asset note", "Original game images", "The public site uses only Spire Plus-owned or publishable assets. Vanilla entries use locally saved, site-owned redraw icons."]
     ],
     changeLog: [
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],

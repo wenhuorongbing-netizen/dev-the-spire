@@ -152,3 +152,19 @@ Rendered checks:
 - Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.0.zip` and the release button to the concrete GitHub tag URL.
 - Public install page points the main download button to `releases/download/v0.1.0-private-beta.0/SpirePlus-v0.1.0-private-beta.0.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
 - Browser console warnings/errors: none.
+
+## Review 6: Local Redraw Icon QA
+
+Result: pass.
+
+Fixes checked during this pass:
+
+- Updated `AGENTS.md` asset rule: original non-art game assets are still blocked; original art requires documented redistribution permission before entering tracked/public files.
+- Replaced repeated vanilla relic/card placeholder usage with 25 relic-specific and 3 card-specific site-owned SVG redraw icons under `website/assets/vanilla-icons/`.
+- Confirmed update entries no longer rely on local `source code/` image paths for vanilla relic/card display.
+
+Static checks:
+
+- `node --check website/content-data.js` passed.
+- `node --check website/app.js` passed.
+- Update-page icon existence scan passed with no missing icon files.

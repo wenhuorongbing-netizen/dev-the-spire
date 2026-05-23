@@ -35,9 +35,9 @@ Baseline setup is complete on the local machine:
 - Historical `EzDailyContent` Mod Settings verification succeeded on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
 - `EZMicroBalance` build and publish have succeeded.
 - Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, and documentation freshness guards.
-- Current local source is refreshed from Slay the Spire 2 `v0.105.0`; BaseLib runtime/project package are aligned on `v3.1.2`.
+- Current local source is refreshed from Slay the Spire 2 `v0.106.0`; BaseLib runtime/project package are aligned on `v3.1.4`.
 - Controlled `--force-steam off` smoke loading has verified only BaseLib and `EZMicroBalance` initialization to main menu from the final installed artifacts.
-- Normal Steam-client startup/log verification exists for earlier `Spire Plus` display-name packages with exactly BaseLib and `EZMicroBalance` loaded, config registration, and 0 release-blocking log hits. Current source defines 24 SavedSpireFields after the latest static fixes, while the latest live loader log still reports the earlier 22-field package; rerun live loader smoke before claiming current-package runtime parity. Mod Settings UI screenshot evidence for `EZMicroBalance` is still partly historical under the old `EZ Micro Balance` display name. Live gameplay feature verification remains pending.
+- Normal Steam-client startup/log verification exists for earlier `Spire Plus` display-name packages with exactly BaseLib and `EZMicroBalance` loaded, config registration, and 0 release-blocking log hits. Current source defines 25 SavedSpireFields after the latest static fixes, while the latest live loader log still reports an earlier package; rerun live loader smoke before claiming current-package runtime parity. Mod Settings UI screenshot evidence for `EZMicroBalance` is still partly historical under the old `EZ Micro Balance` display name. Live gameplay feature verification remains pending.
 
 Revalidate build, publish, and game load before claiming private beta readiness.
 
@@ -45,7 +45,8 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 
 - Do not change an existing manifest id in-place.
 - If creating a new independent mod project, choose and document a stable manifest id before the first build.
-- Do not copy original Slay the Spire 2 game assets into this repository.
+- Do not copy original Slay the Spire 2 non-art game assets into this repository, including code, data tables, text dumps, scenes, serialized gameplay resources, and other non-visual source materials.
+- Original Slay the Spire 2 art may be used in tracked/public files only when redistribution permission is confirmed and documented. Without that permission, keep original art outside the repository and use Spire Plus-owned, generated, or otherwise redistributable replacement art.
 - Do not copy large chunks of decompiled game code into this repository.
 - Do not claim Ascension release readiness until direct API/runtime evidence supports it. If A11-A20 selection is explicitly requested for development testing, keep the patch narrow, documented, independently disableable, and out of A21-A30/custom-character scope.
 - Keep experimental Ascension systems independently disableable or behind an explicit internal/debug gate unless release docs intentionally say otherwise.
@@ -83,7 +84,7 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 - Clone the repository on the target machine.
 - Copy `Directory.Build.props.example` to `Directory.Build.props`.
 - Fill local `GodotPath` and `Sts2Path` values.
-- Install BaseLib `v3.1.2` under `<GameRoot>\mods\BaseLib`.
+- Install BaseLib `v3.1.4` under `<GameRoot>\mods\BaseLib`.
 - Do not commit `Directory.Build.props`, `.tools/`, `.godot/`, `bin/`, `obj/`, downloaded archives, or local binaries.
 
 ## Documentation

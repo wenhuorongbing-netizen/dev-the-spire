@@ -48,4 +48,4 @@ https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-priv
 - 渲染逻辑：`app.js`
 - 图片：`assets/`
 
-`assets/` 只放 `EZMicroBalance/images/` 下的自有或生成资源，以及站点自带的简化图标。不要复制 `source code/` 下的游戏原始图集。
+`assets/` 只放 `EZMicroBalance/images/` 下的自有或生成资源，以及站点自带的重新绘制图标。不要复制 `source code/` 下的原版非美术资产；原版美术只有在确认可再分发授权后才可以进入公开站点。
