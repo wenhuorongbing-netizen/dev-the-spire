@@ -26,6 +26,25 @@ const sourceRelicIcons = {
   "BLOOD_SOAKED_ROSE.description": "blood_soaked_rose.png"
 };
 
+const ownedRelicIcons = {
+  "SERE_TALON.description": "assets/relics/sere_talon.svg"
+};
+
+const currentReadableGuardSnippets = [
+  "不靠无脑加强把游戏变简单",
+  "进阶二十仍然有压力",
+  "without turning the game into a pile of free power",
+  "A20 that still pushes back",
+  "若合适房间不足，至少放入2个",
+  "可附魔牌",
+  "If there are not enough suitable rooms, at least 2 are placed.",
+  "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission.",
+  "Vakuu's Sere Talon",
+  "Tanx Claws",
+  "On pickup, add 2 random Curses and 3 Wish.",
+  "On pickup, transform up to 6 cards into Maul."
+];
+
 const vanillaIconPaths = {
   relic: "assets/vanilla-icons/relic.svg",
   curse: "assets/vanilla-icons/curse-card.svg",
@@ -91,13 +110,13 @@ const ascensionDetails = {
     detail("路线", "插入路线必须可抵达，且保留一条不经过插入列的普通路线。", "Routing", "The inserted route must be reachable while a normal route that avoids the inserted column remains available.")
   ],
   LEVEL_12: [
-    detail("数量", "第一幕目标2个火印精英；第二幕以后目标3个；安全候选不足时至少尝试2个。", "Count", "Act 1 targets 2 Firemarked Elites; later acts target 3; the safe fallback attempts at least 2."),
+    detail("数量", "第一幕目标2个火印精英；第二幕以后目标3个。若合适房间不足，至少放入2个。", "Count", "Act 1 targets 2 Firemarked Elites; later acts target 3. If there are not enough suitable rooms, at least 2 are placed."),
     detail("奖励", "击败后获得铸令；若已经持有铸令，改为15金币。火印精英卡牌奖励显示到4选。", "Reward", "Defeat one to gain a Forge Token. If already held, it converts to 15 Gold. Firemarked Elite card rewards show up to 4 cards."),
     detail("铸令", "下个休息处：休息随机升级1张可升级普通/罕见牌；没有目标则回复5 HP。锻造则回复7 HP。", "Forge Token", "At the next rest site: Rest upgrades 1 upgradable Common/Uncommon card at random, or heals 5 HP if none exists. Smith heals 7 HP.")
   ],
   LEVEL_13: [
     detail("出现率", "普通战10%；战旗房15%；火印精英20%；首领5%。", "Rates", "Normal combat 10%; Banner Room 15%; Firemarked Elite 20%; Boss 5%."),
-    detail("候选", "只作用于普通/罕见/稀有攻击或技能；排除X费、0费、已有附魔、消耗牌和不能生成附魔的牌。", "Eligible cards", "Only Common/Uncommon/Rare Attacks or Skills. X-cost, 0-cost, already enchanted, Exhaust, and non-enchantable cards are excluded."),
+    detail("可附魔牌", "只作用于普通/罕见/稀有攻击或技能；排除X费、0费、已有附魔、消耗牌和不能生成附魔的牌。", "Eligible cards", "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission. X-cost, 0-cost, already enchanted, Exhaust, and non-enchantable cards are excluded."),
     detail("效果", "裂变牌耗能-1，打出后消耗。", "Effect", "Fission reduces cost by 1 and Exhausts the card after play.")
   ],
   LEVEL_14: [
@@ -187,11 +206,19 @@ window.SPIRE_PLUS_DATA = {
     navInstall: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     navForum: "\u8bba\u575b",
     navIssues: "\u5df2\u77e5\u95ee\u9898",
+    navAbout: "关于",
     releaseLine: "\u79c1\u4eba\u6d4b\u8bd5\u5305 \u00b7 v0.1.0-private-beta.0",
     heroTitle: "Spire Plus",
-    heroCopy: "版本改动、下载方式、反馈入口与已知问题。",
-    introTitle: "关于 Spire Plus",
-    introCopy: "Spire Plus 不是单纯的加强包。它在加入更多路线、遗物、先古和卡牌选择的同时，保留代价与风险，避免把游戏直接变简单；并提供 A11-A20，尤其是 A20 的挑战难度。目标是让《杀戮尖塔 2》更平衡、更耐玩，也更有意思。",
+    heroCopy: "当前改动、下载、论坛和测试状态。",
+    modIntroTitle: "重塑进阶与策略边界",
+    featAscensionTitle: "重塑进阶 20",
+    featAscensionDesc: "原版进阶难度单调。Spire Plus 重新设计了高阶挑战（A11-A20），引入独特首领专属能力、火印宿主精英与地图限制。难度呈科学曲线上升，让资深玩家再次面对尖塔真正的压迫感。",
+    featPhilosophyTitle: "科学难度与构筑可玩性",
+    featPhilosophyDesc: "设计理念不仅是让游戏变难，而是让它更好玩。科学调优各个流派，打破“为了活下去而被迫选择特定防御/解牌”的死板死胡同，给玩家带来更多元、更自由的角色选择空间。",
+    featRewardTitle: "高风险，高回报",
+    featRewardDesc: "不必再为了苟活而做无趣的选择。如果你敢于挑战更危险的路线或特殊的先古试炼，你将赢取无与伦比的专属先古遗物与强力祝福。走最强大的路线，拿最丰厚的奖励！",
+    aboutTitle: "关于",
+    aboutLead: "项目说明、素材来源和发布边界。",
     download: "\u4e0b\u8f7d\u6a21\u7ec4",
     viewIssues: "\u67e5\u770b\u5df2\u77e5\u95ee\u9898",
     all: "\u5168\u90e8",
@@ -204,15 +231,17 @@ window.SPIRE_PLUS_DATA = {
     installTitle: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     installLead: "\u4e0b\u8f7d\u6700\u65b0\u79c1\u6d4b\u5305\uff0c\u5e76\u6309\u4e0b\u65b9\u8def\u5f84\u5b89\u88c5 BaseLib \u4e0e Spire Plus\u3002",
     currentDownload: "\u5f53\u524d\u4e0b\u8f7d",
+    requiredFilesTitle: "第一步：下载必要文件",
+    optionalFilesTitle: "发布页与源码",
     directDownload: "直链下载",
     openRelease: "\u6253\u5f00\u53d1\u5e03\u9875",
-    openBaseLib: "下载 BaseLib",
+    openBaseLib: "下载 BaseLib 3.1.4",
     openRepo: "\u6253\u5f00\u4ed3\u5e93",
     steps: "\u5b89\u88c5\u6b65\u9aa4",
     requirements: "\u8fd0\u884c\u8981\u6c42",
-    assetPolicy: "\u56fe\u7247\u4e0e\u7248\u6743\u8fb9\u754c",
+    assetPolicy: "图片与素材说明",
     forumTitle: "\u8bba\u575b",
-    forumLead: "无需注册的公开讨论区。输入名字、标题和正文即可发帖，也可以直接匿名回复。",
+    forumLead: "玩家发帖和回复的地方。",
     forumPublicTitle: "Spire Plus 论坛",
     openForum: "进入论坛",
     forumHealth: "数据库状态",
@@ -224,7 +253,7 @@ window.SPIRE_PLUS_DATA = {
     postTitle: "\u6807\u9898",
     postBody: "\u5185\u5bb9",
     postTitlePlaceholder: "\u8f93\u5165\u6807\u9898",
-    postBodyPlaceholder: "写下现象、版本、截图说明或复现步骤。",
+    postBodyPlaceholder: "写下你想说的内容。",
     replyPlaceholder: "写回复",
     replySubmit: "回复",
     postSubmit: "发布",
@@ -236,18 +265,14 @@ window.SPIRE_PLUS_DATA = {
     changeLog: "\u66f4\u65b0\u8bb0\u5f55",
     noTitle: "\u672a\u547d\u540d"
   },
-  summary: [
-    ["更新内容", "原版对比与当前效果", "updates"],
-    ["下载与安装", "版本、依赖和安装路径", "install"],
-    ["论坛", "反馈、建议和讨论入口", "forum"],
-    ["已知问题", "待验证项目与更新记录", "issues"]
-  ],
+  summary: [],
   package: {
     localDownload: "../publish/SpirePlus-v0.1.0-private-beta.0.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.0/SpirePlus-v0.1.0-private-beta.0.zip",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.0",
-    baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/tag/v3.1.4",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/latest/download/SpirePlus-v0.1.0-private-beta.0.zip",
+    latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/latest",
+    baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.1.4/BaseLib.3.1.4.zip",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
       ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.0.zip"],
@@ -255,19 +280,19 @@ window.SPIRE_PLUS_DATA = {
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,879,498 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "1D294871C211B48EAE9DA246BC94E8BF5422985A3FC589D62048BAF32469BB26"]
+      ["\u4f53\u79ef", "18,905,599 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC"]
     ]
   },
   installSteps: [
     "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.0.zip\u3002",
-    "下载 BaseLib v3.1.4；版本页应显示 BaseLib-StS2 v3.1.4。",
+    "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
-    "当前技术路径：mods\\EZMicroBalance\\EZMicroBalance.json。",
+    "压缩包内保留技术兼容目录；玩家不需要手动改名。",
     "BaseLib 最终位置：mods\\BaseLib\\BaseLib.json。",
     "\u542f\u52a8\u6e38\u620f\uff0c\u5728\u6a21\u7ec4\u5217\u8868\u91cc\u542f\u7528 Spire Plus\u3002",
-    "\u6b64\u7248\u672c\u4ecd\u5904\u4e8e\u79c1\u6d4b\uff1b\u53cd\u9988\u95ee\u9898\u65f6\u8bf7\u9644\u4e0a godot.log\u3001\u622a\u56fe\u548c\u590d\u73b0\u6b65\u9aa4\u3002"
+    "此版本仍处于私测；如果遇到问题，论坛里直接发帖即可。"
   ],
   requirements: [
     "Slay the Spire 2 public beta v0.106.0\u3002",
@@ -276,20 +301,20 @@ window.SPIRE_PLUS_DATA = {
     "为兼容现有存档，压缩包内的技术目录名暂不手动修改；玩家看到的模组名应为 Spire Plus。"
   ],
   assetPolicy: [
-    "本站只打包 Spire Plus 自有或可发布素材。",
-    "\u539f\u7248\u6e38\u620f\u975e\u7f8e\u672f\u8d44\u4ea7\u4e0d\u8fdb\u5165\u4ed3\u5e93\u3002\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\u5df2\u7531\u9879\u76ee\u8d1f\u8d23\u4eba\u786e\u8ba4\u53ef\u7528\u4e8e\u672c\u7ad9\u53d1\u5e03\u3002",
-    "\u672c\u7ad9\u4ec5\u968f\u5305\u53d1\u5e03\u5f53\u524d\u66f4\u65b0\u9875\u5b9e\u9645\u5f15\u7528\u7684\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\uff0c\u7edf\u4e00\u653e\u5728 website/assets/source-art/\u3002",
-    "\u82e5\u540e\u7eed\u9700\u8981\u516c\u5f00\u5c55\u793a\u66f4\u591a\u539f\u7248\u5b9e\u673a\u622a\u56fe\u6216\u539f\u56fe\uff0c\u5c06\u5355\u72ec\u8bb0\u5f55\u6765\u6e90\u548c\u4f7f\u7528\u8303\u56f4\u3002"
+    "本站会使用 Spire Plus 自有素材、生成素材，以及已确认可以用于本站展示的原版美术。",
+    "原版游戏的非美术资产不放进仓库；代码、数据表、文本转储、场景资源和玩法资源都不作为网站素材复制。",
+    "当前页面用到的原版遗物图标和卡牌图像已确认可以用于本站发布，文件统一放在 website/assets/source-art/。",
+    "以后如果要放更多原版截图或原图，会单独记录来源和用途。"
   ],
   forum: {
     url: "./forum/",
     localUrl: "./forum/",
     notice:
-      "这里会是玩家讨论、Bug 反馈、构筑记录和版本建议的主入口。论坛不要求账号；填写名字只是显示用，留空会显示为匿名玩家。数据由 Supabase 保存。",
+      "这里会是玩家讨论、Bug 反馈、构筑记录和版本建议的主入口。填写名字只是显示用，留空会显示为匿名玩家。数据由 Supabase 保存。",
     points: [
       "发帖：名字可留空，填写标题和正文即可发布。",
       "看帖：所有可见帖子按最后回复时间排序。",
-      "回复：进入帖子详情后可直接回复，不需要注册。"
+      "回复：进入帖子详情后可直接回复。"
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
@@ -310,7 +335,8 @@ window.SPIRE_PLUS_DATA = {
         baseRelic("\u73e0\u5b9d\u76d2", "JEWELRY_BOX.description", ["\u795e\u5316"], "拾起时将1张神化加入牌组。", "拾起时将1张神化加入牌组；这张神化没有固有。"),
         baseRelic("\u4fdd\u5b58\u4e4b\u96fe", "PRESERVED_FOG.description", ["\u5220\u724c"], "拾起时从牌组移除3张牌；将1张愚行加入牌组。", "拾起时从牌组移除4张牌；将1张愚行加入牌组。"),
         cardLoc("愚行", "FOLLY.description", ["\u8bc5\u5492", "\u5361\u724c\u672c\u4f53"], "无法打出。固有。永恒。虚无。"),
-        baseRelic("\u5229\u722a", "CLAWS.description", ["\u8bc5\u5492", "\u8bb8\u613f"], "拾起时选择至多6张牌，将它们变化为“撕咬”。", "拾起时不再变牌；从4张诅咒中选择1张加入牌组，再加入2张许愿和1张许愿+。"),
+        baseRelic("\u74e6\u5e93\u539f\u521d\u4e4b\u722a", "SERE_TALON.description", ["\u8bc5\u5492", "\u8bb8\u613f"], "\u74e6\u5e93\u5956\u52b1\u3002\u62fe\u53d6\u65f6\uff0c\u5c06\u0032\u5f20\u968f\u673a\u8bc5\u5492\u548c\u0033\u5f20\u8bb8\u613f\u52a0\u5165\u724c\u7ec4\u3002", "\u62fe\u53d6\u65f6\uff0c\u5c06\u0032\u5f20\u968f\u673a\u8bc5\u5492\u548c\u0033\u5f20\u8bb8\u613f\u52a0\u5165\u724c\u7ec4\u3002"),
+        baseRelic("\u5766\u514b\u65af\u5229\u722a", "CLAWS.description", ["\u6495\u54ac", "\u53d8\u5316"], "\u62fe\u53d6\u65f6\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac\u201d\u3002", "\u6cbf\u7528\u539f\u7248\u5766\u514b\u65af\u5229\u722a\u6d41\u7a0b\uff1a\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac\u201d\u3002\u6570\u503c\u5f3a\u5316\u5f85\u8bbe\u8ba1\u3002"),
         baseRelic("\u9009\u62e9\u6096\u8bba", "CHOICES_PARADOX.description", ["\u7a00\u6709\u724c"], "每场战斗第1回合开始时，从5张随机牌中选择1张加入手牌；该牌获得保留。", "每场战斗开始时，从5张可用稀有牌中选择1张加入手牌；获得保留，并在战斗后移除。"),
         baseRelic("\u5b9d\u77f3\u9762\u5177", "JEWELED_MASK.description", ["\u80fd\u529b\u724c"], "每场战斗第1回合抽牌前，将抽牌堆中1张随机能力牌移入手牌；本回合费用为0。", "拾起时选择1张能力牌永久变为0费；每场战斗开始时，将它从抽牌堆移入手牌。"),
         baseRelic("\u5e15\u5c14\u4e4b\u89d2", "PAELS_HORN.description", ["\u653e\u677e"], "拾起时将2张放松加入牌组。", "拾起时将1张放松和1张已升级的放松+加入牌组。"),
@@ -446,7 +472,7 @@ window.SPIRE_PLUS_DATA = {
     ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.0.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
-    ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb Future Peek \u53d1\u5e03\u3002"]
+    ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
   ],
   locFiles: {
     relics: "assets/localization/zhs/relics.json",
@@ -458,6 +484,8 @@ window.SPIRE_PLUS_DATA = {
 };
 
 function sourceRelicIcon(descKey) {
+  const ownedIcon = ownedRelicIcons[descKey];
+  if (ownedIcon) return ownedIcon;
   const fileName = sourceRelicIcons[descKey];
   return fileName ? `assets/source-art/relics/${fileName}` : undefined;
 }
@@ -569,10 +597,18 @@ window.SPIRE_PLUS_DATA.i18n = {
       navInstall: "Download & Install",
       navForum: "Forum",
       navIssues: "Known Issues",
+      navAbout: "About",
       releaseLine: "Private test build · v0.1.0-private-beta.0",
-      heroCopy: "Patch notes, downloads, feedback links, and known issues.",
-      introTitle: "About Spire Plus",
-      introCopy: "Spire Plus is not a pure power-up pack. It adds more route, relic, Ancient, and card choices while keeping real costs and risks, so the game does not simply become easier. It also adds the A11-A20 challenge set, with A20 as the top-end test. The goal is a Slay the Spire 2 run that feels more balanced, more replayable, and more interesting.",
+      heroCopy: "Current changes, download, forum, and test status.",
+      modIntroTitle: "Re-imagined Ascension & Strategic Freedom",
+      featAscensionTitle: "Re-imagined A20 Challenge",
+      featAscensionDesc: "Vanilla Ascension is too simple. Spire Plus expands the advanced difficulty (A11-A20) with unique Boss dedicated abilities, Elite firemarks, and layout challenges. Enjoy a scientific difficulty scale that pushes back even the most experienced players.",
+      featPhilosophyTitle: "Science of Fun & Build Freedom",
+      featPhilosophyDesc: "Our philosophy is not just to make the game harder, but more playable. We balance various build spaces so you are never forced to choose a rigid 'survive-at-all-costs' card. Reclaim your strategic freedom.",
+      featRewardTitle: "High Risk, High Reward",
+      featRewardDesc: "No more boring, compromise-filled choices. Challenge yourself with riskier, stronger paths and Boss trials to earn powerful custom marker relics and Ancient blessings. Survive and conquer your own way!",
+      aboutTitle: "About",
+      aboutLead: "Project notes, asset sources, and release boundaries.",
       download: "Download Mod",
       viewIssues: "Known Issues",
       all: "All",
@@ -585,15 +621,17 @@ window.SPIRE_PLUS_DATA.i18n = {
       installTitle: "Download & Install",
       installLead: "Download the latest private test build, then install BaseLib and Spire Plus in the paths below.",
       currentDownload: "Current Download",
+      requiredFilesTitle: "Step 1: Required Files",
+      optionalFilesTitle: "Release Page & Source",
       directDownload: "Direct Download",
       openRelease: "Open Releases",
-      openBaseLib: "Download BaseLib",
+      openBaseLib: "Download BaseLib 3.1.4",
       openRepo: "Open Repository",
       steps: "Install Steps",
       requirements: "Requirements",
-      assetPolicy: "Image and Asset Policy",
+      assetPolicy: "Images and Assets",
         forumTitle: "Forum",
-        forumLead: "A public no-account discussion board. Type a name, title, and body to post, or leave the name empty and reply anonymously.",
+        forumLead: "A place for player posts and replies.",
         forumPublicTitle: "Spire Plus Forum",
         openForum: "Open Forum",
         forumHealth: "Database Status",
@@ -605,7 +643,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       postTitle: "Title",
       postBody: "Body",
       postTitlePlaceholder: "Enter title",
-      postBodyPlaceholder: "Write the issue, version, screenshot notes, or reproduction steps.",
+      postBodyPlaceholder: "Write what you want to say.",
       replyPlaceholder: "Write a reply",
       replySubmit: "Reply",
         postSubmit: "Post",
@@ -619,12 +657,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       separator: " · ",
       issueSeparator: " · "
     },
-    summary: [
-      ["Updates", "Vanilla comparison and current effects", "updates"],
-      ["Download & Install", "Build, dependencies, install paths", "install"],
-      ["Forum", "Feedback, suggestions, discussion", "forum"],
-      ["Known Issues", "Open checks and changelog", "issues"]
-    ],
+    summary: [],
     locFiles: {
       relics: "assets/localization/eng/relics.json",
       ancients: "assets/localization/eng/ancients.json",
@@ -639,19 +672,19 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,879,498 bytes"],
-        ["Hash", "1D294871C211B48EAE9DA246BC94E8BF5422985A3FC589D62048BAF32469BB26"]
+        ["Size", "18,905,599 bytes"],
+        ["Hash", "47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC"]
       ]
     },
     installSteps: [
       "Download SpirePlus-v0.1.0-private-beta.0.zip.",
-      "Download BaseLib v3.1.4; the release page should show BaseLib-StS2 v3.1.4.",
+      "Download BaseLib.3.1.4.zip and extract it to the game's mods\\BaseLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
-      "Current technical path: mods\\EZMicroBalance\\EZMicroBalance.json.",
+      "The archive keeps its technical compatibility folder; players should not rename it manually.",
       "Final BaseLib path: mods\\BaseLib\\BaseLib.json.",
       "Start the game and enable Spire Plus in the mod list.",
-      "This is a private test build. When reporting an issue, include godot.log, screenshots, and reproduction steps."
+      "This is a private test build. If something breaks, post it in the forum."
     ],
     requirements: [
       "Slay the Spire 2 public beta v0.106.0.",
@@ -660,19 +693,19 @@ window.SPIRE_PLUS_DATA.i18n = {
       "For save compatibility, do not manually rename the technical folder inside the zip. The in-game mod name should be Spire Plus."
     ],
     assetPolicy: [
-      "This site ships only Spire Plus-owned or publishable assets.",
-      "Original non-art game assets are not committed. The project owner has confirmed permission to publish the vanilla relic icons and card portraits used on this site.",
-      "Only the vanilla images referenced by the current update page are shipped, under website/assets/source-art/.",
-      "If more base-game screenshots or original art are published later, source and usage scope will be documented separately."
+      "This site uses Spire Plus-owned assets, generated assets, and approved base-game art needed for the update page.",
+      "Original non-art game assets are not copied into the repository: no code, data tables, text dumps, scenes, or gameplay resources.",
+      "The vanilla relic icons and card portraits currently shown on the site have been approved for this public page and live under website/assets/source-art/.",
+      "If more base-game screenshots or art are added later, the source and usage scope will be documented separately."
     ],
       forum: {
         url: "./forum/",
         localUrl: "./forum/",
-        notice: "This is the main place for player discussion, bug reports, run notes, and version feedback. No account is required; names are display-only, and empty names are shown as anonymous players. Data is stored in Supabase.",
+        notice: "This is the main place for player discussion, bug reports, run notes, and version feedback. Names are display-only, and empty names are shown as anonymous players. Data is stored in Supabase.",
         points: [
           "Post: name is optional; title and body are enough.",
           "Browse: visible posts are sorted by latest activity.",
-          "Reply: open a post and answer directly without signing in."
+          "Reply: open a post and answer directly."
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
@@ -782,10 +815,15 @@ window.SPIRE_PLUS_DATA.i18n = {
         vanilla: "Unplayable. Innate. Eternal. Ethereal.",
         desc: "Unplayable. Innate. Eternal."
       },
+      "SERE_TALON.description": {
+        title: "Vakuu's Sere Talon",
+        vanilla: "Vakuu reward. On pickup, add 2 random Curses and 3 Wish.",
+        desc: "On pickup, add 2 random Curses and 3 Wish."
+      },
       "CLAWS.description": {
-        title: "Claws",
+        title: "Tanx Claws",
         vanilla: "On pickup, choose up to 6 cards and transform them into Maul.",
-        desc: "No longer transforms deck cards. Choose 1 of 4 Curses to add to your deck, then add 2 Wish and 1 Wish+."
+        desc: "Keeps the source Tanx Claws flow: transform up to 6 cards into Maul. Numeric Maul tuning is pending design."
       },
       "CHOICES_PARADOX.description": {
         title: "Choices Paradox",
@@ -991,7 +1029,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       ["Current package", "SpirePlus-v0.1.0-private-beta.0.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
-      ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate Future Peek package."]
+      ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]
     ]
   }
 };

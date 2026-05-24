@@ -5,7 +5,7 @@
   let labels = data.labels;
   const app = document.getElementById("app");
   const header = document.getElementById("siteHeader");
-  const routes = new Set(["updates", "install", "forum", "issues"]);
+  const routes = new Set(["updates", "install", "forum", "issues", "about"]);
   const fallbackIcon = "assets/relics/relic.png";
   const appVersion = new URL(document.currentScript?.src || location.href, location.href).searchParams.get("v") || "local";
   let loc = await loadLocalization();
@@ -237,7 +237,8 @@
       ["updates", labels.navUpdates],
       ["install", labels.navInstall],
       ["forum", labels.navForum],
-      ["issues", labels.navIssues]
+      ["issues", labels.navIssues],
+      ["about", labels.navAbout]
     ]) {
       const link = el("a", id === activeRoute ? "active" : "", label);
       link.href = "#" + id;
@@ -248,9 +249,11 @@
 
     const langSwitch = el("div", "lang-switch");
     for (const [id, label] of [["zh", "中文"], ["en", "EN"]]) {
-      const langButton = el("button", id === lang ? "active" : "", label);
+      const isActive = id === lang;
+      const langButton = el("button", isActive ? "active" : "", label);
       langButton.type = "button";
       langButton.dataset.lang = id;
+      langButton.setAttribute("aria-pressed", isActive ? "true" : "false");
       langSwitch.appendChild(langButton);
     }
     header.appendChild(langSwitch);
@@ -291,21 +294,33 @@
     hero.appendChild(copy);
     app.appendChild(hero);
 
-    const intro = el("section", "intro-panel");
-    intro.appendChild(el("strong", "", labels.introTitle));
-    intro.appendChild(el("p", "", labels.introCopy));
-    app.appendChild(intro);
+    // Create Introduction Section to replace quick-nav cards
+    const introSection = el("section", "mod-intro-section panel");
+    const introTitle = el("h2", "intro-heading", labels.modIntroTitle);
+    introSection.appendChild(introTitle);
 
-    const summary = el("section", "summary-strip quick-nav");
-    for (const [value, label, routeId] of data.summary) {
-      const card = el("a", "stat-card quick-card");
-      card.href = "#" + routeId;
-      card.dataset.route = routeId;
-      card.appendChild(el("strong", "", value));
-      card.appendChild(el("span", "", label));
-      summary.appendChild(card);
-    }
-    app.appendChild(summary);
+    const introGrid = el("div", "intro-grid");
+
+    // Feature 1: Re-imagined Ascension
+    const feat1 = el("div", "feat-card");
+    feat1.appendChild(el("h3", "", labels.featAscensionTitle));
+    feat1.appendChild(el("p", "", labels.featAscensionDesc));
+    introGrid.appendChild(feat1);
+
+    // Feature 2: Design Philosophy
+    const feat2 = el("div", "feat-card");
+    feat2.appendChild(el("h3", "", labels.featPhilosophyTitle));
+    feat2.appendChild(el("p", "", labels.featPhilosophyDesc));
+    introGrid.appendChild(feat2);
+
+    // Feature 3: High Risk High Reward
+    const feat3 = el("div", "feat-card");
+    feat3.appendChild(el("h3", "", labels.featRewardTitle));
+    feat3.appendChild(el("p", "", labels.featRewardDesc));
+    introGrid.appendChild(feat3);
+
+    introSection.appendChild(introGrid);
+    app.appendChild(introSection);
 
     const tools = el("section", "tool-row");
     const search = el("label", "search");
@@ -375,6 +390,20 @@
     }
     app.appendChild(board);
 
+    const emptyState = el("div", "empty-state hidden");
+    emptyState.id = "searchEmptyState";
+    const emptyText = el("p", "", labels.noSearchMatched || "没有找到匹配的改动。");
+    const clearLink = el("a", "clear-search-link", labels.clearSearch || "清除搜索");
+    clearLink.href = "#";
+    clearLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      input.value = "";
+      applyFilters();
+    });
+    emptyState.appendChild(emptyText);
+    emptyState.appendChild(clearLink);
+    app.appendChild(emptyState);
+
     input.addEventListener("input", applyFilters);
     chips.addEventListener("click", (event) => {
       const chip = event.target.closest(".chip");
@@ -392,6 +421,7 @@
   function applyFilters() {
     const query = normalize(document.getElementById("updateSearch").value);
     const filter = document.querySelector("#updateFilters .active")?.dataset.filter || labels.all;
+    let totalVisible = 0;
     for (const group of document.querySelectorAll(".compare-group")) {
       const filterMatch = filter === labels.all || group.dataset.group === filter;
       let visible = 0;
@@ -400,7 +430,13 @@
         card.classList.toggle("hidden", !searchMatch);
         if (searchMatch) visible += 1;
       }
-      group.classList.toggle("hidden", !filterMatch || visible === 0);
+      const shouldShowGroup = filterMatch && visible > 0;
+      group.classList.toggle("hidden", !shouldShowGroup);
+      if (shouldShowGroup) totalVisible += visible;
+    }
+    const emptyState = document.getElementById("searchEmptyState");
+    if (emptyState) {
+      emptyState.classList.toggle("hidden", totalVisible > 0);
     }
   }
 
@@ -411,23 +447,128 @@
     const primaryDownloadUrl = local ? data.package.localDownload : data.package.releaseDownload;
 
     const pkg = panel(labels.currentDownload);
-    const actions = el("div", "download-actions");
-    actions.appendChild(button(labels.download, primaryDownloadUrl, true));
-    if (!local) actions.appendChild(button(labels.openRelease, data.package.releasesPage, false));
-    actions.appendChild(button(labels.openBaseLib, data.package.baseLibRelease, false));
-    if (local) actions.appendChild(button(labels.openRelease, data.package.releasesPage, false));
-    actions.appendChild(button(labels.openRepo, data.package.repository, false));
-    pkg.appendChild(actions);
+
+    // Group 1: Prerequisite files downloads
+    const requiredGroup = el("div", "download-group required-group");
+    requiredGroup.appendChild(el("h3", "download-group-title", labels.requiredFilesTitle || "第一步：下载必要文件 (Required Files)"));
+    const requiredActions = el("div", "download-actions");
+    const downloadLink = button(labels.download, primaryDownloadUrl, true);
+    requiredActions.appendChild(downloadLink);
+    requiredActions.appendChild(button(labels.openBaseLib, data.package.baseLibRelease, true));
+    requiredGroup.appendChild(requiredActions);
+    pkg.appendChild(requiredGroup);
+
+    // Group 2: Optional resources
+    const optionalGroup = el("div", "download-group");
+    optionalGroup.appendChild(el("h3", "download-group-title", labels.optionalFilesTitle || "辅助与源代码 (Optional Links)"));
+    const optionalActions = el("div", "download-actions");
+    const releaseLink = button(labels.openRelease, data.package.releasesPage, false);
+    optionalActions.appendChild(releaseLink);
+    optionalActions.appendChild(button(labels.openRepo, data.package.repository, false));
+    optionalGroup.appendChild(optionalActions);
+    pkg.appendChild(optionalGroup);
+
     const meta = el("dl", "meta");
     for (const [key, value] of data.package.meta) {
       meta.appendChild(el("dt", "", key));
-      meta.appendChild(el("dd", key === "\u54c8\u5e0c" ? "hash" : "", value));
+      const isHash = key === "哈希" || key === "Hash" || key === "\u54c8\u5e0c";
+      const dd = el("dd", isHash ? "hash-container" : "");
+      dd.dataset.metaField = packageMetaField(key);
+      if (isHash) {
+        const hashSpan = el("span", "hash", value);
+        const copyBtn = el("button", "copy-hash-btn", labels.copy || "复制");
+        copyBtn.type = "button";
+        copyBtn.addEventListener("click", () => {
+          navigator.clipboard.writeText(hashSpan.textContent).then(() => {
+            copyBtn.textContent = labels.copied || "已复制";
+            copyBtn.classList.add("copied");
+            setTimeout(() => {
+              copyBtn.textContent = labels.copy || "复制";
+              copyBtn.classList.remove("copied");
+            }, 1500);
+          });
+        });
+        dd.appendChild(hashSpan);
+        dd.appendChild(copyBtn);
+      } else {
+        dd.textContent = value;
+      }
+      meta.appendChild(dd);
     }
     pkg.appendChild(meta);
+    hydrateLatestRelease(downloadLink, releaseLink, meta);
 
     grid.appendChild(pkg);
     grid.appendChild(listPanel(labels.steps, data.installSteps));
     grid.appendChild(listPanel(labels.requirements, data.requirements));
+    app.appendChild(grid);
+  }
+
+  async function hydrateLatestRelease(downloadLink, releaseLink, meta) {
+    if (!data.package.latestReleaseApi) return;
+
+    try {
+      const response = await fetch(data.package.latestReleaseApi, {
+        headers: { Accept: "application/vnd.github+json" },
+        cache: "no-cache"
+      });
+      if (!response.ok) return;
+
+      const release = await response.json();
+      const asset = chooseSpirePlusAsset(release.assets || []);
+      if (!asset?.browser_download_url) return;
+
+      downloadLink.href = asset.browser_download_url;
+      if (release.html_url) releaseLink.href = release.html_url;
+      setPackageMeta(meta, "file", asset.name);
+      setPackageMeta(meta, "version", release.tag_name || release.name || "");
+      setPackageMeta(meta, "size", formatAssetSize(asset.size));
+
+      const hash = extractSha256(release.body || "");
+      if (hash) setPackageMeta(meta, "hash", hash.toUpperCase());
+    } catch {
+      // Static fallback links remain valid when GitHub API is unavailable or rate-limited.
+    }
+  }
+
+  function chooseSpirePlusAsset(assets) {
+    return assets.find(asset => /^SpirePlus.*\.zip$/i.test(asset.name || "")) ||
+      assets.find(asset => /spire.*plus.*\.zip$/i.test(asset.name || ""));
+  }
+
+  function packageMetaField(key) {
+    const value = String(key || "").toLowerCase();
+    if (key.includes("文件") || value === "file") return "file";
+    if (key.includes("版本") || value === "version") return "version";
+    if (key.includes("体积") || value === "size") return "size";
+    if (key.includes("哈希") || value === "hash") return "hash";
+    return "";
+  }
+
+  function setPackageMeta(meta, field, value) {
+    if (!value) return;
+    const node = meta.querySelector(`[data-meta-field="${field}"]`);
+    const hash = node?.querySelector(".hash");
+    if (hash) hash.textContent = value;
+    else if (node) node.textContent = value;
+  }
+
+  function formatAssetSize(size) {
+    if (!Number.isFinite(size)) return "";
+    return lang === "en" ? `${size.toLocaleString("en-US")} bytes` : `${size.toLocaleString("zh-CN")} 字节`;
+  }
+
+  function extractSha256(textValue) {
+    return String(textValue || "").match(/\b[A-Fa-f0-9]{64}\b/)?.[0] || "";
+  }
+
+  function renderAbout() {
+    app.appendChild(renderPageHead(labels.aboutTitle, labels.aboutLead));
+
+    const grid = el("section", "install-grid about-grid");
+    const intro = panel(labels.introTitle);
+    intro.appendChild(el("p", "", labels.introCopy));
+    grid.appendChild(intro);
     grid.appendChild(listPanel(labels.assetPolicy, data.assetPolicy));
     app.appendChild(grid);
   }
@@ -522,11 +663,33 @@
   }
 
   window.addEventListener("message", (event) => {
-    if (event.origin !== location.origin || event.data?.type !== "spire-plus-forum-height") return;
-    const frame = document.getElementById("forumFrame");
-    if (!frame) return;
-    const minimum = Math.max(640, window.innerHeight - header.getBoundingClientRect().height);
-    frame.style.height = `${Math.max(minimum, Number(event.data.height) || 0)}px`;
+    if (event.origin !== location.origin) return;
+    if (event.data?.type === "spire-plus-forum-height") {
+      const frame = document.getElementById("forumFrame");
+      if (!frame) return;
+      const minimum = Math.max(640, window.innerHeight - header.getBoundingClientRect().height);
+      frame.style.height = `${Math.max(minimum, Number(event.data.height) || 0)}px`;
+    } else if (event.data?.type === "spire-plus-forum-route") {
+      const nextRoute = event.data.route;
+      const url = new URL(location.href);
+      if (nextRoute && nextRoute !== "/") {
+        url.searchParams.set("forumRoute", nextRoute);
+      } else {
+        url.searchParams.delete("forumRoute");
+      }
+      history.replaceState(null, "", url.toString());
+
+      const frame = document.getElementById("forumFrame");
+      if (frame) {
+        const headerOffset = header.getBoundingClientRect().height || 58;
+        const elementPosition = frame.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - headerOffset - 16;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      }
+    }
   });
 
   function render() {
@@ -535,6 +698,7 @@
       current === "install" ? labels.navInstall :
       current === "forum" ? labels.navForum :
       current === "issues" ? labels.navIssues :
+      current === "about" ? labels.navAbout :
       labels.navUpdates
     );
     app.replaceChildren();
@@ -542,6 +706,7 @@
     if (current === "install") renderInstall();
     else if (current === "forum") renderForum();
     else if (current === "issues") renderIssues();
+    else if (current === "about") renderAbout();
     else renderUpdates();
     window.scrollTo({ top: 0, behavior: "instant" });
   }
