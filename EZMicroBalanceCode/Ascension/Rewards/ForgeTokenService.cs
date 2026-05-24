@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class ForgeTokenService
 {
@@ -21,14 +21,14 @@ internal static partial class ForgeTokenService
             {
                 await PlayerCmd.GainGold(DuplicateTokenGoldAmount, player);
                 MainFile.Logger.Info(
-                    $"[EZMicroBalance] Ascension A12 applied: duplicate Forge Token converted to {DuplicateTokenGoldAmount} gold for player {combatState.RunState.GetPlayerSlotIndex(player)}.");
+                    $"[Spire Plus] Ascension A12 applied: duplicate Forge Token converted to {DuplicateTokenGoldAmount} gold for player {combatState.RunState.GetPlayerSlotIndex(player)}.");
                 continue;
             }
 
             AscensionSavedStateFields.ForgeTokenHeld[player] = true;
             await EnsureTokenRelic(player);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A12 applied: Forge Token granted to player {combatState.RunState.GetPlayerSlotIndex(player)}.");
+                $"[Spire Plus] Ascension A12 applied: Forge Token granted to player {combatState.RunState.GetPlayerSlotIndex(player)}.");
         }
     }
 
@@ -47,14 +47,14 @@ internal static partial class ForgeTokenService
             CardCmd.Upgrade(upgradeTarget, CardPreviewStyle.HorizontalLayout);
             await RemoveTokenRelics(player);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A12 applied: Forge Token upgraded {upgradeTarget.Id.Entry} after rest heal.");
+                $"[Spire Plus] Ascension A12 applied: Forge Token upgraded {upgradeTarget.Id.Entry} after rest heal.");
             return;
         }
 
         await CreatureCmd.Heal(player.Creature, NoUpgradeFallbackHealAmount);
         await RemoveTokenRelics(player);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A12 applied: Forge Token fallback healed {NoUpgradeFallbackHealAmount} after rest heal because no common/uncommon upgrade target existed.");
+            $"[Spire Plus] Ascension A12 applied: Forge Token fallback healed {NoUpgradeFallbackHealAmount} after rest heal because no common/uncommon upgrade target existed.");
     }
 
     public static async Task ApplyAfterRestSiteSmith(Player player)
@@ -69,7 +69,7 @@ internal static partial class ForgeTokenService
         await CreatureCmd.Heal(player.Creature, SmithHealAmount);
         await RemoveTokenRelics(player);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A12 applied: Forge Token healed {SmithHealAmount} after smith.");
+            $"[Spire Plus] Ascension A12 applied: Forge Token healed {SmithHealAmount} after smith.");
     }
 
     public static IReadOnlyList<LocString> ModifyExtraRestSiteHealText(

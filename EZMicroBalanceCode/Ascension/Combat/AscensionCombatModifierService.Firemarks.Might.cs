@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -8,7 +8,7 @@ internal static partial class AscensionCombatModifierService
         await PowerCmd.Apply<MightMarkFiremarkPower>(new BlockingPlayerChoiceContext(), host, strength, host, null);
         await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), host, strength, host, null);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A12 applied: Might firemark host {host.Name} gained {strength} Strength.");
+            $"[Spire Plus] Ascension A12 applied: Might firemark host {host.Name} gained {strength} Strength.");
     }
 
     private static async Task ApplyMightOverflow(CombatState combatState, AscensionCombatTracker tracker)
@@ -46,6 +46,6 @@ internal static partial class AscensionCombatModifierService
         await PowerCmd.Remove(host.GetPower<FiremarkHeatPower>());
         await PowerCmd.Apply<FiremarkHeatStrikePower>(new BlockingPlayerChoiceContext(), host, tracker.FiremarkBaseAmount, host, null);
         await RefreshEnemyIntent(host);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Might firemark Heat is full; next attack is empowered.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A12 applied: Might firemark Heat is full; next attack is empowered.");
     }
 }

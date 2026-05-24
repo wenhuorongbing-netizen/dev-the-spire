@@ -43,7 +43,7 @@ internal sealed class HolyDazeBossSealMarkerPower : BossSealMarkerPower
     public override List<(string, string)>? Localization => Loc(
         "专属能力：圣昏",
         "首次眩晕期间，每次受击最多受到[blue]1[/blue]点伤害。眩晕结束后，A19获得[blue]1[/blue]点[gold]力量[/gold]；[gold]烙印形态[/gold]获得[blue]2[/blue]点。",
-        "首次眩晕会限制受击，并在结束后加力量。",
+        "首次眩晕限制受击，并在结束后获得力量。",
         "Dedicated Ability: Holy Daze",
         "During the first stun, each hit deals at most [blue]1[/blue] damage. When the stun ends, A19 gains [blue]1[/blue] [gold]Strength[/gold]; [gold]Branded Form[/gold] gains [blue]2[/blue].",
         "The first stun caps hits and later grants Strength.");
@@ -55,7 +55,7 @@ internal sealed class MartyrOathBossSealMarkerPower : BossSealMarkerPower
 
     public override List<(string, string)>? Localization => Loc(
         "专属能力：殉誓",
-        "亲族随从死亡时，亲族祭司获得[gold]殉誓[/gold]，最多[blue]2[/blue]枚。下一次施加负面状态时，每枚殉誓使持续时间+[blue]1[/blue]；下一次攻击时，每枚殉誓使每次命中额外造成[blue]3[/blue]点伤害。[gold]烙印形态[/gold]改为每枚[blue]4[/blue]点；同一回合两名随从死亡时，祭司获得[blue]1[/blue]层[gold]人工制品[/gold]。",
+        "亲族随从死亡时，亲族祭司获得[gold]殉誓[/gold]，最多[blue]2[/blue]枚。下一次施加负面状态时，每枚使持续时间+[blue]1[/blue]；下一次攻击时，每次命中每枚额外造成[blue]3[/blue]点伤害。[gold]烙印形态[/gold]改为每枚[blue]4[/blue]点；若同一回合两名随从死亡，祭司获得[blue]1[/blue]层[gold]人工制品[/gold]。",
         "随从死亡会强化祭司的下一次负面状态或攻击。",
         "Dedicated Ability: Martyr Oath",
         "When a Kin follower dies, Kin Priest gains [gold]Martyr Oath[/gold], up to [blue]2[/blue]. The next debuff lasts [blue]1[/blue] longer per Oath; each hit of the next attack deals [blue]3[/blue] extra damage per Oath. [gold]Branded Form[/gold] changes the hit bonus to [blue]4[/blue], and if both followers die in one turn the Priest gains [blue]1[/blue] [gold]Artifact[/gold].",
@@ -68,7 +68,7 @@ internal sealed class InkReturnBossSealMarkerPower : BossSealMarkerPower
 
     public override List<(string, string)>? Localization => Loc(
         "专属能力：墨返",
-        "[gold]滑溜[/gold]第一次被完全移除后，下个敌方回合开始时返还一部分。A19返还清除量的[blue]25%[/blue]，至少[blue]3[/blue]、最多[blue]12[/blue]层。[gold]烙印形态[/gold]返还[blue]35%[/blue]，至少[blue]5[/blue]、最多[blue]18[/blue]层。每场触发[blue]1[/blue]次。",
+        "[gold]滑溜[/gold]首次被完全移除后，下个敌方回合开始时返还一部分。A19返还清除量的[blue]25%[/blue]，至少[blue]3[/blue]层，最多[blue]12[/blue]层。[gold]烙印形态[/gold]返还[blue]35%[/blue]，至少[blue]5[/blue]层，最多[blue]18[/blue]层。每场触发[blue]1[/blue]次。",
         "首次清除滑溜后会返还一次。",
         "Dedicated Ability: Ink Return",
         "The first time [gold]Slippery[/gold] is fully removed, part of it returns next enemy turn. A19 restores [blue]25%[/blue] of the cleared amount, min [blue]3[/blue], max [blue]12[/blue]. [gold]Branded Form[/gold] restores [blue]35%[/blue], min [blue]5[/blue], max [blue]18[/blue]. Triggers once.",
@@ -81,7 +81,7 @@ internal sealed class StartledShellBossSealMarkerPower : BossSealMarkerPower
 
     public override List<(string, string)>? Localization => Loc(
         "专属能力：多重护甲苏醒",
-        "乐加维林族母被提前打醒时获得[blue]4[/blue]层[gold]多重护甲[/gold]，自然醒来时获得[blue]8[/blue]层。第一次[gold]摄魂[/gold]后，当前多重护甲减少一半。[gold]烙印形态[/gold]改为提前打醒[blue]6[/blue]层、自然醒来[blue]10[/blue]层，摄魂只减少三分之一。多人模式按首领战规则缩放最终层数。",
+        "乐加维林族母被提前打醒时获得[blue]4[/blue]层[gold]多重护甲[/gold]；自然醒来时获得[blue]8[/blue]层。第一次[gold]摄魂[/gold]后，当前多重护甲减少一半。[gold]烙印形态[/gold]改为提前打醒[blue]6[/blue]层、自然醒来[blue]10[/blue]层，摄魂只减少三分之一。多人模式按首领战规则缩放最终层数。",
         "醒来时获得多重护甲；第一次摄魂会削减它。",
         "Dedicated Ability: Plating Wake",
         "Lagavulin Matriarch gains [blue]4[/blue] [gold]Plating[/gold] when woken early, or [blue]8[/blue] when it wakes naturally. After the first [gold]Soul Siphon[/gold], current Plating is halved. [gold]Branded Form[/gold] changes this to [blue]6[/blue] if woken early or [blue]10[/blue] if it wakes naturally, and only removes one third. Multiplayer uses the boss Plating scaling.",
@@ -120,7 +120,7 @@ internal sealed class MisalignedShellBossSealMarkerPower : BossSealMarkerPower
 
     public override List<(string, string)>? Localization => Loc(
         "专属能力：错壳校准",
-        "玩家回合结束时，检查两只爪的生命百分比。若差距至少[blue]35%[/blue]，生命百分比较高的爪获得[blue]1[/blue]层校准。校准达到[blue]2[/blue]层时，该爪下一次攻击每次命中额外造成[blue]4[/blue]点伤害；每只爪每场最多触发[blue]1[/blue]次。[gold]烙印形态[/gold]改为[blue]30%[/blue]差距和每次命中[blue]5[/blue]点伤害。",
+        "玩家回合结束时，检查两只爪的生命百分比。若差距至少[blue]35%[/blue]，生命百分比较高的爪获得[blue]1[/blue]层校准。校准达到[blue]2[/blue]层时，该爪下一次攻击每次命中额外造成[blue]4[/blue]点伤害；每只爪每场最多触发[blue]1[/blue]次。[gold]烙印形态[/gold]改为[blue]30%[/blue]差距和每次命中+[blue]5[/blue]点伤害。",
         "两只爪血线差距过大时，高血爪会校准攻击。",
         "Dedicated Ability: Claw Calibration",
         "At player turn end, compare both claws' HP percentages. If the gap is at least [blue]35%[/blue], the higher-HP claw gains [blue]1[/blue] Calibration. At [blue]2[/blue] Calibration, each hit of its next attack deals [blue]4[/blue] extra damage; each claw can trigger once per combat. [gold]Branded Form[/gold] changes this to a [blue]30%[/blue] gap and [blue]5[/blue] extra damage per hit.",
@@ -202,7 +202,7 @@ internal sealed class MartyrOathPower : BossSealPower
 
     public override List<(string, string)>? Localization => Loc(
         "殉誓",
-        "下一次由亲族祭司施加的[gold]负面状态[/gold]持续时间+[blue]{Amount}[/blue]，然后移除此效果。若祭司先攻击，则殉誓改为强化该次攻击。",
+        "亲族祭司施加的下一次[gold]负面状态[/gold]持续时间+[blue]{Amount}[/blue]，之后移除此效果。若祭司先攻击，殉誓会改为强化那次攻击。",
         "下一次负面状态持续更久。",
         "Martyr Oath",
         "The next [gold]debuff[/gold] applied by Kin Priest lasts [blue]{Amount}[/blue] longer, then this is removed. If the Priest attacks first, the Oath empowers that attack instead.",
@@ -241,7 +241,7 @@ internal sealed class MartyrOathStrikePower : BossSealPower
 
     public override List<(string, string)>? Localization => Loc(
         "殉誓攻击",
-        "下一次攻击每次命中额外造成[blue]{Amount}[/blue]点伤害，然后移除此效果。",
+        "下一次攻击每次命中额外造成[blue]{Amount}[/blue]点伤害，之后移除此效果。",
         "下一次攻击每次命中额外造成伤害。",
         "Martyr Strike",
         "Each hit of the next attack deals [blue]{Amount}[/blue] extra damage, then this is removed.",
@@ -287,7 +287,7 @@ internal sealed class KaiserCalibrationStrikePower : BossSealPower
 
     public override List<(string, string)>? Localization => Loc(
         "校准攻击",
-        "下一次攻击每次命中额外造成[blue]{Amount}[/blue]点伤害，然后移除此效果。",
+        "下一次攻击每次命中额外造成[blue]{Amount}[/blue]点伤害，之后移除此效果。",
         "下一次攻击每次命中额外造成伤害。",
         "Calibrated Strike",
         "Each hit of the next attack deals [blue]{Amount}[/blue] extra damage, then this is removed.",
@@ -317,7 +317,7 @@ internal sealed class DeepThoughtPower : BossSealPower
 
     public override List<(string, string)>? Localization => Loc(
         "深思",
-        "下一次知识诅咒会附带额外代价。每层：崩解触发时额外造成[blue]1[/blue]点伤害；心智腐烂洗入[blue]1[/blue]张[gold]晕眩[/gold]。懒惰使本回合下一张牌费用+[blue]1[/blue]；枯竭使本回合失去[blue]1[/blue]点能量。[gold]烙印形态[/gold]下，懒惰和枯竭的附加代价每次知识诅咒最多结算一次。",
+        "下一次知识诅咒会附带额外代价。每层：崩解触发时额外造成[blue]1[/blue]点伤害；心智腐烂洗入[blue]1[/blue]张[gold]晕眩[/gold]；懒惰使本回合下一张牌费用+[blue]1[/blue]；枯竭使本回合失去[blue]1[/blue]点能量。[gold]烙印形态[/gold]下，懒惰和枯竭的附加代价每次知识诅咒最多结算一次。",
         "下一次知识诅咒更重。",
         "Deep Thought",
         "The next Knowledge curse adds a side cost. Per stack: Disintegration deals +[blue]1[/blue] when it triggers; Mind Rot shuffles [blue]1[/blue] [gold]Dazed[/gold] into discard. Sloth makes your next card this turn cost +[blue]1[/blue]; Waste Away makes you lose [blue]1[/blue] [gold]Energy[/gold] this turn. In [gold]Branded Form[/gold], Sloth and Waste Away side costs resolve at most once per Knowledge curse.",
@@ -399,7 +399,7 @@ internal sealed class DeepThoughtCostTaxPower : BossSealPower
 
     public override List<(string, string)>? Localization => Loc(
         "深思代价",
-        "本回合下一张牌费用+[blue]{Amount}[/blue]，然后移除此效果。",
+        "本回合下一张牌费用+[blue]{Amount}[/blue]，之后移除此效果。",
         "下一张牌费用提高。",
         "Deep Thought Cost",
         "The next card you play this turn costs +[blue]{Amount}[/blue], then this is removed.",
@@ -473,7 +473,7 @@ internal sealed class AeonglassLaserEchoPower : BossSealPower
 
     public override List<(string, string)>? Localization => Loc(
         "时砂回流",
-        "下一次眼部激光额外命中[blue]1[/blue]次，然后移除此效果。",
+        "下一次眼部激光额外命中[blue]1[/blue]次，之后移除此效果。",
         "下一次眼部激光额外命中。",
         "Time Sand Reflow",
         "The next Eye Lasers hit [blue]1[/blue] extra time, then this is removed.",
@@ -503,7 +503,7 @@ internal sealed class AeonglassPendingWitherPower : BossSealPower
 
     public override List<(string, string)>? Localization => Loc(
         "待回流枯萎",
-        "下一次[gold]加大力度[/gold]额外加入[blue]{Amount}[/blue]张[gold]枯萎[/gold]，然后移除此效果。",
+        "下一次[gold]加大力度[/gold]额外加入[blue]{Amount}[/blue]张[gold]枯萎[/gold]，之后移除此效果。",
         "下一次加大力度加入更多枯萎。",
         "Pending Wither",
         "The next [gold]Increasing Intensity[/gold] adds [blue]{Amount}[/blue] extra [gold]Wither[/gold], then this is removed.",
@@ -541,7 +541,7 @@ internal sealed class TestSubjectSkillAdaptationPower : TestSubjectSamplePower
     public override List<(string, string)>? Localization => Loc(
         "技能适应",
         "本阶段第一次在单回合打出第[blue]3[/blue]张技能牌时，实验体获得[blue]1[/blue]点[gold]力量[/gold]。",
-        "第3张技能会给实验体力量。",
+        "第3张技能牌会给实验体力量。",
         "Skill Adaptation",
         "The first time [blue]3[/blue] Skills are played in one turn this phase, Test Subject gains [blue]1[/blue] [gold]Strength[/gold].",
         "The third Skill gives Test Subject Strength.");
@@ -581,7 +581,7 @@ internal sealed class TestSubjectAttackAdaptationPower : TestSubjectSamplePower
     public override List<(string, string)>? Localization => Loc(
         "攻击适应",
         "本阶段第一次在单回合打出第[blue]4[/blue]张攻击牌时，实验体获得[blue]1[/blue]层[gold]人工制品[/gold]。",
-        "第4张攻击会给实验体人工制品。",
+        "第4张攻击牌会给实验体人工制品。",
         "Attack Adaptation",
         "The first time [blue]4[/blue] Attacks are played in one turn this phase, Test Subject gains [blue]1[/blue] [gold]Artifact[/gold].",
         "The fourth Attack gives Test Subject Artifact.");
@@ -664,7 +664,7 @@ internal sealed class TestSubjectContaminatedSamplePower : TestSubjectSamplePowe
 
     public override List<(string, string)>? Localization => Loc(
         "污染样本",
-        "本阶段第一次洗牌时，将[blue]1[/blue]张[gold]晕眩[/gold]加入触发玩家的弃牌堆，然后移除此效果。",
+        "本阶段第一次洗牌时，将[blue]1[/blue]张[gold]晕眩[/gold]加入触发玩家的弃牌堆，之后移除此效果。",
         "首次洗牌会加入晕眩。",
         "Contaminated Sample",
         "The first shuffle this phase adds [blue]1[/blue] [gold]Dazed[/gold] to the triggering player's discard pile, then this is removed.",

@@ -1,4 +1,4 @@
-# Ancient Expansion v2.2 Implementation Plan
+﻿# Ancient Expansion v2.2 Implementation Plan
 
 Status: Urda v2.2 is source-complete/default-on with ten blessing ids, Morvi v2.2 is source-complete/default-on for direct private-beta testing, Lotha is source-complete/default-on for direct testing, and Vakuu fight is hidden by default with a dedicated source enemy/scene plus Contract, Stolen Vault, and Blood Debt pressure. All remain live-pending.
 
@@ -19,28 +19,28 @@ Current hard boundaries for claims:
 
 - Do not expand Lotha beyond the current eight-blessing test slice until live UI/gameplay/save-load evidence exists.
 - Do not expose or expand Vakuu fight beyond the current hidden opt-in single-player slice until live UI/gameplay/save-load/failure evidence proves the dedicated source enemy/scene path is stable.
-- Do not expand Urda beyond the current ten v2.2 blessing ids in this cycle.
+- Do not expand Urda beyond the current eleven blessing ids in this cycle.
 - Morvi is default-on in the current private-beta test slice with all eight v2.2 blessing ids, event art, option/icon art, English/zhs localization, hover powers, disable gates, force-Ancient gates, and force-blessing gates. Live gameplay, save/load, and co-op evidence remain pending.
 - Do not change Ascension, Rootblight, boss dedicated abilities, Fission, or multiplayer gameplay in this v2.2 Ancient pass.
 - Publish/package unless resource/localization/package inputs changed and the required build succeeds first.
 
 Allowed current-pass Urda work:
 
-- Fix source-level bugs in the ten active Urda blessings.
+- Fix source-level bugs in the eleven active Urda blessings.
 - Add source/localization/docs guards for those ten blessings.
 - Keep all live gameplay and save/load verification rows open until actually tested.
 
 Urda current status:
 
-- Urda appears in Act 1 by default unless `EZMB_DISABLE_URDA=1` is set.
-- `EZMB_FORCE_ANCIENT=URDA` and `EZMB_FORCE_URDA_BLESSING` support focused testing.
-- All ten v2.2 blessing ids are implemented with source guards.
+- Urda appears in Act 1 by default unless `SPIREPLUS_DISABLE_URDA=1` is set. Legacy `EZMB_DISABLE_URDA=1` still works.
+- `SPIREPLUS_FORCE_ANCIENT=URDA` and `SPIREPLUS_FORCE_URDA_BLESSING` support focused testing. Legacy `EZMB_*` aliases still work.
+- All eleven Urda blessing ids are implemented with source guards.
 - Source-safe deviations are documented in the Urda manual checklist and work log: Trial Branch uses a simple 4-card selection grid; Shallow-Root Relic has deterministic Act 2 removal/refund instead of an unproven settlement choice; Rooted Route auto-marks a reachable normal-combat node without map graph mutation; Root-Sight uses the Root Eyes relic to choose a future reachable Monster, Unknown, or Elite room; Seed Bank stores by consuming the reward.
 
 Morvi current status:
 
-- Morvi appears in Act 2 by default unless `EZMB_DISABLE_MORVI=1` or `SPIREPLUS_DISABLE_MORVI=1` is set.
-- `EZMB_FORCE_ANCIENT=MORVI` / `SPIREPLUS_FORCE_ANCIENT=MORVI` and `EZMB_FORCE_MORVI_BLESSING` / `SPIREPLUS_FORCE_MORVI_BLESSING` support focused testing.
+- Morvi appears in Act 2 by default unless `SPIREPLUS_DISABLE_MORVI=1` is set. Legacy `EZMB_DISABLE_MORVI=1` still works.
+- `SPIREPLUS_FORCE_ANCIENT=MORVI` and `SPIREPLUS_FORCE_MORVI_BLESSING` support focused testing. Legacy `EZMB_*` aliases still work.
 - All eight v2.2 blessing ids are implemented with source guards.
 - Source-safe deviations are documented in the manual checklist and work log: Forbidden Loan auto-settles after the Act 2 boss instead of opening a post-boss choice; Red Ink Overdraft uses a generated 0-cost temporary action card instead of a native combat button, skips generation when the hand is full, verifies the generated card actually lands in hand, and uses nonlethal HP fallback for unpaid debt; Open-Book sealed cards are held through the exhaust pile and return on turn 3 only if hand space allows; Blueprint Proof uses reversible source upgrade/downgrade commands where possible.
 
@@ -50,7 +50,7 @@ Lotha current status:
 
 Vakuu current status:
 
-- Local Core source supports a hidden opt-in single-player slice that enters a custom `RoomType.Monster` combat from Vakuu with normal rewards disabled, resumes the parent event on victory, and offers extra non-Vakuu Act 3 Ancient blessing choices based on how many Stolen Vault locks the player breaks. The transition is awaited, normal combat rewards are disabled, a no-unclaimed-blessings fallback prevents an empty victory state, the parent event `Node` is cleared before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips normal combat rewards and the duplicate reconstructed-parent Ancient heal before resuming the parent event. The fight now offers 0-cost Contract choices after the normal hand draw on turns 1, 3, and 5; broken locks create 50 loot Gold each, Blood Debt removes 15 loot Gold per stack at victory, and unpaid debt costs nonlethal HP. Cash Out is offered after a lock break, including a hand-full immediate choice fallback. The slice requires `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, or a force-fight gate, and uses a dedicated Vakuu monster plus custom encounter scene. Save/load during the parent-linked child-combat flow remains a runtime risk; live UI/gameplay/save-load/failure and co-op evidence remain pending.
+- Local Core source supports a hidden opt-in single-player slice that enters a custom `RoomType.Monster` combat from Vakuu with normal rewards disabled, resumes the parent event on victory, and offers extra non-Vakuu Act 3 Ancient blessing choices based on how many Stolen Vault locks the player breaks. The transition is awaited, normal combat rewards are disabled, a no-unclaimed-blessings fallback prevents an empty victory state, the parent event `Node` is cleared before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips normal combat rewards and the duplicate reconstructed-parent Ancient heal before resuming the parent event. The fight now offers 0-cost Contract choices after the normal hand draw on turns 1, 3, and 5; broken locks create 50 loot Gold each, Blood Debt removes 15 loot Gold per stack at victory, and unpaid debt costs nonlethal HP. Cash Out is offered after a lock break, including a hand-full immediate choice fallback. The slice requires preferred `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, a force-fight gate, or legacy `EZMB_ENABLE_VAKUU_FIGHT=1`, and uses a dedicated Vakuu monster plus custom encounter scene. Save/load during the parent-linked child-combat flow remains a runtime risk; live UI/gameplay/save-load/failure and co-op evidence remain pending.
 
 ## 1.5 Next Full-Implementation Track
 
@@ -75,7 +75,7 @@ The next development pass should not create more audit files before improving th
 4. Live-verify Morvi's already promoted source slice:
    - all eight v2.2 Morvi blessings, gates, state, localization, option art, and save/load stance are source-present;
    - preserve Power-card safety and nonrecursive extra-play rules while replacing temporary art.
-5. Live-verify Urda's ten source-backed blessings and tighten any source-safe deviation that runtime evidence proves can support richer UI.
+5. Live-verify Urda's eleven source-backed blessings and tighten any source-safe deviation that runtime evidence proves can support richer UI.
 6. Live-verify Vakuu fight failure/victory clarity, Contract hand injection, lock breaks, Blood Debt scaling, bonus Gold, and victory choice count behavior.
 7. Refresh build, publish, package, and then live/manual validation evidence before any release-ready claim.
 
@@ -99,7 +99,7 @@ Each blessing implementation packet should contain:
 1. Fix visible art/text regressions first, because the user is testing the current build and unclear UI text blocks meaningful feedback.
 2. Live-verify Lotha against the documented source-safe v2.2 behavior, including the Death Reprieve timing deviation.
 3. Live-verify Morvi's full source slice, including Red Ink/Open Book restore-sensitive rows and Debt Settlement nonlethal HP fallback.
-4. Live-verify Urda's ten-blessing source slice, including option icon sizing and hover readability.
+4. Live-verify Urda's eleven-blessing source slice, including option icon sizing and hover readability.
 5. Revisit Vakuu/Contract/power art only if live screenshots show readability or routing problems.
 6. Run live/save-load/co-op/manual validation and update release docs with actual evidence.
 
@@ -113,3 +113,4 @@ A future feature is not complete until all of these are true:
 - Manual checklist rows are updated truthfully.
 - Runtime logs show no related exception.
 - Release docs do not overclaim the feature.
+

@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 
@@ -18,7 +18,7 @@ internal static partial class AscensionMapService
         {
             var evidence = GetA11GeometryEvidence(adjustedMap);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A11 source-boundary applied: ActModel.CreateMap returned adjusted map; actIndex={actIndex}; columns={adjustedMap.GetColumnCount()}/{GetA11TargetColumnCount()}; rows={adjustedMap.GetRowCount()}/{GetA11TargetRowCount(runState, actIndex)}; insertedColumnRoute={evidence.HasInsertedColumnRouteChoice}; originalRoutePreserved={evidence.HasStartToBossRouteAvoidingInsertedColumn}; insertedColumnRouteChoices={evidence.InsertedColumnRouteChoiceCount}.");
+                $"[Spire Plus] Ascension A11 source-boundary applied: ActModel.CreateMap returned adjusted map; actIndex={actIndex}; columns={adjustedMap.GetColumnCount()}/{GetA11TargetColumnCount()}; rows={adjustedMap.GetRowCount()}/{GetA11TargetRowCount(runState, actIndex)}; insertedColumnRoute={evidence.HasInsertedColumnRouteChoice}; originalRoutePreserved={evidence.HasStartToBossRouteAvoidingInsertedColumn}; insertedColumnRouteChoices={evidence.InsertedColumnRouteChoiceCount}.");
             return adjustedMap;
         }
 
@@ -35,7 +35,7 @@ internal static partial class AscensionMapService
             {
                 var evidence = GetA11GeometryEvidence(adjustedMap);
                 MainFile.Logger.Info(
-                    $"[EZMicroBalance] Ascension A11 applied: expanded map width by {AscensionFeatureGate.A11ExtraMapColumns} column with a reachable optional route and inserted {GetA11ExtraRouteRowsForAct(actIndex)} late route row(s); actIndex={actIndex}; columns={adjustedMap.GetColumnCount()}/{GetA11TargetColumnCount()}; rows={adjustedMap.GetRowCount()}/{GetA11TargetRowCount(runState, actIndex)}; insertedColumnRoute={evidence.HasInsertedColumnRouteChoice}; originalRoutePreserved={evidence.HasStartToBossRouteAvoidingInsertedColumn}; insertedColumnRouteChoices={evidence.InsertedColumnRouteChoiceCount}.");
+                    $"[Spire Plus] Ascension A11 applied: expanded map width by {AscensionFeatureGate.A11ExtraMapColumns} column with a reachable optional route and inserted {GetA11ExtraRouteRowsForAct(actIndex)} late route row(s); actIndex={actIndex}; columns={adjustedMap.GetColumnCount()}/{GetA11TargetColumnCount()}; rows={adjustedMap.GetRowCount()}/{GetA11TargetRowCount(runState, actIndex)}; insertedColumnRoute={evidence.HasInsertedColumnRouteChoice}; originalRoutePreserved={evidence.HasStartToBossRouteAvoidingInsertedColumn}; insertedColumnRouteChoices={evidence.InsertedColumnRouteChoiceCount}.");
                 map = adjustedMap;
             }
             else
@@ -50,13 +50,13 @@ internal static partial class AscensionMapService
             if (branchedMap != map)
             {
                 MainFile.Logger.Info(
-                    $"[EZMicroBalance] Ascension A17 applied: inserted one optional {DeepBranchMinLength}-{DeepBranchMaxLength} node Deep Branch with safe-route reconnect; actIndex={actIndex}; columns={branchedMap.GetColumnCount()}; rows={branchedMap.GetRowCount()}.");
+                    $"[Spire Plus] Ascension A17 applied: inserted one optional {DeepBranchMinLength}-{DeepBranchMaxLength} node Deep Branch with safe-route reconnect; actIndex={actIndex}; columns={branchedMap.GetColumnCount()}; rows={branchedMap.GetRowCount()}.");
                 map = branchedMap;
             }
             else
             {
                 MainFile.Logger.Info(
-                    $"[EZMicroBalance] Ascension A17 gate active: Deep Branch already present or unsupported for safe insertion; actIndex={actIndex}; columns={map.GetColumnCount()}; rows={map.GetRowCount()}.");
+                    $"[Spire Plus] Ascension A17 gate active: Deep Branch already present or unsupported for safe insertion; actIndex={actIndex}; columns={map.GetColumnCount()}; rows={map.GetRowCount()}.");
             }
         }
 

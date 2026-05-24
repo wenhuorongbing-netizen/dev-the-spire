@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 internal static partial class LothaBlessingService
 {
@@ -48,7 +48,7 @@ internal static partial class LothaBlessingService
                 DeferredVerdictStacks,
                 player.Creature,
                 null);
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Deferred Verdict granted draw 4, Energy 4, and player-owned Verdict 3.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Deferred Verdict granted draw 4, Energy 4, and player-owned Verdict 3.");
         }
         else if (selectedBlessing == LothaBlessingIds.DeferredVerdict &&
             combatState.DeferredVerdictGranted &&

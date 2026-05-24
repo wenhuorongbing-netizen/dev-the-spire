@@ -22,6 +22,8 @@ internal static class UrdaAssetPaths
 
     public static string ShallowRootRelicOptionIcon => $"{MainFile.ResPath}/images/ancients/urda/options/urda_shallow_root_relic.png";
 
+    public static string EliteRootOptionIcon => $"{MainFile.ResPath}/images/ancients/urda/options/urda_elite_root.png";
+
     public static string RootedRouteOptionIcon => $"{MainFile.ResPath}/images/ancients/urda/options/urda_rooted_route.png";
 
     public static string AfterRainOptionIcon => $"{MainFile.ResPath}/images/ancients/urda/options/urda_after_rain.png";

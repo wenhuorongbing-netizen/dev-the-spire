@@ -246,6 +246,7 @@ public sealed class ReleaseArtifactTests
         Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_moss_map.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_trial_branch.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_shallow_root_relic.png.import", entries);
+        Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_elite_root.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_rooted_route.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_after_rain.png.import", entries);
         Assert.Contains("EZMicroBalance/images/ancients/urda/options/urda_root_sight.png.import", entries);
@@ -456,11 +457,13 @@ public sealed class ReleaseArtifactTests
 
         Assert.Contains("EZMicroBalance", betaCompatibility, StringComparison.Ordinal);
         Assert.Contains("dotnet list EZMicroBalance.csproj package --include-transitive", betaCompatibility, StringComparison.Ordinal);
-        Assert.Contains("Active project: `EZMicroBalance`", remoteSetup, StringComparison.Ordinal);
+        Assert.Contains("Active mod: `Spire Plus`", remoteSetup, StringComparison.Ordinal);
+        Assert.Contains("Technical project, manifest id, and install folder: `EZMicroBalance`", remoteSetup, StringComparison.Ordinal);
         Assert.Contains(@"<GameRoot>\mods\EZMicroBalance\EZMicroBalance.dll", remoteSetup, StringComparison.Ordinal);
         Assert.Contains("manifest id `EZMicroBalance`", manualChecklist, StringComparison.Ordinal);
         Assert.Contains(@"<GameRoot>\mods\EZMicroBalance", manualChecklist, StringComparison.Ordinal);
-        Assert.Contains("Confirm Spire Plus / `EZMicroBalance` appears.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Confirm `Spire Plus` appears with manifest id `EZMicroBalance`.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Confirm `Spire Plus` is enabled.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Confirm legacy Easy Content / EzDailyContent is disabled or absent.", manualChecklist, StringComparison.Ordinal);
 
         Assert.DoesNotContain("dotnet list EzDailyContent.csproj", betaCompatibility, StringComparison.Ordinal);

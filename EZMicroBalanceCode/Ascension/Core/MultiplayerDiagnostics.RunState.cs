@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Nodes;
+﻿using MegaCrit.Sts2.Core.Nodes;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -21,7 +21,7 @@ internal static class NGameStartNewMultiplayerRunDiagPatch
         }
         else
         {
-            MainFile.Logger.Info("[EZMicroBalance][MPDiag] StartNewMultiplayerRun postfix: RunState is null");
+            MainFile.Logger.Info("[Spire Plus][MPDiag] StartNewMultiplayerRun postfix: RunState is null");
         }
     }
 }
@@ -70,7 +70,7 @@ internal static class AncientEventModelBeforeEventStartedDiagPatch
         if (player == null) return;
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance][MPDiag] AncientEventModel.BeforeEventStarted prefix: " +
+            $"[Spire Plus][MPDiag] AncientEventModel.BeforeEventStarted prefix: " +
             $"eventType={__instance.GetType().Name}; isPreFinished={isPreFinished}; " +
             $"playerNetId={player.NetId}; currentHp={player.Creature.CurrentHp}; maxHp={player.Creature.MaxHp}");
     }
@@ -83,7 +83,7 @@ internal static class AncientEventModelBeforeEventStartedDiagPatch
         if (player == null) return;
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance][MPDiag] AncientEventModel.BeforeEventStarted postfix: " +
+            $"[Spire Plus][MPDiag] AncientEventModel.BeforeEventStarted postfix: " +
             $"eventType={__instance.GetType().Name}; isPreFinished={isPreFinished}; " +
             $"playerNetId={player.NetId}; currentHp={player.Creature.CurrentHp}; maxHp={player.Creature.MaxHp}");
     }

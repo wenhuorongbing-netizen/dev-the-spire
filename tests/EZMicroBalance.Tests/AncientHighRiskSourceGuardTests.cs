@@ -352,7 +352,16 @@ public sealed class AncientHighRiskSourceGuardTests
         var hornSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsHornPhase1Patch.cs");
         var pickupSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var pickupDispatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PickupRewardPatches.cs");
-        var clawsSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "ClawsPatches.cs");
+        var sereTalonVisualSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs");
+        var tanxClawsTuningSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
+        var vakuuEventSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Vakuu.cs");
+        var tanxEventSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Tanx.cs");
+        var sereTalonSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "SereTalon.cs");
+        var clawsSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "Claws.cs");
+        var coreNRelicSource = ReadRepoText("source code", "src", "Core", "Nodes", "Relics", "NRelic.cs");
+        var coreEventOptionButtonSource = ReadRepoText("source code", "src", "Core", "Nodes", "Events", "NEventOptionButton.cs");
+        var coreRelicRewardSource = ReadRepoText("source code", "src", "Core", "Rewards", "RelicReward.cs");
+        var coreInspectRelicScreenSource = ReadRepoText("source code", "src", "Core", "Nodes", "Screens", "InspectScreens", "NInspectRelicScreen.cs");
         var sealSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SealOfGoldPatches.cs");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
 
@@ -386,13 +395,104 @@ public sealed class AncientHighRiskSourceGuardTests
             "DebtCardPatch.ConfigureDebt(debt)",
             "CardPileCmd.Add(debt, PileType.Deck)");
         Assert.DoesNotContain("case Claws", pickupDispatch, StringComparison.Ordinal);
+        Assert.DoesNotContain("typeof(SereTalon), nameof(SereTalon.AfterObtained)", pickupSource, StringComparison.Ordinal);
+        AssertSourceContains(vakuuEventSource, "RelicOption<SereTalon>()");
+        Assert.DoesNotContain("RelicOption<Claws>()", vakuuEventSource, StringComparison.Ordinal);
+        AssertSourceContains(tanxEventSource, "RelicOption<Claws>()");
+        Assert.DoesNotContain("RelicOption<SereTalon>()", tanxEventSource, StringComparison.Ordinal);
+        AssertSourceContains(
+            sereTalonSource,
+            "public sealed class SereTalon : RelicModel",
+            "new DynamicVar(\"Curses\", 2m)",
+            "new DynamicVar(\"Wishes\", 3m)",
+            "base.Owner.RunState.Rng.Niche.NextItem(availableCurses)",
+            "base.Owner.RunState.CreateCard(ModelDb.Card<Wish>(), base.Owner)");
         AssertSourceContains(
             clawsSource,
+            "public sealed class Claws : RelicModel",
+            "new CardsVar(6)",
+            "HoverTipFactory.FromCardWithCardHoverTips<Maul>()",
+            "new CardTransformation(c, CreateMaulFromOriginal(c, forPreview: true))",
+            "base.Owner.RunState.CreateCard<Maul>(base.Owner)",
+            "CardCmd.Transform(transformations, base.Owner.PlayerRng.Transformations)");
+        AssertSourceContains(
+            tanxClawsTuningSource,
             "[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]",
-            "private static async Task ChooseCurseAndAddWishes(Claws claws)",
-            "CreateClawsCurseDraft(claws.Owner)",
-            "CreateCard<Wish>",
-            "CardCmd.Upgrade(upgradedWish)");
+            "CardSelectCmd.FromDeckForTransformation",
+            "owner.RunState.CreateCard<Maul>(owner)",
+            "maul.UpgradeInternal()",
+            "CardCmd.Upgrade(maul, CardPreviewStyle.None)",
+            "CardCmd.Transform(transformations, owner.PlayerRng.Transformations)");
+        Assert.DoesNotContain("SereTalon", tanxClawsTuningSource, StringComparison.Ordinal);
+        AssertSourceContains(
+            sereTalonVisualSource,
+            "get_IconPath",
+            "get_PackedIconPath",
+            "get_PackedIconOutlinePath",
+            "get_BigIconPath",
+            "get_Icon",
+            "get_IconOutline",
+            "get_BigIcon",
+            "NEventOptionButton._Ready",
+            "NRelic keeps its IconSize private",
+            "Outline.Visible is",
+            "Ancient option buttons assign the relic icon directly during _Ready()",
+            "Relic-bar and inspect nodes can reload after the model texture getters",
+            "TryApply",
+            "TryApplyEventOptionButton",
+            "TryApplyRelicNode",
+            "IsNodeReady()",
+            "InvalidOperationException",
+            "CanUsePath(iconPath)",
+            "ResourceLoader.Exists(iconPath)",
+            "TryApplyPackedTexture",
+            "LoadPackedTexture",
+            "TryApplyTexture",
+            "ResourceLoader.Load<Texture2D>(PackedIcon",
+            "GetNodeOrNull<TextureRect>(\"%RelicIcon\")",
+            "button.Option?.Relic is not SereTalon",
+            "PreloadManager.Cache.GetTexture2D(iconPath)",
+            "texture is null",
+            "LogSkippedPathOnce(iconPath, \"texture did not load\")",
+            "Vakuu Sere Talon Ancient option icon route skipped",
+            "resource path does not exist",
+            "icon route skipped because",
+            "relic is not SereTalon",
+            "sere_talon_spire_plus.png",
+            "RelicModel packed icon path",
+            "RelicModel big icon path",
+            "RelicModel packed icon texture",
+            "RelicModel big icon texture",
+            "Ancient event option button",
+            "Vakuu Sere Talon icon route active");
+        Assert.DoesNotContain("__instance is Claws", sereTalonVisualSource, StringComparison.Ordinal);
+        AssertSourceContains(
+            coreEventOptionButtonSource,
+            "Option.Relic.Icon",
+            "Option.Relic.IconOutline",
+            "GetNode<TextureRect>(\"%RelicIcon\")");
+        AssertSourceContains(
+            coreNRelicSource,
+            "case IconSize.Small:",
+            "Icon.Texture = Model.Icon",
+            "Outline.Visible = true",
+            "Outline.Texture = Model.IconOutline",
+            "case IconSize.Large:",
+            "Icon.Texture = Model.BigIcon",
+            "Outline.Visible = false");
+        AssertSourceContains(
+            coreRelicRewardSource,
+            "public override TextureRect CreateIcon()",
+            "textureRect.Texture = _relic.BigIcon");
+        AssertSourceContains(
+            coreInspectRelicScreenSource,
+            "_relicImage.Texture = relicModel.BigIcon");
+        Assert.True(
+            File.Exists(RepoPath("EZMicroBalance", "images", "relics", "sere_talon_spire_plus.png")),
+            "Sere Talon needs a Spire Plus-owned in-game icon so it is not visually confused with Tanx Claws.");
+        Assert.True(
+            File.Exists(RepoPath("EZMicroBalance", "images", "relics", "big", "sere_talon_spire_plus.png")),
+            "Sere Talon needs a separate big relic icon for inspect/hover surfaces.");
 
         AssertSourceContains(
             sealSource,
@@ -413,24 +513,7 @@ public sealed class AncientHighRiskSourceGuardTests
         var debtSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "DebtAndCardPatches.cs");
         var cards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
 
-        AssertSourceContains(
-            pickupSource,
-            "ModelDb.Card<BadLuck>()",
-            "ModelDb.Card<Clumsy>()",
-            "ModelDb.Card<Decay>()",
-            "ModelDb.Card<Doubt>()",
-            "ModelDb.Card<Guilty>()",
-            "ModelDb.Card<Injury>()",
-            "ModelDb.Card<Normality>()",
-            "ModelDb.Card<Regret>()",
-            "ModelDb.Card<Shame>()",
-            "ModelDb.Card<Writhe>()",
-            ".StableShuffle(owner.PlayerRng.Rewards)",
-            ".Take(4)",
-            "foreach (var unselected in curseDraft.Where(card => card != selectedCurse))",
-            "claws.Owner.RunState.RemoveCard(unselected)",
-            "claws.Owner.RunState.CreateCard<Wish>(claws.Owner)",
-            "CardCmd.Upgrade(upgradedWish)");
+        Assert.DoesNotContain("CreateSereTalonCurseDraft", pickupSource, StringComparison.Ordinal);
 
         AssertSourceContains(
             vakuSource,

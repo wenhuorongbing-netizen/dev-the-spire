@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models.Acts;
@@ -22,7 +22,7 @@ internal static class VakuuForceAncientPatch
         }
 
         __result = [ModelDb.AncientEvent<MegaCrit.Sts2.Core.Models.Events.Vakuu>()];
-        MainFile.Logger.Info("[EZMicroBalance] Force Ancient gate selected Vakuu as the Act 3 Ancient.");
+        MainFile.Logger.Info("[Spire Plus] Force Ancient gate selected Vakuu as the Act 3 Ancient.");
     }
 }
 

@@ -15,7 +15,7 @@ Best release test setup:
 - Two Steam accounts.
 - Both own and can launch Slay the Spire 2.
 - Same game branch and game version/date.
-- Same Spire Plus / `EZMicroBalance` package hash.
+- Same Spire Plus package hash. The technical package folder/id remains `EZMicroBalance`.
 - Same BaseLib runtime version and files under `<GameRoot>\mods\BaseLib`.
 - Same enabled mod set: BaseLib plus Spire Plus only unless a row explicitly tests compatibility.
 
@@ -36,25 +36,25 @@ No Ascension environment variable is needed.
 Gate-off comparison:
 
 ```text
-EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1
+SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1
 ```
 
 Multiplayer-only disable comparison:
 
 ```text
-EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1
+SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1
 ```
 
 Optional diagnostics:
 
 ```text
-EZMB_ASCENSION_DIAGNOSTICS=1
+SPIREPLUS_ASCENSION_DIAGNOSTICS=1
 ```
 
 Multiplayer run-start/Neow/save-quit diagnostics (P0 investigation):
 
 ```text
-EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1
+SPIREPLUS_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1
 ```
 
 Legacy compatibility:
@@ -70,19 +70,19 @@ EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1
 PowerShell user env set:
 
 ```powershell
-[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION','1','User')
-[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION','1','User')
-[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DIAGNOSTICS','1','User')
-[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS','1','User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION','1','User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION','1','User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DIAGNOSTICS','1','User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_MULTIPLAYER_DIAGNOSTICS','1','User')
 ```
 
 PowerShell user env clear:
 
 ```powershell
-[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION',$null,'User')
-[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION',$null,'User')
-[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DIAGNOSTICS',$null,'User')
-[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS',$null,'User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION',$null,'User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION',$null,'User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DIAGNOSTICS',$null,'User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_MULTIPLAYER_DIAGNOSTICS',$null,'User')
 ```
 
 After changing User env vars, fully restart Steam and the game on the affected machine before testing.
@@ -94,11 +94,11 @@ After changing User env vars, fully restart Steam and the game on the affected m
 - Launch through the normal Steam client on host and client.
 - Confirm BaseLib appears in Mod Settings on both machines.
 - Confirm BaseLib is enabled on both machines.
-- Confirm Spire Plus appears as `EZMicroBalance` on both machines.
+- Confirm Spire Plus appears with manifest id `EZMicroBalance` on both machines.
 - Confirm Spire Plus is enabled on both machines.
 - Confirm legacy `EzDailyContent` is disabled or absent on both machines.
 - Confirm both machines use the same package hash and same BaseLib version.
-- Inspect both `godot.log` files for startup errors, missing localization keys, `CanonicalModelException`, and Spire Plus / `EZMicroBalance` exceptions.
+- Inspect both `godot.log` files for startup errors, missing localization keys, `CanonicalModelException`, and Spire Plus exceptions under technical id `EZMicroBalance`.
 
 ### Gate Default-On Checks
 
@@ -109,7 +109,7 @@ After changing User env vars, fully restart Steam and the game on the affected m
 
 ### Gate-Off Comparison Checks
 
-- Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` on the host.
+- Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` on the host.
 - Fully restart Steam and the game.
 - Confirm single-player selection returns to vanilla A1-A10.
 - Confirm host-multiplayer selection returns to vanilla A1-A10.
@@ -117,7 +117,7 @@ After changing User env vars, fully restart Steam and the game on the affected m
 
 ### Multiplayer-Only Disable Checks
 
-- Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` on the host.
+- Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` on the host.
 - Fully restart Steam and the game.
 - Confirm single-player A11-A20 selection remains available.
 - Confirm host-multiplayer selection returns to the vanilla cap.
@@ -195,18 +195,18 @@ After changing User env vars, fully restart Steam and the game on the affected m
   - `Version mismatch. Host: ... Ours: ...` means the handshake version strings differ.
   - `Our version ... matches the host's, but our Model ID hash does not` or `ModelDb hash mismatch` means the visible version string matched, but the multiplayer model serialization table differed.
   - Record both `Got initial game info message. Version: ... Hash: ...` and local `ModelIdSerializationCache initialized... Hash: ...` lines.
-  - Compare both machines' `release_info.json`, `Loaded X mods (Y total)`, BaseLib/EZMB versions, and installed package hashes.
-- Confirm no Spire Plus / `EZMicroBalance` error or exception lines.
+  - Compare both machines' `release_info.json`, `Loaded X mods (Y total)`, BaseLib/Spire Plus versions, and installed package hashes.
+- Confirm no Spire Plus error or exception lines under technical id `EZMicroBalance`.
 - Confirm no ownership warning for Rootblight, Blight Sprout, Forge Token, Firemark, Banner, dedicated ability, or Branded Form state.
 - Confirm no checksum, desync, disconnect, lobby clamp, or save/load exception lines.
 - Confirm A20 downgrade warning appears on host-only selection and on run start when A20 is selected in multiplayer.
-- Keep unrelated local invalid-manifest errors separate from Spire Plus / `EZMicroBalance` findings.
+- Keep unrelated local invalid-manifest errors separate from Spire Plus findings under technical id `EZMicroBalance`.
 
 ## P0 Triage Matrix — Multiplayer A11-A20 Run-Start / Neow / Black Screen / Save-Quit
 
 **⚠️ Dependency Compatibility Gate — must pass BEFORE any A11-A20 testing:**
 
-1. Disable ALL mods except BaseLib + EZMicroBalance. Explicitly disable/remove DamageMeter, RouteSuggest, AnimeWaifuSilent, AncientWaifus, BetterSpire2Lite, Act4Heart, ModConfig, QuickLink, SpeedX, The-Watcher, and all skin/character/replacement mods.
+1. Disable ALL mods except BaseLib + Spire Plus. The Spire Plus technical folder/id is `EZMicroBalance`. Explicitly disable/remove DamageMeter, RouteSuggest, AnimeWaifuSilent, AncientWaifus, BetterSpire2Lite, Act4Heart, ModConfig, QuickLink, SpeedX, The-Watcher, and all skin/character/replacement mods.
 2. Start singleplayer A0 with Defect (or any character that starts with an active relic like Cracked Core). Enter first combat.
 3. Expected: draw cards normally, energy not stuck at 0, no `Creature.get_ShowsInfiniteHp` in `godot.log`.
 4. Start singleplayer A10. Same expectations.
@@ -222,14 +222,14 @@ Execute these rows to isolate the root cause of the reported 0/80 HP, Neow block
 - Only BaseLib + Spire Plus enabled.
 - Restart Steam and game fully after changing env vars.
 - Collect `godot.log` from both machines after each run.
-- Use `EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` combined with each row to capture lobby state, player HP at run start, Neow HP, and save/quit diagnostics.
+- Use `SPIREPLUS_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` combined with each row to capture lobby state, player HP at run start, Neow HP, and save/quit diagnostics.
 
 ### A. Vanilla Control (A10)
 
 Purpose: confirm that base multiplayer works with the mod loaded and vanilla A10.
 
 ```text
-EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1
+SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1
 ```
 
 - Host creates co-op lobby, sets Ascension to A10 (or vanilla max available).
@@ -243,7 +243,7 @@ EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1
 Purpose: determine whether EZMB gameplay slices (Rootblight, Firemarks, etc.) cause the HP/Neow issue, or if it's purely in the selection/run-start path.
 
 ```text
-EZMB_ASCENSION_DISABLE_ALL_SYSTEMS=1
+SPIREPLUS_ASCENSION_DISABLE_ALL_SYSTEMS=1
 ```
 
 - No disable-public env var. A11-A20 selection is default-on.
@@ -297,13 +297,13 @@ Purpose: test the full A20 with all systems enabled.
 
 If Row B passes (HP normal with all systems disabled), disable systems one at a time to find which one causes the issue:
 
-1. `EZMB_ASCENSION_ENABLE_ROOTBLIGHT=0` — A14 default
-2. `EZMB_ASCENSION_ENABLE_BLIGHT_SPROUT=0` — A15/A18 default
-3. `EZMB_ASCENSION_ENABLE_MAP_GEOMETRY=0` — A11/A17 default
-4. `EZMB_ASCENSION_ENABLE_FIRE_MARK_ELITES=0` — A12 default
-5. `EZMB_ASCENSION_ENABLE_BANNER_ROOMS=0` — A16 default
-6. `EZMB_ASCENSION_ENABLE_BOSS_SEALS=0` — A19 default
-7. `EZMB_ASCENSION_ENABLE_BRANDED_FORM=0` — A20 Branded Form default
+1. `SPIREPLUS_ASCENSION_ENABLE_ROOTBLIGHT=0` — A14 default
+2. `SPIREPLUS_ASCENSION_ENABLE_BLIGHT_SPROUT=0` — A15/A18 default
+3. `SPIREPLUS_ASCENSION_ENABLE_MAP_GEOMETRY=0` — A11/A17 default
+4. `SPIREPLUS_ASCENSION_ENABLE_FIRE_MARK_ELITES=0` — A12 default
+5. `SPIREPLUS_ASCENSION_ENABLE_BANNER_ROOMS=0` — A16 default
+6. `SPIREPLUS_ASCENSION_ENABLE_BOSS_SEALS=0` — A19 default
+7. `SPIREPLUS_ASCENSION_ENABLE_BRANDED_FORM=0` — A20 Branded Form default
 
 Legacy alias: `EZMB_ASCENSION_ENABLE_DUAL_KING_BRANDS=0` still disables the same A20 slice for older local scripts.
 

@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
@@ -24,13 +24,13 @@ internal static partial class MorviBlessingService
         if (combatState.BlueprintDrawAfterCards.Remove(card))
         {
             await CardPileCmd.Draw(choiceContext, 1m, player);
-            MainFile.Logger.Info($"[EZMicroBalance] Morvi Blueprint Proof drew 1 after {card.Id.Entry}.");
+            MainFile.Logger.Info($"[Spire Plus] Morvi Blueprint Proof drew 1 after {card.Id.Entry}.");
         }
 
         if (combatState.BlueprintBlockAfterCards.Remove(card))
         {
             await CreatureCmd.GainBlock(player.Creature, BlueprintProofBlock, ValueProp.Move, cardPlay, fast: true);
-            MainFile.Logger.Info($"[EZMicroBalance] Morvi Blueprint Proof granted {BlueprintProofBlock} Block after upgraded card {card.Id.Entry}.");
+            MainFile.Logger.Info($"[Spire Plus] Morvi Blueprint Proof granted {BlueprintProofBlock} Block after upgraded card {card.Id.Entry}.");
         }
     }
 
@@ -77,7 +77,7 @@ internal static partial class MorviBlessingService
                 ["proofread"] = combatState.ProofreadRemaining,
                 ["reason"] = reason
             });
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Blueprint Proof initialized {combatState.ProofreadRemaining} Proofread ({reason}).");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Blueprint Proof initialized {combatState.ProofreadRemaining} Proofread ({reason}).");
         return true;
     }
 

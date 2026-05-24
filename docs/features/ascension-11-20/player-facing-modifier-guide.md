@@ -1,4 +1,4 @@
-# Ascension Modifier Preview Guide
+﻿# Ascension Modifier Preview Guide
 
 Status: player-facing guide for the current A12/A16/A19/A20 source pass. Live UI verification is still pending.
 
@@ -44,7 +44,7 @@ Fission is reward-only and remains probabilistic:
 - Firemarked Elite: 40%
 - Boss: 15%
 
-Fission can only appear on eligible Attack or Skill rewards. With `EZMB_ASCENSION_DIAGNOSTICS=1`, logs show source label, chance, eligible candidate count, roll, applied yes/no, and card id when applied.
+Fission can only appear on eligible Attack or Skill rewards. With `SPIREPLUS_ASCENSION_DIAGNOSTICS=1`, logs show source label, chance, eligible candidate count, roll, applied yes/no, and card id when applied.
 
 ## Map Hover Previews
 

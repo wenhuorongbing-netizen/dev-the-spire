@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using Godot;
 using MegaCrit.Sts2.Core.Assets;
@@ -119,7 +119,7 @@ internal static class AscensionA20CourtyardService
         var marker = LaunchMarkers.GetValue(runState, _ => new CourtyardLaunchMarker());
         if (marker.Started)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A20 courtyard launch ignored because it is already in progress.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A20 courtyard launch ignored because it is already in progress.");
             return;
         }
 
@@ -130,7 +130,7 @@ internal static class AscensionA20CourtyardService
             await runManager.EnterRoomWithoutExitingCurrentRoom(eventRoom, fadeToBlack: true);
             await SaveManager.Instance.SaveRun(eventRoom, saveProgress: false);
             ReleaseEvidenceLog.Log("A20BrandedForm", "courtyard_entered", runState: runState);
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A20 applied: entered the fixed courtyard event between Boss 1 rewards and Boss 2.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A20 applied: entered the fixed courtyard event between Boss 1 rewards and Boss 2.");
         }
         catch
         {

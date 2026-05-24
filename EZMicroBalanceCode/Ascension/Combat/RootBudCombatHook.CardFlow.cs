@@ -1,4 +1,5 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -93,7 +94,10 @@ internal sealed partial class RootBudCombatHook
         {
             tracker.Buds.Add(bud);
             bud.WasPlayed = true;
-            MainFile.Logger.Info("[EZMicroBalance] Ascension Blight Sprout tracked: played before combat end.");
+            var evidence = CreateBlightSproutEvidenceData(state);
+            evidence["sproutRound"] = bud.SproutRound;
+            ReleaseEvidenceLog.Log("BlightSprout", "played", bud.Owner, evidence);
+            MainFile.Logger.Info("[Spire Plus] Ascension Blight Sprout tracked: played before combat end.");
         }
 
         await AscensionCombatModifierService.AfterCardPlayed(state, tracker, cardPlay);

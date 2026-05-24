@@ -287,7 +287,8 @@ function New-ManualInstructions {
     )
 
     $screenshotName = "01-$($AncientName.ToLowerInvariant())-clicked-ui.png"
-    $envLines = @($ForceEnvironment.GetEnumerator() | ForEach-Object { "- $($_.Key)=$($_.Value)" })
+    $preferredEnvLines = @($ForceEnvironment.GetEnumerator() | Where-Object { $_.Key.StartsWith('SPIREPLUS_', [System.StringComparison]::Ordinal) } | ForEach-Object { "- $($_.Key)=$($_.Value)" })
+    $legacyEnvLines = @($ForceEnvironment.GetEnumerator() | Where-Object { $_.Key.StartsWith('EZMB_', [System.StringComparison]::Ordinal) } | ForEach-Object { "- $($_.Key)=$($_.Value)" })
     $preflightLine = if ($Preflight['Skipped']) {
         'Prepare preflight was skipped by -NoPreflight.'
     } elseif ($Preflight['Success']) {
@@ -298,9 +299,9 @@ function New-ManualInstructions {
 
     $vakuuNote = if ($AncientName -eq 'VAKUU') {
         if ($VakuuFight) {
-            'This focused run sets the unfinished Vakuu force-fight gate, so the expected visible option count is 1 fight option. For the normal Vakuu screen, expect 3 options; if EZMB_ENABLE_VAKUU_FIGHT or SPIREPLUS_ENABLE_VAKUU_FIGHT is set, expect 4.'
+            'This focused run sets the unfinished Vakuu force-fight gate, so the expected visible option count is 1 fight option. For the normal Vakuu screen, expect 3 options; if SPIREPLUS_ENABLE_VAKUU_FIGHT or legacy EZMB_ENABLE_VAKUU_FIGHT is set, expect 4.'
         } else {
-            'For Vakuu, the current source expects 3 options by default. Set EZMB_ENABLE_VAKUU_FIGHT=1 or SPIREPLUS_ENABLE_VAKUU_FIGHT=1 only for the unfinished opt-in fight, or use -ForceVakuuFight for a focused one-option fight smoke.'
+            'For Vakuu, the current source expects 3 options by default. Set SPIREPLUS_ENABLE_VAKUU_FIGHT=1 or legacy EZMB_ENABLE_VAKUU_FIGHT=1 only for the unfinished opt-in fight, or use -ForceVakuuFight for a focused one-option fight smoke.'
         }
     } else {
         ''
@@ -315,20 +316,24 @@ function New-ManualInstructions {
         '',
         '## Force environment for launched process',
         '',
-        'When -Launch is used, the helper sets these process environment variables before calling the live-session helper:',
+        'When -Launch is used, the helper sets these preferred Spire Plus process environment variables before calling the live-session helper:',
         ''
-    ) + $envLines + @(
+    ) + $preferredEnvLines + @(
+        '',
+        'The legacy aliases below are also set for compatibility with existing source gates and old local scripts:',
+        ''
+    ) + $legacyEnvLines + @(
         '',
         '## Open the Ancient',
         '',
         "Expected visible option count for this prepared run: $ExpectedOptionCountForThisRun.",
         $vakuuNote,
         "Preferred unsaved UI smoke command: $UnsavedTestCommand",
-        "Active-run DevConsole render-smoke command: $DevConsoleCommand",
+        "Legacy active-run DevConsole render-smoke command: $DevConsoleCommand",
         "Manual route: $ManualRoute",
         '',
-        'Use the preferred command from the main menu to start an unsaved single-player test run and open this Ancient. Use the active-run command only after a run is already in progress.',
-        'Either DevConsole route is UI render smoke, not natural gameplay proof.',
+        'Use the preferred Spire Plus command from the main menu to start an unsaved single-player test run and open this Ancient. Use the legacy active-run command only after a run is already in progress.',
+        'Either command route is UI render smoke, not natural gameplay proof.',
         '',
         '## Capture files under this evidence directory',
         '',
@@ -567,7 +572,8 @@ $plan = [ordered]@{
     ExpectedOptionCounts = $expectedOptionCounts
     ExpectedOptionCountForThisRun = $expectedOptionCountForThisRun
     PreferredUnsavedDevConsoleCommand = $unsavedTestCommandForThisRun
-    ExpectedDevConsoleCommand = $devConsoleCommands[$ancientName]
+    ExpectedDevConsoleCommand = $unsavedTestCommandForThisRun
+    LegacyActiveRunDevConsoleCommand = $devConsoleCommands[$ancientName]
     ManualRouteInstruction = $manualRoutes[$ancientName]
     ForceVakuuFight = [bool]$ForceVakuuFight
     LaunchRequested = [bool]$Launch
@@ -611,7 +617,8 @@ $environment = [ordered]@{
     ForceEnvironment = $forceEnvironment
     ExpectedOptionCountForThisRun = $expectedOptionCountForThisRun
     PreferredUnsavedDevConsoleCommand = $unsavedTestCommandForThisRun
-    ExpectedDevConsoleCommand = $devConsoleCommands[$ancientName]
+    ExpectedDevConsoleCommand = $unsavedTestCommandForThisRun
+    LegacyActiveRunDevConsoleCommand = $devConsoleCommands[$ancientName]
     ManualRouteInstruction = $manualRoutes[$ancientName]
     Scripts = [ordered]@{
         Preflight = $preflightScript
@@ -630,8 +637,10 @@ $packageHashes = [ordered]@{
     Files = @(
         Get-HashRow -RelativePath 'EZMicroBalance.json'
         Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0.zip'
-        Get-HashRow -RelativePath 'publish\EZMicroBalance.dll'
-        Get-HashRow -RelativePath 'publish\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.dll'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.json'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\README_INSTALL.txt'
     )
 }
 
@@ -641,7 +650,7 @@ $commandLines = @(
     "Live-session command used by -Launch: $livePrepareCommand",
     "Restore command: $restoreCommand",
     "Preferred UI-smoke command: $unsavedTestCommandForThisRun",
-    "Active-run render-smoke command: $($devConsoleCommands[$ancientName])"
+    "Legacy active-run render-smoke command: $($devConsoleCommands[$ancientName])"
 )
 $commandLines -join [Environment]::NewLine | Set-Content -LiteralPath $commandPath -Encoding UTF8
 Save-Json -InputObject $environment -Path $environmentPath
@@ -657,7 +666,7 @@ Save-Json -InputObject ([ordered]@{
 Save-Json -InputObject ([ordered]@{
     Status = 'pending'
     RequiredFiles = @('godot.log', 'godot-log-audit.json')
-    BlockingPatterns = @('ERROR', 'Exception', '[EZMB-EVIDENCE]')
+    BlockingPatterns = @('ERROR', 'Exception', '[SPIREPLUS-EVIDENCE]', '[EZMB-EVIDENCE]')
     Notes = 'Fill with audit output after copying live logs. This template is not a pass marker.'
 }) -Path $logAuditTemplatePath
 

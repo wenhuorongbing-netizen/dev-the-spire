@@ -198,7 +198,8 @@ $environment = [ordered]@{
     NoLaunch = -not [bool]$Launch
     Requirement = 'Two-client host/join proof with host and client logs, audits, screenshots, and result notes.'
     ReleaseEvidenceLogging = [ordered]@{
-        EnvironmentVariable = 'EZMB_RELEASE_EVIDENCE_LOG'
+        EnvironmentVariable = 'SPIREPLUS_RELEASE_EVIDENCE_LOG'
+        LegacyEnvironmentVariable = 'EZMB_RELEASE_EVIDENCE_LOG'
         RecommendedValue = '1'
     }
 }
@@ -208,8 +209,10 @@ $packageHashes = [ordered]@{
     Files = @(
         Get-HashRow -RelativePath 'EZMicroBalance.json'
         Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0.zip'
-        Get-HashRow -RelativePath 'publish\EZMicroBalance.dll'
-        Get-HashRow -RelativePath 'publish\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.dll'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.json'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\README_INSTALL.txt'
     )
 }
 
@@ -254,8 +257,8 @@ $manualInstructions = @(
     '',
     'Before testing:',
     '',
-    '- Use exactly BaseLib plus Spire Plus / EZMicroBalance on host and client.',
-    '- Set `EZMB_RELEASE_EVIDENCE_LOG=1` for both clients.',
+    '- Use exactly BaseLib plus Spire Plus on host and client.',
+    '- Set `SPIREPLUS_RELEASE_EVIDENCE_LOG=1` for both clients.',
     '- Record package hashes from `package-hashes.json` before the run.',
     '',
     'Required checks:',

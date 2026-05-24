@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Events;
@@ -63,7 +63,7 @@ internal static partial class VakuuFightService
 
         ClearEventNode(vakuu);
         ReleaseEvidenceLog.Log("VakuuFight", "fight_started", vakuu.Owner);
-        MainFile.Logger.Info("[EZMicroBalance] Starting Vakuu fight encounter through the explicit parent-room stack transition.");
+        MainFile.Logger.Info("[Spire Plus] Starting Vakuu fight encounter through the explicit parent-room stack transition.");
         await RunManager.Instance.EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true);
         ReleaseEvidenceLog.Log("VakuuFight", "child_combat_room_entered", vakuu.Owner);
     }

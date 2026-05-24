@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 
 namespace EZMicroBalance.Tests;
 
@@ -45,7 +45,7 @@ public sealed class SaveStateContractsGuardTests
             ["SavedSpireField<Player, string> UrdaStateKey", "SavedSpireField<CardModel, string> UrdaDeckStateKey", "RootSightPreviewRecords"],
             ["RestoreRootSightPreviewMarkers", "AfterMapGenerated", "restored one eye"],
             ["ClearStaleRootSightPreview", "ClearUnreachableRootSightPreviews", "ResetRootSightTransientState"],
-            ["MainFile.Logger", "[EZMicroBalance] Urda Root Eyes"],
+            ["MainFile.Logger", "[Spire Plus] Urda Root Eyes"],
             ["Root Eyes", "Root Sight", "SAVE-LOAD"]),
         new StatefulFeatureContract(
             "Urda Seed Bank",
@@ -59,7 +59,7 @@ public sealed class SaveStateContractsGuardTests
             ["SavedSpireField<Player, string> UrdaStateKey", "SavedSpireField<CardModel, string> UrdaDeckStateKey", "SeedBankCardIds"],
             ["GetSeedBankCardIds", "TryExtractSeedBankFromRelicClick", "TryGetStoredCard"],
             ["SeedBankCardIds = string.Empty", "SeedBankSettled = true", "RefreshSeedBankRelicStatus"],
-            ["MainFile.Logger", "[EZMicroBalance] Urda Seed Bank"],
+            ["MainFile.Logger", "[Spire Plus] Urda Seed Bank"],
             ["Seed Bank", "SAVE-LOAD"]),
         new StatefulFeatureContract(
             "Morvi state",
@@ -73,7 +73,7 @@ public sealed class SaveStateContractsGuardTests
             ["SavedSpireField<Player, string> MorviStateKey", "SavedSpireField<CardModel, string> MorviDeckStateKey", "MorviOpenBookSealedCard"],
             ["SyncPersistentState", "AfterCardChangedPiles", "BeforeCombatStart"],
             ["ClearState", "ClearBorrowedAncientCards", "ResetCombatState"],
-            ["MainFile.Logger", "[EZMicroBalance] Morvi"],
+            ["MainFile.Logger", "[Spire Plus] Morvi"],
             ["Morvi state", "SAVE-LOAD"]),
         new StatefulFeatureContract(
             "Lotha Death Reprieve",
@@ -87,7 +87,7 @@ public sealed class SaveStateContractsGuardTests
             ["SavedSpireField<Player, string> LothaStateKey", "SavedSpireField<CardModel, string> LothaDeckStateKey", "DeathReprievePhase"],
             ["HydrateDeathReprieveState", "BeforeCombatStart", "deck-mirrored blessing progress"],
             ["ResolveDeathReprieveProgress", "ResetCombatState", "DeathReprievePhase.Resolved"],
-            ["MainFile.Logger", "[EZMicroBalance] Lotha Death Reprieve"],
+            ["MainFile.Logger", "[Spire Plus] Lotha Death Reprieve"],
             ["Lotha Death Reprieve", "SAVE-LOAD"]),
         new StatefulFeatureContract(
             "Vakuu child combat",
@@ -101,7 +101,7 @@ public sealed class SaveStateContractsGuardTests
             ["CombatRoom.ToSerializable", "PreserveParentEventForPreFinishedSave", "ParentEventId"],
             ["ArmPrefinishedParentRestoreHealSkip", "ResumeAfterVictory", "ProceedFromNoRewardVictory"],
             ["ClearEventNode", "no-reward resume found no valid parent event stack", "ClearCommandForceFightWhenBeginEventCompletes"],
-            ["MainFile.Logger", "[EZMicroBalance] Vakuu"],
+            ["MainFile.Logger", "[Spire Plus] Vakuu"],
             ["Vakuu", "VAKUU-FIGHT-LIVE", "SAVE-LOAD"]),
         new StatefulFeatureContract(
             "Rootblight",
@@ -117,7 +117,7 @@ public sealed class SaveStateContractsGuardTests
             ["SavedSpireField<Player, int> RootblightLevel", "SavedSpireField<RootFamilyCard, bool> RootblightWasPresentAtCombatStart", "DeckVersion is RootFamilyCard"],
             ["SetDiagnosticLevelFromDeck", "MarkCombatStartRootblight", "ReadPendingCombatDowngrades"],
             ["ClearPendingCombatDowngrades", "WasPresentAtCombatStart = false", "PlantedInSeedbed = false"],
-            ["MainFile.Logger", "[EZMicroBalance] Ascension Rootblight"],
+            ["MainFile.Logger", "[Spire Plus] Ascension Rootblight"],
             ["Rootblight", "SAVE-LOAD"])
     ];
 

@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.addons.mega_text;
+﻿using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Nodes.Screens;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -25,7 +25,7 @@ internal static class AscensionA20RewardScreenReflection
         value = null;
         if (field == null)
         {
-            WarnOnce("[EZMicroBalance] Ascension A20 reward-screen wording disabled: expected NRewardsScreen field was not found.");
+            WarnOnce("[Spire Plus] Ascension A20 reward-screen wording disabled: expected NRewardsScreen field was not found.");
             return false;
         }
 
@@ -36,7 +36,7 @@ internal static class AscensionA20RewardScreenReflection
         }
         catch (Exception exception)
         {
-            WarnOnce($"[EZMicroBalance] Ascension A20 reward-screen wording disabled after reflection failure: {exception.GetType().Name}.");
+            WarnOnce($"[Spire Plus] Ascension A20 reward-screen wording disabled after reflection failure: {exception.GetType().Name}.");
             return false;
         }
     }

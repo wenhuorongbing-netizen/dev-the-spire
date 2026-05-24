@@ -1,4 +1,4 @@
-# A11-A20 Development Checklist
+﻿# A11-A20 Development Checklist
 
 Status: compact active checklist. The full v2.0 planning document was archived to `docs/archive/feature-inputs/ascension-11-20/development-checklist-v2-full-20260518.md`.
 
@@ -8,8 +8,8 @@ Use this file for current development triage. Use the archived full draft only w
 
 - A11-A20 remain the current private-beta high-Ascension test surface.
 - A11-A20 selection is default-on for the private-beta test candidate.
-- `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 public selection.
-- `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection.
+- `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 public selection.
+- `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection.
 - A21-A30 and custom characters are out of scope.
 - Do not claim release readiness until live single-player, save-load, and co-op evidence exists.
 
@@ -63,9 +63,10 @@ After package/resource changes:
 ```powershell
 dotnet publish EZMicroBalance.sln
 .\scripts\package-spire-plus.ps1
-$env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'
+$env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'
 dotnet test EZMicroBalance.sln --no-build
-Remove-Item Env:\EZMB_RUN_RELEASE_ARTIFACT_TESTS
+Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS
 ```
 
 These commands do not prove live gameplay, save-load, death/failure paths, or co-op behavior.
+The old `EZMB_RUN_RELEASE_ARTIFACT_TESTS` variable remains a compatibility alias, but new test notes should use `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS`.

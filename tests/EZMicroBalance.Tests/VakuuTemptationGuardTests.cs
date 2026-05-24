@@ -167,8 +167,8 @@ public sealed class VakuuTemptationGuardTests
             "public override bool ShouldGiveRewards => false");
         AssertSourceContains(
             gate,
-            "EnableEnvironmentVariable = \"EZMB_ENABLE_VAKUU_FIGHT\"",
-            "SpirePlusEnableEnvironmentVariable = \"SPIREPLUS_ENABLE_VAKUU_FIGHT\"",
+            "EnableEnvironmentVariable = \"SPIREPLUS_ENABLE_VAKUU_FIGHT\"",
+            "LegacyEnableEnvironmentVariable = \"EZMB_ENABLE_VAKUU_FIGHT\"",
             "ShouldEnableFight",
             "ShouldForceFight ||",
             "runState.Players.Count == 1");

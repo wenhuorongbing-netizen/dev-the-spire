@@ -1,7 +1,7 @@
 param(
     [string]$EvidenceDir,
 
-    [string]$PackageSha256 = "11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120",
+    [string]$PackageSha256 = "47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC",
 
     [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.0.zip",
 
@@ -76,6 +76,26 @@ function Save-Json {
     )
 
     $InputObject | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $Path -Encoding UTF8
+}
+
+function Write-ChecklistFiles {
+    param(
+        [Parameter(Mandatory = $true)][string]$TemplateContent,
+        [Parameter(Mandatory = $true)][string]$TemplatePath,
+        [Parameter(Mandatory = $true)][string]$WorkingPath
+    )
+
+    $TemplateContent | Set-Content -LiteralPath $TemplatePath -Encoding UTF8
+
+    $workingLines = @($TemplateContent -split "`r?`n" | ForEach-Object {
+            if ($_ -match '^Copy this file to `[^`]+` and fill it with live results before marking this row pass\.$' -or
+                $_ -match '^Template reference for `[^`]+`\. Fill the working `[^`]+` with live results before marking this row pass\.$') {
+                'Fill this checklist with live results before marking this row pass.'
+            } else {
+                $_
+            }
+        })
+    ($workingLines -join [Environment]::NewLine) | Set-Content -LiteralPath $WorkingPath -Encoding UTF8
 }
 
 function Format-DisplayToken {
@@ -304,7 +324,8 @@ function New-ManualRows {
             Label = 'Rootblight and Blight Sprout visual/gameplay behavior'
             ExtraRequiredFiles = @('rootblight-behavior-checklist.md')
             Checkpoints = @(
-                'Confirm Blight Sprout appears in the expected normal, elite, and Boss combat contexts instead of disappearing from the run.',
+                'Confirm A14+ Rootblight appears before ordinary combat and normal fights advance existing Rootblight without expecting Blight Sprout cards.',
+                'Confirm Blight Sprout appears only in the current A15 Boss and A18 eligible Elite contexts instead of disappearing from those fights.',
                 'Confirm unhandled Blight Sprouts grow into Rootblight after combat and that existing Rootblight follows the current cap/split rules.',
                 'Confirm save/load does not erase pending Blight Sprouts, Rootblight cards, or current run repair state.',
                 'Confirm card art, card hover, combat notices, and EN/ZHS wording remain readable.'
@@ -395,7 +416,8 @@ $environment = [ordered]@{
     GodotPath = [Environment]::GetEnvironmentVariable('GODOT_PATH', 'Process')
     BaseLibExpectedRuntimeLocation = '<GameRoot>\mods\BaseLib'
     ReleaseEvidenceLogging = [ordered]@{
-        EnvironmentVariable = 'EZMB_RELEASE_EVIDENCE_LOG'
+        EnvironmentVariable = 'SPIREPLUS_RELEASE_EVIDENCE_LOG'
+        LegacyEnvironmentVariable = 'EZMB_RELEASE_EVIDENCE_LOG'
         RecommendedValue = '1'
     }
     LaunchRequested = [bool]$Launch
@@ -411,9 +433,10 @@ $packageHashes = [ordered]@{
     Files = @(
         Get-HashRow -RelativePath 'EZMicroBalance.json'
         Get-HashRow -RelativePath $PackagePath
-        Get-HashRow -RelativePath 'publish\EZMicroBalance.dll'
-        Get-HashRow -RelativePath 'publish\EZMicroBalance.pck'
-        Get-HashRow -RelativePath 'publish\EZMicroBalance.json'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.dll'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.json'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\README_INSTALL.txt'
     )
 }
 
@@ -424,7 +447,7 @@ $enabledModsTemplate = @(
     '',
     'Expected current-package loader proof:',
     '- BaseLib',
-    '- EZMicroBalance / Spire Plus',
+    '- Spire Plus',
     '',
     'Paste the loaded-mods log excerpt here. Do not mark this file passed from historical 16/22-field logs or source review.'
 ) -join [Environment]::NewLine
@@ -517,13 +540,16 @@ foreach ($row in $manualRows) {
     ($rowReadmeLines -join [Environment]::NewLine) | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'README.md') -Encoding UTF8
 
     if ($row.Id -eq 'ancient-reward-visible-relics') {
+        $sereTalonCn = -join @([char]0x74E6, [char]0x5E93, [char]0x539F, [char]0x521D, [char]0x4E4B, [char]0x722A)
+        $tanxClawsCn = -join @([char]0x5766, [char]0x514B, [char]0x65AF, [char]0x5229, [char]0x722A)
+        $maulCn = -join @([char]0x6495, [char]0x54AC)
         $ancientRewardChecklist = @(
             '# Ancient Reward Visible Relics Checklist',
             '',
-            'Copy this file to `ancient-reward-relics-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `ancient-reward-relics-checklist.md`. Fill the working `ancient-reward-relics-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
-            '- `godot.log` from the live run with `EZMB_RELEASE_EVIDENCE_LOG=1` when possible.',
+            '- `godot.log` from the live run with `SPIREPLUS_RELEASE_EVIDENCE_LOG=1` when possible.',
             '- `godot-log-audit.json` showing no release-blocking signatures.',
             '- `result-note.md` summarizing which Ancient rewards were tested and which rows failed.',
             '- Screenshots are strongly recommended for Ancient option rows, relic bar placement, and hover readability.',
@@ -538,6 +564,7 @@ foreach ($row in $manualRows) {
             '| Urda | moss_map | UrdaMossMapOptionRelic |  |  |  |',
             '| Urda | trial_branch | UrdaTrialBranchOptionRelic |  |  |  |',
             '| Urda | shallow_root_relic | UrdaShallowRootRelicOptionRelic |  |  |  |',
+            '| Urda | elite_root | UrdaEliteRootOptionRelic |  |  |  |',
             '| Urda | rooted_route | UrdaRootedRouteOptionRelic |  |  |  |',
             '| Urda | after_rain | UrdaAfterRainOptionRelic |  |  |  |',
             '| Urda | root_sight | UrdaRootSightOptionRelic |  |  |  |',
@@ -560,21 +587,23 @@ foreach ($row in $manualRows) {
             '| Lotha | public_evidence | LothaPublicEvidenceOptionRelic |  |  |  |',
             '| Vakuu | fight_option | VakuuFightOptionRelic |  |  |  |',
             '| Vakuu | victory_non_vakuu_choices | Non-Vakuu Act 3 Ancient reward relic choices after winning Vakuu |  |  |  |',
+            "| Vakuu event | sere_talon_pickup | Vakuu's Sere Talon / $sereTalonCn adds 2 random Curses and 3 Wish; verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes such as ``Ancient event option button``, ``RelicModel packed icon texture``, ``RelicModel big icon texture``, ``NRelic small node``, and ``NRelic large node`` are not Tanx Claws. |  |  |  |",
+            "| Tanx event | claws_maul_transform | Tanx Claws / $tanxClawsCn transforms cards into upgraded Maul / $maulCn+ cards. |  |  |  |",
             '',
             'Do not use this row to cover Ancient clicked background art, Vakuu victory return, save/load, or co-op. Those have separate verifier rows.'
         ) -join [Environment]::NewLine
 
-        $ancientRewardChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'ancient-reward-relics-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $ancientRewardChecklist -TemplatePath (Join-Path $rowEvidenceFull 'ancient-reward-relics-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'ancient-reward-relics-checklist.md')
     }
 
     if ($row.Id -eq 'rootblight-visual-behavior') {
         $rootblightChecklist = @(
             '# Rootblight / Blight Sprout Behavior Checklist',
             '',
-            'Copy this file to `rootblight-behavior-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `rootblight-behavior-checklist.md`. Fill the working `rootblight-behavior-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
-            '- `godot.log` from the live run with `EZMB_RELEASE_EVIDENCE_LOG=1` when possible.',
+            '- `godot.log` from the live run with `SPIREPLUS_RELEASE_EVIDENCE_LOG=1` when possible.',
             '- `godot-log-audit.json` showing no release-blocking signatures.',
             '- `result-note.md` summarizing which Ascension level, act, and combat type was tested.',
             '- Screenshots are strongly recommended for card hand visibility, card hover, combat notices, and post-save/load state.',
@@ -584,9 +613,10 @@ foreach ($row in $manualRows) {
             '| Scenario ID | Expected behavior | Live result | Evidence file(s) |',
             '| --- | --- | --- | --- |',
             '| rootblight-start-eligibility | A14+ run starts/repairs Rootblight setup only after a real deck card exists; no silent permanent disable if the deck is temporarily unavailable. |  |  |',
-            '| normal-sprout-appearance | Normal combat contexts that should add Blight Sprout show the card in hand/draw flow and in logs. |  |  |',
+            '| normal-rootblight-continuity | Ordinary normal combats do not add Blight Sprout in the current design; they should still mark existing Rootblight, show it in the deck/hand flow, and resolve combat-end growth/cap rules. |  |  |',
             '| elite-single-sprout | Elite combat adds exactly one Blight Sprout at the expected timing and does not duplicate across reload/reentry. |  |  |',
             '| boss-two-sprouts-staggered | Act 2/3 Boss combat adds two Blight Sprouts on the staggered turns, with both cards visible when expected. |  |  |',
+            '| husk-exhaust-block-timing | Withered Husk grants exactly 3 Block when it is Exhausted, not when it merely has Ethereal/Void text or sits in hand. |  |  |',
             '| combat-end-growth | An unresolved Blight Sprout grows into Rootblight after combat; handled/planted Sprouts do not grow. |  |  |',
             '| rootblight-cap-four | Rootblight respects the current maximum and Rootblight III split/growth rule without exceeding 4 cards. |  |  |',
             '| rootblight-save-load | Save/load before Sprout entry, during combat, and after combat preserves pending markers and deck state. |  |  |',
@@ -595,14 +625,14 @@ foreach ($row in $manualRows) {
             'Do not use this row to cover A11 route traversal, Ancient clicked UI, or co-op. Those have separate verifier rows.'
         ) -join [Environment]::NewLine
 
-        $rootblightChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'rootblight-behavior-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $rootblightChecklist -TemplatePath (Join-Path $rowEvidenceFull 'rootblight-behavior-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'rootblight-behavior-checklist.md')
     }
 
     if ($row.Id -eq 'art-resource-routing-live-preview') {
         $artRoutingChecklist = @(
             '# Art / Resource Routing Checklist',
             '',
-            'Copy this file to `art-resource-routing-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `art-resource-routing-checklist.md`. Fill the working `art-resource-routing-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
             '- `window-preflight.json` proving Slay the Spire 2 was the foreground window for clicked UI screenshots.',
@@ -614,7 +644,7 @@ foreach ($row in $manualRows) {
             '',
             '| Surface ID | Expected routing | Live result | Evidence file(s) |',
             '| --- | --- | --- | --- |',
-            '| title-home-preview | Spire Plus title/home preview image fits the UI frame and does not stretch, crop critical subject matter, or use stale EZ Micro Balance branding. |  |  |',
+            '| title-home-preview | Spire Plus title/home preview image fits the UI frame and does not stretch, crop critical subject matter, or use stale pre-refresh branding. |  |  |',
             '| urda-clicked-background | Urda large background appears only on the clicked Ancient screen/event surface and fits behind option rows. |  |  |',
             '| morvi-clicked-background | Morvi large background appears only on the clicked Ancient screen/event surface and fits behind option rows. |  |  |',
             '| lotha-clicked-background | Lotha large background appears only on the clicked Ancient screen/event surface and fits behind option rows. |  |  |',
@@ -630,14 +660,14 @@ foreach ($row in $manualRows) {
             'Do not use this row to cover gameplay correctness. Ancient reward relic visibility, Rootblight behavior, A19/A20 combat, and Vakuu return paths have separate verifier rows.'
         ) -join [Environment]::NewLine
 
-        $artRoutingChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'art-resource-routing-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $artRoutingChecklist -TemplatePath (Join-Path $rowEvidenceFull 'art-resource-routing-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'art-resource-routing-checklist.md')
     }
 
     if ($row.Id -eq 'player-text-tooltip-readability') {
         $playerTextChecklist = @(
             '# Player Text / Tooltip QA Checklist',
             '',
-            'Copy this file to `player-text-qa-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `player-text-qa-checklist.md`. Fill the working `player-text-qa-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
             '- `godot.log` and clean `godot-log-audit.json` from the same session.',
@@ -662,14 +692,14 @@ foreach ($row in $manualRows) {
             'Do not use this row to cover gameplay correctness. Ancient rewards, art routing, Rootblight behavior, A19/A20 combat, Vakuu return, save-load, and co-op have separate verifier rows.'
         ) -join [Environment]::NewLine
 
-        $playerTextChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'player-text-qa-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $playerTextChecklist -TemplatePath (Join-Path $rowEvidenceFull 'player-text-qa-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'player-text-qa-checklist.md')
     }
 
     if ($row.Id -eq 'vakuu-victory-no-black-screen') {
         $vakuuVictoryChecklist = @(
             '# Vakuu Victory / No Black Screen Checklist',
             '',
-            'Copy this file to `vakuu-victory-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `vakuu-victory-checklist.md`. Fill the working `vakuu-victory-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
             '- `godot.log` and clean `godot-log-audit.json` from the same session.',
@@ -691,14 +721,14 @@ foreach ($row in $manualRows) {
             'Do not use this row to cover failure/death or save-load. Those have separate verifier rows.'
         ) -join [Environment]::NewLine
 
-        $vakuuVictoryChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'vakuu-victory-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $vakuuVictoryChecklist -TemplatePath (Join-Path $rowEvidenceFull 'vakuu-victory-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'vakuu-victory-checklist.md')
     }
 
     if ($row.Id -eq 'vakuu-failure-death-path') {
         $vakuuFailureDeathChecklist = @(
             '# Vakuu Failure / Death Checklist',
             '',
-            'Copy this file to `vakuu-failure-death-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `vakuu-failure-death-checklist.md`. Fill the working `vakuu-failure-death-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
             '- `godot.log` and clean `godot-log-audit.json` from the same session.',
@@ -719,14 +749,14 @@ foreach ($row in $manualRows) {
             'Do not use this row to cover victory return or save-load. Those have separate verifier rows.'
         ) -join [Environment]::NewLine
 
-        $vakuuFailureDeathChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'vakuu-failure-death-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $vakuuFailureDeathChecklist -TemplatePath (Join-Path $rowEvidenceFull 'vakuu-failure-death-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'vakuu-failure-death-checklist.md')
     }
 
     if ($row.Id -eq 'vakuu-active-fight-save-load') {
         $vakuuSaveLoadChecklist = @(
             '# Vakuu Save / Load Checklist',
             '',
-            'Copy this file to `vakuu-save-load-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `vakuu-save-load-checklist.md`. Fill the working `vakuu-save-load-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
             '- `godot.log` and clean `godot-log-audit.json` from the same session.',
@@ -748,14 +778,14 @@ foreach ($row in $manualRows) {
             'Do not use this row to cover victory without reload or failure/death. Those have separate verifier rows.'
         ) -join [Environment]::NewLine
 
-        $vakuuSaveLoadChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'vakuu-save-load-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $vakuuSaveLoadChecklist -TemplatePath (Join-Path $rowEvidenceFull 'vakuu-save-load-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'vakuu-save-load-checklist.md')
     }
 
     if ($row.Id -eq 'preview-tools-live-proof') {
         $previewToolsChecklist = @(
             '# Preview Tools Checklist',
             '',
-            'Copy this file to `preview-tools-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `preview-tools-checklist.md`. Fill the working `preview-tools-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
             '- `environment.json` and `package-hashes.json` for the tested package.',
@@ -781,14 +811,14 @@ foreach ($row in $manualRows) {
             'Do not use this row to cover Ancient reward relic visibility, Vakuu, Rootblight, or general UI art. Those have separate verifier rows.'
         ) -join [Environment]::NewLine
 
-        $previewToolsChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'preview-tools-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $previewToolsChecklist -TemplatePath (Join-Path $rowEvidenceFull 'preview-tools-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'preview-tools-checklist.md')
     }
 
     if ($row.Id -eq 'coop-disposition') {
         $coopChecklist = @(
             '# Co-op Disposition Checklist',
             '',
-            'Copy this file to `coop-disposition-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `coop-disposition-checklist.md`. Fill the working `coop-disposition-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
             '- `host-godot.log` and clean `host-godot-log-audit.json`.',
@@ -800,7 +830,7 @@ foreach ($row in $manualRows) {
             '',
             '| Scenario ID | Expected behavior | Live result | Evidence file(s) |',
             '| --- | --- | --- | --- |',
-            '| coop-host-join-clean-logs | Host and client load exactly BaseLib plus Spire Plus/EZMicroBalance with matching package hashes and clean logs. |  |  |',
+            '| coop-host-join-clean-logs | Host and client load exactly BaseLib plus Spire Plus with matching package hashes and clean logs. |  |  |',
             '| coop-a11-a20-selection | A11-A20 selection/start-run behavior is recorded on host and client; selection visibility alone is not gameplay support. |  |  |',
             '| coop-ancients | Urda, Morvi, Lotha, and gated Vakuu have explicit host/client disposition notes for reward state and relic visibility. |  |  |',
             '| coop-root-eyes | Root Eyes map preview either stays gated in co-op or shows host/client-consistent map state with no desync. |  |  |',
@@ -812,17 +842,17 @@ foreach ($row in $manualRows) {
             'Do not use this row to cover single-player behavior. Single-player Ancient, Vakuu, Rootblight, preview, and A19/A20 rows have separate verifier gates.'
         ) -join [Environment]::NewLine
 
-        $coopChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'coop-disposition-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $coopChecklist -TemplatePath (Join-Path $rowEvidenceFull 'coop-disposition-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'coop-disposition-checklist.md')
     }
 
     if ($row.Id -eq 'a19-a20-dedicated-boss-abilities') {
         $bossChecklist = @(
             '# A19/A20 Dedicated Boss Ability Checklist',
             '',
-            'Copy this file to `boss-ability-checklist.md` and fill it with live results before marking this row pass.',
+            'Template reference for `boss-ability-checklist.md`. Fill the working `boss-ability-checklist.md` with live results before marking this row pass.',
             '',
             'Required evidence:',
-            '- `godot.log` from the live run with `EZMB_RELEASE_EVIDENCE_LOG=1` when possible.',
+            '- `godot.log` from the live run with `SPIREPLUS_RELEASE_EVIDENCE_LOG=1` when possible.',
             '- `godot-log-audit.json` showing no release-blocking signatures.',
             '- `result-note.md` summarizing which Bosses were tested and which rows failed.',
             '- Screenshots are optional for this gameplay row but strongly recommended for intent and hover issues.',
@@ -847,7 +877,7 @@ foreach ($row in $manualRows) {
             'Do not use this row to cover A11 map traversal, Ancient UI, Vakuu fight return, or co-op. Those have separate verifier rows.'
         ) -join [Environment]::NewLine
 
-        $bossChecklist | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'boss-ability-checklist-template.md') -Encoding UTF8
+        Write-ChecklistFiles -TemplateContent $bossChecklist -TemplatePath (Join-Path $rowEvidenceFull 'boss-ability-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'boss-ability-checklist.md')
     }
 }
 

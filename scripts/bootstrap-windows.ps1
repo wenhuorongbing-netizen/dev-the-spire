@@ -16,7 +16,7 @@ function Fail($Message) {
     exit 1
 }
 
-Write-Host 'Spire Plus / EZMicroBalance Windows bootstrap'
+Write-Host 'Spire Plus Windows bootstrap'
 Write-Host 'This script validates local tools, creates Directory.Build.props from the example if needed, and runs build/publish.'
 
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
@@ -94,4 +94,4 @@ if (-not $SkipPublish) {
 }
 
 Write-Host 'Bootstrap completed.'
-Write-Host 'Launch Slay the Spire 2, open Settings -> Mod Settings, and confirm BaseLib plus Spire Plus / EZMicroBalance appear and are enabled.'
+Write-Host 'Launch Slay the Spire 2, open Settings -> Mod Settings, and confirm BaseLib plus Spire Plus appear and are enabled.'

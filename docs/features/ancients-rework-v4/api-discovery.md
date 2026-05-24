@@ -93,7 +93,7 @@ Implemented with narrow Harmony patches. The original batch was developed in the
 Historical limits after batch 2, superseded by later finish evidence below:
 
 - In-game localization/resources were not rewritten in that batch. The current active resource pass now provides English and Simplified Chinese overrides for changed relic/card/rest-site text.
-- `Claws`, `Crossbow`, `Fiddle`, `JeweledMask`, `ChoicesParadox`, `PrismaticGem`, `PaelsTooth`, rest-site changes, and reward-slot rewrites were later implemented with the local API evidence documented below. They remain manual-runtime pending, not source-deferred.
+- `SereTalon`, `Crossbow`, `Fiddle`, `JeweledMask`, `ChoicesParadox`, `PrismaticGem`, `PaelsTooth`, rest-site changes, and reward-slot rewrites were later implemented with the local API evidence documented below. `Claws` (`Tanx Claws` in player text) is the separate Tanx Maul-transform relic and is not the Vakuu curse/Wish relic. They remain manual-runtime pending, not source-deferred.
 - `Debt` now loses gold on `CardCmd.Exhaust(...)`; manual testing should confirm all expected exhaust paths use that command.
 
 ## Finish Batch API Evidence
@@ -102,7 +102,7 @@ Timestamp: 2026-05-05 17:14:30 +02:00.
 
 Additional local APIs inspected:
 
-- `CardSelectCmd.FromChooseABundleScreen(Player, IReadOnlyList<IReadOnlyList<CardModel>>)` can present four one-card curse bundles without a combat `PlayerChoiceContext`, so `Claws` can safely draft one curse on pickup.
+- `SereTalon` uses the source pickup path, so it does not need a custom curse-selection screen.
 - `CardSelectCmd.FromChooseACardScreen(PlayerChoiceContext, IReadOnlyList<CardModel>, Player, bool canSkip)` accepts one card and a skip option. This supports `Crossbow` and `ToastyMittens` lightweight accept/skip prompts.
 - `AbstractModel.BeforeSideTurnStart(PlayerChoiceContext, CombatSide, IReadOnlyList<Creature>, ICombatState)` is inherited by `Crossbow`, while `Crossbow.AfterSideTurnStart(...)` contains the vanilla unconditional generated-attack add. The finish batch patches the inherited before-turn hook for the offer and no-ops the vanilla after-turn add.
 - `Fiddle.ModifyHandDrawLate(...)` and `Fiddle.ShouldDraw(...)` are narrow relic hooks for replacing the vanilla draw-to-7 behavior and removing the old blanket draw prevention. `CardPileCmd.Draw(...)` is the command-level draw path; prefixing it allows a player-turn non-hand-draw cap of 7 while leaving draw effects callable.
@@ -116,7 +116,7 @@ Additional local APIs inspected:
 
 Implemented in finish batch:
 
-- `Claws`: draft one curse from four safer curse candidates, add 2 `Wish` plus 1 upgraded `Wish+`.
+- `SereTalon`: source behavior adds two random Curses and 3 `Wish`. Do not patch `Claws`; that relic belongs to Tanx and transforms cards into `Maul`.
 - `Crossbow`: each owner turn offers one generated attack; accept adds it to hand with temporary cost -1, `Ethereal`, and `Exhaust`; skip removes the generated combat card.
 - `Fiddle`: start-of-turn hand draw targets 7, vanilla blanket draw prevention is disabled, and non-hand-draw player-turn draw is capped at the remaining room up to 7.
 - `JeweledMask`: on pickup, select an unenchanted deck power or draft one generated character power; enchant it with a persistent custom marker that permanently sets energy cost to 0; combat start pulls the marked power from draw pile to hand.

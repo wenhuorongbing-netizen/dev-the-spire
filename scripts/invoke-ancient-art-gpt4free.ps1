@@ -291,7 +291,7 @@ else {
 }
 
 $assembledPrompt = @"
-Generate exactly one original Spire Plus / EZMicroBalance image asset.
+Generate exactly one original Spire Plus image asset.
 
 Required generation mode:
 generation_mode: $RequiredGenerationMode

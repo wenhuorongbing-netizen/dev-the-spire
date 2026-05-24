@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 
@@ -39,7 +39,7 @@ internal static partial class AscensionMapService
             evidence.HasStartToBossRouteAvoidingInsertedColumn;
 
         var message =
-            $"[EZMicroBalance] Ascension A11 source-boundary check: boundary={boundary}; actIndex={actIndex}; columns={map.GetColumnCount()}/{targetColumns}; rows={map.GetRowCount()}/{targetRows}; insertedColumnRoute={evidence.HasInsertedColumnRouteChoice}; originalRoutePreserved={evidence.HasStartToBossRouteAvoidingInsertedColumn}; insertedColumnRouteChoices={evidence.InsertedColumnRouteChoiceCount}.";
+            $"[Spire Plus] Ascension A11 source-boundary check: boundary={boundary}; actIndex={actIndex}; columns={map.GetColumnCount()}/{targetColumns}; rows={map.GetRowCount()}/{targetRows}; insertedColumnRoute={evidence.HasInsertedColumnRouteChoice}; originalRoutePreserved={evidence.HasStartToBossRouteAvoidingInsertedColumn}; insertedColumnRouteChoices={evidence.InsertedColumnRouteChoiceCount}.";
 
         if (!evidenceAvailable)
         {
@@ -72,7 +72,7 @@ internal static partial class AscensionMapService
         }
         catch (Exception ex)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] Ascension A11 geometry diagnostic failed: {ex.Message}");
+            MainFile.Logger.Warn($"[Spire Plus] Ascension A11 geometry diagnostic failed: {ex.Message}");
             evidence = new A11MapGeometryEvidence(A11InsertedColumn, false, false, false, 0);
             return false;
         }

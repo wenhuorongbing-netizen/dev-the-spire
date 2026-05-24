@@ -35,10 +35,10 @@ Use `features/README.md` as the compact feature index.
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current Urda, Morvi, Lotha, and Vakuu roadmap/status. |
 | Ancient reward rebalance v4 | `features/ancients-rework-v4/README.md` | Active Spire Plus core feature. v4.3 is current. |
 | Ascension 11-20 | `features/ascension-11-20/README.md` | Active development track, default-on for private-beta multiplayer testing, not release-verified. |
-| Urda ancient expansion support | `features/ancient-expansion-urda/README.md` | Support evidence for the current default-on Urda slice with ten source-backed blessings; active goal/issues/v2.2/v3.3 docs override older behavior if they conflict. |
+| Urda ancient expansion support | `features/ancient-expansion-urda/README.md` | Support evidence for the current default-on Urda slice with eleven source-backed blessings; active goal/issues/v2.2/v3.3 docs override older behavior if they conflict. |
 | Preview tools | `features/preview-tools/README.md` | Crystal Sphere peek and transform preview now ship inside the single Spire Plus mod. |
 | Public forum | `features/forum/technical-spec.md` | GitHub Pages + Supabase anonymous text forum; go-live steps are in `features/forum/go-live-checklist.md`. |
-| Independent mod architecture | `architecture-ez-micro-balance.md` | Why `EZMicroBalance` is the single active deliverable. |
+| Independent mod architecture | `architecture-ez-micro-balance.md` | Why `Spire Plus` keeps the stable `EZMicroBalance` technical id. |
 
 ## Validation And Release Support
 

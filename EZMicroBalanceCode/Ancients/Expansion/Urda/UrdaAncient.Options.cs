@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
@@ -18,6 +18,7 @@ internal sealed partial class EzmbUrda
             MossMapSelectionOption,
             TrialBranchSelectionOption,
             ShallowRootRelicSelectionOption,
+            EliteRootSelectionOption,
             RootedRouteSelectionOption,
             AfterRainSelectionOption,
             RootSightSelectionOption,
@@ -45,7 +46,7 @@ internal sealed partial class EzmbUrda
             return [forced];
         }
 
-        MainFile.Logger.Warn($"[EZMicroBalance] Urda forced blessing '{forcedBlessing}' did not match any option; showing fallback options.");
+        MainFile.Logger.Warn($"[Spire Plus] Urda forced blessing '{forcedBlessing}' did not match any option; showing fallback options.");
         return TakeFallbackOptions(options, includeReroll: true);
     }
 
@@ -56,13 +57,13 @@ internal sealed partial class EzmbUrda
     {
         if (options.Count == 0)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Urda has no source-backed Ancient options to show; the event will finish instead of presenting a blank Ancient screen.");
+            MainFile.Logger.Warn("[Spire Plus] Urda has no source-backed Ancient options to show; the event will finish instead of presenting a blank Ancient screen.");
             return [];
         }
 
         if (options.Count < ExpectedInitialOptionCount)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] Urda only has {options.Count} source-backed option(s), expected {ExpectedInitialOptionCount}; showing all available options.");
+            MainFile.Logger.Warn($"[Spire Plus] Urda only has {options.Count} source-backed option(s), expected {ExpectedInitialOptionCount}; showing all available options.");
         }
 
         var candidates = excludedTextKeys is { Count: > 0 }
@@ -100,7 +101,7 @@ internal sealed partial class EzmbUrda
         var rerolled = TakeFallbackOptions(options, includeReroll: false, previousChoices);
         AncientInitialOptionReroll.ReplaceGeneratedOptionsForHistory(this, rerolled);
         SetEventState(InitialDescription, rerolled);
-        MainFile.Logger.Info("[EZMicroBalance] Urda initial Ancient rewards rerolled once.");
+        MainFile.Logger.Info("[Spire Plus] Urda initial Ancient rewards rerolled once.");
         return Task.CompletedTask;
     }
 }

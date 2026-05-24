@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Events;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
@@ -42,7 +42,7 @@ internal sealed partial class EzmbLotha
             return [forced];
         }
 
-        MainFile.Logger.Warn($"[EZMicroBalance] Lotha forced blessing '{forcedBlessing}' did not match any option; showing fallback options.");
+        MainFile.Logger.Warn($"[Spire Plus] Lotha forced blessing '{forcedBlessing}' did not match any option; showing fallback options.");
         return TakeFallbackOptions(options, includeReroll: true);
     }
 
@@ -53,13 +53,13 @@ internal sealed partial class EzmbLotha
     {
         if (options.Count == 0)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Lotha has no source-backed Ancient options to show; the event will finish instead of presenting a blank Ancient screen.");
+            MainFile.Logger.Warn("[Spire Plus] Lotha has no source-backed Ancient options to show; the event will finish instead of presenting a blank Ancient screen.");
             return [];
         }
 
         if (options.Count < ExpectedInitialOptionCount)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] Lotha only has {options.Count} source-backed option(s), expected {ExpectedInitialOptionCount}; showing all available options.");
+            MainFile.Logger.Warn($"[Spire Plus] Lotha only has {options.Count} source-backed option(s), expected {ExpectedInitialOptionCount}; showing all available options.");
         }
 
         var candidates = excludedTextKeys is { Count: > 0 }
@@ -99,7 +99,7 @@ internal sealed partial class EzmbLotha
         var rerolled = TakeFallbackOptions(options, includeReroll: false, previousChoices);
         AncientInitialOptionReroll.ReplaceGeneratedOptionsForHistory(this, rerolled);
         SetEventState(InitialDescription, rerolled);
-        MainFile.Logger.Info("[EZMicroBalance] Lotha initial Ancient rewards rerolled once.");
+        MainFile.Logger.Info("[Spire Plus] Lotha initial Ancient rewards rerolled once.");
         return Task.CompletedTask;
     }
 

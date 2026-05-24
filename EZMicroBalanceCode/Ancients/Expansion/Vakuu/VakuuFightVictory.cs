@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
@@ -36,8 +36,8 @@ internal static partial class VakuuFightService
             });
         MainFile.Logger.Info(
             options[0].TextKey == VictoryFallbackOptionKey
-                ? "[EZMicroBalance] Vakuu fight victory had no unclaimed non-Vakuu Act 3 Ancient blessing options; using explicit fallback."
-                : $"[EZMicroBalance] Vakuu fight victory resolved with {GetEncounter(combatRoom).BrokenLocks} broken locks, {options.Count} blessing choices, and {GetEncounter(combatRoom).VictoryGold} bonus Gold.");
+                ? "[Spire Plus] Vakuu fight victory had no unclaimed non-Vakuu Act 3 Ancient blessing options; using explicit fallback."
+                : $"[Spire Plus] Vakuu fight victory resolved with {GetEncounter(combatRoom).BrokenLocks} broken locks, {options.Count} blessing choices, and {GetEncounter(combatRoom).VictoryGold} bonus Gold.");
         return Task.CompletedTask;
     }
 
@@ -48,7 +48,7 @@ internal static partial class VakuuFightService
         var owner = vakuu.Owner;
         if (owner is null)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Vakuu fight victory resume had no owner; using the explicit fallback path. Live restore for this path remains pending.");
+            MainFile.Logger.Info("[Spire Plus] Vakuu fight victory resume had no owner; using the explicit fallback path. Live restore for this path remains pending.");
             return [CreateVictoryFallbackOption(vakuu, combatRoom)];
         }
 
@@ -128,7 +128,7 @@ internal static partial class VakuuFightService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Vakuu rewards settled: locks={encounter.BrokenLocks}, lootGold={encounter.VictoryLootGold}, bloodDebt={encounter.BloodDebt}, paidGold={encounter.VictoryGold}, shortfall={encounter.BloodDebtShortfall}.");
+            $"[Spire Plus] Vakuu rewards settled: locks={encounter.BrokenLocks}, lootGold={encounter.VictoryLootGold}, bloodDebt={encounter.BloodDebt}, paidGold={encounter.VictoryGold}, shortfall={encounter.BloodDebtShortfall}.");
     }
 
 }

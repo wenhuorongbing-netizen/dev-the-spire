@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Commands;
+﻿using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Rooms;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
@@ -14,7 +14,7 @@ internal static partial class VakuuFightService
             "victory_rewards_suppressed",
             runState: combatRoom.CombatState.RunState);
         MainFile.Logger.Info(
-            "[EZMicroBalance] Vakuu fight has no normal combat rewards; resuming the Vakuu event reward choice.");
+            "[Spire Plus] Vakuu fight has no normal combat rewards; resuming the Vakuu event reward choice.");
 
         if (combatRoom.ShouldResumeParentEventAfterCombat &&
             combatRoom.CombatState.RunState.CurrentRoomCount > 1)
@@ -38,7 +38,7 @@ internal static partial class VakuuFightService
     private static async Task ProceedFromMissingParentStackNoRewardVictory(CombatRoom combatRoom)
     {
         MainFile.Logger.Warn(
-            "[EZMicroBalance] Vakuu fight no-reward resume found no valid parent event stack; opening the map instead of leaving a finished combat screen.");
+            "[Spire Plus] Vakuu fight no-reward resume found no valid parent event stack; opening the map instead of leaving a finished combat screen.");
 
         await Cmd.Wait(0.2f);
         NMapScreen.Instance?.SetTravelEnabled(enabled: true);

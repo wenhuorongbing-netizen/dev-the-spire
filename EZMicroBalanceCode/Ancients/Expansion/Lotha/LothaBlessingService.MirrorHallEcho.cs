@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 internal static partial class LothaBlessingService
 {
@@ -21,7 +21,7 @@ internal static partial class LothaBlessingService
         combatState.MirrorHallEchoArmedType = null;
         combatState.PowerReplacementCardPendingBenefit = null;
         await ApplyPowerReplacementBenefit(choiceContext, cardPlay.Card.Owner);
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Mirror Hall Echo used the Power-card replacement benefit: cost 0 and draw 1.");
+        MainFile.Logger.Info("[Spire Plus] Lotha Mirror Hall Echo used the Power-card replacement benefit: cost 0 and draw 1.");
     }
 
     private static void RecordMirrorHallEchoType(Player player, LothaCombatState combatState)
@@ -40,7 +40,7 @@ internal static partial class LothaBlessingService
         combatState.MirrorHallEchoRecordedType = lastPlayedType;
         if (lastPlayedType.HasValue)
         {
-            MainFile.Logger.Info($"[EZMicroBalance] Lotha Mirror Hall Echo recorded {lastPlayedType.Value} for next turn.");
+            MainFile.Logger.Info($"[Spire Plus] Lotha Mirror Hall Echo recorded {lastPlayedType.Value} for next turn.");
         }
     }
 

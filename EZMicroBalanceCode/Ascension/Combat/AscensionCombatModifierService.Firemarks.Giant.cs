@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -9,7 +9,7 @@ internal static partial class AscensionCombatModifierService
         var giantMaxHp = Math.Ceiling(host.MaxHp * (1m + (maxHpPercent / 100m)));
         await CreatureCmd.SetMaxAndCurrentHp(host, giantMaxHp);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A12 applied: Giant firemark host {host.Name} max HP increased to {host.MaxHp}.");
+            $"[Spire Plus] Ascension A12 applied: Giant firemark host {host.Name} max HP increased to {host.MaxHp}.");
     }
 
     private static async Task TrackMoltenCoreDamage(
@@ -28,7 +28,7 @@ internal static partial class AscensionCombatModifierService
             var originalMaxHp = tracker.FiremarkOriginalMaxHp > 0m ? tracker.FiremarkOriginalMaxHp : host.MaxHp;
             tracker.FiremarkCoreDamageNeeded = Math.Ceiling(originalMaxHp * GetMoltenCoreDamagePercent(combatState) / 100m);
             await PowerCmd.Apply<MoltenCoreFiremarkPower>(new BlockingPlayerChoiceContext(), host, tracker.FiremarkCoreDamageNeeded, host, null);
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Giant firemark exposed Molten Core.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A12 applied: Giant firemark exposed Molten Core.");
         }
 
         if (!wasExposedBeforeThisHit ||
@@ -49,7 +49,7 @@ internal static partial class AscensionCombatModifierService
         await PowerCmd.Remove(host.GetPower<MoltenCoreFiremarkPower>());
         await CreatureCmd.SetMaxHp(host, Math.Max(1m, host.MaxHp - Math.Ceiling(host.MaxHp * 0.1m)));
         await ApplyGiantOverflowDamage(combatState, tracker, host);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Molten Core broke and reduced Firemarked enemy max HP.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A12 applied: Molten Core broke and reduced Firemarked enemy max HP.");
     }
 
     private static async Task ApplyGiantOverflowDamage(
@@ -85,6 +85,6 @@ internal static partial class AscensionCombatModifierService
         tracker.FiremarkCoreResolved = true;
         await PowerCmd.Remove(host.GetPower<MoltenCoreFiremarkPower>());
         await PowerCmd.Apply<ArtifactPower>(new BlockingPlayerChoiceContext(), host, 1m, host, null);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Molten Core window expired and the Firemarked enemy gained Artifact.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A12 applied: Molten Core window expired and the Firemarked enemy gained Artifact.");
     }
 }

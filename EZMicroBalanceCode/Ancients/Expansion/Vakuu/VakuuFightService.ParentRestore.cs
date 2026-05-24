@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Entities.Ancients;
+﻿using MegaCrit.Sts2.Core.Entities.Ancients;
 using System.Runtime.CompilerServices;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
@@ -31,7 +31,7 @@ internal static partial class VakuuFightService
             {
                 ["parentEventId"] = serializableRoom.ParentEventId.ToString()
             });
-        MainFile.Logger.Info("[EZMicroBalance] Vakuu pre-finished fight save records Vakuu as the resume parent event.");
+        MainFile.Logger.Info("[Spire Plus] Vakuu pre-finished fight save records Vakuu as the resume parent event.");
     }
 
     public static void ArmPrefinishedParentRestoreHealSkip(
@@ -61,7 +61,7 @@ internal static partial class VakuuFightService
                 ["remainingSkips"] = state.RemainingSkips
             });
         MainFile.Logger.Info(
-            "[EZMicroBalance] Vakuu pre-finished fight restore armed duplicate Ancient heal skip for the parent event.");
+            "[Spire Plus] Vakuu pre-finished fight restore armed duplicate Ancient heal skip for the parent event.");
     }
 
     public static bool ShouldSkipPrefinishedParentRestoreHeal(
@@ -84,7 +84,7 @@ internal static partial class VakuuFightService
         }
 
         MainFile.Logger.Info(
-            "[EZMicroBalance] Vakuu pre-finished fight restore skipped duplicate Ancient heal on the reconstructed parent event.");
+            "[Spire Plus] Vakuu pre-finished fight restore skipped duplicate Ancient heal on the reconstructed parent event.");
         return true;
     }
 

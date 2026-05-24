@@ -49,14 +49,17 @@ public sealed class MorviV22GuardTests
 
         AssertSourceContains(
             gate,
-            "EZMB_DISABLE_MORVI",
-            "SPIREPLUS_DISABLE_MORVI",
-            "EZMB_FORCE_ANCIENT",
-            "SPIREPLUS_FORCE_ANCIENT",
-            "EZMB_FORCE_MORVI_BLESSING",
-            "SPIREPLUS_FORCE_MORVI_BLESSING",
+            "DisableEnvironmentVariable = \"SPIREPLUS_DISABLE_MORVI\"",
+            "LegacyDisableEnvironmentVariable = \"EZMB_DISABLE_MORVI\"",
+            "ForceAncientEnvironmentVariable = \"SPIREPLUS_FORCE_ANCIENT\"",
+            "LegacyForceAncientEnvironmentVariable = \"EZMB_FORCE_ANCIENT\"",
+            "ForceBlessingEnvironmentVariable = \"SPIREPLUS_FORCE_MORVI_BLESSING\"",
+            "LegacyForceBlessingEnvironmentVariable = \"EZMB_FORCE_MORVI_BLESSING\"",
             "ShouldForceMorvi",
-            "AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable)");
+            "FirstRawEnvironmentValue(ForceAncientEnvironmentVariable, LegacyForceAncientEnvironmentVariable)",
+            "FirstRawEnvironmentValue(ForceBlessingEnvironmentVariable, LegacyForceBlessingEnvironmentVariable)",
+            "AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable)",
+            "AncientFeatureGate.IsTruthyEnvironmentVariable(LegacyDisableEnvironmentVariable)");
         Assert.DoesNotContain("return IsTruthy(value);", gate, StringComparison.Ordinal);
 
         AssertSourceContains(

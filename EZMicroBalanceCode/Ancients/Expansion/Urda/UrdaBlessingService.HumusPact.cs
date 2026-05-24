@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
+﻿using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Rewards;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -80,7 +80,7 @@ internal static partial class UrdaBlessingService
         SetProgress(player, progress);
         await PlayerCmd.GainGold(HumusGoldPerSkip, player);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Humus Pact applied: composted normal combat card reward {progress.HumusSkips}/{HumusRequiredSkips}; gained {HumusGoldPerSkip} gold.");
+            $"[Spire Plus] Urda Humus Pact applied: composted normal combat card reward {progress.HumusSkips}/{HumusRequiredSkips}; gained {HumusGoldPerSkip} gold.");
     }
 
     private static async Task<bool> ResolveHumusCompletion(Player player)
@@ -88,7 +88,7 @@ internal static partial class UrdaBlessingService
         var rewardCard = CreateRandomRewardCard(player);
         if (rewardCard == null)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Urda Humus Pact deferred upgraded card reward: no valid reward card could be generated.");
+            MainFile.Logger.Warn("[Spire Plus] Urda Humus Pact deferred upgraded card reward: no valid reward card could be generated.");
             return false;
         }
 
@@ -114,7 +114,7 @@ internal static partial class UrdaBlessingService
             .WithSkippingDisallowed()
             .Offer();
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Humus Pact completed: removed {selectedRemovals.Count} card(s) and offered upgraded {rewardCard.Id.Entry}.");
+            $"[Spire Plus] Urda Humus Pact completed: removed {selectedRemovals.Count} card(s) and offered upgraded {rewardCard.Id.Entry}.");
         return true;
     }
 

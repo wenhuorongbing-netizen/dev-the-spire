@@ -44,20 +44,27 @@ public sealed class UrdaReleaseCoverageGuardTests
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
 
         Assert.Contains("ForceAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("LegacyForceAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
         Assert.Contains("DisableAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
-        Assert.Contains("EZMB_DISABLE_URDA", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("LegacyDisableAncientEnvironmentVariable", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("DisableAncientEnvironmentVariable = \"SPIREPLUS_DISABLE_URDA\"", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("LegacyDisableAncientEnvironmentVariable = \"EZMB_DISABLE_URDA\"", urdaGate, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_DISABLE_URDA", urdaGate, StringComparison.Ordinal);
         Assert.Contains("ForcedAncient", urdaGate, StringComparison.Ordinal);
         Assert.Contains("ShouldForceUrda", urdaGate, StringComparison.Ordinal);
-        Assert.Contains("EZMB_FORCE_ANCIENT", urdaGate, StringComparison.Ordinal);
-        Assert.Contains("SPIREPLUS_FORCE_ANCIENT", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("ForceAncientEnvironmentVariable = \"SPIREPLUS_FORCE_ANCIENT\"", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("LegacyForceAncientEnvironmentVariable = \"EZMB_FORCE_ANCIENT\"", urdaGate, StringComparison.Ordinal);
         Assert.Contains("ForceBlessingEnvironmentVariable", urdaGate, StringComparison.Ordinal);
-        Assert.Contains("EZMB_FORCE_URDA_BLESSING", urdaGate, StringComparison.Ordinal);
-        Assert.Contains("SPIREPLUS_FORCE_URDA_BLESSING", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("LegacyForceBlessingEnvironmentVariable", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("ForceBlessingEnvironmentVariable = \"SPIREPLUS_FORCE_URDA_BLESSING\"", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("LegacyForceBlessingEnvironmentVariable = \"EZMB_FORCE_URDA_BLESSING\"", urdaGate, StringComparison.Ordinal);
         Assert.Contains("AncientFeatureGate.FirstNonBlankEnvironmentValue", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("FirstNonBlankEnvironmentValue(ForceAncientEnvironmentVariable, LegacyForceAncientEnvironmentVariable)", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("FirstNonBlankEnvironmentValue(ForceBlessingEnvironmentVariable, LegacyForceBlessingEnvironmentVariable)", urdaGate, StringComparison.Ordinal);
         Assert.Contains("OrdinalIgnoreCase", urdaGate, StringComparison.Ordinal);
         Assert.Contains("string.Equals(", urdaGate, StringComparison.Ordinal);
         Assert.Contains("AncientFeatureGate.IsTruthyEnvironmentVariable(DisableAncientEnvironmentVariable, trimValue: true)", urdaGate, StringComparison.Ordinal);
+        Assert.Contains("AncientFeatureGate.IsTruthyEnvironmentVariable(LegacyDisableAncientEnvironmentVariable, trimValue: true)", urdaGate, StringComparison.Ordinal);
 
         Assert.Contains("IsUrdaEnabled", urdaSource, StringComparison.Ordinal);
         Assert.Contains("UrdaFeatureGate.ShouldForceUrda", urdaSource, StringComparison.Ordinal);
@@ -78,6 +85,7 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.Contains("OptionWithRelic<UrdaMossMapOptionRelic>", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("OptionWithRelic<UrdaTrialBranchOptionRelic>", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("OptionWithRelic<UrdaShallowRootRelicOptionRelic>", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("OptionWithRelic<UrdaEliteRootOptionRelic>", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("OptionWithRelic<UrdaRootedRouteOptionRelic>", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("OptionWithRelic<UrdaAfterRainOptionRelic>", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("OptionWithRelic<UrdaRootSightOptionRelic>", urdaAncient, StringComparison.Ordinal);
@@ -102,11 +110,12 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.Contains("urda_moss_map", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_trial_branch", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_shallow_root_relic", urdaBlessings, StringComparison.Ordinal);
+        Assert.Contains("urda_elite_root", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_rooted_route", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_after_rain", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_root_sight", urdaBlessings, StringComparison.Ordinal);
         Assert.Contains("urda_seed_bank", urdaBlessings, StringComparison.Ordinal);
-        Assert.Equal(10, Regex.Matches(urdaAncient, @"UrdaBlessingIds\.[A-Za-z]+")
+        Assert.Equal(11, Regex.Matches(urdaAncient, @"UrdaBlessingIds\.[A-Za-z]+")
             .Cast<Match>()
             .Select(match => match.Value)
             .Distinct(StringComparer.Ordinal)
@@ -132,6 +141,7 @@ public sealed class UrdaReleaseCoverageGuardTests
             "UrdaMossMapOptionRelic",
             "UrdaTrialBranchOptionRelic",
             "UrdaShallowRootRelicOptionRelic",
+            "UrdaEliteRootOptionRelic",
             "UrdaRootedRouteOptionRelic",
             "UrdaAfterRainOptionRelic",
             "UrdaRootSightOptionRelic",
@@ -144,7 +154,7 @@ public sealed class UrdaReleaseCoverageGuardTests
             "TaskHelper.RunSafely(UrdaBlessingService.TryExtractSeedBankFromRelicClick(seedBank.Owner))",
             "RefreshStoredSeedDisplay",
             "HoverTipFactory.FromCard(card)");
-        Assert.Equal(10, Regex.Matches(urdaOptionRelics, @"\[Pool\(typeof\(SharedRelicPool\)\)\]").Count);
+        Assert.Equal(11, Regex.Matches(urdaOptionRelics, @"\[Pool\(typeof\(SharedRelicPool\)\)\]").Count);
 
         AssertSourceContains(
             urdaScene,
@@ -166,6 +176,7 @@ public sealed class UrdaReleaseCoverageGuardTests
             "EZMicroBalance/images/ancients/urda/options/urda_moss_map.png",
             "EZMicroBalance/images/ancients/urda/options/urda_trial_branch.png",
             "EZMicroBalance/images/ancients/urda/options/urda_shallow_root_relic.png",
+            "EZMicroBalance/images/ancients/urda/options/urda_elite_root.png",
             "EZMicroBalance/images/ancients/urda/options/urda_rooted_route.png",
             "EZMicroBalance/images/ancients/urda/options/urda_after_rain.png",
             "EZMicroBalance/images/ancients/urda/options/urda_root_sight.png",
@@ -556,6 +567,9 @@ public sealed class UrdaReleaseCoverageGuardTests
                 "EZMICROBALANCE-URDA_SHALLOW_ROOT_RELIC_OPTION_RELIC.title",
                 "EZMICROBALANCE-URDA_SHALLOW_ROOT_RELIC_OPTION_RELIC.description",
                 "EZMICROBALANCE-URDA_SHALLOW_ROOT_RELIC_OPTION_RELIC.flavor",
+                "EZMICROBALANCE-URDA_ELITE_ROOT_OPTION_RELIC.title",
+                "EZMICROBALANCE-URDA_ELITE_ROOT_OPTION_RELIC.description",
+                "EZMICROBALANCE-URDA_ELITE_ROOT_OPTION_RELIC.flavor",
                 "EZMICROBALANCE-URDA_ROOTED_ROUTE_OPTION_RELIC.title",
                 "EZMICROBALANCE-URDA_ROOTED_ROUTE_OPTION_RELIC.description",
                 "EZMICROBALANCE-URDA_ROOTED_ROUTE_OPTION_RELIC.flavor",
@@ -589,6 +603,8 @@ public sealed class UrdaReleaseCoverageGuardTests
                 "EZMB_URDA.pages.INITIAL.options.urda_trial_branch.selectionScreenPrompt",
                 "EZMB_URDA.pages.INITIAL.options.urda_shallow_root_relic.title",
                 "EZMB_URDA.pages.INITIAL.options.urda_shallow_root_relic.description",
+                "EZMB_URDA.pages.INITIAL.options.urda_elite_root.title",
+                "EZMB_URDA.pages.INITIAL.options.urda_elite_root.description",
                 "EZMB_URDA.pages.INITIAL.options.urda_rooted_route.title",
                 "EZMB_URDA.pages.INITIAL.options.urda_rooted_route.description",
                 "EZMB_URDA.pages.INITIAL.options.urda_after_rain.title",

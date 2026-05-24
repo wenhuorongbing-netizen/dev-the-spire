@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 internal static class PaelsToothStoredCardService
 {
@@ -9,7 +9,7 @@ internal static class PaelsToothStoredCardService
     {
         await original;
         AncientSavedStateFields.PaelsToothNonBossCombatCounter[paelsTooth] = 0;
-        MainFile.Logger.Info($"[EZMicroBalance] PaelsTooth applied: stored {paelsTooth.SerializableCards.Count} removed card(s) and reset combat counter.");
+        MainFile.Logger.Info($"[Spire Plus] PaelsTooth applied: stored {paelsTooth.SerializableCards.Count} removed card(s) and reset combat counter.");
     }
 
     public static async Task AfterCombatEnd(PaelsTooth paelsTooth, CombatRoom room)
@@ -36,7 +36,7 @@ internal static class PaelsToothStoredCardService
         AncientSavedStateFields.PaelsToothNonBossCombatCounter[paelsTooth] = counter;
         if (counter < 2)
         {
-            MainFile.Logger.Info($"[EZMicroBalance] PaelsTooth applied: counted non-boss combat {counter}/2 before next upgraded return.");
+            MainFile.Logger.Info($"[Spire Plus] PaelsTooth applied: counted non-boss combat {counter}/2 before next upgraded return.");
             return;
         }
 
@@ -44,7 +44,7 @@ internal static class PaelsToothStoredCardService
         if (returnedCard != null)
         {
             AncientSavedStateFields.PaelsToothNonBossCombatCounter[paelsTooth] = 0;
-            MainFile.Logger.Info($"[EZMicroBalance] PaelsTooth applied: returned upgraded stored card {returnedCard.Id.Entry}; {paelsTooth.SerializableCards.Count} stored card(s) remain.");
+            MainFile.Logger.Info($"[Spire Plus] PaelsTooth applied: returned upgraded stored card {returnedCard.Id.Entry}; {paelsTooth.SerializableCards.Count} stored card(s) remain.");
         }
     }
 
@@ -78,7 +78,7 @@ internal static class PaelsToothStoredCardService
         var selectedPreview = previews.FirstOrDefault(preview => preview.Card == selected);
         if (selected == null || selectedPreview.Saved == null)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] PaelsTooth skipped: stored-card choice returned no selection.");
+            MainFile.Logger.Warn("[Spire Plus] PaelsTooth skipped: stored-card choice returned no selection.");
             return null;
         }
 
@@ -93,7 +93,7 @@ internal static class PaelsToothStoredCardService
         {
             AncientCardHelpers.RemoveUnpiledRunCard(selected);
             RefreshStoredCardDisplay(paelsTooth);
-            MainFile.Logger.Warn($"[EZMicroBalance] PaelsTooth skipped: selected stored card {selected.Id.Entry} could not be returned to the deck.");
+            MainFile.Logger.Warn($"[Spire Plus] PaelsTooth skipped: selected stored card {selected.Id.Entry} could not be returned to the deck.");
             return null;
         }
 
@@ -109,14 +109,14 @@ internal static class PaelsToothStoredCardService
         paelsTooth.SerializableCards.Clear();
         AncientSavedStateFields.PaelsToothNonBossCombatCounter[paelsTooth] = 0;
         RefreshStoredCardDisplay(paelsTooth);
-        MainFile.Logger.Info($"[EZMicroBalance] PaelsTooth applied: cleared {remaining} stored card(s) after {reason}.");
+        MainFile.Logger.Info($"[Spire Plus] PaelsTooth applied: cleared {remaining} stored card(s) after {reason}.");
     }
 
     private static void RefreshStoredCardDisplay(PaelsTooth paelsTooth)
     {
         if (UpdateCardListMethod == null)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] PaelsTooth skipped display refresh: UpdateCardList method was not found.");
+            MainFile.Logger.Warn("[Spire Plus] PaelsTooth skipped display refresh: UpdateCardList method was not found.");
             return;
         }
 

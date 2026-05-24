@@ -1,4 +1,4 @@
-# Ascension 11-20 Implementation Plan
+﻿# Ascension 11-20 Implementation Plan
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
@@ -41,11 +41,11 @@ The current implementation uses the selected run Ascension level after the selec
 - A19 also enables dedicated ability definition lookup, source-guarded boss-specific dedicated ability hooks, and a fourth boss card reward option; all boss-specific mechanics still require live verification.
 - A20 also enables the single-player vanilla double-boss map path, Boss 2 Branded Form metadata/parameters independent of the A19 dedicated ability feature flag, Boss 1 post-combat recovery, one Boss card reward before Boss 2, narrow Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2 with an immediate pre-finished-room save. It does not create a bespoke full custom intermission screen.
 - A11-A20 selection is now default-on in this private-beta multiplayer test candidate for standard single-player and host-multiplayer lobbies.
-- `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection for comparison testing.
-- `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
+- `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection for comparison testing.
+- `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
-- `EZMB_ASCENSION_DEBUG_LEVEL=11` through `20` can still force slice gates for internal checks.
-- `EZMB_ASCENSION_DIAGNOSTICS=1` enables read-only internal run/combat diagnostics without enabling gameplay systems. It must not mutate restored Blight Sprout card state or raise Rootblight by itself.
+- `SPIREPLUS_ASCENSION_DEBUG_LEVEL=11` through `20` can still force slice gates for internal checks.
+- `SPIREPLUS_ASCENSION_DIAGNOSTICS=1` enables read-only internal run/combat diagnostics without enabling gameplay systems. It must not mutate restored Blight Sprout card state or raise Rootblight by itself.
 - Host multiplayer A20 selection/start now logs a development-testing warning because A20 Branded Form / second-boss enhanced dedicated ability gameplay remains single-player gated. A20 multiplayer selection is not full A20 co-op support.
 - Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
 
@@ -108,7 +108,7 @@ Status: implemented; live log verification pending.
 
 Scope:
 
-- `EZMB_ASCENSION_DIAGNOSTICS=1`.
+- `SPIREPLUS_ASCENSION_DIAGNOSTICS=1`.
 - Register the same proven run/combat hook subscriber path even when gameplay debug levels are off.
 - Log run Ascension, act index, debug/public gate state, Rootblight level/card counts, current combat room type, round, boss/elite Blight Sprout gate state, and combat Blight Sprout counts.
 - No deck, map, reward, rest-site, boss-flow, progress, selector, or manifest mutation.
@@ -153,7 +153,7 @@ Scope:
 Gate:
 
 - A14+ through the original single-player Ascension UI.
-- Internal force gate: `EZMB_ASCENSION_DEBUG_LEVEL=14`.
+- Internal force gate: `SPIREPLUS_ASCENSION_DEBUG_LEVEL=14`.
 
 Required exact APIs:
 
@@ -209,7 +209,7 @@ Scope:
 - Before seeding, scan that player's active combat piles for an existing Blight Sprout so hook re-entry or mid-combat reload does not add a duplicate.
 - Boss Blight Sprouts sprout on rounds 3 and 4 by moving to top of draw pile if they have not entered hand; elite Blight Sprout uses round 3.
 - If it entered hand and was not played before combat end, add one Rootblight I after combat, capped by the 4-card Rootblight limit.
-- A18 elite Blight Sprout is also implemented behind `EZMB_ASCENSION_DEBUG_LEVEL=18`, but only for Acts 2/3 elites.
+- A18 elite Blight Sprout is also implemented behind `SPIREPLUS_ASCENSION_DEBUG_LEVEL=18`, but only for Acts 2/3 elites.
 - If a player dies during the combat, that combat's Blight Sprout does not raise Rootblight for that player after the game's pre-end revive path.
 
 Required proof:
@@ -286,7 +286,7 @@ Implemented:
 
 Remaining deferrals:
 
-- Reward reroll behavior, selected-card save/load, card text display, and multiplayer reward synchronization remain unverified. Next proof step: live-test `EZMB_ASCENSION_DEBUG_LEVEL=13` across reward generation, reroll, pick, save/load, and combat play.
+- Reward reroll behavior, selected-card save/load, card text display, and multiplayer reward synchronization remain unverified. Next proof step: live-test `SPIREPLUS_ASCENSION_DEBUG_LEVEL=13` across reward generation, reroll, pick, save/load, and combat play.
 
 ## Phase 6: A16 Banner Rooms
 
@@ -371,7 +371,7 @@ Required proof:
 
 Exact deferrals:
 
-- A20 creates/reveals the second Boss by reusing exact vanilla timing: `RunManager.GenerateRooms()` sets `SecondBossEncounter` before `StandardActMap.CreateFor(...)`, and `NBossMapPoint` renders Boss 1/Boss 2 icons from the act encounters. EZ Micro Balance's postfix only fills `SecondBossEncounter` when A20 is enabled, the run is single-player, and vanilla did not already choose a second Boss.
+- A20 creates/reveals the second Boss by reusing exact vanilla timing: `RunManager.GenerateRooms()` sets `SecondBossEncounter` before `StandardActMap.CreateFor(...)`, and `NBossMapPoint` renders Boss 1/Boss 2 icons from the act encounters. Spire Plus's postfix only fills `SecondBossEncounter` when A20 is enabled, the run is single-player, and vanilla did not already choose a second Boss.
 - A full custom A20 intermission screen is not implemented. Exact API evidence: `NRewardsScreen.OnProceedButtonPressed()` already owns the safe Boss 1 terminal-reward branch to the second Boss when `SecondBossMapPoint` exists, while replacing that flow with bespoke UI would touch `RunManager.ProceedFromTerminalRewardsScreen()` / `CombatManager.EndCombatInternal()` and risks duplicate rewards or skipped terminal behavior. Current implementation changes Boss 1 reward-screen wording inside the proven vanilla pause and opens a default-layout `A20Courtyard` event with a native pre-finished-room save before Boss 2. Next proof step: live-test Boss 1 reward to courtyard to Boss 2 with save/load and defeat/victory checks, then prototype any bespoke full intermission in a disposable branch only if needed.
 
 ## Documentation Requirements Per Slice

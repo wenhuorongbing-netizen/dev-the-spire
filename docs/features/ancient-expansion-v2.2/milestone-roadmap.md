@@ -1,6 +1,6 @@
-# Ancient Expansion v2.2 Milestone Roadmap
+﻿# Ancient Expansion v2.2 Milestone Roadmap
 
-Status: Urda has ten source-backed/default-on v2.2 blessings. Morvi has eight source-backed/default-on v2.2 blessings. Lotha has eight source-backed/default-on v2.2 blessings. Vakuu fight is hidden by default as a dedicated opt-in slice with Temptation. This roadmap is now a historical milestone map; use `source-design.md`, `manual-test-checklist.md`, and `docs/issues.md` for current work.
+Status: Urda has eleven source-backed/default-on blessings. Morvi has eight source-backed/default-on v2.2 blessings. Lotha has eight source-backed/default-on v2.2 blessings. Vakuu fight is hidden by default as a dedicated opt-in slice with Temptation. This roadmap is now a historical milestone map; use `source-design.md`, `manual-test-checklist.md`, and `docs/issues.md` for current work.
 
 ## Milestone 0: Planning Ingest
 
@@ -10,7 +10,7 @@ Exit:
 
 - `source-design.md` stores the full roadmap.
 - `docs/issues/ancient-expansion-v2.2.md` tracks compact issues.
-- Current Urda docs track the full ten-blessing source-backed slice.
+- Current Urda docs track the full eleven-blessing source-backed slice.
 - Morvi is default-on source-complete/live-pending content; Lotha is default-on source-complete/live-pending content; Vakuu fight is hidden-by-default source-dedicated/live-pending content.
 
 ## Milestone 1: Current Urda Verification First
@@ -46,7 +46,7 @@ Gate:
 
 - Card and Power safety rules must be guarded first.
 - Extra-play recursion must be prevented in tests.
-- Morvi must keep `EZMB_DISABLE_MORVI` / `SPIREPLUS_DISABLE_MORVI`, force-Ancient, and force-blessing gates until live reward UI/save-load/co-op checks pass.
+- Morvi must keep preferred `SPIREPLUS_DISABLE_MORVI`, its legacy `EZMB_DISABLE_MORVI` alias, force-Ancient, and force-blessing gates until live reward UI/save-load/co-op checks pass.
 - Lotha remains live-pending until event UI, gameplay, save/load, co-op, and Death Reprieve lethal-path evidence is recorded.
 
 ## Milestone 3: Vakuu Fight Prototype
@@ -91,3 +91,4 @@ Exit:
 - Package hashes are refreshed only after resources/code are stable.
 - Live Ancient UI/gameplay, save/load, and co-op matrices are either completed or explicitly listed as release blockers.
 - No release-ready claim is made without actual runtime evidence.
+

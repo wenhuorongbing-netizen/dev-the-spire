@@ -4,12 +4,19 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionFeatureGate
 {
-    public const string DebugLevelEnvironmentVariable = "EZMB_ASCENSION_DEBUG_LEVEL";
-    public const string PublicGateEnvironmentVariable = "EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION";
-    public const string DisablePublicSelectionEnvironmentVariable = "EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION";
-    public const string DisableMultiplayerSelectionEnvironmentVariable = "EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION";
-    public const string DiagnosticsEnvironmentVariable = "EZMB_ASCENSION_DIAGNOSTICS";
-    public const string MultiplayerDiagnosticsEnvironmentVariable = "EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS";
+    public const string DebugLevelEnvironmentVariable = "SPIREPLUS_ASCENSION_DEBUG_LEVEL";
+    public const string PublicGateEnvironmentVariable = "SPIREPLUS_ASCENSION_ALLOW_PUBLIC_ASCENSION";
+    public const string DisablePublicSelectionEnvironmentVariable = "SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION";
+    public const string DisableMultiplayerSelectionEnvironmentVariable = "SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION";
+    public const string DiagnosticsEnvironmentVariable = "SPIREPLUS_ASCENSION_DIAGNOSTICS";
+    public const string MultiplayerDiagnosticsEnvironmentVariable = "SPIREPLUS_ASCENSION_MULTIPLAYER_DIAGNOSTICS";
+
+    public const string LegacyDebugLevelEnvironmentVariable = "EZMB_ASCENSION_DEBUG_LEVEL";
+    public const string LegacyPublicGateEnvironmentVariable = "EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION";
+    public const string LegacyDisablePublicSelectionEnvironmentVariable = "EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION";
+    public const string LegacyDisableMultiplayerSelectionEnvironmentVariable = "EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION";
+    public const string LegacyDiagnosticsEnvironmentVariable = "EZMB_ASCENSION_DIAGNOSTICS";
+    public const string LegacyMultiplayerDiagnosticsEnvironmentVariable = "EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS";
 
     public const int MaxSupportedAscensionLevel = 20;
 

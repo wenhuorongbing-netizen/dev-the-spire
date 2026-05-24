@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 internal static partial class PrismaticGemRewardPatch
 {
@@ -19,7 +19,7 @@ internal static partial class PrismaticGemRewardPatch
         {
             if (isNormalCardReward)
             {
-                MainFile.Logger.Warn("[EZMicroBalance] PrismaticGem skipped: normal card reward modification had no CardReward screen context.");
+                MainFile.Logger.Warn("[Spire Plus] PrismaticGem skipped: normal card reward modification had no CardReward screen context.");
             }
 
             return false;
@@ -32,7 +32,7 @@ internal static partial class PrismaticGemRewardPatch
             screenState.HasTriggerDecision = true;
             if (!isNormalCardReward)
             {
-                MainFile.Logger.Info("[EZMicroBalance] PrismaticGem ignored non-normal card reward screen; no counter increment.");
+                MainFile.Logger.Info("[Spire Plus] PrismaticGem ignored non-normal card reward screen; no counter increment.");
                 return false;
             }
 
@@ -49,7 +49,7 @@ internal static partial class PrismaticGemRewardPatch
         {
             if (madeTriggerDecision)
             {
-                MainFile.Logger.Info($"[EZMicroBalance] PrismaticGem applied: counted normal card reward {screenState.CounterAtDecision}; no replacement for this reward screen.");
+                MainFile.Logger.Info($"[Spire Plus] PrismaticGem applied: counted normal card reward {screenState.CounterAtDecision}; no replacement for this reward screen.");
             }
 
             return false;
@@ -58,12 +58,12 @@ internal static partial class PrismaticGemRewardPatch
         if (!ReplaceAllRewardSlots(prismaticGem, player, cardRewardOptions, screenState.CounterAtDecision))
         {
             RestoreCounterAfterFailedReplacement(prismaticGem, screenState);
-            MainFile.Logger.Warn($"[EZMicroBalance] PrismaticGem skipped: all reward slots could not be replaced on normal reward {screenState.CounterAtDecision}.");
+            MainFile.Logger.Warn($"[Spire Plus] PrismaticGem skipped: all reward slots could not be replaced on normal reward {screenState.CounterAtDecision}.");
             return false;
         }
 
         prismaticGem.Flash();
-        MainFile.Logger.Info($"[EZMicroBalance] PrismaticGem applied: replaced every visible reward slot with off-color cards on normal reward {screenState.CounterAtDecision}.");
+        MainFile.Logger.Info($"[Spire Plus] PrismaticGem applied: replaced every visible reward slot with off-color cards on normal reward {screenState.CounterAtDecision}.");
         return true;
     }
 

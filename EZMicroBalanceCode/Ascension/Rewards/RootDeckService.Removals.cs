@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Entities.Cards;
+﻿using MegaCrit.Sts2.Core.Entities.Cards;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -16,7 +16,7 @@ internal static partial class RootDeckService
         if (deckCard == null)
         {
             MainFile.Logger.Warn(
-                $"[EZMicroBalance] Ascension Rootblight skipped: played level {card.RootblightLevel} for player {player.RunState.GetPlayerSlotIndex(player)} had no unique master-deck card.");
+                $"[Spire Plus] Ascension Rootblight skipped: played level {card.RootblightLevel} for player {player.RunState.GetPlayerSlotIndex(player)} had no unique master-deck card.");
             return;
         }
 
@@ -33,7 +33,7 @@ internal static partial class RootDeckService
         SetDiagnosticLevelFromDeck(player);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension Rootblight applied: played level {card.RootblightLevel}; removed its master-deck card and queued {downgradedLevel} downgrade level for player {player.RunState.GetPlayerSlotIndex(player)}.");
+            $"[Spire Plus] Ascension Rootblight applied: played level {card.RootblightLevel}; removed its master-deck card and queued {downgradedLevel} downgrade level for player {player.RunState.GetPlayerSlotIndex(player)}.");
     }
 
     public static async Task RemoveHighestRootblight(Player player, string reason)
@@ -58,7 +58,7 @@ internal static partial class RootDeckService
         SetDiagnosticLevelFromDeck(player);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension Rootblight removed by {reason}: removed level {rootblightCard.RootblightLevel} for player {player.RunState.GetPlayerSlotIndex(player)}.");
+            $"[Spire Plus] Ascension Rootblight removed by {reason}: removed level {rootblightCard.RootblightLevel} for player {player.RunState.GetPlayerSlotIndex(player)}.");
     }
 
     public static Task BeforeCardRemoved(CardModel card)
@@ -78,7 +78,7 @@ internal static partial class RootDeckService
         MarkRootBeginsApplied(player);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension Rootblight removed through a deck-removal API for player {player.RunState.GetPlayerSlotIndex(player)}; remaining Rootblight cards are preserved.");
+            $"[Spire Plus] Ascension Rootblight removed through a deck-removal API for player {player.RunState.GetPlayerSlotIndex(player)}; remaining Rootblight cards are preserved.");
         return Task.CompletedTask;
     }
 }

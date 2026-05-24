@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Modding;
+﻿using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
@@ -24,7 +24,7 @@ internal static class LothaInitializer
             CreateCombatHookSubscribers);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Lotha hooks registered default-on; set {LothaFeatureGate.DisableEnvironmentVariable}=1 or {LothaFeatureGate.SpirePlusDisableEnvironmentVariable}=1 to disable.");
+            $"[Spire Plus] Lotha hooks registered default-on; set {LothaFeatureGate.DisableEnvironmentVariable}=1 to disable. Legacy alias: {LothaFeatureGate.LegacyDisableEnvironmentVariable}=1.");
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>

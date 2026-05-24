@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -40,7 +40,7 @@ internal static partial class AscensionCombatModifierService
             await ApplyPowerWithFinalDisplayedGain<ArtifactPower>(priest, 1, priest, null);
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Martyr Oath armed Kin Priest's next debuff or attack.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Martyr Oath armed Kin Priest's next debuff or attack.");
     }
 
     private static void ResetMartyrOathTurnCounters(AscensionCombatTracker tracker)

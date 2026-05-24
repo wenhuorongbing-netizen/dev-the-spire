@@ -116,12 +116,12 @@ try {
     }
 
     Invoke-Step 'Spire Plus artifact tests' {
-        $env:EZMB_RUN_RELEASE_ARTIFACT_TESTS = '1'
+        $env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS = '1'
         try {
             dotnet test EZMicroBalance.sln --no-build
         }
         finally {
-            Remove-Item Env:\EZMB_RUN_RELEASE_ARTIFACT_TESTS -ErrorAction SilentlyContinue
+            Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS -ErrorAction SilentlyContinue
         }
     }
 }

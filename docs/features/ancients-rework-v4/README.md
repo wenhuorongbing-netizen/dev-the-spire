@@ -24,11 +24,11 @@ For the global documentation map, use `../../README.md`.
 
 ## Current Implementation State
 
-The Ancient v4.3 rebalance has been implemented in the active independent `EZMicroBalance` project under `EZMicroBalanceCode/Ancients/`.
+The Ancient v4.3 rebalance has been implemented for Spire Plus under `EZMicroBalanceCode/Ancients/`.
 
 The current v4.3 pass covers Velvet Choker's retained soft limit, Distinguished Cape's `lose 30% of current Max HP, at least 18` trade gate, Prismatic Gem's "Every second standard card reward contains only off-color cards" behavior, and no-space Simplified Chinese number formatting. v4.2 rightmost-slot Prismatic Gem is historical only. v4.2 Distinguished Cape 40% min15 is historical only.
 
-No source-design item is currently documented as blocked for lack of local compile-time API evidence. Current normal Steam-client startup/log verification confirms Spire Plus / `EZMicroBalance` loads cleanly and registers its config page. Current Mod Settings UI list evidence, historical page-level Mod Settings UI evidence, limited A11 map checks plus saved-map boss-reachability graph proof, and targeted A14 Rootblight English/ZHS hover/starter-notice checks have evidence. Private beta is not complete until:
+No source-design item is currently documented as blocked for lack of local compile-time API evidence. Latest normal Steam-client startup/log verification confirms Spire Plus loaded cleanly under technical id `EZMicroBalance` and registered its config page for the same DLL/PCK/manifest as the current package; the current ZIP/README hash still needs a fresh loader row. Current Mod Settings UI list evidence, historical page-level Mod Settings UI evidence, limited A11 map checks plus saved-map boss-reachability graph proof, and targeted A14 Rootblight English/ZHS hover/starter-notice checks have evidence. Private beta is not complete until:
 
 - the manual verification matrix has concrete runtime results,
 - save/load-sensitive behavior is verified in-game,

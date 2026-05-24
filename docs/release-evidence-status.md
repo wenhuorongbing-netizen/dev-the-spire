@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120` |
-| DLL | `C9030FCDC459E35256B00CE71925854AF44CFE97667DEB07F751CEA540C86522` |
-| PCK | `68F6DCCC5564AE402B3FFB1DD9A65B92555B58CF72282E8EC64FF273EEC4E0F8` |
+| ZIP | `47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC` |
+| DLL | `04F65C55CF679C4E0635C6AB21A3E35FF24D669815E27B6C00251059C4A07643` |
+| PCK | `6D10EE277F8FBD91269D77533179D3644C5B944C822ED5787644A374883FF5CE` |
 | Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
-| README_INSTALL | `2441D012F12D0FB81BCAF7E1C99B1E60F18187937B9911D7D4FD54ACC47BCC6A` |
+| README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA` |
 
 ## Automation Summary
 
@@ -26,17 +26,17 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep every row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The loader row is the only currently passed row.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Pending | User/Codex with game launch approval | Current package command, environment, hashes, `enabled-mods.txt`, `godot.log`, and clean `godot-log-audit.json`. |
+| fresh-current-package-loader-smoke | loader | Passed | Codex | Current package loader evidence under `.tools/runtime-evidence/manual-test-handoff-20260524-161744/release/fresh-current-package-loader-smoke`: command, environment, hashes, `enabled-mods.txt`, `godot.log`, and clean `godot-log-audit.json`. This covers startup/log loading only; feature rows remain pending. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-vakuu-normal | clicked-ui | Pending | User | Vakuu normal reward-screen screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-vakuu-fight | clicked-ui | Pending | User | Vakuu fight option screenshot, foreground preflight, route note, log, and log audit. |
-| ancient-reward-visible-relics | gameplay | Pending | User | Urda, Morvi, Lotha, and Vakuu reward choices appear as visible option relics; selected lasting rewards appear in the relic bar with readable hover text; `ancient-reward-relics-checklist.md` has every reward row filled. |
+| ancient-reward-visible-relics | gameplay | Pending | User | Urda, Morvi, Lotha, and Vakuu reward choices appear as visible option relics; selected lasting rewards appear in the relic bar with readable hover text; Sere Talon / Tanx Claws routing spot checks are filled; `ancient-reward-relics-checklist.md` has every reward row filled. |
 | player-text-tooltip-readability | gameplay | Pending | User | Player-facing card, relic, power, map-hover, event, and tooltip text fits and reads clearly in English and Simplified Chinese; `player-text-qa-checklist.md` has every row filled. |
 | art-resource-routing-live-preview | clicked-ui | Pending | User | Title/home, Ancient screens, large art, thumbnails, option relic art, card art, and power art route to the intended assets; `art-resource-routing-checklist.md` has every surface row filled. |
 | vakuu-victory-no-black-screen | gameplay | Pending | User | Gated Vakuu fight victory returns to the parent event or map without black screen or soft lock; `vakuu-victory-checklist.md` has every scenario row filled. |
@@ -66,17 +66,18 @@ Use `collect-release-evidence.ps1` to create the verifier-readable manifest and 
 Set this before launching the game to add grep-friendly evidence lines to `godot.log`:
 
 ```powershell
-$env:EZMB_RELEASE_EVIDENCE_LOG='1'
+$env:SPIREPLUS_RELEASE_EVIDENCE_LOG='1'
 ```
 
-Plain marker for scripts and test guards: `EZMB_RELEASE_EVIDENCE_LOG=1`.
+Plain marker for scripts and test guards: `SPIREPLUS_RELEASE_EVIDENCE_LOG=1`.
+Legacy alias: `EZMB_RELEASE_EVIDENCE_LOG=1`.
 
 Current source guard expects markers on Vakuu fight return paths, Root Eyes, Seed Bank, Rootblight, preview tools, A20 map/combat paths, and co-op gates.
 
 Expected marker format:
 
 ```text
-[EZMB-EVIDENCE] <Feature> <Event> run=<run> player=<player> net=<single/host/client> data=<json-ish>
+[SPIREPLUS-EVIDENCE] <Feature> <Event> run=<run> player=<player> net=<single/host/client> data=<json-ish>
 ```
 
 The marker helps collect proof; it does not turn a pending row into passed evidence by itself.

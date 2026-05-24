@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+﻿using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 
@@ -23,7 +23,7 @@ internal static class AncientSelectionEvidenceLog
                 ["forced"] = forced
             });
         MainFile.Logger.Info(
-            $"[EZMicroBalance] {ancientId} blessing selected: {blessingId}; " +
+            $"[Spire Plus] {ancientId} blessing selected: {blessingId}; " +
             $"playerSlot={PlayerSlot(player)}, run={RunId(player)}, forced={forced}, relic={relicType}.");
     }
 
@@ -46,7 +46,7 @@ internal static class AncientSelectionEvidenceLog
                 ["forced"] = forced
             });
         MainFile.Logger.Warn(
-            $"[EZMicroBalance] {ancientId} blessing selection failed before completion: {blessingId}; " +
+            $"[Spire Plus] {ancientId} blessing selection failed before completion: {blessingId}; " +
             $"playerSlot={PlayerSlot(player)}, run={RunId(player)}, forced={forced}, reason={reason}.");
     }
 
@@ -69,7 +69,7 @@ internal static class AncientSelectionEvidenceLog
                 ["forced"] = forced
             });
         MainFile.Logger.Info(
-            $"[EZMicroBalance] {ancientId} option selected: {optionId}; " +
+            $"[Spire Plus] {ancientId} option selected: {optionId}; " +
             $"playerSlot={PlayerSlot(player)}, run={RunId(player)}, forced={forced}, relic={relicType}.");
     }
 

@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -82,6 +82,14 @@ public sealed class ReleaseArtifactParityGuardTests
         var zippedEntries = ReadPckDirectory(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck"));
 
         Assert.Equal(installedEntries.OrderBy(entry => entry, StringComparer.Ordinal), zippedEntries.OrderBy(entry => entry, StringComparer.Ordinal));
+        AssertImportedTexturePresent(
+            installedEntries,
+            zippedEntries,
+            "EZMicroBalance/images/relics/sere_talon_spire_plus.png");
+        AssertImportedTexturePresent(
+            installedEntries,
+            zippedEntries,
+            "EZMicroBalance/images/relics/big/sere_talon_spire_plus.png");
 
         foreach (var resource in exportedResources.Where(path => path.EndsWith(".json", StringComparison.Ordinal)))
         {
@@ -118,6 +126,32 @@ public sealed class ReleaseArtifactParityGuardTests
 
         Assert.Equal(activeLocalizationJson.Length, exportedLocalization.Length);
         Assert.All(activeLocalizationJson, resource => Assert.Contains(resource, exportedLocalization));
+    }
+
+    private static void AssertImportedTexturePresent(
+        IReadOnlyCollection<string> installedEntries,
+        IReadOnlyCollection<string> zippedEntries,
+        string sourceResource)
+    {
+        var importResource = sourceResource + ".import";
+        AssertRepoFileExists(sourceResource.Split('/'));
+        AssertRepoFileExists(importResource.Split('/'));
+        Assert.Contains(importResource, installedEntries);
+        Assert.Contains(importResource, zippedEntries);
+
+        var importText = ReadRepoText(importResource.Split('/'));
+        var importedTextureEntries = Regex
+            .Matches(importText, "\"res://(?<path>[^\"]+\\.ctex)\"")
+            .Select(match => match.Groups["path"].Value)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.NotEmpty(importedTextureEntries);
+        foreach (var importedTextureEntry in importedTextureEntries)
+        {
+            Assert.Contains(importedTextureEntry, installedEntries);
+            Assert.Contains(importedTextureEntry, zippedEntries);
+        }
     }
 
     [ReleaseArtifactFact]
@@ -192,7 +226,7 @@ public sealed class ReleaseArtifactParityGuardTests
             "[INFO] Loading Godot PCK D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.pck",
             "[INFO] Finished mod initialization for 'Spire Plus' (EZMicroBalance).",
             "[INFO] [BaseLib] Found 13 SavedSpireFields.",
-            "[INFO] [EZMicroBalance] Urda Trial Branch failed after missed combat 1/3; marked card removed from deck.",
+            "[INFO] [Spire Plus] Urda Trial Branch failed after missed combat 1/3; marked card removed from deck.",
             "[INFO] [Startup] Time to main menu: 12,648ms");
 
         var summary = SmokeLogParser.Parse(syntheticLog);
@@ -214,8 +248,8 @@ public sealed class ReleaseArtifactParityGuardTests
         var syntheticLog = string.Join(
             Environment.NewLine,
             "[INFO] Loading assembly DLL D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.dll",
-            "[ERROR] [EZMicroBalance] Failed to resolve custom scene.",
-            "[INFO] [EZMicroBalance] Urda Trial Branch failed after missed combat 1/3; marked card removed from deck.",
+            "[ERROR] [Spire Plus] Failed to resolve custom scene.",
+            "[INFO] [Spire Plus] Urda Trial Branch failed after missed combat 1/3; marked card removed from deck.",
             "[INFO] [Startup] Time to main menu: 12,648ms");
 
         var summary = SmokeLogParser.Parse(syntheticLog);
@@ -281,7 +315,7 @@ public sealed class ReleaseArtifactParityGuardTests
             matches.Count == 0,
             $"Recent runtime log {Path.GetFileName(recentLog)} contains forbidden v0.105.0 API drift or dependency failure signatures: {string.Join("; ", matches)}. " +
             "The test environment may have incompatible mods (DamageMeter, non-EZMB mods) or an incompatible BaseLib version. " +
-            "Disable all mods except BaseLib + EZMicroBalance and retest. See ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT in docs/issues.md.");
+            "Disable all mods except BaseLib + Spire Plus and retest. The Spire Plus technical folder/id is EZMicroBalance. See ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT in docs/issues.md.");
     }
 
     [ReleaseArtifactFact]
@@ -306,7 +340,10 @@ public sealed class ReleaseArtifactParityGuardTests
         if (passingLogs.Length == 0)
         {
             var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
-            Assert.Contains("refreshed runtime smoke remains pending", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("fresh-current-package-loader-smoke", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("Found 30 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("Previous current-package Steam-client loader evidence", currentDocs, StringComparison.Ordinal);
+            Assert.DoesNotContain("refreshed runtime smoke remains pending", currentDocs, StringComparison.Ordinal);
             Assert.DoesNotContain("current package smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("refreshed runtime smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
             return;
@@ -420,12 +457,12 @@ public sealed class ReleaseArtifactParityGuardTests
                 LoadedEzPck: lines.Any(line => line.Contains("Loading Godot PCK", StringComparison.Ordinal) &&
                                                line.Contains("EZMicroBalance.pck", StringComparison.Ordinal)),
                 InitializedEzMicroBalance: lines.Any(line =>
-                    line.Contains("Finished mod initialization for 'Spire Plus' (EZMicroBalance)", StringComparison.Ordinal) ||
-                    line.Contains("Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance)", StringComparison.Ordinal)),
+                    line.Contains("Finished mod initialization for 'Spire Plus' (EZMicroBalance)", StringComparison.Ordinal)),
                 ReachedMainMenu: lines.Any(line => line.Contains("Time to main menu", StringComparison.Ordinal)),
                 SavedSpireFieldCount: savedFieldCount.Success ? int.Parse(savedFieldCount.Groups["count"].Value) : null,
                 EzMicroBalanceErrorLines: lines
-                    .Where(line => line.Contains("EZMicroBalance", StringComparison.Ordinal) &&
+                    .Where(line => (line.Contains("EZMicroBalance", StringComparison.Ordinal) ||
+                                    line.Contains("Spire Plus", StringComparison.Ordinal)) &&
                                    IsEzMicroBalanceErrorLine(line))
                     .ToArray(),
                 UnrelatedManifestErrorLines: lines

@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
@@ -73,6 +73,6 @@ internal static partial class UrdaBlessingService
         RemoveQuestMarker<UrdaRootSightMapQuestMarker>(current);
         NMapScreen.Instance?.RefreshAllPointVisuals();
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Root Eyes consumed preview {preview.RoomType} {preview.ModelId} at {coord}.");
+            $"[Spire Plus] Urda Root Eyes consumed preview {preview.RoomType} {preview.ModelId} at {coord}.");
     }
 }

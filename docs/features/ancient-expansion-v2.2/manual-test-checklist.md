@@ -1,12 +1,12 @@
 # Ancient Expansion v2.2 Manual Test Checklist
 
-Status: Urda ten-blessing rows, default-on Morvi source rows, and default-on Lotha source rows are source-backed but still require live validation. Vakuu fight is hidden by default with a dedicated source enemy/scene because the reported post-victory black-screen path still needs live victory/save-load proof. Lotha Death Reprieve phase is deck-mirrored, and Urda/Morvi/Lotha encoded state mirror usage is source-guarded, but active live save/load restore remains pending. The latest player-facing polish pass removed legacy Urda option-marker wording, tightened key rich-text highlights, added Root-Sight hover explanation, moved Ancient combat-only behavior onto combat-state hooks, and added visible Trial Branch / Single Sentence counters; live hover/readability remains pending until clicked UI screenshots/logs are captured.
+Status: Urda eleven-blessing rows, default-on Morvi source rows, and default-on Lotha source rows are source-backed but still require live validation. Vakuu fight is hidden by default with a dedicated source enemy/scene because the reported post-victory black-screen path still needs live victory/save-load proof. Lotha Death Reprieve phase is deck-mirrored, and Urda/Morvi/Lotha encoded state mirror usage is source-guarded, but active live save/load restore remains pending. The latest player-facing polish pass removed legacy Urda option-marker wording, tightened key rich-text highlights, added Root-Sight hover explanation, moved Ancient combat-only behavior onto combat-state hooks, and added visible Trial Branch / Single Sentence counters; live hover/readability remains pending until clicked UI screenshots/logs are captured.
 
 ## 0. Planning Integrity
 
 - [x] v2.2 design is stored outside `docs/issues.md`.
 - [x] Compact issue file exists at `docs/issues/ancient-expansion-v2.2.md`.
-- [x] Morvi is default-on for private-beta direct testing and can be hidden with `EZMB_DISABLE_MORVI=1` or `SPIREPLUS_DISABLE_MORVI=1`.
+- [x] Morvi is default-on for private-beta direct testing and can be hidden with `SPIREPLUS_DISABLE_MORVI=1`; legacy `EZMB_DISABLE_MORVI=1` still works.
 - [x] Lotha is explicitly source-complete/live-pending; Vakuu fight is explicitly source-dedicated, hidden by default, and single-player only.
 - [x] User approved continuing into the next development round before live testing.
 - [x] Morvi/Lotha art direction is recorded in `art-direction.md`.
@@ -31,7 +31,7 @@ Prepare without launching:
 
 Rerun the printed command with `-Launch` only when ready for a live session. The helper sets `SPIREPLUS_FORCE_ANCIENT=<Ancient>` and `EZMB_FORCE_ANCIENT=<Ancient>` for the launched process; for `VAKUU -ForceVakuuFight`, it also sets `SPIREPLUS_FORCE_VAKUU_FIGHT=1` and `EZMB_FORCE_VAKUU_FIGHT=1`.
 
-Expected visible option counts are Urda 4, Morvi 3, Lotha 3, and Vakuu 3 by default. Vakuu shows 4 only when `EZMB_ENABLE_VAKUU_FIGHT=1` or `SPIREPLUS_ENABLE_VAKUU_FIGHT=1` is deliberately set. Current source keeps the focused `-ForceVakuuFight` case to one fight option.
+Expected visible option counts are Urda 4, Morvi 3, Lotha 3, and Vakuu 3 by default. Vakuu shows 4 only when preferred `SPIREPLUS_ENABLE_VAKUU_FIGHT=1` or legacy `EZMB_ENABLE_VAKUU_FIGHT=1` is deliberately set. Current source keeps the focused `-ForceVakuuFight` case to one fight option.
 
 Preferred unsaved UI-smoke commands, run from the main menu after the live-session helper launches the game:
 
@@ -45,7 +45,7 @@ spireplus_test_ancient VAKUU confirm fight
 
 The `fight` form sets the current game process's Vakuu force-fight gate before opening Vakuu. These commands use `shouldSave: false` and refuse to run while another run is already in progress, so they are safer for UI smoke than continuing a user run. They still count only as UI render smoke, not natural gameplay proof.
 
-Active-run DevConsole render-smoke commands, only after a run is already in progress. Do not run them from the main menu: local Core `AncientConsoleCmd.Process(...)` reads `issuingPlayer.RunState` and the 2026-05-15 `.tools/runtime-evidence/ancient-ui-click-vakuu-20260515-211824` attempt confirmed a main-menu command has no player context and is invalid evidence. Use these only when natural routing would take too long and the row is marked as UI render smoke rather than gameplay proof:
+Legacy active-run DevConsole render-smoke commands, only after a run is already in progress. Prefer the `spireplus_test_ancient ...` commands above from the main menu. Do not run these legacy commands from the main menu: local Core `AncientConsoleCmd.Process(...)` reads `issuingPlayer.RunState` and the 2026-05-15 `.tools/runtime-evidence/ancient-ui-click-vakuu-20260515-211824` attempt confirmed a main-menu command has no player context and is invalid evidence. Use these only when natural routing would take too long and the row is marked as UI render smoke rather than gameplay proof:
 
 ```text
 ancient EZMB_URDA
@@ -86,6 +86,7 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] Trial Branch success path: the chosen card is played in each of the next three combats, then the card is kept and the Trial Branch marker/enchantment are cleared.
 - [ ] Trial Branch failure path: missing the chosen card in any one of the next three combats removes it immediately after that combat.
 - [ ] Shallow-Root Relic offers two common relics, grants the chosen relic plus 75 Gold, roots on an Act 1 elite for 35 Gold, and otherwise uses the documented Act 2 removal/refund fallback.
+- [ ] Elite Root shows as an Urda first-tier option relic, then heals 10 HP after each Elite victory. Include one Firemarked Elite in the manual check if possible.
 - [ ] Rooted Route auto-marks a reachable normal-combat node within the first seven floors without changing the map graph, rewards reaching it, and withers for 8 HP loss plus 25 Gold if unreachable.
 - [ ] After Rain gains 1 Rain Breath after the first unblocked enemy attack damage in each Act 1 combat; if the hand is full, verify Core's normal generated-card fallback is readable. At Act 2 start, fewer than 3 triggers gives 75 Gold, otherwise heal 8 and upgrade 1 card.
 - [ ] Root-Sight starts with 5 Root Eyes. Clicking the Root Eyes relic opens map selection, highlights future reachable Monster, Unknown, or Elite rooms, stores the chosen room's concrete enemy group or event on hover, excludes Rest Sites/Shops/Treasure/Boss rooms, and grants the first-use potion if a slot exists.
@@ -94,9 +95,9 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 
 ## 2. Default-On Morvi Source Slice
 
-- [ ] Morvi appears in Act 2 by default and is hidden when `EZMB_DISABLE_MORVI=1` or `SPIREPLUS_DISABLE_MORVI=1`.
-- [ ] `EZMB_FORCE_ANCIENT=MORVI` or `SPIREPLUS_FORCE_ANCIENT=MORVI` focuses Act 2 testing on Morvi.
-- [ ] `EZMB_FORCE_MORVI_BLESSING` or `SPIREPLUS_FORCE_MORVI_BLESSING` can force each id: `morvi_forbidden_loan`, `morvi_misprint_press`, `morvi_red_ink_overdraft`, `morvi_overdue_library`, `morvi_open_book_exam`, `morvi_paperstorm`, `morvi_blueprint_proof`, and `morvi_debt_settlement`.
+- [ ] Morvi appears in Act 2 by default and is hidden when `SPIREPLUS_DISABLE_MORVI=1`; legacy `EZMB_DISABLE_MORVI=1` still works.
+- [ ] `SPIREPLUS_FORCE_ANCIENT=MORVI` focuses Act 2 testing on Morvi; legacy `EZMB_FORCE_ANCIENT=MORVI` still works.
+- [ ] `SPIREPLUS_FORCE_MORVI_BLESSING` can force each id: `morvi_forbidden_loan`, `morvi_misprint_press`, `morvi_red_ink_overdraft`, `morvi_overdue_library`, `morvi_open_book_exam`, `morvi_paperstorm`, `morvi_blueprint_proof`, and `morvi_debt_settlement`. Legacy `EZMB_FORCE_MORVI_BLESSING` still works.
 - [ ] Morvi event UI renders event art, dialogue, three options, option/relic icons, and hover tips.
 - [ ] Forbidden Loan offers one of three class Ancient cards, adds the upgraded chosen card with the Borrowed Ancient marker, and charges 1 HP for borrowed Attack/Skill plays.
 - [ ] Forbidden Loan borrowed Power play loses 8 HP and is not copied, replayed, or extra-played by Morvi v2.2 systems.
@@ -117,8 +118,8 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 ## 3. Default-On Lotha Source Slice
 
 - [x] `EZMicroBalance/images/events/ezmb_lotha.png` and custom scene path are present before Lotha is enabled for player testing.
-- [ ] Lotha appears in Act 3 by default and is hidden when `EZMB_DISABLE_LOTHA=1` or `SPIREPLUS_DISABLE_LOTHA=1`.
-- [ ] `EZMB_FORCE_ANCIENT=LOTHA` or `SPIREPLUS_FORCE_ANCIENT=LOTHA` focuses Act 3 testing on Lotha.
+- [ ] Lotha appears in Act 3 by default and is hidden when `SPIREPLUS_DISABLE_LOTHA=1`; legacy `EZMB_DISABLE_LOTHA=1` still works.
+- [ ] `SPIREPLUS_FORCE_ANCIENT=LOTHA` focuses Act 3 testing on Lotha; legacy `EZMB_FORCE_ANCIENT=LOTHA` still works.
 - [ ] Lotha event UI renders event art, dialogue, three options, option/relic icons, and hover tips.
 - [ ] Mirror Rebuttal selection screen chooses exactly one Attack, Skill, or Power deck card.
 - [ ] Mirror Rebuttal moves the selected combat card to hand on the first player turn after normal draw when it starts in a combat pile outside the hand; if the hand is full, it goes to the top of the draw pile.
@@ -150,9 +151,9 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 ## 4. Vakuu Fight Unfinished Opt-In Slice
 
 - [ ] In single-player, normal Vakuu shows only its three standard options by default.
-- [ ] `EZMB_ENABLE_VAKUU_FIGHT=1` or `SPIREPLUS_ENABLE_VAKUU_FIGHT=1` adds the gated fight as a fourth option; `EZMB_DISABLE_VAKUU_FIGHT=1` or `SPIREPLUS_DISABLE_VAKUU_FIGHT=1` hides it again.
-- [ ] `EZMB_FORCE_ANCIENT=VAKUU` or `SPIREPLUS_FORCE_ANCIENT=VAKUU` focuses Act 3 testing on Vakuu.
-- [ ] `EZMB_FORCE_VAKUU_FIGHT=1` or `SPIREPLUS_FORCE_VAKUU_FIGHT=1` limits Vakuu to the fight option for focused testing.
+- [ ] `SPIREPLUS_ENABLE_VAKUU_FIGHT=1` adds the gated fight as a fourth option; `SPIREPLUS_DISABLE_VAKUU_FIGHT=1` hides it again. Legacy `EZMB_ENABLE_VAKUU_FIGHT=1` and `EZMB_DISABLE_VAKUU_FIGHT=1` still work.
+- [ ] `SPIREPLUS_FORCE_ANCIENT=VAKUU` focuses Act 3 testing on Vakuu; legacy `EZMB_FORCE_ANCIENT=VAKUU` still works.
+- [ ] `SPIREPLUS_FORCE_VAKUU_FIGHT=1` limits Vakuu to the fight option for focused testing; legacy `EZMB_FORCE_VAKUU_FIGHT=1` still works.
 - [ ] Declining the fight preserves current Vakuu behavior.
 - [ ] Selecting Fight Vakuu enters the dedicated Vakuu trial combat and the option text explains Stolen Locks, Contracts, Blood Debt, Cash Out, no normal rewards, and death risk.
 - [ ] On turns 1, 3, and 5, after the normal hand draw, Vakuu shows contract choices; the chosen Contract is added to hand if there is hand space.

@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Text;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -76,6 +77,10 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Equal(stagingReadmeHash, Sha256(ReadZipBytes(archive, "EZMicroBalance/README_INSTALL.txt")));
 
         var packageReadme = File.ReadAllText(Path.Combine(stagingDir, "README_INSTALL.txt"));
+        Assert.Contains("Display name: Spire Plus", packageReadme, StringComparison.Ordinal);
+        Assert.Contains("Technical compatibility id: EZMicroBalance", packageReadme, StringComparison.Ordinal);
+        Assert.Contains("EZMicroBalance is a technical folder/id only; player-facing screens should say Spire Plus.", packageReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("Compatibility id: EZMicroBalance", packageReadme, StringComparison.Ordinal);
         Assert.Contains("boss dedicated abilities", packageReadme, StringComparison.Ordinal);
         Assert.Contains("Branded Form", packageReadme, StringComparison.Ordinal);
         Assert.DoesNotContain("Royal Seal", packageReadme, StringComparison.Ordinal);
@@ -111,9 +116,9 @@ public sealed class ReleasePackageArtifactGuardTests
 
         Assert.Contains("manual feature verification", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
         Assert.Contains("still pending", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Latest normal Steam-client startup/log verification is historical for the pre-review Spire Plus display-name package", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
-        Assert.Contains("RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("release ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
@@ -135,13 +140,14 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Contains(pckHash, handoff, StringComparison.Ordinal);
         Assert.Contains("Record results in `docs/features/ancients-rework-v4/manual-verification-matrix.md`", handoff, StringComparison.Ordinal);
         Assert.Contains("update `docs/release-checklist.md`", handoff, StringComparison.Ordinal);
-        Assert.Contains("Historical normal Steam-client startup/log verification passed for an earlier Spire Plus display-name package", handoff, StringComparison.Ordinal);
+        Assert.Contains("Current normal Steam-client startup/log verification passed for this 30-field package", handoff, StringComparison.Ordinal);
+        Assert.Contains("Historical normal Steam-client startup/log evidence confirms the display name", handoff, StringComparison.Ordinal);
         Assert.Contains("Current Mod Settings list screenshot shows `Spire Plus`", handoff, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", handoff, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", handoff, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", handoff, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", handoff, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", handoff, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", handoff, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required", handoff, StringComparison.Ordinal);
         Assert.Contains("docs/features/ascension-11-20/multiplayer-test-runbook.md", handoff, StringComparison.Ordinal);
         Assert.Contains("scripts/audit-godot-log.ps1 -Path <copied godot.log>", handoff, StringComparison.Ordinal);
@@ -173,6 +179,34 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Contains("Push only after explicit user approval", handoff, StringComparison.Ordinal);
     }
 
+    [ReleaseArtifactFact]
+    public void InstalledAndPackagedPckCarrySereTalonTanxClawsSplit()
+    {
+        var installedPck = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
+        Assert.True(File.Exists(installedPck), $"Missing installed PCK: {installedPck}");
+
+        AssertSereTalonTanxClawsSplitIsPackaged(File.ReadAllBytes(installedPck), "installed PCK");
+
+        using var archive = ZipFile.OpenRead(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
+        AssertSereTalonTanxClawsSplitIsPackaged(
+            ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck"),
+            "package PCK");
+    }
+
+    [ReleaseArtifactFact]
+    public void InstalledAndPackagedPckCarryTrialBranchShortChoiceText()
+    {
+        var installedPck = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
+        Assert.True(File.Exists(installedPck), $"Missing installed PCK: {installedPck}");
+
+        AssertTrialBranchShortChoiceTextIsPackaged(File.ReadAllBytes(installedPck), "installed PCK");
+
+        using var archive = ZipFile.OpenRead(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
+        AssertTrialBranchShortChoiceTextIsPackaged(
+            ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck"),
+            "package PCK");
+    }
+
     [Fact]
     public void PackageScriptRejectsNoRefreshWhenStagingArtifactsAreMissing()
     {
@@ -195,10 +229,12 @@ public sealed class ReleasePackageArtifactGuardTests
     {
         var testSource = ReadAllTestSource().Replace("\r\n", "\n");
         var testPlan = ReadRepoText("docs", "test-plan.md");
+        var testReadme = ReadRepoText("tests", "EZMicroBalance.Tests", "README.md");
         var releaseChecklist = ReadRepoText("docs", "release-checklist.md");
         var handoff = ReadRepoText("docs", "private-beta-verification-handoff.md");
 
         Assert.Contains("ReleaseArtifactFactAttribute", testSource, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS", testSource, StringComparison.Ordinal);
         Assert.Contains("EZMB_RUN_RELEASE_ARTIFACT_TESTS", testSource, StringComparison.Ordinal);
         Assert.Contains("Skipping release artifact/runtime checks", testSource, StringComparison.Ordinal);
 
@@ -216,6 +252,8 @@ public sealed class ReleasePackageArtifactGuardTests
             "PackageStagingVersionedZipAndInstalledArtifactsHaveMatchingHashes",
             "CurrentDocsMatchReleaseHashesAndAvoidPinnedStaleTestTotals",
             "PrivateBetaVerificationHandoffCarriesCurrentArtifactsAndManualBlockers",
+            "InstalledAndPackagedPckCarrySereTalonTanxClawsSplit",
+            "InstalledAndPackagedPckCarryTrialBranchShortChoiceText",
             "ActiveCoverArtAndInactiveModRealPolicyMatchExportPckAndPackage",
             "ExportedResourcesInstalledPckAndPackagePckStayInParity",
             "CurrentReleaseHashClaimsMatchInstalledStagingVersionedAndZipArtifacts",
@@ -226,9 +264,66 @@ public sealed class ReleasePackageArtifactGuardTests
             Assert.Contains($"[ReleaseArtifactFact]\n    public void {methodName}", testSource, StringComparison.Ordinal);
         }
 
+        Assert.Contains("SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1", testPlan, StringComparison.Ordinal);
         Assert.Contains("EZMB_RUN_RELEASE_ARTIFACT_TESTS=1", testPlan, StringComparison.Ordinal);
+        Assert.Contains("$env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'", testReadme, StringComparison.Ordinal);
+        Assert.Contains("legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` alias", testReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("$env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'", testReadme, StringComparison.Ordinal);
         Assert.Contains("skipped in normal developer test runs", testPlan, StringComparison.Ordinal);
         Assert.Contains("Release artifact tests are opt-in", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1", handoff, StringComparison.Ordinal);
         Assert.Contains("EZMB_RUN_RELEASE_ARTIFACT_TESTS=1", handoff, StringComparison.Ordinal);
+    }
+
+    private static void AssertSereTalonTanxClawsSplitIsPackaged(byte[] pckBytes, string context)
+    {
+        var pckText = Encoding.UTF8.GetString(pckBytes);
+
+        Assert.Contains("\"SERE_TALON.description\": \"On pickup, add [blue]2[/blue] random Curses and [blue]3[/blue] Wish to your deck.\"", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"SERE_TALON.title\": \"Vakuu's Sere Talon\"", pckText, StringComparison.Ordinal);
+        Assert.Contains("sere_talon_spire_plus.png", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"SERE_TALON.description\": \"\u62fe\u53d6\u65f6\uff0c\u5c06[blue]2[/blue]\u5f20\u968f\u673a\u8bc5\u5492\u548c[blue]3[/blue]\u5f20[gold]\u8bb8\u613f[/gold]\u52a0\u5165\u4f60\u7684\u724c\u7ec4\u3002\"", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"SERE_TALON.title\": \"\u74e6\u5e93\u539f\u521d\u4e4b\u722a\"", pckText, StringComparison.Ordinal);
+
+        Assert.Contains("\"CLAWS.description\": \"On pickup, transform up to [blue]{Cards}[/blue] cards into upgraded Maul.\"", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"CLAWS.title\": \"Tanx Claws\"", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"CLAWS.description\": \"\u62fe\u53d6\u65f6\uff0c\u5c06\u81f3\u591a[blue]{Cards}[/blue]\u5f20\u724c\u53d8\u5316\u4e3a\u6495\u54ac+\u3002\"", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"CLAWS.title\": \"\u5766\u514b\u65af\u5229\u722a\"", pckText, StringComparison.Ordinal);
+
+        foreach (var staleFragment in new[]
+                 {
+                     "\"CLAWS.description\": \"Choose 1 of 4 Curses",
+                     "2 Wish and 1 upgraded Wish",
+                     "No longer transforms deck cards",
+                     "\"SERE_TALON.description\": \"claws.png\"",
+                     "Sere Talon\", \"CLAWS.description\"",
+                     "Vakuu's Sere Talon\", \"CLAWS.description\""
+                 })
+        {
+            Assert.DoesNotContain(staleFragment, pckText, StringComparison.Ordinal);
+        }
+    }
+
+    private static void AssertTrialBranchShortChoiceTextIsPackaged(byte[] pckBytes, string context)
+    {
+        var pckText = Encoding.UTF8.GetString(pckBytes);
+
+        Assert.Contains("\"EZMB_URDA.pages.INITIAL.options.urda_trial_branch.description\": \"Choose [blue]1[/blue] of [blue]4[/blue] cards.", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"EZMB_URDA.pages.INITIAL.options.urda_trial_branch.selectionScreenPrompt\": \"Choose [blue]1[/blue] card for [gold]Trial Branch[/gold].\"", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"EZMICROBALANCE-URDA_TRIAL_BRANCH_OPTION_RELIC.description\": \"Choose [blue]1[/blue] of [blue]4[/blue] cards.", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"EZMB_URDA.pages.INITIAL.options.urda_trial_branch.description\": \"\u4ece[blue]4[/blue]\u5f20\u724c\u4e2d\u9009\u62e9[blue]1[/blue]\u5f20\u3002", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"EZMB_URDA.pages.INITIAL.options.urda_trial_branch.selectionScreenPrompt\": \"\u4e3a[gold]\u8bd5\u70bc\u679d\u6761[/gold]\u9009\u62e9[blue]1[/blue]\u5f20\u724c\u3002\"", pckText, StringComparison.Ordinal);
+        Assert.Contains("\"EZMICROBALANCE-URDA_TRIAL_BRANCH_OPTION_RELIC.description\": \"\u4ece[blue]4[/blue]\u5f20\u724c\u4e2d\u9009\u62e9[blue]1[/blue]\u5f20\u3002", pckText, StringComparison.Ordinal);
+
+        foreach (var staleFragment in new[]
+                 {
+                     "\"EZMB_URDA.pages.INITIAL.options.urda_trial_branch.description\": \"Choose [blue]1[/blue] of [blue]4[/blue] [gold]rare[/gold]",
+                     "\"EZMB_URDA.pages.INITIAL.options.urda_trial_branch.description\": \"Choose [blue]1[/blue] [gold]rare[/gold]",
+                     "\"EZMB_URDA.pages.INITIAL.options.urda_trial_branch.selectionScreenPrompt\": \"Choose [blue]1[/blue] [gold]rare[/gold]",
+                     "\"EZMICROBALANCE-URDA_TRIAL_BRANCH_OPTION_RELIC.description\": \"Choose [blue]1[/blue] of [blue]4[/blue] [gold]rare[/gold]"
+                 })
+        {
+            Assert.DoesNotContain(staleFragment, pckText, StringComparison.Ordinal);
+        }
     }
 }

@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionRewardService
 {
@@ -61,12 +61,12 @@ internal static partial class AscensionRewardService
         {
             CardCmd.Upgrade(extraCard);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A12 applied: upgraded duplicate-token Firemarked Elite card reward option {extraCard.Id.Entry}.");
+                $"[Spire Plus] Ascension A12 applied: upgraded duplicate-token Firemarked Elite card reward option {extraCard.Id.Entry}.");
         }
 
         cardRewardOptions.Add(new CardCreationResult(extraCard));
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A12 applied: added fourth Firemarked Elite card reward option {extraCard.Id.Entry}.");
+            $"[Spire Plus] Ascension A12 applied: added fourth Firemarked Elite card reward option {extraCard.Id.Entry}.");
         return true;
     }
 
@@ -120,7 +120,7 @@ internal static partial class AscensionRewardService
 
         cardRewardOptions.Add(new CardCreationResult(extraCard));
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A19 applied: added fourth boss card reward option {extraCard.Id.Entry}.");
+            $"[Spire Plus] Ascension A19 applied: added fourth boss card reward option {extraCard.Id.Entry}.");
         return true;
     }
 }

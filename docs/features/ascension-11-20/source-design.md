@@ -1,4 +1,4 @@
-# Ascension 11-20 Source Design v1.0
+﻿# Ascension 11-20 Source Design v1.0
 
 Current checklist: `development-checklist-v2.md` is now a compact active triage file. The full v2.0 planning draft from 2026-05-07 is archived at `docs/archive/feature-inputs/ascension-11-20/development-checklist-v2-full-20260518.md`. This v1.0 source-design document remains historical design context for existing prototype slices.
 
@@ -370,7 +370,7 @@ Research must answer before coding each system:
 - Add to discard pile.
 - Sprout timing.
 - Combat-end growth.
-- Keep A18 behind its own explicit gate. The current internal implementation includes elite Root Bud only at `EZMB_ASCENSION_DEBUG_LEVEL=18`; public A18 remains unsupported.
+- Keep A18 behind its own explicit gate. The current internal implementation includes elite Root Bud only at `SPIREPLUS_ASCENSION_DEBUG_LEVEL=18`; public A18 remains unsupported.
 
 ### Phase 4: Firemarked Elite + Forge Token MVP
 

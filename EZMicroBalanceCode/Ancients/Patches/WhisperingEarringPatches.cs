@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))]
 internal static class WhisperingEarringPatch
@@ -49,6 +49,6 @@ internal static class WhisperingEarringPatch
         earring.Flash();
         await VelvetChokerSoftLimitTracker.SuppressCostFor(card, card.SpendResources);
         await CardCmd.AutoPlay(choiceContext, card, target, AutoPlayType.Default, skipXCapture: true);
-        MainFile.Logger.Info($"[EZMicroBalance] WhisperingEarring applied: auto-played {card.Id.Entry} on round {combatState.RoundNumber}.");
+        MainFile.Logger.Info($"[Spire Plus] WhisperingEarring applied: auto-played {card.Id.Entry} on round {combatState.RoundNumber}.");
     }
 }

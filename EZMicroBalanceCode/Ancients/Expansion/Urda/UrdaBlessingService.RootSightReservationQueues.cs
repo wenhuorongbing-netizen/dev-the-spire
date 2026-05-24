@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -47,7 +47,7 @@ internal static partial class UrdaBlessingService
 
             (encounters[currentIndex], encounters[candidateIndex]) = (encounters[candidateIndex], encounters[currentIndex]);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Urda Root Eyes kept reserved {roomType} preview {encounters[candidateIndex].Id} for a future marked room.");
+                $"[Spire Plus] Urda Root Eyes kept reserved {roomType} preview {encounters[candidateIndex].Id} for a future marked room.");
             return;
         }
     }
@@ -82,7 +82,7 @@ internal static partial class UrdaBlessingService
 
             (rooms.events[currentIndex], rooms.events[candidateIndex]) = (rooms.events[candidateIndex], rooms.events[currentIndex]);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Urda Root Eyes kept reserved event preview {rooms.events[candidateIndex].Id} for a future marked room.");
+                $"[Spire Plus] Urda Root Eyes kept reserved event preview {rooms.events[candidateIndex].Id} for a future marked room.");
             return;
         }
     }

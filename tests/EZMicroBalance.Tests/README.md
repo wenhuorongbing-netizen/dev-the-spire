@@ -1,6 +1,6 @@
-# EZMicroBalance.Tests
+# Spire Plus Guard Tests
 
-This test project guards source shape, localization, release documentation, package artifacts, and runtime evidence for `EZMicroBalance`.
+This test project guards source shape, localization, release documentation, package artifacts, and runtime evidence for `Spire Plus`. The technical project and manifest id remain `EZMicroBalance`.
 
 ## Test Groups
 
@@ -56,8 +56,9 @@ Normal runs skip tests that depend on ignored local `publish/`, installed DLL/PC
 ## Release Artifact Test Command
 
 ```powershell
-$env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'
+$env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'
 dotnet test EZMicroBalance.sln --no-build
+Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS
 ```
 
-Run the opt-in suite only after `dotnet publish`, package refresh, and controlled smoke evidence are current.
+Run the opt-in suite only after `dotnet publish`, package refresh, and controlled smoke evidence are current. The legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` alias still works for older local commands.

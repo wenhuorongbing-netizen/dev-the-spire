@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 internal static partial class PrismaticGemRewardScreenHintPatch
 {
@@ -17,7 +17,7 @@ internal static partial class PrismaticGemRewardScreenHintPatch
         {
             WarnOnce(
                 ref BannerFieldFailureLogged,
-                $"[EZMicroBalance] PrismaticGem reward-screen hint fallback: private _banner field unavailable ({reason}); trying {BannerNodePath}.");
+                $"[Spire Plus] PrismaticGem reward-screen hint fallback: private _banner field unavailable ({reason}); trying {BannerNodePath}.");
             return false;
         }
 
@@ -27,7 +27,7 @@ internal static partial class PrismaticGemRewardScreenHintPatch
             {
                 WarnOnce(
                     ref BannerFieldFailureLogged,
-                    $"[EZMicroBalance] PrismaticGem reward-screen hint fallback: private _banner field resolved but did not contain a banner instance; trying {BannerNodePath}.");
+                    $"[Spire Plus] PrismaticGem reward-screen hint fallback: private _banner field resolved but did not contain a banner instance; trying {BannerNodePath}.");
                 return false;
             }
 
@@ -35,21 +35,21 @@ internal static partial class PrismaticGemRewardScreenHintPatch
             {
                 WarnOnce(
                     ref BannerFieldFailureLogged,
-                    $"[EZMicroBalance] PrismaticGem reward-screen hint fallback: private _banner field resolved to a detached banner; trying {BannerNodePath}.");
+                    $"[Spire Plus] PrismaticGem reward-screen hint fallback: private _banner field resolved to a detached banner; trying {BannerNodePath}.");
                 return false;
             }
 
             banner.ChangeText(hintText);
             InfoOnce(
                 ref BannerFieldSuccessLogged,
-                "[EZMicroBalance] PrismaticGem reward-screen hint applied through the guarded private _banner field; visual placement still requires manual gameplay verification.");
+                "[Spire Plus] PrismaticGem reward-screen hint applied through the guarded private _banner field; visual placement still requires manual gameplay verification.");
             return true;
         }
         catch (Exception exception)
         {
             WarnOnce(
                 ref BannerFieldFailureLogged,
-                $"[EZMicroBalance] PrismaticGem reward-screen hint fallback: private _banner access failed with {exception.GetType().Name}; trying {BannerNodePath}.");
+                $"[Spire Plus] PrismaticGem reward-screen hint fallback: private _banner access failed with {exception.GetType().Name}; trying {BannerNodePath}.");
             return false;
         }
     }

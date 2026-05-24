@@ -34,6 +34,9 @@ internal sealed partial class EzmbUrda
     private EventOption ShallowRootRelicSelectionOption =>
         OptionWithRelic<UrdaShallowRootRelicOptionRelic>(UrdaBlessingIds.ShallowRootRelic);
 
+    private EventOption EliteRootSelectionOption =>
+        OptionWithRelic<UrdaEliteRootOptionRelic>(UrdaBlessingIds.EliteRoot);
+
     private EventOption RootedRouteSelectionOption =>
         OptionWithRelic<UrdaRootedRouteOptionRelic>(UrdaBlessingIds.RootedRoute);
 

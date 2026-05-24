@@ -57,6 +57,30 @@ function Get-HandoffRoot {
     return [System.IO.Path]::GetFullPath($candidate)
 }
 
+function Get-RepoRelativePath {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $fullPath = [System.IO.Path]::GetFullPath($Path).TrimEnd('\', '/')
+    $repoFull = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd('\', '/')
+    $comparison = [System.StringComparison]::OrdinalIgnoreCase
+
+    if ($fullPath.Equals($repoFull, $comparison)) {
+        return '.'
+    }
+
+    if ($fullPath.StartsWith($repoFull + '\', $comparison)) {
+        return $fullPath.Substring($repoFull.Length + 1)
+    }
+
+    return $fullPath
+}
+
+function Format-PowerShellSingleQuotedArgument {
+    param([Parameter(Mandatory = $true)][string]$Value)
+
+    return "'" + ($Value -replace "'", "''") + "'"
+}
+
 function Get-PowerShellExecutable {
     $processPath = (Get-Process -Id $PID).Path
     if ($processPath -and (Test-Path -LiteralPath $processPath)) {
@@ -108,17 +132,149 @@ function Assert-Success {
     }
 }
 
+function Get-FileSha256 {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToUpperInvariant()
+}
+
+function Get-PreservedCurrentLoaderRow {
+    param([Parameter(Mandatory = $true)][string]$ManifestPath)
+
+    if (-not (Test-Path -LiteralPath $ManifestPath -PathType Leaf)) {
+        return $null
+    }
+
+    $manifest = Get-Content -Raw -LiteralPath $ManifestPath -Encoding UTF8 | ConvertFrom-Json
+    $manifestPackagePath = [string]$manifest.PackagePath
+    $manifestPackageSha256 = [string]$manifest.PackageSha256
+    if ([string]::IsNullOrWhiteSpace($manifestPackagePath) -or [string]::IsNullOrWhiteSpace($manifestPackageSha256)) {
+        return $null
+    }
+
+    $packageFullPath = if ([System.IO.Path]::IsPathRooted($manifestPackagePath)) {
+        $manifestPackagePath
+    } else {
+        Join-Path $repoRoot $manifestPackagePath
+    }
+
+    if (-not (Test-Path -LiteralPath $packageFullPath -PathType Leaf)) {
+        return $null
+    }
+
+    if ((Get-FileSha256 -Path $packageFullPath) -ne $manifestPackageSha256.ToUpperInvariant()) {
+        return $null
+    }
+
+    $loaderRow = @($manifest.Rows | Where-Object {
+            [string]$_.Id -eq 'fresh-current-package-loader-smoke' -and
+            [string]$_.Status -eq 'pass'
+        } | Select-Object -First 1)
+
+    if ($loaderRow.Count -eq 0) {
+        return $null
+    }
+
+    $evidenceDir = [string]$loaderRow[0].EvidenceDir
+    if ([string]::IsNullOrWhiteSpace($evidenceDir) -or -not (Test-Path -LiteralPath $evidenceDir -PathType Container)) {
+        return $null
+    }
+
+    $packageHashesPath = Join-Path $evidenceDir 'package-hashes.json'
+    if (-not (Test-Path -LiteralPath $packageHashesPath -PathType Leaf)) {
+        return $null
+    }
+
+    $packageHashes = Get-Content -Raw -LiteralPath $packageHashesPath -Encoding UTF8 | ConvertFrom-Json
+    $packageHashRow = @($packageHashes.Files | Where-Object {
+            [string]$_.Path -eq $manifestPackagePath -and
+            [string]$_.Sha256 -eq $manifestPackageSha256
+        } | Select-Object -First 1)
+    if ($packageHashRow.Count -eq 0) {
+        return $null
+    }
+
+    return $loaderRow[0]
+}
+
+function Set-ReleaseManifestRow {
+    param(
+        [Parameter(Mandatory = $true)][string]$ManifestPath,
+        [Parameter(Mandatory = $true)]$Row
+    )
+
+    $manifest = Get-Content -Raw -LiteralPath $ManifestPath -Encoding UTF8 | ConvertFrom-Json
+    $rows = @($manifest.Rows | ForEach-Object {
+            if ([string]$_.Id -eq [string]$Row.Id) {
+                $Row
+            } else {
+                $_
+            }
+        })
+
+    $manifest.Rows = @($rows)
+    $manifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $ManifestPath -Encoding UTF8
+}
+
+function Move-StaleCurrentLoaderEvidence {
+    param([Parameter(Mandatory = $true)][string]$ReleaseEvidenceRoot)
+
+    $loaderEvidenceDir = Join-Path $ReleaseEvidenceRoot 'fresh-current-package-loader-smoke'
+    if (-not (Test-Path -LiteralPath $loaderEvidenceDir -PathType Container)) {
+        return $null
+    }
+
+    $staleEvidenceFiles = @(
+        'godot.log',
+        'godot-log-audit.json',
+        'enabled-mods.txt'
+    )
+    $existingStaleFiles = @($staleEvidenceFiles | Where-Object {
+            Test-Path -LiteralPath (Join-Path $loaderEvidenceDir $_) -PathType Leaf
+        })
+    if ($existingStaleFiles.Count -eq 0) {
+        return $null
+    }
+
+    $archiveRoot = Join-Path $loaderEvidenceDir '.stale-loader-evidence'
+    New-DirectoryIfMissing -Path $archiveRoot
+    $archiveDir = Join-Path $archiveRoot (Get-Date -Format 'yyyyMMdd-HHmmss')
+    New-DirectoryIfMissing -Path $archiveDir
+
+    foreach ($fileName in $existingStaleFiles) {
+        $sourcePath = Join-Path $loaderEvidenceDir $fileName
+        $targetPath = Join-Path $archiveDir $fileName
+        Move-Item -LiteralPath $sourcePath -Destination $targetPath -Force
+    }
+
+    @(
+        '# Stale loader evidence',
+        '',
+        'These files were moved out of `fresh-current-package-loader-smoke` because the current package hash changed or the loader pass row could not be preserved.',
+        'They are historical context only. Capture a fresh `godot.log`, `godot-log-audit.json`, and `enabled-mods.txt` before marking the current loader row pass.'
+    ) -join [Environment]::NewLine | Set-Content -LiteralPath (Join-Path $archiveDir 'README.md') -Encoding UTF8
+
+    return $archiveDir
+}
+
 $handoffRoot = Get-HandoffRoot -RequestedPath $EvidenceRoot
 Assert-PathInside -Child $handoffRoot -Parent $runtimeRoot -Label 'EvidenceRoot'
 New-DirectoryIfMissing -Path $handoffRoot
+$releaseManifestPath = Join-Path $handoffRoot 'release\release-evidence-manifest.json'
+$preservedCurrentLoaderRow = Get-PreservedCurrentLoaderRow -ManifestPath $releaseManifestPath
+$staleCurrentLoaderArchive = $null
 
 $summary = [ordered]@{
     CreatedAt = (Get-Date).ToString('o')
     HandoffRoot = $handoffRoot
-    NoLaunch = $true
+    NoLaunch = $null -eq $preservedCurrentLoaderRow
     PendingVerifierChecked = -not [bool]$SkipPendingVerifier
     Sections = [ordered]@{}
-    Notice = 'No game was launched. These folders are templates only; live rows remain pending until filled with screenshots, logs, and notes.'
+    Notice = if ($null -ne $preservedCurrentLoaderRow) {
+        'Current-package loader row is filled. Remaining gameplay, clicked UI, save-load, preview-tools, and co-op rows are pending.'
+    } else {
+        'No game was launched. These folders are templates only; live rows remain pending until filled with screenshots, logs, and notes.'
+    }
 }
 
 Assert-Success (Invoke-RepoScript -ScriptName 'collect-release-evidence.ps1' -ArgumentList @(
@@ -126,6 +282,12 @@ Assert-Success (Invoke-RepoScript -ScriptName 'collect-release-evidence.ps1' -Ar
         '-EvidenceDir', (Join-Path $handoffRoot 'release')
     ))
 $summary.Sections['release'] = Join-Path $handoffRoot 'release'
+
+if ($null -ne $preservedCurrentLoaderRow) {
+    Set-ReleaseManifestRow -ManifestPath $releaseManifestPath -Row $preservedCurrentLoaderRow
+} else {
+    $staleCurrentLoaderArchive = Move-StaleCurrentLoaderEvidence -ReleaseEvidenceRoot (Join-Path $handoffRoot 'release')
+}
 
 Assert-Success (Invoke-RepoScript -ScriptName 'collect-vakuu-fight-evidence.ps1' -ArgumentList @(
         '-NoLaunch',
@@ -179,19 +341,179 @@ if (-not $SkipPendingVerifier) {
         throw 'Pending release evidence failed for an unexpected reason; expected pending-row failures.'
     }
 
+    $pendingReport = $outputText | ConvertFrom-Json
+    $expectedFailureCount = if ($null -ne $preservedCurrentLoaderRow) { 18 } else { 19 }
+    if ([int]$pendingReport.RequiredRowCount -ne 19 -or [int]$pendingReport.FailureCount -ne $expectedFailureCount) {
+        throw "Pending release evidence should fail closed on exactly $expectedFailureCount live rows. RequiredRowCount=$($pendingReport.RequiredRowCount) FailureCount=$($pendingReport.FailureCount)."
+    }
+
     $summary.PendingVerifierExitCode = $verifyResult.ExitCode
     $summary.PendingVerifierExpectedFailure = $true
+    $summary.PendingVerifierRequiredRowCount = [int]$pendingReport.RequiredRowCount
+    $summary.PendingVerifierFailureCount = [int]$pendingReport.FailureCount
+    $summary.PendingVerifierWarningCount = [int]$pendingReport.WarningCount
+    if ($null -ne $preservedCurrentLoaderRow) {
+        $summary.CurrentVerifierFailureCount = [int]$pendingReport.FailureCount
+        $summary.CurrentLoaderEvidenceDir = [string]$preservedCurrentLoaderRow.EvidenceDir
+    }
+    if ($null -ne $staleCurrentLoaderArchive) {
+        $summary.StaleCurrentLoaderArchive = $staleCurrentLoaderArchive
+    }
 }
+
+$releaseManifest = Get-Content -Raw -LiteralPath $releaseManifestPath | ConvertFrom-Json
+$packagePath = [string]$releaseManifest.PackagePath
+$packageSha256 = [string]$releaseManifest.PackageSha256
+$releaseRootRelative = Get-RepoRelativePath -Path (Join-Path $handoffRoot 'release')
+$releaseManifestRelative = Get-RepoRelativePath -Path $releaseManifestPath
+$verifierCommand =
+    'scripts\verify-spire-plus-release-evidence.ps1 -EvidenceRoot ' +
+    (Format-PowerShellSingleQuotedArgument -Value $releaseRootRelative) +
+    ' -ManifestPath ' +
+    (Format-PowerShellSingleQuotedArgument -Value $releaseManifestRelative) +
+    ' -WritePassMarker'
+
+$summary.PackagePath = $packagePath
+$summary.PackageSha256 = $packageSha256
+$summary.VerifierCommand = $verifierCommand
 
 $summaryPath = Join-Path $handoffRoot 'handoff-summary.json'
 $summary | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $summaryPath -Encoding UTF8
 
-$readme = @(
+$loaderRowFilled = $null -ne $preservedCurrentLoaderRow
+$expectedFailureCount = if ($loaderRowFilled -and $summary.Contains('CurrentVerifierFailureCount')) {
+    [int]$summary.CurrentVerifierFailureCount
+} elseif ($summary.Contains('PendingVerifierFailureCount')) {
+    [int]$summary.PendingVerifierFailureCount
+} else {
+    19
+}
+$startHereIntro = if ($loaderRowFilled) {
+    'This folder is a manual-test evidence scaffold. The current-package loader row is filled; gameplay, UI, save-load, preview-tools, and co-op rows remain pending until a tester adds screenshots, logs, notes, and checklist results.'
+} else {
+    'This folder is a manual-test evidence scaffold. It was generated without launching the game, so every live row remains pending until a tester adds screenshots, logs, notes, and checklist results.'
+}
+$staleArchiveRelative = if ($null -ne $staleCurrentLoaderArchive) {
+    Get-RepoRelativePath -Path $staleCurrentLoaderArchive
+} else {
+    $null
+}
+$handoffSummaryLines = if ($loaderRowFilled) {
+    @(
+        '- `handoff-summary.json` records the current scaffold plus preserved loader proof.',
+        '- `PendingVerifierRequiredRowCount=19`.',
+        ('- `CurrentVerifierFailureCount=' + $expectedFailureCount + '`.'),
+        '- `PendingVerifierWarningCount=0`.',
+        '- Current loader smoke has filled `release/fresh-current-package-loader-smoke/`; remaining rows still need live feature evidence.'
+    )
+} else {
+    $lines = @(
+        '- `handoff-summary.json` records this no-launch scaffold contract.',
+        '- `PendingVerifierRequiredRowCount=19`.',
+        '- `PendingVerifierFailureCount=19`.',
+        '- `PendingVerifierWarningCount=0`.',
+        '- These numbers mean the scaffold is expected to fail until live evidence is filled.'
+    )
+    if ($null -ne $staleArchiveRelative) {
+        $lines += ('- Stale loader files from a non-preserved package hash were moved to `' + $staleArchiveRelative + '`; capture fresh loader files before marking the current loader row pass.')
+    }
+
+    $lines
+}
+$recommendedOrderLoaderLine = if ($loaderRowFilled) {
+    '3. The current loader row is already filled. Keep the Mods-list display-name check in mind during feature testing: it should show `Spire Plus`; `EZMicroBalance` should appear only as the technical folder/id in paths or logs.'
+} else {
+    '3. Run the installed package and fill `release/fresh-current-package-loader-smoke/` first. The Mods list should show `Spire Plus`; `EZMicroBalance` should appear only as the technical folder/id in paths or logs.'
+}
+
+$startHereLines = @(
+    '# Spire Plus Tester Start Here',
+    '',
+    $startHereIntro,
+    '',
+    '## Package under test',
+    '',
+    '- Player-facing mod: `Spire Plus`.',
+    '- Install note: enable `Spire Plus` in game. The current compatibility folder inside the package is `EZMicroBalance`.',
+    ('- ZIP: `' + $packagePath + '`.'),
+    ('- ZIP SHA256: `' + $packageSha256 + '`.'),
+    '',
+    '## Handoff summary',
+    ''
+) + $handoffSummaryLines + @(
+    '',
+    '## Recommended order',
+    '',
+    '1. Verify the installed package hashes and packaged Sere Talon / Tanx Claws split:',
+    '   ```powershell',
+    '   .\scripts\check-installed-spire-plus-package.ps1 -ModDirectory "D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance"',
+    '   ```',
+    ("2. Run the release verifier before live testing once. It should fail closed with $expectedFailureCount pending live rows; a pass at this point means the evidence scaffold is wrong."),
+    $recommendedOrderLoaderLine,
+    '4. Capture clicked Ancient UI evidence in `ancient-ui/` for Urda, Morvi, Lotha, Vakuu normal, and Vakuu force-fight.',
+    '5. Fill gameplay checklist rows under `release/` for Ancient rewards, player text, art routing, Rootblight, A11-A20, and A19/A20 boss abilities.',
+    '6. Test the hidden Vakuu fight using the focused `vakuu/` and release Vakuu rows.',
+    '7. Test preview tools and co-op last; these rows need clean logs and either two-client proof or an explicit accepted deferral.',
+    '',
+    '## Focused current regression check',
+    '',
+    '- Vakuu event option: pick `Sere Talon`. It must be the Vakuu relic that adds 2 random Curses and 3 Wish.',
+    '- It must not show Tanx Claws relic art, title, or Maul-transform text. If the effect is 2 random Curses plus 3 Wish but the art is still Tanx Claws, treat it as a Spire Plus UI/package-load issue.',
+    '- Capture the event option, relic bar, inspect screen, and hover tooltip for Sere Talon.',
+    '- Check `godot.log` for Sere Talon route lines on `Ancient event option button`, `RelicModel packed icon texture`, `RelicModel big icon texture`, `NRelic small node`, and `NRelic large node`, or a Sere Talon icon route skip warning.',
+    '- Test Tanx Claws separately. Tanx Claws should remain the Maul-transform relic and should create upgraded Maul cards.',
+    '',
+    '## Evidence rule',
+    '',
+    'Do not mark rows pass from source review. A pass row needs live files in its row folder and a final `release-evidence-verifier-pass.json` from `scripts\verify-spire-plus-release-evidence.ps1`.',
+    '',
+    'Verifier command after live evidence is filled:',
+    '',
+    '```powershell',
+    $verifierCommand,
+    '```'
+)
+$startHere = $startHereLines -join [Environment]::NewLine
+$startHere | Set-Content -LiteralPath (Join-Path $handoffRoot 'TESTER_START_HERE.md') -Encoding UTF8
+
+$readmeIntro = if ($loaderRowFilled) {
+    'This folder preserves current-package loader smoke evidence. The remaining rows are manual-test templates, not gameplay proof.'
+} else {
+    'This folder was generated without launching the game. It is a template set for manual testing, not proof that any live row passed.'
+}
+$readmeSummaryLines = if ($loaderRowFilled) {
+    @(
+        ('Summary: `handoff-summary.json` records `PendingVerifierRequiredRowCount=19`, current failure count `' + $expectedFailureCount + '`, and `PendingVerifierWarningCount=0`.'),
+        '',
+        'These are scaffold/verifier values, not gameplay proof.',
+        ''
+    )
+} else {
+    $lines = @(
+        'Summary: `handoff-summary.json` records `PendingVerifierRequiredRowCount=19`, `PendingVerifierFailureCount=19`, and `PendingVerifierWarningCount=0`.',
+        '',
+        'Those are expected no-launch values, not live proof.',
+        ''
+    )
+    if ($null -ne $staleArchiveRelative) {
+        $lines += 'Stale loader files from the previous hash were archived at `' + $staleArchiveRelative + '`. Capture fresh loader files in `release/fresh-current-package-loader-smoke/` before marking that row pass.'
+        $lines += ''
+    }
+
+    $lines
+}
+
+$readmeLines = @(
     '# Spire Plus Manual Test Handoff',
     '',
     "Created: $($summary.CreatedAt)",
     '',
-    'This folder was generated without launching the game. It is a template set for manual testing, not proof that any live row passed.',
+    $readmeIntro,
+    '',
+    ('Package under test: `' + $packagePath + '` (`' + $packageSha256 + '`).'),
+    ''
+) + $readmeSummaryLines + @(
+    'Start with `TESTER_START_HERE.md` for the recommended manual-test order and final verifier command.',
     '',
     '## Folders',
     '',
@@ -201,10 +523,21 @@ $readme = @(
     '- `preview-tools/`: Crystal Sphere and transform preview rows.',
     '- `coop/`: two-client co-op rows.',
     '',
-    'Run `scripts\verify-spire-plus-release-evidence.ps1` only after the release rows have live screenshots, logs, and notes. Pending rows are expected to fail closed.'
-) -join [Environment]::NewLine
+    'Verifier command after live evidence is filled:',
+    '',
+    '```powershell',
+    $verifierCommand,
+    '```',
+    '',
+    'Run the verifier only after the release rows have live screenshots, logs, and notes. Pending rows are expected to fail closed.'
+)
+$readme = $readmeLines -join [Environment]::NewLine
 $readme | Set-Content -LiteralPath (Join-Path $handoffRoot 'README.md') -Encoding UTF8
 
 Write-Output "Prepared complete manual-test handoff under $handoffRoot"
 Write-Output "Summary: $summaryPath"
-Write-Output 'No game was launched. All live rows remain pending.'
+if ($loaderRowFilled) {
+    Write-Output 'Current-package loader row was preserved. Remaining gameplay, clicked UI, save-load, preview-tools, and co-op rows remain pending.'
+} else {
+    Write-Output 'No game was launched. All live rows remain pending.'
+}

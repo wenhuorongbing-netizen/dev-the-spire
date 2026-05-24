@@ -1,6 +1,7 @@
-# EZMicroBalanceCode
+# Spire Plus Code
 
-This is the active C# code for the single `Spire Plus / EZMicroBalance` mod.
+This is the active C# code for the single `Spire Plus` mod. The folder name remains
+`EZMicroBalanceCode` because the stable technical manifest id is still `EZMicroBalance`.
 
 ## Module Map
 

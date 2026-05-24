@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]
 internal static class SovereignBladeForgeExhaustPatch
@@ -26,7 +26,7 @@ internal static class SovereignBladeForgeExhaustPatch
 
         if (modifiedCount > 0)
         {
-            MainFile.Logger.Info($"[EZMicroBalance] SovereignBlade applied: added Exhaust to {modifiedCount} forged temporary blade(s).");
+            MainFile.Logger.Info($"[Spire Plus] SovereignBlade applied: added Exhaust to {modifiedCount} forged temporary blade(s).");
         }
 
         return blades;

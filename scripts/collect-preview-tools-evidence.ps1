@@ -200,11 +200,12 @@ $environment = [ordered]@{
     RepositoryRoot = $repoRoot
     GitHead = Get-GitValue -Arguments @('rev-parse', 'HEAD')
     GitStatusShort = Get-GitValue -Arguments @('status', '--short')
-    Naming = 'Preview tools are integrated into Spire Plus / EZMicroBalance.'
+    Naming = 'Preview tools are integrated into Spire Plus.'
     LaunchRequested = [bool]$Launch
     NoLaunch = -not [bool]$Launch
     ReleaseEvidenceLogging = [ordered]@{
-        EnvironmentVariable = 'EZMB_RELEASE_EVIDENCE_LOG'
+        EnvironmentVariable = 'SPIREPLUS_RELEASE_EVIDENCE_LOG'
+        LegacyEnvironmentVariable = 'EZMB_RELEASE_EVIDENCE_LOG'
         RecommendedValue = '1'
     }
 }
@@ -214,8 +215,10 @@ $packageHashes = [ordered]@{
     Files = @(
         Get-HashRow -RelativePath 'EZMicroBalance.json'
         Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0.zip'
-        Get-HashRow -RelativePath 'publish\EZMicroBalance.dll'
-        Get-HashRow -RelativePath 'publish\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.dll'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.json'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\README_INSTALL.txt'
     )
 }
 
@@ -246,7 +249,7 @@ Save-Json -InputObject ([ordered]@{ Rows = $manualRows }) -Path (Join-Path $evid
 Save-Json -InputObject ([ordered]@{
     Status = 'pending'
     RequiredFiles = @('godot.log', 'godot-log-audit.json')
-    BlockingPatterns = @('ERROR', 'Exception', '[EZMB-EVIDENCE]')
+    BlockingPatterns = @('ERROR', 'Exception', '[SPIREPLUS-EVIDENCE]', '[EZMB-EVIDENCE]')
     Notes = 'Fill with audit output after copying live logs. This template is not a pass marker.'
 }) -Path (Join-Path $evidenceFull 'log-audit-template.json')
 $instructions | Set-Content -LiteralPath (Join-Path $evidenceFull 'manual-instructions.md') -Encoding UTF8

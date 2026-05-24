@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionRewardService
 {
@@ -17,7 +17,7 @@ internal static partial class AscensionRewardService
 
         rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, RoomType.Boss), 3, player));
         MainFile.Logger.Info(
-            "[EZMicroBalance] Ascension A20 applied: Boss 1 terminal rewards added one Boss card reward before the second Boss.");
+            "[Spire Plus] Ascension A20 applied: Boss 1 terminal rewards added one Boss card reward before the second Boss.");
         return true;
     }
 
@@ -37,7 +37,7 @@ internal static partial class AscensionRewardService
         }
 
         rewards.Add(new RelicReward(RelicRarity.Uncommon, player));
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A17 applied: Deep Branch treasure added an Uncommon relic reward.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A17 applied: Deep Branch treasure added an Uncommon relic reward.");
         return true;
     }
 }

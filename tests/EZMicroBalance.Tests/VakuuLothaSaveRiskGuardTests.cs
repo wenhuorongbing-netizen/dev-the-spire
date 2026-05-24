@@ -62,7 +62,7 @@ public sealed class VakuuLothaSaveRiskGuardTests
             patch.Contains("__result = __result.Concat([fightOption]).ToList()", StringComparison.Ordinal);
         var hasExplicitUnsafeForceGate =
             gate.Contains("EnableEnvironmentVariable", StringComparison.Ordinal) &&
-            gate.Contains("SpirePlusEnableEnvironmentVariable", StringComparison.Ordinal) &&
+            gate.Contains("LegacyEnableEnvironmentVariable", StringComparison.Ordinal) &&
             gate.Contains("ShouldEnableFight", StringComparison.Ordinal) &&
             gate.Contains("ShouldForceFight", StringComparison.Ordinal);
 

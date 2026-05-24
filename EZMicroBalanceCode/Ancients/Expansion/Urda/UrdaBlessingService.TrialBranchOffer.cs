@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -11,7 +11,7 @@ internal static partial class UrdaBlessingService
         var offers = CreateTrialBranchOffers(player);
         if (offers.Count == 0)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Urda Trial Branch could not create source-safe card offers.");
+            MainFile.Logger.Warn("[Spire Plus] Urda Trial Branch could not create source-safe card offers.");
             return;
         }
 
@@ -53,7 +53,7 @@ internal static partial class UrdaBlessingService
             CardCmd.Enchant<UrdaTrialBranchEnchantment>(addResult.cardAdded, 1m);
             RefreshTrialBranchEnchantment(player);
             CardCmd.PreviewCardPileAdd(addResult, 2f);
-            MainFile.Logger.Info($"[EZMicroBalance] Urda Trial Branch added upgraded rare card {selected.Id.Entry}.");
+            MainFile.Logger.Info($"[Spire Plus] Urda Trial Branch added upgraded rare card {selected.Id.Entry}.");
         }
         else
         {

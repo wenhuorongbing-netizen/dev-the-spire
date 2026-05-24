@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -22,7 +22,7 @@ internal static partial class AscensionCombatModifierService
                 tracker.PressingLineRound = combatState.RoundNumber;
                 tracker.PressingLineCardsPlayed.Clear();
                 tracker.PressingLineLayers.Clear();
-                MainFile.Logger.Info("[EZMicroBalance] Ascension A16 applied: Pressing Line banner is tracking card play this combat.");
+                MainFile.Logger.Info("[Spire Plus] Ascension A16 applied: Pressing Line banner is tracking card play this combat.");
                 break;
             case BannerKind.LastStand:
                 ApplyLastStandCombatStart(combatState);
@@ -42,7 +42,7 @@ internal static partial class AscensionCombatModifierService
         var fallback = BannerKind.BloodPrize;
         metadata.Banner = fallback;
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A16 converted {banner} banner to {fallback}: this combat has one primary enemy.");
+            $"[Spire Plus] Ascension A16 converted {banner} banner to {fallback}: this combat has one primary enemy.");
         return fallback;
     }
 
@@ -61,7 +61,7 @@ internal static partial class AscensionCombatModifierService
                 {
                     tracker.VanguardStrengthRemoved = true;
                     await RemoveVanguardStrength(combatState);
-                    MainFile.Logger.Info("[EZMicroBalance] Ascension A16 applied: Vanguard banner temporary Strength expired.");
+                    MainFile.Logger.Info("[Spire Plus] Ascension A16 applied: Vanguard banner temporary Strength expired.");
                 }
 
                 break;

@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
@@ -63,7 +63,7 @@ internal static partial class MorviBlessingService
         await CardCmd.Exhaust(choiceContext, card, skipVisuals: true);
         await CardPileCmd.Draw(choiceContext, 1m, player);
         await PlayerCmd.GainEnergy(1m, player);
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Paperstorm converted drawn Status {card.Id.Entry}; remaining this turn={combatState.PaperstormTriggersRemainingThisTurn}.");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Paperstorm converted drawn Status {card.Id.Entry}; remaining this turn={combatState.PaperstormTriggersRemainingThisTurn}.");
     }
 
     private static async Task AddWastePapers(Player player)
@@ -79,6 +79,6 @@ internal static partial class MorviBlessingService
             await AncientCardHelpers.TryAddGeneratedCardToCombat(waste, PileType.Draw, player, CardPilePosition.Random);
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] Morvi Paperstorm shuffled 4 Waste Paper Status cards into the draw pile.");
+        MainFile.Logger.Info("[Spire Plus] Morvi Paperstorm shuffled 4 Waste Paper Status cards into the draw pile.");
     }
 }

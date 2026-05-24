@@ -1,25 +1,25 @@
-# Urda Manual Test Checklist
+﻿# Urda Manual Test Checklist
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
-Status: ten-blessing source gameplay slice implemented, live checks pending.
+Status: eleven-blessing source gameplay slice implemented, live checks pending.
 
 ## 0. Environment controls
 
 - Urda is default-on for private-beta testing.
-- `EZMB_DISABLE_URDA=1` hides Urda for comparison.
-- `EZMB_FORCE_ANCIENT=URDA` is legacy-compatible and no longer required.
-- `EZMB_FORCE_URDA_BLESSING=<blessing-id>` (default-off).
+- `SPIREPLUS_DISABLE_URDA=1` hides Urda for comparison. Legacy `EZMB_DISABLE_URDA=1` still works.
+- `SPIREPLUS_FORCE_ANCIENT=URDA` focuses Urda when needed. Legacy `EZMB_FORCE_ANCIENT=URDA` still works and is no longer required.
+- `SPIREPLUS_FORCE_URDA_BLESSING=<blessing-id>` (default-off). Legacy `EZMB_FORCE_URDA_BLESSING` still works.
 - `EZMB_URDA_DIAGNOSTICS=1` (default-off).
 - BaseLib and Spire Plus enabled.
-- Ancient Expansion v2.2 current Urda source pool contains ten blessing ids; each should remain hidden when `EZMB_DISABLE_URDA=1`.
+- Ancient Expansion v2.2 current Urda source pool contains ten blessing ids; each should remain hidden when `SPIREPLUS_DISABLE_URDA=1` or legacy `EZMB_DISABLE_URDA=1`.
 
 ## 1. Baseline checks
 
 - [ ] `dotnet build EZMicroBalance.sln` succeeds.
 - [ ] `dotnet publish` run only if resources/localization changed.
 - [ ] `docs/issues.md` contains the Urda issues and status.
-- [ ] Baseline controlled run with only BaseLib and Spire Plus / `EZMicroBalance` loads cleanly.
+- [ ] Baseline controlled run with only BaseLib and Spire Plus loads cleanly; technical id is `EZMicroBalance`.
 
 ## 1A. Live evidence protocol
 
@@ -42,7 +42,7 @@ Use this protocol for post-fix Urda selection, reward-screen, save/load, and vis
 
 - [ ] New run can reach Act 1 Urda on the configured surface.
 - [ ] Urda selection appears with EN and ZHS names.
-- [ ] Exactly the ten source-backed Urda blessing ids are visible/selectable across forced runs or repeated selections.
+- [ ] Exactly the eleven source-backed Urda blessing ids are visible/selectable across forced runs or repeated selections, including Elite Root.
 - [ ] Trial Branch, Shallow-Root Relic, Rooted Route, After the Rain, Root-Sight, and Seed Bank appear with honest source-safe text and option relic art.
 - [ ] No Morvi, Lotha, or Vakuu active content appears.
 - [ ] Selected blessing is preserved on save/load.
@@ -144,4 +144,5 @@ Use this protocol for post-fix Urda selection, reward-screen, save/load, and vis
 - [ ] Focused Urda runs use force/disable gates as needed so Morvi, Lotha, and Vakuu do not contaminate Urda evidence.
 - [ ] Active Urda blessing list in release notes matches tested live content.
 - [ ] Live Steam-client logs show no Urda-related exceptions.
-- [ ] If Urda registration is blocked or unstable, set `EZMB_DISABLE_URDA=1` for comparison and reopen the default-on decision.
+- [ ] If Urda registration is blocked or unstable, set `SPIREPLUS_DISABLE_URDA=1` for comparison and reopen the default-on decision.
+

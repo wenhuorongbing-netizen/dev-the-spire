@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 internal static partial class PrismaticGemRewardPatch
 {
@@ -15,7 +15,7 @@ internal static partial class PrismaticGemRewardPatch
             .FirstOrDefault();
         if (replacementCanonical == null)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] PrismaticGem fallback: no unique off-color {originalCard.Rarity} {originalCard.Type} card available for slot {slotIndex + 1} on normal reward {counterAtDecision}; relaxing rarity only.");
+            MainFile.Logger.Warn($"[Spire Plus] PrismaticGem fallback: no unique off-color {originalCard.Rarity} {originalCard.Type} card available for slot {slotIndex + 1} on normal reward {counterAtDecision}; relaxing rarity only.");
 
             replacementCanonical = GetOffColorRewardPool(player, null, originalCard.Type, excludedIds)
                 .ToList()
@@ -25,7 +25,7 @@ internal static partial class PrismaticGemRewardPatch
 
         if (replacementCanonical == null)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] PrismaticGem fallback: no unique off-color {originalCard.Type} card available for slot {slotIndex + 1} on normal reward {counterAtDecision}; relaxing type only.");
+            MainFile.Logger.Warn($"[Spire Plus] PrismaticGem fallback: no unique off-color {originalCard.Type} card available for slot {slotIndex + 1} on normal reward {counterAtDecision}; relaxing type only.");
 
             replacementCanonical = GetOffColorRewardPool(player, originalCard.Rarity, null, excludedIds)
                 .ToList()
@@ -35,7 +35,7 @@ internal static partial class PrismaticGemRewardPatch
 
         if (replacementCanonical == null)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] PrismaticGem fallback: no unique off-color {originalCard.Rarity} card available for slot {slotIndex + 1} on normal reward {counterAtDecision}; relaxing rarity and type.");
+            MainFile.Logger.Warn($"[Spire Plus] PrismaticGem fallback: no unique off-color {originalCard.Rarity} card available for slot {slotIndex + 1} on normal reward {counterAtDecision}; relaxing rarity and type.");
 
             replacementCanonical = GetOffColorRewardPool(player, null, null, excludedIds)
                 .ToList()
@@ -45,7 +45,7 @@ internal static partial class PrismaticGemRewardPatch
 
         if (replacementCanonical == null)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] PrismaticGem skipped slot {slotIndex + 1} on normal reward {counterAtDecision}: no unique valid off-color replacement was available.");
+            MainFile.Logger.Warn($"[Spire Plus] PrismaticGem skipped slot {slotIndex + 1} on normal reward {counterAtDecision}: no unique valid off-color replacement was available.");
             return null;
         }
 

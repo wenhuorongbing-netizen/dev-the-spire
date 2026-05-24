@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -22,7 +22,7 @@ internal static partial class LothaBlessingService
 
         combatState.MirrorRebuttalResolved = true;
         combatState.PowerReplacementCardPendingBenefit = null;
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Mirror Rebuttal used the Power-card replacement benefit: cost 0.");
+        MainFile.Logger.Info("[Spire Plus] Lotha Mirror Rebuttal used the Power-card replacement benefit: cost 0.");
         return Task.CompletedTask;
     }
 

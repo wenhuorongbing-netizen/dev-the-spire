@@ -17,6 +17,7 @@ node_modules/
 /output/playwright/
 /website/forum/
 /website/**/*.import
+/tests/**/*.cs.uid
 
 # Local/generated art and calibration material. Not part of the active release package.
 /art_pipeline/

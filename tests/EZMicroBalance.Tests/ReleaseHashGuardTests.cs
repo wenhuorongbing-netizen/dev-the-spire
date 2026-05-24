@@ -97,11 +97,22 @@ public sealed class ReleaseHashGuardTests
         const string stalePreSoulTideCapTextZipHash = "B365AE4A1EDDAEA72CEFDF604CED7C1DFB96D8B372E0B7FC5F6763E5E5453576";
         const string stalePreSoulTideCapTextDllHash = "3A07F6E61447C4E6ECE0A97AB6AA1DAECFB63411B2168BFA3417ADF266CA79FB";
         const string stalePreSoulTideCapTextPckHash = "B060A838D14A791E66FE36B34A74EC733E7F1B3ED1E923343AB47C2531BDE89C";
-        const string currentZipHash = "11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120";
-        const string currentDllHash = "C9030FCDC459E35256B00CE71925854AF44CFE97667DEB07F751CEA540C86522";
-        const string currentPckHash = "68F6DCCC5564AE402B3FFB1DD9A65B92555B58CF72282E8EC64FF273EEC4E0F8";
+        const string stalePreTanxClawsTextZipHash = "3DEBF7FAAA3CA151C0A1D6E63DDCE780100A9F44C5CD6DAD3DCFACA63A3B61DF";
+        const string stalePreTanxClawsTextPckHash = "F7C227656622DF4A2672808FE8260E7FBABB061E80B97A5A191CBB142D8B9CE0";
+        const string stalePreTrialBranchTextZipHash = "F22C631D1870A190A203C7B1C5372F92E31C3329693A291D6FDB3114E0548ADA";
+        const string stalePreTrialBranchTextDllHash = "0587A27EC230BEFAFDFD6D9DB42BFF0B944865B4DB6FDE192F195D3F69E760BA";
+        const string stalePreTrialBranchTextPckHash = "577ECA545283171823F7BAACFD61D92D69DD58DD70CF1040980EB14F8EA0905C";
+        const string stalePreSereTalonPathFallbackZipHash = "228D631639E6621372F7C96F1A4008CABC54481AF6240E8349E8FECC4592B770";
+        const string stalePreSereTalonPathFallbackDllHash = "2FC81522B36547045CE92FA69F30B801193816C30FFDAF61F63E9558F6CA3B9E";
+        const string stalePreBlightSproutDiagnosticsZipHash = "F69B250B23809F2B1E1EC92D1648EE6948F0C87F480A69B9D97A204920BA3915";
+        const string stalePreBlightSproutDiagnosticsDllHash = "DB9AD0665E8AE1D5867E35F836B98A2E09283237E66EDC9299193222B2307770";
+        const string stalePreSereTalonNRelicLifecycleGuardZipHash = "C62DBE2536D79C500D3C744DC0EE2AA727B4BC546D038A790D178AFD1C9EFB11";
+        const string stalePreSereTalonNRelicLifecycleGuardDllHash = "DC8F3FB8E10D6D664E0420F54C5C12CED5C409EB5A50130F857DC4084CA7922A";
+        const string currentZipHash = "47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC";
+        const string currentDllHash = "04F65C55CF679C4E0635C6AB21A3E35FF24D669815E27B6C00251059C4A07643";
+        const string currentPckHash = "6D10EE277F8FBD91269D77533179D3644C5B944C822ED5787644A374883FF5CE";
         const string currentManifestHash = "C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6";
-        const string currentReadmeHash = "2441D012F12D0FB81BCAF7E1C99B1E60F18187937B9911D7D4FD54ACC47BCC6A";
+        const string currentReadmeHash = "33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA";
 
         var currentStatusDocs = new[]
         {
@@ -165,6 +176,13 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreTransformPreviewInstanceStateZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreSoulTideCapTextZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreSoulTideCapTextPckHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreTanxClawsTextZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreTanxClawsTextPckHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreTrialBranchTextZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreTrialBranchTextPckHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSereTalonPathFallbackZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreBlightSproutDiagnosticsZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSereTalonNRelicLifecycleGuardZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(oldDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightUiDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightMarkerDllHash, doc, StringComparison.Ordinal);
@@ -206,6 +224,10 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreRootEyesComposerDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreTransformPreviewInstanceStateDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreSoulTideCapTextDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreTrialBranchTextDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSereTalonPathFallbackDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreBlightSproutDiagnosticsDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSereTalonNRelicLifecycleGuardDllHash, doc, StringComparison.Ordinal);
         }
 
         AssertSourceContains(

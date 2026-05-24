@@ -8,7 +8,7 @@ This file freezes the release-candidate decision boundary requested by `docs/goa
 
 | Surface | Release stance | Reason |
 | --- | --- | --- |
-| Spire Plus / `EZMicroBalance` | Manual-test build now; release candidate only after live evidence | Automation passes, but loader, clicked UI, gameplay, save/load, failure/death, and co-op rows remain pending. |
+| Spire Plus | Manual-test build now; release candidate only after live evidence | Automation passes, but loader, clicked UI, gameplay, save/load, failure/death, and co-op rows remain pending. |
 | `EZMicroBalance` manifest id | Keep unchanged | Saved fields, package folders, env vars, and compatibility depend on the stable id. |
 | Ascension 11-20 | Development-test surface, default-on for private beta testing | Source and guard coverage exist; live traversal and co-op proof remain pending. |
 | Ascension 21-30 | Out of scope | Explicit project rule. |
@@ -41,7 +41,7 @@ Unproven features must stay gated, hidden, unadvertised, or explicitly marked un
 
 ## Preview Tools Decision
 
-Preview tools are no longer a separate mod. They ship inside `Spire Plus / EZMicroBalance` and stay isolated under `EZMicroBalanceCode/Preview/`. They can move from manual-test helper to release-candidate surface only after:
+Preview tools are no longer a separate mod. They ship inside `Spire Plus` and stay isolated under `EZMicroBalanceCode/Preview/`. They can move from manual-test helper to release-candidate surface only after:
 
 - Crystal Sphere peek is proven live to only change mask opacity and never call reveal/reward paths.
 - Transform preview is proven live to match the actual transformation result without advancing real RNG.

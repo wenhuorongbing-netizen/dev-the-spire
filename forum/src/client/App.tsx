@@ -327,7 +327,7 @@ function CategorySelect({ value, onChange }: { value: ForumCategory; onChange: (
       <select value={value} onChange={(event) => onChange(event.target.value as ForumCategory)}>
         {CATEGORIES.map((category) => (
           <option key={category.id} value={category.id}>
-            {category.label} - {category.hint}
+            {category.label}
           </option>
         ))}
       </select>
@@ -386,7 +386,6 @@ function HomePage() {
           <p className="eyebrow">玩家论坛</p>
           <h1>主题列表</h1>
         </div>
-        <p>不需要注册。开新帖时写清版本、进阶、路线、构筑或复现步骤，其他玩家可以直接接着回帖。</p>
       </section>
 
       <div className="board-toolbar">
@@ -530,18 +529,37 @@ function NewPostPage() {
           <CategorySelect value={category} onChange={setCategory} />
           <label>
             昵称
-            <input value={authorName} maxLength={32} placeholder="留空显示为匿名玩家" onChange={(event) => setAuthorName(event.target.value)} />
+            <input id="composer-name" value={authorName} maxLength={32} placeholder="留空显示为匿名玩家" onChange={(event) => setAuthorName(event.target.value)} />
           </label>
           <label>
             标题
-            <input ref={titleRef} value={title} required maxLength={120} placeholder="一句话说明问题或观点" onChange={(event) => setTitle(event.target.value)} />
-            {titleError ? <span className="field-error">{titleError}</span> : null}
+            <input
+              id="composer-title"
+              ref={titleRef}
+              value={title}
+              required
+              maxLength={120}
+              placeholder="一句话说明问题或观点"
+              onChange={(event) => setTitle(event.target.value)}
+              aria-describedby={titleError ? "composer-title-error" : undefined}
+            />
+            {titleError ? <span id="composer-title-error" className="field-error">{titleError}</span> : null}
           </label>
           <label>
             正文
-            <textarea ref={bodyRef} value={body} required maxLength={10000} rows={14} placeholder="写清楚现象、版本、路线、卡组或复现步骤。" onChange={(event) => setBody(event.target.value)} />
+            <textarea
+              id="composer-body"
+              ref={bodyRef}
+              value={body}
+              required
+              maxLength={10000}
+              rows={14}
+              placeholder="写下你想说的内容。"
+              onChange={(event) => setBody(event.target.value)}
+              aria-describedby={bodyErrorText ? "composer-body-error" : undefined}
+            />
             <span className="format-hint">支持引用 &gt;、列表 -、代码块 ``` 和链接。</span>
-            {bodyErrorText ? <span className="field-error">{bodyErrorText}</span> : null}
+            {bodyErrorText ? <span id="composer-body-error" className="field-error">{bodyErrorText}</span> : null}
           </label>
           <label className="honeypot" aria-hidden="true">
             网站
@@ -618,13 +636,23 @@ function ReplyForm({ postId, onReplied }: { postId: string; onReplied: () => Pro
       </div>
       <label>
         昵称
-        <input value={authorName} maxLength={32} placeholder="留空显示为匿名玩家" onChange={(event) => setAuthorName(event.target.value)} />
+        <input id="reply-name" value={authorName} maxLength={32} placeholder="留空显示为匿名玩家" onChange={(event) => setAuthorName(event.target.value)} />
       </label>
       <label>
         回帖内容
-        <textarea ref={bodyRef} value={body} required maxLength={5000} rows={7} placeholder="写下你的回帖。" onChange={(event) => setBody(event.target.value)} />
+        <textarea
+          id="reply-body"
+          ref={bodyRef}
+          value={body}
+          required
+          maxLength={5000}
+          rows={7}
+          placeholder="写下你的回帖。"
+          onChange={(event) => setBody(event.target.value)}
+          aria-describedby={bodyErrorText ? "reply-body-error" : undefined}
+        />
         <span className="format-hint">支持引用 &gt;、列表 -、代码块 ``` 和链接。</span>
-        {bodyErrorText ? <span className="field-error">{bodyErrorText}</span> : null}
+        {bodyErrorText ? <span id="reply-body-error" className="field-error">{bodyErrorText}</span> : null}
       </label>
       <label className="honeypot" aria-hidden="true">
         网站
@@ -809,6 +837,22 @@ export function App() {
       observer.disconnect();
       window.removeEventListener("load", postEmbeddedHeight);
     };
+  }, [route]);
+
+  useEffect(() => {
+    if (!EMBEDDED_MODE || window.parent === window) return;
+    let forumRoute = "";
+    if (route.name === "new") {
+      forumRoute = "/new";
+    } else if (route.name === "post") {
+      forumRoute = `/posts/${route.id}`;
+    } else {
+      forumRoute = "/";
+    }
+    window.parent.postMessage({
+      type: "spire-plus-forum-route",
+      route: forumRoute
+    }, window.location.origin);
   }, [route]);
 
   const page = useMemo(() => {

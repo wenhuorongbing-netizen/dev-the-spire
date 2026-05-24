@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Commands;
+﻿using MegaCrit.Sts2.Core.Commands;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
@@ -113,7 +113,7 @@ internal static partial class VakuuFightService
         await AddBloodDebt(choiceContext, player, cardSource, 1);
         await BreakLock(choiceContext, combatState, "contract");
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Vakuu contract signed: Blood Debt {encounter.BloodDebt}, broken locks {encounter.BrokenLocks}.");
+            $"[Spire Plus] Vakuu contract signed: Blood Debt {encounter.BloodDebt}, broken locks {encounter.BrokenLocks}.");
     }
 
     public static async Task BreakLockFromContract(
@@ -143,7 +143,7 @@ internal static partial class VakuuFightService
 
         await BreakLock(choiceContext, combatState, "contract");
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Vakuu risky contract signed: Blood Debt {encounter.BloodDebt}, broken locks {encounter.BrokenLocks}.");
+            $"[Spire Plus] Vakuu risky contract signed: Blood Debt {encounter.BloodDebt}, broken locks {encounter.BrokenLocks}.");
     }
 
     public static async Task ReduceBloodDebt(
@@ -173,7 +173,7 @@ internal static partial class VakuuFightService
             }
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Vakuu Blood Debt reduced by {removed}; remaining {encounter.BloodDebt}.");
+        MainFile.Logger.Info($"[Spire Plus] Vakuu Blood Debt reduced by {removed}; remaining {encounter.BloodDebt}.");
     }
 
     public static async Task CashOut(PlayerChoiceContext choiceContext, Player player, CardModel cardSource)
@@ -193,7 +193,7 @@ internal static partial class VakuuFightService
 
         encounter.CashedOut = true;
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Vakuu cash out played after {encounter.BrokenLocks} broken locks and {encounter.BloodDebt} Blood Debt.");
+            $"[Spire Plus] Vakuu cash out played after {encounter.BrokenLocks} broken locks and {encounter.BloodDebt} Blood Debt.");
         await CreatureCmd.Kill(vakuu, force: true);
     }
 
@@ -240,14 +240,14 @@ internal static partial class VakuuFightService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Vakuu Stolen Vault lock broken by {source}: {encounter.BrokenLocks}/{EzmbVakuuTrialEncounter.MaxLocks}.");
+            $"[Spire Plus] Vakuu Stolen Vault lock broken by {source}: {encounter.BrokenLocks}/{EzmbVakuuTrialEncounter.MaxLocks}.");
 
         if (encounter.RemainingLocks <= 0)
         {
             if (vakuu is { IsDead: false })
             {
                 encounter.CashedOut = true;
-                MainFile.Logger.Info("[EZMicroBalance] Vakuu trial fully unlocked; ending fight through the normal victory path.");
+                MainFile.Logger.Info("[Spire Plus] Vakuu trial fully unlocked; ending fight through the normal victory path.");
                 await CreatureCmd.Kill(vakuu, force: true);
             }
 

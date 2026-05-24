@@ -1,4 +1,4 @@
-# Test Plan
+﻿# Test Plan
 
 ## Automated Checks
 
@@ -19,12 +19,12 @@ Normal developer tests cover release identity, active localization JSON/key pari
 Release artifact, installed DLL/PCK, package hash, and runtime-smoke evidence tests are skipped in normal developer test runs because `publish/`, `.godot/`, `.zip`, `.dll`, and `.pck` outputs are ignored. Run them only after publish and package staging/zip refresh:
 
 ```powershell
-$env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'
+$env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'
 dotnet test EZMicroBalance.sln --no-build
-Remove-Item Env:\EZMB_RUN_RELEASE_ARTIFACT_TESTS
+Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS
 ```
 
-CI or shell variants may set `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` before the test command. If that variable is set and package artifacts are missing or stale, the release artifact tests should fail with missing-file/hash mismatch details.
+CI or shell variants may set `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` before the test command. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` still works. If either variable is set and package artifacts are missing or stale, the release artifact tests should fail with missing-file/hash mismatch details.
 
 Run after resource, localization, manifest, project, or packaging changes:
 
@@ -39,8 +39,8 @@ Required artifact checks after publish:
 - PCK exists when `has_pck` is `true`.
 - Manifest id matches the intended stable id.
 - Dependencies include `BaseLib`.
-- `affects_gameplay` remains `true` for Spire Plus / `EZMicroBalance`.
-- `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passes after package staging, versioned package directory, and zip artifacts are refreshed.
+- `affects_gameplay` remains `true` for Spire Plus.
+- `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passes after package staging, versioned package directory, and zip artifacts are refreshed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 
 ## Localization Checks
 
@@ -73,7 +73,7 @@ Each implemented Ancient reward change needs a manual result before private beta
 - War Hammer: pickup chooses two cards to upgrade; elite kill upgrades remain.
 - Jewelry Box: adds Apotheosis without Innate.
 - Preserved Fog / Folly: removes four cards and adds Folly with Unplayable, Innate, Eternal.
-- Claws: chooses one curse from four and adds two Wish plus one upgraded Wish.
+- Vakuu's Sere Talon / 瓦库原初之爪: adds two random Curses and three Wish as the Vakuu reward. Tanx Claws / 坦克斯利爪 remains the separate Tanx relic that transforms cards into upgraded Maul+ / 撕咬+ cards.
 - Choices Paradox: combat-start five rare choices, Retain, combat temporary.
 - Jeweled Mask: selected/drafted power permanently costs 0 and is moved from draw pile to hand at combat start.
 - Prismatic Gem: Every second standard card reward contains only off-color cards; reroll preserves trigger/non-trigger state; non-normal rewards do not count; the reward-screen hint logs a fallback if the banner cannot be updated.
@@ -92,7 +92,7 @@ Each implemented Ancient reward change needs a manual result before private beta
 - Crossbow: turn-start random attack offer can be accepted or skipped; skipped generated card does not linger.
 - Toasty Mittens: top draw-pile card can be exhausted for Strength or kept.
 - Whispering Earring: first three turns auto-play one highest-cost playable hand card after draw.
-- Meat Cleaver: Cleaver / 鍒囪倝 removes two cards and loses five current HP; disabled when unavailable.
+- Meat Cleaver: Cleaver / 鍒囪倝鍒€ removes two cards and loses five current HP; disabled when unavailable.
 - Blood-Soaked Rose / Enthralled: Enthralled gains 10 Block while preserving forced-priority behavior.
 
 ## Save/Load Checks
@@ -107,10 +107,10 @@ Required for:
 
 ## Disable Checks
 
-- Disable Spire Plus / `EZMicroBalance`.
+- Disable Spire Plus.
 - Start or load a run where possible.
-- Confirm no Spire Plus / `EZMicroBalance` logs or patches are active when the mod is disabled.
-- Confirm only the intended `Spire Plus / EZMicroBalance` mod is active for this private-beta package.
+- Confirm no Spire Plus logs or patches are active when the mod is disabled.
+- Confirm only the intended `Spire Plus` mod is active for this private-beta package.
 
 ## Current Status
 
@@ -119,9 +119,9 @@ The prior legacy `EzDailyContent` setup passed build, publish, and Mod Settings 
 v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2 Distinguished Cape 40% min15 are historical only.
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.
-- Historical package smoke/log/resource evidence under `.tools/runtime-evidence/current-package-smoke-20260514-015901` covers the earlier 22-field package, installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a clean normal Steam helper startup with BaseLib plus Spire Plus / `EZMicroBalance`.
-- current source defines 30 SavedSpireFields after the 2026-05-17 static fixes, so fresh live loader parity remains pending for the refreshed package. Older 16-field startup/log passes are historical.
-- BaseLib-only plug-off evidence under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` loaded `1 mods (1 total)` and did not initialize Spire Plus / `EZMicroBalance`. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
+- Historical package smoke/log/resource evidence under `.tools/runtime-evidence/current-package-smoke-20260514-015901` covers the earlier 22-field package, installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a clean normal Steam helper startup with BaseLib plus Spire Plus.
+- Latest Steam-client loader evidence under `.tools/runtime-evidence/manual-test-handoff-20260524-161744/release/fresh-current-package-loader-smoke` reports `Found 30 SavedSpireFields` with only BaseLib plus Spire Plus loaded and a clean log audit for the same DLL/PCK/manifest as the current package. The current ZIP/README hash still needs a fresh loader row. Older `20260523-current`, 16-field, and 22-field startup/log passes are historical.
+- BaseLib-only plug-off evidence under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` loaded `1 mods (1 total)` and did not initialize Spire Plus. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
 - Current Mod Settings UI list evidence, historical Mod Settings page evidence, A11 map/save-load spot checks, saved-map boss-reachability proof, Act 2/3 A11 map-surface observation, and targeted A14 Rootblight hover/starter-notice checks have evidence.
 - The A14 Rootblight art-hover probe found pre-fix Urda missing asset paths before combat. Urda now uses custom Ancient icon/background-scene paths and the current package resolves Ancient scene/art resources in headless installed-PCK verification, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.
 - Use `scripts/spire-plus-live-session.ps1` to prepare and restore normal Steam-client local test sessions. Use `-PreserveNewCurrentRunsOnRestore` so test-created `current_run*` files are preserved in the evidence folder before original current-run files are restored.
@@ -132,7 +132,7 @@ v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2
 Ascension 11-20 is now an active development track.
 
 - A11-A20 selection is now default-on in this private-beta multiplayer test candidate. Source tests keep the patch on standard lobby paths and reject global progress getter/save validation patches.
-- Gate controls: `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, legacy-compatible `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`, and forced internal checks through `EZMB_ASCENSION_DEBUG_LEVEL`.
+- Gate controls: `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, legacy-compatible `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1`, and forced internal checks through `SPIREPLUS_ASCENSION_DEBUG_LEVEL`.
 - Host multiplayer A20 selection/start logs a warning that A20 Branded Form / second-boss enhanced dedicated ability gameplay is disabled or downgraded in co-op pending live verification. A20 multiplayer selection is not full A20 co-op support.
 - Current normal Steam-client startup/log and historical Mod Settings UI have separate evidence; startup/log checks are not the same as live co-op verification.
 - A11 Act 1 map/save-load spot check passed with `columns=8; rows=17`; saved-map graph proof shows a boss path from post-load coord `(3,1)` to boss `(3,17)`.

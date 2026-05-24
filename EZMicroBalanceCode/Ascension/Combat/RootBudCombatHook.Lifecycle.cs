@@ -1,3 +1,4 @@
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Rooms;
@@ -28,11 +29,19 @@ internal sealed partial class RootBudCombatHook
 
         if (!IsGameplayEnabledForCurrentRoom(state))
         {
+            var evidence = CreateBlightSproutEvidenceData(state);
+            evidence["rootblightEnabled"] = AscensionFeatureGate.IsRootblightEnabled(state.RunState);
+            evidence["bossSproutEnabled"] = AscensionFeatureGate.IsBossBlightSproutEnabled(state.RunState);
+            evidence["eliteSproutEnabled"] = AscensionFeatureGate.IsEliteBlightSproutEnabled(state.RunState);
+            ReleaseEvidenceLog.Log("BlightSprout", "gate_skipped", runState: state.RunState, data: evidence);
             return;
         }
 
         if (tracker.Seeded)
         {
+            var evidence = CreateBlightSproutEvidenceData(state);
+            evidence["trackedBuds"] = tracker.Buds.Count;
+            ReleaseEvidenceLog.Log("BlightSprout", "seed_already_tracked", runState: state.RunState, data: evidence);
             return;
         }
 
@@ -49,8 +58,12 @@ internal sealed partial class RootBudCombatHook
 
             if (existingBuds.Count > targetBudCount)
             {
+                var evidence = CreateBlightSproutEvidenceData(state);
+                evidence["targetBudCount"] = targetBudCount;
+                evidence["removed"] = existingBuds.Count - targetBudCount;
+                ReleaseEvidenceLog.Log("BlightSprout", "duplicates_removed", player, evidence);
                 MainFile.Logger.Info(
-                    $"[EZMicroBalance] Ascension Blight Sprout normalized: removed {existingBuds.Count - targetBudCount} duplicate Blight Sprout card(s) for player {state.RunState.GetPlayerSlotIndex(player)}.");
+                    $"[Spire Plus] Ascension Blight Sprout normalized: removed {existingBuds.Count - targetBudCount} duplicate Blight Sprout card(s) for player {state.RunState.GetPlayerSlotIndex(player)}.");
                 existingBuds = existingBuds.Take(targetBudCount).ToList();
             }
 
@@ -62,6 +75,10 @@ internal sealed partial class RootBudCombatHook
                     tracker.Buds.Add(existingBud);
                 }
 
+                var evidence = CreateBlightSproutEvidenceData(state);
+                evidence["targetBudCount"] = targetBudCount;
+                evidence["existing"] = existingBuds.Count;
+                ReleaseEvidenceLog.Log("BlightSprout", "existing_reused", player, evidence);
                 continue;
             }
 
@@ -78,8 +95,17 @@ internal sealed partial class RootBudCombatHook
                 await CardPileCmd.AddGeneratedCardToCombat(bud, PileType.Discard, player, CardPilePosition.Bottom);
             }
 
+            var seedEvidence = CreateBlightSproutEvidenceData(state);
+            seedEvidence["targetBudCount"] = targetBudCount;
+            seedEvidence["existing"] = existingBuds.Count;
+            seedEvidence["added"] = targetBudCount - existingBuds.Count;
+            seedEvidence["sproutRounds"] = string.Join(
+                "|",
+                Enumerable.Range(existingBuds.Count, targetBudCount - existingBuds.Count)
+                    .Select(i => GetRootBudSproutRoundForCurrentRoom(state, i)));
+            ReleaseEvidenceLog.Log("BlightSprout", "seeded", player, seedEvidence);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension Blight Sprout applied: added {targetBudCount - existingBuds.Count} Blight Sprout card(s) to discard for player {state.RunState.GetPlayerSlotIndex(player)}.");
+                $"[Spire Plus] Ascension Blight Sprout applied: added {targetBudCount - existingBuds.Count} Blight Sprout card(s) to discard for player {state.RunState.GetPlayerSlotIndex(player)}.");
         }
 
         AscensionDiagnostics.LogCombatState(state, "before combat start after root bud seed");
@@ -124,13 +150,26 @@ internal sealed partial class RootBudCombatHook
 
         foreach (var bud in budsWithGrowth)
         {
+            var evidence = CreateBlightSproutEvidenceData(state);
+            evidence["sproutRound"] = bud.SproutRound;
+            evidence["wasPlayed"] = bud.WasPlayed;
+            evidence["plantedInSeedbed"] = bud.PlantedInSeedbed;
+            ReleaseEvidenceLog.Log("BlightSprout", "growth_rootblight_queued", bud.Owner, evidence);
             await RootDeckService.AddRootblightI(bud.Owner, "Blight Sprout");
+        }
+
+        if (budsWithGrowth.Count == 0)
+        {
+            var evidence = CreateBlightSproutEvidenceData(state);
+            evidence["knownBuds"] = FindKnownBuds(state).Count;
+            evidence["diedPlayers"] = tracker.DiedPlayers.Count;
+            ReleaseEvidenceLog.Log("BlightSprout", "combat_end_no_growth", runState: state.RunState, data: evidence);
         }
 
         if (budsWithGrowth.Count > 0)
         {
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension Blight Sprout applied: added {budsWithGrowth.Count} Rootblight I card(s) from unplayed sprout(s).");
+                $"[Spire Plus] Ascension Blight Sprout applied: added {budsWithGrowth.Count} Rootblight I card(s) from unplayed sprout(s).");
         }
 
         foreach (var bud in FindKnownBuds(state).Where(bud => bud.PlantedInSeedbed))

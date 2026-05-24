@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static partial class UrdaBlessingService
 {
@@ -40,7 +40,7 @@ internal static partial class UrdaBlessingService
 
         CardCmd.PreviewCardPileAdd(addResults, 2f);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Molting applied: removed {removedCards.Count} starter card(s) and added 2 Withered Husk cards.");
+            $"[Spire Plus] Urda Molting applied: removed {removedCards.Count} starter card(s) and added 2 Withered Husk cards.");
     }
 
     private static CardModel? FindStarterCard(Player player, string prefix)

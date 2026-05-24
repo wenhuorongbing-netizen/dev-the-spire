@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -57,7 +57,7 @@ internal static partial class AscensionCombatModifierService
             tracker.InkReturnLastObservedSlippery,
             metadata.IsBossBrand);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A19 tracked: Ink Return will restore {tracker.InkReturnRestoreAmount} Slippery from {tracker.InkReturnLastObservedSlippery} cleared Slippery.");
+            $"[Spire Plus] Ascension A19 tracked: Ink Return will restore {tracker.InkReturnRestoreAmount} Slippery from {tracker.InkReturnLastObservedSlippery} cleared Slippery.");
     }
 
     private static int CalculateInkReturnRestoreAmount(int clearedSlippery, bool isBossBrand)
@@ -97,6 +97,6 @@ internal static partial class AscensionCombatModifierService
         // to the final amount players should see.
         await ApplyPowerWithFinalDisplayedGain<SlipperyPower>(vantom, slippery, vantom, null);
 
-        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Ink Return restored {slippery} final Slippery.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Ink Return restored {slippery} final Slippery.");
     }
 }

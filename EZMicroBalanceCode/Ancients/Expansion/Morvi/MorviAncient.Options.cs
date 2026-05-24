@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Events;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -42,7 +42,7 @@ internal sealed partial class EzmbMorvi
             return [forced];
         }
 
-        MainFile.Logger.Warn($"[EZMicroBalance] Morvi forced blessing '{forcedBlessing}' did not match any option; showing fallback options.");
+        MainFile.Logger.Warn($"[Spire Plus] Morvi forced blessing '{forcedBlessing}' did not match any option; showing fallback options.");
         return TakeFallbackOptions(options, includeReroll: true);
     }
 
@@ -53,13 +53,13 @@ internal sealed partial class EzmbMorvi
     {
         if (options.Count == 0)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Morvi has no source-backed Ancient options to show; the event will finish instead of presenting a blank Ancient screen.");
+            MainFile.Logger.Warn("[Spire Plus] Morvi has no source-backed Ancient options to show; the event will finish instead of presenting a blank Ancient screen.");
             return [];
         }
 
         if (options.Count < ExpectedInitialOptionCount)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] Morvi only has {options.Count} source-backed option(s), expected {ExpectedInitialOptionCount}; showing all available options.");
+            MainFile.Logger.Warn($"[Spire Plus] Morvi only has {options.Count} source-backed option(s), expected {ExpectedInitialOptionCount}; showing all available options.");
         }
 
         var candidates = excludedTextKeys is { Count: > 0 }
@@ -99,7 +99,7 @@ internal sealed partial class EzmbMorvi
         var rerolled = TakeFallbackOptions(options, includeReroll: false, previousChoices);
         AncientInitialOptionReroll.ReplaceGeneratedOptionsForHistory(this, rerolled);
         SetEventState(InitialDescription, rerolled);
-        MainFile.Logger.Info("[EZMicroBalance] Morvi initial Ancient rewards rerolled once.");
+        MainFile.Logger.Info("[Spire Plus] Morvi initial Ancient rewards rerolled once.");
         return Task.CompletedTask;
     }
 

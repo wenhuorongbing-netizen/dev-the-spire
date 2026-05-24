@@ -6,11 +6,13 @@ namespace EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 internal static class ReleaseEvidenceLog
 {
-    public const string EnvironmentVariable = "EZMB_RELEASE_EVIDENCE_LOG";
-    public const string Prefix = "[EZMB-EVIDENCE]";
+    public const string EnvironmentVariable = "SPIREPLUS_RELEASE_EVIDENCE_LOG";
+    public const string LegacyEnvironmentVariable = "EZMB_RELEASE_EVIDENCE_LOG";
+    public const string Prefix = "[SPIREPLUS-EVIDENCE]";
 
     public static bool IsEnabled =>
-        AscensionExpansionConfig.IsTruthy(Environment.GetEnvironmentVariable(EnvironmentVariable));
+        AscensionExpansionConfig.IsTruthy(Environment.GetEnvironmentVariable(EnvironmentVariable)) ||
+        AscensionExpansionConfig.IsTruthy(Environment.GetEnvironmentVariable(LegacyEnvironmentVariable));
 
     public static void Log(
         string feature,

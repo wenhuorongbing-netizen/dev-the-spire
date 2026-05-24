@@ -47,6 +47,17 @@ public sealed class ReleaseEvidenceLogCoverageGuardTests
             "combat_end_notice_queued");
         AssertEvidenceSurface(
             source,
+            "Blight Sprout",
+            "BlightSprout",
+            "gate_skipped",
+            "seeded",
+            "sprouted_to_draw_top",
+            "entered_hand",
+            "played",
+            "growth_rootblight_queued",
+            "player_death_growth_cleared");
+        AssertEvidenceSurface(
+            source,
             "Preview tools",
             "PreviewCrystalSphere",
             "peek_button_added",
@@ -73,12 +84,14 @@ public sealed class ReleaseEvidenceLogCoverageGuardTests
         var statusDoc = ReadRepoText("docs", "release-evidence-status.md");
         var issues = ReadRepoText("docs", "issues.md");
 
+        Assert.Contains("SPIREPLUS_RELEASE_EVIDENCE_LOG", logSource, StringComparison.Ordinal);
         Assert.Contains("EZMB_RELEASE_EVIDENCE_LOG", logSource, StringComparison.Ordinal);
-        Assert.Contains("[EZMB-EVIDENCE]", logSource, StringComparison.Ordinal);
+        Assert.Contains("[SPIREPLUS-EVIDENCE]", logSource, StringComparison.Ordinal);
         Assert.Contains("if (!IsEnabled)", logSource, StringComparison.Ordinal);
         Assert.Contains("return;", SliceFrom(logSource, "if (!IsEnabled)"), StringComparison.Ordinal);
         Assert.Contains("FormatData", logSource, StringComparison.Ordinal);
         Assert.Contains("CultureInfo.InvariantCulture", logSource, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_RELEASE_EVIDENCE_LOG=1", statusDoc, StringComparison.Ordinal);
         Assert.Contains("EZMB_RELEASE_EVIDENCE_LOG=1", statusDoc, StringComparison.Ordinal);
         Assert.Contains("STRICT-AUDIT-EVIDENCE-LOG", issues, StringComparison.Ordinal);
     }

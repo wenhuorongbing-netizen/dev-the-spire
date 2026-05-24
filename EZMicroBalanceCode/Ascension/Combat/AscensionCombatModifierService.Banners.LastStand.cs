@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -6,7 +6,7 @@ internal static partial class AscensionCombatModifierService
     {
         if (!HasMultiplePrimaryEnemies(combatState))
         {
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A16 skipped: Last Stand banner requires a multi-enemy fight.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A16 skipped: Last Stand banner requires a multi-enemy fight.");
         }
     }
 
@@ -34,6 +34,6 @@ internal static partial class AscensionCombatModifierService
             await PowerCmd.Apply<LastStandBannerPower>(new BlockingPlayerChoiceContext(), enemy, strength, enemy, null);
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A16 applied: Last Stand banner triggered after the first enemy death.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A16 applied: Last Stand banner triggered after the first enemy death.");
     }
 }

@@ -30,7 +30,7 @@ Close a row only when the manual evidence includes the requested screenshots, `g
 | A12-A16-MARKER-VARIETY | map markers | source-patched | Multi-seed and save/load marker variety proof. |
 | A12-A16-A19-MAP-PREVIEW | map hover previews | source-patched | Firemark, Banner, dedicated ability, and Branded Form hover rendering proof. |
 | A13-FISSION-SAMPLING | Fission diagnostics | source-patched | 20 normal, 10 Banner, 10 Firemarked Elite, and boss reward samples. |
-| MP-MAC-MODELDB-HASH | cross-platform co-op | investigated | Host/Mac logs, release info, loaded-mod list, ModelDb hashes, and BaseLib/EZMB hash parity. |
+| MP-MAC-MODELDB-HASH | cross-platform co-op | investigated | Host/Mac logs, release info, loaded-mod list, ModelDb hashes, and BaseLib/Spire Plus hash parity. |
 
 ## Execution Notes
 

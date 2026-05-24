@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Entities.Powers;
+﻿using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -59,7 +59,7 @@ internal static partial class AscensionCombatModifierService
         await ApplyBoilingExplosionVulnerability(combatState, tracker, metadata, giant);
 
         MainFile.Logger.Info(
-            "[EZMicroBalance] Ascension A19 applied: Boiling Critical fortified the explosion turn with Artifact, Vulnerable pressure, Weak cleanup, and negative-Strength cleanup.");
+            "[Spire Plus] Ascension A19 applied: Boiling Critical fortified the explosion turn with Artifact, Vulnerable pressure, Weak cleanup, and negative-Strength cleanup.");
     }
 
     private static async Task ApplyBoilingExplosionVulnerability(
@@ -81,7 +81,7 @@ internal static partial class AscensionCombatModifierService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A19 applied: Boiling Critical applied {vulnerable} Vulnerable before the explosion.");
+            $"[Spire Plus] Ascension A19 applied: Boiling Critical applied {vulnerable} Vulnerable before the explosion.");
     }
 
     private static async Task ClearBoilingExplosionFortification(

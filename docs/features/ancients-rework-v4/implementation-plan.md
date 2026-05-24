@@ -170,7 +170,7 @@ Candidate order:
 3. `Warhammer`: on pickup choose 2 cards to upgrade; keep elite-kill random upgrades unchanged.
 4. `Jeweled Box / Apotheosis`: add Apotheosis without Innate, only if instance-level keyword removal is proven.
 5. `Pickled Living Fog / Folly`: remove 4 cards and add Folly with Innate + Eternal but no Ethereal/Retain, only after keyword mutation is proven.
-6. `Withered Claw`: 4-choice curse selection plus 2 `Wish` and 1 `Wish+`, only after selection UI and Wish card creation are proven.
+6. `SereTalon` / 瓦库原初之爪: keep the source behavior, adding 2 random Curses and 3 `Wish`. Keep `Claws` (`Tanx Claws` / 坦克斯利爪 in player text) on the Tanx Maul-transform path; selected cards now become upgraded Maul+ / 撕咬+.
 
 Validation focus:
 

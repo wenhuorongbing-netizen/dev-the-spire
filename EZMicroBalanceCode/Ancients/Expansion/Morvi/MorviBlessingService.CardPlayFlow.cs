@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
 internal static partial class MorviBlessingService
 {
@@ -69,7 +69,7 @@ internal static partial class MorviBlessingService
         if (card.IsUpgraded)
         {
             combatState.BlueprintBlockAfterCards.Add(card);
-            MainFile.Logger.Info($"[EZMicroBalance] Morvi Blueprint Proof armed upgraded-card Block for {card.Id.Entry}.");
+            MainFile.Logger.Info($"[Spire Plus] Morvi Blueprint Proof armed upgraded-card Block for {card.Id.Entry}.");
             return;
         }
 
@@ -77,7 +77,7 @@ internal static partial class MorviBlessingService
         {
             CardCmd.Upgrade(card, CardPreviewStyle.None);
             combatState.BlueprintTemporaryUpgradeCards.Add(card);
-            MainFile.Logger.Info($"[EZMicroBalance] Morvi Blueprint Proof temporarily upgraded {card.Id.Entry} for this play.");
+            MainFile.Logger.Info($"[Spire Plus] Morvi Blueprint Proof temporarily upgraded {card.Id.Entry} for this play.");
         }
 
         combatState.BlueprintDrawAfterCards.Add(card);

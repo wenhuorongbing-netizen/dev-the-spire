@@ -1,4 +1,4 @@
-# Spire Plus Changelog
+﻿# Spire Plus Changelog
 
 Append only short tester/player-facing entries here when behavior or release validation changes.
 
@@ -40,17 +40,17 @@ Append only short tester/player-facing entries here when behavior or release val
 - Urda and Lotha now use custom Ancient background scenes, separate map/run-history icons, option art, and dialogue/localization for the active test slice.
 - At that point Lotha event art used the local generated mirror-tribunal background and temporary source-derived map/option/power crops; the later GPTimage2/browser art pass superseded the temporary-crop note for the current package.
 - Repaired broken Simplified Chinese Ancient expansion localization JSON so the active zhs files parse again.
-- Lotha is source-complete/default-on for private-beta testing with eight blessing options and `EZMB_DISABLE_LOTHA` / `SPIREPLUS_DISABLE_LOTHA` emergency gates.
+- Lotha is source-complete/default-on for private-beta testing with eight blessing options and preferred `SPIREPLUS_DISABLE_LOTHA` plus legacy `EZMB_DISABLE_LOTHA` emergency gates.
 - Lotha corrective polish now covers all eight blessings: Mirror Rebuttal chosen-card setup with a 0-cost Power fallback; Mirror Hall Echo turn-end type recording; Presumption Innocent state; Closed Court no-card-rewards plus split turn-1 and turn-4 resources; Deferred Verdict player-owned turn-4 Verdict stacks; Death Reprieve reprieve turn; Single Sentence first Attack/Skill ruling plus four-card cap; and Public Evidence Debuff/Enlightenment hooks.
 - Death Reprieve has a source-safe timing note for testers: player-turn lethal starts the reprieve immediately, while enemy-turn lethal starts it on the next player turn because safe enemy-turn interruption is not proven by local source.
 - Lotha English and Simplified Chinese option/relic/power text now highlights Attack/Skill/Power, Energy, Block, Verdict, Debuff, Enlightenment, Innocent, and Death Reprieve terms.
-- Morvi is source-complete/default-on for private-beta Act 2 testing with all eight v2.2 blessing options, custom event art, option icons, English/Simplified Chinese localization, hover powers, `EZMB_DISABLE_MORVI` / `SPIREPLUS_DISABLE_MORVI`, force-Ancient gates, and force-blessing gates.
+- Morvi is source-complete/default-on for private-beta Act 2 testing with all eight v2.2 blessing options, custom event art, option icons, English/Simplified Chinese localization, hover powers, preferred `SPIREPLUS_DISABLE_MORVI` plus legacy `EZMB_DISABLE_MORVI`, force-Ancient gates, and force-blessing gates.
 - Morvi source-safe tester notes: Forbidden Loan auto-settles after the Act 2 boss instead of opening a post-boss choice, Red Ink Overdraft appears as a temporary active card instead of a native combat button, and Open-Book sealed cards return from an exhaust-pile holding path when hand space allows. At that time Morvi option/icon art was still temporary; the later GPTimage2/browser art pass superseded it for the current package.
 - Morvi live gameplay, save/load, and co-op verification remain pending.
-- Urda now has ten source-backed default-on v2.2 blessing ids: Seedbed, Humus Pact, Molting, Moss Map, Trial Branch, Shallow-Root Relic, Rooted Route, After the Rain, Root-Sight, and Seed Bank.
+- Urda now has eleven source-backed default-on blessing ids: Seedbed, Humus Pact, Molting, Moss Map, Trial Branch, Shallow-Root Relic, Elite Root, Rooted Route, After the Rain, Root-Sight, and Seed Bank.
 - Urda source-safe tester notes: Trial Branch uses a simple 4-card selection grid, Shallow-Root Relic uses Act 2 removal/refund instead of the unproven `lose 6 Max HP` choice UI, Rooted Route auto-marks a reachable normal-combat node without graph mutation, Root-Sight uses the Root Eyes relic to choose a future reachable Monster, Unknown, or Elite room, and Seed Bank stores by consuming the reward.
 - At that point Urda's six new option icons were temporary source-derived crops because `OPENAI_API_KEY` was not set; the later GPTimage2/browser art pass superseded this for the current package.
-- Fight Vakuu is hidden by default behind `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, or a force-fight gate. It now uses a dedicated Vakuu enemy and encounter scene, but still needs live post-victory, save-load, and failure-path proof before normal exposure.
+- Fight Vakuu is hidden by default behind `SPIREPLUS_ENABLE_VAKUU_FIGHT=1` or a force-fight gate. Legacy `EZMB_ENABLE_VAKUU_FIGHT=1` still works. It now uses a dedicated Vakuu enemy and encounter scene, but still needs live post-victory, save-load, and failure-path proof before normal exposure.
 - Live gameplay, save/load, failure/death, and co-op verification for Urda, Lotha, and Vakuu remain pending.
 
 ## 2026-05-12
@@ -59,8 +59,8 @@ Append only short tester/player-facing entries here when behavior or release val
 - Morvi Debt Settlement text now tells players that missing Gold is paid with nonlethal HP.
 - At that time Morvi/Lotha event art remained pending because no explicit local source PNGs were available; no placeholder art was added. Later 2026-05-13/15 art passes superseded this for the current package.
 - Morvi, the Lender-Scribe now has a default-off Act 2 prototype for focused testing.
-- Set `EZMB_ENABLE_MORVI_V22=1` to include Morvi in Act 2 Ancient selection.
-- Set `EZMB_FORCE_MORVI_BLESSING=morvi_misprint_press`, `morvi_open_book_exam`, or `morvi_debt_settlement` to force one prototype blessing.
+- Historical test gate: `EZMB_ENABLE_MORVI_V22=1` included Morvi in Act 2 Ancient selection at that time; current builds use default-on Morvi unless `SPIREPLUS_DISABLE_MORVI=1` is set.
+- Set `SPIREPLUS_FORCE_MORVI_BLESSING=morvi_misprint_press`, `morvi_open_book_exam`, or `morvi_debt_settlement` to force one prototype blessing. Legacy `EZMB_FORCE_MORVI_BLESSING` still works.
 - Morvi prototype blessings: Misprint Press replays your first Attack or Skill each combat, Open-Book Exam upgrades one eligible Act 2 combat reward card, and Debt Settlement trades immediate gold for three later repayments.
 - Lotha and Vakuu fight content remained unimplemented at that time; the six additional Urda blessings were implemented later on 2026-05-13.
 - Live gameplay, save/load, and co-op verification for Morvi remain pending.
@@ -68,7 +68,7 @@ Append only short tester/player-facing entries here when behavior or release val
 ## 2026-05-11
 
 - Urda, Loamweaver is now enabled by default for private-beta testing in Act 1.
-- Set `EZMB_DISABLE_URDA=1` only when you want to hide Urda for comparison.
+- Set `SPIREPLUS_DISABLE_URDA=1` only when you want to hide Urda for comparison. Legacy `EZMB_DISABLE_URDA=1` still works.
 - Urda now has first-pass gameplay for Seedbed, Humus Pact, Molting, and Moss Map; live gameplay and save/load testing are still pending.
 - Seedbed can trade max HP for Seedlings from normal Act 1 combat card rewards, counts accepted Seedbed choices only, and rewards four accepts with max HP without healing.
 - Humus Pact uses a Compost Reward card-reward option for normal Act 1 combat rewards, then opens a small removal plus upgraded-card payoff after the third compost.
@@ -80,11 +80,11 @@ Append only short tester/player-facing entries here when behavior or release val
 - Multiplayer A20: fixed a black-screen run-start crash caused by hard references to optional Early Access dedicated ability types missing from the current installed game DLL.
 - Compatibility: Debt patch paths avoid direct assumptions about game members that changed across local Early Access builds. Pumpkin Candle and Door Wedge EZMB overrides are removed from the active v0.106.0 package; Pumpkin Candle is vanilla and Doormaker/Door Wedge is replaced by Aeonglass Time Sand Reflow.
 - A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
-- Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.
-- Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
+- Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.
+- Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
 - A20 multiplayer selection is not full A20 co-op support. A20 Branded Form / second-boss enhanced dedicated ability gameplay remains disabled or downgraded in co-op pending live verification.
-- Normal Steam-client Mod Settings has historical RC1 UI evidence for BaseLib and the old EZ Micro Balance display name. Later historical startup/log evidence confirms a Spire Plus display-name package reached main menu, but the current 30-field package still needs a fresh live loader rerun. Startup/log checks are not the same as live co-op or gameplay verification.
+- Normal Steam-client Mod Settings has historical RC1 UI evidence that predates the current display-name refresh. Current startup/log evidence confirms a 30-field package loaded as Spire Plus with only BaseLib plus the technical `EZMicroBalance` mod enabled. Startup/log checks are not the same as live co-op or gameplay verification.
 
 ## 2026-05-07
 
@@ -101,5 +101,5 @@ Append only short tester/player-facing entries here when behavior or release val
 - A17: Deep Branches are optional Act 2/3 side branches in single-player only until route-voting behavior is proven.
 - A19/A20: boss dedicated ability / Branded Form map hover text remains available; A20 Branded Form gameplay remains single-player gated.
 - Multiplayer A20: host selection is enabled only for development testing when the public Ascension gate is on; logs now warn that A20 Branded Form / second-boss enhanced dedicated ability gameplay is disabled or downgraded in co-op pending live verification.
-- Tests: release artifact/package/runtime-smoke checks are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`; normal developer tests no longer require ignored `publish/` package artifacts.
-- Status: historical 2026-05-14 package helper startup/log/resource verification under `.tools/runtime-evidence/current-package-smoke-20260514-015901` passed with BaseLib and Spire Plus / `EZMicroBalance` loaded, `Found 22 SavedSpireFields`, clean audit/manual scans, and installed-PCK Ancient resource coverage. current source defines 30 SavedSpireFields after later static fixes, so fresh live loader parity remains pending for the refreshed package; the refreshed Mod Settings UI list screenshot shows `Spire Plus`. Live feature verification, save-load, and live co-op verification remain pending until actually executed.
+- Tests: release artifact/package/runtime-smoke checks are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`; normal developer tests no longer require ignored `publish/` package artifacts. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
+- Status: current 2026-05-24 Steam-client helper startup/log verification under `.tools/runtime-evidence/manual-test-handoff-20260524-161744/release/fresh-current-package-loader-smoke` passed with BaseLib and Spire Plus under technical id `EZMicroBalance` loaded, `Found 30 SavedSpireFields`, clean audit/manual scans, and restored local settings/mods afterward. Historical 2026-05-14 installed-PCK Ancient resource coverage remains useful resource evidence. Live feature verification, save-load, and live co-op verification remain pending until actually executed.

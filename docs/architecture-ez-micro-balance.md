@@ -1,4 +1,4 @@
-# Spire Plus Architecture Decision
+﻿# Spire Plus Architecture Decision
 
 Decision date: 2026-05-05
 
@@ -59,6 +59,6 @@ Current implementation decision:
 
 ## Gated Expansion Work
 
-The original Ancient-only private beta scope excluded Ascension 11-20-30 and custom-character work. The 2026-05-06 overnight sprint goal opened Ascension 11-20 as an active implementation track. The current private-beta multiplayer test candidate exposes A11-A20 single-player and host-multiplayer selection through the original Ascension UI by default, keeps all selector expansion disableable with `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, keeps host-multiplayer selection separately disableable with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, accepts legacy `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` without requiring it, and does not claim release readiness until live behavior is verified.
+The original Ancient-only private beta scope excluded Ascension 11-20-30 and custom-character work. The 2026-05-06 overnight sprint goal opened Ascension 11-20 as an active implementation track. The current private-beta multiplayer test candidate exposes A11-A20 single-player and host-multiplayer selection through the original Ascension UI by default, keeps all selector expansion disableable with `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, keeps host-multiplayer selection separately disableable with `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, accepts legacy `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` without requiring it, and does not claim release readiness until live behavior is verified.
 
 Ascension 21-30 and custom-character work remain out of scope. If later work requires a separate player-facing toggle, choose and document a new stable manifest id before the first build rather than renaming an existing id in-place.

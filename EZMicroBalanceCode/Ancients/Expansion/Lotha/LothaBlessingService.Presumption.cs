@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -22,7 +22,7 @@ internal static partial class LothaBlessingService
             1,
             player.Creature,
             null);
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Presumption of Innocence applied Innocent at combat start.");
+        MainFile.Logger.Info("[Spire Plus] Lotha Presumption of Innocence applied Innocent at combat start.");
     }
 
     private static async Task TryApplyPresumptionTurnStart(
@@ -49,7 +49,7 @@ internal static partial class LothaBlessingService
         await CardPileCmd.Draw(choiceContext, PresumptionCards, player);
         await PlayerCmd.GainEnergy(PresumptionEnergy, player);
         await CreatureCmd.GainBlock(player.Creature, PresumptionBlock, ValueProp.Move, null, fast: true);
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Presumption of Innocence granted draw 2, Energy 1, and Block 8 while Innocent.");
+        MainFile.Logger.Info("[Spire Plus] Lotha Presumption of Innocence granted draw 2, Energy 1, and Block 8 while Innocent.");
     }
 
     public static async Task AfterDamageReceived(
@@ -84,7 +84,7 @@ internal static partial class LothaBlessingService
             ValueProp.Unblockable | ValueProp.Unpowered,
             null,
             null);
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Presumption of Innocence broke after unblocked enemy attack damage and applied 8 HP loss.");
+        MainFile.Logger.Info("[Spire Plus] Lotha Presumption of Innocence broke after unblocked enemy attack damage and applied 8 HP loss.");
     }
 
     private static bool IsUnblockedEnemyAttackDamage(

@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -15,7 +15,7 @@ internal static partial class AscensionCombatModifierService
         var demon = AliveEnemies(combatState).FirstOrDefault(enemy => enemy.Monster is KnowledgeDemon);
         await PowerCmd.Remove(demon?.GetPower<DeepThoughtPower>());
 
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Marginal Note pressure was shuffled into discard after Curse of Knowledge.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Marginal Note pressure was shuffled into discard after Curse of Knowledge.");
     }
 
     private static void TrackKnowledgeDemonEnemyMove(CombatState combatState, AscensionCombatTracker tracker)
@@ -76,6 +76,6 @@ internal static partial class AscensionCombatModifierService
         await PowerCmd.Apply<DeepThoughtPower>(new BlockingPlayerChoiceContext(), demon, deepThoughtGain, demon, null);
         await ClampPowerAmount<DeepThoughtPower>(demon, metadata.IsBossBrand ? 3 : 2, demon, null);
 
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: unplayed Marginal Note became Deep Thought.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: unplayed Marginal Note became Deep Thought.");
     }
 }

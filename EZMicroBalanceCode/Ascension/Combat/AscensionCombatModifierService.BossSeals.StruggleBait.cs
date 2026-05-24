@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -92,7 +92,7 @@ internal static partial class AscensionCombatModifierService
         await CardPileCmd.AddGeneratedCardToCombat(escape, PileType.Discard, player, CardPilePosition.Bottom);
         tracker.StruggleBaitGeneratedEscapes.Add(escape);
         AscensionSavedStateFields.StruggleBaitGeneratedEscape[escape] = true;
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Escape Fatigue added a dedicated-ability Frantic Escape to the affected player.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Escape Fatigue added a dedicated-ability Frantic Escape to the affected player.");
     }
 
     private static async Task TrackRoyalEscapePlayed(
@@ -126,6 +126,6 @@ internal static partial class AscensionCombatModifierService
         tracker.StruggleBaitVigorGainRound = combatState.RoundNumber;
         var vigorGain = metadata.IsBossBrand ? 3m : 2m;
         await PowerCmd.Apply<VigorPower>(new BlockingPlayerChoiceContext(), insatiable, vigorGain, insatiable, null);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Escape Fatigue converted three dedicated-ability escapes into Vigor.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Escape Fatigue converted three dedicated-ability escapes into Vigor.");
     }
 }

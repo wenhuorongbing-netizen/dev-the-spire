@@ -107,14 +107,15 @@ Spire Plus manual-test package
 
 Archive: SpirePlus-$($manifest.version).zip
 Display name: Spire Plus
-Technical id / install folder: EZMicroBalance
+Technical compatibility id: EZMicroBalance
 Version: $($manifest.version)
 Requires: BaseLib v3.1.4
 
 Install:
-1. Place this EZMicroBalance folder under the Slay the Spire 2 mods folder.
+1. Extract this archive into the Slay the Spire 2 mods folder exactly as packaged.
 2. Keep legacy EzDailyContent disabled or absent.
 3. Enable Spire Plus in the game's Mod Settings.
+4. If the game's Mods list shows EZMicroBalance as the mod name, the package is stale or the display-name route regressed.
 
 Test focus:
 - Urda, Morvi, Lotha, and Vakuu Ancient rewards.
@@ -124,8 +125,9 @@ Test focus:
 
 Notes:
 - This is a manual-test build, not release-ready.
-- EZMicroBalance stays as the technical id this cycle so existing saves, config, and env-var gates keep working.
-- There is no separate Future Peek install in this package.
+- The compatibility id remains EZMicroBalance this cycle so existing saves, config, and legacy gates keep working.
+- EZMicroBalance is a technical folder/id only; player-facing screens should say Spire Plus.
+- Crystal Sphere peek and transform preview are part of this Spire Plus package.
 - Ancient selections now grant visible marker relics so the chosen blessing stays readable in the relic bar.
 - Ascension 21-30 and custom-character content are not included.
 "@ | Set-Content -LiteralPath $readmePath -Encoding UTF8

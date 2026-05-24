@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(RelicCmd), nameof(RelicCmd.Obtain), typeof(RelicModel), typeof(Player), typeof(int))]
 internal static class BlackStarObtainPatch
@@ -20,13 +20,13 @@ internal static class BlackStarObtainPatch
         if (blackStar.Owner.RunState.CurrentActIndex < 2)
         {
             MainFile.Logger.Info(
-                $"[EZMicroBalance] BlackStar skipped: pickup compensation requires act 3+, currentActIndex={blackStar.Owner.RunState.CurrentActIndex}.");
+                $"[Spire Plus] BlackStar skipped: pickup compensation requires act 3+, currentActIndex={blackStar.Owner.RunState.CurrentActIndex}.");
             return obtained;
         }
 
         var relic = RelicFactory.PullNextRelicFromFront(blackStar.Owner).ToMutable();
         await RelicCmd.Obtain(relic, blackStar.Owner);
-        MainFile.Logger.Info($"[EZMicroBalance] BlackStar applied: act 3+ immediate relic {relic.Id.Entry}.");
+        MainFile.Logger.Info($"[Spire Plus] BlackStar applied: act 3+ immediate relic {relic.Id.Entry}.");
         return obtained;
     }
 }

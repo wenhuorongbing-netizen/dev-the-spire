@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -8,7 +8,7 @@ internal static partial class AscensionCombatModifierService
     {
         if (!HasMultiplePrimaryEnemies(combatState))
         {
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A16 skipped: Shieldwall banner requires a multi-enemy fight.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A16 skipped: Shieldwall banner requires a multi-enemy fight.");
             return;
         }
 
@@ -22,11 +22,11 @@ internal static partial class AscensionCombatModifierService
                 tracker.ShieldwallBearer,
                 null);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A16 applied: Shieldwall bannerbearer set to {tracker.ShieldwallBearer.Name}.");
+                $"[Spire Plus] Ascension A16 applied: Shieldwall bannerbearer set to {tracker.ShieldwallBearer.Name}.");
         }
         else
         {
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A16 gate active: Shieldwall had no living enemy target.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A16 gate active: Shieldwall had no living enemy target.");
         }
     }
 
@@ -46,7 +46,7 @@ internal static partial class AscensionCombatModifierService
         await ApplyBlockToEnemies(
             PrimaryAliveEnemies(combatState).Where(enemy => enemy != creature),
             GetShieldwallDeathBlock(combatState));
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A16 applied: Shieldwall bannerbearer death granted final Block.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A16 applied: Shieldwall bannerbearer death granted final Block.");
     }
 
     private static async Task ApplyShieldwallTurnBlock(
@@ -65,6 +65,6 @@ internal static partial class AscensionCombatModifierService
         await ApplyBlockToEnemies(
             PrimaryAliveEnemies(combatState).Where(enemy => enemy != bearer),
             GetShieldwallTurnBlock(combatState));
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A16 applied: Shieldwall bannerbearer protected other enemies at enemy turn end.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A16 applied: Shieldwall bannerbearer protected other enemies at enemy turn end.");
     }
 }

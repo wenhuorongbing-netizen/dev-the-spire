@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionRewardService
 {
@@ -59,7 +59,7 @@ internal static partial class AscensionRewardService
         candidate.ModifyCard(modifiedCard);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A13 applied: added Fission to {modifiedCard.Id.Entry} in a {sourceLabel} card reward ({chancePercent}% source chance).");
+            $"[Spire Plus] Ascension A13 applied: added Fission to {modifiedCard.Id.Entry} in a {sourceLabel} card reward ({chancePercent}% source chance).");
         LogFissionDiagnostics(sourceLabel, chancePercent, candidates.Count, roll, applied: true, modifiedCard.Id.Entry);
         return true;
     }
@@ -78,7 +78,7 @@ internal static partial class AscensionRewardService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension diagnostics: Fission reward roll; sourceLabel={sourceLabel}; chancePercent={chancePercent}; eligibleCandidateCount={eligibleCandidateCount}; roll={(roll.HasValue ? roll.Value.ToString() : "<none>")}; applied={applied}; cardId={cardId ?? "<none>"}.");
+            $"[Spire Plus] Ascension diagnostics: Fission reward roll; sourceLabel={sourceLabel}; chancePercent={chancePercent}; eligibleCandidateCount={eligibleCandidateCount}; roll={(roll.HasValue ? roll.Value.ToString() : "<none>")}; applied={applied}; cardId={cardId ?? "<none>"}.");
     }
 
     private static int GetFissionChancePercent(

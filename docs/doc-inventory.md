@@ -96,7 +96,7 @@ Current support docs, not default reading path:
 - superseded `PROJECT_STATE.md` per-pass validation history -> `docs/archive/project-state-history-20260516.md`
 - superseded `docs/issues.md` long-form 2026-05-15 package verification note -> `docs/archive/implementation-records/2026-05-15-current-package-verification-note.md`
 - top-level `legacy/` migration project metadata -> `docs/archive/legacy-planning/legacy-project-files/`
-- top-level `EzDailyContent*` and `EZFuturePeek*` mod surfaces removed from the active root; the single active deliverable is `Spire Plus / EZMicroBalance`.
+- top-level `EzDailyContent*` and `EZFuturePeek*` mod surfaces removed from the active root; the single active deliverable is `Spire Plus`.
 - stale root architecture audit with superseded `EZFuturePeek` separation advice -> `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md`
 - historical RC1 live-validation log for older package states -> `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`
 

@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
@@ -109,7 +109,7 @@ internal sealed class SpirePlusAncientLiveTestConsoleCmd : AbstractConsoleCmd
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Starting unsaved live-test run for {target.Name} Ancient UI evidence.");
+            $"[Spire Plus] Starting unsaved live-test run for {target.Name} Ancient UI evidence.");
 
         IRunState? commandForceFightRunState = null;
         var commandForceFightArmed = false;

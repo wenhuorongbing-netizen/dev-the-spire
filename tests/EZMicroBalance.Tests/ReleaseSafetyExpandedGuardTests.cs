@@ -15,9 +15,9 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             bootstrap,
-            "Spire Plus / EZMicroBalance Windows bootstrap",
+            "Spire Plus Windows bootstrap",
             "Install BaseLib v3.1.4 under <GameRoot>\\mods\\BaseLib before game verification.",
-            "BaseLib plus Spire Plus / EZMicroBalance appear and are enabled.");
+            "BaseLib plus Spire Plus appear and are enabled.");
         Assert.DoesNotContain("EzDailyContent Windows bootstrap", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain("BaseLib v3.1.0", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain("BaseLib plus EzDailyContent appear", bootstrap, StringComparison.Ordinal);
@@ -93,13 +93,13 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         var devEnvironment = ReadRepoText("docs", "dev-environment.md");
-        Assert.Contains("current source defines 30 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current source defines 30 SavedSpireFields", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("previous smoke log still reports `Found 22 SavedSpireFields`", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("fresh live loader rerun", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("historical 22-field loader evidence", devEnvironment, StringComparison.Ordinal);
-        Assert.Contains("not refreshed 30-field package parity", devEnvironment, StringComparison.Ordinal);
+        Assert.Contains("`Found 22 SavedSpireFields`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("fresh-current-package-loader-smoke", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Historical 22-field loader evidence", devEnvironment, StringComparison.Ordinal);
+        Assert.Contains("Current-package loader evidence:", devEnvironment, StringComparison.Ordinal);
         Assert.Contains("Current source defines 30 SavedSpireFields", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current normal Steam-client helper startup/log pass", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current-package startup/log verification", devEnvironment, StringComparison.Ordinal);
@@ -136,19 +136,19 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Phase 4 Lotha first slice",
             "Source-complete / live-pending",
             "Phase 8 required commands",
-            "fresh 30-field loader proof",
+            "current-package loader smoke",
             "It is not private-beta release-ready");
 
         Assert.Contains("`EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("`Spire Plus`", audit, StringComparison.Ordinal);
-        Assert.Contains("current source defines 30 SavedSpireFields", audit, StringComparison.Ordinal);
+        Assert.Contains("Current source defines 30 SavedSpireFields", audit, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
-        Assert.Contains("previous current-package smoke", audit, StringComparison.Ordinal);
+        Assert.Contains("historical log records", audit, StringComparison.Ordinal);
         Assert.Contains("`Found 22 SavedSpireFields`", audit, StringComparison.Ordinal);
-        Assert.Contains("Historical 22-field loader/resource verification is retained as historical evidence only", audit, StringComparison.Ordinal);
-        Assert.Contains("fresh 30-field loader proof", audit, StringComparison.Ordinal);
-        Assert.Contains("0 Spire Plus / `EZMicroBalance` error signatures", audit, StringComparison.Ordinal);
-        Assert.Contains("Historical normal Steam-client startup/log verification for the earlier 22-field package confirmed the refreshed `Spire Plus` display name", audit, StringComparison.Ordinal);
+        Assert.Contains("Current loader parity is covered by the 30-field smoke", audit, StringComparison.Ordinal);
+        Assert.Contains("current-package loader smoke", audit, StringComparison.Ordinal);
+        Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", audit, StringComparison.Ordinal);
+        Assert.Contains("Current normal Steam-client startup/log verification reports `Found 30 SavedSpireFields`", audit, StringComparison.Ordinal);
         Assert.Contains("refreshed Mod Settings UI list capture now shows `Spire Plus`", audit, StringComparison.Ordinal);
         Assert.Contains("Two-client multiplayer matrix is pending", audit, StringComparison.Ordinal);
     }
@@ -234,8 +234,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "## Prompt-To-Artifact Checklist",
             "## Missing Or Weakly Verified Items",
             "## Conclusion",
-            "258 passed / 18 skipped",
-            "276 passed / 0 skipped",
+            "272 passed / 20 skipped",
+            "292 passed / 0 skipped",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",
             "window-preflight-smoke-20260513-135402",
@@ -246,7 +246,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Vakuu dedicated combat loop",
             "Ancient reward visibility",
             "Player text, UI, and resource routing",
-            "failed as designed with 18 pending manual rows",
+            "fails closed with 18 manual rows",
             "release-ready-path-containment-smoke",
             "evidence dirs outside the evidence root",
             "required-file/screenshot paths that escape their row evidence dir",
@@ -323,7 +323,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120\"",
+            "PackageSha256 = \"47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC\"",
             "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.0.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
@@ -628,19 +628,19 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bready\s+for\s+(?:private beta|release)\b", currentDocs);
         Assert.Contains("- [x] BaseLib appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Latest normal Steam-client startup/log verification is historical for the pre-review Spire Plus display-name package", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);

@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -7,7 +7,7 @@ internal static partial class AscensionCombatModifierService
         var heal = GetConstantHealAmount(combatState);
         await PowerCmd.Apply<ConstantHealMarkFiremarkPower>(new BlockingPlayerChoiceContext(), host, heal, host, null);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A12 applied: Constant Heal firemark host {host.Name} will heal {heal} HP at end of turn.");
+            $"[Spire Plus] Ascension A12 applied: Constant Heal firemark host {host.Name} will heal {heal} HP at end of turn.");
     }
 
     private static async Task ResolveConstantHeal(CombatState combatState, AscensionCombatTracker tracker)
@@ -21,7 +21,7 @@ internal static partial class AscensionCombatModifierService
         if (tracker.FiremarkDamageThisEnemyCycle >= GetConstantHealInterruptDamage(combatState))
         {
             tracker.FiremarkDamageThisEnemyCycle = 0m;
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Constant Heal was interrupted by player damage.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A12 applied: Constant Heal was interrupted by player damage.");
             return;
         }
 

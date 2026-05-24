@@ -6,7 +6,9 @@ internal static partial class AscensionFeatureGate
     {
         get
         {
-            var rawValue = Environment.GetEnvironmentVariable(DebugLevelEnvironmentVariable)?.Trim();
+            var rawValue = FirstRawEnvironmentValue(
+                DebugLevelEnvironmentVariable,
+                LegacyDebugLevelEnvironmentVariable)?.Trim();
             if (!int.TryParse(rawValue, out var level))
             {
                 return 0;
@@ -17,19 +19,44 @@ internal static partial class AscensionFeatureGate
     }
 
     public static bool IsPublicSelectionEnabled =>
-        !IsTruthy(Environment.GetEnvironmentVariable(DisablePublicSelectionEnvironmentVariable));
+        !IsTruthyEnvironmentVariable(
+            DisablePublicSelectionEnvironmentVariable,
+            LegacyDisablePublicSelectionEnvironmentVariable);
 
     public static bool IsPublicGateEnabled =>
         IsPublicSelectionEnabled;
 
     public static bool IsMultiplayerSelectionDisabled =>
-        IsTruthy(Environment.GetEnvironmentVariable(DisableMultiplayerSelectionEnvironmentVariable));
+        IsTruthyEnvironmentVariable(
+            DisableMultiplayerSelectionEnvironmentVariable,
+            LegacyDisableMultiplayerSelectionEnvironmentVariable);
 
     public static bool IsDiagnosticsEnabled =>
-        IsTruthy(Environment.GetEnvironmentVariable(DiagnosticsEnvironmentVariable));
+        IsTruthyEnvironmentVariable(
+            DiagnosticsEnvironmentVariable,
+            LegacyDiagnosticsEnvironmentVariable);
 
     public static bool IsMultiplayerDiagnosticsEnabled =>
-        IsTruthy(Environment.GetEnvironmentVariable(MultiplayerDiagnosticsEnvironmentVariable));
+        IsTruthyEnvironmentVariable(
+            MultiplayerDiagnosticsEnvironmentVariable,
+            LegacyMultiplayerDiagnosticsEnvironmentVariable);
+
+    private static string? FirstRawEnvironmentValue(params string[] names)
+    {
+        foreach (var name in names)
+        {
+            var value = Environment.GetEnvironmentVariable(name);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool IsTruthyEnvironmentVariable(params string[] names) =>
+        names.Any(name => IsTruthy(Environment.GetEnvironmentVariable(name)));
 
     private static bool IsTruthy(string? value)
     {

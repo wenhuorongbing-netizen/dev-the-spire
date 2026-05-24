@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
@@ -126,7 +126,7 @@ internal static partial class UrdaBlessingService
         catch (Exception ex)
         {
             MainFile.Logger.Warn(
-                $"[EZMicroBalance] Urda Root Eyes preview entry failed for {preview.RoomType} {preview.ModelId} at {preview.Coord}: {ex.GetType().Name}: {ex.Message}");
+                $"[Spire Plus] Urda Root Eyes preview entry failed for {preview.RoomType} {preview.ModelId} at {preview.Coord}: {ex.GetType().Name}: {ex.Message}");
             return false;
         }
     }

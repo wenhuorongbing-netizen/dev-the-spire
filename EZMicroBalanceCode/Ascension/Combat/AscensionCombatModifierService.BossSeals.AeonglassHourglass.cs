@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models;
+﻿using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -25,7 +25,7 @@ internal static partial class AscensionCombatModifierService
             if (visibleTimeSand > 0)
             {
                 tracker.AeonglassTimeSand = visibleTimeSand;
-                MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 recovered Time Sand tracker from visible power: {visibleTimeSand}.");
+                MainFile.Logger.Info($"[Spire Plus] Ascension A19 recovered Time Sand tracker from visible power: {visibleTimeSand}.");
             }
         }
 
@@ -33,14 +33,14 @@ internal static partial class AscensionCombatModifierService
         if (pendingWither > tracker.AeonglassExtraWitherFromSands)
         {
             tracker.AeonglassExtraWitherFromSands = pendingWither;
-            MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 recovered pending Wither tracker from visible power: {pendingWither}.");
+            MainFile.Logger.Info($"[Spire Plus] Ascension A19 recovered pending Wither tracker from visible power: {pendingWither}.");
         }
 
         var usedEchoes = (int)(aeonglass.GetPower<AeonglassLaserEchoUseCounterPower>()?.Amount ?? 0m);
         if (usedEchoes > tracker.AeonglassLaserEchoesUsed)
         {
             tracker.AeonglassLaserEchoesUsed = usedEchoes;
-            MainFile.Logger.Info($"[EZMicroBalance] Ascension A20 recovered Time Sand laser counter from hidden power: {usedEchoes}.");
+            MainFile.Logger.Info($"[Spire Plus] Ascension A20 recovered Time Sand laser counter from hidden power: {usedEchoes}.");
         }
     }
 
@@ -77,7 +77,7 @@ internal static partial class AscensionCombatModifierService
             aeonglass,
             null);
         await ArmAeonglassLaserEchoPreviewIfEligible(combatState, tracker, metadata);
-        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Time Sand Reflow created {tracker.AeonglassTimeSand} Time Sand after Ebb.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Time Sand Reflow created {tracker.AeonglassTimeSand} Time Sand after Ebb.");
     }
 
     private static async Task TrackAeonglassEnergySpent(
@@ -118,7 +118,7 @@ internal static partial class AscensionCombatModifierService
             }
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 tracked: spent {spent} energy to clear Time Sand.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 tracked: spent {spent} energy to clear Time Sand.");
     }
 
     private static async Task ArmAeonglassLaserEchoPreviewIfEligible(
@@ -206,7 +206,7 @@ internal static partial class AscensionCombatModifierService
         }
 
         await PowerCmd.Remove(aeonglass.GetPower<AeonglassHourglassPower>());
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: remaining Time Sand will add extra Wither on the next Increasing Intensity.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: remaining Time Sand will add extra Wither on the next Increasing Intensity.");
     }
 
     private static async Task ApplyAeonglassLaserEchoUseCounter(
@@ -261,6 +261,6 @@ internal static partial class AscensionCombatModifierService
         }
 
         await CardPileCmd.AddToCombatAndPreview<Wither>(targets, PileType.Discard, extraWither, null);
-        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Time Sand Reflow added {extraWither} extra Wither on Increasing Intensity.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Time Sand Reflow added {extraWither} extra Wither on Increasing Intensity.");
     }
 }

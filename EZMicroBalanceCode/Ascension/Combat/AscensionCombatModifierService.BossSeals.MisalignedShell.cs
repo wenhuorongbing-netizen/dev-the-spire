@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -71,6 +71,6 @@ internal static partial class AscensionCombatModifierService
             null);
         await RefreshEnemyIntent(higherHpClaw);
         tracker.MisalignedShellClawsDiedThisTurn.Clear();
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Claw Calibration armed the healthier claw's next attack.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Claw Calibration armed the healthier claw's next attack.");
     }
 }

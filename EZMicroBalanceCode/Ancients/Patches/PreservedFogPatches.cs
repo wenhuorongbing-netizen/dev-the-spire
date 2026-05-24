@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(PreservedFog), nameof(PreservedFog.AfterObtained))]
 internal static class PreservedFogPatch
@@ -22,7 +22,7 @@ internal static class PreservedFogPatch
         AncientCardHelpers.RemoveKeywords(folly, CardKeyword.Ethereal, CardKeyword.Retain);
         var result = await CardPileCmd.Add(folly, PileType.Deck);
         CardCmd.PreviewCardPileAdd(result, 2f);
-        MainFile.Logger.Info("[EZMicroBalance] PreservedFog applied: removed up to 4 cards and added Folly without Ethereal/Retain.");
+        MainFile.Logger.Info("[Spire Plus] PreservedFog applied: removed up to 4 cards and added Folly without Ethereal/Retain.");
     }
 }
 

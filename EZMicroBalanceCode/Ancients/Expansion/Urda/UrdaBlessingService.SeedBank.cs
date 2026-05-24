@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
+﻿using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Rewards;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
@@ -81,6 +81,6 @@ internal static partial class UrdaBlessingService
                 ["stored"] = seedIds.Count
             });
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Seed Bank stored {selected.Id.Entry}; stored {seedIds.Count}/{SeedBankMaxSeeds}. The source-safe slice consumes this card reward to store the Seed.");
+            $"[Spire Plus] Urda Seed Bank stored {selected.Id.Entry}; stored {seedIds.Count}/{SeedBankMaxSeeds}. The source-safe slice consumes this card reward to store the Seed.");
     }
 }

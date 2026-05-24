@@ -20,7 +20,7 @@ Current status, 2026-05-17: this active work log is a compact current-facing sum
 
 ## Current No-Game Review Notes
 
-- Root Eyes source path: clicking the Root Eyes relic starts map selection, only reachable Act 1 Monster, Unknown, or Elite nodes are valid, Unknown outcomes exclude Shop, Treasure, Rest Site, and Boss, and the chosen concrete encounter/event preview is saved for that node.
+- Root Eyes source path: clicking the Root Eyes relic starts map selection, only reachable Act 1 Monster, rnknown, or Elite nodes are valid, rnknown outcomes exclude Shop, Treasure, Rest Site, and Boss, and the chosen concrete encounter/event preview is saved for that node.
 - Seed Bank source path: stored cards appear on relic hover, the relic shows a counter, and clicking it lets the player take up to two stored cards. The first chosen card is upgraded, then the relic is used up.
 - Seedbed source path: Seedbed now sets combat slots that plant later Blight Sprouts and generated Temporary Status/Curse cards entering hand. It excludes Rootblight, permanent Curses, Withered Husk, and beneficial temporary pages; planted cards use `CardPileCmd.RemoveFromCombat(...)`, add Withered Husk, and suppress `AfterCardDrawn` hooks.
 - Morvi source path: Overdue Library generated pages use valid dynamic variables and icons; Blueprint Proof initializes at combat start and has a late guard; Debt Settlement records 320 Debt, pays 40 Gold after combat, and converts each missing 10 Gold into 3 nonlethal HP loss.
@@ -37,7 +37,8 @@ dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
 git diff --check
 dotnet publish EZMicroBalance.sln
 .\scripts\package-spire-plus.ps1
-$env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'; dotnet test EZMicroBalance.sln --no-build
+$env:EZMB_RrN_RELEASE_ARTIFACT_TESTS='1'; dotnet test EZMicroBalance.sln --no-build
 ```
 
 No live game, clicked Ancient UI, save-load, failure/death path, or co-op proof is claimed here.
+

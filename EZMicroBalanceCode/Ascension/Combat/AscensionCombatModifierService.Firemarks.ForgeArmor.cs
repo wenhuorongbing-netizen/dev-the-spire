@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -9,7 +9,7 @@ internal static partial class AscensionCombatModifierService
         var block = GetForgeArmorBlock(combatState);
         await PowerCmd.Apply<ForgeArmorMarkFiremarkPower>(new BlockingPlayerChoiceContext(), host, block, host, null);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A12 applied: Forge Armor firemark host {host.Name} will gain {block} Block at player turn start.");
+            $"[Spire Plus] Ascension A12 applied: Forge Armor firemark host {host.Name} will gain {block} Block at player turn start.");
     }
 
     private static async Task ApplyForgeArmorGain(
@@ -26,7 +26,7 @@ internal static partial class AscensionCombatModifierService
         if (tracker.FiremarkArmorSkippedNextTurn)
         {
             tracker.FiremarkArmorSkippedNextTurn = false;
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Forge Armor skipped after the armor was shattered.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A12 applied: Forge Armor skipped after the armor was shattered.");
             return;
         }
 
@@ -67,6 +67,6 @@ internal static partial class AscensionCombatModifierService
         tracker.FiremarkArmorGeneratedThisTurn = false;
         tracker.FiremarkArmorBreaks++;
         tracker.FiremarkArmorSkippedNextTurn = true;
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A12 applied: Forge Armor shattered and will skip the next armor gain.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A12 applied: Forge Armor shattered and will skip the next armor gain.");
     }
 }

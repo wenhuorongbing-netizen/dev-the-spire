@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -28,7 +28,7 @@ internal static partial class LothaBlessingService
             combatState.ClosedCourtFirstTurnUsed = true;
             await CardPileCmd.Draw(choiceContext, ClosedCourtFirstTurnCards, player);
             await PlayerCmd.GainEnergy(ClosedCourtFirstTurnEnergy, player);
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Closed Court turn 1 granted draw 4 and Energy 2.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Closed Court turn 1 granted draw 4 and Energy 2.");
             return;
         }
 
@@ -37,7 +37,7 @@ internal static partial class LothaBlessingService
             combatState.ClosedCourtSecondPulseUsed = true;
             await CardPileCmd.Draw(choiceContext, ClosedCourtSecondPulseCards, player);
             await PlayerCmd.GainEnergy(ClosedCourtSecondPulseEnergy, player);
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Closed Court turn 4 granted draw 2 and Energy 2.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Closed Court turn 4 granted draw 2 and Energy 2.");
         }
     }
 
@@ -56,7 +56,7 @@ internal static partial class LothaBlessingService
             return false;
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Lotha Closed Court suppressed {removed} post-combat card reward(s); gold, potion, and relic rewards remain.");
+        MainFile.Logger.Info($"[Spire Plus] Lotha Closed Court suppressed {removed} post-combat card reward(s); gold, potion, and relic rewards remain.");
         return true;
     }
 }

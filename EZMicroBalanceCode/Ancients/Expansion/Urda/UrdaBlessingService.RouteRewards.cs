@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Entities.Rewards;
+﻿using MegaCrit.Sts2.Core.Entities.Rewards;
 using MegaCrit.Sts2.Core.Map;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -17,7 +17,7 @@ internal static partial class UrdaBlessingService
         if (target == null)
         {
             SetProgress(player, progress with { RootedRouteWithered = true });
-            MainFile.Logger.Warn("[EZMicroBalance] Urda Rooted Route could not find a source-safe reachable Act 1 normal combat target.");
+            MainFile.Logger.Warn("[Spire Plus] Urda Rooted Route could not find a source-safe reachable Act 1 normal combat target.");
             return;
         }
 
@@ -28,7 +28,7 @@ internal static partial class UrdaBlessingService
             RootedRouteResolved = false,
             RootedRouteWithered = false
         });
-        MainFile.Logger.Info($"[EZMicroBalance] Urda Rooted Route marked reachable normal combat node {target.coord.col},{target.coord.row}.");
+        MainFile.Logger.Info($"[Spire Plus] Urda Rooted Route marked reachable normal combat node {target.coord.col},{target.coord.row}.");
     }
 
     private static async Task CheckRootedRouteBeforeRoom(Player player)
@@ -74,7 +74,7 @@ internal static partial class UrdaBlessingService
         await PlayerCmd.GainGold(RootedRouteWitherGold, player);
         SetProgress(player, progress with { RootedRouteWithered = true });
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Rooted Route withered ({reason}); lost {RootedRouteWitherHpLoss} HP and gained {RootedRouteWitherGold} Gold.");
+            $"[Spire Plus] Urda Rooted Route withered ({reason}); lost {RootedRouteWitherHpLoss} HP and gained {RootedRouteWitherGold} Gold.");
     }
 
     private static async Task TryResolveRootedRouteReward(Player player)
@@ -102,7 +102,7 @@ internal static partial class UrdaBlessingService
         SetProgress(player, progress with { RootedRouteResolved = true });
         RemoveQuestMarker<UrdaRootedRouteMapQuestMarker>(current);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Rooted Route resolved at {current.coord.col},{current.coord.row}; offered {cards.Count} source-safe single-card reward(s).");
+            $"[Spire Plus] Urda Rooted Route resolved at {current.coord.col},{current.coord.row}; offered {cards.Count} source-safe single-card reward(s).");
     }
 
     private static List<CardModel> CreateRootedRouteRewardCards(Player player)

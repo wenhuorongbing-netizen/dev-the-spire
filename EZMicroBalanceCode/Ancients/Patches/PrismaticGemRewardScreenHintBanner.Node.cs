@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 internal static partial class PrismaticGemRewardScreenHintPatch
 {
@@ -19,21 +19,21 @@ internal static partial class PrismaticGemRewardScreenHintPatch
             {
                 WarnOnce(
                     ref BannerNodeFallbackLogged,
-                    $"[EZMicroBalance] PrismaticGem reward-screen hint fallback unavailable: {BannerNodePath} node was not found.");
+                    $"[Spire Plus] PrismaticGem reward-screen hint fallback unavailable: {BannerNodePath} node was not found.");
                 return false;
             }
 
             banner.ChangeText(hintText);
             InfoOnce(
                 ref BannerNodeFallbackLogged,
-                $"[EZMicroBalance] PrismaticGem reward-screen hint fallback applied through {BannerNodePath} node lookup.");
+                $"[Spire Plus] PrismaticGem reward-screen hint fallback applied through {BannerNodePath} node lookup.");
             return true;
         }
         catch (Exception exception)
         {
             WarnOnce(
                 ref BannerNodeFallbackLogged,
-                $"[EZMicroBalance] PrismaticGem reward-screen hint fallback through {BannerNodePath} failed with {exception.GetType().Name}.");
+                $"[Spire Plus] PrismaticGem reward-screen hint fallback through {BannerNodePath} failed with {exception.GetType().Name}.");
             return false;
         }
     }
@@ -51,20 +51,20 @@ internal static partial class PrismaticGemRewardScreenHintPatch
             {
                 WarnOnce(
                     ref BannerNodeConfirmationFailureLogged,
-                    $"[EZMicroBalance] PrismaticGem reward-screen hint confirmation unavailable after private _banner update: {BannerNodePath} node was not found; visual placement still requires manual gameplay verification.");
+                    $"[Spire Plus] PrismaticGem reward-screen hint confirmation unavailable after private _banner update: {BannerNodePath} node was not found; visual placement still requires manual gameplay verification.");
                 return;
             }
 
             banner.ChangeText(hintText);
             InfoOnce(
                 ref BannerNodeConfirmationLogged,
-                $"[EZMicroBalance] PrismaticGem reward-screen hint also applied through {BannerNodePath} node lookup after private _banner field path; visual placement still requires manual gameplay verification.");
+                $"[Spire Plus] PrismaticGem reward-screen hint also applied through {BannerNodePath} node lookup after private _banner field path; visual placement still requires manual gameplay verification.");
         }
         catch (Exception exception)
         {
             WarnOnce(
                 ref BannerNodeConfirmationFailureLogged,
-                $"[EZMicroBalance] PrismaticGem reward-screen hint confirmation after private _banner update failed with {exception.GetType().Name}; visual placement still requires manual gameplay verification.");
+                $"[Spire Plus] PrismaticGem reward-screen hint confirmation after private _banner update failed with {exception.GetType().Name}; visual placement still requires manual gameplay verification.");
         }
     }
 }

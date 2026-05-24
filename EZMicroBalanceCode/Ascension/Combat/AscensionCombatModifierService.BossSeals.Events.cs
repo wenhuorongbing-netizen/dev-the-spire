@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -92,7 +92,7 @@ internal static partial class AscensionCombatModifierService
 
         if (cardPlay.Card is MarginalNote)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A19 tracked: Marginal Note was played.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A19 tracked: Marginal Note was played.");
         }
     }
 }

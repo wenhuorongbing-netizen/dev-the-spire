@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -22,7 +22,7 @@ internal static partial class AscensionCombatModifierService
         }
         catch (ObjectDisposedException ex)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] Ascension intent refresh skipped for {creature.LogName}: {ex.Message}");
+            MainFile.Logger.Warn($"[Spire Plus] Ascension intent refresh skipped for {creature.LogName}: {ex.Message}");
         }
     }
 

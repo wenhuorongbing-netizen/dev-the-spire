@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Modding;
 
@@ -21,7 +21,7 @@ internal static class VakuuFightInitializer
             CreateCombatHookSubscribers);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Vakuu fight hooks registered but hidden by default; set {VakuuFightFeatureGate.EnableEnvironmentVariable}=1 or {VakuuFightFeatureGate.SpirePlusEnableEnvironmentVariable}=1 to opt in, or {VakuuFightFeatureGate.ForceFightEnvironmentVariable}=1 / {VakuuFightFeatureGate.SpirePlusForceFightEnvironmentVariable}=1 for focused debugging.");
+            $"[Spire Plus] Vakuu fight hooks registered but hidden by default; set {VakuuFightFeatureGate.EnableEnvironmentVariable}=1 to opt in, or {VakuuFightFeatureGate.ForceFightEnvironmentVariable}=1 for focused debugging. Legacy aliases: {VakuuFightFeatureGate.LegacyEnableEnvironmentVariable}=1 / {VakuuFightFeatureGate.LegacyForceFightEnvironmentVariable}=1.");
     }
 
     private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState) =>
@@ -99,7 +99,7 @@ internal static class VakuuContractService
         if (PileType.Hand.GetPile(player).Cards.Count >= CardPile.MaxCardsInHand)
         {
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Vakuu fight skipped a Contract on player turn {round} because the hand is full.");
+                $"[Spire Plus] Vakuu fight skipped a Contract on player turn {round} because the hand is full.");
             return;
         }
 
@@ -113,12 +113,12 @@ internal static class VakuuContractService
         if (result?.success == true)
         {
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Vakuu fight added a chosen Contract to hand on player turn {round}.");
+                $"[Spire Plus] Vakuu fight added a chosen Contract to hand on player turn {round}.");
         }
         else
         {
             MainFile.Logger.Warn(
-                $"[EZMicroBalance] Vakuu fight could not add a Contract on player turn {round}; generated card was cleaned up.");
+                $"[Spire Plus] Vakuu fight could not add a Contract on player turn {round}; generated card was cleaned up.");
         }
     }
 
@@ -150,7 +150,7 @@ internal static class VakuuContractService
         {
             encounter.CashOutOfferedLock = encounter.BrokenLocks;
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Vakuu fight offered Cash Out after lock {encounter.BrokenLocks}.");
+                $"[Spire Plus] Vakuu fight offered Cash Out after lock {encounter.BrokenLocks}.");
         }
     }
 

@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(ChoicesParadox), nameof(ChoicesParadox.AfterPlayerTurnStart))]
 internal static class ChoicesParadoxPatch
@@ -38,7 +38,7 @@ internal static class ChoicesParadoxPatch
 
         if (generated.Count == 0)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] ChoicesParadox skipped: no eligible rare combat cards generated.");
+            MainFile.Logger.Warn("[Spire Plus] ChoicesParadox skipped: no eligible rare combat cards generated.");
             return;
         }
 
@@ -65,7 +65,7 @@ internal static class ChoicesParadoxPatch
             await AncientCardHelpers.TryAddGeneratedCardToCombat(selected, PileType.Hand, player);
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] ChoicesParadox applied: offered {generated.Count} rare card(s), selected {selected?.Id.Entry ?? "NONE"}.");
+        MainFile.Logger.Info($"[Spire Plus] ChoicesParadox applied: offered {generated.Count} rare card(s), selected {selected?.Id.Entry ?? "NONE"}.");
     }
 
     private static bool IsChoicesParadoxEligibleRare(CardModel card)

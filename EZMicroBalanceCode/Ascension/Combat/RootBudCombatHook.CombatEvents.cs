@@ -1,3 +1,4 @@
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -140,6 +141,8 @@ internal sealed partial class RootBudCombatHook
         }
 
         GetTracker(state).DiedPlayers.Add(creature.Player);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension Blight Sprout tracked: player death clears combat-only Blight Sprout growth.");
+        var evidence = CreateBlightSproutEvidenceData(state);
+        ReleaseEvidenceLog.Log("BlightSprout", "player_death_growth_cleared", creature.Player, evidence);
+        MainFile.Logger.Info("[Spire Plus] Ascension Blight Sprout tracked: player death clears combat-only Blight Sprout growth.");
     }
 }

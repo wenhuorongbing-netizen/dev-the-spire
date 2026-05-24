@@ -1,3 +1,4 @@
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -119,7 +120,11 @@ internal sealed partial class RootBudCombatHook
         {
             bud.HasSprouted = true;
             await CardPileCmd.Add(bud, PileType.Draw, CardPilePosition.Top);
-            MainFile.Logger.Info("[EZMicroBalance] Ascension Blight Sprout applied: sprouted to top of draw pile before hand draw.");
+            var evidence = CreateBlightSproutEvidenceData(state);
+            evidence["sproutRound"] = bud.SproutRound;
+            evidence["pile"] = bud.Pile?.Type.ToString() ?? "none";
+            ReleaseEvidenceLog.Log("BlightSprout", "sprouted_to_draw_top", player, evidence);
+            MainFile.Logger.Info("[Spire Plus] Ascension Blight Sprout applied: sprouted to top of draw pile before hand draw.");
         }
     }
 
@@ -131,8 +136,12 @@ internal sealed partial class RootBudCombatHook
         }
 
         bud.HasEnteredHand = true;
+        var evidence = CreateBlightSproutEvidenceData(state);
+        evidence["sproutRound"] = bud.SproutRound;
+        evidence["plantedInSeedbed"] = bud.PlantedInSeedbed;
+        ReleaseEvidenceLog.Log("BlightSprout", "entered_hand", bud.Owner, evidence);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension Blight Sprout tracked: entered hand for player {state.RunState.GetPlayerSlotIndex(bud.Owner)}.");
+            $"[Spire Plus] Ascension Blight Sprout tracked: entered hand for player {state.RunState.GetPlayerSlotIndex(bud.Owner)}.");
     }
 
     private static async Task ResolveRootblightForCombatEnd(CombatState state)
@@ -141,5 +150,17 @@ internal sealed partial class RootBudCombatHook
         {
             await RootDeckService.ResolveCombatEndRootblight(player);
         }
+    }
+
+    private static Dictionary<string, object?> CreateBlightSproutEvidenceData(CombatState state)
+    {
+        return new Dictionary<string, object?>
+        {
+            ["roomType"] = state.RunState.CurrentRoom?.RoomType.ToString() ?? "none",
+            ["actIndex"] = state.RunState.CurrentActIndex,
+            ["floor"] = state.RunState.ActFloor,
+            ["round"] = state.RoundNumber,
+            ["requiredLevel"] = RequiredAscensionLevelForCurrentRoom(state)
+        };
     }
 }

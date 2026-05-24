@@ -6,7 +6,7 @@ Current dependency and architecture baseline:
 
 - Base game source refresh target: `v0.106.0`.
 - BaseLib package target: `v3.1.4`.
-- Active private-beta project: `EZMicroBalance`.
+- nctive private-beta project: `EZMicroBalance`.
 
 Urda work remains independently disableable and independent from other ancient families.
 
@@ -16,43 +16,43 @@ Ancient Expansion v2.2 now promotes Urda to a ten-blessing default-on source sli
 
 Goal:
 
-- Confirm local source APIs for Act 1 ancient registration and reward hooks.
+- Confirm local source nPIs for nct 1 ancient registration and reward hooks.
 - Confirm no immediate breakage from adding Urda classes and files.
 
-Actions:
+nctions:
 
 1. Read local `source code/src/Core` for `Ancient`, `AncientModel`, `AncientEvent`, and reward flow.
-2. Confirm BaseLib command APIs for card/relic/add/remove and save fields.
+2. Confirm BaseLib command nPIs for card/relic/add/remove and save fields.
 3. Reconfirm current `EZMB_...` manifest and `docs/issues.md` Urda issue list.
 4. Record findings in `api-research.md`.
 
 Exit:
 
 - Build remains green after docs-only changes.
-- `api-research.md` has concrete pass/fail API items.
+- `api-research.md` has concrete pass/fail nPI items.
 
 ## 2. Phase 1: Urda framework
 
 Goal:
 
-- Make Urda selectable in Act 1 and expose an enabled blessing pool limited to implemented blessings.
+- Make Urda selectable in nct 1 and expose an enabled blessing pool limited to implemented blessings.
 
-Actions:
+nctions:
 
 1. Implement or wire Urda identity registration path.
-2. Add `urda` blessing registry with enabled flags.
+2. ndd `urda` blessing registry with enabled flags.
 3. Ensure inactive blessings are excluded from live pool.
-4. Keep Urda independently disableable with `EZMB_DISABLE_URDA=1`; keep `EZMB_FORCE_URDA_BLESSING` default-off for diagnostics.
-5. Add source-guarded fallback behavior when registration path is unavailable.
+4. Keep Urda independently disableable with preferred `SPIREPLUS_DISnBLE_URDn=1`; keep `SPIREPLUS_FORCE_URDn_BLESSING` default-off for diagnostics. Legacy `EZMB_*` aliases still work.
+5. ndd source-guarded fallback behavior when registration path is unavailable.
 
 Exit:
 
-- Source path exists for Urda Act 1 insertion and selection.
+- Source path exists for Urda nct 1 insertion and selection.
 - Live run still needs to prove Urda appears and the configured blessing set is selectable.
 
-## 3. Phase 2: Active blessing slice
+## 3. Phase 2: nctive blessing slice
 
-Active blessing pool:
+nctive blessing pool:
 
 1. Seedbed.
 2. Humus Pact.
@@ -61,7 +61,7 @@ Active blessing pool:
 5. Trial Branch.
 6. Shallow-Root Relic.
 7. Rooted Route.
-8. After the Rain.
+8. nfter the Rain.
 9. Root-Sight.
 10. Seed Bank.
 
@@ -77,27 +77,27 @@ Current hardening notes:
 
 - Seedbed counters advance only on accepted Seedbed alternatives, not reward alternative generation.
 - Seedbed is hidden when max HP cannot safely pay the 2 max HP cost.
-- Humus Pact uses an explicit card reward alternative and resolves its third-trigger payoff after `AfterRewardTaken`.
+- Humus Pact uses an explicit card reward alternative and resolves its third-trigger payoff after `nfterRewardTaken`.
 - Humus Pact no longer patches `CardReward.OnSkipped` because local Core source shows skipped reward finalization can happen when a reward set is abandoned or a room is exited.
 - Humus Pact keeps `HumusCompletionPending` until payoff resolution succeeds, and creates the payoff card before optional removals to avoid consuming removals if no payoff card can be generated.
 - `UrdaStateKey` now includes a Humus completion-pending bit and keeps an eight-field migration read path. `AncientPlayerState` mirrors Urda progress to the card-backed `UrdaDeckStateKey`, but live save/load proof is still required.
 - Trial Branch uses a 4-card source-safe selection grid, upgrades the chosen card, marks it with `UrdaTrialPlantCard`, tracks three combats, and keeps the card only if it was played in each of those combats.
-- Shallow-Root Relic offers two common relics, grants 75 Gold, roots on an Act 1 elite kill for 35 Gold, and uses a deterministic Act 2 fallback that removes the pending relic and refunds 75 Gold. The `lose 6 Max HP to keep it` settlement remains a guarded design constant but is not exposed because no safe Act 2 choice UI was proven.
+- Shallow-Root Relic offers two common relics, grants 75 Gold, roots on an nct 1 elite kill for 35 Gold, and uses a deterministic nct 2 fallback that removes the pending relic and refunds 75 Gold. The `lose 6 Max HP to keep it` settlement remains a guarded design constant but is not exposed because no safe nct 2 choice UI was proven.
 - Rooted Route automatically marks a reachable normal-combat node within the first seven floors, uses quest markers only, grants three card rewards plus a potion if available on success, and withers for 8 HP loss plus 25 Gold if the marked route becomes unreachable.
-- After the Rain follows the current v3.3 source behavior: in Act 1, the first unblocked enemy attack damage each combat adds one `Rain Breath`; at Act 2 start, fewer than three triggers grants 75 Gold, otherwise it heals 8 HP and upgrades one card.
+- nfter the Rain follows the current v3.3 source behavior: in nct 1, the first unblocked enemy attack damage each combat adds one `Rain Breath`; at nct 2 start, fewer than three triggers grants 75 Gold, otherwise it heals 8 HP and upgrades one card.
 - Root-Sight starts with 5 Root Eyes. Clicking the Root Eyes relic opens map selection, highlights future reachable Monster, Unknown, or Elite rooms, stores the chosen room's concrete enemy group or event, and grants the first-use potion if a slot exists.
-- Seed Bank adds a `Store Seed` reward alternative to Act 1 normal combat card rewards. The source-safe slice stores a selected reward card by consuming that reward, caps at three seeds, and before the Act 1 Boss lets the player choose up to two seeds; the first selected card is upgraded and Seed Bank does not mark cards as Trial Plant.
+- Seed Bank adds a `Store Seed` reward alternative to nct 1 normal combat card rewards. The source-safe slice stores a selected reward card by consuming that reward, caps at three seeds, and before the nct 1 Boss lets the player choose up to two seeds; the first selected card is upgraded and Seed Bank does not mark cards as Trial Plant.
 
 ## 4. Phase 3: Diagnostics and release hygiene
 
 Goal:
 
-- Add lightweight read-only diagnostics and keep unsafe content out of live path.
+- ndd lightweight read-only diagnostics and keep unsafe content out of live path.
 
-Actions:
+nctions:
 
-- Add one-time logs for selection, blessing id, and state transitions.
-- Add fallback notices for missing required references.
+- ndd one-time logs for selection, blessing id, and state transitions.
+- ndd fallback notices for missing required references.
 - Keep all non-live diagnostics in default-off mode.
 
 ## 5. Phase 4: Finalization
@@ -106,10 +106,10 @@ Goal:
 
 - Close documentation and runtime evidence for private beta handoff.
 
-Actions:
+nctions:
 
 - Populate all Urda manual rows.
-- Add source-guard tests if coverage is practical.
+- ndd source-guard tests if coverage is practical.
 - Update `docs/issues.md` issue status as work lands.
 - Run `dotnet build`.
 - Publish only if resources or localization changed.
@@ -120,3 +120,4 @@ No milestone in this branch should claim release-ready Urda behavior if:
 - any of the ten Urda blessing rows is incomplete or undocumented.
 - save/load behavior is broken.
 - live manual checks are still unexecuted.
+

@@ -31,14 +31,15 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
 
         AssertSourceContains(
             morviGate,
-            "EZMB_DISABLE_MORVI",
-            "SPIREPLUS_DISABLE_MORVI",
-            "EZMB_FORCE_ANCIENT",
-            "SPIREPLUS_FORCE_ANCIENT",
-            "EZMB_FORCE_MORVI_BLESSING",
-            "SPIREPLUS_FORCE_MORVI_BLESSING",
+            "DisableEnvironmentVariable = \"SPIREPLUS_DISABLE_MORVI\"",
+            "LegacyDisableEnvironmentVariable = \"EZMB_DISABLE_MORVI\"",
+            "ForceAncientEnvironmentVariable = \"SPIREPLUS_FORCE_ANCIENT\"",
+            "LegacyForceAncientEnvironmentVariable = \"EZMB_FORCE_ANCIENT\"",
+            "ForceBlessingEnvironmentVariable = \"SPIREPLUS_FORCE_MORVI_BLESSING\"",
+            "LegacyForceBlessingEnvironmentVariable = \"EZMB_FORCE_MORVI_BLESSING\"",
             "ShouldForceMorvi",
-            "AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable)");
+            "AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable)",
+            "AncientFeatureGate.IsTruthyEnvironmentVariable(LegacyDisableEnvironmentVariable)");
         Assert.DoesNotContain("return IsTruthy(value);", morviGate, StringComparison.Ordinal);
 
         AssertSourceContains(
@@ -187,7 +188,17 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
 
         Assert.Contains("LothaInitializer.Initialize();", mainFile, StringComparison.Ordinal);
         AssertSourceContains(savedFields, "SavedSpireField<Player, string> LothaStateKey", "SavedSpireField<CardModel, string> LothaDeckStateKey", "SavedSpireField<CardModel, bool> LothaMirrorRebuttalCard");
-        AssertSourceContains(lothaGate, "EZMB_DISABLE_LOTHA", "SPIREPLUS_DISABLE_LOTHA", "EZMB_FORCE_ANCIENT", "SPIREPLUS_FORCE_ANCIENT", "EZMB_FORCE_LOTHA_BLESSING", "SPIREPLUS_FORCE_LOTHA_BLESSING", "ShouldForceLotha", "AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable)");
+        AssertSourceContains(
+            lothaGate,
+            "DisableEnvironmentVariable = \"SPIREPLUS_DISABLE_LOTHA\"",
+            "LegacyDisableEnvironmentVariable = \"EZMB_DISABLE_LOTHA\"",
+            "ForceAncientEnvironmentVariable = \"SPIREPLUS_FORCE_ANCIENT\"",
+            "LegacyForceAncientEnvironmentVariable = \"EZMB_FORCE_ANCIENT\"",
+            "ForceBlessingEnvironmentVariable = \"SPIREPLUS_FORCE_LOTHA_BLESSING\"",
+            "LegacyForceBlessingEnvironmentVariable = \"EZMB_FORCE_LOTHA_BLESSING\"",
+            "ShouldForceLotha",
+            "AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable)",
+            "AncientFeatureGate.IsTruthyEnvironmentVariable(LegacyDisableEnvironmentVariable)");
         AssertSourceContains(lothaSource, "CustomAncientModel", "HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))", "LothaFeatureGate.ShouldForceLotha", "ExpectedInitialOptionCount = 3", "candidates.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()", "AncientInitialOptionReroll.CanOffer", "OptionWithRelic<LothaMirrorRebuttalOptionRelic>", "OptionWithRelic<LothaPublicEvidenceOptionRelic>", "CardSelectCmd.FromDeckGeneric", "LothaBlessingService.MarkMirrorRebuttalCard", "HoverTipFactory.FromPower<LothaPresumptionPower>()", "HoverTipFactory.FromPower<LothaVerdictPower>()", "HoverTipFactory.FromPower<LothaDeathReprievePower>()", "HoverTipFactory.FromPower<LothaEnlightenmentPower>()", "HoverTipFactory.Static(StaticHoverTip.Energy)", "HoverTipFactory.Static(StaticHoverTip.Block)", "LothaAssetPaths.MapIcon", "LothaAssetPaths.RunHistoryIcon", "LothaAssetPaths.BackgroundScene");
         AssertSourceContains(lothaRunHook, "ShouldReceiveCombatHooks => true", "public override int ModifyCardPlayCount", "public override bool ShouldPlay", "public override Task AfterSideTurnEnd", "public override Task AfterDamageReceived", "public override bool TryModifyRewardsLate", "public override bool TryModifyEnergyCostInCombat", "public override bool TryModifyStarCost", "public override Task AfterCombatEnd", "ModifyPowerAmountGiven", "TryModifyPowerAmountReceived", "AfterPowerAmountChanged", "LothaExtraPlayCount = 2", "SingleSentenceRemainingPlayLimit = 4", "MirrorRebuttalExtraPlayCount = 1", "MirrorHallEchoExtraPlayCount = 1", "ClosedCourtFirstTurnCards = 4", "ClosedCourtFirstTurnEnergy = 2", "ClosedCourtSecondPulseTurn = 4", "ClosedCourtSecondPulseCards = 2", "ClosedCourtSecondPulseEnergy = 2", "PresumptionCards = 2", "PresumptionEnergy = 1", "PresumptionBlock = 8", "PresumptionHpLoss = 8", "DeferredVerdictTurn = 4", "DeferredVerdictStacks = 3", "DeferredVerdictEnergy = 4", "DeferredVerdictCards = 4", "DeferredVerdictExtraPlayCount = 1", "DeferredVerdictEarlyEndHeal = 4", "DeathReprieveCards = 10", "DeathReprieveEnergy = 10", "PowerFallbackCards = 1", "IsPowerReplacementCostZeroCard", "PowerReplacementCardPendingBenefit", "cost 0 and draw 1", "CardType.Attack or CardType.Skill", "!card.IsClone", "cardPlay.IsAutoPlay", "card.Type == CardType.Power && !card.IsClone", "ApplyPowerReplacementBenefit", "RecordMirrorHallEchoType", "PowerCmd.Apply<LothaPresumptionPower>", "PowerCmd.Apply<LothaVerdictPower>", "PowerCmd.Apply<LothaEnlightenmentPower>", "PowerCmd.Decrement(verdict)", "PowerCmd.ModifyAmount(choiceContext, enlightenment, -consumed", "CreatureCmd.Heal(player.Creature, DeferredVerdictEarlyEndHeal", "CreatureCmd.Damage(", "rewards.RemoveAll(reward => reward is CardReward)", "IsPublicEvidenceDebuffApplication", "IsPublicEvidenceExcludedDamageDebuff", "power is PoisonPower", "power.GetTypeForAmount(amount) == PowerType.Debuff", "ShouldDieLate(Creature creature)", "ShouldDie(Creature creature)", "AfterPreventingDeath(Creature creature)", "CreatureCmd.Kill(player.Creature, force: true)", "AncientSavedStateFields.LothaStateKey", "AncientSavedStateFields.LothaDeckStateKey", "AncientSavedStateFields.LothaMirrorRebuttalCard");
         Assert.DoesNotContain("MirrorRebuttalMinimumBlock", lothaRunHook, StringComparison.Ordinal);

@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -36,6 +36,8 @@ public sealed class AncientBehaviorGuardTests
         "CHOICES_PARADOX.description",
         "CHOICES_PARADOX.selectionScreenPrompt",
         "CLAWS.description",
+        "SERE_TALON.description",
+        "SERE_TALON.eventDescription",
         "CROSSBOW.description",
         "DISTINGUISHED_CAPE.description",
         "DISTINGUISHED_CAPE.eventDescription",
@@ -71,7 +73,7 @@ public sealed class AncientBehaviorGuardTests
         "War Hammer",
         "Jewelry Box",
         "Preserved Fog / Folly",
-        "Claws",
+        "Vakuu's Sere Talon",
         "Choices Paradox",
         "Jeweled Mask",
         "Prismatic Gem",
@@ -103,14 +105,14 @@ public sealed class AncientBehaviorGuardTests
         var completionAudit = ReadRepoText("docs", "features", "ancients-rework-v4", "completion-audit.md");
 
         Assert.Contains("v4.3", archivedV43Plan, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("卓越斗篷", archivedV43Plan, StringComparison.Ordinal);
-        Assert.Contains("棱彩宝石", archivedV43Plan, StringComparison.Ordinal);
+        Assert.Contains("\u5353\u8d8a\u6597\u7bf7", archivedV43Plan, StringComparison.Ordinal);
+        Assert.Contains("\u68f1\u5f69\u5b9d\u77f3", archivedV43Plan, StringComparison.Ordinal);
         Assert.Contains("sts2_ancients_rework_v4_3_adjustment_plan.md", completionAudit, StringComparison.Ordinal);
         Assert.Contains("v4.3 is current", completionAudit, StringComparison.Ordinal);
 
         Assert.Contains("v4.2", archivedPlan, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("卓越斗篷", archivedPlan, StringComparison.Ordinal);
-        Assert.Contains("棱彩宝石", archivedPlan, StringComparison.Ordinal);
+        Assert.Contains("\u5353\u8d8a\u6597\u7bf7", archivedPlan, StringComparison.Ordinal);
+        Assert.Contains("\u68f1\u5f69\u5b9d\u77f3", archivedPlan, StringComparison.Ordinal);
         Assert.Contains("v4.2 is historical", completionAudit, StringComparison.Ordinal);
     }
 
@@ -184,9 +186,13 @@ public sealed class AncientBehaviorGuardTests
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);
         Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.0.zip", readme, StringComparison.Ordinal);
-        Assert.Contains("Technical id / install folder: EZMicroBalance", readme, StringComparison.Ordinal);
+        Assert.Contains("Display name: Spire Plus", readme, StringComparison.Ordinal);
+        Assert.Contains("Technical compatibility id: EZMicroBalance", readme, StringComparison.Ordinal);
+        Assert.Contains("Extract this archive into the Slay the Spire 2 mods folder exactly as packaged.", readme, StringComparison.Ordinal);
+        Assert.Contains("If the game's Mods list shows EZMicroBalance as the mod name, the package is stale or the display-name route regressed.", readme, StringComparison.Ordinal);
         Assert.Contains("BaseLib", readme, StringComparison.Ordinal);
         Assert.Contains("EzDailyContent disabled or absent", readme, StringComparison.Ordinal);
+        Assert.Contains("EZMicroBalance is a technical folder/id only; player-facing screens should say Spire Plus.", readme, StringComparison.Ordinal);
         Assert.Contains("Ancient selections now grant visible marker relics", readme, StringComparison.Ordinal);
         Assert.Contains("manual-test build, not release-ready", readme, StringComparison.Ordinal);
         Assert.Contains("Save/load, death/failure paths, and co-op still need manual proof", readme, StringComparison.Ordinal);
@@ -205,7 +211,6 @@ public sealed class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))]",
             "[HarmonyPatch(typeof(RelicModel), nameof(RelicModel.AfterObtained))]",
             "[HarmonyPatch(typeof(RelicCmd), nameof(RelicCmd.Obtain), typeof(RelicModel), typeof(Player), typeof(int))]",
-            "[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]",
             "[HarmonyPatch(typeof(Sozu), nameof(Sozu.ShouldProcurePotion))]",
             "[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ShouldGainGold))]",
             "[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.ModifyMaxEnergy))]",
@@ -670,21 +675,21 @@ public sealed class AncientBehaviorGuardTests
             }
         }
 
-        Assert.DoesNotContain("设为 0", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("费用为 0", source, StringComparison.Ordinal);
-        Assert.Contains("设为0", source, StringComparison.Ordinal);
-        Assert.Contains("费用为0", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("能量降低 1", activeCode, StringComparison.Ordinal);
-        Assert.Contains("[gold]能量[/gold]费用降低[blue]1[/blue]", activeCode, StringComparison.Ordinal);
+        Assert.DoesNotContain("\u8bbe\u4e3a 0", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("\u8d39\u7528\u4e3a 0", source, StringComparison.Ordinal);
+        Assert.Contains("\u8bbe\u4e3a0", source, StringComparison.Ordinal);
+        Assert.Contains("\u8d39\u7528\u4e3a0", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("\u80fd\u91cf[/gold]\u8d39\u7528\u964d\u4f4e [blue]1", activeCode, StringComparison.Ordinal);
+        Assert.Contains("[gold]\u80fd\u91cf[/gold]\u8d39\u7528\u964d\u4f4e[blue]1[/blue]", activeCode, StringComparison.Ordinal);
         Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
     }
 
     [Fact]
     public void ManualVerificationMatrixUsesUncorruptedSimplifiedChineseExpectedText()
     {
+        var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
         var zhsCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
-        var jeweledMaskFreePowerSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "JeweledMaskFreePower.cs");
         var zhsLocalizationText = string.Join(
             Environment.NewLine,
             Directory.GetFiles(RepoPath("EZMicroBalance", "localization", "zhs"), "*.json", SearchOption.TopDirectoryOnly)
@@ -693,53 +698,127 @@ public sealed class AncientBehaviorGuardTests
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
         Assert.DoesNotContain("\uFFFD", zhsLocalizationText, StringComparison.Ordinal);
-        Assert.DoesNotContain("鐟佷礁", zhsLocalizationText, StringComparison.Ordinal);
-        Assert.DoesNotContain("瀵偓", zhsLocalizationText, StringComparison.Ordinal);
-        Assert.DoesNotContain("閺€", zhsLocalizationText, StringComparison.Ordinal);
-        Assert.DoesNotContain("鍊哄姟", zhsLocalizationText, StringComparison.Ordinal);
+        Assert.DoesNotContain("闁", zhsLocalizationText, StringComparison.Ordinal);
+        Assert.DoesNotContain("閻", zhsLocalizationText, StringComparison.Ordinal);
 
-        Assert.Contains("迅速2", zhsRelics["BEAUTIFUL_BRACELET.description"], StringComparison.Ordinal);
-        Assert.Equal("将1张放松与1张放松+加入你的牌组。", zhsRelics["PAELS_HORN.description"]);
-        Assert.DoesNotContain("已升级的放松+", zhsRelics["PAELS_HORN.description"], StringComparison.Ordinal);
-        Assert.Contains("神化", zhsRelics["JEWELRY_BOX.description"], StringComparison.Ordinal);
-        Assert.Contains("固有", zhsRelics["JEWELRY_BOX.description"], StringComparison.Ordinal);
-        Assert.Contains("许愿", zhsRelics["CLAWS.description"], StringComparison.Ordinal);
-        Assert.Contains("异色牌", zhsRelics["PRISMATIC_GEM.description"], StringComparison.Ordinal);
-        Assert.Equal("棱彩计数：{Count}/{Cycle}", zhsRelics["PRISMATIC_GEM.countHint.title"]);
-        Assert.Equal("棱彩奖励：本次只出现异色牌。", zhsRelics["PRISMATIC_GEM.rewardScreenHint"]);
-        Assert.Contains("灵体", zhsRelics["DISTINGUISHED_CAPE.description"], StringComparison.Ordinal);
-        Assert.Contains("宝石面具", jeweledMaskFreePowerSource, StringComparison.Ordinal);
-        Assert.Contains("这张牌的费用已被宝石面具永久设为0。", jeweledMaskFreePowerSource, StringComparison.Ordinal);
-        Assert.Contains("非首领", zhsRelics["PAELS_TOOTH.description"], StringComparison.Ordinal);
-        Assert.Contains("首领", zhsRelics["PAELS_TOOTH.description"], StringComparison.Ordinal);
-        Assert.Contains("获得1点能量", zhsRelics["PRISMATIC_GEM.description"], StringComparison.Ordinal);
-        Assert.Contains("手牌有7张", zhsRelics["FIDDLE.description"], StringComparison.Ordinal);
-        Assert.Contains("至少18点", zhsRelics["DISTINGUISHED_CAPE.description"], StringComparison.Ordinal);
-        Assert.Equal("债务", zhsCards["DEBT.title"]);
-        Assert.Equal("执迷", zhsCards["ENTHRALLED.title"]);
-        Assert.Equal("愚行", zhsCards["FOLLY.title"]);
-        Assert.Contains("消耗", zhsCards["DEBT.description"], StringComparison.Ordinal);
-        Assert.Contains("永恒", zhsCards["ENTHRALLED.description"], StringComparison.Ordinal);
-        Assert.Contains("保留", zhsRelics["CHOICES_PARADOX.description"], StringComparison.Ordinal);
-        Assert.Contains("虚无", zhsRelics["CROSSBOW.description"], StringComparison.Ordinal);
-        Assert.Contains("力量", zhsRelics["TOASTY_MITTENS.description"], StringComparison.Ordinal);
+        Assert.Contains("\u8fc5\u901f", zhsRelics["BEAUTIFUL_BRACELET.description"], StringComparison.Ordinal);
+        Assert.Equal("\u5c061\u5f20\u653e\u677e\u4e0e1\u5f20\u653e\u677e+\u52a0\u5165\u4f60\u7684\u724c\u7ec4\u3002", zhsRelics["PAELS_HORN.description"]);
+        Assert.DoesNotContain("\u5df2\u5347\u7ea7\u7684\u653e\u677e+", zhsRelics["PAELS_HORN.description"], StringComparison.Ordinal);
+        Assert.Contains("\u795e\u5316", zhsRelics["JEWELRY_BOX.description"], StringComparison.Ordinal);
+        Assert.Contains("\u56fa\u6709", zhsRelics["JEWELRY_BOX.description"], StringComparison.Ordinal);
+        Assert.Contains("\u8bb8\u613f", zhsRelics["SERE_TALON.description"], StringComparison.Ordinal);
+        Assert.Equal("Vakuu's Sere Talon", engRelics["SERE_TALON.title"]);
+        Assert.Equal("\u74e6\u5e93\u539f\u521d\u4e4b\u722a", zhsRelics["SERE_TALON.title"]);
+        Assert.Equal("Tanx Claws", engRelics["CLAWS.title"]);
+        Assert.Equal("\u5766\u514b\u65af\u5229\u722a", zhsRelics["CLAWS.title"]);
+        Assert.Equal("On pickup, transform up to [blue]{Cards}[/blue] cards into upgraded Maul.", engRelics["CLAWS.description"]);
+        Assert.DoesNotContain("\u4f24\u5bb3+[blue]1[/blue]", zhsRelics["CLAWS.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("[blue]1[/blue] more damage", engRelics["CLAWS.description"], StringComparison.Ordinal);
+        Assert.Equal("\u62fe\u53d6\u65f6\uff0c\u5c06\u81f3\u591a[blue]{Cards}[/blue]\u5f20\u724c\u53d8\u5316\u4e3a\u6495\u54ac+\u3002", zhsRelics["CLAWS.description"]);
+        Assert.Contains("\u5f02\u8272\u724c", zhsRelics["PRISMATIC_GEM.description"], StringComparison.Ordinal);
+        Assert.Equal("\u68f1\u5f69\u8ba1\u6570\uff1a{Count}/{Cycle}", zhsRelics["PRISMATIC_GEM.countHint.title"]);
+        Assert.Equal("\u68f1\u5f69\u5956\u52b1\uff1a\u672c\u6b21\u53ea\u51fa\u73b0\u5f02\u8272\u724c\u3002", zhsRelics["PRISMATIC_GEM.rewardScreenHint"]);
+        Assert.Contains("\u7075\u4f53", zhsRelics["DISTINGUISHED_CAPE.description"], StringComparison.Ordinal);
+        Assert.Contains("\u975e\u9996\u9886", zhsRelics["PAELS_TOOTH.description"], StringComparison.Ordinal);
+        Assert.Contains("\u9996\u9886", zhsRelics["PAELS_TOOTH.description"], StringComparison.Ordinal);
+        Assert.Contains("\u83b7\u5f971\u70b9\u80fd\u91cf", zhsRelics["PRISMATIC_GEM.description"], StringComparison.Ordinal);
+        Assert.Contains("\u624b\u724c", zhsRelics["FIDDLE.description"], StringComparison.Ordinal);
+        Assert.Contains("\u81f3\u5c1118\u70b9", zhsRelics["DISTINGUISHED_CAPE.description"], StringComparison.Ordinal);
+        Assert.Equal("\u503a\u52a1", zhsCards["DEBT.title"]);
+        Assert.Equal("\u6267\u8ff7", zhsCards["ENTHRALLED.title"]);
+        Assert.Equal("\u611a\u884c", zhsCards["FOLLY.title"]);
+        Assert.Contains("\u6d88\u8017", zhsCards["DEBT.description"], StringComparison.Ordinal);
+        Assert.Contains("\u6c38\u6052", zhsCards["ENTHRALLED.description"], StringComparison.Ordinal);
+        Assert.Contains("\u4fdd\u7559", zhsRelics["CHOICES_PARADOX.description"], StringComparison.Ordinal);
+        Assert.Contains("\u865a\u65e0", zhsRelics["CROSSBOW.description"], StringComparison.Ordinal);
+        Assert.Contains("\u529b\u91cf", zhsRelics["TOASTY_MITTENS.description"], StringComparison.Ordinal);
 
         AssertSourceContains(
             manualMatrix,
-            "`迅速2`, no raw `Swift`",
-            "`获得1点能量`, `手牌有7张`, `至少18点`",
-            "`棱彩计数：1/2` or `棱彩计数：0/2`",
-            "`棱彩奖励：本次只出现异色牌。`",
-            "`神化`, no raw `Apotheosis`",
-            "`放松` and `放松+`, no raw `Relax`",
-            "`许愿` and `许愿+`, no raw `Wish`",
-            "`愚行`, no raw `Folly`",
-            "`执迷`, no raw `Enthralled`",
-            "`债务`, no raw `Debt`",
-            "`首领`, no raw `Boss`",
-            "`宝石面具` and 0-cost text",
-            "`保留`, `虚无`, `消耗`, `固有`, `永恒`, `力量`");
+            "Tanx Claws",
+            "Maul+",
+            "\u6495\u54ac+",
+            "Vakuu's Sere Talon");
     }
+
+    [Fact]
+    public void VakuuSereTalonAndTanxClawsStayOnSeparateSourceRoutes()
+    {
+        var vakuuSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Vakuu.cs");
+        var tanxSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Tanx.cs");
+        var sereTalonSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "SereTalon.cs");
+        var clawsSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "Claws.cs");
+        var sereTalonVisualPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs");
+        var tanxClawsPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
+        var ancientPatchSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
+        var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
+        var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
+
+        AssertSourceContains(
+            vakuuSource,
+            "RelicOption<SereTalon>()");
+        Assert.DoesNotContain("RelicOption<Claws>()", vakuuSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            tanxSource,
+            "RelicOption<Claws>()");
+        Assert.DoesNotContain("RelicOption<SereTalon>()", tanxSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            sereTalonSource,
+            "new DynamicVar(\"Curses\", 2m)",
+            "new DynamicVar(\"Wishes\", 3m)",
+            "HoverTipFactory.FromCardWithCardHoverTips<Wish>()",
+            "CardPileCmd.Add(card, PileType.Deck)",
+            "CardPileCmd.Add(card2, PileType.Deck)");
+        Assert.DoesNotContain("Maul", sereTalonSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            clawsSource,
+            "new CardsVar(6)",
+            "HoverTipFactory.FromCardWithCardHoverTips<Maul>()",
+            "CreateMaulFromOriginal",
+            "CardCmd.Transform(transformations, base.Owner.PlayerRng.Transformations)");
+        Assert.DoesNotContain("Wish", clawsSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CurseCardPool", clawsSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            sereTalonVisualPatch,
+            "relic is not SereTalon",
+            "[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]",
+            "TryApplyEventOptionButton",
+            "button.Option?.Relic is not SereTalon",
+            "GetNodeOrNull<TextureRect>(\"%RelicIcon\")",
+            "Ancient event option button",
+            "[HarmonyPatch(typeof(NRelic), \"Reload\")]",
+            "TryApplyRelicNode",
+            "IsNodeReady()",
+            "InvalidOperationException",
+            "NRelic small node",
+            "NRelic large node",
+            "RelicModel packed icon texture",
+            "RelicModel big icon texture",
+            "SereTalon uses Spire Plus art and Tanx Claws is untouched");
+        AssertSourceContains(
+            tanxClawsPatch,
+            "[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]",
+            "owner.RunState.CreateCard<Maul>(owner)",
+            "maul.UpgradeInternal()",
+            "CardCmd.Upgrade(maul, CardPreviewStyle.None)");
+        Assert.DoesNotContain("SereTalon", tanxClawsPatch, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch(typeof(Maul)", ancientPatchSource, StringComparison.Ordinal);
+
+        Assert.Equal("Vakuu's Sere Talon", engRelics["SERE_TALON.title"]);
+        Assert.Equal("On pickup, add [blue]2[/blue] random Curses and [blue]3[/blue] Wish to your deck.", engRelics["SERE_TALON.description"]);
+        Assert.Equal("\u74e6\u5e93\u539f\u521d\u4e4b\u722a", zhsRelics["SERE_TALON.title"]);
+        Assert.Equal("\u62fe\u53d6\u65f6\uff0c\u5c06[blue]2[/blue]\u5f20\u968f\u673a\u8bc5\u5492\u548c[blue]3[/blue]\u5f20[gold]\u8bb8\u613f[/gold]\u52a0\u5165\u4f60\u7684\u724c\u7ec4\u3002", zhsRelics["SERE_TALON.description"]);
+
+        Assert.Equal("Tanx Claws", engRelics["CLAWS.title"]);
+        Assert.Equal("On pickup, transform up to [blue]{Cards}[/blue] cards into upgraded Maul.", engRelics["CLAWS.description"]);
+        Assert.Equal("\u5766\u514b\u65af\u5229\u722a", zhsRelics["CLAWS.title"]);
+        Assert.Equal("\u62fe\u53d6\u65f6\uff0c\u5c06\u81f3\u591a[blue]{Cards}[/blue]\u5f20\u724c\u53d8\u5316\u4e3a\u6495\u54ac+\u3002", zhsRelics["CLAWS.description"]);
+    }
+
     [Fact]
     public void CurrentAncientDocsDoNotPresentSupersededV42BehaviorAsCurrent()
     {
@@ -763,8 +842,8 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("compact active source-design summary", sourceDesign, StringComparison.Ordinal);
         Assert.Contains("source-design-mojibake-pre-slim-20260518.md", sourceDesign, StringComparison.Ordinal);
         Assert.True(sourceDesign.Split('\n').Length <= 80, "Keep active Ancients v4 source-design compact; move long design history to archive/reference inputs.");
-        Assert.DoesNotContain("銆", sourceDesign, StringComparison.Ordinal);
-        Assert.DoesNotContain("鍏", sourceDesign, StringComparison.Ordinal);
+        Assert.DoesNotContain("\uFFFD", sourceDesign, StringComparison.Ordinal);
+        Assert.DoesNotContain("TSpire PlusT", sourceDesign, StringComparison.Ordinal);
         Assert.Contains("v4.3 is current", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Every second standard card reward contains only off-color cards", currentDocs, StringComparison.Ordinal);
         Assert.Contains("lose 30% of current Max HP, at least 18", currentDocs, StringComparison.Ordinal);
@@ -970,18 +1049,18 @@ public sealed class AncientBehaviorGuardTests
         Assert.Equal("Requires at least 2 removable cards and more than 5 HP.", restSite["OPTION_COOK.ezDescriptionDisabled"]);
         Assert.Equal("At a [gold]Rest Site[/gold], [gold]remove[/gold] [blue]2[/blue] cards from your [gold]Deck[/gold] and lose [blue]5[/blue] HP.", staticHovers["COOK.description"]);
         Assert.Equal("Cleaver", staticHovers["COOK.title"]);
-        Assert.Equal("在休息处加入[gold]切肉[/gold]选项：移除[blue]2[/blue]张牌并失去[blue]5[/blue]点生命。", zhsRelics["MEAT_CLEAVER.description"]);
-        Assert.Equal("切肉", zhsRestSite["OPTION_COOK.name"]);
-        Assert.Equal("移除2张牌。失去5点生命。", zhsRestSite["OPTION_COOK.ezDescription"]);
-        Assert.Equal("需要至少2张可移除牌且生命值大于5。", zhsRestSite["OPTION_COOK.ezDescriptionDisabled"]);
-        Assert.Equal("在[gold]休息处[/gold]从你的[gold]牌组[/gold]中[gold]移除[/gold][blue]2[/blue]张牌，并失去[blue]5[/blue]点生命。", zhsStaticHovers["COOK.description"]);
-        Assert.Equal("切肉", zhsStaticHovers["COOK.title"]);
+        Assert.Equal("\u5728\u4f11\u606f\u5904\u52a0\u5165[gold]\u5207\u8089[/gold]\u9009\u9879\uff1a\u79fb\u9664[blue]2[/blue]\u5f20\u724c\u5e76\u5931\u53bb[blue]5[/blue]\u70b9\u751f\u547d\u3002", zhsRelics["MEAT_CLEAVER.description"]);
+        Assert.Equal("\u5207\u8089", zhsRestSite["OPTION_COOK.name"]);
+        Assert.Equal("\u79fb\u96642\u5f20\u724c\u3002\u5931\u53bb5\u70b9\u751f\u547d\u3002", zhsRestSite["OPTION_COOK.ezDescription"]);
+        Assert.Equal("\u9700\u8981\u81f3\u5c112\u5f20\u53ef\u79fb\u9664\u724c\u4e14\u751f\u547d\u503c\u5927\u4e8e5\u3002", zhsRestSite["OPTION_COOK.ezDescriptionDisabled"]);
+        Assert.Equal("\u5728[gold]\u4f11\u606f\u5904[/gold]\u4ece\u4f60\u7684[gold]\u724c\u7ec4[/gold]\u4e2d[gold]\u79fb\u9664[/gold][blue]2[/blue]\u5f20\u724c\uff0c\u5e76\u5931\u53bb[blue]5[/blue]\u70b9\u751f\u547d\u3002", zhsStaticHovers["COOK.description"]);
+        Assert.Equal("\u5207\u8089", zhsStaticHovers["COOK.title"]);
         Assert.DoesNotContain("gain [green]9[/green] Max HP", staticHovers["COOK.description"], StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("获得[green]9[/green]点最大生命", zhsStaticHovers["COOK.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\u83b7\u5f97[green]9[/green]\u70b9\u6700\u5927\u751f\u547d", zhsStaticHovers["COOK.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("Cooking", relics["MEAT_CLEAVER.description"], StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("烹饪", zhsRelics["MEAT_CLEAVER.description"], StringComparison.Ordinal);
-        Assert.DoesNotContain("烹饪", zhsRestSite["OPTION_COOK.name"], StringComparison.Ordinal);
-        Assert.DoesNotContain("烹饪", zhsStaticHovers["COOK.title"], StringComparison.Ordinal);
+        Assert.DoesNotContain("鐑归オ", zhsRelics["MEAT_CLEAVER.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("鐑归オ", zhsRestSite["OPTION_COOK.name"], StringComparison.Ordinal);
+        Assert.DoesNotContain("鐑归オ", zhsStaticHovers["COOK.title"], StringComparison.Ordinal);
 
         AssertSourceContains(
             source,
@@ -1002,10 +1081,10 @@ public sealed class AncientBehaviorGuardTests
         Assert.DoesNotContain("MaxHp", source, StringComparison.Ordinal);
         Assert.Contains("Verify option disabled when too few removable cards.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Verify option disabled when HP is not greater than 5.", manualChecklist, StringComparison.Ordinal);
-        Assert.Contains("Expected: Cleaver / 切肉 option removes 2 removable cards and costs 5 HP.", manualChecklist, StringComparison.Ordinal);
+        Assert.Contains("Expected: Cleaver / \u5207\u8089 option removes 2 removable cards and costs 5 HP.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Verify no other rest-site source is affected unexpectedly.", manualChecklist, StringComparison.Ordinal);
         Assert.DoesNotContain("Expected: Cook option", manualChecklist, StringComparison.Ordinal);
-        Assert.DoesNotContain("烹饪", manualChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("\u70f9\u996a", manualChecklist, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1017,18 +1096,18 @@ public sealed class AncientBehaviorGuardTests
         AssertSourceContains(
             releaseChecklist,
             "Target manifest id: `EZMicroBalance`",
-            "- [x] The active release surface is one mod: `Spire Plus / EZMicroBalance`.",
+            "- [x] The active release surface is one mod: `Spire Plus`.",
             "- [x] Legacy `EzDailyContent` and standalone `EZFuturePeek` root mod surfaces have been removed from the active tree.",
             "- [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.",
             "- [x] Manifest declares structured `BaseLib` dependency with `min_version: v3.1.4`.",
             "- [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.",
             "- [x] BaseLib appears in Mod Settings.",
-            "- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
+            "- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [ ] Fresh 30-field loader smoke confirms Spire Plus / `EZMicroBalance` loads from the current package.",
-            "- [ ] Fresh 30-field loader smoke confirms the game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded",
-            "- [ ] `godot.log` reviewed after fresh current-package normal Steam-client isolated startup/log verification.",
+            "- [ ] Fresh loader smoke confirms Spire Plus loads from the current rebuilt ZIP hash after the README wording refresh.",
+            "- [x] Latest loader smoke confirms the game reaches startup completion with only BaseLib and Spire Plus loaded for the same DLL/PCK/manifest as the current package.",
+            "- [x] `godot.log` reviewed after fresh current-package normal Steam-client isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",
@@ -1039,14 +1118,14 @@ public sealed class AncientBehaviorGuardTests
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
             "- [ ] Push to `origin/main` is performed only after explicit user approval.",
-            "Latest normal Steam-client startup/log verification is historical for the pre-review Spire Plus display-name package",
+            "Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest",
             "Refreshed normal Steam-client Mod Settings UI evidence at `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` shows `Spire Plus`",
-            "RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name",
+            "Earlier page-level Mod Settings evidence predates the display-name refresh",
             "Manual feature results are pending",
             "Unsupported Cases",
             "A11-A20 selection is now default-on in this private-beta multiplayer test candidate",
-            "EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1",
-            "EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1",
+            "SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1",
+            "SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1",
             "A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds route rows by act: Act 1 +1, Act 2 +1, Act 3 +2 without A11-specific map markers or hover tips.",
             "A17 inserts one optional 3-4 node Deep Branch in Acts 2/3",
             "A20 uses the vanilla double-boss map path to create/reveal the final-act second Boss",

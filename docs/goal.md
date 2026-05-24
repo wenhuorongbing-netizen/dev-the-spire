@@ -7,15 +7,15 @@ copy contained unreadable prompt remnants and duplicated current docs.
 
 Current target:
 
-- Keep `Spire Plus / EZMicroBalance` as a test-ready manual build, not a release-ready build.
+- Keep `Spire Plus` as a test-ready manual build, not a release-ready build.
 - Treat `docs/test-ready-development-goal.md`, `docs/issues.md`, `docs/toreview.md`, and `docs/review.md` as the active work path.
-- Preserve `EZMicroBalance` as the stable manifest id.
+- Preserve `EZMicroBalance` only as the stable technical manifest id.
 
 Closure rules:
 
 - Live proof required before closing runtime rows.
 - Source review may close only source-level issues such as compile errors, stale API signatures, localization drift, missing resource paths, manifest drift, hash drift, and guard-test failures.
-- Runtime rows need game logs, screenshots, manual notes, or two-client evidence. They include live loader parity, clicked Ancient UI, Urda/Morvi/Lotha/Vakuu gameplay, save/load, Vakuu victory/no-black-screen, A11-A20 traversal/combat behavior, co-op ownership/desync, and Crystal Sphere and transform-preview live proof inside Spire Plus.
+- Runtime rows need game logs, screenshots, manual notes, or two-client evidence. The current-package loader row is filled by the 2026-05-24 Steam-client smoke, but it proves only startup/log loading. Remaining runtime rows include clicked Ancient UI, Urda/Morvi/Lotha/Vakuu gameplay, Sere Talon event/relic surface proof, save/load, Vakuu victory/no-black-screen, A11-A20 traversal/combat behavior, co-op ownership/desync, and Crystal Sphere and transform-preview live proof inside Spire Plus.
 - No release-ready claim is made until those runtime rows have direct evidence.
 
 Current static progress already recorded:

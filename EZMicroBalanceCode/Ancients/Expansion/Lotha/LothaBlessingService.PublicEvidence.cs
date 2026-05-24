@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Entities.Powers;
+﻿using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
@@ -23,7 +23,7 @@ internal static partial class LothaBlessingService
             return amount;
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Lotha Public Evidence doubled player-applied debuff {power.Id.Entry}.");
+        MainFile.Logger.Info($"[Spire Plus] Lotha Public Evidence doubled player-applied debuff {power.Id.Entry}.");
         return amount * 2m;
     }
 
@@ -47,7 +47,7 @@ internal static partial class LothaBlessingService
         }
 
         modifiedAmount = amount * 2m;
-        MainFile.Logger.Info($"[EZMicroBalance] Lotha Public Evidence doubled enemy-applied debuff {canonicalPower.Id.Entry}.");
+        MainFile.Logger.Info($"[Spire Plus] Lotha Public Evidence doubled enemy-applied debuff {canonicalPower.Id.Entry}.");
         return true;
     }
 
@@ -74,7 +74,7 @@ internal static partial class LothaBlessingService
                 PublicEvidenceEnlightenmentGain,
                 applyingPlayer.Creature,
                 cardSource);
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Public Evidence granted Enlightenment after a player-applied debuff.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Public Evidence granted Enlightenment after a player-applied debuff.");
             return;
         }
 
@@ -84,7 +84,7 @@ internal static partial class LothaBlessingService
             GetSelectedBlessing(targetPlayer) == LothaBlessingIds.PublicEvidence)
         {
             await RemoveOnePublicEvidenceEnlightenment(choiceContext, targetPlayer);
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Public Evidence removed Enlightenment after an enemy-applied debuff.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Public Evidence removed Enlightenment after an enemy-applied debuff.");
         }
     }
 
@@ -106,7 +106,7 @@ internal static partial class LothaBlessingService
             await CreatureCmd.GainBlock(player.Creature, PublicEvidenceBlockPerEnlightenment, ValueProp.Move, null, fast: true);
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Lotha Public Evidence consumed {consumed} Enlightenment at turn start.");
+        MainFile.Logger.Info($"[Spire Plus] Lotha Public Evidence consumed {consumed} Enlightenment at turn start.");
     }
 
     private static async Task RemoveOnePublicEvidenceEnlightenment(

@@ -58,6 +58,12 @@ internal sealed class UrdaShallowRootRelicOptionRelic : UrdaOptionRelic
 }
 
 [Pool(typeof(SharedRelicPool))]
+internal sealed class UrdaEliteRootOptionRelic : UrdaOptionRelic
+{
+    public override string PackedIconPath => UrdaAssetPaths.EliteRootOptionIcon;
+}
+
+[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaRootedRouteOptionRelic : UrdaOptionRelic
 {
     public override string PackedIconPath => UrdaAssetPaths.RootedRouteOptionIcon;

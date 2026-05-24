@@ -12,17 +12,21 @@ public sealed class AscensionFeatureGuardTests
 
         AssertSourceContains(
             source,
-            "DebugLevelEnvironmentVariable = \"EZMB_ASCENSION_DEBUG_LEVEL\"",
-            "PublicGateEnvironmentVariable = \"EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION\"",
-            "DisablePublicSelectionEnvironmentVariable = \"EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION\"",
-            "DisableMultiplayerSelectionEnvironmentVariable = \"EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION\"",
+            "DebugLevelEnvironmentVariable = \"SPIREPLUS_ASCENSION_DEBUG_LEVEL\"",
+            "LegacyDebugLevelEnvironmentVariable = \"EZMB_ASCENSION_DEBUG_LEVEL\"",
+            "PublicGateEnvironmentVariable = \"SPIREPLUS_ASCENSION_ALLOW_PUBLIC_ASCENSION\"",
+            "LegacyPublicGateEnvironmentVariable = \"EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION\"",
+            "DisablePublicSelectionEnvironmentVariable = \"SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION\"",
+            "LegacyDisablePublicSelectionEnvironmentVariable = \"EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION\"",
+            "DisableMultiplayerSelectionEnvironmentVariable = \"SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION\"",
+            "LegacyDisableMultiplayerSelectionEnvironmentVariable = \"EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION\"",
             "MaxSupportedAscensionLevel = 20",
             "return 0;",
             "return IsPublicSelectionEnabled && runState.AscensionLevel >= requiredAscensionLevel",
             "public static bool IsPublicSelectionEnabled =>",
-            "!IsTruthy(Environment.GetEnvironmentVariable(DisablePublicSelectionEnvironmentVariable))",
+            "LegacyDisablePublicSelectionEnvironmentVariable",
             "public static bool IsMultiplayerSelectionDisabled =>",
-            "IsTruthy(Environment.GetEnvironmentVariable(DisableMultiplayerSelectionEnvironmentVariable))",
+            "LegacyDisableMultiplayerSelectionEnvironmentVariable",
             "A11-A20 selection is default-on for private-beta multiplayer testing",
             "set {AscensionFeatureGate.DisablePublicSelectionEnvironmentVariable}=1 to restore vanilla A1-A10 selection",
             "set {AscensionFeatureGate.DisableMultiplayerSelectionEnvironmentVariable}=1 to disable only host-multiplayer A11-A20 selection",
@@ -82,7 +86,9 @@ public sealed class AscensionFeatureGuardTests
             "candidate.Equals(\"true\", StringComparison.OrdinalIgnoreCase)",
             "candidate.Equals(\"yes\", StringComparison.OrdinalIgnoreCase)",
             "candidate.Equals(\"on\", StringComparison.OrdinalIgnoreCase)");
-        Assert.Contains("Environment.GetEnvironmentVariable(DebugLevelEnvironmentVariable)?.Trim()", ascensionGate, StringComparison.Ordinal);
+        Assert.Contains("FirstRawEnvironmentValue(", ascensionGate, StringComparison.Ordinal);
+        Assert.Contains("DebugLevelEnvironmentVariable,", ascensionGate, StringComparison.Ordinal);
+        Assert.Contains("LegacyDebugLevelEnvironmentVariable)?.Trim()", ascensionGate, StringComparison.Ordinal);
         AssertSourceContains(
             ancientGate,
             "IsTruthyEnvironmentVariable(string name, bool trimValue = true)",
@@ -691,8 +697,10 @@ public sealed class AscensionFeatureGuardTests
 
         AssertSourceContains(
             expansionConfig,
-            "EnableMapGeometryEnvironmentVariable = \"EZMB_ASCENSION_ENABLE_MAP_GEOMETRY\"",
-            "EnableDeepBranchesEnvironmentVariable = \"EZMB_ASCENSION_ENABLE_DEEP_BRANCHES\"");
+            "EnableMapGeometryEnvironmentVariable = \"SPIREPLUS_ASCENSION_ENABLE_MAP_GEOMETRY\"",
+            "LegacyEnableMapGeometryEnvironmentVariable = \"EZMB_ASCENSION_ENABLE_MAP_GEOMETRY\"",
+            "EnableDeepBranchesEnvironmentVariable = \"SPIREPLUS_ASCENSION_ENABLE_DEEP_BRANCHES\"",
+            "LegacyEnableDeepBranchesEnvironmentVariable = \"EZMB_ASCENSION_ENABLE_DEEP_BRANCHES\"");
 
         AssertSourceContains(
             mapService,

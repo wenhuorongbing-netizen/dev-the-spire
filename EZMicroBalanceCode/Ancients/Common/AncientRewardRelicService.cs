@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 
 internal static class AncientRewardRelicService
 {
@@ -7,12 +7,12 @@ internal static class AncientRewardRelicService
     {
         if (owner.GetRelic<T>() is not null)
         {
-            MainFile.Logger.Info($"[EZMicroBalance] Ancient reward relic already present for {rewardId}: {typeof(T).Name}.");
+            MainFile.Logger.Info($"[Spire Plus] Ancient reward relic already present for {rewardId}: {typeof(T).Name}.");
             return;
         }
 
         var relic = ModelDb.Relic<T>().ToMutable();
         await RelicCmd.Obtain(relic, owner);
-        MainFile.Logger.Info($"[EZMicroBalance] Ancient reward relic obtained for {rewardId}: {relic.Id}.");
+        MainFile.Logger.Info($"[Spire Plus] Ancient reward relic obtained for {rewardId}: {relic.Id}.");
     }
 }

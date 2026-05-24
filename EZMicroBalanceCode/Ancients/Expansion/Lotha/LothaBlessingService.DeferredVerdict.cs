@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 internal static partial class LothaBlessingService
 {
@@ -31,13 +31,13 @@ internal static partial class LothaBlessingService
         }
 
         await PowerCmd.Decrement(verdict);
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Deferred Verdict consumed 1 player-owned Verdict.");
+        MainFile.Logger.Info("[Spire Plus] Lotha Deferred Verdict consumed 1 player-owned Verdict.");
 
         if (usesPowerReplacement)
         {
             combatState.PowerReplacementCardPendingBenefit = null;
             await ApplyPowerReplacementBenefit(choiceContext, player);
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Deferred Verdict used the Power-card replacement benefit: cost 0 and draw 1.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Deferred Verdict used the Power-card replacement benefit: cost 0 and draw 1.");
         }
     }
 

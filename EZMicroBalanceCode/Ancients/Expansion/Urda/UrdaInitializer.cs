@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Modding;
+﻿using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -24,7 +24,7 @@ internal static class UrdaInitializer
             CreateCombatHookSubscribers);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda hooks registered. Urda is default-on for private-beta testing; set {UrdaFeatureGate.DisableAncientEnvironmentVariable}=1 to hide it for comparison.");
+            $"[Spire Plus] Urda hooks registered. Urda is default-on for private-beta testing; set {UrdaFeatureGate.DisableAncientEnvironmentVariable}=1 to hide it for comparison. Legacy alias: {UrdaFeatureGate.LegacyDisableAncientEnvironmentVariable}=1.");
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>

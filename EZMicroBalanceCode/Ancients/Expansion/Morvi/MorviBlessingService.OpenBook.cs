@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -27,7 +27,7 @@ internal static partial class MorviBlessingService
 
             await PlayerCmd.GainEnergy(OpenBookEnergy, player);
             await SetCounterPower<MorviOpenBookPower>(choiceContext, player, drawn.Count);
-            MainFile.Logger.Info($"[EZMicroBalance] Morvi Open-Book Exam drew {drawn.Count} cards and granted {OpenBookEnergy} Energy on turn 1.");
+            MainFile.Logger.Info($"[Spire Plus] Morvi Open-Book Exam drew {drawn.Count} cards and granted {OpenBookEnergy} Energy on turn 1.");
         }
 
         if (player.Creature.CombatState?.RoundNumber == OpenBookReturnTurn &&
@@ -75,7 +75,7 @@ internal static partial class MorviBlessingService
 
         combatState.OpenBookDrawnCards.Clear();
         await SetCounterPower<MorviOpenBookPower>(choiceContext, player, combatState.OpenBookSealedCards.Count);
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Open-Book Exam sealed {combatState.OpenBookSealedCards.Count} cards into exhaust-pile holding until turn 3.");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Open-Book Exam sealed {combatState.OpenBookSealedCards.Count} cards into exhaust-pile holding until turn 3.");
     }
 
     private static async Task ReturnOpenBookCards(Player player, MorviCombatState combatState)
@@ -104,7 +104,7 @@ internal static partial class MorviBlessingService
 
         combatState.OpenBookSealedCards.Clear();
         await SetCounterPower<MorviOpenBookPower>(new ThrowingPlayerChoiceContext(), player, 0);
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Open-Book Exam returned {returned} sealed cards on turn 3 and made them cost 0 this turn.");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Open-Book Exam returned {returned} sealed cards on turn 3 and made them cost 0 this turn.");
     }
 
     private static List<CardModel> FindOpenBookSealedCards(Player player, MorviCombatState combatState)

@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
@@ -78,7 +78,7 @@ internal static partial class LothaBlessingService
                     player,
                     DeathReprieveDiagnostics(player, combatState, progress, "duplicate lethal damage during reprieve"));
                 await CreatureCmd.SetCurrentHp(creature, 1m);
-                MainFile.Logger.Info("[EZMicroBalance] Lotha Death Reprieve kept the player at 1 HP during the reprieve turn.");
+                MainFile.Logger.Info("[Spire Plus] Lotha Death Reprieve kept the player at 1 HP during the reprieve turn.");
             }
 
             return;
@@ -115,7 +115,7 @@ internal static partial class LothaBlessingService
                 "pending_created",
                 player,
                 DeathReprieveDiagnostics(player, combatState, pendingProgress, "enemy or non-player turn lethal damage"));
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Death Reprieve prevented lethal damage; reprieve turn is pending at the next player turn.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Death Reprieve prevented lethal damage; reprieve turn is pending at the next player turn.");
         }
     }
 
@@ -148,7 +148,7 @@ internal static partial class LothaBlessingService
             "lethal_prevented",
             player,
             DeathReprieveDiagnostics(player, combatState, activeProgress, source));
-        MainFile.Logger.Info($"[EZMicroBalance] Lotha Death Reprieve started the reprieve turn from {source}: draw 10, Energy 10, all costs 0.");
+        MainFile.Logger.Info($"[Spire Plus] Lotha Death Reprieve started the reprieve turn from {source}: draw 10, Energy 10, all costs 0.");
     }
 
     private static async Task EnsureDeathReprievePower(PlayerChoiceContext choiceContext, Player player)
@@ -180,7 +180,7 @@ internal static partial class LothaBlessingService
                 "resolved",
                 player,
                 DeathReprieveDiagnostics(player, combatState, GetProgress(player), "turn end with enemies alive", forcedDeath: true));
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Death Reprieve ended with enemies alive; killing the player with force=true.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Death Reprieve ended with enemies alive; killing the player with force=true.");
             await CreatureCmd.Kill(player.Creature, force: true);
             return;
         }
@@ -190,7 +190,7 @@ internal static partial class LothaBlessingService
             "resolved",
             player,
             DeathReprieveDiagnostics(player, combatState, GetProgress(player), "turn end after victory"));
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Death Reprieve ended after victory; the run continues.");
+        MainFile.Logger.Info("[Spire Plus] Lotha Death Reprieve ended after victory; the run continues.");
     }
 
     private static Dictionary<string, object?> DeathReprieveDiagnostics(

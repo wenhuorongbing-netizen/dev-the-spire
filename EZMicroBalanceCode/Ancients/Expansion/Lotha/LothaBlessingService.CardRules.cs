@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
@@ -32,7 +32,7 @@ internal static partial class LothaBlessingService
         {
             combatState.MirrorRebuttalResolved = true;
             LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "mirror_rebuttal", extraPlayCount: MirrorRebuttalExtraPlayCount);
-            MainFile.Logger.Info($"[EZMicroBalance] Lotha Mirror Rebuttal extra-played {card.Id.Entry} one additional time.");
+            MainFile.Logger.Info($"[Spire Plus] Lotha Mirror Rebuttal extra-played {card.Id.Entry} one additional time.");
             return playCount + MirrorRebuttalExtraPlayCount;
         }
 
@@ -44,7 +44,7 @@ internal static partial class LothaBlessingService
             combatState.MirrorHallEchoConsumedThisTurn = true;
             combatState.MirrorHallEchoArmedType = null;
             LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "mirror_hall_echo", extraPlayCount: MirrorHallEchoExtraPlayCount);
-            MainFile.Logger.Info($"[EZMicroBalance] Lotha Mirror Hall Echo extra-played {card.Id.Entry} one additional time.");
+            MainFile.Logger.Info($"[Spire Plus] Lotha Mirror Hall Echo extra-played {card.Id.Entry} one additional time.");
             return playCount + MirrorHallEchoExtraPlayCount;
         }
 
@@ -54,7 +54,7 @@ internal static partial class LothaBlessingService
             IsDeferredVerdictExtraPlayCard(card))
         {
             LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "deferred_verdict", extraPlayCount: DeferredVerdictExtraPlayCount);
-            MainFile.Logger.Info($"[EZMicroBalance] Lotha Deferred Verdict extra-played {card.Id.Entry} one additional time.");
+            MainFile.Logger.Info($"[Spire Plus] Lotha Deferred Verdict extra-played {card.Id.Entry} one additional time.");
             return playCount + DeferredVerdictExtraPlayCount;
         }
 
@@ -66,7 +66,7 @@ internal static partial class LothaBlessingService
             combatState.SingleSentenceRulingCard = card;
             SetSingleSentencePowerAmount(player, SingleSentenceRemainingPlayLimit);
             LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "single_sentence", extraPlayCount: LothaExtraPlayCount);
-            MainFile.Logger.Info($"[EZMicroBalance] Lotha Single Sentence extra-played {card.Id.Entry} two additional times.");
+            MainFile.Logger.Info($"[Spire Plus] Lotha Single Sentence extra-played {card.Id.Entry} two additional times.");
             return playCount + LothaExtraPlayCount;
         }
 

@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Rewards;
 
@@ -48,7 +48,7 @@ internal static partial class UrdaBlessingService
 
         if (context.SeedbedHandled)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Urda Seedbed duplicate reward alternative click ignored.");
+            MainFile.Logger.Info("[Spire Plus] Urda Seedbed duplicate reward alternative click ignored.");
             return;
         }
 
@@ -68,7 +68,7 @@ internal static partial class UrdaBlessingService
         else
         {
             AncientCardHelpers.RemoveUnpiledRunCard(seedbed);
-            MainFile.Logger.Warn("[EZMicroBalance] Urda Seedbed was not added to deck; cost and progress were not applied.");
+            MainFile.Logger.Warn("[Spire Plus] Urda Seedbed was not added to deck; cost and progress were not applied.");
             return;
         }
 
@@ -86,7 +86,7 @@ internal static partial class UrdaBlessingService
 
         SetProgress(player, progress);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Seedbed applied: accepted {progress.SeedbedAccepted}/{MaxSeedbedChecks}; transformed={progress.SeedbedTransformed}.");
+            $"[Spire Plus] Urda Seedbed applied: accepted {progress.SeedbedAccepted}/{MaxSeedbedChecks}; transformed={progress.SeedbedTransformed}.");
     }
 
     private static bool CanPaySeedbedCost(Player player) =>

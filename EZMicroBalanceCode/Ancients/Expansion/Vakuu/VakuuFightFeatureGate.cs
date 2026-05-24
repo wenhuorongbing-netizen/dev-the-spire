@@ -6,27 +6,27 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
 internal static class VakuuFightFeatureGate
 {
-    public const string EnableEnvironmentVariable = "EZMB_ENABLE_VAKUU_FIGHT";
-    public const string SpirePlusEnableEnvironmentVariable = "SPIREPLUS_ENABLE_VAKUU_FIGHT";
-    public const string DisableEnvironmentVariable = "EZMB_DISABLE_VAKUU_FIGHT";
-    public const string SpirePlusDisableEnvironmentVariable = "SPIREPLUS_DISABLE_VAKUU_FIGHT";
-    public const string ForceAncientEnvironmentVariable = "EZMB_FORCE_ANCIENT";
-    public const string SpirePlusForceAncientEnvironmentVariable = "SPIREPLUS_FORCE_ANCIENT";
-    public const string ForceFightEnvironmentVariable = "EZMB_FORCE_VAKUU_FIGHT";
-    public const string SpirePlusForceFightEnvironmentVariable = "SPIREPLUS_FORCE_VAKUU_FIGHT";
+    public const string EnableEnvironmentVariable = "SPIREPLUS_ENABLE_VAKUU_FIGHT";
+    public const string LegacyEnableEnvironmentVariable = "EZMB_ENABLE_VAKUU_FIGHT";
+    public const string DisableEnvironmentVariable = "SPIREPLUS_DISABLE_VAKUU_FIGHT";
+    public const string LegacyDisableEnvironmentVariable = "EZMB_DISABLE_VAKUU_FIGHT";
+    public const string ForceAncientEnvironmentVariable = "SPIREPLUS_FORCE_ANCIENT";
+    public const string LegacyForceAncientEnvironmentVariable = "EZMB_FORCE_ANCIENT";
+    public const string ForceFightEnvironmentVariable = "SPIREPLUS_FORCE_VAKUU_FIGHT";
+    public const string LegacyForceFightEnvironmentVariable = "EZMB_FORCE_VAKUU_FIGHT";
 
     private static readonly object CommandForceFightLock = new();
     private static WeakReference<IRunState>? commandForcedFightRun;
 
     public static string? ForcedAncient =>
-        AncientFeatureGate.FirstRawEnvironmentValue(SpirePlusForceAncientEnvironmentVariable, ForceAncientEnvironmentVariable);
+        AncientFeatureGate.FirstRawEnvironmentValue(ForceAncientEnvironmentVariable, LegacyForceAncientEnvironmentVariable);
 
     public static bool ShouldForceVakuu =>
         IsForcedAncient("VAKUU") || IsForcedAncient("EZMB_VAKUU");
 
     public static bool ShouldForceFight =>
         AncientFeatureGate.IsTruthyEnvironmentVariable(ForceFightEnvironmentVariable) ||
-        AncientFeatureGate.IsTruthyEnvironmentVariable(SpirePlusForceFightEnvironmentVariable);
+        AncientFeatureGate.IsTruthyEnvironmentVariable(LegacyForceFightEnvironmentVariable);
 
     public static bool ShouldForceFightForRun(IRunState runState) =>
         ShouldForceFight || IsCommandForceFightArmedForRun(runState);
@@ -34,12 +34,12 @@ internal static class VakuuFightFeatureGate
     public static bool ShouldEnableFight =>
         ShouldForceFight ||
         AncientFeatureGate.IsTruthyEnvironmentVariable(EnableEnvironmentVariable) ||
-        AncientFeatureGate.IsTruthyEnvironmentVariable(SpirePlusEnableEnvironmentVariable);
+        AncientFeatureGate.IsTruthyEnvironmentVariable(LegacyEnableEnvironmentVariable);
 
     public static bool IsFightEnabled(UnlockState _) =>
         ShouldEnableFight &&
         !AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable) &&
-        !AncientFeatureGate.IsTruthyEnvironmentVariable(SpirePlusDisableEnvironmentVariable);
+        !AncientFeatureGate.IsTruthyEnvironmentVariable(LegacyDisableEnvironmentVariable);
 
     public static bool IsFightEnabledForRun(IRunState runState) =>
         IsFightEnabledForRun(runState, ShouldForceFightForRun(runState));

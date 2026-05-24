@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static partial class UrdaBlessingService
 {
@@ -59,7 +59,7 @@ internal static partial class UrdaBlessingService
                 TrialSettled = true
             });
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Urda Trial Branch failed after missed combat {progress.TrialCombats}/{TrialBranchCombats}; marked card removed from deck.");
+                $"[Spire Plus] Urda Trial Branch failed after missed combat {progress.TrialCombats}/{TrialBranchCombats}; marked card removed from deck.");
             return;
         }
 
@@ -68,7 +68,7 @@ internal static partial class UrdaBlessingService
             SetProgress(player, progress);
             RefreshTrialBranchEnchantment(player);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Urda Trial Branch tracked required play {progress.TrialSuccessfulCombats}/{TrialBranchRequiredSuccesses}; combats={progress.TrialCombats}/{TrialBranchCombats}.");
+                $"[Spire Plus] Urda Trial Branch tracked required play {progress.TrialSuccessfulCombats}/{TrialBranchRequiredSuccesses}; combats={progress.TrialCombats}/{TrialBranchCombats}.");
             return;
         }
 
@@ -80,7 +80,7 @@ internal static partial class UrdaBlessingService
             }
 
             SetProgress(player, progress with { TrialSettled = true });
-            MainFile.Logger.Info("[EZMicroBalance] Urda Trial Branch completed all three required plays; marker and enchantment cleared.");
+            MainFile.Logger.Info("[Spire Plus] Urda Trial Branch completed all three required plays; marker and enchantment cleared.");
             return;
         }
 
@@ -91,7 +91,7 @@ internal static partial class UrdaBlessingService
         }
 
         SetProgress(player, progress with { TrialSettled = true });
-        MainFile.Logger.Info("[EZMicroBalance] Urda Trial Branch failed; marked card removed from deck.");
+        MainFile.Logger.Info("[Spire Plus] Urda Trial Branch failed; marked card removed from deck.");
     }
 
 }

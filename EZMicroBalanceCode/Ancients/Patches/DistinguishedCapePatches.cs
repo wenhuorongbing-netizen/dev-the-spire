@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(DistinguishedCape), "get_CanonicalVars")]
 internal static class DistinguishedCapeVarsPatch
@@ -43,14 +43,14 @@ internal static class DistinguishedCapeEventOptionPatch
             options[capeIndex] = replacement;
             __result = options.ToArray();
             MainFile.Logger.Info(
-                $"[EZMicroBalance] DistinguishedCape replaced in Vakuu options: current max HP {owner.Creature.MaxHp} cannot pay max HP cost {DistinguishedCapePickupPatch.CalculateMaxHpLoss(owner.Creature.MaxHp)}.");
+                $"[Spire Plus] DistinguishedCape replaced in Vakuu options: current max HP {owner.Creature.MaxHp} cannot pay max HP cost {DistinguishedCapePickupPatch.CalculateMaxHpLoss(owner.Creature.MaxHp)}.");
             return;
         }
 
         options[capeIndex] = CreateLockedCapeOption(__instance, options[capeIndex], owner.Creature.MaxHp);
         __result = options.ToArray();
         MainFile.Logger.Warn(
-            $"[EZMicroBalance] DistinguishedCape shown locked in Vakuu options: no same-pool replacement was available for current max HP {owner.Creature.MaxHp}.");
+            $"[Spire Plus] DistinguishedCape shown locked in Vakuu options: no same-pool replacement was available for current max HP {owner.Creature.MaxHp}.");
     }
 
     private static MegaCrit.Sts2.Core.Events.EventOption? CreateVakuuSecondPoolReplacement(
@@ -134,7 +134,7 @@ internal static class DistinguishedCapePickupPatch
         var maxHpLoss = CalculateMaxHpLoss(creature.MaxHp);
         if (!CanPayMaxHpCost(creature.MaxHp))
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] DistinguishedCape blocked: current max HP {creature.MaxHp} cannot pay max HP cost {maxHpLoss}.");
+            MainFile.Logger.Warn($"[Spire Plus] DistinguishedCape blocked: current max HP {creature.MaxHp} cannot pay max HP cost {maxHpLoss}.");
             return;
         }
 
@@ -155,6 +155,6 @@ internal static class DistinguishedCapePickupPatch
         }
 
         CardCmd.PreviewCardPileAdd(results, 2f);
-        MainFile.Logger.Info($"[EZMicroBalance] DistinguishedCape applied: lost {maxHpLoss} max HP and added {results.Count} Apparition card(s).");
+        MainFile.Logger.Info($"[Spire Plus] DistinguishedCape applied: lost {maxHpLoss} max HP and added {results.Count} Apparition card(s).");
     }
 }

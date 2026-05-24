@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
@@ -32,7 +32,7 @@ internal static partial class UrdaBlessingService
         RootSightSelectionPlayer = null;
         NMapScreen.Instance?.RefreshAllPointVisuals();
         ReleaseEvidenceLog.Log("UrdaRootEyes", "selection_cancelled", player);
-        MainFile.Logger.Info("[EZMicroBalance] Urda Root Eyes selection cancelled.");
+        MainFile.Logger.Info("[Spire Plus] Urda Root Eyes selection cancelled.");
     }
 
     internal static bool TryBeginRootSightSelection(Player player)
@@ -51,14 +51,14 @@ internal static partial class UrdaBlessingService
             "Root Eyes shared map preview mutation is pending host-authoritative sync proof") ||
             hasMultiplayerRunState)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Urda Root Eyes preview is single-player only until host-authoritative map preview sync is implemented.");
+            MainFile.Logger.Warn("[Spire Plus] Urda Root Eyes preview is single-player only until host-authoritative map preview sync is implemented.");
             return false;
         }
 
         var mapScreen = NMapScreen.Instance;
         if (mapScreen == null)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Urda Root Eyes selection could not start because the map screen is not available.");
+            MainFile.Logger.Warn("[Spire Plus] Urda Root Eyes selection could not start because the map screen is not available.");
             return false;
         }
 
@@ -67,7 +67,7 @@ internal static partial class UrdaBlessingService
         mapScreen.Open(isOpenedFromTopBar: true);
         mapScreen.RefreshAllPointVisuals();
         ReleaseEvidenceLog.Log("UrdaRootEyes", "selection_opened", player);
-        MainFile.Logger.Info("[EZMicroBalance] Urda Root Eyes selection started; choose a future reachable Monster, Unknown, or Elite map node.");
+        MainFile.Logger.Info("[Spire Plus] Urda Root Eyes selection started; choose a future reachable Monster, Unknown, or Elite map node.");
         return true;
     }
 
@@ -92,7 +92,7 @@ internal static partial class UrdaBlessingService
                     ["pointType"] = point.PointType
                 });
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Urda Root Eyes ignored invalid map target {point.coord.col},{point.coord.row} ({point.PointType}).");
+                $"[Spire Plus] Urda Root Eyes ignored invalid map target {point.coord.col},{point.coord.row} ({point.PointType}).");
             return;
         }
 
@@ -110,7 +110,7 @@ internal static partial class UrdaBlessingService
         if (!TryCreateRootSightPreview(player.RunState, point, out var preview))
         {
             MainFile.Logger.Warn(
-                $"[EZMicroBalance] Urda Root Eyes could not create a preview for {point.coord.col},{point.coord.row} ({point.PointType}).");
+                $"[Spire Plus] Urda Root Eyes could not create a preview for {point.coord.col},{point.coord.row} ({point.PointType}).");
             return;
         }
 
@@ -153,7 +153,7 @@ internal static partial class UrdaBlessingService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Root Eyes previewed {preview.RoomType} {preview.ModelId} at {point.coord.col},{point.coord.row}; eyes left={progress.RootSightEyes}.");
+            $"[Spire Plus] Urda Root Eyes previewed {preview.RoomType} {preview.ModelId} at {point.coord.col},{point.coord.row}; eyes left={progress.RootSightEyes}.");
     }
 
     private static Player? GetActiveRootSightSelectionPlayer()
@@ -178,7 +178,7 @@ internal static partial class UrdaBlessingService
                 {
                     ["hasRunState"] = runState != null
                 });
-            MainFile.Logger.Info("[EZMicroBalance] Urda Root Eyes selection cleared after run context changed.");
+            MainFile.Logger.Info("[Spire Plus] Urda Root Eyes selection cleared after run context changed.");
             return null;
         }
 

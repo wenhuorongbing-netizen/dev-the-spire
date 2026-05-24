@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(Fiddle), "get_CanonicalVars")]
 internal static class FiddleVarsPatch
@@ -77,7 +77,7 @@ internal static class FiddleDrawCapPatch
         if (remainingRoom <= 0)
         {
             __result = Task.FromResult<IEnumerable<CardModel>>(Array.Empty<CardModel>());
-            MainFile.Logger.Info("[EZMicroBalance] Fiddle applied: prevented draw above 7-card player-turn hand cap.");
+            MainFile.Logger.Info("[Spire Plus] Fiddle applied: prevented draw above 7-card player-turn hand cap.");
             return false;
         }
 

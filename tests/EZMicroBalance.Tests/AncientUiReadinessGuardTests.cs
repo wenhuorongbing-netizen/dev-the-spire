@@ -506,6 +506,7 @@ public sealed class AncientUiReadinessGuardTests
             "Expected visible option counts are Urda 4, Morvi 3, Lotha 3",
             "Vakuu 3 by default",
             "one fight option",
+            "Legacy active-run DevConsole",
             "ancient EZMB_URDA",
             "ancient EZMB_MORVI",
             "ancient EZMB_LOTHA",
@@ -527,6 +528,8 @@ public sealed class AncientUiReadinessGuardTests
             "SPIREPLUS_FORCE_VAKUU_FIGHT",
             "EZMB_FORCE_VAKUU_FIGHT",
             "PreferredUnsavedDevConsoleCommand",
+            "LegacyActiveRunDevConsoleCommand",
+            "Legacy active-run DevConsole render-smoke command",
             "spireplus_test_ancient URDA confirm",
             "spireplus_test_ancient VAKUU confirm fight",
             "capture-spire-window.ps1",
@@ -714,7 +717,7 @@ public sealed class AncientUiReadinessGuardTests
             "SPIREPLUS_FORCE_LOTHA_BLESSING=lotha_death_reprieve",
             "SPIREPLUS_DISABLE_URDA=1",
             "SPIREPLUS_ENABLE_VAKUU_FIGHT=1",
-            "EZMB_RELEASE_EVIDENCE_LOG=1",
+            "SPIREPLUS_RELEASE_EVIDENCE_LOG=1",
             "Ancient reward/fight option selection logs include the Ancient, blessing id or option id, selected marker relic type, forced flag, run id, player slot, and network mode.");
     }
 

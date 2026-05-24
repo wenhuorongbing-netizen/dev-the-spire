@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Debug;
+﻿using MegaCrit.Sts2.Core.Debug;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 using MegaCrit.Sts2.Core.Multiplayer.Messages.Lobby;
@@ -9,7 +9,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 /// <summary>
 /// Gated multiplayer diagnostics for A11-A20 run-start/Neow/save-quit investigation.
-/// Default off: set EZMB_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1 to enable.
+/// Default off: set SPIREPLUS_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1 to enable.
 /// Does not change gameplay, state, or network behavior.
 /// </summary>
 internal static class MultiplayerDiagnostics
@@ -23,7 +23,7 @@ internal static class MultiplayerDiagnostics
         var netType = lobby.NetService.Type;
         var gameMode = lobby.GameMode;
         MainFile.Logger.Info(
-            $"[EZMicroBalance][MPDiag] Lobby state: phase={phase}; netType={netType}; gameMode={gameMode}; " +
+            $"[Spire Plus][MPDiag] Lobby state: phase={phase}; netType={netType}; gameMode={gameMode}; " +
             $"ascension={lobby.Ascension}; maxAscension={lobby.MaxAscension}; players={lobby.Players.Count}; " +
             $"localPlayerId={lobby.NetService.NetId}");
 
@@ -31,7 +31,7 @@ internal static class MultiplayerDiagnostics
         {
             var p = lobby.Players[i];
             MainFile.Logger.Info(
-                $"[EZMicroBalance][MPDiag] LobbyPlayer[{i}]: id={p.id}; slot={p.slotId}; " +
+                $"[Spire Plus][MPDiag] LobbyPlayer[{i}]: id={p.id}; slot={p.slotId}; " +
                 $"character={p.character?.Id?.Entry ?? "<null>"}; " +
                 $"maxMultiplayerAscensionUnlocked={p.maxMultiplayerAscensionUnlocked}; isReady={p.isReady}");
         }
@@ -42,14 +42,14 @@ internal static class MultiplayerDiagnostics
         if (!IsEnabled) return;
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance][MPDiag] RunState: phase={phase}; ascension={runState.AscensionLevel}; " +
+            $"[Spire Plus][MPDiag] RunState: phase={phase}; ascension={runState.AscensionLevel}; " +
             $"players={runState.Players.Count}; act={runState.CurrentActIndex}");
 
         foreach (var player in runState.Players)
         {
             var hp = player.Creature;
             MainFile.Logger.Info(
-                $"[EZMicroBalance][MPDiag] Player[slot={runState.GetPlayerSlotIndex(player)}]: " +
+                $"[Spire Plus][MPDiag] Player[slot={runState.GetPlayerSlotIndex(player)}]: " +
                 $"netId={player.NetId}; " +
                 $"currentHp={hp.CurrentHp}; maxHp={hp.MaxHp}; isDead={hp.IsDead}; " +
                 $"isActiveForHooks={player.IsActiveForHooks}");
@@ -61,7 +61,7 @@ internal static class MultiplayerDiagnostics
         if (!IsEnabled) return;
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance][MPDiag] SaveQuit: phase={phase}; isHost={isHost}; localNetId={localNetId}");
+            $"[Spire Plus][MPDiag] SaveQuit: phase={phase}; isHost={isHost}; localNetId={localNetId}");
     }
 
     public static void LogInitialGameInfo(InitialGameInfoMessage message)
@@ -79,7 +79,7 @@ internal static class MultiplayerDiagnostics
         if (!IsEnabled && versionMatch && modelHashMatch && modListMatch) return;
 
         var summary =
-            $"[EZMicroBalance][MPDiag] JoinFlow initial game info: " +
+            $"[Spire Plus][MPDiag] JoinFlow initial game info: " +
             $"hostVersion={message.version}; localVersion={localVersion}; versionMatch={versionMatch}; " +
             $"hostModelHash={message.idDatabaseHash}; localModelHash={localModelHash}; modelHashMatch={modelHashMatch}; " +
             $"gameMode={message.gameMode}; sessionState={message.sessionState}; " +

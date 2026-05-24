@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -33,7 +33,7 @@ internal static partial class UrdaBlessingService
                 if (husks.Count > 0)
                 {
                     MainFile.Logger.Info(
-                        $"[EZMicroBalance] Urda Molting applied: removed {husks.Count} Withered Husk card(s) at Act {runState.CurrentActIndex + 1} start.");
+                        $"[Spire Plus] Urda Molting applied: removed {husks.Count} Withered Husk card(s) at Act {runState.CurrentActIndex + 1} start.");
                 }
 
                 SetProgress(player, progress with { MoltingActive = false });
@@ -147,6 +147,11 @@ internal static partial class UrdaBlessingService
             if (selectedBlessing == UrdaBlessingIds.TrialBranch)
             {
                 await ResolveTrialBranchCombat(player);
+            }
+
+            if (selectedBlessing == UrdaBlessingIds.EliteRoot)
+            {
+                await HealAfterEliteVictory(player, room);
             }
 
             if (runState.CurrentActIndex != 0)

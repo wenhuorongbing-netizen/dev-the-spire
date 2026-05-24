@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Config;
+﻿using EZMicroBalance.EZMicroBalanceCode.Config;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 
@@ -8,12 +8,12 @@ internal static class PreviewLog
     {
         if (EZMicroBalanceModConfig.ShowPreviewDebugLogs)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Preview: " + message);
+            MainFile.Logger.Info("[Spire Plus] Preview: " + message);
         }
     }
 
     public static void Warn(string message)
     {
-        MainFile.Logger.Warn("[EZMicroBalance] Preview: " + message);
+        MainFile.Logger.Warn("[Spire Plus] Preview: " + message);
     }
 }

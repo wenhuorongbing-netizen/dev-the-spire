@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -73,7 +73,7 @@ internal static partial class AscensionCombatModifierService
 
         tracker.PressingLineCardsPlayed.Clear();
         tracker.PressingLineLayers.Clear();
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A16 applied: Pressing Line banner resolved this player turn.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A16 applied: Pressing Line banner resolved this player turn.");
     }
 
     private static async Task ApplyPressingLineStrike(CombatState combatState)

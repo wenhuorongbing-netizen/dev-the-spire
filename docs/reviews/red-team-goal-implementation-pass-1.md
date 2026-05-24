@@ -25,7 +25,7 @@ This pass is a partial implementation-hardening pass only. It cannot claim relea
 
 ## Residual Risk
 
-`ReleaseEvidenceLog` now exists and emits grep-friendly `[EZMB-EVIDENCE]` lines when `EZMB_RELEASE_EVIDENCE_LOG=1` is set. Residual risk remains live-only: those markers still need to be collected from real loader, gameplay, save-load, Vakuu, co-op, and preview-tool sessions before any release-ready claim.
+`ReleaseEvidenceLog` now exists and emits grep-friendly `[SPIREPLUS-EVIDENCE]` lines when `SPIREPLUS_RELEASE_EVIDENCE_LOG=1` is set. `EZMB_RELEASE_EVIDENCE_LOG=1` remains a legacy alias. Residual risk remains live-only: those markers still need to be collected from real loader, gameplay, save-load, Vakuu, co-op, and preview-tool sessions before any release-ready claim.
 
 ## Release Decision
 

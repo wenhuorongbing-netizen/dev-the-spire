@@ -78,7 +78,8 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | War Hammer | Pick up reward, then kill an elite. | Pickup chooses two cards to upgrade; elite kill upgrades remain. | Pending |
 | Jewelry Box | Pick up reward, inspect deck, then save/load or enter the next combat. | Adds `Apotheosis` / `神化` without `Innate` / `固有`; the added card must not start in opening hand from Innate. | Pending |
 | Preserved Fog / Folly | Pick up reward, remove four cards, inspect Folly. | Adds `Folly` / `愚行` with Unplayable, `固有`, and `永恒`. | Pending |
-| Claws | Pick up reward and choose curse. | Chooses one curse from four and adds two `Wish` / `许愿` plus one upgraded `Wish+` / `许愿+`. | Pending |
+| Vakuu's Sere Talon | Pick up Vakuu reward (`瓦库原初之爪`) and inspect deck. | Adds two random Curses and three `Wish` / `许愿`; verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes are not Tanx Claws. | Pending |
+| Tanx Claws | Pick up Tanx reward (`坦克斯利爪`). | Transforms selected cards into upgraded `Maul+` / `撕咬+`. | Pending |
 | Choices Paradox | Start combat after pickup. | Five rare choices are offered, retained, and combat temporary. | Pending |
 | Jeweled Mask | Select or draft a power, save/load, then enter combat. | Selected power permanently costs 0 and starts in hand; the `宝石面具` tooltip explains the permanent 0-cost effect. | Pending |
 | Prismatic Gem | Run the exact tests above and inspect `godot.log`. | Counter increments once per standard reward screen; every second eligible screen makes every visible option off-color, shows the count hover hint, applies the localized banner, and reroll preserves trigger state. | Pending |
@@ -110,7 +111,8 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Prismatic Gem count hint | zhs hover uses `棱彩计数：1/2` or `棱彩计数：0/2`; trigger reward banner uses `棱彩奖励：本次只出现异色牌。` | Pending |
 | Jewelry Box | `神化`, no raw `Apotheosis`; `宝石面具` and 0-cost text | Pending |
 | Pael's Horn | `放松` and `放松+`, no raw `Relax` | Pending |
-| Claws | `许愿` and `许愿+`, no raw `Wish` | Pending |
+| Vakuu's Sere Talon | `许愿`, no raw `Wish`; no Tanx Claws art/title on Vakuu reward | Pending |
+| Tanx Claws | `坦克斯利爪` and `撕咬+`; no `许愿+` text on Tanx reward | Pending |
 | Folly | `愚行`, no raw `Folly` | Pending |
 | Enthralled | `执迷`, no raw `Enthralled` | Pending |
 | Debt | `债务`, no raw `Debt` | Pending |

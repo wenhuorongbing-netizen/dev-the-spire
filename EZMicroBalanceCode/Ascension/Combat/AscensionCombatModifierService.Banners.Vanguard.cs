@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -12,7 +12,7 @@ internal static partial class AscensionCombatModifierService
             await PowerCmd.Apply<VanguardBannerPower>(new BlockingPlayerChoiceContext(), enemy, strength, enemy, null);
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A16 applied: Vanguard banner granted enemies temporary Strength.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A16 applied: Vanguard banner granted enemies temporary Strength.");
     }
 
     private static async Task RemoveVanguardStrength(CombatState combatState)

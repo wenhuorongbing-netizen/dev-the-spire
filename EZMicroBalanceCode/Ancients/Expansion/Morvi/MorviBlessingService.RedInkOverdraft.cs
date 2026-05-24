@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Entities.Gold;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -36,7 +36,7 @@ internal static partial class MorviBlessingService
         await CardPileCmd.Draw(choiceContext, RedInkOverdraftDraw, player);
         await PlayerCmd.GainEnergy(RedInkOverdraftEnergy, player);
         await SetCounterPower<MorviOverdraftPower>(choiceContext, player, combatState.RedInkDebtsThisCombat);
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Red Ink Overdraft recorded debt {combatState.RedInkDebtsThisCombat} this combat.");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Red Ink Overdraft recorded debt {combatState.RedInkDebtsThisCombat} this combat.");
     }
 
     private static async Task AddRedInkOverdraftCard(Player player)
@@ -49,7 +49,7 @@ internal static partial class MorviBlessingService
         var hand = PileType.Hand.GetPile(player);
         if (hand.Cards.Count >= CardPile.MaxCardsInHand)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Morvi Red Ink Overdraft skipped this turn because the hand is full.");
+            MainFile.Logger.Info("[Spire Plus] Morvi Red Ink Overdraft skipped this turn because the hand is full.");
             return;
         }
 
@@ -63,7 +63,7 @@ internal static partial class MorviBlessingService
         if (result.cardAdded.Pile?.Type != PileType.Hand)
         {
             await CardPileCmd.RemoveFromCombat(result.cardAdded, skipVisuals: true);
-            MainFile.Logger.Warn("[EZMicroBalance] Morvi Red Ink Overdraft generated card did not land in hand and was removed to avoid combat-pile flooding.");
+            MainFile.Logger.Warn("[Spire Plus] Morvi Red Ink Overdraft generated card did not land in hand and was removed to avoid combat-pile flooding.");
         }
     }
 
@@ -87,7 +87,7 @@ internal static partial class MorviBlessingService
             await DamagePlayerNonlethal(player, RedInkOverdraftHpPerUnpaidDebt);
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Red Ink Overdraft settled {debtCount} combat debt(s).");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Red Ink Overdraft settled {debtCount} combat debt(s).");
         combatState.RedInkDebtsThisCombat = 0;
         await SetCounterPower<MorviOverdraftPower>(new ThrowingPlayerChoiceContext(), player, 0);
     }

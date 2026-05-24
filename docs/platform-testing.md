@@ -1,6 +1,6 @@
 # Platform Testing
 
-This page is for testers moving the same `Spire Plus / EZMicroBalance` manual-test package between Windows and macOS. It does not replace live gameplay evidence; it only verifies that the installed files, hashes, logs, and environment-variable setup are comparable across machines.
+This page is for testers moving the same `Spire Plus` manual-test package between Windows and macOS. It does not replace live gameplay evidence; it only verifies that the installed files, hashes, logs, and environment-variable setup are comparable across machines.
 
 ## Package Hash Source
 
@@ -34,7 +34,7 @@ $env:STS2_PATH='D:\Steam\steamapps\common\Slay the Spire 2'
 Verify the installed mod folder against the handoff hashes:
 
 ```powershell
-.\scripts\check-installed-ezmb-package.ps1 -ModDirectory "$env:STS2_PATH\mods\EZMicroBalance"
+.\scripts\check-installed-spire-plus-package.ps1 -ModDirectory "$env:STS2_PATH\mods\EZMicroBalance"
 ```
 
 Check a package hash directly:
@@ -58,10 +58,10 @@ $env:APPDATA\SlayTheSpire2\logs\godot.log
 Example feature gates:
 
 ```powershell
-$env:EZMB_DISABLE_MORVI='1'
-$env:EZMB_DISABLE_LOTHA='1'
-$env:EZMB_FORCE_ANCIENT='URDA'
-$env:EZMB_RELEASE_EVIDENCE_LOG='1'
+$env:SPIREPLUS_DISABLE_MORVI='1'
+$env:SPIREPLUS_DISABLE_LOTHA='1'
+$env:SPIREPLUS_FORCE_ANCIENT='URDA'
+$env:SPIREPLUS_RELEASE_EVIDENCE_LOG='1'
 ```
 
 ## macOS
@@ -75,7 +75,7 @@ export STS2_PATH="$HOME/Library/Application Support/Steam/steamapps/common/Slay 
 Verify the installed mod folder against the handoff hashes:
 
 ```sh
-scripts/check-installed-ezmb-package.sh "$STS2_PATH/mods/EZMicroBalance"
+scripts/check-installed-spire-plus-package.sh "$STS2_PATH/mods/EZMicroBalance"
 ```
 
 Check a package hash directly:
@@ -101,10 +101,10 @@ If the game writes logs to a different per-user support path on the target machi
 Example feature gates:
 
 ```sh
-EZMB_DISABLE_MORVI=1
-EZMB_DISABLE_LOTHA=1
-EZMB_FORCE_ANCIENT=URDA
-EZMB_RELEASE_EVIDENCE_LOG=1
+SPIREPLUS_DISABLE_MORVI=1
+SPIREPLUS_DISABLE_LOTHA=1
+SPIREPLUS_FORCE_ANCIENT=URDA
+SPIREPLUS_RELEASE_EVIDENCE_LOG=1
 ```
 
 ## Co-op Hash Rule
@@ -122,9 +122,9 @@ The current source logs additional multiplayer mismatch details, but it does not
 
 ## Evidence Boundary
 
-Passing the hash checks only proves that the same files are installed. It does not prove:
+Passing the installed package checks proves only that the same files are installed, the current Sere Talon imported texture entries are present in the installed PCK, and the English/Simplified Chinese Sere Talon / Tanx Claws split is packaged. It does not prove:
 
-- live loader parity for the current 26 saved fields
+- loader parity on another machine or OS unless that machine also captures a clean startup log
 - clicked Ancient UI
 - reward gameplay
 - save/load

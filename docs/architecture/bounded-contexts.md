@@ -1,6 +1,6 @@
 # Bounded Contexts
 
-This is the release-candidate boundary map for the single `Spire Plus / EZMicroBalance` mod.
+This is the release-candidate boundary map for the single `Spire Plus` mod.
 
 | Context | Responsibility | Public surface | Internal details | Dependencies | Risk |
 | --- | --- | --- | --- | --- | --- |

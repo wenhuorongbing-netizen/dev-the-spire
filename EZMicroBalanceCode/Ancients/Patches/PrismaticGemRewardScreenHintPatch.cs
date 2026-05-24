@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(
     typeof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen),
@@ -35,6 +35,6 @@ internal static partial class PrismaticGemRewardScreenHintPatch
 
         WarnOnce(
             ref BannerUnavailableLogged,
-            "[EZMicroBalance] PrismaticGem reward-screen hint unavailable: private _banner and UI/Banner fallback both failed; visible all-off-color cards and the Prismatic Gem relic hover count remain available for manual confirmation.");
+            "[Spire Plus] PrismaticGem reward-screen hint unavailable: private _banner and UI/Banner fallback both failed; visible all-off-color cards and the Prismatic Gem relic hover count remain available for manual confirmation.");
     }
 }

@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Combat;
+﻿using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Runs;
@@ -15,7 +15,7 @@ internal static class AscensionDiagnostics
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension diagnostics: {phase}; ascension={runState.AscensionLevel}; actIndex={runState.CurrentActIndex}; debugLevel={AscensionFeatureGate.DebugLevel}; publicGate={AscensionFeatureGate.IsPublicGateEnabled}.");
+            $"[Spire Plus] Ascension diagnostics: {phase}; ascension={runState.AscensionLevel}; actIndex={runState.CurrentActIndex}; debugLevel={AscensionFeatureGate.DebugLevel}; publicGate={AscensionFeatureGate.IsPublicGateEnabled}.");
 
         foreach (var player in runState.Players.Where(player => player.IsActiveForHooks))
         {
@@ -32,14 +32,14 @@ internal static class AscensionDiagnostics
 
         var roomType = combatState.RunState.CurrentRoom?.RoomType.ToString() ?? "<none>";
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension diagnostics: {phase}; roomType={roomType}; round={combatState.RoundNumber}; bossBudGate={AscensionFeatureGate.IsEnabledFor(combatState.RunState, AscensionFeatureGate.BossRootBudLevel)}; eliteBudGate={AscensionFeatureGate.IsEnabledFor(combatState.RunState, AscensionFeatureGate.EliteRootBudLevel)}.");
+            $"[Spire Plus] Ascension diagnostics: {phase}; roomType={roomType}; round={combatState.RoundNumber}; bossBudGate={AscensionFeatureGate.IsEnabledFor(combatState.RunState, AscensionFeatureGate.BossRootBudLevel)}; eliteBudGate={AscensionFeatureGate.IsEnabledFor(combatState.RunState, AscensionFeatureGate.EliteRootBudLevel)}.");
 
         foreach (var player in combatState.Players.Where(player => player.IsActiveForHooks))
         {
             LogPlayerRootState(combatState.RunState, player, phase);
             var rootBudCount = CountCardsInCombatPiles<RootBud>(player);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension diagnostics: {phase}; player={combatState.RunState.GetPlayerSlotIndex(player)}; combatBlightSprouts={rootBudCount}.");
+                $"[Spire Plus] Ascension diagnostics: {phase}; player={combatState.RunState.GetPlayerSlotIndex(player)}; combatBlightSprouts={rootBudCount}.");
         }
     }
 
@@ -47,7 +47,7 @@ internal static class AscensionDiagnostics
     {
         var rootFamilyCards = RootDeckService.FindRootFamilyCards(player);
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension diagnostics: {phase}; player={runState.GetPlayerSlotIndex(player)}; rootBeginsApplied={AscensionSavedStateFields.RootBeginsApplied[player]}; rootblightLevel={RootDeckService.GetRootblightLevel(player)}; rootblightCards={rootFamilyCards.Count}.");
+            $"[Spire Plus] Ascension diagnostics: {phase}; player={runState.GetPlayerSlotIndex(player)}; rootBeginsApplied={AscensionSavedStateFields.RootBeginsApplied[player]}; rootblightLevel={RootDeckService.GetRootblightLevel(player)}; rootblightCards={rootFamilyCards.Count}.");
     }
 
     private static int CountCardsInCombatPiles<TCard>(Player player)

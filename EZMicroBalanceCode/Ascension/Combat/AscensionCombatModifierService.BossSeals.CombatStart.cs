@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -17,7 +17,7 @@ internal static partial class AscensionCombatModifierService
             ? $" brand={definition.BrandSummary}"
             : string.Empty;
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension {mode} armed: {definition.Name} ({definition.Id}) is active for this boss. evidence={definition.RuntimeEvidence}{brandText}");
+            $"[Spire Plus] Ascension {mode} armed: {definition.Name} ({definition.Id}) is active for this boss. evidence={definition.RuntimeEvidence}{brandText}");
 
         await ApplyBossSealVisibilityMarker(combatState, definition);
 
@@ -30,7 +30,7 @@ internal static partial class AscensionCombatModifierService
         var owner = FindBossSealVisibilityOwner(combatState, definition.Id);
         if (owner == null)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] Ascension boss dedicated ability marker skipped: no living owner found for {definition.Id}.");
+            MainFile.Logger.Warn($"[Spire Plus] Ascension boss dedicated ability marker skipped: no living owner found for {definition.Id}.");
             return;
         }
 

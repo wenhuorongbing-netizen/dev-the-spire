@@ -53,7 +53,7 @@ internal static class BeautifulBraceletPatch
             CardCmd.Enchant<Swift>(card, 2m);
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] BeautifulBracelet applied: enchanted {cards.Count} card(s) with Swift 2.");
+        MainFile.Logger.Info($"[Spire Plus] BeautifulBracelet applied: enchanted {cards.Count} card(s) with Swift 2.");
     }
 }
 
@@ -119,12 +119,12 @@ internal static class MusicBoxAfterCardPlayedPatch
         var addResult = await AncientCardHelpers.TryAddGeneratedCardToCombat(copy, PileType.Hand, musicBox.Owner);
         if (addResult is not { success: true })
         {
-            MainFile.Logger.Warn("[EZMicroBalance] MusicBox skipped: generated attack copy could not be added to combat.");
+            MainFile.Logger.Warn("[Spire Plus] MusicBox skipped: generated attack copy could not be added to combat.");
             return;
         }
 
         MusicBoxStateTracker.MarkUsed(musicBox);
-        MainFile.Logger.Info("[EZMicroBalance] MusicBox applied: created attack copy with -1 cost, Ethereal, and Exhaust.");
+        MainFile.Logger.Info("[Spire Plus] MusicBox applied: created attack copy with -1 cost, Ethereal, and Exhaust.");
     }
 }
 

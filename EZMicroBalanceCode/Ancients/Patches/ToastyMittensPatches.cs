@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))]
 internal static class ToastyMittensPatch
@@ -26,20 +26,20 @@ internal static class ToastyMittensPatch
 
         if (topCard == null)
         {
-            MainFile.Logger.Info("[EZMicroBalance] ToastyMittens skipped: no draw-pile card to offer.");
+            MainFile.Logger.Info("[Spire Plus] ToastyMittens skipped: no draw-pile card to offer.");
             return;
         }
 
         var selected = await CardSelectCmd.FromChooseACardScreen(choiceContext, new[] { topCard }, player, canSkip: true);
         if (selected != topCard)
         {
-            MainFile.Logger.Info($"[EZMicroBalance] ToastyMittens applied: kept top card {topCard.Id.Entry}.");
+            MainFile.Logger.Info($"[Spire Plus] ToastyMittens applied: kept top card {topCard.Id.Entry}.");
             return;
         }
 
         mittens.Flash();
         await CardCmd.Exhaust(choiceContext, topCard);
         await PowerCmd.Apply<StrengthPower>(choiceContext, player.Creature, mittens.DynamicVars.Strength.BaseValue, player.Creature, null);
-        MainFile.Logger.Info($"[EZMicroBalance] ToastyMittens applied: exhausted {topCard.Id.Entry} and gained Strength.");
+        MainFile.Logger.Info($"[Spire Plus] ToastyMittens applied: exhausted {topCard.Id.Entry} and gained Strength.");
     }
 }

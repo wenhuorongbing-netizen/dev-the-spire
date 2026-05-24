@@ -8,6 +8,7 @@ internal static class UrdaBlessingIds
     public const string MossMap = "urda_moss_map";
     public const string TrialBranch = "urda_trial_branch";
     public const string ShallowRootRelic = "urda_shallow_root_relic";
+    public const string EliteRoot = "urda_elite_root";
     public const string RootedRoute = "urda_rooted_route";
     public const string AfterRain = "urda_after_rain";
     public const string RootSight = "urda_root_sight";

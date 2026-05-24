@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Afflictions;
+﻿using MegaCrit.Sts2.Core.Models.Afflictions;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -12,7 +12,7 @@ internal static partial class AscensionCombatModifierService
         var host = FindFiremarkHost(combatState);
         if (host == null)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A12 gate active: no living enemy was available for Firemark Host selection.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A12 gate active: no living enemy was available for Firemark Host selection.");
             return;
         }
 
@@ -36,7 +36,7 @@ internal static partial class AscensionCombatModifierService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A12 applied: Firemark Host is {host.Name}; overflow affects at most one secondary enemy at a time.");
+            $"[Spire Plus] Ascension A12 applied: Firemark Host is {host.Name}; overflow affects at most one secondary enemy at a time.");
     }
 
     private static Creature? FindFiremarkHost(CombatState combatState)

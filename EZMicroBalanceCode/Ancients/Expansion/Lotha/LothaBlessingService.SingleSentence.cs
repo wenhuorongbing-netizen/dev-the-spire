@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 internal static partial class LothaBlessingService
 {
@@ -22,7 +22,7 @@ internal static partial class LothaBlessingService
         combatState.SingleSentencePowerFallbackUsedThisTurn = true;
         combatState.PowerReplacementCardPendingBenefit = null;
         await ApplyPowerReplacementBenefit(choiceContext, cardPlay.Card.Owner);
-        MainFile.Logger.Info("[EZMicroBalance] Lotha Single Sentence Power fallback cost 0, drew 1 card, and did not consume the sentence.");
+        MainFile.Logger.Info("[Spire Plus] Lotha Single Sentence Power fallback cost 0, drew 1 card, and did not consume the sentence.");
     }
 
     private static void TrackSingleSentenceRemainingPlays(CardPlay cardPlay, LothaCombatState combatState)

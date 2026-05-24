@@ -92,14 +92,14 @@ internal static class CardModelOnPlayPatch
     private static Task PlayDebt(Debt debt)
     {
         debt.ExhaustOnNextPlay = true;
-        MainFile.Logger.Info("[EZMicroBalance] Debt applied: will exhaust after play.");
+        MainFile.Logger.Info("[Spire Plus] Debt applied: will exhaust after play.");
         return Task.CompletedTask;
     }
 
     private static async Task PlayEnthralled(Enthralled enthralled, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(enthralled.Owner.Creature, 10m, ValueProp.Move, cardPlay);
-        MainFile.Logger.Info("[EZMicroBalance] Enthralled applied: gained 10 block.");
+        MainFile.Logger.Info("[Spire Plus] Enthralled applied: gained 10 block.");
     }
 }
 
@@ -146,6 +146,6 @@ internal static class DebtCardPatch
             await PlayerCmd.LoseGold(goldToLose, debt.Owner);
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Debt applied: lost {goldToLose} gold on exhaust.");
+        MainFile.Logger.Info($"[Spire Plus] Debt applied: lost {goldToLose} gold on exhaust.");
     }
 }

@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -55,14 +55,14 @@ internal static partial class AscensionMapService
             markedCount++;
 
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A16 applied: marked {point} as banner room ({kind}).");
+                $"[Spire Plus] Ascension A16 applied: marked {point} as banner room ({kind}).");
             LogMapAssignment(actIndex, point.coord, BannerMarkerFamily, kind);
         }
 
         if (markedCount < desiredCount)
         {
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A16 gate active: marked {markedCount}/{desiredCount} optional banner rooms on actIndex={actIndex}.");
+                $"[Spire Plus] Ascension A16 gate active: marked {markedCount}/{desiredCount} optional banner rooms on actIndex={actIndex}.");
         }
     }
 }

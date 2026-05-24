@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 internal static class PickupRewardService
 {
@@ -7,7 +7,7 @@ internal static class PickupRewardService
         var prefs = new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, 2);
         var cards = (await CardSelectCmd.FromDeckForUpgrade(warHammer.Owner, prefs)).ToList();
         CardCmd.Upgrade(cards, CardPreviewStyle.HorizontalLayout);
-        MainFile.Logger.Info($"[EZMicroBalance] WarHammer applied: upgraded {cards.Count} card(s) on pickup.");
+        MainFile.Logger.Info($"[Spire Plus] WarHammer applied: upgraded {cards.Count} card(s) on pickup.");
     }
 
     public static async Task FillPotionSlotsForSozu(Sozu sozu)
@@ -36,7 +36,7 @@ internal static class PickupRewardService
             SozuPotionGatePatch.EndInitialPotionFill(sozu.Owner);
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Sozu applied: filled {generated.Count} potion slot(s) on pickup.");
+        MainFile.Logger.Info($"[Spire Plus] Sozu applied: filled {generated.Count} potion slot(s) on pickup.");
     }
 
     public static async Task GainInitialGoldForEctoplasm(Ectoplasm ectoplasm)
@@ -51,7 +51,7 @@ internal static class PickupRewardService
             EctoplasmGoldGatePatch.EndInitialGold(ectoplasm.Owner);
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] Ectoplasm applied: gained 250 initial gold.");
+        MainFile.Logger.Info("[Spire Plus] Ectoplasm applied: gained 250 initial gold.");
     }
 
     public static async Task AddDebtsForSealOfGold(SealOfGold sealOfGold)
@@ -65,7 +65,7 @@ internal static class PickupRewardService
         }
 
         CardCmd.PreviewCardPileAdd(results, 2f);
-        MainFile.Logger.Info("[EZMicroBalance] SealOfGold applied: added 2 Debt cards on pickup.");
+        MainFile.Logger.Info("[Spire Plus] SealOfGold applied: added 2 Debt cards on pickup.");
     }
 
     public static async Task ChoosePermanentFreePower(JeweledMask jeweledMask)
@@ -89,12 +89,12 @@ internal static class PickupRewardService
 
         if (selected == null)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] JeweledMask skipped: no eligible unenchanted deck or generated power target.");
+            MainFile.Logger.Warn("[Spire Plus] JeweledMask skipped: no eligible unenchanted deck or generated power target.");
             return;
         }
 
         CardCmd.Enchant<JeweledMaskFreePower>(selected, 1m);
-        MainFile.Logger.Info($"[EZMicroBalance] JeweledMask applied: marked {selected.Id.Entry} as permanent 0-cost combat-start power.");
+        MainFile.Logger.Info($"[Spire Plus] JeweledMask applied: marked {selected.Id.Entry} as permanent 0-cost combat-start power.");
     }
 
     private static async Task<CardModel?> DraftGeneratedPowerForJeweledMask(Player owner)

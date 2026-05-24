@@ -21,6 +21,13 @@ public sealed class EngineeringGovernanceGuardTests
         AssertRepoFileExists("scripts", "ci-full-validation.ps1");
         AssertRepoFileExists("scripts", "report-worktree-batches.ps1");
 
+        var gitignore = ReadRepoText(".gitignore");
+        Assert.Contains("/tests/**/*.cs.uid", gitignore, StringComparison.Ordinal);
+        var testUidFiles = Directory.GetFiles(RepoPath("tests", "EZMicroBalance.Tests"), "*.cs.uid", SearchOption.TopDirectoryOnly);
+        Assert.True(
+            testUidFiles.Length == 0,
+            $"Test project .cs.uid files are not part of the active deliverable:{Environment.NewLine}{string.Join(Environment.NewLine, testUidFiles)}");
+
         var workflow = ReadRepoText(".github", "workflows", "repository-hygiene.yml");
         Assert.Contains("validate-repository-hygiene.ps1", workflow, StringComparison.Ordinal);
         Assert.Contains("git diff --check", workflow, StringComparison.Ordinal);
@@ -52,7 +59,7 @@ public sealed class EngineeringGovernanceGuardTests
             "dotnet format EZMicroBalance.sln --verify-no-changes --no-restore",
             "dotnet publish EZMicroBalance.sln @msbuildProps",
             "package-spire-plus.ps1 -GameRoot $sts2FullPath",
-            "EZMB_RUN_RELEASE_ARTIFACT_TESTS");
+            "SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS");
 
         var worktreeBatchScript = ReadRepoText("scripts", "report-worktree-batches.ps1");
         AssertSourceContains(
@@ -67,6 +74,7 @@ public sealed class EngineeringGovernanceGuardTests
             "git add --pathspec-from-file=",
             "Local output hygiene",
             "Status and release docs",
+            @"^tests/EZMicroBalance\.Tests/[^/]+\.cs\.uid$",
             "Ancient source and tests",
             "Ascension source and tests",
             "Scripts, CI, and validation tests",
@@ -187,7 +195,7 @@ public sealed class EngineeringGovernanceGuardTests
             "## Verifier Row IDs",
             "These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`.",
             "| Row ID | Kind | Status | Owner | Evidence Needed |",
-            "| fresh-current-package-loader-smoke | loader | Pending |",
+            "| fresh-current-package-loader-smoke | loader | Passed |",
             "| ancient-ui-urda | clicked-ui | Pending |",
             "| ancient-ui-morvi | clicked-ui | Pending |",
             "| ancient-ui-lotha | clicked-ui | Pending |",
@@ -275,7 +283,7 @@ public sealed class EngineeringGovernanceGuardTests
             "HEAD | `25f99fb",
             "Total patch declarations | 135",
             "Fresh current-package loader smoke | Pending live run",
-            "README_INSTALL | `2441D012F12D0FB81BCAF7E1C99B1E60F18187937B9911D7D4FD54ACC47BCC6A`");
+            "README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA`");
 
         AssertSourceContains(
             scope,
@@ -365,12 +373,15 @@ public sealed class EngineeringGovernanceGuardTests
             "git add --pathspec-from-file=<pathspec>",
             "The manifest includes the exact `git add --pathspec-from-file=<pathspec>` command for each batch.",
             "## Current Dirty Snapshot",
-            "Snapshot command: `.\\scripts\\report-worktree-batches.ps1 -FailOnUnclassified`, 2026-05-23 after the A19/A20 package hash sync.",
+            "Snapshot command: `.\\scripts\\report-worktree-batches.ps1 -FailOnUnclassified -PathspecDirectory .tools\\worktree-batches\\current`, 2026-05-24 after the test UID cleanup.",
             "This snapshot is not a commit manifest.",
-            "| 3 | 21 | `EZMicroBalanceCode/Ancients/**`, Ancient support docs, Ancient shared evidence/tests |",
-            "| 4 | 42 | `EZMicroBalanceCode/Ascension/**`, `EZMicroBalance/localization/*/ascension.json`, Ascension docs/tests |",
-            "| 5 | 30 | `scripts/**`, `EZMicroBalanceCode/Preview/**`, release/CI/test-infrastructure tests |",
-            "| 6 | 5 | Ancient art/resource docs and waiting-test docs |",
+            "| 0 | 1 | `.gitignore`, `output/.gdignore`, tracked `output/playwright/` evidence |",
+            "| 2 | 12 | `docs/architecture/**`, `docs/specs/**`, `docs/month-plan/**`, archive/index docs |",
+            "| 3 | 113 | `EZMicroBalanceCode/Ancients/**`, Ancient support docs, Ancient shared evidence/tests |",
+            "| 4 | 69 | `EZMicroBalanceCode/Ascension/**`, `EZMicroBalance/localization/*/ascension.json`, Ascension docs/tests |",
+            "| 5 | 79 | `scripts/**`, settings UI localization, `EZMicroBalanceCode/Diagnostics/**`, `EZMicroBalanceCode/Preview/**`, release/CI/test-infrastructure tests, and removed test `.cs.uid` metadata |",
+            "| 6 | 13 | Ancient art/resource docs, active image/export resources, and waiting-test docs |",
+            "| 7 | 12 | `website/**`, `forum/**` |",
             "Minimum split order: land batches 0, 1, 2, and 5 before gameplay batches",
             "Keep preview-tool changes reviewable as their own Spire Plus batch.",
             "Do not close live/manual rows in a commit that has no live evidence folder.");
@@ -405,4 +416,5 @@ public sealed class EngineeringGovernanceGuardTests
         Assert.True(process.WaitForExit(30_000), $"Timed out running {scriptPath}.");
         return (process.ExitCode, output, error);
     }
+
 }

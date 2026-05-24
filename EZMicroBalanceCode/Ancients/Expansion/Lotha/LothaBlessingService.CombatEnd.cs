@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 internal static partial class LothaBlessingService
 {
@@ -19,7 +19,7 @@ internal static partial class LothaBlessingService
 
             combatState.DeferredVerdictGranted = true;
             await CreatureCmd.Heal(player.Creature, DeferredVerdictEarlyEndHeal, playAnim: false);
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Deferred Verdict healed 4 HP because combat ended before turn 4.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Deferred Verdict healed 4 HP because combat ended before turn 4.");
         }
 
         foreach (var player in players)

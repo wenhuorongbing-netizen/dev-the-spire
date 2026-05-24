@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -86,7 +86,7 @@ internal static partial class AscensionCombatModifierService
             : metadata.IsBossBrand ? 10 : 8;
         await PowerCmd.Apply<PlatingPower>(new BlockingPlayerChoiceContext(), matriarch, platingAmount, matriarch, null);
         var wakeSource = wokeFromPlayerDamage ? "early-wake" : "natural-wake";
-        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Startled Shell added {wakeSource} Plating.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Startled Shell added {wakeSource} Plating.");
     }
 
     private static void TrackStartledShellEnemyMove(CombatState combatState, AscensionCombatTracker tracker)
@@ -123,6 +123,6 @@ internal static partial class AscensionCombatModifierService
             -Math.Floor(plating.Amount / divisor),
             matriarch,
             null);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Startled Shell reduced Plating after Soul Siphon.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Startled Shell reduced Plating after Soul Siphon.");
     }
 }

@@ -1,4 +1,4 @@
-using Godot;
+﻿using Godot;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Nodes;
@@ -63,7 +63,7 @@ internal static partial class RootDeckService
         }
         catch (Exception ex)
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] Ascension Rootblight {noticeKind} notice could not be displayed: {ex.Message}");
+            MainFile.Logger.Warn($"[Spire Plus] Ascension Rootblight {noticeKind} notice could not be displayed: {ex.Message}");
         }
     }
 

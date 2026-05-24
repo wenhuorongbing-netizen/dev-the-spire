@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
 internal static partial class MorviBlessingService
 {
@@ -19,7 +19,7 @@ internal static partial class MorviBlessingService
         var combatState = CombatStates.GetOrCreateValue(player);
         combatState.OverdueLibraryDiscountArmed = true;
         combatState.OverdueLibraryDiscountSourceCard = sourceCard;
-        MainFile.Logger.Info("[EZMicroBalance] Morvi Overdue Library armed the next-card cost-0 page.");
+        MainFile.Logger.Info("[Spire Plus] Morvi Overdue Library armed the next-card cost-0 page.");
     }
 
     private static async Task AddArchivePages(Player player)
@@ -42,7 +42,7 @@ internal static partial class MorviBlessingService
             await AncientCardHelpers.TryAddGeneratedCardToCombat(page, PileType.Hand, player);
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] Morvi Overdue Library added 3 random Archive Pages to hand.");
+        MainFile.Logger.Info("[Spire Plus] Morvi Overdue Library added 3 random Archive Pages to hand.");
     }
 
     private static void TryConsumeOverdueLibraryDiscount(CardModel card, MorviCombatState combatState)
@@ -55,6 +55,6 @@ internal static partial class MorviBlessingService
 
         combatState.OverdueLibraryDiscountArmed = false;
         combatState.OverdueLibraryDiscountSourceCard = null;
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Overdue Library consumed next-card cost-0 discount on {card.Id.Entry}.");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Overdue Library consumed next-card cost-0 discount on {card.Id.Entry}.");
     }
 }

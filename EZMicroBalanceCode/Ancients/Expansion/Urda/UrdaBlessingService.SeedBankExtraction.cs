@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
@@ -18,7 +18,7 @@ internal static partial class UrdaBlessingService
         var extractionState = SeedBankExtractionInProgress.GetOrCreateValue(player);
         if (extractionState.InProgress)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Urda Seed Bank extraction ignored: a Seed Bank selection is already open.");
+            MainFile.Logger.Info("[Spire Plus] Urda Seed Bank extraction ignored: a Seed Bank selection is already open.");
             return;
         }
 
@@ -42,7 +42,7 @@ internal static partial class UrdaBlessingService
             "Seed Bank extraction mutates deck from a local relic click") ||
             hasMultiplayerRunState)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Urda Seed Bank relic extraction is single-player only until host-authoritative reward selection sync is implemented.");
+            MainFile.Logger.Warn("[Spire Plus] Urda Seed Bank relic extraction is single-player only until host-authoritative reward selection sync is implemented.");
             return;
         }
 
@@ -124,7 +124,7 @@ internal static partial class UrdaBlessingService
                     {
                         ["stored"] = seedIds.Count
                     });
-                MainFile.Logger.Info("[EZMicroBalance] Urda Seed Bank extraction was canceled; stored Seeds remain available.");
+                MainFile.Logger.Info("[Spire Plus] Urda Seed Bank extraction was canceled; stored Seeds remain available.");
                 return;
             }
 
@@ -188,7 +188,7 @@ internal static partial class UrdaBlessingService
                     : progress);
                 RefreshSeedBankRelicStatus(player);
                 MainFile.Logger.Warn(
-                    $"[EZMicroBalance] Urda Seed Bank extraction preserved {failedSelectedIds.Count} Seed card(s) because they could not be added to the deck.");
+                    $"[Spire Plus] Urda Seed Bank extraction preserved {failedSelectedIds.Count} Seed card(s) because they could not be added to the deck.");
                 return;
             }
 
@@ -215,7 +215,7 @@ internal static partial class UrdaBlessingService
                     ["added"] = addedCount
                 });
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Urda Seed Bank extracted by relic click: added {addedCount} Seed card(s).");
+                $"[Spire Plus] Urda Seed Bank extracted by relic click: added {addedCount} Seed card(s).");
         }
         finally
         {

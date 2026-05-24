@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using BaseLib.Utils;
@@ -23,7 +23,7 @@ internal static class UrdaAct1AncientService
         if (UrdaFeatureGate.ShouldForceUrda)
         {
             unlockedAncients = [urda];
-            MainFile.Logger.Info("[EZMicroBalance] EZMB_FORCE_ANCIENT forced Urda as the Act 1 Ancient.");
+            MainFile.Logger.Info("[Spire Plus] SPIREPLUS_FORCE_ANCIENT forced Urda as the Act 1 Ancient.");
             return;
         }
 
@@ -31,7 +31,7 @@ internal static class UrdaAct1AncientService
         if (!list.Any(ancient => ancient.Id == urda.Id))
         {
             list.Add(urda);
-            MainFile.Logger.Info("[EZMicroBalance] Urda added to Act 1 unlocked ancients.");
+            MainFile.Logger.Info("[Spire Plus] Urda added to Act 1 unlocked ancients.");
             unlockedAncients = list;
         }
     }

@@ -3,7 +3,7 @@ param(
 
     [string]$ManifestPath,
 
-    [string]$PackageSha256 = "11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120",
+    [string]$PackageSha256 = "47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC",
 
     [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.0.zip",
 
@@ -143,14 +143,17 @@ $requiredAncientRewardRows = @(
     @{ Ancient = 'Lotha'; Reward = 'single_sentence' },
     @{ Ancient = 'Lotha'; Reward = 'public_evidence' },
     @{ Ancient = 'Vakuu'; Reward = 'fight_option' },
-    @{ Ancient = 'Vakuu'; Reward = 'victory_non_vakuu_choices' }
+    @{ Ancient = 'Vakuu'; Reward = 'victory_non_vakuu_choices' },
+    @{ Ancient = 'Vakuu event'; Reward = 'sere_talon_pickup' },
+    @{ Ancient = 'Tanx event'; Reward = 'claws_maul_transform' }
 )
 
 $requiredRootblightRows = @(
     'rootblight-start-eligibility',
-    'normal-sprout-appearance',
+    'normal-rootblight-continuity',
     'elite-single-sprout',
     'boss-two-sprouts-staggered',
+    'husk-exhaust-block-timing',
     'combat-end-growth',
     'rootblight-cap-four',
     'rootblight-save-load',
@@ -380,6 +383,79 @@ function Read-CleanLogAudit {
     return $true
 }
 
+function Test-PackageHashesEvidence {
+    param(
+        [Parameter(Mandatory = $true)][string]$PackageHashesPath,
+        [Parameter(Mandatory = $true)][string]$RowId,
+        [System.Collections.Generic.List[string]]$Failures,
+        [Parameter(Mandatory = $true)][string]$ManifestPackagePath
+    )
+
+    try {
+        $packageHashes = Get-Content -LiteralPath $PackageHashesPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    } catch {
+        Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json is not valid JSON: $PackageHashesPath."
+        return
+    }
+
+    $files = @(Get-PropertyValue -Object $packageHashes -Name 'Files' -Default @())
+    if ($files.Count -eq 0) {
+        Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json has no Files rows."
+        return
+    }
+
+    $rowsByPath = @{}
+    foreach ($file in $files) {
+        $rowPath = [string](Get-PropertyValue -Object $file -Name 'Path' -Default '')
+        if ([string]::IsNullOrWhiteSpace($rowPath)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json contains a file row without Path."
+            continue
+        }
+
+        $rowsByPath[$rowPath] = $file
+    }
+
+    foreach ($stalePath in @('publish\EZMicroBalance.dll', 'publish\EZMicroBalance.pck', 'publish\EZMicroBalance.json')) {
+        if ($rowsByPath.ContainsKey($stalePath)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json still records stale root publish artifact path: $stalePath."
+        }
+    }
+
+    $expectedPaths = @(
+        $ManifestPackagePath,
+        'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.dll',
+        'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.pck',
+        'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.json',
+        'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\README_INSTALL.txt'
+    )
+
+    foreach ($expectedPath in $expectedPaths) {
+        if (-not $rowsByPath.ContainsKey($expectedPath)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json is missing current package artifact row: $expectedPath."
+            continue
+        }
+
+        $hashRow = $rowsByPath[$expectedPath]
+        $exists = [bool](Get-PropertyValue -Object $hashRow -Name 'Exists' -Default $false)
+        if (-not $exists) {
+            Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json marks current package artifact missing: $expectedPath."
+            continue
+        }
+
+        $artifactFull = Resolve-WorkspacePath -Path $expectedPath
+        if (-not (Test-Path -LiteralPath $artifactFull -PathType Leaf)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json artifact path does not exist in workspace: $expectedPath."
+            continue
+        }
+
+        $expectedHash = (Get-FileHash -LiteralPath $artifactFull -Algorithm SHA256).Hash.ToUpperInvariant()
+        $actualHash = ([string](Get-PropertyValue -Object $hashRow -Name 'Sha256' -Default '')).ToUpperInvariant()
+        if ($actualHash -ne $expectedHash) {
+            Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json hash for $expectedPath is '$actualHash' but current file hash is '$expectedHash'."
+        }
+    }
+}
+
 function Test-PreflightForeground {
     param([Parameter(Mandatory = $true)][string]$PreflightPath)
 
@@ -457,6 +533,16 @@ function Test-ChecklistCellFilled {
     return $Value -notmatch $invalidChecklistCellPattern
 }
 
+function Test-ChecklistContainsTemplateInstruction {
+    param(
+        [Parameter(Mandatory = $true)][string]$Checklist,
+        [Parameter(Mandatory = $true)][string]$ChecklistName
+    )
+
+    return $Checklist -match [regex]::Escape("Copy this file to ``$ChecklistName``") -or
+        $Checklist -match [regex]::Escape("Template reference for ``$ChecklistName``")
+}
+
 function Test-BossAbilityChecklist {
     param(
         [Parameter(Mandatory = $true)][string]$ChecklistPath,
@@ -465,7 +551,7 @@ function Test-BossAbilityChecklist {
     )
 
     $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
-    if ($checklist -match 'Copy this file to `boss-ability-checklist.md`') {
+    if (Test-ChecklistContainsTemplateInstruction -Checklist $checklist -ChecklistName 'boss-ability-checklist.md') {
         Add-Failure -Failures $Failures -Message "Row $RowId boss-ability-checklist.md still contains the unfilled template instruction."
     }
 
@@ -503,7 +589,7 @@ function Test-AncientRewardRelicsChecklist {
     )
 
     $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
-    if ($checklist -match 'Copy this file to `ancient-reward-relics-checklist.md`') {
+    if (Test-ChecklistContainsTemplateInstruction -Checklist $checklist -ChecklistName 'ancient-reward-relics-checklist.md') {
         Add-Failure -Failures $Failures -Message "Row $RowId ancient-reward-relics-checklist.md still contains the unfilled template instruction."
     }
 
@@ -548,7 +634,7 @@ function Test-RootblightBehaviorChecklist {
     )
 
     $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
-    if ($checklist -match 'Copy this file to `rootblight-behavior-checklist.md`') {
+    if (Test-ChecklistContainsTemplateInstruction -Checklist $checklist -ChecklistName 'rootblight-behavior-checklist.md') {
         Add-Failure -Failures $Failures -Message "Row $RowId rootblight-behavior-checklist.md still contains the unfilled template instruction."
     }
 
@@ -586,7 +672,7 @@ function Test-ArtResourceRoutingChecklist {
     )
 
     $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
-    if ($checklist -match 'Copy this file to `art-resource-routing-checklist.md`') {
+    if (Test-ChecklistContainsTemplateInstruction -Checklist $checklist -ChecklistName 'art-resource-routing-checklist.md') {
         Add-Failure -Failures $Failures -Message "Row $RowId art-resource-routing-checklist.md still contains the unfilled template instruction."
     }
 
@@ -624,7 +710,7 @@ function Test-PlayerTextQaChecklist {
     )
 
     $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
-    if ($checklist -match 'Copy this file to `player-text-qa-checklist.md`') {
+    if (Test-ChecklistContainsTemplateInstruction -Checklist $checklist -ChecklistName 'player-text-qa-checklist.md') {
         Add-Failure -Failures $Failures -Message "Row $RowId player-text-qa-checklist.md still contains the unfilled template instruction."
     }
 
@@ -670,7 +756,8 @@ function Test-SimpleChecklistRows {
     )
 
     $checklist = Get-Content -LiteralPath $ChecklistPath -Raw -Encoding UTF8
-    if ($checklist -match [regex]::Escape($TemplateInstruction)) {
+    if ($checklist -match [regex]::Escape($TemplateInstruction) -or
+        (Test-ChecklistContainsTemplateInstruction -Checklist $checklist -ChecklistName $ChecklistName)) {
         Add-Failure -Failures $Failures -Message "Row $RowId $ChecklistName still contains the unfilled template instruction."
     }
 
@@ -932,6 +1019,14 @@ foreach ($required in $requiredReleaseRows) {
 
         if ((Get-Item -LiteralPath $filePath).Length -eq 0) {
             Add-Failure -Failures $failures -Message "Row $($required.Id) required evidence file is empty: $filePath."
+        }
+
+        if ($requiredFileString -eq 'package-hashes.json') {
+            Test-PackageHashesEvidence `
+                -PackageHashesPath $filePath `
+                -RowId $required.Id `
+                -Failures $failures `
+                -ManifestPackagePath $manifestPackagePath
         }
 
         if ($requiredFileString.EndsWith('.md', [System.StringComparison]::OrdinalIgnoreCase)) {

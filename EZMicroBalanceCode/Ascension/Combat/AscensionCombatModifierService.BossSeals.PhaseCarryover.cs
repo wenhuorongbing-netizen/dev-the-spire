@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -29,7 +29,7 @@ internal static partial class AscensionCombatModifierService
         tracker.TestSubjectAttackCardsThisPhase = 0;
         tracker.TestSubjectSkillCardsThisPhase = 0;
         tracker.TestSubjectDebuffAppliedThisPhase = false;
-        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Experimental Record retained {samples.Count} sample(s) for the next phase.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Experimental Record retained {samples.Count} sample(s) for the next phase.");
         await Task.CompletedTask;
     }
 
@@ -200,6 +200,6 @@ internal static partial class AscensionCombatModifierService
             }
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A20 applied: courtyard recovery restored 25% of missing HP and Boss 2 Brand remains armed on the map.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A20 applied: courtyard recovery restored 25% of missing HP and Boss 2 Brand remains armed on the map.");
     }
 }

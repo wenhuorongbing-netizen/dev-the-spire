@@ -3,7 +3,7 @@
   "updated_date": "2026-05-22",
   "required_generation_mode": "GPTimage2",
   "notes": [
-    "Active Ancient and related card/power/relic art manifest for Spire Plus / EZMicroBalance.",
+    "Active Ancient and related card/power/relic art manifest for Spire Plus.",
     "This file records current active art bytes and final status for browser GPTimage2 small-art assets.",
     "All final_generated image records must set generation_mode, mode, and semantic_model to GPTimage2.",
     "Final generated or user-supplied art must update prompt/source/target/SHA256/dimensions before release docs can cite it.",

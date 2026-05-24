@@ -23,8 +23,8 @@ Do not treat the feature as private-beta ready until these checks are complete o
 - Open Settings -> Mod Settings.
 - Confirm BaseLib appears.
 - Confirm BaseLib is enabled.
-- Confirm Spire Plus / `EZMicroBalance` appears.
-- Confirm Spire Plus / `EZMicroBalance` is enabled.
+- Confirm `Spire Plus` appears with manifest id `EZMicroBalance`.
+- Confirm `Spire Plus` is enabled.
 - Confirm legacy Easy Content / EzDailyContent is disabled or absent.
 - Check `godot.log` for `EZMicroBalance`, `BaseLib`, `EzDailyContent`, `error`, and `exception`.
 
@@ -148,7 +148,8 @@ Verify pickup behavior and player-facing text for:
 - War Hammer
 - Sozu
 - Ectoplasm
-- Claws
+- Vakuu's Sere Talon / 瓦库原初之爪: adds 2 random Curses and 3 Wish.
+- Tanx Claws / 坦克斯利爪: transforms selected cards into upgraded Maul+ / 撕咬+.
 - Jewelry Box
 - Preserved Fog
 - Beautiful Bracelet
@@ -178,7 +179,7 @@ Verify pickup behavior and player-facing text for:
 - In Simplified Chinese, Beautiful Bracelet shows `迅速2` and not raw `Swift 2`.
 - In Simplified Chinese, Jewelry Box shows `神化` and not raw `Apotheosis`.
 - In Simplified Chinese, Pael's Horn shows `放松` / `放松+` and not raw `Relax`.
-- In Simplified Chinese, Claws shows `许愿` / `许愿+` and not raw `Wish`.
+- In Simplified Chinese, Vakuu's Sere Talon shows `许愿`; Tanx Claws shows `撕咬+` and not Wish text.
 - In Simplified Chinese, Preserved Fog shows `愚行` and not raw `Folly`.
 - In Simplified Chinese, Blood-Soaked Rose shows `执迷` and not raw `Enthralled`.
 - In Simplified Chinese, Seal of Gold and the card title show `债务` and not `Debt` or `欠款`.
@@ -210,5 +211,5 @@ The feature is private-beta ready only when:
 - Mod loads in game.
 - No crash occurs during tested Ancient option selection.
 - Every high-priority item above has PASS or a documented accepted known issue.
-- `godot.log` has no new unhandled exception from Spire Plus / `EZMicroBalance`.
+- `godot.log` has no new unhandled exception from Spire Plus under technical id `EZMicroBalance`.
 - The private-beta package has been smoke-inspected for `EZMicroBalance.dll`, `EZMicroBalance.json`, `EZMicroBalance.pck`, and `README_INSTALL.txt`.

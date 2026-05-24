@@ -1,6 +1,6 @@
 ﻿# Harmony Patch Inventory
 
-Generated: 2026-05-23
+Generated: 2026-05-24
 
 Purpose: keep every Harmony patch visible, owned, and risk-labeled. Regenerate after adding, moving, or deleting patch declarations.
 
@@ -15,10 +15,10 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 137 |
+| Total patch declarations | 146 |
 | High risk | 22 |
-| Medium risk | 35 |
-| Low risk | 80 |
+| Medium risk | 42 |
+| Low risk | 82 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -39,7 +39,7 @@ Regenerate:
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 7 | `[HarmonyPatch(typeof(NNormalMapPoint), nameof(NNormalMapPoint._Ready))]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 31 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshState")]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 43 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs` | 143 | `[HarmonyPatch(typeof(NRelicInventory), "OnRelicClicked")]` |
+| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs` | 149 | `[HarmonyPatch(typeof(NRelicInventory), "OnRelicClicked")]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 7 | `[HarmonyPatch(typeof(NMapPoint), "OnRelease")]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 23 | `[HarmonyPatch(typeof(NClickableControl), nameof(NClickableControl._GuiInput))]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 43 | `[HarmonyPatch(typeof(NMapScreen), nameof(NMapScreen.Close))]` |
@@ -60,7 +60,6 @@ Regenerate:
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs` | 33 | `[HarmonyPatch(typeof(BrightestFlame), "get_CanonicalVars")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs` | 49 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.OnPlayWrapper))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/ChoicesParadoxPatches.cs` | 3 | `[HarmonyPatch(typeof(ChoicesParadox), nameof(ChoicesParadox.AfterPlayerTurnStart))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/ClawsPatches.cs` | 3 | `[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/CrossbowPatches.cs` | 3 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.BeforeSideTurnStart))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/CrossbowPatches.cs` | 60 | `[HarmonyPatch(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 3 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.AfterCreated))]` |
@@ -104,7 +103,17 @@ Regenerate:
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintPatch.cs` | 3 | `[HarmonyPatch( typeof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen), nameof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen.RefreshOptions))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs` | 3 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.ModifyMaxEnergy))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs` | 16 | `[HarmonyPatch(typeof(SealOfGold), nameof(SealOfGold.AfterSideTurnStart))]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 336 | `[HarmonyPatch(typeof(RelicModel), "get_IconPath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 345 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 354 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconOutlinePath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 363 | `[HarmonyPatch(typeof(RelicModel), "get_BigIconPath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 372 | `[HarmonyPatch(typeof(RelicModel), "get_Icon")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 381 | `[HarmonyPatch(typeof(RelicModel), "get_IconOutline")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 390 | `[HarmonyPatch(typeof(RelicModel), "get_BigIcon")]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 399 | `[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 411 | `[HarmonyPatch(typeof(NRelic), "Reload")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 3 | `[HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/TanxClawsMaulTuningPatches.cs` | 3 | `[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/ToastyMittensPatches.cs` | 3 | `[HarmonyPatch(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/VakuRewardPatches.cs` | 3 | `[HarmonyPatch(typeof(IronClub), "get_CanonicalVars")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/VakuRewardPatches.cs` | 14 | `[HarmonyPatch(typeof(BrilliantScarf), "get_CanonicalVars")]` |

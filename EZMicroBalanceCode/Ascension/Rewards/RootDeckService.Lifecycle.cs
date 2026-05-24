@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
@@ -43,14 +43,14 @@ internal static partial class RootDeckService
                 else
                 {
                     MainFile.Logger.Warn(
-                        $"[EZMicroBalance] Ascension A14 delayed: Rootblight I could not be added for player {runState.GetPlayerSlotIndex(player)}; the next room/act hook will retry.");
+                        $"[Spire Plus] Ascension A14 delayed: Rootblight I could not be added for player {runState.GetPlayerSlotIndex(player)}; the next room/act hook will retry.");
                     continue;
                 }
 
                 MainFile.Logger.Info(
                     addedStartingRoot
-                        ? $"[EZMicroBalance] Ascension A14 applied: Rootblight I added for player {runState.GetPlayerSlotIndex(player)}."
-                        : $"[EZMicroBalance] Ascension A14 applied: starting Rootblight already present for player {runState.GetPlayerSlotIndex(player)}; no duplicate added.");
+                        ? $"[Spire Plus] Ascension A14 applied: Rootblight I added for player {runState.GetPlayerSlotIndex(player)}."
+                        : $"[Spire Plus] Ascension A14 applied: starting Rootblight already present for player {runState.GetPlayerSlotIndex(player)}; no duplicate added.");
                 continue;
             }
 
@@ -85,7 +85,7 @@ internal static partial class RootDeckService
                     ["cap"] = MaxRootblightCards
                 });
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension Rootblight capped: skipped Rootblight I from {source} because player {player.RunState.GetPlayerSlotIndex(player)} already has {MaxRootblightCards} Rootblight cards.");
+                $"[Spire Plus] Ascension Rootblight capped: skipped Rootblight I from {source} because player {player.RunState.GetPlayerSlotIndex(player)} already has {MaxRootblightCards} Rootblight cards.");
             return;
         }
 
@@ -102,7 +102,7 @@ internal static partial class RootDeckService
                 ["source"] = source
             });
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension Rootblight applied: added Rootblight I from {source} for player {player.RunState.GetPlayerSlotIndex(player)}.");
+            $"[Spire Plus] Ascension Rootblight applied: added Rootblight I from {source} for player {player.RunState.GetPlayerSlotIndex(player)}.");
     }
 
     public static void MarkCombatStartRootblight(Player player)
@@ -156,7 +156,7 @@ internal static partial class RootDeckService
                         ["level"] = card.RootblightLevel
                     });
                 MainFile.Logger.Info(
-                    $"[EZMicroBalance] Ascension Rootblight held by Seedbed: skipped level {card.RootblightLevel} growth for player {player.RunState.GetPlayerSlotIndex(player)}.");
+                    $"[Spire Plus] Ascension Rootblight held by Seedbed: skipped level {card.RootblightLevel} growth for player {player.RunState.GetPlayerSlotIndex(player)}.");
                 continue;
             }
 
@@ -168,19 +168,19 @@ internal static partial class RootDeckService
                     {
                         ShowRootSystemFull(player);
                         MainFile.Logger.Info(
-                            $"[EZMicroBalance] Ascension Rootblight capped: skipped Rootblight I from ignored Rootblight III because player {player.RunState.GetPlayerSlotIndex(player)} already has {MaxRootblightCards} Rootblight cards.");
+                            $"[Spire Plus] Ascension Rootblight capped: skipped Rootblight I from ignored Rootblight III because player {player.RunState.GetPlayerSlotIndex(player)} already has {MaxRootblightCards} Rootblight cards.");
                     }
                     else
                     {
                         card.HasSplit = true;
                         MainFile.Logger.Info(
-                            $"[EZMicroBalance] Ascension Rootblight applied: ignored Rootblight III split once and added Rootblight I for player {player.RunState.GetPlayerSlotIndex(player)}.");
+                            $"[Spire Plus] Ascension Rootblight applied: ignored Rootblight III split once and added Rootblight I for player {player.RunState.GetPlayerSlotIndex(player)}.");
                     }
                 }
                 else
                 {
                     MainFile.Logger.Info(
-                        $"[EZMicroBalance] Ascension Rootblight applied: ignored Rootblight III already split once; no Rootblight IV for player {player.RunState.GetPlayerSlotIndex(player)}.");
+                        $"[Spire Plus] Ascension Rootblight applied: ignored Rootblight III already split once; no Rootblight IV for player {player.RunState.GetPlayerSlotIndex(player)}.");
                 }
 
                 continue;
@@ -198,7 +198,7 @@ internal static partial class RootDeckService
                 {
                     ShowRootSystemFull(player);
                     MainFile.Logger.Info(
-                        $"[EZMicroBalance] Ascension Rootblight capped: skipped queued level {cardToAdd.Level} downgrade because player {player.RunState.GetPlayerSlotIndex(player)} already has {MaxRootblightCards} Rootblight cards.");
+                        $"[Spire Plus] Ascension Rootblight capped: skipped queued level {cardToAdd.Level} downgrade because player {player.RunState.GetPlayerSlotIndex(player)} already has {MaxRootblightCards} Rootblight cards.");
                 }
             }
 

@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -110,7 +110,7 @@ internal static partial class UrdaBlessingService
                 ["coord"] = coord,
                 ["actIndex"] = actIndex
             });
-        MainFile.Logger.Warn($"[EZMicroBalance] Urda Root Eyes cleared stale preview at {coord} and restored one eye.");
+        MainFile.Logger.Warn($"[Spire Plus] Urda Root Eyes cleared stale preview at {coord} and restored one eye.");
     }
 
     private static void ClearUnreachableRootSightPreviews(Player player, IRunState runState)

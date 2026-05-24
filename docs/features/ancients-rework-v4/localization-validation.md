@@ -45,7 +45,7 @@ All active localization JSON files parse as explicit UTF-8:
 | Swift | 迅速 | n/a | Base game `localization/zhs/enchantments.json`, `SWIFT.title` and tooltip. Some relic text uses `迅捷`; the enchantment table is the tooltip authority. | High | Beautiful Bracelet, Swift enchantment tooltip |
 | Apotheosis | 神化 | n/a | Base game `localization/zhs/cards.json`, `APOTHEOSIS.title`. | High | Jewelry Box |
 | Enthralled | 执迷 | n/a | Base game `localization/zhs/cards.json`, `ENTHRALLED.title`; `relics.json`, Blood-Soaked Rose text. | High | Blood-Soaked Rose, Enthralled card |
-| Wish | 许愿 | n/a | Base game `localization/zhs/cards.json`, `WISH.title`. | High | Claws |
+| Wish | 许愿 | n/a | Base game `localization/zhs/cards.json`, `WISH.title`. | High | Vakuu's Sere Talon / 瓦库原初之爪 |
 | Relax | 放松 | n/a | Base game `localization/zhs/cards.json`, `RELAX.title`; Pael's Horn base text. | High | Pael's Horn |
 | Folly | 愚行 | n/a | Base game `localization/zhs/cards.json`, `FOLLY.title`; Preserved Fog base text. | High | Preserved Fog, Folly card |
 | Debt | 债务 | n/a | Base game `localization/zhs/cards.json`, `DEBT.title`. | High | Seal of Gold, Debt card |
@@ -69,7 +69,7 @@ Active `EZMicroBalance/localization/zhs/relics.json`:
 
 - `Swift 2` -> `迅速2`
 - `Enthralled` -> `执迷`
-- `Wish` / `Wish+` -> `许愿` / `许愿+`
+- `Wish` -> `许愿`
 - `Relax` / `Relax+` -> `放松` / `放松+`
 - `非 Boss 战斗` -> `非首领战斗`
 - `本幕 Boss` -> `本幕首领`

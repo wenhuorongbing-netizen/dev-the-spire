@@ -1,15 +1,15 @@
-# Ascension 11-20 Manual Test Checklist
+﻿# Ascension 11-20 Manual Test Checklist
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
-Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; historical 22-field normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. current source defines 30 SavedSpireFields and needs a fresh loader smoke. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
+Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; current 30-field normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
 Last updated: 2026-05-23
 
 ## Research-Mode Baseline
 
 - [x] Read `AGENTS.md`.
 - [x] Read `docs/features/ascension-11-20/source-design.md`.
-- [x] Inspect current Spire Plus / `EZMicroBalance` architecture.
+- [x] Inspect current Spire Plus architecture under technical id `EZMicroBalance`.
 - [x] Run `git status --short --branch`.
 - [x] Check whether `SlayTheSpire2.exe` is running before build.
 - [x] Run `dotnet build EZMicroBalance.sln`.
@@ -23,33 +23,33 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Historical normal Steam-client helper startup/log verification under `.tools/runtime-evidence/live-spire-plus-session-20260515-211414` initialized only BaseLib and Spire Plus / EZMicroBalance, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, found 0 release-blocking signatures, restored settings/moved mods/current-run files, and left 0 `SlayTheSpire2` processes. current source defines 30 SavedSpireFields, so fresh loader parity remains pending.
+- Latest normal Steam-client helper startup/log verification under `.tools/runtime-evidence/manual-test-handoff-20260524-161744/release/fresh-current-package-loader-smoke` initialized only BaseLib and Spire Plus, registered config, reported `Found 30 SavedSpireFields`, reached startup completion, found 0 release-blocking signatures, restored settings/moved mods, and left 0 `SlayTheSpire2` processes for the same DLL/PCK/manifest as the current package. The current ZIP/README hash still needs a fresh loader row.
 - Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the historical 22-field smoke plus the current 30-field source state.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded boss dedicated abilities, and A20 vanilla double-boss map path/Branded Form/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. The current source also patches `ActModel.CreateMap` as an earlier geometry boundary before the run hook. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
-- Read-only diagnostics are implemented behind `EZMB_ASCENSION_DIAGNOSTICS=1`.
+- Read-only diagnostics are implemented behind `SPIREPLUS_ASCENSION_DIAGNOSTICS=1`.
 - Full Ascension gameplay has not been live-tested yet beyond the A11 map spot checks, saved-map boss-reachability graph proof, and targeted A14 Rootblight English/ZHS hover/starter-notice spot checks.
 
 ## Gate Controls
 
 - Default private-beta multiplayer test candidate: no Ascension environment variables are needed. A11-A20 selection is now default-on in the original single-player and host-multiplayer Ascension UI, and run-state level gates activate the implemented slices.
-- Gate-off comparison: set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` before launch to restore vanilla A1-A10 selection for comparison.
-- Multiplayer-only disable comparison: set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` before launch to disable only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
+- Gate-off comparison: set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` before launch to restore vanilla A1-A10 selection for comparison.
+- Multiplayer-only disable comparison: set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` before launch to disable only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
 - Legacy-compatible opt-in: `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is accepted but no longer required.
-- A11 Wide Tower, Long Road / 宽塔长路 map-shape test: set `EZMB_ASCENSION_DEBUG_LEVEL=11` or select A11+ from the original single-player UI.
-- A12 firemarked elite and Forge Token: set `EZMB_ASCENSION_DEBUG_LEVEL=12`.
-- A13 Fission rewards: set `EZMB_ASCENSION_DEBUG_LEVEL=13`.
-- A14 Rootblight Begins internal test: set `EZMB_ASCENSION_DEBUG_LEVEL=14` before launching the game.
-- A15 boss Blight Sprout internal test: set `EZMB_ASCENSION_DEBUG_LEVEL=15`.
-- A16 Banner Rooms: set `EZMB_ASCENSION_DEBUG_LEVEL=16`.
-- A17 Deep Branch route test: set `EZMB_ASCENSION_DEBUG_LEVEL=17` or select A17+ from the original single-player UI. Use single-player; multiplayer branch insertion is skipped until route voting is proven.
-- A18 elite Blight Sprout internal test: set `EZMB_ASCENSION_DEBUG_LEVEL=18`.
-- A19 dedicated ability source-guarded runtime hooks and fourth boss reward option: set `EZMB_ASCENSION_DEBUG_LEVEL=19`.
-- A20 vanilla double-boss path, Boss 2 Branded Form metadata/parameters, Boss 1 recovery, Boss 1 reward, Boss 1 reward-screen prompt, and fixed courtyard event: set `EZMB_ASCENSION_DEBUG_LEVEL=20`; this uses the vanilla second-boss map path and inserts the courtyard through the vanilla terminal reward/map pause.
-- Disable A11 map geometry for comparison: set `EZMB_ASCENSION_ENABLE_MAP_GEOMETRY=0`.
-- Disable A17 Deep Branches for comparison: set `EZMB_ASCENSION_ENABLE_DEEP_BRANCHES=0`.
-- Read-only hook/state diagnostics: set `EZMB_ASCENSION_DIAGNOSTICS=1`.
+- A11 Wide Tower, Long Road / 宽塔长路 map-shape test: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=11` or select A11+ from the original single-player UI.
+- A12 firemarked elite and Forge Token: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=12`.
+- A13 Fission rewards: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=13`.
+- A14 Rootblight Begins internal test: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=14` before launching the game.
+- A15 boss Blight Sprout internal test: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=15`.
+- A16 Banner Rooms: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=16`.
+- A17 Deep Branch route test: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=17` or select A17+ from the original single-player UI. Use single-player; multiplayer branch insertion is skipped until route voting is proven.
+- A18 elite Blight Sprout internal test: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=18`.
+- A19 dedicated ability source-guarded runtime hooks and fourth boss reward option: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=19`.
+- A20 vanilla double-boss path, Boss 2 Branded Form metadata/parameters, Boss 1 recovery, Boss 1 reward, Boss 1 reward-screen prompt, and fixed courtyard event: set `SPIREPLUS_ASCENSION_DEBUG_LEVEL=20`; this uses the vanilla second-boss map path and inserts the courtyard through the vanilla terminal reward/map pause.
+- Disable A11 map geometry for comparison: set `SPIREPLUS_ASCENSION_ENABLE_MAP_GEOMETRY=0`.
+- Disable A17 Deep Branches for comparison: set `SPIREPLUS_ASCENSION_ENABLE_DEEP_BRANCHES=0`.
+- Read-only hook/state diagnostics: set `SPIREPLUS_ASCENSION_DIAGNOSTICS=1`.
 - Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
 
 ## Live Evidence Protocol
@@ -71,7 +71,7 @@ Use this protocol for A11-A20 live evidence, especially Rootblight/Blight Sprout
 
 ## Read-Only Ascension Diagnostics
 
-Execute with `EZMB_ASCENSION_DIAGNOSTICS=1` and no gameplay debug level unless the test case explicitly needs Rootblight behavior.
+Execute with `SPIREPLUS_ASCENSION_DIAGNOSTICS=1` and no gameplay debug level unless the test case explicitly needs Rootblight behavior.
 
 - [ ] Game loads with BaseLib v3.1.4 and Spire Plus enabled.
 - [ ] Starting a normal run with only diagnostics enabled does not add Rootblight.
@@ -79,7 +79,7 @@ Execute with `EZMB_ASCENSION_DIAGNOSTICS=1` and no gameplay debug level unless t
 - [ ] Diagnostics logs appear from the run/combat hook path without mutating gameplay beyond the selected Ascension level.
 - [ ] No deck, map, reward, rest-site, boss-flow, or progress state changes occur when only diagnostics are enabled.
 - [ ] Diagnostics-only mode must not raise Rootblight from restored Blight Sprout cards.
-- [ ] Diagnostics can be combined with `EZMB_ASCENSION_DEBUG_LEVEL=11` through `20` to inspect gated manual tests.
+- [ ] Diagnostics can be combined with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=11` through `20` to inspect gated manual tests.
 
 ## A14 Rootblight MVP: Debug Gate Off
 
@@ -90,11 +90,11 @@ Execute only after Rootblight MVP is implemented.
 - [ ] Game loads with BaseLib v3.1.4 and Spire Plus enabled.
 - [ ] Starting a normal run with the debug/internal gate disabled does not add Rootblight.
 - [ ] Existing Ancient reward rebalance behavior still loads and does not throw.
-- [ ] `godot.log` has no Spire Plus / `EZMicroBalance` Ascension errors.
+- [ ] `godot.log` has no Spire Plus Ascension errors under technical id `EZMicroBalance`.
 
 ## A14 Rootblight MVP: Debug Gate On
 
-Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
+Execute with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=14`.
 
 - [ ] Enable the documented debug/internal gate.
 - [ ] Start a new single-player run.
@@ -127,7 +127,7 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=14`.
 - [ ] Rootblight is not marked Eternal and is removable.
 - [ ] Starting another run does not leak Rootblight state from the prior run.
 
-Targeted normal Steam-client spot checks already executed without `EZMB_ASCENSION_DEBUG_LEVEL`:
+Targeted normal Steam-client spot checks already executed without `SPIREPLUS_ASCENSION_DEBUG_LEVEL`:
 
 - English hover/text evidence: `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` captured Rootblight I/II/III and Blight Sprout with one visible Exhaust keyword, no raw `[gold]` tags, and expected Rootblight previews. The same directory also captures the English A14 Neow starter Rootblight-added notice with deck count 11.
 - ZHS hover/text evidence: `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516` captured Rootblight I/II/III and Blight Sprout with one visible Exhaust keyword, no raw `[gold]` tags, and expected Rootblight previews.
@@ -160,7 +160,7 @@ If multiplayer is not smoke-tested, mark the feature as single-player verified o
 
 ## A15 Boss Blight Sprout MVP
 
-Execute with `EZMB_ASCENSION_DEBUG_LEVEL=15` after A14 Rootblight behavior is verified.
+Execute with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=15` after A14 Rootblight behavior is verified.
 
 - [ ] Act 1 boss combat does not add Blight Sprout.
 - [ ] Act 2 and Act 3 boss combat adds two temporary Blight Sprouts to the relevant discard pile.
@@ -181,7 +181,7 @@ Execute with `EZMB_ASCENSION_DEBUG_LEVEL=15` after A14 Rootblight behavior is ve
 
 ## A18 Elite Blight Sprout MVP
 
-Execute with `EZMB_ASCENSION_DEBUG_LEVEL=18` after A15 boss Blight Sprout behavior is verified.
+Execute with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=18` after A15 boss Blight Sprout behavior is verified.
 
 - [ ] Elite combat adds one temporary Blight Sprout to the relevant discard pile.
 - [ ] Act 1 elites do not add Blight Sprout.
@@ -214,13 +214,13 @@ Default-on implementation present; live co-op testing pending. Use `docs/feature
 
 - [ ] With no Ascension env var, single-player selection can reach A11-A20 from the original Ascension UI.
 - [ ] With no Ascension env var, host-multiplayer selection can reach A11-A20 from the original Ascension UI.
-- [ ] With `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, single-player and multiplayer host selection remain capped by vanilla A1-A10 progress.
-- [ ] With `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, host-multiplayer selection returns to the vanilla cap while single-player A11-A20 selection remains available.
+- [ ] With `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, single-player and multiplayer host selection remain capped by vanilla A1-A10 progress.
+- [ ] With `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, host-multiplayer selection returns to the vanilla cap while single-player A11-A20 selection remains available.
 - [ ] With legacy `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` set and no disable env vars, selection behavior remains the same as default-on.
 - [ ] A11-A20 host selection does not persist to `PreferredMultiplayerAscension` after leaving the lobby.
 - [ ] A11-A20 host selection survives a client joining the lobby without being clamped back to A10.
 - [ ] A client sees the host-selected A11-A20 value.
-- [ ] Gate off via `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`: single-player and multiplayer selection remain normal A1-A10.
+- [ ] Gate off via `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1`: single-player and multiplayer selection remain normal A1-A10.
 - [ ] Gate default-on: host multiplayer can select A11-A20.
 - [ ] Disable multiplayer selection env var returns host multiplayer to the vanilla cap.
 - [ ] Client join does not clamp host A11-A20 selection back to A10.
@@ -238,7 +238,7 @@ Default-on implementation present; live co-op testing pending. Use `docs/feature
 
 ## A12 Firemarked Elite and Forge Token
 
-Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION_DEBUG_LEVEL=12`.
+Gated implementation present; live testing pending. Execute with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=12`.
 
 - [ ] Act 1 selects 2 eligible firemarked elites, and Acts 2/3 select 3 when enough safe nodes exist.
 - [ ] Across multiple fresh seeds/runs, Act 1's first Firemarked Elite is not always Might.
@@ -271,7 +271,7 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 
 ## A13 Fission Enchantment
 
-Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION_DEBUG_LEVEL=13`.
+Gated implementation present; live testing pending. Execute with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=13`.
 
 - [ ] Fission appears only on eligible reward cards.
 - [ ] Fission source rates are visibly plausible over repeated debug rolls: normal combat 10%, Banner Room 15%, Firemarked Elite 20%, Boss 5%.
@@ -283,15 +283,15 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 - [ ] Tooltip/card text is correct in English and Simplified Chinese, uses energy-cost wording, does not show raw `{energyPrefix:energyIcons(...)}` templates, does not duplicate the added Exhaust line, and does not use the Chinese word "费用" for Fission.
 - [ ] Rerolling card rewards does not duplicate or lose state incorrectly.
 - [ ] Picked Fission cards save/load correctly.
-- [ ] With `EZMB_ASCENSION_DIAGNOSTICS=1`, sample 20 normal combat reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
-- [ ] With `EZMB_ASCENSION_DIAGNOSTICS=1`, sample 10 Banner Room reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
-- [ ] With `EZMB_ASCENSION_DIAGNOSTICS=1`, sample 10 Firemarked Elite reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
-- [ ] With `EZMB_ASCENSION_DIAGNOSTICS=1`, sample Boss reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
+- [ ] With `SPIREPLUS_ASCENSION_DIAGNOSTICS=1`, sample 20 normal combat reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
+- [ ] With `SPIREPLUS_ASCENSION_DIAGNOSTICS=1`, sample 10 Banner Room reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
+- [ ] With `SPIREPLUS_ASCENSION_DIAGNOSTICS=1`, sample 10 Firemarked Elite reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
+- [ ] With `SPIREPLUS_ASCENSION_DIAGNOSTICS=1`, sample Boss reward screens and record source label, eligible candidate count, roll, applied count, and applied card id when present.
 - [ ] Do not change Fission probabilities or add a pity counter unless the diagnostic sampling shows eligible reward droughts.
 
 ## A16 Banner Rooms
 
-Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION_DEBUG_LEVEL=16`.
+Gated implementation present; live testing pending. Execute with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=16`.
 
 - [ ] Banner rooms are visible before route commitment.
 - [ ] Across multiple fresh seeds/runs, Act 1's Banner Room is not always Vanguard.
@@ -311,7 +311,7 @@ Gated implementation present; live testing pending. Execute with `EZMB_ASCENSION
 
 ## A17 Deep Branches
 
-Gated implementation present; live testing pending. Execute in single-player by selecting A17+ in the original UI or with `EZMB_ASCENSION_DEBUG_LEVEL=17`. Keep A11 map geometry enabled for the primary test.
+Gated implementation present; live testing pending. Execute in single-player by selecting A17+ in the original UI or with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=17`. Keep A11 map geometry enabled for the primary test.
 
 - [ ] Gate logs one optional 3-4 node Deep Branch with safe-route reconnect in Act 2.
 - [ ] Gate logs one optional 3-4 node Deep Branch with safe-route reconnect in Act 3.
@@ -323,12 +323,12 @@ Gated implementation present; live testing pending. Execute in single-player by 
 - [ ] A safer parallel route from the branch parent to reconnect remains available without entering the branch.
 - [ ] Branch nodes are optional and do not replace all routes to the boss.
 - [ ] Save/load preserves all branch nodes and edges, and metadata/markers restore after load.
-- [ ] With `EZMB_ASCENSION_ENABLE_DEEP_BRANCHES=0`, A17 does not insert branch nodes.
+- [ ] With `SPIREPLUS_ASCENSION_ENABLE_DEEP_BRANCHES=0`, A17 does not insert branch nodes.
 - [ ] Multiplayer branch insertion is skipped until route voting is proven; no multiplayer route desync is introduced by this slice.
 
 ## A19/A20 Boss Systems
 
-Gated implementation present as BossSeal definitions plus source-guarded runtime hooks; live testing pending. Execute A19 with `EZMB_ASCENSION_DEBUG_LEVEL=19`; execute A20 partial checks with `EZMB_ASCENSION_DEBUG_LEVEL=20` only after a second boss map point exists through vanilla/proven flow.
+Gated implementation present as BossSeal definitions plus source-guarded runtime hooks; live testing pending. Execute A19 with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=19`; execute A20 partial checks with `SPIREPLUS_ASCENSION_DEBUG_LEVEL=20` only after a second boss map point exists through vanilla/proven flow.
 
 - [ ] A19 boss-specific dedicated ability metadata is assigned at map generation.
 - [ ] The assigned ability name matches the active boss encounter in `BossSealCatalog`.
@@ -369,8 +369,8 @@ Gated implementation present as BossSeal definitions plus source-guarded runtime
 
 Execute before private beta release.
 
-- [ ] Disable Spire Plus / `EZMicroBalance` and confirm the game reaches main menu.
-- [ ] Re-enable Spire Plus / `EZMicroBalance` and confirm current supported saves behave as documented.
+- [ ] Disable Spire Plus and confirm the game reaches main menu; technical id is `EZMicroBalance`.
+- [ ] Re-enable Spire Plus and confirm current supported saves behave as documented; technical id is `EZMicroBalance`.
 - [ ] Remove only `EZMicroBalance` from mods folder and confirm BaseLib and other mods still load.
 - [ ] Confirm no official game assets were copied into the repository.
 - [ ] Confirm release notes list any unsupported multiplayer or Ascension-selection limitations.
@@ -380,9 +380,9 @@ Execute before private beta release.
 Planning checks for the next release-engineering pass; do not mark these complete without running the commands on the current artifacts.
 
 - [ ] In a clean clone or clean workspace, normal `dotnet test EZMicroBalance.sln --no-build` passes without ignored publish artifacts; release artifact/runtime evidence tests are skipped by `ReleaseArtifactFactAttribute`.
-- [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
+- [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`. The old `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` variable remains a compatibility alias, not the preferred command in new notes.
 - [ ] Publish the current package before runtime smoke.
 - [ ] Launch controlled `--force-steam off` with only BaseLib and Spire Plus enabled.
-- [ ] Inspect `godot.log` and record the current SavedSpireField count; current source defines 30 SavedSpireFields after Seedbed root-suppression markers. The previous smoke log still reports `Found 22 SavedSpireFields`, so a fresh live loader rerun is required before claiming loader parity for this source state.
-- [ ] Confirm the controlled smoke has no Spire Plus / `EZMicroBalance` startup exception or error.
+- [x] Inspect `godot.log` and record the current SavedSpireField count; the current package smoke reports `Found 30 SavedSpireFields` after Seedbed root-suppression markers.
+- [ ] Confirm the controlled smoke has no Spire Plus startup exception or error under technical id `EZMicroBalance`.
 - [ ] Keep normal Steam-client Mod Settings verification separate from controlled smoke.

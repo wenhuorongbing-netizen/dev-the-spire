@@ -1,4 +1,4 @@
-# Ascension 11-20
+﻿# Ascension 11-20
 
 This folder tracks the active Ascension 11-20 development line for `Spire Plus` (`EZMicroBalance` manifest id).
 
@@ -46,8 +46,8 @@ Historical prompt/spec material lives in `docs/archive/feature-inputs/ascension-
 
 ## Safety Rules
 
-- Keep A11-A20 disableable with `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`.
-- Keep host-multiplayer selection separately disableable with `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`.
+- Keep A11-A20 disableable with `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1`.
+- Keep host-multiplayer selection separately disableable with `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`.
 - Do not claim live Ascension readiness until manual single-player and co-op checks pass.
 - Do not implement A21-A30 or custom character systems in this cycle.
 - Prefer current local `source code/src/Core/` evidence over old notes.

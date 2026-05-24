@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -85,7 +85,7 @@ internal static partial class LothaBlessingService
                 ["powerAlreadyPresent"] = alreadyHasPower
             });
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Lotha Death Reprieve restored {progress.DeathReprievePhase} combat state from deck-mirrored blessing progress; " +
+            $"[Spire Plus] Lotha Death Reprieve restored {progress.DeathReprievePhase} combat state from deck-mirrored blessing progress; " +
             $"pendingStart={combatState.DeathReprievePendingStart}, powerAlreadyPresent={alreadyHasPower}. Active-turn save/load continuation remains live-pending.");
     }
 

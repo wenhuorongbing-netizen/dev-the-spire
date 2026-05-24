@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models;
+﻿using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Afflictions;
 using MegaCrit.Sts2.Core.Models.Monsters;
 
@@ -26,7 +26,7 @@ internal static partial class AscensionCombatModifierService
         tracker.ChosenDecreeCardsByPlayer[owner] = card;
         tracker.ChosenDecreePlayersWhoPlayedDecree.Remove(owner);
         tracker.ChosenDecreePlayersWhoPlayedAnyBound.Remove(owner);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Royal Decree marked one Bound card.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Royal Decree marked one Bound card.");
     }
 
     private static void TryAssignChosenDecreeInHandForPlayer(
@@ -122,7 +122,7 @@ internal static partial class AscensionCombatModifierService
             if (markedDecree != null && !tracker.ChosenDecreeCardsByPlayer.ContainsKey(player))
             {
                 tracker.ChosenDecreeCardsByPlayer[player] = markedDecree;
-                MainFile.Logger.Info("[EZMicroBalance] Ascension A19 recovered Royal Decree tracker from visible card marker.");
+                MainFile.Logger.Info("[Spire Plus] Ascension A19 recovered Royal Decree tracker from visible card marker.");
             }
 
             if (combatCards.Any(card => AscensionSavedStateFields.RoyalDecreePlayedBoundCard[card]))
@@ -167,12 +167,12 @@ internal static partial class AscensionCombatModifierService
         {
             if (tracker.ChosenDecreePlayersWhoPlayedDecree.Contains(player))
             {
-                MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Royal Decree was obeyed; no extra penalty was applied.");
+                MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Royal Decree was obeyed; no extra penalty was applied.");
             }
             else if (tracker.ChosenDecreePlayersWhoPlayedAnyBound.Contains(player))
             {
                 await AddQueenMajesty(combatState, tracker, metadata, queen, 1);
-                MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: non-Decree Bound card granted Queen Majesty.");
+                MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: non-Decree Bound card granted Queen Majesty.");
             }
             else
             {
@@ -183,7 +183,7 @@ internal static partial class AscensionCombatModifierService
                     await PowerCmd.Apply<StrengthPower>(new BlockingPlayerChoiceContext(), amalgam, 1m, queen, null);
                 }
 
-                MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: missed Royal Decree granted Majesty and Torch Head Strength.");
+                MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: missed Royal Decree granted Majesty and Torch Head Strength.");
             }
 
             ClearChosenDecreeSavedMarkers(player);

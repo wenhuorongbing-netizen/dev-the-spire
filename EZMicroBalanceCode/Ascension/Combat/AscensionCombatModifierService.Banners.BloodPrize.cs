@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class AscensionCombatModifierService
 {
@@ -13,11 +13,11 @@ internal static partial class AscensionCombatModifierService
         {
             await PowerCmd.Apply<BloodPrizeBannerTargetPower>(new BlockingPlayerChoiceContext(), tracker.BloodPrizeTarget, 1m, tracker.BloodPrizeTarget, null);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A16 applied: Blood Prize target set to {tracker.BloodPrizeTarget.Name}.");
+                $"[Spire Plus] Ascension A16 applied: Blood Prize target set to {tracker.BloodPrizeTarget.Name}.");
         }
         else
         {
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A16 gate active: Blood Prize had no living enemy target.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A16 gate active: Blood Prize had no living enemy target.");
         }
     }
 
@@ -32,7 +32,7 @@ internal static partial class AscensionCombatModifierService
             combatState.RoundNumber <= BountyDeadlineRound)
         {
             tracker.BloodPrizeKilledEarly = true;
-            MainFile.Logger.Info("[EZMicroBalance] Ascension A16 tracked: Blood Prize target killed before the deadline.");
+            MainFile.Logger.Info("[Spire Plus] Ascension A16 tracked: Blood Prize target killed before the deadline.");
         }
     }
 
@@ -71,7 +71,7 @@ internal static partial class AscensionCombatModifierService
         }
 
         await PowerCmd.Remove(target.GetPower<BloodPrizeBannerTargetPower>());
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A16 applied: Blood Prize target survived the deadline and retaliated.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A16 applied: Blood Prize target survived the deadline and retaliated.");
     }
 
     private static void TryAddBountyReward(
@@ -110,6 +110,6 @@ internal static partial class AscensionCombatModifierService
             room.AddExtraReward(player, new GoldReward(playerReward, player));
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Ascension A16 applied: Blood Prize reward added {playerReward} Gold per active player.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A16 applied: Blood Prize reward added {playerReward} Gold per active player.");
     }
 }

@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.BeforeSideTurnStart))]
 internal static class CrossbowOfferPatch
@@ -31,7 +31,7 @@ internal static class CrossbowOfferPatch
         var generated = CardFactory.GetDistinctForCombat(owner, attackPool, 1, owner.RunState.Rng.CombatCardGeneration).FirstOrDefault();
         if (generated == null)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Crossbow skipped: no eligible attack generated.");
+            MainFile.Logger.Warn("[Spire Plus] Crossbow skipped: no eligible attack generated.");
             return;
         }
 
@@ -44,16 +44,16 @@ internal static class CrossbowOfferPatch
             var addResult = await AncientCardHelpers.TryAddGeneratedCardToCombat(generated, PileType.Hand, owner);
             if (addResult is { success: true })
             {
-                MainFile.Logger.Info($"[EZMicroBalance] Crossbow applied: accepted temporary attack {generated.Id.Entry}.");
+                MainFile.Logger.Info($"[Spire Plus] Crossbow applied: accepted temporary attack {generated.Id.Entry}.");
                 return;
             }
 
-            MainFile.Logger.Warn($"[EZMicroBalance] Crossbow skipped: accepted temporary attack {generated.Id.Entry} could not be added to combat.");
+            MainFile.Logger.Warn($"[Spire Plus] Crossbow skipped: accepted temporary attack {generated.Id.Entry} could not be added to combat.");
             return;
         }
 
         AncientCardHelpers.RemoveUnpiledCombatCard(generated, combatState);
-        MainFile.Logger.Info($"[EZMicroBalance] Crossbow applied: skipped temporary attack {generated.Id.Entry}.");
+        MainFile.Logger.Info($"[Spire Plus] Crossbow applied: skipped temporary attack {generated.Id.Entry}.");
     }
 }
 

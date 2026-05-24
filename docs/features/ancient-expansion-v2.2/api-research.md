@@ -1,6 +1,6 @@
 # Ancient Expansion v2.2 API Research
 
-Status: current ten-blessing Urda source evidence plus default-on Morvi source evidence, default-on Lotha source evidence, and hidden-by-default source-dedicated Vakuu fight/Contract source evidence. Vakuu now uses a direct parent-room stack transition, explicitly clears the parent event node before combat, avoids storing `ParentEventId` on the active child combat room, records the parent only for prefinished restore, and skips the duplicate Ancient heal during prefinished parent restore. Lotha now encodes Death Reprieve phase through deck-mirrored state. Runtime gameplay, exact save/load restore, post-victory Vakuu restore, and co-op proof remain pending.
+Status: current eleven-blessing Urda source evidence plus default-on Morvi source evidence, default-on Lotha source evidence, and hidden-by-default source-dedicated Vakuu fight/Contract source evidence. Vakuu now uses a direct parent-room stack transition, explicitly clears the parent event node before combat, avoids storing `ParentEventId` on the active child combat room, records the parent only for prefinished restore, and skips the duplicate Ancient heal during prefinished parent restore. Lotha now encodes Death Reprieve phase through deck-mirrored state. Runtime gameplay, exact save/load restore, post-victory Vakuu restore, and co-op proof remain pending.
 
 ## Current Source-Backed Facts
 
@@ -16,9 +16,9 @@ Current Urda source files:
 
 Observed implementation baseline:
 
-- Urda is default-on unless `EZMB_DISABLE_URDA=1` is set.
-- `EZMB_FORCE_ANCIENT=URDA` remains legacy-compatible but is not required for Urda visibility.
-- Current blessing ids are `urda_seedbed`, `urda_humus_pact`, `urda_molting`, `urda_moss_map`, `urda_trial_branch`, `urda_shallow_root_relic`, `urda_rooted_route`, `urda_after_rain`, `urda_root_sight`, and `urda_seed_bank`.
+- Urda is default-on unless `SPIREPLUS_DISABLE_URDA=1` is set. Legacy `EZMB_DISABLE_URDA=1` still works.
+- `SPIREPLUS_FORCE_ANCIENT=URDA` focuses Urda when needed. Legacy `EZMB_FORCE_ANCIENT=URDA` still works and is not required for Urda visibility.
+- Current blessing ids are `urda_seedbed`, `urda_humus_pact`, `urda_molting`, `urda_moss_map`, `urda_trial_branch`, `urda_shallow_root_relic`, `urda_rooted_route`, `urda_after_rain`, `urda_root_sight`, `urda_seed_bank`, and `urda_elite_root`.
 - Current source hooks cover reward alternatives, reward-taken follow-up handling, act entry, room entry, map marker checks, death-prevention checks, reward-card storage, and Molting card setup.
 - Humus Pact now uses an explicit `EZMB_URDA_HUMUS_PACT` card reward alternative instead of a global `CardReward.OnSkipped` postfix.
 - Seedbed counts accepted Seedbed choices, not reward alternative generation.
@@ -47,7 +47,7 @@ Morvi evidence recorded in this source pass:
 - Local `source code/src/Core/Combat/CombatManager.cs` calls `Hook.AfterCombatEnd(...)` before combat victory cleanup, and local `source code/src/Core/Commands/CreatureCmd.cs` routes ordinary damage through the normal death path. Morvi combat-end debt HP fallbacks now share a nonlethal helper that caps HP loss at current HP minus 1 for both Red Ink Overdraft and Debt Settlement.
 - Local `source code/src/Core/Models/AbstractModel.cs` exposes `BeforeCombatStart`, `AfterCardPlayed`, `TryModifyCardRewardOptionsLate`, `TryModifyCardRewardAlternatives`, and `AfterRewardTaken` hooks used by the Morvi source slice.
 - Morvi Debt Settlement is the current v2.2 combat-end debt model: it grants 220 Gold, optional remove/upgrade selections, sets Debt to 320, then pays up to 40 Debt at each combat end. Missing Gold falls back to the shared nonlethal HP loss helper capped so the player is not reduced below 1 HP.
-- Morvi is default-on for private-beta direct testing with `EZMB_DISABLE_MORVI` / `SPIREPLUS_DISABLE_MORVI` and force-test gates; no live gameplay/save-load/co-op evidence is claimed.
+- Morvi is default-on for private-beta direct testing with preferred `SPIREPLUS_DISABLE_MORVI`, legacy `EZMB_DISABLE_MORVI`, and force-test gates; no live gameplay/save-load/co-op evidence is claimed.
 
 ## 2026-05-12/13 Lotha/Event Visual Evidence
 
@@ -63,7 +63,7 @@ Local source findings:
 - Lotha v2.2/v3.3 corrective polish reuses source-backed command paths already inspected locally: Mirror Rebuttal uses `CardSelectCmd.FromDeckGeneric(...)`, a `SavedSpireField<CardModel,bool>` deck-card marker, `CardModel.DeckVersion`, and `CardPileCmd.Add(..., PileType.Hand)` to move the matching combat card on the first player turn after normal draw; Attack/Skill extra plays use `ModifyCardPlayCount` rather than generated autoplay copies; Mirror Hall Echo now uses the v0.106.0 `AfterSideTurnEnd(...)` model hook plus combat history to record the last player-played non-Status Attack/Skill/Power for the next player turn; Deferred Verdict applies player-owned `LothaVerdictPower` stacks through `PowerCmd.Apply(...)` and consumes them with `PowerCmd.Decrement(...)`; Power-card replacement cost preview/payment uses `TryModifyEnergyCostInCombat(...)` and `TryModifyStarCost(...)`, then applies only the source-design draw benefit after play where that blessing still grants one.
 - Lotha Presumption uses `AfterDamageReceived(...)` with a conservative enemy-attack approximation: `DamageResult.UnblockedDamage > 0`, enemy dealer, `cardSource == null`, and `ValueProp.Move`. Poison, Doom, HP-loss scripts, and self payments inspected locally do not match that full shape.
 - Lotha Closed Court uses `TryModifyRewardsLate(...)` to remove only `CardReward` instances from combat rewards, leaving gold, potion, and relic reward objects intact. Its v3.3 resource plan uses `CardPileCmd.Draw(...)` and `PlayerCmd.GainEnergy(...)` on turn 1 and turn 4; the previous first-three-card temporary discount is removed.
-- Lotha Death Reprieve uses the local `ShouldDieLate` / `AfterPreventingDeath` death-prevention path, modeled after local `CreatureCmd.Kill(...)` and `LizardTail` source. `CreatureCmd.Kill(force: true)` is used only at reprieve failure. Source-safe deviation: local turn-flow evidence did not prove a safe immediate enemy-turn interruption into a new player turn, so enemy-turn lethal marks a pending reprieve that starts at the next player turn. Current source encodes `DeathReprieveUsed` plus `DeathReprievePhase` through the existing Lotha deck mirror. Live lethal-path and restore testing remains pending.
+- Lotha Death Reprieve uses the local `ShouldDieLate` / `AfterPreventingDeath` death-prevention path, modeled after local `CreatureCmd.Kill(...)` and `LizardTail` source. `CreatureCmd.Kill(force: true)` is used only at reprieve failure. source-safe deviation: local turn-flow evidence did not prove a safe immediate enemy-turn interruption into a new player turn, so enemy-turn lethal marks a pending reprieve that starts at the next player turn. Current source encodes `DeathReprieveUsed` plus `DeathReprievePhase` through the existing Lotha deck mirror. Live lethal-path and restore testing remains pending.
 - Lotha Public Evidence uses `ModifyPowerAmountGiven`, `TryModifyPowerAmountReceived`, and `AfterPowerAmountChanged` to double non-damaging negative status applications and manage `LothaEnlightenmentPower`. Eligibility uses `power.GetTypeForAmount(amount) == PowerType.Debuff` as the base gate, but excludes source-proven damage/kill Debuffs. Local Core evidence: `WeakPower`, `VulnerablePower`, and `FrailPower` are non-damage Debuffs; `PoisonPower` is also a Debuff but deals unblockable/unpowered side-turn damage, so it is excluded along with Constrict, Demise, Disintegration, Doom, Magic Bomb, Strangle, and The Gambit.
 
 ## 2026-05-14 Ancient UI/Art Resource Routing Evidence
@@ -96,7 +96,7 @@ Local source findings:
 - Local damage hooks expose unblocked damage through `AfterDamageReceived(...)` and `DamageResult.UnblockedDamage`. Vakuu tracks player-turn unblocked damage and breaks one Stolen Vault lock when damage reaches 40 in a single player turn.
 - Local `PowerModel.ModifyDamageAdditive(...)` participates in powered attack intent/damage calculation. `VakuuBloodDebtPower` uses that hook to add 2 damage per stack to each powered Vakuu attack hit.
 - The hook is scoped by `combatState.Encounter is EzmbVakuuTrialEncounter` and the combat-hook subscriber is gated through `VakuuFightFeatureGate.IsFightEnabledForRun(...)`, preserving the current single-player-only stance.
-- `VakuuFightFeatureGate.IsFightEnabled(...)` now requires `ShouldEnableFight`, which is true only for `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, `EZMB_FORCE_VAKUU_FIGHT=1`, or `SPIREPLUS_FORCE_VAKUU_FIGHT=1`.
+- `VakuuFightFeatureGate.IsFightEnabled(...)` now requires `ShouldEnableFight`, which is true only for preferred `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, preferred `SPIREPLUS_FORCE_VAKUU_FIGHT=1`, or legacy `EZMB_*` fight aliases.
 - Multiplayer authority is not source-proven. `VakuuFightFeatureGate.IsFightEnabledForRun(...)` requires `runState.Players.Count == 1`.
 - Local `source code/src/Core/Rooms/CombatRoom.cs` throws in `ToSerializable()` when a combat room has `ParentEventId` and is not pre-finished. Current Vakuu source no longer stores `ParentEventId` while the combat room is active; prefinished parent recording remains isolated to the `CombatRoom.ToSerializable()` postfix. Live active-fight save/load is still pending because runtime behavior has not been exercised.
 - Live UI, combat victory, save/load, failure/death, and co-op verification remain pending.
@@ -168,3 +168,4 @@ Before claiming runtime-ready behavior or broadening Vakuu behavior beyond the c
 | Multiplayer | Player ownership, host/client authority, and deterministic reward mutation. |
 
 Primary evidence remains local game source. BaseLib/RitsuLib/template APIs are preferred before Harmony. Tutorial material is secondary only: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html`.
+

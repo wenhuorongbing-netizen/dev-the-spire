@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -9,7 +9,7 @@ internal static partial class AscensionMapService
         where TEnum : struct, Enum
     {
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension map assignment: actIndex={actIndex}; coord=({coord.col},{coord.row}); markerFamily={markerFamily}; kind={kind}.");
+            $"[Spire Plus] Ascension map assignment: actIndex={actIndex}; coord=({coord.col},{coord.row}); markerFamily={markerFamily}; kind={kind}.");
     }
 
     private static void LogMapDistributionSummary(IRunState runState, ActMap map, int actIndex)
@@ -39,6 +39,6 @@ internal static partial class AscensionMapService
                 (entry.Metadata.IsBossBrand ? "/brand" : "/seal"));
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension diagnostics: map marker distribution; actIndex={actIndex}; seed={runState.Rng.StringSeed}; firemarkKinds=[{string.Join(", ", firemarks)}]; bannerKinds=[{string.Join(", ", banners)}]; bossSeals=[{string.Join(", ", bossSeals)}].");
+            $"[Spire Plus] Ascension diagnostics: map marker distribution; actIndex={actIndex}; seed={runState.Rng.StringSeed}; firemarkKinds=[{string.Join(", ", firemarks)}]; bannerKinds=[{string.Join(", ", banners)}]; bossSeals=[{string.Join(", ", bossSeals)}].");
     }
 }

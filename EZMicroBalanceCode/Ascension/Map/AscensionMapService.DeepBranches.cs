@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 
@@ -116,7 +116,7 @@ internal static partial class AscensionMapService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A17 applied: Deep Branch metadata restored; actIndex={actIndex}; parent={plan.ParentCoord}; reconnect={plan.ReconnectCoord}; nodes={plan.BranchCoords.Count}.");
+            $"[Spire Plus] Ascension A17 applied: Deep Branch metadata restored; actIndex={actIndex}; parent={plan.ParentCoord}; reconnect={plan.ReconnectCoord}; nodes={plan.BranchCoords.Count}.");
     }
 
 }

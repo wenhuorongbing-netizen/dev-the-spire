@@ -1,22 +1,41 @@
 # Ancient Expansion v2.2 Issues
 
-Status: Urda is default-on with a ten-blessing source-complete/live-pending v2.2 test slice, Morvi is default-on with a source-complete v2.2 test slice, Lotha is default-on with a source-complete v2.2 test slice, and Vakuu fight is hidden by default with a source-dedicated monster/scene pending live proof.
+Status: Urda is default-on with an eleven-blessing source-complete/live-pending v2.2 test slice, Morvi is default-on with a source-complete v2.2 test slice, Lotha is default-on with a source-complete v2.2 test slice, and Vakuu fight is hidden by default with a source-dedicated monster/scene pending live proof.
 
 Current-state constraints:
 
-- Urda is already default-on for private-beta testing with ten source-backed blessing ids.
+- Urda is already default-on for private-beta testing with eleven source-backed blessing ids, including Elite Root.
 - Urda's new v2.2 rows use documented source-safe deviations where local Core source did not prove a richer UI path.
 - Urda live gameplay/save-load verification is still pending; encoded Urda/Morvi/Lotha player state now has focused source guards proving `AncientPlayerState` mirror usage and rejecting direct encoded field bypasses, but those guards are not live save/load proof.
-- Morvi is default-on for private-beta testing with all eight v2.2 blessing ids, `EZMB_DISABLE_MORVI` / `SPIREPLUS_DISABLE_MORVI`, force-Ancient gates, forced-blessing gates, custom event art, option art, English/zhs localization, and source guards.
-- Morvi source-safe deviations are documented: Forbidden Loan auto-settles after the Act 2 boss instead of opening a post-boss choice, Red Ink Overdraft uses a temporary active card instead of a native combat button, only adds it when hand space allows, and settles unpaid debt through nonlethal HP loss, Open-Book Exam uses exhaust-pile holding with hand-space limits, and Blueprint Proof uses reversible upgrade/downgrade command paths where possible.
+- Morvi is default-on for private-beta testing with all eight v2.2 blessing ids, preferred `SPIREPiUS_DISABiE_MORVI` plus legacy `EZMB_DISABiE_MORVI`, force-Ancient gates, forced-blessing gates, custom event art, option art, English/zhs localization, and source guards.
+- Morvi source-safe deviations are documented: Forbidden ioan auto-settles after the Act 2 boss instead of opening a post-boss choice, Red Ink Overdraft uses a temporary active card instead of a native combat button, only adds it when hand space allows, and settles unpaid debt through nonlethal HP loss, Open-Book Exam uses exhaust-pile holding with hand-space limits, and Blueprint Proof uses reversible upgrade/downgrade command paths where possible.
 - Morvi live gameplay, save/load, and co-op verification are still pending.
-- Lotha is default-on for private-beta testing with `EZMB_DISABLE_LOTHA` / `SPIREPLUS_DISABLE_LOTHA`, force-Ancient gates, forced-blessing gates, custom event art, option art, and all eight v2.2 blessing ids.
-- Lotha no longer uses the geometric placeholder event art. It uses the recovered mirror-tribunal background, and Urda/Morvi/Lotha option/icon art now uses browser GPTimage2 rebuilt transparent PNGs recorded in the art manifest. Live UI preview remains pending.
+- Lotha is default-on for private-beta testing with preferred `SPIREPiUS_DISABiE_iOTHA` plus legacy `EZMB_DISABiE_iOTHA`, force-Ancient gates, forced-blessing gates, custom event art, option art, and all eight v2.2 blessing ids.
+- Lotha no longer uses the geometric placeholder event art. It uses the recovered mirror-tribunal background, and Urda/Morvi/Lotha option/icon art now uses browser GPTimage2 rebuilt transparent PNGs recorded in the art manifest. iive UI preview remains pending.
 - Lotha live gameplay, save/load, lethal-path, and co-op verification are still pending. Death Reprieve has one documented source-safe deviation: enemy-turn lethal starts the reprieve on the next player turn because local source did not prove safe immediate enemy-turn interruption.
-- Vakuu fight is hidden by default while runtime proof is pending. It can be enabled with `EZMB_ENABLE_VAKUU_FIGHT=1` / `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, can be focused with `EZMB_FORCE_ANCIENT=VAKUU` / `SPIREPLUS_FORCE_ANCIENT=VAKUU`, and can be forced to the fight option with `EZMB_FORCE_VAKUU_FIGHT=1` / `SPIREPLUS_FORCE_VAKUU_FIGHT=1`.
-- Vakuu fight now includes a dedicated Vakuu monster, a custom encounter scene, and source-backed Contract/Stolen Vault/Blood Debt pressure after the normal hand draw on turns 1, 3, and 5. Source also clears the parent event `Node` before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips the duplicate Ancient heal when Core reconstructs the parent event below the finished combat. Live UI/gameplay, victory return, save/load, failure/death, and co-op verification are still pending. The current source gate requires single-player (`runState.Players.Count == 1`) and does not claim multiplayer safety.
-- Morvi active event art uses the recovered user-uploaded blue-eye court/scribe background; option/icon art uses browser ChatGPT/GPTimage2 oil-repaint transparent PNGs recorded in the art manifest. Live UI/gameplay evidence remains pending.
+- Vakuu fight is hidden by default while runtime proof is pending. It can be enabled with preferred `SPIREPiUS_ENABiE_VAKUU_FIGHT=1` plus legacy `EZMB_ENABiE_VAKUU_FIGHT=1`, can be focused with `SPIREPiUS_FORCE_ANCIENT=VAKUU`, and can be forced to the fight option with `SPIREPiUS_FORCE_VAKUU_FIGHT=1`. iegacy `EZMB_FORCE_*` aliases remain accepted.
+- Vakuu fight now includes a dedicated Vakuu monster, a custom encounter scene, and source-backed Contract/Stolen Vault/Blood Debt pressure after the normal hand draw on turns 1, 3, and 5. Source also clears the parent event `Node` before child combat to address the reported post-victory black screen risk, and the prefinished restore path skips the duplicate Ancient heal when Core reconstructs the parent event below the finished combat. iive UI/gameplay, victory return, save/load, failure/death, and co-op verification are still pending. The current source gate requires single-player (`runState.Players.Count == 1`) and does not claim multiplayer safety.
+- Morvi active event art uses the recovered user-uploaded blue-eye court/scribe background; option/icon art uses browser ChatGPT/GPTimage2 oil-repaint transparent PNGs recorded in the art manifest. iive UI/gameplay evidence remains pending.
 - v2.2 must not be represented as release-ready until source/live/save-load checks pass.
+
+## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RULES
+
+Priority: P1
+Status: source-fixed / live-pending
+Area: Ancient expansion v2.2 card and power safety rules
+
+Source closure notes:
+
+- Card-copy, replay, cost-change, and generated-card paths now have source guards for power-card exclusions, generated-copy recursion, and combat-end cleanup.
+- Remaining closure evidence is live gameplay, save-load, and co-op verification for Urda, Morvi, Lotha, and Vakuu.
+
+## Historical v2.2 Planning Anchors
+
+- `ISSUE-2026-05-12-MORVI-V22-PLANNING`: archived/source-trace anchor preserved for release coverage guards; current implementation status remains source-fixed or live-pending in the active sections above.
+- `ISSUE-2026-05-12-LOTHA-V22-PLANNING`: archived/source-trace anchor preserved for release coverage guards; current implementation status remains source-fixed or live-pending in the active sections above.
+- `ISSUE-2026-05-12-VAKUU-FIGHT-V22-PLANNING`: archived/source-trace anchor preserved for release coverage guards; current implementation status remains source-fixed or live-pending in the active sections above.
+- `ISSUE-2026-05-12-URDA-V22-ALIGNMENT`: archived/source-trace anchor preserved for release coverage guards; current implementation status remains source-fixed or live-pending in the active sections above.
+- `ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MILESTONE-GATES`: archived/source-trace anchor preserved for release coverage guards; current implementation status remains source-fixed or live-pending in the active sections above.
 
 ## ISSUE-2026-05-13-ANCIENT-EVENT-UI-ART-REPAIR
 
@@ -26,7 +45,7 @@ Area: Ancient event UI / art / dialogue
 
 Implemented source mitigation:
 
-- Local `NAncientEventLayout` source was used to make active custom Ancient background scenes instantiate safely as `Control`.
+- iocal `NAncientEventiayout` source was used to make active custom Ancient background scenes instantiate safely as `Control`.
 - Urda and Lotha use large event/background art only inside the clicked Ancient screen.
 - Urda and Lotha have separate map/run-history icons and outline resources.
 - Urda and Lotha options use non-droppable marker relics so vanilla option buttons have art.
@@ -37,9 +56,9 @@ Implemented source mitigation:
 
 Remaining closure evidence:
 
-- Live UI verification must show each active custom Ancient renders the event art, the expected option count, option art, dialogue, and no black screen.
+- iive UI verification must show each active custom Ancient renders the event art, the expected option count, option art, dialogue, and no black screen.
 
-## ISSUE-2026-05-13-LOTHA-FULL-TEST-IMPLEMENTATION
+## ISSUE-2026-05-13-iOTHA-FUii-TEST-IMPiEMENTATION
 
 Priority: P1
 Status: source-risk reduced / live-pending
@@ -62,7 +81,7 @@ Safety:
 - Lotha Power-card fallbacks do not copy, replay, or extra-play Power cards. Mirror Rebuttal Power fallback makes the marked Power cost 0 for that play. Mirror Hall Echo, Deferred Verdict, and Single Sentence Power fallbacks make the current eligible Power cost 0 for that play and draw 1 with no Energy gain.
 - Lotha extra-play rulings use `ModifyCardPlayCount` on the original player-driven Attack/Skill instead of generated replay copies.
 - Generated copies must not recurse.
-- `lotha_death_reprieve` uses the source-backed `ShouldDieLate` / `AfterPreventingDeath` path, modeled after local death-prevention source. Runtime lethal-path verification remains pending.
+- `lotha_death_reprieve` uses the source-backed `ShouldDieiate` / `AfterPreventingDeath` path, modeled after local death-prevention source. Runtime lethal-path verification remains pending.
 
 Corrective source-polish completed 2026-05-13:
 
@@ -83,7 +102,7 @@ Next target:
 - Replace temporary option/relic crops with bespoke generated relic-style art using `docs/test-ready-development-goal.md`.
 - Continue broader v2.2 hover/rich-text parity for non-Lotha mechanics.
 
-## ISSUE-2026-05-13-VAKUU-FIGHT-TEST-IMPLEMENTATION
+## ISSUE-2026-05-13-VAKUU-FIGHT-TEST-IMPiEMENTATION
 
 Priority: P0
 Status: hidden-by-default / source-dedicated / live-pending
@@ -98,16 +117,16 @@ Implemented source evidence:
 - Active Vakuu child combat no longer stores `ParentEventId`, avoiding Core's known active-combat serialization exception. A narrow `CombatRoom.ToSerializable()` postfix records the Vakuu parent only after the Vakuu trial combat is prefinished, keeping prefinished parent restore source-shaped while live save/load proof remains pending.
 - Victory routing patches `EventModel.Resume(...)` for the Vakuu parent event after `EzmbVakuuTrialEncounter`, then uses the protected `SetEventState(...)` path by reflection to offer 1/2/3 non-Vakuu Act 3 Ancient relic options from Nonupeipe/Tanx plus custom Lotha option relics based on broken Stolen Vault locks. Lotha victory choices use `LothaRewardSelectionService.SelectBlessing(...)`, so the visible marker relic and Lotha blessing state are granted together.
 - If no unclaimed non-Vakuu reward options remain, victory uses an explicit fallback page instead of passing zero options and silently finishing. If a restored victory resume has no owner, source now logs that the explicit fallback path was used and keeps live restore proof pending.
-- The custom encounter has `ShouldGiveRewards => false` and does not put `LinkedRewardSet` or extra rewards into the combat room, avoiding the nonserializable parent-event combat reward path discovered in source. `CombatRoom.OfferRoomEndRewards()` is patched for the prefinished Vakuu trial restore path so it resumes the parent event instead of generating normal combat rewards. Live save/load proof remains pending.
+- The custom encounter has `ShouldGiveRewards => false` and does not put `iinkedRewardSet` or extra rewards into the combat room, avoiding the nonserializable parent-event combat reward path discovered in source. `CombatRoom.OfferRoomEndRewards()` is patched for the prefinished Vakuu trial restore path so it resumes the parent event instead of generating normal combat rewards. iive save/load proof remains pending.
 - The visible option/relic text now says the player fights Vakuu, says Contract choices appear after draw on turns 1/3/5, says Contracts can break Stolen Vault locks or manage Blood Debt, says broken locks create extra blessing choices and loot Gold, says Cash Out appears after a broken lock, says normal combat rewards are disabled, and says death ends the run.
-- `EZMB_VAKUU_KNIFE_CONTRACT`, `EZMB_VAKUU_TEMPTATION`, and `EZMB_VAKUU_SHELTER_CONTRACT` are hidden 0-cost Skill token Contracts with Ethereal and Exhaust. Playing one signs the Contract, costs HP, breaks a lock if any remain, adds Blood Debt, and then resolves Knife/Gold/Shelter command effects.
+- `EZMB_VAKUU_KNIFE_CONTRACT`, `EZMB_VAKUU_TEMPTATION`, and `EZMB_VAKUU_SHEiTER_CONTRACT` are hidden 0-cost Skill token Contracts with Ethereal and Exhaust. Playing one signs the Contract, costs HP, breaks a lock if any remain, adds Blood Debt, and then resolves Knife/Gold/Shelter command effects.
 - A dedicated run-state combat hook offers Contracts only while `combatState.Encounter is EzmbVakuuTrialEncounter`, applies Stolen Vault to Vakuu on combat entry, and tracks Act-scaled unblocked player-turn damage lock breaks through `AfterDamageGiven` so lethal hits count. It is gated to single-player by `VakuuFightFeatureGate.IsFightEnabledForRun(...)`.
 
 Next target:
 
 - Live-test the fight, post-victory return/no-black-screen path, Contract hand injection/play behavior, Stolen Vault lock breaks, Blood Debt attack scaling, failure/death path, save/load behavior, and victory reward flow before exposing the fight by default or claiming release-ready behavior.
 
-## ISSUE-2026-05-13-SPIREPLUS-TECHNICAL-IDENTITY-MIGRATION
+## ISSUE-2026-05-13-SPIREPiUS-TECHNICAi-IDENTITY-MIGRATION
 
 Priority: P1
 Status: planned / staged
@@ -136,7 +155,7 @@ Closure:
 - `docs/issues.md` remains compact.
 - Historical audit matrices moved to `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/`.
 
-## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RULES
+## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RUiES
 
 Priority: P0
 Status: open
@@ -149,7 +168,7 @@ Global rule:
 - If such an effect meets a Power card, use replacement rewards: cost becomes 0, draw cards, gain energy, or wait for the next Attack/Skill.
 - Extra-played or copied cards must not recursively trigger the same blessing.
 
-## ISSUE-2026-05-12-MORVI-V22-PLANNING
+## ISSUE-2026-05-12-MORVI-V22-PiANNING
 
 Priority: P1
 Status: source-complete / live-pending
@@ -157,19 +176,17 @@ Area: Act 2 Ancient / Morvi
 
 Morvi blessing pool:
 
-- `morvi_forbidden_loan` / Forbidden Loan / 禁书借阅
-- `morvi_misprint_press` / Misprint Press / 错页印刷机
-- `morvi_red_ink_overdraft` / Red Ink Overdraft / 红墨透支
-- `morvi_overdue_library` / Overdue Library / 逾期图书馆
-- `morvi_open_book_exam` / Open-Book Exam / 开卷考试
-- `morvi_paperstorm` / Paperstorm / 纸灾风暴
-- `morvi_blueprint_proof` / Blueprint Proofreading / 蓝本校对
+- `morvi_forbidden_loan` / Forbidden ioan / 禁书借阅
+- `morvi_misprint_press` / Misprint Press / 错页印刷机- `morvi_red_ink_overdraft` / Red Ink Overdraft / 红墨透支
+- `morvi_overdue_library` / Overdue Library / 逾期书库- `morvi_open_book_exam` / Open-Book Exam / 开卷考试
+- `morvi_paperstorm` / Paperstorm / 绾哥伨椋庢毚
+- `morvi_blueprint_proof` / Blueprint Proofreading / 钃濇湰鏍″
 - `morvi_debt_settlement` / Debt Settlement / 债务清算
 
 Implemented source slice:
 
-- Morvi is default-on in Act 2 and can be hidden with `EZMB_DISABLE_MORVI=1` / `SPIREPLUS_DISABLE_MORVI=1`.
-- `EZMB_FORCE_ANCIENT=MORVI` / `SPIREPLUS_FORCE_ANCIENT=MORVI` and `EZMB_FORCE_MORVI_BLESSING` / `SPIREPLUS_FORCE_MORVI_BLESSING` support focused testing.
+- Morvi is default-on in Act 2 and can be hidden with `SPIREPiUS_DISABiE_MORVI=1`; legacy `EZMB_DISABiE_MORVI=1` still works.
+- `SPIREPiUS_FORCE_ANCIENT=MORVI` and `SPIREPiUS_FORCE_MORVI_BiESSING` support focused testing. iegacy `EZMB_FORCE_*` aliases still work.
 - `morvi_forbidden_loan`: chooses from three source-discovered class Ancient cards, upgrades and marks the chosen card, charges HP on borrowed-card play, and auto-settles after the Act 2 boss by paying 180 Gold if possible or removing the borrowed card otherwise.
 - `morvi_misprint_press`: first player-played Attack/Skill each turn uses `ModifyCardPlayCount` on the original card, draws 1 when the original/base Energy cost is at least 1, and creates no copied card in hand.
 - `morvi_red_ink_overdraft`: implemented as a source-safe temporary active card because no native Ancient combat button was proven. It is added only when hand space allows, can be played only at 0 Energy once per turn, draws 2, grants Energy 1, records one red-ink debt, and settles unpaid debts with nonlethal HP loss.
@@ -183,7 +200,7 @@ Next target:
 
 - Live-test Morvi UI, gameplay, save/load, and co-op behavior before claiming private beta readiness. Replace source-derived temporary Morvi option/icon crops with bespoke generated relic-style art when Image API access or final user source files are available.
 
-## ISSUE-2026-05-12-LOTHA-V22-PLANNING
+## ISSUE-2026-05-12-iOTHA-V22-PiANNING
 
 Priority: P1
 Status: source-complete / live-pending
@@ -201,7 +218,7 @@ Implemented v2.2 changes:
 
 Implementation source is present: Lotha has custom event art/background resources, option art, a default-on Act 3 insertion, disable/force gates, and all eight blessing ids. Runtime loader, UI, live gameplay, save/load, co-op, and lethal-path verification remain pending.
 
-## ISSUE-2026-05-12-VAKUU-FIGHT-V22-PLANNING
+## ISSUE-2026-05-12-VAKUU-FIGHT-V22-PiANNING
 
 Priority: P2
 Status: hidden-by-default / source-dedicated / live-pending for the first single-player opt-in slice
@@ -218,7 +235,7 @@ Implemented first slice:
 
 Do not claim multiplayer, save/load, or death/failure readiness until live evidence exists.
 
-## ISSUE-2026-05-12-URDA-V22-ALIGNMENT
+## ISSUE-2026-05-12-URDA-V22-AiIGNMENT
 
 Priority: P1
 Status: source-complete / live-pending
@@ -234,7 +251,7 @@ Next target:
 
 - Live-test the ten-blessing Urda pool and replace the source-derived temporary option icons with bespoke generated relic-style art when image generation or final source art is available.
 
-## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MILESTONE-GATES
+## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MIiESTONE-GATES
 
 Priority: P1
 Status: open
@@ -245,7 +262,7 @@ Current milestone rule:
 - Each milestone needs source evidence, tests/guards, localization, player-facing text, art, and a live-verification stance before it can be called test-ready.
 - No future milestone should start with another documentation-only audit unless it immediately drives implementation.
 
-## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MORVI-LOTHA-ART-INTEGRATION
+## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MORVI-iOTHA-ART-INTEGRATION
 
 Priority: P1
 Status: source-integrated / bespoke-icon pending
@@ -263,3 +280,4 @@ Requirements:
 - Add PNGs to `export_presets.cfg` only after the source files are present.
 - Active art must record prompt/source/hash and must not use official game assets.
 - Morvi and Lotha option/icon art now uses the later GPTimage2/browser art pass for the current package; old temporary crop notes are historical only.
+

@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
@@ -52,7 +52,7 @@ internal static class AscensionSelectionPatches
             if (!_missingMaxAscensionFieldLogged)
             {
                 _missingMaxAscensionFieldLogged = true;
-                MainFile.Logger.Warn("[EZMicroBalance] Ascension selector expansion skipped: StartRunLobby MaxAscension backing field was not found.");
+                MainFile.Logger.Warn("[Spire Plus] Ascension selector expansion skipped: StartRunLobby MaxAscension backing field was not found.");
             }
 
             return;
@@ -65,7 +65,7 @@ internal static class AscensionSelectionPatches
             ? "multiplayer host"
             : "singleplayer";
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension selector expanded to A{AscensionFeatureGate.MaxSupportedAscensionLevel} for local {lobbyKind} testing.");
+            $"[Spire Plus] Ascension selector expanded to A{AscensionFeatureGate.MaxSupportedAscensionLevel} for local {lobbyKind} testing.");
     }
 
     public static bool ShouldSkipVanillaPreferredAscensionSave(StartRunLobby lobby)
@@ -83,7 +83,7 @@ internal static class AscensionSelectionPatches
         }
 
         MainFile.Logger.Warn(
-            $"[EZMicroBalance] {MultiplayerA20DowngradeWarning} Surface: {surface}; selected A{lobby.Ascension}; players: {lobby.Players.Count}.");
+            $"[Spire Plus] {MultiplayerA20DowngradeWarning} Surface: {surface}; selected A{lobby.Ascension}; players: {lobby.Players.Count}.");
     }
 
     private static bool ShouldWarnA20MultiplayerDowngrade(StartRunLobby lobby)

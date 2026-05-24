@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]
 internal static class JeweledMaskCombatStartPatch
@@ -23,16 +23,16 @@ internal static class JeweledMaskCombatStartPatch
         {
             jeweledMask.Flash();
             await CardPileCmd.Add(markedPower, PileType.Hand);
-            MainFile.Logger.Info($"[EZMicroBalance] JeweledMask applied: moved marked power {markedPower.Id.Entry} from draw pile to hand.");
+            MainFile.Logger.Info($"[Spire Plus] JeweledMask applied: moved marked power {markedPower.Id.Entry} from draw pile to hand.");
             return;
         }
 
         if (PileType.Hand.GetPile(player).Cards.Any(AncientCardHelpers.IsJeweledMaskPower))
         {
-            MainFile.Logger.Info("[EZMicroBalance] JeweledMask skipped pull: marked power already in hand.");
+            MainFile.Logger.Info("[Spire Plus] JeweledMask skipped pull: marked power already in hand.");
             return;
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] JeweledMask skipped pull: no marked power in draw pile or hand.");
+        MainFile.Logger.Info("[Spire Plus] JeweledMask skipped pull: no marked power in draw pile or hand.");
     }
 }

@@ -5,11 +5,11 @@ Target manifest id: `EZMicroBalance`
 
 ## Architecture
 
-- [x] The active release surface is one mod: `Spire Plus / EZMicroBalance`.
+- [x] The active release surface is one mod: `Spire Plus`.
 - [x] Legacy `EzDailyContent` and standalone `EZFuturePeek` root mod surfaces have been removed from the active tree.
 - [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.
 - [x] Custom-character work is not included in this private beta.
-- [x] A11-A20 selection is now default-on in this private-beta multiplayer test candidate for single-player and host-multiplayer standard lobbies. Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison. Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection. `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required. Host multiplayer A20 selection/start logs a downgrade warning because A20 Branded Form / second-boss enhanced dedicated ability gameplay remains disabled or downgraded in co-op pending live verification. Full live Ascension and co-op verification is pending.
+- [x] A11-A20 selection is now default-on in this private-beta multiplayer test candidate for single-player and host-multiplayer standard lobbies. Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison. Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection. `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required. Host multiplayer A20 selection/start logs a downgrade warning because A20 Branded Form / second-boss enhanced dedicated ability gameplay remains disabled or downgraded in co-op pending live verification. Full live Ascension and co-op verification is pending.
 
 ## Build And Publish
 
@@ -24,10 +24,10 @@ Target manifest id: `EZMicroBalance`
 - [x] Manifest has `affects_gameplay: true`.
 - [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
-- [x] Release artifact tests are opt-in with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh.
-- [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`; this does not claim a fresh 30-field loader smoke.
+- [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
+- [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
 - [x] `publish/SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts on 2026-05-23 and copied to the local game root for manual testing.
-  - Current package hashes: DLL `C9030FCDC459E35256B00CE71925854AF44CFE97667DEB07F751CEA540C86522`; manifest `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`; PCK `68F6DCCC5564AE402B3FFB1DD9A65B92555B58CF72282E8EC64FF273EEC4E0F8`; README `2441D012F12D0FB81BCAF7E1C99B1E60F18187937B9911D7D4FD54ACC47BCC6A`; zip `11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120`.
+  - Current package hashes: DLL `04F65C55CF679C4E0635C6AB21A3E35FF24D669815E27B6C00251059C4A07643`; manifest `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`; PCK `6D10EE277F8FBD91269D77533179D3644C5B944C822ED5787644A374883FF5CE`; README `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA`; zip `47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
@@ -35,16 +35,16 @@ Target manifest id: `EZMicroBalance`
 
 - [x] BaseLib appears in Mod Settings.
 - [x] BaseLib loads when enabled in a controlled smoke profile.
-- [x] Spire Plus / `EZMicroBalance` appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
+- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
 - [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.
-- [x] Historical EZ Micro Balance display-name Mod Settings evidence exists for the same `EZMicroBalance` manifest id.
-- [ ] Fresh 30-field loader smoke confirms Spire Plus / `EZMicroBalance` loads from the current package.
-- [ ] Fresh 30-field loader smoke confirms the game reaches main menu with only BaseLib and Spire Plus / `EZMicroBalance` loaded; unrelated disabled local-mod manifest/name noise in the developer mods folder must stay non-blocking.
-- [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib and Spire Plus / `EZMicroBalance`, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. current source defines 30 SavedSpireFields after the 2026-05-17 static fixes, so a fresh live loader smoke is pending for the current package.
-- [x] Repeat helper-driven normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` reached main menu with only BaseLib and Spire Plus / `EZMicroBalance`, reported `Found 16 SavedSpireFields`, restored settings plus 24 moved mod entries, and audited clean.
-- [x] BaseLib-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with `EZMicroBalance` temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus / `EZMicroBalance`, restored settings plus 25 moved entries and the current-run save, and audited clean.
+- [x] Historical pre-display-name-refresh Mod Settings evidence exists for the same technical manifest id.
+- [ ] Fresh loader smoke confirms Spire Plus loads from the current rebuilt ZIP hash after the README wording refresh.
+- [x] Latest loader smoke confirms the game reaches startup completion with only BaseLib and Spire Plus loaded for the same DLL/PCK/manifest as the current package. Evidence: `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke`.
+- [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib and Spire Plus, reported `Found 22 SavedSpireFields`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. This is historical context now superseded for runtime binaries by the 30-field loader smoke.
+- [x] Repeat helper-driven normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` reached main menu with only BaseLib and Spire Plus, reported `Found 16 SavedSpireFields`, restored settings plus 24 moved mod entries, and audited clean.
+- [x] BaseLib-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with the Spire Plus technical folder temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus, restored settings plus 25 moved entries and the current-run save, and audited clean.
 - [x] `godot.log` reviewed for controlled smoke-test initializer errors.
-- [ ] `godot.log` reviewed after fresh current-package normal Steam-client isolated startup/log verification.
+- [x] `godot.log` reviewed after fresh current-package normal Steam-client isolated startup/log verification.
 - [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.
 
 ## Content Verification
@@ -79,7 +79,7 @@ The collector creates the verifier-readable manifest scaffold. The verifier hash
 | Ancient rewards visible to players | Source: `AncientRewardRelicService` plus Urda/Morvi/Lotha/Vakuu option relic flows; package README and handoff say selected Ancient rewards grant visible marker relics; tests cover option/relic text and package handoff. | Source/package guarded; user still needs to confirm relic-bar visibility and hover readability in live runs. |
 | Player text and tooltip polish | Active EN/zhs localization under `EZMicroBalance/localization/**`; guards reject stale development terms, old Cook wording, raw tokens, mojibake fragments, and mismatched option/relic descriptions. | Static-validated; live UI fit, tooltip readability, and hover behavior remain manual rows. |
 | UI and art resource routing | Event backgrounds, map/run-history icons, option/relic icons, card portraits, power art, and Vakuu encounter art have separate paths in source/export/manifest; art audit and UI readiness guards cover dimensions, hashes, and export paths. | Source/package guarded; clicked Ancient screenshots and combat-scene screenshots remain required before visual closure. |
-| Automation and package parity | `dotnet build`, normal `dotnet test`, `dotnet format --verify-no-changes`, `git diff --check`, opt-in artifact tests, and `scripts/check-installed-ezmb-package.ps1` passed after the current package hash refresh. The installed DLL/manifest/PCK/README and copied game-root ZIP match the handoff hashes. | Automated coverage is green for the installed/package artifacts; it does not replace gameplay/manual proof. |
+| Automation and package parity | `dotnet build`, normal `dotnet test`, `dotnet format --verify-no-changes`, `git diff --check`, opt-in artifact tests, and `scripts/check-installed-spire-plus-package.ps1` passed after the current package hash refresh. The installed DLL/manifest/PCK/README and copied game-root ZIP match the handoff hashes. | Automated coverage is green for the installed/package artifacts; it does not replace gameplay/manual proof. |
 | Documented publish blockers | `PROJECT_STATE.md`, `docs/issues.md`, this checklist, `docs/test-ready-development-goal.md`, and `docs/features/ancient-expansion-v2.2/manual-test-checklist.md` keep live/manual rows open. | Current package is a user-test-ready handoff; publish-proof requires the open manual rows to be completed with evidence. |
 
 ## Release Hygiene
@@ -95,10 +95,10 @@ The collector creates the verifier-readable manifest scaffold. The verifier hash
 
 ## Known Issues
 
-- Latest normal Steam-client startup/log verification is historical for the pre-review Spire Plus display-name package.
-  - Evidence under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded exactly BaseLib and `EZMicroBalance`, registered config, reported `Found 22 SavedSpireFields`, reached main menu in `13,539ms`, and had 0 release-blocking hits. current source defines 30 SavedSpireFields, so fresh live loader parity remains pending.
+- Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest.
+  - Evidence under `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke` loaded exactly BaseLib and `EZMicroBalance`, registered config, reported `Found 30 SavedSpireFields`, reached startup completion, and had 0 release-blocking hits for the same DLL/PCK/manifest as the current package. A fresh current-ZIP loader row is pending after the README wording refresh. This remains loader/startup evidence, not gameplay proof.
   - The 2026-05-13 helper startup/log pass is historical 16-field evidence. BaseLib-only plug-off evidence loaded only BaseLib; the earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
-  - Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list. RC1 normal Steam-client Mod Settings UI verification remains historical evidence for the old EZ Micro Balance display name.
+  - Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list. Earlier page-level Mod Settings evidence predates the display-name refresh.
 - Manual feature results are pending; `docs/features/ancients-rework-v4/manual-verification-matrix.md`, `docs/features/ancient-expansion-urda/manual-test-checklist.md`, and `docs/features/ascension-11-20/manual-test-checklist.md` remain the current manual surfaces.
 - A11 source now inserts a reachable optional route node in the new column and adds Act 1/2/3 route rows, while ordinary A11 route nodes no longer receive a dedicated marker or hover tooltip. The existing A11 live save has a saved-map graph proof from the post-load first-node coord to the boss; natural click-by-click traversal remains pending.
 - Host multiplayer A20 development selection logs an explicit downgrade warning. This is not live co-op support for Branded Form; A20 co-op boss-path behavior remains pending manual verification.
@@ -113,7 +113,7 @@ The collector creates the verifier-readable manifest scaffold. The verifier hash
 
 - Enabling legacy `EzDailyContent` and `EZMicroBalance` together is unsupported.
 - Other mods that alter card rewards, card pools, rest-site options, Ancient rewards, maps, or Ascension selectors are not compatibility-tested.
-- A11-A20 selection is now default-on in this private-beta multiplayer test candidate. The selector patch touches only standard single-player and host-multiplayer lobby selection/start paths, temporarily raises the local single-player run-start max only while launching A11-A20, temporarily expands multiplayer lobby unlock caps only during max recomputation, and skips A11-A20 preferred-progress writes. Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison; set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
+- A11-A20 selection is now default-on in this private-beta multiplayer test candidate. The selector patch touches only standard single-player and host-multiplayer lobby selection/start paths, temporarily raises the local single-player run-start max only while launching A11-A20, temporarily expands multiplayer lobby unlock caps only during max recomputation, and skips A11-A20 preferred-progress writes. Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison; set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds route rows by act: Act 1 +1, Act 2 +1, Act 3 +2 without A11-specific map markers or hover tips.
 - A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available and gives enhanced treasure nodes an extra Uncommon relic reward.
 - A19/A20 Boss map points now have dedicated ability / Branded Form hover text.

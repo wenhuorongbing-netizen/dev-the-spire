@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
@@ -61,7 +61,7 @@ internal static partial class MorviBlessingService
         }
 
         LogMisprintExtraPlayAttempt(player, card, allowed: true, reason: "misprint_press", extraPlayCount: MisprintExtraPlayCount);
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Misprint Press added one play to {card.Id.Entry}.");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Misprint Press added one play to {card.Id.Entry}.");
         return playCount + MisprintExtraPlayCount;
     }
 
@@ -76,7 +76,7 @@ internal static partial class MorviBlessingService
         }
 
         await CardPileCmd.Draw(choiceContext, 1m, cardPlay.Card.Owner);
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Misprint Press drew 1 card after {cardPlay.Card.Id.Entry}.");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Misprint Press drew 1 card after {cardPlay.Card.Id.Entry}.");
     }
 
     private static bool TryConsumeAutoPlayModifierBlock(CardModel card, MorviCombatState combatState)

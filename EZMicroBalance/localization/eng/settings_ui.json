@@ -5,5 +5,5 @@
   "EZMICROBALANCE-CRYSTAL_SPHERE_MASK_ALPHA.title": "Crystal Sphere fog alpha",
   "EZMICROBALANCE-ENABLE_TRANSFORM_PREDICTION.title": "Reveal transform preview",
   "EZMICROBALANCE-TRANSFORM_PREDICTION_ALWAYS_ON.title": "Transform preview always on",
-  "EZMICROBALANCE-SHOW_PREVIEW_DEBUG_LOGS.title": "Preview debug logs"
+  "EZMICROBALANCE-SHOW_PREVIEW_DEBUG_LOGS.title": "Preview diagnostics logs"
 }

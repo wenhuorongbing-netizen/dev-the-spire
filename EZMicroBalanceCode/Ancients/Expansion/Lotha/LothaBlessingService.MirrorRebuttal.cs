@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -15,7 +15,7 @@ internal static partial class LothaBlessingService
     {
         ClearMirrorRebuttalMarkedCards(player);
         AncientSavedStateFields.LothaMirrorRebuttalCard[card] = true;
-        MainFile.Logger.Info($"[EZMicroBalance] Lotha Mirror Rebuttal marked deck card {card.Id.Entry}.");
+        MainFile.Logger.Info($"[Spire Plus] Lotha Mirror Rebuttal marked deck card {card.Id.Entry}.");
     }
 
     private static void ClearMirrorRebuttalMarkedCards(Player player)
@@ -31,37 +31,37 @@ internal static partial class LothaBlessingService
         var selectedCard = player.PlayerCombatState?.AllCards.FirstOrDefault(IsMirrorRebuttalCombatCard);
         if (selectedCard == null)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Lotha Mirror Rebuttal skipped combat-start pull: selected deck card was not found in combat.");
+            MainFile.Logger.Warn("[Spire Plus] Lotha Mirror Rebuttal skipped combat-start pull: selected deck card was not found in combat.");
             return;
         }
 
         if (selectedCard.Pile?.Type == PileType.Hand)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Lotha Mirror Rebuttal selected card already started in hand.");
+            MainFile.Logger.Info("[Spire Plus] Lotha Mirror Rebuttal selected card already started in hand.");
             return;
         }
 
         if (selectedCard.Pile?.Type.IsCombatPile() != true)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Lotha Mirror Rebuttal skipped combat-start pull: selected card is not in a combat pile.");
+            MainFile.Logger.Warn("[Spire Plus] Lotha Mirror Rebuttal skipped combat-start pull: selected card is not in a combat pile.");
             return;
         }
 
         if (PileType.Hand.GetPile(player).Cards.Count >= CardPile.MaxCardsInHand)
         {
             await CardPileCmd.Add(selectedCard, PileType.Draw, CardPilePosition.Top);
-            MainFile.Logger.Warn($"[EZMicroBalance] Lotha Mirror Rebuttal could not move selected card {selectedCard.Id.Entry} into a full hand; placed it on top of draw pile instead.");
+            MainFile.Logger.Warn($"[Spire Plus] Lotha Mirror Rebuttal could not move selected card {selectedCard.Id.Entry} into a full hand; placed it on top of draw pile instead.");
             return;
         }
 
         var addResult = await CardPileCmd.Add(selectedCard, PileType.Hand);
         if (addResult.cardAdded.Pile?.Type == PileType.Hand)
         {
-            MainFile.Logger.Info($"[EZMicroBalance] Lotha Mirror Rebuttal moved selected card {selectedCard.Id.Entry} into hand.");
+            MainFile.Logger.Info($"[Spire Plus] Lotha Mirror Rebuttal moved selected card {selectedCard.Id.Entry} into hand.");
         }
         else
         {
-            MainFile.Logger.Warn($"[EZMicroBalance] Lotha Mirror Rebuttal tried to move selected card {selectedCard.Id.Entry} into hand but it ended in {addResult.cardAdded.Pile?.Type.ToString() ?? "no pile"}.");
+            MainFile.Logger.Warn($"[Spire Plus] Lotha Mirror Rebuttal tried to move selected card {selectedCard.Id.Entry} into hand but it ended in {addResult.cardAdded.Pile?.Type.ToString() ?? "no pile"}.");
         }
     }
 

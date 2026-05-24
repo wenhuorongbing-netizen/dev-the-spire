@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static partial class UrdaBlessingService
 {
@@ -33,7 +33,7 @@ internal static partial class UrdaBlessingService
             ShallowRelicId = selected.Id.ToString()
         });
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Shallow-Root Relic granted {selected.Id.Entry} and {ShallowRootInitialGold} Gold.");
+            $"[Spire Plus] Urda Shallow-Root Relic granted {selected.Id.Entry} and {ShallowRootInitialGold} Gold.");
     }
 
     private static async Task RootShallowRelicFromElite(Player player)
@@ -51,7 +51,7 @@ internal static partial class UrdaBlessingService
         };
         SetProgress(player, progress);
         await PlayerCmd.GainGold(ShallowRootEliteGold, player);
-        MainFile.Logger.Info($"[EZMicroBalance] Urda Shallow-Root Relic rooted after Act 1 Elite; gained {ShallowRootEliteGold} Gold.");
+        MainFile.Logger.Info($"[Spire Plus] Urda Shallow-Root Relic rooted after Act 1 Elite; gained {ShallowRootEliteGold} Gold.");
     }
 
     private static async Task SettleUnrootedShallowRelicAtActTwo(Player player)
@@ -75,7 +75,7 @@ internal static partial class UrdaBlessingService
             ShallowRelicRooted = false
         });
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Shallow-Root Relic Act 2 fallback settled: removed pending relic and refunded {ShallowRootInitialGold} Gold.");
+            $"[Spire Plus] Urda Shallow-Root Relic Act 2 fallback settled: removed pending relic and refunded {ShallowRootInitialGold} Gold.");
     }
 
     private static RelicModel? FindRelicById(Player player, string id) =>

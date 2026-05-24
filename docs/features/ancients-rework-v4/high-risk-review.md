@@ -2,7 +2,7 @@
 
 Review date: 2026-05-06
 
-Scope: private beta hardening pass for implemented Spire Plus / `EZMicroBalance` patches. v4.3 is current.
+Scope: private beta hardening pass for implemented Spire Plus patches under technical id `EZMicroBalance`. v4.3 is current.
 
 ## Reviewed Surfaces
 

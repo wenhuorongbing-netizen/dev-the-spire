@@ -1,6 +1,6 @@
 # Spire Plus Preview Tools
 
-Preview tools are part of the single `Spire Plus / EZMicroBalance` mod.
+Preview tools are part of the single `Spire Plus` mod.
 
 ## Current Target
 

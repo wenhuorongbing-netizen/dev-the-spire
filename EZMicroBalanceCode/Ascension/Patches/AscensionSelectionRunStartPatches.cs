@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 using MegaCrit.Sts2.Core.Saves;
 
@@ -33,7 +33,7 @@ internal static class StartRunLobbyBeginRunLocallyPatch
         AscensionSelectionPatches.ExpandMaxAscension(__instance);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Temporarily raised local MaxAscension to {stats.MaxAscension} so A{__instance.Ascension} can start.");
+            $"[Spire Plus] Temporarily raised local MaxAscension to {stats.MaxAscension} so A{__instance.Ascension} can start.");
     }
 
     private static Exception? Finalizer(ProgressMaxAscensionOverride? __state, Exception? __exception)
@@ -92,7 +92,7 @@ internal static class StartRunLobbyUpdatePreferredAscensionPatch
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Keeping A{__instance.Ascension} as a launch-only test selection; not writing it to vanilla progress.");
+            $"[Spire Plus] Keeping A{__instance.Ascension} as a launch-only test selection; not writing it to vanilla progress.");
         return false;
     }
 }

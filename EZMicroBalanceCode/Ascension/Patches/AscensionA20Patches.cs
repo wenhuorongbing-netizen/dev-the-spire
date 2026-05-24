@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using EZMicroBalance.EZMicroBalanceCode.Ascension.Events;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Models;
@@ -29,7 +29,7 @@ internal static class AscensionA20GenerateRoomsPatch
             .Where(encounter => encounter.Id != finalAct.BossEncounter.Id));
         if (secondBoss == null)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Ascension A20 could not choose a second boss encounter for the final act.");
+            MainFile.Logger.Warn("[Spire Plus] Ascension A20 could not choose a second boss encounter for the final act.");
             return;
         }
 
@@ -43,7 +43,7 @@ internal static class AscensionA20GenerateRoomsPatch
                 ["encounter"] = secondBoss.Id.ToString()
             });
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Ascension A20 applied: final act second boss set to {secondBoss.Id.Entry} through the vanilla double-boss map path.");
+            $"[Spire Plus] Ascension A20 applied: final act second boss set to {secondBoss.Id.Entry} through the vanilla double-boss map path.");
     }
 }
 

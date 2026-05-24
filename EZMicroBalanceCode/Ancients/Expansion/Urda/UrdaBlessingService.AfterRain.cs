@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static partial class UrdaBlessingService
 {
@@ -44,7 +44,7 @@ internal static partial class UrdaBlessingService
             await CardPileCmd.AddGeneratedCardToCombat(rainBreath, PileType.Hand, player);
         }
 
-        MainFile.Logger.Info("[EZMicroBalance] Urda After the Rain triggered: added Rain Breath after first unblocked enemy attack damage this combat.");
+        MainFile.Logger.Info("[Spire Plus] Urda After the Rain triggered: added Rain Breath after first unblocked enemy attack damage this combat.");
     }
 
     private static void ResetAfterRainCombatTrigger(Player player)
@@ -69,7 +69,7 @@ internal static partial class UrdaBlessingService
         {
             await PlayerCmd.GainGold(AfterRainGoldPayoff, player);
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Urda After the Rain Act 2 payoff granted {AfterRainGoldPayoff} Gold after {progress.AfterRainTriggerCount} Act 1 trigger(s).");
+                $"[Spire Plus] Urda After the Rain Act 2 payoff granted {AfterRainGoldPayoff} Gold after {progress.AfterRainTriggerCount} Act 1 trigger(s).");
             return;
         }
 
@@ -86,7 +86,7 @@ internal static partial class UrdaBlessingService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda After the Rain Act 2 payoff healed {AfterRainRecoveryHeal} HP and upgraded 1 card after {progress.AfterRainTriggerCount} Act 1 trigger(s).");
+            $"[Spire Plus] Urda After the Rain Act 2 payoff healed {AfterRainRecoveryHeal} HP and upgraded 1 card after {progress.AfterRainTriggerCount} Act 1 trigger(s).");
     }
 
     private static bool IsAfterRainTriggerDamage(

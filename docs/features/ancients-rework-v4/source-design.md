@@ -13,7 +13,8 @@ This design is source-complete for automated test handoff. Runtime gameplay, rew
 | Prismatic Gem | Gain 1 Energy. Every second standard card reward contains only off-color cards. The trigger is scoped to the current `CardReward` screen, so reroll keeps the same trigger state and does not advance the saved counter again. | Pending reward-screen and reroll test. |
 | Jewelry Box | Adds a non-Innate Apotheosis and preserves that marker through save/load. | Pending live deck/save-load test. |
 | Preserved Fog | Removes up to four cards and adds Folly without Ethereal or Retain. Folly exposes Unplayable, Eternal, and Innate. | Pending live deck test. |
-| Claws | Chooses one curse from four, then adds two Wish and one Wish+. | Pending live reward test. |
+| Vakuu's Sere Talon / 瓦库原初之爪 | Vakuu relic. Adds two random Curses and three Wish. | Pending live reward test. |
+| Tanx Claws / 坦克斯利爪 | Tanx relic. Transforms selected cards into upgraded Maul+ / 撕咬+. | Pending live pickup test. |
 | Choices Paradox | On the first combat turn, offers five rare temporary retained choices and removes unselected generated cards. | Pending combat test. |
 | Jeweled Mask | Marks one Power card. It permanently costs 0 and starts in hand each combat. | Pending live draft/save-load/combat test. |
 | Prismatic Gem count hint | Relic hover should show the saved reward count, such as `棱彩计数：0/2` or `棱彩计数：1/2`. | Pending hover visual test. |
@@ -34,6 +35,6 @@ This design is source-complete for automated test handoff. Runtime gameplay, rew
 
 ## Player Text Commitments
 
-- Chinese visible text uses compact wording and no-space number formatting, such as `获得1点能量`, `第7张`, `至少18点`, `迅速2`, and `棱彩计数：1/2`.
+- Chinese visible text uses compact wording and no-space number formatting, such as `获得1点能量`, `第7张`, `至少18点`, `迅速2`, and `棱彩计数：0/2`.
 - Tooltips should describe the player-visible effect, cost, and timing.
 - Technical terms such as hook, source-safe, backend, candidate, debug, and fallback must stay out of player-facing text. Internal docs may mention implementation fallbacks only when they explain test or runtime evidence.

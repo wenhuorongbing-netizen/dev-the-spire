@@ -28,7 +28,7 @@ public sealed class ReleaseCoverageGuardTests
         new("War Hammer", ["WAR_HAMMER.description"], [], [], ["WarHammer", "CardSelectCmd.FromDeckForUpgrade", "CardCmd.Upgrade(cards, CardPreviewStyle.HorizontalLayout)"]),
         new("Jewelry Box", ["JEWELRY_BOX.description"], [], [], ["JewelryBox", "CreateNonInnateApotheosis", "Apotheosis"]),
         new("Preserved Fog / Folly", ["PRESERVED_FOG.description"], ["FOLLY.title", "FOLLY.description"], [], ["PreservedFog", "Folly", "FollyKeywordsPatch"]),
-        new("Claws", ["CLAWS.description"], [], [], ["Claws", "CreateClawsCurseDraft", "CreateCard<Wish>"]),
+        new("Vakuu's Sere Talon", ["SERE_TALON.description"], [], [], ["option.Relic is PreservedFog or SereTalon"]),
         new("Choices Paradox", ["CHOICES_PARADOX.description"], [], [], ["ChoicesParadox", "ChooseRareTemporaryCard", "CardKeyword.Retain"]),
         new("Jeweled Mask", ["JEWELED_MASK.description", "JEWELED_MASK.ezSelectionScreenPrompt"], [], [], ["JeweledMask", "JeweledMaskFreePower", "CardCmd.Enchant<JeweledMaskFreePower>"]),
         new("Prismatic Gem", ["PRISMATIC_GEM.description"], [], [], ["PrismaticGem", "RewardScreenState", "GetOffColorRewardPool"]),
@@ -229,7 +229,8 @@ public sealed class ReleaseCoverageGuardTests
             "RootBeginsLevel = 14",
             "BossRootBudLevel = 15",
             "EliteRootBudLevel = 18",
-            "DebugLevelEnvironmentVariable = \"EZMB_ASCENSION_DEBUG_LEVEL\"",
+            "DebugLevelEnvironmentVariable = \"SPIREPLUS_ASCENSION_DEBUG_LEVEL\"",
+            "LegacyDebugLevelEnvironmentVariable = \"EZMB_ASCENSION_DEBUG_LEVEL\"",
             "return 0;",
             "RootFamilyCard",
             "RootBud",
@@ -270,8 +271,8 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("Covered desktop captures, wrong-surface captures, or sessions that never reach the target game surface do not satisfy Rootblight, Ascension, or gameplay rows.", manualChecklist, StringComparison.Ordinal);
 
         Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", releaseChecklist, StringComparison.Ordinal);
-        Assert.Contains("Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.", releaseChecklist, StringComparison.Ordinal);
-        Assert.Contains("Set `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("`EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.", releaseChecklist, StringComparison.Ordinal);
     }
 
@@ -501,7 +502,7 @@ public sealed class ReleaseCoverageGuardTests
             "\\[ERROR\\]",
             "TypeLoadException",
             "MissingMethodException",
-            "EZMicroBalance error/exception",
+            "Spire Plus error/exception",
             "FailOnHit",
             "ConvertTo-Json");
         Assert.DoesNotContain("BaseLib.*(?:patch|patches).*(?:failed|failure|exception)", logAuditScript, StringComparison.Ordinal);
@@ -518,7 +519,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("## Issue detail links", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/urda.md", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/waiting-tests.md", issues, StringComparison.Ordinal);
-        Assert.Contains("Current package hashes, 2026-05-23:", issues, StringComparison.Ordinal);
+        Assert.Contains("Current package hashes, 2026-05-24:", issues, StringComparison.Ordinal);
         Assert.Contains("`URDA-PROTOTYPE` P0 open", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: resolved", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\uFFFD", issues, StringComparison.Ordinal);
@@ -701,12 +702,12 @@ public sealed class ReleaseCoverageGuardTests
             "Two physical PCs.",
             "Same-PC multi-open is not reliable for real Steam multiplayer and should not be the primary release test.",
             "`--force-steam off` is valid for controlled loader smoke only.",
-            "EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1",
-            "EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1",
-            "EZMB_ASCENSION_DIAGNOSTICS=1",
+            "SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1",
+            "SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1",
+            "SPIREPLUS_ASCENSION_DIAGNOSTICS=1",
             "EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1",
-            "[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION','1','User')",
-            "[Environment]::SetEnvironmentVariable('EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION',$null,'User')",
+            "[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION','1','User')",
+            "[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION',$null,'User')",
             "fully restart Steam and the game",
             "Gate Default-On Checks",
             "Gate-Off Comparison Checks",

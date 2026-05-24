@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Monsters;
+﻿using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -25,7 +25,7 @@ internal static partial class AscensionCombatModifierService
 
         tracker.LastSoulFyshIntangibleAmount = (int)intangibleAmount;
         await ApplyPowerWithFinalDisplayedGain<ArtifactPower>(soulFysh, 1, soulFysh, null);
-        MainFile.Logger.Info("[EZMicroBalance] Ascension A19 applied: Soul Tide added Artifact on Intangible entry.");
+        MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Soul Tide added Artifact on Intangible entry.");
     }
 
     private static void TrackSoulTideBeckonsBeforeFlush(
@@ -82,6 +82,6 @@ internal static partial class AscensionCombatModifierService
         var block = tracker.PendingSoulTideBlock;
         tracker.PendingSoulTideBlock = 0m;
         await CreatureCmd.GainBlock(soulFysh, block, ValueProp.Move, null);
-        MainFile.Logger.Info($"[EZMicroBalance] Ascension A19 applied: Soul Tide converted Beckon hand pressure into {block} Block.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Soul Tide converted Beckon hand pressure into {block} Block.");
     }
 }

@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]
 internal static class JewelryBoxPatch
@@ -16,7 +16,7 @@ internal static class JewelryBoxPatch
         var result = await CardPileCmd.Add(card, PileType.Deck, clonedBy: jewelryBox);
         JewelryBoxApotheosisMarker.Mark(result.cardAdded);
         CardCmd.PreviewCardPileAdd(result, 2f);
-        MainFile.Logger.Info("[EZMicroBalance] JewelryBox applied: added Apotheosis without Innate.");
+        MainFile.Logger.Info("[Spire Plus] JewelryBox applied: added Apotheosis without Innate.");
     }
 
     public static CardModel CreateNonInnateApotheosis(Player owner)

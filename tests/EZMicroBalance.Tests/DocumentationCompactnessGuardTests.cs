@@ -1,3 +1,4 @@
+﻿using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -32,6 +33,161 @@ public sealed class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void ChineseIntroKeepsPreviewToolsInsideSpirePlus()
+    {
+        var intro = ReadRepoText("docs", "\u4ecb\u7ecd.md");
+        var packageScript = ReadRepoText("scripts", "package-spire-plus.ps1");
+
+        AssertSourceContains(
+            intro,
+            "# Spire Plus \u7b80\u4ecb",
+            "`Spire Plus` \u662f\u4e00\u4e2a Slay the Spire 2 \u79c1\u6d4b\u6a21\u7ec4",
+            "\u73a9\u5bb6\u53ea\u9700\u8981\u542f\u7528\u8fd9\u4e00\u4e2a\u6a21\u7ec4",
+            "\u6c34\u6676\u7403\u9884\u89c1\u548c\u53d8\u6362\u9884\u89c8\u5de5\u5177\uff0c\u5df2\u7ecf\u5e76\u5165\u540c\u4e00\u4e2a `Spire Plus` \u6a21\u7ec4",
+            "\u989d\u5916\u5b89\u88c5\u7684\u9884\u89c1\u5de5\u5177\u6a21\u7ec4\uff1b\u6c34\u6676\u7403\u9884\u89c1\u548c\u53d8\u6362\u9884\u89c8\u5df2\u7ecf\u5e76\u5165 `Spire Plus`",
+            "\u5f53\u524d\u76ee\u6807\u662f test-ready \u624b\u52a8\u6d4b\u8bd5\u5305");
+        Assert.DoesNotContain("Future Peek", intro, StringComparison.Ordinal);
+        Assert.DoesNotContain("EZFuturePeek", intro, StringComparison.Ordinal);
+        Assert.Contains(
+            "Crystal Sphere peek and transform preview are part of this Spire Plus package.",
+            packageScript,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("Future Peek", packageScript, StringComparison.Ordinal);
+        foreach (var mojibakeFragment in new[] { "\u93c4", "\u7ec9\u4f5e\u7974", "\u941c", "\u59d8\u5b58\u6ae0", "\u68f0\u6fe7", "\u5a34\u8bca", "\u59af\uff27\u7ca8" })
+        {
+            Assert.DoesNotContain(mojibakeFragment, intro, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void PlayerFacingNameStaysSpirePlusWhileTechnicalIdRemainsStable()
+    {
+        using var manifest = JsonDocument.Parse(ReadRepoText("EZMicroBalance.json"));
+        Assert.Equal("EZMicroBalance", manifest.RootElement.GetProperty("id").GetString());
+        Assert.Equal("Spire Plus", manifest.RootElement.GetProperty("name").GetString());
+
+        Assert.Equal(
+            "Spire Plus",
+            JsonStringMap("EZMicroBalance", "localization", "eng", "settings_ui.json")["EZMICROBALANCE.mod_title"]);
+        Assert.Equal(
+            "Spire Plus",
+            JsonStringMap("EZMicroBalance", "localization", "zhs", "settings_ui.json")["EZMICROBALANCE.mod_title"]);
+
+        var currentMarkdownFiles = Directory
+            .GetFiles(Root, "*.md", SearchOption.AllDirectories)
+            .Select(ToRepoRelativePath)
+            .Where(path =>
+                !path.StartsWith("docs/archive/", StringComparison.Ordinal) &&
+                !path.StartsWith(".tools/", StringComparison.Ordinal) &&
+                !path.StartsWith("publish/", StringComparison.Ordinal) &&
+                !path.StartsWith("source code/", StringComparison.Ordinal) &&
+                !path.Contains("/bin/", StringComparison.Ordinal) &&
+                !path.Contains("/obj/", StringComparison.Ordinal))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.NotEmpty(currentMarkdownFiles);
+        var offenders = currentMarkdownFiles
+            .Select(path => new { Path = path, Text = ReadRepoText(path.Split('/')) })
+            .Where(file =>
+                file.Text.Contains("EZ Micro Balance", StringComparison.Ordinal) ||
+                file.Text.Contains("EZ Microbalance", StringComparison.Ordinal) ||
+                file.Text.Contains("EZmicrobalance", StringComparison.Ordinal))
+            .Select(file => file.Path)
+            .ToArray();
+
+        Assert.True(
+            offenders.Length == 0,
+            "Current player/tester-facing markdown must use Spire Plus, not the old display name. Offenders:"
+                + Environment.NewLine
+                + string.Join(Environment.NewLine, offenders));
+
+        var legacyShorthandOffenders = currentMarkdownFiles
+            .Select(path => new { Path = path, Text = ReadRepoText(path.Split('/')) })
+            .SelectMany(file => new[]
+                {
+                    "EZMB-only",
+                    "BaseLib+EZMB",
+                    "non-BaseLib/EZMB",
+                    "BaseLib/EZMB",
+                    "no-op EZMB config",
+                    "BaseLib + EZMicroBalance",
+                    "Spire Plus / `EZMicroBalance`",
+                    "Spire Plus / EZMicroBalance"
+                }
+                .Where(fragment => file.Text.Contains(fragment, StringComparison.Ordinal))
+                .Select(fragment => $"{file.Path}:{fragment}"))
+            .ToArray();
+
+        Assert.True(
+            legacyShorthandOffenders.Length == 0,
+            "Current markdown should say Spire Plus for player/tester-facing setup shorthand; keep EZMicroBalance only for exact technical ids, paths, artifacts, and legacy env-var aliases. Offenders:"
+                + Environment.NewLine
+                + string.Join(Environment.NewLine, legacyShorthandOffenders));
+
+        var remoteSetup = ReadRepoText("docs", "REMOTE_DEVELOPMENT_SETUP.md");
+        var docsIndex = ReadRepoText("docs", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+
+        AssertSourceContains(
+            remoteSetup,
+            "Active mod: `Spire Plus`",
+            "Technical project, manifest id, and install folder: `EZMicroBalance`");
+        Assert.DoesNotContain("Active project: `EZMicroBalance`", remoteSetup, StringComparison.Ordinal);
+        Assert.Contains(
+            "Why `Spire Plus` keeps the stable `EZMicroBalance` technical id.",
+            docsIndex,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "Independent `Spire Plus` project created on the stable `EZMicroBalance` technical id",
+            projectMap,
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void PlayerVisibleLocalizationValuesAvoidTechnicalAndLegacyModNames()
+    {
+        var forbiddenFragments = new[]
+        {
+            "EZMicroBalance",
+            "EZMB",
+            "EZ Micro Balance",
+            "EZ Microbalance",
+            "EZmicrobalance",
+            "Easy Content",
+            "EzDailyContent",
+            "Future Peek",
+            "EZFuturePeek"
+        };
+        var localizationRoots = new[]
+            {
+                RepoPath("EZMicroBalance", "localization", "eng"),
+                RepoPath("EZMicroBalance", "localization", "zhs"),
+                RepoPath("website", "assets", "localization", "eng"),
+                RepoPath("website", "assets", "localization", "zhs")
+            }
+            .Where(Directory.Exists)
+            .ToArray();
+
+        Assert.NotEmpty(localizationRoots);
+
+        var offenders = localizationRoots
+            .SelectMany(root => Directory.GetFiles(root, "*.json", SearchOption.TopDirectoryOnly))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .SelectMany(file => JsonStringMap(file)
+                .SelectMany(entry => forbiddenFragments
+                    .Where(fragment => entry.Value.Contains(fragment, StringComparison.Ordinal))
+                    .Select(fragment => $"{ToRepoRelativePath(file)}:{entry.Key}:{fragment}")))
+            .ToArray();
+
+        Assert.True(
+            offenders.Length == 0,
+            "Player-visible localization values must say Spire Plus. Technical ids may remain in keys, paths, manifest id, saved fields, and legacy env-var aliases only. Offenders:"
+                + Environment.NewLine
+                + string.Join(Environment.NewLine, offenders));
+    }
+
+    [Fact]
     public void TestReadyDevelopmentGoalStaysCompactAndCurrent()
     {
         var goal = ReadRepoText("docs", "test-ready-development-goal.md");
@@ -43,8 +199,14 @@ public sealed class DocumentationCompactnessGuardTests
             "Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test build",
             "Current stop line: Codex should not chase release-ready evidence in this pass.",
             "`source code/src/Core/**` is the primary source evidence",
-            "Preview tools are now part of the single `Spire Plus / EZMicroBalance` mod.",
-            "No live-game, save-load, death/failure, or co-op evidence may be claimed from these commands.");
+            "Preview tools are now part of the single `Spire Plus` mod.",
+            "$env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'",
+            "No live-game, save-load, death/failure, or co-op evidence may be claimed from these commands.",
+            "Trial Branch /",
+            "A12 uses",
+            "dedicated ability /",
+            "Branded Form /");
+        Assert.DoesNotContain("$env:EZMB_RUN_RELEASE_ARTIFACT_TESTS='1'", goal, StringComparison.Ordinal);
         Assert.DoesNotContain("One-Shot Prompt", goal, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("## Subagent Plan", goal, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("## P0:", goal, StringComparison.OrdinalIgnoreCase);
@@ -67,10 +229,11 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("Latest normal Steam-client startup/log evidence is historical for the pre-review Spire Plus package", projectState, StringComparison.Ordinal);
-        Assert.Contains("2026-05-23 after the package no-refresh guard update", projectState, StringComparison.Ordinal);
-        Assert.Contains("258 passed / 18 skipped", projectState, StringComparison.Ordinal);
-        Assert.Contains("fresh live loader parity remains pending for the 2026-05-23 package", projectState, StringComparison.Ordinal);
+        Assert.Contains("current package Steam-client loader smoke", projectState, StringComparison.Ordinal);
+        Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
+        Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
+        Assert.Contains("current-package loader row is pending again", projectState, StringComparison.Ordinal);
+        Assert.Contains("19 pending live/manual rows", projectState, StringComparison.Ordinal);
         Assert.Contains("Current manual-test package is not a release-readiness claim", projectState, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", projectState, StringComparison.Ordinal);
         Assert.Contains("git diff --check", projectState, StringComparison.Ordinal);
@@ -115,6 +278,7 @@ public sealed class DocumentationCompactnessGuardTests
         Assert.DoesNotContain("BANNER-TEMP-STRENGTH-CLEANUP-20260518", toReview, StringComparison.Ordinal);
         Assert.Contains("URDA-ROOT-EYES", toReview, StringComparison.Ordinal);
         Assert.Contains("VAKUU-FIGHT", toReview, StringComparison.Ordinal);
+        Assert.DoesNotContain("candidate gating", toReview, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("toreview-pre-slim-20260518.md", docsIndex, StringComparison.Ordinal);
         Assert.Contains("toreview-pre-slim-20260518.md", projectMap, StringComparison.Ordinal);
         Assert.Contains("toreview-pre-slim-20260518.md", docInventory, StringComparison.Ordinal);
@@ -135,14 +299,125 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-05-23:",
+            "Current package hashes, 2026-05-24:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
-            "152 dirty entries and 0 unclassified paths",
+            "`SERE-TALON/TANX-CLAWS-ROUTING`",
+            "`TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending",
+            "`SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending",
+            "320 dirty entries, 0 unclassified paths",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source-split/refactor passes", issues, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("SERE-TALON/CLAWS-ROUTING", issues, StringComparison.Ordinal);
+        Assert.DoesNotContain("SERE-TALON-VISUAL-IDENTITYT P0 source-fixed / package/live-pending", issues, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void SourceFixedLivePendingIssuesHaveManualRetestRows()
+    {
+        var issues = ReadRepoText("docs", "issues.md");
+        var toReview = ReadRepoText("docs", "toreview.md");
+
+        var mappings = new (string IssueId, string[] RetestEvidence)[]
+        {
+            ("SERE-TALON/TANX-CLAWS-ROUTING", ["MANUAL-20260519-COUNTERS-PEEK-TAGS", "MANUAL-20260524-SERE-TALON-ART"]),
+            ("HUSK-CARD-BEHAVIOR", ["MANUAL-20260519-MOLTING"]),
+            ("SERE-TALON-VISUAL-IDENTITY", ["MANUAL-20260524-SERE-TALON-ART", "MANUAL-20260524-SERE-TALON-TANX-CLAWS-REPORT"]),
+            ("ROOT-SIGHT-ENCOUNTER-POOL", ["URDA-ROOT-EYES"]),
+            ("FIREMARK-HEAL/TEXT", ["MANUAL-20260519-BANNER-FIREMARK"]),
+            ("UNKNOWN-EVENT-PREVIEW-READABILITY", ["URDA-ROOT-EYES"]),
+            ("ROOTBLIGHT-STARTER-MISSING", ["ASCENSION-A11-A20"]),
+            ("WATERFALL-BOSS-SEAL", ["MANUAL-20260522-BOSS-SEALS"]),
+            ("HOURGLASS-BOSS-SEAL-DESIGN", ["MANUAL-20260522-BOSS-SEALS", "MANUAL-20260522-SEAL-INDICATORS"]),
+            ("QUEEN-BOSS-SEAL-WEAKNESS", ["MANUAL-20260522-BOSS-SEALS"]),
+            ("FIREMARK-OVERFLOW/FORGE-ARMOR", ["MANUAL-20260519-BANNER-FIREMARK"]),
+            ("BANNER-ROOM-PREVIEW", ["MANUAL-20260519-ACT-VALUES"]),
+            ("ROOT-EYES-CONFLICTS-COOP", ["MANUAL-20260522-ROOT-EYES-CONFLICTS"]),
+            ("PREVIEW-TOOLS-REWARD-HOOKS", ["MANUAL-20260522-PREVIEW-TOOLS"]),
+            ("SEAL-BANNER-VISIBILITY", ["MANUAL-20260522-SEAL-INDICATORS"]),
+            ("V33-DESIGN-PASS", ["MANUAL-20260522-V33-DESIGN"]),
+            ("STRICT-AUDIT-VAKUU-CULTURE-SAVE", ["VAKUU-FIGHT"]),
+            ("STRICT-AUDIT-PATCH-SURFACE", ["VAKUU-FIGHT", "ASCENSION-A11-A20", "MANUAL-20260520-EVIDENCE-LOG"]),
+            ("STRICT-AUDIT-EVIDENCE-LOG", ["MANUAL-20260520-EVIDENCE-LOG"])
+        };
+
+        var failures = new List<string>();
+        foreach (var mapping in mappings)
+        {
+            if (!issues.Contains($"`{mapping.IssueId}`", StringComparison.Ordinal))
+            {
+                failures.Add($"docs/issues.md no longer lists `{mapping.IssueId}`.");
+                continue;
+            }
+
+            foreach (var retestEvidence in mapping.RetestEvidence)
+            {
+                if (!toReview.Contains(retestEvidence, StringComparison.Ordinal))
+                {
+                    failures.Add($"`{mapping.IssueId}` lacks manual retest evidence `{retestEvidence}` in docs/toreview.md.");
+                }
+            }
+        }
+
+        Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
+    }
+
+    [Fact]
+    public void ActiveQueuesKeepSereTalonAndTanxClawsChineseReadable()
+    {
+        var activeQueues = ReadCurrentFacingDocs(
+            "docs/issues.md",
+            "docs/toreview.md",
+            "docs/review.md");
+
+        AssertSourceContains(
+            activeQueues,
+            "Vakuu's Sere Talon",
+            "Tanx Claws",
+            "Maul+",
+            "\u6495\u54ac+");
+
+        foreach (var staleTanxClawsTuning in new[]
+        {
+            "Numeric Maul tuning is pending",
+            "Maul tuning is pending",
+            "design-pending",
+            "[blue]1[/blue] more damage"
+        })
+        {
+            Assert.DoesNotContain(staleTanxClawsTuning, activeQueues, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void CurrentAncientManualDocsKeepTanxClawsUpgradedMaulDesignCurrent()
+    {
+        var manualDocs = ReadCurrentFacingDocs(
+            "docs/features/ancients-rework-v4/manual-test-checklist.md",
+            "docs/features/ancients-rework-v4/manual-verification-matrix.md",
+            "docs/features/ancients-rework-v4/source-design.md",
+            "docs/features/ancients-rework-v4/implementation-plan.md");
+
+        AssertSourceContains(
+            manualDocs,
+            "Vakuu's Sere Talon",
+            "Tanx Claws",
+            "upgraded Maul",
+            "Maul+",
+            "\u6495\u54ac+");
+
+        foreach (var staleTanxClawsTuning in new[]
+        {
+            "Numeric Maul tuning is pending",
+            "Maul tuning is pending",
+            "design-pending",
+            "[blue]1[/blue] more damage"
+        })
+        {
+            Assert.DoesNotContain(staleTanxClawsTuning, manualDocs, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
@@ -157,15 +432,20 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             handoff,
             "Current source/package highlights:",
-            "This handoff is not a commit manifest",
-            "Do not trust a point-in-time dirty-file list",
-            "git status --short --branch",
-            "git log -1 --oneline --decorate",
-            "git diff --stat");
+            "Current automated snapshot:",
+            "SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1",
+            "Historical detailed command logs are preserved",
+            "Automated evidence does not close clicked UI, live gameplay, save-load, death/failure, route traversal, preview-tools, or co-op rows.");
         Assert.DoesNotContain("A1.05.01", handoff, StringComparison.Ordinal);
         Assert.DoesNotContain("Current git status before", handoff, StringComparison.Ordinal);
         Assert.DoesNotContain("Pre-commit local cleanup status summary", handoff, StringComparison.Ordinal);
         Assert.DoesNotContain("Latest package note, 2026-05-18: the package hashes below include", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("V22 text/art-fit recheck", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("Source-audited text correction recheck", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("Source-guard follow-up, 2026-05-14", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("RC1 normal Steam-client isolated startup log started", handoff, StringComparison.Ordinal);
+        Assert.DoesNotContain("Previous controlled `--force-steam off` smoke evidence", handoff, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -200,12 +480,14 @@ public sealed class DocumentationCompactnessGuardTests
             devEnvironment,
             "Historical 22-field loader evidence:",
             "Current source defines 30 SavedSpireFields",
-            "not refreshed 30-field package parity",
+            "Latest loader evidence:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
             "Last private beta package:",
             "Zip SHA256:",
             "DLL SHA256:",
+            "## Pending manual checks",
             "Manual game verification");
+        Assert.DoesNotContain("## TODO", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("strict hook/text audit", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Banner temporary Strength cleanup", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Ascension side-turn state fix", devEnvironment, StringComparison.Ordinal);
@@ -267,19 +549,19 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "fresh live loader parity remains pending",
+            "Fresh loader smoke confirms Spire Plus loads from the current rebuilt ZIP hash",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,
             "Current automated suite count and command results are recorded",
-            "current source defines 30 SavedSpireFields",
+            "Latest Steam-client loader evidence",
             "manual feature matrix has runtime gameplay",
             "A20 multiplayer selection is not full A20 co-op support");
         AssertSourceContains(
             ancientCompletionAudit,
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "current source defines 30 SavedSpireFields",
-            "historical loader/resource evidence only");
+            "Previous package smoke",
+            "gameplay/manual rows pending");
     }
 
     [Fact]
@@ -287,6 +569,8 @@ public sealed class DocumentationCompactnessGuardTests
     {
         var docsToCheck = new[]
         {
+            "README.md",
+            "docs/BETA_COMPATIBILITY.md",
             "docs/dev-environment.md",
             "docs/toreview.md",
             "docs/test-ready-completion-audit.md",
@@ -317,13 +601,48 @@ public sealed class DocumentationCompactnessGuardTests
             "253 passed, 0 skipped",
             "257 passed / 18 skipped",
             "257 passed, 18 skipped",
+            "258 passed / 18 skipped",
+            "258 passed, 18 skipped",
+            "262 passed / 18 skipped",
+            "262 passed, 18 skipped",
+            "263 passed / 18 skipped",
+            "263 passed, 18 skipped",
+            "264 passed / 20 skipped",
+            "264 passed, 20 skipped",
+            "266 passed / 20 skipped",
+            "266 passed, 20 skipped",
+            "267 passed / 20 skipped",
+            "267 passed, 20 skipped",
+            "268 passed / 20 skipped",
+            "268 passed, 20 skipped",
+            "269 passed / 20 skipped",
+            "269 passed, 20 skipped",
+            "280 passed / 0 skipped",
+            "280 passed, 0 skipped",
+            "281 passed / 0 skipped",
+            "281 passed, 0 skipped",
+            "286 passed / 0 skipped",
+            "286 passed, 0 skipped",
+            "287 passed / 0 skipped",
+            "287 passed, 0 skipped",
+            "289 passed / 0 skipped",
+            "289 passed, 0 skipped",
             "275 passed / 0 skipped",
             "275 passed, 0 skipped",
             "264 passed / 0 skipped",
             "270 passed / 0 skipped",
             "270 passed, 0 skipped",
-            "269 passed / 0 skipped",
-            "269 passed, 0 skipped"
+            "271 passed / 20 skipped",
+            "271 passed, 20 skipped",
+            "291 passed / 0 skipped",
+            "291 passed, 0 skipped"
+        };
+        var staleSavedFieldCounts = new[]
+        {
+            "current source defines 26 SavedSpireFields",
+            "Current source defines 26 SavedSpireFields",
+            "current source now defines 26 SavedSpireFields",
+            "Current source now defines 26 SavedSpireFields"
         };
         var failures = new List<string>();
 
@@ -338,6 +657,14 @@ public sealed class DocumentationCompactnessGuardTests
                     failures.Add($"{path} contains stale validation count `{staleCount}`.");
                 }
             }
+
+            foreach (var staleSavedFieldCount in staleSavedFieldCounts)
+            {
+                if (text.Contains(staleSavedFieldCount, StringComparison.Ordinal))
+                {
+                    failures.Add($"{path} contains stale saved-field count `{staleSavedFieldCount}`.");
+                }
+            }
         }
 
         Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
@@ -345,7 +672,37 @@ public sealed class DocumentationCompactnessGuardTests
         var currentDocs = string.Join(
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains("258 passed / 18 skipped", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("276 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("272 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("292 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CurrentChangelogUsesSpirePlusEnvironmentNamesFirst()
+    {
+        var changelog = ReadRepoText("docs", "mod-changelog.md");
+        var scriptsReadme = ReadRepoText("scripts", "README.md");
+
+        AssertSourceContains(
+            changelog,
+            "SPIREPLUS_ENABLE_VAKUU_FIGHT=1",
+            "SPIREPLUS_DISABLE_MORVI=1",
+            "preferred `SPIREPLUS_DISABLE_MORVI` plus legacy `EZMB_DISABLE_MORVI`",
+            "preferred `SPIREPLUS_DISABLE_LOTHA` plus legacy `EZMB_DISABLE_LOTHA`",
+            "SPIREPLUS_FORCE_MORVI_BLESSING=morvi_misprint_press",
+            "SPIREPLUS_DISABLE_URDA=1",
+            "Legacy `EZMB_ENABLE_VAKUU_FIGHT=1` still works",
+            "Legacy `EZMB_FORCE_MORVI_BLESSING` still works",
+            "Legacy `EZMB_DISABLE_URDA=1` still works");
+        AssertSourceContains(
+            scriptsReadme,
+            "SPIREPLUS_ENABLE_VAKUU_FIGHT=1",
+            "legacy `EZMB_ENABLE_VAKUU_FIGHT=1`");
+        Assert.DoesNotContain("behind `EZMB_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`", changelog, StringComparison.Ordinal);
+        Assert.DoesNotContain("`EZMB_DISABLE_MORVI` / `SPIREPLUS_DISABLE_MORVI`", changelog, StringComparison.Ordinal);
+        Assert.DoesNotContain("`EZMB_DISABLE_LOTHA` / `SPIREPLUS_DISABLE_LOTHA`", changelog, StringComparison.Ordinal);
+        Assert.DoesNotContain("Set TEZMB_FORCE_MORVI_BLESSING=", changelog, StringComparison.Ordinal);
+        Assert.DoesNotContain("Set `EZMB_DISABLE_URDA=1`", changelog, StringComparison.Ordinal);
+        Assert.DoesNotContain("`EZMB_ENABLE_VAKUU_FIGHT=1` / `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`", scriptsReadme, StringComparison.Ordinal);
     }
 }
+

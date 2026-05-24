@@ -209,8 +209,12 @@ public sealed class PreviewToolsGuardTests
         Assert.Equal("预知", simplifiedChinese["EZMICROBALANCE-CRYSTAL_SPHERE_PEEK_BUTTON.title"]);
         Assert.Equal("水晶球预知按钮", simplifiedChinese["EZMICROBALANCE-ENABLE_CRYSTAL_SPHERE_PEEK.title"]);
         Assert.Equal("水晶球雾层透明度", simplifiedChinese["EZMICROBALANCE-CRYSTAL_SPHERE_MASK_ALPHA.title"]);
+        Assert.Equal("Preview diagnostics logs", english["EZMICROBALANCE-SHOW_PREVIEW_DEBUG_LOGS.title"]);
+        Assert.Equal("预览诊断日志", simplifiedChinese["EZMICROBALANCE-SHOW_PREVIEW_DEBUG_LOGS.title"]);
 
         var combinedZhs = string.Join('\n', simplifiedChinese.Values);
+        var combinedEnglish = string.Join('\n', english.Values);
+        Assert.DoesNotContain("debug", combinedEnglish, StringComparison.OrdinalIgnoreCase);
         foreach (var mojibake in new[] { "妫", "閸", "閺", "閼", "鐠", "鈧", "棰勭煡" })
         {
             Assert.DoesNotContain(mojibake, combinedZhs, StringComparison.Ordinal);

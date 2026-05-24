@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Xunit;
@@ -8,6 +8,33 @@ namespace EZMicroBalance.Tests;
 public sealed class ReleaseEvidenceGateTests
 {
     private sealed record RequiredEvidence(string Key, string Description, Func<bool> IsPresent);
+
+    private static void AssertPackageHashesUseVersionedArtifacts(string packageHashesPath)
+    {
+        using var packageDocument = JsonDocument.Parse(File.ReadAllText(packageHashesPath));
+        var files = packageDocument.RootElement
+            .GetProperty("Files")
+            .EnumerateArray()
+            .ToArray();
+        var paths = files
+            .Select(file => file.GetProperty("Path").GetString())
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.0.zip", paths);
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.0\\EZMicroBalance\\EZMicroBalance.dll", paths);
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.0\\EZMicroBalance\\EZMicroBalance.pck", paths);
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.0\\EZMicroBalance\\EZMicroBalance.json", paths);
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.0\\EZMicroBalance\\README_INSTALL.txt", paths);
+        Assert.DoesNotContain("publish\\EZMicroBalance.dll", paths);
+        Assert.DoesNotContain("publish\\EZMicroBalance.pck", paths);
+        Assert.DoesNotContain("publish\\EZMicroBalance.json", paths);
+
+        foreach (var file in files.Where(file => file.GetProperty("Path").GetString()?.StartsWith("publish\\SpirePlus-v0.1.0-private-beta.0", StringComparison.Ordinal) == true))
+        {
+            Assert.True(file.GetProperty("Exists").GetBoolean(), $"Package hash row points at a missing package artifact: {file.GetProperty("Path").GetString()}");
+        }
+    }
 
     [Fact]
     public void CurrentManualTestHandoffScriptCreatesAllPendingEvidenceSections()
@@ -24,6 +51,14 @@ public sealed class ReleaseEvidenceGateTests
             "collect-preview-tools-evidence.ps1",
             "collect-coop-evidence.ps1",
             "verify-spire-plus-release-evidence.ps1",
+            "TESTER_START_HERE.md",
+            "Recommended order",
+            "Handoff summary",
+            "PendingVerifierRequiredRowCount=19",
+            "PendingVerifierFailureCount=19",
+            "PendingVerifierWarningCount=0",
+            "Move-StaleCurrentLoaderEvidence",
+            ".stale-loader-evidence",
             "Pending release evidence unexpectedly passed verification",
             "No game was launched. All live rows remain pending.");
 
@@ -31,6 +66,10 @@ public sealed class ReleaseEvidenceGateTests
             scriptsReadme,
             "prepare-current-manual-test-handoff.ps1",
             "release, Ancient UI, Vakuu fight, preview-tools, and co-op evidence templates",
+            "handoff-summary.json",
+            "PendingVerifierRequiredRowCount",
+            "PendingVerifierFailureCount",
+            "PendingVerifierWarningCount",
             "It does not launch the game and does not mark rows as passed.");
 
         var evidenceDir = RepoPath(
@@ -60,14 +99,64 @@ public sealed class ReleaseEvidenceGateTests
 
             var summaryPath = Path.Combine(evidenceDir, "handoff-summary.json");
             var readmePath = Path.Combine(evidenceDir, "README.md");
+            var startHerePath = Path.Combine(evidenceDir, "TESTER_START_HERE.md");
             Assert.True(File.Exists(summaryPath), "Missing handoff-summary.json.");
             Assert.True(File.Exists(readmePath), "Missing handoff README.md.");
+            Assert.True(File.Exists(startHerePath), "Missing TESTER_START_HERE.md.");
 
             using var summaryDocument = JsonDocument.Parse(File.ReadAllText(summaryPath));
             var summary = summaryDocument.RootElement;
             Assert.True(summary.GetProperty("NoLaunch").GetBoolean());
             Assert.True(summary.GetProperty("PendingVerifierChecked").GetBoolean());
             Assert.True(summary.GetProperty("PendingVerifierExpectedFailure").GetBoolean());
+            Assert.Equal(19, summary.GetProperty("PendingVerifierRequiredRowCount").GetInt32());
+            Assert.Equal(19, summary.GetProperty("PendingVerifierFailureCount").GetInt32());
+            Assert.Equal(0, summary.GetProperty("PendingVerifierWarningCount").GetInt32());
+            Assert.Equal("publish\\SpirePlus-v0.1.0-private-beta.0.zip", summary.GetProperty("PackagePath").GetString());
+            Assert.Equal("47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC", summary.GetProperty("PackageSha256").GetString());
+            var expectedEvidenceRootArg = $"-EvidenceRoot '{Path.GetRelativePath(Root, Path.Combine(evidenceDir, "release"))}'";
+            var expectedManifestArg = $"-ManifestPath '{Path.GetRelativePath(Root, Path.Combine(evidenceDir, "release", "release-evidence-manifest.json"))}'";
+            var verifierCommand = summary.GetProperty("VerifierCommand").GetString();
+            Assert.Contains(expectedEvidenceRootArg, verifierCommand, StringComparison.Ordinal);
+            Assert.Contains(expectedManifestArg, verifierCommand, StringComparison.Ordinal);
+
+            var startHere = File.ReadAllText(startHerePath);
+            var readme = File.ReadAllText(readmePath);
+            Assert.Contains("## Package under test", startHere, StringComparison.Ordinal);
+            Assert.Contains("Player-facing mod: `Spire Plus`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("Install note: enable `Spire Plus` in game. The current compatibility folder inside the package is `EZMicroBalance`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("ZIP: `publish\\SpirePlus-v0.1.0-private-beta.0.zip`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("ZIP SHA256: `47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("## Handoff summary", startHere, StringComparison.Ordinal);
+            Assert.Contains("`handoff-summary.json` records this no-launch scaffold contract.", startHere, StringComparison.Ordinal);
+            Assert.Contains("`PendingVerifierRequiredRowCount=19`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("`PendingVerifierFailureCount=19`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("`PendingVerifierWarningCount=0`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("These numbers mean the scaffold is expected to fail until live evidence is filled.", startHere, StringComparison.Ordinal);
+            Assert.Contains("Recommended order", startHere, StringComparison.Ordinal);
+            Assert.Contains(".\\scripts\\check-installed-spire-plus-package.ps1 -ModDirectory \"D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance\"", startHere, StringComparison.Ordinal);
+            Assert.Contains("It should fail closed with 19 pending live rows", startHere, StringComparison.Ordinal);
+            Assert.Contains("release/fresh-current-package-loader-smoke/", startHere, StringComparison.Ordinal);
+            Assert.Contains("The Mods list should show `Spire Plus`; `EZMicroBalance` should appear only as the technical folder/id in paths or logs.", startHere, StringComparison.Ordinal);
+            Assert.Contains("## Focused current regression check", startHere, StringComparison.Ordinal);
+            Assert.Contains("Vakuu event option: pick `Sere Talon`. It must be the Vakuu relic that adds 2 random Curses and 3 Wish.", startHere, StringComparison.Ordinal);
+            Assert.Contains("It must not show Tanx Claws relic art, title, or Maul-transform text. If the effect is 2 random Curses plus 3 Wish but the art is still Tanx Claws, treat it as a Spire Plus UI/package-load issue.", startHere, StringComparison.Ordinal);
+            Assert.Contains("Capture the event option, relic bar, inspect screen, and hover tooltip for Sere Talon.", startHere, StringComparison.Ordinal);
+            Assert.Contains("Sere Talon route lines on `Ancient event option button`", startHere, StringComparison.Ordinal);
+            Assert.Contains("`RelicModel packed icon texture`", startHere, StringComparison.Ordinal);
+            Assert.Contains("`RelicModel big icon texture`", startHere, StringComparison.Ordinal);
+            Assert.Contains("`NRelic small node`", startHere, StringComparison.Ordinal);
+            Assert.Contains("`NRelic large node`", startHere, StringComparison.Ordinal);
+            Assert.Contains("Tanx Claws should remain the Maul-transform relic and should create upgraded Maul cards.", startHere, StringComparison.Ordinal);
+            Assert.Contains("Do not mark rows pass from source review.", startHere, StringComparison.Ordinal);
+            Assert.Contains("verify-spire-plus-release-evidence.ps1", startHere, StringComparison.Ordinal);
+            Assert.Contains(expectedEvidenceRootArg, startHere, StringComparison.Ordinal);
+            Assert.Contains(expectedManifestArg, startHere, StringComparison.Ordinal);
+            Assert.Contains("`handoff-summary.json` records `PendingVerifierRequiredRowCount=19`, `PendingVerifierFailureCount=19`, and `PendingVerifierWarningCount=0`.", readme, StringComparison.Ordinal);
+            Assert.Contains("Those are expected no-launch values, not live proof.", readme, StringComparison.Ordinal);
+            Assert.Contains(expectedEvidenceRootArg, readme, StringComparison.Ordinal);
+            Assert.Contains(expectedManifestArg, readme, StringComparison.Ordinal);
+            Assert.DoesNotContain("manual-test-handoff-20260523-current", startHere, StringComparison.Ordinal);
 
             var manifestPath = Path.Combine(evidenceDir, "release", "release-evidence-manifest.json");
             using var manifestDocument = JsonDocument.Parse(File.ReadAllText(manifestPath));
@@ -77,6 +166,125 @@ public sealed class ReleaseEvidenceGateTests
             Assert.All(
                 rows.SelectMany(row => row.GetProperty("RequiredFiles").EnumerateArray()),
                 file => Assert.Equal(JsonValueKind.String, file.ValueKind));
+
+            var loaderEvidenceDir = Path.Combine(evidenceDir, "release", "fresh-current-package-loader-smoke");
+            Directory.CreateDirectory(loaderEvidenceDir);
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "command.txt"), "Synthetic current-package loader command fixture.");
+            File.WriteAllText(
+                Path.Combine(loaderEvidenceDir, "godot.log"),
+                "BaseLib initialized. Spire Plus initialized. Loaded 2 mods. Registered config for mod EZMicroBalance. Found 30 SavedSpireFields.");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "BaseLib" + Environment.NewLine + "Spire Plus");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), "{ \"Clean\": true }");
+
+            var manifestNode = JsonNode.Parse(File.ReadAllText(manifestPath))!.AsObject();
+            var manifestRows = manifestNode["Rows"]!.AsArray();
+            var loaderRow = manifestRows.Single(row => (string?)row?["Id"] == "fresh-current-package-loader-smoke")!.AsObject();
+            loaderRow["Status"] = "pass";
+            loaderRow["EvidenceDir"] = loaderEvidenceDir;
+            loaderRow["ResultNote"] = "Synthetic current-package loader preservation fixture for generator regression coverage.";
+            loaderRow["ReleaseNote"] = "Loader row filled; gameplay rows remain pending.";
+            loaderRow["Notes"] = "Preserve this pass row when regenerating the current handoff.";
+            File.WriteAllText(manifestPath, manifestNode.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var preservedResult = RunPowerShell(script, "-EvidenceRoot", evidenceDir);
+            Assert.True(preservedResult.ExitCode == 0, $"prepare-current-manual-test-handoff.ps1 failed while preserving loader evidence:{Environment.NewLine}{preservedResult.Output}");
+
+            using var preservedSummaryDocument = JsonDocument.Parse(File.ReadAllText(summaryPath));
+            var preservedSummary = preservedSummaryDocument.RootElement;
+            Assert.False(preservedSummary.GetProperty("NoLaunch").GetBoolean());
+            Assert.Equal(19, preservedSummary.GetProperty("PendingVerifierRequiredRowCount").GetInt32());
+            Assert.Equal(18, preservedSummary.GetProperty("PendingVerifierFailureCount").GetInt32());
+            Assert.Equal(18, preservedSummary.GetProperty("CurrentVerifierFailureCount").GetInt32());
+            Assert.Equal(loaderEvidenceDir, preservedSummary.GetProperty("CurrentLoaderEvidenceDir").GetString());
+
+            using var preservedManifestDocument = JsonDocument.Parse(File.ReadAllText(manifestPath));
+            var preservedRows = preservedManifestDocument.RootElement.GetProperty("Rows").EnumerateArray().ToArray();
+            var preservedLoaderRow = preservedRows.Single(row => row.GetProperty("Id").GetString() == "fresh-current-package-loader-smoke");
+            Assert.Equal("pass", preservedLoaderRow.GetProperty("Status").GetString());
+            Assert.Equal(loaderEvidenceDir, preservedLoaderRow.GetProperty("EvidenceDir").GetString());
+
+            var preservedStartHere = File.ReadAllText(startHerePath);
+            var preservedReadme = File.ReadAllText(readmePath);
+            Assert.Contains("The current-package loader row is filled", preservedStartHere, StringComparison.Ordinal);
+            Assert.Contains("It should fail closed with 18 pending live rows", preservedStartHere, StringComparison.Ordinal);
+            Assert.Contains("current failure count `18`", preservedReadme, StringComparison.Ordinal);
+            Assert.DoesNotContain("It should fail closed with 19 pending live rows", preservedStartHere, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(evidenceDir))
+            {
+                Directory.Delete(evidenceDir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void CurrentManualTestHandoffArchivesStaleLoaderFilesWhenHashCannotBePreserved()
+    {
+        var script = AssertRepoFileExists("scripts", "prepare-current-manual-test-handoff.ps1");
+        var evidenceDir = RepoPath(
+            ".tools",
+            "runtime-evidence",
+            "test-release-evidence-gate",
+            "prepare-current-manual-test-handoff-stale-loader",
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(evidenceDir);
+        try
+        {
+            var result = RunPowerShell(script, "-EvidenceRoot", evidenceDir);
+            Assert.True(result.ExitCode == 0, $"prepare-current-manual-test-handoff.ps1 failed:{Environment.NewLine}{result.Output}");
+
+            var manifestPath = Path.Combine(evidenceDir, "release", "release-evidence-manifest.json");
+            var loaderEvidenceDir = Path.Combine(evidenceDir, "release", "fresh-current-package-loader-smoke");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot.log"), "Stale loader log for an older package hash.");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), """{ "Clean": true }""");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "BaseLib\r\nSpire Plus\r\n");
+
+            var manifestNode = JsonNode.Parse(File.ReadAllText(manifestPath))!.AsObject();
+            var loaderRow = manifestNode["Rows"]!.AsArray()
+                .Single(row => (string?)row?["Id"] == "fresh-current-package-loader-smoke")!
+                .AsObject();
+            loaderRow["Status"] = "pass";
+            loaderRow["EvidenceDir"] = loaderEvidenceDir;
+            loaderRow["ResultNote"] = "Synthetic stale loader row that should not survive a package-hash mismatch.";
+            File.WriteAllText(manifestPath, manifestNode.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var packageHashesPath = Path.Combine(loaderEvidenceDir, "package-hashes.json");
+            var packageHashes = JsonNode.Parse(File.ReadAllText(packageHashesPath))!.AsObject();
+            var packageRow = packageHashes["Files"]!.AsArray()
+                .Single(row => (string?)row?["Path"] == "publish\\SpirePlus-v0.1.0-private-beta.0.zip")!
+                .AsObject();
+            packageRow["Sha256"] = "STALE_PACKAGE_HASH";
+            File.WriteAllText(packageHashesPath, packageHashes.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var rerunResult = RunPowerShell(script, "-EvidenceRoot", evidenceDir);
+            Assert.True(rerunResult.ExitCode == 0, $"prepare-current-manual-test-handoff.ps1 failed on stale-loader rerun:{Environment.NewLine}{rerunResult.Output}");
+
+            Assert.False(File.Exists(Path.Combine(loaderEvidenceDir, "godot.log")), "Stale godot.log should be moved out of the pending loader row.");
+            Assert.False(File.Exists(Path.Combine(loaderEvidenceDir, "godot-log-audit.json")), "Stale godot-log-audit.json should be moved out of the pending loader row.");
+            Assert.False(File.Exists(Path.Combine(loaderEvidenceDir, "enabled-mods.txt")), "Stale enabled-mods.txt should be moved out of the pending loader row.");
+
+            var archiveRoot = Path.Combine(loaderEvidenceDir, ".stale-loader-evidence");
+            Assert.True(Directory.Exists(archiveRoot), "Missing stale loader evidence archive.");
+            var archiveDir = Assert.Single(Directory.GetDirectories(archiveRoot));
+            Assert.True(File.Exists(Path.Combine(archiveDir, "godot.log")), "Archived stale godot.log missing.");
+            Assert.True(File.Exists(Path.Combine(archiveDir, "godot-log-audit.json")), "Archived stale godot-log-audit.json missing.");
+            Assert.True(File.Exists(Path.Combine(archiveDir, "enabled-mods.txt")), "Archived stale enabled-mods.txt missing.");
+            Assert.Contains("historical context only", File.ReadAllText(Path.Combine(archiveDir, "README.md")), StringComparison.Ordinal);
+
+            using var summaryDocument = JsonDocument.Parse(File.ReadAllText(Path.Combine(evidenceDir, "handoff-summary.json")));
+            var summary = summaryDocument.RootElement;
+            Assert.True(summary.GetProperty("NoLaunch").GetBoolean());
+            Assert.Equal(19, summary.GetProperty("PendingVerifierFailureCount").GetInt32());
+            Assert.Equal(archiveDir, summary.GetProperty("StaleCurrentLoaderArchive").GetString());
+
+            using var rerunManifestDocument = JsonDocument.Parse(File.ReadAllText(manifestPath));
+            var rerunLoaderRow = rerunManifestDocument.RootElement
+                .GetProperty("Rows")
+                .EnumerateArray()
+                .Single(row => row.GetProperty("Id").GetString() == "fresh-current-package-loader-smoke");
+            Assert.Equal("pending", rerunLoaderRow.GetProperty("Status").GetString());
         }
         finally
         {
@@ -125,7 +333,9 @@ public sealed class ReleaseEvidenceGateTests
 
                 Assert.True(File.Exists(Path.Combine(evidenceDir, "command.txt")), $"{scriptName} did not write command.txt.");
                 Assert.True(File.Exists(Path.Combine(evidenceDir, "environment.json")), $"{scriptName} did not write environment.json.");
-                Assert.True(File.Exists(Path.Combine(evidenceDir, "package-hashes.json")), $"{scriptName} did not write package-hashes.json.");
+                var packageHashesPath = Path.Combine(evidenceDir, "package-hashes.json");
+                Assert.True(File.Exists(packageHashesPath), $"{scriptName} did not write package-hashes.json.");
+                AssertPackageHashesUseVersionedArtifacts(packageHashesPath);
                 Assert.True(File.Exists(Path.Combine(evidenceDir, "manual-rows-template.json")), $"{scriptName} did not write manual-rows-template.json.");
 
                 using var rowsDocument = JsonDocument.Parse(File.ReadAllText(Path.Combine(evidenceDir, "manual-rows-template.json")));
@@ -217,12 +427,31 @@ public sealed class ReleaseEvidenceGateTests
                         "Ancient reward row did not get a visible relic checklist template.");
                     var ancientRewardReadme = File.ReadAllText(Path.Combine(ancientRewardDir, "README.md"));
                     var ancientRewardChecklist = File.ReadAllText(Path.Combine(ancientRewardDir, "ancient-reward-relics-checklist-template.md"));
+                    AssertTemplateChecklistCreated(ancientRewardChecklist, "ancient-reward-relics-checklist.md");
+                    var ancientRewardWorkingChecklist = AssertWorkingChecklistCreated(
+                        ancientRewardDir,
+                        "ancient-reward-relics-checklist.md",
+                        ["UrdaSeedBankOptionRelic", "MorviBlueprintProofOptionRelic", "LothaDeathReprieveOptionRelic", "VakuuFightOptionRelic"]);
                     Assert.Contains("Manual checkpoints:", ancientRewardReadme, StringComparison.Ordinal);
                     Assert.Contains("Every Urda, Morvi, and Lotha initial reward option is visible as an option relic", ancientRewardReadme, StringComparison.Ordinal);
                     Assert.Contains("UrdaSeedBankOptionRelic", ancientRewardChecklist, StringComparison.Ordinal);
                     Assert.Contains("MorviBlueprintProofOptionRelic", ancientRewardChecklist, StringComparison.Ordinal);
                     Assert.Contains("LothaDeathReprieveOptionRelic", ancientRewardChecklist, StringComparison.Ordinal);
                     Assert.Contains("VakuuFightOptionRelic", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("sere_talon_pickup", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("claws_maul_transform", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Vakuu's Sere Talon / \u74e6\u5e93\u539f\u521d\u4e4b\u722a", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Tanx Claws / \u5766\u514b\u65af\u5229\u722a", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Maul / \u6495\u54ac", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("`Ancient event option button`", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("`RelicModel packed icon texture`", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("`RelicModel big icon texture`", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("upgraded Maul", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.DoesNotContain("\u95bb", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.DoesNotContain("\u95b8", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.DoesNotContain("\u95b9", ancientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Fill this checklist with live results before marking this row pass.", ancientRewardWorkingChecklist, StringComparison.Ordinal);
 
                     var playerTextRow = rows.Single(row => row.GetProperty("Id").GetString() == "player-text-tooltip-readability");
                     var playerTextFiles = playerTextRow
@@ -238,12 +467,18 @@ public sealed class ReleaseEvidenceGateTests
                         "Player text row did not get a QA checklist template.");
                     var playerTextReadme = File.ReadAllText(Path.Combine(playerTextDir, "README.md"));
                     var playerTextChecklist = File.ReadAllText(Path.Combine(playerTextDir, "player-text-qa-checklist-template.md"));
+                    AssertTemplateChecklistCreated(playerTextChecklist, "player-text-qa-checklist.md");
+                    var playerTextWorkingChecklist = AssertWorkingChecklistCreated(
+                        playerTextDir,
+                        "player-text-qa-checklist.md",
+                        ["ascension-a11-a20", "ancient-choice-text", "preview-tools-text", "en-zhs-key-parity"]);
                     Assert.Contains("Manual checkpoints:", playerTextReadme, StringComparison.Ordinal);
                     Assert.Contains("Check English and Simplified Chinese text separately", playerTextReadme, StringComparison.Ordinal);
                     Assert.Contains("ascension-a11-a20", playerTextChecklist, StringComparison.Ordinal);
                     Assert.Contains("ancient-choice-text", playerTextChecklist, StringComparison.Ordinal);
                     Assert.Contains("preview-tools-text", playerTextChecklist, StringComparison.Ordinal);
                     Assert.Contains("en-zhs-key-parity", playerTextChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Fill this checklist with live results before marking this row pass.", playerTextWorkingChecklist, StringComparison.Ordinal);
 
                     var artRoutingRow = rows.Single(row => row.GetProperty("Id").GetString() == "art-resource-routing-live-preview");
                     var artRoutingFiles = artRoutingRow
@@ -259,12 +494,18 @@ public sealed class ReleaseEvidenceGateTests
                         "Art routing row did not get a routing checklist template.");
                     var artRoutingReadme = File.ReadAllText(Path.Combine(artRoutingDir, "README.md"));
                     var artRoutingChecklist = File.ReadAllText(Path.Combine(artRoutingDir, "art-resource-routing-checklist-template.md"));
+                    AssertTemplateChecklistCreated(artRoutingChecklist, "art-resource-routing-checklist.md");
+                    var artRoutingWorkingChecklist = AssertWorkingChecklistCreated(
+                        artRoutingDir,
+                        "art-resource-routing-checklist.md",
+                        ["title-home-preview", "option-relic-icons", "power-icons", "no-placeholder-or-official-art"]);
                     Assert.Contains("Manual checkpoints:", artRoutingReadme, StringComparison.Ordinal);
                     Assert.Contains("Confirm large Ancient/event art is used only on clicked Ancient or event screens", artRoutingReadme, StringComparison.Ordinal);
                     Assert.Contains("title-home-preview", artRoutingChecklist, StringComparison.Ordinal);
                     Assert.Contains("option-relic-icons", artRoutingChecklist, StringComparison.Ordinal);
                     Assert.Contains("power-icons", artRoutingChecklist, StringComparison.Ordinal);
                     Assert.Contains("no-placeholder-or-official-art", artRoutingChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Fill this checklist with live results before marking this row pass.", artRoutingWorkingChecklist, StringComparison.Ordinal);
 
                     var rootblightRow = rows.Single(row => row.GetProperty("Id").GetString() == "rootblight-visual-behavior");
                     var rootblightFiles = rootblightRow
@@ -280,11 +521,21 @@ public sealed class ReleaseEvidenceGateTests
                         "Rootblight row did not get a behavior checklist template.");
                     var rootblightReadme = File.ReadAllText(Path.Combine(rootblightDir, "README.md"));
                     var rootblightChecklist = File.ReadAllText(Path.Combine(rootblightDir, "rootblight-behavior-checklist-template.md"));
+                    AssertTemplateChecklistCreated(rootblightChecklist, "rootblight-behavior-checklist.md");
+                    var rootblightWorkingChecklist = AssertWorkingChecklistCreated(
+                        rootblightDir,
+                        "rootblight-behavior-checklist.md",
+                        ["rootblight-start-eligibility", "normal-rootblight-continuity", "boss-two-sprouts-staggered", "rootblight-save-load"]);
                     Assert.Contains("Manual checkpoints:", rootblightReadme, StringComparison.Ordinal);
-                    Assert.Contains("Confirm Blight Sprout appears in the expected normal, elite, and Boss combat contexts", rootblightReadme, StringComparison.Ordinal);
+                    Assert.Contains("normal fights advance existing Rootblight without expecting Blight Sprout cards", rootblightReadme, StringComparison.Ordinal);
+                    Assert.Contains("Blight Sprout appears only in the current A15 Boss and A18 eligible Elite contexts", rootblightReadme, StringComparison.Ordinal);
                     Assert.Contains("rootblight-start-eligibility", rootblightChecklist, StringComparison.Ordinal);
+                    Assert.Contains("normal-rootblight-continuity", rootblightChecklist, StringComparison.Ordinal);
+                    Assert.DoesNotContain("normal-sprout-appearance", rootblightChecklist, StringComparison.Ordinal);
                     Assert.Contains("boss-two-sprouts-staggered", rootblightChecklist, StringComparison.Ordinal);
+                    Assert.Contains("husk-exhaust-block-timing", rootblightChecklist, StringComparison.Ordinal);
                     Assert.Contains("rootblight-save-load", rootblightChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Fill this checklist with live results before marking this row pass.", rootblightWorkingChecklist, StringComparison.Ordinal);
 
                     var bossAbilityRow = rows.Single(row => row.GetProperty("Id").GetString() == "a19-a20-dedicated-boss-abilities");
                     var bossAbilityFiles = bossAbilityRow
@@ -300,12 +551,18 @@ public sealed class ReleaseEvidenceGateTests
                         "A19/A20 row did not get a boss ability checklist template.");
                     var bossAbilityReadme = File.ReadAllText(Path.Combine(bossAbilityDir, "README.md"));
                     var bossAbilityChecklist = File.ReadAllText(Path.Combine(bossAbilityDir, "boss-ability-checklist-template.md"));
+                    AssertTemplateChecklistCreated(bossAbilityChecklist, "boss-ability-checklist.md");
+                    var bossAbilityWorkingChecklist = AssertWorkingChecklistCreated(
+                        bossAbilityDir,
+                        "boss-ability-checklist.md",
+                        ["Martyr Oath", "Ink Return", "Time Sand Reflow", "Experimental Record"]);
                     Assert.Contains("Manual checkpoints:", bossAbilityReadme, StringComparison.Ordinal);
                     Assert.Contains("A20 Branded Form applies only to the second Act 3 Boss.", bossAbilityReadme, StringComparison.Ordinal);
                     Assert.Contains("Martyr Oath", bossAbilityChecklist, StringComparison.Ordinal);
                     Assert.Contains("Ink Return", bossAbilityChecklist, StringComparison.Ordinal);
                     Assert.Contains("Time Sand Reflow", bossAbilityChecklist, StringComparison.Ordinal);
                     Assert.Contains("Experimental Record", bossAbilityChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Fill this checklist with live results before marking this row pass.", bossAbilityWorkingChecklist, StringComparison.Ordinal);
 
                     AssertChecklistTemplate(
                         rows,
@@ -357,7 +614,7 @@ public sealed class ReleaseEvidenceGateTests
 
                     using var manifestDocument = JsonDocument.Parse(File.ReadAllText(manifestPath));
                     var manifest = manifestDocument.RootElement;
-                    Assert.Equal("11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120", manifest.GetProperty("PackageSha256").GetString());
+                    Assert.Equal("47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC", manifest.GetProperty("PackageSha256").GetString());
                     Assert.Equal("publish\\SpirePlus-v0.1.0-private-beta.0.zip", manifest.GetProperty("PackagePath").GetString());
                     Assert.Equal(rows.Length, manifest.GetProperty("Rows").GetArrayLength());
 
@@ -607,9 +864,16 @@ public sealed class ReleaseEvidenceGateTests
                     Assert.Contains("coop-disposition-checklist.md still contains the unfilled template instruction", blankChecklistResult.Output, StringComparison.Ordinal);
                     Assert.Contains("row for coop-host-join-clean-logs has no filled Live result cell", blankChecklistResult.Output, StringComparison.Ordinal);
 
+                    var filledAncientRewardChecklist = CreateFilledAncientRewardRelicsChecklist();
+                    Assert.Contains("Vakuu's Sere Talon / \u74e6\u5e93\u539f\u521d\u4e4b\u722a", filledAncientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Tanx Claws / \u5766\u514b\u65af\u5229\u722a", filledAncientRewardChecklist, StringComparison.Ordinal);
+                    Assert.Contains("Maul / \u6495\u54ac", filledAncientRewardChecklist, StringComparison.Ordinal);
+                    Assert.DoesNotContain("\u95bb", filledAncientRewardChecklist, StringComparison.Ordinal);
+                    Assert.DoesNotContain("\u95b8", filledAncientRewardChecklist, StringComparison.Ordinal);
+                    Assert.DoesNotContain("\u95b9", filledAncientRewardChecklist, StringComparison.Ordinal);
                     File.WriteAllText(
                         Path.Combine(ancientRewardEvidenceDir, "ancient-reward-relics-checklist.md"),
-                        CreateFilledAncientRewardRelicsChecklist());
+                        filledAncientRewardChecklist);
                     File.WriteAllText(
                         Path.Combine(playerTextEvidenceDir, "player-text-qa-checklist.md"),
                         CreateFilledPlayerTextQaChecklist());
@@ -689,6 +953,98 @@ public sealed class ReleaseEvidenceGateTests
     }
 
     [Fact]
+    public void ReleaseVerifierRejectsStalePackageHashRows()
+    {
+        var collector = AssertRepoFileExists("scripts", "collect-release-evidence.ps1");
+        var verifier = AssertRepoFileExists("scripts", "verify-spire-plus-release-evidence.ps1");
+        var evidenceDir = RepoPath(
+            ".tools",
+            "runtime-evidence",
+            "test-release-evidence-gate",
+            "stale-package-hashes",
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(evidenceDir);
+        try
+        {
+            var collectResult = RunPowerShell(collector, "-NoLaunch", "-EvidenceDir", evidenceDir);
+            Assert.True(collectResult.ExitCode == 0, $"collect-release-evidence.ps1 -NoLaunch failed:{Environment.NewLine}{collectResult.Output}");
+
+            var manifestPath = Path.Combine(evidenceDir, "release-evidence-manifest.json");
+            var manifestNode = JsonNode.Parse(File.ReadAllText(manifestPath))!.AsObject();
+            foreach (var rowNode in manifestNode["Rows"]!.AsArray())
+            {
+                var rowObject = rowNode!.AsObject();
+                rowObject["Status"] = "deferred";
+                rowObject["ExplicitOwnerDecision"] = true;
+                rowObject["ReleaseNote"] = "Synthetic deferral for package-hash verifier contract test.";
+            }
+
+            var loaderNode = manifestNode["Rows"]!
+                .AsArray()
+                .Select(row => row!.AsObject())
+                .Single(row => row["Id"]!.GetValue<string>() == "fresh-current-package-loader-smoke");
+            loaderNode["Status"] = "pass";
+            loaderNode["ResultNote"] = "Synthetic loader pass attempt with stale package-hashes rows.";
+            loaderNode["ExplicitOwnerDecision"] = false;
+            loaderNode["ReleaseNote"] = "";
+
+            var loaderEvidenceDir = loaderNode["EvidenceDir"]!.GetValue<string>();
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot.log"), "Synthetic loader log for package-hash verifier contract.");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), """{ "Clean": true }""");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "BaseLib\r\nEZMicroBalance\r\n");
+
+            var packageHashesPath = Path.Combine(loaderEvidenceDir, "package-hashes.json");
+            var packageHashesNode = JsonNode.Parse(File.ReadAllText(packageHashesPath))!.AsObject();
+            var staleFiles = new JsonArray();
+            foreach (var fileNode in packageHashesNode["Files"]!.AsArray())
+            {
+                var fileObject = fileNode!.AsObject();
+                var path = fileObject["Path"]!.GetValue<string>();
+                if (path != "publish\\SpirePlus-v0.1.0-private-beta.0\\EZMicroBalance\\EZMicroBalance.dll")
+                {
+                    staleFiles.Add(fileObject.DeepClone());
+                }
+            }
+
+            staleFiles.Add(new JsonObject
+            {
+                ["Path"] = "publish\\EZMicroBalance.dll",
+                ["Exists"] = false,
+                ["Sha256"] = null,
+                ["Length"] = null
+            });
+            packageHashesNode["Files"] = staleFiles;
+            File.WriteAllText(
+                packageHashesPath,
+                packageHashesNode.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            File.WriteAllText(
+                manifestPath,
+                manifestNode.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var verifyResult = RunPowerShell(
+                verifier,
+                "-EvidenceRoot",
+                evidenceDir,
+                "-ManifestPath",
+                manifestPath,
+                "-AllowDeferred");
+            Assert.NotEqual(0, verifyResult.ExitCode);
+            Assert.Contains("package-hashes.json still records stale root publish artifact path", verifyResult.Output, StringComparison.Ordinal);
+            Assert.Contains("publish\\\\EZMicroBalance.dll", verifyResult.Output, StringComparison.Ordinal);
+            Assert.Contains("package-hashes.json is missing current package artifact row", verifyResult.Output, StringComparison.Ordinal);
+            Assert.Contains("SpirePlus-v0.1.0-private-beta.0\\\\EZMicroBalance\\\\EZMicroBalance.dll", verifyResult.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(evidenceDir))
+            {
+                Directory.Delete(evidenceDir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void AncientUiEvidenceHelperCreatesPendingPreparePlansWithoutLaunching()
     {
         var script = AssertRepoFileExists("scripts", "collect-ancient-ui-evidence.ps1");
@@ -739,6 +1095,7 @@ public sealed class ReleaseEvidenceGateTests
                 Assert.True(File.Exists(commandPath), "Ancient UI helper did not write command.txt.");
                 Assert.True(File.Exists(environmentPath), "Ancient UI helper did not write environment.json.");
                 Assert.True(File.Exists(packageHashesPath), "Ancient UI helper did not write package-hashes.json.");
+                AssertPackageHashesUseVersionedArtifacts(packageHashesPath);
                 Assert.True(File.Exists(manualRowsPath), "Ancient UI helper did not write manual-rows-template.json.");
 
                 using var plan = JsonDocument.Parse(File.ReadAllText(planPath));
@@ -746,6 +1103,8 @@ public sealed class ReleaseEvidenceGateTests
                 Assert.Equal(testCase.Ancient, root.GetProperty("Ancient").GetString());
                 Assert.Equal(testCase.ExpectedOptions, root.GetProperty("ExpectedOptionCountForThisRun").GetInt32());
                 Assert.Equal(testCase.Command, root.GetProperty("PreferredUnsavedDevConsoleCommand").GetString());
+                Assert.Equal(testCase.Command, root.GetProperty("ExpectedDevConsoleCommand").GetString());
+                Assert.StartsWith("ancient ", root.GetProperty("LegacyActiveRunDevConsoleCommand").GetString(), StringComparison.Ordinal);
                 Assert.False(root.GetProperty("LaunchRequested").GetBoolean());
                 Assert.True(root.GetProperty("NoPreflight").GetBoolean());
                 Assert.Equal("This helper prepares evidence. It does not prove clicked UI by itself.", root.GetProperty("PendingNotice").GetString());
@@ -773,6 +1132,8 @@ public sealed class ReleaseEvidenceGateTests
                 Assert.Equal("ancient-ui-clicked-evidence", environmentRoot.GetProperty("EvidenceKind").GetString());
                 Assert.Equal(testCase.Ancient, environmentRoot.GetProperty("Ancient").GetString());
                 Assert.Equal(testCase.Command, environmentRoot.GetProperty("PreferredUnsavedDevConsoleCommand").GetString());
+                Assert.Equal(testCase.Command, environmentRoot.GetProperty("ExpectedDevConsoleCommand").GetString());
+                Assert.StartsWith("ancient ", environmentRoot.GetProperty("LegacyActiveRunDevConsoleCommand").GetString(), StringComparison.Ordinal);
                 Assert.False(environmentRoot.GetProperty("LaunchRequested").GetBoolean());
                 Assert.True(environmentRoot.GetProperty("NoLaunch").GetBoolean());
 
@@ -803,11 +1164,22 @@ public sealed class ReleaseEvidenceGateTests
                 var commandText = File.ReadAllText(commandPath);
                 Assert.Contains("Tester launch command:", commandText, StringComparison.Ordinal);
                 Assert.Contains("Restore command:", commandText, StringComparison.Ordinal);
+                Assert.Contains("Legacy active-run render-smoke command:", commandText, StringComparison.Ordinal);
                 Assert.Contains(testCase.Command, commandText, StringComparison.Ordinal);
 
                 var instructions = File.ReadAllText(instructionsPath);
                 Assert.Contains("Known pending result: this helper prepares evidence. It does not prove clicked UI by itself.", instructions, StringComparison.Ordinal);
                 Assert.Contains("Do not mark clicked Ancient UI verified until", instructions, StringComparison.Ordinal);
+                Assert.Contains("preferred Spire Plus process environment variables", instructions, StringComparison.Ordinal);
+                Assert.Contains("SPIREPLUS_FORCE_ANCIENT", instructions, StringComparison.Ordinal);
+                Assert.Contains("EZMB_FORCE_ANCIENT", instructions, StringComparison.Ordinal);
+                Assert.Contains("The legacy aliases below are also set for compatibility", instructions, StringComparison.Ordinal);
+                AssertBefore(
+                    instructions,
+                    "preferred Spire Plus process environment variables",
+                    "The legacy aliases below are also set for compatibility");
+                AssertBefore(instructions, "SPIREPLUS_FORCE_ANCIENT", "EZMB_FORCE_ANCIENT");
+                Assert.Contains("Legacy active-run DevConsole render-smoke command:", instructions, StringComparison.Ordinal);
                 Assert.Contains(testCase.Command, instructions, StringComparison.Ordinal);
             }
             finally
@@ -829,6 +1201,7 @@ public sealed class ReleaseEvidenceGateTests
         AssertSourceContains(
             source,
             "manual-instructions.md",
+            "SPIREPLUS_RELEASE_EVIDENCE_LOG",
             "EZMB_RELEASE_EVIDENCE_LOG",
             "coop-host-join-clean-logs",
             "coop-a11-a20-selection",
@@ -854,6 +1227,7 @@ public sealed class ReleaseEvidenceGateTests
             source,
             "SPIREPLUS_FORCE_ANCIENT",
             "SPIREPLUS_FORCE_VAKUU_FIGHT",
+            "SPIREPLUS_RELEASE_EVIDENCE_LOG",
             "EZMB_RELEASE_EVIDENCE_LOG",
             "vakuu-victory-no-black-screen",
             "vakuu-failure-death",
@@ -916,7 +1290,8 @@ public sealed class ReleaseEvidenceGateTests
 
         var projectState = ReadRepoText("PROJECT_STATE.md");
         Assert.Contains("current source defines 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("live loader parity remains pending", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("current package Steam-client loader smoke", projectState, StringComparison.Ordinal);
+        Assert.Contains("Found 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Found 22 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -1093,10 +1468,39 @@ public sealed class ReleaseEvidenceGateTests
         var rowReadme = File.ReadAllText(Path.Combine(rowDir, "README.md"));
         var checklist = File.ReadAllText(templatePath);
         Assert.Contains("Manual checkpoints:", rowReadme, StringComparison.Ordinal);
+        AssertTemplateChecklistCreated(checklist, requiredChecklist);
         foreach (var expectedFragment in expectedFragments)
         {
             Assert.Contains(expectedFragment, checklist, StringComparison.Ordinal);
         }
+
+        AssertWorkingChecklistCreated(rowDir, requiredChecklist, expectedFragments);
+    }
+
+    private static string AssertWorkingChecklistCreated(
+        string rowDir,
+        string checklistFile,
+        string[] expectedFragments)
+    {
+        var workingPath = Path.Combine(rowDir, checklistFile);
+        Assert.True(File.Exists(workingPath), $"Missing generated working checklist: {checklistFile}.");
+        var workingChecklist = File.ReadAllText(workingPath);
+        Assert.Contains("Fill this checklist with live results before marking this row pass.", workingChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("Copy this file to", workingChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("Template reference for", workingChecklist, StringComparison.Ordinal);
+        foreach (var expectedFragment in expectedFragments)
+        {
+            Assert.Contains(expectedFragment, workingChecklist, StringComparison.Ordinal);
+        }
+
+        return workingChecklist;
+    }
+
+    private static void AssertTemplateChecklistCreated(string templateChecklist, string checklistFile)
+    {
+        Assert.Contains($"Template reference for `{checklistFile}`.", templateChecklist, StringComparison.Ordinal);
+        Assert.Contains($"Fill the working `{checklistFile}` with live results before marking this row pass.", templateChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("Copy this file to", templateChecklist, StringComparison.Ordinal);
     }
 
     private static void PrepareChecklistPassAttempt(
@@ -1220,7 +1624,7 @@ public sealed class ReleaseEvidenceGateTests
     {
         return
         [
-            ("coop-host-join-clean-logs", "Host and client load exactly BaseLib plus Spire Plus/EZMicroBalance with matching package hashes and clean logs."),
+            ("coop-host-join-clean-logs", "Host and client load exactly BaseLib plus Spire Plus with matching package hashes and clean logs."),
             ("coop-a11-a20-selection", "A11-A20 selection/start-run behavior is recorded on host and client; selection visibility alone is not gameplay support."),
             ("coop-ancients", "Urda, Morvi, Lotha, and gated Vakuu have explicit host/client disposition notes for reward state and relic visibility."),
             ("coop-root-eyes", "Root Eyes map preview either stays gated in co-op or shows host/client-consistent map state with no desync."),
@@ -1259,6 +1663,7 @@ public sealed class ReleaseEvidenceGateTests
             ("Urda", "moss_map", "UrdaMossMapOptionRelic"),
             ("Urda", "trial_branch", "UrdaTrialBranchOptionRelic"),
             ("Urda", "shallow_root_relic", "UrdaShallowRootRelicOptionRelic"),
+            ("Urda", "elite_root", "UrdaEliteRootOptionRelic"),
             ("Urda", "rooted_route", "UrdaRootedRouteOptionRelic"),
             ("Urda", "after_rain", "UrdaAfterRainOptionRelic"),
             ("Urda", "root_sight", "UrdaRootSightOptionRelic"),
@@ -1280,7 +1685,9 @@ public sealed class ReleaseEvidenceGateTests
             ("Lotha", "single_sentence", "LothaSingleSentenceOptionRelic"),
             ("Lotha", "public_evidence", "LothaPublicEvidenceOptionRelic"),
             ("Vakuu", "fight_option", "VakuuFightOptionRelic"),
-            ("Vakuu", "victory_non_vakuu_choices", "Non-Vakuu Act 3 Ancient reward relic choices after winning Vakuu")
+            ("Vakuu", "victory_non_vakuu_choices", "Non-Vakuu Act 3 Ancient reward relic choices after winning Vakuu"),
+            ("Vakuu event", "sere_talon_pickup", "Vakuu's Sere Talon / \u74e6\u5e93\u539f\u521d\u4e4b\u722a adds 2 random Curses and 3 Wish; verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes such as `Ancient event option button`, `RelicModel packed icon texture`, and `RelicModel big icon texture` are not Tanx Claws."),
+            ("Tanx event", "claws_maul_transform", "Tanx Claws / \u5766\u514b\u65af\u5229\u722a transforms cards into upgraded Maul / \u6495\u54ac+ cards.")
         };
 
         var lines = new List<string>
@@ -1331,7 +1738,7 @@ public sealed class ReleaseEvidenceGateTests
     {
         var rows = new[]
         {
-            ("title-home-preview", "Spire Plus title/home preview image fits the UI frame and does not stretch, crop critical subject matter, or use stale EZ Micro Balance branding."),
+            ("title-home-preview", "Spire Plus title/home preview image fits the UI frame and does not stretch, crop critical subject matter, or use stale pre-refresh branding."),
             ("urda-clicked-background", "Urda large background appears only on the clicked Ancient screen/event surface and fits behind option rows."),
             ("morvi-clicked-background", "Morvi large background appears only on the clicked Ancient screen/event surface and fits behind option rows."),
             ("lotha-clicked-background", "Lotha large background appears only on the clicked Ancient screen/event surface and fits behind option rows."),
@@ -1364,9 +1771,10 @@ public sealed class ReleaseEvidenceGateTests
         var rows = new[]
         {
             ("rootblight-start-eligibility", "A14+ run starts/repairs Rootblight setup only after a real deck card exists; no silent permanent disable if the deck is temporarily unavailable."),
-            ("normal-sprout-appearance", "Normal combat contexts that should add Blight Sprout show the card in hand/draw flow and in logs."),
+            ("normal-rootblight-continuity", "Ordinary normal combats do not add Blight Sprout in the current design; they should still mark existing Rootblight, show it in the deck/hand flow, and resolve combat-end growth/cap rules."),
             ("elite-single-sprout", "Elite combat adds exactly one Blight Sprout at the expected timing and does not duplicate across reload/reentry."),
             ("boss-two-sprouts-staggered", "Act 2/3 Boss combat adds two Blight Sprouts on the staggered turns, with both cards visible when expected."),
+            ("husk-exhaust-block-timing", "Withered Husk grants exactly 3 Block when it is Exhausted, not when it merely has Ethereal/Void text or sits in hand."),
             ("combat-end-growth", "An unresolved Blight Sprout grows into Rootblight after combat; handled/planted Sprouts do not grow."),
             ("rootblight-cap-four", "Rootblight respects the current maximum and Rootblight III split/growth rule without exceeding 4 cards."),
             ("rootblight-save-load", "Save/load before Sprout entry, during combat, and after combat preserves pending markers and deck state."),

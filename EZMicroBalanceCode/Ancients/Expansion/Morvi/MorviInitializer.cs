@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Modding;
+﻿using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -24,7 +24,7 @@ internal static class MorviInitializer
             CreateCombatHookSubscribers);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Morvi v2.2 hooks registered default-on; set {MorviFeatureGate.DisableEnvironmentVariable}=1 or {MorviFeatureGate.SpirePlusDisableEnvironmentVariable}=1 to disable.");
+            $"[Spire Plus] Morvi v2.2 hooks registered default-on; set {MorviFeatureGate.DisableEnvironmentVariable}=1 to disable. Legacy alias: {MorviFeatureGate.LegacyDisableEnvironmentVariable}=1.");
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>

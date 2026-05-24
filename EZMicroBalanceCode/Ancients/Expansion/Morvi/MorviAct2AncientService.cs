@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Acts;
+﻿using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Unlocks;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -22,7 +22,7 @@ internal static class MorviAct2AncientService
         if (MorviFeatureGate.ShouldForceMorvi)
         {
             unlockedAncients = [morvi];
-            MainFile.Logger.Info("[EZMicroBalance] Force Ancient gate selected Morvi as the Act 2 Ancient.");
+            MainFile.Logger.Info("[Spire Plus] Force Ancient gate selected Morvi as the Act 2 Ancient.");
             return;
         }
 
@@ -30,7 +30,7 @@ internal static class MorviAct2AncientService
         if (!list.Any(ancient => ancient.Id == morvi.Id))
         {
             list.Add(morvi);
-            MainFile.Logger.Info("[EZMicroBalance] Morvi added to Act 2 unlocked ancients for private-beta testing.");
+            MainFile.Logger.Info("[Spire Plus] Morvi added to Act 2 unlocked ancients for private-beta testing.");
             unlockedAncients = list;
         }
     }

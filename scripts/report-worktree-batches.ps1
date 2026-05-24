@@ -47,8 +47,13 @@ function Get-WorktreeBatch {
     }
 
     if ($p.StartsWith('website/', [System.StringComparison]::OrdinalIgnoreCase) -or
-        $p.StartsWith('forum/', [System.StringComparison]::OrdinalIgnoreCase)) {
+        $p.StartsWith('forum/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -match '^tests/EZMicroBalance\.Tests/WebsiteContent.*\.cs(\.uid)?$') {
         return 7
+    }
+
+    if ($p -match '^tests/EZMicroBalance\.Tests/[^/]+\.cs\.uid$') {
+        return 5
     }
 
     if ($p.StartsWith('EZMicroBalanceCode/Ascension/', [System.StringComparison]::OrdinalIgnoreCase) -or
@@ -59,26 +64,35 @@ function Get-WorktreeBatch {
     }
 
     if ($p.StartsWith('EZMicroBalanceCode/Ancients/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -match '^EZMicroBalance/localization/[^/]+/(ancients|cards|card_keywords|powers|relics)\.json$' -or
         $p.StartsWith('docs/features/ancient-expansion-urda/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/features/ancients-rework-v4/', [System.StringComparison]::OrdinalIgnoreCase) -or
-        $p -match '^tests/EZMicroBalance\.Tests/(Ancient|Urda|Lotha|Vakuu).*\.cs(\.uid)?$') {
+        $p -match '^tests/EZMicroBalance\.Tests/(Ancient|Urda|Morvi|Lotha|Vakuu).*\.cs(\.uid)?$') {
         return 3
     }
 
-    if ($p.StartsWith('docs/features/ancient-expansion-v2.2/', [System.StringComparison]::OrdinalIgnoreCase) -or
+    if ($p.StartsWith('EZMicroBalance/images/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -eq 'export_presets.cfg' -or
+        $p.StartsWith('docs/features/ancient-expansion-v2.2/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -eq 'docs/issues/waiting-tests.md') {
         return 6
     }
 
     if ($p.StartsWith('scripts/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('EZMicroBalanceCode/Diagnostics/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Preview/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -match '^EZMicroBalance/localization/[^/]+/settings_ui\.json$' -or
+        $p.StartsWith('docs/features/preview-tools/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('.github/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -eq 'tests/EZMicroBalance.Tests/README.md' -or
+        $p -eq 'docs/patch-inventory.md' -or
         $p -eq 'docs/platform-testing.md' -or
-        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|PreviewTools).*\.cs(\.uid)?$') {
+        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|PreviewTools|SaveStateContracts).*\.cs(\.uid)?$') {
         return 5
     }
 
-    if ($p -eq 'PROJECT_STATE.md' -or
+    if ($p -eq 'AGENTS.md' -or
+        $p -eq 'PROJECT_STATE.md' -or
         $p -eq 'README.md' -or
         $p -eq 'docs/BETA_COMPATIBILITY.md' -or
         $p -match '^docs/(issues|toreview|review|dev-environment|private-beta|release|test-ready|test-plan|mod-changelog).*\.md$') {
@@ -88,6 +102,8 @@ function Get-WorktreeBatch {
     if ($p.StartsWith('docs/architecture/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/specs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/month-plan/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -eq 'docs/architecture-ez-micro-balance.md' -or
+        $p -eq 'docs/REMOTE_DEVELOPMENT_SETUP.md' -or
         $p.StartsWith('docs/archive/feature-inputs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/archive/feature-audits/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -in @('docs/README.md', 'docs/PROJECT_MAP.md', 'docs/doc-inventory.md', 'docs/goal.md', 'docs/worktree-cleanup-audit.md')) {

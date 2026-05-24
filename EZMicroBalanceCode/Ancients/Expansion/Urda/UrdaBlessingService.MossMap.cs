@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static partial class UrdaBlessingService
 {
@@ -27,14 +27,14 @@ internal static partial class UrdaBlessingService
                 break;
         }
 
-        MainFile.Logger.Info($"[EZMicroBalance] Urda Moss Map applied: first Act 1 {roomType} room reward granted.");
+        MainFile.Logger.Info($"[Spire Plus] Urda Moss Map applied: first Act 1 {roomType} room reward granted.");
     }
 
     private static async Task TryGivePotion(Player player)
     {
         if (!player.HasOpenPotionSlots)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Urda Moss Map skipped shop potion: no open potion slot.");
+            MainFile.Logger.Info("[Spire Plus] Urda Moss Map skipped shop potion: no open potion slot.");
             return;
         }
 
@@ -51,7 +51,7 @@ internal static partial class UrdaBlessingService
             .FirstOrDefault();
         if (target == null)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Urda Moss Map skipped elite upgrade: no upgradable card.");
+            MainFile.Logger.Info("[Spire Plus] Urda Moss Map skipped elite upgrade: no upgradable card.");
             return;
         }
 

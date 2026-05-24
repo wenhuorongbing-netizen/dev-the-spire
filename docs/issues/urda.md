@@ -1,4 +1,4 @@
-# Urda Issues
+﻿# Urda Issues
 
 Last updated: 2026-05-13
 
@@ -8,16 +8,16 @@ Last updated: 2026-05-13
 - Refactor scope: keep source refactor clean, reduce future reading cost, and keep runtime claims truthful.
 - Authority note, 2026-05-22: this folder is Urda support evidence. Current combined Ancient behavior is governed by `docs/issues.md`, `docs/test-ready-development-goal.md`, `docs/features/ancient-expansion-v2.2/source-design.md`, and `docs/issues/v3.3-design-review.md`; older Seedbed reward-alternative rows here are historical unless repeated there.
 
-## Status: Prototype / Default-on ten-blessing source candidate
+## Status: Prototype / Default-on eleven-blessing source candidate
 
-Urda is default-on for private-beta testing in this pass. All ten v2.2 Urda blessing ids now have source-backed gameplay hooks, option relics/icons, localization, and guard coverage. The original four blessings remain intact, while Trial Branch, Shallow-Root Relic, Rooted Route, After the Rain, Root-Sight, and Seed Bank are promoted with documented source-safe deviations. A headless installed-PCK check still resolves the custom Urda scene/icon with 0 log errors or warnings, but Urda is not release-ready until live gameplay and save/load checks pass.
+Urda is default-on for private-beta testing in this pass. Eleven Urda blessing ids now have source-backed gameplay hooks, option relics/icons, localization, and guard coverage. The original four blessings remain intact, while Trial Branch, Shallow-Root Relic, Elite Root, Rooted Route, After the Rain, Root-Sight, and Seed Bank are promoted with documented source-safe deviations. A headless installed-PCK check still resolves the custom Urda scene/icon with 0 log errors or warnings, but Urda is not release-ready until live gameplay and save/load checks pass.
 
-- Disable gate: set `EZMB_DISABLE_URDA=1` to hide Urda for comparison.
-- `EZMB_FORCE_ANCIENT=URDA` is legacy-compatible and no longer required.
+- Disable gate: set `SPIREPLUS_DISABLE_URDA=1` to hide Urda for comparison. Legacy `EZMB_DISABLE_URDA=1` still works.
+- `SPIREPLUS_FORCE_ANCIENT=URDA` focuses Urda when needed. Legacy `EZMB_FORCE_ANCIENT=URDA` still works and is no longer required.
 - `UrdaFeatureGate.IsUrdaEnabled(...)` returns true unless the disable gate is truthy.
 - Morvi is default-on in the active private-beta test slice with its own disable/force gates. Lotha is now default-on in the active test slice with its own disable/force gates. Vakuu fight is hidden by default, has a dedicated source enemy/scene, and still needs live victory proof before normal exposure.
 - NeowEpoch visibility is not a live gate for Urda; activation is limited to `Underdocks`/`Overgrowth` patches.
-- Ancient Expansion v2.2 now uses a ten-blessing Urda source slice. Runtime proof is still pending.
+- Ancient Expansion v2.2 now uses an eleven-blessing Urda source slice. Runtime proof is still pending.
 
 ## Active Urda blessing ids (current)
 
@@ -29,6 +29,7 @@ These ids are registered in the default-on Urda test candidate:
 - `urda_moss_map`
 - `urda_trial_branch`
 - `urda_shallow_root_relic`
+- `urda_elite_root`
 - `urda_rooted_route`
 - `urda_after_rain`
 - `urda_root_sight`
@@ -44,12 +45,12 @@ Source-safe deviations:
 
 ## Open blockers
 
-| ID | Severity | Status | Notes |
+| ID | Severity | otatus | Notes |
 | --- | --- | --- | --- |
-| URDA-BL-01 | P0 | open | Source gameplay slice exists for ten active blessings; live selection, reward-screen, room-entry, act-transition, death-prevention, map-marker, and card behavior checks are still pending.
-| URDA-BL-02 | P0 | open | Blessing implementations must be live save/load-tested before any release-ready claim; `SavedSpireField<Player,string>` is registered but not source-proven as persisted by this pass, and the card-backed `UrdaDeckStateKey` mirror is source mitigation rather than live proof.
+| URDA-BL-01 | P0 | open | oource gameplay slice exists for ten active blessings; live selection, reward-screen, room-entry, act-transition, death-prevention, map-marker, and card behavior checks are still pending.
+| URDA-BL-02 | P0 | open | Blessing implementations must be live save/load-tested before any release-ready claim; `oavedopireField<Player,string>` is registered but not source-proven as persisted by this pass, and the card-backed `UrdaDeckotateKey` mirror is source mitigation rather than live proof.
 | URDA-BL-03 | P0 | open | Keep `Urda, Loamweaver` out of user-facing release-ready claims until the manual matrix passes or the feature is explicitly postponed.
-| URDA-BL-04 | P1 | source-mitigated / live-pending | Humus Pact no longer uses `CardReward.OnSkipped`; third payoff pending state is kept until resolver success; verify the explicit `Compost Reward` flow does not reenter reward UI, duplicate/lost payoff, or fire from room-exit cleanup.
+| URDA-BL-04 | P1 | source-mitigated / live-pending | Humus Pact no longer uses `CardReward.Onokipped`; third payoff pending state is kept until resolver success; verify the explicit `Compost Reward` flow does not reenter reward UI, duplicate/lost payoff, or fire from room-exit cleanup.
 | URDA-BL-05 | P1 | source-mitigated / live-pending | Seedbed now counts accepted choices only and uses no-heal max HP gain; verify reroll, low max HP, and fourth-accept behavior live.
 | URDA-BL-06 | P1 | source/package/resource-load mitigated / live-pending | Urda now derives from BaseLib `CustomAncientModel` with custom icon/background-scene paths, packages `ezmb_urda.tscn`, and the headless installed-PCK check at `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345` resolves the custom scene/icon with 0 `ERROR` / `WARNING` lines; rerun live Urda selection and Rootblight visual/gameplay checks to confirm the pre-fix missing asset errors are gone in-game.
 
@@ -68,3 +69,4 @@ Source-safe deviations:
 - Manual evidence that all ten Urda blessings match their documented source behavior and deviations.
 - Manual tests for save/load + selection + combat-safe behavior.
 - Runtime smoke and release checks updated.
+

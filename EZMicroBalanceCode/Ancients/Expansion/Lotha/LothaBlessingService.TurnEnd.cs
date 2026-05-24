@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -32,7 +32,7 @@ internal static partial class LothaBlessingService
             {
                 combatState.DeferredVerdictActiveThisTurn = false;
                 await PowerCmd.Remove<LothaVerdictPower>(player.Creature);
-                MainFile.Logger.Info("[EZMicroBalance] Lotha Deferred Verdict removed Verdict at turn end.");
+                MainFile.Logger.Info("[Spire Plus] Lotha Deferred Verdict removed Verdict at turn end.");
             }
 
             if (selectedBlessing == LothaBlessingIds.DeathReprieve && combatState.DeathReprieveActive)

@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Multiplayer.Game;
+﻿using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -16,7 +16,7 @@ internal static class StartRunLobbyBeginRunForAllPlayersDiagPatch
 
         MultiplayerDiagnostics.LogLobbyState(__instance, "BeginRunForAllPlayers prefix");
         MainFile.Logger.Info(
-            $"[EZMicroBalance][MPDiag] BeginRunForAllPlayers: preferred save skip={AscensionSelectionPatches.ShouldSkipVanillaPreferredAscensionSave(__instance)}");
+            $"[Spire Plus][MPDiag] BeginRunForAllPlayers: preferred save skip={AscensionSelectionPatches.ShouldSkipVanillaPreferredAscensionSave(__instance)}");
     }
 
     private static void Finalizer(StartRunLobby __instance, Exception? __exception)
@@ -26,7 +26,7 @@ internal static class StartRunLobbyBeginRunForAllPlayersDiagPatch
         if (__exception != null)
         {
             MainFile.Logger.Warn(
-                $"[EZMicroBalance][MPDiag] BeginRunForAllPlayers exception: {__exception.Message}");
+                $"[Spire Plus][MPDiag] BeginRunForAllPlayers exception: {__exception.Message}");
         }
 
         MultiplayerDiagnostics.LogLobbyState(__instance, "BeginRunForAllPlayers finalizer");
@@ -46,7 +46,7 @@ internal static class StartRunLobbyBeginRunLocallyDiagPatch
 
         MultiplayerDiagnostics.LogLobbyState(__instance, "BeginRunLocally prefix");
         MainFile.Logger.Info(
-            $"[EZMicroBalance][MPDiag] BeginRunLocally: ascension={__instance.Ascension}; " +
+            $"[Spire Plus][MPDiag] BeginRunLocally: ascension={__instance.Ascension}; " +
             $"singleplayer={__instance.NetService.Type == NetGameType.Singleplayer}");
     }
 }

@@ -1,4 +1,4 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
+﻿using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -31,7 +31,7 @@ internal static class LothaRewardSelectionService
             .FirstOrDefault();
         if (selected == null)
         {
-            MainFile.Logger.Warn("[EZMicroBalance] Lotha Mirror Rebuttal selection skipped: no eligible non-Curse, non-Status deck card.");
+            MainFile.Logger.Warn("[Spire Plus] Lotha Mirror Rebuttal selection skipped: no eligible non-Curse, non-Status deck card.");
             return;
         }
 

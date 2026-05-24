@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using MegaCrit.Sts2.Core.Hooks;
@@ -37,7 +37,7 @@ internal static partial class UrdaBlessingService
         PersistSeedbed(player, state);
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Seedbed set {state.RemainingSlots} slot(s); future seedable temporary cards entering hand will be planted.");
+            $"[Spire Plus] Urda Seedbed set {state.RemainingSlots} slot(s); future seedable temporary cards entering hand will be planted.");
 
         if (plantImmediate)
         {
@@ -89,7 +89,7 @@ internal static partial class UrdaBlessingService
         var candidates = GetSeedbedImmediateCandidates(player).ToList();
         if (candidates.Count == 0)
         {
-            MainFile.Logger.Info("[EZMicroBalance] Urda Seedbed+ found no eligible Draw or Discard pile card to plant.");
+            MainFile.Logger.Info("[Spire Plus] Urda Seedbed+ found no eligible Draw or Discard pile card to plant.");
             return;
         }
 
@@ -141,7 +141,7 @@ internal static partial class UrdaBlessingService
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Seedbed planted {card.Id.Entry} from {sourcePile} via {source}; " +
+            $"[Spire Plus] Urda Seedbed planted {card.Id.Entry} from {sourcePile} via {source}; " +
             $"remaining slots {state.RemainingSlots}. Planting skipped play, discard, and Exhaust synergies.");
     }
 
@@ -209,7 +209,7 @@ internal static class UrdaSeedbedAfterCardDrawnPatch
         }
 
         MainFile.Logger.Info(
-            $"[EZMicroBalance] Urda Seedbed skipped AfterCardDrawn hooks for planted card {card.Id.Entry}.");
+            $"[Spire Plus] Urda Seedbed skipped AfterCardDrawn hooks for planted card {card.Id.Entry}.");
         return false;
     }
 }

@@ -1,4 +1,4 @@
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(CookRestSiteOption), MethodType.Constructor, typeof(Player))]
 internal static class MeatCleaverCookCtorPatch
@@ -72,7 +72,7 @@ internal static class MeatCleaverCookPatch
     {
         if (!CanCook(owner))
         {
-            MainFile.Logger.Info("[EZMicroBalance] MeatCleaver skipped: cook unavailable due to HP or removable-card count.");
+            MainFile.Logger.Info("[Spire Plus] MeatCleaver skipped: cook unavailable due to HP or removable-card count.");
             return false;
         }
 
@@ -93,7 +93,7 @@ internal static class MeatCleaverCookPatch
         }
 
         await CreatureCmd.SetCurrentHp(owner.Creature, owner.Creature.CurrentHp - HpToLose);
-        MainFile.Logger.Info("[EZMicroBalance] MeatCleaver applied: removed 2 cards and lost 5 HP.");
+        MainFile.Logger.Info("[Spire Plus] MeatCleaver applied: removed 2 cards and lost 5 HP.");
         return true;
     }
 }

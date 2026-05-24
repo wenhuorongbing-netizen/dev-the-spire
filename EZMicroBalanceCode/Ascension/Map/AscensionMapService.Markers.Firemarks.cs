@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Map;
+﻿using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -43,21 +43,21 @@ internal static partial class AscensionMapService
             markedCount++;
 
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A12 applied: marked {point} as firemarked elite ({kind}).");
+                $"[Spire Plus] Ascension A12 applied: marked {point} as firemarked elite ({kind}).");
             LogMapAssignment(actIndex, point.coord, FiremarkMarkerFamily, kind);
         }
 
         if (markedCount == 0)
         {
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A12 gate active: no optional elite node was safe to firemark on actIndex={actIndex}.");
+                $"[Spire Plus] Ascension A12 gate active: no optional elite node was safe to firemark on actIndex={actIndex}.");
             return;
         }
 
         if (markedCount < desiredCount)
         {
             MainFile.Logger.Info(
-                $"[EZMicroBalance] Ascension A12 gate active: marked {markedCount}/{desiredCount} firemarked elites on actIndex={actIndex}; minimum fallback target is {MinimumFiremarkedEliteFallbackCount} when safe candidates exist.");
+                $"[Spire Plus] Ascension A12 gate active: marked {markedCount}/{desiredCount} firemarked elites on actIndex={actIndex}; minimum fallback target is {MinimumFiremarkedEliteFallbackCount} when safe candidates exist.");
         }
     }
 

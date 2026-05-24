@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Models.Acts;
+﻿using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Unlocks;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
@@ -22,7 +22,7 @@ internal static class LothaAct3AncientService
         if (LothaFeatureGate.ShouldForceLotha)
         {
             unlockedAncients = [lotha];
-            MainFile.Logger.Info("[EZMicroBalance] Force Ancient gate selected Lotha as the Act 3 Ancient.");
+            MainFile.Logger.Info("[Spire Plus] Force Ancient gate selected Lotha as the Act 3 Ancient.");
             return;
         }
 
@@ -30,7 +30,7 @@ internal static class LothaAct3AncientService
         if (!list.Any(ancient => ancient.Id == lotha.Id))
         {
             list.Add(lotha);
-            MainFile.Logger.Info("[EZMicroBalance] Lotha added to Act 3 unlocked ancients for private-beta testing.");
+            MainFile.Logger.Info("[Spire Plus] Lotha added to Act 3 unlocked ancients for private-beta testing.");
             unlockedAncients = list;
         }
     }

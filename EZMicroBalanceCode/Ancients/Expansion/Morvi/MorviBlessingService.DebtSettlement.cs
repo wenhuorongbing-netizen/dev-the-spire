@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Entities.Gold;
+﻿using MegaCrit.Sts2.Core.Entities.Gold;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -43,7 +43,7 @@ internal static partial class MorviBlessingService
             {
                 ["debt"] = DebtSettlementStartingDebt
             });
-        MainFile.Logger.Info("[EZMicroBalance] Morvi Debt Settlement granted 220 Gold, resolved optional removal/upgrade selections, and set Debt to 320.");
+        MainFile.Logger.Info("[Spire Plus] Morvi Debt Settlement granted 220 Gold, resolved optional removal/upgrade selections, and set Debt to 320.");
     }
 
     private static async Task PayDebtSettlementDue(Player player)
@@ -93,6 +93,6 @@ internal static partial class MorviBlessingService
                 ["goldPaid"] = goldPaid,
                 ["remaining"] = nextProgress.DebtRemaining
             });
-        MainFile.Logger.Info($"[EZMicroBalance] Morvi Debt Settlement paid due={due}; debt remaining={nextProgress.DebtRemaining}.");
+        MainFile.Logger.Info($"[Spire Plus] Morvi Debt Settlement paid due={due}; debt remaining={nextProgress.DebtRemaining}.");
     }
 }
