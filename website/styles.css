@@ -1122,7 +1122,7 @@ p {
   border-color: rgba(223, 175, 83, 0.24);
   background: linear-gradient(135deg, rgba(25, 26, 21, 0.85), rgba(16, 17, 13, 0.85));
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 12px 24px rgba(0, 0, 0, 0.4),
     0 0 12px rgba(223, 175, 83, 0.04);
 }

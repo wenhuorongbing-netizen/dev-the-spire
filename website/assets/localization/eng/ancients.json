@@ -21,6 +21,8 @@
   "EZMB_URDA.pages.INITIAL.options.urda_trial_branch.selectionScreenPrompt": "Choose [blue]1[/blue] card for [gold]Trial Branch[/gold].",
   "EZMB_URDA.pages.INITIAL.options.urda_shallow_root_relic.title": "Shallow-Root Relic",
   "EZMB_URDA.pages.INITIAL.options.urda_shallow_root_relic.description": "Choose [blue]1[/blue] common relic and gain [blue]75[/blue] [gold]Gold[/gold]. Defeat an Act [blue]1[/blue] [gold]Elite[/gold] to keep it; otherwise it is refunded at Act [blue]2[/blue] start.",
+  "EZMB_URDA.pages.INITIAL.options.urda_elite_root.title": "Elite Root",
+  "EZMB_URDA.pages.INITIAL.options.urda_elite_root.description": "After each [gold]Elite[/gold] combat, heal [blue]10[/blue] HP. Firemarked Elites count.",
   "EZMB_URDA.pages.INITIAL.options.urda_rooted_route.title": "Rooted Route",
   "EZMB_URDA.pages.INITIAL.options.urda_rooted_route.description": "Act [blue]1[/blue] gains a [gold]Root Mark[/gold] route. Reach the marked combat for better rewards; miss it to lose [blue]8[/blue] HP and gain [blue]25[/blue] [gold]Gold[/gold].",
   "EZMB_URDA.pages.INITIAL.options.urda_after_rain.title": "After the Rain",
