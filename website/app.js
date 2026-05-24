@@ -284,7 +284,9 @@
     }
     hero.appendChild(media);
     const copy = el("div", "hero-copy");
-    copy.appendChild(el("p", "release-line", labels.releaseLine));
+    if (labels.releaseLine) {
+      copy.appendChild(el("p", "release-line", labels.releaseLine));
+    }
     copy.appendChild(el("h1", "", labels.heroTitle));
     copy.appendChild(el("p", "", labels.heroCopy));
     const actions = el("div", "hero-actions");

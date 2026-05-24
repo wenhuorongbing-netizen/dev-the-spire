@@ -51,11 +51,11 @@ public sealed class WebsiteContentGuardTests
             "EZMB_URDA_RAIN_BREATH",
             "EZMB_VAKUU_TRICK_CONTRACT",
             "EZMB_VAKUU_CASH_OUT_CONTRACT",
-            "\u4e0d\u9760\u65e0\u8111\u52a0\u5f3a\u628a\u6e38\u620f\u53d8\u7b80\u5355",
-            "\u8fdb\u9636\u4e8c\u5341\u4ecd\u7136\u6709\u538b\u529b",
+            "\u4e00\u4e2a\u66f4\u597d\u7684\u300a\u6740\u622e\u5c16\u5854 2\u300b\u62d3\u5c55",
+            "\u65b0\u589e\u8fdb\u9636 A20 \u548c\u5148\u53e4\u4e4b\u6c11\u4fee\u6539",
             "short: \"\\u5361\\u724c\"",
-            "without turning the game into a pile of free power",
-            "A20 that still pushes back",
+            "A better Slay the Spire 2 expansion",
+            "New A20 Ascension and Ancient changes",
             "\u82e5\u5408\u9002\u623f\u95f4\u4e0d\u8db3\uff0c\u81f3\u5c11\u653e\u51652\u4e2a",
             "\u53ef\u9644\u9b54\u724c",
             "If there are not enough suitable rooms, at least 2 are placed.",
@@ -73,8 +73,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260524-release-links",
-            "app.js?v=20260524-release-links");
+            "content-data.js?v=20260524-copy-refresh",
+            "app.js?v=20260524-copy-refresh");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),
