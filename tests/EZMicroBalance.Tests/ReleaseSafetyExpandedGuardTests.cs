@@ -234,8 +234,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "## Prompt-To-Artifact Checklist",
             "## Missing Or Weakly Verified Items",
             "## Conclusion",
-            "272 passed / 20 skipped",
-            "292 passed / 0 skipped",
+            "271 passed / 20 skipped",
+            "291 passed / 0 skipped",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",
             "window-preflight-smoke-20260513-135402",
@@ -323,7 +323,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC\"",
+            "PackageSha256 = \"906D5EDD49408714396850917F82DD43FF9D73CA7A21AAE7354D8B7A750DDB9B\"",
             "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.0.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",

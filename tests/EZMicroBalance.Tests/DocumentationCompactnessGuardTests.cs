@@ -631,11 +631,7 @@ public sealed class DocumentationCompactnessGuardTests
             "275 passed, 0 skipped",
             "264 passed / 0 skipped",
             "270 passed / 0 skipped",
-            "270 passed, 0 skipped",
-            "271 passed / 20 skipped",
-            "271 passed, 20 skipped",
-            "291 passed / 0 skipped",
-            "291 passed, 0 skipped"
+            "270 passed, 0 skipped"
         };
         var staleSavedFieldCounts = new[]
         {
@@ -672,8 +668,8 @@ public sealed class DocumentationCompactnessGuardTests
         var currentDocs = string.Join(
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains("272 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("292 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("271 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("291 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]

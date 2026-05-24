@@ -106,7 +106,7 @@ function Get-WorktreeBatch {
         $p -eq 'docs/REMOTE_DEVELOPMENT_SETUP.md' -or
         $p.StartsWith('docs/archive/feature-inputs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/archive/feature-audits/', [System.StringComparison]::OrdinalIgnoreCase) -or
-        $p -in @('docs/README.md', 'docs/PROJECT_MAP.md', 'docs/doc-inventory.md', 'docs/goal.md', 'docs/worktree-cleanup-audit.md')) {
+        $p -in @('docs/README.md', 'docs/PROJECT_MAP.md', 'docs/doc-inventory.md', 'docs/goal.md', 'docs/git-commit-push-policy.md', 'docs/worktree-cleanup-audit.md')) {
         return 2
     }
 

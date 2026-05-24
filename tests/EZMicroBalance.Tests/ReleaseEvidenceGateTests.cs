@@ -113,7 +113,7 @@ public sealed class ReleaseEvidenceGateTests
             Assert.Equal(19, summary.GetProperty("PendingVerifierFailureCount").GetInt32());
             Assert.Equal(0, summary.GetProperty("PendingVerifierWarningCount").GetInt32());
             Assert.Equal("publish\\SpirePlus-v0.1.0-private-beta.0.zip", summary.GetProperty("PackagePath").GetString());
-            Assert.Equal("47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC", summary.GetProperty("PackageSha256").GetString());
+            Assert.Equal("906D5EDD49408714396850917F82DD43FF9D73CA7A21AAE7354D8B7A750DDB9B", summary.GetProperty("PackageSha256").GetString());
             var expectedEvidenceRootArg = $"-EvidenceRoot '{Path.GetRelativePath(Root, Path.Combine(evidenceDir, "release"))}'";
             var expectedManifestArg = $"-ManifestPath '{Path.GetRelativePath(Root, Path.Combine(evidenceDir, "release", "release-evidence-manifest.json"))}'";
             var verifierCommand = summary.GetProperty("VerifierCommand").GetString();
@@ -126,7 +126,7 @@ public sealed class ReleaseEvidenceGateTests
             Assert.Contains("Player-facing mod: `Spire Plus`.", startHere, StringComparison.Ordinal);
             Assert.Contains("Install note: enable `Spire Plus` in game. The current compatibility folder inside the package is `EZMicroBalance`.", startHere, StringComparison.Ordinal);
             Assert.Contains("ZIP: `publish\\SpirePlus-v0.1.0-private-beta.0.zip`.", startHere, StringComparison.Ordinal);
-            Assert.Contains("ZIP SHA256: `47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("ZIP SHA256: `906D5EDD49408714396850917F82DD43FF9D73CA7A21AAE7354D8B7A750DDB9B`.", startHere, StringComparison.Ordinal);
             Assert.Contains("## Handoff summary", startHere, StringComparison.Ordinal);
             Assert.Contains("`handoff-summary.json` records this no-launch scaffold contract.", startHere, StringComparison.Ordinal);
             Assert.Contains("`PendingVerifierRequiredRowCount=19`.", startHere, StringComparison.Ordinal);
@@ -614,7 +614,7 @@ public sealed class ReleaseEvidenceGateTests
 
                     using var manifestDocument = JsonDocument.Parse(File.ReadAllText(manifestPath));
                     var manifest = manifestDocument.RootElement;
-                    Assert.Equal("47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC", manifest.GetProperty("PackageSha256").GetString());
+                    Assert.Equal("906D5EDD49408714396850917F82DD43FF9D73CA7A21AAE7354D8B7A750DDB9B", manifest.GetProperty("PackageSha256").GetString());
                     Assert.Equal("publish\\SpirePlus-v0.1.0-private-beta.0.zip", manifest.GetProperty("PackagePath").GetString());
                     Assert.Equal(rows.Length, manifest.GetProperty("Rows").GetArrayLength());
 

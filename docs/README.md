@@ -68,6 +68,7 @@ These files are current support records but are not part of the default next-dev
 | `REMOTE_DEVELOPMENT_SETUP.md` | Current setup guide for another machine. |
 | `archive/superseded/setup-spec-original-scaffold.md` | Historical setup specification from the original scaffold; keep for context, do not use as current status. |
 | `codex-workflow.md` | Repeatable Codex workflow notes. |
+| `git-commit-push-policy.md` | Required tested-slice commit and GitHub push workflow for keeping the worktree clean. |
 | `style/card-localization-style-guide.md` | Source-backed card text, keyword, preview, and bilingual terminology rules. |
 | `skills/sts2-godot-mod-development.md` | Repo-local StS2/Godot/.NET development reference. |
 | `adr/0000-template.md` | Template for architecture, patch-surface, saved-state, and release-scope decisions. |

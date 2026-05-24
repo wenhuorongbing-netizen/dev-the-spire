@@ -16,7 +16,7 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest verification after the Sere Talon website/manual-matrix closure and package README wording refresh: `dotnet build EZMicroBalance.sln`, normal tests with 272 passed / 20 skipped, focused website/documentation/release-evidence guards, `dotnet format`, `git diff --check`, installed-package checker, release verifier fail-closed check with 19 pending live/manual rows / 0 warnings, worktree batching with 320 dirty entries / 0 unclassified paths, and opt-in artifact tests with 292 passed / 0 skipped all passed in their expected modes.
+- Latest verification after the Sere Talon website/manual-matrix closure and package README wording refresh: `dotnet build EZMicroBalance.sln`, normal tests with 271 passed / 20 skipped, focused website/documentation/release-evidence guards, `dotnet format`, `git diff --check`, installed-package checker, release verifier fail-closed check with 19 pending live/manual rows / 0 warnings, worktree batching with 320 dirty entries / 0 unclassified paths, and opt-in artifact tests with 291 passed / 0 skipped all passed in their expected modes.
 - `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. The current package loader row is pending again after the ZIP/README hash changed; the verifier is expected to fail closed with 19 manual rows until loader evidence, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
 - The latest normal Steam smoke under `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke` covered the same DLL/PCK/manifest as the current package: only BaseLib plus Spire Plus loaded, `Found 30 SavedSpireFields`, and the log audit was clean. This is startup/log context only until the current ZIP is launched.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
@@ -43,17 +43,17 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 - Package: `publish\SpirePlus-v0.1.0-private-beta.0.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `47AE3A9F110284D2BEF03B84ED190208459E3BA55547BF7A656AFA08F61735CC`
+- Zip SHA256: `906D5EDD49408714396850917F82DD43FF9D73CA7A21AAE7354D8B7A750DDB9B`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `04F65C55CF679C4E0635C6AB21A3E35FF24D669815E27B6C00251059C4A07643`
+- DLL SHA256: `3D4297EFE3EA08E292732615E7C75798DCDD2DBD3F81A97D772EE25E041E6F6E`
 - Manifest SHA256: `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`
-- PCK SHA256: `6D10EE277F8FBD91269D77533179D3644C5B944C822ED5787644A374883FF5CE`
+- PCK SHA256: `49C119F8CB9B04F59EFE1D7BB3791D3832F0CE27568FC5DC7956C83CA264F91A`
 - README_INSTALL SHA256: `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA`
 
 ## Known Automated Evidence
 
 - Current automated snapshot: `dotnet build`, normal `dotnet test`, focused website/documentation/release-evidence guards, `dotnet format`, `git diff --check`, website syntax checks, no-launch evidence-template regeneration, and worktree batching passed after the 2026-05-24 package/text/art guard passes.
-- Current normal test count: 272 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 292 passed / 0 skipped.
+- Current normal test count: 271 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 291 passed / 0 skipped.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1`, which also checks the installed PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split.
 - Historical loader/resource evidence remains useful context only. The 30-field loader proof covers the same DLL/PCK/manifest as the current package, but the current ZIP/README hash still needs a fresh loader row; gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
 - Historical detailed command logs are preserved in `docs/review.md`, `docs/archive/project-state-history-20260516.md`, and `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`. This handoff intentionally keeps only the current tester-facing summary.
@@ -66,7 +66,7 @@ Historical RC1 notes now live at `docs/archive/implementation-records/rc1-live-v
 
 Current manual-proof summary:
 
-- Current ZIP startup/log verification is pending after the README wording refresh; the latest 30-field smoke remains useful same-DLL/PCK startup context only.
+- Current normal Steam-client startup/log verification passed for this 30-field package's DLL/PCK/manifest only; current ZIP/README startup/log verification is pending after the README wording refresh. The latest 30-field smoke remains useful same-DLL/PCK startup context only.
 - Historical helper-driven startup/log verification confirms loader health only. This is loader/helper evidence, not live gameplay evidence.
 - Current Mod Settings list screenshot shows `Spire Plus`; page-level BaseLib/old-display-name evidence remains historical.
 - Normal Steam-client A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, saved-map boss-reachability graph proof, Act 2/3 A11 map-surface checks, and targeted A14 Rootblight hover/starter-notice spot checks passed.
