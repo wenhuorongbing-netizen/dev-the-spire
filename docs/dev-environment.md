@@ -74,21 +74,21 @@
 - Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-23 after the Vakuu evidence-helper pass. Result: succeeded with 0 warnings and 0 errors.
 - Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-24 after the player-visible localization naming guard. Result: passed, 271 passed, 20 skipped release artifact/runtime evidence tests, 0 failed.
 - Last successful Release test run: `dotnet test EZMicroBalance.sln -c Release` on 2026-05-13 after the BaseLib-only plug-off startup/log refresh. Result: passed, 81 passed, 18 skipped release artifact/runtime evidence tests, 0 failed.
-- Latest opt-in artifact-validation run: `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-24 after the player-visible localization naming guard. Result: passed, 291 passed, 0 skipped, 0 failed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
+- Latest opt-in artifact-validation run: `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-25 after the Elite Root source-safety guard. Result: passed, 291 passed, 0 skipped, 0 failed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - Latest full local CI-script run: `scripts\ci-full-validation.ps1` on 2026-05-20 with explicit `STS2_PATH` and `GODOT_PATH`. Result: passed. This is local no-game validation, not live loader or gameplay proof.
-- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-23 after the Vakuu evidence-helper pass. Result: exit code 0.
-- Last required diff check: `git diff --check` on 2026-05-23 after the Vakuu evidence-helper pass. Result: exit code 0 with CRLF/LF warnings only.
-- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-23 for the Firemark overflow / Waterfall dedicated ability refresh.
-- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-23. Result: command returned exit code 0. Spire Plus rebuilt `EZMicroBalance.dll`/manifest/PCK with the current source and resources included.
-- Publish/package note: package staging, the versioned package folder, installed artifacts, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.0.zip` were refreshed again on 2026-05-24 for local manual testing after the package README wording cleanup. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The latest 30-field startup/log verification covers the same DLL/PCK/manifest, but the current ZIP/README hash still needs a fresh loader row; live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
-- Last PCK hash check: the 2026-05-24 local manual-test package refresh left the installed, staging, versioned, and zip-entry PCK at SHA256 `49C119F8CB9B04F59EFE1D7BB3791D3832F0CE27568FC5DC7956C83CA264F91A`.
-- Last staging/versioned DLL hash check: SHA256 `3D4297EFE3EA08E292732615E7C75798DCDD2DBD3F81A97D772EE25E041E6F6E`.
+- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-25 after the Elite Root source-safety guard. Result: exit code 0.
+- Last required diff check: `git diff --check` on 2026-05-25 after the Elite Root source-safety guard. Result: exit code 0 with CRLF/LF warnings only.
+- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 for the Elite Root source-safety refresh.
+- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25. Result: command returned exit code 0. Spire Plus rebuilt `EZMicroBalance.dll`/manifest/PCK with the current source and resources included.
+- Publish/package note: package staging, the versioned package folder, installed artifacts, `publish\SpirePlus-v0.1.0-private-beta.0.zip`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.0.zip` were refreshed again on 2026-05-25 for local manual testing after the Elite Root source-safety guard. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The current ZIP/DLL hash needs a fresh loader row; live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
+- Last PCK hash check: the 2026-05-25 local manual-test package refresh left the installed, staging, versioned, and zip-entry PCK at SHA256 `49C119F8CB9B04F59EFE1D7BB3791D3832F0CE27568FC5DC7956C83CA264F91A`.
+- Last staging/versioned DLL hash check: SHA256 `32856B1536EEFF0B9E9EF795EF34AB6E261143D610D4F159E114C177FA0BF0D1`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
-- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts on 2026-05-23.
+- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts on 2026-05-25.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `906D5EDD49408714396850917F82DD43FF9D73CA7A21AAE7354D8B7A750DDB9B`
-  - DLL SHA256: `3D4297EFE3EA08E292732615E7C75798DCDD2DBD3F81A97D772EE25E041E6F6E`
+  - Zip SHA256: `33DBFFCDE799EFEF2683960405BC72D030C2EBC521106F2A59C02BACE84CE4AD`
+  - DLL SHA256: `32856B1536EEFF0B9E9EF795EF34AB6E261143D610D4F159E114C177FA0BF0D1`
   - README SHA256: `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA`
   - Manifest SHA256: `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`
   - PCK SHA256: `49C119F8CB9B04F59EFE1D7BB3791D3832F0CE27568FC5DC7956C83CA264F91A`

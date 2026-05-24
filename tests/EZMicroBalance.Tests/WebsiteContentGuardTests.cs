@@ -26,7 +26,7 @@ public sealed class WebsiteContentGuardTests
     public void WebsitePackageMetadataMatchesCurrentPackageHash()
     {
         var websiteData = ReadRepoText("website", "content-data.js");
-        Assert.Contains("906D5EDD49408714396850917F82DD43FF9D73CA7A21AAE7354D8B7A750DDB9B", websiteData, StringComparison.Ordinal);
+        Assert.Contains("33DBFFCDE799EFEF2683960405BC72D030C2EBC521106F2A59C02BACE84CE4AD", websiteData, StringComparison.Ordinal);
         Assert.DoesNotContain("2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605", websiteData, StringComparison.Ordinal);
 
         var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.0.zip");
@@ -69,7 +69,7 @@ public sealed class WebsiteContentGuardTests
             "\"CLAWS.description\": \"claws.png\"",
             "At the start of your turn, the Firemark host gains 8/14/24 Molten Armor",
             "Deal 12/24/48 damage in the round to interrupt the heal",
-            "906D5EDD49408714396850917F82DD43FF9D73CA7A21AAE7354D8B7A750DDB9B");
+            "33DBFFCDE799EFEF2683960405BC72D030C2EBC521106F2A59C02BACE84CE4AD");
 
         AssertSourceContains(
             index,

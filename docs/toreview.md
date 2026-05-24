@@ -5,13 +5,13 @@ Current test package: `publish/SpirePlus-v0.1.0-private-beta.0.zip`.
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `906D5EDD49408714396850917F82DD43FF9D73CA7A21AAE7354D8B7A750DDB9B` |
-| DLL | `3D4297EFE3EA08E292732615E7C75798DCDD2DBD3F81A97D772EE25E041E6F6E` |
+| ZIP | `33DBFFCDE799EFEF2683960405BC72D030C2EBC521106F2A59C02BACE84CE4AD` |
+| DLL | `32856B1536EEFF0B9E9EF795EF34AB6E261143D610D4F159E114C177FA0BF0D1` |
 | PCK | `49C119F8CB9B04F59EFE1D7BB3791D3832F0CE27568FC5DC7956C83CA264F91A` |
 | Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
 | README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA` |
 
-Latest no-game validation snapshot: build passed, default tests `271 passed / 20 skipped`, opt-in artifact tests `291 passed / 0 skipped`, website syntax checks passed, format passed, and `git diff --check` passed. After the README wording refresh, the current-package loader row is pending again because the ZIP/README hash changed without opening the game. The release verifier fails closed with 19 pending live/manual rows.
+Latest no-game validation snapshot: build passed, default tests `271 passed / 20 skipped`, opt-in artifact tests `291 passed / 0 skipped`, website syntax checks passed, format passed, installed-package check passed, and `git diff --check` passed. After the Elite Root source-safety refresh, the current-package loader row is pending again because the ZIP/DLL hash changed without opening the game. The release verifier fails closed with 19 pending live/manual rows.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

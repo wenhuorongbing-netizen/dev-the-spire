@@ -22,6 +22,7 @@ public sealed class UrdaReleaseCoverageGuardTests
         var urdaOptionRelics = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaOptionRelics.cs");
         var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var urdaAfterRain = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.AfterRain.cs");
+        var urdaEliteRoot = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.EliteRoot.cs");
         var urdaHumusPact = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.HumusPact.cs");
         var urdaRouteRewards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RouteRewards.cs");
         var urdaShallowRootRelic = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.ShallowRootRelic.cs");
@@ -258,6 +259,13 @@ public sealed class UrdaReleaseCoverageGuardTests
             "EZMB_URDA_SEED_BANK_STORE",
             "UrdaStateKey");
         Assert.DoesNotContain("[HarmonyPatch(typeof(CardReward), nameof(CardReward.OnSkipped))]", urdaRunHook, StringComparison.Ordinal);
+        AssertSourceContains(
+            urdaEliteRoot,
+            "room.RoomType != RoomType.Elite",
+            "player.Creature.IsDead",
+            "CreatureCmd.Heal(player.Creature, EliteRootHeal)",
+            "UrdaEliteRoot",
+            "elite_victory_heal");
         Assert.DoesNotContain("OnSkipped", urdaRunHook, StringComparison.Ordinal);
         var seedbedRewardSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.Seedbed.cs");
         var seedbedCombatSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedCombat.cs");

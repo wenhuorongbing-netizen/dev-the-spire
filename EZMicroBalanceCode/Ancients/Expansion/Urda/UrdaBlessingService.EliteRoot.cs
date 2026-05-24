@@ -13,6 +13,11 @@ internal static partial class UrdaBlessingService
             return;
         }
 
+        if (player.Creature.IsDead)
+        {
+            return;
+        }
+
         var before = player.Creature.CurrentHp;
         player.Relics.OfType<UrdaEliteRootOptionRelic>().FirstOrDefault()?.Flash();
         await CreatureCmd.Heal(player.Creature, EliteRootHeal);
