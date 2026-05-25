@@ -39,8 +39,8 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: succeeded.",
-            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: succeeded.",
+            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded.",
+            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded.",
             "installed `mods\\EZMicroBalance` folder",
             "matched the installed mod artifacts on 2026-05-25",
             "302 passed, 0 skipped, 0 failed");
@@ -261,7 +261,7 @@ public sealed class DocumentationCompactnessGuardTests
         Assert.Contains("current package Steam-client loader smoke", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
-        Assert.Contains("fresh loader proof is pending again for beta.14", projectState, StringComparison.Ordinal);
+        Assert.Contains("fresh loader proof is pending again for beta.16", projectState, StringComparison.Ordinal);
         Assert.Contains("20 pending live/manual rows", projectState, StringComparison.Ordinal);
         Assert.Contains("Current manual-test package is not a release-readiness claim", projectState, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", projectState, StringComparison.Ordinal);
@@ -578,7 +578,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.14 ZIP hash is pending",
+            "Fresh loader smoke for the current beta.16 ZIP hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

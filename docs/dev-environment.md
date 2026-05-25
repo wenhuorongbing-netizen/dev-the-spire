@@ -1,4 +1,4 @@
-﻿# Development Environment
+# Development Environment
 
 ## Machine
 - OS: Windows 11 Pro (`10.0.26200`, `64-bit`)
@@ -70,28 +70,28 @@
 - BaseLib version consistency: OK. Runtime `v3.1.4` matches project package `3.1.4`.
 
 ## Last known commands
-- Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: succeeded with 0 warnings and 0 errors.
-- Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: succeeded with 0 warnings and 0 errors.
+- Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded with 0 warnings and 0 errors.
+- Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded with 0 warnings and 0 errors.
 - Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-25 after the goal guard / dev-environment drift repair. Result: passed, 282 passed, 20 skipped release artifact/runtime evidence tests, 0 failed.
 - Last successful Release test run: `dotnet test EZMicroBalance.sln -c Release` on 2026-05-13 after the BaseLib-only plug-off startup/log refresh. Result: passed, 81 passed, 18 skipped release artifact/runtime evidence tests, 0 failed.
 - Latest opt-in artifact-validation run: `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-25 after the goal guard / dev-environment drift repair. Result: passed, 302 passed, 0 skipped, 0 failed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - Latest full local CI-script run: `scripts\ci-full-validation.ps1` on 2026-05-20 with explicit `STS2_PATH` and `GODOT_PATH`. Result: passed. This is local no-game validation, not live loader or gameplay proof.
-- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: exit code 0.
-- Last required diff check: `git diff --check` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: exit code 0 with CRLF/LF warnings only.
-- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: succeeded.
-- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: succeeded.
-- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.14.zip`, the installed `mods\EZMicroBalance` folder, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.14.zip` were refreshed and hash-checked on 2026-05-25 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The current ZIP/DLL/PCK hash needs a fresh loader row after launching the current package; live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
-- Last PCK hash check: the 2026-05-25 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `4AC26AEE728BB5CC5F403A226654F4D412BE533B9501AA470E688542A6241348`.
-- Last staging/versioned DLL hash check: SHA256 `C05F28958C2B043E4DC352135CA71D386DBCD87BF4AABD02789B6B02FE784175`.
+- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: exit code 0.
+- Last required diff check: `git diff --check` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: exit code 0 with CRLF/LF warnings only.
+- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded.
+- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded.
+- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.16.zip`, the installed `mods\EZMicroBalance` folder, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.16.zip` were refreshed and hash-checked on 2026-05-25 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The current ZIP/DLL/PCK hash needs a fresh loader row after launching the current package; live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
+- Last PCK hash check: the 2026-05-25 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `63B34F2319EBF62FC283314D8311241D15FDC58D9A8EB9FFF741138CDDE910DD`.
+- Last staging/versioned DLL hash check: SHA256 `05EDB840EFB2B12EB369A7C0A3B9A098AAD2449C1C6C438095D8C008987C23E4`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
-- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.14.zip` was rebuilt from package staging, copied to the game root, and matched the installed mod artifacts on 2026-05-25.
+- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.16.zip` was rebuilt from package staging, copied to the game root, and matched the installed mod artifacts on 2026-05-25.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `203E1C91E6912581ED96699A9952895CBB96259B2B0EA53354B21C72F11704B9`
-  - DLL SHA256: `C05F28958C2B043E4DC352135CA71D386DBCD87BF4AABD02789B6B02FE784175`
-  - README SHA256: `82CB305AA6CA56BC167F00B0D58D1E836BF146D2030748B8FAF88C5A6057D633`
-  - Manifest SHA256: `934CE24967D8AF1ABE64B8DED9DB5F958FA97D0EC8A5D2D3128F6490B0FA3CB9`
-  - PCK SHA256: `4AC26AEE728BB5CC5F403A226654F4D412BE533B9501AA470E688542A6241348`
+  - Zip SHA256: `29D0C33A88E270F10E14C27DB084803F4DB87C5476E59D8137EC0D24C914A6EB`
+  - DLL SHA256: `05EDB840EFB2B12EB369A7C0A3B9A098AAD2449C1C6C438095D8C008987C23E4`
+  - README SHA256: `B626ED6A8E4A6F26BCB7CD1B5E7488108893358C9F5AB9C48014786CC7056481`
+  - Manifest SHA256: `661C3FE51A0E5EA44251F3941815F6DAD523EF8364D51843502AC7FFCDE96334`
+  - PCK SHA256: `63B34F2319EBF62FC283314D8311241D15FDC58D9A8EB9FFF741138CDDE910DD`
   - Entries: `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
 - Last release art audit: `EZMicroBalance/mod_image.png` and `publish\EZMicroBalance-cover-source.png` currently have SHA256 `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75` and were manually checked as original generated art with no visible text, letters, numbers, numerals, logos, or official game assets.
 - Publish note: Headless Godot export requires `export_presets.cfg` to be UTF-8 without BOM and needs local runtime references available to the editor assembly scan. `EZMicroBalance.csproj` copies `sts2.dll`, `0Harmony.dll`, and BaseLib into the Godot temp build folders before export; the selected-resource PCK still contains only active mod resources.

@@ -64,11 +64,11 @@ public sealed class WebsiteContentGuardTests
             "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
             "Gain 8 Block, set up a 2-space Seedbed",
             "\u79cd\u4e0b\u4e0d\u662f\u6253\u51fa\u3001\u5f03\u724c\u6216\u6d88\u8017",
-            "\u79cd\u4e0b\u6839\u82bd\u89c6\u4e3a\u5df2\u5904\u7406",
+            "\u79cd\u4e0b\u6839\u82bd\u4e0d\u7b97\u6253\u51fa",
             "\u6839\u8680\u662f\u4e3b\u724c\u7ec4\u91cc\u7684\u8bc5\u5492\uff0c\u4e0d\u662f\u6839\u82bd",
             "Planting is not playing, discarding, or exhausting",
             "Seedbed can plant Rootblight",
-            "A planted [gold]Rootblight[/gold] is held for one combat",
+            "A planted [gold]Rootblight[/gold] only freezes for this combat",
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
@@ -81,8 +81,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-seedbed-planting",
-            "app.js?v=20260525-seedbed-planting");
+            "content-data.js?v=20260525-seedbed-planting-b16",
+            "app.js?v=20260525-seedbed-planting-b16");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

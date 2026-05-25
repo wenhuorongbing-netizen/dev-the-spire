@@ -80,7 +80,7 @@ Use `verify-spire-plus-release-evidence.ps1` after manual testing has produced e
 ```
 
 By default, deferred rows fail. Use `-AllowDeferred` only when the project owner has explicitly accepted a release-note deferral and the row has `ExplicitOwnerDecision: true` plus a non-empty `ReleaseNote`. Pass rows also fail on duplicate row ids, wrong row kinds, manifests or evidence dirs outside the evidence root, required-file or screenshot paths that escape the row evidence dir, empty required files, missing `command.txt`, empty, invalid, or undersized clicked-UI PNG screenshots, empty required Markdown note files, or notes that say the evidence is invalid, covered, main-menu-only, loader-health-only, or otherwise not counted. Default evidence files cannot be removed from a row; `RequiredFiles` only adds extra files. Unknown or blank manifest rows are ignored but reported in `Warnings`.
-The verifier also computes the SHA256 of `publish\SpirePlus-v0.1.0-private-beta.14.zip` by default; use `-PackagePath` only when intentionally auditing a different zip. `-WritePassMarker` writes `release-evidence-verifier-pass.json` only after all rows pass or are accepted deferrals.
+The verifier also computes the SHA256 of `publish\SpirePlus-v0.1.0-private-beta.16.zip` by default; use `-PackagePath` only when intentionally auditing a different zip. `-WritePassMarker` writes `release-evidence-verifier-pass.json` only after all rows pass or are accepted deferrals.
 
 ## Full local CI lane
 

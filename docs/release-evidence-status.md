@@ -1,4 +1,4 @@
-﻿# Release Evidence Status
+# Release Evidence Status
 
 Current target: `Spire Plus` manual-test build for user validation. This page is a compact dashboard for evidence state; it does not replace `docs/release-checklist.md`.
 
@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `203E1C91E6912581ED96699A9952895CBB96259B2B0EA53354B21C72F11704B9` |
-| DLL | `C05F28958C2B043E4DC352135CA71D386DBCD87BF4AABD02789B6B02FE784175` |
-| PCK | `4AC26AEE728BB5CC5F403A226654F4D412BE533B9501AA470E688542A6241348` |
-| Manifest | `934CE24967D8AF1ABE64B8DED9DB5F958FA97D0EC8A5D2D3128F6490B0FA3CB9` |
-| README_INSTALL | `82CB305AA6CA56BC167F00B0D58D1E836BF146D2030748B8FAF88C5A6057D633` |
+| ZIP | `29D0C33A88E270F10E14C27DB084803F4DB87C5476E59D8137EC0D24C914A6EB` |
+| DLL | `05EDB840EFB2B12EB369A7C0A3B9A098AAD2449C1C6C438095D8C008987C23E4` |
+| PCK | `63B34F2319EBF62FC283314D8311241D15FDC58D9A8EB9FFF741138CDDE910DD` |
+| Manifest | `661C3FE51A0E5EA44251F3941815F6DAD523EF8364D51843502AC7FFCDE96334` |
+| README_INSTALL | `B626ED6A8E4A6F26BCB7CD1B5E7488108893358C9F5AB9C48014786CC7056481` |
 
 ## Automation Summary
 
@@ -26,11 +26,11 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. After the beta.14 package refresh, the loader row is pending again and 20 live/manual rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. After the beta.16 package refresh, the loader row is pending again and 20 live/manual rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Pending | User | Fresh beta.14 loader evidence: command, environment, current package hashes, `enabled-mods.txt`, `godot.log`, clean `godot-log-audit.json`, startup completion, stopped game, and restored mod isolation. Previous beta.13 loader evidence remains startup context only. |
+| fresh-current-package-loader-smoke | loader | Pending | User | Fresh beta.16 loader evidence: command, environment, current package hashes, `enabled-mods.txt`, `godot.log`, clean `godot-log-audit.json`, startup completion, stopped game, and restored mod isolation. Previous beta.13 loader evidence remains startup context only. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |

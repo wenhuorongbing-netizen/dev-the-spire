@@ -19,7 +19,7 @@ http://127.0.0.1:4177/website/
 In local preview, the current download button points to:
 
 ```text
-../publish/SpirePlus-v0.1.0-private-beta.14.zip
+../publish/SpirePlus-v0.1.0-private-beta.16.zip
 ```
 
 ## Public Deploy
@@ -29,13 +29,13 @@ In local preview, the current download button points to:
 In the public site, the current download button points to the versioned GitHub Release asset:
 
 ```text
-https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.14/SpirePlus-v0.1.0-private-beta.14.zip
+https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.16/SpirePlus-v0.1.0-private-beta.16.zip
 ```
 
 The release-page button points to:
 
 ```text
-https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.14
+https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.16
 ```
 
 If the repository is private, GitHub Pages availability depends on the account plan. If GitHub reports that private Pages are unsupported, use a public Pages repository, make this repository public, or upgrade the plan before publishing the site.

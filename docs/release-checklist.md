@@ -1,4 +1,4 @@
-﻿# Private Beta Release Checklist
+# Private Beta Release Checklist
 
 Target mod: `Spire Plus`
 Target manifest id: `EZMicroBalance`
@@ -26,8 +26,8 @@ Target manifest id: `EZMicroBalance`
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [ ] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`; rerun after the installed mod folder is refreshed.
-- [ ] `publish/SpirePlus-v0.1.0-private-beta.14.zip` must be rebuilt from the current Seedbed strength/planting source and copied to the local game root for manual testing.
-  - Current package hashes: DLL `C05F28958C2B043E4DC352135CA71D386DBCD87BF4AABD02789B6B02FE784175`; manifest `934CE24967D8AF1ABE64B8DED9DB5F958FA97D0EC8A5D2D3128F6490B0FA3CB9`; PCK `4AC26AEE728BB5CC5F403A226654F4D412BE533B9501AA470E688542A6241348`; README `82CB305AA6CA56BC167F00B0D58D1E836BF146D2030748B8FAF88C5A6057D633`; zip `203E1C91E6912581ED96699A9952895CBB96259B2B0EA53354B21C72F11704B9`.
+- [ ] `publish/SpirePlus-v0.1.0-private-beta.16.zip` must be rebuilt from the current Seedbed strength/planting source and copied to the local game root for manual testing.
+  - Current package hashes: DLL `05EDB840EFB2B12EB369A7C0A3B9A098AAD2449C1C6C438095D8C008987C23E4`; manifest `661C3FE51A0E5EA44251F3941815F6DAD523EF8364D51843502AC7FFCDE96334`; PCK `63B34F2319EBF62FC283314D8311241D15FDC58D9A8EB9FFF741138CDDE910DD`; README `B626ED6A8E4A6F26BCB7CD1B5E7488108893358C9F5AB9C48014786CC7056481`; zip `29D0C33A88E270F10E14C27DB084803F4DB87C5476E59D8137EC0D24C914A6EB`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
@@ -38,14 +38,14 @@ Target manifest id: `EZMicroBalance`
 - [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
 - [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.
 - [x] Historical pre-display-name-refresh Mod Settings evidence exists for the same technical manifest id.
-- [ ] Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest only after beta.14 is smoke-tested; the current available 30-field row is beta.13 historical startup evidence.
-- [ ] Fresh loader smoke for the current beta.14 ZIP hash is pending after the Seedbed strength/planting refresh.
+- [ ] Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest only after beta.16 is smoke-tested; the current available 30-field row is beta.13 historical startup evidence.
+- [ ] Fresh loader smoke for the current beta.16 ZIP hash is pending after the Seedbed strength/planting refresh.
 - [ ] Latest loader smoke for the current package hash is pending; beta.13 loader/startup evidence remains historical context. Previous evidence: `.tools\runtime-evidence\release-ready-manual\fresh-current-package-loader-smoke`.
 - [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib and Spire Plus, reported `Found 22 SavedSpireFields`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. This is historical context now superseded for runtime binaries by the 30-field loader smoke.
 - [x] Repeat helper-driven normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` reached main menu with only BaseLib and Spire Plus, reported `Found 16 SavedSpireFields`, restored settings plus 24 moved mod entries, and audited clean.
 - [x] BaseLib-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with the Spire Plus technical folder temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus, restored settings plus 25 moved entries and the current-run save, and audited clean.
 - [x] `godot.log` reviewed for controlled smoke-test initializer errors.
-- [ ] `godot.log` reviewed after fresh beta.14 normal Steam-client isolated startup/log verification.
+- [ ] `godot.log` reviewed after fresh beta.16 normal Steam-client isolated startup/log verification.
 - [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.
 
 ## Content Verification
@@ -72,7 +72,16 @@ Before any release-ready claim, fill a manual release evidence manifest and run:
 .\scripts\verify-spire-plus-release-evidence.ps1 -WritePassMarker
 ```
 
-The collector creates the verifier-readable manifest scaffold. The verifier hashes the package under test and requires current package hash parity, manifest/evidence dirs/files that stay inside the declared evidence root, matching row kinds, `command.txt` for every passed row, clicked-UI screenshots with foreground preflight, clean `godot-log-audit.json` files, result notes, fresh loader rows, preview-tools rows, save/load rows, Vakuu victory/failure rows, Rootblight/A11/disable-mod rows, and co-op disposition. Row `RequiredFiles` may add files but cannot remove the defaults. Unknown or blank manifest rows are ignored but reported as warnings. Deferred rows fail unless rerun with `-AllowDeferred` after an explicit owner-approved release note. `-WritePassMarker` writes `release-evidence-verifier-pass.json` only after the verifier exits 0.
+The collector creates the verifier-readable manifest scaffold.
+The verifier hashes the package under test and requires current package hash parity,
+manifest/evidence dirs/files inside the declared evidence root, matching row kinds,
+`command.txt` for every passed row, clicked-UI screenshots with foreground preflight,
+clean `godot-log-audit.json` files, result notes, fresh loader rows, preview-tools rows,
+save/load rows, Vakuu victory/failure rows, Rootblight/A11/disable-mod rows, and co-op disposition.
+Row `RequiredFiles` may add files; they cannot remove the defaults.
+Unknown or blank manifest rows are ignored but reported as warnings.
+Deferred rows fail unless rerun with `-AllowDeferred` after an explicit owner-approved release note.
+`-WritePassMarker` writes `release-evidence-verifier-pass.json` only after the verifier exits 0.
 
 | Requirement | Current artifacts / evidence | Status |
 | --- | --- | --- |
@@ -96,7 +105,7 @@ The collector creates the verifier-readable manifest scaffold. The verifier hash
 
 ## Known Issues
 
-- Fresh loader smoke for the current beta.14 package hash is pending.
+- Fresh loader smoke for the current beta.16 package hash is pending.
   - Evidence under `.tools\runtime-evidence\release-ready-manual\fresh-current-package-loader-smoke` loaded exactly BaseLib and `EZMicroBalance`, registered config, reported `Found 30 SavedSpireFields`, reached startup completion, and had 0 release-blocking hits. The helper stopped the game and restored 24 isolated mod entries. This remains loader/startup evidence, not gameplay proof.
   - The 2026-05-13 helper startup/log pass is historical 16-field evidence. BaseLib-only plug-off evidence loaded only BaseLib; the earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
   - Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list. Earlier page-level Mod Settings evidence predates the display-name refresh.

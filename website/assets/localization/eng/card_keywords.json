@@ -2,5 +2,5 @@
   "EZMB_TEMPORARY.title": "Temporary",
   "EZMB_TEMPORARY.description": "This card only exists during this combat. It is removed after combat.",
   "EZMB_PLANTED.title": "Plant",
-  "EZMB_PLANTED.description": "An eligible card is caught by Seedbed before it enters your hand and leaves this combat. Planting is not playing, discarding, or exhausting, and those rewards do not trigger. Planted Temporary Status or Curse cards do not return this combat; a planted Blight Sprout is treated as handled and adds no Rootblight I after combat; a planted Rootblight is held for one combat and does not upgrade, split, get removed, or downgrade after combat."
+  "EZMB_PLANTED.description": "Seedbed catches an eligible card before it enters your hand, removes it from this combat, and gives you 1 Withered Husk. Planting is not playing, discarding, or exhausting, so those triggers do not fire. Planted Temporary Status and Curse cards do not return this combat; this is not permanent card removal, and permanent Curses cannot be planted. A planted Blight Sprout is treated as handled without counting as played and adds no Rootblight I after combat. A planted Rootblight only freezes for this combat: it remains in your master deck at the same level and does not upgrade, split, get removed, or downgrade after combat."
 }
