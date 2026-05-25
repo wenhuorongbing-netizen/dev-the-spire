@@ -28,7 +28,7 @@
 - BaseLib `v3.1.4` compatibility with v0.106.0:
   - Historical 22-field loader evidence: `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib plus Spire Plus under technical id `EZMicroBalance`, BaseLib `177 patches successfully, 0 failed`, config registration, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Found 22 SavedSpireFields`, `Time to main menu: 13,539ms`, and no release-blocking log signatures.
   - Runtime files under `<GameRoot>\mods\BaseLib` now report `v3.1.4`; the project references `Alchyr.Sts2.BaseLib` `3.1.4`.
-  - Latest loader evidence: `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke` reached startup completion with only BaseLib plus Spire Plus, registered config for `EZMicroBalance`, reported `Found 30 SavedSpireFields`, and audited clean for a prior package hash. Current-package loader evidence: pending for the latest package hash.
+  - Current-package loader evidence: `.tools\runtime-evidence\beta16-loader-smoke-20260525-184743` reached startup completion with only BaseLib plus Spire Plus, registered config for `EZMicroBalance`, reported `Found 30 SavedSpireFields`, matched the current beta.16 package hash, audited clean, stopped the game, and restored the isolated mod setup.
   - Current display-name list evidence shows `Spire Plus`; older page-level Mod Settings evidence predates the display-name refresh.
   - A0/A10/A20 combat smoke, limited A11 map/save-load evidence, Act 2/3 A11 map-surface observation, and targeted A14 Rootblight hover/starter-notice checks exist. Full Ancient gameplay, full Rootblight combat behavior, natural A11 traversal, and co-op verification remain pending.
 - Do not use pre-2026-05-22 `v0.105.x` source notes as the sole basis for current `v0.106.0` conclusions. Reinspect the refreshed source and confirm runtime behavior before making release claims.
@@ -98,7 +98,7 @@
 
 ## Manual game verification
 - Manual game verification succeeded: legacy baseline only.
-- Status: latest normal Steam startup/log verification covers a prior 30-field package hash and loaded only BaseLib plus Spire Plus with a clean audit; the current package still needs a fresh loader row. Refreshed Mod Settings UI list screenshot shows `Spire Plus` under the display-name package; older page-level Mod Settings evidence predates the display-name refresh; live gameplay verification remains pending.
+- Status: latest normal Steam startup/log verification covers the current beta.16 package hash and loaded only BaseLib plus Spire Plus with a clean audit. Refreshed Mod Settings UI list screenshot shows `Spire Plus` under the display-name package; older page-level Mod Settings evidence predates the display-name refresh; live gameplay verification remains pending.
 - Verification surface: Slay the Spire 2 Settings -> Mod Settings.
 - BaseLib appeared in Mod Settings: yes.
 - BaseLib enabled: yes.
@@ -106,7 +106,7 @@
 - Legacy EzDailyContent enabled: yes.
 - Target EZMicroBalance Mod Settings verification:
   - Current UI list pass under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus` in the Mods list with only BaseLib and `EZMicroBalance` enabled.
-  - Latest startup/log evidence under `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke` logged `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 30 SavedSpireFields`, startup completion, and 0 release-blocking hits for a prior package hash. Current package loader proof is pending.
+  - Latest startup/log evidence under `.tools\runtime-evidence\beta16-loader-smoke-20260525-184743` logged `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 30 SavedSpireFields`, startup completion, current beta.16 package hash parity, and 0 release-blocking hits.
   - Earlier package startup/log evidence under `.tools\runtime-evidence\current-package-smoke-20260514-015901` is historical 22-field loader/resource evidence.
   - Historical page-level UI evidence remains under `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-*` with the old display name.
 - Screenshot-observed in-game version: `v0.104.0`, date `2026.04.23`.
@@ -156,7 +156,7 @@
   - Log signals: BaseLib `177 patches successfully, 0 failed`, config registered for `EZMicroBalance`, `Loaded 2 mods (2 total)`, `Found 22 SavedSpireFields`, `Time to main menu: 14,045ms`, and 0 release-blocking scan hits.
   - Boundary: Current source defines 30 SavedSpireFields after the 2026-05-17 static fixes, so this smoke is historical loader/log/resource evidence only. Gameplay/manual gates remain pending.
   - Restore stopped the game, restored settings to the original hash, restored moved mod entries/current-run files, preserved Steam-rehydrated test current-run files under evidence, and left 0 `SlayTheSpire2` processes.
-- 2026-05-24: Steam-client loader smoke under `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke` prepared a restore-safe session, moved 25 non-BaseLib/Spire Plus entries aside, enabled only BaseLib and `EZMicroBalance`, launched through Steam, logged `Loaded 2 mods (2 total)`, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Registered config for mod EZMicroBalance`, `Found 30 SavedSpireFields`, and startup completion, then stopped the game and restored settings plus moved entries. `godot-log-audit.json` is clean with 0 release-blocking signatures. This is startup/log evidence for a prior package hash; the current package still needs a fresh loader row and gameplay/manual gates remain pending.
+- 2026-05-25: Steam-client loader smoke under `.tools\runtime-evidence\beta16-loader-smoke-20260525-184743` prepared a restore-safe session, moved 24 non-BaseLib/Spire Plus entries aside, enabled only BaseLib and `EZMicroBalance`, launched through Steam, logged `Loaded 2 mods (2 total)`, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Registered config for mod EZMicroBalance`, `Found 30 SavedSpireFields`, and startup completion, then stopped the game and restored settings plus moved entries. `godot-log-audit.json` is clean with 0 release-blocking signatures. This is startup/log evidence for the current beta.16 package; gameplay/manual gates remain pending.
 
 ## Phase progress
 - Completed setup baseline: build, publish, and legacy Mod Settings verification.

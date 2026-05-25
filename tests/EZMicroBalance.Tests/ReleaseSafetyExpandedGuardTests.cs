@@ -145,10 +145,11 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
         Assert.Contains("historical log records", audit, StringComparison.Ordinal);
         Assert.Contains("`Found 22 SavedSpireFields`", audit, StringComparison.Ordinal);
-        Assert.Contains("Current loader parity is covered by the 30-field smoke", audit, StringComparison.Ordinal);
+        Assert.Contains("Current loader parity is covered by the beta.16 Steam-client smoke", audit, StringComparison.Ordinal);
         Assert.Contains("current-package loader smoke", audit, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("Current normal Steam-client startup/log verification reports `Found 30 SavedSpireFields`", audit, StringComparison.Ordinal);
+        Assert.Contains("current beta.16 package hash", audit, StringComparison.Ordinal);
         Assert.Contains("refreshed Mod Settings UI list capture now shows `Spire Plus`", audit, StringComparison.Ordinal);
         Assert.Contains("Two-client multiplayer matrix is pending", audit, StringComparison.Ordinal);
     }

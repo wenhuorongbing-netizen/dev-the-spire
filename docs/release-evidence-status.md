@@ -26,11 +26,11 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. After the beta.16 package refresh, the loader row is pending again and 20 live/manual rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. After the beta.16 loader smoke, the loader row has startup evidence and the verifier fails closed with 19 remaining manual/live rows.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Pending | User | Fresh beta.16 loader evidence: command, environment, current package hashes, `enabled-mods.txt`, `godot.log`, clean `godot-log-audit.json`, startup completion, stopped game, and restored mod isolation. Previous beta.13 loader evidence remains startup context only. |
+| fresh-current-package-loader-smoke | loader | Passed | Codex | `.tools/runtime-evidence/beta16-loader-smoke-20260525-184743` has `godot.log`, clean `godot-log-audit.json`, `loader-smoke-result.json`, current package hash parity, BaseLib plus Spire Plus only, startup completion, stopped game, and restored mod isolation. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |

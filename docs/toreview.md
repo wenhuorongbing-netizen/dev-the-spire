@@ -11,7 +11,7 @@ Current package hashes:
 | Manifest | `661C3FE51A0E5EA44251F3941815F6DAD523EF8364D51843502AC7FFCDE96334` |
 | README_INSTALL | `B626ED6A8E4A6F26BCB7CD1B5E7488108893358C9F5AB9C48014786CC7056481` |
 
-Latest no-game validation snapshot: build passed, default tests `282 passed / 20 skipped`, opt-in artifact tests `302 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.16`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the Seedbed / Rootblight package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
+Latest no-game validation snapshot: build passed, default tests `282 passed / 20 skipped`, opt-in artifact tests `302 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.16`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. The current beta.16 package also has loader/startup proof under `.tools/runtime-evidence/beta16-loader-smoke-20260525-184743`, preserved in the current handoff release row. The release verifier now fails closed with 19 remaining rows until gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof is filled.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

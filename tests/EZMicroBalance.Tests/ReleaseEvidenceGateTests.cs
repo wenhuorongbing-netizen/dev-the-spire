@@ -1291,7 +1291,7 @@ public sealed class ReleaseEvidenceGateTests
 
         var projectState = ReadRepoText("PROJECT_STATE.md");
         Assert.Contains("current source defines 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("current package Steam-client loader smoke", projectState, StringComparison.Ordinal);
+        Assert.Contains("fresh beta.16 Steam-client loader smoke", projectState, StringComparison.Ordinal);
         Assert.Contains("Found 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Found 22 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
     }

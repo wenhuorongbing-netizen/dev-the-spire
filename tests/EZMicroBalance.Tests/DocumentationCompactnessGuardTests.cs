@@ -258,11 +258,11 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("current package Steam-client loader smoke", projectState, StringComparison.Ordinal);
+        Assert.Contains("fresh beta.16 Steam-client loader smoke", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
-        Assert.Contains("fresh loader proof is pending again for beta.16", projectState, StringComparison.Ordinal);
-        Assert.Contains("20 pending live/manual rows", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta16-loader-smoke-20260525-184743", projectState, StringComparison.Ordinal);
+        Assert.Contains("gameplay, save-load, and co-op rows remain pending", projectState, StringComparison.Ordinal);
         Assert.Contains("Current manual-test package is not a release-readiness claim", projectState, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", projectState, StringComparison.Ordinal);
         Assert.Contains("git diff --check", projectState, StringComparison.Ordinal);
@@ -509,7 +509,7 @@ public sealed class DocumentationCompactnessGuardTests
             devEnvironment,
             "Historical 22-field loader evidence:",
             "Current source defines 30 SavedSpireFields",
-            "Latest loader evidence:",
+            "Current-package loader evidence:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
             "Last private beta package:",
             "Zip SHA256:",
