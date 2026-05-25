@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 
 namespace EZMicroBalance.Tests;
 
@@ -110,9 +110,11 @@ public sealed class ReleaseHashGuardTests
         const string stalePreSereTalonNRelicLifecycleGuardDllHash = "DC8F3FB8E10D6D664E0420F54C5C12CED5C409EB5A50130F857DC4084CA7922A";
         const string stalePreA20LocTableMergeZipHash = "FBF0A0CF5F1182A436E2828E4102495E844C3E5E9D76F99BD645B7A3A7E0D227";
         const string stalePreA20LocTableMergeDllHash = "38F1F60D20C3D47E275966851943E15C910D56F91FA2CD6BC00A7BD2C8201F59";
-        const string currentZipHash = "D05410668B56EA55C5E287EB1CF7CF7CCC89F6173CC6E2E1E29F181E525036E6";
-        const string currentDllHash = "A9F358D05CAC382FAF6DA5BBA36FDC3D2CE311CDE489B2B8EFBCA1F9CCC193D1";
-        const string currentPckHash = "A07DA0222F2477BD5B4A8F89129DAF14C687EC300E752AE5A522F450FC227AB0";
+        const string stalePreA20SmartFormatDllHash = "A9F358D05CAC382FAF6DA5BBA36FDC3D2CE311CDE489B2B8EFBCA1F9CCC193D1";
+        const string stalePreA20SmartFormatPckHash = "A07DA0222F2477BD5B4A8F89129DAF14C687EC300E752AE5A522F450FC227AB0";
+        const string currentZipHash = "2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006";
+        const string currentDllHash = "C8A8862AB427CD49BB77E7D90CB299A07276B768F5DB6C34BBAFB363F06DD6F1";
+        const string currentPckHash = "30312BE1E2723A1F7C1A617CAD45F9E2313C567EFE391378424B39CA330039A2";
         const string currentManifestHash = "C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6";
         const string currentReadmeHash = "33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA";
 
@@ -186,6 +188,7 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreBlightSproutDiagnosticsZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreSereTalonNRelicLifecycleGuardZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreA20LocTableMergeZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreA20SmartFormatPckHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(oldDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightUiDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightMarkerDllHash, doc, StringComparison.Ordinal);
@@ -232,6 +235,7 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreBlightSproutDiagnosticsDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreSereTalonNRelicLifecycleGuardDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreA20LocTableMergeDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreA20SmartFormatDllHash, doc, StringComparison.Ordinal);
         }
 
         AssertSourceContains(
@@ -243,3 +247,4 @@ public sealed class ReleaseHashGuardTests
             currentReadmeHash);
     }
 }
+

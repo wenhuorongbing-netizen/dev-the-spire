@@ -1,13 +1,13 @@
-# Spire Plus To Review
+﻿# Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
 Current test package: `publish/SpirePlus-v0.1.0-private-beta.0.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `D05410668B56EA55C5E287EB1CF7CF7CCC89F6173CC6E2E1E29F181E525036E6` |
-| DLL | `A9F358D05CAC382FAF6DA5BBA36FDC3D2CE311CDE489B2B8EFBCA1F9CCC193D1` |
-| PCK | `A07DA0222F2477BD5B4A8F89129DAF14C687EC300E752AE5A522F450FC227AB0` |
+| ZIP | `2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006` |
+| DLL | `C8A8862AB427CD49BB77E7D90CB299A07276B768F5DB6C34BBAFB363F06DD6F1` |
+| PCK | `30312BE1E2723A1F7C1A617CAD45F9E2313C567EFE391378424B39CA330039A2` |
 | Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
 | README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA` |
 
@@ -45,3 +45,4 @@ Latest no-game validation snapshot: build passed, default tests `273 passed / 20
 | GOV-CI-FULL-LANE | Engineering | Added self-hosted Windows full no-game validation workflow and script. | Run it once and attach the workflow log before treating CI as full validation evidence. |
 
 Do not close these rows from source review alone. Close only after matching live manual proof exists.
+

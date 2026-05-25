@@ -31,6 +31,31 @@ internal static class AscensionLocalizationBridge
         return TryGetTextForLanguage("eng", key, out text);
     }
 
+    public static bool TryGetText(string key, out string text)
+    {
+        text = string.Empty;
+
+        var language = LocManager.Instance?.Language;
+        if (!string.IsNullOrWhiteSpace(language) &&
+            TryGetTextForLanguage(language, key, out text))
+        {
+            return true;
+        }
+
+        return TryGetTextForLanguage("eng", key, out text);
+    }
+
+    public static bool IsAscensionLevelKey(string key)
+    {
+        if (!key.StartsWith("LEVEL_", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return key.EndsWith(".title", StringComparison.Ordinal) ||
+            key.EndsWith(".description", StringComparison.Ordinal);
+    }
+
     public static void MergeIntoIfAscensionTable(LocTable table)
     {
         if (!IsAscensionTable(table))
@@ -106,6 +131,25 @@ internal static class AscensionLocalizationBridge
         // early UI paths. Merge the current Spire Plus ascension slice into the
         // already-live original table so character select never displays raw keys.
         table.MergeWith(new Dictionary<string, string>(localizedTable, StringComparer.Ordinal));
+    }
+}
+
+[HarmonyPatch(typeof(LocManager), nameof(LocManager.SmartFormat))]
+internal static class AscensionLocalizationSmartFormatPatch
+{
+    private static bool Prefix(LocString locString, Dictionary<string, object> variables, ref string __result)
+    {
+        if (locString.LocTable.Equals("ascension", StringComparison.Ordinal) &&
+            AscensionLocalizationBridge.IsAscensionLevelKey(locString.LocEntryKey) &&
+            AscensionLocalizationBridge.TryGetText(locString.LocEntryKey, out var text))
+        {
+            // The character-select Ascension panel is an early UI path. Resolve
+            // A11-A20 directly so it never falls back to visible raw loc keys.
+            __result = text;
+            return false;
+        }
+
+        return true;
     }
 }
 

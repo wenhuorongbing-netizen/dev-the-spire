@@ -1,11 +1,11 @@
-# Spire Plus Issues
+﻿# Spire Plus Issues
 Current target: test-ready manual build, not release-ready.
 Current package hashes, 2026-05-25:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `D05410668B56EA55C5E287EB1CF7CF7CCC89F6173CC6E2E1E29F181E525036E6` |
-| DLL | `A9F358D05CAC382FAF6DA5BBA36FDC3D2CE311CDE489B2B8EFBCA1F9CCC193D1` |
-| PCK | `A07DA0222F2477BD5B4A8F89129DAF14C687EC300E752AE5A522F450FC227AB0` |
+| ZIP | `2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006` |
+| DLL | `C8A8862AB427CD49BB77E7D90CB299A07276B768F5DB6C34BBAFB363F06DD6F1` |
+| PCK | `30312BE1E2723A1F7C1A617CAD45F9E2313C567EFE391378424B39CA330039A2` |
 | Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
 | README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA` |
 ## Active blockers
@@ -31,3 +31,4 @@ Current package hashes, 2026-05-25:
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE`: prove save/load plus Vakuu victory return, failure/death, active/pre-finished save-load, and no-black-screen behavior.
 - `CO-OP`: verify multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, save/reconnect, and preview tools.
 ## Issue detail links: `docs/issues/ancient-expansion-v2.2.md`, `docs/issues/urda.md`, `docs/issues/waiting-tests.md`, `docs/issues/v3.3-design-review.md`; retest rows in `docs/toreview.md`.
+

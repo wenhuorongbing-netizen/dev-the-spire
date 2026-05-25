@@ -1,4 +1,11 @@
 {
+  "SPIREPLUS.mod_title": "Spire Plus",
+  "SPIREPLUS-CRYSTAL_SPHERE_PEEK_BUTTON.title": "Peek",
+  "SPIREPLUS-ENABLE_CRYSTAL_SPHERE_PEEK.title": "Crystal Sphere peek button",
+  "SPIREPLUS-CRYSTAL_SPHERE_MASK_ALPHA.title": "Crystal Sphere fog alpha",
+  "SPIREPLUS-ENABLE_TRANSFORM_PREDICTION.title": "Reveal transform preview",
+  "SPIREPLUS-TRANSFORM_PREDICTION_ALWAYS_ON.title": "Transform preview always on",
+  "SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.title": "Preview diagnostics logs",
   "EZMICROBALANCE.mod_title": "Spire Plus",
   "EZMICROBALANCE-CRYSTAL_SPHERE_PEEK_BUTTON.title": "Peek",
   "EZMICROBALANCE-ENABLE_CRYSTAL_SPHERE_PEEK.title": "Crystal Sphere peek button",

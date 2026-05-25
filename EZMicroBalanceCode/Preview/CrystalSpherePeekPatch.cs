@@ -117,7 +117,8 @@ internal static class CrystalSpherePeekPatch
 
     private static string GetPeekButtonText()
     {
-        return LocString.GetIfExists("settings_ui", "EZMICROBALANCE-CRYSTAL_SPHERE_PEEK_BUTTON.title")?.GetFormattedText()
+        return LocString.GetIfExists("settings_ui", "SPIREPLUS-CRYSTAL_SPHERE_PEEK_BUTTON.title")?.GetFormattedText()
+            ?? LocString.GetIfExists("settings_ui", "EZMICROBALANCE-CRYSTAL_SPHERE_PEEK_BUTTON.title")?.GetFormattedText()
             ?? (LocManager.Instance.Language == "zhs" ? "预知" : null)
             ?? "Peek";
     }

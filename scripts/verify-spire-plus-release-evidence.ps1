@@ -1,9 +1,9 @@
-param(
+﻿param(
     [string]$EvidenceRoot = ".tools\runtime-evidence\release-ready-manual",
 
     [string]$ManifestPath,
 
-    [string]$PackageSha256 = "D05410668B56EA55C5E287EB1CF7CF7CCC89F6173CC6E2E1E29F181E525036E6",
+    [string]$PackageSha256 = "2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006",
 
     [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.0.zip",
 

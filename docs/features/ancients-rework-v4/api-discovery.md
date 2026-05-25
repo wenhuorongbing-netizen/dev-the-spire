@@ -202,3 +202,7 @@ No new public API surface was added beyond the hover/banner hooks documented abo
 
 The archived v4.2 next-plan file at `../../archive/feature-inputs/ancients-rework-v4/sts2_ancients_rework_v4_2_next_plan.md` is byte-for-byte identical to `C:\Users\Jack\Downloads\sts2_ancients_rework_v4_2_next_plan.md` as of that preservation pass.
 The v4.3 adjustment plan file at `reference-inputs/sts2_ancients_rework_v4_3_adjustment_plan.md` originated from `C:\Users\Jack\Downloads\sts2_ancients_rework_v4_3_adjustment_plan.md` and now includes repository-local implementation-status annotations clarifying that the code is implemented while runtime/gameplay verification remains pending.
+
+## Feedback / Juiciness Notes
+
+Current rule for direct Ancient payoffs: use real game feedback primitives, not custom noisy overlays. Card additions should preview the exact cards, attach the source relic to the preview metadata, play the deck-movement cue, show the source relic pulse, and use a short weak screen shake. One-use Ancient reward rerolls and relic payoffs use the relic activation cue plus the same weak confirmation shake. This keeps player feedback legible without changing reward content, RNG, or save state.

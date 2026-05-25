@@ -1,4 +1,4 @@
-# Private Beta Release Checklist
+﻿# Private Beta Release Checklist
 
 Target mod: `Spire Plus`
 Target manifest id: `EZMicroBalance`
@@ -27,7 +27,7 @@ Target manifest id: `EZMicroBalance`
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
 - [x] `publish/SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts on 2026-05-23 and copied to the local game root for manual testing.
-  - Current package hashes: DLL `A9F358D05CAC382FAF6DA5BBA36FDC3D2CE311CDE489B2B8EFBCA1F9CCC193D1`; manifest `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`; PCK `A07DA0222F2477BD5B4A8F89129DAF14C687EC300E752AE5A522F450FC227AB0`; README `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA`; zip `D05410668B56EA55C5E287EB1CF7CF7CCC89F6173CC6E2E1E29F181E525036E6`.
+  - Current package hashes: DLL `C8A8862AB427CD49BB77E7D90CB299A07276B768F5DB6C34BBAFB363F06DD6F1`; manifest `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`; PCK `30312BE1E2723A1F7C1A617CAD45F9E2313C567EFE391378424B39CA330039A2`; README `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA`; zip `2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
@@ -121,3 +121,4 @@ The collector creates the verifier-readable manifest scaffold. The verifier hash
 - A bespoke full-screen intermission remains unimplemented pending live verification needs.
 - Ascension 21-30 and custom-character content are not included.
 - Former root `art_pipeline/` and `asset/` generated art/calibration folders are archived under ignored `.tools/archive/local-art-and-calibration-20260515/` and are not part of the active publish package.
+

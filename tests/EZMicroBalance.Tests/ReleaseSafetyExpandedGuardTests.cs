@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -323,7 +323,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"D05410668B56EA55C5E287EB1CF7CF7CCC89F6173CC6E2E1E29F181E525036E6\"",
+            "PackageSha256 = \"2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006\"",
             "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.0.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
@@ -551,7 +551,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             foreach (var (key, value) in JsonStringValues(document.RootElement))
             {
                 if (relativePath.EndsWith("EZMicroBalance/localization/zhs/settings_ui.json", StringComparison.Ordinal) &&
-                    key == "EZMICROBALANCE.mod_title")
+                    (key == "EZMICROBALANCE.mod_title" || key == "SPIREPLUS.mod_title"))
                 {
                     continue;
                 }

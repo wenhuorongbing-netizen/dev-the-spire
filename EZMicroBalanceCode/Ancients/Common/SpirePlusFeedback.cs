@@ -1,4 +1,6 @@
 using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
@@ -41,13 +43,13 @@ internal static class SpirePlusFeedback
     public static void ConfirmChoiceRefresh()
     {
         SfxCmd.Play(RelicTriggerSfx);
-        NGame.Instance?.ScreenShake(ShakeStrength.VeryWeak, ShakeDuration.Short);
+        NGame.Instance?.ScreenShake(ShakeStrength.Weak, ShakeDuration.Short);
     }
 
     public static void ConfirmRelicPayoff(RelicModel? sourceRelic)
     {
         FlashSourceRelic(sourceRelic);
-        NGame.Instance?.ScreenShake(ShakeStrength.VeryWeak, ShakeDuration.Short);
+        NGame.Instance?.ScreenShake(ShakeStrength.Weak, ShakeDuration.Short);
     }
 
     private static List<CardPileAddResult> AttachSourceRelic(
@@ -87,11 +89,16 @@ internal static class SpirePlusFeedback
 
         sourceRelic.Flash();
         SfxCmd.Play(RelicTriggerSfx);
+        var flashVfx = NRelicFlashVfx.Create(sourceRelic);
+        if (flashVfx != null)
+        {
+            NRun.Instance?.GlobalUi.AboveTopBarVfxContainer.AddChildSafely(flashVfx);
+        }
     }
 
     private static void PlayDeckGainCue()
     {
         SfxCmd.Play(DeckAddSfx);
-        NGame.Instance?.ScreenShake(ShakeStrength.VeryWeak, ShakeDuration.Short);
+        NGame.Instance?.ScreenShake(ShakeStrength.Weak, ShakeDuration.Short);
     }
 }

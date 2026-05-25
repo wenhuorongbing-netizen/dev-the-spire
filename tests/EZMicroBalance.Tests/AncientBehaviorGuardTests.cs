@@ -855,10 +855,12 @@ public sealed class AncientBehaviorGuardTests
             feedbackSource,
             "RelicTriggerSfx = \"event:/sfx/ui/relic_activate_general\"",
             "sourceRelic.Flash()",
+            "NRelicFlashVfx.Create(sourceRelic)",
+            "AboveTopBarVfxContainer.AddChildSafely(flashVfx)",
             "public static void ConfirmRelicPayoff(RelicModel? sourceRelic)",
             "models.Insert(0, sourceRelic)",
             "CardCmd.PreviewCardPileAdd(successfulAdds, seconds)",
-            "NGame.Instance?.ScreenShake(ShakeStrength.VeryWeak, ShakeDuration.Short)");
+            "NGame.Instance?.ScreenShake(ShakeStrength.Weak, ShakeDuration.Short)");
 
         AssertSourceContains(
             ancientSource,

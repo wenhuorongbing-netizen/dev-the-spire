@@ -15,10 +15,10 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 152 |
+| Total patch declarations | 153 |
 | High risk | 22 |
 | Medium risk | 42 |
-| Low risk | 88 |
+| Low risk | 89 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -153,11 +153,12 @@ Regenerate:
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 50 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.ProceedFromTerminalRewardsScreen))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionA20RewardScreenPatches.cs` | 56 | `[HarmonyPatch(typeof(NRewardsScreen), nameof(NRewardsScreen._Ready))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionA20RewardScreenPatches.cs` | 94 | `[HarmonyPatch(typeof(NRewardsScreen), "UpdateScreenState")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 112 | `[HarmonyPatch(typeof(LocManager), nameof(LocManager.GetTable))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 124 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 145 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 166 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 178 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 137 | `[HarmonyPatch(typeof(LocManager), nameof(LocManager.SmartFormat))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 156 | `[HarmonyPatch(typeof(LocManager), nameof(LocManager.GetTable))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 168 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 189 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 210 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 222 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapBossSealHoverPatches.cs` | 11 | `[HarmonyPatch(typeof(NBossMapPoint), "OnFocus")]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapGenerationPatches.cs` | 8 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.CreateMap))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapIconPatches.cs` | 6 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]` |
@@ -169,7 +170,7 @@ Regenerate:
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 109 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]` |
 | Map hover composition | Medium | `EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs` | 12 | `[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]` |
 | Preview tools | Medium | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 13 | `[HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 145 | `[HarmonyPatch]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 146 | `[HarmonyPatch]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 105 | `[HarmonyPatch]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 108 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 113 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |

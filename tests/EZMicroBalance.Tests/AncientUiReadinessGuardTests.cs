@@ -335,7 +335,8 @@ public sealed class AncientUiReadinessGuardTests
             feedback,
             "public static void ConfirmChoiceRefresh()",
             "SfxCmd.Play(RelicTriggerSfx)",
-            "NGame.Instance?.ScreenShake(ShakeStrength.VeryWeak, ShakeDuration.Short)");
+            "NRelicFlashVfx.Create(sourceRelic)",
+            "NGame.Instance?.ScreenShake(ShakeStrength.Weak, ShakeDuration.Short)");
 
         foreach (var key in new[]
         {

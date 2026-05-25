@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -26,7 +26,7 @@ public sealed class WebsiteContentGuardTests
     public void WebsitePackageMetadataMatchesCurrentPackageHash()
     {
         var websiteData = ReadRepoText("website", "content-data.js");
-        Assert.Contains("D05410668B56EA55C5E287EB1CF7CF7CCC89F6173CC6E2E1E29F181E525036E6", websiteData, StringComparison.Ordinal);
+        Assert.Contains("2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006", websiteData, StringComparison.Ordinal);
         Assert.DoesNotContain("2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605", websiteData, StringComparison.Ordinal);
 
         var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.0.zip");
@@ -69,12 +69,12 @@ public sealed class WebsiteContentGuardTests
             "\"CLAWS.description\": \"claws.png\"",
             "At the start of your turn, the Firemark host gains 8/14/24 Molten Armor",
             "Deal 12/24/48 damage in the round to interrupt the heal",
-            "D05410668B56EA55C5E287EB1CF7CF7CCC89F6173CC6E2E1E29F181E525036E6");
+            "2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006");
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-image-fix",
-            "app.js?v=20260525-image-fix");
+            "content-data.js?v=20260525-codex-overhaul",
+            "app.js?v=20260525-codex-overhaul");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

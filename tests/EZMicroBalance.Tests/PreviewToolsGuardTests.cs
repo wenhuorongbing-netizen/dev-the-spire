@@ -191,6 +191,13 @@ public sealed class PreviewToolsGuardTests
         var simplifiedChinese = TestRepo.JsonStringMap("EZMicroBalance", "localization", "zhs", "settings_ui.json");
         var requiredKeys = new[]
         {
+            "SPIREPLUS.mod_title",
+            "SPIREPLUS-CRYSTAL_SPHERE_PEEK_BUTTON.title",
+            "SPIREPLUS-ENABLE_CRYSTAL_SPHERE_PEEK.title",
+            "SPIREPLUS-CRYSTAL_SPHERE_MASK_ALPHA.title",
+            "SPIREPLUS-ENABLE_TRANSFORM_PREDICTION.title",
+            "SPIREPLUS-TRANSFORM_PREDICTION_ALWAYS_ON.title",
+            "SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.title",
             "EZMICROBALANCE.mod_title",
             "EZMICROBALANCE-CRYSTAL_SPHERE_PEEK_BUTTON.title",
             "EZMICROBALANCE-ENABLE_CRYSTAL_SPHERE_PEEK.title",
@@ -209,6 +216,8 @@ public sealed class PreviewToolsGuardTests
         }
 
         Assert.Equal("Spire Plus", simplifiedChinese["EZMICROBALANCE.mod_title"]);
+        Assert.Equal("Spire Plus", simplifiedChinese["SPIREPLUS.mod_title"]);
+        Assert.Equal("预知", simplifiedChinese["SPIREPLUS-CRYSTAL_SPHERE_PEEK_BUTTON.title"]);
         Assert.Equal("预知", simplifiedChinese["EZMICROBALANCE-CRYSTAL_SPHERE_PEEK_BUTTON.title"]);
         Assert.Equal("水晶球预知按钮", simplifiedChinese["EZMICROBALANCE-ENABLE_CRYSTAL_SPHERE_PEEK.title"]);
         Assert.Equal("水晶球雾层透明度", simplifiedChinese["EZMICROBALANCE-CRYSTAL_SPHERE_MASK_ALPHA.title"]);
