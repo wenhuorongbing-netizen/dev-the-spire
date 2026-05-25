@@ -284,7 +284,7 @@ public sealed class EngineeringGovernanceGuardTests
             "HEAD | `25f99fb",
             "Total patch declarations | 135",
             "Fresh current-package loader smoke | Pending live run",
-            "README_INSTALL | `674A1AA0255D61B1E740A0ADA71DC7912E72CE8F3D53A17C22BD2FA697BB8B10`");
+            "README_INSTALL | `1020BE6A6CDF9E4D0FAB4214F183F41A9330067DC07EED1B2875FA3D20355214`");
 
         AssertSourceContains(
             scope,

@@ -1,23 +1,23 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.3.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.4.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `067C58E7FB6782DC69BFCE003117706EAE55CE741A0093DE057C3CC4DD9CC62E` |
-| DLL | `4DAAA7CDEF83F6BCF5FA5B3A096677EE1C8D316325ED73719E3EC9E03F133564` |
-| PCK | `850A8538EB3FD7183A9D884E70C1A33BD97AE88AD46BAEBC5B644D265F73A6D1` |
-| Manifest | `DEBD899E29D049A9C3D9F0CCA7E9B9B3931FE5E41BCEC557D728115F6AD01B82` |
-| README_INSTALL | `674A1AA0255D61B1E740A0ADA71DC7912E72CE8F3D53A17C22BD2FA697BB8B10` |
+| ZIP | `04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C` |
+| DLL | `CA2AD8C72D5CDD7C4E1DB91D08FE5A0C9465AD24B9EB733313DFC54ECBD34A49` |
+| PCK | `5E53126F917B1992988CE51EE8692005E5461D884E5D9E1502E47C9B1D776318` |
+| Manifest | `6460DDBCC60616B53DE5E8AB68968317CDD375E82F570FE33E467810F248F3AB` |
+| README_INSTALL | `1020BE6A6CDF9E4D0FAB4214F183F41A9330067DC07EED1B2875FA3D20355214` |
 
-Latest no-game validation snapshot: build passed, default tests `277 passed / 20 skipped`, opt-in artifact tests `297 passed / 0 skipped`, staged Godot export plus package refresh passed, format passed, installed-package sync passed, and `git diff --check` passed. After the Neow/Act 1 reroll package refresh, the current-package loader row is pending again because the ZIP/DLL/PCK hash changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
+Latest no-game validation snapshot: build passed, default tests `277 passed / 20 skipped`, opt-in artifact tests `297 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.4`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the Seed Bank hover package refresh, the current-package loader row is pending again because the ZIP/DLL/PCK hash changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
 | --- | --- | --- | --- |
 | URDA-ROOT-EYES | Urda | Root Eyes selects future Monster/Unknown/Elite nodes, stores concrete previews, shows stacked marker hovers, and gates co-op queue mutation. | Click the relic, select shared-marker nodes, enter marked rooms in order and out of order, then save/load before entry. |
-| URDA-SEED-BANK | Urda | Seed Bank stores cards on the relic, exposes hover tips, supports relic-click extraction, and preserves seeds if deck-add fails. | Store cards, hover the relic, click extract, verify cards enter deck, and verify Boss transition does not hang. |
+| URDA-SEED-BANK | Urda | Seed Bank stores cards on the relic, shows a compact stored-card hover list, supports relic-click extraction, and preserves seeds if deck-add fails. | Store 1/2/3 cards, hover the relic from the left relic bar, confirm no large card preview clips offscreen, click extract, verify cards enter deck, and verify Boss transition does not hang. |
 | URDA-TRIAL-HUMUS | Urda | Trial Branch, Seedbed, Humus Pact, Moss Map, Rooted Route, After Rain, Molting, Shallow-Root Relic, and Elite Root have source guards and visible relic hovers. | Check event text, relic hover text, card reward alternatives, map markers, and combat results. |
 | URDA-ELITE-ROOT | Urda | New first-tier Urda option relic: after each Elite combat, heal 10 HP. | Pick Elite Root, fight a normal Elite and a Firemarked Elite if possible, and confirm each victory heals up to 10 HP. |
 | NEOW-ACT1-REROLL | Neow / Ancient UI | The one-use dice reroll now appears on Neow's normal start choices and eligible Act 1 Ancient reward screens. The text says the reroll is Act 1 only and disappears after use. | Start a run, use Neow reroll once, confirm choices refresh and the reroll vanishes; later check an Act 1 Ancient screen and confirm it cannot be saved into Act 2. |

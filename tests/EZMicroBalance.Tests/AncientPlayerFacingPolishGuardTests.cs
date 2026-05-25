@@ -691,7 +691,8 @@ public sealed class AncientPlayerFacingPolishGuardTests
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"));
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaOptionRelics.cs"));
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
         var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
@@ -710,7 +711,12 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "SeedBankCardIds = string.Join(\",\", failedSelectedIds.Take(SeedBankMaxSeeds))",
             "finally",
             "AncientCardHelpers.RemoveUnpiledRunCard(card)",
+            "CreateStoredSeedsHoverTip",
+            "storedSeeds.descriptionPrefix",
+            "storedSeeds.descriptionFooter",
             "Seed Bank extraction preserved");
+        Assert.DoesNotContain("HoverTipFactory.FromCard(card)", seedBankSource, StringComparison.Ordinal);
+        Assert.DoesNotContain(".Concat(card.HoverTips)", seedBankSource, StringComparison.Ordinal);
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
             "max [blue]3[/blue]",

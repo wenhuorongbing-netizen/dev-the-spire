@@ -154,7 +154,10 @@ public sealed class UrdaReleaseCoverageGuardTests
             "UrdaBlessingService.GetSeedBankStoredCount(seedBank.Owner)",
             "TaskHelper.RunSafely(UrdaBlessingService.TryExtractSeedBankFromRelicClick(seedBank.Owner))",
             "RefreshStoredSeedDisplay",
-            "HoverTipFactory.FromCard(card)");
+            "CreateStoredSeedsHoverTip",
+            "storedSeeds.descriptionPrefix");
+        Assert.DoesNotContain("HoverTipFactory.FromCard(card)", urdaOptionRelics, StringComparison.Ordinal);
+        Assert.DoesNotContain(".Concat(card.HoverTips)", urdaOptionRelics, StringComparison.Ordinal);
         Assert.Equal(11, Regex.Matches(urdaOptionRelics, @"\[Pool\(typeof\(SharedRelicPool\)\)\]").Count);
 
         AssertSourceContains(

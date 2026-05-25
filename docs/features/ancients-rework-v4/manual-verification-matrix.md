@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.3.zip`, SHA256 `067C58E7FB6782DC69BFCE003117706EAE55CE741A0093DE057C3CC4DD9CC62E` |
+| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.4.zip`, SHA256 `04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C` |
 
 ## Runtime Load Checklist
 

@@ -80,18 +80,18 @@
 - Last required diff check: `git diff --check` on 2026-05-25 after the Elite Root source-safety guard. Result: exit code 0 with CRLF/LF warnings only.
 - Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 for the Sovereign Blade jade boon refresh. Result: blocked while copying the Release DLL into the installed mod folder because `SlayTheSpire2.exe` held `mods\EZMicroBalance\EZMicroBalance.dll` open.
 - Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 before the Sovereign Blade jade boon refresh. The current `.2` manual-test package was built from Release DLL plus a direct headless Godot `--export-pack` into package staging because the installed mod folder was locked.
-- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.3.zip`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.3.zip` were refreshed on 2026-05-25 for local manual testing after the Sovereign Blade jade boon refresh. The installed `mods\EZMicroBalance` folder was not overwritten while the game process held the DLL lock. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The current ZIP/DLL/PCK hash needs a fresh loader row after the tester exits the game, extracts the zip, and launches the current package; live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
-- Last PCK hash check: the 2026-05-25 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `850A8538EB3FD7183A9D884E70C1A33BD97AE88AD46BAEBC5B644D265F73A6D1`.
-- Last staging/versioned DLL hash check: SHA256 `4DAAA7CDEF83F6BCF5FA5B3A096677EE1C8D316325ED73719E3EC9E03F133564`.
+- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.4.zip`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.4.zip` were refreshed on 2026-05-25 for local manual testing after the Sovereign Blade jade boon refresh. The installed `mods\EZMicroBalance` folder was not overwritten while the game process held the DLL lock. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The current ZIP/DLL/PCK hash needs a fresh loader row after the tester exits the game, extracts the zip, and launches the current package; live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
+- Last PCK hash check: the 2026-05-25 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `5E53126F917B1992988CE51EE8692005E5461D884E5D9E1502E47C9B1D776318`.
+- Last staging/versioned DLL hash check: SHA256 `CA2AD8C72D5CDD7C4E1DB91D08FE5A0C9465AD24B9EB733313DFC54ECBD34A49`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
-- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.3.zip` was rebuilt from package staging on 2026-05-25 because the installed mod DLL was locked by a running game process.
+- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.4.zip` was rebuilt from package staging on 2026-05-25 because the installed mod DLL was locked by a running game process.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `067C58E7FB6782DC69BFCE003117706EAE55CE741A0093DE057C3CC4DD9CC62E`
-  - DLL SHA256: `4DAAA7CDEF83F6BCF5FA5B3A096677EE1C8D316325ED73719E3EC9E03F133564`
-  - README SHA256: `674A1AA0255D61B1E740A0ADA71DC7912E72CE8F3D53A17C22BD2FA697BB8B10`
-  - Manifest SHA256: `DEBD899E29D049A9C3D9F0CCA7E9B9B3931FE5E41BCEC557D728115F6AD01B82`
-  - PCK SHA256: `850A8538EB3FD7183A9D884E70C1A33BD97AE88AD46BAEBC5B644D265F73A6D1`
+  - Zip SHA256: `04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C`
+  - DLL SHA256: `CA2AD8C72D5CDD7C4E1DB91D08FE5A0C9465AD24B9EB733313DFC54ECBD34A49`
+  - README SHA256: `1020BE6A6CDF9E4D0FAB4214F183F41A9330067DC07EED1B2875FA3D20355214`
+  - Manifest SHA256: `6460DDBCC60616B53DE5E8AB68968317CDD375E82F570FE33E467810F248F3AB`
+  - PCK SHA256: `5E53126F917B1992988CE51EE8692005E5461D884E5D9E1502E47C9B1D776318`
   - Entries: `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
 - Last release art audit: `EZMicroBalance/mod_image.png` and `publish\EZMicroBalance-cover-source.png` currently have SHA256 `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75` and were manually checked as original generated art with no visible text, letters, numbers, numerals, logos, or official game assets.
 - Publish note: Headless Godot export requires `export_presets.cfg` to be UTF-8 without BOM and needs local runtime references available to the editor assembly scan. `EZMicroBalance.csproj` copies `sts2.dll`, `0Harmony.dll`, and BaseLib into the Godot temp build folders before export; the selected-resource PCK still contains only active mod resources.

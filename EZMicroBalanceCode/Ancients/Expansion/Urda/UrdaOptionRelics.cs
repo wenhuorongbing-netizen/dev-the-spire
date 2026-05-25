@@ -128,19 +128,40 @@ internal sealed class UrdaSeedBankOptionRelic : UrdaOptionRelic
                 return [];
             }
 
+            var storedCards = UrdaBlessingService.GetSeedBankStoredCards(Owner);
             ReleaseEvidenceLog.Log(
                 "UrdaSeedBank",
                 "relic_hover_count",
                 Owner,
                 new Dictionary<string, object?>
                 {
-                    ["stored"] = UrdaBlessingService.GetSeedBankStoredCount(Owner)
+                    ["stored"] = storedCards.Count
                 });
-            return UrdaBlessingService
-                .GetSeedBankStoredCards(Owner)
-                .SelectMany(card => new[] { HoverTipFactory.FromCard(card) }.Concat(card.HoverTips))
-                .ToArray();
+            return storedCards.Count == 0
+                ? []
+                : [CreateStoredSeedsHoverTip(storedCards)];
         }
+    }
+
+    private static IHoverTip CreateStoredSeedsHoverTip(IReadOnlyList<CardModel> storedCards)
+    {
+        var storedNames = storedCards
+            .Take(3)
+            .Select(static card => card.Title)
+            .Where(static title => !string.IsNullOrWhiteSpace(title))
+            .Select(static title => "- " + title)
+            .ToList();
+
+        var description = new List<string>
+        {
+            new LocString("relics", "EZMICROBALANCE-URDA_SEED_BANK_OPTION_RELIC.storedSeeds.descriptionPrefix").GetFormattedText()
+        };
+        description.AddRange(storedNames);
+        description.Add(new LocString("relics", "EZMICROBALANCE-URDA_SEED_BANK_OPTION_RELIC.storedSeeds.descriptionFooter").GetFormattedText());
+
+        return new HoverTip(
+            new LocString("relics", "EZMICROBALANCE-URDA_SEED_BANK_OPTION_RELIC.storedSeeds.title"),
+            string.Join("\n", description.Where(static line => !string.IsNullOrWhiteSpace(line))));
     }
 
     public void RefreshStoredSeedDisplay() => InvokeDisplayAmountChanged();

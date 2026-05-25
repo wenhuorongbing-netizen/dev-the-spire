@@ -1,10 +1,10 @@
-﻿# Spire Plus Test-Ready Development Goal
+# Spire Plus Test-Ready Development Goal
 
 Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test build, with source, resources, package, docs, and automated guards aligned for the user's manual test pass.
 
 Current stop line: Codex should not chase release-ready evidence in this pass. The user will run live/manual testing. This is not a release-ready claim.
 
-Current package target remains `publish/SpirePlus-v0.1.0-private-beta.3.zip`. The stable technical manifest id remains `EZMicroBalance`; do not edit it in place.
+Current package target remains `publish/SpirePlus-v0.1.0-private-beta.4.zip`. The stable technical manifest id remains `EZMicroBalance`; do not edit it in place.
 
 ## Current State
 

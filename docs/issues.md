@@ -3,15 +3,16 @@ Current target: test-ready manual build, not release-ready.
 Current package hashes, 2026-05-25:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `067C58E7FB6782DC69BFCE003117706EAE55CE741A0093DE057C3CC4DD9CC62E` |
-| DLL | `4DAAA7CDEF83F6BCF5FA5B3A096677EE1C8D316325ED73719E3EC9E03F133564` |
-| PCK | `850A8538EB3FD7183A9D884E70C1A33BD97AE88AD46BAEBC5B644D265F73A6D1` |
-| Manifest | `DEBD899E29D049A9C3D9F0CCA7E9B9B3931FE5E41BCEC557D728115F6AD01B82` |
-| README_INSTALL | `674A1AA0255D61B1E740A0ADA71DC7912E72CE8F3D53A17C22BD2FA697BB8B10` |
+| ZIP | `04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C` |
+| DLL | `CA2AD8C72D5CDD7C4E1DB91D08FE5A0C9465AD24B9EB733313DFC54ECBD34A49` |
+| PCK | `5E53126F917B1992988CE51EE8692005E5461D884E5D9E1502E47C9B1D776318` |
+| Manifest | `6460DDBCC60616B53DE5E8AB68968317CDD375E82F570FE33E467810F248F3AB` |
+| README_INSTALL | `1020BE6A6CDF9E4D0FAB4214F183F41A9330067DC07EED1B2875FA3D20355214` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` P0 source/package-fixed / live-pending
 - `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
+- `URDA-SEED-BANK-HOVER` P0 source/package-fixed / live-pending: Seed Bank relic hover now shows a compact stored-card list instead of full card previews that can clip offscreen and spawn unrelated keyword tips.
 - `ENEMY-DAMAGE-POLISH` P1 source-fixed / live-pending: Decimillipede, Terror Eel, and Phantasmal Gardener attack pressure is lightly reduced through damage getter patches so intent and real damage stay aligned; live elite-fight pacing proof remains pending.
 - `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
 - `URDA-PROTOTYPE` P0 open / live-pending: default-on with eleven source-backed ids, including Elite Root; live gameplay and save/load proof remain pending.

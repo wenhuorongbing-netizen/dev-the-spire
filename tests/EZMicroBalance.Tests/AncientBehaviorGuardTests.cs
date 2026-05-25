@@ -1,4 +1,4 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -189,7 +189,7 @@ public sealed class AncientBehaviorGuardTests
     [ReleaseArtifactFact]
     public void PrivateBetaZipContainsOnlyInstallableActiveModFiles()
     {
-        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.3.zip");
+        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.4.zip");
         Assert.True(File.Exists(packagePath), $"Missing private beta package: {packagePath}");
 
         using var archive = ZipFile.OpenRead(packagePath);
@@ -220,7 +220,7 @@ public sealed class AncientBehaviorGuardTests
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);
-        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.3.zip", readme, StringComparison.Ordinal);
+        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.4.zip", readme, StringComparison.Ordinal);
         Assert.Contains("Display name: Spire Plus", readme, StringComparison.Ordinal);
         Assert.Contains("Technical compatibility id: EZMicroBalance", readme, StringComparison.Ordinal);
         Assert.Contains("Extract this archive into the Slay the Spire 2 mods folder exactly as packaged.", readme, StringComparison.Ordinal);
