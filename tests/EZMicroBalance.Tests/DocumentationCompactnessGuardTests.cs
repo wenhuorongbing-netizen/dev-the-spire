@@ -317,7 +317,7 @@ public sealed class DocumentationCompactnessGuardTests
             "`SERE-TALON/TANX-CLAWS-ROUTING`",
             "`TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending",
             "`SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending",
-            "320 dirty entries, 0 unclassified paths",
+            "current worktree is clean after intentional batches",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source-split/refactor passes", issues, StringComparison.OrdinalIgnoreCase);

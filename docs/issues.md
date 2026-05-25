@@ -9,10 +9,10 @@ Current package hashes, 2026-05-25:
 | Manifest | `0696BFF73607D4583CE75F34868DA488528A518B7E269BE8ADB2F87A7071BE59` |
 | README_INSTALL | `362118DBB9BF74AC81979081C99CC7007BDAD9BB922B05A0DEB17A886A455F26` |
 ## Active blockers
-- `SERE-TALON/TANX-CLAWS-ROUTING` P0 source/package-fixed / live-pending
-- `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
+- `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
 - `URDA-SEED-BANK-HOVER` P0 source/package-fixed / live-pending: Seed Bank relic hover now shows a compact stored-card list instead of full card previews that can clip offscreen and spawn unrelated keyword tips.
+- `URDA-SEEDBED-PLANTING` P0 source/package-fixed / live-pending: Seedbed explains Planting / 种下 and can hold Rootblight for one combat.
 - `COOP-COMBAT-START-CRASH` P0 source/package-fixed / live-pending:
   - User log ended during multiplayer combat startup for `CUBEX_CONSTRUCT_NORMAL`, with no managed stack. Treat this as latest Spire Plus crash evidence even if the in-game manifest text still shows an older beta label.
   - Source fix: co-op fails closed before proof for A11-A20 selection/gameplay, Ascension map/rewards, Ancient offers/selections/run hooks, Urda reward alternatives, combat hooks, and preview tools.
@@ -34,7 +34,7 @@ Current package hashes, 2026-05-25:
 - `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open: clicked UI, relic-bar display, combat visuals, preview tools, co-op, and Vakuu fight need live proof.
 - `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2: check invariant culture, patch mapping, and evidence logging.
 ## Engineering governance blockers
-- `GOV-WIP-SPLIT` P0: worktree has 320 dirty entries, 0 unclassified paths. Stage only by intentional batch.
+- `GOV-WIP-SPLIT` P0 source-fixed: current worktree is clean after intentional batches. Keep future edits staged by explicit scope.
 - `GOV-CI-FIRST-RUN` P2 runner-pending; `DOC-CONFLICT-GOVERNANCE` and `PLATFORM-PACKAGE-CHECKS` P2: CI first run and cross-platform checks.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
