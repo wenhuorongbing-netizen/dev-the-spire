@@ -1,4 +1,5 @@
-﻿using MegaCrit.Sts2.Core.Modding;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -32,8 +33,21 @@ internal static class MorviInitializer
             ? [ModelDb.GetById<MorviRunHook>(ModelDb.GetId<MorviRunHook>())]
             : [];
 
-    private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState) =>
-        MorviFeatureGate.IsMorviEnabled(combatState.RunState.UnlockState)
-            ? [ModelDb.GetById<MorviCombatHook>(ModelDb.GetId<MorviCombatHook>())]
-            : [];
+    private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState)
+    {
+        if (!MorviFeatureGate.IsMorviEnabled(combatState.RunState.UnlockState))
+        {
+            return [];
+        }
+
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopCombatHook(
+                combatState.RunState,
+                "MorviCombatHooks",
+                "Morvi combat card, pile, and power hooks still need two-client proof."))
+        {
+            return [];
+        }
+
+        return [ModelDb.GetById<MorviCombatHook>(ModelDb.GetId<MorviCombatHook>())];
+    }
 }

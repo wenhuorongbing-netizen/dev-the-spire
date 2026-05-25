@@ -1,3 +1,4 @@
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Models.Powers;
 
@@ -9,17 +10,26 @@ internal sealed class LothaRunHook : AbstractModel
 
     public override Task BeforeCombatStart()
     {
-        return LothaBlessingService.BeforeCombatStart();
+        return ShouldSkipCoopCombat(CurrentRunState())
+            ? Task.CompletedTask
+            : LothaBlessingService.BeforeCombatStart();
     }
 
     public override Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
     {
+        if (card.Owner?.Creature.CombatState != null && ShouldSkipCoopCombat(card.Owner.RunState))
+        {
+            return Task.CompletedTask;
+        }
+
         LothaBlessingService.SyncPersistentState(card.Owner);
         return Task.CompletedTask;
     }
 
     public override Task AfterCombatEnd(CombatRoom room) =>
-        LothaBlessingService.AfterCombatEnd(room);
+        ShouldSkipCoopCombat(room.CombatState?.RunState)
+            ? Task.CompletedTask
+            : LothaBlessingService.AfterCombatEnd(room);
 
     public override Task AfterDamageReceived(
         PlayerChoiceContext choiceContext,
@@ -28,19 +38,34 @@ internal sealed class LothaRunHook : AbstractModel
         ValueProp props,
         Creature? dealer,
         CardModel? cardSource) =>
-        LothaBlessingService.AfterDamageReceived(choiceContext, target, result, props, dealer, cardSource);
+        ShouldSkipCoopCombat(target.CombatState?.RunState)
+            ? Task.CompletedTask
+            : LothaBlessingService.AfterDamageReceived(choiceContext, target, result, props, dealer, cardSource);
 
     public override bool TryModifyRewardsLate(Player player, List<Reward> rewards, AbstractRoom? room) =>
         LothaBlessingService.TryModifyRewardsLate(player, rewards, room);
 
     public override bool ShouldDieLate(Creature creature) =>
+        ShouldSkipCoopCombat(creature.CombatState?.RunState) ||
         LothaBlessingService.ShouldDieLate(creature);
 
     public override bool ShouldDie(Creature creature) =>
+        ShouldSkipCoopCombat(creature.CombatState?.RunState) ||
         LothaBlessingService.ShouldDie(creature);
 
     public override Task AfterPreventingDeath(Creature creature) =>
-        LothaBlessingService.AfterPreventingDeath(creature);
+        ShouldSkipCoopCombat(creature.CombatState?.RunState)
+            ? Task.CompletedTask
+            : LothaBlessingService.AfterPreventingDeath(creature);
+
+    internal static bool ShouldSkipCoopCombat(IRunState? runState) =>
+        MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopCombatHook(
+            runState,
+            "LothaCombatHooks",
+            "Lotha combat card, power, and death-prevention hooks still need two-client proof.");
+
+    private static IRunState? CurrentRunState() =>
+        CombatManager.Instance.DebugOnlyGetState()?.RunState;
 }
 
 internal sealed class LothaCombatHook : AbstractModel
@@ -48,25 +73,50 @@ internal sealed class LothaCombatHook : AbstractModel
     public override bool ShouldReceiveCombatHooks => true;
 
     public override Task AfterPlayerTurnStartEarly(PlayerChoiceContext choiceContext, Player player) =>
-        LothaBlessingService.AfterPlayerTurnStart(choiceContext, player);
+        LothaRunHook.ShouldSkipCoopCombat(player.RunState)
+            ? Task.CompletedTask
+            : LothaBlessingService.AfterPlayerTurnStart(choiceContext, player);
 
     public override Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants) =>
-        LothaBlessingService.AfterTurnEnd(choiceContext, side);
+        LothaRunHook.ShouldSkipCoopCombat(CombatManager.Instance.DebugOnlyGetState()?.RunState)
+            ? Task.CompletedTask
+            : LothaBlessingService.AfterTurnEnd(choiceContext, side);
 
     public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount) =>
-        LothaBlessingService.ModifyCardPlayCount(card, playCount);
+        LothaRunHook.ShouldSkipCoopCombat(card.Owner?.RunState)
+            ? playCount
+            : LothaBlessingService.ModifyCardPlayCount(card, playCount);
 
     public override bool ShouldPlay(CardModel card, AutoPlayType autoPlayType) =>
+        LothaRunHook.ShouldSkipCoopCombat(card.Owner?.RunState) ||
         LothaBlessingService.ShouldPlay(card, autoPlayType);
 
     public override Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        LothaBlessingService.AfterCardPlayed(choiceContext, cardPlay);
+        LothaRunHook.ShouldSkipCoopCombat(cardPlay.Card.Owner?.RunState)
+            ? Task.CompletedTask
+            : LothaBlessingService.AfterCardPlayed(choiceContext, cardPlay);
 
-    public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost) =>
-        LothaBlessingService.TryModifyEnergyCostInCombat(card, originalCost, out modifiedCost);
+    public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)
+    {
+        if (LothaRunHook.ShouldSkipCoopCombat(card.Owner?.RunState))
+        {
+            modifiedCost = originalCost;
+            return false;
+        }
 
-    public override bool TryModifyStarCost(CardModel card, decimal originalCost, out decimal modifiedCost) =>
-        LothaBlessingService.TryModifyStarCost(card, originalCost, out modifiedCost);
+        return LothaBlessingService.TryModifyEnergyCostInCombat(card, originalCost, out modifiedCost);
+    }
+
+    public override bool TryModifyStarCost(CardModel card, decimal originalCost, out decimal modifiedCost)
+    {
+        if (LothaRunHook.ShouldSkipCoopCombat(card.Owner?.RunState))
+        {
+            modifiedCost = originalCost;
+            return false;
+        }
+
+        return LothaBlessingService.TryModifyStarCost(card, originalCost, out modifiedCost);
+    }
 
     public override decimal ModifyPowerAmountGiven(
         PowerModel power,
@@ -74,15 +124,25 @@ internal sealed class LothaCombatHook : AbstractModel
         decimal amount,
         Creature? target,
         CardModel? cardSource) =>
-        LothaBlessingService.ModifyPowerAmountGiven(power, giver, amount, target);
+        LothaRunHook.ShouldSkipCoopCombat(giver.CombatState?.RunState)
+            ? amount
+            : LothaBlessingService.ModifyPowerAmountGiven(power, giver, amount, target);
 
     public override bool TryModifyPowerAmountReceived(
         PowerModel canonicalPower,
         Creature target,
         decimal amount,
         Creature? applier,
-        out decimal modifiedAmount) =>
-        LothaBlessingService.TryModifyPowerAmountReceived(canonicalPower, target, amount, applier, out modifiedAmount);
+        out decimal modifiedAmount)
+    {
+        if (LothaRunHook.ShouldSkipCoopCombat(target.CombatState?.RunState))
+        {
+            modifiedAmount = amount;
+            return false;
+        }
+
+        return LothaBlessingService.TryModifyPowerAmountReceived(canonicalPower, target, amount, applier, out modifiedAmount);
+    }
 
     public override Task AfterPowerAmountChanged(
         PlayerChoiceContext choiceContext,
@@ -90,5 +150,7 @@ internal sealed class LothaCombatHook : AbstractModel
         decimal amount,
         Creature? applier,
         CardModel? cardSource) =>
-        LothaBlessingService.AfterPowerAmountChanged(choiceContext, power, amount, applier, cardSource);
+        LothaRunHook.ShouldSkipCoopCombat(CombatManager.Instance.DebugOnlyGetState()?.RunState)
+            ? Task.CompletedTask
+            : LothaBlessingService.AfterPowerAmountChanged(choiceContext, power, amount, applier, cardSource);
 }

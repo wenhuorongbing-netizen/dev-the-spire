@@ -1,4 +1,5 @@
-﻿using MegaCrit.Sts2.Core.Modding;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -32,8 +33,21 @@ internal static class UrdaInitializer
             ? [ModelDb.GetById<UrdaRunHook>(ModelDb.GetId<UrdaRunHook>())]
             : [];
 
-    private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState) =>
-        UrdaFeatureGate.IsUrdaEnabled(combatState.RunState.UnlockState)
-            ? [ModelDb.GetById<UrdaCombatHook>(ModelDb.GetId<UrdaCombatHook>())]
-            : [];
+    private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState)
+    {
+        if (!UrdaFeatureGate.IsUrdaEnabled(combatState.RunState.UnlockState))
+        {
+            return [];
+        }
+
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopCombatHook(
+                combatState.RunState,
+                "UrdaCombatHooks",
+                "Urda combat card, Seedbed, Seed Bank, Root Sight, and Rooted Route hooks still need two-client proof."))
+        {
+            return [];
+        }
+
+        return [ModelDb.GetById<UrdaCombatHook>(ModelDb.GetId<UrdaCombatHook>())];
+    }
 }

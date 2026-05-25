@@ -102,7 +102,9 @@ public sealed class AscensionV2MilestoneGuardTests
         AssertSourceContains(
             initializer,
             "AscensionFeatureGate.IsAnyImplementedSliceEnabled(runState) ||",
-            "AscensionFeatureGate.IsAnyImplementedSliceEnabled(combatState.RunState) ||");
+            "if (!AscensionFeatureGate.IsAnyImplementedSliceEnabled(combatState.RunState) &&",
+            "!AscensionFeatureGate.IsDiagnosticsEnabled",
+            "ShouldDisableUnverifiedCoopCombatHook");
         AssertSourceContains(mapService, "if (!AscensionFeatureGate.IsAnyImplementedSliceEnabled(runState) &&", "return map;");
         AssertSourceContains(rewardService, "AscensionFeatureGate.IsFiremarkedEliteEnabled", "AscensionFeatureGate.IsBossSealsEnabled", "AscensionFeatureGate.IsFissionEnabled");
         AssertSourceContains(rootRunHook, "AscensionFeatureGate.IsRootblightEnabled", "ForgeTokenService.SyncVisibleTokens");

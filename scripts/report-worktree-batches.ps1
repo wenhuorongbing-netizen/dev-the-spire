@@ -94,7 +94,7 @@ function Get-WorktreeBatch {
         $p -eq 'tests/EZMicroBalance.Tests/README.md' -or
         $p -eq 'docs/patch-inventory.md' -or
         $p -eq 'docs/platform-testing.md' -or
-        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|PreviewTools|SaveStateContracts|ModInfoLocalization).*\.cs(\.uid)?$') {
+        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|CoopCombatSafety|PreviewTools|SaveStateContracts|ModInfoLocalization).*\.cs(\.uid)?$') {
         return 5
     }
 

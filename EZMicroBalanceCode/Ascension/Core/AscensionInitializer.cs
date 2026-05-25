@@ -41,9 +41,20 @@ public static class AscensionInitializer
 
     private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState)
     {
-        return AscensionFeatureGate.IsAnyImplementedSliceEnabled(combatState.RunState) ||
-               AscensionFeatureGate.IsDiagnosticsEnabled
-            ? new AbstractModel[] { ModelDb.GetById<RootBudCombatHook>(ModelDb.GetId<RootBudCombatHook>()) }
-            : Array.Empty<AbstractModel>();
+        if (!AscensionFeatureGate.IsAnyImplementedSliceEnabled(combatState.RunState) &&
+            !AscensionFeatureGate.IsDiagnosticsEnabled)
+        {
+            return Array.Empty<AbstractModel>();
+        }
+
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopCombatHook(
+                combatState.RunState,
+                "AscensionCombatHooks",
+                "A11-A20 combat modifiers, Blight Sprout, Rootblight, firemark, banner, and boss-seal combat hooks still need two-client proof."))
+        {
+            return Array.Empty<AbstractModel>();
+        }
+
+        return new AbstractModel[] { ModelDb.GetById<RootBudCombatHook>(ModelDb.GetId<RootBudCombatHook>()) };
     }
 }

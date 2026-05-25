@@ -41,18 +41,18 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.4.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.5.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C`
+- Zip SHA256: `8FD25AE6EFECCD76CFEDA13B99CAB355DF02824EDA595A4F8F1A0BBABDFC5D0E`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `CA2AD8C72D5CDD7C4E1DB91D08FE5A0C9465AD24B9EB733313DFC54ECBD34A49`
-- Manifest SHA256: `6460DDBCC60616B53DE5E8AB68968317CDD375E82F570FE33E467810F248F3AB`
-- PCK SHA256: `5E53126F917B1992988CE51EE8692005E5461D884E5D9E1502E47C9B1D776318`
-- README_INSTALL SHA256: `1020BE6A6CDF9E4D0FAB4214F183F41A9330067DC07EED1B2875FA3D20355214`
+- DLL SHA256: `970AEFA59F72B742D53D81383CA6F8AA05F544C668CDD1277439CC729E1365C8`
+- Manifest SHA256: `AA87E2C0AC29CB13F0DD8A4E500DA2F6CC352CE95918D1577C2FE52FEDF811AC`
+- PCK SHA256: `1DA7560202FA06E4E2FB9CD1E8994130C4E86B05697DAB5AD75F596C310ACDA0`
+- README_INSTALL SHA256: `F933C266CBA1A6B1C81A2AC3D4BF1AA30A407BF6676703E95F1EB86724126C04`
 
 ## Known Automated Evidence
 
-- Current automated snapshot: `dotnet build`, normal `dotnet test`, focused website/documentation/release-evidence guards, `dotnet format`, `git diff --check`, website syntax checks, no-launch evidence-template regeneration, and worktree batching passed after the 2026-05-24 package/text/art guard passes.
+- Current automated snapshot: `dotnet build`, normal `dotnet test`, opt-in release-artifact tests, `dotnet publish`, package refresh, `dotnet format`, `git diff --check`, website syntax checks, and installed-package checking passed after the 2026-05-25 co-op combat safety fix. Current-package live loader and gameplay proof are still pending.
 - Current normal test count: 272 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 292 passed / 0 skipped.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1`, which also checks the installed PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split.
 - Historical loader/resource evidence remains useful context only. The 30-field loader proof covers the same DLL/PCK/manifest as the current package, but the current ZIP/README hash still needs a fresh loader row; gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
@@ -83,7 +83,7 @@ Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplay
 8. Execute disable-mod gameplay verification.
 9. Inspect `%APPDATA%\SlayTheSpire2\logs\godot.log` after the Steam-client pass.
 10. Fill `.tools\runtime-evidence\release-ready-manual\release-evidence-manifest.json` and run `scripts\verify-spire-plus-release-evidence.ps1 -WritePassMarker` before treating the package as release-proven. Use `scripts\collect-release-evidence.ps1 -NoLaunch` to create the evidence folder plus manifest, or `-WriteTemplate` to create only the manifest.
-    Keep the manifest, each row `EvidenceDir`, required file, screenshot path, and `command.txt` inside the evidence root. Unknown or blank rows appear in `Warnings` and do not satisfy any release row. The verifier hashes `publish\SpirePlus-v0.1.0-private-beta.4.zip` by default; pass `-PackagePath` only for a deliberate alternate package. Use `-AllowDeferred` only after an explicit owner-approved release-note deferral.
+    Keep the manifest, each row `EvidenceDir`, required file, screenshot path, and `command.txt` inside the evidence root. Unknown or blank rows appear in `Warnings` and do not satisfy any release row. The verifier hashes `publish\SpirePlus-v0.1.0-private-beta.5.zip` by default; pass `-PackagePath` only for a deliberate alternate package. Use `-AllowDeferred` only after an explicit owner-approved release-note deferral.
 
 ## Ascension Verification
 
@@ -167,4 +167,3 @@ Do not include:
 - Any copied official Slay the Spire 2 assets or large decompiled method bodies.
 
 Push only after explicit user approval.
-

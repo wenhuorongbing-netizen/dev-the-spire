@@ -323,8 +323,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C\"",
-            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.4.zip\"",
+            "PackageSha256 = \"8FD25AE6EFECCD76CFEDA13B99CAB355DF02824EDA595A4F8F1A0BBABDFC5D0E\"",
+            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.5.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
             "Get-FileHash -LiteralPath $packageFull -Algorithm SHA256",
@@ -434,7 +434,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             initializer,
             "AscensionFeatureGate.IsAnyImplementedSliceEnabled(runState) ||",
             "AscensionFeatureGate.IsDiagnosticsEnabled",
-            "AscensionFeatureGate.IsAnyImplementedSliceEnabled(combatState.RunState) ||");
+            "if (!AscensionFeatureGate.IsAnyImplementedSliceEnabled(combatState.RunState) &&",
+            "ShouldDisableUnverifiedCoopCombatHook");
 
         AssertSourceContains(
             mapService,

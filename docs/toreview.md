@@ -1,23 +1,24 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.4.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.5.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C` |
-| DLL | `CA2AD8C72D5CDD7C4E1DB91D08FE5A0C9465AD24B9EB733313DFC54ECBD34A49` |
-| PCK | `5E53126F917B1992988CE51EE8692005E5461D884E5D9E1502E47C9B1D776318` |
-| Manifest | `6460DDBCC60616B53DE5E8AB68968317CDD375E82F570FE33E467810F248F3AB` |
-| README_INSTALL | `1020BE6A6CDF9E4D0FAB4214F183F41A9330067DC07EED1B2875FA3D20355214` |
+| ZIP | `8FD25AE6EFECCD76CFEDA13B99CAB355DF02824EDA595A4F8F1A0BBABDFC5D0E` |
+| DLL | `970AEFA59F72B742D53D81383CA6F8AA05F544C668CDD1277439CC729E1365C8` |
+| PCK | `1DA7560202FA06E4E2FB9CD1E8994130C4E86B05697DAB5AD75F596C310ACDA0` |
+| Manifest | `AA87E2C0AC29CB13F0DD8A4E500DA2F6CC352CE95918D1577C2FE52FEDF811AC` |
+| README_INSTALL | `F933C266CBA1A6B1C81A2AC3D4BF1AA30A407BF6676703E95F1EB86724126C04` |
 
-Latest no-game validation snapshot: build passed, default tests `277 passed / 20 skipped`, opt-in artifact tests `297 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.4`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the Seed Bank hover package refresh, the current-package loader row is pending again because the ZIP/DLL/PCK hash changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
+Latest no-game validation snapshot: build passed, default tests `279 passed / 20 skipped`, opt-in artifact tests `299 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.5`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the co-op combat safety package refresh, the current-package loader row is pending again because the ZIP/DLL/PCK hash changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
 | --- | --- | --- | --- |
 | URDA-ROOT-EYES | Urda | Root Eyes selects future Monster/Unknown/Elite nodes, stores concrete previews, shows stacked marker hovers, and gates co-op queue mutation. | Click the relic, select shared-marker nodes, enter marked rooms in order and out of order, then save/load before entry. |
 | URDA-SEED-BANK | Urda | Seed Bank stores cards on the relic, shows a compact stored-card hover list, supports relic-click extraction, and preserves seeds if deck-add fails. | Store 1/2/3 cards, hover the relic from the left relic bar, confirm no large card preview clips offscreen, click extract, verify cards enter deck, and verify Boss transition does not hang. |
+| COOP-COMBAT-START-CRASH | Multiplayer / combat start | Co-op combat now disables unverified Spire Plus combat hooks by default and writes `coop_combat_hook_disabled` warnings instead of mutating combat state before two-client proof. | Install the current package, enter co-op normal combat, confirm no crash, and attach `godot.log`. Do not set `SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS` unless deliberately debugging co-op hooks. |
 | URDA-TRIAL-HUMUS | Urda | Trial Branch, Seedbed, Humus Pact, Moss Map, Rooted Route, After Rain, Molting, Shallow-Root Relic, and Elite Root have source guards and visible relic hovers. | Check event text, relic hover text, card reward alternatives, map markers, and combat results. |
 | URDA-ELITE-ROOT | Urda | New first-tier Urda option relic: after each Elite combat, heal 10 HP. | Pick Elite Root, fight a normal Elite and a Firemarked Elite if possible, and confirm each victory heals up to 10 HP. |
 | NEOW-ACT1-REROLL | Neow / Ancient UI | The one-use dice reroll now appears on Neow's normal start choices and eligible Act 1 Ancient reward screens. The text says the reroll is Act 1 only and disappears after use. | Start a run, use Neow reroll once, confirm choices refresh and the reroll vanishes; later check an Act 1 Ancient screen and confirm it cannot be saved into Act 2. |

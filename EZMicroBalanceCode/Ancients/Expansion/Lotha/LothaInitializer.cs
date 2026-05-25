@@ -1,4 +1,5 @@
-﻿using MegaCrit.Sts2.Core.Modding;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
@@ -32,8 +33,21 @@ internal static class LothaInitializer
             ? [ModelDb.GetById<LothaRunHook>(ModelDb.GetId<LothaRunHook>())]
             : [];
 
-    private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState) =>
-        LothaFeatureGate.IsLothaEnabled(combatState.RunState.UnlockState)
-            ? [ModelDb.GetById<LothaCombatHook>(ModelDb.GetId<LothaCombatHook>())]
-            : [];
+    private static IEnumerable<AbstractModel> CreateCombatHookSubscribers(CombatState combatState)
+    {
+        if (!LothaFeatureGate.IsLothaEnabled(combatState.RunState.UnlockState))
+        {
+            return [];
+        }
+
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopCombatHook(
+                combatState.RunState,
+                "LothaCombatHooks",
+                "Lotha combat card, power, and death-prevention hooks still need two-client proof."))
+        {
+            return [];
+        }
+
+        return [ModelDb.GetById<LothaCombatHook>(ModelDb.GetId<LothaCombatHook>())];
+    }
 }

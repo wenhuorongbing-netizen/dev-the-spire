@@ -21,16 +21,16 @@ public sealed class ReleaseEvidenceGateTests
             .Where(path => !string.IsNullOrWhiteSpace(path))
             .ToHashSet(StringComparer.Ordinal);
 
-        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.4.zip", paths);
-        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.4\\EZMicroBalance\\EZMicroBalance.dll", paths);
-        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.4\\EZMicroBalance\\EZMicroBalance.pck", paths);
-        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.4\\EZMicroBalance\\EZMicroBalance.json", paths);
-        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.4\\EZMicroBalance\\README_INSTALL.txt", paths);
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.5.zip", paths);
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.5\\EZMicroBalance\\EZMicroBalance.dll", paths);
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.5\\EZMicroBalance\\EZMicroBalance.pck", paths);
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.5\\EZMicroBalance\\EZMicroBalance.json", paths);
+        Assert.Contains("publish\\SpirePlus-v0.1.0-private-beta.5\\EZMicroBalance\\README_INSTALL.txt", paths);
         Assert.DoesNotContain("publish\\EZMicroBalance.dll", paths);
         Assert.DoesNotContain("publish\\EZMicroBalance.pck", paths);
         Assert.DoesNotContain("publish\\EZMicroBalance.json", paths);
 
-        foreach (var file in files.Where(file => file.GetProperty("Path").GetString()?.StartsWith("publish\\SpirePlus-v0.1.0-private-beta.4", StringComparison.Ordinal) == true))
+        foreach (var file in files.Where(file => file.GetProperty("Path").GetString()?.StartsWith("publish\\SpirePlus-v0.1.0-private-beta.5", StringComparison.Ordinal) == true))
         {
             Assert.True(file.GetProperty("Exists").GetBoolean(), $"Package hash row points at a missing package artifact: {file.GetProperty("Path").GetString()}");
         }
@@ -112,8 +112,8 @@ public sealed class ReleaseEvidenceGateTests
             Assert.Equal(20, summary.GetProperty("PendingVerifierRequiredRowCount").GetInt32());
             Assert.Equal(20, summary.GetProperty("PendingVerifierFailureCount").GetInt32());
             Assert.Equal(0, summary.GetProperty("PendingVerifierWarningCount").GetInt32());
-            Assert.Equal("publish\\SpirePlus-v0.1.0-private-beta.4.zip", summary.GetProperty("PackagePath").GetString());
-            Assert.Equal("04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C", summary.GetProperty("PackageSha256").GetString());
+            Assert.Equal("publish\\SpirePlus-v0.1.0-private-beta.5.zip", summary.GetProperty("PackagePath").GetString());
+            Assert.Equal("8FD25AE6EFECCD76CFEDA13B99CAB355DF02824EDA595A4F8F1A0BBABDFC5D0E", summary.GetProperty("PackageSha256").GetString());
             var expectedEvidenceRootArg = $"-EvidenceRoot '{Path.GetRelativePath(Root, Path.Combine(evidenceDir, "release"))}'";
             var expectedManifestArg = $"-ManifestPath '{Path.GetRelativePath(Root, Path.Combine(evidenceDir, "release", "release-evidence-manifest.json"))}'";
             var verifierCommand = summary.GetProperty("VerifierCommand").GetString();
@@ -125,8 +125,8 @@ public sealed class ReleaseEvidenceGateTests
             Assert.Contains("## Package under test", startHere, StringComparison.Ordinal);
             Assert.Contains("Player-facing mod: `Spire Plus`.", startHere, StringComparison.Ordinal);
             Assert.Contains("Install note: enable `Spire Plus` in game. The current compatibility folder inside the package is `EZMicroBalance`.", startHere, StringComparison.Ordinal);
-            Assert.Contains("ZIP: `publish\\SpirePlus-v0.1.0-private-beta.4.zip`.", startHere, StringComparison.Ordinal);
-            Assert.Contains("ZIP SHA256: `04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("ZIP: `publish\\SpirePlus-v0.1.0-private-beta.5.zip`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("ZIP SHA256: `8FD25AE6EFECCD76CFEDA13B99CAB355DF02824EDA595A4F8F1A0BBABDFC5D0E`.", startHere, StringComparison.Ordinal);
             Assert.Contains("## Handoff summary", startHere, StringComparison.Ordinal);
             Assert.Contains("`handoff-summary.json` records this no-launch scaffold contract.", startHere, StringComparison.Ordinal);
             Assert.Contains("`PendingVerifierRequiredRowCount=20`.", startHere, StringComparison.Ordinal);
@@ -253,7 +253,7 @@ public sealed class ReleaseEvidenceGateTests
             var packageHashesPath = Path.Combine(loaderEvidenceDir, "package-hashes.json");
             var packageHashes = JsonNode.Parse(File.ReadAllText(packageHashesPath))!.AsObject();
             var packageRow = packageHashes["Files"]!.AsArray()
-                .Single(row => (string?)row?["Path"] == "publish\\SpirePlus-v0.1.0-private-beta.4.zip")!
+                .Single(row => (string?)row?["Path"] == "publish\\SpirePlus-v0.1.0-private-beta.5.zip")!
                 .AsObject();
             packageRow["Sha256"] = "STALE_PACKAGE_HASH";
             File.WriteAllText(packageHashesPath, packageHashes.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
@@ -615,8 +615,8 @@ public sealed class ReleaseEvidenceGateTests
 
                     using var manifestDocument = JsonDocument.Parse(File.ReadAllText(manifestPath));
                     var manifest = manifestDocument.RootElement;
-                    Assert.Equal("04B0E8ADE7183BED8C6AF89AECB1BC5FB66DC0FCBB9F1F0C3BB7F91F92BFD11C", manifest.GetProperty("PackageSha256").GetString());
-                    Assert.Equal("publish\\SpirePlus-v0.1.0-private-beta.4.zip", manifest.GetProperty("PackagePath").GetString());
+                    Assert.Equal("8FD25AE6EFECCD76CFEDA13B99CAB355DF02824EDA595A4F8F1A0BBABDFC5D0E", manifest.GetProperty("PackageSha256").GetString());
+                    Assert.Equal("publish\\SpirePlus-v0.1.0-private-beta.5.zip", manifest.GetProperty("PackagePath").GetString());
                     Assert.Equal(rows.Length, manifest.GetProperty("Rows").GetArrayLength());
 
                     var verifier = AssertRepoFileExists("scripts", "verify-spire-plus-release-evidence.ps1");
@@ -1001,7 +1001,7 @@ public sealed class ReleaseEvidenceGateTests
             {
                 var fileObject = fileNode!.AsObject();
                 var path = fileObject["Path"]!.GetValue<string>();
-                if (path != "publish\\SpirePlus-v0.1.0-private-beta.4\\EZMicroBalance\\EZMicroBalance.dll")
+                if (path != "publish\\SpirePlus-v0.1.0-private-beta.5\\EZMicroBalance\\EZMicroBalance.dll")
                 {
                     staleFiles.Add(fileObject.DeepClone());
                 }
@@ -1034,7 +1034,7 @@ public sealed class ReleaseEvidenceGateTests
             Assert.Contains("package-hashes.json still records stale root publish artifact path", verifyResult.Output, StringComparison.Ordinal);
             Assert.Contains("publish\\\\EZMicroBalance.dll", verifyResult.Output, StringComparison.Ordinal);
             Assert.Contains("package-hashes.json is missing current package artifact row", verifyResult.Output, StringComparison.Ordinal);
-            Assert.Contains("SpirePlus-v0.1.0-private-beta.4\\\\EZMicroBalance\\\\EZMicroBalance.dll", verifyResult.Output, StringComparison.Ordinal);
+            Assert.Contains("SpirePlus-v0.1.0-private-beta.5\\\\EZMicroBalance\\\\EZMicroBalance.dll", verifyResult.Output, StringComparison.Ordinal);
         }
         finally
         {
@@ -1141,7 +1141,7 @@ public sealed class ReleaseEvidenceGateTests
                 using var hashes = JsonDocument.Parse(File.ReadAllText(packageHashesPath));
                 var files = hashes.RootElement.GetProperty("Files").EnumerateArray().ToArray();
                 Assert.Contains(files, file => file.GetProperty("Path").GetString() == "EZMicroBalance.json");
-                Assert.Contains(files, file => file.GetProperty("Path").GetString() == "publish\\SpirePlus-v0.1.0-private-beta.4.zip");
+                Assert.Contains(files, file => file.GetProperty("Path").GetString() == "publish\\SpirePlus-v0.1.0-private-beta.5.zip");
 
                 using var rowsDocument = JsonDocument.Parse(File.ReadAllText(manualRowsPath));
                 var rows = rowsDocument.RootElement.GetProperty("Rows").EnumerateArray().ToArray();

@@ -4,7 +4,7 @@ Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test b
 
 Current stop line: Codex should not chase release-ready evidence in this pass. The user will run live/manual testing. This is not a release-ready claim.
 
-Current package target remains `publish/SpirePlus-v0.1.0-private-beta.4.zip`. The stable technical manifest id remains `EZMicroBalance`; do not edit it in place.
+Current package target remains `publish/SpirePlus-v0.1.0-private-beta.5.zip`. The stable technical manifest id remains `EZMicroBalance`; do not edit it in place.
 
 ## Current State
 
@@ -14,8 +14,9 @@ Current package target remains `publish/SpirePlus-v0.1.0-private-beta.4.zip`. Th
 - Final browser GPTimage2 small art generated this pass is the current small-art baseline. No `generic_temporary` or `final_required_before_release` art blockers remain. Event backgrounds are active middle-draft resources. Live clicked-UI review remains unresolved.
 - The latest Steam-client loader smoke under `.tools/runtime-evidence/manual-test-handoff-20260524-161744/release/fresh-current-package-loader-smoke` reported `Found 30 SavedSpireFields` with only BaseLib plus Spire Plus loaded and a clean log audit for the same DLL/PCK/manifest as the current package. The current ZIP/README hash still needs a fresh loader row after the README wording refresh. Older 22-field and `20260523-current` loader smokes remain historical evidence only.
 - Preview tools are now part of the single `Spire Plus` mod. Crystal Sphere peek and transform preview live under the technical `EZMicroBalanceCode/Preview/` source folder; live proof is still pending.
+- Multiplayer combat is fail-closed for unverified Spire Plus combat hooks after the 2026-05-25 combat-start crash log. Ascension, Morvi, Lotha, Urda, and Vakuu combat hooks are disabled in co-op by default and should log one-time `coop_combat_hook_disabled` warnings until two-client proof exists.
 
-Manual test controls do not prove live behavior by themselves: `SPIREPLUS_FORCE_ANCIENT=URDA|MORVI|LOTHA|VAKUU`, `SPIREPLUS_FORCE_URDA_BLESSING=seedbed`, `SPIREPLUS_FORCE_MORVI_BLESSING=morvi_forbidden_loan`, `SPIREPLUS_FORCE_LOTHA_BLESSING=lotha_death_reprieve`, `SPIREPLUS_DISABLE_URDA=1`, `SPIREPLUS_DISABLE_MORVI=1`, `SPIREPLUS_DISABLE_LOTHA=1`, `SPIREPLUS_DISABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_FORCE_VAKUU_FIGHT=1`, and `SPIREPLUS_RELEASE_EVIDENCE_LOG=1`. Legacy `EZMB_FORCE_*`, `EZMB_DISABLE_*`, `EZMB_ENABLE_*`, and `EZMB_RELEASE_EVIDENCE_LOG` aliases still work. Ancient reward/fight option selection logs include the Ancient, blessing id or option id, selected marker relic type, forced flag, run id, player slot, and network mode.
+Manual test controls do not prove live behavior by themselves: `SPIREPLUS_FORCE_ANCIENT=URDA|MORVI|LOTHA|VAKUU`, `SPIREPLUS_FORCE_URDA_BLESSING=seedbed`, `SPIREPLUS_FORCE_MORVI_BLESSING=morvi_forbidden_loan`, `SPIREPLUS_FORCE_LOTHA_BLESSING=lotha_death_reprieve`, `SPIREPLUS_DISABLE_URDA=1`, `SPIREPLUS_DISABLE_MORVI=1`, `SPIREPLUS_DISABLE_LOTHA=1`, `SPIREPLUS_DISABLE_VAKUU_FIGHT=1`, `SPIREPLUS_ENABLE_VAKUU_FIGHT=1`, `SPIREPLUS_FORCE_VAKUU_FIGHT=1`, `SPIREPLUS_RELEASE_EVIDENCE_LOG=1`, and `SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS=1` for deliberate co-op combat hook debugging only. Legacy `EZMB_FORCE_*`, `EZMB_DISABLE_*`, `EZMB_ENABLE_*`, `EZMB_RELEASE_EVIDENCE_LOG`, and `EZMB_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS` aliases still work. Ancient reward/fight option selection logs include the Ancient, blessing id or option id, selected marker relic type, forced flag, run id, player slot, and network mode.
 
 ## Required Reading
 
