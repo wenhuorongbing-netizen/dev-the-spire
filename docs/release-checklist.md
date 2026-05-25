@@ -38,13 +38,13 @@ Target manifest id: `EZMicroBalance`
 - [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
 - [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.
 - [x] Historical pre-display-name-refresh Mod Settings evidence exists for the same technical manifest id.
-- [ ] Fresh loader smoke confirms Spire Plus loads from the current rebuilt ZIP hash after the README wording refresh.
-- [x] Latest loader smoke confirms the game reaches startup completion with only BaseLib and Spire Plus loaded for the same DLL/PCK/manifest as the current package. Evidence: `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke`.
+- [ ] Fresh loader smoke confirms Spire Plus loads from the current beta.13 ZIP hash after the Seedbed / planting text refresh.
+- [ ] Latest loader smoke confirms the game reaches startup completion with only BaseLib and Spire Plus loaded for the current package hash. The 2026-05-24 smoke at `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke` is prior-hash startup context only.
 - [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib and Spire Plus, reported `Found 22 SavedSpireFields`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. This is historical context now superseded for runtime binaries by the 30-field loader smoke.
 - [x] Repeat helper-driven normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` reached main menu with only BaseLib and Spire Plus, reported `Found 16 SavedSpireFields`, restored settings plus 24 moved mod entries, and audited clean.
 - [x] BaseLib-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with the Spire Plus technical folder temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus, restored settings plus 25 moved entries and the current-run save, and audited clean.
 - [x] `godot.log` reviewed for controlled smoke-test initializer errors.
-- [x] `godot.log` reviewed after fresh current-package normal Steam-client isolated startup/log verification.
+- [ ] `godot.log` reviewed after fresh beta.13 normal Steam-client isolated startup/log verification.
 - [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.
 
 ## Content Verification
@@ -95,8 +95,8 @@ The collector creates the verifier-readable manifest scaffold. The verifier hash
 
 ## Known Issues
 
-- Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest.
-  - Evidence under `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke` loaded exactly BaseLib and `EZMicroBalance`, registered config, reported `Found 30 SavedSpireFields`, reached startup completion, and had 0 release-blocking hits for the same DLL/PCK/manifest as the current package. A fresh current-ZIP loader row is pending after the README wording refresh. This remains loader/startup evidence, not gameplay proof.
+- Latest normal Steam-client startup/log verification covers a prior 30-field package hash.
+  - Evidence under `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke` loaded exactly BaseLib and `EZMicroBalance`, registered config, reported `Found 30 SavedSpireFields`, reached startup completion, and had 0 release-blocking hits for that prior package. A fresh beta.13 loader row is pending. This remains historical loader/startup context, not gameplay proof.
   - The 2026-05-13 helper startup/log pass is historical 16-field evidence. BaseLib-only plug-off evidence loaded only BaseLib; the earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
   - Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list. Earlier page-level Mod Settings evidence predates the display-name refresh.
 - Manual feature results are pending; `docs/features/ancients-rework-v4/manual-verification-matrix.md`, `docs/features/ancient-expansion-urda/manual-test-checklist.md`, and `docs/features/ascension-11-20/manual-test-checklist.md` remain the current manual surfaces.

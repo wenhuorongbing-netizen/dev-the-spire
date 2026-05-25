@@ -560,7 +560,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke confirms Spire Plus loads from the current rebuilt ZIP hash",
+            "Fresh loader smoke confirms Spire Plus loads from the current beta.13 ZIP hash",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,
