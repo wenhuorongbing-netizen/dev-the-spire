@@ -11,7 +11,7 @@ Current package hashes:
 | Manifest | `934CE24967D8AF1ABE64B8DED9DB5F958FA97D0EC8A5D2D3128F6490B0FA3CB9` |
 | README_INSTALL | `82CB305AA6CA56BC167F00B0D58D1E836BF146D2030748B8FAF88C5A6057D633` |
 
-Latest no-game validation snapshot: build passed, default tests `281 passed / 20 skipped`, opt-in artifact tests `301 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.14`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the Seedbed / Rootblight package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
+Latest no-game validation snapshot: build passed, default tests `282 passed / 20 skipped`, opt-in artifact tests `302 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.14`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the Seedbed / Rootblight package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

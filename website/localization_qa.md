@@ -356,8 +356,8 @@ Static checks:
 
 - `node --check website/content-data.js` passed.
 - `node --check website/app.js` passed.
-- `dotnet test EZMicroBalance.sln --no-build` passed, 281 passed / 20 skipped.
-- `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 301 passed / 0 skipped.
+- `dotnet test EZMicroBalance.sln --no-build` passed, 282 passed / 20 skipped.
+- `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 302 passed / 0 skipped.
 
 Live checks still required:
 

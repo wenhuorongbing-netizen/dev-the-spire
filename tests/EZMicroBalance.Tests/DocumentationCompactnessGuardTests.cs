@@ -33,6 +33,24 @@ public sealed class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void DevEnvironmentDoesNotCarryStalePackageRefreshState()
+    {
+        var devEnvironment = ReadRepoText("docs", "dev-environment.md");
+
+        AssertSourceContains(
+            devEnvironment,
+            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: succeeded.",
+            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.14 Seedbed / Rootblight package refresh. Result: succeeded.",
+            "installed `mods\\EZMicroBalance` folder",
+            "matched the installed mod artifacts on 2026-05-25",
+            "302 passed, 0 skipped, 0 failed");
+        Assert.DoesNotContain("Sovereign Blade jade boon refresh", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("current `.2` manual-test package", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("installed mod folder was locked", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("installed mod DLL was locked", devEnvironment, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ChineseIntroKeepsPreviewToolsInsideSpirePlus()
     {
         var intro = ReadRepoText("docs", "\u4ecb\u7ecd.md");
