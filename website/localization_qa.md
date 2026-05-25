@@ -1,4 +1,4 @@
-# Spire Plus Website Localization QA
+﻿# Spire Plus Website Localization QA
 
 Date: 2026-05-22
 
@@ -30,7 +30,7 @@ Result: pass after one fix.
 
 Fix made during this pass:
 
-- Added the English tag translation `消耗 -> Exhaust` for the Brightest Flame update entry.
+- Added the English tag translation `娑堣€?-> Exhaust` for the Brightest Flame update entry.
 
 Checks:
 
@@ -47,7 +47,7 @@ Latest rendered confirmation:
 - `cardCount = 93`
 - `document.documentElement.lang = en`
 - `Exhaust` present
-- `消耗` absent
+- `娑堣€梎 absent
 - browser console warnings/errors: none
 
 ## Validation Commands
@@ -80,7 +80,7 @@ Fix made during this pass:
 
 Post-fix text scan:
 
-- No remaining broad placeholder phrases were found in website data: `fixed`, `several`, `multiple`, `固定`, `若干`, `多张`.
+- No remaining broad placeholder phrases were found in website data: `fixed`, `several`, `multiple`, `鍥哄畾`, `鑻ュ共`, `澶氬紶`.
 
 Rendered confirmation:
 
@@ -122,12 +122,12 @@ Result: pass.
 
 Fixes checked during this pass:
 
-- Corrected the creator name to `温火融冰` in Chinese and `Wenhuo Rongbing` in English.
+- Corrected the creator name to `娓╃伀铻嶅啺` in Chinese and `Wenhuo Rongbing` in English.
 - Replaced public vanilla placeholders with site-owned simplified SVG icons under `website/assets/vanilla-icons/`.
-- Added separate card-change entries for `愚行 / Folly` and `执迷 / Enthralled`.
-- Kept `至亮之焰 / Brightest Flame` as the public-facing English title and verified its Exhaust/draw change appears.
-- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.2.zip`.
-- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.2`.
+- Added separate card-change entries for `鎰氳 / Folly` and `鎵ц糠 / Enthralled`.
+- Kept `鑷充寒涔嬬劙 / Brightest Flame` as the public-facing English title and verified its Exhaust/draw change appears.
+- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.3.zip`.
+- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.3`.
 
 Static checks:
 
@@ -148,9 +148,9 @@ Rendered checks:
 - Chinese and English update pages render 106 update cards.
 - 28 vanilla-related entries use `assets/vanilla-icons/`.
 - `.source-art-placeholder` count is 0.
-- Search for `执迷` returns the Blood-Soaked Rose relic row and the Enthralled card row.
-- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.2.zip` and the release button to the concrete GitHub tag URL.
-- Public install page points the main download button to `releases/download/v0.1.0-private-beta.2/SpirePlus-v0.1.0-private-beta.2.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
+- Search for `鎵ц糠` returns the Blood-Soaked Rose relic row and the Enthralled card row.
+- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.3.zip` and the release button to the concrete GitHub tag URL.
+- Public install page points the main download button to `releases/download/v0.1.0-private-beta.3/SpirePlus-v0.1.0-private-beta.3.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
 - Browser console warnings/errors: none.
 
 ## Review 6: Local Redraw Icon QA

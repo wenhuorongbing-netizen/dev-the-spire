@@ -1,4 +1,4 @@
-﻿# Spire Plus Private Beta Verification Handoff
+# Spire Plus Private Beta Verification Handoff
 
 Date: 2026-05-15
 
@@ -41,14 +41,14 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.2.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.3.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `AFD1304686A4CABAEAFCEBA75870D52D0449AB854E8E1D65E2693B72E941C62F`
+- Zip SHA256: `067C58E7FB6782DC69BFCE003117706EAE55CE741A0093DE057C3CC4DD9CC62E`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `5CA8EE1A1700A04597860430BE017413AD4A4EC32D691CFB3BA9E0E3D8601F33`
-- Manifest SHA256: `A7007A3CDE633F661404B00EEBC1154BF4DB5FA9F41CC89AA5030CE7314AC862`
-- PCK SHA256: `CF93B736667058E3B6FC2F1AF5D033D26452421374F0E40C6FA6496C6510D3E8`
-- README_INSTALL SHA256: `E13627EEB9D658107C0B9CBD48819749EEFE49F6E3B28CF32BD18EA28B4FC7EB`
+- DLL SHA256: `4DAAA7CDEF83F6BCF5FA5B3A096677EE1C8D316325ED73719E3EC9E03F133564`
+- Manifest SHA256: `DEBD899E29D049A9C3D9F0CCA7E9B9B3931FE5E41BCEC557D728115F6AD01B82`
+- PCK SHA256: `850A8538EB3FD7183A9D884E70C1A33BD97AE88AD46BAEBC5B644D265F73A6D1`
+- README_INSTALL SHA256: `674A1AA0255D61B1E740A0ADA71DC7912E72CE8F3D53A17C22BD2FA697BB8B10`
 
 ## Known Automated Evidence
 
@@ -83,7 +83,7 @@ Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplay
 8. Execute disable-mod gameplay verification.
 9. Inspect `%APPDATA%\SlayTheSpire2\logs\godot.log` after the Steam-client pass.
 10. Fill `.tools\runtime-evidence\release-ready-manual\release-evidence-manifest.json` and run `scripts\verify-spire-plus-release-evidence.ps1 -WritePassMarker` before treating the package as release-proven. Use `scripts\collect-release-evidence.ps1 -NoLaunch` to create the evidence folder plus manifest, or `-WriteTemplate` to create only the manifest.
-    Keep the manifest, each row `EvidenceDir`, required file, screenshot path, and `command.txt` inside the evidence root. Unknown or blank rows appear in `Warnings` and do not satisfy any release row. The verifier hashes `publish\SpirePlus-v0.1.0-private-beta.2.zip` by default; pass `-PackagePath` only for a deliberate alternate package. Use `-AllowDeferred` only after an explicit owner-approved release-note deferral.
+    Keep the manifest, each row `EvidenceDir`, required file, screenshot path, and `command.txt` inside the evidence root. Unknown or blank rows appear in `Warnings` and do not satisfy any release row. The verifier hashes `publish\SpirePlus-v0.1.0-private-beta.3.zip` by default; pass `-PackagePath` only for a deliberate alternate package. Use `-AllowDeferred` only after an explicit owner-approved release-note deferral.
 
 ## Ascension Verification
 

@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -323,8 +323,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"AFD1304686A4CABAEAFCEBA75870D52D0449AB854E8E1D65E2693B72E941C62F\"",
-            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.2.zip\"",
+            "PackageSha256 = \"067C58E7FB6782DC69BFCE003117706EAE55CE741A0093DE057C3CC4DD9CC62E\"",
+            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.3.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
             "Get-FileHash -LiteralPath $packageFull -Algorithm SHA256",

@@ -26,10 +26,10 @@ public sealed class WebsiteContentGuardTests
     public void WebsitePackageMetadataMatchesCurrentPackageHash()
     {
         var websiteData = ReadRepoText("website", "content-data.js");
-        Assert.Contains("AFD1304686A4CABAEAFCEBA75870D52D0449AB854E8E1D65E2693B72E941C62F", websiteData, StringComparison.Ordinal);
+        Assert.Contains("067C58E7FB6782DC69BFCE003117706EAE55CE741A0093DE057C3CC4DD9CC62E", websiteData, StringComparison.Ordinal);
         Assert.DoesNotContain("2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605", websiteData, StringComparison.Ordinal);
 
-        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.2.zip");
+        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.3.zip");
         if (File.Exists(packagePath))
         {
             var package = new FileInfo(packagePath);
@@ -69,7 +69,7 @@ public sealed class WebsiteContentGuardTests
             "\"CLAWS.description\": \"claws.png\"",
             "At the start of your turn, the Firemark host gains 8/14/24 Molten Armor",
             "Deal 12/24/48 damage in the round to interrupt the heal",
-            "AFD1304686A4CABAEAFCEBA75870D52D0449AB854E8E1D65E2693B72E941C62F");
+            "067C58E7FB6782DC69BFCE003117706EAE55CE741A0093DE057C3CC4DD9CC62E");
 
         AssertSourceContains(
             index,
@@ -116,7 +116,7 @@ public sealed class WebsiteContentGuardTests
                        "\"SERE_TALON.description\": \"assets/relics/sere_talon.svg\"",
                      "Sere Talon\", \"CLAWS.description\"",
                       "Vakuu's Sere Talon\", \"CLAWS.description\"",
-                      "闂佸憡顭囬崰搴ㄥ垂閸偆鈻曢悗锝庡墮閻掔睜\", \"CLAWS.description\"",
+                       "\u95c2\u5099\u7901\u93b2",
                       "Future Peek",
                       "separate Future Peek package",
                       "18,904,206",

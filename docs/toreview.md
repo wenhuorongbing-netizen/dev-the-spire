@@ -1,17 +1,17 @@
-﻿# Spire Plus To Review
+# Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.2.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.3.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `AFD1304686A4CABAEAFCEBA75870D52D0449AB854E8E1D65E2693B72E941C62F` |
-| DLL | `5CA8EE1A1700A04597860430BE017413AD4A4EC32D691CFB3BA9E0E3D8601F33` |
-| PCK | `CF93B736667058E3B6FC2F1AF5D033D26452421374F0E40C6FA6496C6510D3E8` |
-| Manifest | `A7007A3CDE633F661404B00EEBC1154BF4DB5FA9F41CC89AA5030CE7314AC862` |
-| README_INSTALL | `E13627EEB9D658107C0B9CBD48819749EEFE49F6E3B28CF32BD18EA28B4FC7EB` |
+| ZIP | `067C58E7FB6782DC69BFCE003117706EAE55CE741A0093DE057C3CC4DD9CC62E` |
+| DLL | `4DAAA7CDEF83F6BCF5FA5B3A096677EE1C8D316325ED73719E3EC9E03F133564` |
+| PCK | `850A8538EB3FD7183A9D884E70C1A33BD97AE88AD46BAEBC5B644D265F73A6D1` |
+| Manifest | `DEBD899E29D049A9C3D9F0CCA7E9B9B3931FE5E41BCEC557D728115F6AD01B82` |
+| README_INSTALL | `674A1AA0255D61B1E740A0ADA71DC7912E72CE8F3D53A17C22BD2FA697BB8B10` |
 
-Latest no-game validation snapshot: build passed, default tests `273 passed / 20 skipped`, opt-in artifact tests `293 passed / 0 skipped`, website syntax checks passed, format passed, installed-package check passed, and `git diff --check` passed. After the Elite Root source-safety refresh, the current-package loader row is pending again because the ZIP/DLL hash changed without opening the game. The release verifier fails closed with 20 pending live/manual rows.
+Latest no-game validation snapshot: build passed, default tests `277 passed / 20 skipped`, opt-in artifact tests `297 passed / 0 skipped`, staged Godot export plus package refresh passed, format passed, installed-package sync passed, and `git diff --check` passed. After the Neow/Act 1 reroll package refresh, the current-package loader row is pending again because the ZIP/DLL/PCK hash changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
@@ -20,6 +20,7 @@ Latest no-game validation snapshot: build passed, default tests `273 passed / 20
 | URDA-SEED-BANK | Urda | Seed Bank stores cards on the relic, exposes hover tips, supports relic-click extraction, and preserves seeds if deck-add fails. | Store cards, hover the relic, click extract, verify cards enter deck, and verify Boss transition does not hang. |
 | URDA-TRIAL-HUMUS | Urda | Trial Branch, Seedbed, Humus Pact, Moss Map, Rooted Route, After Rain, Molting, Shallow-Root Relic, and Elite Root have source guards and visible relic hovers. | Check event text, relic hover text, card reward alternatives, map markers, and combat results. |
 | URDA-ELITE-ROOT | Urda | New first-tier Urda option relic: after each Elite combat, heal 10 HP. | Pick Elite Root, fight a normal Elite and a Firemarked Elite if possible, and confirm each victory heals up to 10 HP. |
+| NEOW-ACT1-REROLL | Neow / Ancient UI | The one-use dice reroll now appears on Neow's normal start choices and eligible Act 1 Ancient reward screens. The text says the reroll is Act 1 only and disappears after use. | Start a run, use Neow reroll once, confirm choices refresh and the reroll vanishes; later check an Act 1 Ancient screen and confirm it cannot be saved into Act 2. |
 | MORVI-REWARDS | Morvi | Morvi choices use visible option relics; Debt and Overdraft counters are Buff counters; failed selections refresh choices. | Test Forbidden Loan, Misprint Press, Red Ink, Overdue Library, Blueprint Proof, Paperstorm, Open Book, Debt Settlement. |
 | LOTHA-REWARDS | Lotha | Lotha choices use visible option relics with source-split card rules, transient state recovery, and Mirror Rebuttal handling. | Test each blessing, especially Single Sentence, Death Reprieve, Public Evidence, and Mirror Rebuttal. |
 | VAKUU-FIGHT | Vakuu | Vakuu fight has a visible fight relic, dedicated encounter scene/monster, no-normal-reward resume path, and fallback exit path. | Enable the gate, start the fight, win, confirm no black screen, choose reward, test failure/death and save/load. |

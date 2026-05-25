@@ -400,17 +400,20 @@
       "id": "urda_elite_root_option_relic",
       "role": "option_relic",
       "target_path": "EZMicroBalance/images/ancients/urda/options/urda_elite_root.png",
-      "source_status": "source_local_generated",
-      "source_path": ".tools/art-generation/elite-root-20260525/urda_elite_root_candidate_v2.png",
-      "sha256": "9A71DC62B52B27C945F7FF13513CFDC33EE0040906E385D51746CF332AE9A959",
+      "source_status": "final_generated",
+      "source_path": ".tools/art-generation/elite-root-20260525/urda_elite_root_gptimage2_128.png",
+      "sha256": "A5658E090D169501D2880185D33B2C7966B8907C8B498FE8CD889BE430FBDB89",
       "dimensions": {
         "width": 128,
         "height": 128
       },
-      "prompt_id": "elite_root_local_icon_20260525",
+      "prompt_id": "elite_root_gptimage2_icon_20260525",
       "final_required_before_release": false,
-      "notes": "Local same-concept repaint for the Urda Elite Root option relic: thick black contour, gnarled root wreath, old-gold elite seal, and small green healing accents. Kept transparent and normalized to 128x128 for relic UI surfaces. GPTimage2 prompt is archived for a future remote rerun if desired.",
-      "source_review_path": ".tools/art-generation/elite-root-20260525/elite-root-candidate-v2-contact.png"
+      "notes": "Fresh built-in image-generation repaint for the Urda Elite Root option relic, not based on the earlier local sketch: old-gold elite mask/spire crest wrapped in living roots, thick black contour, acrylic-gouache/oil texture, and small green healing leaf accents. Chroma-key background was removed locally and the final transparent icon was normalized to 128x128 for relic UI surfaces.",
+      "source_review_path": ".tools/art-generation/elite-root-20260525/elite-root-gptimage2-contact.png",
+      "generation_mode": "GPTimage2",
+      "mode": "GPTimage2",
+      "semantic_model": "GPTimage2"
     },
     {
       "id": "urda_rooted_route_option_relic",

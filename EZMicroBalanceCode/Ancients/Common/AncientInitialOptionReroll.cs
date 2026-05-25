@@ -1,6 +1,8 @@
 using System.Reflection;
 
 using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
@@ -15,8 +17,18 @@ internal static class AncientInitialOptionReroll
         typeof(AncientEventModel).GetField("_generatedOptions", BindingFlags.Instance | BindingFlags.NonPublic)
         ?? throw new MissingFieldException(nameof(AncientEventModel), "_generatedOptions");
 
+    private static readonly MethodInfo SetEventStateMethod =
+        typeof(EventModel).GetMethod(
+            "SetEventState",
+            BindingFlags.Instance | BindingFlags.NonPublic,
+            null,
+            [typeof(LocString), typeof(IEnumerable<EventOption>)],
+            null)
+        ?? throw new MissingMethodException(nameof(EventModel), "SetEventState");
+
     public static bool CanOffer(AncientEventModel ancient, int availableOptionCount, int visibleOptionCount) =>
         ancient.Owner != null &&
+        IsFirstActAncientReward(ancient) &&
         availableOptionCount > visibleOptionCount &&
         !HasSpent(ancient);
 
@@ -49,6 +61,25 @@ internal static class AncientInitialOptionReroll
 
     public static void ReplaceGeneratedOptionsForHistory(AncientEventModel ancient, IReadOnlyList<EventOption> options) =>
         GeneratedOptionsField.SetValue(ancient, options.ToList());
+
+    public static void ReplaceGeneratedOptionsAndRefreshScreen(
+        AncientEventModel ancient,
+        LocString description,
+        IReadOnlyList<EventOption> options)
+    {
+        ReplaceGeneratedOptionsForHistory(ancient, options);
+        SetEventStateMethod.Invoke(ancient, [description, options]);
+    }
+
+    private static bool IsFirstActAncientReward(AncientEventModel ancient)
+    {
+        if (ancient is Neow)
+        {
+            return true;
+        }
+
+        return ancient.Owner?.RunState.CurrentActIndex == 0;
+    }
 
     private static bool HasSpent(AncientEventModel ancient)
     {

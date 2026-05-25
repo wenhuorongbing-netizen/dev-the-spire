@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -181,15 +181,15 @@ public sealed class AncientBehaviorGuardTests
             "HoverTipFactory.FromPower<VigorPower>((int)Amount)");
 
         AssertSovereignBladeText(cardsEng["SOVEREIGN_BLADE.description"], "Strength", "Dexterity", "Plating", "Regen", "Vigor");
-        AssertSovereignBladeText(cardsZhs["SOVEREIGN_BLADE.description"], "力量", "敏捷", "覆甲", "再生", "活力");
+        AssertSovereignBladeText(cardsZhs["SOVEREIGN_BLADE.description"], "\u529b\u91cf", "\u654f\u6377", "\u8986\u7532", "\u518d\u751f", "\u6d3b\u529b");
         AssertSovereignBladeText(staticEng["FORGE.description"], "Sovereign Blade", "Strength", "Dexterity", "Plating", "Regen", "Vigor");
-        AssertSovereignBladeText(staticZhs["FORGE.description"], "君王之剑", "力量", "敏捷", "覆甲", "再生", "活力");
+        AssertSovereignBladeText(staticZhs["FORGE.description"], "\u541b\u738b\u4e4b\u5251", "\u529b\u91cf", "\u654f\u6377", "\u8986\u7532", "\u518d\u751f", "\u6d3b\u529b");
     }
 
     [ReleaseArtifactFact]
     public void PrivateBetaZipContainsOnlyInstallableActiveModFiles()
     {
-        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.2.zip");
+        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.3.zip");
         Assert.True(File.Exists(packagePath), $"Missing private beta package: {packagePath}");
 
         using var archive = ZipFile.OpenRead(packagePath);
@@ -220,7 +220,7 @@ public sealed class AncientBehaviorGuardTests
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);
-        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.2.zip", readme, StringComparison.Ordinal);
+        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.3.zip", readme, StringComparison.Ordinal);
         Assert.Contains("Display name: Spire Plus", readme, StringComparison.Ordinal);
         Assert.Contains("Technical compatibility id: EZMicroBalance", readme, StringComparison.Ordinal);
         Assert.Contains("Extract this archive into the Slay the Spire 2 mods folder exactly as packaged.", readme, StringComparison.Ordinal);
@@ -734,8 +734,8 @@ public sealed class AncientBehaviorGuardTests
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
         Assert.DoesNotContain("\uFFFD", zhsLocalizationText, StringComparison.Ordinal);
-        Assert.DoesNotContain("闁", zhsLocalizationText, StringComparison.Ordinal);
-        Assert.DoesNotContain("閻", zhsLocalizationText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\u95c2", zhsLocalizationText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\u95c1", zhsLocalizationText, StringComparison.Ordinal);
 
         Assert.Contains("\u8fc5\u901f", zhsRelics["BEAUTIFUL_BRACELET.description"], StringComparison.Ordinal);
         Assert.Equal("\u5c061\u5f20\u653e\u677e\u4e0e1\u5f20\u653e\u677e+\u52a0\u5165\u4f60\u7684\u724c\u7ec4\u3002", zhsRelics["PAELS_HORN.description"]);
@@ -1153,9 +1153,9 @@ public sealed class AncientBehaviorGuardTests
         Assert.DoesNotContain("gain [green]9[/green] Max HP", staticHovers["COOK.description"], StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\u83b7\u5f97[green]9[/green]\u70b9\u6700\u5927\u751f\u547d", zhsStaticHovers["COOK.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("Cooking", relics["MEAT_CLEAVER.description"], StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("鐑归オ", zhsRelics["MEAT_CLEAVER.description"], StringComparison.Ordinal);
-        Assert.DoesNotContain("鐑归オ", zhsRestSite["OPTION_COOK.name"], StringComparison.Ordinal);
-        Assert.DoesNotContain("鐑归オ", zhsStaticHovers["COOK.title"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\u95bb\u621d\u7d8a\u9288", zhsRelics["MEAT_CLEAVER.description"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\u95bb\u621d\u7d8a\u9288", zhsRestSite["OPTION_COOK.name"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\u95bb\u621d\u7d8a\u9288", zhsStaticHovers["COOK.title"], StringComparison.Ordinal);
 
         AssertSourceContains(
             source,

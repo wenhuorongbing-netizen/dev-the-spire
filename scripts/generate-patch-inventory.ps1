@@ -38,6 +38,7 @@ function Get-OwnerFromPath {
     if ($RelativePath -like 'EZMicroBalanceCode/Ancients/Expansion/Morvi/*') { return 'Morvi' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ancients/Expansion/Lotha/*') { return 'Lotha' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ancients/Expansion/Vakuu/*') { return 'Vakuu' }
+    if ($RelativePath -like 'EZMicroBalanceCode/Ancients/Common/*') { return 'Ancient shared infrastructure' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ancients/Patches/*') { return 'Ancient reward rebalance' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Core/*') { return 'Ascension core' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Map/*') { return 'Ascension map' }

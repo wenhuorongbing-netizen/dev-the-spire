@@ -1,4 +1,4 @@
-﻿(async function () {
+(async function () {
   const baseData = window.SPIRE_PLUS_DATA;
   let lang = initialLang();
   let data = selectData(baseData, lang);
@@ -11,8 +11,12 @@
   let loc = await loadLocalization();
   document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
 
-  // Flat list of all updates across groups for easy inspector index lookups
+  // State Management
   let allUpdateItems = [];
+  let pinnedInspectItem = null;
+  let activeInspectItem = null;
+  let activeMechanicId = "blood_debt";
+
   function flattenUpdateItems() {
     allUpdateItems = [];
     data.updateGroups.forEach(group => {
@@ -25,11 +29,19 @@
         });
       });
     });
+    // Append the Mechanics Codex virtual card
+    allUpdateItems.push({
+      title: "Spire Plus Codex & Rules",
+      titleEn: "Spire Plus Codex & Rules",
+      isMechanicsCodex: true,
+      tags: [lang === 'en' ? "Rules" : "机制库", lang === 'en' ? "Codex" : "知识库"],
+      icon: "assets/ancients/urda/ezmb_urda_map_icon.png",
+      namespace: "custom_codex"
+    });
   }
   flattenUpdateItems();
 
-  let activeInspectItem = allUpdateItems[0] || null;
-  let pinnedInspectIdentity = null;
+  activeInspectItem = allUpdateItems[0] || null;
 
   function initialLang() {
     const requested = new URLSearchParams(location.search).get("lang") ||
@@ -63,7 +75,6 @@
       knownIssues: patch.knownIssues || base.knownIssues,
       changeLog: patch.changeLog || base.changeLog,
       locFiles: patch.locFiles || base.locFiles,
-      mechanics: patch.mechanics || base.mechanics || [],
       updateGroups: base.updateGroups.map((group, index) => {
         const groupPatch = groupPatches[index] || {};
         const groupItems = groupPatch.items || {};
@@ -88,45 +99,6 @@
     return item.i18nKey || item.descKey || item.titleKey || item.title || item.ancientId || "";
   }
 
-  function inspectIdentity(item) {
-    if (!item) return "";
-    if (item.kind === "mechanic") return `mechanic:${item.mechanicId}`;
-    return `item:${itemKey(item)}`;
-  }
-
-  function isPinned(item = activeInspectItem) {
-    return Boolean(pinnedInspectIdentity && pinnedInspectIdentity === inspectIdentity(item));
-  }
-
-  function getMechanic(id) {
-    return (data.mechanics || []).find((mechanic) => mechanic.id === id);
-  }
-
-  function getMechanicTitle(mechanic) {
-    return text(lang === "en" ? mechanic.titleEn || mechanic.title : mechanic.title);
-  }
-
-  function getMechanicBody(mechanic) {
-    return text(lang === "en" ? mechanic.descEn || mechanic.desc : mechanic.desc);
-  }
-
-  function getMechanicBullets(mechanic) {
-    return lang === "en" ? mechanic.bulletsEn || mechanic.bullets || [] : mechanic.bullets || [];
-  }
-
-  function mechanicInspectItem(id) {
-    const mechanic = getMechanic(id);
-    if (!mechanic) return null;
-    return {
-      kind: "mechanic",
-      mechanicId: mechanic.id,
-      title: getMechanicTitle(mechanic),
-      desc: getMechanicBody(mechanic),
-      icon: mechanic.icon || "assets/relics/relic.png",
-      tags: mechanic.tags || [labels.mechanicTag || "机制"]
-    };
-  }
-
   function translateTags(tags, translations) {
     return (tags || []).map((tag) => translations[tag] || tag);
   }
@@ -141,8 +113,8 @@
     loc = await loadLocalization();
     document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
     flattenUpdateItems();
+    pinnedInspectItem = null;
     activeInspectItem = allUpdateItems[0] || null;
-    pinnedInspectIdentity = null;
     render();
   }
 
@@ -156,22 +128,6 @@
       .replace(/\{[^}]+\}/g, "?")
       .replace(/\s+/g, " ")
       .trim();
-  }
-
-  function escapeHtml(value) {
-    return String(value || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  }
-
-  function escapeAttr(value) {
-    return escapeHtml(value).replace(/"/g, "&quot;");
-  }
-
-  function cssString(value) {
-    if (window.CSS?.escape) return CSS.escape(value);
-    return String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
   }
 
   function localize(item, field) {
@@ -200,364 +156,77 @@
   }
 
   function detailSearchText(item) {
-    return ([...(item.details || []), ...extraSourceDetails(item)])
+    return (item.details || [])
       .map((entry) => [detailLabel(entry), detailBody(item, entry)].join(" "))
       .join(" ");
   }
 
-  function isPlaceholderVanilla(value) {
-    const normalized = text(value).replace(/\s+/g, " ").trim().toLowerCase();
-    if (!normalized) return true;
-    return [
-      "\u539f\u7248\u65e0\u6b64",
-      "\u539f\u7248\u9996\u9886\u6ca1\u6709 a19 \u4e13\u5c5e\u80fd\u529b\u6216 a20 \u70d9\u5370\u5f62\u6001",
-      "no equivalent vanilla content",
-      "vanilla bosses do not have a19 dedicated abilities or a20 branded form"
-    ].some((snippet) => normalized.includes(snippet));
-  }
-
   function renderItemDetails(item) {
-    const details = [...(item.details || []), ...extraSourceDetails(item)];
-    if (!details.length) return "";
+    if (!item.details?.length) return "";
     let rowsHtml = "";
-    for (const entry of details) {
+    for (const entry of item.details) {
       const label = detailLabel(entry);
       const body = detailBody(item, entry);
       if (!label && !body) continue;
       rowsHtml += `
         <div class="detail-row">
           <strong class="detail-title">${label}</strong>
-          <span class="detail-copy">${formatStsText(body)}</span>
+          <span class="detail-copy">${formatStsText(body, false)}</span>
         </div>
       `;
     }
     return `
-      <details class="item-details" open>
-        <summary>${labels.effectDetails || labels.expandDetails || "具体效果"}</summary>
+      <details class="item-details">
+        <summary>${labels.expandDetails || "展开具体效果"}</summary>
         <div class="detail-grid">${rowsHtml}</div>
       </details>
     `;
   }
 
-  function extraSourceDetails(item) {
-    if (item?.descKey !== "BOSS_SEAL_CHOSEN_DECREE.summary") return [];
-    return [
-      {
-        label: "威仪",
-        labelEn: "Majesty",
-        text: "下一次防御或屏障动作每层额外获得[blue]8[/blue]点格挡。A19最多[blue]2[/blue]层；A20烙印形态最多[blue]3[/blue]层，且一次防御或屏障最多消耗[blue]2[/blue]层。",
-        textEn: "The next defense or barrier action gains [blue]8[/blue] extra Block per stack. A19 caps at [blue]2[/blue]; A20 Branded Form caps at [blue]3[/blue] and can spend at most [blue]2[/blue] stacks on one defense or barrier action."
-      },
-      {
-        label: "御令牌",
-        labelEn: "Royal Decree card",
-        text: "本回合打出被标记的束缚牌，可以避免御令惩罚。打出非御令束缚牌时，女王获得[blue]1[/blue]层威仪。",
-        textEn: "Playing the marked Bound card this turn avoids the decree penalty. Playing a non-Decree Bound card gives Queen [blue]1[/blue] Majesty."
-      }
-    ];
-  }
-
-  function findUpdateItemByKey(key) {
-    return allUpdateItems.find((item) => itemKey(item) === key);
-  }
-
-  function itemTitle(item) {
-    if (!item) return "";
-    return localize(item, "title") || text(item.title || item.titleEn || item.i18nKey || itemKey(item));
-  }
-
-  function itemSearchText(item) {
-    if (!item) return "";
-    const vanilla = text(lang === "en"
-      ? item.vanillaEn || item.vanilla || item.groupDefaultVanillaEn || item.groupDefaultVanilla
-      : item.vanilla || item.groupDefaultVanilla);
-    return [
-      itemTitle(item),
-      localize(item, "desc") || text(item.current),
-      isPlaceholderVanilla(vanilla) ? "" : vanilla,
-      detailSearchText(item),
-      (item.tags || []).join(" ")
-    ].join(" ");
-  }
-
-  function relationRules() {
-    return [
-      {
-        terms: ["档案页", "临时页", "Archive Page", "Archive Pages"],
-        mechanics: ["archive_pages", "temporary"],
-        items: [
-          "EZMB_MORVI.pages.INITIAL.options.morvi_overdue_library.description",
-          "EZMB_MORVI_ARCHIVE_DRAW_PAGE.description",
-          "EZMB_MORVI_ARCHIVE_VEIL_PAGE.description",
-          "EZMB_MORVI_ARCHIVE_BURN_PAGE.description",
-          "EZMB_MORVI_ARCHIVE_DISCOUNT_PAGE.description",
-          "EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description",
-          "EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE.description"
-        ]
-      },
-      {
-        terms: ["苗床", "枯壳", "Seedbed", "Withered Husk"],
-        mechanics: ["seedbed", "temporary", "blight_sprout"],
-        items: [
-          "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description",
-          "EZMB_URDA_SEEDBED.description",
-          "EZMB_WITHERED_HUSK.description",
-          "EZMB_ROOT_BUD.description"
-        ]
-      },
-      {
-        terms: ["根蚀", "根芽", "Rootblight", "Blight Sprout"],
-        mechanics: ["rootblight", "blight_sprout"],
-        items: [
-          "LEVEL_14.description",
-          "LEVEL_15.description",
-          "LEVEL_18.description",
-          "EZMB_ROOT.description",
-          "EZMB_DEEP_ROOT.description",
-          "EZMB_ROOTBLIGHT_III.description",
-          "EZMB_ROOT_BUD.description"
-        ]
-      },
-      {
-        terms: ["血债", "赃物锁", "契约", "Blood Debt", "Stolen Lock", "Contract"],
-        mechanics: ["blood_debt", "stolen_lock", "contract"],
-        items: [
-          "VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description",
-          "EZMB_VAKUU_KNIFE_CONTRACT.description",
-          "EZMB_VAKUU_TEMPTATION.description",
-          "EZMB_VAKUU_SHELTER_CONTRACT.description",
-          "EZMB_VAKUU_TRICK_CONTRACT.description",
-          "EZMB_VAKUU_CASH_OUT_CONTRACT.description"
-        ]
-      },
-      {
-        terms: ["裁决", "延期判决", "Verdict", "Deferred Verdict"],
-        mechanics: ["verdict", "replay"],
-        items: [
-          "EZMB_LOTHA.pages.INITIAL.options.lotha_deferred_verdict.description"
-        ]
-      },
-      {
-        terms: ["御令", "威仪", "束缚", "Royal Decree", "Majesty", "Bound"],
-        mechanics: ["royal_decree", "majesty", "bound"],
-        items: [
-          "BOSS_SEAL_CHOSEN_DECREE.summary"
-        ]
-      },
-      {
-        terms: ["债务", "Debt", "红墨", "Red Ink"],
-        mechanics: ["debt", "red_ink_debt"],
-        items: [
-          "SEAL_OF_GOLD.description",
-          "EZMB_MORVI.pages.INITIAL.options.morvi_debt_settlement.description",
-          "EZMB_MORVI.pages.INITIAL.options.morvi_red_ink_overdraft.description",
-          "EZMB_MORVI_RED_INK_OVERDRAFT.description"
-        ]
-      },
-      {
-        terms: ["裂变", "火印", "溢火", "铸令", "战旗", "Fission", "Firemark", "Overflow", "Forge Token", "Banner"],
-        mechanics: ["fission", "firemark", "overflow", "forge_token", "banner"],
-        items: [
-          "LEVEL_12.description",
-          "LEVEL_13.description",
-          "LEVEL_16.description",
-          "FIREMARK_MIGHT.description",
-          "FIREMARK_GIANT.description",
-          "FIREMARK_FORGE_ARMOR.description",
-          "FIREMARK_CONSTANT_HEAL.description",
-          "BANNER_VANGUARD.description",
-          "BANNER_SHIELDWALL.description",
-          "BANNER_BLOOD_PRIZE.description",
-          "BANNER_PRESSING_LINE.description",
-          "BANNER_LAST_STAND.description"
-        ]
-      },
-      {
-        terms: ["执迷", "Enthralled"],
-        items: ["BLOOD_SOAKED_ROSE.description", "ENTHRALLED.description"]
-      },
-      {
-        terms: ["愚行", "Folly"],
-        items: ["PRESERVED_FOG.description", "FOLLY.description"]
-      }
-    ];
-  }
-
-  function relatedForItem(item) {
-    const currentKey = itemKey(item);
-    const content = itemSearchText(item).toLowerCase();
-    const relatedItems = new Map();
-    const relatedMechanics = new Map();
-
-    function addItem(key) {
-      if (!key || key === currentKey || relatedItems.has(key)) return;
-      const target = findUpdateItemByKey(key);
-      if (target) relatedItems.set(key, target);
-    }
-
-    function addMechanic(id) {
-      if (!id || relatedMechanics.has(id)) return;
-      const mechanic = getMechanic(id);
-      if (mechanic) relatedMechanics.set(id, mechanic);
-    }
-
-    for (const mechanic of data.mechanics || []) {
-      const terms = lang === "en" ? mechanic.termsEn || mechanic.terms || [] : mechanic.terms || [];
-      if (terms.some((term) => content.includes(String(term).toLowerCase()))) addMechanic(mechanic.id);
-    }
-
-    for (const rule of relationRules()) {
-      if (rule.terms.some((term) => content.includes(String(term).toLowerCase()))) {
-        (rule.items || []).forEach(addItem);
-        (rule.mechanics || []).forEach(addMechanic);
-      }
-    }
-
-    (item.relatedItems || []).forEach(addItem);
-    (item.relatedMechanics || []).forEach(addMechanic);
-
-    return {
-      items: [...relatedItems.values()].slice(0, 12),
-      mechanics: [...relatedMechanics.values()].slice(0, 12)
-    };
-  }
-
-  function relatedForMechanic(mechanic) {
-    const relatedItems = (mechanic.relatedItemKeys || [])
-      .map(findUpdateItemByKey)
-      .filter(Boolean)
-      .slice(0, 12);
-    const relatedMechanics = (mechanic.relatedMechanicIds || [])
-      .map(getMechanic)
-      .filter(Boolean)
-      .slice(0, 12);
-    return { items: relatedItems, mechanics: relatedMechanics };
-  }
-
-  function renderRelatedLinks(item) {
-    if (!item || item.mechanicHub) return "";
-    const related = item.kind === "mechanic"
-      ? relatedForMechanic(getMechanic(item.mechanicId) || {})
-      : relatedForItem(item);
-    const itemLinks = related.items.map((target) =>
-      `<button type="button" class="link-chip" data-item-key="${escapeAttr(itemKey(target))}">${itemTitle(target)}</button>`
-    ).join("");
-    const mechanicLinks = related.mechanics.map((mechanic) =>
-      `<button type="button" class="link-chip mechanic-chip" data-mechanic-id="${escapeAttr(mechanic.id)}">${getMechanicTitle(mechanic)}</button>`
-    ).join("");
-    if (!itemLinks && !mechanicLinks) return "";
-    return `
-      <section class="related-panel">
-        ${mechanicLinks ? `
-          <div class="related-block">
-            <h4>${labels.relatedMechanics || "机制解释"}</h4>
-            <div class="link-chip-row">${mechanicLinks}</div>
-          </div>
-        ` : ""}
-        ${itemLinks ? `
-          <div class="related-block">
-            <h4>${labels.relatedChanges || "相关改动"}</h4>
-            <div class="link-chip-row">${itemLinks}</div>
-          </div>
-        ` : ""}
-      </section>
-    `;
-  }
-
-  function MechanicCard(mechanic, compact = false) {
-    const bullets = getMechanicBullets(mechanic);
-    const bulletHtml = compact ? "" : `
-      <ul>
-        ${bullets.map((line) => `<li>${formatStsText(text(line))}</li>`).join("")}
-      </ul>
-    `;
-    return `
-      <article class="mechanic-card" id="mechanic-${escapeAttr(mechanic.id)}">
-        <button type="button" class="mechanic-title" data-mechanic-id="${escapeAttr(mechanic.id)}">${getMechanicTitle(mechanic)}</button>
-        <p>${formatStsText(getMechanicBody(mechanic))}</p>
-        ${bulletHtml}
-      </article>
-    `;
-  }
-
-  function MechanicCodexComponent() {
-    return `
-      <section class="mechanic-codex">
-        <h3>${labels.mechanicCodex || "机制资料库"}</h3>
-        <div class="mechanic-codex-grid">
-          ${(data.mechanics || []).map((mechanic) => MechanicCard(mechanic)).join("")}
-        </div>
-      </section>
-    `;
-  }
-
-  function MechanicInspectorComponent(item) {
-    const mechanic = getMechanic(item.mechanicId);
-    if (!mechanic) return "";
-    const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
-    return `
-      <div class="inspector-card-preview mechanic-inspector">
-        <div class="inspector-art-frame">
-          ${renderImage(item.icon, item.title)}
-        </div>
-        <div class="inspector-header">
-          <h2>${item.title}</h2>
-          <div class="inspector-tags">${tagsHtml}</div>
-        </div>
-        ${InspectorActions(item)}
-        <div class="inspector-comp">
-          <div>
-            <h4 class="inspector-sect-title">${labels.mechanicTag || "机制"}</h4>
-            <div class="inspector-desc-block current-box">
-              <p>${formatStsText(getMechanicBody(mechanic))}</p>
-            </div>
-          </div>
-        </div>
-        ${MechanicCard(mechanic)}
-        ${renderRelatedLinks(item)}
-      </div>
-    `;
-  }
-
-  function formatStsText(text) {
-    if (!text) return "";
-    let escaped = escapeHtml(text);
+  function formatStsText(textVal, isCurrent) {
+    if (!textVal) return "";
+    let escaped = textVal
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
 
     const mappings = [
-      { key: "sts-keyword-red", words: ["伤害", "攻击", "造成", "生命", "HP", "Damage", "Attack", "Attacks", "deal", "deals"] },
-      { key: "sts-keyword-blue", words: ["格挡", "防御", "Block", "Gain Block"] },
-      { key: "sts-keyword-green", words: ["能量", "能量制限", "Energy", "energy"] },
-      { key: "sts-keyword-purple", words: ["消耗", "虚无", "诅诅", "诅咒", "脆弱", "虚弱", "易伤", "Exhaust", "Ethereal", "Curse", "Curses", "Vulnerable", "Weak"] },
-      { key: "sts-keyword-gold", words: ["遗物", "先古之民", "先古", "金币", "Relic", "Ancient", "Gold"] }
+      { key: "sts-keyword-attack", words: ["攻击", "Attack", "Attacks"] },
+      { key: "sts-keyword-skill", words: ["技能", "Skill", "Skills"] },
+      { key: "sts-keyword-power", words: ["能力", "Power", "Powers"] },
+      { key: "sts-keyword-status", words: ["状态", "Status", "Temporary Status", "临时状态"] },
+      { key: "sts-keyword-curse", words: ["诅咒", "Curse", "Curses", "Temporary Curse", "临时诅咒"] },
+
+      { key: "sts-keyword-stat-strength", words: ["力量", "Strength"] },
+      { key: "sts-keyword-stat-dexterity", words: ["敏捷", "Dexterity"] },
+      { key: "sts-keyword-stat-focus", words: ["集中", "Focus"] },
+      { key: "sts-keyword-stat-vigor", words: ["活力", "Vigor"] },
+      { key: "sts-keyword-stat-block", words: ["格挡", "防御", "Block", "Gain Block", "Defence"] },
+      { key: "sts-keyword-stat-energy", words: ["能量", "能量制限", "Energy", "energy"] },
+
+      { key: "sts-keyword-mech-blood-debt", words: ["血债", "Blood Debt", "赃物锁", "破锁赃物", "Loot Lock", "Loot-lock", "Loot"] },
+      { key: "sts-keyword-mech-verdict", words: ["裁决", "延期裁决", "封庭", "Verdict", "Deferred Verdict", "Closed Court"] },
+      { key: "sts-keyword-mech-relic", words: ["遗物", "Relic", "Relics"] },
+      { key: "sts-keyword-mech-ancient", words: ["先古", "先古之民", "Ancient", "Ancients"] },
+      { key: "sts-keyword-mech-gold", words: ["金币", "金", "Gold", "gold"] },
+      { key: "sts-keyword-mech-fission", words: ["裂变", "Fission", "裂变牌", "裂变率", "裂变附魔"] },
+      { key: "sts-keyword-mech-seedbed", words: ["苗床", "Seedbed", "枯壳", "Withered Husk"] },
+      { key: "sts-keyword-mech-sprout", words: ["根芽", "Sprout", "Blight Sprout", "Sprouts"] },
+      { key: "sts-keyword-mech-rootblight", words: ["根蚀", "Rootblight", "Rootblights"] },
+      { key: "sts-keyword-mech-contract", words: ["契约", "Contract", "Contracts"] },
+      { key: "sts-keyword-mech-temp-page", words: ["临时页", "Temporary Page", "页", "Page", "Pages"] }
     ];
 
     let index = 0;
     const replacements = {};
-    function register(word, className, link = null) {
+    function register(word, className) {
       const marker = `__STS_MARKER_${index}__`;
-      const safeWord = escapeHtml(word);
-      if (link?.mechanicId) {
-        replacements[marker] = `<button type="button" class="text-keyword-link ${className}" data-mechanic-id="${escapeAttr(link.mechanicId)}">${safeWord}</button>`;
-      } else if (link?.itemKey) {
-        replacements[marker] = `<button type="button" class="text-keyword-link ${className}" data-item-key="${escapeAttr(link.itemKey)}">${safeWord}</button>`;
-      } else {
-        replacements[marker] = `<span class="${className}">${safeWord}</span>`;
-      }
+      replacements[marker] = `<span class="${className}">${word}</span>`;
       index++;
       return marker;
     }
 
     const flatKeywords = [];
-    for (const mechanic of data.mechanics || []) {
-      const terms = lang === "en" ? mechanic.termsEn || mechanic.terms || [] : mechanic.terms || [];
-      for (const word of terms) {
-        flatKeywords.push({
-          word,
-          className: mechanic.keywordClass || "sts-keyword-gold",
-          link: { mechanicId: mechanic.id }
-        });
-      }
-    }
     for (const group of mappings) {
       for (const word of group.words) {
         flatKeywords.push({ word, className: group.key });
@@ -576,14 +245,32 @@
           : escapeRegExp(item.word),
         'gi'
       );
-      escaped = escaped.replace(regex, (match) => register(match, item.className, item.link));
+      escaped = escaped.replace(regex, (match) => register(match, item.className));
     }
 
     for (const marker in replacements) {
       escaped = escaped.replace(new RegExp(marker, 'g'), replacements[marker]);
     }
 
+    // Wrap numbers/changed digits in Spire Plus current text block
+    if (isCurrent) {
+      escaped = escaped.replace(/(?<!<[^>]*)\b(\d+(?:%|层|个|张|格|费|HP|金币|格挡|力量|敏捷)?|\+\d+|-\d+)\b/g, '<span class="sts-upgrade-val">$1</span>');
+    }
+
+    // Parse cross-card hyperlinks
+    escaped = addCodexHyperlinks(escaped);
+
     return escaped;
+  }
+
+  function addCodexHyperlinks(htmlString) {
+    const cardTerms = ["放松", "愚行", "执迷", "至亮之焰", "临时页", "契约", "雨息", "枯壳", "苗床", "根蚀", "根芽"];
+    let output = htmlString;
+    cardTerms.forEach(term => {
+      const regex = new RegExp(`(?<!<[^>]*)${term}`, 'g');
+      output = output.replace(regex, `<a href="#" class="codex-link" data-target="${term}">${term}</a>`);
+    });
+    return output;
   }
 
   function renderImage(src, alt) {
@@ -750,18 +437,6 @@
     `;
   }
 
-  function InspectorActions(item) {
-    const locked = isPinned(item);
-    return `
-      <div class="inspector-actions">
-        <button type="button" class="focus-btn ${locked ? "locked" : ""}" data-pin-current="true">
-          ${locked ? labels.pinnedFocus || "已锁定" : labels.lockFocus || "锁定关注"}
-        </button>
-        ${locked ? `<button type="button" class="focus-btn ghost" data-unpin-current="true">${labels.unlockFocus || "取消锁定"}</button>` : ""}
-      </div>
-    `;
-  }
-
   function CardInspectorComponent(item) {
     if (!item) {
       return `
@@ -772,15 +447,63 @@
       `;
     }
 
-    if (item.kind === "mechanic") return MechanicInspectorComponent(item);
+    if (item.isMechanicsCodex) {
+      const mechanics = [
+        { id: "blood_debt", name: lang === 'en' ? "Blood Debt" : "血债与赃物锁", desc: lang === 'en' ? "Blood Debt: Added by Vakuu. When you have Blood Debt, taking unblocked damage increases your Blood Debt. You must play Contract cards to break Loot Locks or use rest site options to reduce it." : "血债与赃物锁：瓦库试炼特有负面层数。拥有血债时，受到未格挡的伤害会累积等量血债；每层血债会增加受到的生命流失。需要打出契约卡牌打破赃物锁，或在休息处使用切肉选项来减少血债。" },
+        { id: "forge_token", name: lang === 'en' ? "Forge Token" : "威仪与铸令", desc: lang === 'en' ? "Forge Token: Earned by defeating Firemarked Elites. Can be used at the next rest site to either Rest (upgrades 1 random card) or Smith (heals 7 HP)." : "铸令与威仪：击败火印精英获得。可在下一个休息处使用：休息随机升级1张卡牌，锻造额外回复7 HP。" },
+        { id: "verdict", name: lang === 'en' ? "Verdict" : "洛莎之裁决", desc: lang === 'en' ? "Verdict & Closed Court: Lotha's core mechanic. Delays damage or curse triggers, storing them as pending actions or cards in hand to be resolved in later phases." : "裁决与延期裁决：洛莎的核心机制。推迟生命流失或诅咒卡牌的结算，转化为挂起契约或临时手牌状态，允许玩家在后续回合中通过特定卡牌手段进行化解。" },
+        { id: "fission", name: lang === 'en' ? "Fission" : "裂变附魔", desc: lang === 'en' ? "Fission: Ascension 13 modifier. Fission cards in card rewards have their cost reduced by 1 but are Exhausted after being played." : "裂变：进阶13开启的特殊附魔。卡牌奖励中的攻击或技能牌有几率获得裂变附魔，卡牌耗能-1，但打出后获得消耗属性。" },
+        { id: "seedbed", name: lang === 'en' ? "Seedbeds & Sprouts" : "苗床与根芽", desc: lang === 'en' ? "Seedbeds & Sprouts: Urda and Ascension 14/15/18 mechanic. Seedbeds allow planting temporary status cards. Blight Sprouts surface during combats and add Rootblight I if left unresolved." : "苗床与根芽：乌尔姖与进阶14/15/18的连带机制。苗床可以优先种下临时卡牌。根芽会在战斗中萌发，若在战后未能处理，会向牌组中加入永久的根蚀 I 诅咒。" },
+        { id: "firemarked", name: lang === 'en' ? "Firemarked Elites" : "火印精英", desc: lang === 'en' ? "Firemarked Elites: Ascension 12. Enhanced elites with increased HP and Strength. Defeating them grants Forge Tokens and 4-card rewards." : "火印精英：进阶12引入的强化精英。精英会随机获得火印宿主能力（力量、生命、熔甲、回复），击败后获得铸令，卡牌奖励提升为4选1。" },
+        { id: "banner", name: lang === 'en' ? "Banner Rooms" : "战旗房", desc: lang === 'en' ? "Banner Rooms: Ascension 16. Enhanced combat rooms containing a Bannerbearer (Vanguard, Shieldwall, etc.). Offers higher rewards and a 15% Fission card chance." : "战旗房：进阶16引入的强化普通战斗。会随机刷出战旗效果（先锋、盾阵、血赏等），战斗奖励卡牌具有15%的裂变几率。" },
+        { id: "deepbranch", name: lang === 'en' ? "Deep Branch" : "深层支线", desc: lang === 'en' ? "Deep Branch: Ascension 17. High-risk optional branch routes in Act 2 and Act 3 that reconnect to the main route and award an extra Uncommon relic." : "深层支线：进阶17引入的分支路线。第二、三幕中会插入3-4节点长度的极度危险支线，通往支线终点会额外赠送一个罕见遗物。" }
+      ];
+
+      let menuItemsHtml = "";
+      mechanics.forEach(m => {
+        const isActive = activeMechanicId === m.id;
+        menuItemsHtml += `
+          <button type="button" class="codex-menu-item ${isActive ? 'active-menu-item' : ''}" data-mechanic="${m.id}">
+            <strong>${m.name}</strong>
+            <span>${m.desc.slice(0, 20)}...</span>
+          </button>
+        `;
+      });
+
+      const activeMech = mechanics.find(m => m.id === activeMechanicId) || mechanics[0];
+
+      return `
+        <div class="inspector-card-preview">
+          <div class="inspector-header">
+            <h2>${lang === 'en' ? 'Mechanics Codex' : '先古与进阶机制详解'}</h2>
+            <span class="tag">${lang === 'en' ? 'Rules Reference' : '机制规则速查'}</span>
+            ${pinnedInspectItem && pinnedInspectItem.isMechanicsCodex ? `
+              <div style="margin-top: 6px;">
+                <span class="pin-badge">${lang === 'en' ? 'Locked' : '已锁定'}</span>
+                <button type="button" class="clear-pin-btn" id="clearPinBtn">${lang === 'en' ? 'Clear' : '解锁'}</button>
+              </div>
+            ` : ""}
+          </div>
+          <div class="codex-menu">
+            ${menuItemsHtml}
+          </div>
+          <div class="inspector-comp" style="margin-top: 8px;">
+            <h4 class="inspector-sect-title">${activeMech.name}</h4>
+            <div class="inspector-desc-block current-box">
+              <p>${formatStsText(activeMech.desc, false)}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
     const title = localize(item, "title");
     const current = localize(item, "desc") || text(item.current);
     const vanilla = text(lang === 'en'
       ? item.vanillaEn || item.vanilla || item.groupDefaultVanillaEn || item.groupDefaultVanilla
       : item.vanilla || item.groupDefaultVanilla);
-    const showVanilla = !isPlaceholderVanilla(vanilla);
     const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
+    const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item);
 
     return `
       <div class="inspector-card-preview">
@@ -790,26 +513,28 @@
         <div class="inspector-header">
           <h2>${title}</h2>
           <div class="inspector-tags">${tagsHtml}</div>
-        </div>
-        ${InspectorActions(item)}
-        <div class="inspector-comp">
-          ${showVanilla ? `
-            <div>
-              <h4 class="inspector-sect-title">${labels.vanilla} (Vanilla)</h4>
-              <div class="inspector-desc-block vanilla-box">
-                <p>${formatStsText(vanilla)}</p>
-              </div>
+          ${isPinned ? `
+            <div style="margin-top: 6px;">
+              <span class="pin-badge">${lang === 'en' ? 'Locked' : '已锁定'}</span>
+              <button type="button" class="clear-pin-btn" id="clearPinBtn">${lang === 'en' ? 'Clear' : '解锁'}</button>
             </div>
           ` : ""}
+        </div>
+        <div class="inspector-comp">
+          <div>
+            <h4 class="inspector-sect-title">${labels.vanilla} (Vanilla)</h4>
+            <div class="inspector-desc-block vanilla-box">
+              <p>${formatStsText(vanilla, false)}</p>
+            </div>
+          </div>
           <div>
             <h4 class="inspector-sect-title">${labels.current} (Spire Plus)</h4>
             <div class="inspector-desc-block current-box">
-              <p>${formatStsText(current)}</p>
+              <p>${formatStsText(current, true)}</p>
             </div>
           </div>
         </div>
         ${renderItemDetails(item)}
-        ${item.mechanicHub ? MechanicCodexComponent() : renderRelatedLinks(item)}
       </div>
     `;
   }
@@ -820,15 +545,16 @@
     const vanilla = text(lang === 'en'
       ? item.vanillaEn || item.vanilla || item.groupDefaultVanillaEn || item.groupDefaultVanilla
       : item.vanilla || item.groupDefaultVanilla);
-    const searchableVanilla = isPlaceholderVanilla(vanilla) ? "" : vanilla;
     const detailsText = detailSearchText(item);
     const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
-    const searchString = normalize([title, current, searchableVanilla, detailsText, (item.tags || []).join(" ")].join(" "));
-    const identity = inspectIdentity(item);
-    const pinnedClass = pinnedInspectIdentity === identity ? "pinned-inspect" : "";
+
+    // Create search payload containing tags, titles, and text
+    const searchString = normalize([title, current, vanilla, detailsText, (item.tags || []).join(" ")].join(" "));
+    const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item);
 
     return `
-      <article class="compare-card ${isActive ? 'active-inspect' : ''} ${pinnedClass}" style="--index: ${index}" data-search="${searchString}" data-index="${index}" data-item-key="${escapeAttr(itemKey(item))}">
+      <article class="compare-card ${isActive ? 'active-inspect' : ''}" style="--index: ${index}" data-search="${searchString}" data-index="${index}">
+        ${isPinned ? `<span class="pin-badge">${lang === 'en' ? 'Locked' : '已锁定'}</span>` : ""}
         <div class="card-header-row">
           <div class="card-art-frame">
             ${renderImage(item.icon, title)}
@@ -840,7 +566,7 @@
         </div>
         <dl>
           <dt>${labels.current}</dt>
-          <dd class="sts-card-current">${formatStsText(current)}</dd>
+          <dd class="sts-card-current">${formatStsText(current, true)}</dd>
         </dl>
       </article>
     `;
@@ -876,6 +602,11 @@
       `;
     }).join("");
 
+    const codexItem = allUpdateItems.find(item => item.isMechanicsCodex);
+    const codexCardIndex = allUpdateItems.indexOf(codexItem);
+    const isCodexActive = activeInspectItem && activeInspectItem.isMechanicsCodex;
+    const codexCardHtml = RelicCardComponent(codexItem, codexCardIndex, isCodexActive);
+
     return `
       <section class="update-board">
         <aside class="inspector-pane" id="inspectorPane">
@@ -883,6 +614,18 @@
         </aside>
         <div class="cards-pane">
           ${groupsHtml}
+          <section class="compare-group" data-group="${lang === 'en' ? 'Rules' : '机制库'}">
+            <div class="group-head">
+              ${renderImage(codexItem.icon, codexItem.title)}
+              <div>
+                <h2>${lang === 'en' ? 'Rules & Codex' : '先古与进阶机制详解'}</h2>
+                <p>${lang === 'en' ? 'Quick reference guide for new gameplay mechanisms' : 'Spire Plus 新增机制规则速查指南'}</p>
+              </div>
+            </div>
+            <div class="compare-list">
+              ${codexCardHtml}
+            </div>
+          </section>
           <div id="searchEmptyState" class="empty-state hidden">
             <p>${labels.noSearchMatched || "没有找到匹配的改动。"}</p>
             <a href="#" class="clear-search-link">${labels.clearSearch || "清除搜索"}</a>
@@ -892,47 +635,8 @@
     `;
   }
 
-  function paintInspector() {
-    const inspectorPane = app.querySelector("#inspectorPane");
-    if (inspectorPane) {
-      inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
-    }
-    const activeIdentity = inspectIdentity(activeInspectItem);
-    const pinnedIdentity = pinnedInspectIdentity;
-    app.querySelectorAll(".compare-card").forEach((card) => {
-      const identity = `item:${card.dataset.itemKey || ""}`;
-      card.classList.toggle("active-inspect", identity === activeIdentity);
-      card.classList.toggle("pinned-inspect", Boolean(pinnedIdentity && identity === pinnedIdentity));
-    });
-  }
-
-  function selectInspectItem(item, { pin = false, reveal = false } = {}) {
-    if (!item) return;
-    activeInspectItem = item;
-    if (pin) pinnedInspectIdentity = inspectIdentity(item);
-    paintInspector();
-
-    if (reveal && item.kind !== "mechanic") {
-      const card = app.querySelector(`.compare-card[data-item-key="${cssString(itemKey(item))}"]`);
-      if (card) {
-        card.scrollIntoView({ block: "center", behavior: "smooth" });
-      }
-    }
-  }
-
-  function selectMechanic(id, { pin = true } = {}) {
-    const item = mechanicInspectItem(id);
-    if (item) selectInspectItem(item, { pin });
-  }
-
-  function unpinInspector() {
-    pinnedInspectIdentity = null;
-    paintInspector();
-  }
-
   function SpireMapStepsComponent(title, steps, cssClass) {
     const listItems = steps.map((step, idx) => {
-      // Map node indicators
       let stepIndicator = idx + 1;
       if (idx === 0) stepIndicator = "?";
       if (idx === 1) stepIndicator = "⚔";
@@ -1185,7 +889,6 @@
     const filter = document.querySelector("#updateFilters .active")?.dataset.filter || labels.all;
     let totalVisible = 0;
 
-    // Scan through groups
     for (const group of document.querySelectorAll(".compare-group")) {
       const filterMatch = filter === labels.all || group.dataset.group === filter;
       let visibleInGroup = 0;
@@ -1207,6 +910,28 @@
     }
   }
 
+  // --- Router & Jump Actions ---
+
+  function triggerJump(target) {
+    const allChip = document.querySelector("#updateFilters [data-filter='" + labels.all + "']");
+    if (allChip) {
+      for (const chip of document.querySelectorAll("#updateFilters .chip")) chip.classList.remove("active");
+      allChip.classList.add("active");
+    }
+
+    const input = document.getElementById("updateSearch");
+    if (input) {
+      input.value = target;
+      applyFilters();
+    }
+
+    const matchedCard = Array.from(document.querySelectorAll(".compare-card:not(.hidden)"))[0];
+    if (matchedCard) {
+      matchedCard.click();
+      matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
   // --- Redraw Loop ---
 
   function render() {
@@ -1224,7 +949,6 @@
     if (current === "install") {
       app.innerHTML = InstallComponent();
 
-      // Bind copy hash button
       const copyBtns = app.querySelectorAll(".copy-hash-btn");
       copyBtns.forEach(btn => {
         btn.addEventListener("click", () => {
@@ -1242,7 +966,6 @@
         });
       });
 
-      // Bind merchant shop hover dialog lines
       const speechBalloon = app.querySelector("#merchantSpeech");
       const hoverTargets = app.querySelectorAll("[data-hover]");
       if (speechBalloon) {
@@ -1295,7 +1018,7 @@
     } else if (current === "about") {
       app.innerHTML = AboutComponent();
     } else {
-      // Updates page
+      // Updates view
       app.innerHTML = `
         ${HeroComponent()}
         ${IntroFeaturesComponent()}
@@ -1308,7 +1031,6 @@
         input.addEventListener("input", applyFilters);
       }
 
-      // Bind filter runic chips
       const chips = app.querySelector("#updateFilters");
       if (chips) {
         chips.addEventListener("click", (event) => {
@@ -1331,62 +1053,70 @@
         });
       }
 
-      // Bind card inspection hover and click listener
+      // Card inspector mouseenter / click logic
       const compareCards = app.querySelectorAll(".compare-card");
+      const inspectorPane = app.querySelector("#inspectorPane");
+      const cardsPane = app.querySelector(".cards-pane");
+
       compareCards.forEach(card => {
         const index = parseInt(card.dataset.index);
         const item = allUpdateItems[index];
 
-        const selectInspect = (pin = false) => {
+        const selectInspect = () => {
           if (!item) return;
-          if (!pin && pinnedInspectIdentity) return;
-          selectInspectItem(item, { pin });
+          activeInspectItem = item;
+          if (inspectorPane) {
+            inspectorPane.innerHTML = CardInspectorComponent(item);
+          }
+          // Highlight active look only
+          compareCards.forEach(c => c.classList.remove("active-inspect"));
+          card.classList.add("active-inspect");
         };
 
-        card.addEventListener("mouseenter", () => selectInspect(false));
-        card.addEventListener("click", (event) => {
-          if (event.target.closest(".text-keyword-link, .link-chip")) return;
-          selectInspect(true);
+        card.addEventListener("mouseenter", () => {
+          // If not pinned, or temporarily previewing, update active inspect
+          selectInspect();
         });
-      });
 
-      app.querySelectorAll(".text-keyword-link[data-mechanic-id], .link-chip[data-mechanic-id], .mechanic-title[data-mechanic-id]").forEach(link => {
-        link.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          selectMechanic(link.dataset.mechanicId, { pin: true });
-        });
-      });
-
-      app.querySelectorAll(".text-keyword-link[data-item-key], .link-chip[data-item-key]").forEach(link => {
-        link.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          const item = findUpdateItemByKey(link.dataset.itemKey);
-          selectInspectItem(item, { pin: true, reveal: true });
-        });
-      });
-
-      app.querySelectorAll("[data-pin-current]").forEach(button => {
-        button.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          if (activeInspectItem) {
-            pinnedInspectIdentity = inspectIdentity(activeInspectItem);
-            paintInspector();
+        card.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item)) {
+            // Unpin if clicked again
+            pinnedInspectItem = null;
+          } else {
+            // Pin this card
+            pinnedInspectItem = item;
           }
+          render(); // Refresh list to update locking states
         });
       });
 
-      app.querySelectorAll("[data-unpin-current]").forEach(button => {
-        button.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          unpinInspector();
+      // Restore pinned inspect card on leaving card pane
+      if (cardsPane) {
+        cardsPane.addEventListener("mouseleave", () => {
+          activeInspectItem = pinnedInspectItem || allUpdateItems[0];
+          if (inspectorPane) {
+            inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
+          }
+          compareCards.forEach(c => {
+            const index = parseInt(c.dataset.index);
+            const item = allUpdateItems[index];
+            const isInspect = activeInspectItem && itemKey(activeInspectItem) === itemKey(item);
+            c.classList.toggle("active-inspect", isInspect);
+          });
         });
+      }
+
+      // Bind Clear Pin click handler inside inspector
+      document.addEventListener("click", (e) => {
+        const clearPinBtn = e.target.closest("#clearPinBtn");
+        if (clearPinBtn) {
+          pinnedInspectItem = null;
+          render();
+        }
       });
 
-      // Bind Hero choice event choices actions
+      // Bind Hero choice log actions
       const heroChoiceBtns = app.querySelectorAll(".hero-choice-btn");
       heroChoiceBtns.forEach(btn => {
         btn.addEventListener("click", () => {
@@ -1401,51 +1131,49 @@
   }
 
   window.addEventListener("hashchange", render);
+
+  // Dynamic navigation click bindings (including cross-card hyperlinks)
   document.addEventListener("click", (event) => {
-    const mechanicLink = event.target.closest(".text-keyword-link[data-mechanic-id], .link-chip[data-mechanic-id], .mechanic-title[data-mechanic-id]");
-    if (mechanicLink) {
+    // Cross-card codex link routing
+    const codexLink = event.target.closest(".codex-link");
+    if (codexLink) {
       event.preventDefault();
-      event.stopPropagation();
-      selectMechanic(mechanicLink.dataset.mechanicId, { pin: true });
-      return;
-    }
-
-    const itemLink = event.target.closest(".text-keyword-link[data-item-key], .link-chip[data-item-key]");
-    if (itemLink) {
-      event.preventDefault();
-      event.stopPropagation();
-      const item = findUpdateItemByKey(itemLink.dataset.itemKey);
-      selectInspectItem(item, { pin: true, reveal: true });
-      return;
-    }
-
-    const pinButton = event.target.closest("[data-pin-current]");
-    if (pinButton) {
-      event.preventDefault();
-      if (activeInspectItem) {
-        pinnedInspectIdentity = inspectIdentity(activeInspectItem);
-        paintInspector();
+      const target = codexLink.dataset.target;
+      if (route() !== "updates") {
+        location.hash = "updates";
+        setTimeout(() => triggerJump(target), 80);
+      } else {
+        triggerJump(target);
       }
       return;
     }
 
-    const unpinButton = event.target.closest("[data-unpin-current]");
-    if (unpinButton) {
-      event.preventDefault();
-      unpinInspector();
-      return;
-    }
-
+    // Language button routing
     const langButton = event.target.closest("[data-lang]");
     if (langButton) {
       event.preventDefault();
       setLanguage(langButton.dataset.lang);
       return;
     }
+
+    // Tab button routing
     const link = event.target.closest("[data-route]");
     if (!link) return;
     event.preventDefault();
     location.hash = link.dataset.route;
+  });
+
+  // Listener for Mechanics sub-menu clicks
+  document.addEventListener("click", (event) => {
+    const codexMenuItem = event.target.closest(".codex-menu-item");
+    if (codexMenuItem) {
+      event.stopPropagation();
+      activeMechanicId = codexMenuItem.dataset.mechanic;
+      const inspectorPane = document.getElementById("inspectorPane");
+      if (inspectorPane) {
+        inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
+      }
+    }
   });
 
   render();

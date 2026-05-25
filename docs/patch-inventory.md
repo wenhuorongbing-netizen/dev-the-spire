@@ -15,10 +15,10 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 162 |
+| Total patch declarations | 163 |
 | High risk | 22 |
 | Medium risk | 44 |
-| Low risk | 96 |
+| Low risk | 97 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -31,6 +31,7 @@ Regenerate:
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
+| Ancient shared infrastructure | Low | `EZMicroBalanceCode/Ancients/Common/NeowInitialOptionRerollPatch.cs` | 7 | `[HarmonyPatch(typeof(Neow), "GenerateInitialOptions")]` |
 | Lotha | Low | `EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAct3AncientService.cs` | 39 | `[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]` |
 | Morvi | Low | `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAct2AncientService.cs` | 39 | `[HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAct1AncientService.cs` | 40 | `[HarmonyPatch(typeof(Overgrowth), nameof(Overgrowth.GetUnlockedAncients))]` |
