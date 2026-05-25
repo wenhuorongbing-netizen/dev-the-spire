@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.9.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.10.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `8654879DBE99697FE0CE36F14B141B49882EA07C3C373FFB1D60D441154EEF56` |
-| DLL | `9A59A9C13848E2C4B5C9B5EFEBEC3AD5BAAE8A2DD48616202F9056E17F254F03` |
-| PCK | `8B24C57585918D87694C39E9EFB6D6543D916C6A6A69263FA3CEC9212324A20E` |
-| Manifest | `41997280F3055C5C2C08DC00D511B8CE1C320DBD34076F256DCC10B32B17522B` |
-| README_INSTALL | `E739F9588299C4CF1FF0F7BE02362BE2CAF3D3F4E8D2942DE65EC35A95811D3A` |
+| ZIP | `37E6EE714BE16601A0A55BBA912A27F69E2AF978A8F464E4F9C4CF86D14BB07A` |
+| DLL | `3603C28FFA117B994195ECDB2DA7A7D147D5BB0BBBC52B6B4681CCC3029310B3` |
+| PCK | `60ED9A8FE5CD31A315AC2F30BE35FF208F73A2C271C45C5035414DFF87F354B6` |
+| Manifest | `0696BFF73607D4583CE75F34868DA488528A518B7E269BE8ADB2F87A7071BE59` |
+| README_INSTALL | `362118DBB9BF74AC81979081C99CC7007BDAD9BB922B05A0DEB17A886A455F26` |
 
-Latest no-game validation snapshot: build passed, default tests `281 passed / 20 skipped`, opt-in artifact tests `301 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.9`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the co-op gameplay fail-closed crash hardening package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
+Latest no-game validation snapshot: build passed, default tests `281 passed / 20 skipped`, opt-in artifact tests `301 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.10`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the co-op gameplay fail-closed crash hardening package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

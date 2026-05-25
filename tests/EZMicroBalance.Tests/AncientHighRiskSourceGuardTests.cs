@@ -115,10 +115,12 @@ public sealed class AncientHighRiskSourceGuardTests
 
         Assert.DoesNotContain("FirstOrDefault(candidate => candidate.RootblightLevel == rootblight.RootblightLevel)", seedbed, StringComparison.Ordinal);
         Assert.DoesNotContain("RootDeckService.FindRootFamilyCards(card.Owner)", seedbed, StringComparison.Ordinal);
-        Assert.DoesNotContain("rootblight.PlantedInSeedbed = true", seedbed, StringComparison.Ordinal);
         AssertSourceContains(
             seedbed,
-            "card is WitheredHusk or RootFamilyCard",
+            "card is WitheredHusk",
+            "card is RootFamilyCard rootblight",
+            "RootDeckService.CanHoldRootblightBySeedbed(rootblight)",
+            "RootDeckService.TryHoldRootblightBySeedbed(rootblight)",
             "card.DeckVersion == null",
             "Planting skipped play, discard, and Exhaust synergies");
         AssertSourceContains(

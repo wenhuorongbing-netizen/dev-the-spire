@@ -283,7 +283,10 @@ public sealed class UrdaReleaseCoverageGuardTests
         AssertSourceContains(
             seedbedCombatSource,
             "CardSelectorPrefs(new LocString(\"cards\", \"EZMB_URDA_SEEDBED.selectionScreenPrompt\"), 1, 1)",
-            "card is WitheredHusk or RootFamilyCard",
+            "card is WitheredHusk",
+            "card is RootFamilyCard rootblight",
+            "RootDeckService.CanHoldRootblightBySeedbed(rootblight)",
+            "RootDeckService.TryHoldRootblightBySeedbed(rootblight)",
             "card.DeckVersion == null",
             "CardPileCmd.RemoveFromCombat(card, skipVisuals: true)",
             "TryAddGeneratedCardToCombat(husk, PileType.Hand, player)",
@@ -504,7 +507,6 @@ public sealed class UrdaReleaseCoverageGuardTests
             "SeedBankCardIds");
         Assert.DoesNotContain("UrdaTrialPlantCard", seedBank, StringComparison.Ordinal);
         Assert.DoesNotContain("RootDeckService.FindRootFamilyCards(card.Owner)", seedbedSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("rootblight.PlantedInSeedbed = true", seedbedSource, StringComparison.Ordinal);
         Assert.DoesNotContain("SettleSeedBankBeforeActOneBoss", urdaRunHook, StringComparison.Ordinal);
         Assert.DoesNotContain("room.RoomType == RoomType.Boss", urdaRunHook, StringComparison.Ordinal);
         var huskTransformPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaWitheredHuskTransformPatches.cs");

@@ -11,7 +11,7 @@
   "NEOW.pages.INITIAL.options.ezmb_reroll_initial_options.title": "Reroll",
   "NEOW.pages.INITIAL.options.ezmb_reroll_initial_options.description": "Reroll these Act [blue]1[/blue] Ancient rewards once. The die appears only in Act [blue]1[/blue] and disappears after use.",
   "EZMB_URDA.pages.INITIAL.options.urda_seedbed.title": "Seedbed",
-  "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "Act [blue]1[/blue] card rewards can become [gold]Seedbeds[/gold]. Each costs [blue]2[/blue] [gold]Max HP[/gold]. [gold]Seedbed[/gold] catches later [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, and [gold]Blight Sprouts[/gold].",
+  "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "Act [blue]1[/blue] card rewards can become [gold]Seedbeds[/gold]. Each costs [blue]2[/blue] [gold]Max HP[/gold]. [gold]Seedbed[/gold] plants later [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, [gold]Blight Sprouts[/gold], and [gold]Rootblight[/gold], removing them from this combat and replacing them with [gold]Withered Husk[/gold].",
   "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title": "Humus Pact",
   "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description": "Act [blue]1[/blue] normal combat card rewards gain a [gold]Compost Reward[/gold] button. Taking it skips those cards and gives [blue]15[/blue] [gold]Gold[/gold]. The [blue]3[/blue]rd compost then removes up to [blue]2[/blue] deck cards and offers [blue]1[/blue] upgraded reward card.",
   "EZMB_URDA.pages.INITIAL.options.urda_molting.title": "Molting",

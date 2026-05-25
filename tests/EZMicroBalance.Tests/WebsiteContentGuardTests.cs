@@ -61,11 +61,11 @@ public sealed class WebsiteContentGuardTests
             "\u53ef\u9644\u9b54\u724c",
             "If there are not enough suitable rooms, at least 2 are placed.",
             "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission.",
-            "Temporary Status cards, Temporary Curse cards, or Blight Sprouts",
+            "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
             "\u79cd\u4e0b\u4e0d\u662f\u6253\u51fa\u3001\u5f03\u724c\u6216\u6d88\u8017",
             "\u6839\u8680\u662f\u4e3b\u724c\u7ec4\u91cc\u7684\u8bc5\u5492\uff0c\u4e0d\u662f\u6839\u82bd",
             "Planting is not playing, discarding, or exhausting",
-            "Seedbed cannot plant Rootblight",
+            "Seedbed can plant Rootblight",
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
@@ -78,8 +78,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-seedbed-detail2",
-            "app.js?v=20260525-seedbed-detail2");
+            "content-data.js?v=20260525-seedbed-rootblight3",
+            "app.js?v=20260525-seedbed-rootblight3");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),
@@ -124,7 +124,6 @@ public sealed class WebsiteContentGuardTests
                        "\u95c2\u5099\u7901\u93b2",
                       "Future Peek",
                       "separate Future Peek package",
-                      "18,904,206",
                        "18,879,316",
                       "18,874,569"
                   })

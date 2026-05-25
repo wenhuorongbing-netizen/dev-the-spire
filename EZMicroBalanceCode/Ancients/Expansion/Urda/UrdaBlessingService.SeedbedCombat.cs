@@ -61,7 +61,7 @@ internal static partial class UrdaBlessingService
 
     public static bool IsSeedbedSeedableCard(CardModel card)
     {
-        if (card is WitheredHusk or RootFamilyCard)
+        if (card is WitheredHusk)
         {
             return false;
         }
@@ -69,6 +69,12 @@ internal static partial class UrdaBlessingService
         if (card is RootBud)
         {
             return true;
+        }
+
+        if (card is RootFamilyCard rootblight)
+        {
+            return card.Pile?.Type.IsCombatPile() == true &&
+                RootDeckService.CanHoldRootblightBySeedbed(rootblight);
         }
 
         return card.DeckVersion == null &&
@@ -126,6 +132,12 @@ internal static partial class UrdaBlessingService
         }
 
         var sourcePile = card.Pile.Type;
+        if (card is RootFamilyCard rootblight &&
+            !RootDeckService.TryHoldRootblightBySeedbed(rootblight))
+        {
+            return;
+        }
+
         MarkSeedbedPlantedCard(card);
         state.RemainingSlots--;
         PersistSeedbed(player, state);

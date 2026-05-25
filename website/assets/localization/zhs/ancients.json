@@ -11,7 +11,7 @@
   "NEOW.pages.INITIAL.options.ezmb_reroll_initial_options.title": "重掷",
   "NEOW.pages.INITIAL.options.ezmb_reroll_initial_options.description": "重置本次第[blue]1[/blue]幕先古奖励。骰子只在第[blue]1[/blue]幕出现，使用后消失。",
   "EZMB_URDA.pages.INITIAL.options.urda_seedbed.title": "苗床",
-  "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "第[blue]1[/blue]幕卡牌奖励可改拿[gold]苗床[/gold]。每次失去[blue]2[/blue]点[gold]最大生命[/gold]。[gold]苗床[/gold]会接住之后进入手牌的[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌和[gold]根芽[/gold]。",
+  "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "第[blue]1[/blue]幕卡牌奖励可改拿[gold]苗床[/gold]。每次失去[blue]2[/blue]点[gold]最大生命[/gold]。[gold]苗床[/gold]会种下之后进入手牌的[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]和[gold]根蚀[/gold]，把它们移出本场战斗并换成[gold]枯壳[/gold]。",
   "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title": "腐殖约定",
   "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description": "第[blue]1[/blue]幕普通战斗的卡牌奖励会出现[gold]化为腐殖[/gold]按钮。选择它会跳过本次卡牌，改拿[blue]15[/blue][gold]金币[/gold]。第[blue]3[/blue]次[gold]化为腐殖[/gold]后，移除至多[blue]2[/blue]张牌，并获得[blue]1[/blue]张已升级奖励牌。",
   "EZMB_URDA.pages.INITIAL.options.urda_molting.title": "脱壳",

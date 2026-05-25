@@ -71,7 +71,8 @@ public sealed class UrdaSeedbed : CustomCardModel
         AncientCardHelpers.TemporaryHoverTip(),
         AncientCardHelpers.PlantedHoverTip(),
         HoverTipFactory.FromCard<WitheredHusk>(),
-        HoverTipFactory.FromCard<RootBud>()
+        HoverTipFactory.FromCard<RootBud>(),
+        HoverTipFactory.FromCard<Root>()
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(4m, ValueProp.Move)];

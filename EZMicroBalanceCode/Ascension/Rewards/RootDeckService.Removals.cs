@@ -1,9 +1,49 @@
 ﻿using MegaCrit.Sts2.Core.Entities.Cards;
 
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 internal static partial class RootDeckService
 {
+    public static bool CanHoldRootblightBySeedbed(RootFamilyCard card)
+    {
+        return card.Owner is { } player &&
+            AscensionFeatureGate.IsRootblightEnabled(player.RunState) &&
+            TryFindRootblightDeckVersion(player, card) != null;
+    }
+
+    public static bool TryHoldRootblightBySeedbed(RootFamilyCard card)
+    {
+        var player = card.Owner;
+        if (player == null || !AscensionFeatureGate.IsRootblightEnabled(player.RunState))
+        {
+            return false;
+        }
+
+        var deckCard = TryFindRootblightDeckVersion(player, card);
+        if (deckCard == null)
+        {
+            MainFile.Logger.Warn(
+                $"[Spire Plus] Ascension Rootblight skipped: Seedbed could not find a unique master-deck level {card.RootblightLevel} card for player {player.RunState.GetPlayerSlotIndex(player)}.");
+            return false;
+        }
+
+        deckCard.PlantedInSeedbed = true;
+        card.PlantedInSeedbed = true;
+        ReleaseEvidenceLog.Log(
+            "Rootblight",
+            "seedbed_hold",
+            player,
+            new Dictionary<string, object?>
+            {
+                ["level"] = deckCard.RootblightLevel
+            });
+        MainFile.Logger.Info(
+            $"[Spire Plus] Ascension Rootblight held by Seedbed: level {deckCard.RootblightLevel} will not grow or downgrade at combat end for player {player.RunState.GetPlayerSlotIndex(player)}.");
+        return true;
+    }
+
     public static async Task ApplyPlayedRootblightCard(RootFamilyCard card)
     {
         var player = card.Owner;

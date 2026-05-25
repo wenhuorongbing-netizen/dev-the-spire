@@ -2,8 +2,8 @@
   "id": "EZMicroBalance",
   "name": "Spire Plus",
   "author": "wenhuorongbing-netizen",
-  "description": "Spire Plus expands the run with Ancient blessings, A11-A20 progression, Rootblight pressure, banner rooms, Firemarked Elites, boss dedicated abilities, and preview tools. Requires BaseLib.",
-  "version": "v0.1.0-private-beta.9",
+  "description": "Spire Plus adds new Ancient rewards, A11-A20 progression, Rootblight pressure, Firemarked Elites, Banner Rooms, boss dedicated abilities, and preview tools. Requires BaseLib.",
+  "version": "v0.1.0-private-beta.10",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [

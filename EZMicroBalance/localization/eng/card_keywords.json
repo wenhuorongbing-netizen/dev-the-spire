@@ -2,5 +2,5 @@
   "EZMB_TEMPORARY.title": "Temporary",
   "EZMB_TEMPORARY.description": "This card only exists during this combat. It is removed after combat.",
   "EZMB_PLANTED.title": "Plant",
-  "EZMB_PLANTED.description": "A planted card does not enter your hand and is removed from this combat. Planting is not playing, discarding, or exhausting."
+  "EZMB_PLANTED.description": "A planted card does not enter your hand and is removed from this combat. Planting is not playing, discarding, or exhausting. A planted Blight Sprout adds no Rootblight; a planted Rootblight does not change stage at combat end."
 }
