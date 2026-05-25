@@ -1,4 +1,5 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.HoverTips;
 
@@ -89,6 +90,21 @@ internal sealed partial class EzmbMorvi
     {
         if (Owner != null)
         {
+            if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                    Owner.RunState,
+                    "MorviAncientSelection",
+                    "Morvi Ancient rewards can mutate deck, reward, and combat state and are disabled in co-op until host-authoritative sync is proven."))
+            {
+                AncientSelectionEvidenceLog.LogBlessingSelectionFailed(
+                    Owner,
+                    "Morvi",
+                    blessingId,
+                    "coop_gameplay_disabled",
+                    !string.IsNullOrWhiteSpace(MorviFeatureGate.ForcedBlessing));
+                Done();
+                return;
+            }
+
             if (!await MorviBlessingService.TrySetSelectedBlessing(Owner, blessingId))
             {
                 AncientSelectionEvidenceLog.LogBlessingSelectionFailed(

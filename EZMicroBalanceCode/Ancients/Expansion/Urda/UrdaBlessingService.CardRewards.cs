@@ -24,6 +24,14 @@ internal static partial class UrdaBlessingService
         Player player,
         CardCreationOptions creationOptions)
     {
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                player.RunState,
+                "UrdaCardRewardAlternatives",
+                "Urda card-reward alternatives open local choices and are disabled in co-op until reward sync is proven."))
+        {
+            return false;
+        }
+
         if (PrismaticGemRewardScreenContextPatch.CurrentReward is not { } currentReward ||
             currentReward.Player != player ||
             !IsNormalActOneCombatReward(player, creationOptions))
@@ -40,6 +48,14 @@ internal static partial class UrdaBlessingService
         CardReward cardReward,
         List<CardRewardAlternative> alternatives)
     {
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                player.RunState,
+                "UrdaCardRewardAlternatives",
+                "Urda card-reward alternatives open local choices and are disabled in co-op until reward sync is proven."))
+        {
+            return false;
+        }
+
         if (!IsTrackedNormalActOneCombatReward(cardReward) || alternatives.Count >= 2)
         {
             return false;

@@ -1,5 +1,6 @@
 ﻿using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Rewards;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -52,6 +53,14 @@ internal static partial class UrdaBlessingService
 
     private static async Task ChooseHumusPact(Player player, CardReward reward)
     {
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                player.RunState,
+                "UrdaCardRewardAlternatives",
+                "Urda Humus Pact reward alternative mutates gold, card rewards, and deck removals from a local reward choice."))
+        {
+            return;
+        }
+
         if (!IsTrackedNormalActOneCombatReward(reward) ||
             GetSelectedBlessing(player) != UrdaBlessingIds.HumusPact)
         {

@@ -18,6 +18,11 @@ internal sealed class UrdaRunHook : AbstractModel
         List<CardCreationResult> cardRewardOptions,
         CardCreationOptions creationOptions)
     {
+        if (ShouldSkipCoopGameplay(player.RunState))
+        {
+            return false;
+        }
+
         return UrdaBlessingService.MarkCardRewardIfNormalActOneCombat(player, creationOptions);
     }
 
@@ -26,16 +31,31 @@ internal sealed class UrdaRunHook : AbstractModel
         CardReward cardReward,
         List<CardRewardAlternative> alternatives)
     {
+        if (ShouldSkipCoopGameplay(player.RunState))
+        {
+            return false;
+        }
+
         return UrdaBlessingService.TryModifyCardRewardAlternatives(player, cardReward, alternatives);
     }
 
     public override Task AfterRewardTaken(Player player, Reward reward)
     {
+        if (ShouldSkipCoopGameplay(player.RunState))
+        {
+            return Task.CompletedTask;
+        }
+
         return UrdaBlessingService.AfterRewardTaken(player, reward);
     }
 
     public override Task BeforeRoomEntered(AbstractRoom room)
     {
+        if (ShouldSkipCoopGameplay(CurrentRunState()))
+        {
+            return Task.CompletedTask;
+        }
+
         return UrdaBlessingService.BeforeRoomEntered(room);
     }
 
@@ -56,17 +76,32 @@ internal sealed class UrdaRunHook : AbstractModel
 
     public override Task AfterActEntered()
     {
+        if (ShouldSkipCoopGameplay(CurrentRunState()))
+        {
+            return Task.CompletedTask;
+        }
+
         return UrdaBlessingService.AfterActEntered();
     }
 
     public override Task AfterMapGenerated(ActMap map, int actIndex)
     {
+        if (ShouldSkipCoopGameplay(CurrentRunState()))
+        {
+            return Task.CompletedTask;
+        }
+
         UrdaBlessingService.AfterMapGenerated(map, actIndex);
         return Task.CompletedTask;
     }
 
     public override Task AfterRoomEntered(AbstractRoom room)
     {
+        if (ShouldSkipCoopGameplay(CurrentRunState()))
+        {
+            return Task.CompletedTask;
+        }
+
         return UrdaBlessingService.AfterRoomEntered(room);
     }
 
@@ -93,6 +128,15 @@ internal sealed class UrdaRunHook : AbstractModel
             runState,
             "UrdaCombatHooks",
             "Urda combat card, Seedbed, Seed Bank, Root Sight, and Rooted Route hooks still need two-client proof.");
+
+    internal static bool ShouldSkipCoopGameplay(IRunState? runState) =>
+        MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+            runState,
+            "UrdaRunHooks",
+            "Urda reward, map, room, Seed Bank, Root Sight, and relic-state mutations are disabled in co-op until host-authoritative sync is proven.");
+
+    private static IRunState? CurrentRunState() =>
+        RunManager.Instance.DebugOnlyGetState();
 }
 
 internal sealed class UrdaCombatHook : AbstractModel

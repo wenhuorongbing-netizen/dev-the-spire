@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=New+Rocker&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=New+Rocker&family=Instrument+Serif:ital@0;1&family=Barlow:wght@300;400;500;600;700&family=Kreon:wght@400;700&display=swap');
+
 
 :root {
   color-scheme: dark;
@@ -287,11 +288,14 @@ main {
 }
 
 .page-head h1 {
-  font-family: "New Rocker", "Cinzel Decorative", serif;
-  font-size: clamp(28px, 4vw, 48px);
+  font-family: "Instrument Serif", "New Rocker", serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(38px, 5vw, 64px);
   color: var(--gold-bright);
   margin: 0 0 8px;
-  text-shadow: 0 0 8px hsla(44, 73%, 58%, 0.3);
+  text-shadow: 0 0 10px hsla(44, 73%, 58%, 0.25);
+  letter-spacing: -0.01em;
 }
 
 .page-head p.lead {
@@ -423,15 +427,17 @@ main {
 }
 
 .hero h1 {
-  font-family: "New Rocker", "Cinzel Decorative", "Cinzel", serif;
-  font-size: clamp(36px, 5vw, 64px);
+  font-family: "Instrument Serif", "New Rocker", serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(48px, 6vw, 84px);
   margin: 0 0 16px;
   color: var(--text-primary);
   text-shadow:
-    0 0 10px hsla(44, 73%, 58%, 0.3),
+    0 0 15px hsla(44, 73%, 58%, 0.25),
     4px 4px 0px var(--bg-dark);
   line-height: 0.95;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
 }
 
 .hero p:not(.release-line) {
@@ -581,20 +587,20 @@ main {
 
 .search input {
   width: 100%;
-  background: hsl(80, 8%, 4%);
-  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
-  padding: 8px 12px;
-  border-radius: 0;
-  font-family: "Inter", sans-serif;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-family: "Barlow", sans-serif;
   font-size: 14px;
   transition: var(--transition);
 }
 
 .search input:focus {
   outline: none;
-  border-color: var(--gold-bright);
-  box-shadow: var(--shadow-glow-gold);
+  border-color: rgba(223, 175, 83, 0.5);
+  box-shadow: 0 0 15px rgba(223, 175, 83, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .chips {
@@ -604,13 +610,14 @@ main {
 }
 
 .chip {
-  background: var(--bg-card);
-  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-muted);
-  font-family: "Outfit", sans-serif;
-  font-weight: 700;
+  font-family: "Barlow", sans-serif;
+  font-weight: 600;
   font-size: 12px;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
   padding: 6px 16px;
   cursor: pointer;
   transition: var(--transition);
@@ -618,15 +625,17 @@ main {
 }
 
 .chip:hover {
-  border-color: var(--text-primary);
+  border-color: rgba(223, 175, 83, 0.5);
   color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .chip.active {
-  background: var(--gold-bright);
+  background: rgba(223, 175, 83, 0.12);
   border-color: var(--gold-bright);
-  color: var(--bg-dark);
-  font-weight: 800;
+  color: var(--gold-bright);
+  font-weight: 700;
+  text-shadow: 0 0 4px rgba(223, 175, 83, 0.2);
 }
 
 /* Split-Pane Updates Codex Layout */
@@ -641,10 +650,12 @@ main {
 .inspector-pane {
   position: sticky;
   top: 138px;
-  background: linear-gradient(180deg, hsl(80, 8%, 10%) 0%, hsl(80, 8%, 6%) 100%);
-  border: 1px solid var(--line-strong);
+  background: linear-gradient(180deg, rgba(20, 23, 20, 0.85) 0%, rgba(13, 15, 13, 0.85) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(223, 175, 83, 0.15);
   padding: 24px;
-  box-shadow: var(--shadow-main);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03);
   clip-path: polygon(0 16px, 16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px));
   min-height: 520px;
 }
@@ -653,7 +664,7 @@ main {
   content: "";
   position: absolute;
   inset: 1px;
-  background: hsl(80, 8%, 8%);
+  background: linear-gradient(180deg, rgba(20, 23, 20, 0.55) 0%, rgba(10, 12, 10, 0.55) 100%);
   z-index: -1;
   clip-path: polygon(0 15px, 15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px));
 }
@@ -835,8 +846,9 @@ main {
 }
 
 .group-head h2 {
-  font-family: "Cinzel", serif;
-  font-size: 22px;
+  font-family: "Kreon", "Cinzel", serif;
+  font-weight: 700;
+  font-size: 24px;
   color: var(--text-primary);
   margin: 0 0 4px;
 }
@@ -855,8 +867,10 @@ main {
 
 /* Relic Card Component Design */
 .compare-card {
-  background: linear-gradient(135deg, hsl(80, 8%, 10%) 0%, hsl(80, 8%, 8%) 100%);
-  border: 1px solid var(--line-dim);
+  background: linear-gradient(135deg, rgba(20, 23, 20, 0.75) 0%, rgba(13, 15, 13, 0.75) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(223, 175, 83, 0.08);
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -869,13 +883,16 @@ main {
   opacity: 0;
   clip-path: polygon(0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px));
   overflow: hidden;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 .compare-card::before {
   content: "";
   position: absolute;
   inset: 1px;
-  background: var(--bg-card);
+  background: linear-gradient(135deg, rgba(25, 28, 25, 0.4) 0%, rgba(15, 17, 15, 0.4) 100%);
   z-index: -1;
   clip-path: polygon(0 9px, 9px 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 9px), calc(100% - 9px) 100%, 9px 100%, 0 calc(100% - 9px));
   transition: var(--transition);
@@ -913,23 +930,104 @@ main {
 .compare-card:hover {
   transform: translateY(-4px) scale(1.02);
   z-index: 5;
-  border-color: var(--sts-green);
-  box-shadow: 0 8px 24px rgba(0, 230, 118, 0.25), 0 0 10px rgba(0, 230, 118, 0.15);
+  border-color: rgba(0, 230, 118, 0.45);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(0, 230, 118, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .compare-card:hover::before {
-  background: var(--bg-hover);
+  background: linear-gradient(135deg, rgba(30, 35, 30, 0.55) 0%, rgba(20, 22, 20, 0.55) 100%);
 }
 
 /* Card Pin State on List Cards */
 .compare-card.active-inspect {
   z-index: 4;
-  border-color: var(--gold-bright) !important;
-  box-shadow: 0 8px 24px rgba(223, 175, 83, 0.25), 0 0 10px rgba(223, 175, 83, 0.15);
+  border-color: rgba(223, 175, 83, 0.55) !important;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.5),
+    0 0 18px rgba(223, 175, 83, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .compare-card.active-inspect::before {
-  background: var(--bg-hover);
+  background: linear-gradient(135deg, rgba(35, 38, 35, 0.55) 0%, rgba(22, 25, 22, 0.55) 100%);
+}
+
+/* Card Category Theming (Border & Shadows) */
+
+/* Relics: Gold/Bronze Theme */
+.compare-card.type-relics:hover {
+  border-color: rgba(223, 175, 83, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(223, 175, 83, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-relics.active-inspect {
+  border-color: rgba(223, 175, 83, 0.65) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 18px rgba(223, 175, 83, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-relics:hover .card-art-frame {
+  border-color: var(--gold-bright);
+  background: radial-gradient(circle at center, hsla(44, 73%, 58%, 0.15) 0%, transparent 80%), hsl(80, 8%, 4%);
+}
+
+/* Cards: Blue/Steel Theme */
+.compare-card.type-cards:hover {
+  border-color: rgba(0, 176, 255, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 176, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-cards.active-inspect {
+  border-color: rgba(0, 176, 255, 0.65) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 18px rgba(0, 176, 255, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-cards:hover .card-art-frame {
+  border-color: var(--sts-blue);
+  background: radial-gradient(circle at center, hsla(195, 80%, 50%, 0.15) 0%, transparent 80%), hsl(80, 8%, 4%);
+}
+
+/* Ancients: Teal/Emerald Theme */
+.compare-card.type-ancients:hover {
+  border-color: rgba(0, 230, 118, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 230, 118, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-ancients.active-inspect {
+  border-color: rgba(0, 230, 118, 0.65) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 18px rgba(0, 230, 118, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-ancients:hover .card-art-frame {
+  border-color: var(--sts-green);
+  background: radial-gradient(circle at center, hsla(140, 85%, 45%, 0.15) 0%, transparent 80%), hsl(80, 8%, 4%);
+}
+
+/* Ascension: Blood Red Theme */
+.compare-card.type-ascension:hover {
+  border-color: rgba(255, 23, 68, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 23, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-ascension.active-inspect {
+  border-color: rgba(255, 23, 68, 0.65) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 23, 68, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-ascension:hover .card-art-frame {
+  border-color: var(--sts-red);
+  background: radial-gradient(circle at center, hsla(12, 90%, 55%, 0.15) 0%, transparent 80%), hsl(80, 8%, 4%);
+}
+
+/* Preview Tools & Mechanics: Purple Theme */
+.compare-card.type-preview:hover,
+.compare-card.type-mechanic:hover {
+  border-color: rgba(186, 104, 200, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(186, 104, 200, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-preview.active-inspect,
+.compare-card.type-mechanic.active-inspect {
+  border-color: rgba(186, 104, 200, 0.65) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 18px rgba(186, 104, 200, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.compare-card.type-preview:hover .card-art-frame,
+.compare-card.type-mechanic:hover .card-art-frame {
+  border-color: var(--sts-purple);
+  background: radial-gradient(circle at center, hsla(270, 75%, 72%, 0.15) 0%, transparent 80%), hsl(80, 8%, 4%);
 }
 
 .compare-card .pin-badge {
@@ -981,7 +1079,7 @@ main {
 }
 
 .card-title-block h3 {
-  font-family: "Cinzel", serif;
+  font-family: "Kreon", "Cinzel", serif;
   font-size: 16px;
   color: var(--text-primary);
   margin: 0;
@@ -1008,8 +1106,10 @@ main {
   font-size: 10px;
   padding: 1px 6px;
   border-radius: 2px;
-  font-family: "Outfit", sans-serif;
+  font-family: "Barlow", sans-serif;
+  font-weight: 500;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 /* Card Compare Details */
@@ -1025,7 +1125,8 @@ main {
 }
 
 .compare-card dt {
-  font-family: "Outfit", sans-serif;
+  font-family: "Barlow", sans-serif;
+  font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -1532,6 +1633,20 @@ main {
 }
 
 
+/* Animated keyword glows mimicking game elements */
+@keyframes text-glow-pulse {
+  0%, 100% {
+    text-shadow: 0 0 3px currentColor, 1px 1px 1px rgba(0, 0, 0, 0.85);
+  }
+  50% {
+    text-shadow: 0 0 8px currentColor, 1px 1px 1px rgba(0, 0, 0, 0.85);
+  }
+}
+
+[class*="sts-keyword-"] {
+  animation: text-glow-pulse 2.2s infinite ease-in-out;
+}
+
 /* Cross-card codex hyperlinks */
 .codex-link {
   color: var(--gold-bright);
@@ -1544,6 +1659,7 @@ main {
 
 .codex-link:hover {
   text-shadow: 0 0 10px currentColor;
+  text-decoration: underline double;
 }
 
 /* Make links inside keyword classes inherit keyword-specific colors and glow animation */
@@ -1551,6 +1667,11 @@ main {
   color: inherit !important;
   text-shadow: inherit !important;
   animation: inherit !important;
+}
+
+[class*="sts-keyword-"] .codex-link:hover {
+  text-shadow: 0 0 12px currentColor, 1px 1px 1px rgba(0, 0, 0, 0.9) !important;
+  text-decoration: underline double !important;
 }
 
 /* Mechanics Codex Sub-Menu Styles */

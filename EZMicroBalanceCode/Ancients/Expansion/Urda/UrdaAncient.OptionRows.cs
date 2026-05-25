@@ -74,13 +74,15 @@ internal sealed partial class EzmbUrda
     {
         if (Owner != null)
         {
-            await UrdaRewardSelectionService.SelectBlessing<T>(Owner, blessingId);
-            AncientSelectionEvidenceLog.LogBlessingSelected(
-                Owner,
-                "Urda",
-                blessingId,
-                typeof(T).Name,
-                !string.IsNullOrWhiteSpace(UrdaFeatureGate.ForcedBlessing));
+            if (await UrdaRewardSelectionService.SelectBlessing<T>(Owner, blessingId))
+            {
+                AncientSelectionEvidenceLog.LogBlessingSelected(
+                    Owner,
+                    "Urda",
+                    blessingId,
+                    typeof(T).Name,
+                    !string.IsNullOrWhiteSpace(UrdaFeatureGate.ForcedBlessing));
+            }
         }
         Done();
     }

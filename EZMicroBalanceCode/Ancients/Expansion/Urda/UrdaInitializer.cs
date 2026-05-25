@@ -29,7 +29,11 @@ internal static class UrdaInitializer
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>
-        UrdaFeatureGate.IsUrdaEnabled(runState.UnlockState)
+        UrdaFeatureGate.IsUrdaEnabled(runState.UnlockState) &&
+        !MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+            runState,
+            "UrdaRunHooks",
+            "Urda reward, map, room, Seed Bank, Root Sight, and relic-state mutations are disabled in co-op until host-authoritative sync is proven.")
             ? [ModelDb.GetById<UrdaRunHook>(ModelDb.GetId<UrdaRunHook>())]
             : [];
 

@@ -29,7 +29,11 @@ internal static class LothaInitializer
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>
-        LothaFeatureGate.IsLothaEnabled(runState.UnlockState)
+        LothaFeatureGate.IsLothaEnabled(runState.UnlockState) &&
+        !MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+            runState,
+            "LothaRunHooks",
+            "Lotha reward, deck-state, room, death-prevention, and combat-preparation mutations are disabled in co-op until host-authoritative sync is proven.")
             ? [ModelDb.GetById<LothaRunHook>(ModelDb.GetId<LothaRunHook>())]
             : [];
 

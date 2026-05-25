@@ -1,5 +1,6 @@
 ﻿using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using MegaCrit.Sts2.Core.Entities.Rewards;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -32,6 +33,14 @@ internal static partial class UrdaBlessingService
 
     private static async Task AcceptSeedbed(Player player, CardReward cardReward)
     {
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                player.RunState,
+                "UrdaCardRewardAlternatives",
+                "Urda Seedbed card-reward alternative mutates deck and max HP from a local reward choice."))
+        {
+            return;
+        }
+
         if (!CardRewardContexts.TryGetValue(cardReward, out var context) ||
             !context.IsNormalActOneCombatCardReward)
         {

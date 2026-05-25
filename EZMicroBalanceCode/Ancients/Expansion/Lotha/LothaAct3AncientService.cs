@@ -1,5 +1,6 @@
-﻿using MegaCrit.Sts2.Core.Models.Acts;
+using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Unlocks;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -8,6 +9,16 @@ internal static class LothaAct3AncientService
     public static void AddLothaToAct3(UnlockState unlockState, ref IEnumerable<AncientEventModel> unlockedAncients)
     {
         if (!LothaFeatureGate.IsLothaEnabled(unlockState))
+        {
+            return;
+        }
+
+        var runManager = RunManager.Instance;
+        if (runManager.DebugOnlyGetState() is { } runState &&
+            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                runState,
+                "LothaAncientOffer",
+                "Lotha Ancient reward selection mutates per-player reward state and is disabled in co-op until two-client proof exists."))
         {
             return;
         }

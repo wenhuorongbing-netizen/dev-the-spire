@@ -17,6 +17,11 @@ internal sealed class LothaRunHook : AbstractModel
 
     public override Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
     {
+        if (card.Owner != null && ShouldSkipCoopGameplay(card.Owner.RunState))
+        {
+            return Task.CompletedTask;
+        }
+
         if (card.Owner?.Creature.CombatState != null && ShouldSkipCoopCombat(card.Owner.RunState))
         {
             return Task.CompletedTask;
@@ -43,6 +48,7 @@ internal sealed class LothaRunHook : AbstractModel
             : LothaBlessingService.AfterDamageReceived(choiceContext, target, result, props, dealer, cardSource);
 
     public override bool TryModifyRewardsLate(Player player, List<Reward> rewards, AbstractRoom? room) =>
+        !ShouldSkipCoopGameplay(player.RunState) &&
         LothaBlessingService.TryModifyRewardsLate(player, rewards, room);
 
     public override bool ShouldDieLate(Creature creature) =>
@@ -63,6 +69,12 @@ internal sealed class LothaRunHook : AbstractModel
             runState,
             "LothaCombatHooks",
             "Lotha combat card, power, and death-prevention hooks still need two-client proof.");
+
+    internal static bool ShouldSkipCoopGameplay(IRunState? runState) =>
+        MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+            runState,
+            "LothaRunHooks",
+            "Lotha reward, deck-state, room, death-prevention, and combat-preparation mutations are disabled in co-op until host-authoritative sync is proven.");
 
     private static IRunState? CurrentRunState() =>
         CombatManager.Instance.DebugOnlyGetState()?.RunState;

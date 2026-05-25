@@ -29,7 +29,11 @@ internal static class MorviInitializer
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>
-        MorviFeatureGate.IsMorviEnabled(runState.UnlockState)
+        MorviFeatureGate.IsMorviEnabled(runState.UnlockState) &&
+        !MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+            runState,
+            "MorviRunHooks",
+            "Morvi reward, deck-state, room, and combat-preparation mutations are disabled in co-op until host-authoritative sync is proven.")
             ? [ModelDb.GetById<MorviRunHook>(ModelDb.GetId<MorviRunHook>())]
             : [];
 

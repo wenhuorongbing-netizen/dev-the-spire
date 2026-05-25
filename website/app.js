@@ -16,6 +16,9 @@
   let pinnedInspectItem = null;
   let activeInspectItem = null;
   let activeMechanicId = "blood_debt";
+  let currentSearchQuery = "";
+  let currentFilter = ""; // Empty string represents "All"
+  let lastActiveRoute = "";
 
   function flattenUpdateItems() {
     allUpdateItems = [];
@@ -447,18 +450,22 @@
   }
 
   function CodexControls() {
-    const chipButtons = data.updateGroups.map(group => `
-      <button type="button" class="chip" data-filter="${group.short}">${group.short}</button>
-    `).join("");
+    const activeFilter = currentFilter || labels.all;
+    const chipButtons = data.updateGroups.map(group => {
+      const isActive = currentFilter === group.short;
+      return `<button type="button" class="chip ${isActive ? 'active' : ''}" data-filter="${group.short}">${group.short}</button>`;
+    }).join("");
+
+    const isAllActive = !currentFilter || currentFilter === labels.all;
 
     return `
       <section class="tool-row">
         <label class="search">
           <span>${labels.search}</span>
-          <input id="updateSearch" type="search" placeholder="${labels.searchPlaceholder}" />
+          <input id="updateSearch" type="search" placeholder="${labels.searchPlaceholder}" value="${currentSearchQuery || ''}" />
         </label>
         <div class="chips" id="updateFilters">
-          <button type="button" class="chip active" data-filter="${labels.all}">${labels.all}</button>
+          <button type="button" class="chip ${isAllActive ? 'active' : ''}" data-filter="${labels.all}">${labels.all}</button>
           ${chipButtons}
         </div>
       </section>
@@ -579,9 +586,12 @@
     // Create search payload containing tags, titles, and text
     const searchString = normalize([title, current, vanilla, detailsText, (item.tags || []).join(" ")].join(" "));
     const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item);
+    const namespaceClass = item.isMechanicsCodex ? 'type-mechanic' : (item.namespace ? `type-${item.namespace}` : '');
+    const hasPreviewTag = (item.tags || []).includes("Preview tool") ? 'type-preview' : '';
+    const cardClasses = ["compare-card", isActive ? "active-inspect" : "", namespaceClass, hasPreviewTag].filter(Boolean).join(" ");
 
     return `
-      <article class="compare-card ${isActive ? 'active-inspect' : ''}" style="--index: ${index}" data-search="${searchString}" data-index="${index}">
+      <article class="${cardClasses}" style="--index: ${index}" data-search="${searchString}" data-index="${index}">
         ${isPinned ? `<span class="pin-badge">${lang === 'en' ? 'Locked' : '已锁定'}</span>` : ""}
         <div class="card-header-row">
           <div class="card-art-frame">
@@ -967,40 +977,25 @@
     };
 
     // First clear search query to ensure all cards are visible
-    const input = document.getElementById("updateSearch");
-    if (input) {
-      input.value = "";
-    }
-    const allChip = document.querySelector("#updateFilters [data-filter='" + labels.all + "']");
-    if (allChip) {
-      for (const chip of document.querySelectorAll("#updateFilters .chip")) chip.classList.remove("active");
-      allChip.classList.add("active");
-    }
-    applyFilters();
+    currentSearchQuery = "";
+    currentFilter = ""; // Go back to "All"
 
     if (target in mechanicRoutes) {
       activeMechanicId = mechanicRoutes[target];
       // Find the Mechanics Codex card
-      const codexCard = Array.from(document.querySelectorAll(".compare-card")).find(card => {
-        const index = parseInt(card.dataset.index);
-        return allUpdateItems[index]?.isMechanicsCodex;
-      });
-      if (codexCard) {
-        // Pin/Click the card
-        const index = parseInt(codexCard.dataset.index);
-        pinnedInspectItem = allUpdateItems[index];
+      const codexItem = allUpdateItems.find(item => item.isMechanicsCodex);
+      if (codexItem) {
+        pinnedInspectItem = codexItem;
         activeInspectItem = pinnedInspectItem;
+        render(); // Re-render with active states
 
-        // Render to update selected states and inspector view
-        render();
-
-        // Re-find in the newly rendered DOM to make sure it's the right node
-        const newCodexCard = Array.from(document.querySelectorAll(".compare-card")).find(card => {
+        // Scroll to the codex card in the new DOM
+        const codexCardNode = Array.from(document.querySelectorAll(".compare-card")).find(card => {
           const idx = parseInt(card.dataset.index);
           return allUpdateItems[idx]?.isMechanicsCodex;
         });
-        if (newCodexCard) {
-          newCodexCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (codexCardNode) {
+          codexCardNode.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       }
     } else {
@@ -1010,25 +1005,25 @@
         searchValue = cardRoutes[target];
       }
 
-      // Now set search box to searchValue to filter for the card
-      if (input) {
-        input.value = searchValue;
-        applyFilters();
+      currentSearchQuery = searchValue; // Search for the card title
+
+      // Find the card to pin
+      const cardItem = allUpdateItems.find(item => {
+        const title = localize(item, "title");
+        return title.includes(searchValue) || item.title === searchValue || item.titleEn === searchValue;
+      });
+
+      if (cardItem) {
+        pinnedInspectItem = cardItem;
+        activeInspectItem = pinnedInspectItem;
       }
 
+      render(); // Render with the new search query and pin
+
+      // Find matched card in newly rendered DOM and scroll
       const matchedCard = Array.from(document.querySelectorAll(".compare-card:not(.hidden)"))[0];
       if (matchedCard) {
-        const index = parseInt(matchedCard.dataset.index);
-        pinnedInspectItem = allUpdateItems[index];
-        activeInspectItem = pinnedInspectItem;
-
-        render();
-
-        // Re-find in newly rendered DOM and scroll
-        const newMatchedCard = Array.from(document.querySelectorAll(".compare-card:not(.hidden)"))[0];
-        if (newMatchedCard) {
-          newMatchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+        matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
   }
@@ -1044,6 +1039,13 @@
       current === "about" ? labels.navAbout :
       labels.navUpdates
     );
+
+    const shouldLockHeight = (current === lastActiveRoute);
+    const originalMinHeight = document.body.style.minHeight;
+    const savedScrollY = window.scrollY;
+    if (shouldLockHeight) {
+      document.body.style.minHeight = `${document.body.scrollHeight}px`;
+    }
 
     app.replaceChildren();
 
@@ -1129,7 +1131,10 @@
 
       const input = app.querySelector("#updateSearch");
       if (input) {
-        input.addEventListener("input", applyFilters);
+        input.addEventListener("input", () => {
+          currentSearchQuery = input.value;
+          applyFilters();
+        });
       }
 
       const chips = app.querySelector("#updateFilters");
@@ -1139,6 +1144,7 @@
           if (!chip) return;
           for (const item of chips.querySelectorAll(".chip")) item.classList.remove("active");
           chip.classList.add("active");
+          currentFilter = chip.dataset.filter === labels.all ? "" : chip.dataset.filter;
           applyFilters();
         });
       }
@@ -1149,10 +1155,13 @@
           e.preventDefault();
           if (input) {
             input.value = "";
+            currentSearchQuery = "";
             applyFilters();
           }
         });
       }
+
+      applyFilters();
 
       // Card inspector mouseenter / click logic
       const compareCards = app.querySelectorAll(".compare-card");
@@ -1228,7 +1237,15 @@
     }
 
     header.innerHTML = HeaderComponent(current);
-    window.scrollTo({ top: 0, behavior: "instant" });
+    if (shouldLockHeight) {
+      document.body.style.minHeight = originalMinHeight;
+      window.scrollTo({ top: savedScrollY, behavior: "instant" });
+    }
+
+    if (current !== lastActiveRoute) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      lastActiveRoute = current;
+    }
   }
 
   window.addEventListener("hashchange", render);

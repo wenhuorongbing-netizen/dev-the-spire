@@ -1,5 +1,6 @@
 ﻿using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Unlocks;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
@@ -8,6 +9,15 @@ internal static class MorviAct2AncientService
     public static void AddMorviToAct2(UnlockState unlockState, ref IEnumerable<AncientEventModel> unlockedAncients)
     {
         if (!MorviFeatureGate.IsMorviEnabled(unlockState))
+        {
+            return;
+        }
+
+        if (RunManager.Instance.DebugOnlyGetState() is { } runState &&
+            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                runState,
+                "MorviAncientOffer",
+                "Morvi Ancient reward selection mutates per-player reward state and is disabled in co-op until two-client proof exists."))
         {
             return;
         }

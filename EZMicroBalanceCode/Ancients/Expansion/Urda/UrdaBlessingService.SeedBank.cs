@@ -1,6 +1,7 @@
 ﻿using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Rewards;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -29,6 +30,14 @@ internal static partial class UrdaBlessingService
 
     private static async Task ChooseSeedBankStore(Player player, CardReward reward)
     {
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                player.RunState,
+                "UrdaSeedBank",
+                "Seed Bank stores a local card-reward choice and is disabled in co-op until reward sync is proven."))
+        {
+            return;
+        }
+
         if (!IsTrackedNormalActOneCombatReward(reward) ||
             GetSelectedBlessing(player) != UrdaBlessingIds.SeedBank)
         {

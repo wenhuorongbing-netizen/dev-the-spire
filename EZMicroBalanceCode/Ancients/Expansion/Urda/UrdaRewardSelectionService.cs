@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -8,9 +9,23 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static class UrdaRewardSelectionService
 {
-    public static async Task SelectBlessing<T>(Player owner, string blessingId)
+    public static async Task<bool> SelectBlessing<T>(Player owner, string blessingId)
         where T : RelicModel
     {
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                owner.RunState,
+                "UrdaAncientSelection",
+                "Urda Ancient rewards can open local card/relic/map choices and are disabled in co-op until host-authoritative sync is proven."))
+        {
+            AncientSelectionEvidenceLog.LogBlessingSelectionFailed(
+                owner,
+                "Urda",
+                blessingId,
+                "coop_gameplay_disabled",
+                !string.IsNullOrWhiteSpace(UrdaFeatureGate.ForcedBlessing));
+            return false;
+        }
+
         UrdaBlessingService.SetSelectedBlessing(owner, blessingId);
         await AncientRewardRelicService.ObtainSelectionRelicIfMissing<T>(owner, blessingId);
 
@@ -34,5 +49,7 @@ internal static class UrdaRewardSelectionService
         {
             await UrdaBlessingService.ApplyRootSight(owner);
         }
+
+        return true;
     }
 }

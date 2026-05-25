@@ -15,6 +15,11 @@ internal sealed class MorviRunHook : AbstractModel
 
     public override Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
     {
+        if (card.Owner != null && ShouldSkipCoopGameplay(card.Owner.RunState))
+        {
+            return Task.CompletedTask;
+        }
+
         if (card.Owner?.Creature.CombatState != null && ShouldSkipCoopCombat(card.Owner.RunState))
         {
             return Task.CompletedTask;
@@ -36,6 +41,12 @@ internal sealed class MorviRunHook : AbstractModel
             runState,
             "MorviCombatHooks",
             "Morvi combat card, pile, and power hooks still need two-client proof.");
+
+    internal static bool ShouldSkipCoopGameplay(IRunState? runState) =>
+        MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+            runState,
+            "MorviRunHooks",
+            "Morvi reward, deck-state, room, and combat-preparation mutations are disabled in co-op until host-authoritative sync is proven.");
 
     private static IRunState? CurrentRunState() =>
         CombatManager.Instance.DebugOnlyGetState()?.RunState;

@@ -1,4 +1,5 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.HoverTips;
 
@@ -84,6 +85,21 @@ internal sealed partial class EzmbLotha
     {
         if (Owner != null)
         {
+            if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                    Owner.RunState,
+                    "LothaAncientSelection",
+                    "Lotha Ancient rewards can mutate deck, reward, death, and combat state and are disabled in co-op until host-authoritative sync is proven."))
+            {
+                AncientSelectionEvidenceLog.LogBlessingSelectionFailed(
+                    Owner,
+                    "Lotha",
+                    blessingId,
+                    "coop_gameplay_disabled",
+                    !string.IsNullOrWhiteSpace(LothaFeatureGate.ForcedBlessing));
+                Done();
+                return;
+            }
+
             await LothaRewardSelectionService.SelectBlessing<T>(Owner, blessingId);
             AncientSelectionEvidenceLog.LogBlessingSelected(
                 Owner,

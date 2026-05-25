@@ -11,7 +11,11 @@ internal static class MultiplayerFeaturePolicy
     public const string LegacyAllowUnverifiedCoopCombatHooksEnvironmentVariable = "EZMB_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS";
     public const string AllowUnverifiedCoopPreviewToolsEnvironmentVariable = "SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS";
     public const string LegacyAllowUnverifiedCoopPreviewToolsEnvironmentVariable = "EZMB_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS";
+    public const string AllowUnverifiedCoopGameplayEnvironmentVariable = "SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY";
+    public const string LegacyAllowUnverifiedCoopGameplayEnvironmentVariable = "EZMB_ALLOW_UNVERIFIED_COOP_GAMEPLAY";
 
+    private static readonly object CoopGameplayGateLogLock = new();
+    private static readonly HashSet<string> LoggedCoopGameplayGateKeys = [];
     private static readonly object CoopCombatGateLogLock = new();
     private static readonly HashSet<string> LoggedCoopCombatGateKeys = [];
     private static readonly object CoopPreviewGateLogLock = new();
@@ -56,6 +60,36 @@ internal static class MultiplayerFeaturePolicy
                 ["canMutateSharedState"] = CanMutateSharedRunState(runState),
                 ["players"] = runState?.Players.Count ?? 0
             });
+        return true;
+    }
+
+    public static bool ShouldDisableUnverifiedCoopGameplay(
+        IRunState? runState,
+        string feature,
+        string reason)
+    {
+        if (IsSingleplayer(runState))
+        {
+            return false;
+        }
+
+        if (IsUnverifiedCoopGameplayOverrideEnabled)
+        {
+            LogCoopGameplayGateOnce(
+                feature,
+                "coop_gameplay_override_enabled",
+                runState,
+                reason,
+                $"[Spire Plus] {feature} is mutating co-op run state because {AllowUnverifiedCoopGameplayEnvironmentVariable}=1 is set. This path still needs two-client proof.");
+            return false;
+        }
+
+        LogCoopGameplayGateOnce(
+            feature,
+            "coop_gameplay_disabled",
+            runState,
+            reason,
+            $"[Spire Plus] {feature} disabled for co-op: {reason}");
         return true;
     }
 
@@ -158,6 +192,49 @@ internal static class MultiplayerFeaturePolicy
             Environment.GetEnvironmentVariable(AllowUnverifiedCoopPreviewToolsEnvironmentVariable)) ||
         AscensionExpansionConfig.IsTruthy(
             Environment.GetEnvironmentVariable(LegacyAllowUnverifiedCoopPreviewToolsEnvironmentVariable));
+
+    private static bool IsUnverifiedCoopGameplayOverrideEnabled =>
+        AscensionExpansionConfig.IsTruthy(
+            Environment.GetEnvironmentVariable(AllowUnverifiedCoopGameplayEnvironmentVariable)) ||
+        AscensionExpansionConfig.IsTruthy(
+            Environment.GetEnvironmentVariable(LegacyAllowUnverifiedCoopGameplayEnvironmentVariable));
+
+    private static void LogCoopGameplayGateOnce(
+        string feature,
+        string eventName,
+        IRunState? runState,
+        string reason,
+        string message)
+    {
+        var key = string.Join(
+            "|",
+            RuntimeHelpers.GetHashCode(runState),
+            DescribeNetMode(runState),
+            runState?.Players.Count ?? 0,
+            feature,
+            eventName);
+
+        lock (CoopGameplayGateLogLock)
+        {
+            if (!LoggedCoopGameplayGateKeys.Add(key))
+            {
+                return;
+            }
+        }
+
+        MainFile.Logger.Warn(message);
+        LogCoopEvidence(
+            feature,
+            eventName,
+            runState,
+            new Dictionary<string, object?>
+            {
+                ["reason"] = reason,
+                ["canMutateSharedState"] = CanMutateSharedRunState(runState),
+                ["players"] = runState?.Players.Count ?? 0,
+                ["netMode"] = DescribeNetMode(runState)
+            });
+    }
 
     private static void LogCoopCombatGateOnce(
         string feature,

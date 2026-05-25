@@ -2,6 +2,7 @@
 using System.Linq;
 
 using BaseLib.Utils;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Models.Acts;
@@ -15,6 +16,15 @@ internal static class UrdaAct1AncientService
     public static void AddUrdaToAct1(UnlockState unlockState, ref IEnumerable<AncientEventModel> unlockedAncients)
     {
         if (!UrdaFeatureGate.IsUrdaEnabled(unlockState))
+        {
+            return;
+        }
+
+        if (RunManager.Instance.DebugOnlyGetState() is { } runState &&
+            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                runState,
+                "UrdaAncientOffer",
+                "Urda Ancient reward selection mutates per-player reward state and is disabled in co-op until two-client proof exists."))
         {
             return;
         }
