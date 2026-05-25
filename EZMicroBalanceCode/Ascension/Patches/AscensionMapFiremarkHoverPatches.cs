@@ -61,7 +61,7 @@ internal static class FiremarkedEliteMapHoverPatch
                 break;
             case FiremarkKind.ConstantHeal:
                 description.Add("Heal", ActValue(actIndex, 4m, 8m, 16m));
-                description.Add("InterruptDamage", ActValue(actIndex, 12m, 24m, 48m));
+                description.Add("InterruptDamage", ActValue(actIndex, 18m, 36m, 72m));
                 description.Add("OverflowHeal", ActValue(actIndex, 2m, 4m, 8m));
                 break;
         }

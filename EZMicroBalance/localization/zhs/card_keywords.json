@@ -2,5 +2,5 @@
   "EZMB_TEMPORARY.title": "临时",
   "EZMB_TEMPORARY.description": "本牌只存在于本场战斗。战斗结束后移除。",
   "EZMB_PLANTED.title": "种下",
-  "EZMB_PLANTED.description": "被种下的牌不会进入手牌，并移出本场战斗。种下不是打出、丢弃或消耗。根芽被种下后不会生成根蚀；根蚀被种下后本战结束不改变阶段。"
+  "EZMB_PLANTED.description": "被种下的牌不会进入手牌，并移出本场战斗。种下不是打出、丢弃或消耗，不触发这些联动。根芽被种下后按已处理结算，战后不会生成根蚀 I；根蚀被种下后，本战不会移除、降级或恶化。"
 }

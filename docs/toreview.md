@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.10.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.11.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `37E6EE714BE16601A0A55BBA912A27F69E2AF978A8F464E4F9C4CF86D14BB07A` |
-| DLL | `3603C28FFA117B994195ECDB2DA7A7D147D5BB0BBBC52B6B4681CCC3029310B3` |
-| PCK | `60ED9A8FE5CD31A315AC2F30BE35FF208F73A2C271C45C5035414DFF87F354B6` |
-| Manifest | `0696BFF73607D4583CE75F34868DA488528A518B7E269BE8ADB2F87A7071BE59` |
-| README_INSTALL | `362118DBB9BF74AC81979081C99CC7007BDAD9BB922B05A0DEB17A886A455F26` |
+| ZIP | `6AAA370834172F0C8A814C306520D464111DA380FE8FB8987F3564D44AB84C31` |
+| DLL | `69D771B3F22987CD241B2AB4CE3CFB4F203087A219D2F65DE0E069B05DA02DCF` |
+| PCK | `70E51826BE9A59EDC752BBD23AD95625997FC8FA2C250DB1255F5522F7DD59BA` |
+| Manifest | `FFD51759227208EEABB1542F7134BFBFE5BFE19A6C7565EDF630C21ACC7220A5` |
+| README_INSTALL | `8FAC7328F2162FC6976DBE3B350985B558114EBBA9EBFC5CFE710C4B60BD555F` |
 
-Latest no-game validation snapshot: build passed, default tests `281 passed / 20 skipped`, opt-in artifact tests `301 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.10`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the Seedbed / Rootblight package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
+Latest no-game validation snapshot: build passed, default tests `281 passed / 20 skipped`, opt-in artifact tests `301 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.11`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the Seedbed / Rootblight package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

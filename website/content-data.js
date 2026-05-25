@@ -76,7 +76,7 @@ const sourceCardOverrides = {
 
 const cardDescOverrides = {
   EZMB_URDA_SEEDLING: "0费技能。消耗。获得4点格挡；升级后获得7点格挡。",
-  EZMB_URDA_SEEDBED: "1费技能。消耗。获得4点格挡，设置2格苗床。之后临时状态牌、临时诅咒牌、根芽或根蚀进入手牌前，会先被种下：从战斗牌堆移除，不触发打出、弃牌或消耗联动，并加入1张枯壳。种下根芽会阻止这张根芽在战后生成根蚀 I；种下根蚀会让这张根蚀在本战结束时不升、不降、不移除。升级后获得6点格挡，设置3格苗床，并立即从抽牌堆或弃牌堆种下1张同类牌或根蚀。",
+  EZMB_URDA_SEEDBED: "1费技能。消耗。获得6点格挡，设置2格苗床。之后临时状态牌、临时诅咒牌、根芽或根蚀进入手牌前，会先被种下：从战斗牌堆移除，不触发打出、弃牌或消耗联动，并加入1张枯壳。种下根芽按已处理结算，战后不会生成根蚀 I；种下根蚀会让它本战不移除、不降级、不恶化。升级后获得8点格挡，设置3格苗床，并立即从抽牌堆或弃牌堆种下1张可种下的牌。",
   EZMB_URDA_RAIN_BREATH: "0费临时技能。消耗。获得5点格挡，抽1张牌。",
   EZMB_WITHERED_HUSK: "临时诅咒。虚无，消耗。被消耗时获得3点格挡；苗床不能种下这张牌。",
   EZMB_MORVI_ARCHIVE_DRAW_PAGE: "0费临时页。虚无，消耗。抽2张牌。",
@@ -96,7 +96,7 @@ const ascDescOverrides = {
   FIREMARK_MIGHT: "火印宿主开局获得1/2/4点力量；未被格挡的攻击伤害会积累热势，2层后下次攻击+1/2/4伤害；溢火给1名正在攻击的副目标1/1/2点临时力量。",
   FIREMARK_GIANT: "火印宿主最大生命提高20%/30%/45%；半血时暴露熔核，窗口内造成原最大生命20%/25%/30%的伤害可打破；打破后削弱宿主，并对1名副目标造成6/12/24点溢火伤害。",
   FIREMARK_FORGE_ARMOR: "你的回合开始时，火印宿主获得8/14/24点熔甲；若回合结束时宿主没有格挡，下一次熔甲跳过；溢火给1名副目标3/6/12点格挡。",
-  FIREMARK_CONSTANT_HEAL: "敌方回合结束时，火印宿主回复4/8/16点生命；本轮造成12/24/48点伤害可中断治疗；治疗成功时，溢火为1名受伤副目标回复2/4/8点生命。",
+  FIREMARK_CONSTANT_HEAL: "敌方回合结束时，火印宿主回复4/8/16点生命；本轮造成18/36/72点伤害可中断治疗；治疗成功时，溢火为1名受伤副目标回复2/4/8点生命。",
   BANNER_VANGUARD: "敌人开战时获得临时力量。第1/2/3幕分别为1/2/4点；第3回合开始时失去这些力量。",
   BANNER_SHIELDWALL: "多敌人战斗中，一名敌人成为旗手。旗手存活时，敌方回合结束后其他敌人获得格挡；旗手死亡时，其他敌人获得5/10/20点格挡。",
   BANNER_BLOOD_PRIZE: "第3回合结束前击杀标记敌人，战斗后获得15/30/55金币。若它存活，它会获得1/2/4点力量和1/1/2层人工制品。",
@@ -170,7 +170,7 @@ const ascensionDetails = {
   ],
   FIREMARK_CONSTANT_HEAL: [
     detail("数值", "敌方回合结束时回复4/8/16 HP。", "Values", "At enemy turn end, heal 4/8/16 HP."),
-    detail("打断", "本轮对宿主造成12/24/48点伤害可中断本次治疗。", "Interrupt", "Deal 12/24/48 damage to the host during the round to interrupt that heal."),
+    detail("打断", "本轮对宿主造成18/36/72点伤害可中断本次治疗。", "Interrupt", "Deal 18/36/72 damage to the host during the round to interrupt that heal."),
     detail("溢火", "治疗成功时，为1名受伤副目标回复2/4/8 HP。", "Overflow", "If the heal succeeds, 1 damaged secondary enemy heals 2/4/8 HP.")
   ],
   BANNER_VANGUARD: [
@@ -260,15 +260,15 @@ const mechanicGlossary = [
   mechanic(
     "seedbed",
     "苗床",
-    "乌尔妲的负面牌处理轴。它不是单次格挡牌，而是提前铺下几个空位，把后续进入手牌的临时负面牌、根芽或根蚀压进苗床，换成可消耗的枯壳。",
-    ["打出苗床：获得4点格挡并设置2格苗床；苗床+获得6点格挡、设置3格，并立即从抽牌堆或弃牌堆种下1张同类牌或根蚀。", "苗床会处理临时状态牌、临时诅咒牌、根芽和根蚀；不会处理永久诅咒、枯壳或正向临时页。", "每种下1张，加入1张枯壳；枯壳是临时诅咒，被消耗时获得3点格挡。", "种下根芽不等于打出根芽，但结算结果等同于处理掉它：这张根芽战后不会生成根蚀 I。", "种下根蚀不等于打出根蚀：它不会从主牌组移除，也不会降级；本战结束时也不会恶化。"],
+    "乌尔妲的负面牌处理轴。它先给一层正常格挡，再铺下几个空位，之后把进入手牌的临时负面牌、根芽或根蚀压进苗床，换成可消耗的枯壳。",
+    ["打出苗床：获得6点格挡并设置2格苗床；苗床+获得8点格挡、设置3格，并立即从抽牌堆或弃牌堆种下1张可种下的牌。", "苗床会处理临时状态牌、临时诅咒牌、根芽和根蚀；不会处理永久诅咒、枯壳或正向临时页。", "每种下1张，加入1张枯壳；枯壳是临时诅咒，被消耗时获得3点格挡。", "种下临时状态牌或临时诅咒牌，就是把它移出本场战斗；这不是消耗，所以不会触发消耗收益。", "种下根芽不算打出，但结算上等同于已处理：这张根芽战后不会生成根蚀 I。", "种下根蚀会冻结它一场：它不会从主牌组移除、不会降级，也不会在本战结束时恶化。"],
     ["苗床", "种下", "枯壳", "根芽", "根蚀"],
     ["EZMB_URDA.pages.INITIAL.options.urda_seedbed.description", "EZMB_URDA_SEEDBED.description", "EZMB_WITHERED_HUSK.description", "EZMB_ROOT_BUD.description"],
     ["temporary", "blight_sprout"],
     {
       titleEn: "Seedbed",
-      descEn: "Urda's negative-card handling axis. It is not just a one-shot Block card: it sets slots that bury later temporary negative cards, Blight Sprouts, or Rootblight and turn them into exhaustable Withered Husks.",
-      bulletsEn: ["Playing Seedbed gains 4 Block and sets 2 slots; Seedbed+ gains 6 Block, sets 3 slots, and immediately plants 1 matching card or Rootblight from draw or discard.", "Seedbed handles Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight. It does not handle permanent Curses, Withered Husk, or beneficial temporary pages.", "Each planted card adds 1 Withered Husk. Withered Husk is a Temporary Curse that gains 3 Block when exhausted.", "Planting a Blight Sprout is not playing it, but the result is the same for growth: that Sprout will not add Rootblight I after combat.", "Planting Rootblight is not playing it: it is not removed or downgraded, but it also does not worsen at combat end."],
+      descEn: "Urda's negative-card handling axis. It gives real Block first, then sets slots that catch later temporary negative cards, Blight Sprouts, or Rootblight and turn them into exhaustable Withered Husks.",
+      bulletsEn: ["Playing Seedbed gains 6 Block and sets 2 slots; Seedbed+ gains 8 Block, sets 3 slots, and immediately plants 1 eligible card from draw or discard.", "Seedbed handles Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight. It does not handle permanent Curses, Withered Husk, or beneficial temporary pages.", "Each planted card adds 1 Withered Husk. Withered Husk is a Temporary Curse that gains 3 Block when exhausted.", "Planting a temporary Status or Curse removes it from this combat. It is not Exhaust, so Exhaust rewards do not trigger.", "Planting a Blight Sprout does not count as playing it, but it is treated as handled: that Sprout will not add Rootblight I after combat.", "Planting Rootblight freezes it for one combat: it is not removed, not downgraded, and does not worsen at combat end."],
       termsEn: ["Seedbed", "Seedbeds", "plant", "planted", "Withered Husk", "Blight Sprout", "Rootblight"]
     }
   ),
@@ -276,28 +276,28 @@ const mechanicGlossary = [
     "plant",
     "种下",
     "种下是苗床的处理动作：符合条件的牌在进入手牌前被苗床截住，从战斗牌堆移除，并换成1张枯壳。",
-    ["种下不是打出、弃牌或消耗；不会触发这些关键词和对应联动。", "可种下：临时状态牌、临时诅咒牌、根芽、根蚀。不可种下：永久诅咒、枯壳、正向临时页。", "种下根芽会阻止这张根芽战后生成根蚀 I；但它不会触发“打出根芽”的效果。", "种下根蚀会压住它一场：这张根蚀不会从主牌组移除、不会降级，也不会在战后升到下一阶段。", "每次种下都会占用1格苗床。格数用完后，后续负面牌按原规则进入手牌。"],
+    ["种下不是打出、弃牌或消耗；不会触发这些关键词和对应联动。", "可种下：临时状态牌、临时诅咒牌、根芽、根蚀。不可种下：永久诅咒、枯壳、正向临时页。", "对临时状态牌或临时诅咒牌来说，种下就是让它离开本场战斗；它不会再回到这场战斗。", "种下根芽会阻止这张根芽战后生成根蚀 I；它不触发“打出根芽”的效果。", "种下根蚀会压住它一场：这张根蚀不会从主牌组移除、不会降级，也不会在战后升到下一阶段。", "每次种下都会占用1格苗床。格数用完后，后续负面牌按原规则进入手牌。"],
     ["种下", "苗床", "根芽", "枯壳", "根蚀"],
     ["EZMB_URDA_SEEDBED.description", "EZMB_WITHERED_HUSK.description", "EZMB_ROOT_BUD.description"],
     ["seedbed", "blight_sprout", "rootblight"],
     {
       titleEn: "Plant",
       descEn: "Plant is Seedbed's handling action: an eligible card is caught before entering hand, removed from combat, and converted into 1 Withered Husk.",
-      bulletsEn: ["Planting is not playing, discarding, or exhausting the card, so those triggers do not fire.", "Can plant: Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight. Cannot plant: permanent Curses, Withered Husk, or beneficial temporary pages.", "Planting a Blight Sprout prevents that Sprout from adding Rootblight I after combat, but does not count as playing it.", "Planting Rootblight holds it for one combat: it is not removed, not downgraded, and does not worsen at combat end.", "Each plant consumes 1 Seedbed slot. After slots run out, later negative cards follow their normal rules."],
+      bulletsEn: ["Planting is not playing, discarding, or exhausting the card, so those triggers do not fire.", "Can plant: Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight. Cannot plant: permanent Curses, Withered Husk, or beneficial temporary pages.", "For temporary Status or Curse cards, planting removes them from this combat. They do not return to this combat.", "Planting a Blight Sprout prevents that Sprout from adding Rootblight I after combat, but does not count as playing it.", "Planting Rootblight holds it for one combat: it is not removed, not downgraded, and does not worsen at combat end.", "Each plant consumes 1 Seedbed slot. After slots run out, later negative cards follow their normal rules."],
       termsEn: ["Plant", "plant", "planted", "planting", "Seedbed", "Blight Sprout", "Withered Husk", "Rootblight"]
     }
   ),
   mechanic(
     "rootblight",
     "根蚀",
-    "A14开始出现的长期污染。根蚀是主牌组里的诅咒，不是根芽；苗床可以把本战进入手牌的根蚀种下，压住它一场。",
+    "A14开始出现的长期污染。根蚀是主牌组里的诅咒，不是根芽；苗床可以把本战进入手牌的根蚀种下，让它这一场停滞。",
     ["根蚀 I：打出后从主牌组移除；战后仍留在主牌组中则变为根蚀 II。", "根蚀 II：打出后移除，战后加入根蚀 I；战后仍留在主牌组中则变为根蚀 III。", "根蚀 III：打出后移除，战后加入根蚀 II；如果继续不处理，它保持根蚀 III，第一次额外加入根蚀 I。没有第四阶段。", "根蚀被苗床种下时，本战结束不改变阶段。它不会被移除，也不会降级。", "最多4张根蚀。休息会移除最高等级根蚀。"],
     ["根蚀", "根蚀 I", "根蚀 II", "根蚀 III"],
     ["LEVEL_14.description", "EZMB_ROOT.description", "EZMB_DEEP_ROOT.description", "EZMB_ROOTBLIGHT_III.description", "EZMB_ROOT_BUD.description"],
     ["blight_sprout", "seedbed"],
     {
       titleEn: "Rootblight",
-      descEn: "A long-term pollution system starting at A14. Rootblight is a master-deck Curse, not a Blight Sprout. Seedbed can plant Rootblight that enters hand and hold it for one combat.",
+      descEn: "A long-term pollution system starting at A14. Rootblight is a master-deck Curse, not a Blight Sprout. Seedbed can plant Rootblight that enters hand and freeze it for one combat.",
       bulletsEn: ["Rootblight I: playing it removes it from the master deck; if still in the master deck after combat, it becomes Rootblight II.", "Rootblight II: playing it removes it and adds Rootblight I after combat; if still in the master deck after combat, it becomes Rootblight III.", "Rootblight III: playing it removes it and adds Rootblight II after combat. If ignored again, it stays Rootblight III and adds Rootblight I the first time. There is no stage IV.", "When Seedbed plants Rootblight, it does not change stage at combat end. It is not removed or downgraded.", "Max 4 Rootblights. Resting removes the highest-stage Rootblight."],
       termsEn: ["Rootblight", "Rootblights", "Rootblight I", "Rootblight II", "Rootblight III"],
       keywordClass: "sts-keyword-purple"
@@ -307,14 +307,14 @@ const mechanicGlossary = [
     "blight_sprout",
     "根芽",
     "根芽是短期压力牌。第3或第4回合开始时，如果还没进过手牌，会被放到抽牌堆顶。",
-    ["根芽本身是2费临时诅咒。打出它会处理掉本场根芽压力。", "见到后不打出也不种下，战斗后加入根蚀 I。", "从未见到则枯萎，不进入长期牌组。", "苗床可以种下根芽：不算打出，但会阻止这张根芽战后生成根蚀 I。"],
+    ["根芽本身是2费临时诅咒。打出它会处理掉本场根芽压力。", "见到后不打出也不种下，战斗后加入根蚀 I。", "从未见到则枯萎，不进入长期牌组。", "苗床可以种下根芽：不算打出，但按已处理结算，会阻止这张根芽战后生成根蚀 I。"],
     ["根芽"],
     ["LEVEL_15.description", "LEVEL_18.description", "EZMB_ROOT_BUD.description", "EZMB_URDA_SEEDBED.description"],
     ["rootblight", "seedbed"],
     {
       titleEn: "Blight Sprout",
       descEn: "Blight Sprout is a short-term pressure card. On round 3 or 4, if it has not entered hand, it is placed on top of the draw pile.",
-      bulletsEn: ["Blight Sprout itself is a 2-cost Temporary Curse. Playing it handles the Sprout pressure for that combat.", "If seen and neither played nor planted, it adds Rootblight I after combat.", "If never seen, it withers and does not enter the long-term deck.", "Seedbed can plant Blight Sprout: it does not count as playing it, but prevents that Sprout from adding Rootblight I after combat."],
+      bulletsEn: ["Blight Sprout itself is a 2-cost Temporary Curse. Playing it handles the Sprout pressure for that combat.", "If seen and neither played nor planted, it adds Rootblight I after combat.", "If never seen, it withers and does not enter the long-term deck.", "Seedbed can plant Blight Sprout: it does not count as playing it, but it is treated as handled and prevents that Sprout from adding Rootblight I after combat."],
       termsEn: ["Blight Sprout", "Blight Sprouts", "Sprout", "Sprouts"],
       keywordClass: "sts-keyword-purple"
     }
@@ -601,11 +601,11 @@ window.SPIRE_PLUS_DATA = {
     featPhilosophyTitle: "更多选项，不是降低难度",
     featPhilosophyDesc: "Spire Plus 的目标是让游戏更平衡、更有意思。它减少一些被迫睡火、被迫硬抓生存牌的局面，同时保留进阶 20 应有的压力。",
     featRewardTitle: "奖励更强，代价更清楚",
-    featRewardDesc: "先古之民和部分原版遗物被重做为明确的交换：你可以拿到更强的启动、路线收益或牌组处理，但要承担血量、债务、污染、路线承诺或出牌限制。",
+    featRewardDesc: "先古之民和部分原版遗物被重做为明确的交换：你可以拿到更强的启动、路线收益、牌组处理或战斗预知，但要承担血量、债务、污染、路线承诺或出牌限制。",
     aboutTitle: "关于",
     aboutLead: "项目说明、素材来源和发布边界。",
     introTitle: "模组说明",
-    introCopy: "Spire Plus 是温火融冰制作的《杀戮尖塔 2》平衡与高进阶拓展。它重做一批原版遗物和先古之民奖励，加入 A11-A20 测试难度、预览工具和新的风险收益机制。目标不是让游戏变简单，而是在更多选择和更高压力之间取得更好的平衡。",
+    introCopy: "Spire Plus 是温火融冰制作的《杀戮尖塔 2》玩法拓展。它把先古之民奖励改成可见遗物，重做一批原版遗物，加入 A11-A20 测试进阶、根芽/根蚀、火印精英、战旗房、首领专属能力、水晶球预知和变换预览。每个新系统都应让玩家能看懂收益、代价和处理办法。",
     download: "\u4e0b\u8f7d\u6a21\u7ec4",
     viewIssues: "\u67e5\u770b\u5df2\u77e5\u95ee\u9898",
     all: "\u5168\u90e8",
@@ -662,25 +662,25 @@ window.SPIRE_PLUS_DATA = {
   mechanics: mechanicGlossary,
   summary: [],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.10.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.11.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.10/SpirePlus-v0.1.0-private-beta.10.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.11/SpirePlus-v0.1.0-private-beta.11.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.10",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.11",
     baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.1.4/BaseLib.3.1.4.zip",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.10.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.10"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.11.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.11"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,936,744 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "37E6EE714BE16601A0A55BBA912A27F69E2AF978A8F464E4F9C4CF86D14BB07A"]
+      ["\u4f53\u79ef", "18,937,575 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "6AAA370834172F0C8A814C306520D464111DA380FE8FB8987F3564D44AB84C31"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.10.zip\u3002",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.11.zip\u3002",
     "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -713,7 +713,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.10"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.11"]
     ]
   },
   updateGroups: [
@@ -764,12 +764,12 @@ window.SPIRE_PLUS_DATA = {
       items: [
         {
           ...ancient("urda_seedbed", "assets/ancients/urda/options/urda_seedbed.png", ["\u4e4c\u5c14\u59b2"]),
-          desc: "第1幕普通战斗卡牌奖励可改拿苗床：失去2点最大生命，加入1张苗床。第一次拿到的苗床自动升级。累计收下4次后，获得10点最大生命。苗床打出后会种下后续临时状态牌、临时诅咒牌、根芽或根蚀，把它们转成枯壳。",
+          desc: "第1幕普通战斗卡牌奖励可改拿苗床：失去2点最大生命，加入1张苗床。第一次拿到的苗床自动升级。累计收下4次后，获得10点最大生命。苗床打出后会种下后续临时负面牌、根芽或根蚀，把它们转成枯壳。根芽会按已处理结算；根蚀会在本战停滞。",
           details: [
             detail("获取", "一幕普通战斗卡牌奖励中选择苗床，会结束本次奖励选择并加入1张苗床。", "Pickup", "Choose Seedbed from an Act 1 normal combat card reward; it completes that reward and adds 1 Seedbed."),
             detail("成本", "每次收下苗床失去2点最大生命。第一次收下的苗床会升级。", "Cost", "Each taken Seedbed costs 2 Max HP. The first Seedbed taken is upgraded."),
             detail("累计", "累计收下4次苗床后，获得10点最大生命。", "Completion", "After taking Seedbed 4 times, gain 10 Max HP."),
-            detail("种下", "苗床会截住之后进入手牌的临时状态牌、临时诅咒牌、根芽或根蚀；该牌从战斗牌堆移除，并加入1张枯壳。", "Plant", "Seedbed catches later Temporary Status cards, Temporary Curse cards, Blight Sprouts, or Rootblight before they enter hand; the card is removed from combat and replaced by 1 Withered Husk.")
+            detail("种下", "苗床会截住之后进入手牌的临时状态牌、临时诅咒牌、根芽或根蚀；该牌移出本场战斗，不触发打出、弃牌或消耗，并加入1张枯壳。", "Plant", "Seedbed catches later Temporary Status cards, Temporary Curse cards, Blight Sprouts, or Rootblight before they enter hand. The card is removed from combat, does not trigger play, discard, or Exhaust effects, and is replaced by 1 Withered Husk.")
           ]
         },
         ancient("urda_humus_pact", "assets/ancients/urda/options/urda_humus_pact.png", ["\u4e4c\u5c14\u59b2"]),
@@ -895,7 +895,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-      ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.10.zip；游戏内显示名为 Spire Plus。"],
+      ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.11.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -1125,17 +1125,17 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.10.zip"],
-        ["Version", "v0.1.0-private-beta.10"],
+        ["File", "SpirePlus-v0.1.0-private-beta.11.zip"],
+        ["Version", "v0.1.0-private-beta.11"],
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,936,744 bytes"],
-        ["Hash", "37E6EE714BE16601A0A55BBA912A27F69E2AF978A8F464E4F9C4CF86D14BB07A"]
+        ["Size", "18,937,575 bytes"],
+        ["Hash", "6AAA370834172F0C8A814C306520D464111DA380FE8FB8987F3564D44AB84C31"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.10.zip.",
+      "Download SpirePlus-v0.1.0-private-beta.11.zip.",
       "Download BaseLib.3.1.4.zip and extract it to the game's mods\\BaseLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
@@ -1167,7 +1167,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-            ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.10"]
+            ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.11"]
         ]
       },
     updateGroups: [
@@ -1411,19 +1411,19 @@ window.SPIRE_PLUS_DATA.i18n = {
       },
       "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": {
         title: "Seedbed",
-        desc: "Act 1 normal combat card rewards can become Seedbed: lose 2 Max HP and add 1 Seedbed. The first Seedbed taken is upgraded. After taking Seedbed 4 times, gain 10 Max HP. Seedbed plants later Temporary Status cards, Temporary Curse cards, Blight Sprouts, or Rootblight and converts them into Withered Husks.",
+        desc: "Act 1 normal combat card rewards can become Seedbed: lose 2 Max HP and add 1 Seedbed. The first Seedbed taken is upgraded. After taking Seedbed 4 times, gain 10 Max HP. Seedbed plants later temporary negative cards, Blight Sprouts, or Rootblight and converts them into Withered Husks. Sprouts are treated as handled; Rootblight is frozen for this combat.",
         details: [
           detail("获取", "一幕普通战斗卡牌奖励中选择苗床，会结束本次奖励选择并加入1张苗床。", "Pickup", "Choose Seedbed from an Act 1 normal combat card reward; it completes that reward and adds 1 Seedbed."),
           detail("成本", "每次收下苗床失去2点最大生命。第一次收下的苗床会升级。", "Cost", "Each taken Seedbed costs 2 Max HP. The first Seedbed taken is upgraded."),
           detail("累计", "累计收下4次苗床后，获得10点最大生命。", "Completion", "After taking Seedbed 4 times, gain 10 Max HP."),
-          detail("种下", "苗床会截住之后进入手牌的临时状态牌、临时诅咒牌、根芽或根蚀；该牌从战斗牌堆移除，并加入1张枯壳。", "Plant", "Seedbed catches later Temporary Status cards, Temporary Curse cards, Blight Sprouts, or Rootblight before they enter hand; the card is removed from combat and replaced by 1 Withered Husk.")
+          detail("种下", "苗床会截住之后进入手牌的临时状态牌、临时诅咒牌、根芽或根蚀；该牌移出本场战斗，不触发打出、弃牌或消耗，并加入1张枯壳。", "Plant", "Seedbed catches later Temporary Status cards, Temporary Curse cards, Blight Sprouts, or Rootblight before they enter hand. The card is removed from combat, does not trigger play, discard, or Exhaust effects, and is replaced by 1 Withered Husk.")
         ]
       },
       "EZMB_URDA_SEEDLING.description": {
         desc: "0-cost Skill. Exhaust. Gain 4 Block; upgraded gains 7 Block."
       },
       "EZMB_URDA_SEEDBED.description": {
-        desc: "1-cost Skill. Exhaust. Gain 4 Block and set up a 2-space Seedbed. Later Temporary Status cards, Temporary Curse cards, Blight Sprouts, or Rootblight are planted before entering hand: the card is removed from combat, does not trigger play, discard, or Exhaust synergies, and adds 1 Withered Husk. Planting a Blight Sprout prevents that Sprout from adding Rootblight I after combat. Planting Rootblight holds it for one combat: it is not removed, not downgraded, and does not worsen. Upgraded: gain 6 Block, set 3 slots, and immediately plant 1 matching card or Rootblight from draw or discard."
+        desc: "1-cost Skill. Exhaust. Gain 6 Block and set up a 2-space Seedbed. Later Temporary Status cards, Temporary Curse cards, Blight Sprouts, or Rootblight are planted before entering hand: the card is removed from combat, does not trigger play, discard, or Exhaust synergies, and adds 1 Withered Husk. Planting a Blight Sprout treats it as handled, so it adds no Rootblight I after combat. Planting Rootblight freezes it for this combat: it is not removed, not downgraded, and does not worsen. Upgraded: gain 8 Block, set 3 slots, and immediately plant 1 eligible card from draw or discard."
       },
       "EZMB_URDA_RAIN_BREATH.description": {
         desc: "0-cost temporary Skill. Exhaust. Gain 5 Block and draw 1 card."
@@ -1474,7 +1474,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         desc: "At the start of your turn, the Firemark host gains 8/14/24 Molten Armor. If the host has no Block at turn end, the next Molten Armor is skipped. Overflow gives 1 secondary enemy 3/6/12 Block."
       },
       "FIREMARK_CONSTANT_HEAL.description": {
-        desc: "At enemy turn end, the Firemark host heals 4/8/16 HP. Deal 12/24/48 damage in the round to interrupt the heal. If it heals, overflow heals 1 damaged secondary enemy for 2/4/8 HP."
+        desc: "At enemy turn end, the Firemark host heals 4/8/16 HP. Deal 18/36/72 damage in the round to interrupt the heal. If it heals, overflow heals 1 damaged secondary enemy for 2/4/8 HP."
       },
       "BANNER_VANGUARD.description": {
         desc: "Enemies start with temporary Strength. Act 1/2/3 values are 1/2/4. It is removed at the start of round 3."
@@ -1512,7 +1512,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.10.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.11.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]
@@ -1576,7 +1576,7 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "EZMICROBALANCE-UrdaMossMapOptionRelic.description": "第[blue]1[/blue]幕首次进入：怪物 +[blue]25[/blue] [gold]金币[/gold]；事件治疗[blue]5[/blue]；商店给[gold]药水[/gold]；[gold]精英[/gold]随机升级[blue]1[/blue]张牌；休息处 +[blue]3[/blue] [gold]最大生命[/gold]。",
       "EZMICROBALANCE-UrdaMossMapOptionRelic.flavor": "苔痕遮住道路时留下的封存记号。",
       "EZMICROBALANCE-UrdaMossMapOptionRelic.title": "苔痕地图",
-      "EZMICROBALANCE-UrdaSeedbedOptionRelic.description": "在第[blue]1[/blue]幕普通战斗卡牌奖励中收下[gold]苗床[/gold]：失去[blue]2[/blue]点[gold]最大生命[/gold]并加入[gold]苗床[/gold]。[gold]苗床[/gold]会接住之后进入手牌的[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌和[gold]根芽[/gold]。",
+      "EZMICROBALANCE-UrdaSeedbedOptionRelic.description": "第[blue]1[/blue]幕普通战斗卡牌奖励可改拿[gold]苗床[/gold]：失去[blue]2[/blue]点[gold]最大生命[/gold]并加入[gold]苗床[/gold]。第一次加入的[gold]苗床[/gold]会升级；累计收下[blue]4[/blue]次后，获得[blue]10[/blue]点[gold]最大生命[/gold]。[gold]苗床[/gold]会种下后续[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]和[gold]根蚀[/gold]，换成[gold]枯壳[/gold]。种下[gold]根芽[/gold]会阻止它生成[gold]根蚀 I[/gold]；种下[gold]根蚀[/gold]会让它本战不恶化。",
       "EZMICROBALANCE-UrdaSeedbedOptionRelic.flavor": "一粒耐心种子的封存记号。",
       "EZMICROBALANCE-UrdaSeedbedOptionRelic.title": "苗床",
       "EZMICROBALANCE-URDA_HUMUS_PACT_OPTION_RELIC.description": "第[blue]1[/blue]幕普通战斗卡牌奖励会出现[gold]化为腐殖[/gold]。选择它会跳过本次卡牌，改拿[blue]15[/blue][gold]金币[/gold]。第[blue]3[/blue]次[gold]化为腐殖[/gold]后，移除至多[blue]2[/blue]张牌，并获得[blue]1[/blue]张已升级奖励牌。",
@@ -1588,7 +1588,7 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.description": "第[blue]1[/blue]幕首次进入：怪物 +[blue]25[/blue] [gold]金币[/gold]；事件治疗[blue]5[/blue]；商店给[gold]药水[/gold]；[gold]精英[/gold]随机升级[blue]1[/blue]张牌；休息处 +[blue]3[/blue] [gold]最大生命[/gold]。",
       "EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.flavor": "苔痕遮住道路时留下的封存记号。",
       "EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.title": "苔痕地图",
-      "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.description": "在第[blue]1[/blue]幕普通战斗卡牌奖励中收下[gold]苗床[/gold]：失去[blue]2[/blue]点[gold]最大生命[/gold]并加入[gold]苗床[/gold]。[gold]苗床[/gold]会接住之后进入手牌的[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌和[gold]根芽[/gold]。",
+      "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.description": "第[blue]1[/blue]幕普通战斗卡牌奖励可改拿[gold]苗床[/gold]：失去[blue]2[/blue]点[gold]最大生命[/gold]并加入[gold]苗床[/gold]。第一次加入的[gold]苗床[/gold]会升级；累计收下[blue]4[/blue]次后，获得[blue]10[/blue]点[gold]最大生命[/gold]。[gold]苗床[/gold]会种下后续[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]和[gold]根蚀[/gold]，换成[gold]枯壳[/gold]。种下[gold]根芽[/gold]会阻止它生成[gold]根蚀 I[/gold]；种下[gold]根蚀[/gold]会让它本战不恶化。",
       "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.flavor": "一粒耐心种子的封存记号。",
       "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.title": "苗床",
       "EZMICROBALANCE-URDA_TRIAL_BRANCH_OPTION_RELIC.description": "从[blue]4[/blue]张牌中选择[blue]1[/blue]张。它会升级、加入牌组，并获得[gold]试炼枝条[/gold]。接下来[blue]3[/blue]场战斗每场都必须打出它；漏掉任意一场就会被移除。",
@@ -1683,7 +1683,7 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "NEOW.pages.INITIAL.options.ezmb_reroll_initial_options.title": "重掷",
       "NEOW.pages.INITIAL.options.ezmb_reroll_initial_options.description": "重置本次第[blue]1[/blue]幕先古奖励。骰子只在第[blue]1[/blue]幕出现，使用后消失。",
       "EZMB_URDA.pages.INITIAL.options.urda_seedbed.title": "苗床",
-      "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "第[blue]1[/blue]幕卡牌奖励可改拿[gold]苗床[/gold]。每次失去[blue]2[/blue]点[gold]最大生命[/gold]。[gold]苗床[/gold]会接住之后进入手牌的[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌和[gold]根芽[/gold]。",
+      "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "第[blue]1[/blue]幕卡牌奖励可改拿[gold]苗床[/gold]：失去[blue]2[/blue]点[gold]最大生命[/gold]并加入[gold]苗床[/gold]。第一次加入的[gold]苗床[/gold]会升级；累计收下[blue]4[/blue]次后，获得[blue]10[/blue]点[gold]最大生命[/gold]。[gold]苗床[/gold]会种下后续[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]和[gold]根蚀[/gold]，换成[gold]枯壳[/gold]。种下[gold]根芽[/gold]会阻止它生成[gold]根蚀 I[/gold]；种下[gold]根蚀[/gold]会让它本战不恶化。",
       "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title": "腐殖约定",
       "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description": "第[blue]1[/blue]幕普通战斗的卡牌奖励会出现[gold]化为腐殖[/gold]按钮。选择它会跳过本次卡牌，改拿[blue]15[/blue][gold]金币[/gold]。第[blue]3[/blue]次[gold]化为腐殖[/gold]后，移除至多[blue]2[/blue]张牌，并获得[blue]1[/blue]张已升级奖励牌。",
       "EZMB_URDA.pages.INITIAL.options.urda_molting.title": "脱壳",
@@ -1931,9 +1931,9 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "EZMB_URDA_SEEDLING.title": "幼芽",
       "EZMB_URDA_SEEDLING.description": "[gold]临时[/gold]。获得{Block:diff()}点[gold]格挡[/gold]。",
       "EZMB_URDA_SEEDBED.title": "苗床",
-      "EZMB_URDA_SEEDBED.description": "获得{Block:diff()}点[gold]格挡[/gold]。设置[blue]{Capacity}[/blue]格[gold]苗床[/gold]。{ImmediateLine}\n之后进入手牌的[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]或[gold]根蚀[/gold]会优先种下。种下会将那张牌移出本场战斗，不算打出、丢弃或消耗。每种下[blue]1[/blue]张，获得[blue]1[/blue]张[gold]枯壳[/gold]。\n被种下的[gold]根芽[/gold]不会在战后生成[gold]根蚀 I[/gold]；被种下的[gold]根蚀[/gold]本战结束时不改变阶段。\n消耗。",
-      "EZMB_URDA_SEEDBED.upgradeLine": "\n立即从抽牌堆或弃牌堆中种下[blue]1[/blue]张同类牌或[gold]根蚀[/gold]。",
-      "EZMB_URDA_SEEDBED.selectionScreenPrompt": "选择1张临时负面牌、根芽或根蚀种下。",
+      "EZMB_URDA_SEEDBED.description": "获得{Block:diff()}点[gold]格挡[/gold]。设置[blue]{Capacity}[/blue]格[gold]苗床[/gold]。{ImmediateLine}\n之后进入手牌的[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]或[gold]根蚀[/gold]会先被种下。种下会把那张牌移出本场战斗，不算打出、丢弃或消耗，也不会触发这些联动。每种下[blue]1[/blue]张，获得[blue]1[/blue]张[gold]枯壳[/gold]。\n[gold]根芽[/gold]被种下后，按已处理结算：战后不会生成[gold]根蚀 I[/gold]。[gold]根蚀[/gold]被种下后，本战不会移除、降级或恶化。\n消耗。",
+      "EZMB_URDA_SEEDBED.upgradeLine": "\n立即从抽牌堆或弃牌堆中种下[blue]1[/blue]张可种下的牌。",
+      "EZMB_URDA_SEEDBED.selectionScreenPrompt": "选择1张可种下的牌。根芽会被处理；根蚀本战停滞。",
       "EZMB_URDA_RAIN_BREATH.title": "雨息",
       "EZMB_URDA_RAIN_BREATH.description": "[gold]临时[/gold]。获得{Block:diff()}点[gold]格挡[/gold]。\n抽{Cards:diff()}张牌。\n消耗。",
       "EZMB_WITHERED_HUSK.title": "枯壳",
@@ -2063,7 +2063,7 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "EZMICROBALANCE-UrdaMossMapOptionRelic.description": "First Act [blue]1[/blue] rooms: Monster +[blue]25[/blue] [gold]Gold[/gold]; Event heal [blue]5[/blue]; Shop [gold]Potion[/gold]; [gold]Elite[/gold] upgrade [blue]1[/blue] random card; Rest Site +[blue]3[/blue] [gold]Max HP[/gold].",
       "EZMICROBALANCE-UrdaMossMapOptionRelic.flavor": "A sealed token for the path hidden by moss.",
       "EZMICROBALANCE-UrdaMossMapOptionRelic.title": "Moss Map",
-      "EZMICROBALANCE-UrdaSeedbedOptionRelic.description": "Take [gold]Seedbed[/gold] from Act [blue]1[/blue] normal combat card rewards: lose [blue]2[/blue] [gold]Max HP[/gold] and add a [gold]Seedbed[/gold]. [gold]Seedbed[/gold] catches later [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, and [gold]Blight Sprouts[/gold].",
+      "EZMICROBALANCE-UrdaSeedbedOptionRelic.description": "Act [blue]1[/blue] normal combat card rewards can become [gold]Seedbed[/gold]: lose [blue]2[/blue] [gold]Max HP[/gold] and add a [gold]Seedbed[/gold]. The first one is upgraded. After taking [blue]4[/blue], gain [blue]10[/blue] [gold]Max HP[/gold]. [gold]Seedbed[/gold] plants later [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, [gold]Blight Sprouts[/gold], and [gold]Rootblight[/gold], replacing them with [gold]Withered Husk[/gold]. Planted [gold]Blight Sprouts[/gold] do not add [gold]Rootblight I[/gold]; planted [gold]Rootblight[/gold] does not worsen this combat.",
       "EZMICROBALANCE-UrdaSeedbedOptionRelic.flavor": "A sealed token for a patient seed.",
       "EZMICROBALANCE-UrdaSeedbedOptionRelic.title": "Seedbed",
       "EZMICROBALANCE-URDA_HUMUS_PACT_OPTION_RELIC.description": "Act [blue]1[/blue] normal combat card rewards gain [gold]Compost Reward[/gold]. Taking it skips the reward cards and gives [blue]15[/blue] [gold]Gold[/gold]. The [blue]3[/blue]rd compost removes up to [blue]2[/blue] deck cards and offers [blue]1[/blue] upgraded reward card.",
@@ -2075,7 +2075,7 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.description": "First Act [blue]1[/blue] rooms: Monster +[blue]25[/blue] [gold]Gold[/gold]; Event heal [blue]5[/blue]; Shop [gold]Potion[/gold]; [gold]Elite[/gold] upgrade [blue]1[/blue] random card; Rest Site +[blue]3[/blue] [gold]Max HP[/gold].",
       "EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.flavor": "A sealed token for the path hidden by moss.",
       "EZMICROBALANCE-URDA_MOSS_MAP_OPTION_RELIC.title": "Moss Map",
-      "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.description": "Take [gold]Seedbed[/gold] from Act [blue]1[/blue] normal combat card rewards: lose [blue]2[/blue] [gold]Max HP[/gold] and add a [gold]Seedbed[/gold]. [gold]Seedbed[/gold] catches later [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, and [gold]Blight Sprouts[/gold].",
+      "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.description": "Act [blue]1[/blue] normal combat card rewards can become [gold]Seedbed[/gold]: lose [blue]2[/blue] [gold]Max HP[/gold] and add a [gold]Seedbed[/gold]. The first one is upgraded. After taking [blue]4[/blue], gain [blue]10[/blue] [gold]Max HP[/gold]. [gold]Seedbed[/gold] plants later [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, [gold]Blight Sprouts[/gold], and [gold]Rootblight[/gold], replacing them with [gold]Withered Husk[/gold]. Planted [gold]Blight Sprouts[/gold] do not add [gold]Rootblight I[/gold]; planted [gold]Rootblight[/gold] does not worsen this combat.",
       "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.flavor": "A sealed token for a patient seed.",
       "EZMICROBALANCE-URDA_SEEDBED_OPTION_RELIC.title": "Seedbed",
       "EZMICROBALANCE-URDA_TRIAL_BRANCH_OPTION_RELIC.description": "Choose [blue]1[/blue] of [blue]4[/blue] cards. It is upgraded, added to your deck, and gains [gold]Trial Branch[/gold]. Play it in each of the next [blue]3[/blue] combats. Missing any combat removes it.",
@@ -2170,7 +2170,7 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "NEOW.pages.INITIAL.options.ezmb_reroll_initial_options.title": "Reroll",
       "NEOW.pages.INITIAL.options.ezmb_reroll_initial_options.description": "Reroll these Act [blue]1[/blue] Ancient rewards once. The die appears only in Act [blue]1[/blue] and disappears after use.",
       "EZMB_URDA.pages.INITIAL.options.urda_seedbed.title": "Seedbed",
-      "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "Act [blue]1[/blue] card rewards can become [gold]Seedbeds[/gold]. Each costs [blue]2[/blue] [gold]Max HP[/gold]. [gold]Seedbed[/gold] catches later [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, and [gold]Blight Sprouts[/gold].",
+      "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": "Act [blue]1[/blue] card rewards can become [gold]Seedbeds[/gold]: lose [blue]2[/blue] [gold]Max HP[/gold] and add a [gold]Seedbed[/gold]. The first one is upgraded. After taking [blue]4[/blue], gain [blue]10[/blue] [gold]Max HP[/gold]. [gold]Seedbed[/gold] plants later [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, [gold]Blight Sprouts[/gold], and [gold]Rootblight[/gold], replacing them with [gold]Withered Husk[/gold]. Planted [gold]Blight Sprouts[/gold] do not add [gold]Rootblight I[/gold]; planted [gold]Rootblight[/gold] does not worsen this combat.",
       "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.title": "Humus Pact",
       "EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description": "Act [blue]1[/blue] normal combat card rewards gain a [gold]Compost Reward[/gold] button. Taking it skips those cards and gives [blue]15[/blue] [gold]Gold[/gold]. The [blue]3[/blue]rd compost then removes up to [blue]2[/blue] deck cards and offers [blue]1[/blue] upgraded reward card.",
       "EZMB_URDA.pages.INITIAL.options.urda_molting.title": "Molting",
@@ -2418,9 +2418,9 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "EZMB_URDA_SEEDLING.title": "Seedling",
       "EZMB_URDA_SEEDLING.description": "[gold]Temporary[/gold]. Gain {Block:diff()} [gold]Block[/gold].",
       "EZMB_URDA_SEEDBED.title": "Seedbed",
-      "EZMB_URDA_SEEDBED.description": "Gain {Block:diff()} [gold]Block[/gold]. Set up a [blue]{Capacity}[/blue]-space [gold]Seedbed[/gold].{ImmediateLine}\nLater, [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, [gold]Blight Sprouts[/gold], or [gold]Rootblight[/gold] that would enter your hand are planted first. Planting removes that card from this combat and is not playing, discarding, or exhausting it. Add [blue]1[/blue] [gold]Withered Husk[/gold] each time.\nA planted [gold]Blight Sprout[/gold] adds no [gold]Rootblight I[/gold] after combat. A planted [gold]Rootblight[/gold] does not change stage at combat end.\nExhaust.",
-      "EZMB_URDA_SEEDBED.upgradeLine": "\nImmediately plant [blue]1[/blue] matching card or [gold]Rootblight[/gold] from your draw or discard pile.",
-      "EZMB_URDA_SEEDBED.selectionScreenPrompt": "Choose 1 temporary negative card, Blight Sprout, or Rootblight to plant.",
+      "EZMB_URDA_SEEDBED.description": "Gain {Block:diff()} [gold]Block[/gold]. Set up a [blue]{Capacity}[/blue]-space [gold]Seedbed[/gold].{ImmediateLine}\nLater, [gold]Temporary[/gold] Status cards, [gold]Temporary[/gold] Curse cards, [gold]Blight Sprouts[/gold], or [gold]Rootblight[/gold] that would enter your hand are planted first. Planting removes that card from this combat. It is not played, discarded, or exhausted, and those triggers do not fire. Add [blue]1[/blue] [gold]Withered Husk[/gold] each time.\nA planted [gold]Blight Sprout[/gold] is treated as handled and adds no [gold]Rootblight I[/gold] after combat. A planted [gold]Rootblight[/gold] is not removed, downgraded, or worsened this combat.\nExhaust.",
+      "EZMB_URDA_SEEDBED.upgradeLine": "\nImmediately plant [blue]1[/blue] eligible card from your draw or discard pile.",
+      "EZMB_URDA_SEEDBED.selectionScreenPrompt": "Choose 1 eligible card to plant. Sprouts are handled; Rootblight is held for this combat.",
       "EZMB_URDA_RAIN_BREATH.title": "Rain Breath",
       "EZMB_URDA_RAIN_BREATH.description": "[gold]Temporary[/gold]. Gain {Block:diff()} [gold]Block[/gold].\nDraw {Cards:diff()} card.\nExhaust.",
       "EZMB_WITHERED_HUSK.title": "Withered Husk",

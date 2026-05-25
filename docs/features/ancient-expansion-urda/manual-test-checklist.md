@@ -57,7 +57,7 @@ Use this protocol for post-fix Urda selection, reward-screen, save/load, and vis
 - [ ] Accepting consumes 2 max HP and adds one Seedbed card.
 - [ ] First accepted Seedbed is upgraded.
 - [ ] Four successful accepts set the transformed latch and grant +10 max HP without healing current HP.
-- [ ] Seedbed card text says it catches later Temporary Status cards, Temporary Curse cards, and Blight Sprouts.
+- [ ] Seedbed card text says it plants later Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight.
 - [ ] Save/load preserves `UrdaSeedbed` counters and transformed state.
 
 ## 4. Humus Pact checks

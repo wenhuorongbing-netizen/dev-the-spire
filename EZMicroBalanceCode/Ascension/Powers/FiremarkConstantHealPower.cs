@@ -30,15 +30,15 @@ internal sealed class ConstantHealMarkFiremarkPower : FiremarkPower
 
     private int InterruptDamage => Amount switch
     {
-        <= 4 => 12,
-        <= 8 => 24,
-        _ => 48
+        <= 4 => 18,
+        <= 8 => 36,
+        _ => 72
     };
 
     private sealed class InterruptDamageDynamicVar : DynamicVar
     {
         public InterruptDamageDynamicVar()
-            : base(InterruptDamageVar, 12m)
+            : base(InterruptDamageVar, 18m)
         {
         }
 

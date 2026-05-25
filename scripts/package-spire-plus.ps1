@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')
 $manifestPath = Join-Path $repoRoot 'EZMicroBalance.json'
-$manifest = Get-Content -Raw -LiteralPath $manifestPath | ConvertFrom-Json
+$manifest = Get-Content -Raw -Encoding UTF8 -LiteralPath $manifestPath | ConvertFrom-Json
 
 if ($manifest.id -ne 'EZMicroBalance') {
     throw "Expected stable manifest id EZMicroBalance, found '$($manifest.id)'."
@@ -65,7 +65,7 @@ function Assert-StagedManifestMatchesRepository {
         [Parameter(Mandatory)] [object]$RepositoryManifest
     )
 
-    $stagedManifest = Get-Content -Raw -LiteralPath $StagedManifestPath | ConvertFrom-Json
+    $stagedManifest = Get-Content -Raw -Encoding UTF8 -LiteralPath $StagedManifestPath | ConvertFrom-Json
     foreach ($propertyName in @('id', 'name', 'version')) {
         if ($stagedManifest.$propertyName -ne $RepositoryManifest.$propertyName) {
             throw "Staged manifest $propertyName mismatch. Expected '$($RepositoryManifest.$propertyName)', found '$($stagedManifest.$propertyName)'."

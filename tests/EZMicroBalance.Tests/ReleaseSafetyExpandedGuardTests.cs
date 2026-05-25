@@ -323,8 +323,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"37E6EE714BE16601A0A55BBA912A27F69E2AF978A8F464E4F9C4CF86D14BB07A\"",
-            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.10.zip\"",
+            "PackageSha256 = \"6AAA370834172F0C8A814C306520D464111DA380FE8FB8987F3564D44AB84C31\"",
+            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.11.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
             "Get-FileHash -LiteralPath $packageFull -Algorithm SHA256",

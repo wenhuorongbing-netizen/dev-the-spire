@@ -297,6 +297,11 @@ public sealed class UrdaReleaseCoverageGuardTests
             "Set up a [blue]{Capacity}[/blue]-space [gold]Seedbed[/gold]",
             JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json")["EZMB_URDA_SEEDBED.description"],
             StringComparison.Ordinal);
+        AssertSourceContains(
+            urdaCards,
+            "public sealed class UrdaSeedbed",
+            "new BlockVar(6m, ValueProp.Move)",
+            "DynamicVars.Block.UpgradeValueBy(2m)");
         var seedbedAlternative = SliceBetween(seedbedRewardSource, "private static bool TryAddSeedbedAlternative", "private static async Task AcceptSeedbed");
         Assert.DoesNotContain("SeedbedChecks = progress.SeedbedChecks + 1", seedbedAlternative, StringComparison.Ordinal);
         AssertSourceContains(

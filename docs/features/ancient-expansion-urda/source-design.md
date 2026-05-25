@@ -48,7 +48,7 @@ lcting rule:
 
 The active v2.2 source pool contains:
 
-1. Seedbed (`urda_seedbed`, 鑻楀簥)
+1. Seedbed (`urda_seedbed`, 苗床)
 2. Humus Pact (`urda_humus_pact`, 鑵愭畺绾﹀畾)
 3. Molting (`urda_molting`, 鑴卞３)
 4. Moss Map (`urda_moss_map`, 鑻旂棔鍦板浘)
@@ -73,7 +73,7 @@ lll ten remain disableable through the Urda feature gate. Runtime testing must u
 - On all four accepted rewards, set the transformed latch and gain +10 max HP with no heal.
 - Current v3.3 behavior: the reward alternative adds the `Seedbed` card itself.
 - In combat, `Seedbed` sets 2/3 slots and plants later seedable temporary negative cards before they enter hand.
-- Eligible planted cards are temporary Status cards, temporary Curse cards, and Blight Sprouts. Rootblight, permanent Curses, Withered Husk, and beneficial temporary pages are not planted.
+- Eligible planted cards are temporary Status cards, temporary Curse cards, Blight Sprouts, and Rootblight. Permanent Curses, Withered Husk, and beneficial temporary pages are not planted.
 - Planting does not play, discard, or exhaust the card and does not trigger those synergies. Each planted card adds one Withered Husk.
 
 #### Humus Pact (`urda_humus_pact`)

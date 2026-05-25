@@ -73,9 +73,9 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] Seedbed does not offer the alternative when max HP is not greater than 2.
 - [ ] Seedbed fourth acceptance grants +10 max HP without healing current HP.
 - [ ] Seedbed card text and hover explain Temporary and Plant without crowding the tooltip.
-- [ ] Seedbed sets 2 slots; Seedbed+ sets 3 slots and can immediately plant one eligible draw/discard card.
-- [ ] Later Temporary Status cards, Temporary Curse cards, and Blight Sprouts are planted before entering hand; each planted card adds one Withered Husk.
-- [ ] Rootblight, permanent Curses, Withered Husk, and beneficial temporary pages are not planted.
+- [ ] Seedbed gives 6 Block and sets 2 slots; Seedbed+ gives 8 Block, sets 3 slots, and can immediately plant one eligible draw/discard card.
+- [ ] Later Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight are planted before entering hand; each planted card adds one Withered Husk.
+- [ ] Permanent Curses, Withered Husk, and beneficial temporary pages are not planted.
 - [ ] Planted cards do not trigger play, discard, draw, or Exhaust synergies.
 - [ ] Humus Pact live `Compost Reward` alternative, gold, remove flow, and upgraded-card payoff verified.
 - [ ] Humus Pact third payoff does not duplicate, disappear, or softlock.

@@ -844,7 +844,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
             urdaSourceDesign,
             "Status / authority note, 2026-05-23",
             "v3.3 Seedbed and After the Rain supersede",
-            "temporary Status cards, temporary Curse cards, and Blight Sprouts",
+            "temporary Status cards, temporary Curse cards, Blight Sprouts, and Rootblight",
             "Withered Husk",
             "Rain Breath",
             "fewer than 3 Act 1 triggers grants 75 Gold",
@@ -860,7 +860,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             urdaManualChecklist,
             "adds one Seedbed card",
-            "Temporary Status cards, Temporary Curse cards, and Blight Sprouts",
+            "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
             "first unblocked enemy attack damage each combat adds 1 Rain Breath",
             "3 or more Act 1 triggers heals 8 HP and upgrades 1 card");
         AssertSourceContains(
@@ -908,17 +908,17 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             v33DesignReview,
             "current follow-up design uses `Temporary` and `Plant`",
-            "future temporary negative cards and Blight Sprouts are planted before entering hand",
+            "future temporary negative cards, Blight Sprouts, and Rootblight are planted before entering hand",
             "Upgraded Seedbed can also plant one eligible card from draw/discard immediately",
-            "Rootblight and Withered Husk are not plantable",
+            "Rootblight and Blight Sprout are plantable",
             "Seedbed future-card planting",
             "Seedbed+ immediate draw/discard planting");
         AssertSourceContains(
             v22ManualChecklist,
             "Seedbed card text and hover explain Temporary and Plant",
-            "Seedbed sets 2 slots; Seedbed+ sets 3 slots",
-            "Later Temporary Status cards, Temporary Curse cards, and Blight Sprouts are planted before entering hand",
-            "Rootblight, permanent Curses, Withered Husk, and beneficial temporary pages are not planted",
+            "Seedbed gives 6 Block and sets 2 slots; Seedbed+ gives 8 Block, sets 3 slots",
+            "Later Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight are planted before entering hand",
+            "Permanent Curses, Withered Husk, and beneficial temporary pages are not planted",
             "Planted cards do not trigger play, discard, draw, or Exhaust synergies");
 
         foreach (var staleFragment in new[] { "does not yet store one unchosen", "auto-catching future cards", "Bury 1 Status, Curse, Blight Sprout, or Rootblight", "Seedbed text now says \"up to\"", "鎾", "銆", "绂", "閿", "钃", "鍙", "闀", "缁", "姝" })

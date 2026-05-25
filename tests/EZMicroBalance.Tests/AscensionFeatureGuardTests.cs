@@ -583,7 +583,7 @@ public sealed class AscensionFeatureGuardTests
             "description.Add(\"OverflowBlock\", ActValue(actIndex, 3m, 6m, 12m))",
             "description.Add(\"OverflowHeal\", ActValue(actIndex, 2m, 4m, 8m))",
             "description.Add(\"Armor\", ActValue(actIndex, 8m, 14m, 24m))",
-            "description.Add(\"InterruptDamage\", ActValue(actIndex, 12m, 24m, 48m))",
+            "description.Add(\"InterruptDamage\", ActValue(actIndex, 18m, 36m, 72m))",
             "description.Add(\"DeathBlock\", ActValue(actIndex, 5m, 10m, 20m))",
             "description.Add(\"Gold\", ActValue(actIndex, 15m, 30m, 55m))",
             "BossMapPointHoverPatch",

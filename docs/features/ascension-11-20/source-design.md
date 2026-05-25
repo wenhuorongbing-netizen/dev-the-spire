@@ -1,4 +1,4 @@
-﻿# Ascension 11-20 Source Design v1.0
+# Ascension 11-20 Source Design v1.0
 
 Current checklist: `development-checklist-v2.md` is now a compact active triage file. The full v2.0 planning draft from 2026-05-07 is archived at `docs/archive/feature-inputs/ascension-11-20/development-checklist-v2-full-20260518.md`. This v1.0 source-design document remains historical design context for existing prototype slices.
 
@@ -167,7 +167,7 @@ Current v3.2 firemark types:
 | Giant | One firemarked enemy gains +20%/+30%/+45% max/current HP by act. At half HP it exposes Molten Core; enough damage during the window removes 10% max HP, otherwise it gains 1 Artifact. | OnCombatStart / OnDamage / OnTurnEnd |
 | Firemark Overflow | One Firemark Host receives the full mark. Overflow affects at most one secondary non-summon enemy at a time: Might gives 1/1/2 temporary Strength to an attacker, Giant core break deals 6/12/24 splash damage, Forge Armor gives 3/6/12 Block, Constant Heal restores 2/4/8 HP to one damaged ally. | BeforeSideTurnStart / AfterPlayerTurnStart / damage and heal windows |
 | Forge Armor | The Firemark Host gains 8/14/24 Molten Armor at player turn start. If the host has no Block at turn end, the next Molten Armor is skipped. This can happen at most twice per combat. | AfterPlayerTurnStart / AfterSideTurnEnd |
-| Constant Heal | One firemarked enemy heals 4/8/16 HP at enemy turn end. Dealing 12/24/48 damage to it before its next heal interrupts that heal. | AfterSideTurnEnd |
+| Constant Heal | One firemarked enemy heals 4/8/16 HP at enemy turn end. Dealing 18/36/72 damage to it before its next heal interrupts that heal. | AfterSideTurnEnd |
 
 Generation rules:
 
@@ -293,7 +293,7 @@ UI can be deferred behind console/log/manual validation for prototypes, but priv
 | Firemark Might | +1/+2/+4 Strength by act; Heat burst +1/+2/+4 damage |
 | Firemark Giant | +20%/+30%/+45% max/current HP; Molten Core damage window 20%/25%/30% original max HP |
 | Firemark Forge Armor | 8/14/24 Molten Armor by act |
-| Firemark Constant Heal | 4/8/16 HP by act; interrupt threshold 12/24/48 damage |
+| Firemark Constant Heal | 4/8/16 HP by act; interrupt threshold 18/36/72 damage |
 | Vanguard Banner | +1/+2/+4 temporary Strength by act |
 | Shieldwall Banner | 3/7/14 turn Block; 5/10/20 death Block |
 | Blood Prize Banner | 15/30/55 Gold; retaliation +1/+2/+4 Strength and 1/1/2 Artifact |

@@ -75,7 +75,7 @@ public sealed class UrdaSeedbed : CustomCardModel
         HoverTipFactory.FromCard<Root>()
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(4m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(6m, ValueProp.Move)];
     public override bool CanBeGeneratedInCombat => false;
     public override bool CanBeGeneratedByModifiers => false;
 

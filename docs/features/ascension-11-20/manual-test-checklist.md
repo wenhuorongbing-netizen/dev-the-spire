@@ -1,4 +1,4 @@
-﻿# Ascension 11-20 Manual Test Checklist
+# Ascension 11-20 Manual Test Checklist
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
@@ -259,7 +259,7 @@ Gated implementation present; live testing pending. Execute with `SPIREPLUS_ASCE
 - [ ] Giant Mark increases only the marked enemy's max/current HP by +20%/+30%/+45% by act; dropping below half HP exposes Molten Core, which breaks after 20%/25%/30% original Max HP damage by act and removes 10% Max HP.
 - [ ] Firemarked Elite picks one Firemark Host. Overflow affects at most one secondary non-summon enemy at a time and stops after the host dies.
 - [ ] Forge Armor Mark gives only the host 8/14/24 Molten Armor at player turn start; if the host has no Block at turn end, the next armor gain is skipped, up to twice.
-- [ ] Constant Heal Mark heals only the marked enemy for 4/8/16 HP at enemy turn end by act; dealing 12/24/48 damage before its next heal prevents that heal.
+- [ ] Constant Heal Mark heals only the marked enemy for 4/8/16 HP at enemy turn end by act; dealing 18/36/72 damage before its next heal prevents that heal.
 - [ ] Firemarked Elite card rewards show one additional card option.
 - [ ] Defeating firemarked elite grants one visible Forge Token status relic with counter 1.
 - [ ] Forge Token hover text explains Rest, Smith, fallback heal, max-one cap, and random upgrade targeting, without claiming special-action payout.

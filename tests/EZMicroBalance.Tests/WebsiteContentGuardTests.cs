@@ -62,10 +62,13 @@ public sealed class WebsiteContentGuardTests
             "If there are not enough suitable rooms, at least 2 are placed.",
             "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission.",
             "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
+            "Gain 6 Block and set up a 2-space Seedbed",
             "\u79cd\u4e0b\u4e0d\u662f\u6253\u51fa\u3001\u5f03\u724c\u6216\u6d88\u8017",
+            "\u79cd\u4e0b\u6839\u82bd\u6309\u5df2\u5904\u7406\u7ed3\u7b97",
             "\u6839\u8680\u662f\u4e3b\u724c\u7ec4\u91cc\u7684\u8bc5\u5492\uff0c\u4e0d\u662f\u6839\u82bd",
             "Planting is not playing, discarding, or exhausting",
             "Seedbed can plant Rootblight",
+            "A planted [gold]Rootblight[/gold] is not removed, downgraded, or worsened this combat.",
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
@@ -73,13 +76,13 @@ public sealed class WebsiteContentGuardTests
             "\"SERE_TALON.description\": \"sere_talon.png\"",
             "\"CLAWS.description\": \"claws.png\"",
             "At the start of your turn, the Firemark host gains 8/14/24 Molten Armor",
-            "Deal 12/24/48 damage in the round to interrupt the heal",
+            "Deal 18/36/72 damage in the round to interrupt the heal",
             packageHash);
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-seedbed-rootblight3",
-            "app.js?v=20260525-seedbed-rootblight3");
+            "content-data.js?v=20260525-seedbed-clarity",
+            "app.js?v=20260525-seedbed-clarity");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

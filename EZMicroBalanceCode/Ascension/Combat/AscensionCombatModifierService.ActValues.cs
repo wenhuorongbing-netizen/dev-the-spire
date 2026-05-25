@@ -32,7 +32,7 @@ internal static partial class AscensionCombatModifierService
 
     private static decimal GetMoltenCoreDamagePercent(CombatState combatState) => GetActValue(combatState, 20m, 25m, 30m);
 
-    private static decimal GetConstantHealInterruptDamage(CombatState combatState) => GetActValue(combatState, 12m, 24m, 48m);
+    private static decimal GetConstantHealInterruptDamage(CombatState combatState) => GetActValue(combatState, 18m, 36m, 72m);
 
     private static decimal GetVanguardStrength(CombatState combatState) => GetActValue(combatState, 1m, 2m, 4m);
 
