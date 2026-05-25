@@ -1,6 +1,6 @@
 ﻿# Harmony Patch Inventory
 
-Generated: 2026-05-24
+Generated: 2026-05-25
 
 Purpose: keep every Harmony patch visible, owned, and risk-labeled. Regenerate after adding, moving, or deleting patch declarations.
 
@@ -15,10 +15,10 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 146 |
+| Total patch declarations | 147 |
 | High risk | 22 |
 | Medium risk | 42 |
-| Low risk | 82 |
+| Low risk | 83 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -103,6 +103,7 @@ Regenerate:
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintPatch.cs` | 3 | `[HarmonyPatch( typeof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen), nameof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen.RefreshOptions))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs` | 3 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.ModifyMaxEnergy))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs` | 16 | `[HarmonyPatch(typeof(SealOfGold), nameof(SealOfGold.AfterSideTurnStart))]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonPickupPatches.cs` | 3 | `[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 336 | `[HarmonyPatch(typeof(RelicModel), "get_IconPath")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 345 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 354 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconOutlinePath")]` |

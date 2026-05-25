@@ -2,7 +2,7 @@ using BaseLib.Config;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Config;
 
-internal sealed class EZMicroBalanceModConfig : SimpleModConfig
+internal sealed class SpirePlusModConfig : SimpleModConfig
 {
     public static bool EnableCrystalSpherePeek { get; set; } = true;
 

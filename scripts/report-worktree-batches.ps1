@@ -79,6 +79,8 @@ function Get-WorktreeBatch {
     }
 
     if ($p.StartsWith('scripts/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -eq 'EZMicroBalanceCode/MainFile.cs' -or
+        $p.StartsWith('EZMicroBalanceCode/Config/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Diagnostics/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Preview/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^EZMicroBalance/localization/[^/]+/settings_ui\.json$' -or

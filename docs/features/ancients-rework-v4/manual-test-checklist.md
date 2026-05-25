@@ -148,7 +148,7 @@ Verify pickup behavior and player-facing text for:
 - War Hammer
 - Sozu
 - Ectoplasm
-- Vakuu's Sere Talon / 瓦库原初之爪: adds 2 random Curses and 3 Wish.
+- Vakuu's Sere Talon / 瓦库原初之爪: choose 1 of 4 Curses, then gain that Curse, 2 Wish, and 1 Wish+.
 - Tanx Claws / 坦克斯利爪: transforms selected cards into upgraded Maul+ / 撕咬+.
 - Jewelry Box
 - Preserved Fog

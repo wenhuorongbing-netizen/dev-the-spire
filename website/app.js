@@ -137,7 +137,7 @@
       if (!label && !body) continue;
       const row = el("div", "detail-row");
       row.appendChild(el("strong", "detail-title", label));
-      row.appendChild(el("span", "detail-copy", body));
+      row.appendChild(elHtml("span", "detail-copy", formatStsText(body)));
       list.appendChild(row);
     }
     details.appendChild(list);
@@ -149,6 +149,66 @@
     if (className) node.className = className;
     if (value !== undefined) node.textContent = value;
     return node;
+  }
+
+  function elHtml(tag, className, htmlValue) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (htmlValue !== undefined) node.innerHTML = htmlValue;
+    return node;
+  }
+
+  function formatStsText(text) {
+    if (!text) return "";
+    let escaped = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+    const mappings = [
+      { key: "sts-keyword-red", words: ["伤害", "攻击", "造成", "生命", "HP", "Damage", "Attack", "Attacks", "deal", "deals"] },
+      { key: "sts-keyword-blue", words: ["格挡", "防御", "Block", "Gain Block"] },
+      { key: "sts-keyword-green", words: ["能量", "能量制限", "Energy", "energy"] },
+      { key: "sts-keyword-purple", words: ["消耗", "虚无", "诅咒", "根蚀", "根芽", "脆弱", "虚弱", "易伤", "血债", "Exhaust", "Ethereal", "Curse", "Curses", "Rootblight", "Rootblights", "Sprout", "Sprouts", "Vulnerable", "Weak", "Blood Debt"] },
+      { key: "sts-keyword-gold", words: ["遗物", "先古之民", "先古", "铸令", "金币", "Relic", "Ancient", "Gold", "Forge Token"] }
+    ];
+
+    let index = 0;
+    const replacements = {};
+    function register(word, className) {
+      const marker = `__STS_MARKER_${index}__`;
+      replacements[marker] = `<span class="${className}">${word}</span>`;
+      index++;
+      return marker;
+    }
+
+    const flatKeywords = [];
+    for (const group of mappings) {
+      for (const word of group.words) {
+        flatKeywords.push({ word, className: group.key });
+      }
+    }
+    flatKeywords.sort((a, b) => b.word.length - a.word.length);
+
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    for (const item of flatKeywords) {
+      const regex = new RegExp(
+        /^[a-zA-Z]/.test(item.word)
+          ? '\\b' + escapeRegExp(item.word) + '\\b'
+          : escapeRegExp(item.word),
+        'gi'
+      );
+      escaped = escaped.replace(regex, (match) => register(match, item.className));
+    }
+
+    for (const marker in replacements) {
+      escaped = escaped.replace(new RegExp(marker, 'g'), replacements[marker]);
+    }
+
+    return escaped;
   }
 
   function image(src, alt) {
@@ -226,7 +286,12 @@
     brand.dataset.route = "updates";
     brand.appendChild(image("assets/ancients/urda/ezmb_urda_map_icon.png", ""));
     const brandText = el("span", "");
-    brandText.appendChild(el("strong", "", "Spire Plus"));
+    const brandTitleRow = el("div", "brand-title-row");
+    brandTitleRow.appendChild(el("strong", "", "Spire Plus"));
+    const heart = el("div", "beating-heart-container");
+    heart.appendChild(el("div", "beating-heart"));
+    brandTitleRow.appendChild(heart);
+    brandText.appendChild(brandTitleRow);
     brandText.appendChild(el("small", "", labels.brandSub));
     brand.appendChild(brandText);
     header.appendChild(brand);
@@ -375,9 +440,9 @@
         body.appendChild(el("h3", "", title));
         const dl = el("dl", "");
         dl.appendChild(el("dt", "", labels.vanilla));
-        dl.appendChild(el("dd", "", vanilla));
+        dl.appendChild(elHtml("dd", "", formatStsText(vanilla)));
         dl.appendChild(el("dt", "", labels.current));
-        dl.appendChild(el("dd", "", current));
+        dl.appendChild(elHtml("dd", "", formatStsText(current)));
         body.appendChild(dl);
         const tags = el("div", "tags");
         for (const tag of item.tags || []) tags.appendChild(el("span", "tag", tag));

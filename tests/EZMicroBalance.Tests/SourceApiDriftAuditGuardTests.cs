@@ -126,7 +126,7 @@ public sealed class SourceApiDriftAuditGuardTests
             "Include=\"0Harmony\"",
             "Include=\"sts2\"");
 
-        Assert.Contains("ModConfigRegistry.Register(ModId, new EZMicroBalanceModConfig())", mainFile, StringComparison.Ordinal);
+        Assert.Contains("ModConfigRegistry.Register(ModId, new SpirePlusModConfig())", mainFile, StringComparison.Ordinal);
     }
 
 }

@@ -62,7 +62,7 @@ public sealed class CrossPlatformTestingGuardTests
             "check_file \"README_INSTALL.txt\" \"README_INSTALL\"",
             "\\\"SERE_TALON.title\\\": \\\"Vakuu's Sere Talon\\\"",
             "\\\"SERE_TALON.title\\\": \\\"\u74e6\u5e93\u539f\u521d\u4e4b\u722a\\\"",
-            "\\\"SERE_TALON.description\\\": \\\"\u62fe\u53d6\u65f6\uff0c\u5c06[blue]2[/blue]\u5f20\u968f\u673a\u8bc5\u5492\u548c[blue]3[/blue]\u5f20[gold]\u8bb8\u613f[/gold]\u52a0\u5165\u4f60\u7684\u724c\u7ec4\u3002\\\"",
+            "\\\"SERE_TALON.description\\\": \\\"\u62fe\u53d6\u65f6\uff0c\u4ece[blue]4[/blue]\u5f20\u8bc5\u5492\u4e2d\u9009\u62e9[blue]1[/blue]\u5f20\u3002\u5c06\u5b83\u3001[blue]2[/blue]\u5f20[gold]\u8bb8\u613f[/gold]\u548c[blue]1[/blue]\u5f20[gold]\u8bb8\u613f+[/gold]\u52a0\u5165\u4f60\u7684\u724c\u7ec4\u3002\\\"",
             "\\\"CLAWS.title\\\": \\\"Tanx Claws\\\"",
             "\\\"CLAWS.title\\\": \\\"\u5766\u514b\u65af\u5229\u722a\\\"",
             "cards into upgraded Maul",

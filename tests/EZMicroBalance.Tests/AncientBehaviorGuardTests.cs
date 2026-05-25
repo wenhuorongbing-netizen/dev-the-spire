@@ -38,6 +38,7 @@ public sealed class AncientBehaviorGuardTests
         "CLAWS.description",
         "SERE_TALON.description",
         "SERE_TALON.eventDescription",
+        "SERE_TALON.selectionScreenPrompt",
         "CROSSBOW.description",
         "DISTINGUISHED_CAPE.description",
         "DISTINGUISHED_CAPE.eventDescription",
@@ -748,6 +749,7 @@ public sealed class AncientBehaviorGuardTests
         var tanxSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Tanx.cs");
         var sereTalonSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "SereTalon.cs");
         var clawsSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "Claws.cs");
+        var sereTalonPickupPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonPickupPatches.cs");
         var sereTalonVisualPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs");
         var tanxClawsPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
         var ancientPatchSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
@@ -772,6 +774,28 @@ public sealed class AncientBehaviorGuardTests
             "CardPileCmd.Add(card, PileType.Deck)",
             "CardPileCmd.Add(card2, PileType.Deck)");
         Assert.DoesNotContain("Maul", sereTalonSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            sereTalonPickupPatch,
+            "[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]",
+            "private const int CurseOfferCount = 4",
+            "private const int CursePickCount = 1",
+            "private const int NormalWishCount = 2",
+            "private const int UpgradedWishCount = 1",
+            "ModelDb.CardPool<CurseCardPool>()",
+            "owner.RunState.Rng.Niche.NextItem(availableCurses)",
+            "sereTalon.Flash()",
+            "CardSelectCmd.FromSimpleGrid",
+            "new BlockingPlayerChoiceContext()",
+            "new LocString(\"relics\", \"SERE_TALON.selectionScreenPrompt\")",
+            "Cancelable = false",
+            "RequireManualConfirmation = true",
+            "AncientCardHelpers.RemoveUnpiledRunCard(curse)",
+            "owner.RunState.CreateCard<Wish>(owner)",
+            "CardCmd.Upgrade(wish, CardPreviewStyle.None)",
+            "CardCmd.PreviewCardPileAdd(successfulAdds, 2f)");
+        Assert.DoesNotContain("Claws", sereTalonPickupPatch, StringComparison.Ordinal);
+        Assert.DoesNotContain("Maul", sereTalonPickupPatch, StringComparison.Ordinal);
 
         AssertSourceContains(
             clawsSource,
@@ -809,9 +833,11 @@ public sealed class AncientBehaviorGuardTests
         Assert.DoesNotContain("[HarmonyPatch(typeof(Maul)", ancientPatchSource, StringComparison.Ordinal);
 
         Assert.Equal("Vakuu's Sere Talon", engRelics["SERE_TALON.title"]);
-        Assert.Equal("On pickup, add [blue]2[/blue] random Curses and [blue]3[/blue] Wish to your deck.", engRelics["SERE_TALON.description"]);
+        Assert.Equal("On pickup, choose [blue]1[/blue] of [blue]4[/blue] Curses. Add it, [blue]2[/blue] Wish, and [blue]1[/blue] Wish+ to your deck.", engRelics["SERE_TALON.description"]);
+        Assert.Equal("Choose 1 Curse.", engRelics["SERE_TALON.selectionScreenPrompt"]);
         Assert.Equal("\u74e6\u5e93\u539f\u521d\u4e4b\u722a", zhsRelics["SERE_TALON.title"]);
-        Assert.Equal("\u62fe\u53d6\u65f6\uff0c\u5c06[blue]2[/blue]\u5f20\u968f\u673a\u8bc5\u5492\u548c[blue]3[/blue]\u5f20[gold]\u8bb8\u613f[/gold]\u52a0\u5165\u4f60\u7684\u724c\u7ec4\u3002", zhsRelics["SERE_TALON.description"]);
+        Assert.Equal("\u62fe\u53d6\u65f6\uff0c\u4ece[blue]4[/blue]\u5f20\u8bc5\u5492\u4e2d\u9009\u62e9[blue]1[/blue]\u5f20\u3002\u5c06\u5b83\u3001[blue]2[/blue]\u5f20[gold]\u8bb8\u613f[/gold]\u548c[blue]1[/blue]\u5f20[gold]\u8bb8\u613f+[/gold]\u52a0\u5165\u4f60\u7684\u724c\u7ec4\u3002", zhsRelics["SERE_TALON.description"]);
+        Assert.Equal("\u9009\u62e91\u5f20\u8bc5\u5492\u3002", zhsRelics["SERE_TALON.selectionScreenPrompt"]);
 
         Assert.Equal("Tanx Claws", engRelics["CLAWS.title"]);
         Assert.Equal("On pickup, transform up to [blue]{Cards}[/blue] cards into upgraded Maul.", engRelics["CLAWS.description"]);

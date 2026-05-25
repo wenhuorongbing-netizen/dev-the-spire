@@ -43,7 +43,7 @@ internal static class TransformPreviewCyclePatch
     {
         ClearPredictions(preview);
 
-        if (!EZMicroBalanceModConfig.EnableTransformPrediction || !EZMicroBalanceModConfig.TransformPredictionAlwaysOn)
+        if (!SpirePlusModConfig.EnableTransformPrediction || !SpirePlusModConfig.TransformPredictionAlwaysOn)
         {
             return;
         }
@@ -125,7 +125,7 @@ internal static class TransformPreviewCyclePatch
 
     private static bool Prefix(NTransformPreview __instance, NPreviewCardHolder holder, CardPile cardPile, ref Task __result)
     {
-        if (!EZMicroBalanceModConfig.EnableTransformPrediction || !EZMicroBalanceModConfig.TransformPredictionAlwaysOn)
+        if (!SpirePlusModConfig.EnableTransformPrediction || !SpirePlusModConfig.TransformPredictionAlwaysOn)
         {
             return true;
         }

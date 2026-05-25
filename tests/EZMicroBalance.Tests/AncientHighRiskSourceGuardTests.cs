@@ -395,7 +395,20 @@ public sealed class AncientHighRiskSourceGuardTests
             "DebtCardPatch.ConfigureDebt(debt)",
             "CardPileCmd.Add(debt, PileType.Deck)");
         Assert.DoesNotContain("case Claws", pickupDispatch, StringComparison.Ordinal);
-        Assert.DoesNotContain("typeof(SereTalon), nameof(SereTalon.AfterObtained)", pickupSource, StringComparison.Ordinal);
+        AssertSourceContains(
+            pickupSource,
+            "[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]",
+            "private const int CurseOfferCount = 4",
+            "private const int CursePickCount = 1",
+            "private const int NormalWishCount = 2",
+            "private const int UpgradedWishCount = 1",
+            "CardSelectCmd.FromSimpleGrid",
+            "new BlockingPlayerChoiceContext()",
+            "SERE_TALON.selectionScreenPrompt",
+            "Cancelable = false",
+            "RequireManualConfirmation = true",
+            "AncientCardHelpers.RemoveUnpiledRunCard(curse)",
+            "CardCmd.Upgrade(wish, CardPreviewStyle.None)");
         AssertSourceContains(vakuuEventSource, "RelicOption<SereTalon>()");
         Assert.DoesNotContain("RelicOption<Claws>()", vakuuEventSource, StringComparison.Ordinal);
         AssertSourceContains(tanxEventSource, "RelicOption<Claws>()");

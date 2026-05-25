@@ -12,13 +12,13 @@ namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 [HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]
 internal static class CrystalSpherePeekPatch
 {
-    internal const string ButtonName = "EZMicroBalanceCrystalSpherePeekButton";
+    internal const string ButtonName = "SpirePlusCrystalSpherePeekButton";
 
     private static readonly ConditionalWeakTable<NCrystalSphereScreen, PeekState> PeekStates = new();
 
     private static void Postfix(NCrystalSphereScreen __instance)
     {
-        if (!EZMicroBalanceModConfig.EnableCrystalSpherePeek)
+        if (!SpirePlusModConfig.EnableCrystalSpherePeek)
         {
             return;
         }
@@ -81,7 +81,7 @@ internal static class CrystalSpherePeekPatch
             {
                 ["button"] = ButtonName,
                 ["originalAlpha"] = originalAlpha,
-                ["configuredAlpha"] = EZMicroBalanceModConfig.CrystalSphereMaskAlpha
+                ["configuredAlpha"] = SpirePlusModConfig.CrystalSphereMaskAlpha
             });
     }
 
@@ -121,7 +121,7 @@ internal static class CrystalSpherePeekPatch
     private static void ApplyPeekMaskState(Control mask, bool pressed, float originalAlpha)
     {
         var color = mask.Modulate;
-        color.A = pressed ? (float)EZMicroBalanceModConfig.CrystalSphereMaskAlpha : originalAlpha;
+        color.A = pressed ? (float)SpirePlusModConfig.CrystalSphereMaskAlpha : originalAlpha;
         mask.Modulate = color;
         ReleaseEvidenceLog.Log(
             "PreviewCrystalSphere",

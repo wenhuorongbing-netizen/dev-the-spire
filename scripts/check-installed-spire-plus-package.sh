@@ -112,9 +112,9 @@ check_file "README_INSTALL.txt" "README_INSTALL" || status=1
 pck_path="$mod_dir/EZMicroBalance.pck"
 if [ -f "$pck_path" ]; then
     check_pck_contains "Sere Talon EN title" "\"SERE_TALON.title\": \"Vakuu's Sere Talon\""
-    check_pck_contains "Sere Talon EN effect" "\"SERE_TALON.description\": \"On pickup, add [blue]2[/blue] random Curses and [blue]3[/blue] Wish to your deck.\""
+    check_pck_contains "Sere Talon EN effect" "\"SERE_TALON.description\": \"On pickup, choose [blue]1[/blue] of [blue]4[/blue] Curses. Add it, [blue]2[/blue] Wish, and [blue]1[/blue] Wish+ to your deck.\""
     check_pck_contains "Sere Talon ZHS title" "\"SERE_TALON.title\": \"瓦库原初之爪\""
-    check_pck_contains "Sere Talon ZHS effect" "\"SERE_TALON.description\": \"拾取时，将[blue]2[/blue]张随机诅咒和[blue]3[/blue]张[gold]许愿[/gold]加入你的牌组。\""
+    check_pck_contains "Sere Talon ZHS effect" "\"SERE_TALON.description\": \"拾取时，从[blue]4[/blue]张诅咒中选择[blue]1[/blue]张。将它、[blue]2[/blue]张[gold]许愿[/gold]和[blue]1[/blue]张[gold]许愿+[/gold]加入你的牌组。\""
     check_pck_contains "Sere Talon owned icon" "sere_talon_spire_plus.png"
     check_pck_contains "Sere Talon small import" "EZMicroBalance/images/relics/sere_talon_spire_plus.png.import"
     check_pck_contains "Sere Talon big import" "EZMicroBalance/images/relics/big/sere_talon_spire_plus.png.import"

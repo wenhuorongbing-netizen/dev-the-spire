@@ -6,7 +6,7 @@ internal static class PreviewLog
 {
     public static void Debug(string message)
     {
-        if (EZMicroBalanceModConfig.ShowPreviewDebugLogs)
+        if (SpirePlusModConfig.ShowPreviewDebugLogs)
         {
             MainFile.Logger.Info("[Spire Plus] Preview: " + message);
         }

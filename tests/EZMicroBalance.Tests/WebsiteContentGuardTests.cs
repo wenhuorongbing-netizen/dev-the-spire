@@ -73,8 +73,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260524-copy-refresh",
-            "app.js?v=20260524-copy-refresh");
+            "content-data.js?v=20260525-gothic-redesign",
+            "app.js?v=20260525-gothic-redesign");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

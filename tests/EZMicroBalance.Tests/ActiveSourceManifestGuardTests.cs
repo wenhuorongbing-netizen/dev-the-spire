@@ -320,7 +320,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.State.cs",
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.cs",
         "EZMicroBalanceCode/Ascension/Patches/RootRunHook.cs",
-        "EZMicroBalanceCode/Config/EZMicroBalanceModConfig.cs",
+        "EZMicroBalanceCode/Config/SpirePlusModConfig.cs",
         "EZMicroBalanceCode/Diagnostics/ReleaseEvidenceLog.cs",
         "EZMicroBalanceCode/Diagnostics/SpirePlusAncientLiveTestConsoleCmd.cs",
         "EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs",

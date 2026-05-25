@@ -78,7 +78,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | War Hammer | Pick up reward, then kill an elite. | Pickup chooses two cards to upgrade; elite kill upgrades remain. | Pending |
 | Jewelry Box | Pick up reward, inspect deck, then save/load or enter the next combat. | Adds `Apotheosis` / `神化` without `Innate` / `固有`; the added card must not start in opening hand from Innate. | Pending |
 | Preserved Fog / Folly | Pick up reward, remove four cards, inspect Folly. | Adds `Folly` / `愚行` with Unplayable, `固有`, and `永恒`. | Pending |
-| Vakuu's Sere Talon | Pick up Vakuu reward (`瓦库原初之爪`) and inspect deck. | Adds two random Curses and three `Wish` / `许愿`; verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes are not Tanx Claws. | Pending |
+| Vakuu's Sere Talon | Pick up Vakuu reward (`瓦库原初之爪`) and inspect deck. | Shows a 4-Curse choice; after choosing 1 Curse, deck gains that Curse, two `Wish` / `许愿`, and one upgraded `Wish+` / `许愿+`; verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes are not Tanx Claws. | Pending |
 | Tanx Claws | Pick up Tanx reward (`坦克斯利爪`). | Transforms selected cards into upgraded `Maul+` / `撕咬+`. | Pending |
 | Choices Paradox | Start combat after pickup. | Five rare choices are offered, retained, and combat temporary. | Pending |
 | Jeweled Mask | Select or draft a power, save/load, then enter combat. | Selected power permanently costs 0 and starts in hand; the `宝石面具` tooltip explains the permanent 0-cost effect. | Pending |
