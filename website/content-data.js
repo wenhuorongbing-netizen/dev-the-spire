@@ -838,12 +838,9 @@ window.SPIRE_PLUS_DATA = {
     }
   ],
   knownIssues: [
-    ["\u9ad8\u4f18\u5148\u7ea7", "\u5b9e\u673a\u52a0\u8f7d\u8bb0\u5f55\u5f85\u66f4\u65b0", "\u5f53\u524d\u5305\u9700\u8981\u91cd\u65b0\u8dd1\u4e00\u6b21\u5b8c\u6574\u52a0\u8f7d\u6d4b\u8bd5\uff0c\u5e76\u4fdd\u7559\u4e0e\u6700\u65b0\u6784\u5efa\u5bf9\u5e94\u7684 godot.log\u3002"],
-    ["\u5f85\u9a8c\u8bc1", "\u5148\u53e4\u8282\u70b9\u754c\u9762", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u3001\u666e\u901a\u74e6\u5e93\u548c\u9690\u85cf\u74e6\u5e93\u6218\u6597\u9700\u8981\u8865\u5145\u622a\u56fe\u3001\u65e5\u5fd7\u548c\u60ac\u505c\u6587\u672c\u53ef\u8bfb\u6027\u8bc1\u660e\u3002"],
-    ["\u5f85\u9a8c\u8bc1", "\u74e6\u5e93\u8bd5\u70bc", "\u80dc\u5229\u8fd4\u56de\u4e8b\u4ef6\u3001\u5931\u8d25/\u6b7b\u4ea1\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u8054\u673a\u8fb9\u754c\u9700\u8981\u8fdb\u4e00\u6b65\u5b9e\u673a\u6d4b\u8bd5\u3002"],
-    ["\u5f85\u9a8c\u8bc1", "\u8fdb\u9636 11-20", "A11 \u8def\u7ebf\u70b9\u51fb\u3001A12/A16/A19/A20 \u6218\u6597\u89c4\u5219\u3001\u6839\u8680\u6218\u540e\u7ed3\u7b97\u3001\u5b58\u8bfb\u6863\u548c\u53cc\u4eba\u8054\u673a\u8fd8\u9700\u8981\u5b8c\u6574\u8bb0\u5f55\u3002"],
-    ["监控中", "公开论坛", "论坛已接入 GitHub Pages 与 Supabase；继续观察免费项目休眠、缓存刷新、匿名刷屏和简单管理后台缺失问题。"],
-    ["\u7d20\u6750\u8bf4\u660e", "\u539f\u7248\u6e38\u620f\u56fe\u7247", "\u539f\u7248\u9057\u7269\u56fe\u6807\u4e0e\u5361\u724c\u7acb\u7ed8\u5df2\u83b7\u5f97\u7ad9\u70b9\u53d1\u5e03\u6388\u6743\u786e\u8ba4\uff0c\u5e76\u4ec5\u5206\u53d1\u5f53\u524d\u66f4\u65b0\u9875\u5b9e\u9645\u4f7f\u7528\u7684\u56fe\u50cf\u3002"]
+    ["待测试", "先古之民遗物", "需要测试先古之民所有遗物生效。"],
+    ["待测试", "联机", "需要测试联机可以用。"],
+    ["待修复", "Mac 文本显示", "目前已知 Mac 文本显示错误，需要修复。"]
   ],
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
@@ -1419,12 +1416,9 @@ window.SPIRE_PLUS_DATA.i18n = {
       }
     },
     knownIssues: [
-      ["High priority", "Live-load evidence needs a refresh", "The current package needs a fresh full load test with a godot.log that matches the latest build."],
-      ["Needs verification", "Ancient node UI", "Urda, Morvi, Lotha, normal Vakuu, and hidden Vakuu combat need screenshots, logs, and hover text readability proof."],
-      ["Needs verification", "Vakuu trial", "Victory return, failure/death resolution, save-load behavior, and multiplayer boundaries need more live testing."],
-      ["Needs verification", "Ascension 11-20", "A11 route clicks, A12/A16/A19/A20 combat rules, Rootblight post-combat resolution, save-load behavior, and two-player co-op need full test records."],
-      ["Monitoring", "Public forum", "The forum now uses GitHub Pages and Supabase. Remaining operational risks are free-plan sleep, cache refreshes, anonymous spam, and the lack of a public moderation UI."],
-      ["Asset note", "Original game images", "Vanilla relic icons and card portraits are approved for this site and are included only for the update entries that use them."]
+      ["Needs testing", "Ancient relics", "Test that every Ancient relic works in game."],
+      ["Needs testing", "Multiplayer", "Test that multiplayer works with the mod enabled."],
+      ["Needs fix", "Mac text rendering", "Known issue: text displays incorrectly on Mac and needs a fix."]
     ],
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
