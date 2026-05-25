@@ -70,6 +70,16 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 - Large tasks must declare success criteria in docs before implementation.
 - Do not force future agents to read archived prompt dumps; route current work through current docs + active feature docs first.
 
+### Versioning, package, and push rules
+
+- Every successful implementation pass that changes player-visible behavior, resources, localization, package contents, tests that guard shipped behavior, or tester handoff docs must increment the Spire Plus package version. Do not ship two different builds with the same visible version.
+- During private beta, use the manifest/package version form `v0.1.0-private-beta.N` and increment `N` for each delivered tester build unless the owner explicitly chooses a new semantic version line.
+- Keep `EZMicroBalance.json`, package names, release hashes, tester handoff docs, and website/package metadata aligned with the new version before handoff.
+- After code or resource changes, run the required validation commands for the touched surface. At minimum, run `dotnet build`; after resource/localization/packaging changes, also run `dotnet publish` and refresh the package.
+- After a successful implementation pass, commit the intended changes and push the current branch to `origin` so other testers and agents can get the latest version immediately.
+- Do not push if validation fails, packaging fails, the remote is unavailable, authentication is missing, or the only possible push would include unrelated local changes that were not part of the task. In that case, stop and report the exact blocker.
+- Preserve `EZMicroBalance` only as the stable technical manifest id, install folder, saved-field namespace, and compatibility surface. Player-facing version notes and tester instructions should call the mod `Spire Plus`.
+
 ## Build Commands
 
 - `dotnet build`
