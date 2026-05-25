@@ -48,6 +48,7 @@ function Get-WorktreeBatch {
 
     if ($p.StartsWith('website/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('forum/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/features/forum/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^tests/EZMicroBalance\.Tests/WebsiteContent.*\.cs(\.uid)?$') {
         return 7
     }
@@ -59,7 +60,7 @@ function Get-WorktreeBatch {
     if ($p.StartsWith('EZMicroBalanceCode/Ascension/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^EZMicroBalance/localization/[^/]+/ascension\.json$' -or
         $p.StartsWith('docs/features/ascension-11-20/', [System.StringComparison]::OrdinalIgnoreCase) -or
-        $p -match '^tests/EZMicroBalance\.Tests/(Ascension|BossDedicated).*\.cs(\.uid)?$') {
+        $p -match '^tests/EZMicroBalance\.Tests/(Ascension|BossDedicated|EnemyDamage).*\.cs(\.uid)?$') {
         return 4
     }
 
@@ -79,11 +80,13 @@ function Get-WorktreeBatch {
     }
 
     if ($p.StartsWith('scripts/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -eq 'EZMicroBalance.json' -or
         $p -eq 'EZMicroBalance.csproj' -or
         $p -eq 'project.godot' -or
         $p -eq 'EZMicroBalanceCode/MainFile.cs' -or
         $p.StartsWith('EZMicroBalanceCode/Config/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Diagnostics/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('EZMicroBalanceCode/Modding/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Preview/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^EZMicroBalance/localization/[^/]+/settings_ui\.json$' -or
         $p.StartsWith('docs/features/preview-tools/', [System.StringComparison]::OrdinalIgnoreCase) -or
@@ -91,7 +94,7 @@ function Get-WorktreeBatch {
         $p -eq 'tests/EZMicroBalance.Tests/README.md' -or
         $p -eq 'docs/patch-inventory.md' -or
         $p -eq 'docs/platform-testing.md' -or
-        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|PreviewTools|SaveStateContracts).*\.cs(\.uid)?$') {
+        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|PreviewTools|SaveStateContracts|ModInfoLocalization).*\.cs(\.uid)?$') {
         return 5
     }
 

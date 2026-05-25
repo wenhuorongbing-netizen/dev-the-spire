@@ -1,11 +1,11 @@
-﻿param(
+param(
     [string]$EvidenceRoot = ".tools\runtime-evidence\release-ready-manual",
 
     [string]$ManifestPath,
 
-    [string]$PackageSha256 = "2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006",
+    [string]$PackageSha256 = "9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E",
 
-    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.0.zip",
+    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.1.zip",
 
     [int]$MinScreenshotWidth = 800,
 
@@ -76,6 +76,11 @@ $requiredReleaseRows = @(
         ExtraRequiredFiles = @('rootblight-behavior-checklist.md')
     },
     @{ Id = 'a11-natural-route-traversal'; Kind = 'gameplay'; Label = 'Natural A11 route click traversal' },
+    @{
+        Id = 'ascension-selector-localization'
+        Kind = 'clicked-ui'
+        Label = 'A11-A20 character-select Ascension selector localization'
+    },
     @{
         Id = 'a19-a20-dedicated-boss-abilities'
         Kind = 'gameplay'
@@ -423,10 +428,10 @@ function Test-PackageHashesEvidence {
 
     $expectedPaths = @(
         $ManifestPackagePath,
-        'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.dll',
-        'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.pck',
-        'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.json',
-        'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\README_INSTALL.txt'
+        'publish\SpirePlus-v0.1.0-private-beta.1\EZMicroBalance\EZMicroBalance.dll',
+        'publish\SpirePlus-v0.1.0-private-beta.1\EZMicroBalance\EZMicroBalance.pck',
+        'publish\SpirePlus-v0.1.0-private-beta.1\EZMicroBalance\EZMicroBalance.json',
+        'publish\SpirePlus-v0.1.0-private-beta.1\EZMicroBalance\README_INSTALL.txt'
     )
 
     foreach ($expectedPath in $expectedPaths) {

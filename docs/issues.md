@@ -1,16 +1,18 @@
-﻿# Spire Plus Issues
+# Spire Plus Issues
 Current target: test-ready manual build, not release-ready.
 Current package hashes, 2026-05-25:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006` |
-| DLL | `C8A8862AB427CD49BB77E7D90CB299A07276B768F5DB6C34BBAFB363F06DD6F1` |
-| PCK | `30312BE1E2723A1F7C1A617CAD45F9E2313C567EFE391378424B39CA330039A2` |
-| Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
-| README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA` |
+| ZIP | `9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E` |
+| DLL | `8CF4F8219652DF0D93FEF7A88DC9692EC6E744D38B358303606DA7F9CB833830` |
+| PCK | `87C43FADEAF2B08A7561A7E4797340991A3F146382BC487CD6C05DB77E1496A4` |
+| Manifest | `049D8FE97BB96CA7A28B4735D11BDA18549265D798C2EB8A1774E2B82453C1D1` |
+| README_INSTALL | `9581091856D252D6837A8368596E8BE834720EE0895D67B4824D4C2631F1D286` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` P0 source/package-fixed / live-pending
 - `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
+- `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
+- `ENEMY-DAMAGE-POLISH` P1 source-fixed / live-pending: Decimillipede, Terror Eel, and Phantasmal Gardener attack pressure is lightly reduced through damage getter patches so intent and real damage stay aligned; live elite-fight pacing proof remains pending.
 - `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
 - `URDA-PROTOTYPE` P0 open / live-pending: default-on with eleven source-backed ids, including Elite Root; live gameplay and save/load proof remain pending.
 - `MORVI/LOTHA/VAKUU` P0/P1 live-pending: default-on morvi_forbidden_loan/lotha_death_reprieve need gameplay proof; hidden Vakuu fight needs victory, death/failure, save/load, and no-black-screen proof.
@@ -31,4 +33,3 @@ Current package hashes, 2026-05-25:
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE`: prove save/load plus Vakuu victory return, failure/death, active/pre-finished save-load, and no-black-screen behavior.
 - `CO-OP`: verify multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, save/reconnect, and preview tools.
 ## Issue detail links: `docs/issues/ancient-expansion-v2.2.md`, `docs/issues/urda.md`, `docs/issues/waiting-tests.md`, `docs/issues/v3.3-design-review.md`; retest rows in `docs/toreview.md`.
-

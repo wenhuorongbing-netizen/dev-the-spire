@@ -4,7 +4,7 @@ Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test b
 
 Current stop line: Codex should not chase release-ready evidence in this pass. The user will run live/manual testing. This is not a release-ready claim.
 
-Current package target remains `publish/SpirePlus-v0.1.0-private-beta.0.zip`. The stable technical manifest id remains `EZMicroBalance`; do not edit it in place.
+Current package target remains `publish/SpirePlus-v0.1.0-private-beta.1.zip`. The stable technical manifest id remains `EZMicroBalance`; do not edit it in place.
 
 ## Current State
 

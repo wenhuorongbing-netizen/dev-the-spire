@@ -1,4 +1,4 @@
-﻿# Release Evidence Status
+# Release Evidence Status
 
 Current target: `Spire Plus` manual-test build for user validation. This page is a compact dashboard for evidence state; it does not replace `docs/release-checklist.md`.
 
@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006` |
-| DLL | `C8A8862AB427CD49BB77E7D90CB299A07276B768F5DB6C34BBAFB363F06DD6F1` |
-| PCK | `30312BE1E2723A1F7C1A617CAD45F9E2313C567EFE391378424B39CA330039A2` |
-| Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
-| README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA` |
+| ZIP | `9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E` |
+| DLL | `8CF4F8219652DF0D93FEF7A88DC9692EC6E744D38B358303606DA7F9CB833830` |
+| PCK | `87C43FADEAF2B08A7561A7E4797340991A3F146382BC487CD6C05DB77E1496A4` |
+| Manifest | `049D8FE97BB96CA7A28B4735D11BDA18549265D798C2EB8A1774E2B82453C1D1` |
+| README_INSTALL | `9581091856D252D6837A8368596E8BE834720EE0895D67B4824D4C2631F1D286` |
 
 ## Automation Summary
 
@@ -45,6 +45,7 @@ These are the exact row IDs required by `scripts/verify-spire-plus-release-evide
 | ancient-state-save-load | save-load | Pending | User | Urda, Morvi, Lotha, Root Sight, Seed Bank, Rootblight, and related deck mirrors restore correctly. |
 | rootblight-visual-behavior | gameplay | Pending | User | Rootblight and Blight Sprout visuals, hover, combat-end notice timing, combat behavior, cap/split behavior, and save-load persistence work in game; `rootblight-behavior-checklist.md` has every scenario row filled. |
 | a11-natural-route-traversal | gameplay | Pending | User | A11 natural map traversal, route clicks, width/row layout, and logs behave correctly. |
+| ascension-selector-localization | clicked-ui | Pending | User | Character-select A11-A20 Ascension panels show localized titles/descriptions. A20 must show `烙印形态` / `Branded Form`, not raw keys like `ascension.LEVEL_20.title`. |
 | a19-a20-dedicated-boss-abilities | gameplay | Pending | User | Every A19/A20 v4.1 Boss ability is tested on its matching Boss, attack-changing effects show final intent, Branded Form applies only to the second Act 3 Boss, and `boss-ability-checklist.md` has every Boss row filled with live result and evidence files. |
 | disable-mod-gameplay | gameplay | Pending | User | A run with Spire Plus disabled and BaseLib enabled behaves as expected beyond startup. |
 | preview-tools-live-proof | preview-tools | Pending | User | Crystal Sphere, transform preview, Prismatic Gem preview, save/reopen, and multiplayer gate/proof match live behavior; `preview-tools-checklist.md` has every scenario row filled. |
@@ -81,4 +82,3 @@ Expected marker format:
 ```
 
 The marker helps collect proof; it does not turn a pending row into passed evidence by itself.
-

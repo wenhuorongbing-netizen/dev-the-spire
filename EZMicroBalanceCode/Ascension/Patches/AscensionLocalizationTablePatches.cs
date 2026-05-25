@@ -134,17 +134,18 @@ internal static class AscensionLocalizationBridge
     }
 }
 
-[HarmonyPatch(typeof(LocManager), nameof(LocManager.SmartFormat))]
-internal static class AscensionLocalizationSmartFormatPatch
+[HarmonyPatch(typeof(LocString), nameof(LocString.GetRawText))]
+internal static class AscensionLocalizationLocStringRawTextPatch
 {
-    private static bool Prefix(LocString locString, Dictionary<string, object> variables, ref string __result)
+    private static bool Prefix(LocString __instance, ref string __result)
     {
-        if (locString.LocTable.Equals("ascension", StringComparison.Ordinal) &&
-            AscensionLocalizationBridge.IsAscensionLevelKey(locString.LocEntryKey) &&
-            AscensionLocalizationBridge.TryGetText(locString.LocEntryKey, out var text))
+        if (__instance.LocTable.Equals("ascension", StringComparison.Ordinal) &&
+            AscensionLocalizationBridge.IsAscensionLevelKey(__instance.LocEntryKey) &&
+            AscensionLocalizationBridge.TryGetText(__instance.LocEntryKey, out var text))
         {
-            // The character-select Ascension panel is an early UI path. Resolve
-            // A11-A20 directly so it never falls back to visible raw loc keys.
+            // The character-select Ascension panel formats a LocString very
+            // early. Resolve A11-A20 before Core's table can leak placeholder
+            // keys such as ascension.LEVEL_20.title into player-facing UI.
             __result = text;
             return false;
         }

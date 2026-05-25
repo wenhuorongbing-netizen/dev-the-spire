@@ -273,6 +273,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Core/AscensionSavedStateFields.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs",
+        "EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs",
         "EZMicroBalanceCode/Ascension/Map/BannerRoomMapQuestMarker.cs",
         "EZMicroBalanceCode/Ascension/Rewards/BossSealCatalog.Definitions.cs",
         "EZMicroBalanceCode/Ascension/Rewards/BossSealCatalog.Localization.cs",
@@ -326,6 +327,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Diagnostics/ReleaseEvidenceLog.cs",
         "EZMicroBalanceCode/Diagnostics/SpirePlusAncientLiveTestConsoleCmd.cs",
         "EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs",
+        "EZMicroBalanceCode/Modding/ModInfoLocalizationPatches.cs",
         "EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs",
         "EZMicroBalanceCode/Preview/PreviewLog.cs",
         "EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs",
@@ -395,6 +397,7 @@ public sealed class ActiveSourceManifestGuardTests
         new("EZMicroBalanceCode/Config/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
         new("EZMicroBalanceCode/Diagnostics/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
         new("EZMicroBalanceCode/Map/", "AncientHighRiskSourceGuardTests.cs", "ReadRepoText(\"EZMicroBalanceCode\", \"Map\", \"SpirePlusMapPointHoverComposer.cs\")"),
+        new("EZMicroBalanceCode/Modding/", "ModInfoLocalizationGuardTests.cs", "ReadRepoText(\"EZMicroBalanceCode\", \"Modding\", \"ModInfoLocalizationPatches.cs\")"),
         new("EZMicroBalanceCode/Preview/", "PreviewToolsGuardTests.cs", "CrystalSpherePatchOnlyTouchesTheMaskAndButton"),
         new("EZMicroBalanceCode/MainFile.cs", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")")
     ];

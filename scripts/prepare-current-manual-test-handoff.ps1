@@ -342,8 +342,9 @@ if (-not $SkipPendingVerifier) {
     }
 
     $pendingReport = $outputText | ConvertFrom-Json
-    $expectedFailureCount = if ($null -ne $preservedCurrentLoaderRow) { 18 } else { 19 }
-    if ([int]$pendingReport.RequiredRowCount -ne 19 -or [int]$pendingReport.FailureCount -ne $expectedFailureCount) {
+    $expectedRequiredRowCount = 20
+    $expectedFailureCount = if ($null -ne $preservedCurrentLoaderRow) { 19 } else { 20 }
+    if ([int]$pendingReport.RequiredRowCount -ne $expectedRequiredRowCount -or [int]$pendingReport.FailureCount -ne $expectedFailureCount) {
         throw "Pending release evidence should fail closed on exactly $expectedFailureCount live rows. RequiredRowCount=$($pendingReport.RequiredRowCount) FailureCount=$($pendingReport.FailureCount)."
     }
 
@@ -386,7 +387,7 @@ $expectedFailureCount = if ($loaderRowFilled -and $summary.Contains('CurrentVeri
 } elseif ($summary.Contains('PendingVerifierFailureCount')) {
     [int]$summary.PendingVerifierFailureCount
 } else {
-    19
+    20
 }
 $startHereIntro = if ($loaderRowFilled) {
     'This folder is a manual-test evidence scaffold. The current-package loader row is filled; gameplay, UI, save-load, preview-tools, and co-op rows remain pending until a tester adds screenshots, logs, notes, and checklist results.'
@@ -401,7 +402,7 @@ $staleArchiveRelative = if ($null -ne $staleCurrentLoaderArchive) {
 $handoffSummaryLines = if ($loaderRowFilled) {
     @(
         '- `handoff-summary.json` records the current scaffold plus preserved loader proof.',
-        '- `PendingVerifierRequiredRowCount=19`.',
+        '- `PendingVerifierRequiredRowCount=20`.',
         ('- `CurrentVerifierFailureCount=' + $expectedFailureCount + '`.'),
         '- `PendingVerifierWarningCount=0`.',
         '- Current loader smoke has filled `release/fresh-current-package-loader-smoke/`; remaining rows still need live feature evidence.'
@@ -409,8 +410,8 @@ $handoffSummaryLines = if ($loaderRowFilled) {
 } else {
     $lines = @(
         '- `handoff-summary.json` records this no-launch scaffold contract.',
-        '- `PendingVerifierRequiredRowCount=19`.',
-        '- `PendingVerifierFailureCount=19`.',
+        '- `PendingVerifierRequiredRowCount=20`.',
+        '- `PendingVerifierFailureCount=20`.',
         '- `PendingVerifierWarningCount=0`.',
         '- These numbers mean the scaffold is expected to fail until live evidence is filled.'
     )
@@ -483,14 +484,14 @@ $readmeIntro = if ($loaderRowFilled) {
 }
 $readmeSummaryLines = if ($loaderRowFilled) {
     @(
-        ('Summary: `handoff-summary.json` records `PendingVerifierRequiredRowCount=19`, current failure count `' + $expectedFailureCount + '`, and `PendingVerifierWarningCount=0`.'),
+        ('Summary: `handoff-summary.json` records `PendingVerifierRequiredRowCount=20`, current failure count `' + $expectedFailureCount + '`, and `PendingVerifierWarningCount=0`.'),
         '',
         'These are scaffold/verifier values, not gameplay proof.',
         ''
     )
 } else {
     $lines = @(
-        'Summary: `handoff-summary.json` records `PendingVerifierRequiredRowCount=19`, `PendingVerifierFailureCount=19`, and `PendingVerifierWarningCount=0`.',
+        'Summary: `handoff-summary.json` records `PendingVerifierRequiredRowCount=20`, `PendingVerifierFailureCount=20`, and `PendingVerifierWarningCount=0`.',
         '',
         'Those are expected no-launch values, not live proof.',
         ''

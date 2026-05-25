@@ -1,29 +1,17 @@
 # Spire Plus Goal Guard
 
-This file is the compact guardrail for the active `/goal` thread. Historical `/goal`
-intake text was archived to
-`docs/archive/feature-inputs/goal-md-mojibake-intake-20260523.md` because the active
-copy contained unreadable prompt remnants and duplicated current docs.
+Current target: test-ready manual build, not release-ready.
 
-Current target:
-
-- Keep `Spire Plus` as a test-ready manual build, not a release-ready build.
-- Treat `docs/test-ready-development-goal.md`, `docs/issues.md`, `docs/toreview.md`, and `docs/review.md` as the active work path.
-- Preserve `EZMicroBalance` only as the stable technical manifest id.
+Active implementation notes:
+- Keep player-facing name `Spire Plus`; keep `EZMicroBalance` only where it is the stable technical manifest id, resource folder, namespace, saved-field prefix, or legacy environment alias.
+- Keep Vakuu's Sere Talon separate from Tanx Claws: Sere Talon offers 4 Curses, choose 1, then adds 2 Wish and 1 Wish+; Tanx Claws remains the Maul+ transform relic.
+- Keep recent source-level polish focused: A20 selector localization, direct-gain feedback, Elite Root payoff feedback, and light elite damage reduction.
+- Archive long prompt dumps under `docs/archive/feature-inputs/`; see `goal-md-mojibake-intake-20260523.md`.
 
 Closure rules:
-
-- Live proof required before closing runtime rows.
-- Source review may close only source-level issues such as compile errors, stale API signatures, localization drift, missing resource paths, manifest drift, hash drift, and guard-test failures.
-- Runtime rows need game logs, screenshots, manual notes, or two-client evidence. The current-package loader row is filled by the 2026-05-24 Steam-client smoke, but it proves only startup/log loading. Remaining runtime rows include clicked Ancient UI, Urda/Morvi/Lotha/Vakuu gameplay, Sere Talon event/relic surface proof, save/load, Vakuu victory/no-black-screen, A11-A20 traversal/combat behavior, co-op ownership/desync, and Crystal Sphere and transform-preview live proof inside Spire Plus.
-- No release-ready claim is made until those runtime rows have direct evidence.
-
-Current static progress already recorded:
-
-- v0.106 / BaseLib 3.1.4 API drift is documented in `docs/audits/v0.106-source-api-drift.md`.
-- A19/A20 dedicated boss abilities and Branded Form are source-locked by `BossDedicatedAbilityV41GuardTests`.
-- Cross-platform package checks are documented in `docs/platform-testing.md`.
-
-Current stop line:
-
-- No source-only pass may mark this goal complete while the Manual Proof Gates in `docs/issues.md` and `docs/toreview.md` remain open.
+- Live proof required for gameplay, clicked UI, save/load, co-op, and package-loader claims.
+- Source review may close only source-level issues.
+- Runtime rows need game logs, screenshots, manual notes, or two-client evidence.
+- Crystal Sphere and transform-preview live proof inside Spire Plus remains required.
+- No source-only pass may mark this goal complete.
+- No release-ready claim is made until the manual proof gates are closed.

@@ -1,9 +1,9 @@
-﻿param(
+param(
     [string]$EvidenceDir,
 
-    [string]$PackageSha256 = "2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006",
+    [string]$PackageSha256 = "9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E",
 
-    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.0.zip",
+    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.1.zip",
 
     [switch]$Launch,
 
@@ -333,6 +333,17 @@ function New-ManualRows {
         },
         @{ Id = 'a11-natural-route-traversal'; Kind = 'gameplay'; Label = 'Natural A11 route click traversal' },
         @{
+            Id = 'ascension-selector-localization'
+            Kind = 'clicked-ui'
+            Label = 'A11-A20 character-select Ascension selector localization'
+            Checkpoints = @(
+                'Open the character-select Ascension selector in English and Simplified Chinese if possible.',
+                'A20 must show Branded Form / 烙印形态instead of ascension.LEVEL_20.title.',
+                'A20 description must be readable instead of ascension.LEVEL_20.description.',
+                'Spot-check A11-A19 titles/descriptions for the same raw-key regression.'
+            )
+        },
+        @{
             Id = 'a19-a20-dedicated-boss-abilities'
             Kind = 'gameplay'
             Label = 'A19/A20 dedicated boss abilities and Branded Form live combat proof'
@@ -433,10 +444,10 @@ $packageHashes = [ordered]@{
     Files = @(
         Get-HashRow -RelativePath 'EZMicroBalance.json'
         Get-HashRow -RelativePath $PackagePath
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.dll'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.pck'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\EZMicroBalance.json'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.0\EZMicroBalance\README_INSTALL.txt'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.1\EZMicroBalance\EZMicroBalance.dll'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.1\EZMicroBalance\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.1\EZMicroBalance\EZMicroBalance.json'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.1\EZMicroBalance\README_INSTALL.txt'
     )
 }
 

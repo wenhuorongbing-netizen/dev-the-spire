@@ -15,10 +15,10 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 153 |
+| Total patch declarations | 160 |
 | High risk | 22 |
-| Medium risk | 42 |
-| Low risk | 89 |
+| Medium risk | 43 |
+| Low risk | 95 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -153,12 +153,12 @@ Regenerate:
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 50 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.ProceedFromTerminalRewardsScreen))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionA20RewardScreenPatches.cs` | 56 | `[HarmonyPatch(typeof(NRewardsScreen), nameof(NRewardsScreen._Ready))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionA20RewardScreenPatches.cs` | 94 | `[HarmonyPatch(typeof(NRewardsScreen), "UpdateScreenState")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 137 | `[HarmonyPatch(typeof(LocManager), nameof(LocManager.SmartFormat))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 156 | `[HarmonyPatch(typeof(LocManager), nameof(LocManager.GetTable))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 168 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 189 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 210 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 222 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 137 | `[HarmonyPatch(typeof(LocString), nameof(LocString.GetRawText))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 157 | `[HarmonyPatch(typeof(LocManager), nameof(LocManager.GetTable))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 169 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 190 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 211 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 223 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapBossSealHoverPatches.cs` | 11 | `[HarmonyPatch(typeof(NBossMapPoint), "OnFocus")]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapGenerationPatches.cs` | 8 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.CreateMap))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapIconPatches.cs` | 6 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]` |
@@ -168,7 +168,14 @@ Regenerate:
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 84 | `[HarmonyPatch(typeof(StartRunLobby), "UpdatePreferredAscension")]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 100 | `[HarmonyPatch(typeof(StartRunLobby), nameof(StartRunLobby.SyncAscensionChange))]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 109 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 20 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_WritheDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 29 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_ConstrictDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 38 | `[HarmonyPatch(typeof(TerrorEel), "get_CrashDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 47 | `[HarmonyPatch(typeof(TerrorEel), "get_ThrashDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 56 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_BiteDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 65 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_LashDamage")]` |
 | Map hover composition | Medium | `EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs` | 12 | `[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]` |
+| Mod info localization | Medium | `EZMicroBalanceCode/Modding/ModInfoLocalizationPatches.cs` | 12 | `[HarmonyPatch(typeof(NModInfoContainer), nameof(NModInfoContainer.Fill))]` |
 | Preview tools | Medium | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 13 | `[HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 146 | `[HarmonyPatch]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 105 | `[HarmonyPatch]` |

@@ -109,15 +109,15 @@ public sealed class AscensionFeatureGuardTests
             "HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))",
             "HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))",
             "HarmonyPatch(typeof(LocManager), nameof(LocManager.GetTable))",
-            "HarmonyPatch(typeof(LocManager), nameof(LocManager.SmartFormat))",
+            "HarmonyPatch(typeof(LocString), nameof(LocString.GetRawText))",
             "AscensionLocalizationBridge.MergeIntoIfAscensionTable(__result)",
             "table.MergeWith(new Dictionary<string, string>(localizedTable, StringComparer.Ordinal))",
             "TableNameField?.GetValue(table) is string tableName",
             "tableName.Equals(\"ascension\", StringComparison.Ordinal)",
             "$\"{MainFile.ResPath}/localization/{language}/ascension.json\"",
             "TryGetTextForLanguage(\"eng\", key, out text)",
-            "AscensionLocalizationBridge.IsAscensionLevelKey(locString.LocEntryKey)",
-            "AscensionLocalizationBridge.TryGetText(locString.LocEntryKey, out var text)",
+            "AscensionLocalizationBridge.IsAscensionLevelKey(__instance.LocEntryKey)",
+            "AscensionLocalizationBridge.TryGetText(__instance.LocEntryKey, out var text)",
             "__result = new LocString(\"ascension\", key)",
             "Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read)");
 

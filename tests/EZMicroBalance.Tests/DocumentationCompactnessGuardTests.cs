@@ -244,7 +244,7 @@ public sealed class DocumentationCompactnessGuardTests
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("current-package loader row is pending again", projectState, StringComparison.Ordinal);
-        Assert.Contains("19 pending live/manual rows", projectState, StringComparison.Ordinal);
+        Assert.Contains("20 pending live/manual rows", projectState, StringComparison.Ordinal);
         Assert.Contains("Current manual-test package is not a release-readiness claim", projectState, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", projectState, StringComparison.Ordinal);
         Assert.Contains("git diff --check", projectState, StringComparison.Ordinal);

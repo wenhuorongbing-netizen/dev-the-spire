@@ -210,6 +210,7 @@ public sealed class EngineeringGovernanceGuardTests
             "| ancient-state-save-load | save-load | Pending |",
             "| rootblight-visual-behavior | gameplay | Pending |",
             "| a11-natural-route-traversal | gameplay | Pending |",
+            "| ascension-selector-localization | clicked-ui | Pending |",
             "| a19-a20-dedicated-boss-abilities | gameplay | Pending |",
             "| disable-mod-gameplay | gameplay | Pending |",
             "| preview-tools-live-proof | preview-tools | Pending |",
@@ -283,7 +284,7 @@ public sealed class EngineeringGovernanceGuardTests
             "HEAD | `25f99fb",
             "Total patch declarations | 135",
             "Fresh current-package loader smoke | Pending live run",
-            "README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA`");
+            "README_INSTALL | `9581091856D252D6837A8368596E8BE834720EE0895D67B4824D4C2631F1D286`");
 
         AssertSourceContains(
             scope,

@@ -46,6 +46,7 @@ function Get-OwnerFromPath {
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Patches/*') { return 'Ascension patches' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Events/*') { return 'Ascension events' }
     if ($RelativePath -like 'EZMicroBalanceCode/Map/*') { return 'Map hover composition' }
+    if ($RelativePath -like 'EZMicroBalanceCode/Modding/*') { return 'Mod info localization' }
     if ($RelativePath -like 'EZMicroBalanceCode/Preview/*') { return 'Preview tools' }
     return 'Unclassified'
 }
@@ -58,7 +59,7 @@ function Get-RiskFromPatch {
 
     $combined = "$RelativePath $PatchText"
     if ($combined -match 'CombatRoom|EventRoom|RunManager|SaveManager|StartRunLobby|NGame|JoinFlow') { return 'High' }
-    if ($combined -match 'NMap|NRewardsScreen|NCrystalSphere|NTransformPreview|NNormalMapPoint|NBossMapPoint|NRelicInventory') { return 'Medium' }
+    if ($combined -match 'NMap|NRewardsScreen|NCrystalSphere|NTransformPreview|NNormalMapPoint|NBossMapPoint|NRelicInventory|NModInfoContainer') { return 'Medium' }
     if ($combined -match 'CardModel|RelicModel|CardReward|CardPileCmd|Creature|Power|AbstractModel') { return 'Medium' }
     return 'Low'
 }

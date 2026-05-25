@@ -69,7 +69,7 @@ Use `prepare-current-manual-test-handoff.ps1` when you want the full current han
 .\scripts\prepare-current-manual-test-handoff.ps1 -EvidenceRoot .tools\runtime-evidence\manual-test-handoff-20260523-current
 ```
 
-The generated handoff includes `TESTER_START_HERE.md`, `handoff-summary.json`, `release/`, `ancient-ui/`, `vakuu/`, `preview-tools/`, and `coop/`. `TESTER_START_HERE.md` repeats the package path and ZIP SHA256 from the generated manifest and prints the verifier command for the actual evidence root used in that run. `handoff-summary.json` records the expected no-launch verifier result: `PendingVerifierRequiredRowCount` is 19, `PendingVerifierFailureCount` is 19, and `PendingVerifierWarningCount` is 0. Release row folders include `*-checklist-template.md` references plus directly editable `*-checklist.md` working files. It does not launch the game and does not mark rows as passed.
+The generated handoff includes `TESTER_START_HERE.md`, `handoff-summary.json`, `release/`, `ancient-ui/`, `vakuu/`, `preview-tools/`, and `coop/`. `TESTER_START_HERE.md` repeats the package path and ZIP SHA256 from the generated manifest and prints the verifier command for the actual evidence root used in that run. `handoff-summary.json` records the expected no-launch verifier result: `PendingVerifierRequiredRowCount` is 20, `PendingVerifierFailureCount` is 20, and `PendingVerifierWarningCount` is 0. Release row folders include `*-checklist-template.md` references plus directly editable `*-checklist.md` working files. It does not launch the game and does not mark rows as passed.
 
 Use `verify-spire-plus-release-evidence.ps1` after manual testing has produced evidence folders. You can either run `collect-release-evidence.ps1` to create the evidence folder, verifier-readable manifest, and one subfolder per required row, or use `-WriteTemplate` to create only the manifest. Fill every row with `Status`, `EvidenceDir`, screenshots, result notes, and any owner-approved deferrals:
 
@@ -80,7 +80,7 @@ Use `verify-spire-plus-release-evidence.ps1` after manual testing has produced e
 ```
 
 By default, deferred rows fail. Use `-AllowDeferred` only when the project owner has explicitly accepted a release-note deferral and the row has `ExplicitOwnerDecision: true` plus a non-empty `ReleaseNote`. Pass rows also fail on duplicate row ids, wrong row kinds, manifests or evidence dirs outside the evidence root, required-file or screenshot paths that escape the row evidence dir, empty required files, missing `command.txt`, empty, invalid, or undersized clicked-UI PNG screenshots, empty required Markdown note files, or notes that say the evidence is invalid, covered, main-menu-only, loader-health-only, or otherwise not counted. Default evidence files cannot be removed from a row; `RequiredFiles` only adds extra files. Unknown or blank manifest rows are ignored but reported in `Warnings`.
-The verifier also computes the SHA256 of `publish\SpirePlus-v0.1.0-private-beta.0.zip` by default; use `-PackagePath` only when intentionally auditing a different zip. `-WritePassMarker` writes `release-evidence-verifier-pass.json` only after all rows pass or are accepted deferrals.
+The verifier also computes the SHA256 of `publish\SpirePlus-v0.1.0-private-beta.1.zip` by default; use `-PackagePath` only when intentionally auditing a different zip. `-WritePassMarker` writes `release-evidence-verifier-pass.json` only after all rows pass or are accepted deferrals.
 
 ## Full local CI lane
 

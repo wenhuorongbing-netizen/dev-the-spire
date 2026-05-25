@@ -1,17 +1,17 @@
-﻿# Spire Plus To Review
+# Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.0.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.1.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006` |
-| DLL | `C8A8862AB427CD49BB77E7D90CB299A07276B768F5DB6C34BBAFB363F06DD6F1` |
-| PCK | `30312BE1E2723A1F7C1A617CAD45F9E2313C567EFE391378424B39CA330039A2` |
-| Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
-| README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA` |
+| ZIP | `9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E` |
+| DLL | `8CF4F8219652DF0D93FEF7A88DC9692EC6E744D38B358303606DA7F9CB833830` |
+| PCK | `87C43FADEAF2B08A7561A7E4797340991A3F146382BC487CD6C05DB77E1496A4` |
+| Manifest | `049D8FE97BB96CA7A28B4735D11BDA18549265D798C2EB8A1774E2B82453C1D1` |
+| README_INSTALL | `9581091856D252D6837A8368596E8BE834720EE0895D67B4824D4C2631F1D286` |
 
-Latest no-game validation snapshot: build passed, default tests `273 passed / 20 skipped`, opt-in artifact tests `293 passed / 0 skipped`, website syntax checks passed, format passed, installed-package check passed, and `git diff --check` passed. After the Elite Root source-safety refresh, the current-package loader row is pending again because the ZIP/DLL hash changed without opening the game. The release verifier fails closed with 19 pending live/manual rows.
+Latest no-game validation snapshot: build passed, default tests `273 passed / 20 skipped`, opt-in artifact tests `293 passed / 0 skipped`, website syntax checks passed, format passed, installed-package check passed, and `git diff --check` passed. After the Elite Root source-safety refresh, the current-package loader row is pending again because the ZIP/DLL hash changed without opening the game. The release verifier fails closed with 20 pending live/manual rows.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
@@ -23,10 +23,12 @@ Latest no-game validation snapshot: build passed, default tests `273 passed / 20
 | MORVI-REWARDS | Morvi | Morvi choices use visible option relics; Debt and Overdraft counters are Buff counters; failed selections refresh choices. | Test Forbidden Loan, Misprint Press, Red Ink, Overdue Library, Blueprint Proof, Paperstorm, Open Book, Debt Settlement. |
 | LOTHA-REWARDS | Lotha | Lotha choices use visible option relics with source-split card rules, transient state recovery, and Mirror Rebuttal handling. | Test each blessing, especially Single Sentence, Death Reprieve, Public Evidence, and Mirror Rebuttal. |
 | VAKUU-FIGHT | Vakuu | Vakuu fight has a visible fight relic, dedicated encounter scene/monster, no-normal-reward resume path, and fallback exit path. | Enable the gate, start the fight, win, confirm no black screen, choose reward, test failure/death and save/load. |
-| MANUAL-20260519-COUNTERS-PEEK-TAGS | UI/tooltips | Vakuu combat counters are visible. Vakuu's Sere Talon / 瓦库原初之爪 offers 4 Curses, then adds the chosen Curse, 2 Wish, and 1 Wish+; Tanx Claws / 坦克斯利爪 transforms cards into Maul+ / 撕咬+. | Inspect Vakuu's Sere Talon pickup, Tanx Claws pickup, relic-bar art, Crystal Sphere preview, Quiet Echo, and Deferred Verdict text. |
+| MANUAL-20260519-COUNTERS-PEEK-TAGS | UI/tooltips | Vakuu combat counters are visible. Vakuu's Sere Talon / 瓦库原初之爪 offers 4 Curses, then adds the chosen Curse, 2 Wish, and 1 Wish+; Tanx Claws / 坦克斯利爪transforms cards into Maul+ / 撕咬+. | Inspect Vakuu's Sere Talon pickup, Tanx Claws pickup, relic-bar art, Crystal Sphere preview, Quiet Echo, and Deferred Verdict text. |
 | MANUAL-20260524-SERE-TALON-ART | Ancient rewards / relic art | Sere Talon routes to Spire Plus-owned icon art and no longer uses Tanx Claws art. | Pick up Vakuu's Sere Talon and verify event option, relic bar, inspect screen, hover title/text, and log routes. |
 | MANUAL-20260524-SERE-TALON-TANX-CLAWS-REPORT | Ancient rewards / relic art | Treat any green Tanx Claws art on Vakuu's Sere Talon as our display/package route problem until live proof says otherwise. | If the effect is curse choice + 2 Wish + 1 Wish+ but art/title is Tanx Claws, capture `godot.log` route lines and the surface that bypassed the patch. |
 | ASCENSION-A11-A20 | Ascension | A11 map geometry, A12 Firemarked Elites, A13 Fission, A16 Banners, A17 Deep Branch, A19 dedicated abilities, A20 Branded Form, and Rootblight have guards. | Play A11-A20 paths, verify hovers, rewards, boss abilities, Rootblight timing, save/load, and co-op boundaries. |
+| ENEMY-DAMAGE-POLISH | Ascension / Elite combat | Decimillipede Writhe/Constrict, Terror Eel Crash/Thrash, and Phantasmal Gardener Bite/Lash are reduced through source getter patches so visible intent and real damage share the same values. | Fight these Elite encounters and compare first-cycle damage pacing against the previous build; confirm no intent/damage mismatch. |
+| ASCENSION-SELECTOR-LOCALIZATION | Ascension UI | A11-A20 character-select panels use the Spire Plus localization bridge for current-language then English fallback. | On character select, check A20 shows `烙印形态` / `Branded Form` and a readable description instead of `ascension.LEVEL_20.title` or `ascension.LEVEL_20.description`. |
 | MANUAL-20260519-SEEDBED | Urda | Seedbed catches later Blight Sprouts and temporary Status/Curse cards, skips Rootblight and Withered Husk, and grants a Husk per planted card. | Check Seedbed option/card hover in EN/ZHS and combat planting behavior. |
 | MANUAL-20260523-SEEDBED-REWARD-REENTRY | Urda | Seedbed reward alternatives have a per-reward handled guard. | Choose the Seedbed alternative once, then try rapid repeat clicks and save/load around the reward screen. |
 | MANUAL-20260519-MOLTING | Urda | Molting creates `Withered Husk` as an Ethereal + Exhaust curse card; exhausted Husk gives 3 Block. | Pick Molting, inspect the preview, draw/play or let the card expire, and confirm timing. |
@@ -45,4 +47,3 @@ Latest no-game validation snapshot: build passed, default tests `273 passed / 20
 | GOV-CI-FULL-LANE | Engineering | Added self-hosted Windows full no-game validation workflow and script. | Run it once and attach the workflow log before treating CI as full validation evidence. |
 
 Do not close these rows from source review alone. Close only after matching live manual proof exists.
-

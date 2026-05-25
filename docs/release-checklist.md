@@ -1,4 +1,4 @@
-﻿# Private Beta Release Checklist
+# Private Beta Release Checklist
 
 Target mod: `Spire Plus`
 Target manifest id: `EZMicroBalance`
@@ -26,8 +26,8 @@ Target manifest id: `EZMicroBalance`
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.0.zip` was rebuilt from the configured installed artifacts on 2026-05-23 and copied to the local game root for manual testing.
-  - Current package hashes: DLL `C8A8862AB427CD49BB77E7D90CB299A07276B768F5DB6C34BBAFB363F06DD6F1`; manifest `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`; PCK `30312BE1E2723A1F7C1A617CAD45F9E2313C567EFE391378424B39CA330039A2`; README `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA`; zip `2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006`.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.1.zip` was rebuilt from the configured installed artifacts on 2026-05-23 and copied to the local game root for manual testing.
+  - Current package hashes: DLL `8CF4F8219652DF0D93FEF7A88DC9692EC6E744D38B358303606DA7F9CB833830`; manifest `049D8FE97BB96CA7A28B4735D11BDA18549265D798C2EB8A1774E2B82453C1D1`; PCK `87C43FADEAF2B08A7561A7E4797340991A3F146382BC487CD6C05DB77E1496A4`; README `9581091856D252D6837A8368596E8BE834720EE0895D67B4824D4C2631F1D286`; zip `9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 

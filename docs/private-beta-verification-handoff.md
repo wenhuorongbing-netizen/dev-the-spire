@@ -1,4 +1,4 @@
-﻿# Spire Plus Private Beta Verification Handoff
+# Spire Plus Private Beta Verification Handoff
 
 Date: 2026-05-15
 
@@ -16,7 +16,7 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest verification after the Sere Talon website/manual-matrix closure and package README wording refresh: `dotnet build EZMicroBalance.sln`, normal tests with 272 passed / 20 skipped, focused website/documentation/release-evidence guards, `dotnet format`, `git diff --check`, installed-package checker, release verifier fail-closed check with 19 pending live/manual rows / 0 warnings, worktree batching with 320 dirty entries / 0 unclassified paths, and opt-in artifact tests with 292 passed / 0 skipped all passed in their expected modes.
+- Latest verification after the Sere Talon website/manual-matrix closure and package README wording refresh: `dotnet build EZMicroBalance.sln`, normal tests with 272 passed / 20 skipped, focused website/documentation/release-evidence guards, `dotnet format`, `git diff --check`, installed-package checker, release verifier fail-closed check with 20 pending live/manual rows / 0 warnings, worktree batching with 320 dirty entries / 0 unclassified paths, and opt-in artifact tests with 292 passed / 0 skipped all passed in their expected modes.
 - `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. The current package loader row is pending again after the ZIP/README hash changed; the verifier is expected to fail closed with 19 manual rows until loader evidence, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
 - The latest normal Steam smoke under `.tools\runtime-evidence\manual-test-handoff-20260524-161744\release\fresh-current-package-loader-smoke` covered the same DLL/PCK/manifest as the current package: only BaseLib plus Spire Plus loaded, `Found 30 SavedSpireFields`, and the log audit was clean. This is startup/log context only until the current ZIP is launched.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
@@ -41,14 +41,14 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.0.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.1.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006`
+- Zip SHA256: `9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `C8A8862AB427CD49BB77E7D90CB299A07276B768F5DB6C34BBAFB363F06DD6F1`
-- Manifest SHA256: `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6`
-- PCK SHA256: `30312BE1E2723A1F7C1A617CAD45F9E2313C567EFE391378424B39CA330039A2`
-- README_INSTALL SHA256: `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA`
+- DLL SHA256: `8CF4F8219652DF0D93FEF7A88DC9692EC6E744D38B358303606DA7F9CB833830`
+- Manifest SHA256: `049D8FE97BB96CA7A28B4735D11BDA18549265D798C2EB8A1774E2B82453C1D1`
+- PCK SHA256: `87C43FADEAF2B08A7561A7E4797340991A3F146382BC487CD6C05DB77E1496A4`
+- README_INSTALL SHA256: `9581091856D252D6837A8368596E8BE834720EE0895D67B4824D4C2631F1D286`
 
 ## Known Automated Evidence
 
@@ -83,7 +83,7 @@ Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplay
 8. Execute disable-mod gameplay verification.
 9. Inspect `%APPDATA%\SlayTheSpire2\logs\godot.log` after the Steam-client pass.
 10. Fill `.tools\runtime-evidence\release-ready-manual\release-evidence-manifest.json` and run `scripts\verify-spire-plus-release-evidence.ps1 -WritePassMarker` before treating the package as release-proven. Use `scripts\collect-release-evidence.ps1 -NoLaunch` to create the evidence folder plus manifest, or `-WriteTemplate` to create only the manifest.
-    Keep the manifest, each row `EvidenceDir`, required file, screenshot path, and `command.txt` inside the evidence root. Unknown or blank rows appear in `Warnings` and do not satisfy any release row. The verifier hashes `publish\SpirePlus-v0.1.0-private-beta.0.zip` by default; pass `-PackagePath` only for a deliberate alternate package. Use `-AllowDeferred` only after an explicit owner-approved release-note deferral.
+    Keep the manifest, each row `EvidenceDir`, required file, screenshot path, and `command.txt` inside the evidence root. Unknown or blank rows appear in `Warnings` and do not satisfy any release row. The verifier hashes `publish\SpirePlus-v0.1.0-private-beta.1.zip` by default; pass `-PackagePath` only for a deliberate alternate package. Use `-AllowDeferred` only after an explicit owner-approved release-note deferral.
 
 ## Ascension Verification
 

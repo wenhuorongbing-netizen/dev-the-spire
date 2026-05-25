@@ -1,0 +1,58 @@
+using Xunit;
+
+namespace EZMicroBalance.Tests;
+
+public sealed class EnemyDamagePolishGuardTests
+{
+    [Fact]
+    public void HighPressureEliteDamagePolishPatchesSourceDamageGetters()
+    {
+        var patch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "EnemyDamagePolishPatches.cs");
+        var decimillipede = ReadRepoText("source code", "src", "Core", "Models", "Monsters", "DecimillipedeSegment.cs");
+        var terrorEel = ReadRepoText("source code", "src", "Core", "Models", "Monsters", "TerrorEel.cs");
+        var phantasmalGardener = ReadRepoText("source code", "src", "Core", "Models", "Monsters", "PhantasmalGardener.cs");
+
+        AssertSourceContains(
+            decimillipede,
+            "private int WritheDamage",
+            "new MultiAttackIntent(WritheDamage, 2)",
+            "await DamageCmd.Attack(WritheDamage).WithHitCount(2)",
+            "private int ConstrictDamage",
+            "new SingleAttackIntent(ConstrictDamage)",
+            "await DamageCmd.Attack(ConstrictDamage)");
+
+        AssertSourceContains(
+            terrorEel,
+            "private int CrashDamage",
+            "new SingleAttackIntent(CrashDamage)",
+            "await DamageCmd.Attack(CrashDamage)",
+            "private int ThrashDamage",
+            "new MultiAttackIntent(ThrashDamage, ThrashRepeat)",
+            "await DamageCmd.Attack(ThrashDamage).WithHitCount(ThrashRepeat)");
+
+        AssertSourceContains(
+            phantasmalGardener,
+            "private int BiteDamage",
+            "new SingleAttackIntent(BiteDamage)",
+            "await DamageCmd.Attack(BiteDamage)",
+            "private int LashDamage",
+            "new SingleAttackIntent(LashDamage)",
+            "await DamageCmd.Attack(LashDamage)");
+
+        AssertSourceContains(
+            patch,
+            "HarmonyPatch(typeof(DecimillipedeSegment), \"get_WritheDamage\")",
+            "HarmonyPatch(typeof(DecimillipedeSegment), \"get_ConstrictDamage\")",
+            "HarmonyPatch(typeof(TerrorEel), \"get_CrashDamage\")",
+            "HarmonyPatch(typeof(TerrorEel), \"get_ThrashDamage\")",
+            "HarmonyPatch(typeof(PhantasmalGardener), \"get_BiteDamage\")",
+            "HarmonyPatch(typeof(PhantasmalGardener), \"get_LashDamage\")",
+            "DecimillipedeWritheReduction = 2",
+            "DecimillipedeConstrictReduction = 1",
+            "TerrorEelCrashReduction = 2",
+            "TerrorEelThrashReduction = 1",
+            "PhantasmalGardenerBiteReduction = 1",
+            "PhantasmalGardenerLashReduction = 1",
+            "Math.Max(1, damage - reduction)");
+    }
+}
