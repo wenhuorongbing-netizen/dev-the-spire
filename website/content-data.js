@@ -23,11 +23,11 @@ const sourceRelicIcons = {
   "TOASTY_MITTENS.description": "toasty_mittens.png",
   "WHISPERING_EARRING.description": "whispering_earring.png",
   "MEAT_CLEAVER.description": "meat_cleaver.png",
-  "BLOOD_SOAKED_ROSE.description": "blood_soaked_rose.png"
+  "BLOOD_SOAKED_ROSE.description": "blood_soaked_rose.png",
+  "SERE_TALON.description": "sere_talon.png"
 };
 
 const ownedRelicIcons = {
-  "SERE_TALON.description": "assets/relics/sere_talon.svg"
 };
 
 const currentReadableGuardSnippets = [
@@ -280,8 +280,8 @@ window.SPIRE_PLUS_DATA = {
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,918,281 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "D8C7BB29B45FDA669BC2345B133EF0277E97004B1B6B53992DFF4FAC55F466F4"]
+      ["\u4f53\u79ef", "18,918,860 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "1060EC31D531AC6DC3DC25B24C317FA0AAFCC29CAA33E02D12233C524E8E5ADF"]
     ]
   },
   installSteps: [
@@ -672,8 +672,8 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,918,281 bytes"],
-        ["Hash", "D8C7BB29B45FDA669BC2345B133EF0277E97004B1B6B53992DFF4FAC55F466F4"]
+        ["Size", "18,918,860 bytes"],
+        ["Hash", "1060EC31D531AC6DC3DC25B24C317FA0AAFCC29CAA33E02D12233C524E8E5ADF"]
       ]
     },
     installSteps: [
