@@ -62,7 +62,7 @@ public sealed class WebsiteContentGuardTests
             "If there are not enough suitable rooms, at least 2 are placed.",
             "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission.",
             "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
-            "Gain 7 Block and set up a 2-space Seedbed",
+            "Gain 8 Block, set up a 2-space Seedbed",
             "\u79cd\u4e0b\u4e0d\u662f\u6253\u51fa\u3001\u5f03\u724c\u6216\u6d88\u8017",
             "\u79cd\u4e0b\u6839\u82bd\u89c6\u4e3a\u5df2\u5904\u7406",
             "\u6839\u8680\u662f\u4e3b\u724c\u7ec4\u91cc\u7684\u8bc5\u5492\uff0c\u4e0d\u662f\u6839\u82bd",
@@ -81,8 +81,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-seedbed-strength",
-            "app.js?v=20260525-seedbed-strength");
+            "content-data.js?v=20260525-seedbed-planting",
+            "app.js?v=20260525-seedbed-planting");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

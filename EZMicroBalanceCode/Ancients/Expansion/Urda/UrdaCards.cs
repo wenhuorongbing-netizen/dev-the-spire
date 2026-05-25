@@ -75,7 +75,7 @@ public sealed class UrdaSeedbed : CustomCardModel
         HoverTipFactory.FromCard<Root>()
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(7m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(8m, ValueProp.Move)];
     public override bool CanBeGeneratedInCombat => false;
     public override bool CanBeGeneratedByModifiers => false;
 
@@ -83,20 +83,21 @@ public sealed class UrdaSeedbed : CustomCardModel
     {
         ExhaustOnNextPlay = true;
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await UrdaBlessingService.SetupSeedbed(choiceContext, Owner, IsUpgraded ? 3 : 2, IsUpgraded, this);
+        await UrdaBlessingService.SetupSeedbed(choiceContext, Owner, IsUpgraded ? 3 : 2, IsUpgraded ? 2 : 1, this);
     }
 
     protected override void AddExtraArgsToDescription(LocString description)
     {
         description.Add("Capacity", IsUpgraded ? 3m : 2m);
-        description.Add(
-            "ImmediateLine",
-            IsUpgraded ? new LocString("cards", "EZMB_URDA_SEEDBED.upgradeLine").GetFormattedText() : string.Empty);
+        description.Add("ImmediatePlantCount", IsUpgraded ? 2m : 1m);
+        var immediateLine = new LocString("cards", "EZMB_URDA_SEEDBED.immediateLine");
+        immediateLine.Add("ImmediatePlantCount", IsUpgraded ? 2m : 1m);
+        description.Add("ImmediateLine", immediateLine.GetFormattedText());
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(4m);
     }
 }
 

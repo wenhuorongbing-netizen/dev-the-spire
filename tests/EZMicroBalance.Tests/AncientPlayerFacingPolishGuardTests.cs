@@ -909,14 +909,14 @@ public sealed class AncientPlayerFacingPolishGuardTests
             v33DesignReview,
             "current follow-up design uses `Temporary` and `Plant`",
             "future temporary negative cards, Blight Sprouts, and Rootblight are planted before entering hand",
-            "Upgraded Seedbed can also plant one eligible card from draw/discard immediately",
+            "Seedbed immediately plants one eligible card from draw/discard; upgraded Seedbed can plant up to two",
             "Rootblight and Blight Sprout are plantable",
             "Seedbed future-card planting",
             "Seedbed+ immediate draw/discard planting");
         AssertSourceContains(
             v22ManualChecklist,
             "Seedbed card text and hover explain Temporary and Plant",
-            "Seedbed gives 7 Block and sets 2 slots; Seedbed+ gives 10 Block, sets 3 slots",
+            "Seedbed gives 8 Block, sets 2 slots, and immediately plants 1 eligible draw/discard card; Seedbed+ gives 12 Block, sets 3 slots, and can immediately plant up to 2",
             "Later Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight are planted before entering hand",
             "Permanent Curses, Withered Husk, and beneficial temporary pages are not planted",
             "Planted cards do not trigger play, discard, draw, or Exhaust synergies");

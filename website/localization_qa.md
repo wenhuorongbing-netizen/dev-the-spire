@@ -126,8 +126,8 @@ Fixes checked during this pass:
 - Replaced public vanilla placeholders with site-owned simplified SVG icons under `website/assets/vanilla-icons/`.
 - Added separate card-change entries for `愚行 / Folly` and `执迷 / Enthralled`.
 - Kept `至亮之焰 / Brightest Flame` as the public-facing title pair and verified its Exhaust/draw change appears.
-- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.13.zip`.
-- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.13`.
+- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.14.zip`.
+- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.14`.
 
 Static checks:
 
@@ -149,8 +149,8 @@ Rendered checks:
 - 28 vanilla-related entries use `assets/vanilla-icons/`.
 - `.source-art-placeholder` count is 0.
 - Search for `执迷` returns the Blood-Soaked Rose relic row and the Enthralled card row.
-- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.13.zip` and the release button to the concrete GitHub tag URL.
-- Public install page points the main download button to `releases/download/v0.1.0-private-beta.13/SpirePlus-v0.1.0-private-beta.13.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
+- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.14.zip` and the release button to the concrete GitHub tag URL.
+- Public install page points the main download button to `releases/download/v0.1.0-private-beta.14/SpirePlus-v0.1.0-private-beta.14.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
 - Browser console warnings/errors: none.
 
 ## Review 6: Local Redraw Icon QA
@@ -350,7 +350,7 @@ Fixes checked during this pass:
 - Clarified Blight Sprout and Rootblight cases: planted Sprouts do not add Rootblight I after combat; planted Rootblight is held for this combat and does not grow, downgrade, split, or disappear.
 - Buffed Seedbed to 7 Block, 10 Block when upgraded, so the card remains worth playing even when it catches nothing.
 - Regenerated the embedded localization fallback from current JSON so stale or mojibake fallback strings do not reappear when asset loading fails.
-- Updated package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.13.zip`.
+- Updated package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.14.zip`.
 
 Static checks:
 

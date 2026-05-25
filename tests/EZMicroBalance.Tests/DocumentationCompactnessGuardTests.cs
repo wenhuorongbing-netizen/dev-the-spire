@@ -243,8 +243,8 @@ public sealed class DocumentationCompactnessGuardTests
         Assert.Contains("current package Steam-client loader smoke", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
-        Assert.Contains("current package Steam-client loader smoke now passes for beta.13", projectState, StringComparison.Ordinal);
-        Assert.Contains("19 pending live/manual rows", projectState, StringComparison.Ordinal);
+        Assert.Contains("fresh loader proof is pending again for beta.14", projectState, StringComparison.Ordinal);
+        Assert.Contains("20 pending live/manual rows", projectState, StringComparison.Ordinal);
         Assert.Contains("Current manual-test package is not a release-readiness claim", projectState, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", projectState, StringComparison.Ordinal);
         Assert.Contains("git diff --check", projectState, StringComparison.Ordinal);
@@ -560,7 +560,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke confirms Spire Plus loads from the current beta.13 ZIP hash",
+            "Fresh loader smoke for the current beta.14 ZIP hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

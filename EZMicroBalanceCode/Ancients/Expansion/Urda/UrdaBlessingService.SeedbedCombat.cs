@@ -23,7 +23,7 @@ internal static partial class UrdaBlessingService
         PlayerChoiceContext choiceContext,
         Player player,
         int capacity,
-        bool plantImmediate,
+        int immediatePlantCount,
         AbstractModel source)
     {
         if (capacity <= 0 ||
@@ -37,11 +37,11 @@ internal static partial class UrdaBlessingService
         PersistSeedbed(player, state);
 
         MainFile.Logger.Info(
-            $"[Spire Plus] Urda Seedbed set {state.RemainingSlots} slot(s); future seedable temporary cards entering hand will be planted.");
+            $"[Spire Plus] Urda Seedbed set {state.RemainingSlots} slot(s); eligible negative cards entering hand will be planted.");
 
-        if (plantImmediate)
+        if (immediatePlantCount > 0)
         {
-            await PlantOneSeedbedCandidateFromDrawOrDiscard(choiceContext, player, source);
+            await PlantSeedbedCandidatesFromDrawOrDiscard(choiceContext, player, source, immediatePlantCount);
         }
     }
 
@@ -82,10 +82,11 @@ internal static partial class UrdaBlessingService
             card.Type is CardType.Status or CardType.Curse;
     }
 
-    private static async Task PlantOneSeedbedCandidateFromDrawOrDiscard(
+    private static async Task PlantSeedbedCandidatesFromDrawOrDiscard(
         PlayerChoiceContext choiceContext,
         Player player,
-        AbstractModel source)
+        AbstractModel source,
+        int maxPlantCount)
     {
         if (GetOrRestoreSeedbed(player) is not { RemainingSlots: > 0 } state)
         {
@@ -95,25 +96,29 @@ internal static partial class UrdaBlessingService
         var candidates = GetSeedbedImmediateCandidates(player).ToList();
         if (candidates.Count == 0)
         {
-            MainFile.Logger.Info("[Spire Plus] Urda Seedbed+ found no eligible Draw or Discard pile card to plant.");
+            MainFile.Logger.Info("[Spire Plus] Urda Seedbed found no eligible Draw or Discard pile card to plant immediately.");
             return;
         }
 
-        var selected = (await CardSelectCmd.FromSimpleGrid(
+        var selectionCount = Math.Min(Math.Min(maxPlantCount, state.RemainingSlots), candidates.Count);
+        var selectedCards = (await CardSelectCmd.FromSimpleGrid(
             choiceContext,
             candidates,
             player,
-            new CardSelectorPrefs(new LocString("cards", "EZMB_URDA_SEEDBED.selectionScreenPrompt"), 1, 1)
+            new CardSelectorPrefs(new LocString("cards", "EZMB_URDA_SEEDBED.selectionScreenPrompt"), 1, selectionCount)
             {
                 RequireManualConfirmation = true
-            })).FirstOrDefault();
+            })).ToList();
 
-        if (selected == null)
+        foreach (var selected in selectedCards)
         {
-            return;
-        }
+            if (state.RemainingSlots <= 0)
+            {
+                break;
+            }
 
-        await PlantSeedbedCard(selected, state, $"Seedbed+ immediate:{source.Id.Entry}");
+            await PlantSeedbedCard(selected, state, $"Seedbed immediate:{source.Id.Entry}");
+        }
     }
 
     private static IEnumerable<CardModel> GetSeedbedImmediateCandidates(Player player) =>

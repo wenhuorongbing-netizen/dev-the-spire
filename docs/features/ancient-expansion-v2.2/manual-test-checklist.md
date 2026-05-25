@@ -73,7 +73,7 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] Seedbed does not offer the alternative when max HP is not greater than 2.
 - [ ] Seedbed fourth acceptance grants +10 max HP without healing current HP.
 - [ ] Seedbed card text and hover explain Temporary and Plant without crowding the tooltip.
-- [ ] Seedbed gives 7 Block and sets 2 slots; Seedbed+ gives 10 Block, sets 3 slots, and can immediately plant one eligible draw/discard card.
+- [ ] Seedbed gives 8 Block, sets 2 slots, and immediately plants 1 eligible draw/discard card; Seedbed+ gives 12 Block, sets 3 slots, and can immediately plant up to 2.
 - [ ] Later Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight are planted before entering hand; each planted card adds one Withered Husk.
 - [ ] Permanent Curses, Withered Husk, and beneficial temporary pages are not planted.
 - [ ] Planted cards do not trigger play, discard, draw, or Exhaust synergies.

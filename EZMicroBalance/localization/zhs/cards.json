@@ -21,9 +21,9 @@
   "EZMB_URDA_SEEDLING.title": "幼芽",
   "EZMB_URDA_SEEDLING.description": "[gold]临时[/gold]。获得{Block:diff()}点[gold]格挡[/gold]。",
   "EZMB_URDA_SEEDBED.title": "苗床",
-  "EZMB_URDA_SEEDBED.description": "获得{Block:diff()}点[gold]格挡[/gold]。设置[blue]{Capacity}[/blue]格[gold]苗床[/gold]。{ImmediateLine}\n之后若[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]或[gold]根蚀[/gold]将进入手牌，苗床会先种下它：那张牌移出本场战斗，不进入手牌，不算打出、丢弃或消耗。每种下[blue]1[/blue]张，获得[blue]1[/blue]张[gold]枯壳[/gold]。\n种下[gold]临时[/gold]状态牌或诅咒牌，等于本场处理掉它。种下[gold]根芽[/gold]视为本场已处理，战后不会生成[gold]根蚀 I[/gold]。种下[gold]根蚀[/gold]会让它停住一场：战后不升级、不分裂，也不会被移除或降级。\n消耗。",
-  "EZMB_URDA_SEEDBED.upgradeLine": "\n立即从抽牌堆或弃牌堆中种下[blue]1[/blue]张可种下的牌。",
-  "EZMB_URDA_SEEDBED.selectionScreenPrompt": "选择1张可种下的牌。根芽会被处理；根蚀本战停滞。",
+  "EZMB_URDA_SEEDBED.description": "获得{Block:diff()}点[gold]格挡[/gold]。设置[blue]{Capacity}[/blue]格[gold]苗床[/gold]。{ImmediateLine}\n之后若[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]或[gold]根蚀[/gold]将进入手牌，苗床会先种下它：那张牌移出本场战斗，不进入手牌，不算打出、丢弃或消耗。每种下[blue]1[/blue]张，获得[blue]1[/blue]张[gold]枯壳[/gold]。\n种下[gold]临时[/gold]状态牌或诅咒牌，等于本场处理掉它，但这不算消耗，不触发消耗奖励。种下[gold]根芽[/gold]视为本场已处理，战后不会生成[gold]根蚀 I[/gold]。种下[gold]根蚀[/gold]会让它停住一场：战后不升级、不分裂，也不会被移除或降级。\n消耗。",
+  "EZMB_URDA_SEEDBED.upgradeLine": "\n立即从抽牌堆或弃牌堆中种下至多[blue]{ImmediatePlantCount}[/blue]张可种下的牌。",
+  "EZMB_URDA_SEEDBED.selectionScreenPrompt": "选择要种下的牌。苗床至多种下1张；苗床+至多种下2张。根芽会被处理；根蚀本战停滞。",
   "EZMB_URDA_RAIN_BREATH.title": "雨息",
   "EZMB_URDA_RAIN_BREATH.description": "[gold]临时[/gold]。获得{Block:diff()}点[gold]格挡[/gold]。\n抽{Cards:diff()}张牌。\n消耗。",
   "EZMB_WITHERED_HUSK.title": "枯壳",
@@ -55,5 +55,6 @@
   "EZMB_MORVI_RED_INK_OVERDRAFT.title": "红墨透支",
   "EZMB_MORVI_RED_INK_OVERDRAFT.description": "[gold]临时[/gold]。只能在你拥有[blue]0[/blue]点[gold]能量[/gold]时打出。抽[blue]2[/blue]张牌，获得[blue]1[/blue]点[gold]能量[/gold]，并记录[blue]1[/blue]笔[gold]红墨债[/gold]。",
   "EZMB_MORVI_WASTE_PAPER.title": "废纸",
-  "EZMB_MORVI_WASTE_PAPER.description": "[gold]临时[/gold]。纸页风暴可以在它从[gold]抽牌堆[/gold]被抽到时将其消耗。"
+  "EZMB_MORVI_WASTE_PAPER.description": "[gold]临时[/gold]。纸页风暴可以在它从[gold]抽牌堆[/gold]被抽到时将其消耗。",
+  "EZMB_URDA_SEEDBED.immediateLine": "\n立即从抽牌堆或弃牌堆中种下至多[blue]{ImmediatePlantCount}[/blue]张可种下的牌。"
 }

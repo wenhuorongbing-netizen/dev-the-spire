@@ -282,7 +282,7 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.DoesNotContain("TryCatchSeedbedCardFromHand", urdaRunHook, StringComparison.Ordinal);
         AssertSourceContains(
             seedbedCombatSource,
-            "CardSelectorPrefs(new LocString(\"cards\", \"EZMB_URDA_SEEDBED.selectionScreenPrompt\"), 1, 1)",
+            "CardSelectorPrefs(new LocString(\"cards\", \"EZMB_URDA_SEEDBED.selectionScreenPrompt\"), 1, selectionCount)",
             "card is WitheredHusk",
             "card is RootFamilyCard rootblight",
             "RootDeckService.CanHoldRootblightBySeedbed(rootblight)",
@@ -300,8 +300,8 @@ public sealed class UrdaReleaseCoverageGuardTests
         AssertSourceContains(
             urdaCards,
             "public sealed class UrdaSeedbed",
-            "new BlockVar(7m, ValueProp.Move)",
-            "DynamicVars.Block.UpgradeValueBy(3m)");
+            "new BlockVar(8m, ValueProp.Move)",
+            "DynamicVars.Block.UpgradeValueBy(4m)");
         var seedbedAlternative = SliceBetween(seedbedRewardSource, "private static bool TryAddSeedbedAlternative", "private static async Task AcceptSeedbed");
         Assert.DoesNotContain("SeedbedChecks = progress.SeedbedChecks + 1", seedbedAlternative, StringComparison.Ordinal);
         AssertSourceContains(

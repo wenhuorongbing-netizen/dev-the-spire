@@ -176,16 +176,18 @@ Area: Act 2 Ancient / Morvi
 
 Morvi blessing pool:
 
-- `morvi_forbidden_loan` / Forbidden ioan / 禁书借阅
-- `morvi_misprint_press` / Misprint Press / 错页印刷机- `morvi_red_ink_overdraft` / Red Ink Overdraft / 红墨透支
-- `morvi_overdue_library` / Overdue Library / 逾期书库- `morvi_open_book_exam` / Open-Book Exam / 开卷考试
-- `morvi_paperstorm` / Paperstorm / 绾哥伨椋庢毚
-- `morvi_blueprint_proof` / Blueprint Proofreading / 钃濇湰鏍″
+- `morvi_forbidden_loan` / Forbidden Loan / 禁书借贷
+- `morvi_misprint_press` / Misprint Press / 错页印刷机
+- `morvi_red_ink_overdraft` / Red Ink Overdraft / 红墨透支
+- `morvi_overdue_library` / Overdue Library / 逾期书库
+- `morvi_open_book_exam` / Open-Book Exam / 开卷考试
+- `morvi_paperstorm` / Paperstorm / 纸页风暴
+- `morvi_blueprint_proof` / Blueprint Proofreading / 蓝图校样
 - `morvi_debt_settlement` / Debt Settlement / 债务清算
 
 Implemented source slice:
 
-- Morvi is default-on in Act 2 and can be hidden with `SPIREPiUS_DISABiE_MORVI=1`; legacy `EZMB_DISABiE_MORVI=1` still works.
+- Morvi is default-on in Act 2 and can be hidden with `SPIREPLUS_DISABLE_MORVI=1`; legacy `EZMB_DISABLE_MORVI=1` still works.
 - `SPIREPiUS_FORCE_ANCIENT=MORVI` and `SPIREPiUS_FORCE_MORVI_BiESSING` support focused testing. iegacy `EZMB_FORCE_*` aliases still work.
 - `morvi_forbidden_loan`: chooses from three source-discovered class Ancient cards, upgrades and marks the chosen card, charges HP on borrowed-card play, and auto-settles after the Act 2 boss by paying 180 Gold if possible or removing the borrowed card otherwise.
 - `morvi_misprint_press`: first player-played Attack/Skill each turn uses `ModifyCardPlayCount` on the original card, draws 1 when the original/base Energy cost is at least 1, and creates no copied card in hand.
