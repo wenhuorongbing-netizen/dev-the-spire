@@ -199,6 +199,376 @@ function detail(label, text, labelEn, textEn) {
   return { label, text, labelEn, textEn };
 }
 
+function mechanic(id, title, desc, bullets, terms, relatedItemKeys = [], relatedMechanicIds = [], options = {}) {
+  return {
+    id,
+    title,
+    titleEn: options.titleEn,
+    desc,
+    descEn: options.descEn,
+    bullets,
+    bulletsEn: options.bulletsEn,
+    terms,
+    termsEn: options.termsEn,
+    relatedItemKeys,
+    relatedMechanicIds,
+    tags: options.tags || ["机制"],
+    keywordClass: options.keywordClass || "sts-keyword-gold",
+    icon: options.icon || "assets/card_portraits/morvi_archive_pages.png"
+  };
+}
+
+const mechanicGlossary = [
+  mechanic(
+    "archive_pages",
+    "档案页",
+    "莫尔维的0费临时页。逾期书库会在战斗开始时给3张随机档案页；每张页只在当前战斗存在。",
+    ["抽取页抽2张牌。", "遮蔽页获得14点格挡。", "焚页对所有敌人造成10点伤害。", "折价页让本回合下一张牌费用变为0。", "勇武页获得2点临时力量。", "灵巧页获得2点临时敏捷。"],
+    ["档案页", "临时页", "抽取页", "遮蔽页", "焚页", "折价页", "勇武页", "灵巧页"],
+    [
+      "EZMB_MORVI.pages.INITIAL.options.morvi_overdue_library.description",
+      "EZMB_MORVI_ARCHIVE_DRAW_PAGE.description",
+      "EZMB_MORVI_ARCHIVE_VEIL_PAGE.description",
+      "EZMB_MORVI_ARCHIVE_BURN_PAGE.description",
+      "EZMB_MORVI_ARCHIVE_DISCOUNT_PAGE.description",
+      "EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description",
+      "EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE.description"
+    ],
+    ["temporary"],
+    {
+      titleEn: "Archive Pages",
+      descEn: "Morvi's 0-cost temporary pages. Overdue Library adds 3 random Archive Pages at combat start; each page exists only for the current combat.",
+      bulletsEn: ["Draw Page draws 2 cards.", "Veil Page gains 14 Block.", "Burn Page deals 10 damage to all enemies.", "Discount Page makes the next card played this turn cost 0.", "Bravery Page gains 2 temporary Strength.", "Dexterity Page gains 2 temporary Dexterity."],
+      termsEn: ["Archive Page", "Archive Pages", "Draw Page", "Veil Page", "Burn Page", "Discount Page", "Bravery Page", "Dexterity Page", "temporary page", "temporary pages"]
+    }
+  ),
+  mechanic(
+    "temporary",
+    "临时",
+    "临时牌只服务当前战斗或当前生成流程。它们通常不会进入长期牌组，战斗后会被移除。",
+    ["临时牌可以正常被打出、消耗或被其它机制处理。", "苗床会优先种下临时状态牌、临时诅咒牌和根芽。", "档案页、契约、雨息、幼芽、枯壳都属于这类短期资源。"],
+    ["临时", "临时牌"],
+    ["EZMB_URDA_SEEDLING.description", "EZMB_URDA_RAIN_BREATH.description", "EZMB_WITHERED_HUSK.description"],
+    ["archive_pages", "contract", "seedbed"],
+    {
+      titleEn: "Temporary",
+      descEn: "Temporary cards serve the current combat or generation flow. They usually do not enter the long-term deck and are removed after combat.",
+      bulletsEn: ["Temporary cards can still be played, exhausted, or handled by other mechanics.", "Seedbed plants Temporary Status cards, Temporary Curse cards, and Blight Sprouts first.", "Archive Pages, Contracts, Rain Breath, Seedling, and Withered Husk are short-term resources."],
+      termsEn: ["Temporary", "temporary card", "temporary cards"]
+    }
+  ),
+  mechanic(
+    "seedbed",
+    "苗床",
+    "乌尔妲的负面牌处理轴。苗床设置格数，之后进入手牌的临时状态牌、临时诅咒牌或根芽会优先被种下。",
+    ["每种下1张牌，加入1张枯壳。", "枯壳被消耗时获得3点格挡。", "苗床不会种下枯壳本身。"],
+    ["苗床", "种下", "枯壳"],
+    ["EZMB_URDA.pages.INITIAL.options.urda_seedbed.description", "EZMB_URDA_SEEDBED.description", "EZMB_WITHERED_HUSK.description", "EZMB_ROOT_BUD.description"],
+    ["temporary", "blight_sprout"],
+    {
+      titleEn: "Seedbed",
+      descEn: "Urda's negative-card handling axis. Seedbed sets slots, then later Temporary Status cards, Temporary Curse cards, or Blight Sprouts entering hand are planted first.",
+      bulletsEn: ["Each planted card adds 1 Withered Husk.", "Withered Husk gains 3 Block when exhausted.", "Seedbed cannot plant Withered Husk itself."],
+      termsEn: ["Seedbed", "Seedbeds", "plant", "planted", "Withered Husk"]
+    }
+  ),
+  mechanic(
+    "rootblight",
+    "根蚀",
+    "A14开始出现的长期污染。根蚀留在主牌组中过战斗会恶化；打出它可以把污染降级或移除。",
+    ["根蚀 I：打出后从主牌组移除；没处理会变为根蚀 II。", "根蚀 II：打出后移除，战后加入根蚀 I；没处理会变为根蚀 III。", "根蚀 III：打出后移除，战后加入根蚀 II；第一次继续恶化时额外加入根蚀 I。没有第四阶段。", "最多4张根蚀。休息会移除最高等级根蚀。"],
+    ["根蚀", "根蚀 I", "根蚀 II", "根蚀 III"],
+    ["LEVEL_14.description", "EZMB_ROOT.description", "EZMB_DEEP_ROOT.description", "EZMB_ROOTBLIGHT_III.description", "EZMB_ROOT_BUD.description"],
+    ["blight_sprout", "seedbed"],
+    {
+      titleEn: "Rootblight",
+      descEn: "A long-term pollution system starting at A14. Rootblight left in the master deck worsens after combat; playing it removes or downgrades the pollution.",
+      bulletsEn: ["Rootblight I: playing it removes it from the master deck; ignoring it turns it into Rootblight II.", "Rootblight II: playing it removes it and adds Rootblight I after combat; ignoring it turns it into Rootblight III.", "Rootblight III: playing it removes it and adds Rootblight II after combat; the first continued worsen adds Rootblight I. There is no stage IV.", "Max 4 Rootblights. Resting removes the highest-stage Rootblight."],
+      termsEn: ["Rootblight", "Rootblights", "Rootblight I", "Rootblight II", "Rootblight III"],
+      keywordClass: "sts-keyword-purple"
+    }
+  ),
+  mechanic(
+    "blight_sprout",
+    "根芽",
+    "根芽是短期压力牌。第3或第4回合开始时，如果还没进过手牌，会被放到抽牌堆顶。",
+    ["见到后不打出，战斗后加入根蚀 I。", "从未见到则枯萎，不进入长期牌组。", "苗床可以种下根芽，避免根蚀增长。"],
+    ["根芽"],
+    ["LEVEL_15.description", "LEVEL_18.description", "EZMB_ROOT_BUD.description", "EZMB_URDA_SEEDBED.description"],
+    ["rootblight", "seedbed"],
+    {
+      titleEn: "Blight Sprout",
+      descEn: "Blight Sprout is a short-term pressure card. On round 3 or 4, if it has not entered hand, it is placed on top of the draw pile.",
+      bulletsEn: ["If seen and not played, it adds Rootblight I after combat.", "If never seen, it withers and does not enter the long-term deck.", "Seedbed can plant Blight Sprout to prevent Rootblight growth."],
+      termsEn: ["Blight Sprout", "Blight Sprouts", "Sprout", "Sprouts"],
+      keywordClass: "sts-keyword-purple"
+    }
+  ),
+  mechanic(
+    "blood_debt",
+    "血债",
+    "瓦库试炼的战斗债务。血债越高，瓦库每段攻击越痛；试炼结算时会先用破锁赃物偿还。",
+    ["每层血债使瓦库每段攻击伤害+2。", "试炼结束时，每层先扣15赃物金币。", "赃物不足时，剩余债务以非致命生命支付。"],
+    ["血债"],
+    ["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description", "EZMB_VAKUU_KNIFE_CONTRACT.description", "EZMB_VAKUU_TEMPTATION.description", "EZMB_VAKUU_SHELTER_CONTRACT.description", "EZMB_VAKUU_TRICK_CONTRACT.description"],
+    ["contract", "stolen_lock"],
+    {
+      titleEn: "Blood Debt",
+      descEn: "Vakuu Trial's combat debt. More Blood Debt makes every Vakuu attack hit harder; trial loot pays it off first.",
+      bulletsEn: ["Each stack makes each Vakuu attack hit deal 2 more damage.", "At trial end, each stack removes 15 loot Gold first.", "Unpaid debt costs nonlethal HP."],
+      termsEn: ["Blood Debt"],
+      keywordClass: "sts-keyword-purple",
+      icon: "assets/powers/vakuu_blood_debt.png"
+    }
+  ),
+  mechanic(
+    "contract",
+    "契约",
+    "瓦库试炼第1、3、5回合提供契约选择。契约帮你破锁、抽牌、防御或收手，但多数会提高血债。",
+    ["刀契：造成伤害，失去生命，破1把锁并增加1层血债。", "金契：获得能量并抽牌，失去生命，破1把锁并增加1层血债。", "避债契：获得格挡并移除血债。", "诈契：破1把锁并增加血债，同时让瓦库下一次攻击更痛。", "兑现：至少破1把锁后结束战斗并拿走破锁收益。"],
+    ["契约", "刀契", "金契", "避债契", "诈契", "兑现"],
+    ["EZMB_VAKUU_KNIFE_CONTRACT.description", "EZMB_VAKUU_TEMPTATION.description", "EZMB_VAKUU_SHELTER_CONTRACT.description", "EZMB_VAKUU_TRICK_CONTRACT.description", "EZMB_VAKUU_CASH_OUT_CONTRACT.description"],
+    ["blood_debt", "stolen_lock"],
+    {
+      titleEn: "Contracts",
+      descEn: "Vakuu Trial offers Contracts on turns 1, 3, and 5. They help break locks, draw, defend, or cash out, but most increase Blood Debt.",
+      bulletsEn: ["Knife Contract: deals damage, loses HP, breaks 1 lock, and adds 1 Blood Debt.", "Gold Contract: gains Energy and draws, loses HP, breaks 1 lock, and adds 1 Blood Debt.", "Avoid Debt: gains Block and removes Blood Debt.", "Fraud Contract: breaks 1 lock and adds Blood Debt, while making Vakuu's next attack stronger.", "Cash Out: after breaking at least 1 lock, ends the fight and takes broken-lock loot."],
+      termsEn: ["Contract", "Contracts", "Knife Contract", "Gold Contract", "Avoid Debt", "Fraud Contract", "Cash Out"]
+    }
+  ),
+  mechanic(
+    "stolen_lock",
+    "赃物锁",
+    "瓦库试炼的收益门槛。你需要至少打破1把锁才能收手；破得越多，最后的赃物和额外祝福选择越多。",
+    ["契约和伤害窗口会打破赃物锁。", "破锁收益会先偿还血债，剩余才归玩家。", "战斗没有普通战斗奖励。"],
+    ["赃物锁", "破锁"],
+    ["VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description", "EZMB_VAKUU_CASH_OUT_CONTRACT.description"],
+    ["blood_debt", "contract"],
+    {
+      titleEn: "Stolen Locks",
+      descEn: "Vakuu Trial's loot gate. You need to break at least 1 lock before cashing out; more broken locks mean more loot and blessing choices.",
+      bulletsEn: ["Contracts and damage windows break Stolen Locks.", "Lock loot pays Blood Debt first; only the remainder is kept.", "The fight has no normal combat rewards."],
+      termsEn: ["Stolen Lock", "Stolen Locks", "lock", "locks"]
+    }
+  ),
+  mechanic(
+    "verdict",
+    "裁决",
+    "洛莎的第4回合爆发资源。裁决层数会强化接下来打出的非状态牌。",
+    ["攻击牌和技能牌会额外打出1次。", "能力牌不会额外打出，改为本次费用变为0并抽1张牌。", "延期判决提供3层裁决；若战斗在第4回合前结束，回复4点生命。"],
+    ["裁决"],
+    ["EZMB_LOTHA.pages.INITIAL.options.lotha_deferred_verdict.description"],
+    ["replay"],
+    {
+      titleEn: "Verdict",
+      descEn: "Lotha's turn-4 burst resource. Verdict stacks empower the next non-Status cards played.",
+      bulletsEn: ["Attacks and Skills play 1 extra time.", "Powers do not replay; they cost 0 for that play and draw 1 card instead.", "Deferred Verdict grants 3 Verdict on turn 4; if combat ends before turn 4, heal 4 HP."],
+      termsEn: ["Verdict"],
+      keywordClass: "sts-keyword-gold"
+    }
+  ),
+  mechanic(
+    "replay",
+    "额外打出",
+    "当前文本中写作“额外打出X次”。它会再次结算攻击牌或技能牌；能力牌使用安全替代收益。",
+    ["攻击牌和技能牌按原效果额外结算。", "能力牌不额外打出，通常改为0费、抽牌等安全收益。", "同一个来源不会递归触发自己。"],
+    ["额外打出", "重放"],
+    ["EZMB_LOTHA.pages.INITIAL.options.lotha_deferred_verdict.description", "BOSS_SEAL_CHOSEN_DECREE.summary"],
+    ["verdict"],
+    {
+      titleEn: "Extra Play",
+      descEn: "Current text says \"play extra times\". It resolves Attacks and Skills again; Powers use safe replacement rewards.",
+      bulletsEn: ["Attacks and Skills resolve their effect again.", "Powers are not replayed; they usually become 0-cost and draw cards or similar safe rewards.", "A source cannot recursively trigger itself."],
+      termsEn: ["play extra time", "play extra times", "extra play", "Replay"],
+      keywordClass: "sts-keyword-gold"
+    }
+  ),
+  mechanic(
+    "debt",
+    "债务",
+    "莫尔维和黄金之印都会使用的资源压力。债务会把当前的强度提前给你，再在之后用金币或生命偿还。",
+    ["债务清算立即给220金币、删牌和升级，然后记录320债务。", "每场战斗后偿还40金币；金币不足时每缺10金币失去3点非致命生命。", "黄金之印会加入可打出的债务诅咒，被消耗时失去至多5金币。"],
+    ["债务"],
+    ["EZMB_MORVI.pages.INITIAL.options.morvi_debt_settlement.description", "SEAL_OF_GOLD.description"],
+    ["red_ink_debt"],
+    {
+      titleEn: "Debt",
+      descEn: "A resource pressure used by Morvi and Seal of Gold. Debt gives power now and collects Gold or HP later.",
+      bulletsEn: ["Debt Settlement immediately grants 220 Gold, removals, and upgrades, then records 320 Debt.", "After each combat, repay 40 Gold; if short, lose 3 nonlethal HP per missing 10 Gold.", "Seal of Gold adds playable Debt Curses that lose up to 5 Gold when exhausted."],
+      termsEn: ["Debt"],
+      keywordClass: "sts-keyword-gold"
+    }
+  ),
+  mechanic(
+    "red_ink_debt",
+    "红墨债",
+    "红墨透支的短期账。你在0能量时主动换取抽牌和能量，战斗后再付账。",
+    ["每回合限1次。", "抽2张牌并获得1点能量。", "战斗后支付12金币；金币不足则失去3点生命。"],
+    ["红墨债", "透支"],
+    ["EZMB_MORVI.pages.INITIAL.options.morvi_red_ink_overdraft.description", "EZMB_MORVI_RED_INK_OVERDRAFT.description"],
+    ["debt"],
+    {
+      titleEn: "Red-Ink Debt",
+      descEn: "Red Ink Overdraft's short-term bill. At 0 Energy, you actively trade later payment for cards and Energy now.",
+      bulletsEn: ["Once per turn.", "Draw 2 cards and gain 1 Energy.", "After combat, pay 12 Gold; if short, lose 3 HP."],
+      termsEn: ["red-ink debt", "Overdraft", "Red Ink Overdraft"],
+      keywordClass: "sts-keyword-gold"
+    }
+  ),
+  mechanic(
+    "fission",
+    "裂变",
+    "A13奖励附魔。裂变只会出现在合格的攻击牌和技能牌上。",
+    ["普通战10%，战旗房15%，火印精英20%，首领5%。", "只作用于普通、罕见、稀有攻击或技能。", "X费、0费、已有附魔、消耗牌和不能生成附魔的牌不会获得裂变。", "裂变牌耗能-1，打出后消耗。"],
+    ["裂变"],
+    ["LEVEL_13.description"],
+    [],
+    {
+      titleEn: "Fission",
+      descEn: "An A13 reward enchantment. Fission appears only on eligible Attacks and Skills.",
+      bulletsEn: ["Rates: normal combat 10%, Banner Room 15%, Firemarked Elite 20%, Boss 5%.", "Only Common, Uncommon, or Rare Attacks and Skills are eligible.", "X-cost, 0-cost, already enchanted, Exhaust, and non-enchantable cards are excluded.", "Fission reduces cost by 1 and Exhausts the card after play."],
+      termsEn: ["Fission"],
+      keywordClass: "sts-keyword-gold"
+    }
+  ),
+  mechanic(
+    "firemark",
+    "火印",
+    "A12的强化精英规则。火印会选择1名宿主，给它完整火印，并让战斗带有公开反制窗口。",
+    ["火印精英奖励更高，击败后获得铸令；已有铸令时改为15金币。", "火印种类包括烈力、巨体、锻甲、恒愈。", "溢火每次最多影响1名非召唤副目标。"],
+    ["火印", "火印精英"],
+    ["LEVEL_12.description", "FIREMARK_MIGHT.description", "FIREMARK_GIANT.description", "FIREMARK_FORGE_ARMOR.description", "FIREMARK_CONSTANT_HEAL.description"],
+    ["overflow", "forge_token"],
+    {
+      titleEn: "Firemark",
+      descEn: "A12's enhanced Elite rule. One host receives the full Firemark, and the fight exposes a counterplay window.",
+      bulletsEn: ["Firemarked Elites have better rewards. Defeat one to gain a Forge Token; if you already have one, gain 15 Gold instead.", "Firemarks include Might, Giant, Forge Armor, and Constant Heal.", "Overflow affects at most 1 non-summoned secondary target each time."],
+      termsEn: ["Firemark", "Firemarked Elite", "Firemarked Elites"]
+    }
+  ),
+  mechanic(
+    "overflow",
+    "溢火",
+    "火印的副目标扩散。宿主触发或被打破窗口时，溢火会把一小部分效果给另一名敌人。",
+    ["烈力：给1名正在攻击的副目标临时力量。", "巨体：打破熔核时对1名副目标造成溢火伤害。", "锻甲：给1名副目标格挡。", "恒愈：治疗成功时为1名受伤副目标回复生命。"],
+    ["溢火"],
+    ["FIREMARK_MIGHT.description", "FIREMARK_GIANT.description", "FIREMARK_FORGE_ARMOR.description", "FIREMARK_CONSTANT_HEAL.description"],
+    ["firemark"],
+    {
+      titleEn: "Overflow",
+      descEn: "Firemark spillover. When the host triggers or its window breaks, Overflow gives a smaller effect to another enemy.",
+      bulletsEn: ["Might: gives temporary Strength to 1 attacking secondary enemy.", "Giant: breaking Molten Core deals overflow damage to 1 secondary enemy.", "Forge Armor: gives Block to 1 secondary enemy.", "Constant Heal: successful healing restores HP to 1 damaged secondary enemy."],
+      termsEn: ["Overflow"]
+    }
+  ),
+  mechanic(
+    "forge_token",
+    "铸令",
+    "击败火印精英后获得的下个休息处奖励。",
+    ["休息：随机升级1张可升级普通/罕见牌；没有目标则回复5点生命。", "锻造：额外回复7点生命。", "若已经持有铸令，再击败火印精英改为获得15金币。"],
+    ["铸令"],
+    ["LEVEL_12.description"],
+    ["firemark"],
+    {
+      titleEn: "Forge Token",
+      descEn: "The next-rest-site reward from defeating a Firemarked Elite.",
+      bulletsEn: ["Rest: randomly upgrades 1 upgradable Common/Uncommon card; if none exists, heals 5 HP.", "Smith: additionally heals 7 HP.", "If you already have a Forge Token, another Firemarked Elite converts to 15 Gold."],
+      termsEn: ["Forge Token"]
+    }
+  ),
+  mechanic(
+    "banner",
+    "战旗",
+    "A16的公开规则强化普通战。战旗房会在进房前显示具体规则，奖励里也有更高裂变率。",
+    ["战旗池：先锋、盾阵、血赏、压阵、残阵。", "盾阵和残阵需要多敌人战；单敌人战回退为血赏。", "战旗房卡牌奖励裂变率为15%。"],
+    ["战旗", "战旗房"],
+    ["LEVEL_16.description", "BANNER_VANGUARD.description", "BANNER_SHIELDWALL.description", "BANNER_BLOOD_PRIZE.description", "BANNER_PRESSING_LINE.description", "BANNER_LAST_STAND.description"],
+    ["fission"],
+    {
+      titleEn: "Banner",
+      descEn: "A16's visible-rule enhanced normal combat. Banner Rooms show their exact rule before entry and use a higher Fission reward rate.",
+      bulletsEn: ["Banner pool: Vanguard, Shieldwall, Blood Prize, Pressing Line, Last Stand.", "Shieldwall and Last Stand require multi-enemy fights; single-enemy fights fall back to Blood Prize.", "Banner Room card rewards use a 15% Fission chance."],
+      termsEn: ["Banner", "Banner Room", "Banner Rooms"]
+    }
+  ),
+  mechanic(
+    "royal_decree",
+    "御令",
+    "女王A19专属能力。女王施加束缚时，其中1张束缚牌会被标记为御令牌。",
+    ["打出御令牌不会触发额外惩罚。", "打出非御令束缚牌时，女王获得1层威仪。", "没有打出束缚牌时，女王获得1层威仪，火炬头获得1点力量。"],
+    ["御令", "御令牌"],
+    ["BOSS_SEAL_CHOSEN_DECREE.summary"],
+    ["majesty", "bound"],
+    {
+      titleEn: "Royal Decree",
+      descEn: "Queen's A19 dedicated ability. When Queen applies Bound, 1 Bound card is marked as the Decree.",
+      bulletsEn: ["Playing the Decree has no extra penalty.", "Playing a non-Decree Bound card gives Queen 1 Majesty.", "Playing no Bound card gives Queen 1 Majesty and Torch Head 1 Strength."],
+      termsEn: ["Royal Decree", "Decree"]
+    }
+  ),
+  mechanic(
+    "majesty",
+    "威仪",
+    "女王御令惩罚产生的防御资源。威仪会强化女王下一次防御或屏障动作。",
+    ["每层威仪让下一次防御或屏障动作额外获得8点格挡。", "A19最多2层。", "A20烙印形态上限变为3层，且一次防御或屏障最多消耗2层。"],
+    ["威仪"],
+    ["BOSS_SEAL_CHOSEN_DECREE.summary"],
+    ["royal_decree", "bound"],
+    {
+      titleEn: "Majesty",
+      descEn: "Queen's defensive resource from Royal Decree punishment. Majesty strengthens Queen's next defense or barrier action.",
+      bulletsEn: ["Each Majesty adds 8 Block to the next defense or barrier action.", "A19 cap is 2 stacks.", "A20 Branded Form raises the cap to 3 and lets one defense/barrier action spend at most 2 stacks."],
+      termsEn: ["Majesty"]
+    }
+  ),
+  mechanic(
+    "bound",
+    "束缚",
+    "女王施加到玩家牌上的限制。御令会在束缚牌中标记1张必须优先处理的目标。",
+    ["本网站主要记录Spire Plus新增的御令交互。", "打出正确的御令牌可以避免额外惩罚。", "打出其他束缚牌或完全不处理束缚，会加强敌人。"],
+    ["束缚"],
+    ["BOSS_SEAL_CHOSEN_DECREE.summary"],
+    ["royal_decree", "majesty"],
+    {
+      titleEn: "Bound",
+      descEn: "Queen's card restriction. Royal Decree marks one Bound card as the required target.",
+      bulletsEn: ["This site mainly records the new Spire Plus Royal Decree interaction.", "Playing the correct Decree avoids the extra penalty.", "Playing another Bound card or ignoring Bound strengthens enemies."],
+      termsEn: ["Bound"]
+    }
+  ),
+  mechanic(
+    "trial_branch",
+    "试炼枝条",
+    "乌尔妲的三场战斗小任务。选中的牌升级入库，但必须在接下来三场战斗里证明自己。",
+    ["从4张牌中选1张。", "该牌升级后加入牌组并获得试炼枝条标记。", "接下来3场战斗每场都要打出它；漏掉任何一场都会移除。"],
+    ["试炼枝条", "试种枝条"],
+    ["EZMB_URDA.pages.INITIAL.options.urda_trial_branch.description"],
+    [],
+    {
+      titleEn: "Trial Branch",
+      descEn: "Urda's three-combat mini-quest. The chosen card joins upgraded, but must prove itself over the next three combats.",
+      bulletsEn: ["Choose 1 of 4 cards.", "It is upgraded, added to the deck, and marked with Trial Branch.", "Play it in each of the next 3 combats; missing any combat removes it."],
+      termsEn: ["Trial Branch"]
+    }
+  ),
+  mechanic(
+    "sway",
+    "婆娑",
+    "预留机制词条。当前包的源码和本地化中没有独立的婆娑定义，也没有战斗触发；网站先保留入口，等后续设计落地后直接补正式效果。",
+    ["当前状态：未实装。", "不会影响当前私测包战斗。", "后续若进入设计，会在这里记录具体触发、层数和结算。"],
+    ["婆娑"],
+    [],
+    [],
+    {
+      titleEn: "Sway",
+      descEn: "Reserved mechanic entry. Current source and localization do not define a standalone Sway effect or combat trigger; the site keeps this anchor for a later design.",
+      bulletsEn: ["Current state: not implemented.", "It does not affect the current private-test package.", "If it enters the design later, trigger, stacks, and resolution will be recorded here."],
+      termsEn: ["Sway"],
+      keywordClass: "sts-keyword-purple"
+    }
+  )
+];
+
 window.SPIRE_PLUS_DATA = {
   labels: {
     brandSub: "Spire Plus，一个更好的《杀戮尖塔 2》拓展 · 温火融冰制作",
@@ -226,6 +596,13 @@ window.SPIRE_PLUS_DATA = {
     searchPlaceholder: "\u9057\u7269\u3001\u5148\u53e4\u3001\u8fdb\u9636\u3001\u5173\u952e\u8bcd",
     vanilla: "\u539f\u7248",
     current: "\u5f53\u524d",
+    lockFocus: "锁定关注",
+    pinnedFocus: "已锁定",
+    unlockFocus: "取消锁定",
+    relatedChanges: "相关改动",
+    relatedMechanics: "机制解释",
+    mechanicCodex: "机制资料库",
+    mechanicTag: "机制",
     expandDetails: "\u5177\u4f53\u6548\u679c",
     sourceArtPlaceholder: "\u539f\u7248",
     installTitle: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
@@ -265,27 +642,28 @@ window.SPIRE_PLUS_DATA = {
     changeLog: "\u66f4\u65b0\u8bb0\u5f55",
     noTitle: "\u672a\u547d\u540d"
   },
+  mechanics: mechanicGlossary,
   summary: [],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.0.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.1.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/latest/download/SpirePlus-v0.1.0-private-beta.0.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/latest/download/SpirePlus-v0.1.0-private-beta.1.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
     releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/latest",
     baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.1.4/BaseLib.3.1.4.zip",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.0.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.0"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.1.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.1"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,921,527 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "B1F999EEA895AB364FA062C0B481203AC3A3C1AD2170B3B589BFB1019673FE53"]
+      ["\u4f53\u79ef", "18,923,321 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.0.zip\u3002",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.1.zip\u3002",
     "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -318,7 +696,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.0"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.1"]
     ]
   },
   updateGroups: [
@@ -454,7 +832,8 @@ window.SPIRE_PLUS_DATA = {
         card("EZMB_VAKUU_TRICK_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
         card("EZMB_VAKUU_CASH_OUT_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
         manual("\u6c34\u6676\u7403\u9884\u77e5", "\u539f\u7248\u65e0\u9884\u77e5\u6309\u94ae\u3002", "\u6c34\u6676\u7403\u5c0f\u6e38\u620f\u4e2d\u663e\u793a\u9884\u77e5\u6309\u94ae\uff1b\u53ea\u6539\u53d8\u906e\u7f69\u53ef\u89c1\u6027\uff0c\u4e0d\u53d1\u653e\u5956\u52b1\u3002", ["\u9884\u89c8\u5de5\u5177"]),
-        manual("\u53d8\u6362\u771f\u5b9e\u9884\u89c8", "\u539f\u7248\u4e0d\u663e\u793a\u786e\u5b9a\u7ed3\u679c\u3002", "\u4f7f\u7528\u590d\u5236\u7684\u968f\u673a\u6570\u5feb\u7167\u9884\u6d4b\u53d8\u6362\u7ed3\u679c\uff1b\u4e0d\u521b\u5efa\u5361\u724c\uff0c\u4e0d\u63a8\u8fdb\u771f\u5b9e\u968f\u673a\u6570\u3002", ["\u9884\u89c8\u5de5\u5177"])
+        manual("\u53d8\u6362\u771f\u5b9e\u9884\u89c8", "\u539f\u7248\u4e0d\u663e\u793a\u786e\u5b9a\u7ed3\u679c\u3002", "\u4f7f\u7528\u590d\u5236\u7684\u968f\u673a\u6570\u5feb\u7167\u9884\u6d4b\u53d8\u6362\u7ed3\u679c\uff1b\u4e0d\u521b\u5efa\u5361\u724c\uff0c\u4e0d\u63a8\u8fdb\u771f\u5b9e\u968f\u673a\u6570\u3002", ["\u9884\u89c8\u5de5\u5177"]),
+        mechanicHub()
       ]
     }
   ],
@@ -469,7 +848,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.0.zip；游戏内显示名为 Spire Plus。"],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.1.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -589,6 +968,21 @@ function manual(title, vanilla, current, tags, icon) {
   return { title, vanilla, current, tags, icon, i18nKey };
 }
 
+function mechanicHub() {
+  return {
+    title: "机制资料库",
+    titleEn: "Mechanic Codex",
+    vanilla: "原版无此新增内容。",
+    vanillaEn: "No equivalent vanilla content.",
+    current: "集中记录 Spire Plus 的新增机制、相关卡牌和互相引用。点击正文里的机制词或下方链接可以跳到对应条目。",
+    descEn: "A compact reference for Spire Plus mechanics, related cards, and cross-links. Click mechanic terms or related links to inspect them.",
+    tags: ["机制", "资料库"],
+    icon: "assets/card_portraits/morvi_archive_pages.png",
+    i18nKey: "mechanic_codex",
+    mechanicHub: true
+  };
+}
+
 window.SPIRE_PLUS_DATA.i18n = {
   en: {
     labels: {
@@ -616,6 +1010,13 @@ window.SPIRE_PLUS_DATA.i18n = {
       searchPlaceholder: "Relic, Ancient, Ascension, keyword",
       vanilla: "Vanilla",
       current: "Current",
+      lockFocus: "Lock Focus",
+      pinnedFocus: "Locked",
+      unlockFocus: "Unlock",
+      relatedChanges: "Related Changes",
+      relatedMechanics: "Mechanics",
+      mechanicCodex: "Mechanic Codex",
+      mechanicTag: "Mechanic",
       expandDetails: "Exact effects",
       sourceArtPlaceholder: "Vanilla",
       installTitle: "Download & Install",
@@ -667,17 +1068,17 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.0.zip"],
-        ["Version", "v0.1.0-private-beta.0"],
+        ["File", "SpirePlus-v0.1.0-private-beta.1.zip"],
+        ["Version", "v0.1.0-private-beta.1"],
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,921,527 bytes"],
-        ["Hash", "B1F999EEA895AB364FA062C0B481203AC3A3C1AD2170B3B589BFB1019673FE53"]
+        ["Size", "18,923,321 bytes"],
+        ["Hash", "9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.0.zip.",
+      "Download SpirePlus-v0.1.0-private-beta.1.zip.",
       "Download BaseLib.3.1.4.zip and extract it to the game's mods\\BaseLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
@@ -709,7 +1110,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.0"]
+          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.1"]
         ]
       },
     updateGroups: [
@@ -782,7 +1183,9 @@ window.SPIRE_PLUS_DATA.i18n = {
       "烙印形态": "Branded Form",
       "卡牌": "Card",
       "状态": "Status",
-      "预览工具": "Preview tool"
+      "预览工具": "Preview tool",
+      "机制": "Mechanic",
+      "资料库": "Codex"
     },
     items: {
       "VELVET_CHOKER.description": {
@@ -1026,7 +1429,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.0.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.1.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]

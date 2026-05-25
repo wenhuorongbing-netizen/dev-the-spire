@@ -29,6 +29,7 @@
   flattenUpdateItems();
 
   let activeInspectItem = allUpdateItems[0] || null;
+  let pinnedInspectIdentity = null;
 
   function initialLang() {
     const requested = new URLSearchParams(location.search).get("lang") ||
@@ -62,6 +63,7 @@
       knownIssues: patch.knownIssues || base.knownIssues,
       changeLog: patch.changeLog || base.changeLog,
       locFiles: patch.locFiles || base.locFiles,
+      mechanics: patch.mechanics || base.mechanics || [],
       updateGroups: base.updateGroups.map((group, index) => {
         const groupPatch = groupPatches[index] || {};
         const groupItems = groupPatch.items || {};
@@ -86,6 +88,45 @@
     return item.i18nKey || item.descKey || item.titleKey || item.title || item.ancientId || "";
   }
 
+  function inspectIdentity(item) {
+    if (!item) return "";
+    if (item.kind === "mechanic") return `mechanic:${item.mechanicId}`;
+    return `item:${itemKey(item)}`;
+  }
+
+  function isPinned(item = activeInspectItem) {
+    return Boolean(pinnedInspectIdentity && pinnedInspectIdentity === inspectIdentity(item));
+  }
+
+  function getMechanic(id) {
+    return (data.mechanics || []).find((mechanic) => mechanic.id === id);
+  }
+
+  function getMechanicTitle(mechanic) {
+    return text(lang === "en" ? mechanic.titleEn || mechanic.title : mechanic.title);
+  }
+
+  function getMechanicBody(mechanic) {
+    return text(lang === "en" ? mechanic.descEn || mechanic.desc : mechanic.desc);
+  }
+
+  function getMechanicBullets(mechanic) {
+    return lang === "en" ? mechanic.bulletsEn || mechanic.bullets || [] : mechanic.bullets || [];
+  }
+
+  function mechanicInspectItem(id) {
+    const mechanic = getMechanic(id);
+    if (!mechanic) return null;
+    return {
+      kind: "mechanic",
+      mechanicId: mechanic.id,
+      title: getMechanicTitle(mechanic),
+      desc: getMechanicBody(mechanic),
+      icon: mechanic.icon || "assets/relics/relic.png",
+      tags: mechanic.tags || [labels.mechanicTag || "机制"]
+    };
+  }
+
   function translateTags(tags, translations) {
     return (tags || []).map((tag) => translations[tag] || tag);
   }
@@ -101,6 +142,7 @@
     document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
     flattenUpdateItems();
     activeInspectItem = allUpdateItems[0] || null;
+    pinnedInspectIdentity = null;
     render();
   }
 
@@ -114,6 +156,22 @@
       .replace(/\{[^}]+\}/g, "?")
       .replace(/\s+/g, " ")
       .trim();
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function escapeAttr(value) {
+    return escapeHtml(value).replace(/"/g, "&quot;");
+  }
+
+  function cssString(value) {
+    if (window.CSS?.escape) return CSS.escape(value);
+    return String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
   }
 
   function localize(item, field) {
@@ -199,31 +257,307 @@
     ];
   }
 
+  function findUpdateItemByKey(key) {
+    return allUpdateItems.find((item) => itemKey(item) === key);
+  }
+
+  function itemTitle(item) {
+    if (!item) return "";
+    return localize(item, "title") || text(item.title || item.titleEn || item.i18nKey || itemKey(item));
+  }
+
+  function itemSearchText(item) {
+    if (!item) return "";
+    const vanilla = text(lang === "en"
+      ? item.vanillaEn || item.vanilla || item.groupDefaultVanillaEn || item.groupDefaultVanilla
+      : item.vanilla || item.groupDefaultVanilla);
+    return [
+      itemTitle(item),
+      localize(item, "desc") || text(item.current),
+      isPlaceholderVanilla(vanilla) ? "" : vanilla,
+      detailSearchText(item),
+      (item.tags || []).join(" ")
+    ].join(" ");
+  }
+
+  function relationRules() {
+    return [
+      {
+        terms: ["档案页", "临时页", "Archive Page", "Archive Pages"],
+        mechanics: ["archive_pages", "temporary"],
+        items: [
+          "EZMB_MORVI.pages.INITIAL.options.morvi_overdue_library.description",
+          "EZMB_MORVI_ARCHIVE_DRAW_PAGE.description",
+          "EZMB_MORVI_ARCHIVE_VEIL_PAGE.description",
+          "EZMB_MORVI_ARCHIVE_BURN_PAGE.description",
+          "EZMB_MORVI_ARCHIVE_DISCOUNT_PAGE.description",
+          "EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description",
+          "EZMB_MORVI_ARCHIVE_DEXTERITY_PAGE.description"
+        ]
+      },
+      {
+        terms: ["苗床", "枯壳", "Seedbed", "Withered Husk"],
+        mechanics: ["seedbed", "temporary", "blight_sprout"],
+        items: [
+          "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description",
+          "EZMB_URDA_SEEDBED.description",
+          "EZMB_WITHERED_HUSK.description",
+          "EZMB_ROOT_BUD.description"
+        ]
+      },
+      {
+        terms: ["根蚀", "根芽", "Rootblight", "Blight Sprout"],
+        mechanics: ["rootblight", "blight_sprout"],
+        items: [
+          "LEVEL_14.description",
+          "LEVEL_15.description",
+          "LEVEL_18.description",
+          "EZMB_ROOT.description",
+          "EZMB_DEEP_ROOT.description",
+          "EZMB_ROOTBLIGHT_III.description",
+          "EZMB_ROOT_BUD.description"
+        ]
+      },
+      {
+        terms: ["血债", "赃物锁", "契约", "Blood Debt", "Stolen Lock", "Contract"],
+        mechanics: ["blood_debt", "stolen_lock", "contract"],
+        items: [
+          "VAKUU.pages.INITIAL.options.ezmb_vakuu_fight.description",
+          "EZMB_VAKUU_KNIFE_CONTRACT.description",
+          "EZMB_VAKUU_TEMPTATION.description",
+          "EZMB_VAKUU_SHELTER_CONTRACT.description",
+          "EZMB_VAKUU_TRICK_CONTRACT.description",
+          "EZMB_VAKUU_CASH_OUT_CONTRACT.description"
+        ]
+      },
+      {
+        terms: ["裁决", "延期判决", "Verdict", "Deferred Verdict"],
+        mechanics: ["verdict", "replay"],
+        items: [
+          "EZMB_LOTHA.pages.INITIAL.options.lotha_deferred_verdict.description"
+        ]
+      },
+      {
+        terms: ["御令", "威仪", "束缚", "Royal Decree", "Majesty", "Bound"],
+        mechanics: ["royal_decree", "majesty", "bound"],
+        items: [
+          "BOSS_SEAL_CHOSEN_DECREE.summary"
+        ]
+      },
+      {
+        terms: ["债务", "Debt", "红墨", "Red Ink"],
+        mechanics: ["debt", "red_ink_debt"],
+        items: [
+          "SEAL_OF_GOLD.description",
+          "EZMB_MORVI.pages.INITIAL.options.morvi_debt_settlement.description",
+          "EZMB_MORVI.pages.INITIAL.options.morvi_red_ink_overdraft.description",
+          "EZMB_MORVI_RED_INK_OVERDRAFT.description"
+        ]
+      },
+      {
+        terms: ["裂变", "火印", "溢火", "铸令", "战旗", "Fission", "Firemark", "Overflow", "Forge Token", "Banner"],
+        mechanics: ["fission", "firemark", "overflow", "forge_token", "banner"],
+        items: [
+          "LEVEL_12.description",
+          "LEVEL_13.description",
+          "LEVEL_16.description",
+          "FIREMARK_MIGHT.description",
+          "FIREMARK_GIANT.description",
+          "FIREMARK_FORGE_ARMOR.description",
+          "FIREMARK_CONSTANT_HEAL.description",
+          "BANNER_VANGUARD.description",
+          "BANNER_SHIELDWALL.description",
+          "BANNER_BLOOD_PRIZE.description",
+          "BANNER_PRESSING_LINE.description",
+          "BANNER_LAST_STAND.description"
+        ]
+      },
+      {
+        terms: ["执迷", "Enthralled"],
+        items: ["BLOOD_SOAKED_ROSE.description", "ENTHRALLED.description"]
+      },
+      {
+        terms: ["愚行", "Folly"],
+        items: ["PRESERVED_FOG.description", "FOLLY.description"]
+      }
+    ];
+  }
+
+  function relatedForItem(item) {
+    const currentKey = itemKey(item);
+    const content = itemSearchText(item).toLowerCase();
+    const relatedItems = new Map();
+    const relatedMechanics = new Map();
+
+    function addItem(key) {
+      if (!key || key === currentKey || relatedItems.has(key)) return;
+      const target = findUpdateItemByKey(key);
+      if (target) relatedItems.set(key, target);
+    }
+
+    function addMechanic(id) {
+      if (!id || relatedMechanics.has(id)) return;
+      const mechanic = getMechanic(id);
+      if (mechanic) relatedMechanics.set(id, mechanic);
+    }
+
+    for (const mechanic of data.mechanics || []) {
+      const terms = lang === "en" ? mechanic.termsEn || mechanic.terms || [] : mechanic.terms || [];
+      if (terms.some((term) => content.includes(String(term).toLowerCase()))) addMechanic(mechanic.id);
+    }
+
+    for (const rule of relationRules()) {
+      if (rule.terms.some((term) => content.includes(String(term).toLowerCase()))) {
+        (rule.items || []).forEach(addItem);
+        (rule.mechanics || []).forEach(addMechanic);
+      }
+    }
+
+    (item.relatedItems || []).forEach(addItem);
+    (item.relatedMechanics || []).forEach(addMechanic);
+
+    return {
+      items: [...relatedItems.values()].slice(0, 12),
+      mechanics: [...relatedMechanics.values()].slice(0, 12)
+    };
+  }
+
+  function relatedForMechanic(mechanic) {
+    const relatedItems = (mechanic.relatedItemKeys || [])
+      .map(findUpdateItemByKey)
+      .filter(Boolean)
+      .slice(0, 12);
+    const relatedMechanics = (mechanic.relatedMechanicIds || [])
+      .map(getMechanic)
+      .filter(Boolean)
+      .slice(0, 12);
+    return { items: relatedItems, mechanics: relatedMechanics };
+  }
+
+  function renderRelatedLinks(item) {
+    if (!item || item.mechanicHub) return "";
+    const related = item.kind === "mechanic"
+      ? relatedForMechanic(getMechanic(item.mechanicId) || {})
+      : relatedForItem(item);
+    const itemLinks = related.items.map((target) =>
+      `<button type="button" class="link-chip" data-item-key="${escapeAttr(itemKey(target))}">${itemTitle(target)}</button>`
+    ).join("");
+    const mechanicLinks = related.mechanics.map((mechanic) =>
+      `<button type="button" class="link-chip mechanic-chip" data-mechanic-id="${escapeAttr(mechanic.id)}">${getMechanicTitle(mechanic)}</button>`
+    ).join("");
+    if (!itemLinks && !mechanicLinks) return "";
+    return `
+      <section class="related-panel">
+        ${mechanicLinks ? `
+          <div class="related-block">
+            <h4>${labels.relatedMechanics || "机制解释"}</h4>
+            <div class="link-chip-row">${mechanicLinks}</div>
+          </div>
+        ` : ""}
+        ${itemLinks ? `
+          <div class="related-block">
+            <h4>${labels.relatedChanges || "相关改动"}</h4>
+            <div class="link-chip-row">${itemLinks}</div>
+          </div>
+        ` : ""}
+      </section>
+    `;
+  }
+
+  function MechanicCard(mechanic, compact = false) {
+    const bullets = getMechanicBullets(mechanic);
+    const bulletHtml = compact ? "" : `
+      <ul>
+        ${bullets.map((line) => `<li>${formatStsText(text(line))}</li>`).join("")}
+      </ul>
+    `;
+    return `
+      <article class="mechanic-card" id="mechanic-${escapeAttr(mechanic.id)}">
+        <button type="button" class="mechanic-title" data-mechanic-id="${escapeAttr(mechanic.id)}">${getMechanicTitle(mechanic)}</button>
+        <p>${formatStsText(getMechanicBody(mechanic))}</p>
+        ${bulletHtml}
+      </article>
+    `;
+  }
+
+  function MechanicCodexComponent() {
+    return `
+      <section class="mechanic-codex">
+        <h3>${labels.mechanicCodex || "机制资料库"}</h3>
+        <div class="mechanic-codex-grid">
+          ${(data.mechanics || []).map((mechanic) => MechanicCard(mechanic)).join("")}
+        </div>
+      </section>
+    `;
+  }
+
+  function MechanicInspectorComponent(item) {
+    const mechanic = getMechanic(item.mechanicId);
+    if (!mechanic) return "";
+    const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
+    return `
+      <div class="inspector-card-preview mechanic-inspector">
+        <div class="inspector-art-frame">
+          ${renderImage(item.icon, item.title)}
+        </div>
+        <div class="inspector-header">
+          <h2>${item.title}</h2>
+          <div class="inspector-tags">${tagsHtml}</div>
+        </div>
+        ${InspectorActions(item)}
+        <div class="inspector-comp">
+          <div>
+            <h4 class="inspector-sect-title">${labels.mechanicTag || "机制"}</h4>
+            <div class="inspector-desc-block current-box">
+              <p>${formatStsText(getMechanicBody(mechanic))}</p>
+            </div>
+          </div>
+        </div>
+        ${MechanicCard(mechanic)}
+        ${renderRelatedLinks(item)}
+      </div>
+    `;
+  }
+
   function formatStsText(text) {
     if (!text) return "";
-    let escaped = text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    let escaped = escapeHtml(text);
 
     const mappings = [
       { key: "sts-keyword-red", words: ["伤害", "攻击", "造成", "生命", "HP", "Damage", "Attack", "Attacks", "deal", "deals"] },
       { key: "sts-keyword-blue", words: ["格挡", "防御", "Block", "Gain Block"] },
       { key: "sts-keyword-green", words: ["能量", "能量制限", "Energy", "energy"] },
-      { key: "sts-keyword-purple", words: ["消耗", "虚无", "诅诅", "诅咒", "根蚀", "根芽", "脆弱", "虚弱", "易伤", "血债", "Exhaust", "Ethereal", "Curse", "Curses", "Rootblight", "Rootblights", "Sprout", "Sprouts", "Vulnerable", "Weak", "Blood Debt"] },
-      { key: "sts-keyword-gold", words: ["遗物", "先古之民", "先古", "铸令", "金币", "Relic", "Ancient", "Gold", "Forge Token"] }
+      { key: "sts-keyword-purple", words: ["消耗", "虚无", "诅诅", "诅咒", "脆弱", "虚弱", "易伤", "Exhaust", "Ethereal", "Curse", "Curses", "Vulnerable", "Weak"] },
+      { key: "sts-keyword-gold", words: ["遗物", "先古之民", "先古", "金币", "Relic", "Ancient", "Gold"] }
     ];
 
     let index = 0;
     const replacements = {};
-    function register(word, className) {
+    function register(word, className, link = null) {
       const marker = `__STS_MARKER_${index}__`;
-      replacements[marker] = `<span class="${className}">${word}</span>`;
+      const safeWord = escapeHtml(word);
+      if (link?.mechanicId) {
+        replacements[marker] = `<button type="button" class="text-keyword-link ${className}" data-mechanic-id="${escapeAttr(link.mechanicId)}">${safeWord}</button>`;
+      } else if (link?.itemKey) {
+        replacements[marker] = `<button type="button" class="text-keyword-link ${className}" data-item-key="${escapeAttr(link.itemKey)}">${safeWord}</button>`;
+      } else {
+        replacements[marker] = `<span class="${className}">${safeWord}</span>`;
+      }
       index++;
       return marker;
     }
 
     const flatKeywords = [];
+    for (const mechanic of data.mechanics || []) {
+      const terms = lang === "en" ? mechanic.termsEn || mechanic.terms || [] : mechanic.terms || [];
+      for (const word of terms) {
+        flatKeywords.push({
+          word,
+          className: mechanic.keywordClass || "sts-keyword-gold",
+          link: { mechanicId: mechanic.id }
+        });
+      }
+    }
     for (const group of mappings) {
       for (const word of group.words) {
         flatKeywords.push({ word, className: group.key });
@@ -242,7 +576,7 @@
           : escapeRegExp(item.word),
         'gi'
       );
-      escaped = escaped.replace(regex, (match) => register(match, item.className));
+      escaped = escaped.replace(regex, (match) => register(match, item.className, item.link));
     }
 
     for (const marker in replacements) {
@@ -416,6 +750,18 @@
     `;
   }
 
+  function InspectorActions(item) {
+    const locked = isPinned(item);
+    return `
+      <div class="inspector-actions">
+        <button type="button" class="focus-btn ${locked ? "locked" : ""}" data-pin-current="true">
+          ${locked ? labels.pinnedFocus || "已锁定" : labels.lockFocus || "锁定关注"}
+        </button>
+        ${locked ? `<button type="button" class="focus-btn ghost" data-unpin-current="true">${labels.unlockFocus || "取消锁定"}</button>` : ""}
+      </div>
+    `;
+  }
+
   function CardInspectorComponent(item) {
     if (!item) {
       return `
@@ -425,6 +771,8 @@
         </div>
       `;
     }
+
+    if (item.kind === "mechanic") return MechanicInspectorComponent(item);
 
     const title = localize(item, "title");
     const current = localize(item, "desc") || text(item.current);
@@ -443,6 +791,7 @@
           <h2>${title}</h2>
           <div class="inspector-tags">${tagsHtml}</div>
         </div>
+        ${InspectorActions(item)}
         <div class="inspector-comp">
           ${showVanilla ? `
             <div>
@@ -460,6 +809,7 @@
           </div>
         </div>
         ${renderItemDetails(item)}
+        ${item.mechanicHub ? MechanicCodexComponent() : renderRelatedLinks(item)}
       </div>
     `;
   }
@@ -474,9 +824,11 @@
     const detailsText = detailSearchText(item);
     const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
     const searchString = normalize([title, current, searchableVanilla, detailsText, (item.tags || []).join(" ")].join(" "));
+    const identity = inspectIdentity(item);
+    const pinnedClass = pinnedInspectIdentity === identity ? "pinned-inspect" : "";
 
     return `
-      <article class="compare-card ${isActive ? 'active-inspect' : ''}" style="--index: ${index}" data-search="${searchString}" data-index="${index}">
+      <article class="compare-card ${isActive ? 'active-inspect' : ''} ${pinnedClass}" style="--index: ${index}" data-search="${searchString}" data-index="${index}" data-item-key="${escapeAttr(itemKey(item))}">
         <div class="card-header-row">
           <div class="card-art-frame">
             ${renderImage(item.icon, title)}
@@ -538,6 +890,44 @@
         </div>
       </section>
     `;
+  }
+
+  function paintInspector() {
+    const inspectorPane = app.querySelector("#inspectorPane");
+    if (inspectorPane) {
+      inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
+    }
+    const activeIdentity = inspectIdentity(activeInspectItem);
+    const pinnedIdentity = pinnedInspectIdentity;
+    app.querySelectorAll(".compare-card").forEach((card) => {
+      const identity = `item:${card.dataset.itemKey || ""}`;
+      card.classList.toggle("active-inspect", identity === activeIdentity);
+      card.classList.toggle("pinned-inspect", Boolean(pinnedIdentity && identity === pinnedIdentity));
+    });
+  }
+
+  function selectInspectItem(item, { pin = false, reveal = false } = {}) {
+    if (!item) return;
+    activeInspectItem = item;
+    if (pin) pinnedInspectIdentity = inspectIdentity(item);
+    paintInspector();
+
+    if (reveal && item.kind !== "mechanic") {
+      const card = app.querySelector(`.compare-card[data-item-key="${cssString(itemKey(item))}"]`);
+      if (card) {
+        card.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    }
+  }
+
+  function selectMechanic(id, { pin = true } = {}) {
+    const item = mechanicInspectItem(id);
+    if (item) selectInspectItem(item, { pin });
+  }
+
+  function unpinInspector() {
+    pinnedInspectIdentity = null;
+    paintInspector();
   }
 
   function SpireMapStepsComponent(title, steps, cssClass) {
@@ -943,25 +1333,57 @@
 
       // Bind card inspection hover and click listener
       const compareCards = app.querySelectorAll(".compare-card");
-      const inspectorPane = app.querySelector("#inspectorPane");
       compareCards.forEach(card => {
         const index = parseInt(card.dataset.index);
         const item = allUpdateItems[index];
 
-        const selectInspect = () => {
+        const selectInspect = (pin = false) => {
           if (!item) return;
-          activeInspectItem = item;
-          // Dynamically repaint the inspector pane
-          if (inspectorPane) {
-            inspectorPane.innerHTML = CardInspectorComponent(item);
-          }
-          // Mark active class in grid list
-          compareCards.forEach(c => c.classList.remove("active-inspect"));
-          card.classList.add("active-inspect");
+          if (!pin && pinnedInspectIdentity) return;
+          selectInspectItem(item, { pin });
         };
 
-        card.addEventListener("mouseenter", selectInspect);
-        card.addEventListener("click", selectInspect);
+        card.addEventListener("mouseenter", () => selectInspect(false));
+        card.addEventListener("click", (event) => {
+          if (event.target.closest(".text-keyword-link, .link-chip")) return;
+          selectInspect(true);
+        });
+      });
+
+      app.querySelectorAll(".text-keyword-link[data-mechanic-id], .link-chip[data-mechanic-id], .mechanic-title[data-mechanic-id]").forEach(link => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          selectMechanic(link.dataset.mechanicId, { pin: true });
+        });
+      });
+
+      app.querySelectorAll(".text-keyword-link[data-item-key], .link-chip[data-item-key]").forEach(link => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const item = findUpdateItemByKey(link.dataset.itemKey);
+          selectInspectItem(item, { pin: true, reveal: true });
+        });
+      });
+
+      app.querySelectorAll("[data-pin-current]").forEach(button => {
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (activeInspectItem) {
+            pinnedInspectIdentity = inspectIdentity(activeInspectItem);
+            paintInspector();
+          }
+        });
+      });
+
+      app.querySelectorAll("[data-unpin-current]").forEach(button => {
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          unpinInspector();
+        });
       });
 
       // Bind Hero choice event choices actions
@@ -980,6 +1402,40 @@
 
   window.addEventListener("hashchange", render);
   document.addEventListener("click", (event) => {
+    const mechanicLink = event.target.closest(".text-keyword-link[data-mechanic-id], .link-chip[data-mechanic-id], .mechanic-title[data-mechanic-id]");
+    if (mechanicLink) {
+      event.preventDefault();
+      event.stopPropagation();
+      selectMechanic(mechanicLink.dataset.mechanicId, { pin: true });
+      return;
+    }
+
+    const itemLink = event.target.closest(".text-keyword-link[data-item-key], .link-chip[data-item-key]");
+    if (itemLink) {
+      event.preventDefault();
+      event.stopPropagation();
+      const item = findUpdateItemByKey(itemLink.dataset.itemKey);
+      selectInspectItem(item, { pin: true, reveal: true });
+      return;
+    }
+
+    const pinButton = event.target.closest("[data-pin-current]");
+    if (pinButton) {
+      event.preventDefault();
+      if (activeInspectItem) {
+        pinnedInspectIdentity = inspectIdentity(activeInspectItem);
+        paintInspector();
+      }
+      return;
+    }
+
+    const unpinButton = event.target.closest("[data-unpin-current]");
+    if (unpinButton) {
+      event.preventDefault();
+      unpinInspector();
+      return;
+    }
+
     const langButton = event.target.closest("[data-lang]");
     if (langButton) {
       event.preventDefault();

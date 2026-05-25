@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -26,10 +26,10 @@ public sealed class WebsiteContentGuardTests
     public void WebsitePackageMetadataMatchesCurrentPackageHash()
     {
         var websiteData = ReadRepoText("website", "content-data.js");
-        Assert.Contains("2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006", websiteData, StringComparison.Ordinal);
+        Assert.Contains("9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E", websiteData, StringComparison.Ordinal);
         Assert.DoesNotContain("2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605", websiteData, StringComparison.Ordinal);
 
-        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.0.zip");
+        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.1.zip");
         if (File.Exists(packagePath))
         {
             var package = new FileInfo(packagePath);
@@ -69,12 +69,12 @@ public sealed class WebsiteContentGuardTests
             "\"CLAWS.description\": \"claws.png\"",
             "At the start of your turn, the Firemark host gains 8/14/24 Molten Armor",
             "Deal 12/24/48 damage in the round to interrupt the heal",
-            "2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006");
+            "9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E");
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-codex-overhaul",
-            "app.js?v=20260525-codex-overhaul");
+            "content-data.js?v=20260525-links-glow",
+            "app.js?v=20260525-links-glow");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),
@@ -116,7 +116,7 @@ public sealed class WebsiteContentGuardTests
                        "\"SERE_TALON.description\": \"assets/relics/sere_talon.svg\"",
                      "Sere Talon\", \"CLAWS.description\"",
                       "Vakuu's Sere Talon\", \"CLAWS.description\"",
-                      "闁告鍠庨崹鍨▕鐎ｎ剙鐒籠\", \"CLAWS.description\"",
+                      "闂佸憡顭囬崰搴ㄥ垂閸偆鈻曢悗锝庡墮閻掔睜\", \"CLAWS.description\"",
                       "Future Peek",
                       "separate Future Peek package",
                       "18,904,206",
