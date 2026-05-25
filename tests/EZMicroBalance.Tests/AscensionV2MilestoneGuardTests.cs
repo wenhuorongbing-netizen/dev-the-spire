@@ -627,12 +627,13 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Contains("Eye Lasers", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.brand"], StringComparison.Ordinal);
         Assert.Contains("[blue]3[/blue] Time Sand", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.brand"], StringComparison.Ordinal);
         Assert.Contains("extra [gold]Wither[/gold]", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.brand"], StringComparison.Ordinal);
-        Assert.Contains("avoid punishment", englishAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.Contains("Playing the Decree has no extra penalty", englishAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.Contains("non-Decree Bound card gives Queen [blue]1[/blue] [gold]Majesty[/gold]", englishAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
         Assert.DoesNotContain("Play it for player Block", englishAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
-        Assert.Contains("Majesty can reach [blue]3[/blue]", englishAscension["BOSS_SEAL_CHOSEN_DECREE.brand"], StringComparison.Ordinal);
-        Assert.Contains("打出御令不会追加惩罚", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
-        Assert.DoesNotContain("王令", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
-        Assert.DoesNotContain("打出它获得格挡", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.Contains("Majesty cap becomes [blue]3[/blue]", englishAscension["BOSS_SEAL_CHOSEN_DECREE.brand"], StringComparison.Ordinal);
+        Assert.Contains("\u6253\u51fa\u5fa1\u4ee4\u724c\u4e0d\u4f1a\u89e6\u53d1\u989d\u5916\u60e9\u7f5a", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\u738b\u4ee4", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
+        Assert.DoesNotContain("\u6253\u51fa\u5b83\u83b7\u5f97\u683c\u6321", zhsAscension["BOSS_SEAL_CHOSEN_DECREE.summary"], StringComparison.Ordinal);
         Assert.Contains("[blue]2[/blue] different samples", englishAscension["BOSS_SEAL_RESIDUAL_SAMPLE.brand"], StringComparison.Ordinal);
         foreach (var key in englishAscension.Keys.Where(key => key.StartsWith("BOSS_SEAL_", StringComparison.Ordinal)))
         {
