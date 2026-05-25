@@ -1,4 +1,4 @@
-﻿(async function () {
+(async function () {
   const baseData = window.SPIRE_PLUS_DATA;
   let lang = initialLang();
   let data = selectData(baseData, lang);
@@ -311,10 +311,22 @@
     const result = {};
     await Promise.all(
       Object.entries(data.locFiles).map(async ([name, url]) => {
-        const requestUrl = new URL(url, location.href);
-        requestUrl.searchParams.set("v", appVersion);
-        const response = await fetch(requestUrl, { cache: "no-cache" });
-        result[name] = await response.json();
+        try {
+          const requestUrl = new URL(url, location.href);
+          if (location.protocol !== "file:") {
+            requestUrl.searchParams.set("v", appVersion);
+          }
+          const response = await fetch(requestUrl, { cache: "no-cache" });
+          if (!response.ok) throw new Error(`Status ${response.status}`);
+          result[name] = await response.json();
+        } catch (err) {
+          console.error(`Failed to load localization file ${name}:`, err);
+          result[name] = {};
+        }
+        if (!result[name] || Object.keys(result[name]).length === 0) {
+          const embeddedLang = lang === "en" ? "en" : "zh";
+          result[name] = window.SPIRE_PLUS_EMBEDDED_LOC?.[embeddedLang]?.[name] || {};
+        }
       })
     );
     return result;
