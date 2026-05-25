@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -52,10 +52,10 @@ public sealed class WebsiteContentGuardTests
             "EZMB_URDA_RAIN_BREATH",
             "EZMB_VAKUU_TRICK_CONTRACT",
             "EZMB_VAKUU_CASH_OUT_CONTRACT",
-            "\u4e00\u4e2a\u53ea\u9700\u542f\u7528\u7684\u300a\u6740\u622e\u5c16\u5854 2\u300b\u73a9\u6cd5\u6269\u5c55",
+            "\u5148\u53e4\u5956\u52b1\u3001\u539f\u7248\u9057\u7269\u3001\u9ad8\u8fdb\u9636\u8def\u7ebf\u548c\u9884\u89c8\u5de5\u5177\u90fd\u653e\u5728\u540c\u4e00\u4e2a Mod \u91cc",
             "Spire Plus \u505a\u4e86\u4ec0\u4e48",
             "short: \"\\u5361\\u724c\"",
-            "Stronger rewards with readable costs",
+            "stronger rewards and clearer resolution",
             "What Spire Plus Changes",
             "\u82e5\u5408\u9002\u623f\u95f4\u4e0d\u8db3\uff0c\u81f3\u5c11\u653e\u51652\u4e2a",
             "\u53ef\u9644\u9b54\u724c",
@@ -63,16 +63,16 @@ public sealed class WebsiteContentGuardTests
             "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission.",
             "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
             "Seedbed starts as 8/12 Block",
-            "Each successful plant means one fewer pollution card",
-            "\u79cd\u4e0b\u4e0d\u662f\u6d88\u8017\u8bc5\u5492",
-            "\u6839\u8680\u672c\u6218\u505c\u4f4f",
-            "\u79cd\u4e0b\u4e0d\u662f\u6253\u51fa\u3001\u5f03\u724c\u6216\u6d88\u8017",
-            "\u79cd\u4e0b\u6839\u82bd\u4e0d\u7b97\u6253\u51fa",
-            "\u6839\u8680\u53ea\u5728\u672c\u6218\u505c\u4f4f",
-            "Planting is not playing, discarding, or exhausting",
-            "Planting is not exhausting a Curse",
+            "each successful plant means one fewer negative card drawn this combat",
+            "\u79cd\u4e0b=\u672c\u6218\u9694\u79bb",
+            "\u6839\u8680\u53ea\u51bb\u7ed3\u8fd9\u4e00\u573a",
+            "\u79cd\u4e0b\u4e0d\u7b97\u6253\u51fa\u3001\u5f03\u724c\u6216\u6d88\u8017",
+            "\u79cd\u4e0b\u6839\u82bd\u6309\u672c\u6218\u5df2\u5904\u7406\u7ed3\u7b97",
+            "\u4e5f\u4e0d\u4f1a\u88ab\u51c0\u5316",
+            "Planting means combat-only isolation",
+            "Planting does not count as play, discard, or Exhaust",
             "Seedbed can plant Rootblight",
-            "A planted [gold]Rootblight[/gold] is held still for this combat",
+            "A planted [gold]Rootblight[/gold] is frozen for this combat",
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
@@ -85,8 +85,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-seedbed-clarity-b20",
-            "app.js?v=20260525-seedbed-clarity-b20");
+            "content-data.js?v=20260525-seedbed-clarity-b21",
+            "app.js?v=20260525-seedbed-clarity-b21");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

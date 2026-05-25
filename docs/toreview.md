@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.20.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.21.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `D15A0B21CB97AC498AE015116D230601F7F42E3EFB8CDF37D3226258FB1E52AD` |
-| DLL | `B99691BED8D511435C6A820198BFA713BDF983542D11159D4F690E688D7C448D` |
-| PCK | `4448C61BB44D5EEFBE26F7EAE42780CA3068BE29BAA6D691525225A0706521F5` |
-| Manifest | `351F929E813AB59B59E1546585D951A69E80B87D55A4428B0D8804C71B7B0BE2` |
-| README_INSTALL | `5C830BC85E13E8A693F442CB30794F5619CDF64FBB1C8736EFF017188737928D` |
+| ZIP | `B113A7ADC1306BAF4946FB6069B678310A708A7C91B670FA2869D36DDC13EA98` |
+| DLL | `94C15E20E32B50813761088EBF95E628A36F04F68EAF6C323B21849338DD1BE9` |
+| PCK | `16B5DFC6EF60C873FEAC6445C90DFE3CBB656950CB02BBD9CC30D4CD7BB66750` |
+| Manifest | `BDFCFB0C748523B37D10AFB02D5BAD2789327DB45B3F94E5107DA20001BD6B80` |
+| README_INSTALL | `FFDDD27042F8B02CC38EFF1B914A18FADAD6854524DD60BECB08278459D10F98` |
 
-Latest validation snapshot: beta.20 build and publish/package refresh passed; beta.20 final test/format/artifact checks are being rerun for this text pass. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.20 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: beta.21 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.21 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -27,9 +27,10 @@ public sealed class ModInfoLocalizationGuardTests
             "string.Equals(language, \"zhs\", StringComparison.Ordinal)",
             "Spire Plus 是用于私测的《杀戮尖塔 2》单体玩法扩展",
             "Spire Plus is a single Slay the Spire 2 gameplay expansion",
-            "Seedbed is the clearest example",
-            "种下不是消耗诅咒",
-            "根蚀被种下后只在本战停住",
+            "Seedbed shows that rule clearly",
+            "Planting means combat-only isolation",
+            "种下就是“本战隔离”",
+            "根蚀被种下后只冻结这一场",
             "[gold]作者[/gold]",
             "[gold]版本[/gold]",
             "GetNodeOrNull<MegaRichTextLabel>(\"ModDescription\")");
@@ -48,10 +49,14 @@ public sealed class ModInfoLocalizationGuardTests
 
         Assert.Equal("EZMicroBalance", root.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", root.GetProperty("name").GetString());
-        Assert.Equal("v0.1.0-private-beta.20", root.GetProperty("version").GetString());
+        Assert.Equal("v0.1.0-private-beta.21", root.GetProperty("version").GetString());
         Assert.True(root.TryGetProperty("description", out var description));
         Assert.Contains("Spire Plus", description.GetString(), StringComparison.Ordinal);
         Assert.Contains("中文", description.GetString(), StringComparison.Ordinal);
+        Assert.Contains("Planting is combat-only isolation", description.GetString(), StringComparison.Ordinal);
+        Assert.Contains("种下=本战隔离", description.GetString(), StringComparison.Ordinal);
+        Assert.Contains("Rootblight is frozen", description.GetString(), StringComparison.Ordinal);
+        Assert.Contains("根蚀只冻结这一场", description.GetString(), StringComparison.Ordinal);
         Assert.DoesNotContain("涓", description.GetString(), StringComparison.Ordinal);
         Assert.DoesNotContain("銆", description.GetString(), StringComparison.Ordinal);
         Assert.False(root.TryGetProperty("description_zhs", out _), "The game manifest schema does not read description_zhs; use the UI patch instead.");

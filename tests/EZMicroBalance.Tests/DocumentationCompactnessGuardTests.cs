@@ -24,11 +24,52 @@ public sealed class DocumentationCompactnessGuardTests
             "Crystal Sphere and transform-preview live proof inside Spire Plus",
             "No source-only pass may mark this goal complete");
         Assert.Contains("goal-md-mojibake-intake-20260523.md", goal, StringComparison.Ordinal);
+        Assert.Contains("goal-coop-preview-plan-20260525.md", goal, StringComparison.Ordinal);
         Assert.Contains("goal-md-mojibake-intake-20260523.md", archiveReadme, StringComparison.Ordinal);
+        Assert.Contains("goal-coop-preview-plan-20260525.md", archiveReadme, StringComparison.Ordinal);
 
         foreach (var stalePromptMarker in new[] { "## P0", "## P1", "One-Shot Prompt", "Phase 1", "sourcecodeonlyaianalysis" })
         {
             Assert.DoesNotContain(stalePromptMarker, goal, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
+    public void UrdaSupportSourceDesignStaysReadableAndCurrent()
+    {
+        var urdaSourceDesign = ReadRepoText("docs", "features", "ancient-expansion-urda", "source-design.md");
+
+        AssertSourceContains(
+            urdaSourceDesign,
+            "# Urda Ancient Source Design v1",
+            "`EZMB_URDA` registration and visibility path",
+            "The active v2.2 source pool contains eleven Urda blessings",
+            "Humus Pact (`urda_humus_pact`, 腐殖约定)",
+            "Moss Map (`urda_moss_map`, 苔痕地图)",
+            "Elite Root (`urda_elite_root`, 精英根须)",
+            "All eleven remain disableable through the Urda feature gate",
+            "`Withered Husk` is a 0-cost Temporary Curse with Ethereal and Exhaust",
+            "A planted Blight Sprout is treated as handled for that combat",
+            "A planted Rootblight is frozen for that combat only",
+            "After the Rain (`urda_after_rain`)",
+            "AncientSavedStateFields.UrdaStateKey",
+            "All active Urda text must include EN + ZHS entries");
+
+        foreach (var mojibakeOrDamagedTerm in new[]
+        {
+            "lncient",
+            "lct ",
+            "lfter",
+            "lll ten",
+            "URDl",
+            "鑵",
+            "鑴",
+            "鑻",
+            "鍦",
+            "lPI"
+        })
+        {
+            Assert.DoesNotContain(mojibakeOrDamagedTerm, urdaSourceDesign, StringComparison.Ordinal);
         }
     }
 
@@ -39,11 +80,11 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.20 Seedbed explanation / mod-overview refresh. Result: succeeded.",
-            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.20 Seedbed explanation / mod-overview refresh. Result: succeeded.",
+            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.21 Seedbed explanation / mod-overview refresh. Result: succeeded.",
+            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.21 Seedbed explanation / mod-overview refresh. Result: succeeded.",
             "installed `mods\\EZMicroBalance` folder",
             "matched the installed mod artifacts on 2026-05-25",
-            "302 passed, 0 skipped, 0 failed");
+            "303 passed, 0 skipped, 0 failed");
         Assert.DoesNotContain("Sovereign Blade jade boon refresh", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current `.2` manual-test package", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("installed mod folder was locked", devEnvironment, StringComparison.Ordinal);
@@ -258,7 +299,7 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("beta.20 Seedbed explanation", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.21 Seedbed explanation", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta19-loader-smoke-20260525-213336", projectState, StringComparison.Ordinal);
@@ -578,7 +619,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.20 package hash is pending",
+            "Fresh loader smoke for the current beta.21 package hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

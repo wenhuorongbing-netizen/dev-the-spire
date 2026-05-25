@@ -842,12 +842,12 @@ public sealed class AncientPlayerFacingPolishGuardTests
 
         AssertSourceContains(
             urdaSourceDesign,
-            "Status / authority note, 2026-05-23",
+            "Status / authority note, 2026-05-25",
             "v3.3 Seedbed and After the Rain supersede",
-            "temporary Status cards, temporary Curse cards, Blight Sprouts, and Rootblight",
+            "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
             "Withered Husk",
             "Rain Breath",
-            "fewer than 3 Act 1 triggers grants 75 Gold",
+            "fewer than 3 Act 1 After the Rain triggers grants 75 Gold",
             "Three or more triggers heals 8 HP and upgrades 1 card");
         AssertSourceContains(
             docsIndex,
