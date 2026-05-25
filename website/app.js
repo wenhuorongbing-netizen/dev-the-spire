@@ -147,6 +147,17 @@
       .join(" ");
   }
 
+  function isPlaceholderVanilla(value) {
+    const normalized = text(value).replace(/\s+/g, " ").trim().toLowerCase();
+    if (!normalized) return true;
+    return [
+      "\u539f\u7248\u65e0\u6b64",
+      "\u539f\u7248\u9996\u9886\u6ca1\u6709 a19 \u4e13\u5c5e\u80fd\u529b\u6216 a20 \u70d9\u5370\u5f62\u6001",
+      "no equivalent vanilla content",
+      "vanilla bosses do not have a19 dedicated abilities or a20 branded form"
+    ].some((snippet) => normalized.includes(snippet));
+  }
+
   function renderItemDetails(item) {
     const details = [...(item.details || []), ...extraSourceDetails(item)];
     if (!details.length) return "";
@@ -420,6 +431,7 @@
     const vanilla = text(lang === 'en'
       ? item.vanillaEn || item.vanilla || item.groupDefaultVanillaEn || item.groupDefaultVanilla
       : item.vanilla || item.groupDefaultVanilla);
+    const showVanilla = !isPlaceholderVanilla(vanilla);
     const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
 
     return `
@@ -432,12 +444,14 @@
           <div class="inspector-tags">${tagsHtml}</div>
         </div>
         <div class="inspector-comp">
-          <div>
-            <h4 class="inspector-sect-title">${labels.vanilla} (Vanilla)</h4>
-            <div class="inspector-desc-block vanilla-box">
-              <p>${formatStsText(vanilla)}</p>
+          ${showVanilla ? `
+            <div>
+              <h4 class="inspector-sect-title">${labels.vanilla} (Vanilla)</h4>
+              <div class="inspector-desc-block vanilla-box">
+                <p>${formatStsText(vanilla)}</p>
+              </div>
             </div>
-          </div>
+          ` : ""}
           <div>
             <h4 class="inspector-sect-title">${labels.current} (Spire Plus)</h4>
             <div class="inspector-desc-block current-box">
@@ -456,9 +470,10 @@
     const vanilla = text(lang === 'en'
       ? item.vanillaEn || item.vanilla || item.groupDefaultVanillaEn || item.groupDefaultVanilla
       : item.vanilla || item.groupDefaultVanilla);
+    const searchableVanilla = isPlaceholderVanilla(vanilla) ? "" : vanilla;
     const detailsText = detailSearchText(item);
     const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
-    const searchString = normalize([title, current, vanilla, detailsText, (item.tags || []).join(" ")].join(" "));
+    const searchString = normalize([title, current, searchableVanilla, detailsText, (item.tags || []).join(" ")].join(" "));
 
     return `
       <article class="compare-card ${isActive ? 'active-inspect' : ''}" style="--index: ${index}" data-search="${searchString}" data-index="${index}">
