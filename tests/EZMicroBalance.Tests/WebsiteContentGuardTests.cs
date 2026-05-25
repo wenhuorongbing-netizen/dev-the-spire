@@ -68,7 +68,7 @@ public sealed class WebsiteContentGuardTests
             "\u6839\u8680\u662f\u4e3b\u724c\u7ec4\u91cc\u7684\u8bc5\u5492\uff0c\u4e0d\u662f\u6839\u82bd",
             "Planting is not playing, discarding, or exhausting",
             "Seedbed can plant Rootblight",
-            "A planted [gold]Rootblight[/gold] only freezes for this combat",
+            "A planted [gold]Rootblight[/gold] is held still for this combat",
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
@@ -81,8 +81,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-seedbed-planting-b16",
-            "app.js?v=20260525-seedbed-planting-b16");
+            "content-data.js?v=20260525-seedbed-planting-b17",
+            "app.js?v=20260525-seedbed-planting-b17");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

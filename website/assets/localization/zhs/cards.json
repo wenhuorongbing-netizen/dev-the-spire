@@ -1,4 +1,4 @@
-{
+﻿{
   "BRIGHTEST_FLAME.title": "至亮之焰",
   "BRIGHTEST_FLAME.description": "[gold]消耗[/gold]。\n获得{Energy:energyIcons()}。\n抽{Cards:diff()}{Cards:plural:张牌|张牌}。\n失去{MaxHp:diff()}点最大生命。",
   "DEBT.title": "债务",
@@ -21,9 +21,9 @@
   "EZMB_URDA_SEEDLING.title": "幼芽",
   "EZMB_URDA_SEEDLING.description": "[gold]临时[/gold]。获得{Block:diff()}点[gold]格挡[/gold]。",
   "EZMB_URDA_SEEDBED.title": "苗床",
-  "EZMB_URDA_SEEDBED.description": "获得{Block:diff()}点[gold]格挡[/gold]。设置[blue]{Capacity}[/blue]格[gold]苗床[/gold]。{ImmediateLine}\n之后若[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]或[gold]根蚀[/gold]将进入手牌，苗床会先种下它：那张牌移出本场战斗，不进入手牌，并换成[blue]1[/blue]张[gold]枯壳[/gold]。\n种下不是打出、丢弃或消耗，不触发这些联动。临时状态牌和临时诅咒牌被种下后，本战不会再出现；这不是永久删牌，永久诅咒不能被种下。种下[gold]根芽[/gold]不算打出，但按已处理结算，战后不会生成[gold]根蚀 I[/gold]。种下[gold]根蚀[/gold]只冻结本场：它仍按同等级留在主牌组，战后不升级、不分裂、不移除、不降级。\n消耗。",
+  "EZMB_URDA_SEEDBED.description": "获得{Block:diff()}点[gold]格挡[/gold]。设置[blue]{Capacity}[/blue]格[gold]苗床[/gold]。{ImmediateLine}\n之后若[gold]临时[/gold]状态牌、[gold]临时[/gold]诅咒牌、[gold]根芽[/gold]或[gold]根蚀[/gold]将进入手牌，苗床会先种下它：那张牌移出本场战斗，不进入手牌，你获得[blue]1[/blue]张[gold]枯壳[/gold]。\n种下是苗床替你处理这张牌。它不是打出、丢弃或消耗，不触发这些联动。临时状态牌和临时诅咒牌被种下后，本战不会再出现；永久诅咒不能种下，也不会被删除。种下[gold]根芽[/gold]不算打出，但按已处理结算，战后不会生成[gold]根蚀 I[/gold]。种下[gold]根蚀[/gold]表示本场停住：它仍按同等级留在主牌组，战后不升级、不分裂、不移除、不降级。\n消耗。",
   "EZMB_URDA_SEEDBED.upgradeLine": "\n立即从抽牌堆或弃牌堆中种下至多[blue]{ImmediatePlantCount}[/blue]张可种下的牌。",
-  "EZMB_URDA_SEEDBED.selectionScreenPrompt": "选择要种下的牌。苗床至多种下1张；苗床+至多种下2张。根芽按已处理；根蚀保持同等级。",
+  "EZMB_URDA_SEEDBED.selectionScreenPrompt": "选择要种下的牌。该牌会离开本场战斗，不算打出、丢弃或消耗。根芽按已处理；根蚀保持同等级。",
   "EZMB_URDA_RAIN_BREATH.title": "雨息",
   "EZMB_URDA_RAIN_BREATH.description": "[gold]临时[/gold]。获得{Block:diff()}点[gold]格挡[/gold]。\n抽{Cards:diff()}张牌。\n消耗。",
   "EZMB_WITHERED_HUSK.title": "枯壳",

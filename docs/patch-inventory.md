@@ -32,15 +32,15 @@ Regenerate:
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
 | Ancient shared infrastructure | Low | `EZMicroBalanceCode/Ancients/Common/NeowInitialOptionRerollPatch.cs` | 7 | `[HarmonyPatch(typeof(Neow), "GenerateInitialOptions")]` |
-| Lotha | Low | `EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAct3AncientService.cs` | 39 | `[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]` |
-| Morvi | Low | `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAct2AncientService.cs` | 39 | `[HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))]` |
-| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAct1AncientService.cs` | 40 | `[HarmonyPatch(typeof(Overgrowth), nameof(Overgrowth.GetUnlockedAncients))]` |
-| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAct1AncientService.cs` | 48 | `[HarmonyPatch(typeof(Underdocks), nameof(Underdocks.GetUnlockedAncients))]` |
-| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.SeedbedCombat.cs` | 201 | `[HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))]` |
+| Lotha | Low | `EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAct3AncientService.cs` | 49 | `[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]` |
+| Morvi | Low | `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAct2AncientService.cs` | 49 | `[HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))]` |
+| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAct1AncientService.cs` | 50 | `[HarmonyPatch(typeof(Overgrowth), nameof(Overgrowth.GetUnlockedAncients))]` |
+| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAct1AncientService.cs` | 58 | `[HarmonyPatch(typeof(Underdocks), nameof(Underdocks.GetUnlockedAncients))]` |
+| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.SeedbedCombat.cs` | 218 | `[HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 7 | `[HarmonyPatch(typeof(NNormalMapPoint), nameof(NNormalMapPoint._Ready))]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 31 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshState")]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 43 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs` | 149 | `[HarmonyPatch(typeof(NRelicInventory), "OnRelicClicked")]` |
+| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs` | 170 | `[HarmonyPatch(typeof(NRelicInventory), "OnRelicClicked")]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 7 | `[HarmonyPatch(typeof(NMapPoint), "OnRelease")]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 23 | `[HarmonyPatch(typeof(NClickableControl), nameof(NClickableControl._GuiInput))]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 43 | `[HarmonyPatch(typeof(NMapScreen), nameof(NMapScreen.Close))]` |
@@ -165,7 +165,7 @@ Regenerate:
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapBossSealHoverPatches.cs` | 11 | `[HarmonyPatch(typeof(NBossMapPoint), "OnFocus")]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapGenerationPatches.cs` | 8 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.CreateMap))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapIconPatches.cs` | 6 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]` |
-| Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs` | 151 | `[HarmonyPatch(typeof(StartRunLobby), "SetSingleplayerAscensionAfterCharacterChanged")]` |
+| Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs` | 154 | `[HarmonyPatch(typeof(StartRunLobby), "SetSingleplayerAscensionAfterCharacterChanged")]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 7 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunLocally")]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 63 | `[HarmonyPatch(typeof(StartRunLobby), "UpdateMaxMultiplayerAscension")]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 84 | `[HarmonyPatch(typeof(StartRunLobby), "UpdatePreferredAscension")]` |
@@ -179,19 +179,19 @@ Regenerate:
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 65 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_LashDamage")]` |
 | Map hover composition | Medium | `EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs` | 12 | `[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]` |
 | Mod info localization | Medium | `EZMicroBalanceCode/Modding/ModInfoLocalizationPatches.cs` | 12 | `[HarmonyPatch(typeof(NModInfoContainer), nameof(NModInfoContainer.Fill))]` |
-| Preview tools | Medium | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 13 | `[HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 146 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 105 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 108 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 113 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 118 | `[HarmonyPatch(typeof(Symbiote), "KillWithFire")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 123 | `[HarmonyPatch(typeof(WhisperingHollow), "Hug")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 132 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 135 | `[HarmonyPatch(typeof(MorphicGrove), "Group")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 140 | `[HarmonyPatch(typeof(Trial), "NondescriptInnocent")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 145 | `[HarmonyPatch(typeof(NewLeaf), nameof(NewLeaf.AfterObtained))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 150 | `[HarmonyPatch(typeof(Astrolabe), nameof(Astrolabe.AfterObtained))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 166 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
-| Preview tools | Medium | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 18 | `[HarmonyPatch(typeof(NTransformPreview), nameof(NTransformPreview.Initialize))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 37 | `[HarmonyPatch]` |
+| Preview tools | Medium | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 14 | `[HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 155 | `[HarmonyPatch]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 115 | `[HarmonyPatch]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 118 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 123 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 128 | `[HarmonyPatch(typeof(Symbiote), "KillWithFire")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 133 | `[HarmonyPatch(typeof(WhisperingHollow), "Hug")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 142 | `[HarmonyPatch]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 145 | `[HarmonyPatch(typeof(MorphicGrove), "Group")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 150 | `[HarmonyPatch(typeof(Trial), "NondescriptInnocent")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 155 | `[HarmonyPatch(typeof(NewLeaf), nameof(NewLeaf.AfterObtained))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 160 | `[HarmonyPatch(typeof(Astrolabe), nameof(Astrolabe.AfterObtained))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 176 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
+| Preview tools | Medium | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 19 | `[HarmonyPatch(typeof(NTransformPreview), nameof(NTransformPreview.Initialize))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 49 | `[HarmonyPatch]` |
 

@@ -14,9 +14,9 @@ Target manifest id: `EZMicroBalance`
 ## Build And Publish
 
 - [x] `dotnet build` succeeds.
-- [x] Latest source/package build check passed with `dotnet build EZMicroBalance.sln --no-restore` after the Morvi reward/state lifecycle hardening pass.
-- [x] Publish/package/hash refresh has been rerun for the latest source/text/resource slices with a rebuilt `SpirePlus` private-beta zip. The latest `dotnet publish` attempt was blocked only by a running game process locking the installed DLL; the package was refreshed from Release DLL plus direct Godot export into package staging.
-- [ ] `dotnet publish` succeeds after the tester exits the currently running game and releases the installed DLL lock.
+- [x] Latest source/package build check passed with `dotnet build EZMicroBalance.sln` after the beta.17 Seedbed / planting text refresh.
+- [x] Publish/package/hash refresh has been rerun for the latest source/text/resource slices with a rebuilt `SpirePlus` private-beta zip.
+- [x] `dotnet publish` succeeds.
 - [x] Published `EZMicroBalance.json` exists.
 - [x] Published `EZMicroBalance.dll` exists.
 - [x] Published `EZMicroBalance.pck` exists.
@@ -25,9 +25,9 @@ Target manifest id: `EZMicroBalance`
 - [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
-- [ ] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`; rerun after the installed mod folder is refreshed.
-- [ ] `publish/SpirePlus-v0.1.0-private-beta.16.zip` must be rebuilt from the current Seedbed strength/planting source and copied to the local game root for manual testing.
-  - Current package hashes: DLL `05EDB840EFB2B12EB369A7C0A3B9A098AAD2449C1C6C438095D8C008987C23E4`; manifest `661C3FE51A0E5EA44251F3941815F6DAD523EF8364D51843502AC7FFCDE96334`; PCK `63B34F2319EBF62FC283314D8311241D15FDC58D9A8EB9FFF741138CDDE910DD`; README `B626ED6A8E4A6F26BCB7CD1B5E7488108893358C9F5AB9C48014786CC7056481`; zip `29D0C33A88E270F10E14C27DB084803F4DB87C5476E59D8137EC0D24C914A6EB`.
+- [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.17.zip` was rebuilt from the current Seedbed strength/planting source and copied to the local game root for manual testing.
+  - Current package hashes: DLL `22BE6A53D8676E3E44A0A3D65D77D4BA5BA8ECF3999301EE5AC984D267AC29AD`; manifest `2FA6369F292784B85CB07D47A2511CA2AC8EFA20A5DB6FA334FF8C5E7B4E77FB`; PCK `116737BB57F8A7A23A629A753D04A97950391040EF5C7242E1E440C451E44994`; README `33D681E205CB2378E1057E49596E86337992418FC929D79AFCF77215CCEAC25D`; zip `44DFFE46847F6EE096EEDAC02303841E0646C1493D00D10DB66A2B46AF885FD6`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
@@ -38,14 +38,14 @@ Target manifest id: `EZMicroBalance`
 - [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
 - [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.
 - [x] Historical pre-display-name-refresh Mod Settings evidence exists for the same technical manifest id.
-- [ ] Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest only after beta.16 is smoke-tested; the current available 30-field row is beta.13 historical startup evidence.
-- [ ] Fresh loader smoke for the current beta.16 ZIP hash is pending after the Seedbed strength/planting refresh.
-- [ ] Latest loader smoke for the current package hash is pending; beta.13 loader/startup evidence remains historical context. Previous evidence: `.tools\runtime-evidence\release-ready-manual\fresh-current-package-loader-smoke`.
+- [x] Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311`; beta.13 loader/startup evidence remains historical context.
+- [x] Fresh loader smoke for the current beta.17 ZIP hash passed after the Seedbed strength/planting refresh.
+- [x] Latest loader smoke for the current package hash is captured under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311`.
 - [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib and Spire Plus, reported `Found 22 SavedSpireFields`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. This is historical context now superseded for runtime binaries by the 30-field loader smoke.
 - [x] Repeat helper-driven normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` reached main menu with only BaseLib and Spire Plus, reported `Found 16 SavedSpireFields`, restored settings plus 24 moved mod entries, and audited clean.
 - [x] BaseLib-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with the Spire Plus technical folder temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus, restored settings plus 25 moved entries and the current-run save, and audited clean.
 - [x] `godot.log` reviewed for controlled smoke-test initializer errors.
-- [ ] `godot.log` reviewed after fresh beta.16 normal Steam-client isolated startup/log verification.
+- [x] `godot.log` reviewed after fresh beta.17 normal Steam-client isolated startup/log verification.
 - [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.
 
 ## Content Verification
@@ -105,8 +105,8 @@ Deferred rows fail unless rerun with `-AllowDeferred` after an explicit owner-ap
 
 ## Known Issues
 
-- Fresh loader smoke for the current beta.16 package hash is pending.
-  - Evidence under `.tools\runtime-evidence\release-ready-manual\fresh-current-package-loader-smoke` loaded exactly BaseLib and `EZMicroBalance`, registered config, reported `Found 30 SavedSpireFields`, reached startup completion, and had 0 release-blocking hits. The helper stopped the game and restored 24 isolated mod entries. This remains loader/startup evidence, not gameplay proof.
+- Fresh loader smoke for the current beta.17 package hash passed under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311`.
+  - The loader smoke loaded exactly BaseLib and `EZMicroBalance`, registered config, reported `Found 30 SavedSpireFields`, reached startup completion, and had 0 release-blocking hits. The helper stopped the game and restored 24 isolated mod entries. This remains loader/startup evidence, not gameplay proof.
   - The 2026-05-13 helper startup/log pass is historical 16-field evidence. BaseLib-only plug-off evidence loaded only BaseLib; the earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
   - Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list. Earlier page-level Mod Settings evidence predates the display-name refresh.
 - Manual feature results are pending; `docs/features/ancients-rework-v4/manual-verification-matrix.md`, `docs/features/ancient-expansion-urda/manual-test-checklist.md`, and `docs/features/ascension-11-20/manual-test-checklist.md` remain the current manual surfaces.

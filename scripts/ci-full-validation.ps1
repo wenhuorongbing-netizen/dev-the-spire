@@ -104,7 +104,23 @@ try {
     }
 
     Invoke-Step 'Diff whitespace check' {
-        git diff --check
+        $previousErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+            $diffCheckOutput = & git diff --check 2>&1
+            $diffCheckExitCode = $LASTEXITCODE
+        }
+        finally {
+            $ErrorActionPreference = $previousErrorActionPreference
+        }
+
+        if ($diffCheckOutput) {
+            $diffCheckOutput | ForEach-Object { Write-Host $_ }
+        }
+
+        if ($diffCheckExitCode -ne 0) {
+            throw "git diff --check failed with exit code $diffCheckExitCode"
+        }
     }
 
     Invoke-Step 'Spire Plus publish' {

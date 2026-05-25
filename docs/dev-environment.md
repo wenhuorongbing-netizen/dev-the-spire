@@ -28,7 +28,7 @@
 - BaseLib `v3.1.4` compatibility with v0.106.0:
   - Historical 22-field loader evidence: `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib plus Spire Plus under technical id `EZMicroBalance`, BaseLib `177 patches successfully, 0 failed`, config registration, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Found 22 SavedSpireFields`, `Time to main menu: 13,539ms`, and no release-blocking log signatures.
   - Runtime files under `<GameRoot>\mods\BaseLib` now report `v3.1.4`; the project references `Alchyr.Sts2.BaseLib` `3.1.4`.
-  - Current-package loader evidence: `.tools\runtime-evidence\beta16-loader-smoke-20260525-184743` reached startup completion with only BaseLib plus Spire Plus, registered config for `EZMicroBalance`, reported `Found 30 SavedSpireFields`, matched the current beta.16 package hash, audited clean, stopped the game, and restored the isolated mod setup.
+  - Current-package loader evidence: `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311` reached startup completion with only BaseLib plus Spire Plus, registered config for `EZMicroBalance`, reported `Found 30 SavedSpireFields`, matched the current beta.17 package hash, audited clean, stopped the game, and restored the isolated mod setup.
   - Current display-name list evidence shows `Spire Plus`; older page-level Mod Settings evidence predates the display-name refresh.
   - A0/A10/A20 combat smoke, limited A11 map/save-load evidence, Act 2/3 A11 map-surface observation, and targeted A14 Rootblight hover/starter-notice checks exist. Full Ancient gameplay, full Rootblight combat behavior, natural A11 traversal, and co-op verification remain pending.
 - Do not use pre-2026-05-22 `v0.105.x` source notes as the sole basis for current `v0.106.0` conclusions. Reinspect the refreshed source and confirm runtime behavior before making release claims.
@@ -70,35 +70,35 @@
 - BaseLib version consistency: OK. Runtime `v3.1.4` matches project package `3.1.4`.
 
 ## Last known commands
-- Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded with 0 warnings and 0 errors.
-- Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded with 0 warnings and 0 errors.
+- Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-25 after the beta.17 Seedbed / Rootblight package refresh. Result: succeeded with 0 warnings and 0 errors.
+- Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-25 after the beta.17 Seedbed / Rootblight package refresh. Result: succeeded with 0 warnings and 0 errors.
 - Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-25 after the goal guard / dev-environment drift repair. Result: passed, 282 passed, 20 skipped release artifact/runtime evidence tests, 0 failed.
 - Last successful Release test run: `dotnet test EZMicroBalance.sln -c Release` on 2026-05-13 after the BaseLib-only plug-off startup/log refresh. Result: passed, 81 passed, 18 skipped release artifact/runtime evidence tests, 0 failed.
 - Latest opt-in artifact-validation run: `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-25 after the goal guard / dev-environment drift repair. Result: passed, 302 passed, 0 skipped, 0 failed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - Latest full local CI-script run: `scripts\ci-full-validation.ps1` on 2026-05-20 with explicit `STS2_PATH` and `GODOT_PATH`. Result: passed. This is local no-game validation, not live loader or gameplay proof.
-- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: exit code 0.
-- Last required diff check: `git diff --check` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: exit code 0 with CRLF/LF warnings only.
-- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded.
-- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.16 Seedbed / Rootblight package refresh. Result: succeeded.
-- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.16.zip`, the installed `mods\EZMicroBalance` folder, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.16.zip` were refreshed and hash-checked on 2026-05-25 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The current ZIP/DLL/PCK hash needs a fresh loader row after launching the current package; live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
-- Last PCK hash check: the 2026-05-25 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `63B34F2319EBF62FC283314D8311241D15FDC58D9A8EB9FFF741138CDDE910DD`.
-- Last staging/versioned DLL hash check: SHA256 `05EDB840EFB2B12EB369A7C0A3B9A098AAD2449C1C6C438095D8C008987C23E4`.
+- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-25 after the beta.17 Seedbed / Rootblight package refresh. Result: exit code 0.
+- Last required diff check: `git diff --check` on 2026-05-25 after the beta.17 Seedbed / Rootblight package refresh. Result: exit code 0 with CRLF/LF warnings only.
+- Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.17 Seedbed / Rootblight package refresh. Result: succeeded.
+- Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.17 Seedbed / Rootblight package refresh. Result: succeeded.
+- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.17.zip`, the installed `mods\EZMicroBalance` folder, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.17.zip` were refreshed and hash-checked on 2026-05-25 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The current ZIP/DLL/PCK hash needs a fresh loader row after launching the current package; live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
+- Last PCK hash check: the 2026-05-25 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `116737BB57F8A7A23A629A753D04A97950391040EF5C7242E1E440C451E44994`.
+- Last staging/versioned DLL hash check: SHA256 `22BE6A53D8676E3E44A0A3D65D77D4BA5BA8ECF3999301EE5AC984D267AC29AD`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
-- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.16.zip` was rebuilt from package staging, copied to the game root, and matched the installed mod artifacts on 2026-05-25.
+- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.17.zip` was rebuilt from package staging, copied to the game root, and matched the installed mod artifacts on 2026-05-25.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `29D0C33A88E270F10E14C27DB084803F4DB87C5476E59D8137EC0D24C914A6EB`
-  - DLL SHA256: `05EDB840EFB2B12EB369A7C0A3B9A098AAD2449C1C6C438095D8C008987C23E4`
-  - README SHA256: `B626ED6A8E4A6F26BCB7CD1B5E7488108893358C9F5AB9C48014786CC7056481`
-  - Manifest SHA256: `661C3FE51A0E5EA44251F3941815F6DAD523EF8364D51843502AC7FFCDE96334`
-  - PCK SHA256: `63B34F2319EBF62FC283314D8311241D15FDC58D9A8EB9FFF741138CDDE910DD`
+  - Zip SHA256: `44DFFE46847F6EE096EEDAC02303841E0646C1493D00D10DB66A2B46AF885FD6`
+  - DLL SHA256: `22BE6A53D8676E3E44A0A3D65D77D4BA5BA8ECF3999301EE5AC984D267AC29AD`
+  - README SHA256: `33D681E205CB2378E1057E49596E86337992418FC929D79AFCF77215CCEAC25D`
+  - Manifest SHA256: `2FA6369F292784B85CB07D47A2511CA2AC8EFA20A5DB6FA334FF8C5E7B4E77FB`
+  - PCK SHA256: `116737BB57F8A7A23A629A753D04A97950391040EF5C7242E1E440C451E44994`
   - Entries: `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
 - Last release art audit: `EZMicroBalance/mod_image.png` and `publish\EZMicroBalance-cover-source.png` currently have SHA256 `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75` and were manually checked as original generated art with no visible text, letters, numbers, numerals, logos, or official game assets.
 - Publish note: Headless Godot export requires `export_presets.cfg` to be UTF-8 without BOM and needs local runtime references available to the editor assembly scan. `EZMicroBalance.csproj` copies `sts2.dll`, `0Harmony.dll`, and BaseLib into the Godot temp build folders before export; the selected-resource PCK still contains only active mod resources.
 
 ## Manual game verification
 - Manual game verification succeeded: legacy baseline only.
-- Status: latest normal Steam startup/log verification covers the current beta.16 package hash and loaded only BaseLib plus Spire Plus with a clean audit. Refreshed Mod Settings UI list screenshot shows `Spire Plus` under the display-name package; older page-level Mod Settings evidence predates the display-name refresh; live gameplay verification remains pending.
+- Status: latest normal Steam startup/log verification covers the current beta.17 package hash and loaded only BaseLib plus Spire Plus with a clean audit. Refreshed Mod Settings UI list screenshot shows `Spire Plus` under the display-name package; older page-level Mod Settings evidence predates the display-name refresh; live gameplay verification remains pending.
 - Verification surface: Slay the Spire 2 Settings -> Mod Settings.
 - BaseLib appeared in Mod Settings: yes.
 - BaseLib enabled: yes.
@@ -106,7 +106,7 @@
 - Legacy EzDailyContent enabled: yes.
 - Target EZMicroBalance Mod Settings verification:
   - Current UI list pass under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus` in the Mods list with only BaseLib and `EZMicroBalance` enabled.
-  - Latest startup/log evidence under `.tools\runtime-evidence\beta16-loader-smoke-20260525-184743` logged `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 30 SavedSpireFields`, startup completion, current beta.16 package hash parity, and 0 release-blocking hits.
+  - Latest startup/log evidence under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311` logged `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 30 SavedSpireFields`, startup completion, current beta.17 package hash parity, and 0 release-blocking hits.
   - Earlier package startup/log evidence under `.tools\runtime-evidence\current-package-smoke-20260514-015901` is historical 22-field loader/resource evidence.
   - Historical page-level UI evidence remains under `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-*` with the old display name.
 - Screenshot-observed in-game version: `v0.104.0`, date `2026.04.23`.
@@ -156,7 +156,7 @@
   - Log signals: BaseLib `177 patches successfully, 0 failed`, config registered for `EZMicroBalance`, `Loaded 2 mods (2 total)`, `Found 22 SavedSpireFields`, `Time to main menu: 14,045ms`, and 0 release-blocking scan hits.
   - Boundary: Current source defines 30 SavedSpireFields after the 2026-05-17 static fixes, so this smoke is historical loader/log/resource evidence only. Gameplay/manual gates remain pending.
   - Restore stopped the game, restored settings to the original hash, restored moved mod entries/current-run files, preserved Steam-rehydrated test current-run files under evidence, and left 0 `SlayTheSpire2` processes.
-- 2026-05-25: Steam-client loader smoke under `.tools\runtime-evidence\beta16-loader-smoke-20260525-184743` prepared a restore-safe session, moved 24 non-BaseLib/Spire Plus entries aside, enabled only BaseLib and `EZMicroBalance`, launched through Steam, logged `Loaded 2 mods (2 total)`, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Registered config for mod EZMicroBalance`, `Found 30 SavedSpireFields`, and startup completion, then stopped the game and restored settings plus moved entries. `godot-log-audit.json` is clean with 0 release-blocking signatures. This is startup/log evidence for the current beta.16 package; gameplay/manual gates remain pending.
+- 2026-05-25: Steam-client loader smoke under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311` prepared a restore-safe session, moved 24 non-BaseLib/Spire Plus entries aside, enabled only BaseLib and `EZMicroBalance`, launched through Steam, logged `Loaded 2 mods (2 total)`, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Registered config for mod EZMicroBalance`, `Found 30 SavedSpireFields`, and startup completion, then stopped the game and restored settings plus moved entries. `godot-log-audit.json` is clean with 0 release-blocking signatures. This is startup/log evidence for the current beta.17 package; gameplay/manual gates remain pending.
 
 ## Phase progress
 - Completed setup baseline: build, publish, and legacy Mod Settings verification.
