@@ -587,7 +587,7 @@ foreach ($row in $manualRows) {
             '| Lotha | public_evidence | LothaPublicEvidenceOptionRelic |  |  |  |',
             '| Vakuu | fight_option | VakuuFightOptionRelic |  |  |  |',
             '| Vakuu | victory_non_vakuu_choices | Non-Vakuu Act 3 Ancient reward relic choices after winning Vakuu |  |  |  |',
-            "| Vakuu event | sere_talon_pickup | Vakuu's Sere Talon / $sereTalonCn adds 2 random Curses and 3 Wish; verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes such as ``Ancient event option button``, ``RelicModel packed icon texture``, ``RelicModel big icon texture``, ``NRelic small node``, and ``NRelic large node`` are not Tanx Claws. |  |  |  |",
+            "| Vakuu event | sere_talon_pickup | Vakuu's Sere Talon / $sereTalonCn lets the player choose 1 of 4 Curses, then adds that Curse, 2 Wish, and 1 Wish+; verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes such as ``Ancient event option button``, ``RelicModel packed icon texture``, ``RelicModel big icon texture``, ``NRelic small node``, and ``NRelic large node`` are not Tanx Claws. |  |  |  |",
             "| Tanx event | claws_maul_transform | Tanx Claws / $tanxClawsCn transforms cards into upgraded Maul / $maulCn+ cards. |  |  |  |",
             '',
             'Do not use this row to cover Ancient clicked background art, Vakuu victory return, save/load, or co-op. Those have separate verifier rows.'

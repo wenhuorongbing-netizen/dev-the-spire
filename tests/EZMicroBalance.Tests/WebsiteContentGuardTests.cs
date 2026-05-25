@@ -61,7 +61,7 @@ public sealed class WebsiteContentGuardTests
             "If there are not enough suitable rooms, at least 2 are placed.",
             "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission.",
             "Temporary Status cards, Temporary Curse cards, or Blight Sprouts",
-            "On pickup, add 2 random Curses and 3 Wish.",
+            "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
             "Transforms up to 6 cards into upgraded Maul.",

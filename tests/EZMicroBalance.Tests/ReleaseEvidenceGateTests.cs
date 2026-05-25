@@ -139,8 +139,8 @@ public sealed class ReleaseEvidenceGateTests
             Assert.Contains("release/fresh-current-package-loader-smoke/", startHere, StringComparison.Ordinal);
             Assert.Contains("The Mods list should show `Spire Plus`; `EZMicroBalance` should appear only as the technical folder/id in paths or logs.", startHere, StringComparison.Ordinal);
             Assert.Contains("## Focused current regression check", startHere, StringComparison.Ordinal);
-            Assert.Contains("Vakuu event option: pick `Sere Talon`. It must be the Vakuu relic that adds 2 random Curses and 3 Wish.", startHere, StringComparison.Ordinal);
-            Assert.Contains("It must not show Tanx Claws relic art, title, or Maul-transform text. If the effect is 2 random Curses plus 3 Wish but the art is still Tanx Claws, treat it as a Spire Plus UI/package-load issue.", startHere, StringComparison.Ordinal);
+            Assert.Contains("Vakuu event option: pick `Sere Talon`. It must be the Vakuu relic that offers 4 Curses, lets you choose 1, then adds that Curse, 2 Wish, and 1 Wish+.", startHere, StringComparison.Ordinal);
+            Assert.Contains("It must not show Tanx Claws relic art, title, or Maul-transform text. If the effect is curse choice plus 2 Wish and 1 Wish+ but the art is still Tanx Claws, treat it as a Spire Plus UI/package-load issue.", startHere, StringComparison.Ordinal);
             Assert.Contains("Capture the event option, relic bar, inspect screen, and hover tooltip for Sere Talon.", startHere, StringComparison.Ordinal);
             Assert.Contains("Sere Talon route lines on `Ancient event option button`", startHere, StringComparison.Ordinal);
             Assert.Contains("`RelicModel packed icon texture`", startHere, StringComparison.Ordinal);
@@ -1686,7 +1686,7 @@ public sealed class ReleaseEvidenceGateTests
             ("Lotha", "public_evidence", "LothaPublicEvidenceOptionRelic"),
             ("Vakuu", "fight_option", "VakuuFightOptionRelic"),
             ("Vakuu", "victory_non_vakuu_choices", "Non-Vakuu Act 3 Ancient reward relic choices after winning Vakuu"),
-            ("Vakuu event", "sere_talon_pickup", "Vakuu's Sere Talon / \u74e6\u5e93\u539f\u521d\u4e4b\u722a adds 2 random Curses and 3 Wish; verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes such as `Ancient event option button`, `RelicModel packed icon texture`, and `RelicModel big icon texture` are not Tanx Claws."),
+            ("Vakuu event", "sere_talon_pickup", "Vakuu's Sere Talon / \u74e6\u5e93\u539f\u521d\u4e4b\u722a lets the player choose 1 of 4 Curses, then adds that Curse, 2 Wish, and 1 Wish+; verify event-option art, relic-bar art, inspect art, hover text, and surface-specific log routes such as `Ancient event option button`, `RelicModel packed icon texture`, and `RelicModel big icon texture` are not Tanx Claws."),
             ("Tanx event", "claws_maul_transform", "Tanx Claws / \u5766\u514b\u65af\u5229\u722a transforms cards into upgraded Maul / \u6495\u54ac+ cards.")
         };
 

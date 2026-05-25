@@ -13,7 +13,7 @@ This design is source-complete for automated test handoff. Runtime gameplay, rew
 | Prismatic Gem | Gain 1 Energy. Every second standard card reward contains only off-color cards. The trigger is scoped to the current `CardReward` screen, so reroll keeps the same trigger state and does not advance the saved counter again. | Pending reward-screen and reroll test. |
 | Jewelry Box | Adds a non-Innate Apotheosis and preserves that marker through save/load. | Pending live deck/save-load test. |
 | Preserved Fog | Removes up to four cards and adds Folly without Ethereal or Retain. Folly exposes Unplayable, Eternal, and Innate. | Pending live deck test. |
-| Vakuu's Sere Talon / 瓦库原初之爪 | Vakuu relic. Adds two random Curses and three Wish. | Pending live reward test. |
+| Vakuu's Sere Talon / 瓦库原初之爪 | Vakuu relic. Choose one of four Curses, then add that Curse, two Wish, and one Wish+. | Pending live reward test. |
 | Tanx Claws / 坦克斯利爪 | Tanx relic. Transforms selected cards into upgraded Maul+ / 撕咬+. | Pending live pickup test. |
 | Choices Paradox | On the first combat turn, offers five rare temporary retained choices and removes unselected generated cards. | Pending combat test. |
 | Jeweled Mask | Marks one Power card. It permanently costs 0 and starts in hand each combat. | Pending live draft/save-load/combat test. |
