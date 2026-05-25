@@ -7,6 +7,14 @@ internal static partial class AscensionRewardService
         List<CardCreationResult> cardRewardOptions,
         CardCreationOptions creationOptions)
     {
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                player.RunState,
+                "AscensionRewards",
+                "A11-A20 card reward mutations, including Firemarked rewards, Boss rewards, and Fission, are disabled in co-op until reward sync is proven."))
+        {
+            return false;
+        }
+
         var modified = false;
 
         if (AscensionFeatureGate.IsFiremarkedEliteEnabled(player.RunState))
@@ -29,6 +37,14 @@ internal static partial class AscensionRewardService
 
     public static bool TryModifyRewardsLate(Player player, List<Reward> rewards, AbstractRoom? room)
     {
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                player.RunState,
+                "AscensionRewards",
+                "A11-A20 room reward mutations are disabled in co-op until reward sync is proven."))
+        {
+            return false;
+        }
+
         if (TryAddA20BossOneCardReward(player, rewards, room))
         {
             return true;

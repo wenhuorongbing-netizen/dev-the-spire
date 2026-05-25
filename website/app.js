@@ -32,15 +32,6 @@
         });
       });
     });
-    // Append the Mechanics Codex virtual card
-    allUpdateItems.push({
-      title: "Spire Plus Codex & Rules",
-      titleEn: "Spire Plus Codex & Rules",
-      isMechanicsCodex: true,
-      tags: [lang === 'en' ? "Rules" : "机制库", lang === 'en' ? "Codex" : "知识库"],
-      icon: "assets/ancients/urda/ezmb_urda_map_icon.png",
-      namespace: "custom_codex"
-    });
   }
   flattenUpdateItems();
 
@@ -283,7 +274,7 @@
   }
 
   function addCodexHyperlinks(htmlString) {
-    const cardTerms = ["放松", "愚行", "执迷", "至亮之焰", "临时页", "契约", "雨息", "枯壳", "苗床", "根蚀", "根芽", "血债", "威仪", "裁决", "裂变", "火印精英", "战旗房", "深层支线"];
+    const cardTerms = ["放松", "愚行", "执迷", "至亮之焰", "临时页", "契约", "雨息", "枯壳", "苗床", "根蚀", "根芽", "血债", "威仪", "裁决", "裂变", "火印精英", "战旗房", "深层支线", "水晶球预知", "变换真实预览"];
     let output = htmlString;
     cardTerms.forEach(term => {
       const regex = new RegExp(`(?<!<[^>]*)${term}`, 'g');
@@ -482,56 +473,6 @@
       `;
     }
 
-    if (item.isMechanicsCodex) {
-      const mechanics = [
-        { id: "blood_debt", name: lang === 'en' ? "Blood Debt" : "血债与赃物锁", desc: lang === 'en' ? "Blood Debt: Added by Vakuu. When you have Blood Debt, taking unblocked damage increases your Blood Debt. You must play Contract cards to break Loot Locks or use rest site options to reduce it." : "血债与赃物锁：瓦库试炼特有负面层数。拥有血债时，受到未格挡的伤害会累积等量血债；每层血债会增加受到的生命流失。需要打出契约卡牌打破赃物锁，或在休息处使用切肉选项来减少血债。" },
-        { id: "forge_token", name: lang === 'en' ? "Forge Token" : "威仪与铸令", desc: lang === 'en' ? "Forge Token: Earned by defeating Firemarked Elites. Can be used at the next rest site to either Rest (upgrades 1 random card) or Smith (heals 7 HP)." : "铸令与威仪：击败火印精英获得。可在下一个休息处使用：休息随机升级1张卡牌，锻造额外回复7 HP。" },
-        { id: "verdict", name: lang === 'en' ? "Verdict" : "洛莎之裁决", desc: lang === 'en' ? "Verdict & Closed Court: Lotha's core mechanic. Delays damage or curse triggers, storing them as pending actions or cards in hand to be resolved in later phases." : "裁决与延期裁决：洛莎的核心机制。推迟生命流失或诅咒卡牌的结算，转化为挂起契约或临时手牌状态，允许玩家在后续回合中通过特定卡牌手段进行化解。" },
-        { id: "fission", name: lang === 'en' ? "Fission" : "裂变附魔", desc: lang === 'en' ? "Fission: Ascension 13 modifier. Fission cards in card rewards have their cost reduced by 1 but are Exhausted after being played." : "裂变：进阶13开启的特殊附魔。卡牌奖励中的攻击或技能牌有几率获得裂变附魔，卡牌耗能-1，但打出后获得消耗属性。" },
-        { id: "seedbed", name: lang === 'en' ? "Seedbeds & Sprouts" : "苗床与根芽", desc: lang === 'en' ? "Seedbeds & Sprouts: Urda and Ascension 14/15/18 mechanic. Seedbeds allow planting temporary status cards. Blight Sprouts surface during combats and add Rootblight I if left unresolved." : "苗床与根芽：乌尔姖与进阶14/15/18的连带机制。苗床可以优先种下临时卡牌。根芽会在战斗中萌发，若在战后未能处理，会向牌组中加入永久的根蚀 I 诅咒。" },
-        { id: "firemarked", name: lang === 'en' ? "Firemarked Elites" : "火印精英", desc: lang === 'en' ? "Firemarked Elites: Ascension 12. Enhanced elites with increased HP and Strength. Defeating them grants Forge Tokens and 4-card rewards." : "火印精英：进阶12引入的强化精英。精英会随机获得火印宿主能力（力量、生命、熔甲、回复），击败后获得铸令，卡牌奖励提升为4选1。" },
-        { id: "banner", name: lang === 'en' ? "Banner Rooms" : "战旗房", desc: lang === 'en' ? "Banner Rooms: Ascension 16. Enhanced combat rooms containing a Bannerbearer (Vanguard, Shieldwall, etc.). Offers higher rewards and a 15% Fission card chance." : "战旗房：进阶16引入的强化普通战斗。会随机刷出战旗效果（先锋、盾阵、血赏等），战斗奖励卡牌具有15%的裂变几率。" },
-        { id: "deepbranch", name: lang === 'en' ? "Deep Branch" : "深层支线", desc: lang === 'en' ? "Deep Branch: Ascension 17. High-risk optional branch routes in Act 2 and Act 3 that reconnect to the main route and award an extra Uncommon relic." : "深层支线：进阶17引入的分支路线。第二、三幕中会插入3-4节点长度的极度危险支线，通往支线终点会额外赠送一个罕见遗物。" }
-      ];
-
-      let menuItemsHtml = "";
-      mechanics.forEach(m => {
-        const isActive = activeMechanicId === m.id;
-        menuItemsHtml += `
-          <button type="button" class="codex-menu-item ${isActive ? 'active-menu-item' : ''}" data-mechanic="${m.id}">
-            <strong>${m.name}</strong>
-            <span>${m.desc.slice(0, 20)}...</span>
-          </button>
-        `;
-      });
-
-      const activeMech = mechanics.find(m => m.id === activeMechanicId) || mechanics[0];
-
-      return `
-        <div class="inspector-card-preview">
-          <div class="inspector-header">
-            <h2>${lang === 'en' ? 'Mechanics Codex' : '先古与进阶机制详解'}</h2>
-            <span class="tag">${lang === 'en' ? 'Rules Reference' : '机制规则速查'}</span>
-            ${pinnedInspectItem && pinnedInspectItem.isMechanicsCodex ? `
-              <div style="margin-top: 6px;">
-                <span class="pin-badge">${lang === 'en' ? 'Locked' : '已锁定'}</span>
-                <button type="button" class="clear-pin-btn" id="clearPinBtn">${lang === 'en' ? 'Clear' : '解锁'}</button>
-              </div>
-            ` : ""}
-          </div>
-          <div class="codex-menu">
-            ${menuItemsHtml}
-          </div>
-          <div class="inspector-comp" style="margin-top: 8px;">
-            <h4 class="inspector-sect-title">${activeMech.name}</h4>
-            <div class="inspector-desc-block current-box">
-              <p>${formatStsText(activeMech.desc, false)}</p>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
     const title = localize(item, "title");
     const current = localize(item, "desc") || text(item.current);
     const vanilla = text(lang === 'en'
@@ -539,6 +480,14 @@
       : item.vanilla || item.groupDefaultVanilla);
     const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
     const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item);
+    const vanillaHtml = vanilla ? `
+          <div>
+            <h4 class="inspector-sect-title">${labels.vanilla} (Vanilla)</h4>
+            <div class="inspector-desc-block vanilla-box">
+              <p>${formatStsText(vanilla, false)}</p>
+            </div>
+          </div>
+    ` : "";
 
     return `
       <div class="inspector-card-preview">
@@ -556,12 +505,7 @@
           ` : ""}
         </div>
         <div class="inspector-comp">
-          <div>
-            <h4 class="inspector-sect-title">${labels.vanilla} (Vanilla)</h4>
-            <div class="inspector-desc-block vanilla-box">
-              <p>${formatStsText(vanilla, false)}</p>
-            </div>
-          </div>
+          ${vanillaHtml}
           <div>
             <h4 class="inspector-sect-title">${labels.current} (Spire Plus)</h4>
             <div class="inspector-desc-block current-box">
@@ -640,11 +584,6 @@
       `;
     }).join("");
 
-    const codexItem = allUpdateItems.find(item => item.isMechanicsCodex);
-    const codexCardIndex = allUpdateItems.indexOf(codexItem);
-    const isCodexActive = activeInspectItem && activeInspectItem.isMechanicsCodex;
-    const codexCardHtml = RelicCardComponent(codexItem, codexCardIndex, isCodexActive);
-
     return `
       <section class="update-board">
         <aside class="inspector-pane" id="inspectorPane">
@@ -652,18 +591,6 @@
         </aside>
         <div class="cards-pane">
           ${groupsHtml}
-          <section class="compare-group" data-group="${lang === 'en' ? 'Rules' : '机制库'}">
-            <div class="group-head">
-              ${renderImage(codexItem.icon, codexItem.title)}
-              <div>
-                <h2>${lang === 'en' ? 'Rules & Codex' : '先古与进阶机制详解'}</h2>
-                <p>${lang === 'en' ? 'Quick reference guide for new gameplay mechanisms' : 'Spire Plus 新增机制规则速查指南'}</p>
-              </div>
-            </div>
-            <div class="compare-list">
-              ${codexCardHtml}
-            </div>
-          </section>
           <div id="searchEmptyState" class="empty-state hidden">
             <p>${labels.noSearchMatched || "没有找到匹配的改动。"}</p>
             <a href="#" class="clear-search-link">${labels.clearSearch || "清除搜索"}</a>
@@ -951,18 +878,44 @@
   // --- Router & Jump Actions ---
 
   function triggerJump(target) {
+    const directTarget = findUpdateItemForJump(target);
+    if (directTarget) {
+      currentSearchQuery = "";
+      currentFilter = "";
+
+      const input = document.getElementById("updateSearch");
+      if (input) input.value = "";
+
+      const chips = document.getElementById("updateFilters");
+      if (chips) {
+        for (const chip of chips.querySelectorAll(".chip")) {
+          chip.classList.toggle("active", chip.dataset.filter === labels.all);
+        }
+      }
+
+      applyFilters();
+      activeInspectItem = directTarget;
+      pinnedInspectItem = directTarget;
+      paintVisibleInspector();
+
+      const matchedCard = findRenderedCard(directTarget);
+      if (matchedCard) {
+        matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+
     const mechanicRoutes = {
-      "血债": "blood_debt",
-      "威仪": "forge_token",
-      "裁决": "verdict",
-      "裂变": "fission",
-      "苗床": "seedbed",
-      "根芽": "seedbed",
-      "根蚀": "seedbed",
-      "枯壳": "seedbed",
-      "火印精英": "firemarked",
-      "战旗房": "banner",
-      "深层支线": "deepbranch"
+      "血债": "血债与赃物锁",
+      "威仪": "威仪与铸令",
+      "裁决": "洛莎之裁决",
+      "裂变": "裂变附魔",
+      "苗床": "苗床与根芽",
+      "根芽": "苗床与根芽",
+      "根蚀": "苗床与根芽",
+      "火印精英": "火印精英",
+      "战旗房": "战旗房",
+      "深层支线": "深层支线"
     };
 
     const cardRoutes = {
@@ -980,50 +933,111 @@
     currentSearchQuery = "";
     currentFilter = ""; // Go back to "All"
 
+    let searchValue = target;
     if (target in mechanicRoutes) {
-      activeMechanicId = mechanicRoutes[target];
-      // Find the Mechanics Codex card
-      const codexItem = allUpdateItems.find(item => item.isMechanicsCodex);
-      if (codexItem) {
-        pinnedInspectItem = codexItem;
-        activeInspectItem = pinnedInspectItem;
-        render(); // Re-render with active states
+      searchValue = mechanicRoutes[target];
+    } else if (target in cardRoutes) {
+      searchValue = cardRoutes[target];
+    }
 
-        // Scroll to the codex card in the new DOM
-        const codexCardNode = Array.from(document.querySelectorAll(".compare-card")).find(card => {
-          const idx = parseInt(card.dataset.index);
-          return allUpdateItems[idx]?.isMechanicsCodex;
-        });
-        if (codexCardNode) {
-          codexCardNode.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      }
-    } else {
-      // It's a card link
-      let searchValue = target;
-      if (target in cardRoutes) {
-        searchValue = cardRoutes[target];
-      }
+    currentSearchQuery = searchValue; // Search for the card title
 
-      currentSearchQuery = searchValue; // Search for the card title
+    // Find the card to pin
+    const cardItem = allUpdateItems.find(item => {
+      const title = localize(item, "title");
+      return title.includes(searchValue) || item.title === searchValue || item.titleEn === searchValue;
+    });
 
-      // Find the card to pin
-      const cardItem = allUpdateItems.find(item => {
-        const title = localize(item, "title");
-        return title.includes(searchValue) || item.title === searchValue || item.titleEn === searchValue;
+    if (cardItem) {
+      pinnedInspectItem = cardItem;
+      activeInspectItem = pinnedInspectItem;
+    }
+
+    render(); // Render with the new search query and pin
+
+    // Find matched card in newly rendered DOM and scroll
+    const matchedCard = Array.from(document.querySelectorAll(".compare-card:not(.hidden)"))[0];
+    if (matchedCard) {
+      matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  function findUpdateItemForJump(target) {
+    const query = normalize(target);
+    if (!query) return null;
+
+    const exactTitleMatch = allUpdateItems.find(item => {
+      const titles = [
+        localize(item, "title"),
+        item.title,
+        item.titleEn
+      ];
+
+      return titles.some(value => normalize(text(value || "")) === query);
+    });
+    if (exactTitleMatch) return exactTitleMatch;
+
+    const fieldMatch = allUpdateItems.find(item => {
+      const fields = [
+        localize(item, "title"),
+        localize(item, "desc"),
+        item.title,
+        item.titleEn,
+        item.i18nKey,
+        item.descKey,
+        item.namespace,
+        ...(item.tags || [])
+      ];
+
+      return fields.some(value => {
+        const normalized = normalize(text(value || ""));
+        return normalized && (normalized.includes(query) || query.includes(normalized));
       });
+    });
+    if (fieldMatch) return fieldMatch;
 
-      if (cardItem) {
-        pinnedInspectItem = cardItem;
-        activeInspectItem = pinnedInspectItem;
-      }
+    const renderedMatch = Array.from(document.querySelectorAll(".compare-card")).find(card => {
+      const title = normalize(card.querySelector(".card-title-block")?.textContent || "");
+      const current = normalize(card.querySelector(".sts-card-current")?.textContent || "");
+      return title.includes(query) || current.includes(query);
+    });
+    if (renderedMatch) {
+      const renderedItem = allUpdateItems[parseInt(renderedMatch.dataset.index)];
+      if (renderedItem) return renderedItem;
+    }
 
-      render(); // Render with the new search query and pin
+    return null;
+  }
 
-      // Find matched card in newly rendered DOM and scroll
-      const matchedCard = Array.from(document.querySelectorAll(".compare-card:not(.hidden)"))[0];
-      if (matchedCard) {
-        matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
+  function findRenderedCard(item) {
+    return Array.from(document.querySelectorAll(".compare-card")).find(card => {
+      const cardItem = allUpdateItems[parseInt(card.dataset.index)];
+      return cardItem && itemKey(cardItem) === itemKey(item);
+    });
+  }
+
+  function paintVisibleInspector() {
+    const inspectorPane = document.getElementById("inspectorPane");
+    if (inspectorPane && activeInspectItem) {
+      inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
+    }
+
+    for (const card of document.querySelectorAll(".compare-card")) {
+      const cardItem = allUpdateItems[parseInt(card.dataset.index)];
+      const isInspect = activeInspectItem && itemKey(activeInspectItem) === itemKey(cardItem);
+      const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(cardItem);
+      card.classList.toggle("active-inspect", Boolean(isInspect));
+
+      let badge = card.querySelector(".pin-badge");
+      if (isPinned) {
+        if (!badge) {
+          badge = document.createElement("span");
+          badge.className = "pin-badge";
+          badge.textContent = lang === "en" ? "Locked" : "已锁定";
+          card.insertBefore(badge, card.firstChild);
+        }
+      } else if (badge) {
+        badge.remove();
       }
     }
   }
@@ -1161,6 +1175,27 @@
         });
       }
 
+      for (const heroBtn of app.querySelectorAll(".hero-choice-btn")) {
+        heroBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const choice = heroBtn.dataset.choice;
+          if (choice === "install") {
+            location.hash = "install";
+            return;
+          }
+
+          const board = document.querySelector(".tool-row") || document.querySelector(".update-board");
+          if (board) {
+            board.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      }
+
+      for (const codexLink of app.querySelectorAll(".codex-link")) {
+        codexLink.addEventListener("click", handleCodexLinkClick);
+      }
+
       applyFilters();
 
       // Card inspector mouseenter / click logic
@@ -1189,19 +1224,48 @@
         });
 
         card.addEventListener("click", (e) => {
+          const clickTarget = typeof e.target?.closest === "function" ? e.target : null;
+          if (clickTarget?.closest(".codex-link")) {
+            return;
+          }
+
           e.stopPropagation();
           if (pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item)) {
-            // Unpin if clicked again
             pinnedInspectItem = null;
           } else {
-            // Pin this card
             pinnedInspectItem = item;
           }
-          render(); // Refresh list to update locking states
+
+          activeInspectItem = pinnedInspectItem || item;
+          if (inspectorPane) {
+            inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
+          }
+
+          compareCards.forEach(c => {
+            const idx = parseInt(c.dataset.index);
+            const cardItem = allUpdateItems[idx];
+            const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(cardItem);
+            const isInspect = activeInspectItem && itemKey(activeInspectItem) === itemKey(cardItem);
+
+            c.classList.toggle("active-inspect", isInspect);
+
+            let badge = c.querySelector(".pin-badge");
+            if (isPinned) {
+              if (!badge) {
+                badge = document.createElement("span");
+                badge.className = "pin-badge";
+                badge.textContent = lang === 'en' ? 'Locked' : '已锁定';
+                c.insertBefore(badge, c.firstChild);
+              }
+            } else {
+              if (badge) {
+                badge.remove();
+              }
+            }
+          });
         });
       });
 
-      // Restore pinned inspect card on leaving card pane
       if (cardsPane) {
         cardsPane.addEventListener("mouseleave", () => {
           activeInspectItem = pinnedInspectItem || allUpdateItems[0];
@@ -1213,27 +1277,22 @@
             const item = allUpdateItems[index];
             const isInspect = activeInspectItem && itemKey(activeInspectItem) === itemKey(item);
             c.classList.toggle("active-inspect", isInspect);
+
+            const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item);
+            let badge = c.querySelector(".pin-badge");
+            if (isPinned) {
+              if (!badge) {
+                badge = document.createElement("span");
+                badge.className = "pin-badge";
+                badge.textContent = lang === 'en' ? 'Locked' : '已锁定';
+                c.insertBefore(badge, c.firstChild);
+              }
+            } else {
+              if (badge) badge.remove();
+            }
           });
         });
       }
-
-      // Bind Clear Pin click handler inside inspector
-      document.addEventListener("click", (e) => {
-        const clearPinBtn = e.target.closest("#clearPinBtn");
-        if (clearPinBtn) {
-          pinnedInspectItem = null;
-          render();
-        }
-      });
-
-      // Bind Hero choice log actions
-      const heroChoiceBtns = app.querySelectorAll(".hero-choice-btn");
-      heroChoiceBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-          const choiceType = btn.dataset.choice;
-          location.hash = choiceType;
-        });
-      });
     }
 
     header.innerHTML = HeaderComponent(current);
@@ -1250,23 +1309,40 @@
 
   window.addEventListener("hashchange", render);
 
-  // Dynamic navigation click bindings (including cross-card hyperlinks)
   document.addEventListener("click", (event) => {
-    // Cross-card codex link routing
-    const codexLink = event.target.closest(".codex-link");
+    const eventTarget = typeof event.target?.closest === "function" ? event.target : null;
+    if (eventTarget?.closest(".codex-link")) {
+      handleCodexLinkClick(event);
+    }
+  }, true);
+
+  function handleCodexLinkClick(event) {
+    const source = typeof event.target?.closest === "function" ? event.target : event.currentTarget;
+    const codexLink = source?.closest?.(".codex-link");
+    if (!codexLink) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    const target = codexLink.dataset.target;
+    if (route() !== "updates") {
+      location.hash = "updates";
+      setTimeout(() => triggerJump(target), 80);
+    } else {
+      triggerJump(target);
+    }
+  }
+
+  // Dynamic navigation click bindings (including cross-card hyperlinks and buttons)
+  document.addEventListener("click", (event) => {
+    // 1. Cross-card codex link routing
+    const eventTarget = typeof event.target?.closest === "function" ? event.target : null;
+    const codexLink = eventTarget?.closest(".codex-link");
     if (codexLink) {
-      event.preventDefault();
-      const target = codexLink.dataset.target;
-      if (route() !== "updates") {
-        location.hash = "updates";
-        setTimeout(() => triggerJump(target), 80);
-      } else {
-        triggerJump(target);
-      }
+      handleCodexLinkClick(event);
       return;
     }
 
-    // Language button routing
+    // 2. Language button routing
     const langButton = event.target.closest("[data-lang]");
     if (langButton) {
       event.preventDefault();
@@ -1274,23 +1350,46 @@
       return;
     }
 
-    // Tab button routing
-    const link = event.target.closest("[data-route]");
-    if (!link) return;
-    event.preventDefault();
-    location.hash = link.dataset.route;
-  });
-
-  // Listener for Mechanics sub-menu clicks
-  document.addEventListener("click", (event) => {
-    const codexMenuItem = event.target.closest(".codex-menu-item");
-    if (codexMenuItem) {
-      event.stopPropagation();
-      activeMechanicId = codexMenuItem.dataset.mechanic;
+    // 3. Clear Pin button in-place click handler
+    const clearPinBtn = event.target.closest("#clearPinBtn");
+    if (clearPinBtn) {
+      pinnedInspectItem = null;
+      activeInspectItem = allUpdateItems[0];
       const inspectorPane = document.getElementById("inspectorPane");
       if (inspectorPane) {
         inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
       }
+      const compareCards = document.querySelectorAll(".compare-card");
+      compareCards.forEach(c => {
+        c.classList.remove("active-inspect");
+        const badge = c.querySelector(".pin-badge");
+        if (badge) badge.remove();
+      });
+      return;
+    }
+
+    // 4. Hero Choice button routing & smooth scrolling
+    const heroBtn = event.target.closest(".hero-choice-btn");
+    if (heroBtn) {
+      event.preventDefault();
+      const choice = heroBtn.dataset.choice;
+      if (choice === "updates") {
+        const board = document.querySelector(".tool-row") || document.querySelector(".update-board");
+        if (board) {
+          board.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        location.hash = choice;
+      }
+      return;
+    }
+
+    // 5. Tab button routing
+    const link = event.target.closest("[data-route]");
+    if (link) {
+      event.preventDefault();
+      location.hash = link.dataset.route;
+      return;
     }
   });
 

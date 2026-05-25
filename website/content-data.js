@@ -1,4 +1,4 @@
-﻿const sourceRelicIcons = {
+const sourceRelicIcons = {
   "VELVET_CHOKER.description": "velvet_choker.png",
   "DISTINGUISHED_CAPE.description": "distinguished_cape.png",
   "PRISMATIC_GEM.description": "prismatic_gem.png",
@@ -601,7 +601,7 @@ window.SPIRE_PLUS_DATA = {
     unlockFocus: "取消锁定",
     relatedChanges: "相关改动",
     relatedMechanics: "机制解释",
-    mechanicCodex: "机制资料库",
+    mechanicCodex: "机制标签",
     mechanicTag: "机制",
     expandDetails: "\u5177\u4f53\u6548\u679c",
     sourceArtPlaceholder: "\u539f\u7248",
@@ -645,25 +645,25 @@ window.SPIRE_PLUS_DATA = {
   mechanics: mechanicGlossary,
   summary: [],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.7.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.8.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.7/SpirePlus-v0.1.0-private-beta.7.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.8/SpirePlus-v0.1.0-private-beta.8.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.7",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.8",
     baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.1.4/BaseLib.3.1.4.zip",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.7.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.7"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.8.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.8"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,934,969 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "4E838C7EE1A790E65C045A3D72CE572450E66CA54E31616F578D342AEF9F5DC6"]
+      ["\u4f53\u79ef", "18,936,103 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.7.zip\u3002",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.8.zip\u3002",
     "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -696,7 +696,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.7"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.8"]
     ]
   },
   updateGroups: [
@@ -804,9 +804,35 @@ window.SPIRE_PLUS_DATA = {
       ]
     },
     {
+      short: "机制",
+      title: "先古与进阶机制详解",
+      note: "把跨条目机制拆开显示。点击机制词时，只锁定对应条目，不重建整页列表。",
+      icon: "assets/ascension/forge_token_status.png",
+      defaultVanilla: "",
+      items: [
+        mechanicCard("blood_debt", "assets/powers/vakuu_blood_debt.png", ["瓦库", "血债"]),
+        mechanicCard("stolen_lock", "assets/powers/vakuu_stolen_vault.png", ["瓦库", "赃物锁"]),
+        mechanicCard("contract", "assets/card_portraits/vakuu_temptation.png", ["瓦库", "契约"]),
+        mechanicCard("forge_token", "assets/ascension/forge_token_status.png", ["A12", "铸令"]),
+        mechanicCard("firemark", "assets/ascension/firemarked_elite_indicator.png", ["A12", "火印精英"]),
+        mechanicCard("overflow", "assets/ascension/firemark_might_indicator.png", ["A12", "溢火"]),
+        mechanicCard("fission", "assets/ascension/fission_enchantment_icon.png", ["A13", "裂变"]),
+        mechanicCard("seedbed", "assets/ancients/urda/options/urda_seedbed.png", ["乌尔妲", "苗床"]),
+        mechanicCard("rootblight", "assets/card_portraits/rootblight_i.png", ["A14", "根蚀"]),
+        mechanicCard("blight_sprout", "assets/card_portraits/blight_sprout.png", ["A15", "根芽"]),
+        mechanicCard("banner", "assets/ascension/banner_room_indicator.png", ["A16", "战旗房"]),
+        mechanicCard("trial_branch", "assets/ancients/urda/options/urda_trial_branch.png", ["乌尔妲", "试炼枝条"]),
+        mechanicCard("verdict", "assets/powers/lotha_verdict.png", ["洛莎", "裁决"]),
+        mechanicCard("majesty", "assets/ascension/boss_seals/chosen_decree.png", ["A19", "威仪"]),
+        mechanicCard("royal_decree", "assets/ascension/boss_seals/chosen_decree.png", ["A19", "御令"]),
+        manual("\u6c34\u6676\u7403\u9884\u77e5", "", "\u6c34\u6676\u7403\u5c0f\u6e38\u620f\u4e2d\u663e\u793a\u9884\u77e5\u6309\u94ae\uff1b\u53ea\u6539\u53d8\u906e\u7f69\u53ef\u89c1\u6027\uff0c\u4e0d\u53d1\u653e\u5956\u52b1\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/ancients/urda/options/urda_root_sight.png"),
+        manual("\u53d8\u6362\u771f\u5b9e\u9884\u89c8", "", "\u4f7f\u7528\u590d\u5236\u7684\u968f\u673a\u6570\u5feb\u7167\u9884\u6d4b\u53d8\u6362\u7ed3\u679c\uff1b\u4e0d\u521b\u5efa\u5361\u724c\uff0c\u4e0d\u63a8\u8fdb\u771f\u5b9e\u968f\u673a\u6570\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/ancients/morvi/options/morvi_blueprint_proof.png")
+      ]
+    },
+    {
       short: "\u5361\u724c",
-      title: "\u65b0\u589e\u5361\u724c\u3001\u72b6\u6001\u4e0e\u9884\u89c8\u5de5\u5177",
-      note: "\u539f\u7248\u6ca1\u6709\u8fd9\u4e9b\u65b0\u589e\u5361\u724c\u3001\u72b6\u6001\u548c\u9884\u89c8\u5de5\u5177\u3002",
+      title: "\u65b0\u589e\u5361\u724c\u4e0e\u72b6\u6001",
+      note: "\u539f\u7248\u6ca1\u6709\u8fd9\u4e9b\u65b0\u589e\u5361\u724c\u548c\u72b6\u6001\u3002",
       icon: "assets/card_portraits/rootblight_i.png",
       defaultVanilla: "\u539f\u7248\u65e0\u6b64\u65b0\u589e\u5185\u5bb9\u3002",
       items: [
@@ -830,10 +856,7 @@ window.SPIRE_PLUS_DATA = {
         card("EZMB_VAKUU_TEMPTATION", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
         card("EZMB_VAKUU_SHELTER_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
         card("EZMB_VAKUU_TRICK_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
-        card("EZMB_VAKUU_CASH_OUT_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png"),
-        manual("\u6c34\u6676\u7403\u9884\u77e5", "\u539f\u7248\u65e0\u9884\u77e5\u6309\u94ae\u3002", "\u6c34\u6676\u7403\u5c0f\u6e38\u620f\u4e2d\u663e\u793a\u9884\u77e5\u6309\u94ae\uff1b\u53ea\u6539\u53d8\u906e\u7f69\u53ef\u89c1\u6027\uff0c\u4e0d\u53d1\u653e\u5956\u52b1\u3002", ["\u9884\u89c8\u5de5\u5177"]),
-        manual("\u53d8\u6362\u771f\u5b9e\u9884\u89c8", "\u539f\u7248\u4e0d\u663e\u793a\u786e\u5b9a\u7ed3\u679c\u3002", "\u4f7f\u7528\u590d\u5236\u7684\u968f\u673a\u6570\u5feb\u7167\u9884\u6d4b\u53d8\u6362\u7ed3\u679c\uff1b\u4e0d\u521b\u5efa\u5361\u724c\uff0c\u4e0d\u63a8\u8fdb\u771f\u5b9e\u968f\u673a\u6570\u3002", ["\u9884\u89c8\u5de5\u5177"]),
-        mechanicHub()
+        card("EZMB_VAKUU_CASH_OUT_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png")
       ]
     }
   ],
@@ -845,7 +868,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.7.zip；游戏内显示名为 Spire Plus。"],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.8.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -958,26 +981,34 @@ function card(id, tags, icon) {
   };
 }
 
+function mechanicCard(id, icon, tags = []) {
+  const entry = mechanicGlossary.find(item => item.id === id);
+  if (!entry) {
+    return manual(id, "", id, ["机制"], icon);
+  }
+
+  const bullets = entry.bullets || [];
+  const bulletsEn = entry.bulletsEn || bullets;
+  return {
+    namespace: "mechanics",
+    i18nKey: `mechanic_${id}`,
+    title: entry.title,
+    titleEn: entry.titleEn,
+    desc: [entry.desc, ...bullets].join(" "),
+    descEn: [entry.descEn, ...bulletsEn].filter(Boolean).join(" "),
+    vanilla: "",
+    vanillaEn: "",
+    icon: icon || entry.icon,
+    tags: ["机制", ...tags],
+    details: bullets.map((line, index) => detail(`规则 ${index + 1}`, line, `Rule ${index + 1}`, bulletsEn[index] || line))
+  };
+}
+
 function manual(title, vanilla, current, tags, icon) {
   let i18nKey = title;
   if (title === "\u6c34\u6676\u7403\u9884\u77e5") i18nKey = "crystal_sphere_peek";
   if (title === "\u53d8\u6362\u771f\u5b9e\u9884\u89c8") i18nKey = "transform_preview";
   return { title, vanilla, current, tags, icon, i18nKey };
-}
-
-function mechanicHub() {
-  return {
-    title: "机制资料库",
-    titleEn: "Mechanic Codex",
-    vanilla: "原版无此新增内容。",
-    vanillaEn: "No equivalent vanilla content.",
-    current: "集中记录 Spire Plus 的新增机制、相关卡牌和互相引用。点击正文里的机制词或下方链接可以跳到对应条目。",
-    descEn: "A compact reference for Spire Plus mechanics, related cards, and cross-links. Click mechanic terms or related links to inspect them.",
-    tags: ["机制", "资料库"],
-    icon: "assets/card_portraits/morvi_archive_pages.png",
-    i18nKey: "mechanic_codex",
-    mechanicHub: true
-  };
 }
 
 window.SPIRE_PLUS_DATA.i18n = {
@@ -1012,7 +1043,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       unlockFocus: "Unlock",
       relatedChanges: "Related Changes",
       relatedMechanics: "Mechanics",
-      mechanicCodex: "Mechanic Codex",
+      mechanicCodex: "Mechanic Tags",
       mechanicTag: "Mechanic",
       expandDetails: "Exact effects",
       sourceArtPlaceholder: "Vanilla",
@@ -1065,17 +1096,17 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.7.zip"],
-        ["Version", "v0.1.0-private-beta.7"],
+        ["File", "SpirePlus-v0.1.0-private-beta.8.zip"],
+        ["Version", "v0.1.0-private-beta.8"],
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,934,969 bytes"],
-        ["Hash", "4E838C7EE1A790E65C045A3D72CE572450E66CA54E31616F578D342AEF9F5DC6"]
+        ["Size", "18,936,103 bytes"],
+        ["Hash", "BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.7.zip.",
+      "Download SpirePlus-v0.1.0-private-beta.8.zip.",
       "Download BaseLib.3.1.4.zip and extract it to the game's mods\\BaseLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
@@ -1107,7 +1138,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.7"]
+            ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.8"]
         ]
       },
     updateGroups: [
@@ -1130,9 +1161,15 @@ window.SPIRE_PLUS_DATA.i18n = {
         defaultVanilla: "No equivalent vanilla content."
       },
       {
+        short: "Mechanics",
+        title: "Ancient and Ascension Mechanics",
+        note: "Cross-entry mechanics are split into individual reference cards. Clicking a mechanic term locks the matching card instead of rebuilding the whole list.",
+        defaultVanilla: ""
+      },
+      {
         short: "Cards",
-        title: "New Cards, Statuses, and Preview Tools",
-        note: "New cards, statuses, and preview tools added by the mod.",
+        title: "New Cards and Statuses",
+        note: "New cards and statuses added by the mod.",
         defaultVanilla: "No equivalent vanilla content."
       }
     ],
@@ -1176,13 +1213,26 @@ window.SPIRE_PLUS_DATA.i18n = {
       "首领": "Boss",
       "根芽": "Blight Sprout",
       "战旗": "Banner",
+      "战旗房": "Banner Room",
+      "血债": "Blood Debt",
+      "赃物锁": "Stolen Lock",
+      "契约": "Contract",
+      "铸令": "Forge Token",
+      "火印精英": "Firemarked Elite",
+      "溢火": "Overflow",
+      "裂变": "Fission",
+      "苗床": "Seedbed",
+      "试炼枝条": "Trial Branch",
+      "裁决": "Verdict",
+      "威仪": "Majesty",
+      "御令": "Royal Decree",
       "专属能力": "Dedicated Ability",
       "烙印形态": "Branded Form",
       "卡牌": "Card",
       "状态": "Status",
       "预览工具": "Preview tool",
       "机制": "Mechanic",
-      "资料库": "Codex"
+      "资料库": "Mechanic tag"
     },
     items: {
       "VELVET_CHOKER.description": {
@@ -1404,13 +1454,13 @@ window.SPIRE_PLUS_DATA.i18n = {
       },
       "crystal_sphere_peek": {
         title: "Crystal Sphere Peek",
-        vanilla: "Vanilla has no peek button.",
+        vanilla: "",
         current: "Adds a peek button to the Crystal Sphere minigame. It only changes mask visibility and does not grant rewards.",
         tags: ["Preview tool"]
       },
       "transform_preview": {
         title: "Deterministic Transform Preview",
-        vanilla: "Vanilla does not show the exact transform result.",
+        vanilla: "",
         current: "Uses a copied RNG snapshot to predict transform results. It creates no card and does not advance real RNG.",
         tags: ["Preview tool"]
       }
@@ -1423,7 +1473,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.7.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.8.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]

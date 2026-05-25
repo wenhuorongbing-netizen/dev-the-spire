@@ -28,7 +28,7 @@ public static class AscensionInitializer
             CreateCombatHookSubscribers);
 
         MainFile.Logger.Info(
-            $"[Spire Plus] Ascension hooks registered. A11-A20 selection is default-on for private-beta multiplayer testing; set {AscensionFeatureGate.DisablePublicSelectionEnvironmentVariable}=1 to restore vanilla A1-A10 selection, set {AscensionFeatureGate.DisableMultiplayerSelectionEnvironmentVariable}=1 to disable only host-multiplayer A11-A20 selection, set {AscensionFeatureGate.DiagnosticsEnvironmentVariable}=1 for internal diagnostics, set {AscensionFeatureGate.MultiplayerDiagnosticsEnvironmentVariable}=1 for multiplayer run-start/Neow/save-quit diagnostics.");
+            $"[Spire Plus] Ascension hooks registered. A11-A20 selection is default-on for single-player private-beta testing; multiplayer A11-A20 gameplay is fail-closed unless {MultiplayerFeaturePolicy.AllowUnverifiedCoopGameplayEnvironmentVariable}=1 is set for focused two-client debugging. Set {AscensionFeatureGate.DisablePublicSelectionEnvironmentVariable}=1 to restore vanilla A1-A10 selection, set {AscensionFeatureGate.DiagnosticsEnvironmentVariable}=1 for internal diagnostics, set {AscensionFeatureGate.MultiplayerDiagnosticsEnvironmentVariable}=1 for multiplayer run-start/Neow/save-quit diagnostics.");
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState)

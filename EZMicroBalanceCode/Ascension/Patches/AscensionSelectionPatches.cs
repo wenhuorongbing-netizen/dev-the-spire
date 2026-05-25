@@ -10,9 +10,8 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 internal static class AscensionSelectionPatches
 {
     public const string MultiplayerA20DowngradeWarning =
-        "Multiplayer A20 selection is enabled for development testing. " +
-        "A20 Branded Form / second-boss enhanced dedicated ability gameplay is currently disabled or downgraded in co-op pending live verification. " +
-        "A11-A19 inherited systems may still apply if their gates are enabled, subject to live verification.";
+        "Multiplayer A11-A20 gameplay is fail-closed by default after crash logs. " +
+        $"Set {MultiplayerFeaturePolicy.AllowUnverifiedCoopGameplayEnvironmentVariable}=1 only for focused two-client debugging.";
 
     private static readonly FieldInfo? MaxAscensionBackingField =
         AccessTools.Field(typeof(StartRunLobby), "<MaxAscension>k__BackingField");
@@ -30,7 +29,11 @@ internal static class AscensionSelectionPatches
         return AscensionFeatureGate.IsPublicSelectionEnabled &&
             !AscensionFeatureGate.IsMultiplayerSelectionDisabled &&
             lobby.NetService.Type == NetGameType.Host &&
-            lobby.GameMode != GameMode.Daily;
+            lobby.GameMode != GameMode.Daily &&
+            !MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+                null,
+                "AscensionMultiplayerSelection",
+                "A11-A20 co-op selection is disabled by default because run-state, map, reward, and combat mutations do not yet have two-client proof.");
     }
 
     public static bool ShouldExpandSelection(StartRunLobby lobby)

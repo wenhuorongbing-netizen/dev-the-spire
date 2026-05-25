@@ -1,4 +1,4 @@
-﻿# Spire Plus Private Beta Release Completion Audit
+# Spire Plus Private Beta Release Completion Audit
 
 Date: 2026-05-15
 
@@ -32,9 +32,9 @@ Concrete private-beta completion criteria:
 | Requirement | Concrete evidence inspected | Status |
 | --- | --- | --- |
 | Stable manifest id | `EZMicroBalance.json` remains `id: EZMicroBalance`; docs state `Spire Plus` is the player-facing name only. | Pass |
-| Single package | `EZMicroBalance/`, `EZMicroBalanceCode/`, `EZMicroBalance.csproj`, and `publish/SpirePlus-v0.1.0-private-beta.7.zip` with `EZMicroBalance/` as the install folder; duplicate root mod surfaces are removed from the active tree. | Pass |
+| Single package | `EZMicroBalance/`, `EZMicroBalanceCode/`, `EZMicroBalance.csproj`, and `publish/SpirePlus-v0.1.0-private-beta.8.zip` with `EZMicroBalance/` as the install folder; duplicate root mod surfaces are removed from the active tree. | Pass |
 | Build and publish | `dotnet build EZMicroBalance.sln --no-restore` and `dotnet publish EZMicroBalance.sln --no-restore` passed after the Ascension map marker ordering split; installed/staging/versioned/package hashes are in parity. | Pass for build/publish/package |
-| Latest source/package refresh | Source review confirms visible Ancient marker relics, current EN/zhs text guards, separate art/resource routes, dedicated gated Vakuu fight source, Root Eyes preview hardening, A11-A20 source guards, integrated preview-tool guards, and the short manual-test package README. Current zip SHA256 is `4E838C7EE1A790E65C045A3D72CE572450E66CA54E31616F578D342AEF9F5DC6`; detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/build/package artifact parity; gameplay verification pending |
+| Latest source/package refresh | Source review confirms visible Ancient marker relics, current EN/zhs text guards, separate art/resource routes, dedicated gated Vakuu fight source, Root Eyes preview hardening, A11-A20 source guards, integrated preview-tool guards, and the short manual-test package README. Current zip SHA256 is `BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971`; detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/build/package artifact parity; gameplay verification pending |
 | Current automated tests | `dotnet build EZMicroBalance.sln` passes with 0 warnings/errors; `dotnet test EZMicroBalance.sln --no-build` passes with 272 passed / 20 skipped; `dotnet test EZMicroBalance.sln -c Release` previously passed with 81 passed / 18 skipped; latest package refresh evidence includes `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` with 292 passed / 0 skipped after the player-visible localization naming guard. | Automated build/test/artifact pass; live/manual evidence pending |
 | Formatting and diff hygiene | `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passes after the Ascension map marker ordering split; `git diff --check` passes with CRLF warnings only. | Pass |
 | Package hash parity | `scripts/check-installed-spire-plus-package.ps1` confirms installed DLL, manifest, PCK, README, copied game-root ZIP hashes, Sere Talon imported textures, and Sere Talon / Tanx Claws PCK content match `docs/private-beta-verification-handoff.md`. | Pass |
@@ -73,4 +73,3 @@ Latest local screenshot attempts remain invalid: `.tools/runtime-evidence/live-u
 ## Conclusion
 
 Not achieved. The current tree has the latest Urda/Morvi/Lotha/Vakuu source hardening build/publish/package-refreshed, historical loader/resource smoke remains useful, and the restore-safe live-session helper is ready for the next manual pass. It is not private-beta release-ready. The current Codex target is test-ready handoff; this release audit stays open until the live/manual blockers above are executed or explicitly release-noted as deferred by the project owner.
-

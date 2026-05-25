@@ -5,6 +5,51 @@ namespace EZMicroBalance.Tests;
 public sealed class CoopCombatSafetyGuardTests
 {
     [Fact]
+    public void UnverifiedGameplayMutationsFailClosedInMultiplayer()
+    {
+        var policy = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerFeaturePolicy.cs");
+        var ascensionGates = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.Systems.cs");
+        var ascensionSelection = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionSelectionPatches.cs");
+        var ascensionRewards = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
+        var urdaOffer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAct1AncientService.cs");
+        var morviOffer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAct2AncientService.cs");
+        var lothaOffer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAct3AncientService.cs");
+        var urdaSelection = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRewardSelectionService.cs");
+        var morviSelection = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.OptionRows.cs");
+        var lothaSelection = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.OptionRows.cs");
+        var urdaRewards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.CardRewards.cs");
+
+        Assert.Contains("SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY", policy, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ALLOW_UNVERIFIED_COOP_GAMEPLAY", policy, StringComparison.Ordinal);
+        Assert.Contains("ShouldDisableUnverifiedCoopGameplay", policy, StringComparison.Ordinal);
+        Assert.Contains("coop_gameplay_disabled", policy, StringComparison.Ordinal);
+        Assert.Contains("LoggedCoopGameplayGateKeys", policy, StringComparison.Ordinal);
+
+        Assert.Contains("IsCoopAscensionGameplayAllowed", ascensionGates, StringComparison.Ordinal);
+        Assert.Contains("ShouldDisableUnverifiedCoopGameplay", ascensionGates, StringComparison.Ordinal);
+        Assert.Contains("ShouldDisableUnverifiedCoopGameplay", ascensionSelection, StringComparison.Ordinal);
+        Assert.Contains("ShouldDisableUnverifiedCoopGameplay", ascensionRewards, StringComparison.Ordinal);
+
+        foreach (var source in new[]
+        {
+            urdaOffer,
+            morviOffer,
+            lothaOffer,
+            urdaSelection,
+            morviSelection,
+            lothaSelection,
+            urdaRewards
+        })
+        {
+            Assert.Contains("ShouldDisableUnverifiedCoopGameplay", source, StringComparison.Ordinal);
+        }
+
+        Assert.Contains("coop_gameplay_disabled", urdaSelection, StringComparison.Ordinal);
+        Assert.Contains("coop_gameplay_disabled", morviSelection, StringComparison.Ordinal);
+        Assert.Contains("coop_gameplay_disabled", lothaSelection, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void UnverifiedCombatHooksFailClosedInMultiplayer()
     {
         var policy = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerFeaturePolicy.cs");

@@ -1,4 +1,4 @@
-﻿# Ancient Rework v4 Manual Verification Matrix
+# Ancient Rework v4 Manual Verification Matrix
 
 Prepared: 2026-05-07
 Updated: 2026-05-18
@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.7.zip`, SHA256 `4E838C7EE1A790E65C045A3D72CE572450E66CA54E31616F578D342AEF9F5DC6` |
+| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.8.zip`, SHA256 `BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971` |
 
 ## Runtime Load Checklist
 

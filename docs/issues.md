@@ -1,26 +1,26 @@
-﻿# Spire Plus Issues
+# Spire Plus Issues
 Current target: test-ready manual build, not release-ready.
 Current package hashes, 2026-05-25:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `4E838C7EE1A790E65C045A3D72CE572450E66CA54E31616F578D342AEF9F5DC6` |
-| DLL | `9D98CD31EEBE27E89299F24EF9AA846C9EAFD5B5ABC876FFB346A136DB45D928` |
-| PCK | `E3261B48D134FE57B52D043511093CC4170C699E80E08EDB00D96999CE197BC7` |
-| Manifest | `0A537E6EB76B903D2D7A52312F97B332F7421EB1E69C059E946051B7445092CD` |
-| README_INSTALL | `40E564BC5AD0D72E2C2E3E5EBD0EE1A2A8188DEB982B29F23527C9249E71C825` |
+| ZIP | `BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971` |
+| DLL | `29B7A4D505AD1ED68998C5AF9E2FB3E1AEBDEC15FDFE79C9B385DF74DDB8F26C` |
+| PCK | `456378240576DB6EF8FF1669A4E2E8B747BB64AC269470635CED1BC0A90ADEFF` |
+| Manifest | `5E76B8441D999119110ED6AEC2074F812E80E0F68AF5F675019098EA7174AE99` |
+| README_INSTALL | `CCBD00A154028A897BDD71A15B7057FC9DF3E17930DB48312E552D0253121336` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` P0 source/package-fixed / live-pending
 - `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
 - `URDA-SEED-BANK-HOVER` P0 source/package-fixed / live-pending: Seed Bank relic hover now shows a compact stored-card list instead of full card previews that can clip offscreen and spawn unrelated keyword tips.
 - `COOP-COMBAT-START-CRASH` P0 source/package-fixed / live-pending:
-  - User log ended during multiplayer combat startup for `CUBEX_CONSTRUCT_NORMAL`, with no managed stack.
-  - Source fix: multiplayer combat disables unverified Ascension, Morvi, Lotha, Urda, and Vakuu combat hooks by default, and logs one warning per feature.
-  - Debug opt-in: `SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS=1`, legacy `EZMB_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS=1`.
-  - The provided log declared `v0.1.0-private-beta.2`; retest must use the current package.
+  - User log ended during multiplayer combat startup for `CUBEX_CONSTRUCT_NORMAL`, with no managed stack. Treat this as latest Spire Plus crash evidence even if the in-game manifest text still shows an older beta label.
+  - Source fix: co-op fails closed before proof for A11-A20 selection/gameplay, Ascension map/rewards, Ancient offers/selections/run hooks, Urda reward alternatives, combat hooks, and preview tools.
+  - Retest must use the newly packaged build and leave `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY`, `SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS`, and `SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS` unset unless deliberately debugging.
 - `COOP-PREVIEW-TOOLS-CRASH` P0 source/package-fixed / live-pending:
-  - User log `godot2026-05-25T08.54.22.log` used `v0.1.0-private-beta.2`; Root Eyes was only offered, while the suspicious path is co-op `Aroma of Chaos` transform plus reconnect/choice-sync.
-  - Source/package fix: transform prediction and Crystal Sphere peek fail closed in co-op by default; opt-in env vars exist only for debugging. Retest needs two-client transform, Crystal Sphere, reconnect/save-load, and both logs.
+  - User log `godot2026-05-25T08.54.22.log` is latest crash evidence despite the stale beta label. It shows co-op A20, A14 Rootblight, Urda/Seed Bank, A13 Fission, reconnect, and `Aroma of Chaos` transform sync.
+  - Source fix: transform prediction, Crystal Sphere peek, and broader Spire Plus co-op gameplay mutation fail closed by default.
+  - Retest needs two-client combat start, transform event, Crystal Sphere if available, reconnect/save-load, and both clients' logs.
 - `ENEMY-DAMAGE-POLISH` P1 source-fixed / live-pending: Decimillipede, Terror Eel, and Phantasmal Gardener attack pressure is lightly reduced through damage getter patches so intent and real damage stay aligned; live elite-fight pacing proof remains pending.
 - `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
 - `URDA-PROTOTYPE` P0 open / live-pending: default-on with eleven source-backed ids, including Elite Root; live gameplay and save/load proof remain pending.

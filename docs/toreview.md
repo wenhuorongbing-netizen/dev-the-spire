@@ -1,25 +1,25 @@
-﻿# Spire Plus To Review
+# Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.7.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.8.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `4E838C7EE1A790E65C045A3D72CE572450E66CA54E31616F578D342AEF9F5DC6` |
-| DLL | `9D98CD31EEBE27E89299F24EF9AA846C9EAFD5B5ABC876FFB346A136DB45D928` |
-| PCK | `E3261B48D134FE57B52D043511093CC4170C699E80E08EDB00D96999CE197BC7` |
-| Manifest | `0A537E6EB76B903D2D7A52312F97B332F7421EB1E69C059E946051B7445092CD` |
-| README_INSTALL | `40E564BC5AD0D72E2C2E3E5EBD0EE1A2A8188DEB982B29F23527C9249E71C825` |
+| ZIP | `BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971` |
+| DLL | `29B7A4D505AD1ED68998C5AF9E2FB3E1AEBDEC15FDFE79C9B385DF74DDB8F26C` |
+| PCK | `456378240576DB6EF8FF1669A4E2E8B747BB64AC269470635CED1BC0A90ADEFF` |
+| Manifest | `5E76B8441D999119110ED6AEC2074F812E80E0F68AF5F675019098EA7174AE99` |
+| README_INSTALL | `CCBD00A154028A897BDD71A15B7057FC9DF3E17930DB48312E552D0253121336` |
 
-Latest no-game validation snapshot: build passed, default tests `280 passed / 20 skipped`, opt-in artifact tests `300 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.7`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the co-op preview-tools crash hardening package refresh, the current-package loader row is pending again because the ZIP/DLL/PCK hash changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
+Latest no-game validation snapshot: build passed, default tests `281 passed / 20 skipped`, opt-in artifact tests `301 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.8`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the co-op gameplay fail-closed crash hardening package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
 | --- | --- | --- | --- |
 | URDA-ROOT-EYES | Urda | Root Eyes selects future Monster/Unknown/Elite nodes, stores concrete previews, shows stacked marker hovers, and gates co-op queue mutation. | Click the relic, select shared-marker nodes, enter marked rooms in order and out of order, then save/load before entry. |
 | URDA-SEED-BANK | Urda | Seed Bank stores cards on the relic, shows a compact stored-card hover list, supports relic-click extraction, and preserves seeds if deck-add fails. | Store 1/2/3 cards, hover the relic from the left relic bar, confirm no large card preview clips offscreen, click extract, verify cards enter deck, and verify Boss transition does not hang. |
-| COOP-COMBAT-START-CRASH | Multiplayer / combat start | Co-op combat now disables unverified Spire Plus combat hooks by default and writes `coop_combat_hook_disabled` warnings instead of mutating combat state before two-client proof. | Install the current package, enter co-op normal combat, confirm no crash, and attach `godot.log`. Do not set `SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS` unless deliberately debugging co-op hooks. |
-| COOP-PREVIEW-TOOLS-CRASH | Multiplayer / preview tools | Co-op now disables transform prediction and Crystal Sphere peek by default and writes `coop_preview_tool_disabled` warnings. The user log pointed at a multiplayer `Aroma of Chaos` transform flow plus reconnect/choice-sync risk, not a selected Root Eyes path. | Install the current package, enter a two-client run, trigger a deck transform event and Crystal Sphere if possible, confirm no crash/desync/reconnect hang, and attach both clients' logs. Do not set `SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS` unless deliberately debugging the preview tool. |
+| COOP-COMBAT-START-CRASH | Multiplayer / combat start | The latest crash log ended during `CUBEX_CONSTRUCT_NORMAL` combat startup. Co-op now disables unverified Spire Plus gameplay mutations by default, including A11-A20 selection/gameplay, Ascension map/reward changes, Ancient offers/selections/run hooks, Urda reward alternatives, combat hooks, and preview tools. | Install the newly packaged build, enter co-op normal combat, confirm no crash, and attach `godot.log`. Do not set `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY`, `SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS`, or `SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS` unless deliberately debugging those paths. |
+| COOP-PREVIEW-TOOLS-CRASH | Multiplayer / preview tools | The latest transform crash log showed co-op A20 state, Rootblight, Seed Bank, Fission, reconnect, and `Aroma of Chaos` transform/choice-sync before failure. Transform prediction and Crystal Sphere peek fail closed in co-op by default; broader co-op gameplay mutation also fails closed. | Install the newly packaged build, enter a two-client run, trigger a deck transform event and Crystal Sphere if possible, confirm no crash/desync/reconnect hang, and attach both clients' logs. Leave all unverified co-op opt-ins unset unless intentionally bisecting. |
 | URDA-TRIAL-HUMUS | Urda | Trial Branch, Seedbed, Humus Pact, Moss Map, Rooted Route, After Rain, Molting, Shallow-Root Relic, and Elite Root have source guards and visible relic hovers. | Check event text, relic hover text, card reward alternatives, map markers, and combat results. |
 | URDA-ELITE-ROOT | Urda | New first-tier Urda option relic: after each Elite combat, heal 10 HP. | Pick Elite Root, fight a normal Elite and a Firemarked Elite if possible, and confirm each victory heals up to 10 HP. |
 | NEOW-ACT1-REROLL | Neow / Ancient UI | The one-use dice reroll now appears on Neow's normal start choices and eligible Act 1 Ancient reward screens. The text says the reroll is Act 1 only and disappears after use. | Start a run, use Neow reroll once, confirm choices refresh and the reroll vanishes; later check an Act 1 Ancient screen and confirm it cannot be saved into Act 2. |
