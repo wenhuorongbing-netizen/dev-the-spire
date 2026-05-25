@@ -116,7 +116,8 @@ public sealed class ReleasePackageArtifactGuardTests
 
         Assert.Contains("manual feature verification", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
         Assert.Contains("still pending", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Fresh loader smoke for the current beta.18 package hash is pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("This is historical loader/startup evidence, not current beta.18 proof and not gameplay proof", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
@@ -140,7 +141,7 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Contains(pckHash, handoff, StringComparison.Ordinal);
         Assert.Contains("Record results in `docs/features/ancients-rework-v4/manual-verification-matrix.md`", handoff, StringComparison.Ordinal);
         Assert.Contains("update `docs/release-checklist.md`", handoff, StringComparison.Ordinal);
-        Assert.Contains("Current normal Steam-client startup/log verification passed for the beta.17 package hash", handoff, StringComparison.Ordinal);
+        Assert.Contains("Historical normal Steam-client startup/log verification passed for the beta.17 package hash", handoff, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log evidence confirms the display name", handoff, StringComparison.Ordinal);
         Assert.Contains("Current Mod Settings list screenshot shows `Spire Plus`", handoff, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", handoff, StringComparison.Ordinal);

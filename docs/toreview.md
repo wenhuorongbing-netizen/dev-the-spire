@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.17.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.18.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `44DFFE46847F6EE096EEDAC02303841E0646C1493D00D10DB66A2B46AF885FD6` |
-| DLL | `22BE6A53D8676E3E44A0A3D65D77D4BA5BA8ECF3999301EE5AC984D267AC29AD` |
-| PCK | `116737BB57F8A7A23A629A753D04A97950391040EF5C7242E1E440C451E44994` |
-| Manifest | `2FA6369F292784B85CB07D47A2511CA2AC8EFA20A5DB6FA334FF8C5E7B4E77FB` |
-| README_INSTALL | `33D681E205CB2378E1057E49596E86337992418FC929D79AFCF77215CCEAC25D` |
+| ZIP | `FBD862960E8A82B159428F0E1770C95F09C13A1D479863C6A8BD6BB7800BAD8D` |
+| DLL | `DD9C31D7BF550F3007D0472CC666078363ECDBA017405B0388814D1B6800B22F` |
+| PCK | `B57E9FC8231A607746FDFAF3515F05D9D4A43D9449A2308FD1981C6B330BB671` |
+| Manifest | `76B7343E6FEBA79CE878F05BF8E21CABA5BEF3937E5D87E12C14059F02078BE5` |
+| README_INSTALL | `B8AD0579BC87B0778D71BE6FE369E7BFA23A5DDA5D95843EF5C5E8B1770ACF45` |
 
-Latest validation snapshot: build passed, default tests `282 passed / 20 skipped`, opt-in artifact tests `302 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.17`, format passed, website syntax checks passed, installed-package check passed, `git diff --check` passed, and beta.17 loader/startup proof exists under `.tools/runtime-evidence/beta17-loader-smoke-20260525-194311`. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: build passed, default tests `282 passed / 20 skipped`, opt-in artifact tests `302 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.18`, format passed, website syntax checks passed, installed-package check passed, `git diff --check` passed, and beta.17 loader/startup proof exists under `.tools/runtime-evidence/beta17-loader-smoke-20260525-194311`. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

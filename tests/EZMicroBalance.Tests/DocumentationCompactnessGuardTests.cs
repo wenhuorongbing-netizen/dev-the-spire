@@ -39,8 +39,8 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.17 Seedbed / Rootblight package refresh. Result: succeeded.",
-            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.17 Seedbed / Rootblight package refresh. Result: succeeded.",
+            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.18 Seedbed explanation / mod-overview refresh. Result: succeeded.",
+            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.18 Seedbed explanation / mod-overview refresh. Result: succeeded.",
             "installed `mods\\EZMicroBalance` folder",
             "matched the installed mod artifacts on 2026-05-25",
             "302 passed, 0 skipped, 0 failed");
@@ -258,11 +258,11 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("fresh beta.17 Steam-client loader smoke", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.18 Seedbed explanation", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta17-loader-smoke-20260525-194311", projectState, StringComparison.Ordinal);
-        Assert.Contains("gameplay, save-load, and co-op rows remain pending", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.18 needs a fresh loader smoke", projectState, StringComparison.Ordinal);
         Assert.Contains("Current manual-test package is not a release-readiness claim", projectState, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", projectState, StringComparison.Ordinal);
         Assert.Contains("git diff --check", projectState, StringComparison.Ordinal);
@@ -509,7 +509,7 @@ public sealed class DocumentationCompactnessGuardTests
             devEnvironment,
             "Historical 22-field loader evidence:",
             "Current source defines 30 SavedSpireFields",
-            "Current-package loader evidence:",
+            "Historical beta.17 loader evidence:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
             "Last private beta package:",
             "Zip SHA256:",
@@ -578,7 +578,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.17 ZIP hash passed",
+            "Fresh loader smoke for the current beta.18 package hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

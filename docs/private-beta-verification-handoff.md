@@ -16,9 +16,9 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest verification after the beta.17 Seedbed / planting text package refresh and goal-guard doc repair: `dotnet build EZMicroBalance.sln`, normal tests with 282 passed / 20 skipped, `dotnet publish`, package refresh, website syntax checks, `dotnet format`, `git diff --check`, installed-package checker, release verifier fail-closed check, and opt-in artifact tests with 302 passed / 0 skipped all passed in their expected modes.
-- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.17 Seedbed strength/planting refresh, the current package loader row is filled from `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311`; the verifier is expected to fail closed with 19 pending live/manual rows until feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
-- The latest normal Steam smoke under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311` covered the current beta.17 package hash: only BaseLib plus Spire Plus loaded, `Found 30 SavedSpireFields`, startup completed, and the log audit was clean. This is startup/log context only; feature gameplay rows remain pending.
+- Latest verification after the beta.18 Seedbed explanation / mod-overview refresh: `dotnet build EZMicroBalance.sln`, normal tests with 282 passed / 20 skipped, `dotnet publish`, package refresh, website syntax checks, `dotnet format`, `git diff --check`, installed-package check, release verifier fail-closed guards, and opt-in artifact tests with 302 passed / 0 skipped all passed in their expected modes.
+- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.18 Seedbed explanation / mod-overview refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
+- The latest normal Steam smoke under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311` covered the beta.17 package hash: only BaseLib plus Spire Plus loaded, `Found 30 SavedSpireFields`, startup completed, and the log audit was clean. This is historical startup/log context only; current beta.18 loader and feature gameplay rows remain pending.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
 Browser GPTimage2 art rebuild recheck, 2026-05-15:
@@ -41,21 +41,21 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.17.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.18.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `44DFFE46847F6EE096EEDAC02303841E0646C1493D00D10DB66A2B46AF885FD6`
+- Zip SHA256: `FBD862960E8A82B159428F0E1770C95F09C13A1D479863C6A8BD6BB7800BAD8D`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `22BE6A53D8676E3E44A0A3D65D77D4BA5BA8ECF3999301EE5AC984D267AC29AD`
-- Manifest SHA256: `2FA6369F292784B85CB07D47A2511CA2AC8EFA20A5DB6FA334FF8C5E7B4E77FB`
-- PCK SHA256: `116737BB57F8A7A23A629A753D04A97950391040EF5C7242E1E440C451E44994`
-- README_INSTALL SHA256: `33D681E205CB2378E1057E49596E86337992418FC929D79AFCF77215CCEAC25D`
+- DLL SHA256: `DD9C31D7BF550F3007D0472CC666078363ECDBA017405B0388814D1B6800B22F`
+- Manifest SHA256: `76B7343E6FEBA79CE878F05BF8E21CABA5BEF3937E5D87E12C14059F02078BE5`
+- PCK SHA256: `B57E9FC8231A607746FDFAF3515F05D9D4A43D9449A2308FD1981C6B330BB671`
+- README_INSTALL SHA256: `B8AD0579BC87B0778D71BE6FE369E7BFA23A5DDA5D95843EF5C5E8B1770ACF45`
 
 ## Known Automated Evidence
 
-- Current automated snapshot: beta.17 must rerun `dotnet build`, normal `dotnet test`, opt-in release-artifact tests, `dotnet publish`, package refresh, `dotnet format`, `git diff --check`, website syntax checks, installed-package checking, and release verifier fail-closed checking after the Seedbed strength/planting clarity refresh. Gameplay proof is still pending.
+- Current automated snapshot: beta.18 passed `dotnet build`, normal `dotnet test`, opt-in release-artifact tests, `dotnet publish`, package refresh, `dotnet format`, `git diff --check`, website syntax checks, installed-package checking, and release verifier fail-closed guard coverage after the Seedbed strength/planting clarity refresh. Gameplay proof is still pending.
 - Current normal test count: 282 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 302 passed / 0 skipped.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1`, which also checks the installed PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split.
-- Historical loader/resource evidence remains useful context only. The current 30-field loader proof covers beta.17 loader/startup only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
+- Historical loader/resource evidence remains useful context only. The 30-field loader proof covers beta.17 loader/startup only. Current beta.18 still needs loader proof. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
 - Historical detailed command logs are preserved in `docs/review.md`, `docs/archive/project-state-history-20260516.md`, and `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`. This handoff intentionally keeps only the current tester-facing summary.
 - Automated evidence does not close clicked UI, live gameplay, save-load, death/failure, route traversal, preview-tools, or co-op rows.
 
@@ -66,7 +66,7 @@ Historical RC1 notes now live at `docs/archive/implementation-records/rc1-live-v
 
 Current manual-proof summary:
 
-- Current normal Steam-client startup/log verification passed for the beta.17 package hash under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311`. It proves loader/startup only.
+- Historical normal Steam-client startup/log verification passed for the beta.17 package hash under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311`. Current beta.18 loader proof is pending.
 - Historical helper-driven startup/log verification confirms loader health only. This is loader/helper evidence, not live gameplay evidence.
 - Current Mod Settings list screenshot shows `Spire Plus`; page-level BaseLib/old-display-name evidence remains historical.
 - Normal Steam-client A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, saved-map boss-reachability graph proof, Act 2/3 A11 map-surface checks, and targeted A14 Rootblight hover/starter-notice spot checks passed.
@@ -83,7 +83,7 @@ Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplay
 8. Execute disable-mod gameplay verification.
 9. Inspect `%APPDATA%\SlayTheSpire2\logs\godot.log` after the Steam-client pass.
 10. Fill `.tools\runtime-evidence\manual-test-handoff-20260523-current\release\release-evidence-manifest.json` and run `scripts\verify-spire-plus-release-evidence.ps1 -WritePassMarker` before treating the package as release-proven. Use `scripts\collect-release-evidence.ps1 -NoLaunch` to create the evidence folder plus manifest, or `-WriteTemplate` to create only the manifest.
-    Keep the manifest, each row `EvidenceDir`, required file, screenshot path, and `command.txt` inside the evidence root. Unknown or blank rows appear in `Warnings` and do not satisfy any release row. The verifier hashes `publish\SpirePlus-v0.1.0-private-beta.17.zip` by default; pass `-PackagePath` only for a deliberate alternate package. Use `-AllowDeferred` only after an explicit owner-approved release-note deferral.
+    Keep the manifest, each row `EvidenceDir`, required file, screenshot path, and `command.txt` inside the evidence root. Unknown or blank rows appear in `Warnings` and do not satisfy any release row. The verifier hashes `publish\SpirePlus-v0.1.0-private-beta.18.zip` by default; pass `-PackagePath` only for a deliberate alternate package. Use `-AllowDeferred` only after an explicit owner-approved release-note deferral.
 
 ## Ascension Verification
 

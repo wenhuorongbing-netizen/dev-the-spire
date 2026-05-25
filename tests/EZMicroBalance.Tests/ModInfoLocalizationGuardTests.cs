@@ -25,10 +25,11 @@ public sealed class ModInfoLocalizationGuardTests
             "mod.manifest?.id, MainFile.ModId",
             "LocManager.Instance?.Language",
             "string.Equals(language, \"zhs\", StringComparison.Ordinal)",
-            "Spire Plus 是一个用于私测的《杀戮尖塔 2》玩法扩展",
+            "Spire Plus 是一个用于私测的《杀戮尖塔 2》单体玩法扩展",
             "Spire Plus is a single Slay the Spire 2 gameplay expansion",
-            "Seedbed is the model case",
-            "根蚀只在本场停住",
+            "Seedbed is the clearest example",
+            "种下不是消耗诅咒",
+            "根蚀被种下后只在本战冻结",
             "GetNodeOrNull<MegaRichTextLabel>(\"ModDescription\")");
     }
 
@@ -40,7 +41,7 @@ public sealed class ModInfoLocalizationGuardTests
 
         Assert.Equal("EZMicroBalance", root.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", root.GetProperty("name").GetString());
-        Assert.Equal("v0.1.0-private-beta.17", root.GetProperty("version").GetString());
+        Assert.Equal("v0.1.0-private-beta.18", root.GetProperty("version").GetString());
         Assert.True(root.TryGetProperty("description", out var description));
         Assert.Contains("Spire Plus", description.GetString(), StringComparison.Ordinal);
         Assert.Contains("中文", description.GetString(), StringComparison.Ordinal);
