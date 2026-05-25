@@ -226,7 +226,7 @@ window.SPIRE_PLUS_DATA = {
     searchPlaceholder: "\u9057\u7269\u3001\u5148\u53e4\u3001\u8fdb\u9636\u3001\u5173\u952e\u8bcd",
     vanilla: "\u539f\u7248",
     current: "\u5f53\u524d",
-    expandDetails: "\u5c55\u5f00\u5177\u4f53\u6548\u679c",
+    expandDetails: "\u5177\u4f53\u6548\u679c",
     sourceArtPlaceholder: "\u539f\u7248",
     installTitle: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     installLead: "\u4e0b\u8f7d\u6700\u65b0\u79c1\u6d4b\u5305\uff0c\u5e76\u6309\u4e0b\u65b9\u8def\u5f84\u5b89\u88c5 BaseLib \u4e0e Spire Plus\u3002",
@@ -280,8 +280,8 @@ window.SPIRE_PLUS_DATA = {
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,921,528 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006"]
+      ["\u4f53\u79ef", "18,921,527 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "B1F999EEA895AB364FA062C0B481203AC3A3C1AD2170B3B589BFB1019673FE53"]
     ]
   },
   installSteps: [
@@ -616,7 +616,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       searchPlaceholder: "Relic, Ancient, Ascension, keyword",
       vanilla: "Vanilla",
       current: "Current",
-      expandDetails: "Expand exact effects",
+      expandDetails: "Exact effects",
       sourceArtPlaceholder: "Vanilla",
       installTitle: "Download & Install",
       installLead: "Download the latest private test build, then install BaseLib and Spire Plus in the paths below.",
@@ -672,8 +672,8 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,921,528 bytes"],
-        ["Hash", "2EAC08531559C7871497741F5827705A3B9DB0EC60AF69A1C485AB6F9B4A3006"]
+        ["Size", "18,921,527 bytes"],
+        ["Hash", "B1F999EEA895AB364FA062C0B481203AC3A3C1AD2170B3B589BFB1019673FE53"]
       ]
     },
     installSteps: [

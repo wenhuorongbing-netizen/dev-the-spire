@@ -142,15 +142,16 @@
   }
 
   function detailSearchText(item) {
-    return (item.details || [])
+    return ([...(item.details || []), ...extraSourceDetails(item)])
       .map((entry) => [detailLabel(entry), detailBody(item, entry)].join(" "))
       .join(" ");
   }
 
   function renderItemDetails(item) {
-    if (!item.details?.length) return "";
+    const details = [...(item.details || []), ...extraSourceDetails(item)];
+    if (!details.length) return "";
     let rowsHtml = "";
-    for (const entry of item.details) {
+    for (const entry of details) {
       const label = detailLabel(entry);
       const body = detailBody(item, entry);
       if (!label && !body) continue;
@@ -162,11 +163,29 @@
       `;
     }
     return `
-      <details class="item-details">
-        <summary>${labels.expandDetails || "展开具体效果"}</summary>
+      <details class="item-details" open>
+        <summary>${labels.effectDetails || labels.expandDetails || "具体效果"}</summary>
         <div class="detail-grid">${rowsHtml}</div>
       </details>
     `;
+  }
+
+  function extraSourceDetails(item) {
+    if (item?.descKey !== "BOSS_SEAL_CHOSEN_DECREE.summary") return [];
+    return [
+      {
+        label: "威仪",
+        labelEn: "Majesty",
+        text: "下一次防御或屏障动作每层额外获得[blue]8[/blue]点格挡。A19最多[blue]2[/blue]层；A20烙印形态最多[blue]3[/blue]层，且一次防御或屏障最多消耗[blue]2[/blue]层。",
+        textEn: "The next defense or barrier action gains [blue]8[/blue] extra Block per stack. A19 caps at [blue]2[/blue]; A20 Branded Form caps at [blue]3[/blue] and can spend at most [blue]2[/blue] stacks on one defense or barrier action."
+      },
+      {
+        label: "御令牌",
+        labelEn: "Royal Decree card",
+        text: "本回合打出被标记的束缚牌，可以避免御令惩罚。打出非御令束缚牌时，女王获得[blue]1[/blue]层威仪。",
+        textEn: "Playing the marked Bound card this turn avoids the decree penalty. Playing a non-Decree Bound card gives Queen [blue]1[/blue] Majesty."
+      }
+    ];
   }
 
   function formatStsText(text) {

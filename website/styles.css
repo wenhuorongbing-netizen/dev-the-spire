@@ -31,7 +31,7 @@
   --radius-sharp: 0px;
   --radius-mild: 4px;
   --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  --font-readable: "Inter", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", "Source Han Sans SC", "Hiragino Sans GB", "Segoe UI", Arial, sans-serif;
+  --font-readable: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", "Source Han Sans SC", "Hiragino Sans GB", Arial, sans-serif;
 }
 
 * {
@@ -52,10 +52,12 @@ body {
   margin: 0;
   color: var(--text-primary);
   font-family: var(--font-readable);
-  font-size: 16.5px;
+  font-size: 17px;
   font-weight: 500;
-  line-height: 1.68;
+  line-height: 1.72;
   letter-spacing: 0;
+  font-kerning: normal;
+  font-optical-sizing: auto;
   background:
     radial-gradient(circle at 50% 0%, hsla(44, 70%, 55%, 0.08) 0%, transparent 60%),
     radial-gradient(circle at 10% 30%, hsla(12, 70%, 50%, 0.03) 0%, transparent 40%),
@@ -419,11 +421,11 @@ main {
 }
 
 .hero p:not(.release-line) {
-  font-size: 17px;
+  font-size: 17.5px;
   font-weight: 500;
   color: var(--text-muted);
   margin: 0 0 28px;
-  line-height: 1.68;
+  line-height: 1.72;
 }
 
 /* Event Choices UI elements inside Hero */
@@ -528,10 +530,10 @@ main {
 }
 
 .feat-card p {
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 500;
   color: var(--text-muted);
-  line-height: 1.68;
+  line-height: 1.72;
   margin: 0;
 }
 
@@ -746,9 +748,9 @@ main {
   border: 1px solid var(--line-dim);
   padding: 12px;
   border-radius: var(--radius-mild);
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 500;
-  line-height: 1.62;
+  line-height: 1.68;
 }
 
 .inspector-desc-block.vanilla-box {
@@ -928,9 +930,9 @@ main {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 500;
-  line-height: 1.58;
+  line-height: 1.62;
   border-top: 1px solid var(--line-dim);
   padding-top: 10px;
 }
@@ -1011,10 +1013,10 @@ main {
 }
 
 .detail-copy {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 500;
   color: var(--text-muted);
-  line-height: 1.58;
+  line-height: 1.62;
 }
 
 /* Merchant Rug downloads container (Install panel) */
