@@ -413,6 +413,7 @@
     tools.appendChild(chips);
     app.appendChild(tools);
 
+    let cardIndex = 0;
     const board = el("section", "update-board");
     for (const group of data.updateGroups) {
       const section = el("section", "compare-group");
@@ -434,6 +435,7 @@
           : item.vanilla || group.defaultVanilla);
         const detailsText = detailSearchText(item);
         const card = el("article", "compare-card");
+        card.style.setProperty("--index", cardIndex++);
         card.dataset.search = normalize([title, current, vanilla, detailsText, (item.tags || []).join(" ")].join(" "));
         card.appendChild(image(item.icon || group.icon, title));
         const body = el("div", "");
