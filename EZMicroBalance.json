@@ -2,8 +2,8 @@
   "id": "EZMicroBalance",
   "name": "Spire Plus",
   "author": "wenhuorongbing-netizen",
-  "description": "Spire Plus is a Slay the Spire 2 gameplay expansion: Ancient reward reworks, A11-A20 test progression, Rootblight and Blight Sprouts, Firemarked Elites, Banner Rooms, boss dedicated abilities, and preview tools. Requires BaseLib. 中文：Spire Plus 是《杀戮尖塔 2》玩法拓展：先古之民奖励重做、A11-A20 测试进阶、根芽/根蚀、火印精英、战旗房、首领专属能力和预览工具。需要 BaseLib。",
-  "version": "v0.1.0-private-beta.11",
+  "description": "Spire Plus expands Slay the Spire 2 with clearer risk-reward choices: reworked Ancient relic rewards, A11-A20 test progression, Rootblight/Blight Sprouts, Firemarked Elites, Banner Rooms, boss dedicated abilities, and preview tools for Crystal Sphere peek and transform preview. Requires BaseLib. 中文：Spire Plus 为《杀戮尖塔 2》加入更清楚的风险与奖励：先古之民遗物奖励重做、A11-A20 测试进阶、根芽/根蚀、火印精英、战旗房、首领专属能力，以及水晶球预知和变换预览等预览工具。需要 BaseLib。",
+  "version": "v0.1.0-private-beta.13",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [

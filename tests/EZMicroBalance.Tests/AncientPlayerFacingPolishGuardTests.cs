@@ -916,7 +916,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             v22ManualChecklist,
             "Seedbed card text and hover explain Temporary and Plant",
-            "Seedbed gives 6 Block and sets 2 slots; Seedbed+ gives 8 Block, sets 3 slots",
+            "Seedbed gives 7 Block and sets 2 slots; Seedbed+ gives 10 Block, sets 3 slots",
             "Later Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight are planted before entering hand",
             "Permanent Curses, Withered Husk, and beneficial temporary pages are not planted",
             "Planted cards do not trigger play, discard, draw, or Exhaust synergies");

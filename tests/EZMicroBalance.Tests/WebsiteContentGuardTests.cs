@@ -52,23 +52,23 @@ public sealed class WebsiteContentGuardTests
             "EZMB_URDA_RAIN_BREATH",
             "EZMB_VAKUU_TRICK_CONTRACT",
             "EZMB_VAKUU_CASH_OUT_CONTRACT",
-            "\u8ba9\u300a\u6740\u622e\u5c16\u5854 2\u300b\u6709\u66f4\u591a\u9009\u62e9",
+            "\u8ba9\u300a\u6740\u622e\u5c16\u5854 2\u300b\u7684\u5956\u52b1\u66f4\u6562\u62ff",
             "Spire Plus \u505a\u4e86\u4ec0\u4e48",
             "short: \"\\u5361\\u724c\"",
-            "More choices, clearer costs",
+            "Stronger rewards with readable costs",
             "What Spire Plus Changes",
             "\u82e5\u5408\u9002\u623f\u95f4\u4e0d\u8db3\uff0c\u81f3\u5c11\u653e\u51652\u4e2a",
             "\u53ef\u9644\u9b54\u724c",
             "If there are not enough suitable rooms, at least 2 are placed.",
             "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission.",
             "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
-            "Gain 6 Block and set up a 2-space Seedbed",
+            "Gain 7 Block and set up a 2-space Seedbed",
             "\u79cd\u4e0b\u4e0d\u662f\u6253\u51fa\u3001\u5f03\u724c\u6216\u6d88\u8017",
-            "\u79cd\u4e0b\u6839\u82bd\u6309\u5df2\u5904\u7406\u7ed3\u7b97",
+            "\u79cd\u4e0b\u6839\u82bd\u89c6\u4e3a\u5df2\u5904\u7406",
             "\u6839\u8680\u662f\u4e3b\u724c\u7ec4\u91cc\u7684\u8bc5\u5492\uff0c\u4e0d\u662f\u6839\u82bd",
             "Planting is not playing, discarding, or exhausting",
             "Seedbed can plant Rootblight",
-            "A planted [gold]Rootblight[/gold] is not removed, downgraded, or worsened this combat.",
+            "A planted [gold]Rootblight[/gold] is held for one combat",
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
@@ -81,8 +81,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-seedbed-clarity",
-            "app.js?v=20260525-seedbed-clarity");
+            "content-data.js?v=20260525-seedbed-strength",
+            "app.js?v=20260525-seedbed-strength");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

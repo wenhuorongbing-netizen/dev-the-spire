@@ -1,6 +1,6 @@
 # Spire Plus Test-Ready Development Goal
 Goal: keep the current `Spire Plus` workspace at a user-test-ready manual test build, with source, resources, package, docs, and automated guards aligned for the user's manual test pass.
-Current stop line: Codex should not chase release-ready evidence in this pass. The user will run live/manual testing. This is not a release-ready claim. Current package target remains `publish/SpirePlus-v0.1.0-private-beta.11.zip`. The stable technical manifest id remains `EZMicroBalance`; do not edit it in place.
+Current stop line: Codex should not chase release-ready evidence in this pass. The user will run live/manual testing. This is not a release-ready claim. Current package target remains `publish/SpirePlus-v0.1.0-private-beta.13.zip`. The stable technical manifest id remains `EZMicroBalance`; do not edit it in place.
 ## Current State
 - Urda, Morvi, and Lotha are default-on test slices with visible marker relics for selected Ancient rewards.
 - Vakuu fight is hidden by default and can be enabled only through explicit fight gates. It has a dedicated source enemy and scene, but victory return, no-black-screen, save-load, failure/death path, and co-op behavior still need live proof.

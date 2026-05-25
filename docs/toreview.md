@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.11.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.13.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `6AAA370834172F0C8A814C306520D464111DA380FE8FB8987F3564D44AB84C31` |
-| DLL | `69D771B3F22987CD241B2AB4CE3CFB4F203087A219D2F65DE0E069B05DA02DCF` |
-| PCK | `70E51826BE9A59EDC752BBD23AD95625997FC8FA2C250DB1255F5522F7DD59BA` |
-| Manifest | `FFD51759227208EEABB1542F7134BFBFE5BFE19A6C7565EDF630C21ACC7220A5` |
-| README_INSTALL | `8FAC7328F2162FC6976DBE3B350985B558114EBBA9EBFC5CFE710C4B60BD555F` |
+| ZIP | `1AAB42699E3FD7B837ADA9719BEE0F446DF7CD4F590B0C3278C1C411CFD7A7A0` |
+| DLL | `2E85D1A54F3F60C16E2FEEEB78BEC1294103A3E729B646B16BA0DC2BD0C6B786` |
+| PCK | `4304CDFA00333FC000C86B6FC72F1C27154F7D42DB4BC48EAF5656B2F42CD70C` |
+| Manifest | `FBAB4A54102E5BB8C6787497BBA5AD1CC935B5EBDCA760D490DE9B261CDF801A` |
+| README_INSTALL | `F9DB2CBEA6FC5018E10AF92C1149DFBEB868E6B58EB0253082EED91C911EAC22` |
 
-Latest no-game validation snapshot: build passed, default tests `281 passed / 20 skipped`, opt-in artifact tests `301 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.11`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the Seedbed / Rootblight package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
+Latest no-game validation snapshot: build passed, default tests `281 passed / 20 skipped`, opt-in artifact tests `301 passed / 0 skipped`, publish/package refresh produced `v0.1.0-private-beta.13`, format passed, website syntax checks passed, installed-package check passed, and `git diff --check` passed. After the Seedbed / Rootblight package refresh, the current-package loader row is pending again because package hashes changed without opening the game. The release verifier is expected to fail closed until live/manual rows are filled.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
@@ -26,7 +26,7 @@ Latest no-game validation snapshot: build passed, default tests `281 passed / 20
 | MORVI-REWARDS | Morvi | Morvi choices use visible option relics; Debt and Overdraft counters are Buff counters; failed selections refresh choices. | Test Forbidden Loan, Misprint Press, Red Ink, Overdue Library, Blueprint Proof, Paperstorm, Open Book, Debt Settlement. |
 | LOTHA-REWARDS | Lotha | Lotha choices use visible option relics with source-split card rules, transient state recovery, and Mirror Rebuttal handling. | Test each blessing, especially Single Sentence, Death Reprieve, Public Evidence, and Mirror Rebuttal. |
 | VAKUU-FIGHT | Vakuu | Vakuu fight has a visible fight relic, dedicated encounter scene/monster, no-normal-reward resume path, and fallback exit path. | Enable the gate, start the fight, win, confirm no black screen, choose reward, test failure/death and save/load. |
-| MANUAL-20260519-COUNTERS-PEEK-TAGS | UI/tooltips | Vakuu combat counters are visible. Vakuu's Sere Talon / 瓦库原初之爪 offers 4 Curses, then adds the chosen Curse, 2 Wish, and 1 Wish+; Tanx Claws / 坦克斯利爪transforms cards into Maul+ / 撕咬+. | Inspect Vakuu's Sere Talon pickup, Tanx Claws pickup, relic-bar art, Crystal Sphere preview, Quiet Echo, and Deferred Verdict text. |
+| MANUAL-20260519-COUNTERS-PEEK-TAGS | UI/tooltips | Vakuu combat counters are visible. Vakuu's Sere Talon / 瓦库原初之爪 offers 4 Curses, then adds the chosen Curse, 2 Wish, and 1 Wish+; Tanx Claws / 坦克斯利爪 transforms cards into Maul+ / 撕咬+. | Inspect Vakuu's Sere Talon pickup, Tanx Claws pickup, relic-bar art, Crystal Sphere preview, Quiet Echo, and Deferred Verdict text. |
 | MANUAL-20260524-SERE-TALON-ART | Ancient rewards / relic art | Sere Talon routes to Spire Plus-owned icon art and no longer uses Tanx Claws art. | Pick up Vakuu's Sere Talon and verify event option, relic bar, inspect screen, hover title/text, and log routes. |
 | MANUAL-20260524-SERE-TALON-TANX-CLAWS-REPORT | Ancient rewards / relic art | Treat any green Tanx Claws art on Vakuu's Sere Talon as our display/package route problem until live proof says otherwise. | If the effect is curse choice + 2 Wish + 1 Wish+ but art/title is Tanx Claws, capture `godot.log` route lines and the surface that bypassed the patch. |
 | ASCENSION-A11-A20 | Ascension | A11 map geometry, A12 Firemarked Elites, A13 Fission, A16 Banners, A17 Deep Branch, A19 dedicated abilities, A20 Branded Form, and Rootblight have guards. | Play A11-A20 paths, verify hovers, rewards, boss abilities, Rootblight timing, save/load, and co-op boundaries. |

@@ -25,8 +25,8 @@ public sealed class ModInfoLocalizationGuardTests
             "mod.manifest?.id, MainFile.ModId",
             "LocManager.Instance?.Language",
             "string.Equals(language, \"zhs\", StringComparison.Ordinal)",
-            "Spire Plus 加入新的先古之民奖励",
-            "Spire Plus adds new Ancient rewards",
+            "Spire Plus 是一个私测中的完整玩法 mod",
+            "Spire Plus is one gameplay mod for private testing",
             "GetNodeOrNull<MegaRichTextLabel>(\"ModDescription\")");
     }
 
@@ -38,7 +38,7 @@ public sealed class ModInfoLocalizationGuardTests
 
         Assert.Equal("EZMicroBalance", root.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", root.GetProperty("name").GetString());
-        Assert.Equal("v0.1.0-private-beta.11", root.GetProperty("version").GetString());
+        Assert.Equal("v0.1.0-private-beta.13", root.GetProperty("version").GetString());
         Assert.True(root.TryGetProperty("description", out var description));
         Assert.Contains("Spire Plus", description.GetString(), StringComparison.Ordinal);
         Assert.False(root.TryGetProperty("description_zhs", out _), "The game manifest schema does not read description_zhs; use the UI patch instead.");

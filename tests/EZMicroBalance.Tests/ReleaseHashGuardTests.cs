@@ -112,11 +112,26 @@ public sealed class ReleaseHashGuardTests
         const string stalePreA20LocTableMergeDllHash = "38F1F60D20C3D47E275966851943E15C910D56F91FA2CD6BC00A7BD2C8201F59";
         const string stalePreA20SmartFormatDllHash = "A9F358D05CAC382FAF6DA5BBA36FDC3D2CE311CDE489B2B8EFBCA1F9CCC193D1";
         const string stalePreA20SmartFormatPckHash = "A07DA0222F2477BD5B4A8F89129DAF14C687EC300E752AE5A522F450FC227AB0";
-        const string currentZipHash = "6AAA370834172F0C8A814C306520D464111DA380FE8FB8987F3564D44AB84C31";
-        const string currentDllHash = "69D771B3F22987CD241B2AB4CE3CFB4F203087A219D2F65DE0E069B05DA02DCF";
-        const string currentPckHash = "70E51826BE9A59EDC752BBD23AD95625997FC8FA2C250DB1255F5522F7DD59BA";
-        const string currentManifestHash = "FFD51759227208EEABB1542F7134BFBFE5BFE19A6C7565EDF630C21ACC7220A5";
-        const string currentReadmeHash = "8FAC7328F2162FC6976DBE3B350985B558114EBBA9EBFC5CFE710C4B60BD555F";
+        const string stalePreSeedbedClarityZipHash = "6AAA370834172F0C8A814C306520D464111DA380FE8FB8987F3564D44AB84C31";
+        const string stalePreSeedbedClarityDllHash = "69D771B3F22987CD241B2AB4CE3CFB4F203087A219D2F65DE0E069B05DA02DCF";
+        const string stalePreSeedbedClarityPckHash = "70E51826BE9A59EDC752BBD23AD95625997FC8FA2C250DB1255F5522F7DD59BA";
+        const string stalePreSeedbedClarityManifestHash = "FFD51759227208EEABB1542F7134BFBFE5BFE19A6C7565EDF630C21ACC7220A5";
+        const string stalePreSeedbedClarityReadmeHash = "8FAC7328F2162FC6976DBE3B350985B558114EBBA9EBFC5CFE710C4B60BD555F";
+        const string stalePreSeedbedStrengthZipHash = "201E514BEA91CF7490449682518472C19F6267F471890BE95E733214772EB1F0";
+        const string stalePreSeedbedStrengthDllHash = "1D33AFF4283C9EF1FBAD7E24E7F58595A74C477C3328C7892013D4B8CE5F7EDC";
+        const string stalePreSeedbedStrengthPckHash = "87A79ABBA22904374C93169A6F70B4F37EA140DC595B495D5CDA4D843E9EDA14";
+        const string stalePreSeedbedStrengthManifestHash = "398457EF661A1CA8EB4F4CA5518B47D4FED6EDDF78570017BB30CE591BFE6397";
+        const string stalePreSeedbedStrengthReadmeHash = "22A8662032FA05807BC300D3B692FB620897773AF2F5FA56FEC7B3404759947C";
+        const string stalePreManifestBomFixZipHash = "5EFCE27E38DF12324D436DA1A3FDC1C7664F3FB34DC043E998744D70986090EE";
+        const string stalePreManifestBomFixPckHash = "0F9BA649149FE16AA8870F4368236C8886DD0B81FE91E2FB63B6DCF43831DAF5";
+        const string stalePreManifestBomFixManifestHash = "9CA9B87288B885CE5853BF376C4283B2680691BD7F589FDF47D77CC9ED230DBE";
+        const string stalePreZhsBomRestoreZipHash = "FC9B870F81804FDDC8DBBE730ACD7DF1B42A24A681A702B4B5469FC6156C7218";
+        const string stalePreZhsBomRestorePckHash = "79A9364C11C1E4CCCD79F4873878F772F4296D7C21A732B759484DB0B4B65FEE";
+        const string currentZipHash = "1AAB42699E3FD7B837ADA9719BEE0F446DF7CD4F590B0C3278C1C411CFD7A7A0";
+        const string currentDllHash = "2E85D1A54F3F60C16E2FEEEB78BEC1294103A3E729B646B16BA0DC2BD0C6B786";
+        const string currentPckHash = "4304CDFA00333FC000C86B6FC72F1C27154F7D42DB4BC48EAF5656B2F42CD70C";
+        const string currentManifestHash = "FBAB4A54102E5BB8C6787497BBA5AD1CC935B5EBDCA760D490DE9B261CDF801A";
+        const string currentReadmeHash = "F9DB2CBEA6FC5018E10AF92C1149DFBEB868E6B58EB0253082EED91C911EAC22";
 
         var currentStatusDocs = new[]
         {
@@ -188,7 +203,20 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreBlightSproutDiagnosticsZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreSereTalonNRelicLifecycleGuardZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreA20LocTableMergeZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedClarityZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedStrengthZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreManifestBomFixZipHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreZhsBomRestoreZipHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreA20SmartFormatPckHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedClarityPckHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedClarityManifestHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedClarityReadmeHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedStrengthPckHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedStrengthManifestHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedStrengthReadmeHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreManifestBomFixPckHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreManifestBomFixManifestHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreZhsBomRestorePckHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(oldDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightUiDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(staleRootSightMarkerDllHash, doc, StringComparison.Ordinal);
@@ -236,6 +264,8 @@ public sealed class ReleaseHashGuardTests
             Assert.DoesNotContain(stalePreSereTalonNRelicLifecycleGuardDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreA20LocTableMergeDllHash, doc, StringComparison.Ordinal);
             Assert.DoesNotContain(stalePreA20SmartFormatDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedClarityDllHash, doc, StringComparison.Ordinal);
+            Assert.DoesNotContain(stalePreSeedbedStrengthDllHash, doc, StringComparison.Ordinal);
         }
 
         AssertSourceContains(

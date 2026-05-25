@@ -3,9 +3,9 @@ param(
 
     [string]$ManifestPath,
 
-    [string]$PackageSha256 = "6AAA370834172F0C8A814C306520D464111DA380FE8FB8987F3564D44AB84C31",
+    [string]$PackageSha256 = "1AAB42699E3FD7B837ADA9719BEE0F446DF7CD4F590B0C3278C1C411CFD7A7A0",
 
-    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.11.zip",
+    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.13.zip",
 
     [int]$MinScreenshotWidth = 800,
 
@@ -428,10 +428,10 @@ function Test-PackageHashesEvidence {
 
     $expectedPaths = @(
         $ManifestPackagePath,
-        'publish\SpirePlus-v0.1.0-private-beta.11\EZMicroBalance\EZMicroBalance.dll',
-        'publish\SpirePlus-v0.1.0-private-beta.11\EZMicroBalance\EZMicroBalance.pck',
-        'publish\SpirePlus-v0.1.0-private-beta.11\EZMicroBalance\EZMicroBalance.json',
-        'publish\SpirePlus-v0.1.0-private-beta.11\EZMicroBalance\README_INSTALL.txt'
+        'publish\SpirePlus-v0.1.0-private-beta.13\EZMicroBalance\EZMicroBalance.dll',
+        'publish\SpirePlus-v0.1.0-private-beta.13\EZMicroBalance\EZMicroBalance.pck',
+        'publish\SpirePlus-v0.1.0-private-beta.13\EZMicroBalance\EZMicroBalance.json',
+        'publish\SpirePlus-v0.1.0-private-beta.13\EZMicroBalance\README_INSTALL.txt'
     )
 
     foreach ($expectedPath in $expectedPaths) {

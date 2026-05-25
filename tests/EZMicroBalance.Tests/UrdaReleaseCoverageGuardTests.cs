@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -300,8 +300,8 @@ public sealed class UrdaReleaseCoverageGuardTests
         AssertSourceContains(
             urdaCards,
             "public sealed class UrdaSeedbed",
-            "new BlockVar(6m, ValueProp.Move)",
-            "DynamicVars.Block.UpgradeValueBy(2m)");
+            "new BlockVar(7m, ValueProp.Move)",
+            "DynamicVars.Block.UpgradeValueBy(3m)");
         var seedbedAlternative = SliceBetween(seedbedRewardSource, "private static bool TryAddSeedbedAlternative", "private static async Task AcceptSeedbed");
         Assert.DoesNotContain("SeedbedChecks = progress.SeedbedChecks + 1", seedbedAlternative, StringComparison.Ordinal);
         AssertSourceContains(
