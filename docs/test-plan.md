@@ -92,7 +92,7 @@ Each implemented Ancient reward change needs a manual result before private beta
 - Crossbow: turn-start random attack offer can be accepted or skipped; skipped generated card does not linger.
 - Toasty Mittens: top draw-pile card can be exhausted for Strength or kept.
 - Whispering Earring: first three turns auto-play one highest-cost playable hand card after draw.
-- Meat Cleaver: Cleaver / 鍒囪倝鍒€ removes two cards and loses five current HP; disabled when unavailable.
+- Meat Cleaver: Cleaver / 切肉 removes two cards and loses five current HP; disabled when unavailable.
 - Blood-Soaked Rose / Enthralled: Enthralled gains 10 Block while preserving forced-priority behavior.
 
 ## Save/Load Checks
