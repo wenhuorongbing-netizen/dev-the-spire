@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.19.zip`, SHA256 `631837AF16F00C83F00954446A14E6B610E1B251B0D994E321C84C166016898E` |
+| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.20.zip`, SHA256 `D15A0B21CB97AC498AE015116D230601F7F42E3EFB8CDF37D3226258FB1E52AD` |
 
 ## Runtime Load Checklist
 
@@ -44,7 +44,7 @@ v4.3 is current. All-slot behavior is retained with safer hook ordering.
 2. Complete one normal monster combat with a normal card reward.
 3. Open the reward screen.
 4. Record all visible card slots, color, and rarity.
-5. Confirm the relic hover shows `棱彩计数：1/2` in zhs, or the English equivalent.
+5. Confirm the relic hover shows `初始计数1/2` in zhs, or the English equivalent.
 6. Reroll if available and confirm rerolling does not force off-color replacements.
 
 Expected result: the first normal reward increments the counter and stays non-triggered through rerolls.
@@ -56,8 +56,8 @@ Expected result: the first normal reward increments the counter and stays non-tr
 3. Open the reward screen.
 4. Confirm every visible option is off-color / `异色牌`, preserving original type and rarity when a matching replacement exists.
 5. Reroll if available and confirm the reward remains all off-color.
-6. Confirm the relic hover shows `棱彩计数：0/2` or `棱彩计数：1/2`, depending on the live reset timing.
-7. If the reward banner is visible, confirm it shows `棱彩奖励：本次只出现异色牌。`.
+6. Confirm the relic hover shows `初始计数0/2` or `初始计数1/2`, depending on the live reset timing.
+7. If the reward banner is visible, confirm it shows `本次标准卡牌奖励只会出现异色牌。`.
 8. Review `godot.log`. If the trigger reward banner is not visible, confirm `PrismaticGem reward-screen hint fallback` is logged with the `_banner` reason or the `UI/Banner fallback`. If both banner paths fail, relic hover count plus every visible reward card being off-color remain the available confirmation surfaces; the log should say visible all-off-color cards and relic hover count remain the available confirmation surfaces.
 
 Expected result: the second normal reward triggers all-slot off-color replacement and reroll preserves that triggered state.
@@ -73,7 +73,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 
 | Ancient / Relic | Manual Check | Expected Result | Result |
 | --- | --- | --- | --- |
-| Pael's Horn | Pick up the reward and inspect the added cards. | Adds one `Relax` / `放松` and one `Relax+` / `放松+`. Regression text includes `获得1点能量`, `手牌有7张`, `至少18点`. | Pending |
+| Pael's Horn | Pick up the reward and inspect the added cards. | Adds one `Relax` / `放松` and one `Relax+` / `放松+`. Regression text includes `抽1张牌`, `每回合7张`, `至少18点`. | Pending |
 | Black Star | Pick up in Act 3 or later, then kill an elite. | Pickup immediately grants one random relic; normal elite bonus remains. | Pending |
 | War Hammer | Pick up reward, then kill an elite. | Pickup chooses two cards to upgrade; elite kill upgrades remain. | Pending |
 | Jewelry Box | Pick up reward, inspect deck, then save/load or enter the next combat. | Adds `Apotheosis` / `神化` without `Innate` / `固有`; the added card must not start in opening hand from Innate. | Pending |
@@ -86,14 +86,14 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Distinguished Cape | Inspect Vakuu options and pick up the reward at max HP values around 80, 70, 30, 19, 18, and 10 if practical. | Uses `lose 30% of current Max HP, at least 18`; cannot be selected when current Max HP is not greater than the v4.3 cost; Vakuu must still show three normal reward options; localized locked Cape only as a defensive fallback; low-Max-HP Vakuu still shows three normal choices; zhs text should include `至少18点`; max HP loss is not damage; adds exactly 3 `Apparition` / `灵体` cards. | Pending |
 | Velvet Choker | Play 6 cards manually from hand, then inspect/play the 7th+ card. | No hard six-card cap; the 7th+ from-hand manual cards cost +1 after other cost changes; copied, autoplayed, or repeated plays do not advance the counter. | Pending |
 | Pael's Tooth | Remove five cards, run two non-boss combats, then act transition. | One stored card returns upgraded every two non-boss combats; remaining stored cards clear after act boss transition. | Pending |
-| Sovereign Blade / Forge | Forge a temporary Sovereign Blade, hover Forge/铸造, then play Sovereign Blade. | Forge hover explains the blade's added boons. Forged temporary Sovereign Blade has Exhaust; permanent Refine Blade is unchanged. Playing Sovereign Blade grants 3 Strength, 3 Dexterity, 3 Plating, 3 Regen, and 3 Vigor. | Pending |
+| Sovereign Blade / Forge | Forge a temporary Sovereign Blade, hover Forge/锻造, then play Sovereign Blade. | Forge hover explains the blade's added boons. Forged temporary Sovereign Blade has Exhaust; permanent Refine Blade is unchanged. Playing Sovereign Blade grants 3 Strength, 3 Dexterity, 3 Plating, 3 Regen, and 3 Vigor. | Pending |
 | Seal of Gold / Debt | Pick up reward, draw/play/exhaust Debt. | Grants energy and two playable `Debt` / `债务` curses; gold loss occurs only on exhaust. | Pending |
 | Sozu | Pick up with empty potion slots, then attempt future potion gain. | Empty potion slots fill on pickup, then future potion gain is blocked. | Pending |
 | Ectoplasm | Pick up, then complete later gold rewards. | Grants immediate gold, then blocks future gold gain. | Pending |
-| Fiddle | Draw many cards in combat. | Draw stops while `手牌有7张`; no card should be lost or stuck. | Pending |
+| Fiddle | Draw many cards in combat. | Draw stops while `每回合7张`; no card should be lost or stuck. | Pending |
 | Iron Club | Play Ironclad attacks and inspect dynamic text. | Uses current variable text; source guard expects 5 cards where applicable. | Pending |
 | Brilliant Scarf | Draw from the reward and inspect dynamic text. | Uses current variable text; source guard expects 6 cards where applicable. | Pending |
-| Beautiful Bracelet | Apply to selected cards and inspect enchantment. | Selected cards gain `Swift 2` / `迅速2`; zhs text does not show raw `Swift`. | Pending |
+| Beautiful Bracelet | Apply to selected cards and inspect enchantment. | Selected cards gain `Swift 2` / `迅捷2`; zhs text does not show raw `Swift`. | Pending |
 | Music Box | Play an eligible card in combat. | Creates a discounted Ethereal Exhaust copy. | Pending |
 | Crossbow | Start enemy turn with Crossbow. | Generated attack is temporary; skipped card does not linger. | Pending |
 | Toasty Mittens | Start turn with a draw pile. | Top draw-pile card can be exhausted for Strength or kept. | Pending |
@@ -106,9 +106,9 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 
 | Area | Expected Text | Result |
 | --- | --- | --- |
-| Beautiful Bracelet relic text | `迅速2`, no raw `Swift` | Pending |
-| Numeric formatting | No spaces between Chinese text, numbers, and units: `获得1点能量`, `手牌有7张`, `至少18点` | Pending |
-| Prismatic Gem count hint | zhs hover uses `棱彩计数：1/2` or `棱彩计数：0/2`; trigger reward banner uses `棱彩奖励：本次只出现异色牌。` | Pending |
+| Beautiful Bracelet relic text | `迅捷2`, no raw `Swift` | Pending |
+| Numeric formatting | No spaces between Chinese text, numbers, and units: `抽1张牌`, `每回合7张`, `至少18点` | Pending |
+| Prismatic Gem count hint | zhs hover uses `初始计数1/2` or `初始计数0/2`; trigger reward banner uses `本次标准卡牌奖励只会出现异色牌。` | Pending |
 | Jewelry Box | `神化`, no raw `Apotheosis`; `宝石面具` and 0-cost text | Pending |
 | Pael's Horn | `放松` and `放松+`, no raw `Relax` | Pending |
 | Vakuu's Sere Talon | `许愿`, no raw `Wish`; no Tanx Claws art/title on Vakuu reward | Pending |
@@ -117,7 +117,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Enthralled | `执迷`, no raw `Enthralled` | Pending |
 | Debt | `债务`, no raw `Debt` | Pending |
 | Pael's Tooth | `首领`, no raw `Boss` | Pending |
-| Shared keywords | `保留`, `虚无`, `消耗`, `固有`, `永恒`, `力量` | Pending |
+| Shared keywords | `固有`, `永恒`, `虚无`, `消耗`, `保留`, `临时` | Pending |
 ## Save/Load Sensitive Rows
 
 | Area | Manual Check | Result |

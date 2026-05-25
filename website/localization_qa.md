@@ -1,4 +1,4 @@
-# Spire Plus Website Localization QA
+﻿# Spire Plus Website Localization QA
 
 Date: 2026-05-22
 
@@ -126,8 +126,8 @@ Fixes checked during this pass:
 - Replaced public vanilla placeholders with site-owned simplified SVG icons under `website/assets/vanilla-icons/`.
 - Added separate card-change entries for `愚行 / Folly` and `执迷 / Enthralled`.
 - Kept `至亮之焰 / Brightest Flame` as the public-facing title pair and verified its Exhaust/draw change appears.
-- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.19.zip`.
-- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.19`.
+- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.20.zip`.
+- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.20`.
 
 Static checks:
 
@@ -149,8 +149,8 @@ Rendered checks:
 - 28 vanilla-related entries use `assets/vanilla-icons/`.
 - `.source-art-placeholder` count is 0.
 - Search for `执迷` returns the Blood-Soaked Rose relic row and the Enthralled card row.
-- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.19.zip` and the release button to the concrete GitHub tag URL.
-- Public install page points the main download button to `releases/download/v0.1.0-private-beta.19/SpirePlus-v0.1.0-private-beta.19.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
+- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.20.zip` and the release button to the concrete GitHub tag URL.
+- Public install page points the main download button to `releases/download/v0.1.0-private-beta.20/SpirePlus-v0.1.0-private-beta.20.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
 - Browser console warnings/errors: none.
 
 ## Review 6: Local Redraw Icon QA
@@ -350,7 +350,7 @@ Fixes checked during this pass:
 - Clarified Blight Sprout and Rootblight cases: planted Sprouts are treated as handled without counting as played and add no Rootblight I after combat; planted Rootblight freezes for this combat, remains in the master deck at the same level, and does not upgrade, downgrade, split, or disappear.
 - Seedbed is documented as an 8 / 12 Block card with immediate deck cleanup and a Withered Husk return for every planted card, so its baseline value is visible even when the player has not yet seen the root system.
 - Regenerated the embedded localization fallback from current JSON so stale or mojibake fallback strings do not reappear when asset loading fails.
-- Updated package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.19.zip`.
+- Updated package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.20.zip`.
 
 Static checks:
 

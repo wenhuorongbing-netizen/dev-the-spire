@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -29,7 +29,7 @@ public sealed class ModInfoLocalizationGuardTests
             "Spire Plus is a single Slay the Spire 2 gameplay expansion",
             "Seedbed is the clearest example",
             "种下不是消耗诅咒",
-            "根蚀被种下后只在本战冻结",
+            "根蚀被种下后只在本战停住",
             "[gold]作者[/gold]",
             "[gold]版本[/gold]",
             "GetNodeOrNull<MegaRichTextLabel>(\"ModDescription\")");
@@ -48,7 +48,7 @@ public sealed class ModInfoLocalizationGuardTests
 
         Assert.Equal("EZMicroBalance", root.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", root.GetProperty("name").GetString());
-        Assert.Equal("v0.1.0-private-beta.19", root.GetProperty("version").GetString());
+        Assert.Equal("v0.1.0-private-beta.20", root.GetProperty("version").GetString());
         Assert.True(root.TryGetProperty("description", out var description));
         Assert.Contains("Spire Plus", description.GetString(), StringComparison.Ordinal);
         Assert.Contains("中文", description.GetString(), StringComparison.Ordinal);

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -65,10 +65,10 @@ public sealed class WebsiteContentGuardTests
             "Seedbed starts as 8/12 Block",
             "Each successful plant means one fewer pollution card",
             "\u79cd\u4e0b\u4e0d\u662f\u6d88\u8017\u8bc5\u5492",
-            "\u6839\u8680\u672c\u6218\u51bb\u7ed3",
+            "\u6839\u8680\u672c\u6218\u505c\u4f4f",
             "\u79cd\u4e0b\u4e0d\u662f\u6253\u51fa\u3001\u5f03\u724c\u6216\u6d88\u8017",
             "\u79cd\u4e0b\u6839\u82bd\u4e0d\u7b97\u6253\u51fa",
-            "\u6839\u8680\u53ea\u5728\u672c\u6218\u51bb\u7ed3",
+            "\u6839\u8680\u53ea\u5728\u672c\u6218\u505c\u4f4f",
             "Planting is not playing, discarding, or exhausting",
             "Planting is not exhausting a Curse",
             "Seedbed can plant Rootblight",
@@ -85,8 +85,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-seedbed-clarity-b19",
-            "app.js?v=20260525-seedbed-clarity-b19");
+            "content-data.js?v=20260525-seedbed-clarity-b20",
+            "app.js?v=20260525-seedbed-clarity-b20");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),
