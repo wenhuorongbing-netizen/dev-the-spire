@@ -650,7 +650,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Latest normal Steam-client startup/log verification covers a prior 30-field package hash", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Latest normal Steam-client startup/log verification covers the current beta.13 package hash", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);

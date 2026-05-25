@@ -26,11 +26,11 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. After the `v0.1.0-private-beta.13` package refresh, the verifier template has been regenerated and all 20 live/manual rows are pending again. The installed package hash check passes, but that is package parity evidence, not loader evidence.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. After the current beta.13 loader smoke, the loader row passes and 19 live/manual rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Pending | Codex/User | Launch the current `v0.1.0-private-beta.13` package and fill `.tools/runtime-evidence/release-ready-manual/fresh-current-package-loader-smoke` with command, environment, current package hashes, `enabled-mods.txt`, `godot.log`, and clean `godot-log-audit.json`. The 2026-05-24 loader smoke is prior-hash startup context only. |
+| fresh-current-package-loader-smoke | loader | Passed | Codex | Current beta.13 loader evidence under `.tools/runtime-evidence/release-ready-manual/fresh-current-package-loader-smoke`: command, environment, current package hashes, `enabled-mods.txt`, `godot.log`, clean `godot-log-audit.json`, startup completion, stopped game, and restored mod isolation. This covers loader/startup only; feature rows remain pending. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
