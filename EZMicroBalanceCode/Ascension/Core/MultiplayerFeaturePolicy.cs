@@ -9,13 +9,20 @@ internal static class MultiplayerFeaturePolicy
 {
     public const string AllowUnverifiedCoopCombatHooksEnvironmentVariable = "SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS";
     public const string LegacyAllowUnverifiedCoopCombatHooksEnvironmentVariable = "EZMB_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS";
+    public const string AllowUnverifiedCoopPreviewToolsEnvironmentVariable = "SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS";
+    public const string LegacyAllowUnverifiedCoopPreviewToolsEnvironmentVariable = "EZMB_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS";
 
     private static readonly object CoopCombatGateLogLock = new();
     private static readonly HashSet<string> LoggedCoopCombatGateKeys = [];
+    private static readonly object CoopPreviewGateLogLock = new();
+    private static readonly HashSet<string> LoggedCoopPreviewGateKeys = [];
 
-    public static bool IsSingleplayer(IRunState? runState) =>
-        runState == null ||
-        (runState.Players.Count <= 1 && CurrentNetType() is NetGameType.Singleplayer or NetGameType.None);
+    public static bool IsSingleplayer(IRunState? runState)
+    {
+        var netType = CurrentNetType();
+        return netType is NetGameType.Singleplayer or NetGameType.None &&
+            (runState == null || runState.Players.Count <= 1);
+    }
 
     public static bool IsHost(IRunState? runState) =>
         runState != null && CurrentNetType() == NetGameType.Host;
@@ -82,6 +89,36 @@ internal static class MultiplayerFeaturePolicy
         return true;
     }
 
+    public static bool ShouldDisableUnverifiedCoopPreviewTool(
+        IRunState? runState,
+        string feature,
+        string reason)
+    {
+        if (IsSingleplayer(runState))
+        {
+            return false;
+        }
+
+        if (IsUnverifiedCoopPreviewToolOverrideEnabled)
+        {
+            LogCoopPreviewGateOnce(
+                feature,
+                "coop_preview_tool_override_enabled",
+                runState,
+                reason,
+                $"[Spire Plus] {feature} preview is running in co-op because {AllowUnverifiedCoopPreviewToolsEnvironmentVariable}=1 is set. This path still needs two-client proof.");
+            return false;
+        }
+
+        LogCoopPreviewGateOnce(
+            feature,
+            "coop_preview_tool_disabled",
+            runState,
+            reason,
+            $"[Spire Plus] {feature} preview disabled for co-op: {reason}");
+        return true;
+    }
+
     public static void LogCoopEvidence(
         string feature,
         string eventName,
@@ -91,19 +128,20 @@ internal static class MultiplayerFeaturePolicy
 
     public static string DescribeNetMode(IRunState? runState)
     {
-        if (IsSingleplayer(runState))
-        {
-            return "single";
-        }
-
-        if (IsHost(runState))
+        var netType = CurrentNetType();
+        if (netType == NetGameType.Host)
         {
             return "host";
         }
 
-        if (IsClient(runState))
+        if (netType == NetGameType.Client)
         {
             return "client";
+        }
+
+        if (IsSingleplayer(runState))
+        {
+            return "single";
         }
 
         return runState?.Players.Count > 1 ? "shared-state" : "single";
@@ -114,6 +152,12 @@ internal static class MultiplayerFeaturePolicy
             Environment.GetEnvironmentVariable(AllowUnverifiedCoopCombatHooksEnvironmentVariable)) ||
         AscensionExpansionConfig.IsTruthy(
             Environment.GetEnvironmentVariable(LegacyAllowUnverifiedCoopCombatHooksEnvironmentVariable));
+
+    private static bool IsUnverifiedCoopPreviewToolOverrideEnabled =>
+        AscensionExpansionConfig.IsTruthy(
+            Environment.GetEnvironmentVariable(AllowUnverifiedCoopPreviewToolsEnvironmentVariable)) ||
+        AscensionExpansionConfig.IsTruthy(
+            Environment.GetEnvironmentVariable(LegacyAllowUnverifiedCoopPreviewToolsEnvironmentVariable));
 
     private static void LogCoopCombatGateOnce(
         string feature,
@@ -133,6 +177,43 @@ internal static class MultiplayerFeaturePolicy
         lock (CoopCombatGateLogLock)
         {
             if (!LoggedCoopCombatGateKeys.Add(key))
+            {
+                return;
+            }
+        }
+
+        MainFile.Logger.Warn(message);
+        LogCoopEvidence(
+            feature,
+            eventName,
+            runState,
+            new Dictionary<string, object?>
+            {
+                ["reason"] = reason,
+                ["canMutateSharedState"] = CanMutateSharedRunState(runState),
+                ["players"] = runState?.Players.Count ?? 0,
+                ["netMode"] = DescribeNetMode(runState)
+            });
+    }
+
+    private static void LogCoopPreviewGateOnce(
+        string feature,
+        string eventName,
+        IRunState? runState,
+        string reason,
+        string message)
+    {
+        var key = string.Join(
+            "|",
+            RuntimeHelpers.GetHashCode(runState),
+            DescribeNetMode(runState),
+            runState?.Players.Count ?? 0,
+            feature,
+            eventName);
+
+        lock (CoopPreviewGateLogLock)
+        {
+            if (!LoggedCoopPreviewGateKeys.Add(key))
             {
                 return;
             }

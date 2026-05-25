@@ -50,11 +50,39 @@ public sealed class PreviewToolsGuardTests
     }
 
     [Fact]
+    public void PreviewToolsFailClosedInUnverifiedCoopRuns()
+    {
+        var policySource = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerFeaturePolicy.cs");
+        var crystalSource = ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekPatch.cs");
+        var transformSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPatch.cs");
+        var transformContextSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionRngContext.cs");
+        var combinedPreviewSource = crystalSource + Environment.NewLine + transformSource + Environment.NewLine + transformContextSource;
+
+        Assert.Contains("SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS", policySource, StringComparison.Ordinal);
+        Assert.Contains("EZMB_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS", policySource, StringComparison.Ordinal);
+        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", policySource, StringComparison.Ordinal);
+        Assert.Contains("coop_preview_tool_disabled", policySource, StringComparison.Ordinal);
+        Assert.Contains("coop_preview_tool_override_enabled", policySource, StringComparison.Ordinal);
+        Assert.Contains("LoggedCoopPreviewGateKeys", policySource, StringComparison.Ordinal);
+        Assert.Contains("netType is NetGameType.Singleplayer or NetGameType.None &&", policySource, StringComparison.Ordinal);
+        Assert.Contains("if (netType == NetGameType.Host)", policySource, StringComparison.Ordinal);
+        Assert.Contains("if (netType == NetGameType.Client)", policySource, StringComparison.Ordinal);
+
+        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", crystalSource, StringComparison.Ordinal);
+        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", transformSource, StringComparison.Ordinal);
+        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", transformContextSource, StringComparison.Ordinal);
+        Assert.Contains("ClearPredictions(__instance)", transformSource, StringComparison.Ordinal);
+        Assert.Contains("Clear(player)", transformContextSource, StringComparison.Ordinal);
+        Assert.Contains("two-client proof", combinedPreviewSource, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void CrystalSpherePatchOnlyTouchesTheMaskAndButton()
     {
         var source = ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekPatch.cs");
 
         Assert.Contains("NCrystalSphereScreen", source, StringComparison.Ordinal);
+        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", source, StringComparison.Ordinal);
         Assert.Contains("%ScryMask", source, StringComparison.Ordinal);
         Assert.Contains("GetPeekButtonText()", source, StringComparison.Ordinal);
         Assert.Contains("Modulate", source, StringComparison.Ordinal);

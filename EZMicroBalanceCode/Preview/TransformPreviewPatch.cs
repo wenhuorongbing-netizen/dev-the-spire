@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using Godot;
@@ -56,6 +57,14 @@ internal static class TransformPreviewCyclePatch
         try
         {
             var owner = transformations[0].Original.Owner;
+            if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
+                    owner.RunState,
+                    "PreviewTransform",
+                    "transform prediction preview is single-player only until co-op selection, RNG, and reconnect paths have live proof"))
+            {
+                return;
+            }
+
             if (!TransformPredictionRngContext.TryConsume(
                     owner,
                     out var fork,
@@ -127,6 +136,15 @@ internal static class TransformPreviewCyclePatch
     {
         if (!SpirePlusModConfig.EnableTransformPrediction || !SpirePlusModConfig.TransformPredictionAlwaysOn)
         {
+            return true;
+        }
+
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
+                RunManager.Instance?.DebugOnlyGetState(),
+                "PreviewTransform",
+                "transform prediction preview is single-player only until co-op selection, RNG, and reconnect paths have live proof"))
+        {
+            ClearPredictions(__instance);
             return true;
         }
 

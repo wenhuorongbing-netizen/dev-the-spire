@@ -3,7 +3,7 @@
   "name": "Spire Plus",
   "author": "wenhuorongbing-netizen",
   "description": "Spire Plus expands the run with Ancient blessings, A11-A20 progression, Rootblight pressure, banner rooms, Firemarked Elites, boss dedicated abilities, and preview tools. Requires BaseLib.",
-  "version": "v0.1.0-private-beta.5",
+  "version": "v0.1.0-private-beta.7",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [

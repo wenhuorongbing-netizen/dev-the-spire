@@ -1,13 +1,13 @@
-# Spire Plus Issues
+﻿# Spire Plus Issues
 Current target: test-ready manual build, not release-ready.
 Current package hashes, 2026-05-25:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `8FD25AE6EFECCD76CFEDA13B99CAB355DF02824EDA595A4F8F1A0BBABDFC5D0E` |
-| DLL | `970AEFA59F72B742D53D81383CA6F8AA05F544C668CDD1277439CC729E1365C8` |
-| PCK | `1DA7560202FA06E4E2FB9CD1E8994130C4E86B05697DAB5AD75F596C310ACDA0` |
-| Manifest | `AA87E2C0AC29CB13F0DD8A4E500DA2F6CC352CE95918D1577C2FE52FEDF811AC` |
-| README_INSTALL | `F933C266CBA1A6B1C81A2AC3D4BF1AA30A407BF6676703E95F1EB86724126C04` |
+| ZIP | `4E838C7EE1A790E65C045A3D72CE572450E66CA54E31616F578D342AEF9F5DC6` |
+| DLL | `9D98CD31EEBE27E89299F24EF9AA846C9EAFD5B5ABC876FFB346A136DB45D928` |
+| PCK | `E3261B48D134FE57B52D043511093CC4170C699E80E08EDB00D96999CE197BC7` |
+| Manifest | `0A537E6EB76B903D2D7A52312F97B332F7421EB1E69C059E946051B7445092CD` |
+| README_INSTALL | `40E564BC5AD0D72E2C2E3E5EBD0EE1A2A8188DEB982B29F23527C9249E71C825` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` P0 source/package-fixed / live-pending
 - `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
@@ -18,6 +18,9 @@ Current package hashes, 2026-05-25:
   - Source fix: multiplayer combat disables unverified Ascension, Morvi, Lotha, Urda, and Vakuu combat hooks by default, and logs one warning per feature.
   - Debug opt-in: `SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS=1`, legacy `EZMB_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS=1`.
   - The provided log declared `v0.1.0-private-beta.2`; retest must use the current package.
+- `COOP-PREVIEW-TOOLS-CRASH` P0 source/package-fixed / live-pending:
+  - User log `godot2026-05-25T08.54.22.log` used `v0.1.0-private-beta.2`; Root Eyes was only offered, while the suspicious path is co-op `Aroma of Chaos` transform plus reconnect/choice-sync.
+  - Source/package fix: transform prediction and Crystal Sphere peek fail closed in co-op by default; opt-in env vars exist only for debugging. Retest needs two-client transform, Crystal Sphere, reconnect/save-load, and both logs.
 - `ENEMY-DAMAGE-POLISH` P1 source-fixed / live-pending: Decimillipede, Terror Eel, and Phantasmal Gardener attack pressure is lightly reduced through damage getter patches so intent and real damage stay aligned; live elite-fight pacing proof remains pending.
 - `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
 - `URDA-PROTOTYPE` P0 open / live-pending: default-on with eleven source-backed ids, including Elite Root; live gameplay and save/load proof remain pending.

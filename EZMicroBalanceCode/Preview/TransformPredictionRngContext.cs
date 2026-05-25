@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -23,6 +24,15 @@ internal static class TransformPredictionRngContext
     {
         if (player == null || source == null)
         {
+            return;
+        }
+
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
+                player.RunState,
+                "PreviewTransform",
+                "transform prediction previews use local UI and forked transform RNG contexts that still need two-client proof"))
+        {
+            Clear(player);
             return;
         }
 

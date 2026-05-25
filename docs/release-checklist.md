@@ -1,4 +1,4 @@
-# Private Beta Release Checklist
+﻿# Private Beta Release Checklist
 
 Target mod: `Spire Plus`
 Target manifest id: `EZMicroBalance`
@@ -26,8 +26,8 @@ Target manifest id: `EZMicroBalance`
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [ ] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`; rerun after the installed mod folder is refreshed.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.5.zip` was rebuilt from package staging on 2026-05-25 and copied to the local game root for manual testing.
-  - Current package hashes: DLL `970AEFA59F72B742D53D81383CA6F8AA05F544C668CDD1277439CC729E1365C8`; manifest `AA87E2C0AC29CB13F0DD8A4E500DA2F6CC352CE95918D1577C2FE52FEDF811AC`; PCK `1DA7560202FA06E4E2FB9CD1E8994130C4E86B05697DAB5AD75F596C310ACDA0`; README `F933C266CBA1A6B1C81A2AC3D4BF1AA30A407BF6676703E95F1EB86724126C04`; zip `8FD25AE6EFECCD76CFEDA13B99CAB355DF02824EDA595A4F8F1A0BBABDFC5D0E`.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.7.zip` was rebuilt from package staging on 2026-05-25 and copied to the local game root for manual testing.
+  - Current package hashes: DLL `9D98CD31EEBE27E89299F24EF9AA846C9EAFD5B5ABC876FFB346A136DB45D928`; manifest `0A537E6EB76B903D2D7A52312F97B332F7421EB1E69C059E946051B7445092CD`; PCK `E3261B48D134FE57B52D043511093CC4170C699E80E08EDB00D96999CE197BC7`; README `40E564BC5AD0D72E2C2E3E5EBD0EE1A2A8188DEB982B29F23527C9249E71C825`; zip `4E838C7EE1A790E65C045A3D72CE572450E66CA54E31616F578D342AEF9F5DC6`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 

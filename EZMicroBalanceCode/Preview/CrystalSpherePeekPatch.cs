@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using Godot;
@@ -23,6 +24,14 @@ internal static class CrystalSpherePeekPatch
     private static void Postfix(NCrystalSphereScreen __instance)
     {
         if (!SpirePlusModConfig.EnableCrystalSpherePeek)
+        {
+            return;
+        }
+
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
+                RunManager.Instance?.DebugOnlyGetState(),
+                "PreviewCrystalSphere",
+                "Crystal Sphere peek is a local-only information UI until co-op fairness and reconnect behavior have live proof"))
         {
             return;
         }
