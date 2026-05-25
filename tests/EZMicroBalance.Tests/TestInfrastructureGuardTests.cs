@@ -179,7 +179,7 @@ public sealed class TestInfrastructureGuardTests
         AssertSourceContains(
             cleanupAudit,
             "| `source code/` | `docs/test-ready-development-goal.md` names `source code/src/Core/**` as primary source evidence",
-            "| `publish/` | Package refresh scripts and opt-in release-artifact tests use `publish/SpirePlus-v0.1.0-private-beta.18.zip`",
+            "| `publish/` | Package refresh scripts and opt-in release-artifact tests use `publish/SpirePlus-v0.1.0-private-beta.19.zip`",
             "| `.tools/` | Remaining subfolders are runtime evidence, generated art provenance, local archives, downloaded/decompiled game tooling, Godot, or ILSpy.",
             "duplicate root mod surfaces were removed after the owner rule change",
             "Future targeted prune only for newly proven generated clutter.",

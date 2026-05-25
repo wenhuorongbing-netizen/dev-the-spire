@@ -25,12 +25,19 @@ public sealed class ModInfoLocalizationGuardTests
             "mod.manifest?.id, MainFile.ModId",
             "LocManager.Instance?.Language",
             "string.Equals(language, \"zhs\", StringComparison.Ordinal)",
-            "Spire Plus 是一个用于私测的《杀戮尖塔 2》单体玩法扩展",
+            "Spire Plus 是用于私测的《杀戮尖塔 2》单体玩法扩展",
             "Spire Plus is a single Slay the Spire 2 gameplay expansion",
             "Seedbed is the clearest example",
             "种下不是消耗诅咒",
             "根蚀被种下后只在本战冻结",
+            "[gold]作者[/gold]",
+            "[gold]版本[/gold]",
             "GetNodeOrNull<MegaRichTextLabel>(\"ModDescription\")");
+
+        foreach (var mojibake in new[] { "鏄", "銆", "涓", "绉", "鐗", "浣滆" })
+        {
+            Assert.DoesNotContain(mojibake, patchSource, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
@@ -41,10 +48,12 @@ public sealed class ModInfoLocalizationGuardTests
 
         Assert.Equal("EZMicroBalance", root.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", root.GetProperty("name").GetString());
-        Assert.Equal("v0.1.0-private-beta.18", root.GetProperty("version").GetString());
+        Assert.Equal("v0.1.0-private-beta.19", root.GetProperty("version").GetString());
         Assert.True(root.TryGetProperty("description", out var description));
         Assert.Contains("Spire Plus", description.GetString(), StringComparison.Ordinal);
         Assert.Contains("中文", description.GetString(), StringComparison.Ordinal);
+        Assert.DoesNotContain("涓", description.GetString(), StringComparison.Ordinal);
+        Assert.DoesNotContain("銆", description.GetString(), StringComparison.Ordinal);
         Assert.False(root.TryGetProperty("description_zhs", out _), "The game manifest schema does not read description_zhs; use the UI patch instead.");
     }
 }

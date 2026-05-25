@@ -2,8 +2,8 @@
   "id": "EZMicroBalance",
   "name": "Spire Plus",
   "author": "wenhuorongbing-netizen",
-  "description": "Spire Plus is a single gameplay-expansion mod for Slay the Spire 2. Enable this one mod to test inspectable Ancient relic choices, selected vanilla relic revisions, A11-A20 test rules, and preview tools: Blight Sprouts, Rootblight, Firemarked Elites, Banner Rooms, boss dedicated abilities, Branded Form, Crystal Sphere peek, and transform preview. Requires BaseLib. 中文：Spire Plus 是《杀戮尖塔 2》的单体玩法扩展。启用这一个 Mod，就能测试先古之民遗物式奖励、部分原版遗物调整、A11-A20 测试进阶和预览工具。奖励可以更强，但代价、触发时机和后续结算必须能读懂。",
-  "version": "v0.1.0-private-beta.18",
+  "description": "Spire Plus is a single Slay the Spire 2 gameplay expansion for private testing. Enable this one mod to test inspectable Ancient relic rewards, selected vanilla relic revisions, A11-A20 test rules, Blight Sprouts, Rootblight, Firemarked Elites, Banner Rooms, boss dedicated abilities, and preview tools: Crystal Sphere peek and transform preview. Requires BaseLib. 中文：Spire Plus 是用于私测的《杀戮尖塔 2》单体玩法扩展。启用这一个 Mod，可以测试可悬停查看的先古之民遗物奖励、部分原版遗物调整、A11-A20 测试进阶、根芽、根蚀、火印精英、战旗房、首领专属能力，以及预览工具：水晶球预知和变换预览。苗床会把污染牌种下：该牌移出本场战斗，不算打出、弃牌或消耗；根芽按已处理结算，根蚀只在本战冻结。",
+  "version": "v0.1.0-private-beta.19",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [

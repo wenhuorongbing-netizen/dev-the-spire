@@ -65,24 +65,24 @@ Live-only blockers remain:
 
 ## Package Under Test
 
-`publish/SpirePlus-v0.1.0-private-beta.18.zip`
+`publish/SpirePlus-v0.1.0-private-beta.19.zip`
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `FBD862960E8A82B159428F0E1770C95F09C13A1D479863C6A8BD6BB7800BAD8D` |
-| DLL | `DD9C31D7BF550F3007D0472CC666078363ECDBA017405B0388814D1B6800B22F` |
-| PCK | `B57E9FC8231A607746FDFAF3515F05D9D4A43D9449A2308FD1981C6B330BB671` |
-| Manifest | `76B7343E6FEBA79CE878F05BF8E21CABA5BEF3937E5D87E12C14059F02078BE5` |
-| README_INSTALL | `B8AD0579BC87B0778D71BE6FE369E7BFA23A5DDA5D95843EF5C5E8B1770ACF45` |
+| ZIP | `631837AF16F00C83F00954446A14E6B610E1B251B0D994E321C84C166016898E` |
+| DLL | `5994FBEFDE7B21B358D9072D9CBDF7E1254F6F0C8F23B190687B307BBC30BBD7` |
+| PCK | `337B6A2940094AF28C9D8431E34FDB4E4D467016FE1ADAD50969DA1965023856` |
+| Manifest | `C43CF5A9981A187C4B9F5D653C31892546A71257A9A6C4673FDCBADBC5B0C436` |
+| README_INSTALL | `A51753782BADD5FEEF325910AFB5189A0FE1C7A58B9752FA2C6DD46B6B89198C` |
 
 ## Latest Validation
 
-The current beta.18 package has no fresh loader/startup proof yet. The beta.17 loader smoke remains historical startup evidence only. Gameplay, clicked UI, save-load, route traversal, preview-tools, Vakuu, and co-op proof remain pending.
+The current beta.19 package has no fresh loader/startup proof yet. The beta.17 loader smoke remains historical startup evidence only. Gameplay, clicked UI, save-load, route traversal, preview-tools, Vakuu, and co-op proof remain pending.
 
 Latest completed no-game checks:
 
-- 2026-05-25 beta.17 loader smoke: `.tools/runtime-evidence/beta17-loader-smoke-20260525-194311` loaded exactly BaseLib plus Spire Plus, registered config for `EZMicroBalance`, reported `Found 30 SavedSpireFields`, reached main menu, matched the beta.17 package hash `44DFFE46847F6EE096EEDAC02303841E0646C1493D00D10DB66A2B46AF885FD6`, and audited clean with 0 release-blocking signatures. The helper stopped the game and restored 24 isolated mod entries. This is historical startup evidence for beta.17 only; beta.18 needs a fresh loader smoke before startup parity is claimed. All gameplay, clicked UI, save-load, route traversal, preview-tools, Vakuu, and co-op rows remain pending.
-- 2026-05-25 Seedbed / Rootblight / manifest overview package refresh: `dotnet build EZMicroBalance.sln`, default `dotnet test EZMicroBalance.sln --no-build` (281 passed / 20 skipped), `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` (301 passed / 0 skipped), website syntax checks, `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, `git diff --check`, and `scripts/check-installed-spire-plus-package.ps1` passed. The current package is `publish/SpirePlus-v0.1.0-private-beta.18.zip`; manifest JSON is UTF-8 without BOM and package manifest parsing is covered by opt-in artifact tests. No game was opened.
+- 2026-05-25 beta.17 loader smoke: `.tools/runtime-evidence/beta17-loader-smoke-20260525-194311` loaded exactly BaseLib plus Spire Plus, registered config for `EZMicroBalance`, reported `Found 30 SavedSpireFields`, reached main menu, matched the beta.17 package hash `44DFFE46847F6EE096EEDAC02303841E0646C1493D00D10DB66A2B46AF885FD6`, and audited clean with 0 release-blocking signatures. The helper stopped the game and restored 24 isolated mod entries. This is historical startup evidence for beta.17 only; beta.19 needs a fresh loader smoke before startup parity is claimed. All gameplay, clicked UI, save-load, route traversal, preview-tools, Vakuu, and co-op rows remain pending.
+- 2026-05-25 Seedbed / Rootblight / manifest overview package refresh: `dotnet build EZMicroBalance.sln`, default `dotnet test EZMicroBalance.sln --no-build` (281 passed / 20 skipped), `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` (301 passed / 0 skipped), website syntax checks, `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, `git diff --check`, and `scripts/check-installed-spire-plus-package.ps1` passed. The current package is `publish/SpirePlus-v0.1.0-private-beta.19.zip`; manifest JSON is UTF-8 without BOM and package manifest parsing is covered by opt-in artifact tests. No game was opened.
 - 2026-05-25 co-op gameplay fail-closed package refresh: `dotnet build EZMicroBalance.sln`, default `dotnet test EZMicroBalance.sln --no-build` (281 passed / 20 skipped), `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` (301 passed / 0 skipped), website syntax checks, `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, `git diff --check`, and `scripts/check-installed-spire-plus-package.ps1` passed. The package was later refreshed by the Seedbed / Rootblight pass; no game was opened.
 - 2026-05-25 Seed Bank hover compacting package refresh: `dotnet build EZMicroBalance.sln`, focused Ancient player-facing guard, `dotnet publish EZMicroBalance.sln`, `scripts/package-spire-plus.ps1`, default `dotnet test EZMicroBalance.sln --no-build` (277 passed / 20 skipped), `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` (297 passed / 0 skipped), website syntax checks, `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, `git diff --check`, and `scripts/check-installed-spire-plus-package.ps1` passed. No game was opened.
 - 2026-05-25 Neow/Act 1 Ancient reroll package refresh: `dotnet build EZMicroBalance.sln`, default `dotnet test EZMicroBalance.sln --no-build` (277 passed / 20 skipped), staged Godot export, `scripts/package-spire-plus.ps1 -NoRefreshFromInstalled`, quick installed-mod sync, `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` (297 passed / 0 skipped), `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, and `git diff --check` passed. `dotnet publish` could not complete while Steam repeatedly relaunched `SlayTheSpire2.exe`, so the equivalent staging/package path was used and then copied into `mods/EZMicroBalance`. No game was opened.

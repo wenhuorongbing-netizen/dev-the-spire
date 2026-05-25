@@ -196,7 +196,7 @@ public sealed class EngineeringGovernanceGuardTests
             "These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`.",
             "| Row ID | Kind | Status | Owner | Evidence Needed |",
             "The beta.17 loader smoke is historical startup evidence only",
-            "beta.18 needs a fresh loader row before the verifier can fail closed with 19 remaining manual/live rows",
+            "beta.19 needs a fresh loader row before the verifier can fail closed with 19 remaining manual/live rows",
             "| fresh-current-package-loader-smoke | loader | Pending |",
             "| ancient-ui-urda | clicked-ui | Pending |",
             "| ancient-ui-morvi | clicked-ui | Pending |",

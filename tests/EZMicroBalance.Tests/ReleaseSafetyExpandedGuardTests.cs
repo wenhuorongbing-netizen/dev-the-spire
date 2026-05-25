@@ -136,7 +136,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Phase 4 Lotha first slice",
             "Source-complete / live-pending",
             "Phase 8 required commands",
-            "Current beta.18 loader parity is pending",
+            "Current beta.19 loader parity is pending",
             "It is not private-beta release-ready");
 
         Assert.Contains("`EZMicroBalance`", audit, StringComparison.Ordinal);
@@ -145,11 +145,11 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
         Assert.Contains("historical log records", audit, StringComparison.Ordinal);
         Assert.Contains("`Found 22 SavedSpireFields`", audit, StringComparison.Ordinal);
-        Assert.Contains("Current beta.18 loader parity is pending", audit, StringComparison.Ordinal);
+        Assert.Contains("Current beta.19 loader parity is pending", audit, StringComparison.Ordinal);
         Assert.Contains("historical beta.17 startup evidence only", audit, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("Historical beta.17 normal Steam-client startup/log verification reports `Found 30 SavedSpireFields`", audit, StringComparison.Ordinal);
-        Assert.Contains("current beta.18 loader", audit, StringComparison.Ordinal);
+        Assert.Contains("current beta.19 loader", audit, StringComparison.Ordinal);
         Assert.Contains("refreshed Mod Settings UI list capture now shows `Spire Plus`", audit, StringComparison.Ordinal);
         Assert.Contains("Two-client multiplayer matrix is pending", audit, StringComparison.Ordinal);
     }
@@ -324,8 +324,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"FBD862960E8A82B159428F0E1770C95F09C13A1D479863C6A8BD6BB7800BAD8D\"",
-            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.18.zip\"",
+            "PackageSha256 = \"631837AF16F00C83F00954446A14E6B610E1B251B0D994E321C84C166016898E\"",
+            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.19.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
             "Get-FileHash -LiteralPath $packageFull -Algorithm SHA256",
@@ -651,7 +651,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Fresh loader smoke for the current beta.18 package hash is pending", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Fresh loader smoke for the current beta.19 package hash is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
