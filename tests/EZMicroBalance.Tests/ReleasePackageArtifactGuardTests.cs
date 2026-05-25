@@ -140,7 +140,7 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Contains(pckHash, handoff, StringComparison.Ordinal);
         Assert.Contains("Record results in `docs/features/ancients-rework-v4/manual-verification-matrix.md`", handoff, StringComparison.Ordinal);
         Assert.Contains("update `docs/release-checklist.md`", handoff, StringComparison.Ordinal);
-        Assert.Contains("Current normal Steam-client startup/log verification passed for the beta.13 package hash", handoff, StringComparison.Ordinal);
+        Assert.Contains("Current normal Steam-client startup/log verification passed for the beta.17 package hash", handoff, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log evidence confirms the display name", handoff, StringComparison.Ordinal);
         Assert.Contains("Current Mod Settings list screenshot shows `Spire Plus`", handoff, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", handoff, StringComparison.Ordinal);
