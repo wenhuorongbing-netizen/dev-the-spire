@@ -1377,34 +1377,99 @@ main {
 }
 
 /* Slay the Spire Keyword Typography coloring */
-.sts-keyword-red {
-  color: var(--sts-red);
+.sts-keyword-red,
+.sts-keyword-blue,
+.sts-keyword-green,
+.sts-keyword-purple,
+.sts-keyword-gold {
   font-weight: 700;
-  text-shadow: 0 0 6px hsla(12, 90%, 55%, 0.2);
+}
+
+.sts-keyword-red {
+  --keyword-base: var(--sts-red);
+  --keyword-glint: hsl(22, 100%, 74%);
+  --keyword-shadow: hsla(12, 90%, 55%, 0.24);
+  color: var(--keyword-base);
+  text-shadow: 0 0 6px var(--keyword-shadow);
 }
 
 .sts-keyword-blue {
-  color: var(--sts-blue);
-  font-weight: 700;
-  text-shadow: 0 0 6px hsla(195, 80%, 50%, 0.2);
+  --keyword-base: var(--sts-blue);
+  --keyword-glint: hsl(190, 100%, 78%);
+  --keyword-shadow: hsla(195, 80%, 50%, 0.24);
+  color: var(--keyword-base);
+  text-shadow: 0 0 6px var(--keyword-shadow);
 }
 
 .sts-keyword-green {
-  color: var(--sts-green);
-  font-weight: 700;
-  text-shadow: 0 0 6px hsla(140, 85%, 45%, 0.2);
+  --keyword-base: var(--sts-green);
+  --keyword-glint: hsl(135, 100%, 72%);
+  --keyword-shadow: hsla(140, 85%, 45%, 0.24);
+  color: var(--keyword-base);
+  text-shadow: 0 0 6px var(--keyword-shadow);
 }
 
 .sts-keyword-purple {
-  color: var(--sts-purple);
-  font-weight: 700;
-  text-shadow: 0 0 6px hsla(270, 75%, 72%, 0.2);
+  --keyword-base: var(--sts-purple);
+  --keyword-glint: hsl(287, 100%, 84%);
+  --keyword-shadow: hsla(270, 75%, 72%, 0.24);
+  color: var(--keyword-base);
+  text-shadow: 0 0 6px var(--keyword-shadow);
 }
 
 .sts-keyword-gold {
-  color: var(--sts-gold);
-  font-weight: 700;
-  text-shadow: 0 0 6px hsla(45, 95%, 52%, 0.2);
+  --keyword-base: var(--sts-gold);
+  --keyword-glint: hsl(46, 100%, 82%);
+  --keyword-shadow: hsla(45, 95%, 52%, 0.28);
+  color: var(--keyword-base);
+  text-shadow: 0 0 6px var(--keyword-shadow);
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .sts-keyword-red,
+  .sts-keyword-blue,
+  .sts-keyword-green,
+  .sts-keyword-purple,
+  .sts-keyword-gold {
+    background-image: linear-gradient(
+      105deg,
+      var(--keyword-base) 0%,
+      var(--keyword-base) 35%,
+      var(--keyword-glint) 48%,
+      hsl(48, 100%, 91%) 50%,
+      var(--keyword-glint) 52%,
+      var(--keyword-base) 65%,
+      var(--keyword-base) 100%
+    );
+    background-size: 260% 100%;
+    background-position: 120% 0;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: sts-keyword-glint 8s ease-in-out infinite;
+  }
+}
+
+@keyframes sts-keyword-glint {
+  0%,
+  62% {
+    background-position: 120% 0;
+  }
+
+  82%,
+  100% {
+    background-position: -35% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sts-keyword-red,
+  .sts-keyword-blue,
+  .sts-keyword-green,
+  .sts-keyword-purple,
+  .sts-keyword-gold {
+    animation: none;
+  }
 }
 
 .source-art-placeholder {
