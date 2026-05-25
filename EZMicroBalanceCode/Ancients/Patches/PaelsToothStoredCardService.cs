@@ -97,7 +97,7 @@ internal static class PaelsToothStoredCardService
             return null;
         }
 
-        CardCmd.PreviewCardPileAdd(addResult);
+        SpirePlusFeedback.PreviewDeckAdds(addResult, paelsTooth);
         paelsTooth.SerializableCards.Remove(selectedPreview.Saved);
         RefreshStoredCardDisplay(paelsTooth);
         return selected;

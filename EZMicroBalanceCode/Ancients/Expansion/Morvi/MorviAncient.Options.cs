@@ -99,6 +99,7 @@ internal sealed partial class EzmbMorvi
         var rerolled = TakeFallbackOptions(options, includeReroll: false, previousChoices);
         AncientInitialOptionReroll.ReplaceGeneratedOptionsForHistory(this, rerolled);
         SetEventState(InitialDescription, rerolled);
+        SpirePlusFeedback.ConfirmChoiceRefresh();
         MainFile.Logger.Info("[Spire Plus] Morvi initial Ancient rewards rerolled once.");
         return Task.CompletedTask;
     }

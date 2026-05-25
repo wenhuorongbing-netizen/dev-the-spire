@@ -305,6 +305,7 @@ public sealed class AncientUiReadinessGuardTests
         var urda = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaAncient.Options.cs");
         var morvi = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviAncient.Options.cs");
         var lotha = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaAncient.Options.cs");
+        var feedback = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "SpirePlusFeedback.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
 
@@ -326,8 +327,15 @@ public sealed class AncientUiReadinessGuardTests
                 "AncientInitialOptionReroll.CreateOption",
                 "AncientInitialOptionReroll.TrySpend",
                 "RerollInitialOptions",
-                "includeReroll: false");
+                "includeReroll: false",
+                "SpirePlusFeedback.ConfirmChoiceRefresh();");
         }
+
+        AssertSourceContains(
+            feedback,
+            "public static void ConfirmChoiceRefresh()",
+            "SfxCmd.Play(RelicTriggerSfx)",
+            "NGame.Instance?.ScreenShake(ShakeStrength.VeryWeak, ShakeDuration.Short)");
 
         foreach (var key in new[]
         {

@@ -64,7 +64,7 @@ internal static class PickupRewardService
             results.Add(await CardPileCmd.Add(debt, PileType.Deck));
         }
 
-        CardCmd.PreviewCardPileAdd(results, 2f);
+        SpirePlusFeedback.PreviewDeckAdds(results, sealOfGold, 2f);
         MainFile.Logger.Info("[Spire Plus] SealOfGold applied: added 2 Debt cards on pickup.");
     }
 

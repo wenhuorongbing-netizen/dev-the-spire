@@ -156,7 +156,7 @@ internal static partial class UrdaBlessingService
                 if (addResult.success)
                 {
                     addedCount++;
-                    CardCmd.PreviewCardPileAdd(addResult, 2f);
+                    SpirePlusFeedback.PreviewDeckAdds(addResult, player.GetRelic<UrdaSeedBankOptionRelic>(), 2f);
                     ReleaseEvidenceLog.Log(
                         "UrdaSeedBank",
                         "deck_add_success",

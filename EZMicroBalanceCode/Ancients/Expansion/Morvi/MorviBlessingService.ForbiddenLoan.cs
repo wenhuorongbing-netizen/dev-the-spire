@@ -70,6 +70,7 @@ internal static partial class MorviBlessingService
 
         var borrowedCard = addResult.cardAdded;
         AncientSavedStateFields.MorviBorrowedAncientCard[borrowedCard] = true;
+        SpirePlusFeedback.PreviewDeckAdds(addResult, player.GetRelic<MorviForbiddenLoanOptionRelic>(), 2f);
         MainFile.Logger.Info($"[Spire Plus] Morvi Forbidden Loan added upgraded borrowed Ancient card {borrowedCard.Id.Entry}.");
         return Progress.Default with
         {

@@ -56,13 +56,14 @@ body {
     var(--bg);
   color: var(--ink);
   font-family:
-    "Cormorant Garamond",
     "Lora",
+    "Cormorant Garamond",
     "Georgia",
     "STKaiti",
     "Kaiti",
     serif;
-  line-height: 1.55;
+  font-size: 16.5px;
+  line-height: 1.58;
   letter-spacing: 0.02em;
 }
 
@@ -693,7 +694,7 @@ p {
 .group-head p {
   margin-bottom: 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 15.5px;
 }
 
 .compare-list {
@@ -736,31 +737,32 @@ p {
   left: 1px;
   right: 1px;
   bottom: 1px;
-  background: linear-gradient(135deg, #1f1e1a 0%, #121110 100%);
+  background:
+    linear-gradient(115deg, transparent 40%, rgba(223, 175, 83, 0.12) 50%, transparent 60%) -150% 0 / 250% 100% no-repeat,
+    linear-gradient(135deg, #1f1e1a 0%, #121110 100%);
   clip-path: polygon(0 7px, 7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px));
   z-index: -1;
   pointer-events: none;
 }
 
 .compare-card:hover {
-  transform: translateY(-2px) scale(1.01);
+  transform: translateY(-6px) scale(1.015);
   box-shadow:
-    0 15px 35px rgba(0, 0, 0, 0.6),
-    0 0 20px rgba(223, 175, 83, 0.18);
-  animation: card-shake 0.15s ease-in-out;
+    0 16px 36px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(223, 175, 83, 0.22);
 }
 
 .compare-card:hover::before {
-  background: var(--gold);
+  background: rgba(223, 175, 83, 0.7);
 }
 
-@keyframes card-shake {
-  0% { transform: translateY(-2px) scale(1.01) translate(0, 0) rotate(0deg); }
-  20% { transform: translateY(-2px) scale(1.01) translate(-1px, 1px) rotate(-0.3deg); }
-  40% { transform: translateY(-2px) scale(1.01) translate(1px, -1px) rotate(0.3deg); }
-  60% { transform: translateY(-2px) scale(1.01) translate(-1px, -1px) rotate(-0.3deg); }
-  80% { transform: translateY(-2px) scale(1.01) translate(1px, 1px) rotate(0.3deg); }
-  100% { transform: translateY(-2px) scale(1.01) translate(0, 0) rotate(0deg); }
+.compare-card:hover::after {
+  animation: card-sheen 0.8s ease forwards;
+}
+
+@keyframes card-sheen {
+  0% { background-position: -150% 0, 0 0; }
+  100% { background-position: 250% 0, 0 0; }
 }
 
 @keyframes fadeIn {
@@ -806,7 +808,8 @@ p {
 
 .compare-card h3 {
   margin-bottom: 6px;
-  font-size: 16px;
+  font-size: 19px;
+  font-weight: 700;
 }
 
 .compare-card dl {
@@ -814,7 +817,7 @@ p {
   grid-template-columns: 42px 1fr;
   gap: 4px 8px;
   margin: 0;
-  font-size: 13px;
+  font-size: 15.5px;
 }
 
 .compare-card dt {
@@ -1421,22 +1424,27 @@ p {
   left: 1px;
   right: 1px;
   bottom: 1px;
-  background: linear-gradient(135deg, rgba(21, 22, 18, 0.98) 0%, rgba(14, 15, 12, 0.98) 100%);
+  background:
+    linear-gradient(115deg, transparent 40%, rgba(223, 175, 83, 0.12) 50%, transparent 60%) -150% 0 / 250% 100% no-repeat,
+    linear-gradient(135deg, rgba(21, 22, 18, 0.98) 0%, rgba(14, 15, 12, 0.98) 100%);
   clip-path: polygon(0 11px, 11px 0, calc(100% - 11px) 0, 100% 11px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 11px 100%, 0 calc(100% - 11px));
   z-index: -1;
   pointer-events: none;
 }
 
 .feat-card:hover {
-  transform: translateY(-3px) scale(1.02);
+  transform: translateY(-6px) scale(1.015);
   box-shadow:
-    0 15px 35px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(223, 175, 83, 0.15);
-  animation: card-shake 0.15s ease-in-out;
+    0 16px 36px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(223, 175, 83, 0.22);
 }
 
 .feat-card:hover::before {
-  background: var(--gold);
+  background: rgba(223, 175, 83, 0.7);
+}
+
+.feat-card:hover::after {
+  animation: card-sheen 0.8s ease forwards;
 }
 
 .feat-card h3 {
@@ -1444,7 +1452,7 @@ p {
   margin-bottom: 12px;
   color: var(--gold);
   font-family: "Outfit", "Cormorant Garamond", "Cinzel", serif;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
@@ -1452,7 +1460,7 @@ p {
 .feat-card p {
   margin: 0;
   color: var(--muted);
-  font-size: 13.5px;
+  font-size: 16px;
   line-height: 1.65;
 }
 

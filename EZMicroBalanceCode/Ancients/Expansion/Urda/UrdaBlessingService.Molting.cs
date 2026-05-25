@@ -38,7 +38,7 @@ internal static partial class UrdaBlessingService
             addResults.Add(await CardPileCmd.Add(husk, PileType.Deck));
         }
 
-        CardCmd.PreviewCardPileAdd(addResults, 2f);
+        SpirePlusFeedback.PreviewDeckAdds(addResults, player.GetRelic<UrdaMoltingOptionRelic>(), 2f);
         MainFile.Logger.Info(
             $"[Spire Plus] Urda Molting applied: removed {removedCards.Count} starter card(s) and added 2 Withered Husk cards.");
     }

@@ -21,7 +21,7 @@ internal static class PreservedFogPatch
         var folly = preservedFog.Owner.RunState.CreateCard<Folly>(preservedFog.Owner);
         AncientCardHelpers.RemoveKeywords(folly, CardKeyword.Ethereal, CardKeyword.Retain);
         var result = await CardPileCmd.Add(folly, PileType.Deck);
-        CardCmd.PreviewCardPileAdd(result, 2f);
+        SpirePlusFeedback.PreviewDeckAdds(result, preservedFog, 2f);
         MainFile.Logger.Info("[Spire Plus] PreservedFog applied: removed up to 4 cards and added Folly without Ethereal/Retain.");
     }
 }

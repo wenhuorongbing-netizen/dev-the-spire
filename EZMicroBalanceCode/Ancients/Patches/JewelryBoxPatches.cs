@@ -15,7 +15,7 @@ internal static class JewelryBoxPatch
         var card = CreateNonInnateApotheosis(jewelryBox.Owner);
         var result = await CardPileCmd.Add(card, PileType.Deck, clonedBy: jewelryBox);
         JewelryBoxApotheosisMarker.Mark(result.cardAdded);
-        CardCmd.PreviewCardPileAdd(result, 2f);
+        SpirePlusFeedback.PreviewDeckAdds(result, jewelryBox, 2f);
         MainFile.Logger.Info("[Spire Plus] JewelryBox applied: added Apotheosis without Innate.");
     }
 

@@ -31,7 +31,7 @@ internal static class PaelsHornPhase1Patch
             await CardPileCmd.Add(upgradedRelax, PileType.Deck)
         };
 
-        CardCmd.PreviewCardPileAdd(results, 2f);
+        SpirePlusFeedback.PreviewDeckAdds(results, paelsHorn, 2f);
         MainFile.Logger.Info("[Spire Plus] PaelsHornPhase1 applied: added Relax and Relax+.");
     }
 }

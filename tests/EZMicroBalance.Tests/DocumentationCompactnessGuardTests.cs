@@ -73,6 +73,17 @@ public sealed class DocumentationCompactnessGuardTests
             "Spire Plus",
             JsonStringMap("EZMicroBalance", "localization", "zhs", "settings_ui.json")["EZMICROBALANCE.mod_title"]);
 
+        var godotProject = ReadRepoText("project.godot");
+        Assert.Contains("config/name=\"Spire Plus\"", godotProject, StringComparison.Ordinal);
+        Assert.Contains("project/assembly_name=\"EZMicroBalance\"", godotProject, StringComparison.Ordinal);
+        Assert.DoesNotContain("config/name=\"EZMicroBalance\"", godotProject, StringComparison.Ordinal);
+
+        var projectFile = ReadRepoText("EZMicroBalance.csproj");
+        Assert.Contains("Copying Spire Plus compatibility DLL and manifest", projectFile, StringComparison.Ordinal);
+        Assert.Contains("Exporting Spire Plus compatibility Godot .pck", projectFile, StringComparison.Ordinal);
+        Assert.DoesNotContain("Copying EZMicroBalance Release", projectFile, StringComparison.Ordinal);
+        Assert.DoesNotContain("Exporting EZMicroBalance Godot", projectFile, StringComparison.Ordinal);
+
         var currentMarkdownFiles = Directory
             .GetFiles(Root, "*.md", SearchOption.AllDirectories)
             .Select(ToRepoRelativePath)
@@ -299,7 +310,7 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-05-24:",
+            "Current package hashes, 2026-05-25:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
@@ -668,8 +679,8 @@ public sealed class DocumentationCompactnessGuardTests
         var currentDocs = string.Join(
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains("271 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("291 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("272 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("292 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]

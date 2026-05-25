@@ -1,3 +1,4 @@
+using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
@@ -19,7 +20,8 @@ internal static partial class UrdaBlessingService
         }
 
         var before = player.Creature.CurrentHp;
-        player.Relics.OfType<UrdaEliteRootOptionRelic>().FirstOrDefault()?.Flash();
+        var eliteRoot = player.Relics.OfType<UrdaEliteRootOptionRelic>().FirstOrDefault();
+        SpirePlusFeedback.ConfirmRelicPayoff(eliteRoot);
         await CreatureCmd.Heal(player.Creature, EliteRootHeal);
         var healed = Math.Max(0, player.Creature.CurrentHp - before);
         ReleaseEvidenceLog.Log(

@@ -63,6 +63,9 @@ public sealed class PreviewToolsGuardTests
         Assert.Contains("OnMinigameFinished", source, StringComparison.Ordinal);
         Assert.Contains("HideForFinishedScreen", source, StringComparison.Ordinal);
         Assert.Contains("OriginalMaskAlpha", source, StringComparison.Ordinal);
+        Assert.Contains("ToggleOnSfx = \"event:/sfx/ui/clicks/ui_checkbox_on\"", source, StringComparison.Ordinal);
+        Assert.Contains("ToggleOffSfx = \"event:/sfx/ui/clicks/ui_checkbox_off\"", source, StringComparison.Ordinal);
+        Assert.Contains("SfxCmd.Play(pressed ? ToggleOnSfx : ToggleOffSfx, 0.85f)", source, StringComparison.Ordinal);
 
         Assert.DoesNotContain("ClearCell", source, StringComparison.Ordinal);
         Assert.DoesNotContain("RevealItem", source, StringComparison.Ordinal);

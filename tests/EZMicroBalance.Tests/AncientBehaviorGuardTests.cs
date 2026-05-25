@@ -793,7 +793,7 @@ public sealed class AncientBehaviorGuardTests
             "AncientCardHelpers.RemoveUnpiledRunCard(curse)",
             "owner.RunState.CreateCard<Wish>(owner)",
             "CardCmd.Upgrade(wish, CardPreviewStyle.None)",
-            "CardCmd.PreviewCardPileAdd(successfulAdds, 2f)");
+            "SpirePlusFeedback.PreviewDeckAdds(successfulAdds, sereTalon, 2f)");
         Assert.DoesNotContain("Claws", sereTalonPickupPatch, StringComparison.Ordinal);
         Assert.DoesNotContain("Maul", sereTalonPickupPatch, StringComparison.Ordinal);
 
@@ -843,6 +843,38 @@ public sealed class AncientBehaviorGuardTests
         Assert.Equal("On pickup, transform up to [blue]{Cards}[/blue] cards into upgraded Maul.", engRelics["CLAWS.description"]);
         Assert.Equal("\u5766\u514b\u65af\u5229\u722a", zhsRelics["CLAWS.title"]);
         Assert.Equal("\u62fe\u53d6\u65f6\uff0c\u5c06\u81f3\u591a[blue]{Cards}[/blue]\u5f20\u724c\u53d8\u5316\u4e3a\u6495\u54ac+\u3002", zhsRelics["CLAWS.description"]);
+    }
+
+    [Fact]
+    public void AncientDirectDeckGainFeedbackFlashesSourceRelicAndCardPreview()
+    {
+        var feedbackSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "SpirePlusFeedback.cs");
+        var ancientSource = ReadSourceTree("EZMicroBalanceCode", "Ancients");
+
+        AssertSourceContains(
+            feedbackSource,
+            "RelicTriggerSfx = \"event:/sfx/ui/relic_activate_general\"",
+            "sourceRelic.Flash()",
+            "public static void ConfirmRelicPayoff(RelicModel? sourceRelic)",
+            "models.Insert(0, sourceRelic)",
+            "CardCmd.PreviewCardPileAdd(successfulAdds, seconds)",
+            "NGame.Instance?.ScreenShake(ShakeStrength.VeryWeak, ShakeDuration.Short)");
+
+        AssertSourceContains(
+            ancientSource,
+            "SpirePlusFeedback.PreviewDeckAdds(results, paelsHorn, 2f)",
+            "SpirePlusFeedback.PreviewDeckAdds(result, jewelryBox, 2f)",
+            "SpirePlusFeedback.PreviewDeckAdds(result, preservedFog, 2f)",
+            "SpirePlusFeedback.PreviewDeckAdds(results, cape, 2f)",
+            "SpirePlusFeedback.PreviewDeckAdds(results, sealOfGold, 2f)",
+            "SpirePlusFeedback.PreviewDeckAdds(addResult, paelsTooth)",
+            "SpirePlusFeedback.PreviewDeckAdds(successfulAdds, sereTalon, 2f)",
+            "SpirePlusFeedback.PreviewDeckAdds(addResults, player.GetRelic<UrdaMoltingOptionRelic>(), 2f)",
+            "SpirePlusFeedback.PreviewDeckAdds(addResult, player.GetRelic<UrdaSeedbedOptionRelic>(), 2f)",
+            "SpirePlusFeedback.PreviewDeckAdds(addResult, player.GetRelic<UrdaTrialBranchOptionRelic>(), 2f)",
+            "SpirePlusFeedback.PreviewDeckAdds(addResult, player.GetRelic<UrdaSeedBankOptionRelic>(), 2f)",
+            "SpirePlusFeedback.ConfirmRelicPayoff(eliteRoot)",
+            "SpirePlusFeedback.PreviewDeckAdds(addResult, player.GetRelic<MorviForbiddenLoanOptionRelic>(), 2f)");
     }
 
     [Fact]

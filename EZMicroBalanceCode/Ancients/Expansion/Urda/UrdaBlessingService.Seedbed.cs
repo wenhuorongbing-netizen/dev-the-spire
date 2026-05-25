@@ -63,7 +63,7 @@ internal static partial class UrdaBlessingService
         var addResult = await CardPileCmd.Add(seedbed, PileType.Deck);
         if (addResult.success)
         {
-            CardCmd.PreviewCardPileAdd(addResult, 2f);
+            SpirePlusFeedback.PreviewDeckAdds(addResult, player.GetRelic<UrdaSeedbedOptionRelic>(), 2f);
         }
         else
         {

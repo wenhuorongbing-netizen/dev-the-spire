@@ -4,6 +4,7 @@ using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Events.Custom.CrystalSphere;
 
@@ -13,6 +14,9 @@ namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 internal static class CrystalSpherePeekPatch
 {
     internal const string ButtonName = "SpirePlusCrystalSpherePeekButton";
+
+    private const string ToggleOnSfx = "event:/sfx/ui/clicks/ui_checkbox_on";
+    private const string ToggleOffSfx = "event:/sfx/ui/clicks/ui_checkbox_off";
 
     private static readonly ConditionalWeakTable<NCrystalSphereScreen, PeekState> PeekStates = new();
 
@@ -123,6 +127,7 @@ internal static class CrystalSpherePeekPatch
         var color = mask.Modulate;
         color.A = pressed ? (float)SpirePlusModConfig.CrystalSphereMaskAlpha : originalAlpha;
         mask.Modulate = color;
+        SfxCmd.Play(pressed ? ToggleOnSfx : ToggleOffSfx, 0.85f);
         ReleaseEvidenceLog.Log(
             "PreviewCrystalSphere",
             pressed ? "peek_enabled" : "peek_disabled",

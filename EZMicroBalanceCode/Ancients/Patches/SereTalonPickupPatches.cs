@@ -25,11 +25,11 @@ internal static class SereTalonPickupPatches
 
         var offeredCurses = CreateCurseOffer(owner);
         var curseResults = await ChooseAndAddCurse(sereTalon, owner, offeredCurses);
-        PreviewAdds(curseResults);
+        PreviewAdds(curseResults, sereTalon);
         await Cmd.Wait(0.75f);
 
         var wishResults = await AddWishes(owner);
-        PreviewAdds(wishResults);
+        PreviewAdds(wishResults, sereTalon);
         await Cmd.Wait(0.75f);
 
         MainFile.Logger.Info(
@@ -127,12 +127,12 @@ internal static class SereTalonPickupPatches
         return results;
     }
 
-    private static void PreviewAdds(IEnumerable<CardPileAddResult> results)
+    private static void PreviewAdds(IEnumerable<CardPileAddResult> results, SereTalon sereTalon)
     {
         var successfulAdds = results.Where(result => result.success).ToList();
         if (successfulAdds.Count > 0)
         {
-            CardCmd.PreviewCardPileAdd(successfulAdds, 2f);
+            SpirePlusFeedback.PreviewDeckAdds(successfulAdds, sereTalon, 2f);
         }
     }
 }

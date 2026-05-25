@@ -154,7 +154,7 @@ internal static class DistinguishedCapePickupPatch
             results.Add(await CardPileCmd.Add(apparition, PileType.Deck));
         }
 
-        CardCmd.PreviewCardPileAdd(results, 2f);
+        SpirePlusFeedback.PreviewDeckAdds(results, cape, 2f);
         MainFile.Logger.Info($"[Spire Plus] DistinguishedCape applied: lost {maxHpLoss} max HP and added {results.Count} Apparition card(s).");
     }
 }

@@ -57,7 +57,7 @@
     </Target>
 
     <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
-        <Message Text="Copying EZMicroBalance Release .dll and manifest to mods folder." Importance="high" />
+        <Message Text="Copying Spire Plus compatibility DLL and manifest to mods folder." Importance="high" />
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(AssemblyName).json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
     </Target>
@@ -87,7 +87,7 @@
     </ItemGroup>
 
     <Target Name="GodotPublish" AfterTargets="Publish" Condition="'$(GodotPath)' != '' and Exists('$(GodotPath)') and '$(IsInnerGodotExport)' != 'true'" Inputs="@(GodotPublishInputs)" Outputs="$(ModsPath)$(MSBuildProjectName)/$(MSBuildProjectName).pck">
-        <Message Text="Exporting EZMicroBalance Godot .pck to mods folder" Importance="high"/>
+        <Message Text="Exporting Spire Plus compatibility Godot .pck to mods folder" Importance="high"/>
         <Exec Command="&quot;$(GodotPath)&quot; --headless --export-pack &quot;BasicExport&quot; &quot;$(ModsPath)$(MSBuildProjectName)/$(MSBuildProjectName).pck&quot;"
               EnvironmentVariables="IsInnerGodotExport=true;MSBUILDDISABLENODEREUSE=1"/>
     </Target>

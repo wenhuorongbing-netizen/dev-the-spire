@@ -52,7 +52,7 @@ internal static partial class UrdaBlessingService
             });
             CardCmd.Enchant<UrdaTrialBranchEnchantment>(addResult.cardAdded, 1m);
             RefreshTrialBranchEnchantment(player);
-            CardCmd.PreviewCardPileAdd(addResult, 2f);
+            SpirePlusFeedback.PreviewDeckAdds(addResult, player.GetRelic<UrdaTrialBranchOptionRelic>(), 2f);
             MainFile.Logger.Info($"[Spire Plus] Urda Trial Branch added upgraded rare card {selected.Id.Entry}.");
         }
         else

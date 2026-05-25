@@ -96,6 +96,39 @@ public sealed class AscensionFeatureGuardTests
     }
 
     [Fact]
+    public void AscensionLocalizationBridgeCoversModdedOriginalAscensionTableKeys()
+    {
+        var bridge = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionLocalizationTablePatches.cs");
+        var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
+        var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
+
+        AssertSourceContains(
+            bridge,
+            "HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))",
+            "HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))",
+            "HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))",
+            "HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))",
+            "HarmonyPatch(typeof(LocManager), nameof(LocManager.GetTable))",
+            "AscensionLocalizationBridge.MergeIntoIfAscensionTable(__result)",
+            "table.MergeWith(new Dictionary<string, string>(localizedTable, StringComparer.Ordinal))",
+            "TableNameField?.GetValue(table) is string tableName",
+            "tableName.Equals(\"ascension\", StringComparison.Ordinal)",
+            "$\"{MainFile.ResPath}/localization/{language}/ascension.json\"",
+            "TryGetTextForLanguage(\"eng\", key, out text)",
+            "__result = new LocString(\"ascension\", key)",
+            "Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read)");
+
+        for (var level = 11; level <= 20; level++)
+        {
+            var prefix = $"LEVEL_{level:D2}";
+            Assert.True(englishAscension.ContainsKey($"{prefix}.title"), $"Missing English {prefix}.title");
+            Assert.True(englishAscension.ContainsKey($"{prefix}.description"), $"Missing English {prefix}.description");
+            Assert.True(zhsAscension.ContainsKey($"{prefix}.title"), $"Missing zhs {prefix}.title");
+            Assert.True(zhsAscension.ContainsKey($"{prefix}.description"), $"Missing zhs {prefix}.description");
+        }
+    }
+
+    [Fact]
     public void MultiplayerVersionMismatchDiagnosticsExposeModelHashHandshakeWithoutBypass()
     {
         var diagnostics = string.Join(

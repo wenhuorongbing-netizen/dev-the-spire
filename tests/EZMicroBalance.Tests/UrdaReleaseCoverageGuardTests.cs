@@ -263,6 +263,7 @@ public sealed class UrdaReleaseCoverageGuardTests
             urdaEliteRoot,
             "room.RoomType != RoomType.Elite",
             "player.Creature.IsDead",
+            "SpirePlusFeedback.ConfirmRelicPayoff(eliteRoot)",
             "CreatureCmd.Heal(player.Creature, EliteRootHeal)",
             "UrdaEliteRoot",
             "elite_victory_heal");

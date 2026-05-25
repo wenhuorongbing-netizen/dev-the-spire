@@ -1,17 +1,17 @@
-﻿# Spire Plus To Review
+# Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
 Current test package: `publish/SpirePlus-v0.1.0-private-beta.0.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `D8C7BB29B45FDA669BC2345B133EF0277E97004B1B6B53992DFF4FAC55F466F4` |
-| DLL | `F11BD12A9E60327B07BB5965B777C216684766A310C2CCB8B9D98147C37057A0` |
-| PCK | `42D98CA1DBEDAE9874A7302FBBC8596BF4D971A4B01BDB55A18329699D9046BE` |
+| ZIP | `D05410668B56EA55C5E287EB1CF7CF7CCC89F6173CC6E2E1E29F181E525036E6` |
+| DLL | `A9F358D05CAC382FAF6DA5BBA36FDC3D2CE311CDE489B2B8EFBCA1F9CCC193D1` |
+| PCK | `A07DA0222F2477BD5B4A8F89129DAF14C687EC300E752AE5A522F450FC227AB0` |
 | Manifest | `C2FB53C13AE099080AC71FF7EE2A1F217A2586549A9152DAFE0EBF512EF42FF6` |
 | README_INSTALL | `33263ACDEEE8F46DD89FFCF649A259B190805C992F743BC3DC07F716FD212FAA` |
 
-Latest no-game validation snapshot: build passed, default tests `271 passed / 20 skipped`, opt-in artifact tests `291 passed / 0 skipped`, website syntax checks passed, format passed, installed-package check passed, and `git diff --check` passed. After the Elite Root source-safety refresh, the current-package loader row is pending again because the ZIP/DLL hash changed without opening the game. The release verifier fails closed with 19 pending live/manual rows.
+Latest no-game validation snapshot: build passed, default tests `273 passed / 20 skipped`, opt-in artifact tests `293 passed / 0 skipped`, website syntax checks passed, format passed, installed-package check passed, and `git diff --check` passed. After the Elite Root source-safety refresh, the current-package loader row is pending again because the ZIP/DLL hash changed without opening the game. The release verifier fails closed with 19 pending live/manual rows.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

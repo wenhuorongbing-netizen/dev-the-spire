@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="EZMicroBalance"
+config/name="Spire Plus"
 config/features=PackedStringArray("4.5", "C#", "Mobile")
 config/icon="res://EZMicroBalance/mod_image.png"
 
