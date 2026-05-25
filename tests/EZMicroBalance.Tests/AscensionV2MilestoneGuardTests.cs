@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -829,7 +829,7 @@ public sealed class AscensionV2MilestoneGuardTests
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
 
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", currentDocs, StringComparison.Ordinal);
         Assert.Contains("live Ascension gameplay not executed yet", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", currentDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("release ready", currentDocs, StringComparison.OrdinalIgnoreCase);

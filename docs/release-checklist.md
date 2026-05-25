@@ -9,7 +9,7 @@ Target manifest id: `EZMicroBalance`
 - [x] Legacy `EzDailyContent` and standalone `EZFuturePeek` root mod surfaces have been removed from the active tree.
 - [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.
 - [x] Custom-character work is not included in this private beta.
-- [x] A11-A20 selection is now default-on in this private-beta multiplayer test candidate for single-player and host-multiplayer standard lobbies. Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison. Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection. `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required. Host multiplayer A20 selection/start logs a downgrade warning because A20 Branded Form / second-boss enhanced dedicated ability gameplay remains disabled or downgraded in co-op pending live verification. Full live Ascension and co-op verification is pending.
+- [x] A11-A20 selection is default-on only for single-player standard lobbies. After the 2026-05-25 co-op crash logs, host-multiplayer A11-A20 selection and gameplay fail closed by default unless `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` is deliberately set for two-client debugging. Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison. Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection. `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required. Full live Ascension and co-op verification is pending.
 
 ## Build And Publish
 
@@ -26,8 +26,8 @@ Target manifest id: `EZMicroBalance`
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [ ] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`; rerun after the installed mod folder is refreshed.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.8.zip` was rebuilt from package staging on 2026-05-25 and copied to the local game root for manual testing.
-  - Current package hashes: DLL `29B7A4D505AD1ED68998C5AF9E2FB3E1AEBDEC15FDFE79C9B385DF74DDB8F26C`; manifest `5E76B8441D999119110ED6AEC2074F812E80E0F68AF5F675019098EA7174AE99`; PCK `456378240576DB6EF8FF1669A4E2E8B747BB64AC269470635CED1BC0A90ADEFF`; README `CCBD00A154028A897BDD71A15B7057FC9DF3E17930DB48312E552D0253121336`; zip `BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971`.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.9.zip` was rebuilt from package staging on 2026-05-25 and copied to the local game root for manual testing.
+  - Current package hashes: DLL `9A59A9C13848E2C4B5C9B5EFEBEC3AD5BAAE8A2DD48616202F9056E17F254F03`; manifest `41997280F3055C5C2C08DC00D511B8CE1C320DBD34076F256DCC10B32B17522B`; PCK `8B24C57585918D87694C39E9EFB6D6543D916C6A6A69263FA3CEC9212324A20E`; README `E739F9588299C4CF1FF0F7BE02362BE2CAF3D3F4E8D2942DE65EC35A95811D3A`; zip `8654879DBE99697FE0CE36F14B141B49882EA07C3C373FFB1D60D441154EEF56`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
@@ -91,7 +91,7 @@ The collector creates the verifier-readable manifest scaffold. The verifier hash
 - [x] Author placeholder is replaced for this private beta; `EZMicroBalance.json` author is `wenhuorongbing-netizen`.
 - [ ] Worktree is clean.
 - [ ] Commit is created.
-- [ ] Push to `origin/main` is performed only after explicit user approval.
+- [ ] Push to `origin` is performed after validation, packaging, and an intentional commit.
 
 ## Known Issues
 
@@ -113,7 +113,7 @@ The collector creates the verifier-readable manifest scaffold. The verifier hash
 
 - Enabling legacy `EzDailyContent` and `EZMicroBalance` together is unsupported.
 - Other mods that alter card rewards, card pools, rest-site options, Ancient rewards, maps, or Ascension selectors are not compatibility-tested.
-- A11-A20 selection is now default-on in this private-beta multiplayer test candidate. The selector patch touches only standard single-player and host-multiplayer lobby selection/start paths, temporarily raises the local single-player run-start max only while launching A11-A20, temporarily expands multiplayer lobby unlock caps only during max recomputation, and skips A11-A20 preferred-progress writes. Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison; set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
+- A11-A20 selection is default-on only for single-player standard lobbies. Host-multiplayer selection/gameplay fails closed by default after the 2026-05-25 co-op crash logs unless `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` is deliberately set for two-client debugging. The selector patch touches standard lobby selection/start paths, temporarily raises the local single-player run-start max only while launching A11-A20, and skips A11-A20 preferred-progress writes. Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison; set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds route rows by act: Act 1 +1, Act 2 +1, Act 3 +2 without A11-specific map markers or hover tips.
 - A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available and gives enhanced treasure nodes an extra Uncommon relic reward.
 - A19/A20 Boss map points now have dedicated ability / Branded Form hover text.

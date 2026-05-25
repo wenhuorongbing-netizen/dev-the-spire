@@ -52,16 +52,20 @@ public sealed class WebsiteContentGuardTests
             "EZMB_URDA_RAIN_BREATH",
             "EZMB_VAKUU_TRICK_CONTRACT",
             "EZMB_VAKUU_CASH_OUT_CONTRACT",
-            "\u4e00\u4e2a\u66f4\u597d\u7684\u300a\u6740\u622e\u5c16\u5854 2\u300b\u62d3\u5c55",
-            "\u65b0\u589e\u8fdb\u9636 A20 \u548c\u5148\u53e4\u4e4b\u6c11\u4fee\u6539",
+            "\u8ba9\u300a\u6740\u622e\u5c16\u5854 2\u300b\u6709\u66f4\u591a\u9009\u62e9",
+            "Spire Plus \u505a\u4e86\u4ec0\u4e48",
             "short: \"\\u5361\\u724c\"",
-            "A better Slay the Spire 2 expansion",
-            "New A20 Ascension and Ancient changes",
+            "More choices, clearer costs",
+            "What Spire Plus Changes",
             "\u82e5\u5408\u9002\u623f\u95f4\u4e0d\u8db3\uff0c\u81f3\u5c11\u653e\u51652\u4e2a",
             "\u53ef\u9644\u9b54\u724c",
             "If there are not enough suitable rooms, at least 2 are placed.",
             "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission.",
             "Temporary Status cards, Temporary Curse cards, or Blight Sprouts",
+            "\u79cd\u4e0b\u4e0d\u662f\u6253\u51fa\u3001\u5f03\u724c\u6216\u6d88\u8017",
+            "\u6839\u8680\u662f\u4e3b\u724c\u7ec4\u91cc\u7684\u8bc5\u5492\uff0c\u4e0d\u662f\u6839\u82bd",
+            "Planting is not playing, discarding, or exhausting",
+            "Seedbed cannot plant Rootblight",
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
@@ -74,8 +78,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260525-mechanic-links3",
-            "app.js?v=20260525-mechanic-links3");
+            "content-data.js?v=20260525-seedbed-detail2",
+            "app.js?v=20260525-seedbed-detail2");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

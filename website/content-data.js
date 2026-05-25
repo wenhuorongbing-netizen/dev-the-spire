@@ -31,10 +31,10 @@ const ownedRelicIcons = {
 };
 
 const currentReadableGuardSnippets = [
-  "一个更好的《杀戮尖塔 2》拓展",
-  "新增进阶 A20 和先古之民修改",
-  "A better Slay the Spire 2 expansion",
-  "New A20 Ascension and Ancient changes",
+  "让《杀戮尖塔 2》有更多选择",
+  "Spire Plus 做了什么",
+  "More choices, clearer costs",
+  "What Spire Plus Changes",
   "若合适房间不足，至少放入2个",
   "可附魔牌",
   "If there are not enough suitable rooms, at least 2 are placed.",
@@ -76,7 +76,7 @@ const sourceCardOverrides = {
 
 const cardDescOverrides = {
   EZMB_URDA_SEEDLING: "0费技能。消耗。获得4点格挡；升级后获得7点格挡。",
-  EZMB_URDA_SEEDBED: "1费技能。消耗。获得4点格挡，设置2格苗床；之后进入手牌的临时状态牌、临时诅咒牌或根芽会优先种下，每种下1张加入1张枯壳。升级后获得6点格挡，设置3格苗床，并立即从抽牌堆或弃牌堆种下1张同类牌。",
+  EZMB_URDA_SEEDBED: "1费技能。消耗。获得4点格挡，设置2格苗床。之后临时状态牌、临时诅咒牌或根芽进入手牌前，会先被种下：从战斗牌堆移除，不触发打出、弃牌或消耗联动，并加入1张枯壳。种下根芽会阻止这张根芽在战后生成根蚀 I。升级后获得6点格挡，设置3格苗床，并立即从抽牌堆或弃牌堆种下1张同类牌。",
   EZMB_URDA_RAIN_BREATH: "0费临时技能。消耗。获得5点格挡，抽1张牌。",
   EZMB_WITHERED_HUSK: "临时诅咒。虚无，消耗。被消耗时获得3点格挡；苗床不能种下这张牌。",
   EZMB_MORVI_ARCHIVE_DRAW_PAGE: "0费临时页。虚无，消耗。抽2张牌。",
@@ -260,30 +260,45 @@ const mechanicGlossary = [
   mechanic(
     "seedbed",
     "苗床",
-    "乌尔妲的负面牌处理轴。苗床设置格数，之后进入手牌的临时状态牌、临时诅咒牌或根芽会优先被种下。",
-    ["每种下1张牌，加入1张枯壳。", "枯壳被消耗时获得3点格挡。", "苗床不会种下枯壳本身。"],
-    ["苗床", "种下", "枯壳"],
+    "乌尔妲的负面牌处理轴。它不是单次格挡牌，而是提前铺下几个空位，把后续进入手牌的临时负面牌或根芽转化为枯壳。",
+    ["打出苗床：获得4点格挡并设置2格苗床；苗床+获得6点格挡、设置3格，并立即从抽牌堆或弃牌堆种下1张同类牌。", "苗床会处理临时状态牌、临时诅咒牌和根芽；不会处理根蚀、永久诅咒、枯壳或正向临时页。", "每种下1张，加入1张枯壳；枯壳是临时诅咒，被消耗时获得3点格挡。", "种下根芽不等于打出根芽，但结算结果等同于处理掉它：这张根芽战后不会生成根蚀 I。"],
+    ["苗床", "种下", "枯壳", "根芽", "根蚀"],
     ["EZMB_URDA.pages.INITIAL.options.urda_seedbed.description", "EZMB_URDA_SEEDBED.description", "EZMB_WITHERED_HUSK.description", "EZMB_ROOT_BUD.description"],
     ["temporary", "blight_sprout"],
     {
       titleEn: "Seedbed",
-      descEn: "Urda's negative-card handling axis. Seedbed sets slots, then later Temporary Status cards, Temporary Curse cards, or Blight Sprouts entering hand are planted first.",
-      bulletsEn: ["Each planted card adds 1 Withered Husk.", "Withered Husk gains 3 Block when exhausted.", "Seedbed cannot plant Withered Husk itself."],
-      termsEn: ["Seedbed", "Seedbeds", "plant", "planted", "Withered Husk"]
+      descEn: "Urda's negative-card handling axis. It is not just a one-shot Block card: it sets slots that convert later temporary negative cards or Blight Sprouts into Withered Husks.",
+      bulletsEn: ["Playing Seedbed gains 4 Block and sets 2 slots; Seedbed+ gains 6 Block, sets 3 slots, and immediately plants 1 matching card from draw or discard.", "Seedbed handles Temporary Status cards, Temporary Curse cards, and Blight Sprouts. It does not handle Rootblight, permanent Curses, Withered Husk, or beneficial temporary pages.", "Each planted card adds 1 Withered Husk. Withered Husk is a Temporary Curse that gains 3 Block when exhausted.", "Planting a Blight Sprout is not playing it, but the result is the same for growth: that Sprout will not add Rootblight I after combat."],
+      termsEn: ["Seedbed", "Seedbeds", "plant", "planted", "Withered Husk", "Blight Sprout", "Rootblight"]
+    }
+  ),
+  mechanic(
+    "plant",
+    "种下",
+    "种下是苗床的处理动作：符合条件的牌在进入手牌前被苗床截住，从战斗牌堆移除，并换成1张枯壳。",
+    ["种下不是打出、弃牌或消耗；不会触发这些关键词和对应联动。", "可种下：临时状态牌、临时诅咒牌、根芽。不可种下：根蚀、永久诅咒、枯壳、正向临时页。", "种下根芽会阻止这张根芽战后生成根蚀 I；但它不会触发“打出根芽”的效果。", "每次种下都会占用1格苗床。格数用完后，后续负面牌按原规则进入手牌。"],
+    ["种下", "苗床", "根芽", "枯壳", "根蚀"],
+    ["EZMB_URDA_SEEDBED.description", "EZMB_WITHERED_HUSK.description", "EZMB_ROOT_BUD.description"],
+    ["seedbed", "blight_sprout", "rootblight"],
+    {
+      titleEn: "Plant",
+      descEn: "Plant is Seedbed's handling action: an eligible card is caught before entering hand, removed from combat, and converted into 1 Withered Husk.",
+      bulletsEn: ["Planting is not playing, discarding, or exhausting the card, so those triggers do not fire.", "Can plant: Temporary Status cards, Temporary Curse cards, and Blight Sprouts. Cannot plant: Rootblight, permanent Curses, Withered Husk, or beneficial temporary pages.", "Planting a Blight Sprout prevents that Sprout from adding Rootblight I after combat, but does not count as playing it.", "Each plant consumes 1 Seedbed slot. After slots run out, later negative cards follow their normal rules."],
+      termsEn: ["Plant", "plant", "planted", "planting", "Seedbed", "Blight Sprout", "Withered Husk", "Rootblight"]
     }
   ),
   mechanic(
     "rootblight",
     "根蚀",
-    "A14开始出现的长期污染。根蚀留在主牌组中过战斗会恶化；打出它可以把污染降级或移除。",
-    ["根蚀 I：打出后从主牌组移除；没处理会变为根蚀 II。", "根蚀 II：打出后移除，战后加入根蚀 I；没处理会变为根蚀 III。", "根蚀 III：打出后移除，战后加入根蚀 II；第一次继续恶化时额外加入根蚀 I。没有第四阶段。", "最多4张根蚀。休息会移除最高等级根蚀。"],
+    "A14开始出现的长期污染。根蚀是主牌组里的诅咒，不是根芽；苗床不能种下根蚀。",
+    ["根蚀 I：打出后从主牌组移除；战后仍留在主牌组中则变为根蚀 II。", "根蚀 II：打出后移除，战后加入根蚀 I；战后仍留在主牌组中则变为根蚀 III。", "根蚀 III：打出后移除，战后加入根蚀 II；如果继续不处理，它保持根蚀 III，第一次额外加入根蚀 I。没有第四阶段。", "最多4张根蚀。休息会移除最高等级根蚀。"],
     ["根蚀", "根蚀 I", "根蚀 II", "根蚀 III"],
     ["LEVEL_14.description", "EZMB_ROOT.description", "EZMB_DEEP_ROOT.description", "EZMB_ROOTBLIGHT_III.description", "EZMB_ROOT_BUD.description"],
     ["blight_sprout", "seedbed"],
     {
       titleEn: "Rootblight",
-      descEn: "A long-term pollution system starting at A14. Rootblight left in the master deck worsens after combat; playing it removes or downgrades the pollution.",
-      bulletsEn: ["Rootblight I: playing it removes it from the master deck; ignoring it turns it into Rootblight II.", "Rootblight II: playing it removes it and adds Rootblight I after combat; ignoring it turns it into Rootblight III.", "Rootblight III: playing it removes it and adds Rootblight II after combat; the first continued worsen adds Rootblight I. There is no stage IV.", "Max 4 Rootblights. Resting removes the highest-stage Rootblight."],
+      descEn: "A long-term pollution system starting at A14. Rootblight is a master-deck Curse, not a Blight Sprout; Seedbed cannot plant Rootblight.",
+      bulletsEn: ["Rootblight I: playing it removes it from the master deck; if still in the master deck after combat, it becomes Rootblight II.", "Rootblight II: playing it removes it and adds Rootblight I after combat; if still in the master deck after combat, it becomes Rootblight III.", "Rootblight III: playing it removes it and adds Rootblight II after combat. If ignored again, it stays Rootblight III and adds Rootblight I the first time. There is no stage IV.", "Max 4 Rootblights. Resting removes the highest-stage Rootblight."],
       termsEn: ["Rootblight", "Rootblights", "Rootblight I", "Rootblight II", "Rootblight III"],
       keywordClass: "sts-keyword-purple"
     }
@@ -292,14 +307,14 @@ const mechanicGlossary = [
     "blight_sprout",
     "根芽",
     "根芽是短期压力牌。第3或第4回合开始时，如果还没进过手牌，会被放到抽牌堆顶。",
-    ["见到后不打出，战斗后加入根蚀 I。", "从未见到则枯萎，不进入长期牌组。", "苗床可以种下根芽，避免根蚀增长。"],
+    ["根芽本身是2费临时诅咒。打出它会处理掉本场根芽压力。", "见到后不打出也不种下，战斗后加入根蚀 I。", "从未见到则枯萎，不进入长期牌组。", "苗床可以种下根芽：不算打出，但会阻止这张根芽战后生成根蚀 I。"],
     ["根芽"],
     ["LEVEL_15.description", "LEVEL_18.description", "EZMB_ROOT_BUD.description", "EZMB_URDA_SEEDBED.description"],
     ["rootblight", "seedbed"],
     {
       titleEn: "Blight Sprout",
       descEn: "Blight Sprout is a short-term pressure card. On round 3 or 4, if it has not entered hand, it is placed on top of the draw pile.",
-      bulletsEn: ["If seen and not played, it adds Rootblight I after combat.", "If never seen, it withers and does not enter the long-term deck.", "Seedbed can plant Blight Sprout to prevent Rootblight growth."],
+      bulletsEn: ["Blight Sprout itself is a 2-cost Temporary Curse. Playing it handles the Sprout pressure for that combat.", "If seen and neither played nor planted, it adds Rootblight I after combat.", "If never seen, it withers and does not enter the long-term deck.", "Seedbed can plant Blight Sprout: it does not count as playing it, but prevents that Sprout from adding Rootblight I after combat."],
       termsEn: ["Blight Sprout", "Blight Sprouts", "Sprout", "Sprouts"],
       keywordClass: "sts-keyword-purple"
     }
@@ -571,7 +586,7 @@ const mechanicGlossary = [
 
 window.SPIRE_PLUS_DATA = {
   labels: {
-    brandSub: "Spire Plus，一个更好的《杀戮尖塔 2》拓展 · 温火融冰制作",
+    brandSub: "Spire Plus，由温火融冰制作的《杀戮尖塔 2》平衡与高进阶拓展",
     navUpdates: "\u66f4\u65b0\u5185\u5bb9",
     navInstall: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     navForum: "\u8bba\u575b",
@@ -579,16 +594,18 @@ window.SPIRE_PLUS_DATA = {
     navAbout: "关于",
     releaseLine: "",
     heroTitle: "Spire Plus",
-    heroCopy: "一个更好的《杀戮尖塔 2》拓展。",
-    modIntroTitle: "新增进阶 A20 和先古之民修改",
+    heroCopy: "让《杀戮尖塔 2》有更多选择、更清楚的代价，以及更完整的高进阶挑战。",
+    modIntroTitle: "Spire Plus 做了什么",
     featAscensionTitle: "新增进阶 20",
-    featAscensionDesc: "原版进阶的难度上升不够快，但敌人和精英本身已经很强。Spire Plus 重新设计了更高阶的进阶挑战：一部分进阶在提高难度的同时也提高奖励，有些甚至会直接奖励玩家。奖励更多，面对的压力也更大。",
-    featPhilosophyTitle: "科学难度与构筑可玩性",
-    featPhilosophyDesc: "设计理念是让游戏更好玩，而不是单纯加数字、堆难度。Spire Plus 想解决一种很死板的玩法：为了活下去，被迫在火堆睡觉，被迫抓特定防御牌、解牌和生存牌。我们希望玩家有更多元、更自由的选择空间。",
-    featRewardTitle: "高风险，高回报",
-    featRewardDesc: "不必再为了苟活而做无趣的选择。如果你敢于挑战更危险的路线或特殊的先古试炼，你将赢取无与伦比的专属先古遗物与强力祝福。走最强大的路线，拿最丰厚的奖励！",
+    featAscensionDesc: "在 A11-A20 中加入新的路线、火印精英、裂变奖励、根蚀、战旗房、首领专属能力和 A20 烙印形态。高进阶不是单纯加血加伤，而是给玩家新的判断题。",
+    featPhilosophyTitle: "更多选项，不是降低难度",
+    featPhilosophyDesc: "Spire Plus 的目标是让游戏更平衡、更有意思。它减少一些被迫睡火、被迫硬抓生存牌的局面，同时保留进阶 20 应有的压力。",
+    featRewardTitle: "奖励更强，代价更清楚",
+    featRewardDesc: "先古之民和部分原版遗物被重做为明确的交换：你可以拿到更强的启动、路线收益或牌组处理，但要承担血量、债务、污染、路线承诺或出牌限制。",
     aboutTitle: "关于",
     aboutLead: "项目说明、素材来源和发布边界。",
+    introTitle: "模组说明",
+    introCopy: "Spire Plus 是温火融冰制作的《杀戮尖塔 2》平衡与高进阶拓展。它重做一批原版遗物和先古之民奖励，加入 A11-A20 测试难度、预览工具和新的风险收益机制。目标不是让游戏变简单，而是在更多选择和更高压力之间取得更好的平衡。",
     download: "\u4e0b\u8f7d\u6a21\u7ec4",
     viewIssues: "\u67e5\u770b\u5df2\u77e5\u95ee\u9898",
     all: "\u5168\u90e8",
@@ -645,25 +662,25 @@ window.SPIRE_PLUS_DATA = {
   mechanics: mechanicGlossary,
   summary: [],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.8.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.9.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.8/SpirePlus-v0.1.0-private-beta.8.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.9/SpirePlus-v0.1.0-private-beta.9.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.8",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.9",
     baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.1.4/BaseLib.3.1.4.zip",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.8.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.8"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.9.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.9"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,936,103 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971"]
+      ["\u4f53\u79ef", "18,936,170 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "8654879DBE99697FE0CE36F14B141B49882EA07C3C373FFB1D60D441154EEF56"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.8.zip\u3002",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.9.zip\u3002",
     "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -696,7 +713,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.8"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.9"]
     ]
   },
   updateGroups: [
@@ -714,7 +731,7 @@ window.SPIRE_PLUS_DATA = {
         baseRelic("腌制活雾", "PRESERVED_FOG.description", ["\u5220\u724c"], "拾起时从牌组移除3张牌；将1张愚行加入牌组。", "拾起时从牌组移除4张牌；将1张愚行加入牌组。"),
         cardLoc("愚行", "FOLLY.description", ["\u8bc5\u5492", "\u5361\u724c\u672c\u4f53"], "无法打出。固有。永恒。虚无。"),
         baseRelic("\u74e6\u5e93\u539f\u521d\u4e4b\u722a", "SERE_TALON.description", ["\u8bc5\u5492", "\u8bb8\u613f"], "\u74e6\u5e93\u5956\u52b1\u3002\u62fe\u53d6\u65f6\uff0c\u4ece\u0034\u5f20\u8bc5\u5492\u4e2d\u9009\u62e9\u0031\u5f20\u3002\u52a0\u5165\u5b83\u3001\u0032\u5f20\u8bb8\u613f\u548c\u0031\u5f20\u8bb8\u613f+\u3002", "\u62fe\u53d6\u65f6\uff0c\u4ece\u0034\u5f20\u8bc5\u5492\u4e2d\u9009\u62e9\u0031\u5f20\u3002\u52a0\u5165\u5b83\u3001\u0032\u5f20\u8bb8\u613f\u548c\u0031\u5f20\u8bb8\u613f+\u3002"),
-        baseRelic("\u5766\u514b\u65af\u5229\u722a", "CLAWS.description", ["\u6495\u54ac+", "\u53d8\u5316"], "\u62fe\u53d6\u65f6\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac+\u201d\u3002", "\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac+\u201d\u3002"),
+        baseRelic("\u5766\u514b\u65af\u5229\u722a", "CLAWS.description", ["\u6495\u54ac", "\u6495\u54ac+", "\u53d8\u5316"], "\u62fe\u53d6\u65f6\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac\u201d\u3002", "\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac+\u201d\u3002"),
         baseRelic("\u9009\u62e9\u6096\u8bba", "CHOICES_PARADOX.description", ["\u7a00\u6709\u724c"], "每场战斗第1回合开始时，从5张随机牌中选择1张加入手牌；该牌获得保留。", "每场战斗开始时，从5张可用稀有牌中选择1张加入手牌；获得保留，并在战斗后移除。"),
         baseRelic("\u5b9d\u77f3\u9762\u5177", "JEWELED_MASK.description", ["\u80fd\u529b\u724c"], "每场战斗第1回合抽牌前，将抽牌堆中1张随机能力牌移入手牌；本回合费用为0。", "拾起时选择1张能力牌永久变为0费；每场战斗开始时，将它从抽牌堆移入手牌。"),
         baseRelic("\u5e15\u5c14\u4e4b\u89d2", "PAELS_HORN.description", ["\u653e\u677e"], "拾起时将2张放松加入牌组。", "拾起时将1张放松和1张已升级的放松+加入牌组。"),
@@ -745,7 +762,16 @@ window.SPIRE_PLUS_DATA = {
       icon: "assets/ancients/urda/ezmb_urda_map_icon.png",
       defaultVanilla: "\u539f\u7248\u65e0\u6b64\u65b0\u589e\u5185\u5bb9\u3002",
       items: [
-        ancient("urda_seedbed", "assets/ancients/urda/options/urda_seedbed.png", ["\u4e4c\u5c14\u59b2"]),
+        {
+          ...ancient("urda_seedbed", "assets/ancients/urda/options/urda_seedbed.png", ["\u4e4c\u5c14\u59b2"]),
+          desc: "第1幕普通战斗卡牌奖励可改拿苗床：失去2点最大生命，加入1张苗床。第一次拿到的苗床自动升级。累计收下4次后，获得10点最大生命。苗床打出后会种下后续临时状态牌、临时诅咒牌或根芽，把它们转成枯壳。",
+          details: [
+            detail("获取", "一幕普通战斗卡牌奖励中选择苗床，会结束本次奖励选择并加入1张苗床。", "Pickup", "Choose Seedbed from an Act 1 normal combat card reward; it completes that reward and adds 1 Seedbed."),
+            detail("成本", "每次收下苗床失去2点最大生命。第一次收下的苗床会升级。", "Cost", "Each taken Seedbed costs 2 Max HP. The first Seedbed taken is upgraded."),
+            detail("累计", "累计收下4次苗床后，获得10点最大生命。", "Completion", "After taking Seedbed 4 times, gain 10 Max HP."),
+            detail("种下", "苗床会截住之后进入手牌的临时状态牌、临时诅咒牌或根芽；该牌从战斗牌堆移除，并加入1张枯壳。", "Plant", "Seedbed catches later Temporary Status cards, Temporary Curse cards, or Blight Sprouts before they enter hand; the card is removed from combat and replaced by 1 Withered Husk.")
+          ]
+        },
         ancient("urda_humus_pact", "assets/ancients/urda/options/urda_humus_pact.png", ["\u4e4c\u5c14\u59b2"]),
         ancient("urda_molting", "assets/ancients/urda/options/urda_molting.png", ["\u4e4c\u5c14\u59b2"]),
         ancient("urda_moss_map", "assets/ancients/urda/options/urda_moss_map.png", ["\u4e4c\u5c14\u59b2"]),
@@ -818,6 +844,7 @@ window.SPIRE_PLUS_DATA = {
         mechanicCard("overflow", "assets/ascension/firemark_might_indicator.png", ["A12", "溢火"]),
         mechanicCard("fission", "assets/ascension/fission_enchantment_icon.png", ["A13", "裂变"]),
         mechanicCard("seedbed", "assets/ancients/urda/options/urda_seedbed.png", ["乌尔妲", "苗床"]),
+        mechanicCard("plant", "assets/ancients/urda/options/urda_seedbed.png", ["乌尔妲", "种下"]),
         mechanicCard("rootblight", "assets/card_portraits/rootblight_i.png", ["A14", "根蚀"]),
         mechanicCard("blight_sprout", "assets/card_portraits/blight_sprout.png", ["A15", "根芽"]),
         mechanicCard("banner", "assets/ascension/banner_room_indicator.png", ["A16", "战旗房"]),
@@ -868,7 +895,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.8.zip；游戏内显示名为 Spire Plus。"],
+      ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.9.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -1014,23 +1041,25 @@ function manual(title, vanilla, current, tags, icon) {
 window.SPIRE_PLUS_DATA.i18n = {
   en: {
     labels: {
-      brandSub: "Spire Plus, a better Slay the Spire 2 expansion by Wenhuo Rongbing",
+      brandSub: "Spire Plus, a Slay the Spire 2 balance and high-Ascension expansion by Wenhuo Rongbing",
       navUpdates: "Updates",
       navInstall: "Download & Install",
       navForum: "Forum",
       navIssues: "Known Issues",
       navAbout: "About",
       releaseLine: "",
-      heroCopy: "A better Slay the Spire 2 expansion.",
-      modIntroTitle: "New A20 Ascension and Ancient changes",
+      heroCopy: "More choices, clearer costs, and a fuller high-Ascension challenge for Slay the Spire 2.",
+      modIntroTitle: "What Spire Plus Changes",
       featAscensionTitle: "New Ascension 20",
-      featAscensionDesc: "Vanilla Ascension does not climb fast enough, while enemies and Elites are already strong. Spire Plus redesigns the higher Ascension challenge: some levels raise rewards while raising danger, and some directly reward the player. More rewards also means harder fights.",
-      featPhilosophyTitle: "Science of Fun & Build Freedom",
-      featPhilosophyDesc: "The goal is to make the game more fun, not just add numbers and difficulty. Spire Plus targets rigid survival patterns where players feel forced to rest at fires or draft specific defense, answer, and survival cards. The result should be more varied and freer deck choices.",
-      featRewardTitle: "High Risk, High Reward",
-      featRewardDesc: "No more boring, compromise-filled choices. Challenge yourself with riskier, stronger paths and Boss trials to earn powerful custom marker relics and Ancient blessings. Survive and conquer your own way!",
+      featAscensionDesc: "A11-A20 add new routes, Firemarked Elites, Fission rewards, Rootblight, Banner Rooms, Boss dedicated abilities, and A20 Branded Forms. High Ascension is not just more HP and damage; it asks new tactical questions.",
+      featPhilosophyTitle: "More Options, Not Easier Runs",
+      featPhilosophyDesc: "Spire Plus is built to make the game more balanced and more interesting. It reduces some forced-rest and forced-survival-pick patterns while keeping real A20 pressure.",
+      featRewardTitle: "Stronger Rewards, Clearer Costs",
+      featRewardDesc: "Ancients and several vanilla relics are rebuilt as explicit trades: stronger starts, route value, and deck tools in exchange for HP, debt, pollution, route commitments, or play restrictions.",
       aboutTitle: "About",
       aboutLead: "Project notes, asset sources, and release boundaries.",
+      introTitle: "Mod Overview",
+      introCopy: "Spire Plus is a Slay the Spire 2 balance and high-Ascension expansion by Wenhuo Rongbing. It reworks selected vanilla relics and Ancient rewards, adds the A11-A20 test ruleset, preview tools, and new risk-reward mechanics. The goal is not to make the game easier; it is to give players more meaningful choices under stronger pressure.",
       download: "Download Mod",
       viewIssues: "Known Issues",
       all: "All",
@@ -1096,17 +1125,17 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.8.zip"],
-        ["Version", "v0.1.0-private-beta.8"],
+        ["File", "SpirePlus-v0.1.0-private-beta.9.zip"],
+        ["Version", "v0.1.0-private-beta.9"],
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,936,103 bytes"],
-        ["Hash", "BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971"]
+        ["Size", "18,936,170 bytes"],
+        ["Hash", "8654879DBE99697FE0CE36F14B141B49882EA07C3C373FFB1D60D441154EEF56"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.8.zip.",
+      "Download SpirePlus-v0.1.0-private-beta.9.zip.",
       "Download BaseLib.3.1.4.zip and extract it to the game's mods\\BaseLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
@@ -1138,7 +1167,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-            ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.8"]
+            ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.9"]
         ]
       },
     updateGroups: [
@@ -1380,11 +1409,21 @@ window.SPIRE_PLUS_DATA.i18n = {
         vanilla: "Gain 2 Energy, draw 2 cards, and lose 1 Max HP; upgraded gains 3 Energy and draws 3 cards.",
         desc: "Adds Exhaust. Gain 2 Energy, draw 3 cards, and lose 1 Max HP; upgraded gains 3 Energy and draws 4 cards."
       },
+      "EZMB_URDA.pages.INITIAL.options.urda_seedbed.description": {
+        title: "Seedbed",
+        desc: "Act 1 normal combat card rewards can become Seedbed: lose 2 Max HP and add 1 Seedbed. The first Seedbed taken is upgraded. After taking Seedbed 4 times, gain 10 Max HP. Seedbed plants later Temporary Status cards, Temporary Curse cards, or Blight Sprouts and converts them into Withered Husks.",
+        details: [
+          detail("获取", "一幕普通战斗卡牌奖励中选择苗床，会结束本次奖励选择并加入1张苗床。", "Pickup", "Choose Seedbed from an Act 1 normal combat card reward; it completes that reward and adds 1 Seedbed."),
+          detail("成本", "每次收下苗床失去2点最大生命。第一次收下的苗床会升级。", "Cost", "Each taken Seedbed costs 2 Max HP. The first Seedbed taken is upgraded."),
+          detail("累计", "累计收下4次苗床后，获得10点最大生命。", "Completion", "After taking Seedbed 4 times, gain 10 Max HP."),
+          detail("种下", "苗床会截住之后进入手牌的临时状态牌、临时诅咒牌或根芽；该牌从战斗牌堆移除，并加入1张枯壳。", "Plant", "Seedbed catches later Temporary Status cards, Temporary Curse cards, or Blight Sprouts before they enter hand; the card is removed from combat and replaced by 1 Withered Husk.")
+        ]
+      },
       "EZMB_URDA_SEEDLING.description": {
         desc: "0-cost Skill. Exhaust. Gain 4 Block; upgraded gains 7 Block."
       },
       "EZMB_URDA_SEEDBED.description": {
-        desc: "1-cost Skill. Exhaust. Gain 4 Block and set up a 2-space Seedbed. Later Temporary Status cards, Temporary Curse cards, or Blight Sprouts that enter hand are planted first; each planted card adds 1 Withered Husk. Upgraded: gain 6 Block, capacity becomes 3, and it plants 1 matching card from draw or discard."
+        desc: "1-cost Skill. Exhaust. Gain 4 Block and set up a 2-space Seedbed. Later Temporary Status cards, Temporary Curse cards, or Blight Sprouts are planted before entering hand: the card is removed from combat, does not trigger play, discard, or Exhaust synergies, and adds 1 Withered Husk. Planting a Blight Sprout prevents that Sprout from adding Rootblight I after combat. Upgraded: gain 6 Block, set 3 slots, and immediately plant 1 matching card from draw or discard."
       },
       "EZMB_URDA_RAIN_BREATH.description": {
         desc: "0-cost temporary Skill. Exhaust. Gain 5 Block and draw 1 card."
@@ -1473,7 +1512,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.8.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.9.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]

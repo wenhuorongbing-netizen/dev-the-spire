@@ -2,7 +2,7 @@
 
 This folder tracks the active Ascension 11-20 development line for `Spire Plus` (`EZMicroBalance` manifest id).
 
-Ascension 11-20 is available by default in the current private-beta multiplayer test candidate, but it is not release-verified. Limited A11 map spot checks and targeted A14 Rootblight English/ZHS hover/starter-notice spot checks have evidence; Rootblight combat-end notices are source-hardened with an overlay path, but full live single-player, save/load, clean combat-end behavior, Blight Sprout notice timing, and co-op verification remain pending. Ascension 21-30 and custom character work are out of scope.
+Ascension 11-20 is available by default for single-player testing, but it is not release-verified. After the 2026-05-25 crash logs, host-multiplayer A11-A20 selection/gameplay fails closed by default unless `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` is deliberately set for two-client debugging. Limited A11 map spot checks and targeted A14 Rootblight English/ZHS hover/starter-notice spot checks have evidence; Rootblight combat-end notices are source-hardened with an overlay path, but full live single-player, save/load, clean combat-end behavior, Blight Sprout notice timing, and co-op verification remain pending. Ascension 21-30 and custom character work are out of scope.
 
 ## Current Entry Points
 
@@ -46,7 +46,8 @@ Historical prompt/spec material lives in `docs/archive/feature-inputs/ascension-
 
 ## Safety Rules
 
-- Keep A11-A20 disableable with `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1`.
+- Keep A11-A20 single-player selection disableable with `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1`.
+- Keep host-multiplayer A11-A20 selection/gameplay fail-closed by default; use `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` only for deliberate two-client debugging.
 - Keep host-multiplayer selection separately disableable with `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`.
 - Do not claim live Ascension readiness until manual single-player and co-op checks pass.
 - Do not implement A21-A30 or custom character systems in this cycle.

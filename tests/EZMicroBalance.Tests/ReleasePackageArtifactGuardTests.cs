@@ -145,7 +145,7 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Contains("Current Mod Settings list screenshot shows `Spire Plus`", handoff, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", handoff, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending", handoff, StringComparison.Ordinal);
-        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", handoff, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", handoff, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", handoff, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", handoff, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required", handoff, StringComparison.Ordinal);
@@ -176,7 +176,7 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Contains("Directory.Build.props", handoff, StringComparison.Ordinal);
         Assert.Contains("archived local `art_pipeline` / `asset` material under `.tools/archive/local-art-and-calibration-20260515/`", handoff, StringComparison.Ordinal);
         Assert.Contains("`source code/` local scratch/reference folders", handoff, StringComparison.Ordinal);
-        Assert.Contains("Push only after explicit user approval", handoff, StringComparison.Ordinal);
+        Assert.Contains("Push after validation and an intentional commit", handoff, StringComparison.Ordinal);
     }
 
     [ReleaseArtifactFact]

@@ -13,8 +13,8 @@ internal static class MorviAct2AncientService
             return;
         }
 
-        if (RunManager.Instance.DebugOnlyGetState() is { } runState &&
-            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+        var runState = MultiplayerFeaturePolicy.CurrentRunStateOrNull();
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
                 runState,
                 "MorviAncientOffer",
                 "Morvi Ancient reward selection mutates per-player reward state and is disabled in co-op until two-client proof exists."))

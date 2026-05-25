@@ -189,7 +189,7 @@ public sealed class AncientBehaviorGuardTests
     [ReleaseArtifactFact]
     public void PrivateBetaZipContainsOnlyInstallableActiveModFiles()
     {
-        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.8.zip");
+        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.9.zip");
         Assert.True(File.Exists(packagePath), $"Missing private beta package: {packagePath}");
 
         using var archive = ZipFile.OpenRead(packagePath);
@@ -220,7 +220,7 @@ public sealed class AncientBehaviorGuardTests
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);
-        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.8.zip", readme, StringComparison.Ordinal);
+        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.9.zip", readme, StringComparison.Ordinal);
         Assert.Contains("Display name: Spire Plus", readme, StringComparison.Ordinal);
         Assert.Contains("Technical compatibility id: EZMicroBalance", readme, StringComparison.Ordinal);
         Assert.Contains("Extract this archive into the Slay the Spire 2 mods folder exactly as packaged.", readme, StringComparison.Ordinal);
@@ -1212,13 +1212,13 @@ public sealed class AncientBehaviorGuardTests
             "- [ ] Multiplayer disposition is decided: verified, or release-noted as unsupported/unverified.",
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
-            "- [ ] Push to `origin/main` is performed only after explicit user approval.",
+            "- [ ] Push to `origin` is performed after validation, packaging, and an intentional commit.",
             "Latest normal Steam-client startup/log verification covers the current 30-field DLL/PCK/manifest",
             "Refreshed normal Steam-client Mod Settings UI evidence at `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` shows `Spire Plus`",
             "Earlier page-level Mod Settings evidence predates the display-name refresh",
             "Manual feature results are pending",
             "Unsupported Cases",
-            "A11-A20 selection is now default-on in this private-beta multiplayer test candidate",
+            "A11-A20 selection is default-on only for single-player standard lobbies",
             "SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1",
             "SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1",
             "A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds route rows by act: Act 1 +1, Act 2 +1, Act 3 +2 without A11-specific map markers or hover tips.",

@@ -170,7 +170,7 @@
       `;
     }
     return `
-      <details class="item-details">
+      <details class="item-details" open>
         <summary>${labels.expandDetails || "展开具体效果"}</summary>
         <div class="detail-grid">${rowsHtml}</div>
       </details>
@@ -205,6 +205,7 @@
       { key: "sts-keyword-mech-gold", words: ["金币", "金", "Gold", "gold"] },
       { key: "sts-keyword-mech-fission", words: ["裂变附魔", "裂变率", "裂变牌", "裂变", "Fission"] },
       { key: "sts-keyword-mech-seedbed", words: ["苗床", "Seedbed"] },
+      { key: "sts-keyword-mech-plant", words: ["种下", "Plant", "plant", "Planted", "planted", "Planting", "planting"] },
       { key: "sts-keyword-mech-sprout", words: ["根芽", "Sprout", "Blight Sprout", "Sprouts"] },
       { key: "sts-keyword-mech-rootblight", words: ["根蚀", "Rootblight", "Rootblights"] },
       { key: "sts-keyword-mech-contract", words: ["契约", "Contract", "Contracts"] },
@@ -274,7 +275,7 @@
   }
 
   function addCodexHyperlinks(htmlString) {
-    const cardTerms = ["放松", "愚行", "执迷", "至亮之焰", "临时页", "契约", "雨息", "枯壳", "苗床", "根蚀", "根芽", "血债", "威仪", "裁决", "裂变", "火印精英", "战旗房", "深层支线", "水晶球预知", "变换真实预览"];
+    const cardTerms = ["放松", "愚行", "执迷", "至亮之焰", "临时页", "契约", "雨息", "枯壳", "苗床", "种下", "根蚀", "根芽", "血债", "威仪", "裁决", "裂变", "火印精英", "战旗房", "深层支线", "水晶球预知", "变换真实预览"];
     let output = htmlString;
     cardTerms.forEach(term => {
       const regex = new RegExp(`(?<!<[^>]*)${term}`, 'g');
@@ -911,6 +912,7 @@
       "裁决": "洛莎之裁决",
       "裂变": "裂变附魔",
       "苗床": "苗床与根芽",
+      "种下": "种下",
       "根芽": "苗床与根芽",
       "根蚀": "苗床与根芽",
       "火印精英": "火印精英",

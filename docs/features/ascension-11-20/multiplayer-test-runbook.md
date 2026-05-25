@@ -1,9 +1,11 @@
 # A11-A20 Multiplayer Test Runbook
 
-Date: 2026-05-08  
-Scope: private-beta multiplayer test candidate for Spire Plus (`EZMicroBalance` manifest id) Ascension 11-20 selection and source-patched gameplay slices.
+Date: 2026-05-25
+Scope: Spire Plus (`EZMicroBalance` manifest id) co-op safety checks for Ascension 11-20 selection and source-patched gameplay slices.
 
-A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
+A11-A20 selection/gameplay fails closed in host multiplayer by default after the 2026-05-25 crash logs. Use this runbook first to prove the default fail-closed behavior. Use `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` only for deliberate two-client debugging of the disabled paths.
+
+A11-A20 selection is default-on only for single-player standard lobbies.
 
 Do not treat this runbook as release evidence until results are filled in from real Steam-client multiplayer testing. Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
 
@@ -27,10 +29,18 @@ Same-PC multi-open is not reliable for real Steam multiplayer and should not be 
 
 ## Environment Variables
 
-Default test after this change:
+Default co-op safety test:
 
 ```text
-No Ascension environment variable is needed.
+Do not set SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY.
+Do not set SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS.
+Do not set SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS.
+```
+
+Deliberate co-op debug opt-in:
+
+```text
+SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1
 ```
 
 Gate-off comparison:
@@ -74,6 +84,7 @@ PowerShell user env set:
 [Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION','1','User')
 [Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DIAGNOSTICS','1','User')
 [Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_MULTIPLAYER_DIAGNOSTICS','1','User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY','1','User')
 ```
 
 PowerShell user env clear:
@@ -83,6 +94,7 @@ PowerShell user env clear:
 [Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION',$null,'User')
 [Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DIAGNOSTICS',$null,'User')
 [Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_MULTIPLAYER_DIAGNOSTICS',$null,'User')
+[Environment]::SetEnvironmentVariable('SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY',$null,'User')
 ```
 
 After changing User env vars, fully restart Steam and the game on the affected machine before testing.
@@ -100,11 +112,11 @@ After changing User env vars, fully restart Steam and the game on the affected m
 - Confirm both machines use the same package hash and same BaseLib version.
 - Inspect both `godot.log` files for startup errors, missing localization keys, `CanonicalModelException`, and Spire Plus exceptions under technical id `EZMicroBalance`.
 
-### Gate Default-On Checks
+### Default Fail-Closed Checks
 
 - With no Ascension env vars on host or client, open single-player character select and confirm A11-A20 can be selected.
-- With no Ascension env vars, host a multiplayer lobby and confirm host can select A11-A20.
-- Confirm client sees the host-selected A11-A20 value after joining.
+- With no co-op opt-in vars, host a multiplayer lobby and confirm A11-A20 selection is not exposed.
+- Confirm logs contain the fail-closed warning/evidence for multiplayer A11-A20 selection if the host attempts to access it.
 - Confirm leaving and reopening the lobby does not write A11-A20 into vanilla preferred Ascension paths.
 
 ### Gate-Off Comparison Checks
@@ -112,7 +124,7 @@ After changing User env vars, fully restart Steam and the game on the affected m
 - Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` on the host.
 - Fully restart Steam and the game.
 - Confirm single-player selection returns to vanilla A1-A10.
-- Confirm host-multiplayer selection returns to vanilla A1-A10.
+- Confirm host-multiplayer selection remains vanilla A1-A10.
 - Clear the env var, fully restart, and confirm A11-A20 selection is available again.
 
 ### Multiplayer-Only Disable Checks
@@ -120,11 +132,15 @@ After changing User env vars, fully restart Steam and the game on the affected m
 - Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` on the host.
 - Fully restart Steam and the game.
 - Confirm single-player A11-A20 selection remains available.
-- Confirm host-multiplayer selection returns to the vanilla cap.
-- Clear the env var, fully restart, and confirm host-multiplayer A11-A20 selection is available again.
+- Confirm host-multiplayer selection remains at the vanilla cap.
+- Clear the env var, fully restart, and confirm host-multiplayer still fails closed unless `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` is set.
 
-### Multiplayer Selection Checks
+### Opt-In Multiplayer Selection Debug Checks
 
+Run this section only after default fail-closed behavior passes.
+
+- Set `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` on the host.
+- Fully restart Steam and the game.
 - Host creates a lobby, selects A11, and client joins.
 - Confirm client view does not clamp host selection back to A10.
 - Repeat for A12, A14, A16, and A20.

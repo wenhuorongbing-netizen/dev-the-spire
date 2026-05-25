@@ -71,6 +71,8 @@ public sealed class PreviewToolsGuardTests
         Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", crystalSource, StringComparison.Ordinal);
         Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", transformSource, StringComparison.Ordinal);
         Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", transformContextSource, StringComparison.Ordinal);
+        Assert.Contains("MultiplayerFeaturePolicy.CurrentRunStateOrNull()", transformSource, StringComparison.Ordinal);
+        Assert.Contains("__state = [];", transformSource, StringComparison.Ordinal);
         Assert.Contains("ClearPredictions(__instance)", transformSource, StringComparison.Ordinal);
         Assert.Contains("Clear(player)", transformContextSource, StringComparison.Ordinal);
         Assert.Contains("two-client proof", combinedPreviewSource, StringComparison.Ordinal);

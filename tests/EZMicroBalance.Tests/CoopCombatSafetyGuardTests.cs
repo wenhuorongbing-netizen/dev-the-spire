@@ -24,6 +24,7 @@ public sealed class CoopCombatSafetyGuardTests
         Assert.Contains("ShouldDisableUnverifiedCoopGameplay", policy, StringComparison.Ordinal);
         Assert.Contains("coop_gameplay_disabled", policy, StringComparison.Ordinal);
         Assert.Contains("LoggedCoopGameplayGateKeys", policy, StringComparison.Ordinal);
+        Assert.Contains("CurrentRunStateOrNull", policy, StringComparison.Ordinal);
 
         Assert.Contains("IsCoopAscensionGameplayAllowed", ascensionGates, StringComparison.Ordinal);
         Assert.Contains("ShouldDisableUnverifiedCoopGameplay", ascensionGates, StringComparison.Ordinal);
@@ -47,6 +48,18 @@ public sealed class CoopCombatSafetyGuardTests
         Assert.Contains("coop_gameplay_disabled", urdaSelection, StringComparison.Ordinal);
         Assert.Contains("coop_gameplay_disabled", morviSelection, StringComparison.Ordinal);
         Assert.Contains("coop_gameplay_disabled", lothaSelection, StringComparison.Ordinal);
+
+        foreach (var offerSource in new[]
+        {
+            urdaOffer,
+            morviOffer,
+            lothaOffer
+        })
+        {
+            Assert.Contains("var runState = MultiplayerFeaturePolicy.CurrentRunStateOrNull();", offerSource, StringComparison.Ordinal);
+            Assert.Contains("ShouldDisableUnverifiedCoopGameplay(\n                runState", offerSource, StringComparison.Ordinal);
+            Assert.DoesNotContain("DebugOnlyGetState() is { } runState &&", offerSource, StringComparison.Ordinal);
+        }
     }
 
     [Fact]

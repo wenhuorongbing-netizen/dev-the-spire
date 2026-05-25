@@ -2,8 +2,8 @@
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
-Status: A11-A20 single-player and host-multiplayer selector expansion and prototype slices added; selection is default-on for the private-beta multiplayer test candidate; A11 map geometry has source-boundary and optional-route graph proof; live gameplay verification pending
-Last updated: 2026-05-14
+Status: A11-A20 single-player selector expansion and prototype slices are default-on; host-multiplayer selection/gameplay fails closed by default after the 2026-05-25 crash logs; A11 map geometry has source-boundary and optional-route graph proof; live gameplay verification pending
+Last updated: 2026-05-25
 
 ## Current Development Checklist
 
@@ -26,7 +26,7 @@ Current code under `EZMicroBalanceCode/Ascension/` has been migrated toward this
 
 Do not claim A11-A20 release readiness as a single feature block.
 
-The vanilla game exposes a hard max Ascension of 10 through progress and lobby/UI paths. The current development build adds narrow single-player and host-multiplayer selector/start patches so A11-A20 can be tested through the original Ascension UI without globally patching progress validation.
+The vanilla game exposes a hard max Ascension of 10 through progress and lobby/UI paths. The current development build adds narrow single-player selector/start patches so A11-A20 can be tested through the original Ascension UI without globally patching progress validation. Host-multiplayer selector/start hooks remain in source but fail closed by default until two-client proof exists.
 
 The current implementation uses the selected run Ascension level after the selector expansion:
 
@@ -40,13 +40,14 @@ The current implementation uses the selected run Ascension level after the selec
 - A18 also enables elite Blight Sprout.
 - A19 also enables dedicated ability definition lookup, source-guarded boss-specific dedicated ability hooks, and a fourth boss card reward option; all boss-specific mechanics still require live verification.
 - A20 also enables the single-player vanilla double-boss map path, Boss 2 Branded Form metadata/parameters independent of the A19 dedicated ability feature flag, Boss 1 post-combat recovery, one Boss card reward before Boss 2, narrow Boss 1 reward-screen intermission wording, and a fixed default-layout courtyard event before Boss 2 with an immediate pre-finished-room save. It does not create a bespoke full custom intermission screen.
-- A11-A20 selection is now default-on in this private-beta multiplayer test candidate for standard single-player and host-multiplayer lobbies.
+- A11-A20 selection is default-on for standard single-player lobbies.
+- Host-multiplayer A11-A20 selection/gameplay fails closed by default after the 2026-05-25 crash logs. Set `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` only for deliberate two-client debugging.
 - `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` restores vanilla A1-A10 selection for comparison testing.
-- `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` disables only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
+- `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` remains a narrow host-multiplayer selector rollback switch while leaving single-player A11-A20 available.
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
 - `SPIREPLUS_ASCENSION_DEBUG_LEVEL=11` through `20` can still force slice gates for internal checks.
 - `SPIREPLUS_ASCENSION_DIAGNOSTICS=1` enables read-only internal run/combat diagnostics without enabling gameplay systems. It must not mutate restored Blight Sprout card state or raise Rootblight by itself.
-- Host multiplayer A20 selection/start now logs a development-testing warning because A20 Branded Form / second-boss enhanced dedicated ability gameplay remains single-player gated. A20 multiplayer selection is not full A20 co-op support.
+- Host multiplayer A11-A20 selection/start logs a fail-closed warning unless the explicit co-op gameplay opt-in is set. A20 Branded Form / second-boss enhanced dedicated ability gameplay remains single-player gated.
 - Normal Steam-client Mod Settings has separate RC1 evidence; controlled smoke passed is not the same as live co-op verification.
 
 The diagnostics gate is intentionally non-mutating. It logs hook reachability and Rootblight state only.

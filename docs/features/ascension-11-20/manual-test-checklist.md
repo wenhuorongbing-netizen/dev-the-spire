@@ -2,7 +2,7 @@
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
-Status: checklist for A11-A20 default-on private-beta multiplayer test candidate; current 30-field normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
+Status: checklist for A11-A20 single-player private-beta testing. After the 2026-05-25 co-op crash logs, host-multiplayer A11-A20 selection and gameplay fail closed by default unless `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` is deliberately set for two-client debugging. Current 30-field normal Steam-client startup/log verification, historical limited A11 map spot checks, historical A11 saved-map boss-reachability graph proof, and historical targeted A14 Rootblight English/ZHS hover/notice spot checks exist. The 2026-05-14 A11 source-boundary patch now has source-level optional inserted-column route proof, but still needs fresh live visible width/row, route-click, save-load, and co-op verification; live Ascension gameplay not executed yet for this pass.
 Last updated: 2026-05-23
 
 ## Research-Mode Baseline
@@ -33,7 +33,8 @@ Baseline result on 2026-05-06:
 
 ## Gate Controls
 
-- Default private-beta multiplayer test candidate: no Ascension environment variables are needed. A11-A20 selection is now default-on in the original single-player and host-multiplayer Ascension UI, and run-state level gates activate the implemented slices.
+- Default single-player private-beta test path: no Ascension environment variables are needed. A11-A20 selection is default-on in the original single-player Ascension UI.
+- Co-op safety gate: host-multiplayer A11-A20 selection and gameplay fail closed by default. Set `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` only for deliberate two-client debugging of unverified co-op behavior.
 - Gate-off comparison: set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` before launch to restore vanilla A1-A10 selection for comparison.
 - Multiplayer-only disable comparison: set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` before launch to disable only host-multiplayer A11-A20 selection while leaving single-player A11-A20 available.
 - Legacy-compatible opt-in: `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is accepted but no longer required.
@@ -210,18 +211,19 @@ Gated implementation present. RC1 normal Steam-client spot checks executed by se
 
 ## A11-A20 Host-Multiplayer Selection
 
-Default-on implementation present; live co-op testing pending. Use `docs/features/ascension-11-20/multiplayer-test-runbook.md` for the full two-PC matrix and result template.
+Default fail-closed implementation present; live co-op debugging must be deliberate. Use `docs/features/ascension-11-20/multiplayer-test-runbook.md` for the full two-PC matrix and result template.
 
 - [ ] With no Ascension env var, single-player selection can reach A11-A20 from the original Ascension UI.
-- [ ] With no Ascension env var, host-multiplayer selection can reach A11-A20 from the original Ascension UI.
+- [ ] With no Ascension env var, host-multiplayer selection remains capped by vanilla A1-A10 and logs the co-op gameplay gate.
 - [ ] With `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, single-player and multiplayer host selection remain capped by vanilla A1-A10 progress.
 - [ ] With `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, host-multiplayer selection returns to the vanilla cap while single-player A11-A20 selection remains available.
-- [ ] With legacy `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` set and no disable env vars, selection behavior remains the same as default-on.
+- [ ] With legacy `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` set and no disable env vars, single-player selection behavior remains the same as default-on.
+- [ ] With `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` deliberately set, host-multiplayer selection can reach A11-A20 for focused two-client debugging only.
 - [ ] A11-A20 host selection does not persist to `PreferredMultiplayerAscension` after leaving the lobby.
 - [ ] A11-A20 host selection survives a client joining the lobby without being clamped back to A10.
 - [ ] A client sees the host-selected A11-A20 value.
 - [ ] Gate off via `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1`: single-player and multiplayer selection remain normal A1-A10.
-- [ ] Gate default-on: host multiplayer can select A11-A20.
+- [ ] Co-op default gate: host multiplayer cannot select A11-A20 unless the deliberate debugging override is set.
 - [ ] Disable multiplayer selection env var returns host multiplayer to the vanilla cap.
 - [ ] Client join does not clamp host A11-A20 selection back to A10.
 - [ ] Host creates a multiplayer lobby, selects A20 before any client joins, and `godot.log` immediately records the A20 development-testing downgrade warning.

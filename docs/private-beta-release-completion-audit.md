@@ -14,7 +14,7 @@ Concrete private-beta completion criteria:
 - Package the current private-beta surfaces: Ancient reward rebalance v4.3, Urda default-on ten-blessing slice, Morvi default-on source-complete/live-pending slice, Lotha default-on source-complete/live-pending slice, the hidden-by-default dedicated Vakuu fight slice, Ascension A11-A20 slices, Rootblight/Blight Sprout behavior and art, English/zhs localization, release docs, and tester handoff.
 - Prove the installed package builds, publishes, hashes, loads through Steam with only BaseLib plus Spire Plus, and has no release-blocking loader errors.
 - Complete or explicitly release-note every live/manual gate: Ancient reward runtime matrix, save/load-sensitive rows, disable-mod gameplay, post-fix Urda/Rootblight gameplay and visuals, natural A11 traversal, and two-client co-op/multiplayer.
-- Leave a clean release handoff: worktree/commit/push state must be intentional, and push requires explicit user approval.
+- Leave a clean release handoff: worktree/commit/push state must be intentional, and validated implementation passes should be pushed.
 
 ## Objective Coverage Recheck
 
@@ -32,9 +32,9 @@ Concrete private-beta completion criteria:
 | Requirement | Concrete evidence inspected | Status |
 | --- | --- | --- |
 | Stable manifest id | `EZMicroBalance.json` remains `id: EZMicroBalance`; docs state `Spire Plus` is the player-facing name only. | Pass |
-| Single package | `EZMicroBalance/`, `EZMicroBalanceCode/`, `EZMicroBalance.csproj`, and `publish/SpirePlus-v0.1.0-private-beta.8.zip` with `EZMicroBalance/` as the install folder; duplicate root mod surfaces are removed from the active tree. | Pass |
+| Single package | `EZMicroBalance/`, `EZMicroBalanceCode/`, `EZMicroBalance.csproj`, and `publish/SpirePlus-v0.1.0-private-beta.9.zip` with `EZMicroBalance/` as the install folder; duplicate root mod surfaces are removed from the active tree. | Pass |
 | Build and publish | `dotnet build EZMicroBalance.sln --no-restore` and `dotnet publish EZMicroBalance.sln --no-restore` passed after the Ascension map marker ordering split; installed/staging/versioned/package hashes are in parity. | Pass for build/publish/package |
-| Latest source/package refresh | Source review confirms visible Ancient marker relics, current EN/zhs text guards, separate art/resource routes, dedicated gated Vakuu fight source, Root Eyes preview hardening, A11-A20 source guards, integrated preview-tool guards, and the short manual-test package README. Current zip SHA256 is `BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971`; detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/build/package artifact parity; gameplay verification pending |
+| Latest source/package refresh | Source review confirms visible Ancient marker relics, current EN/zhs text guards, separate art/resource routes, dedicated gated Vakuu fight source, Root Eyes preview hardening, A11-A20 source guards, integrated preview-tool guards, and the short manual-test package README. Current zip SHA256 is `8654879DBE99697FE0CE36F14B141B49882EA07C3C373FFB1D60D441154EEF56`; detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/build/package artifact parity; gameplay verification pending |
 | Current automated tests | `dotnet build EZMicroBalance.sln` passes with 0 warnings/errors; `dotnet test EZMicroBalance.sln --no-build` passes with 272 passed / 20 skipped; `dotnet test EZMicroBalance.sln -c Release` previously passed with 81 passed / 18 skipped; latest package refresh evidence includes `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` with 292 passed / 0 skipped after the player-visible localization naming guard. | Automated build/test/artifact pass; live/manual evidence pending |
 | Formatting and diff hygiene | `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passes after the Ascension map marker ordering split; `git diff --check` passes with CRLF warnings only. | Pass |
 | Package hash parity | `scripts/check-installed-spire-plus-package.ps1` confirms installed DLL, manifest, PCK, README, copied game-root ZIP hashes, Sere Talon imported textures, and Sere Talon / Tanx Claws PCK content match `docs/private-beta-verification-handoff.md`. | Pass |
@@ -66,7 +66,7 @@ These block calling the whole project finished:
 - Post-fix live Urda selection and reward-screen behavior.
 - Post-fix Rootblight generated-art visual check, combat-end behavior/notices, Blight Sprout behavior, and ownership checks.
 - Two-client multiplayer/co-op matrix.
-- Clean intentional commit state and user-approved push.
+- Clean intentional commit state and pushed branch after validation.
 
 Latest local screenshot attempts remain invalid: `.tools/runtime-evidence/live-urda-postfix-20260513-131752` stayed on the main menu and later captured the wrong surface, and `.tools/runtime-evidence/live-urda-continue-postfix-20260513-134337` was covered by another foreground app. Their clean logs may support loader health only; they do not satisfy live Urda, Rootblight, or gameplay rows.
 

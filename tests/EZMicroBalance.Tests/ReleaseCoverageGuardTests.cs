@@ -270,7 +270,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("scripts/spire-plus-live-session.ps1 -Mode Restore -EvidenceDir <evidence-dir> -StopGameOnRestore -PreserveNewCurrentRunsOnRestore", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Covered desktop captures, wrong-surface captures, or sessions that never reach the target game surface do not satisfy Rootblight, Ascension, or gameplay rows.", manualChecklist, StringComparison.Ordinal);
 
-        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("`EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.", releaseChecklist, StringComparison.Ordinal);
@@ -698,7 +698,7 @@ public sealed class ReleaseCoverageGuardTests
 
         AssertSourceContains(
             runbook,
-            "A11-A20 selection is now default-on in this private-beta multiplayer test candidate.",
+            "A11-A20 selection is default-on only for single-player standard lobbies.",
             "Two physical PCs.",
             "Same-PC multi-open is not reliable for real Steam multiplayer and should not be the primary release test.",
             "`--force-steam off` is valid for controlled loader smoke only.",
@@ -709,7 +709,7 @@ public sealed class ReleaseCoverageGuardTests
             "[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION','1','User')",
             "[Environment]::SetEnvironmentVariable('SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION',$null,'User')",
             "fully restart Steam and the game",
-            "Gate Default-On Checks",
+            "Default Fail-Closed Checks",
             "Gate-Off Comparison Checks",
             "Multiplayer-Only Disable Checks",
             "A11 Map Checks",
@@ -800,7 +800,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("Multiplayer branch insertion is skipped", deepBranchesSection, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x]", deepBranchesSection, StringComparison.Ordinal);
 
-        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", releaseChecklist, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds route rows by act: Act 1 +1, Act 2 +1, Act 3 +2 without A11-specific map markers or hover tips.", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("A17 inserts one optional 3-4 node Deep Branch in Acts 2/3", releaseChecklist, StringComparison.Ordinal);
         Assert.Contains("A20 uses the vanilla double-boss map path to create/reveal the final-act second Boss", releaseChecklist, StringComparison.Ordinal);

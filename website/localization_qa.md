@@ -126,8 +126,8 @@ Fixes checked during this pass:
 - Replaced public vanilla placeholders with site-owned simplified SVG icons under `website/assets/vanilla-icons/`.
 - Added separate card-change entries for `鎰氳 / Folly` and `鎵ц糠 / Enthralled`.
 - Kept `鑷充寒涔嬬劙 / Brightest Flame` as the public-facing English title and verified its Exhaust/draw change appears.
-- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.8.zip`.
-- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.8`.
+- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.9.zip`.
+- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.9`.
 
 Static checks:
 
@@ -149,8 +149,8 @@ Rendered checks:
 - 28 vanilla-related entries use `assets/vanilla-icons/`.
 - `.source-art-placeholder` count is 0.
 - Search for `鎵ц糠` returns the Blood-Soaked Rose relic row and the Enthralled card row.
-- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.8.zip` and the release button to the concrete GitHub tag URL.
-- Public install page points the main download button to `releases/download/v0.1.0-private-beta.8/SpirePlus-v0.1.0-private-beta.8.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
+- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.9.zip` and the release button to the concrete GitHub tag URL.
+- Public install page points the main download button to `releases/download/v0.1.0-private-beta.9/SpirePlus-v0.1.0-private-beta.9.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
 - Browser console warnings/errors: none.
 
 ## Review 6: Local Redraw Icon QA

@@ -323,8 +323,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"BD412625FF6BB72B7B493EDAD6D20F793512B6600C1B1B46CCD961AA65B30971\"",
-            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.8.zip\"",
+            "PackageSha256 = \"8654879DBE99697FE0CE36F14B141B49882EA07C3C373FFB1D60D441154EEF56\"",
+            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.9.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
             "Get-FileHash -LiteralPath $packageFull -Algorithm SHA256",
@@ -654,7 +654,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("A11-A20 selection is now default-on in this private-beta multiplayer test candidate", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", currentDocs, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", currentDocs, StringComparison.Ordinal);

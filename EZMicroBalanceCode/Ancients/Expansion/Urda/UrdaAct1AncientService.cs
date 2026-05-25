@@ -20,8 +20,8 @@ internal static class UrdaAct1AncientService
             return;
         }
 
-        if (RunManager.Instance.DebugOnlyGetState() is { } runState &&
-            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+        var runState = MultiplayerFeaturePolicy.CurrentRunStateOrNull();
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
                 runState,
                 "UrdaAncientOffer",
                 "Urda Ancient reward selection mutates per-player reward state and is disabled in co-op until two-client proof exists."))

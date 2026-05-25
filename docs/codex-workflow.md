@@ -15,7 +15,7 @@ The active deliverable is private beta readiness for `Spire Plus` (`EZMicroBalan
 
 Do not implement Ascension 21-30 or a custom character during this cycle.
 
-Ascension 11-20 is an active development track and is default-on in the current private-beta multiplayer test candidate, but live readiness is still gated by manual verification. Do not expand Ascension scope without explicit request, and keep public/multiplayer disable switches documented and working.
+Ascension 11-20 is an active development track and is default-on for single-player testing, but host-multiplayer A11-A20 selection/gameplay fails closed by default after the 2026-05-25 crash logs. Live readiness is still gated by manual verification. Do not expand Ascension scope without explicit request, and keep public/multiplayer disable switches documented and working.
 
 ## Build Mode Flow
 
@@ -43,7 +43,7 @@ Capture exact command, error summary, likely cause, what was checked, minimal fi
 - Preserve the existing dirty worktree.
 - Do not revert unrelated user changes.
 - Use checkpoints before and after major phases when practical.
-- Do not push to `origin/main` without explicit user approval.
+- After validation succeeds, commit the intended changes and push the current branch to `origin`. Stop instead if validation fails, packaging fails, authentication is missing, or the push would include unrelated local changes.
 
 ## Worktree Hygiene
 

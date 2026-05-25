@@ -13,9 +13,8 @@ internal static class LothaAct3AncientService
             return;
         }
 
-        var runManager = RunManager.Instance;
-        if (runManager.DebugOnlyGetState() is { } runState &&
-            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
+        var runState = MultiplayerFeaturePolicy.CurrentRunStateOrNull();
+        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopGameplay(
                 runState,
                 "LothaAncientOffer",
                 "Lotha Ancient reward selection mutates per-player reward state and is disabled in co-op until two-client proof exists."))

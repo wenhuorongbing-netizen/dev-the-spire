@@ -37,6 +37,18 @@ internal static class MultiplayerFeaturePolicy
     public static bool CanMutateSharedRunState(IRunState? runState) =>
         IsSingleplayer(runState) || IsHost(runState);
 
+    public static IRunState? CurrentRunStateOrNull()
+    {
+        try
+        {
+            return RunManager.Instance?.DebugOnlyGetState();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     public static bool ShouldDisableUnverifiedCoopFeature(
         IRunState? runState,
         string feature,

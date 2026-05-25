@@ -24,6 +24,17 @@ internal static class TransformPreviewInitializePatch
         ref IEnumerable<CardTransformation> cardTransformations,
         out List<CardTransformation> __state)
     {
+        if (SpirePlusModConfig.EnableTransformPrediction &&
+            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
+                MultiplayerFeaturePolicy.CurrentRunStateOrNull(),
+                "PreviewTransform",
+                "transform prediction preview is single-player only until co-op selection, RNG, and reconnect paths have live proof"))
+        {
+            __state = [];
+            TransformPreviewCyclePatch.ClearPredictions(__instance);
+            return;
+        }
+
         __state = cardTransformations.ToList();
         cardTransformations = __state;
         TransformPreviewCyclePatch.PreparePredictions(__instance, __state);
@@ -113,7 +124,7 @@ internal static class TransformPreviewCyclePatch
             ReleaseEvidenceLog.Log(
                 "PreviewTransform",
                 "prediction_skipped_exception",
-                runState: RunManager.Instance?.DebugOnlyGetState(),
+                runState: MultiplayerFeaturePolicy.CurrentRunStateOrNull(),
                 data: new Dictionary<string, object?>
                 {
                     ["exception"] = exception.GetType().Name
@@ -140,7 +151,7 @@ internal static class TransformPreviewCyclePatch
         }
 
         if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
-                RunManager.Instance?.DebugOnlyGetState(),
+                MultiplayerFeaturePolicy.CurrentRunStateOrNull(),
                 "PreviewTransform",
                 "transform prediction preview is single-player only until co-op selection, RNG, and reconnect paths have live proof"))
         {
