@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Text.Json;
 using Xunit;
@@ -284,7 +284,7 @@ public sealed class EngineeringGovernanceGuardTests
             "HEAD | `25f99fb",
             "Total patch declarations | 135",
             "Fresh current-package loader smoke | Pending live run",
-            "README_INSTALL | `9581091856D252D6837A8368596E8BE834720EE0895D67B4824D4C2631F1D286`");
+            "README_INSTALL | `E13627EEB9D658107C0B9CBD48819749EEFE49F6E3B28CF32BD18EA28B4FC7EB`");
 
         AssertSourceContains(
             scope,

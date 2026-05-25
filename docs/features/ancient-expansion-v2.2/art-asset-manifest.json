@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_date": "2026-05-22",
+  "updated_date": "2026-05-25",
   "required_generation_mode": "GPTimage2",
   "notes": [
     "Active Ancient and related card/power/relic art manifest for Spire Plus.",
@@ -395,6 +395,22 @@
       "generation_mode": "GPTimage2",
       "mode": "GPTimage2",
       "semantic_model": "GPTimage2"
+    },
+    {
+      "id": "urda_elite_root_option_relic",
+      "role": "option_relic",
+      "target_path": "EZMicroBalance/images/ancients/urda/options/urda_elite_root.png",
+      "source_status": "source_local_generated",
+      "source_path": ".tools/art-generation/elite-root-20260525/urda_elite_root_candidate_v2.png",
+      "sha256": "9A71DC62B52B27C945F7FF13513CFDC33EE0040906E385D51746CF332AE9A959",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "prompt_id": "elite_root_local_icon_20260525",
+      "final_required_before_release": false,
+      "notes": "Local same-concept repaint for the Urda Elite Root option relic: thick black contour, gnarled root wreath, old-gold elite seal, and small green healing accents. Kept transparent and normalized to 128x128 for relic UI surfaces. GPTimage2 prompt is archived for a future remote rerun if desired.",
+      "source_review_path": ".tools/art-generation/elite-root-20260525/elite-root-candidate-v2-contact.png"
     },
     {
       "id": "urda_rooted_route_option_relic",

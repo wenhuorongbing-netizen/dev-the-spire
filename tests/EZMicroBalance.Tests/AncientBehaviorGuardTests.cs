@@ -12,7 +12,8 @@ public sealed class AncientBehaviorGuardTests
     [
         "cards.json",
         "relics.json",
-        "rest_site_ui.json"
+        "rest_site_ui.json",
+        "static_hover_tips.json"
     ];
 
     private static readonly string[] RequiredCardLocalizationKeys =
@@ -24,7 +25,8 @@ public sealed class AncientBehaviorGuardTests
         "ENTHRALLED.title",
         "ENTHRALLED.description",
         "FOLLY.title",
-        "FOLLY.description"
+        "FOLLY.description",
+        "SOVEREIGN_BLADE.description"
     ];
 
     private static readonly string[] RequiredRelicLocalizationKeys =
@@ -152,10 +154,42 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("OPTION_COOK.ezDescriptionDisabled", restSite.Keys);
     }
 
+    [Fact]
+    public void SovereignBladeJadeBoonsApplyOnPlayAndAreExplainedByForge()
+    {
+        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SovereignBladeForgePatches.cs");
+        var cardsEng = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
+        var cardsZhs = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
+        var staticEng = JsonStringMap("EZMicroBalance", "localization", "eng", "static_hover_tips.json");
+        var staticZhs = JsonStringMap("EZMicroBalance", "localization", "zhs", "static_hover_tips.json");
+
+        AssertSourceContains(
+            source,
+            "public const decimal Amount = 3m",
+            "[HarmonyPatch(typeof(SovereignBlade), \"OnPlay\")]",
+            "await original;",
+            "PowerCmd.Apply<StrengthPower>(choiceContext, owner, Amount, owner, blade)",
+            "PowerCmd.Apply<DexterityPower>(choiceContext, owner, Amount, owner, blade)",
+            "PowerCmd.Apply<PlatingPower>(choiceContext, owner, Amount, owner, blade)",
+            "PowerCmd.Apply<RegenPower>(choiceContext, owner, Amount, owner, blade)",
+            "PowerCmd.Apply<VigorPower>(choiceContext, owner, Amount, owner, blade)",
+            "[HarmonyPatch(typeof(CardModel), \"get_HoverTips\")]",
+            "HoverTipFactory.FromPower<StrengthPower>((int)Amount)",
+            "HoverTipFactory.FromPower<DexterityPower>((int)Amount)",
+            "HoverTipFactory.FromPower<PlatingPower>((int)Amount)",
+            "HoverTipFactory.FromPower<RegenPower>((int)Amount)",
+            "HoverTipFactory.FromPower<VigorPower>((int)Amount)");
+
+        AssertSovereignBladeText(cardsEng["SOVEREIGN_BLADE.description"], "Strength", "Dexterity", "Plating", "Regen", "Vigor");
+        AssertSovereignBladeText(cardsZhs["SOVEREIGN_BLADE.description"], "力量", "敏捷", "覆甲", "再生", "活力");
+        AssertSovereignBladeText(staticEng["FORGE.description"], "Sovereign Blade", "Strength", "Dexterity", "Plating", "Regen", "Vigor");
+        AssertSovereignBladeText(staticZhs["FORGE.description"], "君王之剑", "力量", "敏捷", "覆甲", "再生", "活力");
+    }
+
     [ReleaseArtifactFact]
     public void PrivateBetaZipContainsOnlyInstallableActiveModFiles()
     {
-        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.1.zip");
+        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.2.zip");
         Assert.True(File.Exists(packagePath), $"Missing private beta package: {packagePath}");
 
         using var archive = ZipFile.OpenRead(packagePath);
@@ -186,7 +220,7 @@ public sealed class AncientBehaviorGuardTests
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);
-        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.1.zip", readme, StringComparison.Ordinal);
+        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.2.zip", readme, StringComparison.Ordinal);
         Assert.Contains("Display name: Spire Plus", readme, StringComparison.Ordinal);
         Assert.Contains("Technical compatibility id: EZMicroBalance", readme, StringComparison.Ordinal);
         Assert.Contains("Extract this archive into the Slay the Spire 2 mods folder exactly as packaged.", readme, StringComparison.Ordinal);
@@ -243,6 +277,7 @@ public sealed class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterObtained))]",
             "[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterCombatEnd))]",
             "[HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]",
+            "[HarmonyPatch(typeof(SovereignBlade), \"OnPlay\")]",
             "[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.AfterActEntered))]",
             "[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.BeforeSideTurnStart))]",
             "[HarmonyPatch(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart))]",
@@ -1203,6 +1238,15 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("Result: pending.", manualMatrix, StringComparison.Ordinal);
     }
 
+    private static void AssertSovereignBladeText(string value, params string[] requiredTerms)
+    {
+        Assert.True(CountOccurrences(value, "[blue]3[/blue]") >= 5, "Sovereign Blade text should show all five 3-point jade boons.");
+        foreach (var term in requiredTerms)
+        {
+            Assert.Contains(term, value, StringComparison.Ordinal);
+        }
+    }
+
     private static string[] Placeholders(string value)
     {
         return Regex.Matches(value, @"\{[^{}]+\}")
@@ -1217,8 +1261,17 @@ public sealed class AncientBehaviorGuardTests
             placeholder,
             @"^\{(?<name>[^:{}]+):plural:[^{}]*\}$",
             RegexOptions.CultureInvariant);
-        return pluralMatch.Success
-            ? $"{{{pluralMatch.Groups["name"].Value}:plural}}"
+        if (pluralMatch.Success)
+        {
+            return $"{{{pluralMatch.Groups["name"].Value}:plural}}";
+        }
+
+        var chooseMatch = Regex.Match(
+            placeholder,
+            @"^\{(?<name>[^:{}]+):choose\((?<choice>[^)]*)\):[^{}]*\}$",
+            RegexOptions.CultureInvariant);
+        return chooseMatch.Success
+            ? $"{{{chooseMatch.Groups["name"].Value}:choose({chooseMatch.Groups["choice"].Value})}}"
             : placeholder;
     }
 

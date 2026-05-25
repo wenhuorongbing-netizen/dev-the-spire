@@ -1,4 +1,6 @@
 {
   "COOK.description": "At a [gold]Rest Site[/gold], [gold]remove[/gold] [blue]2[/blue] cards from your [gold]Deck[/gold] and lose [blue]5[/blue] HP.",
-  "COOK.title": "Cleaver"
+  "COOK.title": "Cleaver",
+  "FORGE.description": "The first time you [gold]Forge[/gold] each combat, add [gold]Sovereign Blade[/gold] to your [gold]Hand[/gold]. [gold]Forge[/gold] adds damage to it. [gold]Sovereign Blade[/gold] also grants [blue]3[/blue] [gold]Strength[/gold], [blue]3[/blue] [gold]Dexterity[/gold], [blue]3[/blue] [gold]Plating[/gold], [blue]3[/blue] [gold]Regen[/gold], and [blue]3[/blue] [gold]Vigor[/gold] when played.",
+  "FORGE.title": "Forge"
 }

@@ -1,4 +1,4 @@
-# Private Beta Release Checklist
+﻿# Private Beta Release Checklist
 
 Target mod: `Spire Plus`
 Target manifest id: `EZMicroBalance`
@@ -15,8 +15,8 @@ Target manifest id: `EZMicroBalance`
 
 - [x] `dotnet build` succeeds.
 - [x] Latest source/package build check passed with `dotnet build EZMicroBalance.sln --no-restore` after the Morvi reward/state lifecycle hardening pass.
-- [x] Publish/package/hash refresh has been rerun for the latest source/text/resource slices with `dotnet publish EZMicroBalance.sln --no-restore` and a rebuilt `SpirePlus` private-beta zip.
-- [x] `dotnet publish` succeeds.
+- [x] Publish/package/hash refresh has been rerun for the latest source/text/resource slices with a rebuilt `SpirePlus` private-beta zip. The latest `dotnet publish` attempt was blocked only by a running game process locking the installed DLL; the package was refreshed from Release DLL plus direct Godot export into package staging.
+- [ ] `dotnet publish` succeeds after the tester exits the currently running game and releases the installed DLL lock.
 - [x] Published `EZMicroBalance.json` exists.
 - [x] Published `EZMicroBalance.dll` exists.
 - [x] Published `EZMicroBalance.pck` exists.
@@ -25,9 +25,9 @@ Target manifest id: `EZMicroBalance`
 - [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
-- [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.1.zip` was rebuilt from the configured installed artifacts on 2026-05-23 and copied to the local game root for manual testing.
-  - Current package hashes: DLL `8CF4F8219652DF0D93FEF7A88DC9692EC6E744D38B358303606DA7F9CB833830`; manifest `049D8FE97BB96CA7A28B4735D11BDA18549265D798C2EB8A1774E2B82453C1D1`; PCK `87C43FADEAF2B08A7561A7E4797340991A3F146382BC487CD6C05DB77E1496A4`; README `9581091856D252D6837A8368596E8BE834720EE0895D67B4824D4C2631F1D286`; zip `9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E`.
+- [ ] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`; rerun after the installed mod folder is refreshed.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.2.zip` was rebuilt from package staging on 2026-05-25 and copied to the local game root for manual testing.
+  - Current package hashes: DLL `5CA8EE1A1700A04597860430BE017413AD4A4EC32D691CFB3BA9E0E3D8601F33`; manifest `A7007A3CDE633F661404B00EEBC1154BF4DB5FA9F41CC89AA5030CE7314AC862`; PCK `CF93B736667058E3B6FC2F1AF5D033D26452421374F0E40C6FA6496C6510D3E8`; README `E13627EEB9D658107C0B9CBD48819749EEFE49F6E3B28CF32BD18EA28B4FC7EB`; zip `AFD1304686A4CABAEAFCEBA75870D52D0449AB854E8E1D65E2693B72E941C62F`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
@@ -121,4 +121,3 @@ The collector creates the verifier-readable manifest scaffold. The verifier hash
 - A bespoke full-screen intermission remains unimplemented pending live verification needs.
 - Ascension 21-30 and custom-character content are not included.
 - Former root `art_pipeline/` and `asset/` generated art/calibration folders are archived under ignored `.tools/archive/local-art-and-calibration-20260515/` and are not part of the active publish package.
-

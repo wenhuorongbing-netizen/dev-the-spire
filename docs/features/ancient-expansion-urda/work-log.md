@@ -1,4 +1,4 @@
-# Urda Work Log
+﻿# Urda Work Log
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance
@@ -44,7 +44,7 @@ Validation:
 - `dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 17 skipped after the private-beta release completion audit guard was added.
 - `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 98 passed, 0 skipped after the private-beta release completion audit guard was added.
 - `dotnet publish EZMicroBalance.sln`: passed and refreshed the installed DLL/PCK.
-- Rebuilt package staging, versioned package folder, and `publish\EZMicroBalance-v0.1.0-private-beta.1.zip` from installed artifacts.
+- Rebuilt package staging, versioned package folder, and `publish\EZMicroBalance-v0.1.0-private-beta.2.zip` from installed artifacts.
 
 Current hashes:
 
@@ -126,7 +126,7 @@ Validation:
 - `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
 - `dotnet test EZMicroBalance.sln --no-build`: passed, 73 passed, 16 skipped.
 - `dotnet publish EZMicroBalance.sln`: passed and refreshed installed DLL/PCK because localization/export resources changed.
-- Rebuilt package staging, versioned package folder, and `publish\EZMicroBalance-v0.1.0-private-beta.1.zip` from installed artifacts.
+- Rebuilt package staging, versioned package folder, and `publish\EZMicroBalance-v0.1.0-private-beta.2.zip` from installed artifacts.
 - `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 89 passed, 0 skipped.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
 - `git diff --check`: passed with CRLF normalization warnings only.

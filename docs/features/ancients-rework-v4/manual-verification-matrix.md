@@ -1,4 +1,4 @@
-# Ancient Rework v4 Manual Verification Matrix
+﻿# Ancient Rework v4 Manual Verification Matrix
 
 Prepared: 2026-05-07
 Updated: 2026-05-18
@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.1.zip`, SHA256 `11CCD08698F72F4A27547E0FB0D4E7793323ED729DA7CFE3F548CC39F4C51120` |
+| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.2.zip`, SHA256 `AFD1304686A4CABAEAFCEBA75870D52D0449AB854E8E1D65E2693B72E941C62F` |
 
 ## Runtime Load Checklist
 
@@ -86,7 +86,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Distinguished Cape | Inspect Vakuu options and pick up the reward at max HP values around 80, 70, 30, 19, 18, and 10 if practical. | Uses `lose 30% of current Max HP, at least 18`; cannot be selected when current Max HP is not greater than the v4.3 cost; Vakuu must still show three normal reward options; localized locked Cape only as a defensive fallback; low-Max-HP Vakuu still shows three normal choices; zhs text should include `至少18点`; max HP loss is not damage; adds exactly 3 `Apparition` / `灵体` cards. | Pending |
 | Velvet Choker | Play 6 cards manually from hand, then inspect/play the 7th+ card. | No hard six-card cap; the 7th+ from-hand manual cards cost +1 after other cost changes; copied, autoplayed, or repeated plays do not advance the counter. | Pending |
 | Pael's Tooth | Remove five cards, run two non-boss combats, then act transition. | One stored card returns upgraded every two non-boss combats; remaining stored cards clear after act boss transition. | Pending |
-| Sovereign Blade / Forge | Forge a temporary Sovereign Blade; inspect permanent Refine Blade. | Forged temporary Sovereign Blade has Exhaust; permanent Refine Blade is unchanged. | Pending |
+| Sovereign Blade / Forge | Forge a temporary Sovereign Blade, hover Forge/铸造, then play Sovereign Blade. | Forge hover explains the blade's added boons. Forged temporary Sovereign Blade has Exhaust; permanent Refine Blade is unchanged. Playing Sovereign Blade grants 3 Strength, 3 Dexterity, 3 Plating, 3 Regen, and 3 Vigor. | Pending |
 | Seal of Gold / Debt | Pick up reward, draw/play/exhaust Debt. | Grants energy and two playable `Debt` / `债务` curses; gold loss occurs only on exhaust. | Pending |
 | Sozu | Pick up with empty potion slots, then attempt future potion gain. | Empty potion slots fill on pickup, then future potion gain is blocked. | Pending |
 | Ectoplasm | Pick up, then complete later gold rewards. | Grants immediate gold, then blocks future gold gain. | Pending |

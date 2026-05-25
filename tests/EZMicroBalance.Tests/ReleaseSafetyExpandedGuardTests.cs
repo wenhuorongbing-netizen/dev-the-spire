@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -323,8 +323,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E\"",
-            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.1.zip\"",
+            "PackageSha256 = \"AFD1304686A4CABAEAFCEBA75870D52D0449AB854E8E1D65E2693B72E941C62F\"",
+            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.2.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
             "Get-FileHash -LiteralPath $packageFull -Algorithm SHA256",
@@ -556,7 +556,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
                     continue;
                 }
 
-                var visibleValue = Regex.Replace(value, @"\{[^{}]*\}", string.Empty, RegexOptions.CultureInvariant);
+                var visibleValue = RemoveLocalizationPlaceholders(value);
                 visibleValue = Regex.Replace(visibleValue, @"\[(?:/)?[A-Za-z][^\]]*\]", string.Empty, RegexOptions.CultureInvariant);
                 foreach (Match match in Regex.Matches(visibleValue, @"[A-Za-z][A-Za-z0-9_-]*", RegexOptions.CultureInvariant))
                 {
@@ -571,6 +571,21 @@ public sealed class ReleaseSafetyExpandedGuardTests
         }
 
         Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
+    }
+
+    private static string RemoveLocalizationPlaceholders(string value)
+    {
+        var previous = value;
+        while (true)
+        {
+            var next = Regex.Replace(previous, @"\{[^{}]*\}", string.Empty, RegexOptions.CultureInvariant);
+            if (next == previous)
+            {
+                return next;
+            }
+
+            previous = next;
+        }
     }
 
     [Fact]

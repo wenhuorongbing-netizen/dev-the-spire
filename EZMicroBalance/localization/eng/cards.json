@@ -7,6 +7,7 @@
   "ENTHRALLED.description": "If this is in your hand, you must play it before other cards. Gain 10 Block. Eternal.",
   "FOLLY.title": "Folly",
   "FOLLY.description": "Unplayable. Innate. Eternal.",
+  "SOVEREIGN_BLADE.description": "Deal {Damage:diff()} damage{TargetType:choose(AllEnemies): to ALL enemies|}{Repeat:plural:| {} times}.\nGain [blue]3[/blue] [gold]Strength[/gold], [blue]3[/blue] [gold]Dexterity[/gold], [blue]3[/blue] [gold]Plating[/gold], [blue]3[/blue] [gold]Regen[/gold], and [blue]3[/blue] [gold]Vigor[/gold].{GainsBlock:cond:\nGain {CalculatedBlock:diff()} [gold]Block[/gold].|}",
   "EZMB_ROOT.title": "Rootblight I",
   "EZMB_ROOT.description": "Remove this from your deck.\nIf this is still in your deck after combat, it becomes [gold]Rootblight II[/gold].",
   "EZMB_DEEP_ROOT.title": "Rootblight II",

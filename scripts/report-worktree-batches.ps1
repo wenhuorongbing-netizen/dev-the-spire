@@ -65,7 +65,7 @@ function Get-WorktreeBatch {
     }
 
     if ($p.StartsWith('EZMicroBalanceCode/Ancients/', [System.StringComparison]::OrdinalIgnoreCase) -or
-        $p -match '^EZMicroBalance/localization/[^/]+/(ancients|cards|card_keywords|powers|relics)\.json$' -or
+        $p -match '^EZMicroBalance/localization/[^/]+/(ancients|cards|card_keywords|powers|relics|static_hover_tips)\.json$' -or
         $p.StartsWith('docs/features/ancient-expansion-urda/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/features/ancients-rework-v4/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^tests/EZMicroBalance\.Tests/(Ancient|Urda|Morvi|Lotha|Vakuu).*\.cs(\.uid)?$') {
@@ -118,6 +118,7 @@ function Get-WorktreeBatch {
     }
 
     if ($p -eq 'EZMicroBalanceCode/README.md' -or
+        $p -eq 'docs/implement.md' -or
         $p.StartsWith('docs/audits/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^docs/(介绍|/+344/+273/+213/+347/+273/+215)\.md$') {
         return 8

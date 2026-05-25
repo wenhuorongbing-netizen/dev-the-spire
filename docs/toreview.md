@@ -1,15 +1,15 @@
-# Spire Plus To Review
+﻿# Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.1.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.2.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `9B597ECAF7C2020C55E5639C7079260C0BB09FFEC9D659C8A8D00A96DB4BD14E` |
-| DLL | `8CF4F8219652DF0D93FEF7A88DC9692EC6E744D38B358303606DA7F9CB833830` |
-| PCK | `87C43FADEAF2B08A7561A7E4797340991A3F146382BC487CD6C05DB77E1496A4` |
-| Manifest | `049D8FE97BB96CA7A28B4735D11BDA18549265D798C2EB8A1774E2B82453C1D1` |
-| README_INSTALL | `9581091856D252D6837A8368596E8BE834720EE0895D67B4824D4C2631F1D286` |
+| ZIP | `AFD1304686A4CABAEAFCEBA75870D52D0449AB854E8E1D65E2693B72E941C62F` |
+| DLL | `5CA8EE1A1700A04597860430BE017413AD4A4EC32D691CFB3BA9E0E3D8601F33` |
+| PCK | `CF93B736667058E3B6FC2F1AF5D033D26452421374F0E40C6FA6496C6510D3E8` |
+| Manifest | `A7007A3CDE633F661404B00EEBC1154BF4DB5FA9F41CC89AA5030CE7314AC862` |
+| README_INSTALL | `E13627EEB9D658107C0B9CBD48819749EEFE49F6E3B28CF32BD18EA28B4FC7EB` |
 
 Latest no-game validation snapshot: build passed, default tests `273 passed / 20 skipped`, opt-in artifact tests `293 passed / 0 skipped`, website syntax checks passed, format passed, installed-package check passed, and `git diff --check` passed. After the Elite Root source-safety refresh, the current-package loader row is pending again because the ZIP/DLL hash changed without opening the game. The release verifier fails closed with 20 pending live/manual rows.
 
