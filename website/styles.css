@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=New+Rocker&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=New+Rocker&display=swap');
 
 :root {
   color-scheme: dark;
@@ -881,22 +881,46 @@ main {
   transition: var(--transition);
 }
 
+/* Card breathing/pulsing border glows */
+@keyframes sts-card-pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 10px hsla(140, 85%, 45%, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    border-color: hsla(140, 85%, 45%, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 25px hsla(140, 85%, 45%, 0.8), 0 0 8px hsla(140, 85%, 45%, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-color: hsla(140, 85%, 45%, 1);
+  }
+}
+
+@keyframes sts-card-pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 10px hsla(44, 73%, 58%, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    border-color: hsla(44, 73%, 58%, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 25px hsla(44, 73%, 58%, 0.8), 0 0 8px hsla(44, 73%, 58%, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-color: hsla(44, 73%, 58%, 1);
+  }
+}
+
 /* High-contrast diagonal sweep sheen */
 .compare-card::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 30%, rgba(255, 255, 255, 0.4) 46%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.4) 54%, transparent 70%);
+  background: linear-gradient(135deg, transparent 20%, rgba(255, 215, 0, 0.15) 40%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 215, 0, 0.15) 60%, transparent 80%);
   background-size: 250% 250%;
   background-position: -250% 0;
   z-index: 10;
   pointer-events: none;
-  mix-blend-mode: overlay;
+  mix-blend-mode: screen;
   transition: none;
+  opacity: 0.9;
 }
 
 .compare-card:hover::after {
-  animation: sweep-sheen 0.55s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: sweep-sheen 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 @keyframes sweep-sheen {
@@ -911,9 +935,8 @@ main {
 
 .compare-card:hover {
   transform: translateY(-4px) scale(1.02);
-  border-color: var(--sts-green);
-  box-shadow: var(--shadow-glow-green);
   z-index: 5;
+  animation: sts-card-pulse-green 1.2s infinite ease-in-out;
 }
 
 .compare-card:hover::before {
@@ -922,8 +945,8 @@ main {
 
 /* Card Pin State on List Cards */
 .compare-card.active-inspect {
-  border-color: var(--gold-bright) !important;
-  box-shadow: var(--shadow-glow-gold) !important;
+  z-index: 4;
+  animation: sts-card-pulse-gold 1.5s infinite ease-in-out;
 }
 
 .compare-card.active-inspect::before {
@@ -990,7 +1013,7 @@ main {
 }
 
 .compare-card:hover .card-title-block h3 {
-  color: var(--sts-green);
+  text-shadow: 0 0 8px var(--gold-bright);
 }
 
 .compare-card .tags {
@@ -1443,102 +1466,134 @@ main {
   color: hsl(45, 100%, 75%);
 }
 
+/* Runic pulsing text-shadow glow keyframes */
+@keyframes sts-pulse-glow-red {
+  0%, 100% { text-shadow: 0 0 4px rgba(255, 77, 77, 0.45); }
+  50% { text-shadow: 0 0 12px rgba(255, 77, 77, 0.85), 0 0 2px rgba(255, 77, 77, 0.5); }
+}
+@keyframes sts-pulse-glow-green {
+  0%, 100% { text-shadow: 0 0 4px rgba(0, 230, 118, 0.45); }
+  50% { text-shadow: 0 0 12px rgba(0, 230, 118, 0.85), 0 0 2px rgba(0, 230, 118, 0.5); }
+}
+@keyframes sts-pulse-glow-gold {
+  0%, 100% { text-shadow: 0 0 4px rgba(255, 215, 0, 0.45); }
+  50% { text-shadow: 0 0 12px rgba(255, 215, 0, 0.85), 0 0 2px rgba(255, 215, 0, 0.5); }
+}
+@keyframes sts-pulse-glow-purple {
+  0%, 100% { text-shadow: 0 0 4px rgba(179, 136, 255, 0.45); }
+  50% { text-shadow: 0 0 12px rgba(179, 136, 255, 0.85), 0 0 2px rgba(179, 136, 255, 0.5); }
+}
+@keyframes sts-pulse-glow-blue {
+  0%, 100% { text-shadow: 0 0 4px rgba(41, 121, 255, 0.45); }
+  50% { text-shadow: 0 0 12px rgba(41, 121, 255, 0.85), 0 0 2px rgba(41, 121, 255, 0.5); }
+}
+@keyframes sts-pulse-glow-cyan {
+  0%, 100% { text-shadow: 0 0 4px rgba(0, 229, 255, 0.45); }
+  50% { text-shadow: 0 0 12px rgba(0, 229, 255, 0.85), 0 0 2px rgba(0, 229, 255, 0.5); }
+}
+@keyframes sts-pulse-glow-pink {
+  0%, 100% { text-shadow: 0 0 4px rgba(233, 30, 99, 0.45); }
+  50% { text-shadow: 0 0 12px rgba(233, 30, 99, 0.85), 0 0 2px rgba(233, 30, 99, 0.5); }
+}
+@keyframes sts-pulse-glow-orange {
+  0%, 100% { text-shadow: 0 0 4px rgba(255, 112, 67, 0.45); }
+  50% { text-shadow: 0 0 12px rgba(255, 112, 67, 0.85), 0 0 2px rgba(255, 112, 67, 0.5); }
+}
+@keyframes sts-pulse-upgrade {
+  0%, 100% {
+    text-shadow: 0 0 4px rgba(0, 230, 118, 0.4);
+    color: hsl(140, 85%, 45%);
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(0, 230, 118, 0.95), 0 0 4px rgba(0, 230, 118, 0.6);
+    color: hsl(140, 95%, 55%);
+  }
+}
+
 /* Slay the Spire Keyword Typography coloring */
-.sts-keyword-attack {
+.sts-keyword-attack,
+.sts-keyword-stat-strength,
+.sts-keyword-mech-blood-debt,
+.sts-keyword-status-vulnerable {
   color: var(--sts-red);
   font-weight: 700;
-  text-shadow: 0 0 5px hsla(12, 90%, 55%, 0.25);
+  animation: sts-pulse-glow-red 2.5s infinite ease-in-out;
 }
 
-.sts-keyword-skill {
+.sts-keyword-skill,
+.sts-keyword-stat-dexterity,
+.sts-keyword-mech-seedbed,
+.sts-keyword-mech-sprout,
+.sts-keyword-mech-rootblight,
+.sts-keyword-status-poison {
   color: var(--sts-green);
   font-weight: 700;
-  text-shadow: 0 0 5px hsla(140, 85%, 45%, 0.25);
+  animation: sts-pulse-glow-green 2.5s infinite ease-in-out;
 }
 
-.sts-keyword-power {
+.sts-keyword-power,
+.sts-keyword-stat-energy,
+.sts-keyword-mech-relic,
+.sts-keyword-mech-ancient,
+.sts-keyword-mech-gold,
+.sts-keyword-mech-contract,
+.sts-keyword-mech-prestige,
+.sts-keyword-mech-loot,
+.sts-keyword-stat-temp-hp {
   color: var(--sts-gold);
   font-weight: 700;
-  text-shadow: 0 0 5px hsla(45, 95%, 52%, 0.25);
+  animation: sts-pulse-glow-gold 2.5s infinite ease-in-out;
 }
 
 .sts-keyword-status,
-.sts-keyword-curse {
+.sts-keyword-curse,
+.sts-keyword-mech-verdict,
+.sts-keyword-status-weak {
   color: var(--sts-purple);
   font-weight: 700;
-  text-shadow: 0 0 5px hsla(270, 75%, 72%, 0.25);
+  animation: sts-pulse-glow-purple 2.5s infinite ease-in-out;
 }
 
-.sts-keyword-stat-strength {
-  color: hsl(12, 100%, 65%);
+.sts-keyword-stat-block,
+.sts-keyword-stat-plated-armor {
+  color: hsl(210, 95%, 65%);
   font-weight: 700;
-  text-shadow: 0 0 5px hsla(12, 100%, 65%, 0.25);
+  animation: sts-pulse-glow-blue 2.5s infinite ease-in-out;
 }
 
-.sts-keyword-stat-dexterity {
-  color: hsl(140, 90%, 60%);
-  font-weight: 700;
-  text-shadow: 0 0 5px hsla(140, 90%, 60%, 0.25);
-}
-
-.sts-keyword-stat-focus {
+.sts-keyword-stat-focus,
+.sts-keyword-mech-fission,
+.sts-keyword-mech-temp-page,
+.sts-keyword-mech-ethereal,
+.sts-keyword-mech-inherent,
+.sts-keyword-stat-draw,
+.sts-keyword-mech-loot-lock,
+.sts-keyword-mech-copy {
   color: hsl(195, 95%, 60%);
   font-weight: 700;
-  text-shadow: 0 0 5px hsla(195, 95%, 60%, 0.25);
+  animation: sts-pulse-glow-cyan 2.5s infinite ease-in-out;
 }
 
 .sts-keyword-stat-vigor {
   color: hsl(340, 95%, 65%);
   font-weight: 700;
-  text-shadow: 0 0 5px hsla(340, 95%, 65%, 0.25);
+  animation: sts-pulse-glow-pink 2.5s infinite ease-in-out;
 }
 
-.sts-keyword-stat-block {
-  color: hsl(210, 95%, 65%);
+.sts-keyword-mech-exhaust,
+.sts-keyword-mech-retain,
+.sts-keyword-mech-unplayable,
+.sts-keyword-status-frail {
+  color: hsl(28, 95%, 60%);
   font-weight: 700;
-  text-shadow: 0 0 5px hsla(210, 95%, 65%, 0.25);
-}
-
-.sts-keyword-stat-energy {
-  color: hsl(90, 100%, 50%);
-  font-weight: 700;
-  text-shadow: 0 0 5px hsla(90, 100%, 50%, 0.25);
-}
-
-.sts-keyword-mech-blood-debt {
-  color: hsl(0, 100%, 60%);
-  font-weight: 700;
-  text-shadow: 0 0 5px hsla(0, 100%, 60%, 0.3);
-}
-
-.sts-keyword-mech-verdict {
-  color: hsl(280, 100%, 75%);
-  font-weight: 700;
-  text-shadow: 0 0 5px hsla(280, 100%, 75%, 0.3);
-}
-
-.sts-keyword-mech-relic,
-.sts-keyword-mech-ancient,
-.sts-keyword-mech-gold {
-  color: var(--gold-bright);
-  font-weight: 700;
-  text-shadow: 0 0 5px hsla(44, 73%, 58%, 0.25);
-}
-
-.sts-keyword-mech-fission,
-.sts-keyword-mech-seedbed,
-.sts-keyword-mech-sprout,
-.sts-keyword-mech-rootblight {
-  color: hsl(160, 100%, 65%);
-  font-weight: 700;
-  text-shadow: 0 0 5px hsla(160, 100%, 65%, 0.3);
+  animation: sts-pulse-glow-orange 2.5s infinite ease-in-out;
 }
 
 /* Pulsing upgraded stats and diffs values */
 .sts-upgrade-val {
   color: var(--sts-green) !important;
   font-weight: 700;
-  text-shadow: 0 0 6px hsla(140, 85%, 45%, 0.45);
+  animation: sts-pulse-upgrade 1.2s infinite ease-in-out;
 }
 
 /* Cross-card codex hyperlinks */
@@ -1548,13 +1603,18 @@ main {
   cursor: pointer;
   font-weight: 700;
   transition: var(--transition);
-  text-shadow: 0 0 4px hsla(44, 73%, 58%, 0.2);
+  text-shadow: 0 0 4px hsla(44, 73%, 58%, 0.25);
 }
 
 .codex-link:hover {
-  color: var(--text-primary);
-  background: hsla(44, 73%, 58%, 0.12);
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* Make links inside keyword classes inherit keyword-specific colors and glow animation */
+[class*="sts-keyword-"] .codex-link {
+  color: inherit !important;
+  text-shadow: inherit !important;
+  animation: inherit !important;
 }
 
 /* Mechanics Codex Sub-Menu Styles */

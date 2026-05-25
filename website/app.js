@@ -1,4 +1,4 @@
-(async function () {
+﻿(async function () {
   const baseData = window.SPIRE_PLUS_DATA;
   let lang = initialLang();
   let data = selectData(baseData, lang);
@@ -191,30 +191,46 @@
       .replace(/>/g, "&gt;");
 
     const mappings = [
-      { key: "sts-keyword-attack", words: ["攻击", "Attack", "Attacks"] },
-      { key: "sts-keyword-skill", words: ["技能", "Skill", "Skills"] },
-      { key: "sts-keyword-power", words: ["能力", "Power", "Powers"] },
-      { key: "sts-keyword-status", words: ["状态", "Status", "Temporary Status", "临时状态"] },
-      { key: "sts-keyword-curse", words: ["诅咒", "Curse", "Curses", "Temporary Curse", "临时诅咒"] },
+      { key: "sts-keyword-attack", words: ["攻击牌", "攻击", "Attack", "Attacks"] },
+      { key: "sts-keyword-skill", words: ["技能牌", "技能", "Skill", "Skills"] },
+      { key: "sts-keyword-power", words: ["能力牌", "能力", "Power", "Powers"] },
+      { key: "sts-keyword-status", words: ["临时状态牌", "临时状态", "状态牌", "状态", "Status", "Temporary Status"] },
+      { key: "sts-keyword-curse", words: ["临时诅咒牌", "临时诅咒", "诅咒牌", "诅咒", "Curse", "Curses", "Temporary Curse"] },
 
       { key: "sts-keyword-stat-strength", words: ["力量", "Strength"] },
       { key: "sts-keyword-stat-dexterity", words: ["敏捷", "Dexterity"] },
       { key: "sts-keyword-stat-focus", words: ["集中", "Focus"] },
       { key: "sts-keyword-stat-vigor", words: ["活力", "Vigor"] },
       { key: "sts-keyword-stat-block", words: ["格挡", "防御", "Block", "Gain Block", "Defence"] },
-      { key: "sts-keyword-stat-energy", words: ["能量", "能量制限", "Energy", "energy"] },
+      { key: "sts-keyword-stat-energy", words: ["能量制限", "能量限制", "能量", "费用", "Energy", "energy"] },
 
-      { key: "sts-keyword-mech-blood-debt", words: ["血债", "Blood Debt", "赃物锁", "破锁赃物", "Loot Lock", "Loot-lock", "Loot"] },
-      { key: "sts-keyword-mech-verdict", words: ["裁决", "延期裁决", "封庭", "Verdict", "Deferred Verdict", "Closed Court"] },
+      { key: "sts-keyword-mech-blood-debt", words: ["血债", "Blood Debt"] },
+      { key: "sts-keyword-mech-verdict", words: ["延期裁决", "裁决", "封庭", "Verdict", "Deferred Verdict", "Closed Court"] },
       { key: "sts-keyword-mech-relic", words: ["遗物", "Relic", "Relics"] },
-      { key: "sts-keyword-mech-ancient", words: ["先古", "先古之民", "Ancient", "Ancients"] },
+      { key: "sts-keyword-mech-ancient", words: ["先古之民", "先古", "Ancient", "Ancients"] },
       { key: "sts-keyword-mech-gold", words: ["金币", "金", "Gold", "gold"] },
-      { key: "sts-keyword-mech-fission", words: ["裂变", "Fission", "裂变牌", "裂变率", "裂变附魔"] },
-      { key: "sts-keyword-mech-seedbed", words: ["苗床", "Seedbed", "枯壳", "Withered Husk"] },
+      { key: "sts-keyword-mech-fission", words: ["裂变附魔", "裂变率", "裂变牌", "裂变", "Fission"] },
+      { key: "sts-keyword-mech-seedbed", words: ["苗床", "Seedbed"] },
       { key: "sts-keyword-mech-sprout", words: ["根芽", "Sprout", "Blight Sprout", "Sprouts"] },
       { key: "sts-keyword-mech-rootblight", words: ["根蚀", "Rootblight", "Rootblights"] },
       { key: "sts-keyword-mech-contract", words: ["契约", "Contract", "Contracts"] },
-      { key: "sts-keyword-mech-temp-page", words: ["临时页", "Temporary Page", "页", "Page", "Pages"] }
+      { key: "sts-keyword-mech-temp-page", words: ["临时页", "Temporary Page", "页", "Page", "Pages"] },
+      { key: "sts-keyword-mech-prestige", words: ["威仪", "Prestige", "Majesty"] },
+      { key: "sts-keyword-stat-plated-armor", words: ["多重护甲", "护甲", "Plated Armor", "Armor"] },
+      { key: "sts-keyword-mech-ethereal", words: ["虚无牌", "虚无", "Ethereal"] },
+      { key: "sts-keyword-mech-exhaust", words: ["消耗牌", "消耗", "Exhaust"] },
+      { key: "sts-keyword-mech-retain", words: ["保留牌", "保留", "Retain"] },
+      { key: "sts-keyword-mech-unplayable", words: ["无法打出", "Unplayable"] },
+      { key: "sts-keyword-mech-inherent", words: ["固有牌", "固有", "Inherent", "Innate"] },
+      { key: "sts-keyword-status-vulnerable", words: ["易伤", "Vulnerable"] },
+      { key: "sts-keyword-status-weak", words: ["虚弱", "Weak"] },
+      { key: "sts-keyword-status-frail", words: ["脆弱", "Frail"] },
+      { key: "sts-keyword-status-poison", words: ["中毒", "Poison"] },
+      { key: "sts-keyword-stat-draw", words: ["抽牌", "抽", "Draw", "Draws"] },
+      { key: "sts-keyword-stat-temp-hp", words: ["临时生命", "Temp HP"] },
+      { key: "sts-keyword-mech-loot-lock", words: ["赃物锁", "Loot Lock", "Loot-lock"] },
+      { key: "sts-keyword-mech-loot", words: ["破锁赃物", "赃物", "Loot"] },
+      { key: "sts-keyword-mech-copy", words: ["复制", "Copy"] }
     ];
 
     let index = 0;
@@ -264,7 +280,7 @@
   }
 
   function addCodexHyperlinks(htmlString) {
-    const cardTerms = ["放松", "愚行", "执迷", "至亮之焰", "临时页", "契约", "雨息", "枯壳", "苗床", "根蚀", "根芽"];
+    const cardTerms = ["放松", "愚行", "执迷", "至亮之焰", "临时页", "契约", "雨息", "枯壳", "苗床", "根蚀", "根芽", "血债", "威仪", "裁决", "裂变", "火印精英", "战旗房", "深层支线"];
     let output = htmlString;
     cardTerms.forEach(term => {
       const regex = new RegExp(`(?<!<[^>]*)${term}`, 'g');
@@ -913,22 +929,95 @@
   // --- Router & Jump Actions ---
 
   function triggerJump(target) {
+    const mechanicRoutes = {
+      "血债": "blood_debt",
+      "威仪": "forge_token",
+      "裁决": "verdict",
+      "裂变": "fission",
+      "苗床": "seedbed",
+      "根芽": "seedbed",
+      "根蚀": "seedbed",
+      "枯壳": "seedbed",
+      "火印精英": "firemarked",
+      "战旗房": "banner",
+      "深层支线": "deepbranch"
+    };
+
+    const cardRoutes = {
+      "放松": "帕尔之角",
+      "愚行": "愚行",
+      "执迷": "执迷",
+      "至亮之焰": "至亮之焰",
+      "雨息": "EZMB_URDA_RAIN_BREATH",
+      "枯壳": "EZMB_WITHERED_HUSK",
+      "临时页": "EZMB_MORVI_ARCHIVE_DRAW_PAGE",
+      "契约": "EZMB_VAKUU_KNIFE_CONTRACT"
+    };
+
+    // First clear search query to ensure all cards are visible
+    const input = document.getElementById("updateSearch");
+    if (input) {
+      input.value = "";
+    }
     const allChip = document.querySelector("#updateFilters [data-filter='" + labels.all + "']");
     if (allChip) {
       for (const chip of document.querySelectorAll("#updateFilters .chip")) chip.classList.remove("active");
       allChip.classList.add("active");
     }
+    applyFilters();
 
-    const input = document.getElementById("updateSearch");
-    if (input) {
-      input.value = target;
-      applyFilters();
-    }
+    if (target in mechanicRoutes) {
+      activeMechanicId = mechanicRoutes[target];
+      // Find the Mechanics Codex card
+      const codexCard = Array.from(document.querySelectorAll(".compare-card")).find(card => {
+        const index = parseInt(card.dataset.index);
+        return allUpdateItems[index]?.isMechanicsCodex;
+      });
+      if (codexCard) {
+        // Pin/Click the card
+        const index = parseInt(codexCard.dataset.index);
+        pinnedInspectItem = allUpdateItems[index];
+        activeInspectItem = pinnedInspectItem;
 
-    const matchedCard = Array.from(document.querySelectorAll(".compare-card:not(.hidden)"))[0];
-    if (matchedCard) {
-      matchedCard.click();
-      matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Render to update selected states and inspector view
+        render();
+
+        // Re-find in the newly rendered DOM to make sure it's the right node
+        const newCodexCard = Array.from(document.querySelectorAll(".compare-card")).find(card => {
+          const idx = parseInt(card.dataset.index);
+          return allUpdateItems[idx]?.isMechanicsCodex;
+        });
+        if (newCodexCard) {
+          newCodexCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+    } else {
+      // It's a card link
+      let searchValue = target;
+      if (target in cardRoutes) {
+        searchValue = cardRoutes[target];
+      }
+
+      // Now set search box to searchValue to filter for the card
+      if (input) {
+        input.value = searchValue;
+        applyFilters();
+      }
+
+      const matchedCard = Array.from(document.querySelectorAll(".compare-card:not(.hidden)"))[0];
+      if (matchedCard) {
+        const index = parseInt(matchedCard.dataset.index);
+        pinnedInspectItem = allUpdateItems[index];
+        activeInspectItem = pinnedInspectItem;
+
+        render();
+
+        // Re-find in newly rendered DOM and scroll
+        const newMatchedCard = Array.from(document.querySelectorAll(".compare-card:not(.hidden)"))[0];
+        if (newMatchedCard) {
+          newMatchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
     }
   }
 
@@ -1074,7 +1163,7 @@
         };
 
         card.addEventListener("mouseenter", () => {
-          // If not pinned, or temporarily previewing, update active inspect
+          if (pinnedInspectItem) return; // Keep inspector locked to pinned card
           selectInspect();
         });
 
