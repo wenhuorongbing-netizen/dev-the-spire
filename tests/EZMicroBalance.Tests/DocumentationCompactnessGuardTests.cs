@@ -93,6 +93,28 @@ public sealed class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void AncientV4DocsUseCurrentRuntimeTargetAndArchiveOldBaseline()
+    {
+        var apiDiscovery = ReadRepoText("docs", "features", "ancients-rework-v4", "api-discovery.md");
+        var manualChecklist = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-test-checklist.md");
+
+        AssertSourceContains(
+            apiDiscovery,
+            "Runtime target in `docs/dev-environment.md`: public beta `v0.106.0`, source-refreshed locally on `2026-05-22`",
+            "Current authoritative source is the refreshed local public beta `v0.106.0` assembly/source noted above.",
+            "The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`)",
+            "historical context only",
+            "revalidate against `v0.106.0`");
+        AssertSourceContains(
+            manualChecklist,
+            "- Target game version: public beta `v0.106.0`, refreshed locally on `2026-05-22` per `docs/dev-environment.md`",
+            "- Legacy baseline: `v0.104.0` (`2026.04.23`) is historical only and is not the target for this checklist.");
+
+        Assert.DoesNotContain("Evidence source remains local `sts2.dll` from public beta `v0.104.0`", apiDiscovery, StringComparison.Ordinal);
+        Assert.DoesNotContain("Verified baseline target: `v0.104.0`, `2026.04.23`", manualChecklist, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ChineseIntroKeepsPreviewToolsInsideSpirePlus()
     {
         var intro = ReadRepoText("docs", "intro.zh.md");

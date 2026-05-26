@@ -1,6 +1,6 @@
 # Spire Plus API Discovery
 
-Last updated: 2026-05-06 19:30:00 +02:00
+Last updated: 2026-05-26 19:30:00 +02:00
 
 ## Reference Check
 
@@ -64,7 +64,7 @@ Historical phase-1 limits from before the finish batches:
 
 ## Batch 2 API Evidence
 
-Evidence source remains local `sts2.dll` from public beta `v0.104.0` (`2026.04.23`) plus the live RitsuLib/BaseLib tutorial references listed above.
+Current authoritative source is the refreshed local public beta `v0.106.0` assembly/source noted above. The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`) plus the live RitsuLib/BaseLib tutorial references; keep those older notes as historical context only and revalidate against `v0.106.0` before treating an old Batch 2 detail as current API authority.
 
 Implemented with narrow Harmony patches. The original batch was developed in the legacy `EzDailyContentCode/Ancients/AncientRewardBalancePatches.cs`; the active release implementation now lives in grouped files under `EZMicroBalanceCode/Ancients/Patches/`:
 

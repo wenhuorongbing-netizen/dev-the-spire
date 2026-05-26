@@ -9,7 +9,8 @@ Do not treat the feature as private-beta ready until these checks are complete o
 ## Environment
 
 - Game branch: public beta
-- Verified baseline target: `v0.104.0`, `2026.04.23`
+- Target game version: public beta `v0.106.0`, refreshed locally on `2026-05-22` per `docs/dev-environment.md`
+- Legacy baseline: `v0.104.0` (`2026.04.23`) is historical only and is not the target for this checklist.
 - BaseLib runtime: `v3.1.4`
 - Expected BaseLib folder: `<GameRoot>\mods\BaseLib`
 - Expected mod folder: `<GameRoot>\mods\EZMicroBalance`
