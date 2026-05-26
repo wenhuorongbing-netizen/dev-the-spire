@@ -189,34 +189,32 @@
       { key: "sts-keyword-attack", words: ["攻击牌", "攻击", "Attack", "Attacks"] },
       { key: "sts-keyword-skill", words: ["技能牌", "技能", "Skill", "Skills"] },
       { key: "sts-keyword-power", words: ["能力牌", "能力", "Power", "Powers"] },
-      { key: "sts-keyword-status", words: ["临时状态牌", "临时状态", "状态牌", "状态", "Status", "Temporary Status"] },
+      { key: "sts-keyword-status", words: ["临时状态牌", "状态牌", "状态", "Status", "Temporary Status"] },
       { key: "sts-keyword-curse", words: ["临时诅咒牌", "临时诅咒", "诅咒牌", "诅咒", "Curse", "Curses", "Temporary Curse"] },
-
       { key: "sts-keyword-stat-strength", words: ["力量", "Strength"] },
       { key: "sts-keyword-stat-dexterity", words: ["敏捷", "Dexterity"] },
       { key: "sts-keyword-stat-focus", words: ["集中", "Focus"] },
       { key: "sts-keyword-stat-vigor", words: ["活力", "Vigor"] },
-      { key: "sts-keyword-stat-block", words: ["格挡", "防御", "Block", "Gain Block", "Defence"] },
-      { key: "sts-keyword-stat-energy", words: ["能量制限", "能量限制", "能量", "费用", "Energy", "energy"] },
-
+      { key: "sts-keyword-stat-block", words: ["格挡", "Block", "Gain Block", "Defence"] },
+      { key: "sts-keyword-stat-energy", words: ["能量限制", "能量", "费用", "Energy", "energy"] },
       { key: "sts-keyword-mech-blood-debt", words: ["血债", "Blood Debt"] },
-      { key: "sts-keyword-mech-verdict", words: ["延期裁决", "裁决", "封庭", "Verdict", "Deferred Verdict", "Closed Court"] },
+      { key: "sts-keyword-mech-verdict", words: ["延期判决", "裁决", "封庭", "Verdict", "Deferred Verdict", "Closed Court"] },
       { key: "sts-keyword-mech-relic", words: ["遗物", "Relic", "Relics"] },
       { key: "sts-keyword-mech-ancient", words: ["先古之民", "先古", "Ancient", "Ancients"] },
-      { key: "sts-keyword-mech-gold", words: ["金币", "金", "Gold", "gold"] },
-      { key: "sts-keyword-mech-fission", words: ["裂变附魔", "裂变率", "裂变牌", "裂变", "Fission"] },
+      { key: "sts-keyword-mech-gold", words: ["金币", "Gold", "gold"] },
+      { key: "sts-keyword-mech-fission", words: ["裂变附魔", "裂变", "Fission"] },
       { key: "sts-keyword-mech-seedbed", words: ["苗床", "Seedbed"] },
       { key: "sts-keyword-mech-sprout", words: ["根芽", "Sprout", "Blight Sprout", "Sprouts"] },
       { key: "sts-keyword-mech-rootblight", words: ["根蚀", "Rootblight", "Rootblights"] },
       { key: "sts-keyword-mech-contract", words: ["契约", "Contract", "Contracts"] },
-      { key: "sts-keyword-mech-temp-page", words: ["临时页", "Temporary Page", "页", "Page", "Pages"] },
+      { key: "sts-keyword-mech-temp-page", words: ["临时页", "页", "Temporary Page", "Page", "Pages"] },
       { key: "sts-keyword-mech-prestige", words: ["威仪", "Prestige", "Majesty"] },
       { key: "sts-keyword-stat-plated-armor", words: ["多重护甲", "护甲", "Plated Armor", "Armor"] },
-      { key: "sts-keyword-mech-ethereal", words: ["虚无牌", "虚无", "Ethereal"] },
+      { key: "sts-keyword-mech-ethereal", words: ["虚无", "Ethereal"] },
       { key: "sts-keyword-mech-exhaust", words: ["消耗牌", "消耗", "Exhaust"] },
       { key: "sts-keyword-mech-retain", words: ["保留牌", "保留", "Retain"] },
       { key: "sts-keyword-mech-unplayable", words: ["无法打出", "Unplayable"] },
-      { key: "sts-keyword-mech-inherent", words: ["固有牌", "固有", "Inherent", "Innate"] },
+      { key: "sts-keyword-mech-inherent", words: ["固有", "Inherent", "Innate"] },
       { key: "sts-keyword-status-vulnerable", words: ["易伤", "Vulnerable"] },
       { key: "sts-keyword-status-weak", words: ["虚弱", "Weak"] },
       { key: "sts-keyword-status-frail", words: ["脆弱", "Frail"] },
@@ -224,7 +222,7 @@
       { key: "sts-keyword-stat-draw", words: ["抽牌", "抽", "Draw", "Draws"] },
       { key: "sts-keyword-stat-temp-hp", words: ["临时生命", "Temp HP"] },
       { key: "sts-keyword-mech-loot-lock", words: ["赃物锁", "Loot Lock", "Loot-lock"] },
-      { key: "sts-keyword-mech-loot", words: ["破锁赃物", "赃物", "Loot"] },
+      { key: "sts-keyword-mech-loot", words: ["赃物", "Loot"] },
       { key: "sts-keyword-mech-copy", words: ["复制", "Copy"] }
     ];
 
@@ -981,20 +979,20 @@
             let phrase = "";
             if (hoverType === "spireplus") {
               phrase = lang === 'en'
-                ? "Ah, the Spire Plus mod file! Extends the map, rebalances ancient relics, and boosts scientific difficulty. Essential!"
-                : "啊，Spire Plus 模组压缩包！包含全套先古重构与 A11-A20 难度选择，绝对是最佳优化！";
+                ? "Ah, the Spire Plus mod file. It bundles Ancient rewards, higher Ascension tests, and preview tools in one mod."
+                : "这是 Spire Plus 私测包：先古奖励、高进阶测试和预览工具都在同一个 Mod 里。";
             } else if (hoverType === "baselib") {
               phrase = lang === 'en'
-                ? "BaseLib 3.1.4! Don't forget this. The template framework won't load anything without it!"
-                : "BaseLib 3.1.4！千万别漏掉这个，它是所有 StS2 模组的基础底层支持库！";
+                ? "BaseLib 3.1.4 is required. Install it first, then enable Spire Plus."
+                : "需要先安装 BaseLib 3.1.4，再启用 Spire Plus。";
             } else if (hoverType === "releases") {
               phrase = lang === 'en'
-                ? "Checking previous archives? Help yourself, we keep all releases structured."
-                : "想翻阅我们历史归档的私测版本？都在 GitHub Release 界面，请自便！";
+                ? "Previous private-test archives live on the release page."
+                : "历史私测包都在发布页里。";
             } else if (hoverType === "repo") {
               phrase = lang === 'en'
-                ? "Looking at the source logic? Be careful, the code contains dangerous ancient relics."
-                : "想研究底层 C# 源码架构？没问题，完整开源仓库就在这里！";
+                ? "Source code and documentation are in the repository."
+                : "源码、文档和测试记录都在仓库里。";
             }
             speechBalloon.textContent = phrase;
           });

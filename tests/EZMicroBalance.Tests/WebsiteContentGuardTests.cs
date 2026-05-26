@@ -64,6 +64,10 @@ public sealed class WebsiteContentGuardTests
             "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
             "Seedbed is strong as a package",
             "Seedbed has 2/3 total spaces",
+            "Spire Plus 是用于私测的单体玩法扩展",
+            "苗床为什么值得拿",
+            "种下会把牌移出当前战斗",
+            "根蚀冻结本场结束结算",
             "\u79cd\u4e0b\u7684\u610f\u601d",
             "\u6839\u8680\u6682\u505c\u672c\u573a\u7ed3\u675f\u7ed3\u7b97",
             "\u79cd\u4e0b\u4e0d\u8ba1\u4e3a\u6253\u51fa\u3001\u5f03\u724c\u6216\u5173\u952e\u8bcd\u6d88\u8017",
@@ -85,8 +89,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260526-seedbed-rules-b26",
-            "app.js?v=20260526-seedbed-rules-b26");
+            "content-data.js?v=20260526-seedbed-clarity-b27",
+            "app.js?v=20260526-seedbed-clarity-b27");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

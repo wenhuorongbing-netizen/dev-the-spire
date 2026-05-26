@@ -2,5 +2,5 @@
   "EZMB_TEMPORARY.title": "临时",
   "EZMB_TEMPORARY.description": "此卡仅在当前战斗中存在，战斗结束后将自动移出牌组。",
   "EZMB_PLANTED.title": "种下",
-  "EZMB_PLANTED.description": "种下是[gold]苗床[/gold]的处理方式：卡牌在进入手牌前被移出当前战斗，你获得[blue]1[/blue]张[gold]枯壳[/gold]。\n种下不计为打出、弃牌或[gold]消耗[/gold]，不会触发这些联动；永久诅咒不会被苗床永久删除。\n· [gold]临时状态/诅咒[/gold]：本战移出，战后消失。\n· [gold]根芽[/gold]：按本场已处理结算，战后不生成[gold]根蚀 I[/gold]。它没有被真正打出。\n· [gold]根蚀[/gold]：暂停本场结束结算；不好转、不恶化、不分裂、不移除、不净化，战后以原阶段留在主牌组中。\n强度来自三件事：先给格挡，少抽一张污染牌，再把它换成之后可消耗获得格挡的[gold]枯壳[/gold]。"
+  "EZMB_PLANTED.description": "种下是[gold]苗床[/gold]的处理方式：卡牌在进入手牌前被移出当前战斗，你获得[blue]1[/blue]张[gold]枯壳[/gold]。\n种下不算打出、弃牌或[gold]消耗[/gold]，不会触发这些收益；永久诅咒不会被苗床永久删除。\n· [gold]临时状态/诅咒[/gold]：本战移出，战后消失。\n· [gold]根芽[/gold]：结果按本场已处理结算；不进手牌、不生长、战后不生成[gold]根蚀 I[/gold]。\n· [gold]根蚀[/gold]：冻结本场结束结算；不打出、不净化、不好转、不恶化、不分裂，战后以原阶段留在主牌组中。\n强度来自三件事：先给格挡，少抽污染牌，再把每张种下的牌换成之后可消耗获得格挡的[gold]枯壳[/gold]。"
 }
