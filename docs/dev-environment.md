@@ -85,13 +85,13 @@
 - Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-26 after the beta.53 Aeonglass Hourglass split package sync. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.
 - Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.53.zip`, `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.53.zip` were refreshed and hash-checked on 2026-05-26 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The beta.19 loader row is historical startup/log proof only; beta.53 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
 - Last PCK hash check: the 2026-05-26 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `DF865082D339F721270C5F2EA1F13EC0A34280459C29DFEAE070E4E1AA4AA58E`.
-- Last staging/versioned DLL hash check: SHA256 `1CE62AD30167CDBDED16243D124F50033D8D2AD79B9BB828049EC41F1DC2D256`.
+- Last staging/versioned DLL hash check: SHA256 `21D58AAB002B0071E69D39EF9CDA6492F1AE81883CD94C9C8AA4DE7F1227E484`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
 - Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.53.zip` was rebuilt from the real installed mod artifacts, copied to the game root, and synced into the real installed mod folder on 2026-05-26. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `F45B463167F947DFA7006AC5C9A1BBE94B47198902B1A3650E040B0766B314A3`
-  - DLL SHA256: `1CE62AD30167CDBDED16243D124F50033D8D2AD79B9BB828049EC41F1DC2D256`
+  - Zip SHA256: `0EFDA36BB18A28C31474CA299341800F4F49B4B3F142D03E43EAAF1A52E07980`
+  - DLL SHA256: `21D58AAB002B0071E69D39EF9CDA6492F1AE81883CD94C9C8AA4DE7F1227E484`
   - README SHA256: `78CEF7EFF923C502D6ACC35296008A27F1C4A996478400942B118E5A086A7D77`
   - Manifest SHA256: `2BD727A314A947C9B408D200933D23B59CE9640C5AF83FFB940073F5F48FDCFD`
   - PCK SHA256: `DF865082D339F721270C5F2EA1F13EC0A34280459C29DFEAE070E4E1AA4AA58E`
