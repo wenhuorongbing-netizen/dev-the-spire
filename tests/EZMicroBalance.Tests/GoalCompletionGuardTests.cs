@@ -105,7 +105,10 @@ public sealed class GoalCompletionGuardTests
     {
         var goal = ReadRepoText("docs", "goal.md");
         var pickupPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonPickupPatches.cs");
-        var visualPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs");
+        var visualPatch = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualAssetPaths.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"));
         var tanxClawsPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
         var projectState = ReadRepoText("PROJECT_STATE.md");
         var issues = ReadRepoText("docs", "issues.md");

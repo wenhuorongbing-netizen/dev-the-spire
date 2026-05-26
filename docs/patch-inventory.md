@@ -105,15 +105,15 @@ Regenerate:
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs` | 3 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.ModifyMaxEnergy))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs` | 16 | `[HarmonyPatch(typeof(SealOfGold), nameof(SealOfGold.AfterSideTurnStart))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonPickupPatches.cs` | 3 | `[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 336 | `[HarmonyPatch(typeof(RelicModel), "get_IconPath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 345 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 354 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconOutlinePath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 363 | `[HarmonyPatch(typeof(RelicModel), "get_BigIconPath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 372 | `[HarmonyPatch(typeof(RelicModel), "get_Icon")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 381 | `[HarmonyPatch(typeof(RelicModel), "get_IconOutline")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 390 | `[HarmonyPatch(typeof(RelicModel), "get_BigIcon")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 399 | `[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 411 | `[HarmonyPatch(typeof(NRelic), "Reload")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 8 | `[HarmonyPatch(typeof(RelicModel), "get_IconPath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 17 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 26 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconOutlinePath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 35 | `[HarmonyPatch(typeof(RelicModel), "get_BigIconPath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 44 | `[HarmonyPatch(typeof(RelicModel), "get_Icon")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 53 | `[HarmonyPatch(typeof(RelicModel), "get_IconOutline")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 62 | `[HarmonyPatch(typeof(RelicModel), "get_BigIcon")]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 71 | `[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 83 | `[HarmonyPatch(typeof(NRelic), "Reload")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 42 | `[HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 75 | `[HarmonyPatch(typeof(SovereignBlade), "OnPlay")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 85 | `[HarmonyPatch(typeof(CardModel), "get_HoverTips")]` |
@@ -181,18 +181,17 @@ Regenerate:
 | Map hover composition | Medium | `EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs` | 12 | `[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]` |
 | Mod info localization | Medium | `EZMicroBalanceCode/Modding/ModInfoLocalizationPatches.cs` | 12 | `[HarmonyPatch(typeof(NModInfoContainer), nameof(NModInfoContainer.Fill))]` |
 | Preview tools | Medium | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 14 | `[HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 155 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 115 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 118 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 123 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 128 | `[HarmonyPatch(typeof(Symbiote), "KillWithFire")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 133 | `[HarmonyPatch(typeof(WhisperingHollow), "Hug")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 142 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 145 | `[HarmonyPatch(typeof(MorphicGrove), "Group")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 150 | `[HarmonyPatch(typeof(Trial), "NondescriptInnocent")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 155 | `[HarmonyPatch(typeof(NewLeaf), nameof(NewLeaf.AfterObtained))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 160 | `[HarmonyPatch(typeof(Astrolabe), nameof(Astrolabe.AfterObtained))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 176 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 160 | `[HarmonyPatch]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 122 | `[HarmonyPatch]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 125 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 130 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 135 | `[HarmonyPatch(typeof(Symbiote), "KillWithFire")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 140 | `[HarmonyPatch(typeof(WhisperingHollow), "Hug")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 149 | `[HarmonyPatch]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 152 | `[HarmonyPatch(typeof(MorphicGrove), "Group")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 157 | `[HarmonyPatch(typeof(Trial), "NondescriptInnocent")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 162 | `[HarmonyPatch(typeof(NewLeaf), nameof(NewLeaf.AfterObtained))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 167 | `[HarmonyPatch(typeof(Astrolabe), nameof(Astrolabe.AfterObtained))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 183 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
 | Preview tools | Medium | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 19 | `[HarmonyPatch(typeof(NTransformPreview), nameof(NTransformPreview.Initialize))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 49 | `[HarmonyPatch]` |
-
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 38 | `[HarmonyPatch]` |

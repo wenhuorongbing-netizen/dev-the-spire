@@ -46,6 +46,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintPatch.cs",
         "EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/SereTalonPickupPatches.cs",
+        "EZMicroBalanceCode/Ancients/Patches/SereTalonVisualAssetPaths.cs",
         "EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/TanxClawsMaulTuningPatches.cs",

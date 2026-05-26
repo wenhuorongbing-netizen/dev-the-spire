@@ -786,7 +786,9 @@ public sealed class AncientBehaviorGuardTests
         var sereTalonSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "SereTalon.cs");
         var clawsSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "Claws.cs");
         var sereTalonPickupPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonPickupPatches.cs");
-        var sereTalonVisualPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs");
+        var sereTalonVisualAssetPaths = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualAssetPaths.cs");
+        var sereTalonVisualPatches = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs");
+        var sereTalonVisualSource = string.Join(Environment.NewLine, sereTalonVisualAssetPaths, sereTalonVisualPatches);
         var tanxClawsPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
         var ancientPatchSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
@@ -843,7 +845,8 @@ public sealed class AncientBehaviorGuardTests
         Assert.DoesNotContain("CurseCardPool", clawsSource, StringComparison.Ordinal);
 
         AssertSourceContains(
-            sereTalonVisualPatch,
+            sereTalonVisualSource,
+            "internal static class SereTalonVisualAssetPaths",
             "relic is not SereTalon",
             "[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]",
             "TryApplyEventOptionButton",

@@ -171,5 +171,5 @@ if ($parent) {
     New-Item -ItemType Directory -Force -Path $parent | Out-Null
 }
 
-$content | Set-Content -LiteralPath $resolvedOutputPath -Encoding UTF8
+[System.IO.File]::WriteAllText($resolvedOutputPath, $content, [System.Text.UTF8Encoding]::new($false))
 Write-Host "Wrote $resolvedOutputPath"

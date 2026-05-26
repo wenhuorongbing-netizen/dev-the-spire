@@ -354,7 +354,10 @@ public sealed class AncientHighRiskSourceGuardTests
         var hornSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsHornPhase1Patch.cs");
         var pickupSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var pickupDispatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PickupRewardPatches.cs");
-        var sereTalonVisualSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs");
+        var sereTalonVisualSource = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualAssetPaths.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"));
         var tanxClawsTuningSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
         var vakuuEventSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Vakuu.cs");
         var tanxEventSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Tanx.cs");
