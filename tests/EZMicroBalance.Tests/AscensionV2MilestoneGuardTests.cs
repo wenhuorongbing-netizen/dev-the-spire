@@ -706,8 +706,15 @@ public sealed class AscensionV2MilestoneGuardTests
         var boilingCritical = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BoilingCriticalPower.cs");
         var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "ResidualSamplePower.cs");
         var aeonglassHourglass = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassPower.cs");
+        var martyrOath = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MartyrOathPowers.cs");
+        var misalignedShell = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MisalignedShellPowers.cs");
+        var marginalNote = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MarginalNotePowers.cs");
+        var chosenDecree = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "ChosenDecreePowers.cs");
+        var aeonglassRuntime = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassRuntimePowers.cs");
+        var testSubjectSamples = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "TestSubjectSamplePowers.cs");
         var bossSealSharedPowers = string.Join(Environment.NewLine, basePower, markerPowers);
 
+        AssertRepoPathDoesNotExist("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
         AssertSourceContains(
             basePower,
             "internal abstract class BossSealPower : CustomPowerModel, ILocalizationProvider",
@@ -769,6 +776,18 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("internal sealed class ResidualSamplePower", bossSealSharedPowers, StringComparison.Ordinal);
         Assert.DoesNotContain("internal sealed class ChosenDecreeReductionPower", bossSealSharedPowers, StringComparison.Ordinal);
         Assert.DoesNotContain("internal sealed class AeonglassHourglassPower", bossSealSharedPowers, StringComparison.Ordinal);
+        foreach (var runtimePower in new[]
+                 {
+                     "internal sealed class MartyrOathPower",
+                     "internal sealed class KaiserCalibrationPower",
+                     "internal sealed class DeepThoughtPower",
+                     "internal sealed class RoyalMajestyPower",
+                     "internal sealed class AeonglassLaserEchoPower",
+                     "internal abstract class TestSubjectSamplePower"
+                 })
+        {
+            Assert.DoesNotContain(runtimePower, bossSealSharedPowers, StringComparison.Ordinal);
+        }
 
         AssertSourceContains(
             holyDaze,
@@ -824,6 +843,64 @@ public sealed class AscensionV2MilestoneGuardTests
             "[blue]{Amount}[/blue] Time Sand remaining",
             "Each energy spent removes [blue]1[/blue]",
             "Eye Lasers hits [blue]1[/blue] extra time");
+
+        AssertSourceContains(
+            martyrOath,
+            "internal sealed class MartyrOathPower : BossSealPower",
+            "internal sealed class MartyrOathStrikePower : BossSealPower",
+            "protected override BossSealId? SealId => BossSealId.MartyrOath",
+            "ModifyPowerAmountGiven",
+            "AfterModifyingPowerAmountGiven",
+            "ModifyDamageAdditive",
+            "AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)");
+
+        AssertSourceContains(
+            misalignedShell,
+            "internal sealed class KaiserCalibrationPower : BossSealPower",
+            "internal sealed class KaiserCalibrationStrikePower : BossSealPower",
+            "protected override BossSealId? SealId => BossSealId.MisalignedShell",
+            "ModifyDamageAdditive",
+            "AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)");
+
+        AssertSourceContains(
+            marginalNote,
+            "internal sealed class DeepThoughtPower : BossSealPower",
+            "internal sealed class DeepThoughtCostTaxPower : BossSealPower",
+            "protected override BossSealId? SealId => BossSealId.MarginalNote",
+            "DisintegrationPower => amount + Amount",
+            "CardPileCmd.AddGeneratedCardToCombat",
+            "PlayerCmd.LoseEnergy(sideCostLayers, player)",
+            "TryModifyEnergyCostInCombat");
+
+        AssertSourceContains(
+            chosenDecree,
+            "internal sealed class RoyalMajestyPower : BossSealPower",
+            "protected override BossSealId? SealId => BossSealId.ChosenDecree",
+            "private int LayersToSpend => Math.Min(Amount, 2)",
+            "ModifyBlockAdditive",
+            "AfterModifyingBlockAmount");
+
+        AssertSourceContains(
+            aeonglassRuntime,
+            "internal sealed class AeonglassLaserEchoPower : BossSealPower",
+            "internal sealed class AeonglassPendingWitherPower : BossSealPower",
+            "internal sealed class AeonglassLaserEchoUseCounterPower : BossSealPower",
+            "protected override BossSealId? SealId => BossSealId.AeonglassHourglass",
+            "ModifyAttackHitCount",
+            "Owner.Monster is Aeonglass",
+            "protected override bool IsVisibleInternal => false");
+
+        AssertSourceContains(
+            testSubjectSamples,
+            "internal abstract class TestSubjectSamplePower : BossSealPower",
+            "internal sealed class TestSubjectSkillAdaptationPower : TestSubjectSamplePower",
+            "internal sealed class TestSubjectAttackAdaptationPower : TestSubjectSamplePower",
+            "internal sealed class TestSubjectAntibodySamplePower : TestSubjectSamplePower",
+            "internal sealed class TestSubjectContaminatedSamplePower : TestSubjectSamplePower",
+            "Owner.Monster is not TestSubject",
+            "ApplyFinalArtifact",
+            "AfterShuffle",
+            "CardPileCmd.AddGeneratedCardToCombat");
 
         foreach (var source in new[] { basePower, markerPowers, holyDaze, boilingCritical, residualSample, aeonglassHourglass })
         {

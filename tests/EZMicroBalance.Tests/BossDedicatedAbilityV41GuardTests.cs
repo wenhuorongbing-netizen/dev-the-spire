@@ -174,7 +174,8 @@ public sealed class BossDedicatedAbilityV41GuardTests
     {
         var attackIntent = ReadRepoText("source code", "src", "Core", "MonsterMoves", "Intents", "AttackIntent.cs");
         var multiAttackIntent = ReadRepoText("source code", "src", "Core", "MonsterMoves", "Intents", "MultiAttackIntent.cs");
-        var bossPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
+        var martyrOathPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MartyrOathPowers.cs");
+        var misalignedShellPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MisalignedShellPowers.cs");
         var aeonglassIntentPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AeonglassIntentPatches.cs");
         var vigorPower = ReadRepoText("source code", "src", "Core", "Models", "Powers", "VigorPower.cs");
         var heatPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "FiremarkHeatPowers.cs");
@@ -194,12 +195,11 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "CardPreviewMode.None");
         AssertSourceContains(multiAttackIntent, "return GetSingleDamage(targets, owner) * Repeats;");
 
-        var martyrStrike = SliceBetween(
-            bossPowers,
-            "internal sealed class MartyrOathStrikePower",
-            "internal sealed class KaiserCalibrationPower");
+        var martyrStrike = SliceFrom(
+            martyrOathPowers,
+            "internal sealed class MartyrOathStrikePower");
         var martyrOath = SliceBetween(
-            bossPowers,
+            martyrOathPowers,
             "internal sealed class MartyrOathPower",
             "internal sealed class MartyrOathStrikePower");
         AssertSourceContains(
@@ -219,10 +219,9 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "command.Attacker == Owner && command.DamageProps.IsPoweredAttack()");
         Assert.DoesNotContain("AfterDamageGiven", martyrStrike, StringComparison.Ordinal);
 
-        var kaiserStrike = SliceBetween(
-            bossPowers,
-            "internal sealed class KaiserCalibrationStrikePower",
-            "internal sealed class DeepThoughtPower");
+        var kaiserStrike = SliceFrom(
+            misalignedShellPowers,
+            "internal sealed class KaiserCalibrationStrikePower");
         AssertSourceContains(
             kaiserStrike,
             "ModifyDamageAdditive",
@@ -273,7 +272,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var decree = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.ChosenDecree.cs");
         var struggleBait = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.StruggleBait.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
-        var bossPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
+        var aeonglassRuntimePowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassRuntimePowers.cs");
 
         AssertSourceContains(
             aeonglass,
@@ -307,7 +306,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "AscensionSavedStateFields.StruggleBaitGeneratedEscape[escape]",
             "AscensionSavedStateFields.StruggleBaitGeneratedEscape[escape] = false");
         AssertSourceContains(
-            bossPowers,
+            aeonglassRuntimePowers,
             "internal sealed class AeonglassPendingWitherPower",
             "internal sealed class AeonglassLaserEchoUseCounterPower",
             "protected override bool IsVisibleInternal => false");
@@ -410,7 +409,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var rootBudEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
         var aeonglass = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.AeonglassHourglass.cs");
         var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.PhaseCarryover.cs");
-        var bossPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
+        var marginalNotePowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MarginalNotePowers.cs");
         var tracker = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatTracker.cs");
         var chosenDecreeAssignStart = SliceBetween(
             chosenDecree,
@@ -512,7 +511,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "var roundRoom = Math.Max(0, 2 - tracker.MarginalDeepThoughtAddedThisRound);",
             "ClampPowerAmount<DeepThoughtPower>(demon, metadata.IsBossBrand ? 3 : 2, demon, null)");
         var deepThought = SliceBetween(
-            bossPowers,
+            marginalNotePowers,
             "internal sealed class DeepThoughtPower",
             "internal sealed class DeepThoughtCostTaxPower");
         AssertSourceContains(
