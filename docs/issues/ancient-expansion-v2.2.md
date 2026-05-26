@@ -261,13 +261,15 @@ Next target:
 ## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MILESTONE-GATES
 
 Priority: P1
-Status: open
+Status: source-governed / live-pending
 Area: implementation gating
 
 Current milestone rule:
 
 - Each milestone needs source evidence, tests/guards, localization, player-facing text, art, and a live-verification stance before it can be called test-ready.
 - No future milestone should start with another documentation-only audit unless it immediately drives implementation.
+- Future milestone work now follows the gate in `docs/features/ancient-expansion-v2.2/implementation-plan.md`: issue row first, source research, focused guard, implementation, manual row, review note, then validation.
+- Source-ready means build/tests/format/diff-check and relevant guards pass. Live-ready still requires current-package screenshots/logs/manual notes; source review alone cannot close runtime rows.
 
 ## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MORVI-LOTHA-ART-INTEGRATION
 
@@ -287,4 +289,3 @@ Requirements:
 - Add PNGs to `export_presets.cfg` only after the source files are present.
 - Active art must record prompt/source/hash and must not use official game assets.
 - Morvi and Lotha option/icon art now uses the later GPTimage2/browser art pass for the current package; old temporary crop notes are historical only.
-

@@ -404,6 +404,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs",
         "EZMicroBalanceCode/Modding/ModInfoLocalizationPatches.cs",
         "EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs",
+        "EZMicroBalanceCode/Preview/CrystalSpherePeekState.cs",
         "EZMicroBalanceCode/Preview/PreviewLog.cs",
         "EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs",
         "EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs",

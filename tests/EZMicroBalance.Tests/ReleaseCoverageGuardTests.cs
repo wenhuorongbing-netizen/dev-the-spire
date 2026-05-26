@@ -539,6 +539,7 @@ public sealed class ReleaseCoverageGuardTests
         var v22Issues = ReadRepoText("docs", "issues", "ancient-expansion-v2.2.md");
         var featureReadme = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "README.md");
         var sourceDesign = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "source-design.md");
+        var implementationPlan = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "implementation-plan.md");
         var safetyRules = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "card-and-power-safety-rules.md");
         var riskRegister = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md");
         var projectState = ReadRepoText("PROJECT_STATE.md");
@@ -562,6 +563,16 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("ISSUE-2026-05-12-VAKUU-FIGHT-V22-PLANNING", v22Issues, StringComparison.Ordinal);
         Assert.Contains("ISSUE-2026-05-12-URDA-V22-ALIGNMENT", v22Issues, StringComparison.Ordinal);
         Assert.Contains("ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MILESTONE-GATES", v22Issues, StringComparison.Ordinal);
+        var milestoneGateIssue = SliceBetween(
+            v22Issues,
+            "## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MILESTONE-GATES",
+            "## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MORVI-LOTHA-ART-INTEGRATION");
+        AssertSourceContains(
+            milestoneGateIssue,
+            "Status: source-governed / live-pending",
+            "issue row first, source research, focused guard, implementation, manual row, review note, then validation",
+            "Live-ready still requires current-package screenshots/logs/manual notes");
+        Assert.DoesNotContain("Status: open", milestoneGateIssue, StringComparison.Ordinal);
 
         AssertSourceContains(
             featureReadme,
@@ -584,6 +595,14 @@ public sealed class ReleaseCoverageGuardTests
             "Morvi is default-on",
             "Lotha is default-on",
             "Vakuu fight");
+        AssertSourceContains(
+            implementationPlan,
+            "Open or update a compact issue row with acceptance criteria and the manual proof needed",
+            "Record source evidence in `api-research.md`",
+            "Add focused source guard tests before or with implementation",
+            "`source-ready`: implementation, source evidence, focused guards, localization/text/art coverage, build, tests, format, and diff-check pass",
+            "`live-ready`: current-package screenshots, `godot.log`, manual notes, save/load or two-client evidence exist",
+            "Do not start a future milestone as a documentation-only audit");
         AssertSourceContains(
             safetyRules,
             "Power cards are not copied, extra-played, or replayed by default",
@@ -679,7 +698,7 @@ public sealed class ReleaseCoverageGuardTests
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest pushed cleanup/package evidence baseline", projectState, StringComparison.Ordinal);
-        Assert.Contains("current beta.62 Lotha card eligibility split package sync", projectState, StringComparison.Ordinal);
+        Assert.Contains("current beta.63 Crystal Sphere peek state split package sync", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

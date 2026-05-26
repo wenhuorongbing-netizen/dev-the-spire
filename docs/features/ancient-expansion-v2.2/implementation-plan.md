@@ -6,12 +6,24 @@ Status: Urda v2.2 is source-complete/default-on with eleven blessing ids, Morvi 
 
 For every future implementation slice:
 
-1. Read `PROJECT_STATE.md`, `AGENTS.md`, and this feature folder.
-2. Inspect local `source code/src/Core/` for the exact game flow.
-3. Inspect BaseLib/RitsuLib/template APIs and prefer supported APIs over Harmony patches.
-4. Record source evidence in `api-research.md`.
-5. Add source guard tests before or with implementation.
-6. Add manual checklist rows before claiming the feature is playable.
+1. Open or update a compact issue row with acceptance criteria and the manual proof needed.
+2. Read `PROJECT_STATE.md`, `AGENTS.md`, and this feature folder.
+3. Inspect local `source code/src/Core/` for the exact game flow.
+4. Inspect BaseLib/template APIs and prefer supported APIs over Harmony patches.
+5. Record source evidence in `api-research.md`.
+6. Add focused source guard tests before or with implementation.
+7. Implement the smallest feature slice that satisfies the issue row.
+8. Add or update manual checklist rows before claiming the feature is playable.
+9. Add a compact `docs/review.md` note for source-level closure and keep runtime rows open until live evidence exists.
+
+Milestone gate states:
+
+- `planned`: issue row, acceptance criteria, and required source evidence are written.
+- `source-ready`: implementation, source evidence, focused guards, localization/text/art coverage, build, tests, format, and diff-check pass.
+- `manual-test-ready`: package hashes and handoff docs are refreshed when package inputs changed.
+- `live-ready`: current-package screenshots, `godot.log`, manual notes, save/load or two-client evidence exist for the relevant runtime rows.
+
+Do not start a future milestone as a documentation-only audit. A planning edit must either create the issue row and evidence checklist for a concrete implementation slice or move an already implemented slice toward validation.
 
 ## 1. Current Pass Boundary
 
@@ -113,4 +125,3 @@ A future feature is not complete until all of these are true:
 - Manual checklist rows are updated truthfully.
 - Runtime logs show no related exception.
 - Release docs do not overclaim the feature.
-

@@ -98,7 +98,10 @@ public sealed class PreviewToolsGuardTests
     [Fact]
     public void CrystalSpherePatchOnlyTouchesTheMaskAndButton()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekPatch.cs");
+        var source = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekPatch.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekState.cs"));
 
         Assert.Contains("NCrystalSphereScreen", source, StringComparison.Ordinal);
         Assert.Contains("coop_local_ui_preview_enabled", source, StringComparison.Ordinal);
