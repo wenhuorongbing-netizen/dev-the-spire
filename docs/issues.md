@@ -32,6 +32,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `UNKNOWN-EVENT-PREVIEW-READABILITY`, `ROOTBLIGHT-STARTER-MISSING`, `WATERFALL-BOSS-SEAL` P1: check event hover, Rootblight starter deck, and Waterfall Boss.
 - `HOURGLASS-BOSS-SEAL-DESIGN`, `QUEEN-BOSS-SEAL-WEAKNESS`, `FIREMARK-OVERFLOW/FORGE-ARMOR`, `BANNER-ROOM-PREVIEW` P1: check Time Sand, Royal Decree cards, Firemark, and Banners.
 - `ROOT-EYES-CONFLICTS-COOP`, `PREVIEW-TOOLS-REWARD-HOOKS`, `SEAL-BANNER-VISIBILITY`, `V33-DESIGN-PASS` P1: check co-op Root Eyes, preview rewards, seal visibility, and v3.3 designs.
+- `FISSION-EXHAUST-TRIGGERS` P1 open: Fission cards must count as real Exhaust when they leave play, not only move to the exhaust pile. Audit source and BaseLib/Core behavior so every "after this card is Exhausted" / "when a card is Exhausted" effect fires correctly, including examples like Beyond Roar / 彼岸咆哮 and War Drum / 战鼓. Acceptance: Fission uses the canonical exhaust path, intent/text explains it as true Exhaust, and source tests cover at least one card-owned exhaust trigger plus one relic/power-style exhaust listener.
 ## Strict source/BaseLib audit no-go findings, 2026-05-20
 - `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
 ## Engineering governance blockers
