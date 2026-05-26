@@ -31,7 +31,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 ## Engineering governance blockers
 - `GOV-WIP-SPLIT` P0 source-fixed; current committed worktree is clean after the beta.63 batch commit, and the batch classifier reports 0 dirty entries / 0 unclassified entries.
 - `GOV-CI-FIRST-RUN` P2 pending: self-hosted lane exists, but first GitHub/self-hosted run evidence is not recorded.
-  GitHub Actions API check on 2026-05-26 21:15 +02:00 queried the latest 100 `main` runs and found 0 `Full Local Validation` runs.
+  GitHub Actions API check on 2026-05-26 21:36 +02:00 queried the latest 100 `main` runs and found 0 `Full Local Validation` runs.
   Use `scripts/check-github-workflow-runs.ps1 -RequireSuccessfulRun` before closing this.
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
