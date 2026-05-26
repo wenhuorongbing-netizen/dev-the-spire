@@ -513,6 +513,53 @@ public sealed class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void CurrentIssueDetailDocsAvoidReadableTypoArtifacts()
+    {
+        var issueDetails = ReadCurrentFacingDocs(
+            "docs/issues/ancient-expansion-v2.2.md",
+            "docs/issues/urda.md");
+
+        AssertSourceContains(
+            issueDetails,
+            "SPIREPLUS_DISABLE_MORVI",
+            "SPIREPLUS_DISABLE_LOTHA",
+            "SPIREPLUS_ENABLE_VAKUU_FIGHT=1",
+            "SPIREPLUS_FORCE_MORVI_BLESSING",
+            "ISSUE-2026-05-13-LOTHA-FULL-TEST-IMPLEMENTATION",
+            "ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RULES",
+            "SavedSpireField<Player,string>",
+            "UrdaDeckStateKey");
+
+        foreach (var typoArtifact in new[]
+        {
+            "SPIREPiUS",
+            "DISABiE",
+            "ENABiE",
+            "BiESSING",
+            "iOTHA",
+            "FUii",
+            "IMPiEMENTATION",
+            "PiANNING",
+            "AiIGNMENT",
+            "MIiESTONE",
+            "TECHNICAi",
+            "iive",
+            "iocal",
+            "iegacy",
+            "iinkedRewardSet",
+            "SHEiTER",
+            "Onokipped",
+            "oavedopireField",
+            "UrdaDeckotateKey",
+            "otatus",
+            "oource gameplay"
+        })
+        {
+            Assert.DoesNotContain(typoArtifact, issueDetails, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
     public void ActiveQueuesKeepSereTalonAndTanxClawsChineseReadable()
     {
         var activeQueues = ReadCurrentFacingDocs(
@@ -779,7 +826,11 @@ public sealed class DocumentationCompactnessGuardTests
             "275 passed, 0 skipped",
             "264 passed / 0 skipped",
             "270 passed / 0 skipped",
-            "270 passed, 0 skipped"
+            "270 passed, 0 skipped",
+            "288 passed / 20 skipped",
+            "288 passed, 20 skipped",
+            "308 passed / 0 skipped",
+            "308 passed, 0 skipped"
         };
         var staleSavedFieldCounts = new[]
         {
@@ -816,8 +867,8 @@ public sealed class DocumentationCompactnessGuardTests
         var currentDocs = string.Join(
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains("288 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("308 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("289 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("309 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]

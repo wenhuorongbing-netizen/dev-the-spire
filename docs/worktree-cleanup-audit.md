@@ -198,7 +198,7 @@ Owner decision statuses:
 - Current batch classification: `scripts/report-worktree-batches.ps1 -FailOnUnclassified` passed with 0 dirty entries and 0 unclassified paths after the latest pushed beta.38 cleanup commit; rerun after the beta.38 commit before final handoff.
 - Current website/document hygiene validation: deleted 46 ignored `tests\EZMicroBalance.Tests\*.cs.uid` sidecars, repaired current Sere Talon/Tanx Claws Chinese queue text, synced `website/content-data.js` package size to the current beta.38 package size, kept referenced website PNG assets in the public website surface, and focused website/current-doc/governance guard tests passed. A later beta.38 validation pass regenerated and pruned ignored test and `obj` `.cs.uid` sidecars again.
 - `git clean -ndX`: dry-run only; confirms broad ignored-file deletion would hit owner-sensitive/local-evidence paths and must not be used as cleanup.
-- Final `dotnet test EZMicroBalance.sln --no-build`: pass, 288 passed / 20 skipped.
+- Final `dotnet test EZMicroBalance.sln --no-build`: pass, 289 passed / 20 skipped.
 - Final `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: pass.
 - Final `node --check website\content-data.js`: pass.
 - Final `git diff --check`: pass.
