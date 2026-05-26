@@ -406,6 +406,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var chosenDecree = ReadChosenDecreeCombatSources();
         var turnFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.TurnFlow.cs");
         var turnLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.TurnLifecycle.cs");
+        var cardEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CardEvents.cs");
         var combatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatEvents.cs");
         var rootBudEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
         var aeonglass = ReadAeonglassHourglassCombatSources();
@@ -562,10 +563,10 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "poison, thorns, or delayed damage cannot",
             "ResetMartyrOathTurnCounters(tracker);");
         AssertSourceContains(
-            combatEvents,
+            cardEvents,
             "if (card.Owner is { } owner)",
             "TryAssignChosenDecreeInHandForPlayer(combatState, tracker, metadata, owner);");
-        Assert.DoesNotContain("TryAssignChosenDecree(combatState, tracker, metadata, card);", combatEvents, StringComparison.Ordinal);
+        Assert.DoesNotContain("TryAssignChosenDecree(combatState, tracker, metadata, card);", cardEvents, StringComparison.Ordinal);
         Assert.DoesNotContain("TryAssignChosenDecreeInHands(combatState, tracker, metadata);", chosenDecree, StringComparison.Ordinal);
 
         AssertSourceContains(
