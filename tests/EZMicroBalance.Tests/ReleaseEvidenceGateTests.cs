@@ -1349,7 +1349,7 @@ public sealed class ReleaseEvidenceGateTests
 
         var projectState = ReadRepoText("PROJECT_STATE.md");
         Assert.Contains("current source defines 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("beta.53 Aeonglass Hourglass split package sync", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.54 A20 Courtyard recovery split package sync", projectState, StringComparison.Ordinal);
         Assert.Contains("Found 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Found 22 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
     }
