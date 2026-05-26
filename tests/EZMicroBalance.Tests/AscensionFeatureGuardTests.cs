@@ -636,7 +636,7 @@ public sealed class AscensionFeatureGuardTests
 
         Assert.Contains("After [gold]Ebb[/gold], create [blue]2[/blue] Time Sand", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.summary"], StringComparison.Ordinal);
         Assert.Contains("extra [gold]Wither[/gold]", englishAscension["BOSS_SEAL_AEONGLASS_HOURGLASS.summary"], StringComparison.Ordinal);
-        var bossSealMarkerPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealMarkerPowers.cs");
+        var bossSealMarkerPowers = ReadBossSealMarkerPowerSources();
         Assert.Contains("花费能量清时砂；剩余时砂会增加枯萎", bossSealMarkerPowers, StringComparison.Ordinal);
         Assert.DoesNotContain("剩余时砂会增加根蚀", bossSealMarkerPowers, StringComparison.Ordinal);
         Assert.Contains("地图悬停", zhsAscension["MODIFIER_GUIDE.description"], StringComparison.Ordinal);

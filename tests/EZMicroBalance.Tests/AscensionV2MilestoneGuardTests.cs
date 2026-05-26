@@ -700,7 +700,7 @@ public sealed class AscensionV2MilestoneGuardTests
     public void SplitBossSealPowerFilesKeepBehaviorAndReadableLocalization()
     {
         var basePower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPower.cs");
-        var markerPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealMarkerPowers.cs");
+        var markerPowers = ReadBossSealMarkerPowerSources();
         var combatStart = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.CombatStart.cs");
         var holyDaze = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "HolyDazePower.cs");
         var boilingCritical = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BoilingCriticalPower.cs");
@@ -715,6 +715,7 @@ public sealed class AscensionV2MilestoneGuardTests
         var bossSealSharedPowers = string.Join(Environment.NewLine, basePower, markerPowers);
 
         AssertRepoPathDoesNotExist("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
+        AssertRepoPathDoesNotExist("EZMicroBalanceCode", "Ascension", "Powers", "BossSealMarkerPowers.cs");
         AssertSourceContains(
             basePower,
             "internal abstract class BossSealPower : CustomPowerModel, ILocalizationProvider",

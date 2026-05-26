@@ -163,6 +163,7 @@ public sealed class GoalCompletionGuardTests
         AssertRepoFileExists("docs", "archive", "feature-inputs", "goal-preview-plan-intake-20260526.md");
         AssertRepoFileExists("docs", "archive", "feature-inputs", "goal-architecture-refactor-mojibake-intake-20260526.md");
         AssertRepoFileExists("docs", "archive", "feature-inputs", "implement-a19-a20-boss-ability-mojibake-intake-20260526.md");
+        AssertRepoFileExists("docs", "archive", "feature-inputs", "ritsulib-migration-mojibake-intake-20260526.md");
     }
 
     [Fact]

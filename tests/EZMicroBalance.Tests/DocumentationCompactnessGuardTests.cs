@@ -44,6 +44,12 @@ public sealed class DocumentationCompactnessGuardTests
             "archive",
             "feature-inputs",
             "implement-a19-a20-boss-ability-mojibake-intake-20260526.md");
+        Assert.Contains("ritsulib-migration-mojibake-intake-20260526.md", archiveReadme, StringComparison.Ordinal);
+        AssertRepoFileExists(
+            "docs",
+            "archive",
+            "feature-inputs",
+            "ritsulib-migration-mojibake-intake-20260526.md");
 
         Assert.DoesNotContain("A19 / A20", goal, StringComparison.OrdinalIgnoreCase);
 

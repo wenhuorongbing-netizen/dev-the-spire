@@ -63,6 +63,28 @@ internal static class TestRepo
                 .Select(path => File.ReadAllText(path, Encoding.UTF8)));
     }
 
+    internal static string ReadBossSealMarkerPowerSources()
+    {
+        return string.Join(
+            Environment.NewLine,
+            new[]
+            {
+                "BossSealMarkerPower.cs",
+                "BossSealMarkerPowers.HolyDaze.cs",
+                "BossSealMarkerPowers.MartyrOath.cs",
+                "BossSealMarkerPowers.InkReturn.cs",
+                "BossSealMarkerPowers.StartledShell.cs",
+                "BossSealMarkerPowers.SoulTide.cs",
+                "BossSealMarkerPowers.BoilingCritical.cs",
+                "BossSealMarkerPowers.MisalignedShell.cs",
+                "BossSealMarkerPowers.MarginalNote.cs",
+                "BossSealMarkerPowers.StruggleBait.cs",
+                "BossSealMarkerPowers.AeonglassHourglass.cs",
+                "BossSealMarkerPowers.ChosenDecree.cs",
+                "BossSealMarkerPowers.ResidualSample.cs"
+            }.Select(fileName => ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", fileName)));
+    }
+
     internal static string RepoPath(params string[] parts)
     {
         return Path.Combine(new[] { Root }.Concat(parts).ToArray());
