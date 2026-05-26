@@ -104,6 +104,7 @@ These files are current support records but are not part of the default next-dev
 | `archive/feature-inputs/` | Historical feature prompts and superseded implementation specs moved out of active feature folders. |
 | `archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Historical v2.2 audit matrices moved out of the active reading path. |
 | `archive/feature-audits/review-pre-slim-20260518.md` | Full historical source-review log before `docs/review.md` was reduced to current findings. |
+| `archive/feature-audits/review-2026-05-26-beta54-pass-history.md` | Full 2026-05-26 beta.41-beta.54 source/package pass history moved out of the active review summary. |
 | `archive/feature-audits/toreview-pre-slim-20260518.md` | Full historical retest queue before `docs/toreview.md` was reduced to the current manual queue. |
 | `archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md` | Historical architecture/clean-code audit. It contains superseded Future Peek separation advice and should not be used as current implementation direction. |
 | `archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md` | Compact record of the source/test-ready implementation pass. |

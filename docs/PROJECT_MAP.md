@@ -33,6 +33,7 @@
 | `docs/archive/feature-inputs/` | Archive | Historical feature prompts, superseded implementation specs, and old source-design inputs moved out of active feature folders. |
 | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Archive | Historical v2.2 source-audit matrices; do not use as default next-development input. |
 | `docs/archive/feature-audits/review-pre-slim-20260518.md` | Archive | Full historical source-review log before the compact current `docs/review.md`. |
+| `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md` | Archive | Full 2026-05-26 beta.41-beta.54 source/package pass history moved out of the compact current review. |
 | `docs/archive/feature-audits/toreview-pre-slim-20260518.md` | Archive | Full historical retest queue before the compact current `docs/toreview.md`. |
 | `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md` | Archive | Historical architecture/clean-code audit; superseded `EZFuturePeek` separation advice is not current direction. |
 | `docs/archive/implementation-records/` | Archive | Compact implementation records moved out of the active reading path. |

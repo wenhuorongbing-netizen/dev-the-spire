@@ -14,6 +14,7 @@ Archived documents are useful for context, but they are not current implementati
 | `feature-inputs/` | Historical feature prompts, superseded implementation specs, and old source-design inputs moved out of active feature folders. |
 | `feature-audits/ancient-expansion-v2.2/2026-05-13/` | Historical v2.2 overnight source-audit matrices. Current work should start from `docs/test-ready-development-goal.md`, not this archive. |
 | `feature-audits/review-pre-slim-20260518.md` | Full source-review history before the active review file was slimmed to current findings. |
+| `feature-audits/review-2026-05-26-beta54-pass-history.md` | Full 2026-05-26 beta.41-beta.54 source/package fixed-finding history moved out of the active review file. |
 | `feature-audits/toreview-pre-slim-20260518.md` | Full retest-queue history before the active to-review file was slimmed to current manual proof gates. |
 | `feature-audits/architecture-clean-code-management-audit-2026-05-19.md` | Historical architecture/clean-code audit. Superseded `EZFuturePeek` separation advice remains only as context. |
 | `implementation-records/` | Compact records of completed implementation passes that should not stay in the active reading path. |

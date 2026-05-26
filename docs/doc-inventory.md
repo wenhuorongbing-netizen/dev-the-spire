@@ -73,6 +73,7 @@ Current support docs, not default reading path:
 - `docs/archive/prompts/2026-05/`
 - `docs/archive/feature-inputs/`
 - `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/`
+- `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`
 - `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md`
 - `docs/archive/implementation-records/`
 - `docs/archive/project-state-history-20260516.md`
@@ -107,6 +108,7 @@ Current support docs, not default reading path:
 - `docs/介绍.md` -> `docs/intro.zh.md` to keep the Chinese intro active while avoiding quoted non-ASCII paths in Git/script output.
 - root `web_issue.md` -> `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`; current forum follow-up remains in `website/web_issue.md` and `docs/features/forum/`.
 - `website/localization_qa.md` -> `docs/archive/implementation-records/website-localization-qa-20260522.md`; current website package/download state is guarded by `website/content-data.js`, `website/README.md`, and website tests.
+- Detailed 2026-05-26 source/package fixed-finding list from `docs/review.md` -> `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`; current review now keeps only the latest conclusions, rollups, and manual-proof focus.
 - ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
 
 ## F. Archive entrypoints
@@ -118,6 +120,7 @@ Current support docs, not default reading path:
 - `docs/issues/waiting-tests.md`
 - `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/README.md`
 - `docs/archive/feature-audits/review-pre-slim-20260518.md`
+- `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`
 - `docs/archive/feature-audits/toreview-pre-slim-20260518.md`
 - `docs/archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md`
 - `docs/archive/superseded/setup-spec-original-scaffold.md`
