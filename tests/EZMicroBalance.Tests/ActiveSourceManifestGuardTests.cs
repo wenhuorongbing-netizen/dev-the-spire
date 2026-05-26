@@ -117,6 +117,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAssetPaths.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.CardPlayFlow.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.BlueprintProof.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.CombatState.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.DebtSettlement.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.ForbiddenLoan.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.Helpers.cs",

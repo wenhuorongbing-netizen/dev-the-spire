@@ -219,6 +219,7 @@ public sealed class MorviV22GuardTests
         var payments = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.Payments.cs");
         var ancient = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
         var cards = ReadMorviSource();
+        var combatState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.CombatState.cs");
         var state = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.State.cs");
         var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
 
@@ -252,6 +253,13 @@ public sealed class MorviV22GuardTests
             "private const char ProgressSeparator = ';'",
             "TrySelectForbiddenLoanCard(player)",
             "ResolveDebtSettlementPickup(player)");
+        AssertSourceContains(
+            combatState,
+            "private sealed class MorviCombatState",
+            "private static readonly ConditionalWeakTable<Player, MorviCombatState> CombatStates = new();",
+            "public HashSet<CardModel> OpenBookDrawnCards { get; } = []",
+            "public HashSet<CardModel> BlueprintBlockAfterCards { get; } = []");
+        Assert.DoesNotContain("private sealed class MorviCombatState", state, StringComparison.Ordinal);
         AssertSourceContains(
             forbiddenLoan,
             "private const int ForbiddenLoanKeepGoldCost = 180",

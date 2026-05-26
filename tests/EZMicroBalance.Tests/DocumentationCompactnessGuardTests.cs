@@ -610,6 +610,16 @@ public sealed class DocumentationCompactnessGuardTests
             "ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RULES",
             "SavedSpireField<Player,string>",
             "UrdaDeckStateKey");
+        var cardPowerSafetyIssue = SliceBetween(
+            issueDetails,
+            "## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RULES",
+            "## ISSUE-2026-05-12-MORVI-V22-PLANNING");
+        AssertSourceContains(
+            cardPowerSafetyIssue,
+            "Status: source-fixed / live-pending",
+            "Power-card replacement rewards",
+            "Runtime closure still requires live gameplay");
+        Assert.DoesNotContain("Status: open", cardPowerSafetyIssue, StringComparison.Ordinal);
 
         foreach (var typoArtifact in new[]
         {

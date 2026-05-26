@@ -65,6 +65,7 @@ public sealed class SaveStateContractsGuardTests
             "Morvi state",
             [
                 ["EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs"],
+                ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.CombatState.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.State.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoan.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.OpenBook.cs"],

@@ -158,7 +158,7 @@ Closure:
 ## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RULES
 
 Priority: P0
-Status: open
+Status: source-fixed / live-pending
 Area: extra play / copy / ability-card safety
 
 Global rule:
@@ -167,6 +167,11 @@ Global rule:
 - Power cards are not copied, extra-played, or replayed by default.
 - If such an effect meets a Power card, use replacement rewards: cost becomes 0, draw cards, gain energy, or wait for the next Attack/Skill.
 - Extra-played or copied cards must not recursively trigger the same blessing.
+
+Source closure notes:
+
+- Lotha, Morvi, and current Ancient card-power hooks have source guards for Power-card replacement rewards, generated-copy recursion prevention, and combat-end cleanup.
+- Runtime closure still requires live gameplay, save-load, and co-op verification for Urda, Morvi, Lotha, and Vakuu.
 
 ## ISSUE-2026-05-12-MORVI-V22-PLANNING
 

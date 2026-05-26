@@ -112,6 +112,7 @@ function Get-WorktreeBatch {
     if ($p.StartsWith('docs/architecture/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/specs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/month-plan/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/source-research/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -eq 'docs/architecture-ez-micro-balance.md' -or
         $p -eq 'docs/REMOTE_DEVELOPMENT_SETUP.md' -or
         $p.StartsWith('docs/archive/feature-inputs/', [System.StringComparison]::OrdinalIgnoreCase) -or
