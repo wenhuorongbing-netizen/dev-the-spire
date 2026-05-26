@@ -392,6 +392,7 @@ public sealed class LothaPolishGuardTests
     public void SingleSentenceBranchesAreGuardedBeforeAndAfterTheRuling()
     {
         var cardRules = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardRules.cs");
+        var cardPlayCount = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardPlayCount.cs");
         var cardEligibility = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardEligibility.cs");
         var powerReplacement = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.PowerReplacement.cs");
         var singleSentence = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.SingleSentence.cs");
@@ -460,6 +461,14 @@ public sealed class LothaPolishGuardTests
             "SetSingleSentencePowerAmount(player, 0)",
             "return canPlay;");
         Assert.DoesNotContain("<= SingleSentenceRemainingPlayLimit", shouldPlay, StringComparison.Ordinal);
+        Assert.DoesNotContain("public static int ModifyCardPlayCount", cardRules, StringComparison.Ordinal);
+        AssertSourceContains(
+            cardPlayCount,
+            "public static int ModifyCardPlayCount",
+            "LothaExtraPlayCount = 2",
+            "MirrorRebuttalExtraPlayCount = 1",
+            "selectedBlessing == LothaBlessingIds.SingleSentence",
+            "LogExtraPlayAttempt(");
 
         var engText = engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"];
         var zhsText = zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_single_sentence.description"];
