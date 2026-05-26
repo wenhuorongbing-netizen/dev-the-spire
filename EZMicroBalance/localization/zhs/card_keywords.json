@@ -2,5 +2,5 @@
   "EZMB_TEMPORARY.title": "临时",
   "EZMB_TEMPORARY.description": "此卡仅在当前战斗中存在，战斗结束后将自动移出牌组。",
   "EZMB_PLANTED.title": "种下",
-  "EZMB_PLANTED.description": "种下：在牌进入手牌前，将它移出本场战斗，并获得[blue]1[/blue]张[gold]枯壳[/gold]。\n种下不计为打出、弃牌或关键词[gold]消耗[/gold]，不会触发这些收益。\n- 临时状态牌/临时诅咒牌：移出本场，战后消失。\n- 永久诅咒：不会被苗床永久删除。\n- [gold]根芽[/gold]：本场视为已处理，不进手、不生长，战后不加入[gold]根蚀 I[/gold]。\n- [gold]根蚀[/gold]：暂停本场结束检查；不净化、不降级、不恶化、不分裂，战后保持原阶段。\n- 每种下[blue]1[/blue]张牌给[blue]1[/blue]张枯壳；枯壳被消耗时获得[blue]3[/blue]点格挡。"
+  "EZMB_PLANTED.description": "种下：在牌进入手牌前，将它移出本场战斗，并获得[blue]1[/blue]张[gold]枯壳[/gold]。\n种下不是打出、弃牌或关键词[gold]消耗[/gold]，不会触发这些收益。临时状态牌和临时诅咒牌被种下后，会像本场被处理掉一样战后消失；永久诅咒不会被苗床永久删除。\n- [gold]根芽[/gold]：按本场已处理结算，效果接近打出了根芽的关键结果，但不算真正打出；它不进手、不生长，战后不加入[gold]根蚀 I[/gold]。\n- [gold]根蚀[/gold]：只冻结本场结束结算；不净化、不降级、不恶化、不分裂，战后仍保持原阶段。\n- 苗床的收益是[blue]8[/blue]/[blue]12[/blue]点即时格挡、少抽污染牌，以及每种下[blue]1[/blue]张牌给[blue]1[/blue]张枯壳。枯壳被消耗时获得[blue]3[/blue]点格挡。"
 }

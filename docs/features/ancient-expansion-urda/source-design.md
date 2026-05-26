@@ -76,7 +76,7 @@ All eleven remain disableable through the Urda feature gate. Runtime testing mus
 - Eligible planted cards are Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight. Permanent Curses, Withered Husk, and beneficial temporary pages are not planted.
 - Planting does not play, discard, or exhaust the card and does not trigger those synergies. Each planted card adds one Withered Husk.
 - A planted Blight Sprout is treated as handled for that combat and adds no Rootblight I after combat.
-- A planted Rootblight pauses its combat-end check for that combat only. It stays in the master deck at the same stage and does not improve, worsen, split, get removed, downgrade, or get cleansed after combat.
+- A planted Rootblight freezes that combat's end check only. It stays in the master deck at the same stage and does not improve, worsen, split, get removed, downgrade, or get cleansed after combat.
 
 #### Humus Pact (`urda_humus_pact`)
 

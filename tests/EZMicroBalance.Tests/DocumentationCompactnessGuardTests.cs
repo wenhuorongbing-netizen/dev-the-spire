@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -51,7 +51,7 @@ public sealed class DocumentationCompactnessGuardTests
             "All eleven remain disableable through the Urda feature gate",
             "`Withered Husk` is a 0-cost Temporary Curse with Ethereal and Exhaust",
             "A planted Blight Sprout is treated as handled for that combat",
-            "A planted Rootblight pauses its combat-end check for that combat only",
+            "A planted Rootblight freezes that combat's end check only",
             "After the Rain (`urda_after_rain`)",
             "AncientSavedStateFields.UrdaStateKey",
             "All active Urda text must include EN + ZHS entries");
@@ -81,15 +81,13 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.28 Seedbed planting rules refresh. Result: succeeded.",
-            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.28 Seedbed planting rules refresh. Result: succeeded.",
-            "installed `mods\\EZMicroBalance` folder",
-            "matched the installed mod artifacts on 2026-05-26",
-            "303 passed, 0 skipped, 0 failed");
+            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.29 Seedbed planting rules refresh. Result: blocked by a running `SlayTheSpire2.exe` process locking `mods\\EZMicroBalance\\EZMicroBalance.dll`.",
+            "Last successful publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-26 after the beta.29 Seedbed planting rules refresh. Result: succeeded against an isolated temporary mods root.",
+            "isolated `.tools\\publish-game-root\\mods\\EZMicroBalance` folder",
+            "matched the staging/versioned/zip-entry artifacts on 2026-05-26",
+            "failed 5 installed-folder parity tests");
         Assert.DoesNotContain("Sovereign Blade jade boon refresh", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current `.2` manual-test package", devEnvironment, StringComparison.Ordinal);
-        Assert.DoesNotContain("installed mod folder was locked", devEnvironment, StringComparison.Ordinal);
-        Assert.DoesNotContain("installed mod DLL was locked", devEnvironment, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -300,7 +298,7 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("beta.28 Seedbed planting rules and mod-overview refresh", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.29 Seedbed planting rules and mod-overview refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta19-loader-smoke-20260525-213336", projectState, StringComparison.Ordinal);
@@ -620,7 +618,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.28 package hash is pending",
+            "Fresh loader smoke for the current beta.29 package hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

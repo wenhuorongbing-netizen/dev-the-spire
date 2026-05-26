@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -30,7 +30,7 @@ public sealed class ModInfoLocalizationGuardTests
             "Seedbed shows that style",
             "Planting removes a card from this combat before it reaches hand",
             "种下会在牌进入手牌前把它移出本场战斗",
-            "根蚀被种下后暂停本场结束检查",
+            "根蚀被种下后只冻结本场结束结算",
             "[gold]作者[/gold]",
             "[gold]版本[/gold]",
             "GetNodeOrNull<MegaRichTextLabel>(\"ModDescription\")");
@@ -49,13 +49,13 @@ public sealed class ModInfoLocalizationGuardTests
 
         Assert.Equal("EZMicroBalance", root.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", root.GetProperty("name").GetString());
-        Assert.Equal("v0.1.0-private-beta.28", root.GetProperty("version").GetString());
+        Assert.Equal("v0.1.0-private-beta.29", root.GetProperty("version").GetString());
         Assert.True(root.TryGetProperty("description", out var description));
 
         var manifestDescription = description.GetString() ?? string.Empty;
         Assert.Contains("Spire Plus", manifestDescription, StringComparison.Ordinal);
         Assert.Contains("Planting removes the card from this combat before it reaches hand", manifestDescription, StringComparison.Ordinal);
-        Assert.Contains("Rootblight pauses this combat's end check", manifestDescription, StringComparison.Ordinal);
+        Assert.Contains("Rootblight freezes only this combat's end check", manifestDescription, StringComparison.Ordinal);
         Assert.Contains("no cleanse, downgrade, worsen, or split", manifestDescription, StringComparison.Ordinal);
         Assert.Contains("The Mod Settings panel localizes this description by client language.", manifestDescription, StringComparison.Ordinal);
         Assert.DoesNotContain("鏄", manifestDescription, StringComparison.Ordinal);

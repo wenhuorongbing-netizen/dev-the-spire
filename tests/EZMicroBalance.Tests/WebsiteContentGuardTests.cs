@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -62,21 +62,21 @@ public sealed class WebsiteContentGuardTests
             "If there are not enough suitable rooms, at least 2 are placed.",
             "Only Common, Uncommon, or Rare Attacks and Skills can receive Fission.",
             "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
-            "Seedbed is strong as a package",
+            "Seedbed is stronger than it first reads",
             "Seedbed has 2/3 total spaces",
             "Spire Plus 是用于私测的单体玩法扩展",
             "苗床为什么值得拿",
             "种下会在牌进入手牌前把它移出本场战斗",
-            "根蚀暂停本场结束检查",
+            "根蚀只冻结本场结束结算",
             "\u79cd\u4e0b\u4f1a\u5728\u724c\u8fdb\u5165\u624b\u724c\u524d",
-            "\u6839\u8680\u6682\u505c\u672c\u573a\u7ed3\u675f\u7ed3\u7b97",
-            "\u79cd\u4e0b\u4e0d\u8ba1\u4e3a\u6253\u51fa\u3001\u5f03\u724c\u6216\u5173\u952e\u8bcd\u6d88\u8017",
+            "\u6839\u8680\u53ea\u51bb\u7ed3\u672c\u573a\u7ed3\u675f\u7ed3\u7b97",
+            "\u79cd\u4e0b\u4e0d\u662f\u6253\u51fa\u3001\u5f03\u724c\u6216\u5173\u952e\u8bcd\u6d88\u8017",
             "\u79cd\u4e0b\u6839\u82bd\u6309\u201c\u672c\u573a\u5df2\u5904\u7406\u201d\u7ed3\u7b97",
             "\u4e0d\u51c0\u5316",
             "Planting removes a card from this combat before it enters hand",
-            "Planting does not count as play, discard, or Exhaust",
+            "Planting is not play, discard, or Exhaust",
             "Seedbed can plant Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight.",
-            "A planted Rootblight pauses this combat's end check",
+            "A planted Rootblight freezes this combat's end check",
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
@@ -89,8 +89,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260526-seedbed-clarity-b28",
-            "app.js?v=20260526-seedbed-clarity-b28");
+            "content-data.js?v=20260526-seedbed-planting-b29",
+            "app.js?v=20260526-seedbed-planting-b29");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),

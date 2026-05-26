@@ -191,7 +191,7 @@ public sealed class EngineeringGovernanceGuardTests
             dashboard,
             "Do not mark a row passed from source review alone.",
             "## Automation Summary",
-            "| Current package automation | Passed |",
+            "| Current package automation | Partial |",
             "## Verifier Row IDs",
             "These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`.",
             "| Row ID | Kind | Status | Owner | Evidence Needed |",

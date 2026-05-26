@@ -5,7 +5,7 @@ Updated: 2026-05-18
 
 Status: automated gates passed; latest normal Steam-client startup/log verification is historical for the earlier 22-field package; refreshed normal Steam-client Mod Settings UI list screenshot shows Spire Plus; historical page-level Mod Settings UI passed under the old display name; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check and saved-map boss-reachability graph proof passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed.
 
-Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus normal and opt-in artifact tests, but did not rerun live verification. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
+Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus normal tests and isolated package checks, but did not rerun live verification. The latest opt-in artifact test run exposed the real installed folder as stale while the game was running. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
 
 ## Automated Prerequisites
 
@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and release-artifact tests, `publish\SpirePlus-v0.1.0-private-beta.28.zip`, SHA256 `E58B6204BFDCCBE9CA8132AD286D936D30E576FD69A8A9256CB2A08335B503C2` |
+| Private-beta package | Pass for package refresh and isolated package checker, `publish\SpirePlus-v0.1.0-private-beta.29.zip`, SHA256 `26A1DD6A6C6B3FBA9616C29202EED5B082BF46874FCCB17F66AB8BF304EFFBAD`; real installed-folder artifact tests require closing the game and refreshing `mods\EZMicroBalance` |
 
 ## Runtime Load Checklist
 

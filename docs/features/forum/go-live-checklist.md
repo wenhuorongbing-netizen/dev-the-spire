@@ -1,4 +1,4 @@
-# Spire Plus 论坛上线清单
+﻿# Spire Plus 论坛上线清单
 
 这份清单用于把论坛发布到 GitHub Pages，并用 Supabase 保存帖子和回复。这个方案不需要 Render，也不需要本机 24 小时开机。
 
@@ -62,13 +62,13 @@ npm run build
 网站下载按钮当前指向这个 release asset：
 
 ```text
-https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.28/SpirePlus-v0.1.0-private-beta.28.zip
+https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.29/SpirePlus-v0.1.0-private-beta.29.zip
 ```
 
 公开分享前确认 GitHub Release 存在，并且包含：
 
 ```text
-SpirePlus-v0.1.0-private-beta.28.zip
+SpirePlus-v0.1.0-private-beta.29.zip
 ```
 
 如果版本号变化，同步更新 `website/content-data.js` 和发布文档。

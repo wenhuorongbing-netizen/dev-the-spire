@@ -1,4 +1,4 @@
-# Spire Plus Website Localization QA
+﻿# Spire Plus Website Localization QA
 
 Date: 2026-05-22
 
@@ -126,8 +126,8 @@ Fixes checked during this pass:
 - Replaced public vanilla placeholders with site-owned simplified SVG icons under `website/assets/vanilla-icons/`.
 - Added separate card-change entries for `愚行 / Folly` and `执迷 / Enthralled`.
 - Kept `至亮之焰 / Brightest Flame` as the public-facing title pair and verified its Exhaust/draw change appears.
-- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.28.zip`.
-- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.28`.
+- Updated the install page package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.29.zip`.
+- Changed the public release page link to the concrete tag URL `v0.1.0-private-beta.29`.
 
 Static checks:
 
@@ -149,8 +149,8 @@ Rendered checks:
 - 28 vanilla-related entries use `assets/vanilla-icons/`.
 - `.source-art-placeholder` count is 0.
 - Search for `执迷` returns the Blood-Soaked Rose relic row and the Enthralled card row.
-- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.28.zip` and the release button to the concrete GitHub tag URL.
-- Public install page points the main download button to `releases/download/v0.1.0-private-beta.28/SpirePlus-v0.1.0-private-beta.28.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
+- Local install page points the main download button to `../publish/SpirePlus-v0.1.0-private-beta.29.zip` and the release button to the concrete GitHub tag URL.
+- Public install page points the main download button to `releases/download/v0.1.0-private-beta.29/SpirePlus-v0.1.0-private-beta.29.zip`; this avoids GitHub `latest` returning 404 for prerelease builds.
 - Browser console warnings/errors: none.
 
 ## Review 6: Local Redraw Icon QA
@@ -347,17 +347,17 @@ Fixes checked during this pass:
 - Rewrote the packaged mod manifest description into readable bilingual text and kept the manifest as UTF-8 without BOM.
 - Expanded Seedbed / Planting text in Chinese and English across the site, card text, relic hovers, Ancient option hovers, and keyword tooltips.
 - Clarified Planting as combat-only isolation without playing, discarding, or exhausting the caught card.
-- Clarified Blight Sprout and Rootblight cases: planted Sprouts are treated as handled without counting as played and add no Rootblight I after combat; planted Rootblight pauses its combat-end check for this combat, remains in the master deck at the same stage, and does not upgrade, downgrade, split, cleanse, or disappear.
+- Clarified Blight Sprout and Rootblight cases: planted Sprouts are treated as handled without counting as played and add no Rootblight I after combat; planted Rootblight freezes this combat's end check, remains in the master deck at the same stage, and does not upgrade, downgrade, split, cleanse, or disappear.
 - Seedbed is documented as an 8 / 12 Block card with immediate deck cleanup and a Withered Husk return for every planted card, so its baseline value is visible even when the player has not yet seen the root system.
 - Regenerated the embedded localization fallback from current JSON so stale or mojibake fallback strings do not reappear when asset loading fails.
-- Updated package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.28.zip`.
+- Updated package size and SHA-256 for `SpirePlus-v0.1.0-private-beta.29.zip`.
 
 Static checks:
 
 - `node --check website/content-data.js` passed.
 - `node --check website/app.js` passed.
-- `dotnet test EZMicroBalance.sln --no-build` passed, 283 passed / 20 skipped.
-- `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 303 passed / 0 skipped.
+- `dotnet test EZMicroBalance.sln --no-build` passed, 285 passed / 20 skipped.
+- `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` failed 5 installed-folder parity tests because the running game kept the real `mods\EZMicroBalance` folder on the previous DLL/manifest; 300 opt-in tests passed. The isolated package checker passed against `.tools/publish-game-root/mods/EZMicroBalance`.
 
 Live checks still required:
 
