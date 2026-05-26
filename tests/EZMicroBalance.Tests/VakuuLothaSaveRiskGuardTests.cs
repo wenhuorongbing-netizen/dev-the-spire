@@ -266,11 +266,12 @@ public sealed class VakuuLothaSaveRiskGuardTests
         var runHook = ReadLothaSource();
         var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
         var deathReprieveState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveState.cs");
+        var deathReprieveTurn = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveTurn.cs");
         var state = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.State.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var playerState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientPlayerState.cs");
-        var deathBlock = SliceBetween(deathReprieve, "public static bool ShouldDieLate(Creature creature)", "private static async Task EnsureDeathReprievePower");
-        var startBlock = SliceBetween(deathReprieve, "private static async Task StartDeathReprieveTurn", "private static async Task EnsureDeathReprievePower");
+        var deathBlock = SliceBetween(deathReprieve, "public static bool ShouldDieLate(Creature creature)", "private static Dictionary<string, object?> DeathReprieveDiagnostics");
+        var startBlock = SliceBetween(deathReprieveTurn, "private static async Task StartDeathReprieveTurn", "private static async Task EnsureDeathReprievePower");
 
         AssertSourceContains(
             savedFields,
@@ -308,6 +309,13 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "combatState.DeathReprievePendingStart = false",
             "DeathReprievePhase = DeathReprievePhase.Active");
         AssertSourceContains(
+            deathReprieveTurn,
+            "private const int DeathReprieveCards = 10",
+            "private const int DeathReprieveEnergy = 10",
+            "private static async Task EnsureDeathReprievePower",
+            "private static async Task ResolveDeathReprieveTurnEnd",
+            "private static bool IsDeathReprieveCostFree");
+        AssertSourceContains(
             runHook,
             "HydrateDeathReprieveState(player, combatState)",
             "private static void HydrateDeathReprieveState(Player player, LothaCombatState combatState)",
@@ -328,10 +336,11 @@ public sealed class VakuuLothaSaveRiskGuardTests
     public void LothaDeathReprieveWritesPhaseBeforeStartingOrPendingReprieve()
     {
         var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
-        var preventBlock = SliceBetween(deathReprieve, "public static async Task AfterPreventingDeath(Creature creature)", "private static async Task StartDeathReprieveTurn");
+        var deathReprieveTurn = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveTurn.cs");
+        var preventBlock = SliceBetween(deathReprieve, "public static async Task AfterPreventingDeath(Creature creature)", "private static Dictionary<string, object?> DeathReprieveDiagnostics");
         var playerTurnBranch = SliceBetween(preventBlock, "if (creature.CombatState?.CurrentSide == CombatSide.Player", "else");
         var pendingBranch = SliceFrom(preventBlock, "DeathReprievePhase = DeathReprievePhase.PendingStart");
-        var startBlock = SliceBetween(deathReprieve, "private static async Task StartDeathReprieveTurn", "private static async Task EnsureDeathReprievePower");
+        var startBlock = SliceBetween(deathReprieveTurn, "private static async Task StartDeathReprieveTurn", "private static async Task EnsureDeathReprievePower");
 
         AssertSourceContains(
             playerTurnBranch,
@@ -375,12 +384,13 @@ public sealed class VakuuLothaSaveRiskGuardTests
     {
         var runHook = ReadLothaSource();
         var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
+        var deathReprieveTurn = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveTurn.cs");
         var creatureCmd = ReadRepoText("source code", "src", "Core", "Commands", "CreatureCmd.cs");
         var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
         var riskRegister = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md");
         var manualChecklist = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md");
-        var deathBlock = SliceBetween(deathReprieve, "public static bool ShouldDieLate(Creature creature)", "private static async Task EnsureDeathReprievePower");
-        var resolveBlock = SliceBetween(deathReprieve, "private static async Task ResolveDeathReprieveTurnEnd", "private static bool IsDeathReprieveCostFree");
+        var deathBlock = SliceBetween(deathReprieve, "public static bool ShouldDieLate(Creature creature)", "private static Dictionary<string, object?> DeathReprieveDiagnostics");
+        var resolveBlock = SliceBetween(deathReprieveTurn, "private static async Task ResolveDeathReprieveTurnEnd", "private static bool IsDeathReprieveCostFree");
 
         AssertSourceContains(
             creatureCmd,

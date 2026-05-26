@@ -81,6 +81,7 @@ public sealed class EngineeringGovernanceGuardTests
         var gitignore = ReadRepoText(".gitignore");
         Assert.Contains("/EZMicroBalanceCode/**/*.cs.uid", gitignore, StringComparison.Ordinal);
         Assert.Contains("/tests/**/*.cs.uid", gitignore, StringComparison.Ordinal);
+        Assert.Contains("/tests/**/TestResults/", gitignore, StringComparison.Ordinal);
         Assert.Contains("/.playwright-cli/", gitignore, StringComparison.Ordinal);
         Assert.Contains("/website/**/*.import", gitignore, StringComparison.Ordinal);
 

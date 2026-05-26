@@ -20,6 +20,7 @@ node_modules/
 /website/**/*.import
 /EZMicroBalanceCode/**/*.cs.uid
 /tests/**/*.cs.uid
+/tests/**/TestResults/
 
 # Local/generated art and calibration material. Not part of the active release package.
 /art_pipeline/

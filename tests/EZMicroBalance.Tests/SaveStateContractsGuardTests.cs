@@ -132,6 +132,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveState.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.State.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs"],
+                ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveTurn.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CombatStart.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CombatStateReset.cs"]
             ],
