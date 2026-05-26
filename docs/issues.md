@@ -1,12 +1,12 @@
 # Spire Plus Issues
-Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-25:
+Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-26:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `C595FC59D8FAD3731F5A2A1791D5BBCB83E15E1C37A2DDC0C92F0DF08940CD46` |
-| DLL | `89103CF5D6662D1B423259C8ED628763B42A6DD83A9B6F4D25BCD951B15DD527` |
-| PCK | `B5ACC8813F3068CB19E01737C54C2FAAACA317BC80AE3D417167AB66DB6D8EAA` |
-| Manifest | `61E8F5635D4849279BCA8EE3326F6CF61CF648094D7B1E97B721C66E875A282F` |
-| README_INSTALL | `F894C217C7E3B3BFA67159A814BAED21C9EB4DBD84924BA774EFF3C20FE9183D` |
+| ZIP | `4BB0E79E80A5CF9250A48C99E37DD0646E12F3D9824E938BAEE6AB9842224DAA` |
+| DLL | `08976CF96F3221C99A3B8BE848E3A31F7471E046843836C3D5846820F70F2B2A` |
+| PCK | `8D3AD766FFF05AFD92A59298FF0FB9DD7A6AA155973852BF499E002022E31688` |
+| Manifest | `821009A2F90352DF7F0D5D565DD13AE924AF786113A9317D5861D4A6076A0A85` |
+| README_INSTALL | `170A0BE9D56B14FFF03B0191EDE6DF15CDD73D7FEA775E7B05E7A28E4932E07A` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -14,7 +14,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `URDA-SEEDBED-PLANTING` P0 source/package-fixed / live-pending:
   - Seedbed explains Planting / 种下 as a non-play, non-discard, non-exhaust handling action.
   - Planted Blight Sprouts are handled and add no Rootblight I after combat.
-  - Planted Rootblight is frozen for this combat only and stays in the master deck at the same level; it does not improve, worsen, split, downgrade, cleanse, or get removed.
+  - Planted Rootblight pauses its combat-end check for this combat only and stays in the master deck at the same stage; it does not improve, worsen, split, downgrade, cleanse, or get removed.
 - `COOP-COMBAT-START-CRASH` P0 source/package-fixed / live-pending:
   - User log ended during multiplayer combat startup for `CUBEX_CONSTRUCT_NORMAL`, with no managed stack. Treat this as latest Spire Plus crash evidence even if the in-game manifest text still shows an older beta label.
   - Source fix: co-op fails closed before proof for A11-A20 selection/gameplay, Ascension map/rewards, Ancient offers/selections/run hooks, Urda reward alternatives, combat hooks, and preview tools.

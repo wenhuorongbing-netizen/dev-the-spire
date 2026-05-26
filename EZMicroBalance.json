@@ -2,8 +2,8 @@
   "id": "EZMicroBalance",
   "name": "Spire Plus",
   "author": "wenhuorongbing-netizen",
-  "description": "Spire Plus is one Slay the Spire 2 gameplay expansion for private testing. Enable this single mod to test inspectable Ancient relic rewards, selected relic revisions, preview tools, and A11-A20 test rules. Seedbed is a pollution-control card: it gives 8/12 Block, sets up 2/3 total spaces, can spend 1/2 spaces immediately to plant eligible draw or discard pile cards, and uses any remaining spaces to catch later pollution before it enters hand. Planting is combat-only isolation, not play, discard, or the Exhaust keyword. It does not permanently delete Curses. Temporary Status/Curses leave the fight, Blight Sprouts count as handled, and Rootblight is frozen for this fight only without improving or worsening. Each successful plant also gives Withered Husk, turning a bad draw into 3 Block later. The Mod Settings panel localizes this description by client language. Requires BaseLib.",
-  "version": "v0.1.0-private-beta.25",
+  "description": "Spire Plus is one Slay the Spire 2 gameplay expansion for private testing. Enable this single mod to test inspectable Ancient relic rewards, selected relic revisions, preview tools, and A11-A20 test rules. Seedbed is the clearest pollution-control example: it gives 8/12 Block, sets up 2/3 total spaces, immediately plants 1/2 eligible draw or discard pile cards, and uses remaining spaces to catch later pollution before it enters hand. Planting means removing the card from the current combat, adding Withered Husk, and skipping play, discard, and Exhaust triggers. Permanent Curses are not permanently deleted. Temporary Status/Curses disappear after combat, Blight Sprouts count as handled and add no Rootblight I, and Rootblight pauses its combat-end check without improving, worsening, splitting, or cleansing itself. It keeps the same stage after the fight. Each plant prevents a bad draw and turns it into 3 Block later. The Mod Settings panel localizes this description by client language. Requires BaseLib.",
+  "version": "v0.1.0-private-beta.26",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [

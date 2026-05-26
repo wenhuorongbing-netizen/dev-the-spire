@@ -28,9 +28,9 @@ public sealed class ModInfoLocalizationGuardTests
             "Spire Plus 是一个用于私测的《杀戮尖塔 2》单体玩法扩展",
             "Spire Plus is a single Slay the Spire 2 gameplay expansion",
             "Seedbed is the clearest example",
-            "Planting means combat-only isolation",
-            "种下就是本战隔离",
-            "根蚀被种下后只冻结这一场",
+            "Planting means removing the card from the current combat",
+            "种下的意思是把牌移出当前战斗",
+            "根蚀被种下后暂停本场结束结算",
             "[gold]作者[/gold]",
             "[gold]版本[/gold]",
             "GetNodeOrNull<MegaRichTextLabel>(\"ModDescription\")");
@@ -49,13 +49,13 @@ public sealed class ModInfoLocalizationGuardTests
 
         Assert.Equal("EZMicroBalance", root.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", root.GetProperty("name").GetString());
-        Assert.Equal("v0.1.0-private-beta.25", root.GetProperty("version").GetString());
+        Assert.Equal("v0.1.0-private-beta.26", root.GetProperty("version").GetString());
         Assert.True(root.TryGetProperty("description", out var description));
 
         var manifestDescription = description.GetString() ?? string.Empty;
         Assert.Contains("Spire Plus", manifestDescription, StringComparison.Ordinal);
-        Assert.Contains("Planting is combat-only isolation", manifestDescription, StringComparison.Ordinal);
-        Assert.Contains("Rootblight is frozen", manifestDescription, StringComparison.Ordinal);
+        Assert.Contains("Planting means removing the card from the current combat", manifestDescription, StringComparison.Ordinal);
+        Assert.Contains("Rootblight pauses its combat-end check", manifestDescription, StringComparison.Ordinal);
         Assert.Contains("The Mod Settings panel localizes this description by client language.", manifestDescription, StringComparison.Ordinal);
         Assert.DoesNotContain("涓", manifestDescription, StringComparison.Ordinal);
         Assert.DoesNotContain("绉", manifestDescription, StringComparison.Ordinal);

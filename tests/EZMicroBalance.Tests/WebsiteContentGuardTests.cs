@@ -64,15 +64,15 @@ public sealed class WebsiteContentGuardTests
             "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
             "Seedbed is strong as a package",
             "Seedbed has 2/3 total spaces",
-            "\u79cd\u4e0b=\u672c\u6218\u9694\u79bb",
-            "\u6839\u8680\u53ea\u51bb\u7ed3\u8fd9\u4e00\u573a",
-            "\u79cd\u4e0b\u4e0d\u662f\u5173\u952e\u8bcd\u6d88\u8017",
-            "\u79cd\u4e0b\u6839\u82bd\u6309\u201c\u5df2\u5904\u7406\u201d\u7ed3\u7b97",
+            "\u79cd\u4e0b\u7684\u610f\u601d",
+            "\u6839\u8680\u6682\u505c\u672c\u573a\u7ed3\u675f\u7ed3\u7b97",
+            "\u79cd\u4e0b\u4e0d\u8ba1\u4e3a\u6253\u51fa\u3001\u5f03\u724c\u6216\u5173\u952e\u8bcd\u6d88\u8017",
+            "\u79cd\u4e0b\u6839\u82bd\u6309\u201c\u672c\u573a\u5df2\u5904\u7406\u201d\u7ed3\u7b97",
             "\u4e0d\u51c0\u5316",
-            "Planting means combat-only isolation",
-            "Planting is not exhausting a Curse",
+            "Planting means: remove that card from the current combat",
+            "Planting does not count as play, discard, or Exhaust",
             "Seedbed can plant Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight.",
-            "A planted Rootblight is frozen for this combat",
+            "A planted Rootblight pauses its combat-end check",
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
@@ -85,8 +85,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260526-seedbed-clarity-b25",
-            "app.js?v=20260526-seedbed-clarity-b25");
+            "content-data.js?v=20260526-seedbed-rules-b26",
+            "app.js?v=20260526-seedbed-rules-b26");
 
         AssertSourceContains(
             ReadRepoText("website", "app.js"),
