@@ -3,9 +3,9 @@ param(
 
     [string]$ManifestPath,
 
-    [string]$PackageSha256 = "E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B",
+    [string]$PackageSha256 = "E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618",
 
-    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.30.zip",
+    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.31.zip",
 
     [int]$MinScreenshotWidth = 800,
 
@@ -24,6 +24,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'spire-plus-package-evidence.ps1')
 
 $requiredReleaseRows = @(
     @{ Id = 'fresh-current-package-loader-smoke'; Kind = 'loader'; Label = 'Fresh current-package loader smoke with current package hashes and clean log audit' },
@@ -426,13 +427,7 @@ function Test-PackageHashesEvidence {
         }
     }
 
-    $expectedPaths = @(
-        $ManifestPackagePath,
-        'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\EZMicroBalance.dll',
-        'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\EZMicroBalance.pck',
-        'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\EZMicroBalance.json',
-        'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\README_INSTALL.txt'
-    )
+    $expectedPaths = Get-SpirePlusPackageArtifactRelativePaths -RepoRoot $repoRoot -PackagePath $ManifestPackagePath
 
     foreach ($expectedPath in $expectedPaths) {
         if (-not $rowsByPath.ContainsKey($expectedPath)) {

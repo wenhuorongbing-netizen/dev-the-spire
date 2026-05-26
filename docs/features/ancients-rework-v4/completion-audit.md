@@ -2,7 +2,7 @@
 
 Last updated: 2026-05-15
 
-Latest update: the Soul Tide timing package refresh rebuilt `SpirePlus-v0.1.0-private-beta.30.zip` from installed artifacts after automated source validation. Earlier green runtime evidence remains useful history but is not live gameplay proof for this latest package.
+Latest update: the Soul Tide timing package refresh rebuilt `SpirePlus-v0.1.0-private-beta.31.zip` from installed artifacts after automated source validation. Earlier green runtime evidence remains useful history but is not live gameplay proof for this latest package.
 
 ## Objective
 
@@ -19,7 +19,7 @@ Concrete deliverables for the current goal:
 
 | Requirement | Evidence | Status |
 | --- | --- | --- |
-| Preserve existing `EzDailyContent` manifest id | `EzDailyContent.json` still uses id `EzDailyContent`; automated test `ActiveManifestHasStableReleaseIdentity` checks this. | Pass |
+| Preserve legacy scaffold identity without active root files | Legacy root surfaces including `EzDailyContent.json` are absent from the active root; historical scaffold metadata is preserved under `docs/archive/legacy-planning/legacy-project-files/`; automated tests `ActiveManifestHasStableReleaseIdentity` and `OnlySpirePlusIsAnActiveRootModSurface` guard the stable `EZMicroBalance` manifest id and reject any returned legacy root surface. | Pass |
 | Independent mod structure for plug-in / plug-off behavior | `EZMicroBalance.csproj`, `EZMicroBalance.json`, `EZMicroBalance/`, and `EZMicroBalanceCode/`; `docs/architecture-ez-micro-balance.md`. Controlled smoke loads with legacy `EzDailyContent` disabled. | Pass |
 | Stable new manifest id documented | `EZMicroBalance.json` uses id `EZMicroBalance`; architecture docs record the decision. | Pass |
 | Required input docs exist and were audited | `AGENTS.md`, `README.md`, `docs/architecture-ez-micro-balance.md`, `docs/dev-environment.md`, `docs/test-plan.md`, `docs/release-checklist.md`, Ancient v4 source/plan/matrix/audit, and Ascension 11-20 source/research/plan/checklist/work-log all exist and were inspected during the final audit. | Pass |
@@ -55,7 +55,7 @@ Concrete deliverables for the current goal:
 | Tests pass | `dotnet test EZMicroBalance.sln --no-build` passed with 272 passed / 20 skipped after the 2026-05-24 player-visible localization naming guard. `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed with 292 passed / 0 skipped after the artifact guard sync. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted. | Pass |
 | Publish succeeds | Latest `dotnet publish EZMicroBalance.sln` passed on 2026-05-15, built `EZMicroBalance` in Release, copied DLL/manifest, and exported the selected-resource PCK. | Pass |
 | Published artifacts exist | Installed `mods/EZMicroBalance` contains `.json`, `.dll`, and `.pck`; automated tests check PCK contents, installed manifest parity, and DLL parity. | Pass |
-| Private-beta package created | Current rebuilt zip `publish\SpirePlus-v0.1.0-private-beta.30.zip` has SHA256 `E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B`; staging/versioned DLL/JSON/PCK/README hashes match the zip entries. The installed mod folder and game-root zip were refreshed during this pass. Detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/package refresh and package artifact parity; beta.30 loader/gameplay proof pending |
+| Private-beta package created | Current rebuilt zip `publish\SpirePlus-v0.1.0-private-beta.31.zip` has SHA256 `E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618`; staging/versioned DLL/JSON/PCK/README hashes match the zip entries. The installed mod folder and game-root zip were refreshed during this pass. Detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/package refresh and package artifact parity; beta.31 loader/gameplay proof pending |
 | Harmony patch targets resolve | Automated test `HarmonyPatchesResolveAgainstInstalledGameApi` calls `Harmony.PatchAll` on installed DLL against local game/BaseLib assemblies. | Pass |
 | Game loads the mod | Historical beta.19 package smoke `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` reached startup completion with BaseLib plus Spire Plus, reported `v0.1.0-private-beta.19` and `Found 30 SavedSpireFields`, matched the beta.19 package hash, and audited clean. Limited A0/A10/A20, A11 map/save-load, Act 2/3 map-surface, and A14 Rootblight hover/notice evidence exists from earlier source states. | Beta.21 loader startup and gameplay/manual rows pending |
 | BaseLib loads | Controlled smoke, normal Steam startup log, and Mod Settings UI screenshot record BaseLib initialization and a visible enabled BaseLib config page. | Pass |
@@ -65,7 +65,7 @@ Concrete deliverables for the current goal:
 | Save/load-sensitive behavior verified | Matrix rows exist for Prismatic Gem, Pael's Tooth, Jeweled Mask, Debt, and Folly. RC1 A11 Act 1 map save/load spot check passed, but Ancient reward save/load rows and co-op save/load are still pending. | Partial |
 | Multiplayer behavior verified | Ancient and Ascension manual checklists include ownership/desync checks, but no multiplayer runtime pass was executed. | Pending |
 | Disable-mod behavior verified | Controlled loader-disable smoke passed; gameplay disable check remains pending. | Partial |
-| Final required command sequence executed | Build, normal tests, format, diff check, isolated publish, package refresh, hash checks, post-package build, and isolated package checks were rerun after the Seedbed planting text pass. The latest opt-in release-artifact test run correctly failed installed-folder parity because the running game kept the real `mods\EZMicroBalance` folder on the previous DLL/manifest. Live load and gameplay verification were not rerun. | Pass for source/test-ready package; release readiness pending installed-folder refresh and live evidence |
+| Final required command sequence executed | Build, normal tests, format, diff check, package refresh, hash checks, website syntax checks, isolated package checks, real installed-folder checks, and opt-in release-artifact tests were rerun after the Soul Tide timing refresh. Live load and gameplay verification were not rerun. | Pass for source/test-ready package; release readiness pending live evidence |
 | Worktree clean | Current zhs localization, Urda/Morvi deck mirror state, guard, docs, and package-refresh changes are local and pending commit. | Pending |
 | Commit created | The current `HEAD` is `a2183ee (HEAD -> main, origin/main, origin/HEAD) 1`; current test-ready audit, localization, saved-state, docs, tests, and package-refresh changes are not committed yet. | Pending |
 | Push to `origin` after validation | Local release changes must be committed and pushed after validation unless validation, packaging, authentication, or unrelated local changes block the push. | Pending validation |
@@ -100,8 +100,8 @@ Concrete deliverables for the current goal:
 - Rootblight-family generated portrait art: small portraits are 250x190 and big portraits are 1000x760 for Rootblight I/II/III and Blight Sprout. SHA256 values are `37E06A6BCEB585478F681D41A4AC14B0988C6067BE7DC983A7867C8D1A824536`, `6A307787999AF2D154BB320A4D8DCA4079D9060602B73B1AA6BC6E1A22F59D58`, `0C1784FD117A48D47D448972AB3F95BA92B4528A296FC2AE557B58B5AA5F4E4E`, `9BCEE9AD668F2D5DDA6842CBB3D189E8CA42045D51C38C134EECCF9DFF397DE3`, `52AE2A50E1EB6A64FFA243EA061A2B2B5A8EDE7A076C3503FE15F8460F70C97A`, `92EA23513D739DFA9ECB2B95949002346AD4E8D43AB323EF9E7AA949DEB5EC7D`, `4A99EAD43F719D3BB514F6DEF31B72C131D67BE57E2A7B5184B6D788161AAF6E`, and `D2ADB90836972A6903752BC26264A440947797E5CACD4642059B9A98C84DA808`.
 - `git diff --check`: exit code 0 after the 2026-05-14 Morvi reward/state lifecycle hardening implementation and documentation refresh; only CRLF normalization warnings were printed.
 - Active release art hash: `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75`.
-- Staging/versioned/zip-entry DLL hash: `177A03863693F5F07DECE5605D0DD1C2047980129E17D8063998FDE8EBE1A959`. Current staging/versioned/zip-entry PCK hash is `E0FC406D66F1FE9A170C3E3AA90EA30A661C96CE9730F588BCA42D0423FABA1C`; manifest hash is `F2DBE1806B2FDB4A673E71D1FD494BDE3360C24031B42844F194323F100A3C20`; README hash is `C4ABC5CE1A4CEB570759809EF24FA3486D6503527DA8E394FC176B06AE0D5426`.
-- Private-beta package: `publish\SpirePlus-v0.1.0-private-beta.30.zip`, SHA256 `E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B`.
+- Staging/versioned/zip-entry DLL hash: `C5BB994347596FA4EE10DE23D1CC2AE88DD4779D40970919510A413335CE7C9B`. Current staging/versioned/zip-entry PCK hash is `8A267BA928320DCA3A99FD4EA168F7863CD0AA28BF2ECB17FAD2FF24A0C1B26E`; manifest hash is `A92F92402A30C459D98E65BD29FB3BC5AC70B14A587002AAA4E4E1CC0C7D4F23`; README hash is `45F0E46431421CEF3A4FF932E3D189469C5FFBA678DF414383BF3D274CDFA429`.
+- Private-beta package: `publish\SpirePlus-v0.1.0-private-beta.31.zip`, SHA256 `E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618`.
 
 ## Remaining Gates
 

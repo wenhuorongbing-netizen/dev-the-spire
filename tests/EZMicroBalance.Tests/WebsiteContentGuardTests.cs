@@ -89,13 +89,29 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260526-seedbed-planting-b29",
-            "app.js?v=20260526-seedbed-planting-b29");
+            "content-data.js?v=20260526-crystal-inspector-b31",
+            "app.js?v=20260526-crystal-inspector-b31");
+
+        var appJs = ReadRepoText("website", "app.js");
 
         AssertSourceContains(
-            ReadRepoText("website", "app.js"),
+            appJs,
             "requestUrl.searchParams.set(\"v\", appVersion);",
             "fetch(requestUrl, { cache: \"no-cache\" })");
+
+        AssertSourceContains(
+            websiteData,
+            "...mechanicGlossary.map(mechanicCodexItem)",
+            "function mechanicCodexItem(mech)",
+            "isMechanicsCodex: true");
+
+        AssertSourceContains(
+            appJs,
+            "function findRelatedMechanics(item)",
+            "itemMechanic?.relatedMechanicIds?.includes(mech.id)",
+            "if (item.namespace === \"mechanics\" && mech.id === itemKeyStr) continue;",
+            "Related Mechanics",
+            "\u673a\u5236\u89e3\u91ca");
 
         Assert.True(
             File.Exists(RepoPath("website", "assets", "source-art", "relics", "sere_talon.png")),
@@ -140,6 +156,21 @@ public sealed class WebsiteContentGuardTests
                   })
         {
             Assert.DoesNotContain(staleText, websiteData, StringComparison.Ordinal);
+        }
+
+        foreach (var staleManualMechanicEntry in new[]
+                 {
+                     "manual(\"\u8840\u503a\u4e0e\u8d43\u7269\u9501\"",
+                     "manual(\"\u5a01\u4eea\u4e0e\u94f8\u4ee4\"",
+                     "manual(\"\u6d1b\u838e\u4e4b\u88c1\u51b3\"",
+                     "manual(\"\u88c2\u53d8\u9644\u9b54\"",
+                     "manual(\"\u82d7\u5e8a\u4e0e\u6839\u82bd\"",
+                     "manual(\"\u706b\u5370\u7cbe\u82f1\"",
+                     "manual(\"\u6218\u65d7\u623f\"",
+                     "manual(\"\u6df1\u5c42\u652f\u7ebf\""
+                 })
+        {
+            Assert.DoesNotContain(staleManualMechanicEntry, websiteData, StringComparison.Ordinal);
         }
     }
 }

@@ -268,7 +268,8 @@ public sealed class EngineeringGovernanceGuardTests
             scriptsReadme,
             "`generate-patch-inventory.ps1`",
             "`validate-repository-hygiene.ps1`",
-            "`report-worktree-batches.ps1`");
+            "`report-worktree-batches.ps1`",
+            "`spire-plus-package-evidence.ps1`");
     }
 
     [Fact]

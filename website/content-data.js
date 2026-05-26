@@ -647,25 +647,25 @@ window.SPIRE_PLUS_DATA = {
     }
   ],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.30.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.31.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.30/SpirePlus-v0.1.0-private-beta.30.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.31/SpirePlus-v0.1.0-private-beta.31.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.30",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.31",
     baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.1.4/BaseLib.3.1.4.zip",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.30.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.30"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.31.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.31"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,943,794 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B"]
+      ["\u4f53\u79ef", "18,943,793 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.30.zip\u3002",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.31.zip\u3002",
     "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -698,7 +698,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.30"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.31"]
     ]
   },
   updateGroups: [
@@ -844,14 +844,7 @@ window.SPIRE_PLUS_DATA = {
       items: [
         manual("\u6c34\u6676\u7403\u9884\u77e5", "\u539f\u7248\u65e0\u9884\u77e5\u6309\u94ae\u3002", "\u6c34\u6676\u7403\u5c0f\u6e38\u620f\u4e2d\u663e\u793a\u9884\u77e5\u6309\u94ae\uff1b\u53ea\u6539\u53d8\u906e\u7f69\u53ef\u89c1\u6027\uff0c\u4e0d\u53d1\u653e\u5956\u52b1\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/relics/relic.png", "crystal_sphere_peek"),
         manual("\u53d8\u6362\u771f\u5b9e\u9884\u89c8", "\u539f\u7248\u4e0d\u663e\u793a\u786e\u5b9a\u7ed3\u679c\u3002", "\u4f7f\u7528\u590d\u5236\u7684\u968f\u673a\u6570\u5feb\u7167\u9884\u6d4b\u53d8\u6362\u7ed3\u679c\uff1b\u4e0d\u521b\u5efa\u5361\u724c\uff0c\u4e0d\u63a8\u8fdb\u771f\u5b9e\u968f\u673a\u6570\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/relics/relic.png", "transform_preview"),
-        manual("血债与赃物锁", "原版无血债与赃物锁机制。", "拥有血债时，受到未格挡的伤害会累积等量血债；每层血债会增加受到的生命流失。需要打出契约卡牌打破赃物锁，或在休息处使用切肉选项来减少血债。", ["机制"], "assets/card_portraits/vakuu_temptation.png", "mechanic_blood_debt"),
-        manual("威仪与铸令", "原版无铸令与威仪机制。", "击败火印精英获得。可在下一个休息处使用：休息随机升级1张卡牌，固定锻造额外回复7 HP。", ["机制"], "assets/ascension/firemarked_elite_indicator.png", "mechanic_forge_token"),
-        manual("洛莎之裁决", "原版无裁决与延期裁决。", "推迟生命流失或诅咒卡牌的结算，转化为挂起契约或临时手牌状态，允许玩家在后续回合中通过特定卡牌手段进行化解。", ["机制"], "assets/card_portraits/morvi_archive_pages.png", "mechanic_verdict"),
-        manual("裂变附魔", "原版卡牌无裂变附魔。", "进阶13开启的特殊附魔。卡牌奖励中的攻击或技能牌有几率获得裂变附魔，卡牌耗能-1，但打出后获得消耗属性。", ["机制"], "assets/ascension/fission_enchantment_icon.png", "mechanic_fission"),
-        manual("苗床与根芽", "原版无苗床与根芽机制。", "乌尔妲与进阶14/15/18的连带机制。苗床先给8/12格挡，并设置2/3格苗床。种下会在合格牌进入手牌前把它移出当前战斗并给1张枯壳；它不是打出、弃牌或关键词消耗。临时状态和临时诅咒战后消失，永久诅咒不会被永久删除。根芽按本场已处理结算，战后不会变成根蚀；根蚀只冻结本场结束结算，不好转、不恶化、不分裂、不净化，战后保持原阶段。", ["机制"], "assets/card_portraits/rootblight_i.png", "mechanic_seedbed"),
-        manual("火印精英", "原版精英无火印属性。", "进阶12引入的强化精英。精英会随机获得火印宿主能力（力量、生命、熔甲、回复），击败后获得铸令，卡牌奖励提升为4选1。", ["机制"], "assets/ascension/firemarked_elite_indicator.png", "mechanic_firemarked"),
-        manual("战旗房", "原版战斗无战旗随从。", "进阶16引入的强化普通战斗。会随机刷出战旗效果（先锋、盾阵、血赏等），战斗奖励卡牌具有15%的裂变几率。", ["机制"], "assets/ascension/banner_room_indicator.png", "mechanic_banner"),
-        manual("深层支线", "原版地图无深层分支路线。", "进阶17引入的分支路线。第二、三幕中会插入3-4节点长度 of 极度危险支线，通往支线终点会额外赠送一个罕见遗物。", ["机制"], "assets/relics/relic.png", "mechanic_deepbranch")
+        ...mechanicGlossary.map(mechanicCodexItem)
       ]
     }
   ],
@@ -863,7 +856,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.30.zip；游戏内显示名为 Spire Plus。"],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.31.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -983,6 +976,24 @@ function manual(title, vanilla, current, tags, icon, i18nKey) {
   return { title, vanilla, current, tags, icon, i18nKey: finalKey, namespace: "mechanics" };
 }
 
+function mechanicCodexItem(mech) {
+  const bulletDetails = (mech.bullets || []).map((bullet, index) =>
+    detail(`\u8981\u70b9 ${index + 1}`, bullet, `Point ${index + 1}`, (mech.bulletsEn || [])[index] || bullet));
+
+  return {
+    title: mech.title,
+    titleEn: mech.titleEn,
+    desc: mech.desc,
+    descEn: mech.descEn,
+    namespace: "mechanics",
+    i18nKey: mech.id,
+    tags: mech.tags,
+    icon: mech.icon,
+    details: bulletDetails,
+    isMechanicsCodex: true
+  };
+}
+
 window.SPIRE_PLUS_DATA.i18n = {
   zh: {
     labels: {
@@ -1045,7 +1056,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       }
     ],
     installSteps: [
-      "下载 SpirePlus-v0.1.0-private-beta.30.zip。",
+      "下载 SpirePlus-v0.1.0-private-beta.31.zip。",
       "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
       "常见 Windows 路径：Steam\\steamapps\\common\\Slay the Spire 2。",
       "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -1163,17 +1174,17 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.30.zip"],
-        ["Version", "v0.1.0-private-beta.30"],
+        ["File", "SpirePlus-v0.1.0-private-beta.31.zip"],
+        ["Version", "v0.1.0-private-beta.31"],
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,943,794 bytes"],
-        ["Hash", "E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B"]
+        ["Size", "18,943,793 bytes"],
+        ["Hash", "E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.30.zip.",
+      "Download SpirePlus-v0.1.0-private-beta.31.zip.",
       "Download BaseLib.3.1.4.zip and extract it to the game's mods\\BaseLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
@@ -1205,7 +1216,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.30"]
+          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.31"]
         ]
       },
     updateGroups: [
@@ -1567,7 +1578,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.30.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.31.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]

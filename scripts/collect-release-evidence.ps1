@@ -1,9 +1,9 @@
 param(
     [string]$EvidenceDir,
 
-    [string]$PackageSha256 = "E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B",
+    [string]$PackageSha256 = "E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618",
 
-    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.30.zip",
+    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.31.zip",
 
     [switch]$Launch,
 
@@ -18,6 +18,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'spire-plus-package-evidence.ps1')
 $runtimeRoot = Join-Path $repoRoot '.tools\runtime-evidence'
 $liveSessionScript = Join-Path $PSScriptRoot 'spire-plus-live-session.ps1'
 $verifierScript = Join-Path $PSScriptRoot 'verify-spire-plus-release-evidence.ps1'
@@ -443,11 +444,9 @@ $packageHashes = [ordered]@{
     CreatedAt = (Get-Date).ToString('o')
     Files = @(
         Get-HashRow -RelativePath 'EZMicroBalance.json'
-        Get-HashRow -RelativePath $PackagePath
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\EZMicroBalance.dll'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\EZMicroBalance.pck'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\EZMicroBalance.json'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\README_INSTALL.txt'
+        foreach ($artifactPath in (Get-SpirePlusPackageArtifactRelativePaths -RepoRoot $repoRoot -PackagePath $PackagePath)) {
+            Get-HashRow -RelativePath $artifactPath
+        }
     )
 }
 

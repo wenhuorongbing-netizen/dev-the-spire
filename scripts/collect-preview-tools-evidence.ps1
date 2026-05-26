@@ -10,6 +10,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'spire-plus-package-evidence.ps1')
 $runtimeRoot = Join-Path $repoRoot '.tools\runtime-evidence'
 $liveSessionScript = Join-Path $PSScriptRoot 'spire-plus-live-session.ps1'
 
@@ -214,11 +215,9 @@ $packageHashes = [ordered]@{
     CreatedAt = (Get-Date).ToString('o')
     Files = @(
         Get-HashRow -RelativePath 'EZMicroBalance.json'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.30.zip'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\EZMicroBalance.dll'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\EZMicroBalance.pck'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\EZMicroBalance.json'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.30\EZMicroBalance\README_INSTALL.txt'
+        foreach ($artifactPath in (Get-SpirePlusPackageArtifactRelativePaths -RepoRoot $repoRoot)) {
+            Get-HashRow -RelativePath $artifactPath
+        }
     )
 }
 

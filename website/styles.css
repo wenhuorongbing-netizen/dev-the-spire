@@ -1888,3 +1888,63 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+/* Related Mechanics styling inside Card Inspector */
+.inspector-related-mechanics {
+  margin-top: 24px;
+  border-top: 1px solid var(--line-strong);
+  padding-top: 16px;
+}
+
+.mechanics-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.mechanic-info-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line-dim);
+  padding: 12px 16px;
+  border-radius: var(--radius-mild);
+}
+
+.mechanic-info-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.mechanic-info-header img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: var(--radius-mild);
+}
+
+.mechanic-info-header h4 {
+  font-family: "Outfit", sans-serif;
+  font-size: 15px;
+  margin: 0;
+}
+
+.mechanic-info-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0 0 8px 0;
+}
+
+.mechanic-info-bullets {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.mechanic-info-bullets li {
+  margin-bottom: 4px;
+}

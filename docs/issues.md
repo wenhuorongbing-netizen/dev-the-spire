@@ -2,11 +2,11 @@
 Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-26:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B` |
-| DLL | `177A03863693F5F07DECE5605D0DD1C2047980129E17D8063998FDE8EBE1A959` |
-| PCK | `E0FC406D66F1FE9A170C3E3AA90EA30A661C96CE9730F588BCA42D0423FABA1C` |
-| Manifest | `F2DBE1806B2FDB4A673E71D1FD494BDE3360C24031B42844F194323F100A3C20` |
-| README_INSTALL | `C4ABC5CE1A4CEB570759809EF24FA3486D6503527DA8E394FC176B06AE0D5426` |
+| ZIP | `E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618` |
+| DLL | `C5BB994347596FA4EE10DE23D1CC2AE88DD4779D40970919510A413335CE7C9B` |
+| PCK | `8A267BA928320DCA3A99FD4EA168F7863CD0AA28BF2ECB17FAD2FF24A0C1B26E` |
+| Manifest | `A92F92402A30C459D98E65BD29FB3BC5AC70B14A587002AAA4E4E1CC0C7D4F23` |
+| README_INSTALL | `45F0E46431421CEF3A4FF932E3D189469C5FFBA678DF414383BF3D274CDFA429` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -36,7 +36,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `FISSION-EXHAUST-TRIGGERS` P1 open: Fission cards must count as real Exhaust when they leave play. Audit source/BaseLib/Core so Exhaust listeners fire, including Beyond Roar / 彼岸咆哮 and War Drum / 战鼓.
   Acceptance: use the canonical exhaust path, update intent/text, and test one card-owned trigger plus one relic/power-style exhaust listener.
 - Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
-## Engineering governance blockers: `GOV-WIP-SPLIT` P0 source-fixed; current worktree is clean after intentional batches. `GOV-CI-FIRST-RUN`, `DOC-CONFLICT-GOVERNANCE`, and `PLATFORM-PACKAGE-CHECKS` P2 pending.
+## Engineering governance blockers: `GOV-WIP-SPLIT` P0 source-fixed; current dirty worktree is intentionally batch-classified with 0 unclassified entries. `GOV-CI-FIRST-RUN`, `DOC-CONFLICT-GOVERNANCE`, and `PLATFORM-PACKAGE-CHECKS` P2 pending.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.

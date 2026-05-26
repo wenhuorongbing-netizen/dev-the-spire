@@ -82,11 +82,12 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.30 Soul Tide timing refresh. Result: blocked by a running `SlayTheSpire2.exe` process locking `mods\\EZMicroBalance\\EZMicroBalance.dll`.",
-            "Last successful publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-26 after the beta.30 Soul Tide timing refresh. Result: succeeded against an isolated temporary mods root.",
+            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.31 Soul Tide timing refresh. Result: blocked by a running `SlayTheSpire2.exe` process locking `mods\\EZMicroBalance\\EZMicroBalance.dll`.",
+            "Last successful publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-26 after the beta.31 Soul Tide timing refresh. Result: succeeded against an isolated temporary mods root.",
             "isolated `.tools\\publish-game-root\\mods\\EZMicroBalance` folder",
-            "matched the staging/versioned/zip-entry artifacts on 2026-05-26",
-            "failed 5 installed-folder parity tests");
+            "`D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance`",
+            "staging, versioned, installed, game-root zip, and zip-entry artifacts match");
+        Assert.DoesNotContain("failed 5 installed-folder parity tests", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Sovereign Blade jade boon refresh", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current `.2` manual-test package", devEnvironment, StringComparison.Ordinal);
     }
@@ -299,7 +300,7 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("beta.30 Soul Tide timing refresh", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.31 Soul Tide timing refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta19-loader-smoke-20260525-213336", projectState, StringComparison.Ordinal);
@@ -377,11 +378,53 @@ public sealed class DocumentationCompactnessGuardTests
             "`TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending",
             "`SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending",
             "`GOV-WIP-SPLIT` P0 source-fixed",
+            "current dirty worktree is intentionally batch-classified with 0 unclassified entries",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source-split/refactor passes", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("SERE-TALON/CLAWS-ROUTING", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("SERE-TALON-VISUAL-IDENTITYT P0 source-fixed / package/live-pending", issues, StringComparison.Ordinal);
+        Assert.DoesNotContain("current worktree is clean after intentional batches", issues, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CurrentGovernanceDocsDoNotCarryStaleCleanupState()
+    {
+        var docsByPath = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["PROJECT_STATE.md"] = ReadRepoText("PROJECT_STATE.md"),
+            ["docs/issues.md"] = ReadRepoText("docs", "issues.md"),
+            ["docs/worktree-cleanup-audit.md"] = ReadRepoText("docs", "worktree-cleanup-audit.md"),
+            ["docs/features/ancients-rework-v4/completion-audit.md"] = ReadRepoText("docs", "features", "ancients-rework-v4", "completion-audit.md")
+        };
+
+        AssertSourceContains(
+            docsByPath["PROJECT_STATE.md"],
+            "beta.31 startup remains pending",
+            "beta.31 loader proof still needs a fresh run");
+        AssertSourceContains(
+            docsByPath["docs/worktree-cleanup-audit.md"],
+            "47 dirty entries and 0 unclassified paths");
+        AssertSourceContains(
+            docsByPath["docs/features/ancients-rework-v4/completion-audit.md"],
+            "Legacy root surfaces including `EzDailyContent.json` are absent from the active root",
+            "OnlySpirePlusIsAnActiveRootModSurface");
+
+        foreach (var staleFragment in new[]
+                 {
+                     "beta.26 startup remains pending",
+                     "beta.26 loader proof still needs a fresh run",
+                     "current worktree is clean after intentional batches",
+                     "319 dirty entries",
+                     "80 dirty entries",
+                     "`EzDailyContent.json` still uses id `EzDailyContent`"
+                 })
+        {
+            foreach (var (path, text) in docsByPath)
+            {
+                Assert.DoesNotContain(staleFragment, text, StringComparison.Ordinal);
+            }
+        }
     }
 
     [Fact]
@@ -619,7 +662,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.30 package hash is pending",
+            "Fresh loader smoke for the current beta.31 package hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

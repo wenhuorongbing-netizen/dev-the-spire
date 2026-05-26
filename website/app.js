@@ -462,6 +462,45 @@
     `;
   }
 
+  function localizeMechanic(mech) {
+    if (!mech) return null;
+    const isEn = (lang === "en");
+    return {
+      id: mech.id,
+      title: isEn ? (mech.titleEn || mech.title) : mech.title,
+      desc: isEn ? (mech.descEn || mech.desc) : mech.desc,
+      bullets: isEn ? (mech.bulletsEn || mech.bullets || []) : (mech.bullets || []),
+      icon: mech.icon,
+      keywordClass: mech.keywordClass || "sts-keyword-gold"
+    };
+  }
+
+  function findRelatedMechanics(item) {
+    if (!data.mechanics) return [];
+    const title = normalize(localize(item, "title"));
+    const desc = normalize(localize(item, "desc") || item.current || "");
+    const details = normalize(detailSearchText(item));
+    const combinedText = [title, desc, details].join(" ");
+    const itemKeyStr = itemKey(item);
+    const itemMechanic = data.mechanics.find(mech => mech.id === itemKeyStr);
+
+    const related = [];
+    for (const mech of data.mechanics) {
+      if (item.namespace === "mechanics" && mech.id === itemKeyStr) continue;
+
+      const terms = ((lang === "en" ? (mech.termsEn || mech.terms) : mech.terms) || []);
+      const hasTerm = terms.some(term => combinedText.includes(normalize(term)));
+      const hasMechanicRelation = itemMechanic?.relatedMechanicIds?.includes(mech.id);
+      const hasKey = mech.relatedItemKeys?.some(k => {
+        return itemKeyStr.includes(k) || k.includes(itemKeyStr);
+      });
+
+      if (hasTerm || hasKey || hasMechanicRelation) {
+        related.push(localizeMechanic(mech));
+      }
+    }
+    return related;
+  }
   function CardInspectorComponent(item) {
     if (!item) {
       return `
@@ -481,6 +520,31 @@
       : item.vanilla || item.groupDefaultVanilla);
     const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
     const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item);
+
+    const relatedMechanics = findRelatedMechanics(item);
+    let relatedHtml = "";
+    if (relatedMechanics.length > 0) {
+      const sectTitle = lang === "en" ? "Related Mechanics" : "机制解释";
+      const itemsHtml = relatedMechanics.map(mech => {
+        const bulletsHtml = mech.bullets.map(b => `<li>${formatStsText(b, false)}</li>`).join("");
+        return `
+          <div class="mechanic-info-box">
+            <div class="mechanic-info-header">
+              ${renderImage(mech.icon, mech.title)}
+              <h4 class="${mech.keywordClass}">${mech.title}</h4>
+            </div>
+            <p class="mechanic-info-desc">${formatStsText(mech.desc, false)}</p>
+            ${bulletsHtml ? `<ul class="mechanic-info-bullets">${bulletsHtml}</ul>` : ""}
+          </div>
+        `;
+      }).join("");
+      relatedHtml = `
+        <div class="inspector-related-mechanics">
+          <h4 class="inspector-sect-title">${sectTitle}</h4>
+          <div class="mechanics-grid">${itemsHtml}</div>
+        </div>
+      `;
+    }
 
     return `
       <div class="inspector-card-preview">
@@ -512,6 +576,7 @@
           </div>
         </div>
         ${renderItemDetails(item)}
+        ${relatedHtml}
       </div>
     `;
   }
@@ -1069,6 +1134,30 @@
       const inspectorPane = app.querySelector("#inspectorPane");
       const cardsPane = app.querySelector(".cards-pane");
 
+      const updatePinStateInDOM = () => {
+        compareCards.forEach(c => {
+          const cIndex = parseInt(c.dataset.index);
+          const cItem = allUpdateItems[cIndex];
+          const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(cItem);
+          const isActive = pinnedInspectItem ? isPinned : (activeInspectItem && itemKey(activeInspectItem) === itemKey(cItem));
+          c.classList.toggle("active-inspect", isActive);
+
+          let pinBadge = c.querySelector(".pin-badge");
+          if (isPinned && !pinBadge) {
+            pinBadge = document.createElement("span");
+            pinBadge.className = "pin-badge";
+            pinBadge.textContent = lang === 'en' ? 'Locked' : '已锁定';
+            c.insertBefore(pinBadge, c.firstChild);
+          } else if (!isPinned && pinBadge) {
+            pinBadge.remove();
+          }
+        });
+
+        if (inspectorPane) {
+          inspectorPane.innerHTML = CardInspectorComponent(pinnedInspectItem || activeInspectItem || allUpdateItems[0]);
+        }
+      };
+
       compareCards.forEach(card => {
         const index = parseInt(card.dataset.index);
         const item = allUpdateItems[index];
@@ -1092,13 +1181,12 @@
         card.addEventListener("click", (e) => {
           e.stopPropagation();
           if (pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item)) {
-            // Unpin if clicked again
             pinnedInspectItem = null;
           } else {
-            // Pin this card
             pinnedInspectItem = item;
+            activeInspectItem = item;
           }
-          render(); // Refresh list to update locking states
+          updatePinStateInDOM();
         });
       });
 
@@ -1142,7 +1230,23 @@
     const clearPinBtn = event.target.closest("#clearPinBtn");
     if (clearPinBtn) {
       pinnedInspectItem = null;
-      render();
+
+      const compareCards = document.querySelectorAll(".compare-card");
+      const inspectorPane = document.getElementById("inspectorPane");
+
+      compareCards.forEach(c => {
+        const cIndex = parseInt(c.dataset.index);
+        const cItem = allUpdateItems[cIndex];
+        const pinBadge = c.querySelector(".pin-badge");
+        if (pinBadge) pinBadge.remove();
+
+        const isActive = activeInspectItem && itemKey(activeInspectItem) === itemKey(cItem);
+        c.classList.toggle("active-inspect", isActive);
+      });
+
+      if (inspectorPane) {
+        inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem || allUpdateItems[0]);
+      }
       return;
     }
 
@@ -1154,21 +1258,21 @@
       const currentRoute = route();
       if (currentRoute === choiceType) {
         const targetEl = choiceType === "updates"
-          ? document.getElementById("updateFilters") || document.querySelector(".updates-board")
+          ? document.querySelector(".update-board") || document.getElementById("updateFilters")
           : document.querySelector(".merchant-shop");
         if (targetEl) {
-          targetEl.scrollIntoView({ behavior: "smooth" });
+          targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       } else {
         location.hash = choiceType;
         setTimeout(() => {
           const targetEl = choiceType === "updates"
-            ? document.getElementById("updateFilters") || document.querySelector(".updates-board")
+            ? document.querySelector(".update-board") || document.getElementById("updateFilters")
             : document.querySelector(".merchant-shop");
           if (targetEl) {
-            targetEl.scrollIntoView({ behavior: "smooth" });
+            targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
           }
-        }, 100);
+        }, 150);
       }
       return;
     }
