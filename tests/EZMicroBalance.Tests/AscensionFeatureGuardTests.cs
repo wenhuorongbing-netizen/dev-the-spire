@@ -473,6 +473,7 @@ public sealed class AscensionFeatureGuardTests
     {
         var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
         var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
+        var firemarkTargeting = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.Firemarks.Targeting.cs");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
         AssertSourceContains(
@@ -503,6 +504,14 @@ public sealed class AscensionFeatureGuardTests
             "FiremarkOverflowCandidates(combatState, tracker)",
             "LowestHpRatioOverflowTarget(combatState, tracker)",
             "ApplyBossSealCombatStart(combatState, metadata)");
+        AssertSourceContains(
+            firemarkTargeting,
+            "private static Creature? FindFiremarkHost(CombatState combatState)",
+            "enemy.HasPower<MinionPower>()",
+            ".OrderByDescending(enemy => enemy.MaxHp)",
+            "private static IEnumerable<Creature> FiremarkOverflowCandidates",
+            "private static Creature? LowestHpRatioOverflowTarget",
+            "enemy.GetHpPercentRemaining()");
         AssertSourceContains(
             combatService,
             "MaxForgeArmorShatters = 2",
