@@ -1,4 +1,4 @@
-﻿# Ascension 11-20 Implementation Plan
+# Ascension 11-20 Implementation Plan
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
@@ -165,7 +165,7 @@ Required exact APIs:
 | Add master-deck card | `RunState.CreateCard<Root>(player)` / `CreateCard<DeepRoot>(player)` / `CreateCard<RootblightIII>(player)` then `CardPileCmd.Add(card, PileType.Deck, ...)` |
 | Level state | `SavedSpireField<Player,int>` diagnostic Rootblight level, `SavedSpireField<Player,bool>` one-time starter marker, and per-card saved fields for combat-start presence, one-time split state, and Blight Sprout round |
 | Play downgrade | In combat card play, remove the matching master-deck Rootblight card and queue the downgraded replacement; do not listen to non-play exhaust |
-| Combat-end sync | `RootBudCombatHook.AfterCombatEnd(...)` calls `RootDeckService.ResolveCombatEndRootblight(...)` before adding Rootblight I from unplayed Blight Sprout cards, capped at four Rootblight cards |
+| Combat-end sync | `RootBudCombatHook.BeforeCombatStart(...)` retries the starter Rootblight before combat-start marking, then `AfterCombatEnd(...)` calls `RootDeckService.ResolveCombatEndRootblight(...)` before adding Rootblight I from unplayed Blight Sprout cards, capped at four Rootblight cards |
 | Removal/clear | `AfterRestSiteHeal` clears on real rest; `BeforeCardRemoved` clears for normal deck-removal APIs; sync-owned removals suppress the clear hook |
 | Card play behavior | Custom `CardModel.OnPlay(...)`, `CardKeyword.Exhaust`, and `ExhaustOnNextPlay` |
 | Card removability | Do not add `CardKeyword.Eternal`; verify `CardModel.IsRemovable` stays true |
@@ -212,6 +212,7 @@ Scope:
 - If it entered hand and was not played before combat end, add one Rootblight I after combat, capped by the 4-card Rootblight limit.
 - A18 elite Blight Sprout is also implemented behind `SPIREPLUS_ASCENSION_DEBUG_LEVEL=18`, but only for Acts 2/3 elites.
 - If a player dies during the combat, that combat's Blight Sprout does not raise Rootblight for that player after the game's pre-end revive path.
+- Combat start is the last repair point for A14 starter Rootblight. It retries `RootDeckService.EnsureStartingRoot(...)` before marking existing Rootblight cards as present at combat start.
 
 Required proof:
 

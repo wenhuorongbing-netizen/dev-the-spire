@@ -97,6 +97,17 @@ internal static class TestRepo
             }.Select(fileName => ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", fileName)));
     }
 
+    internal static string ReadChosenDecreeCombatSources()
+    {
+        return string.Join(
+            Environment.NewLine,
+            new[]
+            {
+                "AscensionCombatModifierService.BossSeals.ChosenDecree.cs",
+                "AscensionCombatModifierService.BossSeals.ChosenDecree.Cards.cs"
+            }.Select(fileName => ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", fileName)));
+    }
+
     internal static string RepoPath(params string[] parts)
     {
         return Path.Combine(new[] { Root }.Concat(parts).ToArray());

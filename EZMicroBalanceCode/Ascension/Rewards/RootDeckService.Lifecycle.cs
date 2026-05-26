@@ -1,10 +1,10 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
+namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 internal static partial class RootDeckService
 {
-    public static async Task EnsureStartingRoot(RunState runState)
+    public static async Task EnsureStartingRoot(IRunState runState)
     {
         if (!AscensionFeatureGate.IsRootblightEnabled(runState))
         {

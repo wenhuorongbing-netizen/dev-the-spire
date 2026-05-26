@@ -270,7 +270,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
     public void VisibleBossAbilityStateCanRehydrateItsRuntimeTrackerWhereSourceSafe()
     {
         var aeonglass = ReadAeonglassHourglassCombatSources();
-        var decree = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.ChosenDecree.cs");
+        var decree = ReadChosenDecreeCombatSources();
         var struggleBait = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.StruggleBait.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
         var aeonglassRuntimePowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassRuntimePowers.cs");
@@ -403,7 +403,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var boiling = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.BoilingCritical.cs");
         var marginalNote = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.MarginalNote.cs");
         var struggleBait = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.StruggleBait.cs");
-        var chosenDecree = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.ChosenDecree.cs");
+        var chosenDecree = ReadChosenDecreeCombatSources();
         var turnFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.TurnFlow.cs");
         var combatLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatLifecycle.cs");
         var combatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatEvents.cs");

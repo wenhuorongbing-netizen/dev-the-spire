@@ -19,8 +19,12 @@ internal sealed partial class RootBudCombatHook
 
         var tracker = GetTracker(state);
         await AscensionCombatModifierService.BeforeCombatStart(state, tracker);
-        if (AscensionFeatureGate.IsRootblightEnabled(state.RunState))
+        var rootblightEnabled = AscensionFeatureGate.IsRootblightEnabled(state.RunState);
+        if (rootblightEnabled)
         {
+            // Run and room hooks normally add the starter Rootblight first. Combat start
+            // is the last safe repair point before combat-end growth bookkeeping.
+            await RootDeckService.EnsureStartingRoot(state.RunState);
             foreach (var player in state.Players.Where(player => player.IsActiveForHooks))
             {
                 RootDeckService.MarkCombatStartRootblight(player);
@@ -30,7 +34,7 @@ internal sealed partial class RootBudCombatHook
         if (!IsGameplayEnabledForCurrentRoom(state))
         {
             var evidence = CreateBlightSproutEvidenceData(state);
-            evidence["rootblightEnabled"] = AscensionFeatureGate.IsRootblightEnabled(state.RunState);
+            evidence["rootblightEnabled"] = rootblightEnabled;
             evidence["bossSproutEnabled"] = AscensionFeatureGate.IsBossBlightSproutEnabled(state.RunState);
             evidence["eliteSproutEnabled"] = AscensionFeatureGate.IsEliteBlightSproutEnabled(state.RunState);
             ReleaseEvidenceLog.Log("BlightSprout", "gate_skipped", runState: state.RunState, data: evidence);

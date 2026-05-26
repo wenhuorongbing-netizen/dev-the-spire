@@ -245,6 +245,7 @@ public sealed class AscensionFeatureGuardTests
         var serviceState = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.State.cs");
         var serviceLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.Lifecycle.cs");
         var runHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
+        var combatHookLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs");
 
         AssertSourceContains(
             runHook,
@@ -273,6 +274,16 @@ public sealed class AscensionFeatureGuardTests
         AssertBefore(blightSproutAddBlock, "if (!await AddRootblightCard(player, 1, preferOverlayNotice: true))", "MarkRootBeginsApplied(player);");
         Assert.Contains("hadRootblightBeforeAdd || FindRootFamilyCards(player).Count > 0", blightSproutAddBlock, StringComparison.Ordinal);
         Assert.Equal(2, CountOccurrences(blightSproutAddBlock, "MarkRootBeginsApplied(player);"));
+
+        var combatStartBlock = SliceBetween(
+            combatHookLifecycle,
+            "public override async Task BeforeCombatStart()",
+            "if (!IsGameplayEnabledForCurrentRoom(state))");
+        AssertBefore(
+            combatStartBlock,
+            "await RootDeckService.EnsureStartingRoot(state.RunState);",
+            "RootDeckService.MarkCombatStartRootblight(player);");
+        Assert.Contains("last safe repair point before combat-end growth bookkeeping", combatStartBlock, StringComparison.Ordinal);
     }
 
     [Fact]

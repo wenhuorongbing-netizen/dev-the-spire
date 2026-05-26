@@ -237,6 +237,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.AeonglassHourglass.State.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.A20Courtyard.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.BoilingCritical.cs",
+        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.ChosenDecree.Cards.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.ChosenDecree.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.CombatStart.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.Events.cs",
