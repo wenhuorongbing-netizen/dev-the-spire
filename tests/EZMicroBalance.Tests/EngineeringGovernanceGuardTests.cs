@@ -21,6 +21,7 @@ public sealed class EngineeringGovernanceGuardTests
         AssertRepoFileExists("scripts", "ci-full-validation.ps1");
         AssertRepoFileExists("scripts", "report-worktree-batches.ps1");
         AssertRepoFileExists("scripts", "prune-generated-sidecars.ps1");
+        AssertRepoFileExists("scripts", "prune-stale-publish-packages.ps1");
 
         var gitignore = ReadRepoText(".gitignore");
         Assert.Contains("/EZMicroBalanceCode/**/*.cs.uid", gitignore, StringComparison.Ordinal);
@@ -108,6 +109,21 @@ public sealed class EngineeringGovernanceGuardTests
             "Remove-Item -LiteralPath $file.FullName -Force",
             "Dry run complete");
         Assert.DoesNotContain("git clean", sidecarPruneScript, StringComparison.OrdinalIgnoreCase);
+
+        var stalePublishPruneScript = ReadRepoText("scripts", "prune-stale-publish-packages.ps1");
+        AssertSourceContains(
+            stalePublishPruneScript,
+            "[switch]$DryRun",
+            "EZMicroBalance.json",
+            "publish",
+            "SpirePlus-$currentVersion",
+            "v0\\.1\\.0-private-beta",
+            "Current package zip must exist before pruning stale packages",
+            "Refusing to prune path outside expected parent",
+            "[int]$Matches[1] -lt $currentBetaNumber",
+            "Remove-Item -LiteralPath $candidate.FullName -Recurse -Force",
+            "Dry run complete");
+        Assert.DoesNotContain("git clean", stalePublishPruneScript, StringComparison.OrdinalIgnoreCase);
 
         var pullRequestTemplate = ReadRepoText(".github", "pull_request_template.md");
         AssertSourceContains(
@@ -293,6 +309,7 @@ public sealed class EngineeringGovernanceGuardTests
             "`validate-repository-hygiene.ps1`",
             "`report-worktree-batches.ps1`",
             "`prune-generated-sidecars.ps1`",
+            "`prune-stale-publish-packages.ps1`",
             "`spire-plus-package-evidence.ps1`");
     }
 
