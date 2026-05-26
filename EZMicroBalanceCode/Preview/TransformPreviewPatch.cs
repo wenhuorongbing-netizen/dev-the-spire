@@ -1,17 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
-using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
-using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 
@@ -121,59 +116,6 @@ internal static partial class TransformPreviewCyclePatch
                     ["exception"] = exception.GetType().Name
                 });
             PreviewLog.Warn("Transform prediction skipped: " + exception.Message);
-        }
-    }
-
-    private static MethodBase TargetMethod()
-    {
-        return AccessTools.Method(typeof(NTransformPreview), "CycleThroughCards")!;
-    }
-
-    private static bool Prefix(NTransformPreview __instance, NPreviewCardHolder holder, CardPile cardPile, ref Task __result)
-    {
-        try
-        {
-            if (!SpirePlusModConfig.EnableTransformPrediction || !SpirePlusModConfig.TransformPredictionAlwaysOn)
-            {
-                return true;
-            }
-
-            if (!TryDequeuePrediction(__instance, out var predicted))
-            {
-                return true;
-            }
-
-            if (predicted == null)
-            {
-                return true;
-            }
-
-            holder.Hitbox.MouseFilter = Control.MouseFilterEnum.Stop;
-            holder.ReassignToCard(predicted, cardPile.Type, null, ModelVisibility.Visible);
-            ReleaseEvidenceLog.Log(
-                "PreviewTransform",
-                "prediction_displayed",
-                data: new Dictionary<string, object?>
-                {
-                    ["card"] = predicted.Id.Entry,
-                    ["netMode"] = MultiplayerFeaturePolicy.DescribeNetMode(MultiplayerFeaturePolicy.CurrentRunStateOrNull())
-                });
-            __result = Task.CompletedTask;
-            return false;
-        }
-        catch (Exception exception)
-        {
-            ClearPredictions(__instance);
-            ReleaseEvidenceLog.Log(
-                "PreviewTransform",
-                "prediction_display_failed_fallback_vanilla",
-                runState: MultiplayerFeaturePolicy.CurrentRunStateOrNull(),
-                data: new Dictionary<string, object?>
-                {
-                    ["exception"] = exception.GetType().Name
-                });
-            PreviewLog.Warn("Transform prediction display failed; falling back to vanilla cycling: " + exception.Message);
-            return true;
         }
     }
 }

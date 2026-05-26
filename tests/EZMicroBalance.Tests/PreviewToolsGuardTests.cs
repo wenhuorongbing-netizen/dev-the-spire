@@ -64,6 +64,7 @@ public sealed class PreviewToolsGuardTests
         var policySource = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
         var crystalSource = ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekPatch.cs");
         var transformSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPatch.cs");
+        var transformDisplaySource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewCyclePatch.Display.cs");
         var transformContextSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionRngContext.cs");
         var combinedPreviewSource = ReadSourceTree("EZMicroBalanceCode", "Preview");
 
@@ -83,11 +84,12 @@ public sealed class PreviewToolsGuardTests
         Assert.Contains("coop_ui_only_rng_context_registered", transformContextSource, StringComparison.Ordinal);
         Assert.Contains("Transform prediction displays only the local preview card", transformSource, StringComparison.Ordinal);
         Assert.Contains("does not create a PlayerChoice, reward alternative, or advance the real transform RNG", transformSource, StringComparison.Ordinal);
-        Assert.Contains("MultiplayerFeaturePolicy.CurrentRunStateOrNull()", transformSource, StringComparison.Ordinal);
+        Assert.Contains("MultiplayerFeaturePolicy.CurrentRunStateOrNull()", combinedPreviewSource, StringComparison.Ordinal);
         Assert.Contains("ClearPredictions(__instance)", transformSource, StringComparison.Ordinal);
         Assert.Contains("Clear(player)", transformContextSource, StringComparison.Ordinal);
-        Assert.Contains("prediction_display_failed_fallback_vanilla", transformSource, StringComparison.Ordinal);
-        Assert.Contains("return true;", SliceFrom(transformSource, "catch (Exception exception)"), StringComparison.Ordinal);
+        Assert.Contains("prediction_display_failed_fallback_vanilla", transformDisplaySource, StringComparison.Ordinal);
+        Assert.Contains("LogDisplayFailure(__instance, exception)", transformDisplaySource, StringComparison.Ordinal);
+        Assert.Contains("return true;", SliceFrom(transformDisplaySource, "catch (Exception exception)"), StringComparison.Ordinal);
         Assert.DoesNotContain("PlayerChoiceSynchronizer", combinedPreviewSource, StringComparison.Ordinal);
         Assert.DoesNotContain("new PlayerChoice", combinedPreviewSource, StringComparison.Ordinal);
         Assert.DoesNotContain("CardRewardAlternative", combinedPreviewSource, StringComparison.Ordinal);
@@ -145,9 +147,10 @@ public sealed class PreviewToolsGuardTests
     public void TransformPredictionDoesNotCreateRealCardsOrAdvanceRealRng()
     {
         var patchSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPatch.cs");
+        var displaySource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewCyclePatch.Display.cs");
         var queueSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPredictionQueue.cs");
         var predictionSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionService.cs");
-        var combined = patchSource + Environment.NewLine + queueSource + Environment.NewLine + predictionSource;
+        var combined = patchSource + Environment.NewLine + displaySource + Environment.NewLine + queueSource + Environment.NewLine + predictionSource;
 
         Assert.Contains("TransformPredictionRngContext.TryConsume", patchSource, StringComparison.Ordinal);
         Assert.Contains("no verified transform RNG source", patchSource, StringComparison.Ordinal);
@@ -155,11 +158,11 @@ public sealed class PreviewToolsGuardTests
         Assert.Contains("PreparePredictions(__instance", patchSource, StringComparison.Ordinal);
         Assert.Contains("ClearPredictions(__instance)", patchSource, StringComparison.Ordinal);
         Assert.Contains("StorePredictions(preview, queue)", patchSource, StringComparison.Ordinal);
-        Assert.Contains("TryDequeuePrediction(__instance", patchSource, StringComparison.Ordinal);
+        Assert.Contains("TryDequeuePrediction(preview", displaySource, StringComparison.Ordinal);
         Assert.Contains("PredictionsByPreview.TryGetValue(preview", queueSource, StringComparison.Ordinal);
         Assert.Contains("predictions.Pending.Count == 0", queueSource, StringComparison.Ordinal);
-        Assert.Contains("return true;", patchSource, StringComparison.Ordinal);
-        Assert.Contains("holder.ReassignToCard", patchSource, StringComparison.Ordinal);
+        Assert.Contains("return true;", displaySource, StringComparison.Ordinal);
+        Assert.Contains("holder.ReassignToCard", displaySource, StringComparison.Ordinal);
         Assert.Contains("CardFactory.GetDefaultTransformationOptions", predictionSource, StringComparison.Ordinal);
         Assert.Contains("rng.NextItem(optionArray)", predictionSource, StringComparison.Ordinal);
         Assert.Contains("predicted.ToMutable()", predictionSource, StringComparison.Ordinal);
