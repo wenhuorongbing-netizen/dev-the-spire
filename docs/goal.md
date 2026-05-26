@@ -8,7 +8,7 @@ Current target: test-ready manual build, not release-ready.
 - Keep Vakuu's Sere Talon separate from Tanx Claws: Sere Talon offers 4 Curses, choose 1, then adds 2 Wish and 1 Wish+; Tanx Claws remains the Maul+ transform relic.
 - Keep recent source-level polish focused: A20 selector localization, direct-gain feedback, Elite Root payoff feedback, Seedbed / Planting clarity, light elite damage reduction, co-op fail-closed hardening, and Royal Decree safety.
 - Crystal Sphere and transform-preview live proof inside Spire Plus is still required; source review alone does not prove multiplayer or reconnect safety.
-- Archive long prompt dumps under `docs/archive/feature-inputs/`; see `goal-md-mojibake-intake-20260523.md`, `goal-coop-preview-plan-20260525.md`, and `goal-preview-plan-intake-20260526.md`.
+- Archive long prompt dumps under `docs/archive/feature-inputs/`; see `goal-md-mojibake-intake-20260523.md`, `goal-coop-preview-plan-20260525.md`, `goal-preview-plan-intake-20260526.md`, and `goal-architecture-refactor-mojibake-intake-20260526.md`.
 
 ## Closure rules
 

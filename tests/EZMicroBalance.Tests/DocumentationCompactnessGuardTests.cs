@@ -25,12 +25,20 @@ public sealed class DocumentationCompactnessGuardTests
             "Crystal Sphere and transform-preview live proof inside Spire Plus",
             "Seedbed / Planting clarity",
             "No source-only pass may mark this goal complete");
-        Assert.Contains("goal-md-mojibake-intake-20260523.md", goal, StringComparison.Ordinal);
-        Assert.Contains("goal-coop-preview-plan-20260525.md", goal, StringComparison.Ordinal);
-        Assert.Contains("goal-md-mojibake-intake-20260523.md", archiveReadme, StringComparison.Ordinal);
-        Assert.Contains("goal-coop-preview-plan-20260525.md", archiveReadme, StringComparison.Ordinal);
+        foreach (var archivedGoalInput in new[]
+        {
+            "goal-md-mojibake-intake-20260523.md",
+            "goal-coop-preview-plan-20260525.md",
+            "goal-preview-plan-intake-20260526.md",
+            "goal-architecture-refactor-mojibake-intake-20260526.md"
+        })
+        {
+            Assert.Contains(archivedGoalInput, goal, StringComparison.Ordinal);
+            Assert.Contains(archivedGoalInput, archiveReadme, StringComparison.Ordinal);
+            AssertRepoFileExists("docs", "archive", "feature-inputs", archivedGoalInput);
+        }
 
-        foreach (var stalePromptMarker in new[] { "## P0", "## P1", "One-Shot Prompt", "Phase 1", "sourcecodeonlyaianalysis" })
+        foreach (var stalePromptMarker in new[] { "## P0", "## P1", "One-Shot Prompt", "Phase 1", "sourcecodeonlyaianalysis", "## 结论", "FeatureRegistry" })
         {
             Assert.DoesNotContain(stalePromptMarker, goal, StringComparison.OrdinalIgnoreCase);
         }
