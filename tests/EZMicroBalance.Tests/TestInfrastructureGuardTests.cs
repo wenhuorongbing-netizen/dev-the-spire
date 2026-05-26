@@ -247,7 +247,7 @@ public sealed class TestInfrastructureGuardTests
             "Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted",
             "stale redirected publish-output folders",
             "| `source code/` | Default keep because current tests/docs require it. |",
-            "| `publish/` | Retained current beta.44 package/staging/cover-source output; stale beta.0-beta.43 ZIPs and expanded folders were deleted after confirming current-package hash/path parity. Future prune should happen only after a new package rebuild/hash refresh. |",
+            "| `publish/` | Retained current beta.45 package/staging/cover-source output; stale beta.0-beta.44 ZIPs and expanded folders were deleted after confirming current-package hash/path parity. Future prune should happen only after a new package rebuild/hash refresh. |",
             "| `.tools/` | Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted; remaining `.tools/` subfolders are retained as current evidence, art provenance, local archives, or local tool installations. Wholesale deletion is not recommended. |");
     }
 

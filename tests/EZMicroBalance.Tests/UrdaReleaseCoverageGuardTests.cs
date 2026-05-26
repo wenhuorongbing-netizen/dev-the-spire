@@ -30,7 +30,8 @@ public sealed class UrdaReleaseCoverageGuardTests
         var urdaAfterRain = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.AfterRain.cs");
         var urdaEliteRoot = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.EliteRoot.cs");
         var urdaHumusPact = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.HumusPact.cs");
-        var urdaRouteRewards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RouteRewards.cs");
+        var urdaRootedRoute = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootedRoute.cs");
+        var urdaRootedRouteReward = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootedRouteReward.cs");
         var urdaShallowRootRelic = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.ShallowRootRelic.cs");
         var urdaTrialBranch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.TrialBranch.cs");
         var urdaTrialBranchDisplay = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.TrialBranchDisplay.cs");
@@ -424,13 +425,20 @@ public sealed class UrdaReleaseCoverageGuardTests
             "RelicSelectCmd.FromChooseARelicScreen",
             "RelicCmd.Obtain",
             "PlayerCmd.GainGold(ShallowRootInitialGold");
-        var rootedRoute = urdaRouteRewards;
         AssertSourceContains(
-            rootedRoute,
+            urdaRootedRoute,
             "FindRootedRouteTarget(player)",
             "point.coord.row + 1 <= RootedRouteMaxVisibleFloor",
             "EnsureQuestMarker<UrdaRootedRouteMapQuestMarker>",
             "RootedRouteCoord = FormatCoord(target.coord)");
+        Assert.DoesNotContain("RewardsSet(player)", urdaRootedRoute, StringComparison.Ordinal);
+        AssertSourceContains(
+            urdaRootedRouteReward,
+            "TryResolveRootedRouteReward(Player player)",
+            "CreateRootedRouteRewardCards(player)",
+            "RootedRouteCardRewards = 3",
+            "WithCustomRewards(cards.Select<CardModel, Reward>(card => new SpecialCardReward(card, player)).ToList())",
+            "RemoveQuestMarker<UrdaRootedRouteMapQuestMarker>(current)");
         var rootSight = urdaSource;
         AssertSourceContains(
             rootSight,
