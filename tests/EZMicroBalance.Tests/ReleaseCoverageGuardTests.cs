@@ -678,6 +678,7 @@ public sealed class ReleaseCoverageGuardTests
         var readme = ReadRepoText("docs", "README.md");
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
+        Assert.Contains("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);

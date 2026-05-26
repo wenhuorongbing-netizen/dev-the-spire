@@ -378,7 +378,8 @@ public sealed class DocumentationCompactnessGuardTests
             "`TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending",
             "`SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending",
             "`GOV-WIP-SPLIT` P0 source-fixed",
-            "current dirty worktree is intentionally batch-classified with 0 unclassified entries",
+            "current committed worktree is clean after the beta.35 batch commit",
+            "0 dirty entries / 0 unclassified entries",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source-split/refactor passes", issues, StringComparison.OrdinalIgnoreCase);
@@ -404,7 +405,7 @@ public sealed class DocumentationCompactnessGuardTests
             "beta.35 loader proof still needs a fresh run");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
-            "38 dirty entries and 0 unclassified paths");
+            "0 dirty entries and 0 unclassified paths after commit `5be5c51`");
         AssertSourceContains(
             docsByPath["docs/features/ancients-rework-v4/completion-audit.md"],
             "Legacy root surfaces including `EzDailyContent.json` are absent from the active root",
@@ -419,10 +420,11 @@ public sealed class DocumentationCompactnessGuardTests
                      "47 dirty entries",
                      "9 dirty entries",
                      "10 dirty entries",
-                      "14 dirty entries",
-                      "21 dirty entries",
-                      "45 dirty entries",
-                      "80 dirty entries",
+                     "14 dirty entries",
+                     "21 dirty entries",
+                     "45 dirty entries",
+                     "80 dirty entries",
+                     "current dirty worktree is intentionally batch-classified",
                      "`EzDailyContent.json` still uses id `EzDailyContent`"
                  })
         {
@@ -787,8 +789,8 @@ public sealed class DocumentationCompactnessGuardTests
         var currentDocs = string.Join(
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains("272 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("292 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("288 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("308 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]
