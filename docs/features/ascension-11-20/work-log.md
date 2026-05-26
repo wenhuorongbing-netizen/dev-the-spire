@@ -8,9 +8,10 @@ Status: active summary only. The full chronological log was archived to `docs/ar
 - A12 Firemarked Elites, A13 Fission, A14-A18 Rootbud/Rootblight, A17 deep route, A19 boss dedicated abilities, and A20 Branded Form stay within the current A11-A20 scope.
 - A21-A30 and custom characters remain out of scope.
 - Firemark, Banner, boss dedicated ability, and shared Ascension combat helpers have been split out of the central combat modifier file.
-- Dedicated ability effect groups are below the current refactor size threshold.
+- Dedicated ability effect groups are below the current refactor size threshold after the Aeonglass Time Sand energy-spend path was split into its own partial file.
 - The 2026-05-22 art pass promoted GPTimage2 Rootbud/Rootblight card portraits and 12 per-boss dedicated ability / Branded Form transparent icons; export/import metadata and manifest tracking are updated, while live in-game visual proof remains pending.
 - The 2026-05-26 Royal Decree hardening pass keeps the Queen/Royal Decree fix narrow: it only marks currently unenchanted Bound cards that pass Core `EnchantmentModel.CanEnchant(...)`, with a source guard tied to `CardCmd.Enchant(...)` failure behavior. Live Queen fight proof remains pending.
+- The 2026-05-26 Aeonglass cleanup inspected `source code/src/Core/Models/Monsters/Aeonglass.cs` again: the local source still uses `EBB_MOVE`, `EYE_LASERS_MOVE`, and `INCREASING_INTENSITY_MOVE`, and `IncreasingIntensityMove(...)` adds Wither through `CardPileCmd.AddToCombatAndPreview<Wither>(...)`. The cleanup only moved Spire Plus's energy-spend Time Sand tracking into `AscensionCombatModifierService.BossSeals.AeonglassHourglass.Energy.cs`; no move ids, save state, hook entry points, or player-visible behavior changed.
 
 ## Manual Gates
 

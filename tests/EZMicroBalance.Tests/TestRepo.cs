@@ -92,6 +92,7 @@ internal static class TestRepo
             new[]
             {
                 "AscensionCombatModifierService.BossSeals.AeonglassHourglass.cs",
+                "AscensionCombatModifierService.BossSeals.AeonglassHourglass.Energy.cs",
                 "AscensionCombatModifierService.BossSeals.AeonglassHourglass.LaserEcho.cs",
                 "AscensionCombatModifierService.BossSeals.AeonglassHourglass.State.cs"
             }.Select(fileName => ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", fileName)));
