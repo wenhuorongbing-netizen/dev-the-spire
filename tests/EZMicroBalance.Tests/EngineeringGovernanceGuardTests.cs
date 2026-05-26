@@ -74,6 +74,7 @@ public sealed class EngineeringGovernanceGuardTests
         AssertRepoFileExists("scripts", "validate-repository-hygiene.ps1");
         AssertRepoFileExists("scripts", "generate-patch-inventory.ps1");
         AssertRepoFileExists("scripts", "ci-full-validation.ps1");
+        AssertRepoFileExists("scripts", "check-github-workflow-runs.ps1");
         AssertRepoFileExists("scripts", "report-worktree-batches.ps1");
         AssertRepoFileExists("scripts", "prune-generated-sidecars.ps1");
         AssertRepoFileExists("scripts", "prune-stale-publish-packages.ps1");
@@ -127,6 +128,18 @@ public sealed class EngineeringGovernanceGuardTests
             "dotnet publish EZMicroBalance.sln @msbuildProps",
             "package-spire-plus.ps1 -GameRoot $sts2FullPath",
             "SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS");
+
+        var workflowRunCheckScript = ReadRepoText("scripts", "check-github-workflow-runs.ps1");
+        AssertSourceContains(
+            workflowRunCheckScript,
+            "wenhuorongbing-netizen/dev-the-spire",
+            "Full Local Validation",
+            "https://api.github.com/repos/$Repository/actions/runs",
+            "Invoke-RestMethod",
+            "MatchingRunCount",
+            "LatestRun",
+            "[switch]$RequireSuccessfulRun",
+            "No completed successful '$WorkflowName' run was found");
 
         var worktreeBatchScript = ReadRepoText("scripts", "report-worktree-batches.ps1");
         AssertSourceContains(

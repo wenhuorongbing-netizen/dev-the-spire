@@ -196,6 +196,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.RunLifecycle.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.SeedBank.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.SeedBankExtraction.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.SeedBankExtractionCommit.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.SeedBankExtractionState.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.SeedBankStatus.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.Seedbed.cs",

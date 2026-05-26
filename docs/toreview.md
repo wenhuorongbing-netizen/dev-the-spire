@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.59.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.60.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `5FB69675D24E4E5E1FF9CEBE25ADA3AC5ABF8ACFF3E102CE9E22574B0DF7D82C` |
-| DLL | `4DFFC7FF75216DD1076B91B41F8A3F4BC2B3826FC6B25894259B235B7F94CBB0` |
-| PCK | `D8821108DD46E34444EFDBBF8C9251E4FAA06378D9CEEA26D90028DBBBC4CD6D` |
-| Manifest | `1A746F996A11225701BBC4FAA07E8B0B8B749644C88CD77AAF4AF381ADBA2FAB` |
-| README_INSTALL | `164717CE6151485835403B6BCA504CCA5A44D6FEC9DF5B97551E23E121638B36` |
+| ZIP | `4D7246F7D8994D828F7508A09193049E88A7B3FEC7DA66674A96F679CF55ADE9` |
+| DLL | `EC1D0AEB41CA223672FBA2F2544255AABF4778E2395D01CF95D6522245BA0ED9` |
+| PCK | `E005089A3D86E1798C754F26A9EC9D72DE4C407E62917C92B8544E09BAC96DFB` |
+| Manifest | `1A038E90D0DCBA6F1E51EF6E778DBDB95B6F1668EA3B3382B818CDFD80E5733D` |
+| README_INSTALL | `38E0CFF356B25A51F9FCCA9396AC2D3F3ACAEC5929AC78753077C32094EFA9BA` |
 
-Latest validation snapshot: beta.59 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.59 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: beta.60 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.60 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
@@ -51,6 +51,6 @@ Latest validation snapshot: beta.59 build, publish/package refresh, default test
 | MANUAL-20260522-DEDICATED-ABILITY-REROLL | Ascension / Ancient UI | Boss descriptions spell out concrete values; first-layer Ancient reward screens have a dice-style one-use reroll. | Check boss hovers and click the Ancient reroll once; confirm it cannot be used twice. |
 | MANUAL-20260520-EVIDENCE-LOG | Evidence | `ReleaseEvidenceLog` emits opt-in markers for high-risk runtime surfaces. | Launch with `SPIREPLUS_RELEASE_EVIDENCE_LOG=1`, exercise paths, and attach `godot.log` snippets. |
 | ANCIENT-UI-ART | UI/art | Ancient clicked screens, option relic icons, map/run-history icons, and package resources are guarded. | Capture clicked Ancient UI and hover screenshots for Urda, Morvi, Lotha, and gated Vakuu. |
-| GOV-CI-FULL-LANE | Engineering | Added self-hosted Windows full no-game validation workflow and script. | Run it once and attach the workflow log before treating CI as full validation evidence. |
+| GOV-CI-FULL-LANE | Engineering | Added self-hosted Windows full no-game validation workflow, full validation script, and a GitHub Actions API checker that does not require `gh`. | Run `Full Local Validation` once on a self-hosted Windows runner, then run `scripts/check-github-workflow-runs.ps1 -RequireSuccessfulRun` and attach the workflow URL/log before treating CI as full validation evidence. |
 
 Do not close these rows from source review alone. Close only after matching live manual proof exists.

@@ -547,9 +547,11 @@ public sealed class UrdaReleaseCoverageGuardTests
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionCommit.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"));
         var seedBankExtraction = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs");
+        var seedBankExtractionCommit = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionCommit.cs");
         var seedBankExtractionState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs");
         AssertSourceContains(
             seedBank,
@@ -564,6 +566,15 @@ public sealed class UrdaReleaseCoverageGuardTests
             "AncientCardHelpers.RemoveUnpiledRunCard(card)",
             "RefreshSeedBankRelicStatus(player)",
             "SeedBankCardIds");
+        AssertSourceContains(
+            seedBankExtractionCommit,
+            "CommitSeedBankSelectedCards",
+            "CardPileCmd.Add(card, PileType.Deck)",
+            "failedSelectedIds.Add(card.Id.ToString())",
+            "SeedBankCardIds = string.Join(\",\", failedSelectedIds.Take(SeedBankMaxSeeds))",
+            "SeedBankSettled = true",
+            "storage_cleared",
+            "extracted_by_relic_click");
         AssertSourceContains(
             seedBankExtractionState,
             "ConditionalWeakTable<Player, SeedBankExtractionState>",

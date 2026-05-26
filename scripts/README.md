@@ -12,6 +12,7 @@ Repository helper scripts live here. Keep scripts small, idempotent where possib
 | `check-installed-ezmb-package.ps1` | Compatibility alias for older local commands. It forwards to `check-installed-spire-plus-package.ps1`; new tester-facing docs should use the Spire Plus script. |
 | `check-installed-ezmb-package.sh` | Compatibility alias for older local commands. It forwards to `check-installed-spire-plus-package.sh`; new tester-facing docs should use the Spire Plus script. |
 | `check-spire-window-preflight.ps1` | Report the current foreground window, Slay the Spire 2 window state, and visible top-level windows before capturing live gameplay screenshots. Use `-RequireSpireForeground` to fail fast when another app is covering the game. |
+| `check-github-workflow-runs.ps1` | Query GitHub Actions through the public API without requiring `gh`. Use it to check whether `Full Local Validation` has a completed successful run before closing `GOV-CI-FIRST-RUN`; pass `-RequireSuccessfulRun` when the absence of a run should fail the command. |
 | `ci-full-validation.ps1` | Self-hosted Windows CI entry point for full no-game validation. Requires `STS2_PATH`/`GODOT_PATH`, writes a temporary ignored `Directory.Build.props` when needed, checks StS2 DLLs and BaseLib, then runs hygiene, build, tests, format, diff-check, publish, package, and opt-in artifact tests for the single Spire Plus mod. |
 | `collect-ancient-ui-evidence.ps1` | Prepare or restore a forced Ancient clicked-UI evidence session for Urda, Morvi, Lotha, or Vakuu. Prepare mode writes `ancient-ui-evidence-plan.json`, `manual-instructions.md`, `command.txt`, `environment.json`, `package-hashes.json`, and a pending `manual-rows-template.json`; it runs the preflight unless `-NoPreflight` is used, and launches only when `-Launch` is explicit. |
 | `collect-coop-evidence.ps1` | Prepare pending two-client co-op evidence templates for host/client logs, A11-A20 selection, Ancient sync, Root Eyes, Rootblight, save/reconnect, and preview-tool disposition. It never proves co-op by itself and does not auto-launch a two-client session. |
@@ -96,3 +97,12 @@ $env:GODOT_PATH='D:\Game\FOTN\dev-the-spire\.tools\godot-4.5.1-mono\Godot_v4.5.1
 ```
 
 This lane does not launch the game and does not satisfy live/manual rows. It only proves the local source, package, and artifact checks on a runner that has the required game dependencies.
+
+Check whether the GitHub self-hosted lane has actually run:
+
+```powershell
+.\scripts\check-github-workflow-runs.ps1
+.\scripts\check-github-workflow-runs.ps1 -RequireSuccessfulRun
+```
+
+If the command reports `MatchingRunCount` as `0`, keep `GOV-CI-FIRST-RUN` open. Hosted `Repository Hygiene` or website workflow runs do not count as the full local lane.
