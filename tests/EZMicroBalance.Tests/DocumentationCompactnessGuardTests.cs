@@ -378,6 +378,8 @@ public sealed class DocumentationCompactnessGuardTests
             "`TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending",
             "`SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending",
             "`GOV-WIP-SPLIT` P0 source-fixed",
+            "`DOC-CONFLICT-GOVERNANCE` P2 source-fixed",
+            "`PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending",
             "current committed worktree is clean after the beta.38 batch commit",
             "0 dirty entries / 0 unclassified entries",
             "## Manual Proof Gates");
@@ -396,6 +398,7 @@ public sealed class DocumentationCompactnessGuardTests
             ["PROJECT_STATE.md"] = ReadRepoText("PROJECT_STATE.md"),
             ["docs/issues.md"] = ReadRepoText("docs", "issues.md"),
             ["docs/worktree-cleanup-audit.md"] = ReadRepoText("docs", "worktree-cleanup-audit.md"),
+            ["docs/private-beta-release-completion-audit.md"] = ReadRepoText("docs", "private-beta-release-completion-audit.md"),
             ["docs/features/ancients-rework-v4/completion-audit.md"] = ReadRepoText("docs", "features", "ancients-rework-v4", "completion-audit.md")
         };
 
@@ -409,6 +412,17 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
             "current package evidence derived from the manifest/versioned artifacts");
+        AssertSourceContains(
+            docsByPath["docs/issues.md"],
+            "`DOC-CONFLICT-GOVERNANCE` P2 source-fixed",
+            "`PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending");
+        AssertSourceContains(
+            docsByPath["docs/private-beta-release-completion-audit.md"],
+            "Earlier dirty implementation batches have been split, validated, committed, and pushed on `main`",
+            "Final release handoff capture: current `git status --short --branch`, validated HEAD, and pushed branch after the last validation pass.");
+        AssertSourceContains(
+            docsByPath["docs/features/ancients-rework-v4/completion-audit.md"],
+            "Beta.38 loader startup and gameplay/manual rows pending");
         AssertSourceContains(
             docsByPath["docs/features/ancients-rework-v4/completion-audit.md"],
             "Legacy root surfaces including `EzDailyContent.json` are absent from the active root",
@@ -431,6 +445,11 @@ public sealed class DocumentationCompactnessGuardTests
                      "45 dirty entries",
                      "80 dirty entries",
                      "current dirty worktree is intentionally batch-classified",
+                     "remains dirty with many source/resource/docs/tests changes",
+                     "remains dirty with many pending source/docs/test/resource changes",
+                     "no commit or push has been performed",
+                     "Clean intentional commit state and pushed branch after validation",
+                     "Beta.35 loader startup",
                      "`EzDailyContent.json` still uses id `EzDailyContent`",
                      "efb3dc4",
                      "Refresh beta37 package evidence"

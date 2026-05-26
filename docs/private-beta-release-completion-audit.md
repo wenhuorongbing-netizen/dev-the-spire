@@ -25,7 +25,7 @@ Concrete private-beta completion criteria:
 | Player text, UI, and resource routing | EN/zhs localization guards reject stale development wording and mojibake; art/resource guards keep clicked backgrounds, map/run-history icons, option relic art, cards, powers, and encounter art on separate paths; installed-PCK resource smoke exists. | Static/resource guarded; clicked Ancient screenshots, combat-scene screenshots, and live tooltip fit remain pending. |
 | Automation and release evidence | `dotnet build`, normal tests, format, diff-check, opt-in artifact tests, publish, and package refresh pass for the current source/package. `scripts/verify-spire-plus-release-evidence.ps1` hashes the zip, rejects duplicate rows, wrong row kinds, empty/invalid files, invalid notes, undersized PNGs, evidence dirs outside the evidence root, and required-file/screenshot paths that escape their row evidence dir. Fresh path-containment negative smokes failed as designed under `.tools/runtime-evidence/release-ready-path-containment-smoke*`; the current beta.38 evidence audit still needs fresh loader/gameplay/UI/save-load/co-op proof and fails closed with 20 manual rows until evidence is added. | Automation gates work; release evidence is not complete. |
 | Documentation and blockers | `docs/test-ready-development-goal.md`, `docs/issues.md`, `docs/release-checklist.md`, this audit, the Ancient manual checklist, and the release evidence verifier all keep manual rows open. | Correctly blocks release-ready claims. |
-| Clean handoff | `git status --short --branch` remains dirty with many source/resource/docs/tests changes and untracked helper/assets. | Not complete; no commit or push has been performed. |
+| Clean handoff | Earlier dirty implementation batches have been split, validated, committed, and pushed on `main`. Final private-beta release handoff must still recapture `git status --short --branch`, current HEAD, and push state after the last validation pass. | Not complete |
 
 ## Prompt-To-Artifact Checklist
 
@@ -52,7 +52,7 @@ Concrete private-beta completion criteria:
 | Ascension A11-A20 | Source slices and single-player spot checks exist; A11 saved-map boss-reachability graph proof exists. | Not complete: natural click-by-click traversal, full live Ascension matrix, and co-op verification pending |
 | Multiplayer/co-op | Mismatch diagnostics are source-patched and docs provide a two-client runbook. | Not complete: two-client ownership/desync/save-load matrix pending |
 | Out-of-scope systems excluded | Docs/tests guard no A21-A30 and no custom character; Lotha and single-player Vakuu fight are source-complete/live-pending test slices, not release-ready claims; no official assets are packaged. | Pass |
-| Worktree/release handoff | `git status --short --branch` remains dirty with many pending source/docs/test/resource changes; no commit or push performed. | Not complete |
+| Worktree/release handoff | The old dirty-worktree snapshot is no longer current; use the latest committed `main` baseline as the source of truth, then rerun `git status --short --branch` and record the pushed HEAD for the actual release handoff. | Not complete |
 
 ## Missing Or Weakly Verified Items
 
@@ -66,7 +66,7 @@ These block calling the whole project finished:
 - Post-fix live Urda selection and reward-screen behavior.
 - Post-fix Rootblight generated-art visual check, combat-end behavior/notices, Blight Sprout behavior, and ownership checks.
 - Two-client multiplayer/co-op matrix.
-- Clean intentional commit state and pushed branch after validation.
+- Final release handoff capture: current `git status --short --branch`, validated HEAD, and pushed branch after the last validation pass.
 
 Latest local screenshot attempts remain invalid: `.tools/runtime-evidence/live-urda-postfix-20260513-131752` stayed on the main menu and later captured the wrong surface, and `.tools/runtime-evidence/live-urda-continue-postfix-20260513-134337` was covered by another foreground app. Their clean logs may support loader health only; they do not satisfy live Urda, Rootblight, or gameplay rows.
 
