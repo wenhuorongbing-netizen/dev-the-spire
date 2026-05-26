@@ -400,24 +400,29 @@ public sealed class EngineeringGovernanceGuardTests
 
         AssertSourceContains(
             commitBoundaries,
-            "GOV-WIP-SPLIT remains open",
+            "GOV-WIP-SPLIT` is source-fixed for the committed `main` baseline",
             ".\\scripts\\report-worktree-batches.ps1 -FailOnUnclassified",
             ".\\scripts\\report-worktree-batches.ps1 -FailOnUnclassified -PathspecDirectory .tools\\worktree-batches\\current",
             "git add --pathspec-from-file=<pathspec>",
             "The manifest includes the exact `git add --pathspec-from-file=<pathspec>` command for each batch.",
-            "## Current Dirty Snapshot",
-            "Snapshot command: `.\\scripts\\report-worktree-batches.ps1 -FailOnUnclassified -PathspecDirectory .tools\\worktree-batches\\current`, 2026-05-24 after the test UID cleanup.",
-            "This snapshot is not a commit manifest.",
-            "| 0 | 1 | `.gitignore`, `output/.gdignore`, tracked `output/playwright/` evidence |",
-            "| 2 | 12 | `docs/architecture/**`, `docs/specs/**`, `docs/month-plan/**`, archive/index docs |",
-            "| 3 | 113 | `EZMicroBalanceCode/Ancients/**`, Ancient support docs, Ancient shared evidence/tests |",
-            "| 4 | 69 | `EZMicroBalanceCode/Ascension/**`, `EZMicroBalance/localization/*/ascension.json`, Ascension docs/tests |",
-            "| 5 | 79 | `scripts/**`, settings UI localization, `EZMicroBalanceCode/Diagnostics/**`, `EZMicroBalanceCode/Preview/**`, release/CI/test-infrastructure tests, and removed test `.cs.uid` metadata |",
-            "| 6 | 13 | Ancient art/resource docs, active image/export resources, and waiting-test docs |",
-            "| 7 | 12 | `website/**`, `forum/**` |",
-            "Minimum split order: land batches 0, 1, 2, and 5 before gameplay batches",
+            "## Current Clean Baseline",
+            "reported `Total dirty entries: 0` and `Unclassified: 0`",
+            "## Batch Ownership Map",
+            "| 0 | `.gitignore`, `output/.gdignore`, tracked `output/playwright/` evidence |",
+            "| 1 | `PROJECT_STATE.md`, `README.md`, `docs/intro.zh.md`, compact status/release docs |",
+            "| 2 | `docs/architecture/**`, `docs/specs/**`, `docs/month-plan/**`, archive/index docs, implementation-record archives |",
+            "| 3 | `EZMicroBalanceCode/Ancients/**`, Ancient support docs, Ancient shared evidence/tests |",
+            "| 4 | `EZMicroBalanceCode/Ascension/**`, `EZMicroBalance/localization/*/ascension.json`, Ascension docs/tests |",
+            "| 5 | `scripts/**`, settings UI localization, `EZMicroBalanceCode/Diagnostics/**`, `EZMicroBalanceCode/Preview/**`, release/CI/test-infrastructure tests, and generated sidecar policy |",
+            "| 6 | Ancient art/resource docs, active image/export resources, and waiting-test docs |",
+            "| 7 | `website/**`, `forum/**` |",
+            "Minimum split order for future broad work",
             "Keep preview-tool changes reviewable as their own Spire Plus batch.",
             "Do not close live/manual rows in a commit that has no live evidence folder.");
+
+        Assert.DoesNotContain("2026-05-24 after the test UID cleanup", commitBoundaries, StringComparison.Ordinal);
+        Assert.DoesNotContain("| 3 | 113 |", commitBoundaries, StringComparison.Ordinal);
+        Assert.DoesNotContain("| 5 | 79 |", commitBoundaries, StringComparison.Ordinal);
     }
 
     private static (int ExitCode, string Output, string Error) RunPowerShell(string scriptPath, params string[] arguments)
