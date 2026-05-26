@@ -23,7 +23,7 @@ For Ascension map, UI, reward, combat, save-load, or hook behavior, `source code
 
 Approach: fix proven logic issues first, then reduce coupling in small source-preserving cuts. Each cut must build, keep guard coverage, and avoid broad rewrites while the worktree is dirty.
 
-Active documents have narrow jobs: `docs/issues.md` tracks open blockers, `docs/toreview.md` tracks fixed items awaiting user retest, `docs/review.md` tracks source review and validation history, and this file tracks only the current goal and boundaries.
+Active documents have narrow jobs: `docs/issues.md` tracks open blockers, `docs/toreview.md` tracks fixed items awaiting user retest, `docs/review.md` tracks compact current source-review findings and manual-proof focus, and this file tracks only the current goal and boundaries.
 
 Next source cleanup candidates: keep Root Sight, Seed Bank, Seedbed, Trial Branch, Rooted Route, Morvi card-state, Lotha combat-state, Vakuu child-combat, Banner, Firemark, and boss dedicated ability ownership split by feature. Extract one helper group at a time, preserve save-field formats unless a bug requires migration, replace single-file assertions with source-tree assertions before moving partial files, and keep release artifact tests opt-in when they depend on installed package files.
 

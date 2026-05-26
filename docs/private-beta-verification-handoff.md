@@ -10,7 +10,7 @@ Current naming note: testers should see `Spire Plus`. The technical manifest id 
 
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
-Latest package note, 2026-05-23: the package hashes below identify the current manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**`, `docs/review.md`, and feature work logs; this handoff keeps only current tester-facing facts.
+Latest package note, 2026-05-23: the package hashes below identify the current manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**` and feature work logs; `docs/review.md` keeps only compact current source-review context. This handoff keeps only current tester-facing facts.
 
 Current source/package highlights:
 
@@ -29,7 +29,7 @@ Browser GPTimage2 art rebuild recheck, 2026-05-15:
 - `scripts\audit-ancient-art-assets.ps1 -FailOnMissingExport -FailOnInvalidGenerationMode -FailOnHashMismatch -FailOnMissingFinal` passed with 95 manifest assets, 90 `final_generated`, and 0 missing/temporary/export/hash issues.
 - Generic fallback, source-local small-art, and event-background provenance/ratio blockers are resolved. Live clicked-UI preview remains pending.
 
-Older 2026-05-14 text/art-fit and source-guard rechecks are superseded by the current package snapshot above. Their detailed command history is preserved in `docs/review.md` and `docs/archive/**`; do not use those older hashes as the package under test.
+Older 2026-05-14 text/art-fit and source-guard rechecks are superseded by the current package snapshot above. Their detailed command history is preserved in `docs/archive/**` and feature work logs; `docs/review.md` keeps only the compact current review summary. Do not use those older hashes as the package under test.
 
 Clicked Ancient UI handoff, 2026-05-15:
 
@@ -56,7 +56,7 @@ Clicked Ancient UI handoff, 2026-05-15:
 - Current normal test count: 288 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 308 passed / 0 skipped.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory .tools\publish-game-root\mods\EZMicroBalance`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split. After the game is closed and `mods\EZMicroBalance` is refreshed, rerun the same checker against the real installed folder.
 - Historical loader/resource evidence remains useful context only. The current 30-field loader proof covers beta.19 loader/startup only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
-- Historical detailed command logs are preserved in `docs/review.md`, `docs/archive/project-state-history-20260516.md`, and `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`. This handoff intentionally keeps only the current tester-facing summary.
+- Historical detailed command logs are preserved in `docs/archive/project-state-history-20260516.md`, `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`, and feature work logs; `docs/review.md` keeps compact current source-review context. This handoff intentionally keeps only the current tester-facing summary.
 - Automated evidence does not close clicked UI, live gameplay, save-load, death/failure, route traversal, preview-tools, or co-op rows.
 
 ## Required Manual Results
