@@ -313,8 +313,8 @@ public sealed class AscensionFeatureGuardTests
             "await CardPileCmd.AddGeneratedCardToCombat(bud, PileType.Discard, player, CardPilePosition.Bottom)",
             "await CardPileCmd.Add(bud, PileType.Draw, CardPilePosition.Top)",
             "AfterCardDrawn(PlayerChoiceContext choiceContext, CardModel card, bool fromHandDraw)",
-            "public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)",
-            "await AscensionCombatModifierService.BeforeFlush(state, GetTracker(state), player)",
+            "public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)",
+            "await AscensionCombatModifierService.BeforeTurnEnd(state, GetTracker(state), side, participants)",
             "MarkEnteredHand(state, bud)",
             "Trackers.Remove(state)");
 
@@ -330,7 +330,7 @@ public sealed class AscensionFeatureGuardTests
         AssertSourceContains(
             combatHookCombatEvents,
             "internal sealed partial class RootBudCombatHook",
-            "public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)",
+            "public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)",
             "public override async Task BeforeSideTurnStart",
             "IReadOnlyList<Creature> participants",
             "ICombatState combatState",
@@ -902,12 +902,13 @@ public sealed class AscensionFeatureGuardTests
         AssertSourceContains(
             fission,
             "CustomIconPath => AscensionAssetPaths.FissionEnchantmentIcon",
-            "这张牌的[gold]能量[/gold]费用降低[blue]1[/blue]，并获得[gold]消耗[/gold]。",
-            "[gold]能量[/gold]费用降低[blue]1[/blue]。",
+            "这张牌的[gold]耗能[/gold]降低[blue]1[/blue]。打出后进入[gold]消耗[/gold]牌堆，并正常触发[gold]消耗[/gold]效果。",
+            "[gold]耗能[/gold]降低[blue]1[/blue]。正常触发[gold]消耗[/gold]效果。",
+            "This card costs [blue]1[/blue] less. After play, it enters the [gold]Exhaust[/gold] pile and triggers [gold]Exhaust[/gold] effects normally.",
+            "Costs [blue]1[/blue] less. Triggers [gold]Exhaust[/gold] effects normally.",
             "HoverTipFactory.FromKeyword(CardKeyword.Exhaust)");
         Assert.DoesNotContain("energyPrefix:energyIcons", fission, StringComparison.Ordinal);
-        Assert.Equal(1, CountOccurrences(fission, "[gold]消耗[/gold]"));
-        Assert.Equal(1, CountOccurrences(fission, "\"[gold]能量[/gold]费用降低[blue]1[/blue]。\""));
+        Assert.DoesNotContain("\"[gold]能量[/gold]费用降低[blue]1[/blue]。\"", fission, StringComparison.Ordinal);
 
         AssertSourceContains(
             rewardService,
@@ -943,6 +944,75 @@ public sealed class AscensionFeatureGuardTests
         Assert.DoesNotContain("\u7206\u53d1\u9884\u8b66", allAscensionText, StringComparison.Ordinal);
         Assert.Contains("Forge Token special rest-site action payout is disabled", manualChecklist, StringComparison.Ordinal);
         Assert.DoesNotContain("Special rest-site actions heal 5 HP", manualChecklist, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void FissionUsesCanonicalExhaustPipelineAndTriggersExhaustListeners()
+    {
+        var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "FissionEnchantment.cs");
+        var cardModel = ReadRepoText("source code", "src", "Core", "Models", "CardModel.cs");
+        var cardCmd = ReadRepoText("source code", "src", "Core", "Commands", "CardCmd.cs");
+        var hook = ReadRepoText("source code", "src", "Core", "Hooks", "Hook.cs");
+        var drumOfBattle = ReadRepoText("source code", "src", "Core", "Models", "Cards", "DrumOfBattle.cs");
+        var howlFromBeyond = ReadRepoText("source code", "src", "Core", "Models", "Cards", "HowlFromBeyond.cs");
+        var feelNoPain = ReadRepoText("source code", "src", "Core", "Models", "Powers", "FeelNoPainPower.cs");
+        var darkEmbrace = ReadRepoText("source code", "src", "Core", "Models", "Powers", "DarkEmbracePower.cs");
+        var charonsAshes = ReadRepoText("source code", "src", "Core", "Models", "Relics", "CharonsAshes.cs");
+
+        AssertSourceContains(
+            fission,
+            "Card.AddKeyword(CardKeyword.Exhaust)",
+            "triggers [gold]Exhaust[/gold] effects normally",
+            "正常触发[gold]消耗[/gold]效果");
+
+        var resultPile = SliceBetween(cardModel, "protected virtual PileType GetResultPileTypeForCardPlay()", "public async Task MoveToResultPileWithoutPlaying");
+        AssertSourceContains(
+            resultPile,
+            "if (ExhaustOnNextPlay || Keywords.Contains(CardKeyword.Exhaust))",
+            "return PileType.Exhaust;");
+
+        var playWrapper = SliceBetween(cardModel, "public async Task OnPlayWrapper", "protected async Task<int> GeneratePlayCount");
+        AssertSourceContains(
+            playWrapper,
+            "var (resultPileType, resultPilePosition) = Hook.ModifyCardPlayResultPileTypeAndPosition",
+            "case PileType.Exhaust:",
+            "await CardCmd.Exhaust(choiceContext, this, causedByEthereal: false, skipCardPileVisuals);");
+
+        AssertSourceContains(
+            cardCmd,
+            "public static async Task Exhaust",
+            "await CardPileCmd.Add(card, PileType.Exhaust",
+            "CombatManager.Instance.History.CardExhausted(combatState, card)",
+            "await Hook.AfterCardExhausted(combatState, choiceContext, card, causedByEthereal)");
+
+        var exhaustHook = SliceBetween(hook, "public static async Task AfterCardExhausted", "public static async Task AfterCardGeneratedForCombat");
+        AssertSourceContains(
+            exhaustHook,
+            "foreach (AbstractModel model in combatState.IterateHookListeners())",
+            "await model.AfterCardExhausted(choiceContext, card, causedByEthereal)");
+
+        AssertSourceContains(
+            drumOfBattle,
+            "public override async Task AfterCardExhausted",
+            "if (card == this",
+            "await PlayerCmd.GainEnergy");
+        AssertSourceContains(
+            howlFromBeyond,
+            "public override async Task AfterAutoPostPlayPhaseEntered",
+            "pile.Type == PileType.Exhaust",
+            "await CardCmd.AutoPlay(choiceContext, this, null)");
+        AssertSourceContains(
+            feelNoPain,
+            "public override async Task AfterCardExhausted",
+            "await CreatureCmd.GainBlock");
+        AssertSourceContains(
+            darkEmbrace,
+            "public override async Task AfterCardExhausted",
+            "await CardPileCmd.Draw");
+        AssertSourceContains(
+            charonsAshes,
+            "public override async Task AfterCardExhausted",
+            "await CreatureCmd.Damage");
     }
 
     [Fact]

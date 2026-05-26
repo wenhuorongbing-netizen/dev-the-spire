@@ -716,7 +716,8 @@ public sealed class AncientBehaviorGuardTests
         Assert.Contains("\u8bbe\u4e3a0", source, StringComparison.Ordinal);
         Assert.Contains("\u8d39\u7528\u4e3a0", source, StringComparison.Ordinal);
         Assert.DoesNotContain("\u80fd\u91cf[/gold]\u8d39\u7528\u964d\u4f4e [blue]1", activeCode, StringComparison.Ordinal);
-        Assert.Contains("[gold]\u80fd\u91cf[/gold]\u8d39\u7528\u964d\u4f4e[blue]1[/blue]", activeCode, StringComparison.Ordinal);
+        Assert.DoesNotContain("\u8017\u80fd[/gold]\u964d\u4f4e [blue]1", activeCode, StringComparison.Ordinal);
+        Assert.Contains("[gold]\u8017\u80fd[/gold]\u964d\u4f4e[blue]1[/blue]", activeCode, StringComparison.Ordinal);
         Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
     }
 
@@ -1200,9 +1201,9 @@ public sealed class AncientBehaviorGuardTests
             "- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [ ] Fresh loader smoke for the current beta.32 ZIP hash is pending.",
-            "- [ ] Latest loader smoke for the current beta.32 package hash has not been recaptured yet.",
-            "- [ ] `godot.log` reviewed after fresh beta.32 normal Steam-client isolated startup/log verification.",
+            "- [ ] Fresh loader smoke for the current beta.34 ZIP hash is pending.",
+            "- [ ] Latest loader smoke for the current beta.34 package hash has not been recaptured yet.",
+            "- [ ] `godot.log` reviewed after fresh beta.34 normal Steam-client isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",
@@ -1213,7 +1214,7 @@ public sealed class AncientBehaviorGuardTests
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
             "- [ ] Push to `origin` is performed after validation, packaging, and an intentional commit.",
-            "Fresh loader smoke for the current beta.32 package hash is pending",
+            "Fresh loader smoke for the current beta.34 package hash is pending",
             "Refreshed normal Steam-client Mod Settings UI evidence at `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` shows `Spire Plus`",
             "Earlier page-level Mod Settings evidence predates the display-name refresh",
             "Manual feature results are pending",

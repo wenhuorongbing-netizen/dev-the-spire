@@ -89,7 +89,7 @@ internal sealed partial class RootBudCombatHook
         await AscensionCombatModifierService.AfterShuffle(state, GetTracker(state), shuffler);
     }
 
-    public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         var state = CurrentCombatState();
         if (state == null)
@@ -97,7 +97,7 @@ internal sealed partial class RootBudCombatHook
             return;
         }
 
-        await AscensionCombatModifierService.BeforeFlush(state, GetTracker(state), player);
+        await AscensionCombatModifierService.BeforeTurnEnd(state, GetTracker(state), side, participants);
     }
 
     public override async Task BeforeSideTurnStart(

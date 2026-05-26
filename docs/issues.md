@@ -2,28 +2,19 @@
 Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-26:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `CA19F9CC83F3F65581D10F1066C04B8E58E812DE07E1DBA7ACA6FEB4D22F693A` |
-| DLL | `7C894354725DC2DD789245A35DE73F707CD6E82CE54F82B9287B1CB98B0DB970` |
-| PCK | `14BA8D3A135A154C68512B83E59BF4DBF7117320A5C68EDE1E56640245D701F0` |
-| Manifest | `91924EFCF444F0DC495A8B16CA171AA58B923517FC283CC553C2EC6408EA7A7F` |
-| README_INSTALL | `174715C398A6DB6D91ABDFCE294A89B268E2B00AE359FC170C73B72259F1DACD` |
+| ZIP | `18D28D7AFDB176E9C7A96E3CA99C40EBD68FAC04E7766C4E07D48F740E9F6D56` |
+| DLL | `4D665947B042E57A1FDAF81E2682C8DEEE73DC1F19AB8DD060CCBA41B9DF9FC9` |
+| PCK | `A8158CC39EB9D4B68FCF79B178829B1E0F18054E3E0774BE3A69F8B0AE383790` |
+| Manifest | `1CAB72884A37FC1C7F28533A24EEA96A3D8D4BF640688D22E3B8A1D1D6F1AD2F` |
+| README_INSTALL | `B453ED1511A45FEE57A0CAB9B8A004581B859F89963F32E216559F290FB511BD` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
-- `SOUL-TIDE-BLOCK-TIMING` P0 source/package-fixed / live-pending: Soul Fysh's Artifact-without-Block report is source-fixed; pending Beckons now convert to capped Block at enemy turn end, with player-turn-start fallback for unusual flow.
+- `SOUL-TIDE-BLOCK-TIMING` P0 source/package-fixed / live-pending: Soul Fysh now counts Beckons before turn-end in-hand damage moves them, then converts them into capped Block after its turn; player-turn-start remains a fallback.
 - `URDA-SEED-BANK-HOVER` P0 source/package-fixed / live-pending: Seed Bank relic hover now shows a compact stored-card list instead of full card previews that can clip offscreen and spawn unrelated keyword tips.
-- `URDA-SEEDBED-PLANTING` P0 source/package-fixed / live-pending:
-  - Seedbed explains Planting / 种下 as a non-play, non-discard, non-exhaust handling action.
-  - Planted Blight Sprouts are handled and add no Rootblight I after combat.
-  - Planted Rootblight freezes this combat's end check only and stays in the master deck at the same stage; it does not improve, worsen, split, downgrade, cleanse, or get removed.
-- `COOP-COMBAT-START-CRASH` P0 source/package-fixed / live-pending:
-  - User log ended during multiplayer combat startup for `CUBEX_CONSTRUCT_NORMAL`, with no managed stack. Treat this as latest Spire Plus crash evidence even if the in-game manifest text still shows an older beta label.
-  - Source fix: co-op fails closed before proof for A11-A20 selection/gameplay, Ascension map/rewards, Ancient offers/selections/run hooks, Urda reward alternatives, combat hooks, and preview tools.
-  - Retest must use the newly packaged build and leave `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY`, `SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS`, and `SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS` unset unless deliberately debugging.
-- `COOP-PREVIEW-TOOLS-CRASH` P0 source/package-fixed / live-pending:
-  - User log `godot2026-05-25T08.54.22.log` is latest crash evidence despite the stale beta label. It shows co-op A20, A14 Rootblight, Urda/Seed Bank, A13 Fission, reconnect, and `Aroma of Chaos` transform sync.
-  - Source fix: transform prediction, Crystal Sphere peek, and broader Spire Plus co-op gameplay mutation fail closed by default.
-  - Retest needs two-client combat start, transform event, Crystal Sphere if available, reconnect/save-load, and both clients' logs.
+- `URDA-SEEDBED-PLANTING` P0 source/package-fixed / live-pending: Planting text marks it as non-play/non-discard/non-Exhaust; planted Sprouts add no Rootblight I, and planted Rootblight keeps its master-deck stage.
+- `COOP-COMBAT-START-CRASH` P0 source/package-fixed / live-pending: co-op fails closed for unproven Ascension, Ancient, combat, and preview mutations; retest with override env vars unset.
+- `COOP-PREVIEW-TOOLS-CRASH` P0 source/package-fixed / live-pending: transform prediction, Crystal Sphere peek, and broader co-op gameplay mutation fail closed; retest two-client combat, transform, reconnect, save-load, and logs.
 - `ENEMY-DAMAGE-POLISH` P1 open / user-regressed: strengthened Decimillipede still attacks for 7; recheck Decimillipede damage polish against intent and real damage.
 - `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
 - `QUEEN-BOSS-SEAL-RUNTIME` P0 open: user reports the Queen/Royal Decree fight cannot run correctly; reproduce on the current package and capture `godot.log`.
@@ -34,7 +25,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `UNKNOWN-EVENT-PREVIEW-READABILITY`, `ROOTBLIGHT-STARTER-MISSING`, `BOSS-BLIGHT-SPROUT-PLAYED-STILL-ROOTBLIGHT`, `WATERFALL-BOSS-SEAL` P1: check event hover, Rootblight starter deck, Boss Blight Sprout play prevention, and Waterfall Boss.
 - `HOURGLASS-BOSS-SEAL-DESIGN`, `QUEEN-BOSS-SEAL-WEAKNESS`, `FIREMARK-OVERFLOW/FORGE-ARMOR`, `BANNER-ROOM-PREVIEW` P1: check Time Sand, Royal Decree, Firemark secondary-target explanation, and Banners.
 - `ROOT-EYES-CONFLICTS-COOP`, `PREVIEW-TOOLS-REWARD-HOOKS`, `SEAL-BANNER-VISIBILITY`, `V33-DESIGN-PASS` P1: check co-op Root Eyes, preview rewards, seal visibility, and v3.3 designs.
-- `FISSION-EXHAUST-TRIGGERS` P1 open: Fission cards must count as real Exhaust when they leave play; acceptance is the canonical exhaust path, updated intent/text, and one card-owned plus one relic/power-style listener test.
+- `FISSION-EXHAUST-TRIGGERS` P1 source/package-fixed / live-pending: canonical Exhaust path guarded through Fission keyword, `CardCmd.Exhaust(...)`, `AfterCardExhausted(...)`, and Drum/Howl/power/relic listeners.
 - Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
 ## Engineering governance blockers: `GOV-WIP-SPLIT` P0 source-fixed; current dirty worktree is intentionally batch-classified with 0 unclassified entries. `GOV-CI-FIRST-RUN`, `DOC-CONFLICT-GOVERNANCE`, and `PLATFORM-PACKAGE-CHECKS` P2 pending.
 ## Manual Proof Gates

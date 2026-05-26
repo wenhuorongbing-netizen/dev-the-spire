@@ -450,10 +450,16 @@ public sealed class BossDedicatedAbilityV41GuardTests
         AssertSourceContains(
             soulTide,
             "ApplyPowerWithFinalDisplayedGain<ArtifactPower>(soulFysh, 1, soulFysh, null)",
+            "TrackSoulTideBeckonsBeforePlayerTurnEnd",
+            "Count it before Core runs turn-end in-hand effects",
             "metadata.IsBossBrand ? 3m : 2m",
             "combatState.Players.Count(player => player.IsActiveForHooks)",
             "return playerCount <= 1 ? 12 : playerCount == 2 ? 16 : 20;",
             "return playerCount <= 1 ? 8 : playerCount == 2 ? 12 : 16;");
+        AssertSourceContains(
+            rootBudEvents,
+            "public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)",
+            "AscensionCombatModifierService.BeforeTurnEnd(state, GetTracker(state), side, participants)");
         var bossSealPlayerTurnStart = SliceBetween(
             turnFlow,
             "private static async Task ApplyBossSealPlayerTurnStart(",

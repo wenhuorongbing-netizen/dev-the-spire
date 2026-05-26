@@ -14,12 +14,12 @@ internal sealed class FissionEnchantment : CustomEnchantmentModel, ILocalization
     public List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new CardModifierLoc(
             "裂变",
-            "这张牌的[gold]能量[/gold]费用降低[blue]1[/blue]，并获得[gold]消耗[/gold]。",
-            "[gold]能量[/gold]费用降低[blue]1[/blue]。")
+            "这张牌的[gold]耗能[/gold]降低[blue]1[/blue]。打出后进入[gold]消耗[/gold]牌堆，并正常触发[gold]消耗[/gold]效果。",
+            "[gold]耗能[/gold]降低[blue]1[/blue]。正常触发[gold]消耗[/gold]效果。")
         : new CardModifierLoc(
             "Fission",
-            "This card costs [blue]1[/blue] less and gains [gold]Exhaust[/gold].",
-            "Costs [blue]1[/blue] less.");
+            "This card costs [blue]1[/blue] less. After play, it enters the [gold]Exhaust[/gold] pile and triggers [gold]Exhaust[/gold] effects normally.",
+            "Costs [blue]1[/blue] less. Triggers [gold]Exhaust[/gold] effects normally.");
 
     public override bool CanEnchantCardType(CardType cardType)
     {

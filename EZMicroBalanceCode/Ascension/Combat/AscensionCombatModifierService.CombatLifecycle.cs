@@ -87,14 +87,27 @@ internal static partial class AscensionCombatModifierService
         }
     }
 
-    public static Task BeforeFlush(CombatState combatState, AscensionCombatTracker tracker, Player player)
+    public static Task BeforeTurnEnd(
+        CombatState combatState,
+        AscensionCombatTracker tracker,
+        CombatSide side,
+        IEnumerable<Creature> participants)
     {
+        if (side != CombatSide.Player)
+        {
+            return Task.CompletedTask;
+        }
+
         if (!TryRefreshActiveBossSealMetadata(combatState, tracker, out var metadata))
         {
             return Task.CompletedTask;
         }
 
-        TrackSoulTideBeckonsBeforeFlush(combatState, tracker, metadata, player);
+        foreach (var player in participants.Select(participant => participant.Player).OfType<Player>())
+        {
+            TrackSoulTideBeckonsBeforePlayerTurnEnd(combatState, tracker, metadata, player);
+        }
+
         return Task.CompletedTask;
     }
 

@@ -28,7 +28,7 @@ internal static partial class AscensionCombatModifierService
         MainFile.Logger.Info("[Spire Plus] Ascension A19 applied: Soul Tide added Artifact on Intangible entry.");
     }
 
-    private static void TrackSoulTideBeckonsBeforeFlush(
+    private static void TrackSoulTideBeckonsBeforePlayerTurnEnd(
         CombatState combatState,
         AscensionCombatTracker tracker,
         AscensionNodeMetadata metadata,
@@ -45,6 +45,10 @@ internal static partial class AscensionCombatModifierService
             tracker.PendingSoulTideBlock = 0m;
         }
 
+        // Beckon moves itself out of hand while resolving its turn-end damage.
+        // Count it before Core runs turn-end in-hand effects, then apply the
+        // stored Block after Soul Fysh acts so the next player turn starts with
+        // the Block visible.
         var beckonsInHand = player.Piles
             .Where(pile => pile.Type == PileType.Hand)
             .SelectMany(pile => pile.Cards)

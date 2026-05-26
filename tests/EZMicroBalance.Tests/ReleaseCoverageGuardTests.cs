@@ -113,7 +113,7 @@ public sealed class ReleaseCoverageGuardTests
             ],
             [
                 "Fission is implemented for the A13 Ascension-level gate.",
-                "Fission reward mutation is source-patched; reward reroll, pickup, localization rendering, and save/load are pending."
+                "Fission reward mutation is source-patched; reward reroll, pickup, localization rendering, Exhaust payoff live behavior, and save/load are pending."
             ],
             [
                 "Gated implementation present; live testing pending.",
