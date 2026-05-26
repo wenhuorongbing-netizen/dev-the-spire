@@ -380,6 +380,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Cards/RootBudCard.cs",
         "EZMicroBalanceCode/Ascension/Cards/RootFamilyCard.cs",
         "EZMicroBalanceCode/Ascension/Cards/RootPortraitPaths.cs",
+        "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.CombatLifecycle.cs",
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.DeckCards.cs",
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.Lifecycle.cs",
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.Notices.cs",

@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 
 namespace EZMicroBalance.Tests;
 
@@ -162,6 +162,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ascension", "Cards", "RootBudCard.cs"],
                 ["EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.State.cs"],
                 ["EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.Lifecycle.cs"],
+                ["EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.CombatLifecycle.cs"],
                 ["EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.PendingDowngrades.cs"],
                 ["EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs"]
             ],

@@ -244,6 +244,7 @@ public sealed class AscensionFeatureGuardTests
     {
         var serviceState = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.State.cs");
         var serviceLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.Lifecycle.cs");
+        var serviceCombatLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.CombatLifecycle.cs");
         var runHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
         var combatHookLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs");
 
@@ -267,13 +268,18 @@ public sealed class AscensionFeatureGuardTests
         AssertBefore(firstApplyBlock, "addedStartingRoot = await AddRootblightCard(player, 1);", "MarkRootBeginsApplied(player);");
         Assert.Contains("the next room/act hook will retry", firstApplyBlock, StringComparison.Ordinal);
 
-        var blightSproutAddBlock = SliceBetween(
+        var blightSproutAddBlock = SliceFrom(
             serviceLifecycle,
-            "public static async Task AddRootblightI(Player player, string source)",
-            "public static void MarkCombatStartRootblight(Player player)");
+            "public static async Task AddRootblightI(Player player, string source)");
         AssertBefore(blightSproutAddBlock, "if (!await AddRootblightCard(player, 1, preferOverlayNotice: true))", "MarkRootBeginsApplied(player);");
         Assert.Contains("hadRootblightBeforeAdd || FindRootFamilyCards(player).Count > 0", blightSproutAddBlock, StringComparison.Ordinal);
         Assert.Equal(2, CountOccurrences(blightSproutAddBlock, "MarkRootBeginsApplied(player);"));
+        AssertSourceContains(
+            serviceCombatLifecycle,
+            "public static void MarkCombatStartRootblight(Player player)",
+            "public static async Task ResolveCombatEndRootblight(Player player)",
+            "WasPresentAtCombatStart = false",
+            "ClearPendingCombatDowngrades(player)");
 
         var combatStartBlock = SliceBetween(
             combatHookLifecycle,

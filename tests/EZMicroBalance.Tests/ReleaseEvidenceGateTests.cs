@@ -1349,7 +1349,7 @@ public sealed class ReleaseEvidenceGateTests
 
         var projectState = ReadRepoText("PROJECT_STATE.md");
         Assert.Contains("current source defines 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("beta.55 Chosen Decree card-state split and Rootblight combat-start repair package sync", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.56 RootDeck combat lifecycle split package sync", projectState, StringComparison.Ordinal);
         Assert.Contains("Found 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Found 22 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
     }
