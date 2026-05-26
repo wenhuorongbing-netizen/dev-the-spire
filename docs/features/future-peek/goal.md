@@ -11,6 +11,18 @@ is folded into the single gameplay-affecting Spire Plus mod:
 - Source: `EZMicroBalanceCode/Preview/`
 - Active docs: `docs/features/preview-tools/README.md`
 
+## Current Verified Package
+
+The current manual-test package line is
+`publish/SpirePlus-v0.1.0-private-beta.70.zip`.
+
+Static guards for this compatibility goal live in
+`tests/EZMicroBalance.Tests/PreviewToolsGuardTests.cs`. They verify the single
+Spire Plus manifest decision, Crystal Sphere mask-only behavior, transform
+preview forked-RNG behavior, co-op local UI-only behavior, fail-open fallback,
+and player-facing claims that avoid map, reward, relic, or choice foresight
+overpromises.
+
 ## Implemented In This Pass
 
 - Crystal Sphere peek is a local UI-only preview. It only changes the local

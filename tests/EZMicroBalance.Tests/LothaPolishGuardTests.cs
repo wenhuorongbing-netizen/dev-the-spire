@@ -392,6 +392,7 @@ public sealed class LothaPolishGuardTests
     public void SingleSentenceBranchesAreGuardedBeforeAndAfterTheRuling()
     {
         var cardRules = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardRules.cs");
+        var cardPlayDispatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardPlayDispatch.cs");
         var cardPlayCount = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardPlayCount.cs");
         var cardEligibility = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardEligibility.cs");
         var powerReplacement = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.PowerReplacement.cs");
@@ -399,7 +400,7 @@ public sealed class LothaPolishGuardTests
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
 
-        var shouldPlay = SliceBetween(cardRules, "public static bool ShouldPlay", "public static async Task AfterCardPlayed");
+        var shouldPlay = SliceFrom(cardRules, "public static bool ShouldPlay");
         var powerFallback = SliceBetween(singleSentence, "private static async Task TryResolveSingleSentencePowerFallback", "private static void TrackSingleSentenceRemainingPlays");
         var playTracker = SliceBetween(singleSentence, "private static void TrackSingleSentenceRemainingPlays", "private static async Task EnsureSingleSentencePower");
         var powerEligibility = SliceFrom(singleSentence, "private static bool CanUseSingleSentencePowerReplacement");
@@ -462,6 +463,15 @@ public sealed class LothaPolishGuardTests
             "return canPlay;");
         Assert.DoesNotContain("<= SingleSentenceRemainingPlayLimit", shouldPlay, StringComparison.Ordinal);
         Assert.DoesNotContain("public static int ModifyCardPlayCount", cardRules, StringComparison.Ordinal);
+        Assert.DoesNotContain("public static async Task AfterCardPlayed", cardRules, StringComparison.Ordinal);
+        AssertSourceContains(
+            cardPlayDispatch,
+            "public static async Task AfterCardPlayed",
+            "TryResolveMirrorRebuttalPowerFallback(choiceContext, cardPlay, combatState)",
+            "TryResolveMirrorHallEchoPowerFallback(choiceContext, cardPlay, combatState)",
+            "TryResolveDeferredVerdictCard(choiceContext, cardPlay, combatState)",
+            "TryResolveSingleSentencePowerFallback(choiceContext, cardPlay, combatState)",
+            "TrackSingleSentenceRemainingPlays(cardPlay, combatState)");
         AssertSourceContains(
             cardPlayCount,
             "public static int ModifyCardPlayCount",

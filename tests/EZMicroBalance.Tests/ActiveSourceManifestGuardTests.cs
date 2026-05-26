@@ -67,6 +67,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAssetPaths.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingIds.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CardEligibility.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CardPlayDispatch.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CardPlayCount.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CardRules.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CombatEnd.cs",
