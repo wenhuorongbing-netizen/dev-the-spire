@@ -549,6 +549,7 @@ public sealed class AscensionFeatureGuardTests
         var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
         var mapPatch = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Patches");
         var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
+        var bannerTargeting = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.Banners.Targeting.cs");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var playerGuide = ReadRepoText("docs", "features", "ascension-11-20", "player-facing-modifier-guide.md");
         var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
@@ -590,6 +591,16 @@ public sealed class AscensionFeatureGuardTests
             "metadata.Banner = fallback",
             "BannerKind.BloodPrize",
             "converted {banner} banner to {fallback}");
+        AssertSourceContains(
+            bannerTargeting,
+            "private static BannerKind ResolveBannerForCombat(CombatState combatState, AscensionNodeMetadata metadata)",
+            "private static bool RequiresMultiplePrimaryEnemies(BannerKind banner)",
+            "banner is BannerKind.Shieldwall or BannerKind.LastStand",
+            "private static Creature? PickBannerTarget(CombatState combatState)",
+            "PrimaryAliveEnemies(combatState).ToList()",
+            "AliveEnemies(combatState).ToList()",
+            ".OrderByDescending(enemy => enemy.MaxHp)",
+            ".ThenBy(enemy => combatState.Enemies.IndexOf(enemy))");
 
         AssertSourceContains(
             mapPatch,

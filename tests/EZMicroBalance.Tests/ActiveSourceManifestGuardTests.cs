@@ -255,6 +255,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.BloodPrize.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.LastStand.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.Shieldwall.cs",
+        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.Targeting.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners.Vanguard.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Commands.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.CombatEvents.cs",
