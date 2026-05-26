@@ -16,6 +16,8 @@ Live-only blockers remain:
 
 ## Latest Fixed Findings
 
+- 2026-05-26 Aeonglass Hourglass split: `AscensionCombatModifierService.BossSeals.AeonglassHourglass.cs` now owns only Time Sand / Wither settlement, while `AscensionCombatModifierService.BossSeals.AeonglassHourglass.State.cs` owns state hydration and enemy-move tracking and `AscensionCombatModifierService.BossSeals.AeonglassHourglass.LaserEcho.cs` owns Eye Lasers preview/counter behavior. Method names, hook callers, and player-visible behavior are unchanged. No game was opened.
+- 2026-05-26 beta.53 package sync: `EZMicroBalance.json`, current package hash docs, release guards, website download metadata, and `website/README.md` now point at `SpirePlus-v0.1.0-private-beta.53.zip` with ZIP SHA256 `F45B463167F947DFA7006AC5C9A1BBE94B47198902B1A3650E040B0766B314A3`. Build, publish, isolated publish, package refresh, default tests, opt-in artifact tests, website syntax checks, format, diff-check, installed-package check, batch classification, generated-sidecar prune, and stale publish prune passed. No game was opened.
 - 2026-05-26 Future Peek public-claim alignment: the old `docs/features/future-peek/goal.md` compatibility target already points to integrated Spire Plus preview tools, so this pass tightened the player-facing website copy and guard tests. Crystal Sphere text now says the button only lowers the local fog/mask and does not clear cells, spend charges, or grant rewards. Transform preview text now says it predicts card transforms with a forked RNG snapshot and does not promise relic transforms or reward-choice foresight. Focused PreviewTools guards and website syntax checks passed. No game was opened.
 - 2026-05-26 Morvi hook/lifecycle ownership split: removed the mixed `MorviHooks.cs` aggregate. `MorviRunHook.cs` now owns only run/deck-mirror/combat-start/end dispatch and the existing co-op gate helpers, `MorviCombatHook.cs` owns combat-only card/turn/cost hooks, and `MorviBlessingService.CombatLifecycle.cs` owns Morvi's combat lifecycle service logic. Public hook class names, model registration, gate keys, and behavior are unchanged. No game was opened.
 - 2026-05-26 Ascension localization bridge split: `AscensionLocalizationTablePatches.cs` now owns only Harmony localization entry points, while `AscensionLocalizationBridge.cs` owns table identity reflection, table cache, JSON loading, language fallback, and table merge behavior. Public patch class names, fallback/log text, localization keys, and player-visible behavior are unchanged. No game was opened.
@@ -67,7 +69,7 @@ Live-only blockers remain:
 
 Detailed pre-current pass notes remain in the archive files listed above. This active review keeps only context that still guides current manual testing and prevents stale release claims.
 
-- 2026-05-25 loader/startup context: historical beta.19 loader smoke reached the main menu with only BaseLib and Spire Plus enabled, registered `EZMicroBalance`, found 30 SavedSpireFields, and had a clean log audit. It is historical startup context only; beta.52 still needs fresh loader proof.
+- 2026-05-25 loader/startup context: historical beta.19 loader smoke reached the main menu with only BaseLib and Spire Plus enabled, registered `EZMicroBalance`, found 30 SavedSpireFields, and had a clean log audit. It is historical startup context only; beta.53 still needs fresh loader proof.
 - 2026-05-25 co-op fail-closed pass: multiplayer gameplay mutations, combat hooks, Ancient reward/run hooks, Ascension reward/gameplay hooks, and Urda reward alternatives fail closed by default unless explicit opt-in environment variables are set. The two crash logs remain useful co-op evidence, but they do not prove current-package co-op behavior. Preview tools were later narrowed to local UI-only behavior and still need live two-client proof.
 - 2026-05-25 player-facing polish: Seedbed / Planting, Seed Bank hover, A20 selector localization, Ancient direct-gain feedback, Fission Exhaust text, Soul Tide timing, Neow/Act 1 Ancient reroll, Elite Root, and high-pressure elite damage tuning are source/package-fixed and live-pending.
 - 2026-05-24 Sere Talon / Tanx Claws lineage: source, package, art-route, handoff, website, and installed-package checks were hardened across multiple passes. Historical command logs are archive/context evidence, not a substitute for current live UI proof.
@@ -76,7 +78,7 @@ Detailed pre-current pass notes remain in the archive files listed above. This a
 
 - Vakuu's Sere Talon must offer 4 Curses, choose 1, then add the selected Curse, 2 Wish, and 1 Wish+; its event option, relic bar, inspect screen, hover text, and log routes must not appear as Tanx Claws.
 - Tanx Claws must stay on the Tanx route and transform selected cards into upgraded Maul+ / 撕咬+.
-- Current-package Steam-client loader proof for beta.52 is pending; historical beta.19 and beta.17 loader rows are context only.
+- Current-package Steam-client loader proof for beta.53 is pending; historical beta.19 and beta.17 loader rows are context only.
 - Save/load, death/failure, co-op, clicked UI, hover, map traversal, preview tools, and gameplay evidence remain manual rows under `docs/issues.md`, `docs/toreview.md`, and the generated handoff.
 
 ## Still Not Claimed

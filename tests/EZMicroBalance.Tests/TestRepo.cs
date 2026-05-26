@@ -85,6 +85,18 @@ internal static class TestRepo
             }.Select(fileName => ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", fileName)));
     }
 
+    internal static string ReadAeonglassHourglassCombatSources()
+    {
+        return string.Join(
+            Environment.NewLine,
+            new[]
+            {
+                "AscensionCombatModifierService.BossSeals.AeonglassHourglass.cs",
+                "AscensionCombatModifierService.BossSeals.AeonglassHourglass.LaserEcho.cs",
+                "AscensionCombatModifierService.BossSeals.AeonglassHourglass.State.cs"
+            }.Select(fileName => ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", fileName)));
+    }
+
     internal static string RepoPath(params string[] parts)
     {
         return Path.Combine(new[] { Root }.Concat(parts).ToArray());

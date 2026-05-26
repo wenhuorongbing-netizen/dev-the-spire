@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `35A66E5BDA61FBD243D0180B4377508F4C2736B8B7ADA0EB869D573A76143F9C` |
-| DLL | `CF83952566E02BEA7FBF28DE35EF17FD66CB55525310958FB8F7F892C87E6669` |
-| PCK | `98B2CF697395B5146D3D5D8F9D7BB68AA56506F893F561F7D33CE24CAAAEBCF6` |
-| Manifest | `5B96E28B1C322141B53ABDAA8CC65A39B07EA96228E726B207D43682BA7C73EB` |
-| README_INSTALL | `8DEEEC9108CBF98BABD949C440FA15312DB85CD95318DCA3D502003C3AC45621` |
+| ZIP | `F45B463167F947DFA7006AC5C9A1BBE94B47198902B1A3650E040B0766B314A3` |
+| DLL | `1CE62AD30167CDBDED16243D124F50033D8D2AD79B9BB828049EC41F1DC2D256` |
+| PCK | `DF865082D339F721270C5F2EA1F13EC0A34280459C29DFEAE070E4E1AA4AA58E` |
+| Manifest | `2BD727A314A947C9B408D200933D23B59CE9640C5AF83FFB940073F5F48FDCFD` |
+| README_INSTALL | `78CEF7EFF923C502D6ACC35296008A27F1C4A996478400942B118E5A086A7D77` |
 
 ## Automation Summary
 
@@ -22,15 +22,15 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, real installed package checker, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Source/package automation passes for beta.52, but live loader/gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, real installed package checker, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Source/package automation passes for beta.53, but live loader/gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.52 loader proof and gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.53 loader proof and gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Pending | User | Capture a beta.52 `godot.log`, clean `godot-log-audit.json`, `environment.json`, `package-hashes.json`, `enabled-mods.txt`, current package hash parity, BaseLib plus Spire Plus only, startup completion, stopped game, and restored mod isolation. The beta.19 loader smoke remains historical startup evidence only. |
+| fresh-current-package-loader-smoke | loader | Pending | User | Capture a beta.53 `godot.log`, clean `godot-log-audit.json`, `environment.json`, `package-hashes.json`, `enabled-mods.txt`, current package hash parity, BaseLib plus Spire Plus only, startup completion, stopped game, and restored mod isolation. The beta.19 loader smoke remains historical startup evidence only. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |

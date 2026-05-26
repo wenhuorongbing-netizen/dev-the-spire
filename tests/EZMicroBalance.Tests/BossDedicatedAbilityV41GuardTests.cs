@@ -186,7 +186,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var kaiser = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.MisalignedShell.cs");
         var mightFiremark = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.Firemarks.Might.cs");
         var pressingLine = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.Banners.PressingLine.cs");
-        var aeonglassReflow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.AeonglassHourglass.cs");
+        var aeonglassReflow = ReadAeonglassHourglassCombatSources();
 
         AssertSourceContains(
             attackIntent,
@@ -269,7 +269,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
     [Fact]
     public void VisibleBossAbilityStateCanRehydrateItsRuntimeTrackerWhereSourceSafe()
     {
-        var aeonglass = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.AeonglassHourglass.cs");
+        var aeonglass = ReadAeonglassHourglassCombatSources();
         var decree = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.ChosenDecree.cs");
         var struggleBait = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.StruggleBait.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
@@ -408,7 +408,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var combatLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatLifecycle.cs");
         var combatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatEvents.cs");
         var rootBudEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
-        var aeonglass = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.AeonglassHourglass.cs");
+        var aeonglass = ReadAeonglassHourglassCombatSources();
         var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.PhaseCarryover.cs");
         var marginalNotePowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MarginalNotePowers.cs");
         var tracker = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatTracker.BossSeals.cs");
