@@ -62,13 +62,13 @@ npm run build
 网站下载按钮当前指向这个 release asset：
 
 ```text
-https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.80/SpirePlus-v0.1.0-private-beta.80.zip
+https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.81/SpirePlus-v0.1.0-private-beta.81.zip
 ```
 
 公开分享前确认 GitHub Release 存在，并且包含：
 
 ```text
-SpirePlus-v0.1.0-private-beta.80.zip
+SpirePlus-v0.1.0-private-beta.81.zip
 ```
 
 如果版本号变化，同步更新 `website/content-data.js` 和发布文档。
