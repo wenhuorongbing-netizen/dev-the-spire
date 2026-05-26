@@ -549,6 +549,9 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("triggers up to [blue]3[/blue] times", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("SettleSoulTideBeckons(combatState, tracker, metadata)", combatService, StringComparison.Ordinal);
         Assert.DoesNotContain("PowerCmd.Apply<StrengthPower>", marginalNoteSource, StringComparison.Ordinal);
+        Assert.Contains("if (side == CombatSide.Player)", combatService, StringComparison.Ordinal);
+        Assert.Contains("metadata.BossSeal?.Id == BossSealId.SoulTide", combatService, StringComparison.Ordinal);
+        Assert.Contains("the next player side starts", combatService, StringComparison.Ordinal);
         var bossSealPlayerTurnStartSlice = SliceBetween(
             combatService,
             "private static async Task ApplyBossSealPlayerTurnStart(",
@@ -567,10 +570,7 @@ public sealed class AscensionV2MilestoneGuardTests
             StringComparison.Ordinal);
         Assert.DoesNotContain("ApplySoulTidePendingBlock", bossSealEnemyTurnStartSlice, StringComparison.Ordinal);
         Assert.Contains("case BossSealId.SoulTide:", bossSealTurnEndSlice, StringComparison.Ordinal);
-        Assert.Contains(
-            "await ApplySoulTidePendingBlock(combatState, tracker, metadata);",
-            bossSealTurnEndSlice,
-            StringComparison.Ordinal);
+        Assert.DoesNotContain("ApplySoulTidePendingBlock", bossSealTurnEndSlice, StringComparison.Ordinal);
         var playerTurnStartBannerSlice = SliceBetween(
             combatService,
             "private static async Task ApplyBannerTurnStart(",

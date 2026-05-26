@@ -402,6 +402,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var struggleBait = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.StruggleBait.cs");
         var chosenDecree = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.ChosenDecree.cs");
         var turnFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.TurnFlow.cs");
+        var combatLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatLifecycle.cs");
         var combatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatEvents.cs");
         var rootBudEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
         var aeonglass = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.AeonglassHourglass.cs");
@@ -460,6 +461,12 @@ public sealed class BossDedicatedAbilityV41GuardTests
             rootBudEvents,
             "public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)",
             "AscensionCombatModifierService.BeforeTurnEnd(state, GetTracker(state), side, participants)");
+        AssertSourceContains(
+            combatLifecycle,
+            "if (side == CombatSide.Player)",
+            "metadata.BossSeal?.Id == BossSealId.SoulTide",
+            "next player turn starts",
+            "await ApplySoulTidePendingBlock(combatState, tracker, metadata);");
         var bossSealPlayerTurnStart = SliceBetween(
             turnFlow,
             "private static async Task ApplyBossSealPlayerTurnStart(",
@@ -475,7 +482,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         Assert.Contains("await ApplySoulTidePendingBlock(combatState, tracker, metadata);", bossSealPlayerTurnStart, StringComparison.Ordinal);
         Assert.DoesNotContain("ApplySoulTidePendingBlock", bossSealEnemyTurnStart, StringComparison.Ordinal);
         Assert.Contains("case BossSealId.SoulTide:", bossSealTurnEnd, StringComparison.Ordinal);
-        Assert.Contains("await ApplySoulTidePendingBlock(combatState, tracker, metadata);", bossSealTurnEnd, StringComparison.Ordinal);
+        Assert.DoesNotContain("ApplySoulTidePendingBlock", bossSealTurnEnd, StringComparison.Ordinal);
 
         AssertSourceContains(
             boiling,

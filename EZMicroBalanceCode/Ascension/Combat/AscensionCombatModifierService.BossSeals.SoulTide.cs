@@ -46,9 +46,9 @@ internal static partial class AscensionCombatModifierService
         }
 
         // Beckon moves itself out of hand while resolving its turn-end damage.
-        // Count it before Core runs turn-end in-hand effects, then apply the
-        // stored Block after Soul Fysh acts so the next player turn starts with
-        // the Block visible.
+        // Count it before Core runs turn-end in-hand effects, then wait until
+        // the next player side starts. That is the first moment after Soul
+        // Fysh's enemy turn where the Block should become visible.
         var beckonsInHand = player.Piles
             .Where(pile => pile.Type == PileType.Hand)
             .SelectMany(pile => pile.Cards)
@@ -86,6 +86,6 @@ internal static partial class AscensionCombatModifierService
         var block = tracker.PendingSoulTideBlock;
         tracker.PendingSoulTideBlock = 0m;
         await CreatureCmd.GainBlock(soulFysh, block, ValueProp.Move, null);
-        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Soul Tide converted Beckon hand pressure into {block} Block for the next player turn.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Soul Tide converted Beckon hand pressure into {block} Block at player turn start.");
     }
 }

@@ -16,8 +16,8 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest verification after the beta.35 Soul Tide / Fission Exhaust / Elite Root refresh: `dotnet build EZMicroBalance.sln`, normal tests with 288 passed / 20 skipped, opt-in artifact tests with 308 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and installed-package checkers for both `.tools\publish-game-root\mods\EZMicroBalance` and the real game `mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff.
-- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.35 manifest/localization UTF-8 refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
+- Latest verification after the beta.36 Soul Tide / Fission Exhaust / Elite Root refresh: `dotnet build EZMicroBalance.sln`, normal tests with 288 passed / 20 skipped, opt-in artifact tests with 308 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and installed-package checkers for both `.tools\publish-game-root\mods\EZMicroBalance` and the real game `mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff.
+- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.36 Soul Tide / Fission Exhaust / Elite Root refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
 - The latest normal Steam smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` covered the beta.19 package hash: only BaseLib plus Spire Plus loaded, `v0.1.0-private-beta.19` was logged, `Found 30 SavedSpireFields`, startup completed, and the log audit was clean. Feature gameplay rows remain pending.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
@@ -41,14 +41,14 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.35.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.36.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `5C85C7ADD99A2A06E8999654711763A351DD19A5720FE9BF8EA22412BB78382F`
+- Zip SHA256: `F96ABEA174DB4BE321584C671019E729B79DA192EEE30F1C71CDFE86244C6BE8`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `E4CA3D5957BECA4FFA552A7A9C68185519D2F873AA97630F84B8F7855E4420CA`
-- Manifest SHA256: `5A3A2FC0E313C15640C223A6CC5D2874881F27B468D1BC7EF4AF602CD7350EFF`
-- PCK SHA256: `B538EF54DEC975CB7E4DA91C04D442CCACCC7E1E0088D07C2B750C065FE09BE3`
-- README_INSTALL SHA256: `45E605958747C7089D5FCBC0BDE86ED0F7E646DE371658A1435B9C33703BB078`
+- DLL SHA256: `632A62985AD9689F3C31ABD345F2879569EF520FF38A2B7B3D62BB4ED2FA23F9`
+- Manifest SHA256: `64BD6FFD3ED0495A6A7956FF1D1BF04EF0C4F36EF101BBF00C5A9F514FE7B4A7`
+- PCK SHA256: `5D0759BD2DC6C6CBF74F3ECE4EB484E29E1260074407F64CA9289B1D9DAF86DD`
+- README_INSTALL SHA256: `D2FD5959A8DDE416D8D547D0811C85E009A795AB24929811F87D39978118F036`
 
 ## Known Automated Evidence
 

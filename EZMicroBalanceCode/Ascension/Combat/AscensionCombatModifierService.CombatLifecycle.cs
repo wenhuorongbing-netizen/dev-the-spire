@@ -116,12 +116,25 @@ internal static partial class AscensionCombatModifierService
         AscensionCombatTracker tracker,
         CombatSide side)
     {
-        if (side != CombatSide.Enemy)
+        if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
         {
             return;
         }
 
-        if (!TryRefreshNodeMetadata(combatState, tracker, out var metadata))
+        if (side == CombatSide.Player)
+        {
+            if (metadata.BossSeal?.Id == BossSealId.SoulTide)
+            {
+                // Soul Tide reads Beckons at player turn end, waits through
+                // Soul Fysh's enemy turn, then grants Block exactly as the
+                // next player turn starts so the player can see and answer it.
+                await ApplySoulTidePendingBlock(combatState, tracker, metadata);
+            }
+
+            return;
+        }
+
+        if (side != CombatSide.Enemy)
         {
             return;
         }
