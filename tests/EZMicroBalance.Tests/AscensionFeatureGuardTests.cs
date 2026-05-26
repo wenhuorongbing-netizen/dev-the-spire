@@ -99,12 +99,14 @@ public sealed class AscensionFeatureGuardTests
     [Fact]
     public void AscensionLocalizationBridgeCoversModdedOriginalAscensionTableKeys()
     {
-        var bridge = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionLocalizationTablePatches.cs");
+        var bridge = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionLocalizationBridge.cs");
+        var patches = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionLocalizationTablePatches.cs");
+        var source = string.Join(Environment.NewLine, bridge, patches);
         var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
         var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
 
         AssertSourceContains(
-            bridge,
+            source,
             "HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))",
             "HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))",
             "HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))",
@@ -121,6 +123,9 @@ public sealed class AscensionFeatureGuardTests
             "AscensionLocalizationBridge.TryGetText(__instance.LocEntryKey, out var text)",
             "__result = new LocString(\"ascension\", key)",
             "Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read)");
+        Assert.DoesNotContain("internal static class AscensionLocalizationBridge", patches, StringComparison.Ordinal);
+        Assert.DoesNotContain("Godot.FileAccess.Open", patches, StringComparison.Ordinal);
+        Assert.DoesNotContain("HarmonyPatch(", bridge, StringComparison.Ordinal);
 
         for (var level = 11; level <= 20; level++)
         {

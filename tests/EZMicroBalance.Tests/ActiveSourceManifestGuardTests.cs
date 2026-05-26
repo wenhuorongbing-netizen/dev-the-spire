@@ -305,6 +305,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Patches/AscensionMapDeepBranchHoverPatches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionMapFiremarkHoverPatches.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionMapIconPatches.cs",
+        "EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationBridge.cs",
         "EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs",
         "EZMicroBalanceCode/Ascension/Map/AscensionNodeMetadata.cs",
         "EZMicroBalanceCode/Ascension/Rewards/AscensionRewardService.cs",
