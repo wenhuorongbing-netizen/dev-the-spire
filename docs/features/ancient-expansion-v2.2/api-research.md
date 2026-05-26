@@ -14,7 +14,11 @@ Current Urda source files:
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/WitheredHusk.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaFeatureGate.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaInitializer.cs`
-- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelic.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaStandardOptionRelics.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightOptionRelic.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedBankOptionRelic.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelicClickPatch.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRunHook.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCombatHook.cs`
 

@@ -25,7 +25,13 @@ public sealed class UrdaReleaseCoverageGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapClickPatches.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightMapPreviewVisuals.cs"),
             ReadRepoText("EZMicroBalanceCode", "Map", "SpirePlusMapPointHoverComposer.cs"));
-        var urdaOptionRelics = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaOptionRelics.cs");
+        var urdaOptionRelics = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaOptionRelic.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaStandardOptionRelics.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightOptionRelic.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaSeedBankOptionRelic.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaOptionRelicClickPatch.cs"));
         var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var urdaAfterRain = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.AfterRain.cs");
         var urdaEliteRoot = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.EliteRoot.cs");
@@ -157,7 +163,7 @@ public sealed class UrdaReleaseCoverageGuardTests
             "UrdaSeedBankOptionRelic");
         AssertSourceContains(
             urdaOptionRelics,
-            "UrdaSeedBankRelicClickPatch",
+            "UrdaOptionRelicClickPatch",
             "HarmonyPatch(typeof(NRelicInventory), \"OnRelicClicked\")",
             "UrdaBlessingService.GetSeedBankStoredCount(seedBank.Owner)",
             "TaskHelper.RunSafely(UrdaBlessingService.TryExtractSeedBankFromRelicClick(seedBank.Owner))",
@@ -167,6 +173,10 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.DoesNotContain("HoverTipFactory.FromCard(card)", urdaOptionRelics, StringComparison.Ordinal);
         Assert.DoesNotContain(".Concat(card.HoverTips)", urdaOptionRelics, StringComparison.Ordinal);
         Assert.Equal(11, Regex.Matches(urdaOptionRelics, @"\[Pool\(typeof\(SharedRelicPool\)\)\]").Count);
+        Assert.DoesNotContain(
+            "HarmonyPatch(typeof(NRelicInventory)",
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaSeedBankOptionRelic.cs"),
+            StringComparison.Ordinal);
 
         AssertSourceContains(
             urdaScene,
