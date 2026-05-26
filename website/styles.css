@@ -697,25 +697,27 @@ main {
   flex: 1;
   padding-right: 8px;
   margin-right: -8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(223, 175, 83, 0.45) rgba(0, 0, 0, 0.15);
 }
 
 .inspector-card-preview::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .inspector-card-preview::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.15);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .inspector-card-preview::-webkit-scrollbar-thumb {
-  background: rgba(223, 175, 83, 0.3);
-  border-radius: 3px;
+  background: rgba(223, 175, 83, 0.45);
+  border-radius: 4px;
   transition: background 0.2s ease;
 }
 
 .inspector-card-preview::-webkit-scrollbar-thumb:hover {
-  background: var(--gold-bright);
+  background: rgba(223, 175, 83, 0.85);
 }
 
 @keyframes inspectFadeIn {
@@ -2087,4 +2089,14 @@ main {
 .lightbox-close:hover {
   color: var(--gold-bright);
   opacity: 1;
+}
+
+@media (max-height: 680px) and (min-width: 981px) {
+  .inspector-pane {
+    position: static !important;
+    max-height: none !important;
+    min-height: auto !important;
+    margin-bottom: 24px;
+    clip-path: none !important;
+  }
 }

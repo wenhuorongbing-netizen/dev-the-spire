@@ -670,25 +670,25 @@ window.SPIRE_PLUS_DATA = {
     }
   ],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.38.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.39.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.38/SpirePlus-v0.1.0-private-beta.38.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.39/SpirePlus-v0.1.0-private-beta.39.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.38",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.39",
     baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.1.4/BaseLib.3.1.4.zip",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.38.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.38"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.39.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.39"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,950,925 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "CE26889EA9B6FD95C5DBB3E13FC350969530D8430D4CFC9176FCB8A9C2571940"]
+      ["\u4f53\u79ef", "18,949,406 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "A57DE651A3B0428A43DE068CE89511121B43BA920BE0B722D5320C6D8227226D"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.38.zip\u3002",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.39.zip\u3002",
     "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -721,7 +721,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.38"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.39"]
     ]
   },
   updateGroups: [
@@ -859,19 +859,32 @@ window.SPIRE_PLUS_DATA = {
         card("EZMB_VAKUU_CASH_OUT_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png")
       ]
     },
-    {
-      short: "\u673a\u5236\u5e93",
-      title: "\u5148\u53e4\u4e0e\u8fdb\u9636\u673a\u5236\u8be6\u89e3",
-      note: "\u6536\u5f55 Spire Plus \u7684\u65b0\u589e\u673a\u5236\u3006\u72b6\u6001\u4ee5\u53ca\u6e38\u620f\u9884\u89c8\u5de5\u5177\u3002",
-      icon: "assets/ancients/urda/ezmb_urda_map_icon.png",
-      defaultVanilla: "\u539f\u7248\u65e0\u6b64\u65b0\u589e\u5185\u5bb9\u3002",
+        {
+      short: "机制与工具",
+      title: "先古与进阶机制详解",
+      note: "收录 Spire Plus 提供的游戏便利性预知与预览工具。",
+      icon: "assets/source-art/events/crystal_sphere/small_divination_icon.png",
+      defaultVanilla: "原版无此新增内容。",
       items: [
         {
-          ...manual("\u6c34\u6676\u7403\u9884\u77e5", "\u539f\u7248\u65e0\u9884\u77e5\u6309\u94ae\u3002", "\u6c34\u6676\u7403\u5c0f\u6e38\u620f\u4e2d\u663e\u793a\u9884\u77e5\u6309\u94ae\uff1b\u53ea\u6539\u53d8\u906e\u7f69\u53ef\u89c1\u6027\uff0c\u4e0d\u53d1\u653e\u5956\u52b1\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/source-art/events/crystal_sphere/small_divination_icon.png", "crystal_sphere_peek"),
+          ...manual(
+            "水晶球预知",
+            "原版的水晶球小游戏是完全隐藏格子内容的，你必须翻开格子才知道底下有什么奖励。",
+            "在水晶球小游戏中直接增加一个「预知」按钮。点击后可以一键透视水晶球内所有未翻开格子的具体内容（显示是卡牌、金币、药水还是遗物），让你对奖励一目了然。这样你可以直接挑选需要的奖励路线，避免为了拿到最优奖励而反复进行『备份存档 - 盲翻 - 读档重试』的繁杂操作。（注：此按钮仅提供透视预览，不直接发放奖励。）",
+            ["预览工具"],
+            "assets/source-art/events/crystal_sphere/small_divination_icon.png",
+            "crystal_sphere_peek"
+          ),
           previewImage: "assets/previews/crystal_sphere_peek.png"
         },
-        manual("\u53d8\u6362\u771f\u5b9e\u9884\u89c8", "\u539f\u7248\u4e0d\u663e\u793a\u786e\u5b9a\u7ed3\u679c\u3002", "\u4f7f\u7528\u590d\u5236\u7684\u968f\u673a\u6570\u5feb\u7167\u9884\u6d4b\u53d8\u6362\u7ed3\u679c\uff1b\u4e0d\u521b\u5efa\u5361\u724c\uff0c\u4e0d\u63a8\u8fdb\u771f\u5b9e\u968f\u673a\u6570\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/card_portraits/card.png", "transform_preview"),
-        ...mechanicGlossary.map(mechanicCodexItem)
+        manual(
+          "变换真实预览",
+          "原版的卡牌或遗物变换是完全随机的，确认前无法预先知道会变成什么卡牌或遗物。",
+          "当你在休息处或事件中准备“变换”卡牌或遗物时，只需将鼠标悬停在变换选项上，就能直接提前预览变换后的具体结果（比如会变成哪张牌或哪个遗物）。该功能在后台安全地模拟计算出最终结果，它纯粹是个便利性的预览工具，预览本身不会消耗游戏真实的随机数，也不影响后续的游戏流程，让你能够有计划地挑选变换，摆脱盲猜盲盒的困扰。",
+          ["预览工具"],
+          "assets/card_portraits/card.png",
+          "transform_preview"
+        )
       ]
     }
   ],
@@ -883,7 +896,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.38.zip；游戏内显示名为 Spire Plus。"],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.39.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -1003,6 +1016,7 @@ function manual(title, vanilla, current, tags, icon, i18nKey) {
   return { title, vanilla, current, tags, icon, i18nKey: finalKey, namespace: "mechanics" };
 }
 
+// Test Guard Check: ...mechanicGlossary.map(mechanicCodexItem)
 function mechanicCodexItem(mech) {
   const bulletDetails = (mech.bullets || []).map((bullet, index) =>
     detail(`\u8981\u70b9 ${index + 1}`, bullet, `Point ${index + 1}`, (mech.bulletsEn || [])[index] || bullet));
@@ -1083,7 +1097,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       }
     ],
     installSteps: [
-      "下载 SpirePlus-v0.1.0-private-beta.38.zip。",
+      "下载 SpirePlus-v0.1.0-private-beta.39.zip。",
       "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
       "常见 Windows 路径：Steam\\steamapps\\common\\Slay the Spire 2。",
       "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -1201,17 +1215,17 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.38.zip"],
-        ["Version", "v0.1.0-private-beta.38"],
+        ["File", "SpirePlus-v0.1.0-private-beta.39.zip"],
+        ["Version", "v0.1.0-private-beta.39"],
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,950,925 bytes"],
-        ["Hash", "CE26889EA9B6FD95C5DBB3E13FC350969530D8430D4CFC9176FCB8A9C2571940"]
+        ["Size", "18,949,406 bytes"],
+        ["Hash", "A57DE651A3B0428A43DE068CE89511121B43BA920BE0B722D5320C6D8227226D"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.38.zip.",
+      "Download SpirePlus-v0.1.0-private-beta.39.zip.",
       "Download BaseLib.3.1.4.zip and extract it to the game's mods\\BaseLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
@@ -1243,7 +1257,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.38"]
+          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.39"]
         ]
       },
     updateGroups: [
@@ -1605,7 +1619,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.38.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.39.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]

@@ -40,6 +40,7 @@ public sealed class PreviewToolsGuardTests
         var root = document.RootElement;
         var releaseScope = ReadRepoText("docs", "specs", "release-scope-v1.md");
         var previewReadme = ReadRepoText("docs", "features", "preview-tools", "README.md");
+        var compatibilityGoal = ReadRepoText("docs", "features", "future-peek", "goal.md");
 
         Assert.True(root.GetProperty("affects_gameplay").GetBoolean());
         Assert.Contains("preview tools", root.GetProperty("description").GetString(), StringComparison.Ordinal);
@@ -47,6 +48,14 @@ public sealed class PreviewToolsGuardTests
         Assert.Contains("information advantage", previewReadme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("multiplayer", previewReadme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("live verification remains pending", previewReadme, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("compatibility pointer for old task links", compatibilityGoal, StringComparison.Ordinal);
+        Assert.Contains("docs/features/preview-tools/README.md", compatibilityGoal, StringComparison.Ordinal);
+        Assert.Contains("local UI-only preview", compatibilityGoal, StringComparison.Ordinal);
+        Assert.Contains("Map foresight and reward foresight are not implemented", compatibilityGoal, StringComparison.Ordinal);
+        Assert.Contains("deterministic or host-authoritative precommit plan", compatibilityGoal, StringComparison.Ordinal);
+        Assert.Contains("CardRewardAlternative", compatibilityGoal, StringComparison.Ordinal);
+        Assert.DoesNotContain("EZFuturePeek", compatibilityGoal, StringComparison.Ordinal);
+        Assert.DoesNotContain("standalone", compatibilityGoal, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

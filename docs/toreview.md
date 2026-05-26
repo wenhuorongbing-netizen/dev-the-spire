@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.38.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.39.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `CE26889EA9B6FD95C5DBB3E13FC350969530D8430D4CFC9176FCB8A9C2571940` |
+| ZIP | `A57DE651A3B0428A43DE068CE89511121B43BA920BE0B722D5320C6D8227226D` |
 | DLL | `82CCC267554D99DCE41092AF13C2E9388C5F65FC941386E4A025F04FD441DD4D` |
 | PCK | `924E2D74E3FEE3CF76FBD68FE2123D4D9F1FD35BE1F849B4173A6CF52FC026A8` |
 | Manifest | `930C49F39DB48D8CD1118941F54532FC53073F1F7565C0D165F3F4B69581A6D5` |
 | README_INSTALL | `373CE7B8CDE3B1969C6BA7BB4E15AA4E6A62A371DC6167CFE57C636D396598BF` |
 
-Latest validation snapshot: beta.38 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.38 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: beta.39 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.39 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

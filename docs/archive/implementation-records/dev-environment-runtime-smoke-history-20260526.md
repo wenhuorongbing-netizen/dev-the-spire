@@ -6,7 +6,7 @@ Archived on 2026-05-26 from `docs/dev-environment.md` so the active environment 
 
 ## Scope
 
-This record preserves older local smoke-test and runtime-helper notes. These rows are useful for debugging launch setup, helper-script behavior, and historical API drift, but they are not current beta.38 release or gameplay proof.
+This record preserves older local smoke-test and runtime-helper notes. These rows are useful for debugging launch setup, helper-script behavior, and historical API drift, but they are not current beta.39 release or gameplay proof.
 
 ## 2026-05-05 Direct And Force-Steam-Off Attempts
 
@@ -50,4 +50,4 @@ This record preserves older local smoke-test and runtime-helper notes. These row
 
 - Historical package smoke/log/resource verification under `.tools\runtime-evidence\current-package-smoke-20260514-015901` covered an earlier 22-field package, installed/staging/versioned/zip artifact parity, installed README sync, headless installed-PCK loading for Urda/Morvi/Lotha scenes, and 43 Ancient textures.
 - Log signals included BaseLib patch success, config registered for `EZMicroBalance`, `Loaded 2 mods (2 total)`, `Found 22 SavedSpireFields`, `Time to main menu: 14,045ms`, and 0 release-blocking scan hits.
-- Boundary: current source now defines 30 SavedSpireFields, so this is historical loader/log/resource evidence only. It does not prove current beta.38 loader parity or gameplay behavior.
+- Boundary: current source now defines 30 SavedSpireFields, so this is historical loader/log/resource evidence only. It does not prove current beta.39 loader parity or gameplay behavior.

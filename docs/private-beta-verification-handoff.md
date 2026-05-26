@@ -17,7 +17,7 @@ Current source/package highlights:
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
 - Latest verification after the issue-detail typo guard sync: `dotnet build EZMicroBalance.sln`, normal tests with 289 passed / 20 skipped, opt-in artifact tests with 309 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and installed-package checkers for both `.tools\publish-game-root\mods\EZMicroBalance` and the real game `mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff.
-- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.38 Future Peek UI-only co-op refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
+- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.39 Future Peek UI-only co-op refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
 - The latest normal Steam smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` covered the beta.19 package hash: only BaseLib plus Spire Plus loaded, `v0.1.0-private-beta.19` was logged, `Found 30 SavedSpireFields`, startup completed, and the log audit was clean. Feature gameplay rows remain pending.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
@@ -41,9 +41,9 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.38.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.39.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `CE26889EA9B6FD95C5DBB3E13FC350969530D8430D4CFC9176FCB8A9C2571940`
+- Zip SHA256: `A57DE651A3B0428A43DE068CE89511121B43BA920BE0B722D5320C6D8227226D`
 - Manifest id: `EZMicroBalance`
 - DLL SHA256: `82CCC267554D99DCE41092AF13C2E9388C5F65FC941386E4A025F04FD441DD4D`
 - Manifest SHA256: `930C49F39DB48D8CD1118941F54532FC53073F1F7565C0D165F3F4B69581A6D5`
@@ -52,7 +52,7 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Known Automated Evidence
 
-- Current automated snapshot: beta.38 passed `dotnet build`, normal `dotnet test`, isolated publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and isolated installed-package checking after the Future Peek UI-only co-op refresh. Gameplay proof is still pending.
+- Current automated snapshot: beta.39 passed `dotnet build`, normal `dotnet test`, isolated publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and isolated installed-package checking after the Future Peek UI-only co-op refresh. Gameplay proof is still pending.
 - Current normal test count: 289 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 309 passed / 0 skipped.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory .tools\publish-game-root\mods\EZMicroBalance`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split. After the game is closed and `mods\EZMicroBalance` is refreshed, rerun the same checker against the real installed folder.
 - Historical loader/resource evidence remains useful context only. The current 30-field loader proof covers beta.19 loader/startup only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
