@@ -25,40 +25,41 @@ public sealed class ModInfoLocalizationGuardTests
             "mod.manifest?.id, MainFile.ModId",
             "LocManager.Instance?.Language",
             "string.Equals(language, \"zhs\", StringComparison.Ordinal)",
-            "Spire Plus 是用于私测的《杀戮尖塔 2》单体玩法扩展",
+            "Spire Plus 是一个用于私测的《杀戮尖塔 2》单体玩法扩展",
             "Spire Plus is a single Slay the Spire 2 gameplay expansion",
-            "Seedbed shows that rule clearly",
+            "Seedbed is the clearest example",
             "Planting means combat-only isolation",
-            "种下就是“本战隔离”",
+            "种下就是本战隔离",
             "根蚀被种下后只冻结这一场",
             "[gold]作者[/gold]",
             "[gold]版本[/gold]",
             "GetNodeOrNull<MegaRichTextLabel>(\"ModDescription\")");
 
-        foreach (var mojibake in new[] { "鏄", "銆", "涓", "绉", "鐗", "浣滆" })
-        {
-            Assert.DoesNotContain(mojibake, patchSource, StringComparison.Ordinal);
-        }
+        AssertNoMojibake(patchSource);
+        Assert.DoesNotContain("涓", patchSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("绉", patchSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("鎴", patchSource, StringComparison.Ordinal);
     }
 
     [Fact]
-    public void ManifestKeepsAPlainEnglishFallbackDescription()
+    public void ManifestKeepsReadableFallbackDescription()
     {
         using var document = JsonDocument.Parse(ReadRepoText("EZMicroBalance.json"));
         var root = document.RootElement;
 
         Assert.Equal("EZMicroBalance", root.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", root.GetProperty("name").GetString());
-        Assert.Equal("v0.1.0-private-beta.21", root.GetProperty("version").GetString());
+        Assert.Equal("v0.1.0-private-beta.25", root.GetProperty("version").GetString());
         Assert.True(root.TryGetProperty("description", out var description));
-        Assert.Contains("Spire Plus", description.GetString(), StringComparison.Ordinal);
-        Assert.Contains("中文", description.GetString(), StringComparison.Ordinal);
-        Assert.Contains("Planting is combat-only isolation", description.GetString(), StringComparison.Ordinal);
-        Assert.Contains("种下=本战隔离", description.GetString(), StringComparison.Ordinal);
-        Assert.Contains("Rootblight is frozen", description.GetString(), StringComparison.Ordinal);
-        Assert.Contains("根蚀只冻结这一场", description.GetString(), StringComparison.Ordinal);
-        Assert.DoesNotContain("涓", description.GetString(), StringComparison.Ordinal);
-        Assert.DoesNotContain("銆", description.GetString(), StringComparison.Ordinal);
+
+        var manifestDescription = description.GetString() ?? string.Empty;
+        Assert.Contains("Spire Plus", manifestDescription, StringComparison.Ordinal);
+        Assert.Contains("Planting is combat-only isolation", manifestDescription, StringComparison.Ordinal);
+        Assert.Contains("Rootblight is frozen", manifestDescription, StringComparison.Ordinal);
+        Assert.Contains("The Mod Settings panel localizes this description by client language.", manifestDescription, StringComparison.Ordinal);
+        Assert.DoesNotContain("涓", manifestDescription, StringComparison.Ordinal);
+        Assert.DoesNotContain("绉", manifestDescription, StringComparison.Ordinal);
+        AssertNoMojibake(manifestDescription);
         Assert.False(root.TryGetProperty("description_zhs", out _), "The game manifest schema does not read description_zhs; use the UI patch instead.");
     }
 }

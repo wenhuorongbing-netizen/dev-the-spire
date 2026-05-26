@@ -878,9 +878,19 @@ main {
   cursor: pointer;
   position: relative;
   transition: var(--transition);
+}
+
+.compare-card:not(.loaded) {
   animation: cardDealFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: calc(var(--index, 0) * 0.02s);
   opacity: 0;
+}
+
+.compare-card.loaded {
+  opacity: 1;
+}
+
+.compare-card {
   clip-path: polygon(0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px));
   overflow: hidden;
   box-shadow:

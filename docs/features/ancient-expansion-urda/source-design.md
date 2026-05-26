@@ -72,11 +72,11 @@ All eleven remain disableable through the Urda feature gate. Runtime testing mus
 - On accepting a reward, lose 2 max HP.
 - On all four accepted rewards, set the transformed latch and gain +10 max HP with no heal.
 - Current v3.3 behavior: the reward alternative adds the `Seedbed` card itself.
-- In combat, `Seedbed` gives 8 / 12 Block, immediately plants 1 / 2 eligible draw/discard cards, then sets 2 / 3 slots for later pollution.
+- In combat, `Seedbed` gives 8 / 12 Block and sets up 2 / 3 total Seedbed slots. Immediate planting can spend 1 / 2 of those slots on eligible draw/discard cards; any remaining slots catch later pollution.
 - Eligible planted cards are Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight. Permanent Curses, Withered Husk, and beneficial temporary pages are not planted.
 - Planting does not play, discard, or exhaust the card and does not trigger those synergies. Each planted card adds one Withered Husk.
 - A planted Blight Sprout is treated as handled for that combat and adds no Rootblight I after combat.
-- A planted Rootblight is frozen for that combat only. It stays in the master deck at the same level and does not upgrade, split, get removed, downgrade, or get cleansed after combat.
+- A planted Rootblight is frozen for that combat only. It stays in the master deck at the same level and does not improve, worsen, split, get removed, downgrade, or get cleansed after combat.
 
 #### Humus Pact (`urda_humus_pact`)
 

@@ -1,9 +1,9 @@
 param(
     [string]$EvidenceDir,
 
-    [string]$PackageSha256 = "B113A7ADC1306BAF4946FB6069B678310A708A7C91B670FA2869D36DDC13EA98",
+    [string]$PackageSha256 = "C595FC59D8FAD3731F5A2A1791D5BBCB83E15E1C37A2DDC0C92F0DF08940CD46",
 
-    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.21.zip",
+    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.25.zip",
 
     [switch]$Launch,
 
@@ -444,10 +444,10 @@ $packageHashes = [ordered]@{
     Files = @(
         Get-HashRow -RelativePath 'EZMicroBalance.json'
         Get-HashRow -RelativePath $PackagePath
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.21\EZMicroBalance\EZMicroBalance.dll'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.21\EZMicroBalance\EZMicroBalance.pck'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.21\EZMicroBalance\EZMicroBalance.json'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.21\EZMicroBalance\README_INSTALL.txt'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.25\EZMicroBalance\EZMicroBalance.dll'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.25\EZMicroBalance\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.25\EZMicroBalance\EZMicroBalance.json'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.25\EZMicroBalance\README_INSTALL.txt'
     )
 }
 

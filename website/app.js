@@ -15,10 +15,10 @@
   let allUpdateItems = [];
   let pinnedInspectItem = null;
   let activeInspectItem = null;
-  let activeMechanicId = "blood_debt";
   let currentSearchQuery = "";
   let currentFilter = ""; // Empty string represents "All"
   let lastActiveRoute = "";
+  let isUpdatesPageLoaded = false;
 
   function flattenUpdateItems() {
     allUpdateItems = [];
@@ -109,6 +109,7 @@
     flattenUpdateItems();
     pinnedInspectItem = null;
     activeInspectItem = allUpdateItems[0] || null;
+    isUpdatesPageLoaded = false;
     render();
   }
 
@@ -170,7 +171,7 @@
       `;
     }
     return `
-      <details class="item-details" open>
+      <details class="item-details">
         <summary>${labels.expandDetails || "展开具体效果"}</summary>
         <div class="detail-grid">${rowsHtml}</div>
       </details>
@@ -205,7 +206,6 @@
       { key: "sts-keyword-mech-gold", words: ["金币", "金", "Gold", "gold"] },
       { key: "sts-keyword-mech-fission", words: ["裂变附魔", "裂变率", "裂变牌", "裂变", "Fission"] },
       { key: "sts-keyword-mech-seedbed", words: ["苗床", "Seedbed"] },
-      { key: "sts-keyword-mech-plant", words: ["种下", "Plant", "plant", "Planted", "planted", "Planting", "planting"] },
       { key: "sts-keyword-mech-sprout", words: ["根芽", "Sprout", "Blight Sprout", "Sprouts"] },
       { key: "sts-keyword-mech-rootblight", words: ["根蚀", "Rootblight", "Rootblights"] },
       { key: "sts-keyword-mech-contract", words: ["契约", "Contract", "Contracts"] },
@@ -275,7 +275,7 @@
   }
 
   function addCodexHyperlinks(htmlString) {
-    const cardTerms = ["放松", "愚行", "执迷", "至亮之焰", "临时页", "契约", "雨息", "枯壳", "苗床", "种下", "根蚀", "根芽", "血债", "威仪", "裁决", "裂变", "火印精英", "战旗房", "深层支线", "水晶球预知", "变换真实预览"];
+    const cardTerms = ["放松", "愚行", "执迷", "至亮之焰", "临时页", "契约", "雨息", "枯壳", "苗床", "根蚀", "根芽", "血债", "威仪", "裁决", "裂变", "火印精英", "战旗房", "深层支线"];
     let output = htmlString;
     cardTerms.forEach(term => {
       const regex = new RegExp(`(?<!<[^>]*)${term}`, 'g');
@@ -474,6 +474,8 @@
       `;
     }
 
+
+
     const title = localize(item, "title");
     const current = localize(item, "desc") || text(item.current);
     const vanilla = text(lang === 'en'
@@ -481,14 +483,6 @@
       : item.vanilla || item.groupDefaultVanilla);
     const tagsHtml = (item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("");
     const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item);
-    const vanillaHtml = vanilla ? `
-          <div>
-            <h4 class="inspector-sect-title">${labels.vanilla} (Vanilla)</h4>
-            <div class="inspector-desc-block vanilla-box">
-              <p>${formatStsText(vanilla, false)}</p>
-            </div>
-          </div>
-    ` : "";
 
     return `
       <div class="inspector-card-preview">
@@ -506,7 +500,12 @@
           ` : ""}
         </div>
         <div class="inspector-comp">
-          ${vanillaHtml}
+          <div>
+            <h4 class="inspector-sect-title">${labels.vanilla} (Vanilla)</h4>
+            <div class="inspector-desc-block vanilla-box">
+              <p>${formatStsText(vanilla, false)}</p>
+            </div>
+          </div>
           <div>
             <h4 class="inspector-sect-title">${labels.current} (Spire Plus)</h4>
             <div class="inspector-desc-block current-box">
@@ -531,9 +530,9 @@
     // Create search payload containing tags, titles, and text
     const searchString = normalize([title, current, vanilla, detailsText, (item.tags || []).join(" ")].join(" "));
     const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item);
-    const namespaceClass = item.isMechanicsCodex ? 'type-mechanic' : (item.namespace ? `type-${item.namespace}` : '');
-    const hasPreviewTag = (item.tags || []).includes("Preview tool") ? 'type-preview' : '';
-    const cardClasses = ["compare-card", isActive ? "active-inspect" : "", namespaceClass, hasPreviewTag].filter(Boolean).join(" ");
+    const namespaceClass = (item.isMechanicsCodex || item.namespace === "mechanics" || item.namespace === "mechanic") ? "type-mechanic" : (item.namespace ? `type-${item.namespace}` : "");
+    const hasPreviewTag = (item.tags || []).some(t => t === "Preview tool" || t === "预览工具") ? "type-preview" : "";
+    const cardClasses = ["compare-card", isActive ? "active-inspect" : "", namespaceClass, hasPreviewTag, isUpdatesPageLoaded ? "loaded" : ""].filter(Boolean).join(" ");
 
     return `
       <article class="${cardClasses}" style="--index: ${index}" data-search="${searchString}" data-index="${index}">
@@ -879,48 +878,17 @@
   // --- Router & Jump Actions ---
 
   function triggerJump(target) {
-    const directTarget = findUpdateItemForJump(target);
-    if (directTarget) {
-      currentSearchQuery = "";
-      currentFilter = "";
-
-      const input = document.getElementById("updateSearch");
-      if (input) input.value = "";
-
-      const chips = document.getElementById("updateFilters");
-      if (chips) {
-        for (const chip of chips.querySelectorAll(".chip")) {
-          chip.classList.toggle("active", chip.dataset.filter === labels.all);
-        }
-      }
-
-      applyFilters();
-      activeInspectItem = directTarget;
-      pinnedInspectItem = directTarget;
-      paintVisibleInspector();
-
-      const matchedCard = findRenderedCard(directTarget);
-      if (matchedCard) {
-        matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-      return;
-    }
-
-    const mechanicRoutes = {
-      "血债": "血债与赃物锁",
-      "威仪": "威仪与铸令",
-      "裁决": "洛莎之裁决",
-      "裂变": "裂变附魔",
-      "苗床": "苗床与根芽",
-      "种下": "种下",
-      "根芽": "苗床与根芽",
-      "根蚀": "苗床与根芽",
-      "火印精英": "火印精英",
-      "战旗房": "战旗房",
-      "深层支线": "深层支线"
-    };
-
-    const cardRoutes = {
+    const targetMap = {
+      "血债": "mechanic_blood_debt",
+      "威仪": "mechanic_forge_token",
+      "裁决": "mechanic_verdict",
+      "裂变": "mechanic_fission",
+      "苗床": "mechanic_seedbed",
+      "根芽": "mechanic_seedbed",
+      "根蚀": "mechanic_seedbed",
+      "火印精英": "mechanic_firemarked",
+      "战旗房": "mechanic_banner",
+      "深层支线": "mechanic_deepbranch",
       "放松": "帕尔之角",
       "愚行": "愚行",
       "执迷": "执迷",
@@ -936,18 +904,17 @@
     currentFilter = ""; // Go back to "All"
 
     let searchValue = target;
-    if (target in mechanicRoutes) {
-      searchValue = mechanicRoutes[target];
-    } else if (target in cardRoutes) {
-      searchValue = cardRoutes[target];
+    if (target in targetMap) {
+      searchValue = targetMap[target];
     }
 
-    currentSearchQuery = searchValue; // Search for the card title
+    currentSearchQuery = searchValue; // Search for the card title or key
 
     // Find the card to pin
     const cardItem = allUpdateItems.find(item => {
       const title = localize(item, "title");
-      return title.includes(searchValue) || item.title === searchValue || item.titleEn === searchValue;
+      const key = itemKey(item);
+      return title.includes(searchValue) || key === searchValue || item.title === searchValue || item.titleEn === searchValue;
     });
 
     if (cardItem) {
@@ -961,86 +928,6 @@
     const matchedCard = Array.from(document.querySelectorAll(".compare-card:not(.hidden)"))[0];
     if (matchedCard) {
       matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }
-
-  function findUpdateItemForJump(target) {
-    const query = normalize(target);
-    if (!query) return null;
-
-    const exactTitleMatch = allUpdateItems.find(item => {
-      const titles = [
-        localize(item, "title"),
-        item.title,
-        item.titleEn
-      ];
-
-      return titles.some(value => normalize(text(value || "")) === query);
-    });
-    if (exactTitleMatch) return exactTitleMatch;
-
-    const fieldMatch = allUpdateItems.find(item => {
-      const fields = [
-        localize(item, "title"),
-        localize(item, "desc"),
-        item.title,
-        item.titleEn,
-        item.i18nKey,
-        item.descKey,
-        item.namespace,
-        ...(item.tags || [])
-      ];
-
-      return fields.some(value => {
-        const normalized = normalize(text(value || ""));
-        return normalized && (normalized.includes(query) || query.includes(normalized));
-      });
-    });
-    if (fieldMatch) return fieldMatch;
-
-    const renderedMatch = Array.from(document.querySelectorAll(".compare-card")).find(card => {
-      const title = normalize(card.querySelector(".card-title-block")?.textContent || "");
-      const current = normalize(card.querySelector(".sts-card-current")?.textContent || "");
-      return title.includes(query) || current.includes(query);
-    });
-    if (renderedMatch) {
-      const renderedItem = allUpdateItems[parseInt(renderedMatch.dataset.index)];
-      if (renderedItem) return renderedItem;
-    }
-
-    return null;
-  }
-
-  function findRenderedCard(item) {
-    return Array.from(document.querySelectorAll(".compare-card")).find(card => {
-      const cardItem = allUpdateItems[parseInt(card.dataset.index)];
-      return cardItem && itemKey(cardItem) === itemKey(item);
-    });
-  }
-
-  function paintVisibleInspector() {
-    const inspectorPane = document.getElementById("inspectorPane");
-    if (inspectorPane && activeInspectItem) {
-      inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
-    }
-
-    for (const card of document.querySelectorAll(".compare-card")) {
-      const cardItem = allUpdateItems[parseInt(card.dataset.index)];
-      const isInspect = activeInspectItem && itemKey(activeInspectItem) === itemKey(cardItem);
-      const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(cardItem);
-      card.classList.toggle("active-inspect", Boolean(isInspect));
-
-      let badge = card.querySelector(".pin-badge");
-      if (isPinned) {
-        if (!badge) {
-          badge = document.createElement("span");
-          badge.className = "pin-badge";
-          badge.textContent = lang === "en" ? "Locked" : "已锁定";
-          card.insertBefore(badge, card.firstChild);
-        }
-      } else if (badge) {
-        badge.remove();
-      }
     }
   }
 
@@ -1177,27 +1064,6 @@
         });
       }
 
-      for (const heroBtn of app.querySelectorAll(".hero-choice-btn")) {
-        heroBtn.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          const choice = heroBtn.dataset.choice;
-          if (choice === "install") {
-            location.hash = "install";
-            return;
-          }
-
-          const board = document.querySelector(".tool-row") || document.querySelector(".update-board");
-          if (board) {
-            board.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        });
-      }
-
-      for (const codexLink of app.querySelectorAll(".codex-link")) {
-        codexLink.addEventListener("click", handleCodexLinkClick);
-      }
-
       applyFilters();
 
       // Card inspector mouseenter / click logic
@@ -1226,48 +1092,19 @@
         });
 
         card.addEventListener("click", (e) => {
-          const clickTarget = typeof e.target?.closest === "function" ? e.target : null;
-          if (clickTarget?.closest(".codex-link")) {
-            return;
-          }
-
           e.stopPropagation();
           if (pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item)) {
+            // Unpin if clicked again
             pinnedInspectItem = null;
           } else {
+            // Pin this card
             pinnedInspectItem = item;
           }
-
-          activeInspectItem = pinnedInspectItem || item;
-          if (inspectorPane) {
-            inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
-          }
-
-          compareCards.forEach(c => {
-            const idx = parseInt(c.dataset.index);
-            const cardItem = allUpdateItems[idx];
-            const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(cardItem);
-            const isInspect = activeInspectItem && itemKey(activeInspectItem) === itemKey(cardItem);
-
-            c.classList.toggle("active-inspect", isInspect);
-
-            let badge = c.querySelector(".pin-badge");
-            if (isPinned) {
-              if (!badge) {
-                badge = document.createElement("span");
-                badge.className = "pin-badge";
-                badge.textContent = lang === 'en' ? 'Locked' : '已锁定';
-                c.insertBefore(badge, c.firstChild);
-              }
-            } else {
-              if (badge) {
-                badge.remove();
-              }
-            }
-          });
+          render(); // Refresh list to update locking states
         });
       });
 
+      // Restore pinned inspect card on leaving card pane
       if (cardsPane) {
         cardsPane.addEventListener("mouseleave", () => {
           activeInspectItem = pinnedInspectItem || allUpdateItems[0];
@@ -1279,22 +1116,11 @@
             const item = allUpdateItems[index];
             const isInspect = activeInspectItem && itemKey(activeInspectItem) === itemKey(item);
             c.classList.toggle("active-inspect", isInspect);
-
-            const isPinned = pinnedInspectItem && itemKey(pinnedInspectItem) === itemKey(item);
-            let badge = c.querySelector(".pin-badge");
-            if (isPinned) {
-              if (!badge) {
-                badge = document.createElement("span");
-                badge.className = "pin-badge";
-                badge.textContent = lang === 'en' ? 'Locked' : '已锁定';
-                c.insertBefore(badge, c.firstChild);
-              }
-            } else {
-              if (badge) badge.remove();
-            }
           });
         });
       }
+
+      isUpdatesPageLoaded = true;
     }
 
     header.innerHTML = HeaderComponent(current);
@@ -1306,45 +1132,64 @@
     if (current !== lastActiveRoute) {
       window.scrollTo({ top: 0, behavior: "instant" });
       lastActiveRoute = current;
+      isUpdatesPageLoaded = false;
     }
   }
 
   window.addEventListener("hashchange", render);
 
+  // Dynamic navigation click bindings (including cross-card hyperlinks and hero choices)
   document.addEventListener("click", (event) => {
-    const eventTarget = typeof event.target?.closest === "function" ? event.target : null;
-    if (eventTarget?.closest(".codex-link")) {
-      handleCodexLinkClick(event);
-    }
-  }, true);
-
-  function handleCodexLinkClick(event) {
-    const source = typeof event.target?.closest === "function" ? event.target : event.currentTarget;
-    const codexLink = source?.closest?.(".codex-link");
-    if (!codexLink) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    const target = codexLink.dataset.target;
-    if (route() !== "updates") {
-      location.hash = "updates";
-      setTimeout(() => triggerJump(target), 80);
-    } else {
-      triggerJump(target);
-    }
-  }
-
-  // Dynamic navigation click bindings (including cross-card hyperlinks and buttons)
-  document.addEventListener("click", (event) => {
-    // 1. Cross-card codex link routing
-    const eventTarget = typeof event.target?.closest === "function" ? event.target : null;
-    const codexLink = eventTarget?.closest(".codex-link");
-    if (codexLink) {
-      handleCodexLinkClick(event);
+    // Clear Pin click handler inside inspector
+    const clearPinBtn = event.target.closest("#clearPinBtn");
+    if (clearPinBtn) {
+      pinnedInspectItem = null;
+      render();
       return;
     }
 
-    // 2. Language button routing
+    // Hero choice button routing (with smooth scroll support)
+    const heroChoiceBtn = event.target.closest(".hero-choice-btn");
+    if (heroChoiceBtn) {
+      event.preventDefault();
+      const choiceType = heroChoiceBtn.dataset.choice;
+      const currentRoute = route();
+      if (currentRoute === choiceType) {
+        const targetEl = choiceType === "updates"
+          ? document.getElementById("updateFilters") || document.querySelector(".updates-board")
+          : document.querySelector(".merchant-shop");
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        location.hash = choiceType;
+        setTimeout(() => {
+          const targetEl = choiceType === "updates"
+            ? document.getElementById("updateFilters") || document.querySelector(".updates-board")
+            : document.querySelector(".merchant-shop");
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 100);
+      }
+      return;
+    }
+
+    // Cross-card codex link routing
+    const codexLink = event.target.closest(".codex-link");
+    if (codexLink) {
+      event.preventDefault();
+      const target = codexLink.dataset.target;
+      if (route() !== "updates") {
+        location.hash = "updates";
+        setTimeout(() => triggerJump(target), 80);
+      } else {
+        triggerJump(target);
+      }
+      return;
+    }
+
+    // Language button routing
     const langButton = event.target.closest("[data-lang]");
     if (langButton) {
       event.preventDefault();
@@ -1352,47 +1197,11 @@
       return;
     }
 
-    // 3. Clear Pin button in-place click handler
-    const clearPinBtn = event.target.closest("#clearPinBtn");
-    if (clearPinBtn) {
-      pinnedInspectItem = null;
-      activeInspectItem = allUpdateItems[0];
-      const inspectorPane = document.getElementById("inspectorPane");
-      if (inspectorPane) {
-        inspectorPane.innerHTML = CardInspectorComponent(activeInspectItem);
-      }
-      const compareCards = document.querySelectorAll(".compare-card");
-      compareCards.forEach(c => {
-        c.classList.remove("active-inspect");
-        const badge = c.querySelector(".pin-badge");
-        if (badge) badge.remove();
-      });
-      return;
-    }
-
-    // 4. Hero Choice button routing & smooth scrolling
-    const heroBtn = event.target.closest(".hero-choice-btn");
-    if (heroBtn) {
-      event.preventDefault();
-      const choice = heroBtn.dataset.choice;
-      if (choice === "updates") {
-        const board = document.querySelector(".tool-row") || document.querySelector(".update-board");
-        if (board) {
-          board.scrollIntoView({ behavior: "smooth" });
-        }
-      } else {
-        location.hash = choice;
-      }
-      return;
-    }
-
-    // 5. Tab button routing
+    // Tab button routing
     const link = event.target.closest("[data-route]");
-    if (link) {
-      event.preventDefault();
-      location.hash = link.dataset.route;
-      return;
-    }
+    if (!link) return;
+    event.preventDefault();
+    location.hash = link.dataset.route;
   });
 
   render();

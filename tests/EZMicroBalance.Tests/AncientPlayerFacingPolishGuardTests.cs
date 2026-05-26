@@ -372,7 +372,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
             engRelics["EZMICROBALANCE-URDA_AFTER_RAIN_OPTION_RELIC.description"],
             "Act [blue]1[/blue]",
             "[gold]Rain Breath[/gold]",
-            "fewer than [blue]3[/blue] triggers",
+            "if triggered fewer than [blue]3[/blue] times",
             "[blue]75[/blue] [gold]Gold[/gold]",
             "heal [blue]8[/blue] HP");
         AssertSourceContains(
@@ -430,11 +430,11 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description"],
             "[blue]15[/blue] [gold]Gold[/gold]",
-            "[blue]1[/blue] upgraded reward card");
+            "[blue]1[/blue] upgraded card reward");
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
-            "max [blue]3[/blue]",
-            "first chosen card is upgraded",
+            "save up to [blue]3[/blue] cards",
+            "the first is upgraded",
             "Click this relic later");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_humus_pact.description"],
@@ -719,8 +719,8 @@ public sealed class AncientPlayerFacingPolishGuardTests
         Assert.DoesNotContain(".Concat(card.HoverTips)", seedBankSource, StringComparison.Ordinal);
         AssertSourceContains(
             engAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
-            "max [blue]3[/blue]",
-            "the first chosen card is upgraded",
+            "save up to [blue]3[/blue] cards",
+            "the first is upgraded",
             "Click this relic later");
         AssertSourceContains(
             zhsAncients["EZMB_URDA.pages.INITIAL.options.urda_seed_bank.description"],
@@ -790,7 +790,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "收手",
             "[gold]赃物锁[/gold]",
             "[gold]血债[/gold]",
-            "死亡会结束本局");
+            "若死亡会直接结束本局。");
         AssertSourceContains(
             engRelics["EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC.description"],
             "Fight Vakuu",
@@ -809,7 +809,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
             "[gold]赃物锁[/gold]",
             "[gold]血债[/gold]",
             "本场没有普通战斗奖励",
-            "死亡会结束本局");
+            "若死亡会直接结束本局。");
         AssertNonEmpty(engAncients, zhsAncients, "EZMB_VAKUU_FIGHT.pages.VICTORY_FALLBACK.description");
         AssertNonEmpty(engAncients, zhsAncients, "EZMB_VAKUU_FIGHT.pages.VICTORY_FALLBACK.options.CONTINUE.title");
         AssertNonEmpty(engAncients, zhsAncients, "EZMB_VAKUU_FIGHT.pages.VICTORY_FALLBACK.options.CONTINUE.description");
@@ -987,7 +987,7 @@ public sealed class AncientPlayerFacingPolishGuardTests
         AssertSourceContains(
             engAscension["LEVEL_16.description"],
             "[gold]Banner Rooms[/gold]",
-            "[gold]Banner[/gold]",
+            "banner",
             "extra rewards");
         AssertSourceContains(
             engAscension["FIREMARK_ELITE.description"],

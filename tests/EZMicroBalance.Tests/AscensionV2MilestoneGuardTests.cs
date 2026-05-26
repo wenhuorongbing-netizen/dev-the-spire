@@ -1,4 +1,4 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -256,10 +256,10 @@ public sealed class AscensionV2MilestoneGuardTests
             "bud.HasEnteredHand && !bud.WasPlayed",
             "await RootDeckService.AddRootblightI(bud.Owner, \"Blight Sprout\")");
 
-        Assert.Contains("No Rootblight IV.", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
-        Assert.Contains("If never seen, it withers.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
-        Assert.Contains("没有第四阶段根蚀", zhsCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
-        Assert.Contains("若从未见到，则枯萎", zhsCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("first time this occurs", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("if never drawn, it withers away.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("首次发生该恶化", zhsCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("若本场从未抽到，则会枯萎消逝", zhsCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
 
         Assert.Contains("Rootblight IV never appears.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("If the four-card cap blocks a Rootblight III split, the failed add does not consume that card's split marker", manualChecklist, StringComparison.Ordinal);

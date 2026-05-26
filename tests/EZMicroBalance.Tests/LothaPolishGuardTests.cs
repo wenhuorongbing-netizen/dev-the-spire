@@ -601,7 +601,7 @@ public sealed class LothaPolishGuardTests
             "Enemy non-damaging [gold]negative status[/gold] stacks on you also apply twice",
             "remove [blue]1[/blue] [gold]Enlightenment[/gold]",
             "spend up to [blue]3[/blue] [gold]Enlightenment[/gold]",
-            "draws [blue]1[/blue] and gives [blue]4[/blue] [gold]Block[/gold]");
+            "each spent stack draws [blue]1[/blue] and gives [blue]4[/blue] [gold]Block[/gold]");
         AssertSourceContains(
             zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
             "[gold]",

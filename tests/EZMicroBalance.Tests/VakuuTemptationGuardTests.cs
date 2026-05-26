@@ -222,7 +222,7 @@ public sealed class VakuuTemptationGuardTests
         var zhsPowers = JsonStringMap("EZMicroBalance", "localization", "zhs", "powers.json");
 
         AssertLocalizedCard(engCards, "EZMB_VAKUU_KNIFE_CONTRACT", "Knife Contract", "Deal {Damage:diff()} damage to Vakuu", "If a [gold]Stolen Lock[/gold] remains", "[gold]Blood Debt[/gold]");
-        AssertLocalizedCard(engCards, "EZMB_VAKUU_TEMPTATION", "Gold Contract", "Gain {Energy:energyIcons()}", "Draw {Cards:diff()} cards", "[gold]Stolen Lock[/gold]");
+        AssertLocalizedCard(engCards, "EZMB_VAKUU_TEMPTATION", "Gold Contract", "Gain {Energy:energyIcons()}", "draw {Cards:diff()} cards", "[gold]Stolen Lock[/gold]");
         AssertLocalizedCard(engCards, "EZMB_VAKUU_SHELTER_CONTRACT", "Avoid Debt", "Gain {Block:diff()} [gold]Block[/gold]", "Remove {Debt:diff()} [gold]Blood Debt[/gold]");
         AssertLocalizedCard(engCards, "EZMB_VAKUU_TRICK_CONTRACT", "Fraud Contract", "Break [blue]1[/blue] [gold]Stolen Lock[/gold]", "Add {Debt:diff()} [gold]Blood Debt[/gold]", "Vakuu's attacks deal {Backlash:diff()} more damage");
         AssertLocalizedCard(engCards, "EZMB_VAKUU_CASH_OUT_CONTRACT", "Cash Out", "End the Vakuu fight", "take the loot from broken locks");
@@ -257,7 +257,7 @@ public sealed class VakuuTemptationGuardTests
             "与瓦库进行赃物试炼",
             "额外祝福选择",
             "本场没有普通战斗奖励",
-            "死亡会结束本局",
+            "若死亡会直接结束本局",
             "[gold]契约[/gold]",
             "[gold]赃物锁[/gold]",
             "[gold]血债[/gold]");
@@ -266,7 +266,7 @@ public sealed class VakuuTemptationGuardTests
             "与瓦库进行赃物试炼",
             "额外祝福选择",
             "本场没有普通战斗奖励",
-            "死亡会结束本局",
+            "若死亡会直接结束本局",
             "[gold]契约[/gold]",
             "[gold]赃物锁[/gold]",
             "[gold]血债[/gold]");

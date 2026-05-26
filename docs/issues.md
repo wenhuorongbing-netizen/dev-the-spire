@@ -2,11 +2,11 @@
 Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-25:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `B113A7ADC1306BAF4946FB6069B678310A708A7C91B670FA2869D36DDC13EA98` |
-| DLL | `94C15E20E32B50813761088EBF95E628A36F04F68EAF6C323B21849338DD1BE9` |
-| PCK | `16B5DFC6EF60C873FEAC6445C90DFE3CBB656950CB02BBD9CC30D4CD7BB66750` |
-| Manifest | `BDFCFB0C748523B37D10AFB02D5BAD2789327DB45B3F94E5107DA20001BD6B80` |
-| README_INSTALL | `FFDDD27042F8B02CC38EFF1B914A18FADAD6854524DD60BECB08278459D10F98` |
+| ZIP | `C595FC59D8FAD3731F5A2A1791D5BBCB83E15E1C37A2DDC0C92F0DF08940CD46` |
+| DLL | `89103CF5D6662D1B423259C8ED628763B42A6DD83A9B6F4D25BCD951B15DD527` |
+| PCK | `B5ACC8813F3068CB19E01737C54C2FAAACA317BC80AE3D417167AB66DB6D8EAA` |
+| Manifest | `61E8F5635D4849279BCA8EE3326F6CF61CF648094D7B1E97B721C66E875A282F` |
+| README_INSTALL | `F894C217C7E3B3BFA67159A814BAED21C9EB4DBD84924BA774EFF3C20FE9183D` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -14,7 +14,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `URDA-SEEDBED-PLANTING` P0 source/package-fixed / live-pending:
   - Seedbed explains Planting / 种下 as a non-play, non-discard, non-exhaust handling action.
   - Planted Blight Sprouts are handled and add no Rootblight I after combat.
-  - Planted Rootblight is held still for the current combat and stays in the master deck at the same level.
+  - Planted Rootblight is frozen for this combat only and stays in the master deck at the same level; it does not improve, worsen, split, downgrade, cleanse, or get removed.
 - `COOP-COMBAT-START-CRASH` P0 source/package-fixed / live-pending:
   - User log ended during multiplayer combat startup for `CUBEX_CONSTRUCT_NORMAL`, with no managed stack. Treat this as latest Spire Plus crash evidence even if the in-game manifest text still shows an older beta label.
   - Source fix: co-op fails closed before proof for A11-A20 selection/gameplay, Ascension map/rewards, Ancient offers/selections/run hooks, Urda reward alternatives, combat hooks, and preview tools.

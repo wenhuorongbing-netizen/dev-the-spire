@@ -22,6 +22,7 @@ public sealed class DocumentationCompactnessGuardTests
             "Source review may close only source-level issues",
             "Runtime rows need game logs, screenshots, manual notes, or two-client evidence",
             "Crystal Sphere and transform-preview live proof inside Spire Plus",
+            "Seedbed / Planting clarity",
             "No source-only pass may mark this goal complete");
         Assert.Contains("goal-md-mojibake-intake-20260523.md", goal, StringComparison.Ordinal);
         Assert.Contains("goal-coop-preview-plan-20260525.md", goal, StringComparison.Ordinal);
@@ -62,10 +63,10 @@ public sealed class DocumentationCompactnessGuardTests
             "lfter",
             "lll ten",
             "URDl",
-            "鑵",
-            "鑴",
-            "鑻",
-            "鍦",
+            "?",
+            "?",
+            "?",
+            "?",
             "lPI"
         })
         {
@@ -80,8 +81,8 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.21 Seedbed explanation / mod-overview refresh. Result: succeeded.",
-            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.21 Seedbed explanation / mod-overview refresh. Result: succeeded.",
+            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.25 manifest/localization UTF-8 refresh. Result: succeeded.",
+            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-25 after the beta.25 manifest/localization UTF-8 refresh. Result: succeeded.",
             "installed `mods\\EZMicroBalance` folder",
             "matched the installed mod artifacts on 2026-05-25",
             "303 passed, 0 skipped, 0 failed");
@@ -299,7 +300,7 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("beta.21 Seedbed explanation", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.25 manifest/localization UTF-8 refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta19-loader-smoke-20260525-213336", projectState, StringComparison.Ordinal);
@@ -619,7 +620,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.21 package hash is pending",
+            "Fresh loader smoke for the current beta.25 package hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

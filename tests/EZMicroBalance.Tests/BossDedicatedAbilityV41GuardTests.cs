@@ -15,7 +15,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         Assert.Equal("Branded Form", english["LEVEL_20.title"]);
         Assert.Contains("Each Boss gains its own dedicated ability", english["LEVEL_19.description"], StringComparison.Ordinal);
         Assert.Contains("Only the second Act [blue]3[/blue] Boss enters [gold]Branded Form[/gold]", english["LEVEL_20.description"], StringComparison.Ordinal);
-        Assert.Contains("\u6bcf\u540d\u9996\u9886\u83b7\u5f97\u81ea\u5df1\u7684\u4e13\u5c5e\u80fd\u529b", simplifiedChinese["LEVEL_19.description"], StringComparison.Ordinal);
+        Assert.Contains("\u6240\u6709\u9996\u9886\u83b7\u5f97\u4e13\u5c5e\u7279\u6b8a\u80fd\u529b", simplifiedChinese["LEVEL_19.description"], StringComparison.Ordinal);
         Assert.Contains("\u53ea\u6709\u7b2c[blue]3[/blue]\u5e55\u7b2c\u4e8c\u540d\u9996\u9886\u8fdb\u5165[gold]\u70d9\u5370\u5f62\u6001[/gold]", simplifiedChinese["LEVEL_20.description"], StringComparison.Ordinal);
         Assert.Equal("Branded Form", english["BOSS_BRANDED_FORM.title"]);
         Assert.Equal("\u70d9\u5370\u5f62\u6001", simplifiedChinese["BOSS_BRANDED_FORM.title"]);
@@ -65,7 +65,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
 
         AssertSourceContains(
             websiteChineseAscension,
-            "\u6bcf\u540d\u9996\u9886\u83b7\u5f97\u81ea\u5df1\u7684\u4e13\u5c5e\u80fd\u529b",
+            "\u6240\u6709\u9996\u9886\u83b7\u5f97\u4e13\u5c5e\u7279\u6b8a\u80fd\u529b",
             "\u70d9\u5370\u5f62\u6001",
             "\u65f6\u7802\u56de\u6d41",
             "\u591a\u91cd\u62a4\u7532",
