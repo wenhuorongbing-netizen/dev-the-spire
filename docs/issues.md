@@ -2,11 +2,11 @@
 Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-26:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `8334B655AC2E80C1D4BE945EBD78674ED7C38E5C6CDE2BB0E6C7661471A339A7` |
-| DLL | `61F713C92A5553B0593DDFA7650EF32D527652886D293345D7E7F513E4A0311F` |
-| PCK | `9FF225C2651517F2FCDC63E91269E0C788F9A75D8A59E6347E1987ABCE7AA75A` |
-| Manifest | `A3F9908DAEB18589141820BBFC39017F8EE453E7AF2E26EC430D3A4FB1ED055A` |
-| README_INSTALL | `46D9B398042E46B5398916A0635B33E815FDA42F8921F6D53D0FD8B402009E65` |
+| ZIP | `BEE5EB9D032A88319CD566CF163552314EB05D3536E13C1B123F16CCA7DB33AE` |
+| DLL | `6115B8821CE1358D461DE11F7EF2CB47582F26ED5170F918436D9505A61E63A5` |
+| PCK | `29E876AE346F45794456F60CB27D5402CAE8681EA0F80E6876EFCD98B2B0E615` |
+| Manifest | `2C62BEBF506C9332F1CC75421E9C64A49A53A0DDA4814647A6EE5E601295D1FF` |
+| README_INSTALL | `22214175F814E11181EF95EAE8719D3B2E979EC997F657D01B2113B80233B029` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -29,7 +29,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `FISSION-EXHAUST-TRIGGERS` P1 source/package-fixed / live-pending: canonical Exhaust path guarded through Fission keyword, `CardCmd.Exhaust(...)`, `AfterCardExhausted(...)`, and Drum/Howl/power/relic listeners.
 - Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
 ## Engineering governance blockers
-- `GOV-WIP-SPLIT` P0 source-fixed; current committed worktree is clean after the beta.61 batch commit, and the batch classifier reports 0 dirty entries / 0 unclassified entries.
+- `GOV-WIP-SPLIT` P0 source-fixed; current committed worktree is clean after the beta.62 batch commit, and the batch classifier reports 0 dirty entries / 0 unclassified entries.
 - `GOV-CI-FIRST-RUN` P2 pending: self-hosted lane exists, but first GitHub/self-hosted run evidence is not recorded.
   GitHub Actions API check on 2026-05-26 found hosted `Repository Hygiene` / `Spire Plus Website` runs only and 0 `Full Local Validation` runs in the latest queried run set.
   Use `scripts/check-github-workflow-runs.ps1 -RequireSuccessfulRun` before closing this.

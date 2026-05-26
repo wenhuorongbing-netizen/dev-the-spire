@@ -392,6 +392,7 @@ public sealed class LothaPolishGuardTests
     public void SingleSentenceBranchesAreGuardedBeforeAndAfterTheRuling()
     {
         var cardRules = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardRules.cs");
+        var cardEligibility = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardEligibility.cs");
         var powerReplacement = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.PowerReplacement.cs");
         var singleSentence = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.SingleSentence.cs");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
@@ -401,7 +402,7 @@ public sealed class LothaPolishGuardTests
         var powerFallback = SliceBetween(singleSentence, "private static async Task TryResolveSingleSentencePowerFallback", "private static void TrackSingleSentenceRemainingPlays");
         var playTracker = SliceBetween(singleSentence, "private static void TrackSingleSentenceRemainingPlays", "private static async Task EnsureSingleSentencePower");
         var powerEligibility = SliceFrom(singleSentence, "private static bool CanUseSingleSentencePowerReplacement");
-        var eligibleCard = SliceBetween(cardRules, "private static bool IsEligibleCard", "private static bool IsDeferredVerdictConsumerCard");
+        var eligibleCard = SliceBetween(cardEligibility, "private static bool IsEligibleCard", "private static bool IsDeferredVerdictConsumerCard");
         var powerCard = SliceFrom(powerReplacement, "private static bool IsPowerCard");
 
         AssertSourceContains(
