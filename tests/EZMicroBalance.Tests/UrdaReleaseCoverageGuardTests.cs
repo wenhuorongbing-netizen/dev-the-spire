@@ -11,7 +11,13 @@ public sealed class UrdaReleaseCoverageGuardTests
         var urdaGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaFeatureGate.cs");
         var urdaAncient = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
         var urdaBlessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingIds.cs");
-        var urdaCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaCards.cs");
+        var urdaCardModels = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaSeedling.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaSeedbed.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRainBreath.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "WitheredHusk.cs"));
+        var witheredHusk = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "WitheredHusk.cs");
         var urdaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaInitializer.cs");
         var urdaMapUiPatches = string.Join(
             Environment.NewLine,
@@ -298,7 +304,7 @@ public sealed class UrdaReleaseCoverageGuardTests
             JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json")["EZMB_URDA_SEEDBED.description"],
             StringComparison.Ordinal);
         AssertSourceContains(
-            urdaCards,
+            urdaCardModels,
             "public sealed class UrdaSeedbed",
             "new BlockVar(8m, ValueProp.Move)",
             "DynamicVars.Block.UpgradeValueBy(4m)");
@@ -515,14 +521,14 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.DoesNotContain("SettleSeedBankBeforeActOneBoss", urdaRunHook, StringComparison.Ordinal);
         Assert.DoesNotContain("room.RoomType == RoomType.Boss", urdaRunHook, StringComparison.Ordinal);
         var huskTransformPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaWitheredHuskTransformPatches.cs");
-        var normalizedUrdaCards = urdaCards.Replace("\r\n", "\n", StringComparison.Ordinal);
+        var normalizedWitheredHusk = witheredHusk.Replace("\r\n", "\n", StringComparison.Ordinal);
         Assert.Contains(
             "[Pool(typeof(CurseCardPool))]\npublic sealed class WitheredHusk",
-            normalizedUrdaCards,
+            normalizedWitheredHusk,
             StringComparison.Ordinal);
         Assert.DoesNotContain(
             "[Pool(typeof(TokenCardPool))]\npublic sealed class WitheredHusk",
-            normalizedUrdaCards,
+            normalizedWitheredHusk,
             StringComparison.Ordinal);
         AssertSourceContains(
             huskTransformPatch,
@@ -531,7 +537,6 @@ public sealed class UrdaReleaseCoverageGuardTests
             "__result = false",
             "HarmonyPatch(typeof(CardFactory), nameof(CardFactory.GetDefaultTransformationOptions))",
             "__result.Where(card => card is not WitheredHusk)");
-        var witheredHusk = SliceFrom(urdaCards, "public sealed class WitheredHusk");
         AssertSourceContains(
             witheredHusk,
             "WitheredHusk",

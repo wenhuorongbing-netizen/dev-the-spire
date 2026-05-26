@@ -8,7 +8,10 @@ Current Urda source files:
 
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingIds.cs`
-- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCards.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedling.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbed.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRainBreath.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/WitheredHusk.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaFeatureGate.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaInitializer.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs`

@@ -63,6 +63,7 @@ These paths are active private-beta source, resource, test, script, or documenta
 | Active release resource predicates | `IsActiveExportResource` and `IsActiveReleaseResource` centralized in `TestRepo.cs`; duplicate package-boundary predicates removed from release guard tests. | Same infrastructure guard and test README. |
 | Ascension source tree test reads | `AscensionFeatureGuardTests` now uses shared `ReadSourceTree` instead of a local source-tree reader. | Same infrastructure guard. |
 | Ancient feature gate env parsing | Shared `AncientFeatureGate` helper under `EZMicroBalanceCode/Ancients/Common/`. | Release/source guards. |
+| Urda card model split | Removed `UrdaCards.cs`; `UrdaSeedling.cs`, `UrdaSeedbed.cs`, `UrdaRainBreath.cs`, and `WitheredHusk.cs` now own their respective card models. | `UrdaReleaseCoverageGuardTests` and active source manifest validation. |
 | Vakuu fight hook ownership split | `VakuuFightRunHook.cs` keeps initialization/subscription, `VakuuFightCombatHook.cs` owns combat hooks, and `VakuuContractService.cs` owns Contract/Cash Out injection. | `VakuuTemptationGuardTests` and active source manifest validation. |
 | Ascension combat metadata refresh | Duplicated metadata lookup consolidated in `AscensionCombatModifierService`. | `AscensionV2MilestoneGuardTests`. |
 | Stale Morvi v2.2 enable constant | Removed unused `LegacyEnableEnvironmentVariable` from `MorviFeatureGate`; Morvi is current default-on with disable/force gates. | Build/test validation. |
