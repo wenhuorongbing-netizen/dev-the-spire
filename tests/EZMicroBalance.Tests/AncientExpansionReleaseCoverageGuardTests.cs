@@ -314,7 +314,10 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
     {
         var gate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
         var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
-        var command = ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.cs");
+        var command = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.RunSetup.cs"));
         var vakuuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var victory = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var noReward = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.NoRewardResume.cs");

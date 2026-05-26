@@ -609,6 +609,7 @@ public sealed class AncientUiReadinessGuardTests
         var command = string.Join(
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.RunSetup.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs"));
         AssertSourceContains(
@@ -644,6 +645,7 @@ public sealed class AncientUiReadinessGuardTests
         var vakuuCommandAndFeatureSource = string.Join(
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusAncientLiveTestConsoleCmd.RunSetup.cs"),
             ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu"));
         AssertNoProcessEnvironmentMutationForVakuuCommand(vakuuCommandAndFeatureSource);
 
