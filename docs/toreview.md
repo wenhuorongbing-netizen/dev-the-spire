@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.36.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.37.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `F96ABEA174DB4BE321584C671019E729B79DA192EEE30F1C71CDFE86244C6BE8` |
-| DLL | `632A62985AD9689F3C31ABD345F2879569EF520FF38A2B7B3D62BB4ED2FA23F9` |
-| PCK | `5D0759BD2DC6C6CBF74F3ECE4EB484E29E1260074407F64CA9289B1D9DAF86DD` |
-| Manifest | `64BD6FFD3ED0495A6A7956FF1D1BF04EF0C4F36EF101BBF00C5A9F514FE7B4A7` |
-| README_INSTALL | `D2FD5959A8DDE416D8D547D0811C85E009A795AB24929811F87D39978118F036` |
+| ZIP | `3DF27CE930CDCC9A163D27D9F490C4F793F11DA0D8B3E7BE1A281479BD796BF1` |
+| DLL | `834AADBF7437366D21A73F8C3514D56E8B079C32E21CBFB22833BD244FA5F214` |
+| PCK | `8DDBBC1E44D73EC682C00BBF703EA7226EE69DA27DC9E3F73B7B202F5D537D2C` |
+| Manifest | `9403F46F6F2041BB0A4A1D526CEAF8D229E8BF2E3E8DA09989486EA6CDAB0A05` |
+| README_INSTALL | `290856DFB3D51BD9A4B1A368050DB59E9BFBD48804EF7A306B5D4F329A6F1030` |
 
-Latest validation snapshot: beta.36 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.36 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: beta.37 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.37 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
@@ -32,6 +32,7 @@ Latest validation snapshot: beta.36 build, publish/package refresh, default test
 | MANUAL-20260524-SERE-TALON-TANX-CLAWS-REPORT | Ancient rewards / relic art | Treat any green Tanx Claws art on Vakuu's Sere Talon as our display/package route problem until live proof says otherwise. | If the effect is curse choice + 2 Wish + 1 Wish+ but art/title is Tanx Claws, capture `godot.log` route lines and the surface that bypassed the patch. |
 | ASCENSION-A11-A20 | Ascension | A11 map geometry, A12 Firemarked Elites, A13 Fission, A16 Banners, A17 Deep Branch, A19 dedicated abilities, A20 Branded Form, and Rootblight have guards. | Play A11-A20 paths, verify hovers, rewards, boss abilities, Rootblight timing, save/load, and co-op boundaries. |
 | FISSION-EXHAUST-TRIGGERS | Ascension / Fission | Fission text now states that the card enters the Exhaust pile and triggers Exhaust effects normally. Source guards prove the canonical `CardCmd.Exhaust(...)` path and cover Drum of Battle, Howl from Beyond, Feel No Pain, Dark Embrace, and Charon's Ashes-style listeners. | Pick a Fission card with an Exhaust payoff if possible. Confirm it enters the Exhaust pile, triggers card-owned payoff such as Drum of Battle or Howl from Beyond, and triggers powers/relics such as Feel No Pain, Dark Embrace, or Charon's Ashes. |
+| QUEEN-BOSS-SEAL-RUNTIME | Ascension / A19-A20 | Royal Decree now filters candidate Bound cards through `RoyalDecreeEnchantment.CanEnchant(...)` before calling `CardCmd.Enchant(...)`, and its inline zhs modifier text is readable. This addresses the likely crash path when Queen binds a card type that can receive Bound but cannot receive an Enchantment. | Start the Queen A19/A20 fight, draw Bound cards across normal and mixed hand states, confirm the fight does not lock up or crash, inspect the Royal Decree card marker text in zhs/eng, then play the correct Decree, a wrong Bound card, and no Bound card to confirm Majesty/Torch Head outcomes. |
 | ENEMY-DAMAGE-POLISH | Ascension / Elite combat | Decimillipede Writhe/Constrict/Bulk, Terror Eel Crash/Thrash, and Phantasmal Gardener Bite/Lash are reduced through source getter patches so visible intent and real damage share the same values. | Fight these Elite encounters and compare first-cycle damage pacing against the previous build; confirm no intent/damage mismatch. For Decimillipede, check the strengthening/Bulk attack no longer shows the old 7-damage value. |
 | MANUAL-20260526-LIVE-BUGS | Ascension live regressions | User reports: Queen/Royal Decree fight cannot run correctly, strengthened Decimillipede still attacks for 7, Firemarked Elite text does not explain secondary-target effects, and playing Blight Sprout in a Boss fight still awarded Rootblight after victory. | Reproduce each on the current package, capture screenshots and `godot.log`, then keep or move each row according to whether source work is needed. |
 | ASCENSION-SELECTOR-LOCALIZATION | Ascension UI | A11-A20 character-select panels use the Spire Plus localization bridge for current-language then English fallback. | On character select, check A20 shows `烙印形态` / `Branded Form` and a readable description instead of `ascension.LEVEL_20.title` or `ascension.LEVEL_20.description`. |

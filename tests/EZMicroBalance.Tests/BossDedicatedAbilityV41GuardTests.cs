@@ -319,7 +319,8 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var bossPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
         var aeonglassPower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassPower.cs");
         var residualSampleFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.PhaseCarryover.cs");
-        var combinedPowerText = string.Join(Environment.NewLine, bossPowers, aeonglassPower, residualSampleFlow);
+        var royalDecreeEnchantment = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "RoyalDecreeEnchantment.cs");
+        var combinedPowerText = string.Join(Environment.NewLine, bossPowers, aeonglassPower, residualSampleFlow, royalDecreeEnchantment);
 
         AssertSourceContains(
             combinedPowerText,
@@ -334,6 +335,8 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "\u4e13\u5c5e\u80fd\u529b\uff1a\u65f6\u7802\u56de\u6d41",
             "\u4e0b\u4e00\u6b21\u773c\u90e8\u6fc0\u5149\u989d\u5916\u547d\u4e2d",
             "\u61d2\u60f0\u548c\u67af\u7aed\u7684\u9644\u52a0\u4ee3\u4ef7\u6bcf\u6b21\u77e5\u8bc6\u8bc5\u5492\u6700\u591a\u7ed3\u7b97\u4e00\u6b21",
+            "\u5fa1\u4ee4",
+            "\u672c\u56de\u5408\u6253\u51fa\u8fd9\u5f20\u724c\uff0c\u53ef\u907f\u514d\u5fa1\u4ee4\u60e9\u7f5a",
             "Sloth and Waste Away side costs resolve at most once per Knowledge curse",
             "\"\uFF1B\" : \"; \"");
 
@@ -539,6 +542,9 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "tracker.ChosenDecreePlayersWhoPlayedAnyBound.Contains(player)",
             "Bound is applied as cards are drawn",
             "of always marking the first Bound card that entered hand",
+            "private static bool CanMarkChosenDecree(CardModel card)",
+            "ModelDb.Enchantment<RoyalDecreeEnchantment>().CanEnchant(card)",
+            ".Where(CanMarkChosenDecree)",
             "var affectedPlayers = tracker.ChosenDecreeCardsByPlayer.Keys",
             "foreach (var player in affectedPlayers)",
             "ClearChosenDecreeSavedMarkers(player)",

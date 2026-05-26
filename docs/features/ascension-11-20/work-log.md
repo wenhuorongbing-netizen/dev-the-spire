@@ -10,6 +10,7 @@ Status: active summary only. The full chronological log was archived to `docs/ar
 - Firemark, Banner, boss dedicated ability, and shared Ascension combat helpers have been split out of the central combat modifier file.
 - Dedicated ability effect groups are below the current refactor size threshold.
 - The 2026-05-22 art pass promoted GPTimage2 Rootbud/Rootblight card portraits and 12 per-boss dedicated ability / Branded Form transparent icons; export/import metadata and manifest tracking are updated, while live in-game visual proof remains pending.
+- The 2026-05-26 Royal Decree hardening pass keeps the Queen/Royal Decree fix narrow: it only marks currently unenchanted Bound cards that pass Core `EnchantmentModel.CanEnchant(...)`, with a source guard tied to `CardCmd.Enchant(...)` failure behavior. Live Queen fight proof remains pending.
 
 ## Manual Gates
 

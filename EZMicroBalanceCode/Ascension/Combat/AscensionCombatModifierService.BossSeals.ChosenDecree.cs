@@ -13,8 +13,7 @@ internal static partial class AscensionCombatModifierService
     {
         var owner = card.Owner;
         if (owner == null ||
-            card.Affliction is not Bound ||
-            card.Enchantment != null)
+            !CanMarkChosenDecree(card))
         {
             return;
         }
@@ -51,8 +50,7 @@ internal static partial class AscensionCombatModifierService
         var boundCards = player.Piles
             .Where(pile => pile.Type == PileType.Hand)
             .SelectMany(pile => pile.Cards)
-            .Where(card => card.Affliction is Bound &&
-                (card.Enchantment == null || card.Enchantment is RoyalDecreeEnchantment))
+            .Where(CanMarkChosenDecree)
             .ToList();
 
         if (boundCards.Count == 0)
@@ -83,6 +81,13 @@ internal static partial class AscensionCombatModifierService
 
         tracker.ChosenDecreeCardsByPlayer.Remove(player);
         MarkChosenDecree(combatState, tracker, chosenCard);
+    }
+
+    private static bool CanMarkChosenDecree(CardModel card)
+    {
+        return card.Affliction is Bound &&
+            card.Enchantment == null &&
+            ModelDb.Enchantment<RoyalDecreeEnchantment>().CanEnchant(card);
     }
 
     private static void TrackChosenDecreePlayed(AscensionCombatTracker tracker, CardModel card)

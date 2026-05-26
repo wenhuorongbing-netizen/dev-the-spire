@@ -9,7 +9,7 @@ internal sealed class RoyalDecreeEnchantment : CustomEnchantmentModel, ILocaliza
     public List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new CardModifierLoc(
             "御令",
-            "本回合打出这张牌，可以避免御令惩罚。",
+            "本回合打出这张牌，可避免御令惩罚。",
             "打出后避免御令惩罚。")
         : new CardModifierLoc(
             "Royal Decree",
