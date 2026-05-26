@@ -16,6 +16,7 @@ Live-only blockers remain:
 
 ## Latest Fixed Findings
 
+- 2026-05-26 Ascension combat tracker state split: `AscensionCombatTracker.cs` now keeps only shared/root combat state, while Firemark, Banner, and boss dedicated-ability state live in `AscensionCombatTracker.Firemarks.cs`, `AscensionCombatTracker.Banners.cs`, and `AscensionCombatTracker.BossSeals.cs`. Field names and runtime callers are unchanged; source guards now read the boss tracker slice directly. No game was opened.
 - 2026-05-26 boss dedicated ability runtime ownership split: the remaining `BossSealPowers.cs` runtime aggregate was removed. Dedicated ability runtime powers now live by boss/mechanic in `MartyrOathPowers.cs`, `MisalignedShellPowers.cs`, `MarginalNotePowers.cs`, `ChosenDecreePowers.cs`, `AeonglassHourglassRuntimePowers.cs`, and `TestSubjectSamplePowers.cs`; source guards now read those files directly. No game was opened.
 - 2026-05-26 Urda hook file split: `UrdaCombatHook.cs` now owns the Urda combat-hook wrapper class, while `UrdaRunHook.cs` keeps run/reward/map dispatch and the existing co-op guard helpers. High-risk/co-op guards now read the two hook files explicitly instead of slicing both classes from one file. No game was opened.
 - 2026-05-26 Morvi card model split: `MorviArchivePageCards.cs` and `MorviCombatTokenCards.cs` were removed. Archive-page base/card models, Red Ink Overdraft, and Waste Paper now live in one file per card model while Morvi guard tests continue to validate the feature source tree. No game was opened.

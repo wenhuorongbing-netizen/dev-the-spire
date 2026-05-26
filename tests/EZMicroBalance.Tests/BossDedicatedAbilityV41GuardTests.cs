@@ -410,7 +410,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var aeonglass = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.AeonglassHourglass.cs");
         var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.PhaseCarryover.cs");
         var marginalNotePowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MarginalNotePowers.cs");
-        var tracker = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatTracker.cs");
+        var tracker = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatTracker.BossSeals.cs");
         var chosenDecreeAssignStart = SliceBetween(
             chosenDecree,
             "private static void TryAssignChosenDecreeInHandForPlayer",
