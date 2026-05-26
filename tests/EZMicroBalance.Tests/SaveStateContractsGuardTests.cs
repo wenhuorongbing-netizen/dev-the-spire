@@ -168,6 +168,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.Lifecycle.cs"],
                 ["EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.CombatLifecycle.cs"],
                 ["EZMicroBalanceCode", "Ascension", "Rewards", "RootDeckService.PendingDowngrades.cs"],
+                ["EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEnd.cs"],
                 ["EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs"]
             ],
             ["SavedSpireField<Player, int> RootblightLevel", "SavedSpireField<RootFamilyCard, bool> RootblightWasPresentAtCombatStart", "DeckVersion is RootFamilyCard"],

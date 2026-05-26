@@ -298,6 +298,7 @@ public sealed class AscensionFeatureGuardTests
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
         var combatHookMain = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs");
         var combatHookCardFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CardFlow.cs");
+        var combatHookCombatEnd = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEnd.cs");
         var combatHookCombatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
         var combatHookHelpers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Helpers.cs");
         var combatHookLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs");
@@ -305,6 +306,7 @@ public sealed class AscensionFeatureGuardTests
             Environment.NewLine,
             combatHookMain,
             combatHookCardFlow,
+            combatHookCombatEnd,
             combatHookCombatEvents,
             combatHookHelpers,
             combatHookLifecycle);
@@ -360,7 +362,11 @@ public sealed class AscensionFeatureGuardTests
         AssertSourceContains(
             combatHookLifecycle,
             "internal sealed partial class RootBudCombatHook",
-            "public override async Task BeforeCombatStart()",
+            "public override async Task BeforeCombatStart()");
+        Assert.DoesNotContain("public override async Task AfterCombatEnd", combatHookLifecycle, StringComparison.Ordinal);
+        AssertSourceContains(
+            combatHookCombatEnd,
+            "internal sealed partial class RootBudCombatHook",
             "public override async Task AfterCombatEnd(CombatRoom room)");
 
         AssertSourceContains(
@@ -377,7 +383,7 @@ public sealed class AscensionFeatureGuardTests
         var beforeCombatStart = SliceBetween(
             combatHookLifecycle,
             "public override async Task BeforeCombatStart()",
-            "public override async Task AfterCombatEnd");
+            "AscensionDiagnostics.LogCombatState(state, \"before combat start after root bud seed\");");
         AssertSourceContains(
             beforeCombatStart,
             "var state = CurrentCombatState();",
@@ -415,7 +421,7 @@ public sealed class AscensionFeatureGuardTests
             "await AscensionCombatModifierService.AfterCardEnteredHand(state, tracker, card)");
 
         var afterCombatEnd = SliceFrom(
-            combatHookLifecycle,
+            combatHookCombatEnd,
             "public override async Task AfterCombatEnd(CombatRoom room)");
         AssertSourceContains(
             afterCombatEnd,
@@ -446,6 +452,7 @@ public sealed class AscensionFeatureGuardTests
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CardFlow.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEnd.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Helpers.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs"));

@@ -386,6 +386,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Enchantments/RoyalDecreeEnchantment.cs",
         "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.cs",
         "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.CardFlow.cs",
+        "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.CombatEnd.cs",
         "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.CombatEvents.cs",
         "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.Helpers.cs",
         "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.Lifecycle.cs",
