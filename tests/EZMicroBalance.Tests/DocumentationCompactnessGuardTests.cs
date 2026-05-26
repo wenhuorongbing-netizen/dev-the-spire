@@ -93,6 +93,37 @@ public sealed class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void UrdaSupportDocsKeepElevenBlessingCountCurrent()
+    {
+        var activeUrdaDocs = ReadCurrentFacingDocs(
+            "docs/issues/urda.md",
+            "docs/features/ancient-expansion-urda/README.md",
+            "docs/features/ancient-expansion-urda/implementation-plan.md",
+            "docs/features/ancient-expansion-urda/manual-test-checklist.md",
+            "docs/features/ancient-expansion-urda/source-design.md",
+            "docs/features/ancient-expansion-v2.2/source-design.md");
+
+        AssertSourceContains(
+            activeUrdaDocs,
+            "eleven-blessing source candidate",
+            "eleven active blessings",
+            "all eleven Urda blessings",
+            "any of the eleven Urda blessing rows",
+            "Exactly the eleven source-backed Urda blessing ids");
+
+        foreach (var staleCount in new[]
+        {
+            "ten active blessings",
+            "all ten Urda blessings",
+            "ten Urda blessing rows",
+            "any of the ten Urda blessing rows"
+        })
+        {
+            Assert.DoesNotContain(staleCount, activeUrdaDocs, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public void AncientExpansionV22ReadmeUsesReadableCurrentSourcePaths()
     {
         var readme = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "README.md");

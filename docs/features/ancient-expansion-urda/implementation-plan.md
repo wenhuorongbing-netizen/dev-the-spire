@@ -106,10 +106,10 @@ Goal:
 
 - Close documentation and runtime evidence for private beta handoff.
 
-nctions:
+Actions:
 
 - Populate all Urda manual rows.
-- ndd source-guard tests if coverage is practical.
+- Add source-guard tests if coverage is practical.
 - Update `docs/issues.md` issue status as work lands.
 - Run `dotnet build`.
 - Publish only if resources or localization changed.
@@ -117,7 +117,7 @@ nctions:
 
 No milestone in this branch should claim release-ready Urda behavior if:
 
-- any of the ten Urda blessing rows is incomplete or undocumented.
+- any of the eleven Urda blessing rows is incomplete or undocumented.
 - save/load behavior is broken.
 - live manual checks are still unexecuted.
 

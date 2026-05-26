@@ -47,7 +47,7 @@ Source-safe deviations:
 
 | ID | Severity | Status | Notes |
 | --- | --- | --- | --- |
-| URDA-BL-01 | P0 | open | Source gameplay slice exists for ten active blessings; live selection, reward-screen, room-entry, act-transition, death-prevention, map-marker, and card behavior checks are still pending.
+| URDA-BL-01 | P0 | open | Source gameplay slice exists for eleven active blessings; live selection, reward-screen, room-entry, act-transition, death-prevention, map-marker, and card behavior checks are still pending.
 | URDA-BL-02 | P0 | open | Blessing implementations must be live save/load-tested before any release-ready claim; `SavedSpireField<Player,string>` is registered but not source-proven as persisted by this pass, and the card-backed `UrdaDeckStateKey` mirror is source mitigation rather than live proof.
 | URDA-BL-03 | P0 | open | Keep `Urda, Loamweaver` out of user-facing release-ready claims until the manual matrix passes or the feature is explicitly postponed.
 | URDA-BL-04 | P1 | source-mitigated / live-pending | Humus Pact no longer uses `CardReward.OnSkipped`; third payoff pending state is kept until resolver success; verify the explicit `Compost Reward` flow does not reenter reward UI, duplicate/lost payoff, or fire from room-exit cleanup.
@@ -66,7 +66,7 @@ Source-safe deviations:
 ## Required evidence to remove prototype lock
 
 - Active blessing gameplay behavior implemented for all live pool entries.
-- Manual evidence that all ten Urda blessings match their documented source behavior and deviations.
+- Manual evidence that all eleven Urda blessings match their documented source behavior and deviations.
 - Manual tests for save/load + selection + combat-safe behavior.
 - Runtime smoke and release checks updated.
 

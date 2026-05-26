@@ -52,6 +52,10 @@ public sealed class VakuuTemptationGuardTests
     public void VakuuContractsUseSourceBackedCommandsAndSharedContractSigning()
     {
         var card = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTemptationCard.cs");
+        var bloodDebt = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.BloodDebt.cs");
+        var contracts = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.Contracts.cs");
+        var lockBreaks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.LockBreaks.cs");
+        var stolenVault = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.StolenVault.cs");
         var vakuuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
 
         AssertSourceContains(
@@ -81,6 +85,29 @@ public sealed class VakuuTemptationGuardTests
             "Vakuu contract signed",
             "OfferCashOutAfterLockBreak",
             "CreatureCmd.Kill(vakuu, force: true)");
+        AssertSourceContains(
+            contracts,
+            "public static async Task SignContract",
+            "public static async Task BreakLockFromContract",
+            "public static async Task CashOut");
+        AssertSourceContains(
+            bloodDebt,
+            "public static async Task ReduceBloodDebt",
+            "private static async Task AddBloodDebt",
+            "PowerCmd.Apply<VakuuBloodDebtPower>");
+        AssertSourceContains(
+            lockBreaks,
+            "public static async Task AfterDamageGiven",
+            "Core skips AfterDamageReceived for lethal hits",
+            "private static async Task BreakLock",
+            "OfferCashOutAfterLockBreak");
+        AssertSourceContains(
+            stolenVault,
+            "public static async Task EnsureStolenVaultPower",
+            "PowerCmd.Apply<VakuuStolenVaultPower>",
+            "PowerCmd.ModifyAmount",
+            "PowerCmd.Remove(vault)");
+        AssertRepoPathDoesNotExist("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.CombatState.cs");
     }
 
     [Fact]
