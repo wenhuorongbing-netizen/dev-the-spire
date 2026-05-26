@@ -318,7 +318,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
     {
         var bossPowers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
         var aeonglassPower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassPower.cs");
-        var residualSampleFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.ResidualSample.cs");
+        var residualSampleFlow = ReadResidualSampleCombatSources();
         var royalDecreeEnchantment = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "RoyalDecreeEnchantment.cs");
         var combinedPowerText = string.Join(Environment.NewLine, bossPowers, aeonglassPower, residualSampleFlow, royalDecreeEnchantment);
 
@@ -338,7 +338,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "\u5fa1\u4ee4",
             "\u672c\u56de\u5408\u6253\u51fa\u8fd9\u5f20\u724c\uff0c\u53ef\u907f\u514d\u5fa1\u4ee4\u60e9\u7f5a",
             "Sloth and Waste Away side costs resolve at most once per Knowledge curse",
-            "\"\uFF1B\" : \"; \"");
+            "\"\\uFF1B\" : \"; \"");
 
         foreach (var fragment in new[] { "\uFFFD", "\u6d93", "\u9428", "\u951b", "\u95c5", "\u93c3" })
         {
@@ -409,7 +409,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var combatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatEvents.cs");
         var rootBudEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
         var aeonglass = ReadAeonglassHourglassCombatSources();
-        var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.ResidualSample.cs");
+        var residualSample = ReadResidualSampleCombatSources();
         var marginalNotePowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MarginalNotePowers.cs");
         var tracker = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatTracker.BossSeals.cs");
         var chosenDecreeAssignStart = SliceBetween(

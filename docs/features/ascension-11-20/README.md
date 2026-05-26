@@ -37,7 +37,7 @@ Historical prompt/spec material lives in `docs/archive/feature-inputs/ascension-
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals*.cs` | A19/A20 boss dedicated ability and Branded Form lifecycle dispatch, turn flow, combat events, and effect groups. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.HolyDaze.cs`, `.MartyrOath.cs`, `.InkReturn.cs`, and `.StartledShell.cs` | A19/A20 monster-specific dedicated ability windows and enemy pressure effects. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.MarginalNote.cs`, `.MisalignedShell.cs`, and `.StruggleBait.cs` | A19/A20 card-pressure dedicated ability effects. |
-| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.ResidualSample.cs` and `.A20Courtyard.cs` | A19/A20 Residual Sample phase carryover and courtyard recovery effects. |
+| `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.ResidualSample*.cs` and `.A20Courtyard.cs` | A19/A20 Residual Sample phase carryover, visible sample notice, and courtyard recovery effects. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks*.cs` | A12 Firemarked Elite host selection, per-Firemark rules, counterplay windows, and turn/damage handling. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Helpers.cs` | Shared Ascension combat activation checks, act-scaling values, enemy filters, and command helpers. |
 | `EZMicroBalanceCode/Ascension/Rewards/AscensionRewardService.cs` | Reward and room payout helpers. |

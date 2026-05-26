@@ -108,6 +108,17 @@ internal static class TestRepo
             }.Select(fileName => ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", fileName)));
     }
 
+    internal static string ReadResidualSampleCombatSources()
+    {
+        return string.Join(
+            Environment.NewLine,
+            new[]
+            {
+                "AscensionCombatModifierService.BossSeals.ResidualSample.cs",
+                "AscensionCombatModifierService.BossSeals.ResidualSample.Notice.cs"
+            }.Select(fileName => ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", fileName)));
+    }
+
     internal static string RepoPath(params string[] parts)
     {
         return Path.Combine(new[] { Root }.Concat(parts).ToArray());
