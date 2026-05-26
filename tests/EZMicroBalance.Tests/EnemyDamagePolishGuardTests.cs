@@ -19,7 +19,10 @@ public sealed class EnemyDamagePolishGuardTests
             "await DamageCmd.Attack(WritheDamage).WithHitCount(2)",
             "private int ConstrictDamage",
             "new SingleAttackIntent(ConstrictDamage)",
-            "await DamageCmd.Attack(ConstrictDamage)");
+            "await DamageCmd.Attack(ConstrictDamage)",
+            "private int BulkDamage",
+            "new SingleAttackIntent(BulkDamage)",
+            "await DamageCmd.Attack(BulkDamage)");
 
         AssertSourceContains(
             terrorEel,
@@ -43,12 +46,14 @@ public sealed class EnemyDamagePolishGuardTests
             patch,
             "HarmonyPatch(typeof(DecimillipedeSegment), \"get_WritheDamage\")",
             "HarmonyPatch(typeof(DecimillipedeSegment), \"get_ConstrictDamage\")",
+            "HarmonyPatch(typeof(DecimillipedeSegment), \"get_BulkDamage\")",
             "HarmonyPatch(typeof(TerrorEel), \"get_CrashDamage\")",
             "HarmonyPatch(typeof(TerrorEel), \"get_ThrashDamage\")",
             "HarmonyPatch(typeof(PhantasmalGardener), \"get_BiteDamage\")",
             "HarmonyPatch(typeof(PhantasmalGardener), \"get_LashDamage\")",
             "DecimillipedeWritheReduction = 2",
             "DecimillipedeConstrictReduction = 1",
+            "DecimillipedeBulkReduction = 2",
             "TerrorEelCrashReduction = 2",
             "TerrorEelThrashReduction = 1",
             "PhantasmalGardenerBiteReduction = 1",

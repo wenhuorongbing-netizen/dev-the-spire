@@ -16,7 +16,7 @@ Current status, 2026-05-17: this active work log is a compact current-facing sum
 - Recovered the user-uploaded Morvi blue-eye court background is the active Morvi event art.
 - Recovered the correct user-uploaded horizontal mirror-ensemble image is the active Lotha event art.
 - Event backgrounds, map icons, run-history icons, option relic icons, power icons, card portraits, and Vakuu fight art use separate active resource paths. Map and run-history icon pairs intentionally share small-icon bytes; event backgrounds are not used as option relic art.
-- The latest art audit reports 82 manifest assets, 0 missing targets, 0 missing exports, 0 hash mismatches, 0 invalid generation modes, and 0 missing final assets.
+- The latest art audit reports 95 manifest assets, 0 missing targets, 0 missing exports, 0 hash mismatches, 0 invalid generation modes, and 0 missing final assets.
 
 ## Current No-Game Review Notes
 

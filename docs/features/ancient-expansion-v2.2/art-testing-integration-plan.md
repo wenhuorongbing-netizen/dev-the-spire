@@ -7,7 +7,7 @@ This plan separates source/gameplay testing from final-art integration. The prev
 ## Readiness Decision
 
 - Source/gameplay testing can proceed with the promoted browser GPTimage2 oil-repaint art.
-- Final small-art provenance is claimed through the manifest for 69 browser ChatGPT/GPTimage2 `final_generated` records. This covers option relics, identity icons, Lotha Verdict, Vakuu fight, fallback power/relic assets, Ascension indicators/banners/status icons, and six custom card portraits.
+- Final small-art provenance is claimed through the manifest for 90 browser ChatGPT/GPTimage2 `final_generated` records. This covers option relics, identity icons, Lotha Verdict, Vakuu fight, fallback power/relic assets, Ascension indicators/banners/status icons, and custom card portraits.
 - More small-icon generation is not needed before the next in-game preview pass unless live UI screenshots expose scale/readability issues.
 - Event backgrounds are now unified to the 1672x941 / about 16:9 source images and use full-scene keep-aspect centered fitting. They still need live clicked-UI screenshots before release-ready claims.
 

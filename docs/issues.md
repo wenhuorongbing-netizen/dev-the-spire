@@ -2,11 +2,11 @@
 Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-26:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `18D28D7AFDB176E9C7A96E3CA99C40EBD68FAC04E7766C4E07D48F740E9F6D56` |
-| DLL | `4D665947B042E57A1FDAF81E2682C8DEEE73DC1F19AB8DD060CCBA41B9DF9FC9` |
-| PCK | `A8158CC39EB9D4B68FCF79B178829B1E0F18054E3E0774BE3A69F8B0AE383790` |
-| Manifest | `1CAB72884A37FC1C7F28533A24EEA96A3D8D4BF640688D22E3B8A1D1D6F1AD2F` |
-| README_INSTALL | `B453ED1511A45FEE57A0CAB9B8A004581B859F89963F32E216559F290FB511BD` |
+| ZIP | `5C85C7ADD99A2A06E8999654711763A351DD19A5720FE9BF8EA22412BB78382F` |
+| DLL | `E4CA3D5957BECA4FFA552A7A9C68185519D2F873AA97630F84B8F7855E4420CA` |
+| PCK | `B538EF54DEC975CB7E4DA91C04D442CCACCC7E1E0088D07C2B750C065FE09BE3` |
+| Manifest | `5A3A2FC0E313C15640C223A6CC5D2874881F27B468D1BC7EF4AF602CD7350EFF` |
+| README_INSTALL | `45E605958747C7089D5FCBC0BDE86ED0F7E646DE371658A1435B9C33703BB078` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -15,7 +15,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `URDA-SEEDBED-PLANTING` P0 source/package-fixed / live-pending: Planting text marks it as non-play/non-discard/non-Exhaust; planted Sprouts add no Rootblight I, and planted Rootblight keeps its master-deck stage.
 - `COOP-COMBAT-START-CRASH` P0 source/package-fixed / live-pending: co-op fails closed for unproven Ascension, Ancient, combat, and preview mutations; retest with override env vars unset.
 - `COOP-PREVIEW-TOOLS-CRASH` P0 source/package-fixed / live-pending: transform prediction, Crystal Sphere peek, and broader co-op gameplay mutation fail closed; retest two-client combat, transform, reconnect, save-load, and logs.
-- `ENEMY-DAMAGE-POLISH` P1 open / user-regressed: strengthened Decimillipede still attacks for 7; recheck Decimillipede damage polish against intent and real damage.
+- `ENEMY-DAMAGE-POLISH` P1 source/package-fixed / live-pending: Decimillipede's strengthened Bulk attack now uses the same source getter polish as Writhe/Constrict, so the visible intent and real damage no longer stay at the old 7-damage value.
 - `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
 - `QUEEN-BOSS-SEAL-RUNTIME` P0 open: user reports the Queen/Royal Decree fight cannot run correctly; reproduce on the current package and capture `godot.log`.
 - `URDA-PROTOTYPE` P0 open / live-pending: default-on with eleven source-backed ids, including Elite Root; live gameplay and save/load proof remain pending.

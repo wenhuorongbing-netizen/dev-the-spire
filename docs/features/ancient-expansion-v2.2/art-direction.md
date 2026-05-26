@@ -23,7 +23,7 @@ Do not use older ignored `art_pipeline/prompts/*.md` calibration prompts for new
 - Vakuu fight option art uses the same browser GPTimage2 rebuild pass.
 - Custom card portraits now use browser GPTimage2 rebuilt files for Urda Seedling, Withered Husk, Morvi Archive Pages, Red Ink Overdraft, Waste Paper, and Vakuu Temptation.
 - No `generic_temporary` or `final_required_before_release` art blockers remain in the manifest after this pass.
-- The current manifest tracks 82 assets, including 69 `final_generated` entries. Ascension small-art assets are now manifest-tracked rather than only indirectly covered by package/export tests.
+- The current manifest tracks 95 assets, including 90 `final_generated` entries. Ascension small-art assets are now manifest-tracked rather than only indirectly covered by package/export tests.
 
 ## Style Contract
 

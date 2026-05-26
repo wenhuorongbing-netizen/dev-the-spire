@@ -16,8 +16,8 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest verification after the beta.34 Soul Tide / Fission Exhaust / Elite Root refresh: `dotnet build EZMicroBalance.sln`, normal tests with 288 passed / 20 skipped, opt-in artifact tests with 308 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and installed-package checkers for both `.tools\publish-game-root\mods\EZMicroBalance` and the real game `mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff.
-- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.34 manifest/localization UTF-8 refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
+- Latest verification after the beta.35 Soul Tide / Fission Exhaust / Elite Root refresh: `dotnet build EZMicroBalance.sln`, normal tests with 288 passed / 20 skipped, opt-in artifact tests with 308 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and installed-package checkers for both `.tools\publish-game-root\mods\EZMicroBalance` and the real game `mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff.
+- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.35 manifest/localization UTF-8 refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
 - The latest normal Steam smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` covered the beta.19 package hash: only BaseLib plus Spire Plus loaded, `v0.1.0-private-beta.19` was logged, `Found 30 SavedSpireFields`, startup completed, and the log audit was clean. Feature gameplay rows remain pending.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
@@ -26,7 +26,7 @@ Browser GPTimage2 art rebuild recheck, 2026-05-15:
 - Promoted Urda/Morvi/Lotha/Vakuu option relics, Ancient identity icons, Lotha Verdict, Ascension indicators, neutral fallback power/relic assets, and six custom Ancient card portraits into active resources.
 - Review sheets are under `.tools/art-generation/chatgpt/oil-rebuild-20260515/`, especially `active-small-art-contact.png` and `processed/batch5-card-portraits-contact.png`.
 - Event-background repair promoted the Lotha mirror ensemble, reframed Urda and Morvi to 1831x859, and changed all three scenes to keep-aspect centered fitting. Preview sheet: `.tools/art-generation/event-background-reframe-20260515/active-event-backgrounds-1831x859-contact.png`.
-- `scripts\audit-ancient-art-assets.ps1 -FailOnMissingExport -FailOnInvalidGenerationMode -FailOnHashMismatch -FailOnMissingFinal` passed with 82 manifest assets, 69 `final_generated`, and 0 missing/temporary/export/hash issues.
+- `scripts\audit-ancient-art-assets.ps1 -FailOnMissingExport -FailOnInvalidGenerationMode -FailOnHashMismatch -FailOnMissingFinal` passed with 95 manifest assets, 90 `final_generated`, and 0 missing/temporary/export/hash issues.
 - Generic fallback, source-local small-art, and event-background provenance/ratio blockers are resolved. Live clicked-UI preview remains pending.
 
 Older 2026-05-14 text/art-fit and source-guard rechecks are superseded by the current package snapshot above. Their detailed command history is preserved in `docs/review.md` and `docs/archive/**`; do not use those older hashes as the package under test.
@@ -41,18 +41,18 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.34.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.35.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `18D28D7AFDB176E9C7A96E3CA99C40EBD68FAC04E7766C4E07D48F740E9F6D56`
+- Zip SHA256: `5C85C7ADD99A2A06E8999654711763A351DD19A5720FE9BF8EA22412BB78382F`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `4D665947B042E57A1FDAF81E2682C8DEEE73DC1F19AB8DD060CCBA41B9DF9FC9`
-- Manifest SHA256: `1CAB72884A37FC1C7F28533A24EEA96A3D8D4BF640688D22E3B8A1D1D6F1AD2F`
-- PCK SHA256: `A8158CC39EB9D4B68FCF79B178829B1E0F18054E3E0774BE3A69F8B0AE383790`
-- README_INSTALL SHA256: `B453ED1511A45FEE57A0CAB9B8A004581B859F89963F32E216559F290FB511BD`
+- DLL SHA256: `E4CA3D5957BECA4FFA552A7A9C68185519D2F873AA97630F84B8F7855E4420CA`
+- Manifest SHA256: `5A3A2FC0E313C15640C223A6CC5D2874881F27B468D1BC7EF4AF602CD7350EFF`
+- PCK SHA256: `B538EF54DEC975CB7E4DA91C04D442CCACCC7E1E0088D07C2B750C065FE09BE3`
+- README_INSTALL SHA256: `45E605958747C7089D5FCBC0BDE86ED0F7E646DE371658A1435B9C33703BB078`
 
 ## Known Automated Evidence
 
-- Current automated snapshot: beta.34 passed `dotnet build`, normal `dotnet test`, isolated publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and isolated installed-package checking after the Seedbed strength/planting clarity refresh. Gameplay proof is still pending.
+- Current automated snapshot: beta.35 passed `dotnet build`, normal `dotnet test`, isolated publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and isolated installed-package checking after the Seedbed strength/planting clarity refresh. Gameplay proof is still pending.
 - Current normal test count: 288 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 308 passed / 0 skipped.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory .tools\publish-game-root\mods\EZMicroBalance`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split. After the game is closed and `mods\EZMicroBalance` is refreshed, rerun the same checker against the real installed folder.
 - Historical loader/resource evidence remains useful context only. The current 30-field loader proof covers beta.19 loader/startup only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.

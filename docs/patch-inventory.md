@@ -1,6 +1,6 @@
-﻿# Harmony Patch Inventory
+# Harmony Patch Inventory
 
-Generated: 2026-05-25
+Generated: 2026-05-26
 
 Purpose: keep every Harmony patch visible, owned, and risk-labeled. Regenerate after adding, moving, or deleting patch declarations.
 
@@ -15,10 +15,10 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 163 |
+| Total patch declarations | 164 |
 | High risk | 22 |
 | Medium risk | 44 |
-| Low risk | 97 |
+| Low risk | 98 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -171,12 +171,13 @@ Regenerate:
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 84 | `[HarmonyPatch(typeof(StartRunLobby), "UpdatePreferredAscension")]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 100 | `[HarmonyPatch(typeof(StartRunLobby), nameof(StartRunLobby.SyncAscensionChange))]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 109 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 20 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_WritheDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 29 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_ConstrictDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 38 | `[HarmonyPatch(typeof(TerrorEel), "get_CrashDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 47 | `[HarmonyPatch(typeof(TerrorEel), "get_ThrashDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 56 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_BiteDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 65 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_LashDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 21 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_WritheDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 30 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_ConstrictDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 39 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_BulkDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 48 | `[HarmonyPatch(typeof(TerrorEel), "get_CrashDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 57 | `[HarmonyPatch(typeof(TerrorEel), "get_ThrashDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 66 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_BiteDamage")]` |
+| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 75 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_LashDamage")]` |
 | Map hover composition | Medium | `EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs` | 12 | `[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]` |
 | Mod info localization | Medium | `EZMicroBalanceCode/Modding/ModInfoLocalizationPatches.cs` | 12 | `[HarmonyPatch(typeof(NModInfoContainer), nameof(NModInfoContainer.Fill))]` |
 | Preview tools | Medium | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 14 | `[HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]` |

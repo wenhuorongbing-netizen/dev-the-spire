@@ -1,4 +1,4 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -359,7 +359,15 @@ public sealed class ReleaseArtifactParityGuardTests
     [ReleaseArtifactFact]
     public void DisabledSpirePlusPlugOffEvidenceSupportsDocs()
     {
-        AssertRepoDirectoryExists(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020");
+        var evidenceDir = RepoPath(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020");
+        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
+        if (!Directory.Exists(evidenceDir))
+        {
+            Assert.Contains("raw local `.tools` runtime-evidence folders were pruned", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("fresh plug-off evidence must be recaptured before any release-ready claim", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.", currentDocs, StringComparison.Ordinal);
+            return;
+        }
 
         using var summary = JsonDocument.Parse(ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "disabled-startup-summary.json"));
         var root = summary.RootElement;
@@ -388,7 +396,6 @@ public sealed class ReleaseArtifactParityGuardTests
         Assert.Equal(25, restore.RootElement.GetProperty("RestoredModCount").GetInt32());
         Assert.Equal(1, restore.RootElement.GetProperty("RestoredCurrentRunCount").GetInt32());
 
-        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         Assert.Contains("live-spire-plus-disabled-session-20260513-143020", currentDocs, StringComparison.Ordinal);
         Assert.Contains("settings-only disabled attempt", currentDocs, StringComparison.Ordinal);
         Assert.Contains("This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.", currentDocs, StringComparison.Ordinal);

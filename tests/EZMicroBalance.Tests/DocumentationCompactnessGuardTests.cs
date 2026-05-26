@@ -82,8 +82,8 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.34 Soul Tide / Fission Exhaust / Elite Root refresh. Result: succeeded against the real installed mods root.",
-            "Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-26 after the beta.34 Soul Tide / Fission Exhaust / Elite Root refresh. Result: succeeded against an isolated temporary mods root.",
+            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.35 Soul Tide / Fission Exhaust / Elite Root refresh. Result: succeeded against the real installed mods root.",
+            "Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-26 after the beta.35 Soul Tide / Fission Exhaust / Elite Root refresh. Result: succeeded against an isolated temporary mods root.",
             "isolated `.tools\\publish-game-root\\mods\\EZMicroBalance` folder",
             "`D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance`",
             "staging, versioned, installed, game-root zip, and zip-entry artifacts match");
@@ -300,7 +300,7 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("beta.34 Soul Tide / Fission Exhaust / Elite Root refresh", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.35 Soul Tide / Fission Exhaust / Elite Root refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta19-loader-smoke-20260525-213336", projectState, StringComparison.Ordinal);
@@ -400,11 +400,11 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             docsByPath["PROJECT_STATE.md"],
-            "beta.34 startup remains pending",
-            "beta.34 loader proof still needs a fresh run");
+            "beta.35 startup remains pending",
+            "beta.35 loader proof still needs a fresh run");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
-            "50 dirty entries and 0 unclassified paths");
+            "38 dirty entries and 0 unclassified paths");
         AssertSourceContains(
             docsByPath["docs/features/ancients-rework-v4/completion-audit.md"],
             "Legacy root surfaces including `EzDailyContent.json` are absent from the active root",
@@ -668,7 +668,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.34 package hash is pending",
+            "Fresh loader smoke for the current beta.35 package hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

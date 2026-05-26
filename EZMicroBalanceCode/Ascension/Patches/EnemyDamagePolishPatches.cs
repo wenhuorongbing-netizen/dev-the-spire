@@ -6,6 +6,7 @@ internal static class EnemyDamagePolish
 {
     public const int DecimillipedeWritheReduction = 2;
     public const int DecimillipedeConstrictReduction = 1;
+    public const int DecimillipedeBulkReduction = 2;
     public const int TerrorEelCrashReduction = 2;
     public const int TerrorEelThrashReduction = 1;
     public const int PhantasmalGardenerBiteReduction = 1;
@@ -32,6 +33,15 @@ internal static class DecimillipedeConstrictDamagePolishPatch
     private static void Postfix(ref int __result)
     {
         EnemyDamagePolish.ReduceDamage(ref __result, EnemyDamagePolish.DecimillipedeConstrictReduction);
+    }
+}
+
+[HarmonyPatch(typeof(DecimillipedeSegment), "get_BulkDamage")]
+internal static class DecimillipedeBulkDamagePolishPatch
+{
+    private static void Postfix(ref int __result)
+    {
+        EnemyDamagePolish.ReduceDamage(ref __result, EnemyDamagePolish.DecimillipedeBulkReduction);
     }
 }
 
