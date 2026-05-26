@@ -7,7 +7,7 @@ public sealed class CoopCombatSafetyGuardTests
     [Fact]
     public void UnverifiedGameplayMutationsFailClosedInMultiplayer()
     {
-        var policy = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerFeaturePolicy.cs");
+        var policy = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
         var ascensionGates = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureGate.Systems.cs");
         var ascensionSelection = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionSelectionPatches.cs");
         var ascensionRewards = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "AscensionRewardService.cs");
@@ -65,7 +65,7 @@ public sealed class CoopCombatSafetyGuardTests
     [Fact]
     public void UnverifiedCombatHooksFailClosedInMultiplayer()
     {
-        var policy = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerFeaturePolicy.cs");
+        var policy = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
         var ascensionInitializer = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionInitializer.cs");
         var morviInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviInitializer.cs");
         var lothaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaInitializer.cs");

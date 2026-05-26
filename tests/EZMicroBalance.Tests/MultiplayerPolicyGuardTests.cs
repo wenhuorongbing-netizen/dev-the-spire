@@ -7,7 +7,7 @@ public sealed class MultiplayerPolicyGuardTests
     [Fact]
     public void MultiplayerPolicyCentralizesAuthorityAndEvidenceLogging()
     {
-        var policy = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerFeaturePolicy.cs");
+        var policy = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
 
         Assert.Contains("IsSingleplayer", policy, StringComparison.Ordinal);
         Assert.Contains("IsHost", policy, StringComparison.Ordinal);

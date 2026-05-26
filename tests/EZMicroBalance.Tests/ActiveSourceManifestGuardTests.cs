@@ -255,6 +255,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.Systems.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionFeatureGate.cs",
         "EZMicroBalanceCode/Ascension/Core/AscensionInitializer.cs",
+        "EZMicroBalanceCode/Ascension/Core/MultiplayerFeaturePolicy.CoopGates.cs",
         "EZMicroBalanceCode/Ascension/Core/MultiplayerFeaturePolicy.cs",
         "EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.JoinFlow.cs",
         "EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.Lobby.cs",

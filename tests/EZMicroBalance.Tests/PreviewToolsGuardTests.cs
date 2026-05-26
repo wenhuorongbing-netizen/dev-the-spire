@@ -61,7 +61,7 @@ public sealed class PreviewToolsGuardTests
     [Fact]
     public void PreviewToolsRunAsLocalUiOnlyInCoopRuns()
     {
-        var policySource = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerFeaturePolicy.cs");
+        var policySource = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
         var crystalSource = ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekPatch.cs");
         var transformSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPatch.cs");
         var transformContextSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionRngContext.cs");
