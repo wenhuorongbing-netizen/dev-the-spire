@@ -76,6 +76,48 @@ public sealed class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void AncientExpansionV22ReadmeUsesReadableCurrentSourcePaths()
+    {
+        var readme = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "README.md");
+
+        AssertSourceContains(
+            readme,
+            "Current source-backed state to preserve:",
+            "`UrdaRunHook.cs` now stays focused on run/reward/map dispatch, and `UrdaCombatHook.cs` owns the combat-only hook wrapper.",
+            "UrdaBlessingService.SeedbedCombat.cs",
+            "UrdaBlessingService.CardRewards.cs",
+            "LothaBlessingService.CardRules.cs",
+            "LothaBlessingService.CostRules.cs",
+            "LothaBlessingService.CombatState.cs",
+            "LothaBlessingService.CombatStart.cs",
+            "LothaBlessingService.PlayerTurnStart.cs",
+            "LothaBlessingService.TurnEnd.cs",
+            "LothaBlessingService.CombatEnd.cs",
+            "LothaBlessingService.CombatStateReset.cs",
+            "browser ChatGPT/GPTimage2",
+            "source code/src/Core/");
+
+        foreach (var typoArtifact in new[]
+        {
+            "uurrent",
+            "Seedbeduombat",
+            "uardRewards",
+            "uardRules",
+            "uostRules",
+            "uombatState",
+            "uombatLifecycle",
+            "uombatStateReset",
+            "uhatGPT",
+            "uanonical",
+            "uhronological",
+            "source code/src/uore/"
+        })
+        {
+            Assert.DoesNotContain(typoArtifact, readme, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
     public void DevEnvironmentDoesNotCarryStalePackageRefreshState()
     {
         var devEnvironment = ReadRepoText("docs", "dev-environment.md");
