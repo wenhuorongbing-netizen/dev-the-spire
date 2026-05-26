@@ -658,15 +658,15 @@ window.SPIRE_PLUS_DATA = {
   summary: [
     {
       title: "Spire Plus 做了什么",
-      copy: "Spire Plus 是一个用于私测的单体玩法扩展。先古奖励、原版遗物、高进阶路线和预览工具都放在同一个 Mod 里。页面按“触发时机、获得什么、付出什么、战后怎么结算”说明。"
+      copy: "Spire Plus 为《杀戮尖塔 2》加入了高进阶挑战（A11-A20）、全新先古奖励、原版遗物调整，以及水晶球透视和变换预览等便利工具。一个 Mod 搞定，每项改动都会说明触发时机、收益、代价和战后结算。"
     },
     {
       title: "苗床和种下",
-      copy: "种下会在牌进入手牌前把它移出本场战斗，并给你1张枯壳。它不是打出、弃牌或关键词消耗，不触发这些收益。临时状态和临时诅咒被种下后战后消失，永久诅咒不会被永久删除；根芽按本场已处理结算，战后不生成根蚀；根蚀只冻结本场结束结算，不净化、不降级、不恶化、不分裂，战后保持原阶段。"
+      copy: "苗床能在污染牌进入手牌之前拦截它，将它移出本场战斗并给你1张枯壳。被种下的临时状态和临时诅咒战后消失；根芽被种下后视为已处理，战后不会变成根蚀；根蚀被种下后本场冻结，战后保持原阶段。"
     },
     {
-      title: "苗床强度",
-      copy: "苗床先给8/12点格挡，再少抽污染牌，并把每张被种下的牌换成枯壳。枯壳被消耗时获得3点格挡；升级后还能立刻从抽牌堆或弃牌堆处理2张污染牌。它不是纯防御牌，价值来自即时防御、避免坏抽、后续枯壳缓冲一起结算。"
+      title: "苗床为什么值得拿",
+      copy: "苗床先给8/12点格挡，再帮你少抽污染牌，每张被拦截的牌还会变成枯壳。枯壳被消耗时再给3点格挡。它的价值来自即时防御、更干净的抽牌，以及之后枯壳带来的额外格挡。"
     }
   ],
   package: {
@@ -862,15 +862,15 @@ window.SPIRE_PLUS_DATA = {
     {
       short: "机制与工具",
       title: "先古与进阶机制详解",
-      note: "收录 Spire Plus 提供的游戏便利性预知与预览工具。",
+      note: "收录 Spire Plus 新增的便利工具与先古/进阶新机制。",
       icon: "assets/source-art/events/crystal_sphere/small_divination_icon.png",
       defaultVanilla: "原版无此新增内容。",
       items: [
         {
           ...manual(
             "水晶球预知",
-            "原版的水晶球小游戏是完全隐藏格子内容的，你必须翻开格子才知道底下有什么奖励。",
-            "在水晶球小游戏中直接增加一个「预知」按钮。点击后可以一键透视水晶球内所有未翻开格子的具体内容（显示是卡牌、金币、药水还是遗物），让你对奖励一目了然。这样你可以直接挑选需要的奖励路线，避免为了拿到最优奖励而反复进行『备份存档 - 盲翻 - 读档重试』的繁杂操作。（注：此按钮仅提供透视预览，不直接发放奖励。）",
+            "原版水晶球小游戏隐藏了所有格子内容，翻开前你不知道底下是什么。",
+            "水晶球小游戏新增「预知」按钮，点击即可直接看到每个格子下隐藏的奖励内容（卡牌、金币、药水或遗物），让你直接选想要的，不用反复存档读档。",
             ["预览工具"],
             "assets/source-art/events/crystal_sphere/small_divination_icon.png",
             "crystal_sphere_peek"
@@ -879,8 +879,8 @@ window.SPIRE_PLUS_DATA = {
         },
         manual(
           "变换真实预览",
-          "原版的卡牌或遗物变换是完全随机的，确认前无法预先知道会变成什么卡牌或遗物。",
-          "当你在休息处或事件中准备“变换”卡牌或遗物时，只需将鼠标悬停在变换选项上，就能直接提前预览变换后的具体结果（比如会变成哪张牌或哪个遗物）。该功能在后台安全地模拟计算出最终结果，它纯粹是个便利性的预览工具，预览本身不会消耗游戏真实的随机数，也不影响后续的游戏流程，让你能够有计划地挑选变换，摆脱盲猜盲盒的困扰。",
+          "原版的变换是盲选的，确认前无法预先知道会变成什么牌或遗物。",
+          "在休息处或事件中选择「变换」时，把鼠标移到变换选项上就能直接看到变换后会得到什么牌或遗物。看到了不满意可以不选，结果不会改变。",
           ["预览工具"],
           "assets/card_portraits/card.png",
           "transform_preview"
@@ -1085,15 +1085,15 @@ window.SPIRE_PLUS_DATA.i18n = {
     summary: [
       {
         title: "Spire Plus 做了什么",
-        copy: "Spire Plus 是用于私测的单体玩法扩展。先古奖励、原版遗物、高进阶路线和预览工具都放在同一个 Mod 里。页面按触发时机、获得什么、付出什么、战后怎么结算来说明。"
+        copy: "Spire Plus 为杀戮尖塔 2 加入了高进阶挑战（A11-A20）、全新先古奖励、原版遗物调整，以及水晶球透视和变换预览等便利工具。一个 Mod 搞定，每项改动都会说明触发时机、收益、代价和战后结算。"
       },
       {
         title: "苗床和种下",
-        copy: "种下会在牌进入手牌前把它移出本场战斗，并给你1张枯壳。它不是打出、弃牌或关键词消耗，不触发这些收益。临时状态和临时诅咒被种下后战后消失，永久诅咒不会被永久删除；根芽按本场已处理结算，战后不生成根蚀；根蚀只冻结本场结束结算，不净化、不降级、不恶化、不分裂，战后保持原阶段。"
+        copy: "苗床能在污染牌进入手牌之前拦截它，将它移出本场战斗并给你1张枯壳。被种下的临时状态和临时诅咒战后消失；根芽被种下后视为已处理，战后不会变成根蚀；根蚀被种下后本场冻结，战后保持原阶段。"
       },
       {
         title: "苗床为什么值得拿",
-        copy: "苗床先给8/12点格挡，再少抽污染牌，并把每张被种下的牌换成枯壳。枯壳被消耗时获得3点格挡；升级后还能立刻从抽牌堆或弃牌堆处理2张污染牌。它的价值来自即时防御、避免坏抽、后续枯壳缓冲一起结算。"
+        copy: "苗床先给8/12点格挡，再帮你少抽污染牌，每张被拦截的牌还会变成枯壳。枯壳被消耗时再给3点格挡。它的价值来自即时防御、更干净的抽牌，以及之后枯壳带来的额外格挡。"
       }
     ],
     installSteps: [
@@ -1561,13 +1561,13 @@ window.SPIRE_PLUS_DATA.i18n = {
       "crystal_sphere_peek": {
         title: "Crystal Sphere Peek",
         vanilla: "Vanilla has no peek button.",
-        current: "Adds a peek button to the Crystal Sphere minigame. It only changes mask visibility and does not grant rewards.",
+        current: "Adds a Peek button to the Crystal Sphere minigame. Click it to reveal all hidden rewards instantly so you can choose wisely.",
         tags: ["Preview tool"]
       },
       "transform_preview": {
-        title: "Deterministic Transform Preview",
+        title: "Transform Preview",
         vanilla: "Vanilla does not show the exact transform result.",
-        current: "Uses a copied RNG snapshot to predict transform results. It creates no card and does not advance real RNG.",
+        current: "Hover over a transform option to see the exact card or relic you will receive. The preview is safe \u2014 what you see is what you get.",
         tags: ["Preview tool"]
       },
       "mechanic_blood_debt": {

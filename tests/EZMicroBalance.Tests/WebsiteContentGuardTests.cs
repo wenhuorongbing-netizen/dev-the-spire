@@ -45,6 +45,7 @@ public sealed class WebsiteContentGuardTests
     {
         var websiteData = ReadRepoText("website", "content-data.js");
         var index = ReadRepoText("website", "index.html");
+        var styles = ReadRepoText("website", "styles.css");
         var packageHash = CurrentPackageZipSha256();
 
         AssertSourceContains(
@@ -93,6 +94,10 @@ public sealed class WebsiteContentGuardTests
             "assets/card_portraits/card.png",
             "At the start of your turn, the Firemark host gains 8/14/24 Molten Armor",
             "Deal [blue]{InterruptDamage}[/blue] damage to it in one round to interrupt the heal",
+            "soul_fysh_soul_tide",
+            "BOSS_SEAL_SOUL_TIDE.summary",
+            "Soul Fysh",
+            "Soul Tide",
             packageHash);
 
         AssertSourceContains(
@@ -121,6 +126,17 @@ public sealed class WebsiteContentGuardTests
             "if (item.namespace === \"mechanics\" && mech.id === itemKeyStr) continue;",
             "Related Mechanics",
             "\u673a\u5236\u89e3\u91ca");
+
+        AssertSourceContains(
+            appJs,
+            "qol-feature-banner",
+            "qol-banner-content",
+            "qol-banner-image-container");
+        AssertSourceContains(
+            styles,
+            ".qol-feature-banner",
+            ".qol-banner-content",
+            ".qol-banner-image-container");
 
         Assert.True(
             File.Exists(RepoPath("website", "assets", "source-art", "relics", "sere_talon.png")),
