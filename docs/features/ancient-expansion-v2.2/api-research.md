@@ -16,6 +16,7 @@ Current Urda source files:
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaInitializer.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelics.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRunHook.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCombatHook.cs`
 
 Observed implementation baseline:
 

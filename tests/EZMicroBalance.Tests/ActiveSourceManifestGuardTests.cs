@@ -143,6 +143,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAncient.Options.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAssetPaths.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingIds.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaCombatHook.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaFeatureGate.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaInitializer.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.AfterRain.cs",

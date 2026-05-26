@@ -138,13 +138,3 @@ internal sealed class UrdaRunHook : AbstractModel
     private static IRunState? CurrentRunState() =>
         RunManager.Instance.DebugOnlyGetState();
 }
-
-internal sealed class UrdaCombatHook : AbstractModel
-{
-    public override bool ShouldReceiveCombatHooks => true;
-
-    public override Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        UrdaRunHook.ShouldSkipCoopCombat(cardPlay.Card.Owner?.RunState)
-            ? Task.CompletedTask
-            : UrdaBlessingService.AfterCardPlayed(choiceContext, cardPlay);
-}

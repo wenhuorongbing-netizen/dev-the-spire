@@ -102,7 +102,10 @@ public sealed class CoopCombatSafetyGuardTests
     {
         var morviHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviHooks.cs");
         var lothaHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaHooks.cs");
-        var urdaHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
+        var urdaHooks = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaCombatHook.cs"));
 
         Assert.Contains("ShouldSkipCoopCombat(CurrentRunState())", morviHooks, StringComparison.Ordinal);
         Assert.Contains("ShouldSkipCoopCombat(room.CombatState?.RunState)", morviHooks, StringComparison.Ordinal);
@@ -112,8 +115,8 @@ public sealed class CoopCombatSafetyGuardTests
         Assert.Contains("ShouldSkipCoopCombat(creature.CombatState?.RunState)", lothaHooks, StringComparison.Ordinal);
         Assert.Contains("ShouldSkipCoopCombat(target.CombatState?.RunState)", lothaHooks, StringComparison.Ordinal);
 
-        Assert.Contains("card.Owner?.Creature.CombatState != null && ShouldSkipCoopCombat(card.Owner.RunState)", urdaHook, StringComparison.Ordinal);
-        Assert.Contains("ShouldSkipCoopCombat(room.CombatState?.RunState)", urdaHook, StringComparison.Ordinal);
-        Assert.Contains("UrdaRunHook.ShouldSkipCoopCombat(cardPlay.Card.Owner?.RunState)", urdaHook, StringComparison.Ordinal);
+        Assert.Contains("card.Owner?.Creature.CombatState != null && ShouldSkipCoopCombat(card.Owner.RunState)", urdaHooks, StringComparison.Ordinal);
+        Assert.Contains("ShouldSkipCoopCombat(room.CombatState?.RunState)", urdaHooks, StringComparison.Ordinal);
+        Assert.Contains("UrdaRunHook.ShouldSkipCoopCombat(cardPlay.Card.Owner?.RunState)", urdaHooks, StringComparison.Ordinal);
     }
 }

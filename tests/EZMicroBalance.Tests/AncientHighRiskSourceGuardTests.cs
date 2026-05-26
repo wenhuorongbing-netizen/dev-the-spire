@@ -11,14 +11,13 @@ public sealed class AncientHighRiskSourceGuardTests
     {
         var morviHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviHooks.cs");
         var lothaHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaHooks.cs");
-        var urdaHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
+        var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
+        var urdaCombatHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaCombatHook.cs");
 
         var morviRunHook = SliceBetween(morviHooks, "internal sealed class MorviRunHook", "internal sealed class MorviCombatHook");
         var morviCombatHook = SliceFrom(morviHooks, "internal sealed class MorviCombatHook");
         var lothaRunHook = SliceBetween(lothaHooks, "internal sealed class LothaRunHook", "internal sealed class LothaCombatHook");
         var lothaCombatHook = SliceFrom(lothaHooks, "internal sealed class LothaCombatHook");
-        var urdaRunHook = SliceBetween(urdaHook, "internal sealed class UrdaRunHook", "internal sealed class UrdaCombatHook");
-        var urdaCombatHook = SliceFrom(urdaHook, "internal sealed class UrdaCombatHook");
 
         AssertSourceContains(
             morviRunHook,

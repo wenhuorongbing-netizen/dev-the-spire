@@ -16,6 +16,7 @@ Live-only blockers remain:
 
 ## Latest Fixed Findings
 
+- 2026-05-26 Urda hook file split: `UrdaCombatHook.cs` now owns the Urda combat-hook wrapper class, while `UrdaRunHook.cs` keeps run/reward/map dispatch and the existing co-op guard helpers. High-risk/co-op guards now read the two hook files explicitly instead of slicing both classes from one file. No game was opened.
 - 2026-05-26 Morvi card model split: `MorviArchivePageCards.cs` and `MorviCombatTokenCards.cs` were removed. Archive-page base/card models, Red Ink Overdraft, and Waste Paper now live in one file per card model while Morvi guard tests continue to validate the feature source tree. No game was opened.
 - 2026-05-26 Urda card model split: `UrdaCards.cs` was removed and the independent card models now live in `UrdaSeedling.cs`, `UrdaSeedbed.cs`, `UrdaRainBreath.cs`, and `WitheredHusk.cs`. Urda release guards now validate the card model sources without requiring all card behavior to remain in one file. No game was opened.
 - 2026-05-26 Vakuu fight hook ownership split: `VakuuFightRunHook.cs` now keeps only initialization and combat-hook subscription. `VakuuFightCombatHook.cs` owns the combat-hook model, and `VakuuContractService.cs` owns turn-based Contract injection/Cash Out service logic. Vakuu guard tests now read the feature source tree for behavior evidence instead of requiring these concerns to stay in one file. No game was opened.
