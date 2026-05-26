@@ -38,6 +38,7 @@
 | `docs/archive/implementation-records/` | Archive | Compact implementation records moved out of the active reading path. |
 | `docs/intro.zh.md` | Current support | Chinese Spire Plus feature summary kept under an ASCII path for stable Git/script output. |
 | `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Archive | Historical RC1 live-validation log for older package states; current evidence is in `docs/release-evidence-status.md`. |
+| `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md` | Archive | Historical runtime-smoke detail archived from `docs/dev-environment.md`; current environment evidence stays compact. |
 | `docs/archive/superseded/setup-spec-original-scaffold.md` | Archive | Historical original `EzDailyContent` setup specification; current setup starts from `README.md`, `docs/README.md`, and `docs/dev-environment.md`. |
 | `docs/archive/project-state-history-20260516.md` | Archive | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation/package history. |
 | `docs/issues/` | Current support | Compact issue follow-up plus compact manual evidence queue retained for guard/reference support (`docs/issues/waiting-tests.md`). |

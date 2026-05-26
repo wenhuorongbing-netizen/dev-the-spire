@@ -666,22 +666,42 @@ public sealed class DocumentationCompactnessGuardTests
     public void DevEnvironmentAvoidsReleaseJournalLines()
     {
         var devEnvironment = ReadRepoText("docs", "dev-environment.md");
+        var archivedRuntimeHistory = ReadRepoText(
+            "docs",
+            "archive",
+            "implementation-records",
+            "dev-environment-runtime-smoke-history-20260526.md");
         var longestLine = devEnvironment
             .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
             .Max(line => line.Length);
 
-        Assert.True(longestLine <= 850, $"docs/dev-environment.md has a release-journal line of {longestLine} characters.");
+        Assert.True(longestLine <= 750, $"docs/dev-environment.md has a release-journal line of {longestLine} characters.");
         AssertSourceContains(
             devEnvironment,
             "Historical 22-field loader evidence:",
             "Current source defines 30 SavedSpireFields",
             "Historical beta.19 loader evidence:",
+            "dev-environment-runtime-smoke-history-20260526.md",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
             "Last private beta package:",
             "Zip SHA256:",
             "DLL SHA256:",
             "## Pending manual checks",
             "Manual game verification");
+        AssertSourceContains(
+            archivedRuntimeHistory,
+            "Historical archive.",
+            "direct `SlayTheSpire2.exe` launch",
+            "ConnectToGlobalUser failed",
+            "RootBudCombatHook",
+            "rc1-normal-steam-clean-godot-20260508-090122",
+            "live-spire-plus-disabled-session-20260513-142835",
+            "current-package-smoke-20260514-015901");
+        Assert.DoesNotContain("## Runtime smoke attempts", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("direct `SlayTheSpire2.exe` smoke launch", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("ConnectToGlobalUser failed", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("RC1 normal Steam-client launch/log probe", devEnvironment, StringComparison.Ordinal);
+        Assert.DoesNotContain("VampireSurvivors", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("## TODO", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("strict hook/text audit", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Banner temporary Strength cleanup", devEnvironment, StringComparison.Ordinal);

@@ -56,6 +56,7 @@ These files are current support records but are not part of the default next-dev
 | `test-plan.md` | Automated, release-artifact, localization, manual, save/load, and disable checks. |
 | `BETA_COMPATIBILITY.md` | Version compatibility policy and compatibility log. |
 | `archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Historical RC1 source/live-validation notes for older packages. Current evidence is summarized in `release-evidence-status.md` and `dev-environment.md`. |
+| `archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md` | Historical runtime-smoke detail moved out of `dev-environment.md`; use only when investigating old launch/helper behavior. |
 | `issues/waiting-tests.md` | Compact manual evidence queue retained for guard/reference support. Full historical rows are archived under `archive/issues/`. |
 | `mod-changelog.md` | Player-facing change summary. Keep it short. |
 | `intro.zh.md` | Chinese feature and change summary for downstream web documentation. |
@@ -106,6 +107,7 @@ These files are current support records but are not part of the default next-dev
 | `archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md` | Historical architecture/clean-code audit. It contains superseded Future Peek separation advice and should not be used as current implementation direction. |
 | `archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md` | Compact record of the source/test-ready implementation pass. |
 | `archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Historical RC1 live-validation log for older package states. |
+| `archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md` | Historical runtime-smoke detail archived from `dev-environment.md`. |
 | `archive/project-state-history-20260516.md` | Historical `PROJECT_STATE.md` snapshot before the active file was reduced to current status. |
 
 ## Cleanup Rules
