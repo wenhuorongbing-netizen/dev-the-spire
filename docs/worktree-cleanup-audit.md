@@ -180,6 +180,9 @@ Owner decision statuses:
 - Post-cleanup guard update: `dotnet test EZMicroBalance.sln --filter "FullyQualifiedName~TestInfrastructureGuardTests|FullyQualifiedName~ReleaseCoverageGuardTests|FullyQualifiedName~AncientStateMirrorGuardTests|FullyQualifiedName~AncientUiReadinessGuardTests|FullyQualifiedName~AncientArtAssetHygieneGuardTests|FullyQualifiedName~VakuuLothaSaveRiskGuardTests|FullyQualifiedName~VakuuTemptationGuardTests"` passed, 70 passed / 3 skipped.
 - Duplicate goal guard alias cleanup: `docs/implement.md` is deleted because its content duplicated `docs/goal.md`; `DocumentationCompactnessGuardTests.ActiveGoalGuardStaysCompactAndReadable` now asserts the duplicate alias stays absent.
 - Generated C# UID cleanup: tracked `EZMicroBalanceCode/**/*.cs.uid` files are deleted, `.gitignore` ignores regenerated source/test C# UID sidecars, and `EngineeringGovernanceGuardTests.RepositoryHygieneWorkflowAndTemplatesExist` now checks the policy.
+- Current cleanup validation: `dotnet test EZMicroBalance.sln --filter "FullyQualifiedName~EngineeringGovernanceGuardTests|FullyQualifiedName~DocumentationCompactnessGuardTests"` passed, 25 passed / 0 skipped.
+- Current batch classification: `scripts/report-worktree-batches.ps1 -FailOnUnclassified` passed with 80 dirty entries and 0 unclassified paths.
+- Current whitespace check: `git diff --check` passed with CRLF normalization warnings only.
 - `git clean -ndX`: dry-run only; confirms broad ignored-file deletion would hit owner-sensitive/local-evidence paths and must not be used as cleanup.
 - Final `dotnet test EZMicroBalance.sln --no-build`: pass, 170 passed / 18 skipped.
 - Final `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: pass.
