@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
@@ -36,10 +35,8 @@ internal static class TransformPreviewInitializePatch
 }
 
 [HarmonyPatch]
-internal static class TransformPreviewCyclePatch
+internal static partial class TransformPreviewCyclePatch
 {
-    private static readonly ConditionalWeakTable<NTransformPreview, PredictionQueue> PredictionsByPreview = new();
-
     internal static void PreparePredictions(NTransformPreview preview, IReadOnlyList<CardTransformation> transformations)
     {
         ClearPredictions(preview);
@@ -99,7 +96,7 @@ internal static class TransformPreviewCyclePatch
                     upgradeReplacementPreview));
             }
 
-            PredictionsByPreview.Add(preview, new PredictionQueue(queue));
+            StorePredictions(preview, queue);
             ReleaseEvidenceLog.Log(
                 "PreviewTransform",
                 "prediction_prepared",
@@ -127,11 +124,6 @@ internal static class TransformPreviewCyclePatch
         }
     }
 
-    internal static void ClearPredictions(NTransformPreview preview)
-    {
-        PredictionsByPreview.Remove(preview);
-    }
-
     private static MethodBase TargetMethod()
     {
         return AccessTools.Method(typeof(NTransformPreview), "CycleThroughCards")!;
@@ -146,13 +138,11 @@ internal static class TransformPreviewCyclePatch
                 return true;
             }
 
-            if (!PredictionsByPreview.TryGetValue(__instance, out var predictions) ||
-                predictions.Pending.Count == 0)
+            if (!TryDequeuePrediction(__instance, out var predicted))
             {
                 return true;
             }
 
-            var predicted = predictions.Pending.Dequeue();
             if (predicted == null)
             {
                 return true;
@@ -185,15 +175,5 @@ internal static class TransformPreviewCyclePatch
             PreviewLog.Warn("Transform prediction display failed; falling back to vanilla cycling: " + exception.Message);
             return true;
         }
-    }
-
-    private sealed class PredictionQueue
-    {
-        public PredictionQueue(Queue<CardModel?> pending)
-        {
-            Pending = pending;
-        }
-
-        public Queue<CardModel?> Pending { get; }
     }
 }

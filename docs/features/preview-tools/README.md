@@ -20,7 +20,7 @@ Preview tools are part of the single `Spire Plus` mod.
 - Transform preview must not call `CardTransformation.GetReplacement`, `CardFactory.CreateRandomCardForTransform`, `RunState.CreateCard`, or `CombatState.CreateCard`.
 - Co-op preview patches may log evidence, but they must not add `PlayerChoice`, `CardRewardAlternative`, rewards, or any real RNG advancement.
 - Transform preview display must fail open to the vanilla cycling preview if any UI lifecycle error occurs.
-- Preview code stays in `EZMicroBalanceCode/Preview/` so the player sees one mod while source ownership remains clear.
+- Preview code stays in `EZMicroBalanceCode/Preview/` so the player sees one mod while source ownership remains clear. `TransformPreviewPatch.cs` owns the Harmony patch flow; `TransformPreviewPredictionQueue.cs` owns per-preview prediction queue state.
 
 ## Future Peek Intake
 

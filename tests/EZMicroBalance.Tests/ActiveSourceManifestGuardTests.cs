@@ -410,6 +410,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Preview/TransformPredictionSelectionLifetimePatch.cs",
         "EZMicroBalanceCode/Preview/TransformPredictionService.cs",
         "EZMicroBalanceCode/Preview/TransformPreviewPatch.cs",
+        "EZMicroBalanceCode/Preview/TransformPreviewPredictionQueue.cs",
         "EZMicroBalanceCode/MainFile.cs"
     ];
 

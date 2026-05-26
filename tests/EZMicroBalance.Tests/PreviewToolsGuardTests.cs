@@ -142,16 +142,19 @@ public sealed class PreviewToolsGuardTests
     public void TransformPredictionDoesNotCreateRealCardsOrAdvanceRealRng()
     {
         var patchSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPatch.cs");
+        var queueSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPredictionQueue.cs");
         var predictionSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionService.cs");
-        var combined = patchSource + Environment.NewLine + predictionSource;
+        var combined = patchSource + Environment.NewLine + queueSource + Environment.NewLine + predictionSource;
 
         Assert.Contains("TransformPredictionRngContext.TryConsume", patchSource, StringComparison.Ordinal);
         Assert.Contains("no verified transform RNG source", patchSource, StringComparison.Ordinal);
-        Assert.Contains("ConditionalWeakTable<NTransformPreview, PredictionQueue>", patchSource, StringComparison.Ordinal);
+        Assert.Contains("ConditionalWeakTable<NTransformPreview, PredictionQueue>", queueSource, StringComparison.Ordinal);
         Assert.Contains("PreparePredictions(__instance", patchSource, StringComparison.Ordinal);
         Assert.Contains("ClearPredictions(__instance)", patchSource, StringComparison.Ordinal);
-        Assert.Contains("PredictionsByPreview.TryGetValue(__instance", patchSource, StringComparison.Ordinal);
-        Assert.Contains("predictions.Pending.Count == 0", patchSource, StringComparison.Ordinal);
+        Assert.Contains("StorePredictions(preview, queue)", patchSource, StringComparison.Ordinal);
+        Assert.Contains("TryDequeuePrediction(__instance", patchSource, StringComparison.Ordinal);
+        Assert.Contains("PredictionsByPreview.TryGetValue(preview", queueSource, StringComparison.Ordinal);
+        Assert.Contains("predictions.Pending.Count == 0", queueSource, StringComparison.Ordinal);
         Assert.Contains("return true;", patchSource, StringComparison.Ordinal);
         Assert.Contains("holder.ReassignToCard", patchSource, StringComparison.Ordinal);
         Assert.Contains("CardFactory.GetDefaultTransformationOptions", predictionSource, StringComparison.Ordinal);
