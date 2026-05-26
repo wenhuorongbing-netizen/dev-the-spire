@@ -1,11 +1,11 @@
-﻿# Ancient Rework v4 Manual Verification Matrix
+# Ancient Rework v4 Manual Verification Matrix
 
 Prepared: 2026-05-07
 Updated: 2026-05-18
 
 Status: automated gates passed; latest normal Steam-client startup/log verification is historical for the earlier 22-field package; refreshed normal Steam-client Mod Settings UI list screenshot shows Spire Plus; historical page-level Mod Settings UI passed under the old display name; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check and saved-map boss-reachability graph proof passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed.
 
-Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus normal tests and isolated package checks, but did not rerun live verification. The latest opt-in artifact test run exposed the real installed folder as stale while the game was running. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
+Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus normal tests and real installed-folder package checks, but did not rerun live verification. Earlier opt-in artifact work exposed stale installed-folder risk while the game was running; the current package hash check uses the refreshed real installed folder and game-root ZIP. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
 
 ## Automated Prerequisites
 
@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh, isolated package checker, real installed-folder checker, and opt-in artifact tests, `publish\SpirePlus-v0.1.0-private-beta.42.zip`, SHA256 `D53504B05987925D908F02FF748B3C978D1AABCAD2CFB8E3FB4C0CEA3E67BB43` |
+| Private-beta package | Pass for package refresh, real installed-folder checker, and opt-in artifact tests, `publish\SpirePlus-v0.1.0-private-beta.43.zip`, SHA256 `45F252F1EA9C509EA850ADE7DDE1C9ACBC79C642D53FBFA8AD6A15E3321BCC7A` |
 
 ## Runtime Load Checklist
 

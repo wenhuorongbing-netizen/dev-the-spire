@@ -279,7 +279,9 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.DoesNotContain("OnSkipped", urdaRunHook, StringComparison.Ordinal);
         var seedbedRewardSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.Seedbed.cs");
         var seedbedCombatSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedCombat.cs");
-        var seedbedSource = string.Join(Environment.NewLine, seedbedRewardSource, seedbedCombatSource);
+        var seedbedStateSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedState.cs");
+        var seedbedPatchSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaSeedbedAfterCardDrawnPatch.cs");
+        var seedbedSource = string.Join(Environment.NewLine, seedbedRewardSource, seedbedCombatSource, seedbedStateSource, seedbedPatchSource);
         AssertSourceContains(
             urdaRunHook,
             "public override async Task AfterCardChangedPiles",
@@ -296,9 +298,21 @@ public sealed class UrdaReleaseCoverageGuardTests
             "card.DeckVersion == null",
             "CardPileCmd.RemoveFromCombat(card, skipVisuals: true)",
             "TryAddGeneratedCardToCombat(husk, PileType.Hand, player)",
+            "Planting skipped play, discard, and Exhaust synergies");
+        AssertSourceContains(
+            seedbedStateSource,
+            "ConditionalWeakTable<Player, SeedbedCombatState>",
+            "ConditionalWeakTable<CardModel, SeedbedPlantMarker>",
+            "GetOrRestoreSeedbed(Player player)",
+            "SeedbedCombatSlots",
+            "MarkSeedbedPlantedCard",
+            "WasPlantedBySeedbed(CardModel card)");
+        AssertSourceContains(
+            seedbedPatchSource,
             "HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))",
             "WasPlantedBySeedbed(card)",
-            "Planting skipped play, discard, and Exhaust synergies");
+            "skipped AfterCardDrawn hooks for planted card");
+        Assert.DoesNotContain("HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))", seedbedCombatSource, StringComparison.Ordinal);
         Assert.Contains(
             "Set up a [blue]{Capacity}[/blue]-space [gold]Seedbed[/gold]",
             JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json")["EZMB_URDA_SEEDBED.description"],

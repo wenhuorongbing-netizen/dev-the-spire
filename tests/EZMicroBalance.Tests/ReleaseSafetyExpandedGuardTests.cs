@@ -235,8 +235,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "## Prompt-To-Artifact Checklist",
             "## Missing Or Weakly Verified Items",
             "## Conclusion",
-            "289 passed / 20 skipped",
-            "309 passed / 0 skipped",
+            "295 passed / 20 skipped",
+            "315 passed / 0 skipped",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",
             "window-preflight-smoke-20260513-135402",
@@ -654,7 +654,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Fresh loader smoke for the current beta.42 package hash is pending", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Fresh loader smoke for the current beta.43 package hash is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
@@ -665,7 +665,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest pushed cleanup/package evidence baseline", projectState, StringComparison.Ordinal);
-        Assert.Contains("current beta.42 Urda state codec package sync", projectState, StringComparison.Ordinal);
+        Assert.Contains("current beta.43 Seedbed state split package sync", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

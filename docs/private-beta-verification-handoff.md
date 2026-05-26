@@ -1,4 +1,4 @@
-﻿# Spire Plus Private Beta Verification Handoff
+# Spire Plus Private Beta Verification Handoff
 
 Date: 2026-05-15
 
@@ -16,8 +16,8 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest verification after the issue-detail typo guard sync: `dotnet build EZMicroBalance.sln`, normal tests with 289 passed / 20 skipped, opt-in artifact tests with 309 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and installed-package checkers for both `.tools\publish-game-root\mods\EZMicroBalance` and the real game `mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff.
-- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.42 Future Peek UI-only co-op refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
+- Latest verification after the beta.43 Seedbed state split package sync: `dotnet build EZMicroBalance.sln`, normal tests with 295 passed / 20 skipped, opt-in artifact tests with 315 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and the real installed-package checker against `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff. `.tools\publish-game-root` is isolated tooling context only and is not the current package-parity source.
+- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.43 Seedbed state split package sync, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
 - The latest normal Steam smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` covered the beta.19 package hash: only BaseLib plus Spire Plus loaded, `v0.1.0-private-beta.19` was logged, `Found 30 SavedSpireFields`, startup completed, and the log audit was clean. Feature gameplay rows remain pending.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
@@ -41,20 +41,20 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.42.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.43.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `D53504B05987925D908F02FF748B3C978D1AABCAD2CFB8E3FB4C0CEA3E67BB43`
+- Zip SHA256: `45F252F1EA9C509EA850ADE7DDE1C9ACBC79C642D53FBFA8AD6A15E3321BCC7A`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `A98E3FAE5BBDA22BBB8CE06E8A678F39EDE9DEE10672D6848A6DD21737F59503`
-- Manifest SHA256: `95F4500329822CB66A39B6B63DA0C06E33F9587AC38A1A102AB929A0CBFD84BA`
-- PCK SHA256: `AC776AEB5B5C3AF0E11175286C1D25C5F49CCFF4219698F4BB57328BD33212D3`
-- README_INSTALL SHA256: `5B3CA87908819118B67DA5173410BE348D467A2832F0A4D47486099A720870D1`
+- DLL SHA256: `BE54B36F30BF969013C8174729882B0B515E80812BF052C6C4390048B943A412`
+- Manifest SHA256: `A537526B50BAEBD2D08274318AC18AB88F7FBD9C2B268250BE87C235F137ADFD`
+- PCK SHA256: `CBEDFCD551977A5BC818AEB9B4417C1DA5FB07C2AF5DED5901A8BEEEC37C8717`
+- README_INSTALL SHA256: `3C7541494A56B40207ABE38C4472FAFCF7208A80E0D0CD0A50DBE8398F081DCF`
 
 ## Known Automated Evidence
 
-- Current automated snapshot: beta.42 passed `dotnet build`, normal `dotnet test`, isolated publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and isolated installed-package checking after the Future Peek UI-only co-op refresh. Gameplay proof is still pending.
-- Current normal test count: 289 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 309 passed / 0 skipped.
-- Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory .tools\publish-game-root\mods\EZMicroBalance`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split. After the game is closed and `mods\EZMicroBalance` is refreshed, rerun the same checker against the real installed folder.
+- Current automated snapshot: beta.43 passed `dotnet build`, normal `dotnet test`, normal publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and real installed-package checking after the Seedbed state split package sync. Gameplay proof is still pending.
+- Current normal test count: 295 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 315 passed / 0 skipped.
+- Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory "D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance"`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split.
 - Historical loader/resource evidence remains useful context only. The current 30-field loader proof covers beta.19 loader/startup only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
 - Historical detailed command logs are preserved in `docs/archive/project-state-history-20260516.md`, `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`, and feature work logs; `docs/review.md` keeps compact current source-review context. This handoff intentionally keeps only the current tester-facing summary.
 - Automated evidence does not close clicked UI, live gameplay, save-load, death/failure, route traversal, preview-tools, or co-op rows.
