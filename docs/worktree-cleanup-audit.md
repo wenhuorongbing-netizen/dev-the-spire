@@ -154,7 +154,7 @@ Owner decision statuses:
 | Removed duplicate root mod surfaces | Removed after the 2026-05-20 owner rule change; keep absent from active root. |
 | Former root `legacy/` | Archived to `docs/archive/legacy-planning/legacy-project-files/`; top-level folder removed. |
 | `source code/` | Default keep because current tests/docs require it. |
-| `publish/` | Retained current package/staging/cover-source output; stale old-name package folder was deleted. Future prune should happen only after a new package rebuild/hash refresh. |
+| `publish/` | Retained current beta.32 package/staging/cover-source output; stale beta.0-beta.31 ZIPs and expanded package folders were deleted after confirming beta.32 hash/path parity. Future prune should happen only after a new package rebuild/hash refresh. |
 | `.tools/` | Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted; remaining `.tools/` subfolders are retained as current evidence, art provenance, local archives, or local tool installations. Wholesale deletion is not recommended. |
 | `output/playwright/` | Default ignored for new browser screenshots/logs/HARs/PID files. Existing tracked evidence remains visible until reviewed in its own batch. |
 | `website/` and `.github/workflows/spire-plus-site.yml` | Promoted and tracked as current public site source and Pages workflow. Generated `website/forum/` output and `website/**/*.import` metadata remain ignored. |
@@ -196,5 +196,6 @@ Owner decision statuses:
 - Final `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: pass.
 - Final `node --check website\content-data.js`: pass.
 - Final `git diff --check`: pass.
+- Targeted publish-output prune: deleted ignored `publish\SpirePlus-v0.1.0-private-beta.0` through `.31` ZIPs and expanded folders, 64 entries total, reclaiming about 1.24 GB; retained `publish\SpirePlus-v0.1.0-private-beta.32.zip`, the beta.32 expanded folder, `publish\package-staging`, and release cover-source files. Current beta.32 ZIP SHA256 remains `CA19F9CC83F3F65581D10F1066C04B8E58E812DE07E1DBA7ACA6FEB4D22F693A`.
 
 Re-run validation after every subsequent cleanup batch.
