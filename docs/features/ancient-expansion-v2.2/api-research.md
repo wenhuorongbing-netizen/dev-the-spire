@@ -32,8 +32,15 @@ Current Morvi source files:
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAncient.Options.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingIds.cs`
-- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviArchivePageCards.cs`
-- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviCombatTokenCards.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviArchivePageCard.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviArchiveDrawPage.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviArchiveVeilPage.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviArchiveBurnPage.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviArchiveDiscountPage.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviArchiveBraveryPage.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviArchiveDexterityPage.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviRedInkOverdraftCard.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviWastePaper.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviFeatureGate.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviInitializer.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviOptionRelics.cs`
