@@ -636,11 +636,11 @@ $packageHashes = [ordered]@{
     CreatedAt = (Get-Date).ToString('o')
     Files = @(
         Get-HashRow -RelativePath 'EZMicroBalance.json'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.27.zip'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.27\EZMicroBalance\EZMicroBalance.dll'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.27\EZMicroBalance\EZMicroBalance.pck'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.27\EZMicroBalance\EZMicroBalance.json'
-        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.27\EZMicroBalance\README_INSTALL.txt'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.28.zip'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.28\EZMicroBalance\EZMicroBalance.dll'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.28\EZMicroBalance\EZMicroBalance.pck'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.28\EZMicroBalance\EZMicroBalance.json'
+        Get-HashRow -RelativePath 'publish\SpirePlus-v0.1.0-private-beta.28\EZMicroBalance\README_INSTALL.txt'
     )
 }
 

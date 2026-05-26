@@ -27,10 +27,10 @@ public sealed class ModInfoLocalizationGuardTests
             "string.Equals(language, \"zhs\", StringComparison.Ordinal)",
             "Spire Plus 是用于私测的《杀戮尖塔 2》单体玩法扩展",
             "Spire Plus is a single Slay the Spire 2 gameplay expansion",
-            "Seedbed is the clearest example",
-            "Planting means removing the card from the current combat",
-            "种下的意思是把牌移出当前战斗",
-            "根蚀被种下后冻结本场结束结算",
+            "Seedbed shows that style",
+            "Planting removes a card from this combat before it reaches hand",
+            "种下会在牌进入手牌前把它移出本场战斗",
+            "根蚀被种下后暂停本场结束检查",
             "[gold]作者[/gold]",
             "[gold]版本[/gold]",
             "GetNodeOrNull<MegaRichTextLabel>(\"ModDescription\")");
@@ -49,13 +49,14 @@ public sealed class ModInfoLocalizationGuardTests
 
         Assert.Equal("EZMicroBalance", root.GetProperty("id").GetString());
         Assert.Equal("Spire Plus", root.GetProperty("name").GetString());
-        Assert.Equal("v0.1.0-private-beta.27", root.GetProperty("version").GetString());
+        Assert.Equal("v0.1.0-private-beta.28", root.GetProperty("version").GetString());
         Assert.True(root.TryGetProperty("description", out var description));
 
         var manifestDescription = description.GetString() ?? string.Empty;
         Assert.Contains("Spire Plus", manifestDescription, StringComparison.Ordinal);
-        Assert.Contains("Planting means removing the card from the current combat", manifestDescription, StringComparison.Ordinal);
-        Assert.Contains("Rootblight freezes this combat's end check", manifestDescription, StringComparison.Ordinal);
+        Assert.Contains("Planting removes the card from this combat before it reaches hand", manifestDescription, StringComparison.Ordinal);
+        Assert.Contains("Rootblight pauses this combat's end check", manifestDescription, StringComparison.Ordinal);
+        Assert.Contains("no cleanse, downgrade, worsen, or split", manifestDescription, StringComparison.Ordinal);
         Assert.Contains("The Mod Settings panel localizes this description by client language.", manifestDescription, StringComparison.Ordinal);
         Assert.DoesNotContain("鏄", manifestDescription, StringComparison.Ordinal);
         Assert.DoesNotContain("鐗堟湰", manifestDescription, StringComparison.Ordinal);

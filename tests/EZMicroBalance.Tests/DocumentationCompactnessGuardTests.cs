@@ -81,8 +81,8 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.27 Seedbed planting rules refresh. Result: succeeded.",
-            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.27 Seedbed planting rules refresh. Result: succeeded.",
+            "Last attempted publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.28 Seedbed planting rules refresh. Result: succeeded.",
+            "Last successful publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.28 Seedbed planting rules refresh. Result: succeeded.",
             "installed `mods\\EZMicroBalance` folder",
             "matched the installed mod artifacts on 2026-05-26",
             "303 passed, 0 skipped, 0 failed");
@@ -300,7 +300,7 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("beta.27 Seedbed planting rules and mod-overview refresh", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.28 Seedbed planting rules and mod-overview refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta19-loader-smoke-20260525-213336", projectState, StringComparison.Ordinal);
@@ -620,7 +620,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.27 package hash is pending",
+            "Fresh loader smoke for the current beta.28 package hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

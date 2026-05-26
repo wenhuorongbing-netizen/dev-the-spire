@@ -189,7 +189,7 @@ public sealed class AncientBehaviorGuardTests
     [ReleaseArtifactFact]
     public void PrivateBetaZipContainsOnlyInstallableActiveModFiles()
     {
-        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.27.zip");
+        var packagePath = RepoPath("publish", "SpirePlus-v0.1.0-private-beta.28.zip");
         Assert.True(File.Exists(packagePath), $"Missing private beta package: {packagePath}");
 
         using var archive = ZipFile.OpenRead(packagePath);
@@ -220,7 +220,7 @@ public sealed class AncientBehaviorGuardTests
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);
-        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.27.zip", readme, StringComparison.Ordinal);
+        Assert.Contains("Archive: SpirePlus-v0.1.0-private-beta.28.zip", readme, StringComparison.Ordinal);
         Assert.Contains("Display name: Spire Plus", readme, StringComparison.Ordinal);
         Assert.Contains("Technical compatibility id: EZMicroBalance", readme, StringComparison.Ordinal);
         Assert.Contains("Extract this archive into the Slay the Spire 2 mods folder exactly as packaged.", readme, StringComparison.Ordinal);
@@ -1200,9 +1200,9 @@ public sealed class AncientBehaviorGuardTests
             "- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [ ] Fresh loader smoke for the current beta.27 ZIP hash is pending.",
-            "- [ ] Latest loader smoke for the current beta.27 package hash has not been recaptured yet.",
-            "- [ ] `godot.log` reviewed after fresh beta.27 normal Steam-client isolated startup/log verification.",
+            "- [ ] Fresh loader smoke for the current beta.28 ZIP hash is pending.",
+            "- [ ] Latest loader smoke for the current beta.28 package hash has not been recaptured yet.",
+            "- [ ] `godot.log` reviewed after fresh beta.28 normal Steam-client isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",
@@ -1213,7 +1213,7 @@ public sealed class AncientBehaviorGuardTests
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
             "- [ ] Push to `origin` is performed after validation, packaging, and an intentional commit.",
-            "Fresh loader smoke for the current beta.27 package hash is pending",
+            "Fresh loader smoke for the current beta.28 package hash is pending",
             "Refreshed normal Steam-client Mod Settings UI evidence at `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` shows `Spire Plus`",
             "Earlier page-level Mod Settings evidence predates the display-name refresh",
             "Manual feature results are pending",

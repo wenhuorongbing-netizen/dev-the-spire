@@ -324,8 +324,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
 
         AssertSourceContains(
             verifier,
-            "PackageSha256 = \"891F2ABA04E17D6BE74997D7201D071431A956A070F25E2ACEFEFE9142DF171C\"",
-            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.27.zip\"",
+            "PackageSha256 = \"E58B6204BFDCCBE9CA8132AD286D936D30E576FD69A8A9256CB2A08335B503C2\"",
+            "PackagePath = \"publish\\SpirePlus-v0.1.0-private-beta.28.zip\"",
             "MinScreenshotWidth = 800",
             "MinScreenshotHeight = 450",
             "Get-FileHash -LiteralPath $packageFull -Algorithm SHA256",
@@ -651,7 +651,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Fresh loader smoke for the current beta.27 package hash is pending", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Fresh loader smoke for the current beta.28 package hash is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);

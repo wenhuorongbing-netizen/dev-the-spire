@@ -87,6 +87,82 @@ public sealed class GoalCompletionGuardTests
     }
 
     [Fact]
+    public void GoalAndImplementDocsStayAlignedWithCurrentGuard()
+    {
+        var goal = ReadRepoText("docs", "goal.md");
+        var implement = ReadRepoText("docs", "implement.md");
+
+        Assert.Equal(NormalizeLineEndings(goal), NormalizeLineEndings(implement));
+
+        AssertSourceContains(
+            goal,
+            "Current target: test-ready manual build, not release-ready.",
+            "Keep player-facing name `Spire Plus`; keep `EZMicroBalance` only where it is the stable technical manifest id",
+            "Keep Vakuu's Sere Talon separate from Tanx Claws: Sere Talon offers 4 Curses, choose 1, then adds 2 Wish and 1 Wish+; Tanx Claws remains the Maul+ transform relic.",
+            "Archive long prompt dumps under `docs/archive/feature-inputs/`",
+            "No source-only pass may mark this goal complete.");
+    }
+
+    [Fact]
+    public void GoalGuardRulesAreBackedByCurrentSourceAndArchives()
+    {
+        var goal = ReadRepoText("docs", "goal.md");
+        var pickupPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonPickupPatches.cs");
+        var visualPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs");
+        var tanxClawsPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
+        var projectState = ReadRepoText("PROJECT_STATE.md");
+        var issues = ReadRepoText("docs", "issues.md");
+
+        AssertSourceContains(
+            goal,
+            "Spire Plus",
+            "EZMicroBalance",
+            "Sere Talon",
+            "Tanx Claws",
+            "Wish+",
+            "Maul+ transform relic");
+
+        AssertSourceContains(
+            pickupPatch,
+            "[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]",
+            "private const int CurseOfferCount = 4",
+            "private const int CursePickCount = 1",
+            "private const int NormalWishCount = 2",
+            "private const int UpgradedWishCount = 1",
+            "owner.RunState.CreateCard<Wish>(owner)",
+            "CardCmd.Upgrade(wish, CardPreviewStyle.None)");
+        Assert.DoesNotContain("Claws", pickupPatch, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            tanxClawsPatch,
+            "[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]",
+            "ModelDb.Card<Maul>()",
+            "CardCmd.Upgrade(maul, CardPreviewStyle.None)",
+            "Tanx Claws should always create the threatening version of Maul");
+        Assert.DoesNotContain("SereTalon", tanxClawsPatch, StringComparison.Ordinal);
+        Assert.DoesNotContain("Wish", tanxClawsPatch, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            visualPatch,
+            "relic is not SereTalon",
+            "button.Option?.Relic is not SereTalon",
+            "SereTalon uses Spire Plus art and Tanx Claws is untouched");
+
+        AssertSourceContains(
+            projectState,
+            "`Spire Plus`",
+            "`EZMicroBalance` remains only as the stable technical manifest id");
+        AssertSourceContains(
+            issues,
+            "Current target: test-ready manual build, not release-ready.",
+            "`SERE-TALON/TANX-CLAWS-ROUTING`",
+            "## Manual Proof Gates");
+
+        AssertRepoFileExists("docs", "archive", "feature-inputs", "goal-md-mojibake-intake-20260523.md");
+        AssertRepoFileExists("docs", "archive", "feature-inputs", "goal-coop-preview-plan-20260525.md");
+    }
+
+    [Fact]
     public void ManualProofGatesInIssuesBlockCurrentReleaseReadyLanguage()
     {
         var issues = ReadRepoText("docs", "issues.md");
@@ -110,6 +186,9 @@ public sealed class GoalCompletionGuardTests
 
     private static bool ContainsReleaseReadyClaim(string line) =>
         line.Contains("release-ready", StringComparison.OrdinalIgnoreCase);
+
+    private static string NormalizeLineEndings(string value) =>
+        value.Replace("\r\n", "\n", StringComparison.Ordinal);
 
     private static bool IsGuardedNegativeOrInstructionalLine(string line)
     {
