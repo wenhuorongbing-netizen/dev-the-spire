@@ -296,6 +296,8 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Powers/BannerShieldwallPower.cs",
         "EZMicroBalanceCode/Ascension/Powers/BannerVanguardPower.cs",
         "EZMicroBalanceCode/Ascension/Powers/BoilingCriticalPower.cs",
+        "EZMicroBalanceCode/Ascension/Powers/BossSealMarkerPowers.cs",
+        "EZMicroBalanceCode/Ascension/Powers/BossSealPower.cs",
         "EZMicroBalanceCode/Ascension/Powers/BossSealPowers.cs",
         "EZMicroBalanceCode/Ascension/Powers/FiremarkConstantHealPower.cs",
         "EZMicroBalanceCode/Ascension/Powers/FiremarkForgeArmorPower.cs",

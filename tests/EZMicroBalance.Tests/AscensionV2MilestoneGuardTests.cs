@@ -699,12 +699,14 @@ public sealed class AscensionV2MilestoneGuardTests
     [Fact]
     public void SplitBossSealPowerFilesKeepBehaviorAndReadableLocalization()
     {
-        var basePower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
+        var basePower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPower.cs");
+        var markerPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealMarkerPowers.cs");
         var combatStart = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.CombatStart.cs");
         var holyDaze = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "HolyDazePower.cs");
         var boilingCritical = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BoilingCriticalPower.cs");
         var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "ResidualSamplePower.cs");
         var aeonglassHourglass = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassPower.cs");
+        var bossSealSharedPowers = string.Join(Environment.NewLine, basePower, markerPowers);
 
         AssertSourceContains(
             basePower,
@@ -718,7 +720,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "public override string CustomBigIconPath => BossSealIconPath",
             "AscensionAssetPaths.BossSealIndicator");
         AssertSourceContains(
-            basePower,
+            markerPowers,
             "internal abstract class BossSealMarkerPower : BossSealPower",
             "public override int DisplayAmount => 0",
             "HolyDazeBossSealMarkerPower",
@@ -762,11 +764,11 @@ public sealed class AscensionV2MilestoneGuardTests
             "PowerCmd.Apply<AeonglassHourglassBossSealMarkerPower>",
             "PowerCmd.Apply<ChosenDecreeBossSealMarkerPower>",
             "PowerCmd.Apply<ResidualSampleBossSealMarkerPower>");
-        Assert.DoesNotContain("internal sealed class HolyDazePower", basePower, StringComparison.Ordinal);
-        Assert.DoesNotContain("internal sealed class BoilingCriticalPower", basePower, StringComparison.Ordinal);
-        Assert.DoesNotContain("internal sealed class ResidualSamplePower", basePower, StringComparison.Ordinal);
-        Assert.DoesNotContain("internal sealed class ChosenDecreeReductionPower", basePower, StringComparison.Ordinal);
-        Assert.DoesNotContain("internal sealed class AeonglassHourglassPower", basePower, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class HolyDazePower", bossSealSharedPowers, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class BoilingCriticalPower", bossSealSharedPowers, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class ResidualSamplePower", bossSealSharedPowers, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class ChosenDecreeReductionPower", bossSealSharedPowers, StringComparison.Ordinal);
+        Assert.DoesNotContain("internal sealed class AeonglassHourglassPower", bossSealSharedPowers, StringComparison.Ordinal);
 
         AssertSourceContains(
             holyDaze,
@@ -823,7 +825,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "Each energy spent removes [blue]1[/blue]",
             "Eye Lasers hits [blue]1[/blue] extra time");
 
-        foreach (var source in new[] { basePower, holyDaze, boilingCritical, residualSample, aeonglassHourglass })
+        foreach (var source in new[] { basePower, markerPowers, holyDaze, boilingCritical, residualSample, aeonglassHourglass })
         {
             AssertNoMojibake(source, "鐏", "鎴", "绗", "鍥", "浼", "澶", "銆", "闂", "鏈", "寮€", "鑾", "缂", "锟", "铏", "鐑", "杈", "绉", "灞");
         }

@@ -316,7 +316,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
     [Fact]
     public void BossDedicatedAbilityPowerTextKeepsReadableSimplifiedChineseInlineLocalization()
     {
-        var bossPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BossSealPowers.cs");
+        var bossPowers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
         var aeonglassPower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassPower.cs");
         var residualSampleFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.PhaseCarryover.cs");
         var royalDecreeEnchantment = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "RoyalDecreeEnchantment.cs");
