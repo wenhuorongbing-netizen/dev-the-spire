@@ -118,16 +118,20 @@ public sealed class TestInfrastructureGuardTests
         AssertRepoFileExists(".github", "workflows", "spire-plus-site.yml");
         AssertRepoFileExists("docs", "intro.zh.md");
         AssertRepoFileExists("docs", "archive", "implementation-records", "forum-public-integration-qa-20260526.md");
+        AssertRepoFileExists("docs", "archive", "implementation-records", "website-localization-qa-20260522.md");
         AssertRepoPathDoesNotExist("docs", "介绍.md");
         AssertRepoPathDoesNotExist("web_issue.md");
+        AssertRepoPathDoesNotExist("website", "localization_qa.md");
         Assert.Contains("Promoted website source is tracked", projectMap, StringComparison.Ordinal);
         Assert.Contains(".tools/archive/local-website-preview-20260516", projectMap, StringComparison.Ordinal);
         Assert.Contains("docs/intro.zh.md", projectMap, StringComparison.Ordinal);
         Assert.Contains("forum-public-integration-qa-20260526.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("website-localization-qa-20260522.md", projectMap, StringComparison.Ordinal);
         Assert.Contains("current public site source is tracked", docInventory, StringComparison.Ordinal);
         Assert.Contains("docs/intro.zh.md", docInventory, StringComparison.Ordinal);
         Assert.Contains("docs/介绍.md` -> `docs/intro.zh.md", docInventory, StringComparison.Ordinal);
         Assert.Contains("root `web_issue.md` -> `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`", docInventory, StringComparison.Ordinal);
+        Assert.Contains("website/localization_qa.md` -> `docs/archive/implementation-records/website-localization-qa-20260522.md`", docInventory, StringComparison.Ordinal);
         Assert.Contains("ignored `forum/node_modules/` dependency cache deleted", docInventory, StringComparison.Ordinal);
         Assert.Contains("local-website-preview-20260516", docInventory, StringComparison.Ordinal);
         Assert.Contains("generated `website/forum/` output is ignored", docInventory, StringComparison.Ordinal);
@@ -197,7 +201,7 @@ public sealed class TestInfrastructureGuardTests
             "Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted",
             "stale redirected publish-output folders",
             "| `source code/` | Default keep because current tests/docs require it. |",
-            "| `publish/` | Retained current beta.40 package/staging/cover-source output; stale beta.0-beta.33 ZIPs and expanded package folders were deleted after confirming current-package hash/path parity. Future prune should happen only after a new package rebuild/hash refresh. |",
+            "| `publish/` | Retained current beta.41 package/staging/cover-source output; stale beta.0-beta.33 ZIPs and expanded package folders were deleted after confirming current-package hash/path parity. Future prune should happen only after a new package rebuild/hash refresh. |",
             "| `.tools/` | Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted; remaining `.tools/` subfolders are retained as current evidence, art provenance, local archives, or local tool installations. Wholesale deletion is not recommended. |");
     }
 

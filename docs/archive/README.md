@@ -34,3 +34,4 @@ Archived documents are useful for context, but they are not current implementati
 - `implementation-records/2026-05-15-current-package-verification-note.md`: historical long-form package verification note archived from `docs/issues.md`; current blockers remain in `docs/issues.md` and `docs/issues/waiting-tests.md`.
 - `legacy-planning/legacy-project-files/`: preserved old `EzDailyContent.csproj` metadata and migration note moved out of the repository root during cleanup.
 - `implementation-records/rc1-live-validation-log-20260508-20260513.md`: historical live-validation log for older package states. Current package evidence is tracked in `docs/release-evidence-status.md` and `docs/dev-environment.md`.
+- `implementation-records/website-localization-qa-20260522.md`: historical website localization/render QA journal moved out of the public website source; current website metadata is in `website/content-data.js` and `website/README.md`.

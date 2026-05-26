@@ -78,6 +78,7 @@ Current support docs, not default reading path:
 - `docs/archive/project-state-history-20260516.md`
 - `docs/archive/implementation-records/2026-05-15-current-package-verification-note.md`
 - `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`
+- `docs/archive/implementation-records/website-localization-qa-20260522.md`
 - `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`
 - `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`
 
@@ -105,6 +106,7 @@ Current support docs, not default reading path:
 - historical runtime-smoke detail from active `docs/dev-environment.md` -> `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`
 - `docs/介绍.md` -> `docs/intro.zh.md` to keep the Chinese intro active while avoiding quoted non-ASCII paths in Git/script output.
 - root `web_issue.md` -> `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`; current forum follow-up remains in `website/web_issue.md` and `docs/features/forum/`.
+- `website/localization_qa.md` -> `docs/archive/implementation-records/website-localization-qa-20260522.md`; current website package/download state is guarded by `website/content-data.js`, `website/README.md`, and website tests.
 - ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
 
 ## F. Archive entrypoints
@@ -123,6 +125,7 @@ Current support docs, not default reading path:
 - `docs/archive/project-state-history-20260516.md`
 - `docs/archive/implementation-records/2026-05-15-current-package-verification-note.md`
 - `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`
+- `docs/archive/implementation-records/website-localization-qa-20260522.md`
 - `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`
 - `docs/archive/legacy-planning/legacy-project-files/README.md`
 - `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md`

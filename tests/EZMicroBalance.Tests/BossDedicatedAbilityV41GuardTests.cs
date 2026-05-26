@@ -90,12 +90,13 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var activeDocs = string.Join(
             Environment.NewLine,
             ReadRepoText("docs", "review.md"),
-            ReadRepoText("docs", "toreview.md"),
-            ReadRepoText("website", "localization_qa.md"));
+            ReadRepoText("docs", "toreview.md"));
         Assert.DoesNotContain("Royal Seal", activeDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("King Brand", activeDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("\u738b\u5370", activeDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("\u738b\u70d9\u5370", activeDocs, StringComparison.Ordinal);
+        AssertRepoPathDoesNotExist("website", "localization_qa.md");
+        AssertRepoFileExists("docs", "archive", "implementation-records", "website-localization-qa-20260522.md");
 
         foreach (var staleTerm in new[]
                  {

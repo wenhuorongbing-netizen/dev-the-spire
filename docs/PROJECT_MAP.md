@@ -111,6 +111,7 @@ The private beta zip should contain only those three installable files plus `REA
 | `.tools/archive/local-root-clutter-20260515/` | Ignored local archive | Former root local-only package/source-analysis/website zip clutter preserved before any deletion decision. |
 | `.tools/archive/local-website-preview-20260516/` | Ignored local archive | Older snapshot of the pre-promotion website draft and Pages workflow; the current tracked source lives at root `website/` and `.github/workflows/spire-plus-site.yml`. |
 | `docs/archive/implementation-records/forum-public-integration-qa-20260526.md` | Archive | Former root `web_issue.md` forum QA note moved out of the root reading path; current forum follow-up lives in `website/web_issue.md` and `docs/features/forum/`. |
+| `docs/archive/implementation-records/website-localization-qa-20260522.md` | Archive | Former `website/localization_qa.md` historical website QA journal moved out of the public website surface; current website state is guarded by `website/content-data.js`, `website/README.md`, and website tests. |
 
 ## Documentation Map
 

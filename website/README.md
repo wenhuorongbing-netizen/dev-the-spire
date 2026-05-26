@@ -19,7 +19,7 @@ http://127.0.0.1:4177/website/
 In local preview, the current download button points to:
 
 ```text
-../publish/SpirePlus-v0.1.0-private-beta.40.zip
+../publish/SpirePlus-v0.1.0-private-beta.41.zip
 ```
 
 ## Public Deploy
@@ -29,13 +29,13 @@ In local preview, the current download button points to:
 In the public site, the current download button points to the versioned GitHub Release asset:
 
 ```text
-https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.40/SpirePlus-v0.1.0-private-beta.40.zip
+https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.41/SpirePlus-v0.1.0-private-beta.41.zip
 ```
 
 The release-page button points to:
 
 ```text
-https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.40
+https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.41
 ```
 
 If the repository is private, GitHub Pages availability depends on the account plan. If GitHub reports that private Pages are unsupported, use a public Pages repository, make this repository public, or upgrade the plan before publishing the site.
@@ -73,5 +73,7 @@ Full go-live steps are in `../docs/features/forum/go-live-checklist.md`.
 - Styles: `styles.css`
 - Rendering logic: `app.js`
 - Images: `assets/`
+
+Historical website QA journals belong under `../docs/archive/implementation-records/`, not in this public-site source folder.
 
 `assets/` may contain Spire Plus-owned or generated resources, plus original game art only when permission and scope are documented. Current permission was confirmed by the project owner on 2026-05-23 for the vanilla relic icons and card portraits used on this site under `assets/source-art/`. Do not copy original non-art source materials from `source code/`.

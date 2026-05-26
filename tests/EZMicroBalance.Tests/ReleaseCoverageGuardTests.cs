@@ -679,7 +679,7 @@ public sealed class ReleaseCoverageGuardTests
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest pushed cleanup/package evidence baseline", projectState, StringComparison.Ordinal);
-        Assert.Contains("current beta.40 Future Peek UI-only co-op refresh", projectState, StringComparison.Ordinal);
+        Assert.Contains("current beta.41 Future Peek UI-only co-op refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

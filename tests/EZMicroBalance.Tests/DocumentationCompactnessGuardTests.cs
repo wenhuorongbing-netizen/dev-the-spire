@@ -127,6 +127,7 @@ public sealed class DocumentationCompactnessGuardTests
             "ten blessing ids",
             "those ten blessings",
             "Urda ten blessings",
+            "ten-blessing Urda pool",
             "all ten v2.2 blessings"
         })
         {
@@ -183,8 +184,8 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.40 Future Peek UI-only co-op refresh. Result: succeeded against the real installed mods root.",
-            "Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-26 after the beta.40 Future Peek UI-only co-op refresh. Result: succeeded against an isolated temporary mods root.",
+            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.41 Future Peek UI-only co-op refresh. Result: succeeded against the real installed mods root.",
+            "Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-26 after the beta.41 Future Peek UI-only co-op refresh. Result: succeeded against an isolated temporary mods root.",
             "isolated `.tools\\publish-game-root\\mods\\EZMicroBalance` folder",
             "`D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance`",
             "staging, versioned, installed, game-root zip, and zip-entry artifacts match");
@@ -423,7 +424,7 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("beta.40 Future Peek UI-only co-op refresh", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.41 Future Peek UI-only co-op refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta19-loader-smoke-20260525-213336", projectState, StringComparison.Ordinal);
@@ -503,7 +504,7 @@ public sealed class DocumentationCompactnessGuardTests
             "`GOV-WIP-SPLIT` P0 source-fixed",
             "`DOC-CONFLICT-GOVERNANCE` P2 source-fixed",
             "`PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending",
-            "current committed worktree is clean after the beta.40 batch commit",
+            "current committed worktree is clean after the beta.41 batch commit",
             "0 dirty entries / 0 unclassified entries",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
@@ -527,11 +528,11 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             docsByPath["PROJECT_STATE.md"],
-            "beta.40 startup remains pending",
-            "beta.40 loader proof still needs a fresh run");
+            "beta.41 startup remains pending",
+            "beta.41 loader proof still needs a fresh run");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
-            "Current beta.40 evidence should be read from the latest validated HEAD");
+            "Current beta.41 evidence should be read from the latest validated HEAD");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
             "current package evidence derived from the manifest/versioned artifacts");
@@ -897,7 +898,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.40 package hash is pending",
+            "Fresh loader smoke for the current beta.41 package hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

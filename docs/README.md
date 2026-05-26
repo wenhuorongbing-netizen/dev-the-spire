@@ -57,6 +57,7 @@ These files are current support records but are not part of the default next-dev
 | `BETA_COMPATIBILITY.md` | Version compatibility policy and compatibility log. |
 | `archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Historical RC1 source/live-validation notes for older packages. Current evidence is summarized in `release-evidence-status.md` and `dev-environment.md`. |
 | `archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md` | Historical runtime-smoke detail moved out of `dev-environment.md`; use only when investigating old launch/helper behavior. |
+| `archive/implementation-records/website-localization-qa-20260522.md` | Historical website localization/render QA journal moved out of the public website source. |
 | `issues/waiting-tests.md` | Compact manual evidence queue retained for guard/reference support. Full historical rows are archived under `archive/issues/`. |
 | `mod-changelog.md` | Player-facing change summary. Keep it short. |
 | `intro.zh.md` | Chinese feature and change summary for downstream web documentation. |

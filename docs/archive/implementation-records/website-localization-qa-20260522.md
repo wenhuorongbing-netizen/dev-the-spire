@@ -1,5 +1,7 @@
 # Spire Plus Website Localization QA
 
+Archived note: this is historical website QA evidence for earlier package metadata. Current package/download metadata is tracked by `website/content-data.js`, `website/README.md`, and current release guards.
+
 Date: 2026-05-22
 
 Scope: `website/` player site localization for Simplified Chinese and English.

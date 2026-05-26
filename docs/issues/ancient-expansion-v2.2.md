@@ -256,7 +256,7 @@ Current repo state:
 
 Next target:
 
-- Live-test the ten-blessing Urda pool and replace the source-derived temporary option icons with bespoke generated relic-style art when image generation or final source art is available.
+- Live-test the eleven-blessing Urda pool and replace the source-derived temporary option icons with bespoke generated relic-style art when image generation or final source art is available.
 
 ## ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-MILESTONE-GATES
 
