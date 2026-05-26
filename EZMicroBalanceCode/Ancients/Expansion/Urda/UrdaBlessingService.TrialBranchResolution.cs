@@ -1,33 +1,7 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static partial class UrdaBlessingService
 {
-    private const int TrialBranchCombats = 3;
-    private const int TrialBranchRequiredSuccesses = 3;
-
-    public static Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        var player = cardPlay.Card.Owner;
-        if (player == null ||
-            !player.IsActiveForHooks ||
-            GetSelectedBlessing(player) != UrdaBlessingIds.TrialBranch ||
-            cardPlay.Card.DeckVersion is not { } deckCard ||
-            !AncientSavedStateFields.UrdaTrialPlantCard[deckCard])
-        {
-            return Task.CompletedTask;
-        }
-
-        var progress = GetProgress(player);
-        if (progress.TrialSettled || progress.TrialCombats >= TrialBranchCombats)
-        {
-            return Task.CompletedTask;
-        }
-
-        SetProgress(player, progress with { TrialPlayedThisCombat = true });
-        RefreshTrialBranchEnchantment(player);
-        return Task.CompletedTask;
-    }
-
     private static async Task ResolveTrialBranchCombat(Player player)
     {
         var progress = GetProgress(player);
@@ -93,5 +67,4 @@ internal static partial class UrdaBlessingService
         SetProgress(player, progress with { TrialSettled = true });
         MainFile.Logger.Info("[Spire Plus] Urda Trial Branch failed; marked card removed from deck.");
     }
-
 }

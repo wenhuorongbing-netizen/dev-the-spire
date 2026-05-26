@@ -33,9 +33,10 @@ public sealed class UrdaReleaseCoverageGuardTests
         var urdaRootedRoute = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootedRoute.cs");
         var urdaRootedRouteReward = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootedRouteReward.cs");
         var urdaShallowRootRelic = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.ShallowRootRelic.cs");
-        var urdaTrialBranch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.TrialBranch.cs");
+        var urdaTrialBranchCombat = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.TrialBranchCombat.cs");
         var urdaTrialBranchDisplay = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.TrialBranchDisplay.cs");
         var urdaTrialBranchOffer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.TrialBranchOffer.cs");
+        var urdaTrialBranchResolution = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.TrialBranchResolution.cs");
         var urdaTrialBranchEnchantment = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaTrialBranchEnchantment.cs");
         var urdaSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Urda");
         var urdaScene = ReadRepoText("EZMicroBalance", "scenes", "events", "background_scenes", "ezmb_urda.tscn");
@@ -394,13 +395,25 @@ public sealed class UrdaReleaseCoverageGuardTests
             "CardCmd.Enchant<UrdaTrialBranchEnchantment>",
             "RefreshTrialBranchEnchantment");
         Assert.Contains("card.Rarity == CardRarity.Rare", trialBranchOffer, StringComparison.Ordinal);
-        var trialBranch = urdaTrialBranch;
+        var trialBranchCombat = urdaTrialBranchCombat;
         AssertSourceContains(
-            trialBranch,
+            trialBranchCombat,
+            "AfterCardPlayed",
+            "TrialBranchCombats = 3",
+            "TrialBranchRequiredSuccesses = 3",
+            "cardPlay.Card.DeckVersion is not { } deckCard",
+            "TrialPlayedThisCombat = true",
+            "RefreshTrialBranchEnchantment(player)");
+        Assert.DoesNotContain("RemoveFromDeck", trialBranchCombat, StringComparison.Ordinal);
+        var trialBranchResolution = urdaTrialBranchResolution;
+        AssertSourceContains(
+            trialBranchResolution,
+            "ResolveTrialBranchCombat",
             "TrialSuccessfulCombats = progress.TrialSuccessfulCombats + (playedThisCombat ? 1 : 0)",
             "if (!playedThisCombat)",
             "ClearTrialBranchMarkerAndEnchantment",
             "await CardPileCmd.RemoveFromDeck(trialCard)");
+        Assert.DoesNotContain("AfterCardPlayed", trialBranchResolution, StringComparison.Ordinal);
         AssertSourceContains(
             urdaTrialBranchDisplay,
             "TryGetTrialBranchDisplayProgress",

@@ -2,11 +2,11 @@
 Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-26:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `99D13EA3A17EBA6F2676DD394DDB7E2A0CC8CE72DD9C333BA8A124C6257FE51F` |
-| DLL | `E85A8821F34F9BF2D256267FB831AF5BA8A910C403DEFB94ED9C47DFF080F3A1` |
-| PCK | `C46A3E33FBD2C9853F49860C37EBAE449F87FF1A6FE817F6A5A4BA7C6ADDF9C3` |
-| Manifest | `713D2D99A83FB4003398981CFC2EA984103D49C2EFC6A4545D3CD65907A443C3` |
-| README_INSTALL | `92FDFA19D100EC0324E646D242FFA29C8396CB96402695C4F7968FC1B28F55D0` |
+| ZIP | `C1335C862152279DB69285D0D1A82A652AC35A0B5421D9D38F2165F000C78BCC` |
+| DLL | `BD0B096BB2FA866739CD4F11FA7CC9C60656FC566FC79DA7583E084772F36C80` |
+| PCK | `7920760C27017036383BFE72E3CA5276DACE23CD128CDD7C8EA1B1402BA1EDBA` |
+| Manifest | `F1E713E606ABABA4014A6C09D0F29870F08BE2BD330D8AF335AD5BEEA0164451` |
+| README_INSTALL | `6FBB2516907ED2CF0D509C18DF597C67A51656A47AA3B64E53494AFB13E85990` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -28,7 +28,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `FISSION-EXHAUST-TRIGGERS` P1 source/package-fixed / live-pending: canonical Exhaust path guarded through Fission keyword, `CardCmd.Exhaust(...)`, `AfterCardExhausted(...)`, and Drum/Howl/power/relic listeners.
 - Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
 ## Engineering governance blockers
-- `GOV-WIP-SPLIT` P0 source-fixed; current committed worktree is clean after the beta.45 batch commit, and the batch classifier reports 0 dirty entries / 0 unclassified entries.
+- `GOV-WIP-SPLIT` P0 source-fixed; current committed worktree is clean after the beta.46 batch commit, and the batch classifier reports 0 dirty entries / 0 unclassified entries.
 - `GOV-CI-FIRST-RUN` P2 pending: self-hosted lane exists, but first GitHub/self-hosted run evidence is not recorded.
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
