@@ -24,7 +24,7 @@ public sealed class AncientStateMirrorGuardTests
         new(
             "Morvi",
             "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.State.cs",
-            "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviHooks.cs",
+            "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviRunHook.cs",
             "MorviStateKey",
             "MorviDeckStateKey"),
         new(

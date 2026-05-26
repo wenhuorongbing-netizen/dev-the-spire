@@ -27,11 +27,11 @@ public sealed class MorviV22GuardTests
     [Fact]
     public void CombatLifecycleUsesScopedCombatStateInsteadOfGlobalRunStateLookup()
     {
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs");
+        var runLifecycle = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.CombatLifecycle.cs");
 
-        Assert.DoesNotContain("RunManager.Instance.DebugOnlyGetState()", runHook, StringComparison.Ordinal);
+        Assert.DoesNotContain("RunManager.Instance.DebugOnlyGetState()", runLifecycle, StringComparison.Ordinal);
         AssertSourceContains(
-            runHook,
+            runLifecycle,
             "CombatManager.Instance.DebugOnlyGetState()",
             "activeCombatState.Players.Where(player => player.IsActiveForHooks)",
             "room.CombatState.Players.Where(player => player.IsActiveForHooks)");

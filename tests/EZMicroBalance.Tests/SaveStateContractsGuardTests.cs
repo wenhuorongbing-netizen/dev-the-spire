@@ -117,6 +117,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.State.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoan.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.OpenBook.cs"],
+                ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.CombatLifecycle.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs"]
             ],
             ["SavedSpireField<Player, string> MorviStateKey", "SavedSpireField<CardModel, string> MorviDeckStateKey", "MorviOpenBookSealedCard"],

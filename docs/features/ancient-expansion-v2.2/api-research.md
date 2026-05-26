@@ -50,6 +50,8 @@ Current Morvi source files:
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviInitializer.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviOptionRelics.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviPowers.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.CombatLifecycle.cs`
+- `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviCombatHook.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviRunHook.cs`
 
 Morvi evidence recorded in this source pass:
