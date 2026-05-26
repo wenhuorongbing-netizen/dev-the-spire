@@ -1,17 +1,17 @@
-# Spire Plus To Review
+﻿# Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.31.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.32.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618` |
-| DLL | `C5BB994347596FA4EE10DE23D1CC2AE88DD4779D40970919510A413335CE7C9B` |
-| PCK | `8A267BA928320DCA3A99FD4EA168F7863CD0AA28BF2ECB17FAD2FF24A0C1B26E` |
-| Manifest | `A92F92402A30C459D98E65BD29FB3BC5AC70B14A587002AAA4E4E1CC0C7D4F23` |
-| README_INSTALL | `45F0E46431421CEF3A4FF932E3D189469C5FFBA678DF414383BF3D274CDFA429` |
+| ZIP | `97EBB00BD5E6602605C07EA6F8512051A8BAE4A96B111AF6C361FDD23D9594A2` |
+| DLL | `F7BF6B5213908730BBFF55CA3D12EEFBFDBEE5E8A63B7A88BDEA5B6D4CCA6F11` |
+| PCK | `4F1ED9224CDC3FE3952535F8FF5106885528891A635A263DBAE4C22B61C8E006` |
+| Manifest | `91924EFCF444F0DC495A8B16CA171AA58B923517FC283CC553C2EC6408EA7A7F` |
+| README_INSTALL | `174715C398A6DB6D91ABDFCE294A89B268E2B00AE359FC170C73B72259F1DACD` |
 
-Latest validation snapshot: beta.31 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.31 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: beta.32 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.32 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
@@ -20,6 +20,7 @@ Latest validation snapshot: beta.31 build, publish/package refresh, default test
 | URDA-SEED-BANK | Urda | Seed Bank stores cards on the relic, shows a compact stored-card hover list, supports relic-click extraction, and preserves seeds if deck-add fails. | Store 1/2/3 cards, hover the relic from the left relic bar, confirm no large card preview clips offscreen, click extract, verify cards enter deck, and verify Boss transition does not hang. |
 | COOP-COMBAT-START-CRASH | Multiplayer / combat start | The latest crash log ended during `CUBEX_CONSTRUCT_NORMAL` combat startup. Co-op now disables unverified Spire Plus gameplay mutations by default, including A11-A20 selection/gameplay, Ascension map/reward changes, Ancient offers/selections/run hooks, Urda reward alternatives, combat hooks, and preview tools. | Install the newly packaged build, enter co-op normal combat, confirm no crash, and attach `godot.log`. Do not set `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY`, `SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS`, or `SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS` unless deliberately debugging those paths. |
 | COOP-PREVIEW-TOOLS-CRASH | Multiplayer / preview tools | The latest transform crash log showed co-op A20 state, Rootblight, Seed Bank, Fission, reconnect, and `Aroma of Chaos` transform/choice-sync before failure. Transform prediction and Crystal Sphere peek fail closed in co-op by default; broader co-op gameplay mutation also fails closed. | Install the newly packaged build, enter a two-client run, trigger a deck transform event and Crystal Sphere if possible, confirm no crash/desync/reconnect hang, and attach both clients' logs. Leave all unverified co-op opt-ins unset unless intentionally bisecting. |
+| SOUL-TIDE-BLOCK-TIMING | Ascension / A19-A20 | Soul Tide now converts unanswered Beckons into capped Block at enemy turn end, so Soul Fysh should already have Block when the next player turn begins. The player-turn-start fallback remains. | In Soul Fysh A19/A20, leave one or more Beckons in hand through turn end; confirm Beckon damage resolves, then the next player turn begins with Soul Fysh gaining 2/3 Block per Beckon up to cap, not only Artifact. |
 | URDA-TRIAL-HUMUS | Urda | Trial Branch, Seedbed, Humus Pact, Moss Map, Rooted Route, After Rain, Molting, Shallow-Root Relic, and Elite Root have source guards and visible relic hovers. | Check event text, relic hover text, card reward alternatives, map markers, and combat results. |
 | URDA-ELITE-ROOT | Urda | New first-tier Urda option relic: after each Elite combat, heal 10 HP. | Pick Elite Root, fight a normal Elite and a Firemarked Elite if possible, and confirm each victory heals up to 10 HP. |
 | NEOW-ACT1-REROLL | Neow / Ancient UI | The one-use dice reroll now appears on Neow's normal start choices and eligible Act 1 Ancient reward screens. The text says the reroll is Act 1 only and disappears after use. | Start a run, use Neow reroll once, confirm choices refresh and the reroll vanishes; later check an Act 1 Ancient screen and confirm it cannot be saved into Act 2. |

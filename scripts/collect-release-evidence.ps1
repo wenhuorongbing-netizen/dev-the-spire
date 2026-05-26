@@ -1,9 +1,9 @@
 param(
     [string]$EvidenceDir,
 
-    [string]$PackageSha256 = "E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618",
+    [string]$PackageSha256 = "",
 
-    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.31.zip",
+    [string]$PackagePath = "",
 
     [switch]$Launch,
 
@@ -19,6 +19,15 @@ Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 . (Join-Path $PSScriptRoot 'spire-plus-package-evidence.ps1')
+
+if ([string]::IsNullOrWhiteSpace($PackagePath)) {
+    $PackagePath = Get-SpirePlusPackageRelativePath -RepoRoot $repoRoot
+}
+
+if ([string]::IsNullOrWhiteSpace($PackageSha256)) {
+    $PackageSha256 = Get-SpirePlusPackageSha256 -RepoRoot $repoRoot -PackagePath $PackagePath
+}
+
 $runtimeRoot = Join-Path $repoRoot '.tools\runtime-evidence'
 $liveSessionScript = Join-Path $PSScriptRoot 'spire-plus-live-session.ps1'
 $verifierScript = Join-Path $PSScriptRoot 'verify-spire-plus-release-evidence.ps1'

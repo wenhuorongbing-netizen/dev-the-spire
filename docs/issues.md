@@ -1,15 +1,16 @@
-# Spire Plus Issues
+﻿# Spire Plus Issues
 Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-26:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618` |
-| DLL | `C5BB994347596FA4EE10DE23D1CC2AE88DD4779D40970919510A413335CE7C9B` |
-| PCK | `8A267BA928320DCA3A99FD4EA168F7863CD0AA28BF2ECB17FAD2FF24A0C1B26E` |
-| Manifest | `A92F92402A30C459D98E65BD29FB3BC5AC70B14A587002AAA4E4E1CC0C7D4F23` |
-| README_INSTALL | `45F0E46431421CEF3A4FF932E3D189469C5FFBA678DF414383BF3D274CDFA429` |
+| ZIP | `97EBB00BD5E6602605C07EA6F8512051A8BAE4A96B111AF6C361FDD23D9594A2` |
+| DLL | `F7BF6B5213908730BBFF55CA3D12EEFBFDBEE5E8A63B7A88BDEA5B6D4CCA6F11` |
+| PCK | `4F1ED9224CDC3FE3952535F8FF5106885528891A635A263DBAE4C22B61C8E006` |
+| Manifest | `91924EFCF444F0DC495A8B16CA171AA58B923517FC283CC553C2EC6408EA7A7F` |
+| README_INSTALL | `174715C398A6DB6D91ABDFCE294A89B268E2B00AE359FC170C73B72259F1DACD` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
+- `SOUL-TIDE-BLOCK-TIMING` P0 source/package-fixed / live-pending: Soul Fysh's Artifact-without-Block report is source-fixed; pending Beckons now convert to capped Block at enemy turn end, with player-turn-start fallback for unusual flow.
 - `URDA-SEED-BANK-HOVER` P0 source/package-fixed / live-pending: Seed Bank relic hover now shows a compact stored-card list instead of full card previews that can clip offscreen and spawn unrelated keyword tips.
 - `URDA-SEEDBED-PLANTING` P0 source/package-fixed / live-pending:
   - Seedbed explains Planting / 种下 as a non-play, non-discard, non-exhaust handling action.
@@ -33,8 +34,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `UNKNOWN-EVENT-PREVIEW-READABILITY`, `ROOTBLIGHT-STARTER-MISSING`, `BOSS-BLIGHT-SPROUT-PLAYED-STILL-ROOTBLIGHT`, `WATERFALL-BOSS-SEAL` P1: check event hover, Rootblight starter deck, Boss Blight Sprout play prevention, and Waterfall Boss.
 - `HOURGLASS-BOSS-SEAL-DESIGN`, `QUEEN-BOSS-SEAL-WEAKNESS`, `FIREMARK-OVERFLOW/FORGE-ARMOR`, `BANNER-ROOM-PREVIEW` P1: check Time Sand, Royal Decree, Firemark secondary-target explanation, and Banners.
 - `ROOT-EYES-CONFLICTS-COOP`, `PREVIEW-TOOLS-REWARD-HOOKS`, `SEAL-BANNER-VISIBILITY`, `V33-DESIGN-PASS` P1: check co-op Root Eyes, preview rewards, seal visibility, and v3.3 designs.
-- `FISSION-EXHAUST-TRIGGERS` P1 open: Fission cards must count as real Exhaust when they leave play. Audit source/BaseLib/Core so Exhaust listeners fire, including Beyond Roar / 彼岸咆哮 and War Drum / 战鼓.
-  Acceptance: use the canonical exhaust path, update intent/text, and test one card-owned trigger plus one relic/power-style exhaust listener.
+- `FISSION-EXHAUST-TRIGGERS` P1 open: Fission cards must count as real Exhaust when they leave play; acceptance is the canonical exhaust path, updated intent/text, and one card-owned plus one relic/power-style listener test.
 - Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
 ## Engineering governance blockers: `GOV-WIP-SPLIT` P0 source-fixed; current dirty worktree is intentionally batch-classified with 0 unclassified entries. `GOV-CI-FIRST-RUN`, `DOC-CONFLICT-GOVERNANCE`, and `PLATFORM-PACKAGE-CHECKS` P2 pending.
 ## Manual Proof Gates

@@ -93,6 +93,7 @@ function Get-WorktreeBatch {
         $p.StartsWith('docs/features/preview-tools/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('.github/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -eq 'tests/EZMicroBalance.Tests/README.md' -or
+        $p -eq 'tests/EZMicroBalance.Tests/TestRepo.cs' -or
         $p -eq 'docs/patch-inventory.md' -or
         $p -eq 'docs/platform-testing.md' -or
         $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|CoopCombatSafety|PreviewTools|SaveStateContracts|ModInfoLocalization|GoalCompletion).*\.cs(\.uid)?$') {

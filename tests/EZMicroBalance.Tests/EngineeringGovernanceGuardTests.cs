@@ -24,14 +24,16 @@ public sealed class EngineeringGovernanceGuardTests
         var gitignore = ReadRepoText(".gitignore");
         Assert.Contains("/EZMicroBalanceCode/**/*.cs.uid", gitignore, StringComparison.Ordinal);
         Assert.Contains("/tests/**/*.cs.uid", gitignore, StringComparison.Ordinal);
-        var sourceUidFiles = Directory.GetFiles(RepoPath("EZMicroBalanceCode"), "*.cs.uid", SearchOption.AllDirectories);
+
+        var trackedSourceUidFiles = GitLsFiles("EZMicroBalanceCode/**/*.cs.uid");
         Assert.True(
-            sourceUidFiles.Length == 0,
-            $"Godot C# source .uid sidecars are generated metadata and not part of the active deliverable:{Environment.NewLine}{string.Join(Environment.NewLine, sourceUidFiles)}");
-        var testUidFiles = Directory.GetFiles(RepoPath("tests", "EZMicroBalance.Tests"), "*.cs.uid", SearchOption.TopDirectoryOnly);
+            trackedSourceUidFiles.Length == 0,
+            $"Godot C# source .uid sidecars are generated metadata and must not be tracked:{Environment.NewLine}{string.Join(Environment.NewLine, trackedSourceUidFiles)}");
+
+        var trackedTestUidFiles = GitLsFiles("tests/**/*.cs.uid");
         Assert.True(
-            testUidFiles.Length == 0,
-            $"Test project .cs.uid files are not part of the active deliverable:{Environment.NewLine}{string.Join(Environment.NewLine, testUidFiles)}");
+            trackedTestUidFiles.Length == 0,
+            $"Test project .cs.uid files are generated metadata and must not be tracked:{Environment.NewLine}{string.Join(Environment.NewLine, trackedTestUidFiles)}");
 
         var workflow = ReadRepoText(".github", "workflows", "repository-hygiene.yml");
         Assert.Contains("validate-repository-hygiene.ps1", workflow, StringComparison.Ordinal);
@@ -424,6 +426,34 @@ public sealed class EngineeringGovernanceGuardTests
         var error = process.StandardError.ReadToEnd();
         Assert.True(process.WaitForExit(30_000), $"Timed out running {scriptPath}.");
         return (process.ExitCode, output, error);
+    }
+
+    private static string[] GitLsFiles(params string[] pathspecs)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "git",
+            WorkingDirectory = Root,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false
+        };
+
+        startInfo.ArgumentList.Add("ls-files");
+        startInfo.ArgumentList.Add("--");
+        foreach (var pathspec in pathspecs)
+        {
+            startInfo.ArgumentList.Add(pathspec);
+        }
+
+        using var process = Process.Start(startInfo);
+        Assert.NotNull(process);
+        var output = process.StandardOutput.ReadToEnd();
+        var error = process.StandardError.ReadToEnd();
+        Assert.True(process.WaitForExit(30_000), "Timed out running git ls-files.");
+        Assert.True(process.ExitCode == 0, $"git ls-files failed:{Environment.NewLine}{output}{error}");
+
+        return output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
     }
 
 }

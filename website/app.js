@@ -575,6 +575,14 @@
             </div>
           </div>
         </div>
+        ${item.previewImage ? `
+          <div class="inspector-preview-image-container">
+            <h4 class="inspector-sect-title">${lang === 'en' ? 'In-Game Preview' : '实机预览效果'}</h4>
+            <div class="inspector-preview-img-wrapper" title="${lang === 'en' ? 'Click to enlarge' : '点击查看大图'}">
+              <img src="${item.previewImage}" alt="${title}" class="inspector-preview-img" />
+            </div>
+          </div>
+        ` : ""}
         ${renderItemDetails(item)}
         ${relatedHtml}
       </div>
@@ -996,6 +1004,34 @@
 
   // --- Redraw Loop ---
 
+  function showLightbox(src, alt) {
+    let overlay = document.getElementById("lightboxOverlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "lightboxOverlay";
+      overlay.className = "lightbox-overlay";
+      overlay.innerHTML = `
+        <div class="lightbox-content">
+          <img class="lightbox-img" src="" alt="" />
+          <div class="lightbox-caption"></div>
+          <button type="button" class="lightbox-close">&times;</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      overlay.addEventListener("click", (e) => {
+        if (!e.target.closest(".lightbox-img")) {
+          overlay.classList.remove("active");
+        }
+      });
+    }
+    const lightboxImg = overlay.querySelector(".lightbox-img");
+    const lightboxCaption = overlay.querySelector(".lightbox-caption");
+    lightboxImg.src = src;
+    lightboxImg.alt = alt;
+    lightboxCaption.textContent = alt || "";
+    overlay.classList.add("active");
+  }
+
   function render() {
     const current = route();
     document.title = "Spire Plus | " + (
@@ -1226,6 +1262,16 @@
 
   // Dynamic navigation click bindings (including cross-card hyperlinks and hero choices)
   document.addEventListener("click", (event) => {
+    // Lightbox image preview trigger
+    const wrapper = event.target.closest(".inspector-preview-img-wrapper");
+    if (wrapper) {
+      const img = wrapper.querySelector(".inspector-preview-img");
+      if (img) {
+        showLightbox(img.src, img.alt);
+      }
+      return;
+    }
+
     // Clear Pin click handler inside inspector
     const clearPinBtn = event.target.closest("#clearPinBtn");
     if (clearPinBtn) {

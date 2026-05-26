@@ -122,6 +122,8 @@ internal static partial class AscensionCombatModifierService
                     break;
                 case BossSealId.SoulTide:
                     await TrackSoulTideIntangible(combatState, tracker, metadata);
+                    // Apply here so Soul Fysh's Block is already visible when the player regains control.
+                    await ApplySoulTidePendingBlock(combatState, tracker, metadata);
                     break;
                 case BossSealId.BoilingCritical:
                     await TrackBoilingCriticalSteam(combatState, tracker, metadata);

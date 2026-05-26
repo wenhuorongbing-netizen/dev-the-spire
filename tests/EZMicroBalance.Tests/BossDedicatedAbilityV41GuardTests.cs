@@ -462,8 +462,14 @@ public sealed class BossDedicatedAbilityV41GuardTests
             turnFlow,
             "private static async Task ApplyBossSealSideTurnStart(",
             "private static async Task ApplyBossSealTurnEnd(");
+        var bossSealTurnEnd = SliceBetween(
+            turnFlow,
+            "private static async Task ApplyBossSealTurnEnd(",
+            "// The Branded Form double-follower bonus");
         Assert.Contains("await ApplySoulTidePendingBlock(combatState, tracker, metadata);", bossSealPlayerTurnStart, StringComparison.Ordinal);
         Assert.DoesNotContain("ApplySoulTidePendingBlock", bossSealEnemyTurnStart, StringComparison.Ordinal);
+        Assert.Contains("case BossSealId.SoulTide:", bossSealTurnEnd, StringComparison.Ordinal);
+        Assert.Contains("await ApplySoulTidePendingBlock(combatState, tracker, metadata);", bossSealTurnEnd, StringComparison.Ordinal);
 
         AssertSourceContains(
             boiling,

@@ -20,6 +20,55 @@ function Get-SpirePlusPackageRelativePath {
     return "publish\$(Get-SpirePlusPackageName -RepoRoot $RepoRoot).zip"
 }
 
+function Resolve-SpirePlusPackagePath {
+    param(
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [string]$PackagePath
+    )
+
+    $path = if ([string]::IsNullOrWhiteSpace($PackagePath)) {
+        Get-SpirePlusPackageRelativePath -RepoRoot $RepoRoot
+    } else {
+        $PackagePath
+    }
+
+    if ([System.IO.Path]::IsPathRooted($path)) {
+        return [System.IO.Path]::GetFullPath($path)
+    }
+
+    return [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $path))
+}
+
+function Get-SpirePlusFileSha256 {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+        try {
+            return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToUpperInvariant()
+        } catch {
+            if ($attempt -eq 5) {
+                throw
+            }
+
+            Start-Sleep -Milliseconds (100 * $attempt)
+        }
+    }
+}
+
+function Get-SpirePlusPackageSha256 {
+    param(
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [string]$PackagePath
+    )
+
+    $packageFullPath = Resolve-SpirePlusPackagePath -RepoRoot $RepoRoot -PackagePath $PackagePath
+    if (-not (Test-Path -LiteralPath $packageFullPath -PathType Leaf)) {
+        throw "Spire Plus package zip not found: $packageFullPath"
+    }
+
+    return Get-SpirePlusFileSha256 -Path $packageFullPath
+}
+
 function Get-SpirePlusPackageArtifactRelativePaths {
     param(
         [Parameter(Mandatory = $true)][string]$RepoRoot,

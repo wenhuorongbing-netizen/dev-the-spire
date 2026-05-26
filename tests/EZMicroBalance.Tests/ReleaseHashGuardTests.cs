@@ -127,11 +127,13 @@ public sealed class ReleaseHashGuardTests
         const string stalePreManifestBomFixManifestHash = "9CA9B87288B885CE5853BF376C4283B2680691BD7F589FDF47D77CC9ED230DBE";
         const string stalePreZhsBomRestoreZipHash = "FC9B870F81804FDDC8DBBE730ACD7DF1B42A24A681A702B4B5469FC6156C7218";
         const string stalePreZhsBomRestorePckHash = "79A9364C11C1E4CCCD79F4873878F772F4296D7C21A732B759484DB0B4B65FEE";
-        const string currentZipHash = "E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618";
-        const string currentDllHash = "C5BB994347596FA4EE10DE23D1CC2AE88DD4779D40970919510A413335CE7C9B";
-        const string currentPckHash = "8A267BA928320DCA3A99FD4EA168F7863CD0AA28BF2ECB17FAD2FF24A0C1B26E";
-        const string currentManifestHash = "A92F92402A30C459D98E65BD29FB3BC5AC70B14A587002AAA4E4E1CC0C7D4F23";
-        const string currentReadmeHash = "45F0E46431421CEF3A4FF932E3D189469C5FFBA678DF414383BF3D274CDFA429";
+        var currentHashes = CurrentPackageHashesFromIssues();
+        var currentZipHash = CurrentPackageZipSha256();
+        Assert.Equal(currentZipHash, currentHashes["ZIP"]);
+        var currentDllHash = currentHashes["DLL"];
+        var currentPckHash = currentHashes["PCK"];
+        var currentManifestHash = currentHashes["Manifest"];
+        var currentReadmeHash = currentHashes["README_INSTALL"];
 
         var currentStatusDocs = new[]
         {

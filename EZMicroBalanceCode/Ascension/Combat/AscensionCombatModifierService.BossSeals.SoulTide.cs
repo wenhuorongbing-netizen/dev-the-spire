@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.Core.Models.Monsters;
+using MegaCrit.Sts2.Core.Models.Monsters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -82,6 +82,6 @@ internal static partial class AscensionCombatModifierService
         var block = tracker.PendingSoulTideBlock;
         tracker.PendingSoulTideBlock = 0m;
         await CreatureCmd.GainBlock(soulFysh, block, ValueProp.Move, null);
-        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Soul Tide converted Beckon hand pressure into {block} Block at player turn start.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Soul Tide converted Beckon hand pressure into {block} Block for the next player turn.");
     }
 }

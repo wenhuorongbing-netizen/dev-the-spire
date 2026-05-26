@@ -556,11 +556,20 @@ public sealed class AscensionV2MilestoneGuardTests
             combatService,
             "private static async Task ApplyBossSealSideTurnStart(",
             "private static async Task ApplyBossSealTurnEnd(");
+        var bossSealTurnEndSlice = SliceBetween(
+            combatService,
+            "private static async Task ApplyBossSealTurnEnd(",
+            "// The Branded Form double-follower bonus");
         Assert.Contains(
             "await ApplySoulTidePendingBlock(combatState, tracker, metadata);",
             bossSealPlayerTurnStartSlice,
             StringComparison.Ordinal);
         Assert.DoesNotContain("ApplySoulTidePendingBlock", bossSealEnemyTurnStartSlice, StringComparison.Ordinal);
+        Assert.Contains("case BossSealId.SoulTide:", bossSealTurnEndSlice, StringComparison.Ordinal);
+        Assert.Contains(
+            "await ApplySoulTidePendingBlock(combatState, tracker, metadata);",
+            bossSealTurnEndSlice,
+            StringComparison.Ordinal);
         var playerTurnStartBannerSlice = SliceBetween(
             combatService,
             "private static async Task ApplyBannerTurnStart(",

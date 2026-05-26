@@ -14,6 +14,7 @@ public sealed class CrossPlatformTestingGuardTests
         var powershellChecker = ReadRepoText("scripts", "check-installed-ezmb-package.ps1");
         var bashPreferredChecker = ReadRepoText("scripts", "check-installed-spire-plus-package.sh");
         var powershellPreferredChecker = ReadRepoText("scripts", "check-installed-spire-plus-package.ps1");
+        var packageName = CurrentPackageName();
 
         AssertSourceContains(
             platformTesting,
@@ -24,14 +25,14 @@ public sealed class CrossPlatformTestingGuardTests
             "EZMicroBalance/README_INSTALL.txt",
             "It must not include duplicate runtime dependency DLLs such as `BaseLib.dll`, `0Harmony.dll`, or `sts2.dll`.",
             "$env:STS2_PATH='D:\\Steam\\steamapps\\common\\Slay the Spire 2'",
-            "Get-FileHash -LiteralPath .\\publish\\SpirePlus-v0.1.0-private-beta.31.zip -Algorithm SHA256",
-            "Expand-Archive -LiteralPath .\\publish\\SpirePlus-v0.1.0-private-beta.31.zip -DestinationPath .\\publish\\inspect -Force",
+            $"Get-FileHash -LiteralPath .\\publish\\{packageName}.zip -Algorithm SHA256",
+            $"Expand-Archive -LiteralPath .\\publish\\{packageName}.zip -DestinationPath .\\publish\\inspect -Force",
             "$env:APPDATA\\SlayTheSpire2\\logs\\godot.log",
             "$env:SPIREPLUS_DISABLE_MORVI='1'",
             "export STS2_PATH=\"$HOME/Library/Application Support/Steam/steamapps/common/Slay the Spire 2\"",
             "scripts/check-installed-spire-plus-package.sh \"$STS2_PATH/mods/EZMicroBalance\"",
-            "shasum -a 256 publish/SpirePlus-v0.1.0-private-beta.31.zip",
-            "unzip -q publish/SpirePlus-v0.1.0-private-beta.31.zip -d publish/inspect",
+            $"shasum -a 256 publish/{packageName}.zip",
+            $"unzip -q publish/{packageName}.zip -d publish/inspect",
             "$HOME/Library/Application Support/SlayTheSpire2/logs/godot.log",
             "SPIREPLUS_DISABLE_MORVI=1",
             "BaseLib version and installed `mods/BaseLib` folder presence",

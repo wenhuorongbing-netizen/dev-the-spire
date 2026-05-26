@@ -3,9 +3,9 @@ param(
 
     [string]$ManifestPath,
 
-    [string]$PackageSha256 = "E5299E778F78878C1A62934B999D94BC51F1682EA865A2C7996E54AEFB86B618",
+    [string]$PackageSha256 = "",
 
-    [string]$PackagePath = "publish\SpirePlus-v0.1.0-private-beta.31.zip",
+    [string]$PackagePath = "",
 
     [int]$MinScreenshotWidth = 800,
 
@@ -25,6 +25,17 @@ Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 . (Join-Path $PSScriptRoot 'spire-plus-package-evidence.ps1')
+
+if ([string]::IsNullOrWhiteSpace($PackagePath)) {
+    $PackagePath = Get-SpirePlusPackageRelativePath -RepoRoot $repoRoot
+}
+
+if ([string]::IsNullOrWhiteSpace($PackageSha256)) {
+    $defaultPackageFullPath = Resolve-SpirePlusPackagePath -RepoRoot $repoRoot -PackagePath $PackagePath
+    if (Test-Path -LiteralPath $defaultPackageFullPath -PathType Leaf) {
+        $PackageSha256 = Get-SpirePlusPackageSha256 -RepoRoot $repoRoot -PackagePath $PackagePath
+    }
+}
 
 $requiredReleaseRows = @(
     @{ Id = 'fresh-current-package-loader-smoke'; Kind = 'loader'; Label = 'Fresh current-package loader smoke with current package hashes and clean log audit' },
@@ -448,7 +459,7 @@ function Test-PackageHashesEvidence {
             continue
         }
 
-        $expectedHash = (Get-FileHash -LiteralPath $artifactFull -Algorithm SHA256).Hash.ToUpperInvariant()
+        $expectedHash = Get-SpirePlusFileSha256 -Path $artifactFull
         $actualHash = ([string](Get-PropertyValue -Object $hashRow -Name 'Sha256' -Default '')).ToUpperInvariant()
         if ($actualHash -ne $expectedHash) {
             Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json hash for $expectedPath is '$actualHash' but current file hash is '$expectedHash'."
@@ -916,7 +927,7 @@ $actualPackageSha256 = ''
 if (-not (Test-Path -LiteralPath $packageFull -PathType Leaf)) {
     Add-Failure -Failures $failures -Message "Package under test does not exist: $packageFull."
 } else {
-    $actualPackageSha256 = (Get-FileHash -LiteralPath $packageFull -Algorithm SHA256).Hash.ToUpperInvariant()
+    $actualPackageSha256 = Get-SpirePlusFileSha256 -Path $packageFull
     if ($actualPackageSha256 -ne $PackageSha256) {
         Add-Failure -Failures $failures -Message "Actual package SHA256 '$actualPackageSha256' for '$packageFull' does not match current package '$PackageSha256'."
     }

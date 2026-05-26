@@ -227,6 +227,51 @@ internal static class TestRepo
         return document.RootElement.GetProperty("version").GetString() ?? throw new InvalidOperationException("Missing manifest version.");
     }
 
+    internal static string CurrentPackageName()
+    {
+        return $"SpirePlus-{ManifestVersion()}";
+    }
+
+    internal static string CurrentPackageZipRelativePath()
+    {
+        return $"publish\\{CurrentPackageName()}.zip";
+    }
+
+    internal static string CurrentPackageZipPath()
+    {
+        return RepoPath("publish", $"{CurrentPackageName()}.zip");
+    }
+
+    internal static string CurrentPackageZipSha256()
+    {
+        return Sha256(CurrentPackageZipPath());
+    }
+
+    internal static string CurrentPackageArtifactRelativePath(string fileName)
+    {
+        return $"publish\\{CurrentPackageName()}\\EZMicroBalance\\{fileName}";
+    }
+
+    internal static IReadOnlyDictionary<string, string> CurrentPackageHashesFromIssues()
+    {
+        var issues = ReadRepoText("docs", "issues.md");
+        var hashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (Match match in Regex.Matches(
+                     issues,
+                     @"^\|\s*(?<name>ZIP|DLL|PCK|Manifest|README_INSTALL)\s*\|\s*`(?<hash>[A-F0-9]{64})`\s*\|",
+                     RegexOptions.CultureInvariant | RegexOptions.Multiline))
+        {
+            hashes[match.Groups["name"].Value] = match.Groups["hash"].Value;
+        }
+
+        foreach (var required in new[] { "ZIP", "DLL", "PCK", "Manifest", "README_INSTALL" })
+        {
+            Assert.True(hashes.ContainsKey(required), $"Missing current package hash row in docs/issues.md: {required}");
+        }
+
+        return hashes;
+    }
+
     internal static string ReadCurrentFacingDocs(IEnumerable<string> paths)
     {
         return string.Join(Environment.NewLine, paths.Select(path => ReadRepoText(path.Split('/'))));

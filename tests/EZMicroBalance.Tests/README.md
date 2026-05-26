@@ -20,7 +20,7 @@ This test project guards source shape, localization, release documentation, pack
 | `ReleaseArtifactParityGuardTests.cs` | Opt-in installed/package parity, release hash, and runtime-log evidence guards. |
 | `UrdaReleaseCoverageGuardTests.cs` | Urda default-on source slice, option relics, Root Eyes, Seed Bank, and live-pending doc guards. |
 | `ReleaseArtifactFactAttribute.cs` | Opt-in gate for tests that require ignored local release artifacts. |
-| `TestRepo.cs` | Shared repository path, game path, UTF-8 read, JSON map/value walking, source-slicing, manifest, PNG dimension, export-preset parsing, active release resource predicates, ZIP/PCK/hash, JSON normalization, exception-unwrapping, and source-evidence helpers for guard tests. |
+| `TestRepo.cs` | Shared repository path, game path, UTF-8 read, JSON map/value walking, source-slicing, manifest/current-package, PNG dimension, export-preset parsing, active release resource predicates, ZIP/PCK/hash, JSON normalization, exception-unwrapping, and source-evidence helpers for guard tests. |
 | `TestInfrastructureGuardTests.cs` | Prevents guard-test infrastructure duplication and first-read documentation clutter from creeping back in. |
 
 New guard files should use `TestRepo.cs` instead of copying local `FindRepoRoot`, `RepoPath`, or `ReadRepoText` helpers.
@@ -40,6 +40,8 @@ Use the shared JSON/source-slicing helpers for common guard-test parsing instead
 Use the shared ZIP/PCK/hash helpers instead of redefining `ReadZipBytes`, `ReadZipText`, `ReadPckDirectory`, `ReadSourceTree`, `ReadAllTestSource`, or `Sha256`.
 
 Use the shared manifest, PNG byte/dimension, small-UI PNG alpha, JSON normalization, and exception-unwrapping helpers instead of redefining `ManifestVersion`, `ReadPngBytes`, `ReadPngDimensions`, `AssertSmallUiPngHasAlpha`, `NormalizeJson`, or `Unwrap`.
+
+Use the shared current package helpers instead of hardcoding or redefining current `SpirePlus-v...` package names, zip paths, package artifact paths, package ZIP hashes, or current package hash-table parsing in guard tests.
 
 Use the shared export-preset parser instead of redefining `ParseExportFiles`.
 

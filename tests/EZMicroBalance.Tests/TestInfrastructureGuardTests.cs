@@ -9,7 +9,7 @@ public sealed class TestInfrastructureGuardTests
     public void GuardTestsUseSharedRepositoryPathHelpers()
     {
         var duplicateHelperPattern = new Regex(
-            @"\bprivate\s+static\s+(?:(?:[^(;\r\n]+)|(?:\([^)]*\)))\s+(ReadRepoText|ReadSharedText|ReadAllTextShared|RepoPath|GamePath|FindRepoRoot|ToRepoRelativePath|AssertRepoFileExists|AssertRepoDirectoryExists|AssertRepoPathDoesNotExist|AssertDirectoryContainsOnlyFiles|AssertSourceContains|AssertLocalizedKeys|AssertNoMojibake|JsonStringMap|JsonStringValues|JsonKeys|ManifestVersion|ReadCurrentFacingDocs|SliceFrom|SliceBetween|SourceSlice|AssertBefore|CountOccurrences|ReadSourceTree|ReadAllTestSource|ReadZipBytes|ReadZipText|ReadPckDirectory|Sha256|NormalizeJson|ReadPngBytes|ReadPngDimensions|ReadPngSize|AssertSmallUiPngHasAlpha|ReadBigEndianInt32|Unwrap|ReadAncientSource|ReadAscensionSource|ParseExportFiles|IsActiveExportResource|IsActiveReleaseResource)\s*\(",
+            @"\bprivate\s+static\s+(?:(?:[^(;\r\n]+)|(?:\([^)]*\)))\s+(ReadRepoText|ReadSharedText|ReadAllTextShared|RepoPath|GamePath|FindRepoRoot|ToRepoRelativePath|AssertRepoFileExists|AssertRepoDirectoryExists|AssertRepoPathDoesNotExist|AssertDirectoryContainsOnlyFiles|AssertSourceContains|AssertLocalizedKeys|AssertNoMojibake|JsonStringMap|JsonStringValues|JsonKeys|ManifestVersion|CurrentPackageName|CurrentPackageZipRelativePath|CurrentPackageZipPath|CurrentPackageZipSha256|CurrentPackageArtifactRelativePath|CurrentPackageHashesFromIssues|ReadCurrentFacingDocs|SliceFrom|SliceBetween|SourceSlice|AssertBefore|CountOccurrences|ReadSourceTree|ReadAllTestSource|ReadZipBytes|ReadZipText|ReadPckDirectory|Sha256|NormalizeJson|ReadPngBytes|ReadPngDimensions|ReadPngSize|AssertSmallUiPngHasAlpha|ReadBigEndianInt32|Unwrap|ReadAncientSource|ReadAscensionSource|ParseExportFiles|IsActiveExportResource|IsActiveReleaseResource)\s*\(",
             RegexOptions.CultureInvariant);
 
         var duplicateHelpers = Directory
@@ -43,6 +43,7 @@ public sealed class TestInfrastructureGuardTests
         Assert.Contains("Use the shared JSON/source-slicing helpers for common guard-test parsing", readme, StringComparison.Ordinal);
         Assert.Contains("`JsonKeys`", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared manifest, PNG byte/dimension, small-UI PNG alpha, JSON normalization, and exception-unwrapping helpers", readme, StringComparison.Ordinal);
+        Assert.Contains("Use the shared current package helpers", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared export-preset parser", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared active release resource predicates", readme, StringComparison.Ordinal);
     }
@@ -179,7 +180,7 @@ public sealed class TestInfrastructureGuardTests
         AssertSourceContains(
             cleanupAudit,
             "| `source code/` | `docs/test-ready-development-goal.md` names `source code/src/Core/**` as primary source evidence",
-            "| `publish/` | Package refresh scripts and opt-in release-artifact tests use `publish/SpirePlus-v0.1.0-private-beta.31.zip`",
+            $"| `publish/` | Package refresh scripts and opt-in release-artifact tests use `{CurrentPackageZipRelativePath().Replace('\\', '/')}`",
             "| `.tools/` | Remaining subfolders are runtime evidence, generated art provenance, local archives, downloaded/decompiled game tooling, Godot, or ILSpy.",
             "duplicate root mod surfaces were removed after the owner rule change",
             "Future targeted prune only for newly proven generated clutter.",

@@ -135,7 +135,17 @@ function Assert-Success {
 function Get-FileSha256 {
     param([Parameter(Mandatory = $true)][string]$Path)
 
-    return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToUpperInvariant()
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+        try {
+            return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToUpperInvariant()
+        } catch {
+            if ($attempt -eq 5) {
+                throw
+            }
+
+            Start-Sleep -Milliseconds (100 * $attempt)
+        }
+    }
 }
 
 function Get-PreservedCurrentLoaderRow {
