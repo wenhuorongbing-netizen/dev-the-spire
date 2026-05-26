@@ -95,6 +95,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRewardSelectionService.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRunHook.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightAssetPaths.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuContractService.Offers.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuContractService.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightCombatHook.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightEncounter.cs",
