@@ -664,8 +664,12 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
-        Assert.Contains("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Latest pushed cleanup/package evidence baseline", projectState, StringComparison.Ordinal);
+        Assert.Contains("Refresh beta37 package evidence and Royal Decree guard", projectState, StringComparison.Ordinal);
+        Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Refresh beta35 package guards", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("f201508", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("b82023c", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("git diff --check", projectState, StringComparison.OrdinalIgnoreCase);

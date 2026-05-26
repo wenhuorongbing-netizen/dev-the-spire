@@ -8,8 +8,8 @@
 ## Current reviewed state
 
 - Ancient Expansion v2.2 audit baseline reviewed on 2026-05-12: `a2183ee`.
-- Latest pushed cleanup/package guard commit before the current beta.37 validation batch: `5be5c51 Refresh beta35 package guards`.
-- Refresh the exact HEAD again before release packaging or final handoff, because future documentation and validation passes may create newer commits.
+- Latest pushed cleanup/package evidence baseline: `efb3dc4 Refresh beta37 package evidence and Royal Decree guard`.
+- Refresh the exact `git log -1 --oneline --decorate` HEAD again before release packaging or final handoff, because future documentation and validation passes may create newer commits.
 - Superseded per-pass validation/package history was moved to `docs/archive/project-state-history-20260516.md` so this first-read file stays focused on current state.
 
 ## Game and BaseLib target

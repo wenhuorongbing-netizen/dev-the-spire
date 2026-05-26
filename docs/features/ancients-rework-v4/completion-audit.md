@@ -67,13 +67,13 @@ Concrete deliverables for the current goal:
 | Disable-mod behavior verified | Controlled loader-disable smoke passed; gameplay disable check remains pending. | Partial |
 | Final required command sequence executed | Build, normal tests, format, diff check, package refresh, hash checks, website syntax checks, isolated package checks, real installed-folder checks, and opt-in release-artifact tests were rerun after the Soul Tide timing refresh. Live load and gameplay verification were not rerun. | Pass for source/test-ready package; release readiness pending live evidence |
 | Worktree clean | `git status --short --branch` reports `## main...origin/main` after the beta.37 package-guard commit. | Pass |
-| Commit created | The previous pushed package-guard validation baseline is commit `5be5c51 Refresh beta35 package guards`; the beta.37 validation batch should be committed after this pass. | Pending current commit |
-| Push to `origin` after validation | Commit `5be5c51` was pushed to `origin/main` after validation; subsequent docs-only cleanup commits should also be pushed after validation. | Pass |
+| Commit created | The beta.37 package-evidence baseline was committed as `efb3dc4 Refresh beta37 package evidence and Royal Decree guard`. | Pass |
+| Push to `origin` after validation | Commit `efb3dc4` was pushed to `origin/main` after validation; subsequent docs-only cleanup commits should also be pushed after validation. | Pass |
 
 ## Current Automated Evidence
 
 - `git status --short --branch`: `## main...origin/main`.
-- Previous pushed package-guard validation baseline: `5be5c51 Refresh beta35 package guards`; rerun `git log -1 --oneline --decorate` after committing the beta.37 validation batch.
+- Current pushed package-evidence baseline: `efb3dc4 Refresh beta37 package evidence and Royal Decree guard`; rerun `git log -1 --oneline --decorate` before any final handoff.
 - `Get-Process SlayTheSpire2 -ErrorAction SilentlyContinue`: no SlayTheSpire2 process was left running after the English Rootblight hover/notice cleanup.
 - `dotnet build EZMicroBalance.sln`: passed on 2026-05-26 after the beta.37 package-guard sync, 0 warnings, 0 errors.
 - `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-26 after the beta.37 package-guard sync, 288 passed, 20 skipped release artifact/runtime evidence tests, 0 failed.
