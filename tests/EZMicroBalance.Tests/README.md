@@ -43,6 +43,8 @@ Use the shared manifest, PNG byte/dimension, small-UI PNG alpha, JSON normalizat
 
 Use the shared current package helpers instead of hardcoding or redefining current `SpirePlus-v...` package names, zip paths, package artifact paths, package ZIP hashes, or current package hash-table parsing in guard tests.
 
+Use the shared `CurrentFacingDocs` list instead of copying the active release/readiness documentation set into individual guard files.
+
 Use the shared export-preset parser instead of redefining `ParseExportFiles`.
 
 Use the shared active release resource predicates instead of redefining `IsActiveExportResource` or `IsActiveReleaseResource`.

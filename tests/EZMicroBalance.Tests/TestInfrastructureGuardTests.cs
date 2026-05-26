@@ -29,6 +29,51 @@ public sealed class TestInfrastructureGuardTests
     }
 
     [Fact]
+    public void GuardTestsUseSharedCurrentReleaseState()
+    {
+        var testFiles = Directory
+            .GetFiles(RepoPath("tests", "EZMicroBalance.Tests"), "*.cs", SearchOption.TopDirectoryOnly)
+            .Where(path =>
+            {
+                var fileName = Path.GetFileName(path);
+                return !fileName.Equals("TestRepo.cs", StringComparison.Ordinal) &&
+                       !fileName.Equals("TestInfrastructureGuardTests.cs", StringComparison.Ordinal);
+            })
+            .ToArray();
+
+        var localCurrentFacingDocs = testFiles
+            .Where(path => Regex.IsMatch(
+                File.ReadAllText(path),
+                @"\bprivate\s+static\s+readonly\s+string\[\]\s+CurrentFacingDocs\s*=",
+                RegexOptions.CultureInvariant))
+            .Select(ToRepoRelativePath)
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.True(
+            localCurrentFacingDocs.Length == 0,
+            "Guard tests should use TestRepo.CurrentFacingDocs instead of copying the current-facing doc list:" +
+            Environment.NewLine +
+            string.Join(Environment.NewLine, localCurrentFacingDocs));
+
+        var hardcodedCurrentPackageZipPaths = testFiles
+            .SelectMany(path => Regex
+                .Matches(
+                    File.ReadAllText(path),
+                    @"RepoPath\(\s*""publish""\s*,\s*\$""SpirePlus-\{ManifestVersion\(\)\}\.zip""\s*\)",
+                    RegexOptions.CultureInvariant)
+                .Select(match => $"{ToRepoRelativePath(path)}:{match.Value}"))
+            .OrderBy(match => match, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.True(
+            hardcodedCurrentPackageZipPaths.Length == 0,
+            "Guard tests should use CurrentPackageZipPath or CurrentPackageZipSha256 instead of rebuilding the current package ZIP path:" +
+            Environment.NewLine +
+            string.Join(Environment.NewLine, hardcodedCurrentPackageZipPaths));
+    }
+
+    [Fact]
     public void TestReadmeDocumentsSharedRepositoryHelpers()
     {
         var readme = ReadRepoText("tests", "EZMicroBalance.Tests", "README.md");
@@ -44,6 +89,7 @@ public sealed class TestInfrastructureGuardTests
         Assert.Contains("`JsonKeys`", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared manifest, PNG byte/dimension, small-UI PNG alpha, JSON normalization, and exception-unwrapping helpers", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared current package helpers", readme, StringComparison.Ordinal);
+        Assert.Contains("Use the shared `CurrentFacingDocs` list", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared export-preset parser", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared active release resource predicates", readme, StringComparison.Ordinal);
     }

@@ -21,31 +21,15 @@ public sealed class ReleasePackageArtifactGuardTests
         "README_INSTALL.txt"
     ];
 
-    private static readonly string[] CurrentFacingDocs =
-    [
-        "README.md",
-        "docs/dev-environment.md",
-        "docs/private-beta-verification-handoff.md",
-        "docs/private-beta-release-completion-audit.md",
-        "docs/test-plan.md",
-        "docs/test-ready-completion-audit.md",
-        "docs/release-checklist.md",
-        "docs/features/ancients-rework-v4/completion-audit.md",
-        "docs/features/ancients-rework-v4/manual-verification-matrix.md",
-        "docs/features/ascension-11-20/api-research.md",
-        "docs/features/ascension-11-20/manual-test-checklist.md"
-    ];
-
     [ReleaseArtifactFact]
     public void PackageStagingVersionedZipAndInstalledArtifactsHaveMatchingHashes()
     {
-        var version = ManifestVersion();
-        var packageName = $"SpirePlus-{version}";
+        var packageName = CurrentPackageName();
         var installedDir = GamePath("mods", "EZMicroBalance");
         var stagingDir = RepoPath("publish", "package-staging", "EZMicroBalance");
         var versionedDir = RepoPath("publish", packageName, "EZMicroBalance");
-        var zipPath = RepoPath("publish", $"{packageName}.zip");
-        var legacyZipPath = RepoPath("publish", $"EZMicroBalance-{version}.zip");
+        var zipPath = CurrentPackageZipPath();
+        var legacyZipPath = RepoPath("publish", $"EZMicroBalance-{ManifestVersion()}.zip");
 
         AssertDirectoryContainsOnlyFiles(stagingDir, PackagedFiles);
         AssertDirectoryContainsOnlyFiles(versionedDir, PackagedFiles);
@@ -92,7 +76,7 @@ public sealed class ReleasePackageArtifactGuardTests
     [ReleaseArtifactFact]
     public void CurrentDocsMatchReleaseHashesAndAvoidPinnedStaleTestTotals()
     {
-        var packageHash = Sha256(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
+        var packageHash = CurrentPackageZipSha256();
         var modImageHash = Sha256(RepoPath("EZMicroBalance", "mod_image.png"));
 
         Assert.False(Directory.Exists(RepoPath("EzDailyContent")), "Legacy EzDailyContent resources should not return to the active root.");
@@ -128,7 +112,7 @@ public sealed class ReleasePackageArtifactGuardTests
     [ReleaseArtifactFact]
     public void PrivateBetaVerificationHandoffCarriesCurrentArtifactsAndManualBlockers()
     {
-        var packageHash = Sha256(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
+        var packageHash = CurrentPackageZipSha256();
         var installedDir = GamePath("mods", "EZMicroBalance");
         var dllHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.dll"));
         var manifestHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.json"));
@@ -188,7 +172,7 @@ public sealed class ReleasePackageArtifactGuardTests
 
         AssertSereTalonTanxClawsSplitIsPackaged(File.ReadAllBytes(installedPck), "installed PCK");
 
-        using var archive = ZipFile.OpenRead(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
+        using var archive = ZipFile.OpenRead(CurrentPackageZipPath());
         AssertSereTalonTanxClawsSplitIsPackaged(
             ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck"),
             "package PCK");
@@ -202,7 +186,7 @@ public sealed class ReleasePackageArtifactGuardTests
 
         AssertTrialBranchShortChoiceTextIsPackaged(File.ReadAllBytes(installedPck), "installed PCK");
 
-        using var archive = ZipFile.OpenRead(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
+        using var archive = ZipFile.OpenRead(CurrentPackageZipPath());
         AssertTrialBranchShortChoiceTextIsPackaged(
             ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck"),
             "package PCK");

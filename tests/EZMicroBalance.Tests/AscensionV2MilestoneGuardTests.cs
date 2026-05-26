@@ -8,17 +8,6 @@ namespace EZMicroBalance.Tests;
 
 public sealed class AscensionV2MilestoneGuardTests
 {
-    private static readonly string[] CurrentFacingDocs =
-    [
-        "README.md",
-        "docs/dev-environment.md",
-        "docs/private-beta-verification-handoff.md",
-        "docs/test-plan.md",
-        "docs/release-checklist.md",
-        "docs/features/ascension-11-20/api-research.md",
-        "docs/features/ascension-11-20/manual-test-checklist.md"
-    ];
-
     [Fact]
     public void CombatModifierEntryPointsShareNodeMetadataRefreshHelpers()
     {
@@ -912,8 +901,7 @@ public sealed class AscensionV2MilestoneGuardTests
     [ReleaseArtifactFact]
     public void PackageContainsCurrentAscensionLocalization()
     {
-        var version = ManifestVersion();
-        var package = RepoPath("publish", $"SpirePlus-{version}.zip");
+        var package = CurrentPackageZipPath();
         Assert.True(File.Exists(package), $"Missing package zip: {package}");
 
         using var archive = ZipFile.OpenRead(package);

@@ -36,7 +36,7 @@ public sealed class ReleaseArtifactParityGuardTests
         var auditedCover = AssertRepoFileExists("publish", "EZMicroBalance-cover-source.png");
         var exportPreset = ReadRepoText("export_presets.cfg");
         var installedPck = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
-        var packageZip = RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip");
+        var packageZip = CurrentPackageZipPath();
 
         Assert.Equal(Sha256(activeCover), Sha256(auditedCover));
 
@@ -78,7 +78,7 @@ public sealed class ReleaseArtifactParityGuardTests
 
         var installedPck = GamePath("mods", "EZMicroBalance", "EZMicroBalance.pck");
         var installedEntries = ReadPckDirectory(installedPck);
-        using var archive = ZipFile.OpenRead(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
+        using var archive = ZipFile.OpenRead(CurrentPackageZipPath());
         var zippedEntries = ReadPckDirectory(ReadZipBytes(archive, "EZMicroBalance/EZMicroBalance.pck"));
 
         Assert.Equal(installedEntries.OrderBy(entry => entry, StringComparer.Ordinal), zippedEntries.OrderBy(entry => entry, StringComparer.Ordinal));
@@ -157,18 +157,17 @@ public sealed class ReleaseArtifactParityGuardTests
     [ReleaseArtifactFact]
     public void CurrentReleaseHashClaimsMatchInstalledStagingVersionedAndZipArtifacts()
     {
-        var version = ManifestVersion();
-        var packageName = $"SpirePlus-{version}";
+        var packageName = CurrentPackageName();
         var installedDir = GamePath("mods", "EZMicroBalance");
         var stagingDir = RepoPath("publish", "package-staging", "EZMicroBalance");
         var versionedDir = RepoPath("publish", packageName, "EZMicroBalance");
-        var zipPath = RepoPath("publish", $"{packageName}.zip");
+        var zipPath = CurrentPackageZipPath();
 
         var dllHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.dll"));
         var manifestHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.json"));
         var pckHash = Sha256(Path.Combine(installedDir, "EZMicroBalance.pck"));
         var readmeHash = Sha256(Path.Combine(stagingDir, "README_INSTALL.txt"));
-        var zipHash = Sha256(zipPath);
+        var zipHash = CurrentPackageZipSha256();
         var artHash = Sha256(RepoPath("EZMicroBalance", "mod_image.png"));
         var knownCurrentHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {

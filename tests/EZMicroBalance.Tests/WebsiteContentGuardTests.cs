@@ -26,7 +26,7 @@ public sealed class WebsiteContentGuardTests
     public void WebsitePackageMetadataMatchesCurrentPackageHash()
     {
         var websiteData = ReadRepoText("website", "content-data.js");
-        var packagePath = RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip");
+        var packagePath = CurrentPackageZipPath();
         Assert.Contains(Sha256(packagePath), websiteData, StringComparison.Ordinal);
         Assert.DoesNotContain("2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605", websiteData, StringComparison.Ordinal);
 
@@ -45,7 +45,7 @@ public sealed class WebsiteContentGuardTests
     {
         var websiteData = ReadRepoText("website", "content-data.js");
         var index = ReadRepoText("website", "index.html");
-        var packageHash = Sha256(RepoPath("publish", $"SpirePlus-{ManifestVersion()}.zip"));
+        var packageHash = CurrentPackageZipSha256();
 
         AssertSourceContains(
             websiteData,
@@ -65,7 +65,7 @@ public sealed class WebsiteContentGuardTests
             "Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight",
             "Seedbed is stronger than it first reads",
             "Seedbed has 2/3 total spaces",
-            "Spire Plus 是用于私测的单体玩法扩展",
+            "用于私测的单体玩法扩展",
             "苗床为什么值得拿",
             "种下会在牌进入手牌前把它移出本场战斗",
             "根蚀只冻结本场结束结算",
