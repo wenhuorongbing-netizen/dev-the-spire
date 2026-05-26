@@ -1,6 +1,6 @@
-﻿# Ancient Expansion v2.2 Implementation Plan
+# Ancient Expansion v2.2 Implementation Plan
 
-Status: Urda v2.2 is source-complete/default-on with ten blessing ids, Morvi v2.2 is source-complete/default-on for direct private-beta testing, Lotha is source-complete/default-on for direct testing, and Vakuu fight is hidden by default with a dedicated source enemy/scene plus Contract, Stolen Vault, and Blood Debt pressure. All remain live-pending.
+Status: Urda v2.2 is source-complete/default-on with eleven blessing ids, Morvi v2.2 is source-complete/default-on for direct private-beta testing, Lotha is source-complete/default-on for direct testing, and Vakuu fight is hidden by default with a dedicated source enemy/scene plus Contract, Stolen Vault, and Blood Debt pressure. All remain live-pending.
 
 ## 0. Evidence First
 
@@ -27,7 +27,7 @@ Current hard boundaries for claims:
 Allowed current-pass Urda work:
 
 - Fix source-level bugs in the eleven active Urda blessings.
-- Add source/localization/docs guards for those ten blessings.
+- Add source/localization/docs guards for those eleven blessings.
 - Keep all live gameplay and save/load verification rows open until actually tested.
 
 Urda current status:

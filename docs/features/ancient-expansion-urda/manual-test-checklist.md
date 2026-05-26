@@ -1,4 +1,4 @@
-﻿# Urda Manual Test Checklist
+# Urda Manual Test Checklist
 
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
@@ -12,7 +12,7 @@ Status: eleven-blessing source gameplay slice implemented, live checks pending.
 - `SPIREPLUS_FORCE_URDA_BLESSING=<blessing-id>` (default-off). Legacy `EZMB_FORCE_URDA_BLESSING` still works.
 - `EZMB_URDA_DIAGNOSTICS=1` (default-off).
 - BaseLib and Spire Plus enabled.
-- Ancient Expansion v2.2 current Urda source pool contains ten blessing ids; each should remain hidden when `SPIREPLUS_DISABLE_URDA=1` or legacy `EZMB_DISABLE_URDA=1`.
+- Ancient Expansion v2.2 current Urda source pool contains eleven blessing ids, including Elite Root; each should remain hidden when `SPIREPLUS_DISABLE_URDA=1` or legacy `EZMB_DISABLE_URDA=1`.
 
 ## 1. Baseline checks
 

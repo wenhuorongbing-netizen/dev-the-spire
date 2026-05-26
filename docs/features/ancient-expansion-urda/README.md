@@ -17,7 +17,7 @@ Ancient Expansion v2.2 is the current source of truth for the combined Urda/Morv
 Current active focus from `docs/issues.md`:
 
 - One default-on Act 1 Ancient: `Urda, Loamweaver`.
-- Ten blessing ids exposed for source/manual testing.
+- Eleven blessing ids exposed for source/manual testing, including Elite Root.
 - Emergency gate: `SPIREPLUS_DISABLE_URDA=1`; force gate: `SPIREPLUS_FORCE_ANCIENT=URDA`; blessing force gate: `SPIREPLUS_FORCE_URDA_BLESSING`. Legacy `EZMB_*` aliases still work.
 - Live gameplay, save/load, co-op, Rootblight interaction, and final-art verification remain pending.
 
