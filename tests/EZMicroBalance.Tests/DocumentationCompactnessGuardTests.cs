@@ -38,6 +38,15 @@ public sealed class DocumentationCompactnessGuardTests
             AssertRepoFileExists("docs", "archive", "feature-inputs", archivedGoalInput);
         }
 
+        Assert.Contains("implement-a19-a20-boss-ability-mojibake-intake-20260526.md", archiveReadme, StringComparison.Ordinal);
+        AssertRepoFileExists(
+            "docs",
+            "archive",
+            "feature-inputs",
+            "implement-a19-a20-boss-ability-mojibake-intake-20260526.md");
+
+        Assert.DoesNotContain("A19 / A20", goal, StringComparison.OrdinalIgnoreCase);
+
         foreach (var stalePromptMarker in new[] { "## P0", "## P1", "One-Shot Prompt", "Phase 1", "sourcecodeonlyaianalysis", "## 结论", "FeatureRegistry" })
         {
             Assert.DoesNotContain(stalePromptMarker, goal, StringComparison.OrdinalIgnoreCase);
