@@ -214,6 +214,7 @@ public sealed class MorviV22GuardTests
     public void MorviPaymentSplitKeepsPublicApiBoundarySmall()
     {
         var forbiddenLoan = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoan.cs");
+        var forbiddenLoanBorrowedCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoanBorrowedCards.cs");
         var redInk = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.RedInkOverdraft.cs");
         var debtSettlement = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.DebtSettlement.cs");
         var payments = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.Payments.cs");
@@ -226,7 +227,9 @@ public sealed class MorviV22GuardTests
         AssertSourceContains(
             forbiddenLoan,
             "internal static bool HasForbiddenLoanCandidates(Player player)",
-            "private static async Task<Progress?> TrySelectForbiddenLoanCard",
+            "private static async Task<Progress?> TrySelectForbiddenLoanCard");
+        AssertSourceContains(
+            forbiddenLoanBorrowedCards,
             "private static async Task ResolveBorrowedAncientPlayCost",
             "private static async Task AutoSettleForbiddenLoan",
             "private static void ClearBorrowedAncientCards");
@@ -261,7 +264,7 @@ public sealed class MorviV22GuardTests
             "public HashSet<CardModel> BlueprintBlockAfterCards { get; } = []");
         Assert.DoesNotContain("private sealed class MorviCombatState", state, StringComparison.Ordinal);
         AssertSourceContains(
-            forbiddenLoan,
+            forbiddenLoanBorrowedCards,
             "private const int ForbiddenLoanKeepGoldCost = 180",
             "private const int ForbiddenLoanAttackSkillHpLoss = 1",
             "private const int ForbiddenLoanPowerHpLoss = 8");
@@ -284,7 +287,7 @@ public sealed class MorviV22GuardTests
 
         Assert.DoesNotContain("public static async Task ResolveDebtSettlementPickup", debtSettlement, StringComparison.Ordinal);
         Assert.DoesNotContain("public static async Task PayDebtSettlementDue", debtSettlement, StringComparison.Ordinal);
-        Assert.DoesNotContain("public static async Task AutoSettleForbiddenLoan", forbiddenLoan, StringComparison.Ordinal);
+        Assert.DoesNotContain("public static async Task AutoSettleForbiddenLoan", forbiddenLoanBorrowedCards, StringComparison.Ordinal);
         Assert.DoesNotContain("public static async Task DamagePlayerNonlethal", payments, StringComparison.Ordinal);
     }
 
