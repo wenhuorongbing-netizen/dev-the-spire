@@ -1,4 +1,4 @@
-# Development Environment
+﻿# Development Environment
 
 ## Machine
 - OS: Windows 11 Pro (`10.0.26200`, `64-bit`)
@@ -62,7 +62,7 @@
 
 ## Runtime evidence summary
 - BaseLib `v3.1.4` compatibility with `v0.106.0` is the current target. Historical 22-field loader evidence: `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded only BaseLib plus Spire Plus, registered config, reported `Found 22 SavedSpireFields`, reached main menu, and had no release-blocking signatures. This is historical evidence only.
-- Current source defines 30 SavedSpireFields. Historical 22-field and 16-field startup rows remain useful records only; beta.41 loader parity and gameplay proof still need fresh live evidence.
+- Current source defines 30 SavedSpireFields. Historical 22-field and 16-field startup rows remain useful records only; beta.42 loader parity and gameplay proof still need fresh live evidence.
 - Historical beta.19 loader evidence: `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` loaded only BaseLib plus Spire Plus, registered `EZMicroBalance`, reported `v0.1.0-private-beta.19` and `Found 30 SavedSpireFields`, reached startup completion, matched its beta.19 package hash, audited clean, stopped the game, and restored the isolated mod setup.
 - Current display-name list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus`; older page-level Mod Settings evidence predates the display-name refresh.
 - Historical package resource evidence under `.tools\runtime-evidence\current-package-smoke-20260514-015901` verified an earlier 22-field package and headless installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures. This is resource-load evidence, not clicked live Ancient UI proof.
@@ -70,7 +70,7 @@
 - Plug-off loader evidence: `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` loaded `Loaded 1 mods (1 total)` with BaseLib only after temporarily isolating `EZMicroBalance`; the earlier settings-only disabled attempt remains invalid. This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.
 - `scripts/spire-plus-live-session.ps1` preserves test-created `current_run*` files before restoring the user's original current-run files; `live-helper-preserve-current-run-smoke-20260513-133431` and `window-preflight-smoke-20260513-135402` cover helper restore and foreground preflight behavior.
 - Detailed 2026-05-05 through 2026-05-14 runtime attempt history was archived to `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`; historical RC1 live notes remain in `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`.
-- Current beta.41 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, preview-tools, and co-op verification remain pending.
+- Current beta.42 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, preview-tools, and co-op verification remain pending.
 
 ## Last known commands
 - Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-26 after the development-environment runtime-history cleanup. Result: succeeded with 0 warnings and 0 errors.
@@ -81,20 +81,20 @@
 - Latest full local CI-script run: `scripts\ci-full-validation.ps1` on 2026-05-20 with explicit `STS2_PATH` and `GODOT_PATH`. Result: passed. This is local no-game validation, not live loader or gameplay proof.
 - Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-26 after the development-environment runtime-history cleanup. Result: exit code 0.
 - Last required diff check: `git diff --check` on 2026-05-26 after the development-environment runtime-history cleanup. Result: exit code 0 with CRLF/LF warnings only.
-- Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.41 Future Peek UI-only co-op refresh. Result: succeeded against the real installed mods root.
-- Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-26 after the beta.41 Future Peek UI-only co-op refresh. Result: succeeded against an isolated temporary mods root.
-- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.41.zip`, the isolated `.tools\publish-game-root\mods\EZMicroBalance` folder, `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.41.zip` were refreshed and hash-checked on 2026-05-26 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The beta.19 loader row is historical startup/log proof only; beta.41 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
-- Last PCK hash check: the 2026-05-26 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `43F7A640DCE35ADCA60729F8FBCDE638C51C5130F3B57A15909730A136BA8AB9`.
-- Last staging/versioned DLL hash check: SHA256 `3C5BBADB987CA8826394ACE79A216672DFE2D49260B69A71166F14E38C4A70A8`.
+- Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.42 Urda state codec package sync. Result: succeeded against the real installed mods root.
+- Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-26 after the beta.42 Urda state codec package sync. Result: succeeded against an isolated temporary mods root.
+- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.42.zip`, the isolated `.tools\publish-game-root\mods\EZMicroBalance` folder, `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.42.zip` were refreshed and hash-checked on 2026-05-26 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The beta.19 loader row is historical startup/log proof only; beta.42 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
+- Last PCK hash check: the 2026-05-26 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `AC776AEB5B5C3AF0E11175286C1D25C5F49CCFF4219698F4BB57328BD33212D3`.
+- Last staging/versioned DLL hash check: SHA256 `A98E3FAE5BBDA22BBB8CE06E8A678F39EDE9DEE10672D6848A6DD21737F59503`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
-- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.41.zip` was rebuilt from isolated package staging, copied to the game root, and synced into the real installed mod folder on 2026-05-26. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
+- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.42.zip` was rebuilt from isolated package staging, copied to the game root, and synced into the real installed mod folder on 2026-05-26. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `38E1115A46BBC8AED9219E456BAAB90C33249307B25B857E2FF9B675C1C2B3F9`
-  - DLL SHA256: `3C5BBADB987CA8826394ACE79A216672DFE2D49260B69A71166F14E38C4A70A8`
-  - README SHA256: `BC242DCE4625F0DF3DB77499B1032CBA59015CD52FD6846A5210FE18E048804F`
-  - Manifest SHA256: `6BE767413E8E65D1C54DD5D24AF933831CE2433775F7FD6F65CD048DB8C88B12`
-  - PCK SHA256: `43F7A640DCE35ADCA60729F8FBCDE638C51C5130F3B57A15909730A136BA8AB9`
+  - Zip SHA256: `D53504B05987925D908F02FF748B3C978D1AABCAD2CFB8E3FB4C0CEA3E67BB43`
+  - DLL SHA256: `A98E3FAE5BBDA22BBB8CE06E8A678F39EDE9DEE10672D6848A6DD21737F59503`
+  - README SHA256: `5B3CA87908819118B67DA5173410BE348D467A2832F0A4D47486099A720870D1`
+  - Manifest SHA256: `95F4500329822CB66A39B6B63DA0C06E33F9587AC38A1A102AB929A0CBFD84BA`
+  - PCK SHA256: `AC776AEB5B5C3AF0E11175286C1D25C5F49CCFF4219698F4BB57328BD33212D3`
   - Entries: `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
 - Last release art audit: `EZMicroBalance/mod_image.png` and `publish\EZMicroBalance-cover-source.png` currently have SHA256 `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75` and were manually checked as original generated art with no visible text, letters, numbers, numerals, logos, or official game assets.
 - Publish note: Headless Godot export requires `export_presets.cfg` to be UTF-8 without BOM and needs local runtime references available to the editor assembly scan. `EZMicroBalance.csproj` copies `sts2.dll`, `0Harmony.dll`, and BaseLib into the Godot temp build folders before export; the selected-resource PCK still contains only active mod resources.
