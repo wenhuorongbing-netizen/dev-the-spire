@@ -45,7 +45,7 @@ public sealed class MorviV22GuardTests
         var blessings = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingIds.cs");
         var initializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviInitializer.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
-        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var featureRegistry = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
 
         AssertSourceContains(
             gate,
@@ -73,7 +73,7 @@ public sealed class MorviV22GuardTests
             "candidates.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()",
             "AncientInitialOptionReroll.CanOffer",
             "MorviAssetPaths.BackgroundScene");
-        Assert.Contains("MorviInitializer.Initialize();", mainFile, StringComparison.Ordinal);
+        Assert.Contains("MorviInitializer.Initialize", featureRegistry, StringComparison.Ordinal);
         AssertSourceContains(
             initializer,
             "ModHelper.SubscribeForRunStateHooks",

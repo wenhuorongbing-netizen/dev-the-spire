@@ -1,12 +1,8 @@
 ﻿using Godot;
 using HarmonyLib;
 using BaseLib.Config;
-using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
-using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
-using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
-using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
-using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
+using EZMicroBalance.EZMicroBalanceCode.Core.Features;
 using MegaCrit.Sts2.Core.Modding;
 
 namespace EZMicroBalance.EZMicroBalanceCode;
@@ -25,10 +21,6 @@ public partial class MainFile : Node
 
         harmony.PatchAll();
         ModConfigRegistry.Register(ModId, new SpirePlusModConfig());
-        LothaInitializer.Initialize();
-        MorviInitializer.Initialize();
-        UrdaInitializer.Initialize();
-        VakuuFightInitializer.Initialize();
-        AscensionInitializer.Initialize();
+        SpirePlusFeatureRegistry.CreateDefault().InitializeAll();
     }
 }

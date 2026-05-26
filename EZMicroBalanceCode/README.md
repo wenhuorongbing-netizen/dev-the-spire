@@ -7,7 +7,8 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 
 | Area | Responsibility |
 | --- | --- |
-| `MainFile.cs` | Mod entry point, initialization, and registration. |
+| `MainFile.cs` | Mod entry point for Harmony patching, config registration, and feature-registry bootstrap. |
+| `Core/Features/` | Small module registry that keeps startup order and feature ownership out of `MainFile.cs`. |
 | `Ancients/` | Ancient reward rebalance implementation. |
 | `Ancients/Common/` | Shared saved fields, card helpers, selection relic service, feature-gate helpers, and small model/enchantment helpers. |
 | `Ancients/Patches/` | Harmony patches grouped by reward surface or relic family. |

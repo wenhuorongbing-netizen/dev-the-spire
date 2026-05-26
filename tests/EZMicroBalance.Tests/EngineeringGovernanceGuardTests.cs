@@ -8,6 +8,61 @@ namespace EZMicroBalance.Tests;
 public sealed class EngineeringGovernanceGuardTests
 {
     [Fact]
+    public void MainFileUsesFeatureRegistryForModuleBootstrap()
+    {
+        AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "IFeatureModule.cs");
+        AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "FeatureGateResult.cs");
+        AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+        AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
+
+        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var registry = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
+        var featureRegistry = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+
+        Assert.Contains("SpirePlusFeatureRegistry.CreateDefault().InitializeAll()", mainFile, StringComparison.Ordinal);
+        foreach (var directInitializerCall in new[]
+                 {
+                     "LothaInitializer.Initialize",
+                     "MorviInitializer.Initialize",
+                     "UrdaInitializer.Initialize",
+                     "VakuuFightInitializer.Initialize",
+                     "AscensionInitializer.Initialize"
+                 })
+        {
+            Assert.DoesNotContain(directInitializerCall + "();", mainFile, StringComparison.Ordinal);
+            Assert.Contains(directInitializerCall, registry, StringComparison.Ordinal);
+        }
+
+        AssertSourceContains(
+            registry,
+            "\"Ancients.Lotha\"",
+            "\"Ancients.Morvi\"",
+            "\"Ancients.Urda\"",
+            "\"Ancients.VakuuFight\"",
+            "\"Ascension.A11A20\"",
+            "100",
+            "200",
+            "300",
+            "400",
+            "500",
+            "LothaFeatureGate",
+            "MorviFeatureGate",
+            "UrdaFeatureGate",
+            "VakuuFightFeatureGate",
+            "AscensionFeatureGate");
+
+        AssertSourceContains(
+            featureRegistry,
+            ".OrderBy(module => module.InitOrder)",
+            ".ThenBy(module => module.Id, StringComparer.Ordinal)",
+            "EvaluateGate()",
+            "module.Initialize()",
+            "bootstrap gate",
+            "initialization failed",
+            "throw;");
+    }
+
+    [Fact]
     public void RepositoryHygieneWorkflowAndTemplatesExist()
     {
         AssertRepoFileExists(".github", "workflows", "repository-hygiene.yml");
@@ -26,6 +81,7 @@ public sealed class EngineeringGovernanceGuardTests
         var gitignore = ReadRepoText(".gitignore");
         Assert.Contains("/EZMicroBalanceCode/**/*.cs.uid", gitignore, StringComparison.Ordinal);
         Assert.Contains("/tests/**/*.cs.uid", gitignore, StringComparison.Ordinal);
+        Assert.Contains("/.playwright-cli/", gitignore, StringComparison.Ordinal);
         Assert.Contains("/website/**/*.import", gitignore, StringComparison.Ordinal);
 
         var trackedSourceUidFiles = GitLsFiles("EZMicroBalanceCode/**/*.cs.uid");
@@ -92,6 +148,8 @@ public sealed class EngineeringGovernanceGuardTests
             "Scripts, CI, and validation tests",
             "Website public-info surface",
             "Unclassified",
+            ".playwright-cli/",
+            "EZMicroBalanceCode/Core/",
             "Found $unclassifiedCount unclassified dirty worktree entries.");
         Assert.DoesNotContain("EZMicroBalanceCode/MainFile.cs.uid", worktreeBatchScript, StringComparison.Ordinal);
 

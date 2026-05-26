@@ -41,6 +41,7 @@ function Get-WorktreeBatch {
     $p = ConvertTo-SlashPath -Path $Path
 
     if ($p -eq '.gitignore' -or
+        $p.StartsWith('.playwright-cli/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -eq 'output/.gdignore' -or
         $p.StartsWith('output/playwright/', [System.StringComparison]::OrdinalIgnoreCase)) {
         return 0
@@ -84,6 +85,7 @@ function Get-WorktreeBatch {
         $p -eq 'EZMicroBalance.csproj' -or
         $p -eq 'project.godot' -or
         $p -eq 'EZMicroBalanceCode/MainFile.cs' -or
+        $p.StartsWith('EZMicroBalanceCode/Core/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Config/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Diagnostics/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Modding/', [System.StringComparison]::OrdinalIgnoreCase) -or

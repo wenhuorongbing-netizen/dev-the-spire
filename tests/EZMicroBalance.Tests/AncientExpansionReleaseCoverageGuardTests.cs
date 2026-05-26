@@ -8,7 +8,7 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
     [Fact]
     public void MorviV22IsDefaultOnGatedLocalizedAndPowerSafe()
     {
-        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var featureRegistry = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var morviGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviFeatureGate.cs");
         var morviInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviInitializer.cs");
@@ -23,7 +23,7 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
         var engCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
         var zhsCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
 
-        Assert.Contains("MorviInitializer.Initialize();", mainFile, StringComparison.Ordinal);
+        Assert.Contains("MorviInitializer.Initialize", featureRegistry, StringComparison.Ordinal);
         Assert.Contains("MorviStateKey", savedFields, StringComparison.Ordinal);
         Assert.Contains("EZMicroBalanceMorviStateKey", savedFields, StringComparison.Ordinal);
         Assert.Contains("MorviBorrowedAncientCard", savedFields, StringComparison.Ordinal);
@@ -170,7 +170,7 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
     [Fact]
     public void LothaIsDefaultOnGatedLocalizedAndPowerSafe()
     {
-        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var featureRegistry = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var lothaGate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaFeatureGate.cs");
         var lothaSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha");
@@ -186,7 +186,7 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
         var engPowers = JsonStringMap("EZMicroBalance", "localization", "eng", "powers.json");
         var zhsPowers = JsonStringMap("EZMicroBalance", "localization", "zhs", "powers.json");
 
-        Assert.Contains("LothaInitializer.Initialize();", mainFile, StringComparison.Ordinal);
+        Assert.Contains("LothaInitializer.Initialize", featureRegistry, StringComparison.Ordinal);
         AssertSourceContains(savedFields, "SavedSpireField<Player, string> LothaStateKey", "SavedSpireField<CardModel, string> LothaDeckStateKey", "SavedSpireField<CardModel, bool> LothaMirrorRebuttalCard");
         AssertSourceContains(
             lothaGate,

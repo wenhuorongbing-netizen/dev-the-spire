@@ -113,7 +113,7 @@ public sealed class VakuuTemptationGuardTests
     [Fact]
     public void VakuuFightInjectsContractsOnlyInsideCustomVakuuTrialCombat()
     {
-        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var featureRegistry = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
         var runHook = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var vakuuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
@@ -121,7 +121,7 @@ public sealed class VakuuTemptationGuardTests
         var monster = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTrialMonster.cs");
         var battlewornDummy = ReadRepoText("source code", "src", "Core", "Models", "Encounters", "BattlewornDummyEventEncounter.cs");
 
-        Assert.Contains("VakuuFightInitializer.Initialize();", mainFile, StringComparison.Ordinal);
+        Assert.Contains("VakuuFightInitializer.Initialize", featureRegistry, StringComparison.Ordinal);
         AssertSourceContains(
             runHook,
             "ModHelper.SubscribeForCombatStateHooks",
