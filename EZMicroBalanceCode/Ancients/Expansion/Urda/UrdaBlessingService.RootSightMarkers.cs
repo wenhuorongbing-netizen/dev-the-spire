@@ -63,7 +63,7 @@ internal static partial class UrdaBlessingService
     private static string FormatRootSightMarkedCoord(int actIndex, string coord) =>
         $"{actIndex}:{coord}";
 
-    private static bool IsRootSightMarked(Progress progress, int actIndex, string coord)
+    private static bool IsRootSightMarked(UrdaProgress progress, int actIndex, string coord)
     {
         var marked = GetCoordSet(progress.RootSightMarkedCoords);
         return marked.Contains(FormatRootSightMarkedCoord(actIndex, coord)) ||

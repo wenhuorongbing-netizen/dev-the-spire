@@ -14,7 +14,7 @@ internal static partial class UrdaBlessingService
     internal static bool IsSeedBankSettled(Player player) =>
         GetProgress(player).SeedBankSettled;
 
-    private static List<string> GetSeedBankCardIds(Progress progress) =>
+    private static List<string> GetSeedBankCardIds(UrdaProgress progress) =>
         SplitList(progress.SeedBankCardIds, ',').Take(SeedBankMaxSeeds).ToList();
 
     private static CardModel? TryGetStoredCard(string id)

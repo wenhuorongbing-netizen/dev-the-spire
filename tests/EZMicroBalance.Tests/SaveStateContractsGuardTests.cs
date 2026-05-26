@@ -31,6 +31,52 @@ public sealed class SaveStateContractsGuardTests
         Assert.DoesNotContain("AssertRepoFileExists(\"docs\"", testSource, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void UrdaStateCodecKeepsWireFormatAndLegacyDecodeStable()
+    {
+        var state = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.State.cs");
+        var schema = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.StateSchema.cs");
+        var codec = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaStateCodec.cs");
+
+        AssertSourceContains(
+            state,
+            "return ReadState(player).SelectedBlessing;",
+            "private static UrdaProgress GetProgress(Player player)",
+            "UrdaStateCodec.Encode(new UrdaStateSnapshot(blessingId, progress))",
+            "UrdaStateCodec.Decode(AncientPlayerState.Get(");
+
+        AssertSourceContains(
+            schema,
+            "internal sealed record UrdaProgress(",
+            "bool HumusCompletionPending",
+            "string RootSightMarkedCoords",
+            "string SeedBankCardIds",
+            "string RootSightPreviewRecords",
+            "int SeedbedCombatSlots",
+            "public static UrdaProgress Default => new(");
+
+        AssertSourceContains(
+            codec,
+            "internal sealed record UrdaStateSnapshot(string SelectedBlessing, UrdaProgress Progress)",
+            "private const char ProgressSeparator = ';'",
+            "private const int LegacyMinimumPartCount = 8",
+            "private const int LegacyBaseIndex = 8",
+            "private const int CurrentBaseIndex = 9",
+            "HumusCompletionPending before MoltingActive",
+            "hasHumusPendingField && ParseBool(parts[6])",
+            "ParseBool(parts[hasHumusPendingField ? 7 : 6])",
+            "ParseInt(parts[hasHumusPendingField ? 8 : 7])",
+            "var baseIndex = hasHumusPendingField ? CurrentBaseIndex : LegacyBaseIndex",
+            "SanitizeStateField(progress.RootSightMarkedCoords)",
+            "SanitizeStateField(progress.SeedBankCardIds)",
+            "SanitizeStateField(progress.RootSightPreviewRecords)");
+        AssertBefore(codec, "progress.HumusCompleted ? 1 : 0", "progress.HumusCompletionPending ? 1 : 0");
+        AssertBefore(codec, "progress.HumusCompletionPending ? 1 : 0", "progress.MoltingActive ? 1 : 0");
+        AssertBefore(codec, "SanitizeStateField(progress.RootSightMarkedCoords)", "SanitizeStateField(progress.SeedBankCardIds)");
+        AssertBefore(codec, "SanitizeStateField(progress.SeedBankCardIds)", "progress.SeedBankSettled ? 1 : 0");
+        AssertBefore(codec, "progress.SeedBankSettled ? 1 : 0", "SanitizeStateField(progress.RootSightPreviewRecords)");
+    }
+
     public static TheoryData<StatefulFeatureContract> StatefulFeatureContracts() =>
     [
         new StatefulFeatureContract(

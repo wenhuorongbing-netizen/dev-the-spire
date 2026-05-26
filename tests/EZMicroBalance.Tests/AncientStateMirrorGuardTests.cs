@@ -86,8 +86,19 @@ public sealed class AncientStateMirrorGuardTests
             var setState = SliceMethod(source, "SetState");
             var syncPersistentState = SliceMethod(source, "SyncPersistentState");
 
-            AssertUsesHelperWithFields(getSelectedBlessing, "AncientPlayerState.Get(", spec);
-            AssertUsesHelperWithFields(getProgress, "AncientPlayerState.Get(", spec);
+            if (spec.Name == "Urda")
+            {
+                var readState = SliceFrom(source, "private static UrdaStateSnapshot ReadState");
+
+                Assert.Contains("return ReadState(player).SelectedBlessing", getSelectedBlessing, StringComparison.Ordinal);
+                Assert.Contains("return ReadState(player).Progress", getProgress, StringComparison.Ordinal);
+                AssertUsesHelperWithFields(readState, "AncientPlayerState.Get(", spec);
+            }
+            else
+            {
+                AssertUsesHelperWithFields(getSelectedBlessing, "AncientPlayerState.Get(", spec);
+                AssertUsesHelperWithFields(getProgress, "AncientPlayerState.Get(", spec);
+            }
 
             AssertSourceContains(
                 setProgress,

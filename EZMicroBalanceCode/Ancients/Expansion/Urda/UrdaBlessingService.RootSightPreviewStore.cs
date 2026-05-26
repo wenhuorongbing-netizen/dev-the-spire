@@ -12,7 +12,7 @@ internal static partial class UrdaBlessingService
         string ModelId);
 
     private static bool TryFindRootSightPreview(
-        Progress progress,
+        UrdaProgress progress,
         int actIndex,
         string coord,
         out RootSightPreview preview)

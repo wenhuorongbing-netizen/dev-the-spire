@@ -190,6 +190,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.State.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.StateParsing.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.StateSchema.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaStateCodec.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.TrialBranch.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.TrialBranchDisplay.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.TrialBranchOffer.cs",

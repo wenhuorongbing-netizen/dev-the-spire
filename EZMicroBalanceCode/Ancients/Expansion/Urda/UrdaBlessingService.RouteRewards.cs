@@ -62,7 +62,7 @@ internal static partial class UrdaBlessingService
         }
     }
 
-    private static async Task WitherRootedRoute(Player player, Progress progress, string reason)
+    private static async Task WitherRootedRoute(Player player, UrdaProgress progress, string reason)
     {
         await CreatureCmd.Damage(
             new ThrowingPlayerChoiceContext(),
