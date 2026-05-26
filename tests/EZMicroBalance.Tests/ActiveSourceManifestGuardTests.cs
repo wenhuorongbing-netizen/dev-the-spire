@@ -70,6 +70,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.CostRules.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.ClosedCourt.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.DeathReprieve.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.DeathReprieveState.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.DeferredVerdict.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.MirrorHallEcho.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.MirrorRebuttal.cs",

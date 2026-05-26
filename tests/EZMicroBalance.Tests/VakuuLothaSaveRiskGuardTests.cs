@@ -265,6 +265,7 @@ public sealed class VakuuLothaSaveRiskGuardTests
     {
         var runHook = ReadLothaSource();
         var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
+        var deathReprieveState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveState.cs");
         var state = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.State.cs");
         var savedFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
         var playerState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientPlayerState.cs");
@@ -316,10 +317,11 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "private static void ResolveDeathReprieveProgress(Player player)",
             "DeathReprievePhase = DeathReprievePhase.Resolved");
         AssertSourceContains(
-            state,
+            deathReprieveState,
             "combatState.DeathReprievePendingStart = progress.DeathReprievePhase == DeathReprievePhase.PendingStart",
             "combatState.DeathReprieveStarted = progress.DeathReprievePhase == DeathReprievePhase.Active && alreadyHasPower");
-        Assert.DoesNotContain("DeathReprievePendingStart = !alreadyHasPower", state, StringComparison.Ordinal);
+        Assert.DoesNotContain("DeathReprievePendingStart = !alreadyHasPower", deathReprieveState, StringComparison.Ordinal);
+        Assert.DoesNotContain("private static void HydrateDeathReprieveState", state, StringComparison.Ordinal);
     }
 
     [Fact]
