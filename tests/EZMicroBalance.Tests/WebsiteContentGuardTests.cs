@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -50,6 +50,7 @@ public sealed class WebsiteContentGuardTests
         AssertSourceContains(
             websiteData,
             "EZMB_URDA_RAIN_BREATH",
+            "urda_elite_root",
             "EZMB_VAKUU_TRICK_CONTRACT",
             "EZMB_VAKUU_CASH_OUT_CONTRACT",
             "\u5148\u53e4\u5956\u52b1\u3001\u539f\u7248\u9057\u7269\u3001\u9ad8\u8fdb\u9636\u8def\u7ebf\u548c\u9884\u89c8\u5de5\u5177\u90fd\u653e\u5728\u540c\u4e00\u4e2a Mod \u91cc",
@@ -80,17 +81,24 @@ public sealed class WebsiteContentGuardTests
             "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
             "Vakuu's Sere Talon",
             "Tanx Claws",
+            "拾取时选择至多6张牌，将它们变化为“撕咬”。",
+            "选择至多6张牌，将它们变化为“撕咬+”。",
             "Transforms up to 6 cards into upgraded Maul.",
             "\"SERE_TALON.description\": \"sere_talon.png\"",
             "\"CLAWS.description\": \"claws.png\"",
+            "assets/source-art/events/crystal_sphere/small_divination_icon.png",
+            "assets/powers/morvi_archive_page.png",
+            "assets/powers/morvi_open_book.png",
+            "assets/powers/lotha_single_sentence.png",
+            "assets/card_portraits/card.png",
             "At the start of your turn, the Firemark host gains 8/14/24 Molten Armor",
             "Deal [blue]{InterruptDamage}[/blue] damage to it in one round to interrupt the heal",
             packageHash);
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260526-crystal-inspector-b31",
-            "app.js?v=20260526-crystal-inspector-b31");
+            "content-data.js?v=20260526-mechanic-icons",
+            "app.js?v=20260526-mechanic-icons");
 
         var appJs = ReadRepoText("website", "app.js");
 
@@ -116,6 +124,20 @@ public sealed class WebsiteContentGuardTests
         Assert.True(
             File.Exists(RepoPath("website", "assets", "source-art", "relics", "sere_talon.png")),
             "Sere Talon must use its original source icon so Vakuu's reward is not shown with Tanx Claws art or a placeholder.");
+
+        foreach (var websiteImage in new[]
+                 {
+                     RepoPath("website", "assets", "source-art", "events", "crystal_sphere", "small_divination_icon.png"),
+                     RepoPath("website", "assets", "source-art", "events", "crystal_sphere", "big_divination_icon.png"),
+                     RepoPath("website", "assets", "powers", "morvi_archive_page.png"),
+                     RepoPath("website", "assets", "powers", "morvi_open_book.png"),
+                     RepoPath("website", "assets", "powers", "lotha_single_sentence.png"),
+                     RepoPath("website", "assets", "powers", "power.png"),
+                     RepoPath("website", "assets", "card_portraits", "card.png")
+                 })
+        {
+            Assert.True(File.Exists(websiteImage), $"{websiteImage} must exist so website mechanism icons do not fall back to the generic relic placeholder.");
+        }
 
         foreach (var rootImage in new[]
                  {

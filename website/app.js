@@ -203,7 +203,7 @@
       { key: "sts-keyword-mech-ancient", words: ["先古之民", "先古", "Ancient", "Ancients"] },
       { key: "sts-keyword-mech-gold", words: ["金币", "Gold", "gold"] },
       { key: "sts-keyword-mech-fission", words: ["裂变附魔", "裂变", "Fission"] },
-      { key: "sts-keyword-mech-seedbed", words: ["苗床", "Seedbed"] },
+      { key: "sts-keyword-mech-seedbed", words: ["苗床", "种下", "Seedbed", "Planting", "plant", "planted"] },
       { key: "sts-keyword-mech-sprout", words: ["根芽", "Sprout", "Blight Sprout", "Sprouts"] },
       { key: "sts-keyword-mech-rootblight", words: ["根蚀", "Rootblight", "Rootblights"] },
       { key: "sts-keyword-mech-contract", words: ["契约", "Contract", "Contracts"] },

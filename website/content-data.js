@@ -1,4 +1,4 @@
-﻿const sourceRelicIcons = {
+const sourceRelicIcons = {
   "VELVET_CHOKER.description": "velvet_choker.png",
   "DISTINGUISHED_CAPE.description": "distinguished_cape.png",
   "PRISMATIC_GEM.description": "prismatic_gem.png",
@@ -42,7 +42,10 @@ const currentReadableGuardSnippets = [
   "Vakuu's Sere Talon",
   "Tanx Claws",
   "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+.",
-  "On pickup, transform up to 6 cards into Maul."
+  "On pickup, transform up to 6 cards into Maul.",
+  "Spire Plus transforms them into upgraded Maul.",
+  "拾取时选择至多6张牌，将它们变化为“撕咬”。",
+  "选择至多6张牌，将它们变化为“撕咬+”。"
 ];
 
 const vanillaIconPaths = {
@@ -203,7 +206,7 @@ function mechanic(id, title, desc, bullets, terms, relatedItemKeys = [], related
     relatedMechanicIds,
     tags: options.tags || ["机制"],
     keywordClass: options.keywordClass || "sts-keyword-gold",
-    icon: options.icon || "assets/card_portraits/morvi_archive_pages.png"
+    icon: options.icon || "assets/card_portraits/card.png"
   };
 }
 
@@ -228,7 +231,8 @@ const mechanicGlossary = [
       titleEn: "Archive Pages",
       descEn: "Morvi's 0-cost temporary pages. Overdue Library adds 3 random Archive Pages at combat start; each page exists only for the current combat.",
       bulletsEn: ["Draw Page draws 2 cards.", "Veil Page gains 14 Block.", "Burn Page deals 10 damage to all enemies.", "Discount Page makes the next card played this turn cost 0.", "Bravery Page gains 2 temporary Strength.", "Dexterity Page gains 2 temporary Dexterity."],
-      termsEn: ["Archive Page", "Archive Pages", "Draw Page", "Veil Page", "Burn Page", "Discount Page", "Bravery Page", "Dexterity Page", "temporary page", "temporary pages"]
+      termsEn: ["Archive Page", "Archive Pages", "Draw Page", "Veil Page", "Burn Page", "Discount Page", "Bravery Page", "Dexterity Page", "temporary page", "temporary pages"],
+      icon: "assets/powers/morvi_archive_page.png"
     }
   ),
   mechanic(
@@ -243,7 +247,24 @@ const mechanicGlossary = [
       titleEn: "Temporary",
       descEn: "Temporary cards serve the current combat or generation flow. They usually do not enter the long-term deck and are removed after combat.",
       bulletsEn: ["Temporary cards can still be played, exhausted, or handled by other mechanics.", "Seedbed plants Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight first.", "Archive Pages, Contracts, Rain Breath, Seedling, and Withered Husk are short-term resources."],
-      termsEn: ["Temporary", "temporary card", "temporary cards"]
+      termsEn: ["Temporary", "temporary card", "temporary cards"],
+      icon: "assets/card_portraits/card.png"
+    }
+  ),
+  mechanic(
+    "open_book",
+    "开卷",
+    "莫尔维的开卷追踪。第1回合额外抽到且仍在手牌中的牌会被封存，并在第3回合以0费返回。",
+    ["开卷考试会额外抽5张牌并获得2点能量。", "第1回合结束时仍在手牌中的额外抽牌会进入消耗牌堆封存。", "第3回合若手牌有空位，封存牌以0费返回。"],
+    ["开卷", "开卷考试", "封存"],
+    ["EZMICROBALANCE-MORVI_OPEN_BOOK_POWER.description", "EZMB_MORVI.pages.INITIAL.options.morvi_open_book_exam.description"],
+    ["archive_pages"],
+    {
+      titleEn: "Open Book",
+      descEn: "Morvi's Open Book tracker. Extra-drawn cards left in hand at the end of turn 1 are sealed, then return on turn 3 as 0-cost cards.",
+      bulletsEn: ["Open-Book Exam draws 5 extra cards and grants 2 Energy.", "Extra-drawn cards still in hand at turn 1 end are sealed in the Exhaust Pile.", "On turn 3, sealed cards return at 0 cost if hand space allows."],
+      termsEn: ["Open Book", "Open-Book Exam", "sealed"],
+      icon: "assets/powers/morvi_open_book.png"
     }
   ),
   mechanic(
@@ -258,7 +279,8 @@ const mechanicGlossary = [
       titleEn: "Seedbed",
       descEn: "Urda's pollution-control card. It gives Block first, then plants pollution before it reaches your hand and turns it into a Withered Husk.",
       bulletsEn: ["Seedbed can plant Temporary Status cards, Temporary Curse cards, Blight Sprouts, and Rootblight. It cannot plant Withered Husk.", "Planting removes a card from this combat before it enters hand and gives 1 Withered Husk. Planting is not play, discard, or Exhaust, and it triggers none of those payoffs.", "Planted Temporary Status/Curses are handled for this combat and disappear after combat. Permanent Curses are not permanently deleted by Seedbed.", "A planted Blight Sprout is handled for this combat: it does not enter hand, does not grow, and adds no Rootblight I. This gives the key benefit of playing the Sprout without actually playing it.", "A planted Rootblight freezes this combat's end check only: it does not cleanse, downgrade, worsen, or split, and keeps the same stage after combat.", "Seedbed is stronger than it first reads: 8/12 Block now, fewer pollution draws, and 1 Withered Husk per plant. Each Husk later Exhausts for 3 Block.", "Seedbed has 2/3 total spaces. Immediate planting spends those spaces; any remaining spaces catch later pollution."],
-      termsEn: ["Seedbed", "Seedbeds", "plant", "planted", "Withered Husk"]
+      termsEn: ["Seedbed", "Seedbeds", "plant", "planted", "Withered Husk"],
+      icon: "assets/ancients/urda/options/urda_seedbed.png"
     }
   ),
   mechanic(
@@ -274,7 +296,8 @@ const mechanicGlossary = [
       descEn: "A long-term pollution system starting at A14. Rootblight left in the master deck worsens after combat; playing it removes or downgrades the pollution.",
       bulletsEn: ["Rootblight I: playing it removes it from the master deck; ignoring it turns it into Rootblight II.", "Rootblight II: playing it removes it and adds Rootblight I after combat; ignoring it turns it into Rootblight III.", "Rootblight III: playing it removes it and adds Rootblight II after combat; the first continued worsen adds Rootblight I. There is no stage IV.", "Max 4 Rootblights. Resting removes the highest-stage Rootblight."],
       termsEn: ["Rootblight", "Rootblights", "Rootblight I", "Rootblight II", "Rootblight III"],
-      keywordClass: "sts-keyword-purple"
+      keywordClass: "sts-keyword-purple",
+      icon: "assets/card_portraits/rootblight_i.png"
     }
   ),
   mechanic(
@@ -290,7 +313,8 @@ const mechanicGlossary = [
       descEn: "Blight Sprout is a short-term pressure card. On round 3 or 4, if it has not entered hand, it is placed on top of the draw pile.",
       bulletsEn: ["If seen and not played, it adds Rootblight I after combat.", "If never seen, it withers and does not enter the long-term deck.", "Seedbed can plant Blight Sprout to prevent Rootblight growth."],
       termsEn: ["Blight Sprout", "Blight Sprouts", "Sprout", "Sprouts"],
-      keywordClass: "sts-keyword-purple"
+      keywordClass: "sts-keyword-purple",
+      icon: "assets/card_portraits/blight_sprout.png"
     }
   ),
   mechanic(
@@ -322,7 +346,8 @@ const mechanicGlossary = [
       titleEn: "Contracts",
       descEn: "Vakuu Trial offers Contracts on turns 1, 3, and 5. They help break locks, draw, defend, or cash out, but most increase Blood Debt.",
       bulletsEn: ["Knife Contract: deals damage, loses HP, breaks 1 lock, and adds 1 Blood Debt.", "Gold Contract: gains Energy and draws, loses HP, breaks 1 lock, and adds 1 Blood Debt.", "Avoid Debt: gains Block and removes Blood Debt.", "Fraud Contract: breaks 1 lock and adds Blood Debt, while making Vakuu's next attack stronger.", "Cash Out: after breaking at least 1 lock, ends the fight and takes broken-lock loot."],
-      termsEn: ["Contract", "Contracts", "Knife Contract", "Gold Contract", "Avoid Debt", "Fraud Contract", "Cash Out"]
+      termsEn: ["Contract", "Contracts", "Knife Contract", "Gold Contract", "Avoid Debt", "Fraud Contract", "Cash Out"],
+      icon: "assets/card_portraits/vakuu_temptation.png"
     }
   ),
   mechanic(
@@ -337,7 +362,8 @@ const mechanicGlossary = [
       titleEn: "Stolen Locks",
       descEn: "Vakuu Trial's loot gate. You need to break at least 1 lock before cashing out; more broken locks mean more loot and blessing choices.",
       bulletsEn: ["Contracts and damage windows break Stolen Locks.", "Lock loot pays Blood Debt first; only the remainder is kept.", "The fight has no normal combat rewards."],
-      termsEn: ["Stolen Lock", "Stolen Locks", "lock", "locks"]
+      termsEn: ["Stolen Lock", "Stolen Locks", "lock", "locks"],
+      icon: "assets/powers/vakuu_stolen_vault.png"
     }
   ),
   mechanic(
@@ -353,7 +379,8 @@ const mechanicGlossary = [
       descEn: "Lotha's turn-4 burst resource. Verdict stacks empower the next non-Status cards played.",
       bulletsEn: ["Attacks and Skills play 1 extra time.", "Powers do not replay; they cost 0 for that play and draw 1 card instead.", "Deferred Verdict grants 3 Verdict on turn 4; if combat ends before turn 4, heal 4 HP."],
       termsEn: ["Verdict"],
-      keywordClass: "sts-keyword-gold"
+      keywordClass: "sts-keyword-gold",
+      icon: "assets/powers/lotha_verdict.png"
     }
   ),
   mechanic(
@@ -369,7 +396,8 @@ const mechanicGlossary = [
       descEn: "Current text says \"play extra times\". It resolves Attacks and Skills again; Powers use safe replacement rewards.",
       bulletsEn: ["Attacks and Skills resolve their effect again.", "Powers are not replayed; they usually become 0-cost and draw cards or similar safe rewards.", "A source cannot recursively trigger itself."],
       termsEn: ["play extra time", "play extra times", "extra play", "Replay"],
-      keywordClass: "sts-keyword-gold"
+      keywordClass: "sts-keyword-gold",
+      icon: "assets/powers/lotha_single_sentence.png"
     }
   ),
   mechanic(
@@ -385,7 +413,8 @@ const mechanicGlossary = [
       descEn: "A resource pressure used by Morvi and Seal of Gold. Debt gives power now and collects Gold or HP later.",
       bulletsEn: ["Debt Settlement immediately grants 220 Gold, removals, and upgrades, then records 320 Debt.", "After each combat, repay 40 Gold; if short, lose 3 nonlethal HP per missing 10 Gold.", "Seal of Gold adds playable Debt Curses that lose up to 5 Gold when exhausted."],
       termsEn: ["Debt"],
-      keywordClass: "sts-keyword-gold"
+      keywordClass: "sts-keyword-gold",
+      icon: "assets/powers/morvi_debt.png"
     }
   ),
   mechanic(
@@ -401,7 +430,8 @@ const mechanicGlossary = [
       descEn: "Red Ink Overdraft's short-term bill. At 0 Energy, you actively trade later payment for cards and Energy now.",
       bulletsEn: ["Once per turn.", "Draw 2 cards and gain 1 Energy.", "After combat, pay 12 Gold; if short, lose 3 HP."],
       termsEn: ["red-ink debt", "Overdraft", "Red Ink Overdraft"],
-      keywordClass: "sts-keyword-gold"
+      keywordClass: "sts-keyword-gold",
+      icon: "assets/powers/morvi_overdraft.png"
     }
   ),
   mechanic(
@@ -417,7 +447,8 @@ const mechanicGlossary = [
       descEn: "An A13 reward enchantment. Fission appears only on eligible Attacks and Skills.",
       bulletsEn: ["Rates: normal combat 10%, Banner Room 15%, Firemarked Elite 20%, Boss 5%.", "Only Common, Uncommon, or Rare Attacks and Skills are eligible.", "X-cost, 0-cost, already enchanted, Exhaust, and non-enchantable cards are excluded.", "Fission reduces cost by 1 and Exhausts the card after play."],
       termsEn: ["Fission"],
-      keywordClass: "sts-keyword-gold"
+      keywordClass: "sts-keyword-gold",
+      icon: "assets/ascension/fission_enchantment_icon.png"
     }
   ),
   mechanic(
@@ -432,7 +463,8 @@ const mechanicGlossary = [
       titleEn: "Firemark",
       descEn: "A12's enhanced Elite rule. One host receives the full Firemark, and the fight exposes a counterplay window.",
       bulletsEn: ["Firemarked Elites have better rewards. Defeat one to gain a Forge Token; if you already have one, gain 15 Gold instead.", "Firemarks include Might, Giant, Forge Armor, and Constant Heal.", "Overflow affects at most 1 non-summoned secondary target each time."],
-      termsEn: ["Firemark", "Firemarked Elite", "Firemarked Elites"]
+      termsEn: ["Firemark", "Firemarked Elite", "Firemarked Elites"],
+      icon: "assets/ascension/firemarked_elite_indicator.png"
     }
   ),
   mechanic(
@@ -447,7 +479,8 @@ const mechanicGlossary = [
       titleEn: "Overflow",
       descEn: "Firemark spillover. When the host triggers or its window breaks, Overflow gives a smaller effect to another enemy.",
       bulletsEn: ["Might: gives temporary Strength to 1 attacking secondary enemy.", "Giant: breaking Molten Core deals overflow damage to 1 secondary enemy.", "Forge Armor: gives Block to 1 secondary enemy.", "Constant Heal: successful healing restores HP to 1 damaged secondary enemy."],
-      termsEn: ["Overflow"]
+      termsEn: ["Overflow"],
+      icon: "assets/ascension/firemark_might_indicator.png"
     }
   ),
   mechanic(
@@ -462,7 +495,8 @@ const mechanicGlossary = [
       titleEn: "Forge Token",
       descEn: "The next-rest-site reward from defeating a Firemarked Elite.",
       bulletsEn: ["Rest: randomly upgrades 1 upgradable Common/Uncommon card; if none exists, heals 5 HP.", "Smith: additionally heals 7 HP.", "If you already have a Forge Token, another Firemarked Elite converts to 15 Gold."],
-      termsEn: ["Forge Token"]
+      termsEn: ["Forge Token"],
+      icon: "assets/ascension/forge_token_status.png"
     }
   ),
   mechanic(
@@ -477,7 +511,8 @@ const mechanicGlossary = [
       titleEn: "Banner",
       descEn: "A16's visible-rule enhanced normal combat. Banner Rooms show their exact rule before entry and use a higher Fission reward rate.",
       bulletsEn: ["Banner pool: Vanguard, Shieldwall, Blood Prize, Pressing Line, Last Stand.", "Shieldwall and Last Stand require multi-enemy fights; single-enemy fights fall back to Blood Prize.", "Banner Room card rewards use a 15% Fission chance."],
-      termsEn: ["Banner", "Banner Room", "Banner Rooms"]
+      termsEn: ["Banner", "Banner Room", "Banner Rooms"],
+      icon: "assets/ascension/banner_room_indicator.png"
     }
   ),
   mechanic(
@@ -492,7 +527,8 @@ const mechanicGlossary = [
       titleEn: "Royal Decree",
       descEn: "Queen's A19 dedicated ability. When Queen applies Bound, 1 Bound card is marked as the Decree.",
       bulletsEn: ["Playing the Decree has no extra penalty.", "Playing a non-Decree Bound card gives Queen 1 Majesty.", "Playing no Bound card gives Queen 1 Majesty and Torch Head 1 Strength."],
-      termsEn: ["Royal Decree", "Decree"]
+      termsEn: ["Royal Decree", "Decree"],
+      icon: "assets/ascension/boss_seals/chosen_decree.png"
     }
   ),
   mechanic(
@@ -507,7 +543,8 @@ const mechanicGlossary = [
       titleEn: "Majesty",
       descEn: "Queen's defensive resource from Royal Decree punishment. Majesty strengthens Queen's next defense or barrier action.",
       bulletsEn: ["Each Majesty adds 8 Block to the next defense or barrier action.", "A19 cap is 2 stacks.", "A20 Branded Form raises the cap to 3 and lets one defense/barrier action spend at most 2 stacks."],
-      termsEn: ["Majesty"]
+      termsEn: ["Majesty"],
+      icon: "assets/ascension/boss_seals/chosen_decree.png"
     }
   ),
   mechanic(
@@ -522,7 +559,8 @@ const mechanicGlossary = [
       titleEn: "Bound",
       descEn: "Queen's card restriction. Royal Decree marks one Bound card as the required target.",
       bulletsEn: ["This site mainly records the new Spire Plus Royal Decree interaction.", "Playing the correct Decree avoids the extra penalty.", "Playing another Bound card or ignoring Bound strengthens enemies."],
-      termsEn: ["Bound"]
+      termsEn: ["Bound"],
+      icon: "assets/ascension/boss_seals/chosen_decree.png"
     }
   ),
   mechanic(
@@ -537,23 +575,8 @@ const mechanicGlossary = [
       titleEn: "Trial Branch",
       descEn: "Urda's three-combat mini-quest. The chosen card joins upgraded, but must prove itself over the next three combats.",
       bulletsEn: ["Choose 1 of 4 cards.", "It is upgraded, added to the deck, and marked with Trial Branch.", "Play it in each of the next 3 combats; missing any combat removes it."],
-      termsEn: ["Trial Branch"]
-    }
-  ),
-  mechanic(
-    "sway",
-    "婆娑",
-    "预留机制词条。当前包的源码和本地化中没有独立的婆娑定义，也没有战斗触发；网站先保留入口，等后续设计落地后直接补正式效果。",
-    ["当前状态：未实装。", "不会影响当前私测包战斗。", "后续若进入设计，会在这里记录具体触发、层数和结算。"],
-    ["婆娑"],
-    [],
-    [],
-    {
-      titleEn: "Sway",
-      descEn: "Reserved mechanic entry. Current source and localization do not define a standalone Sway effect or combat trigger; the site keeps this anchor for a later design.",
-      bulletsEn: ["Current state: not implemented.", "It does not affect the current private-test package.", "If it enters the design later, trigger, stacks, and resolution will be recorded here."],
-      termsEn: ["Sway"],
-      keywordClass: "sts-keyword-purple"
+      termsEn: ["Trial Branch"],
+      icon: "assets/ancients/urda/options/urda_trial_branch.png"
     }
   )
 ];
@@ -660,8 +683,8 @@ window.SPIRE_PLUS_DATA = {
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,943,847 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "97EBB00BD5E6602605C07EA6F8512051A8BAE4A96B111AF6C361FDD23D9594A2"]
+      ["\u4f53\u79ef", "18,943,880 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "CA19F9CC83F3F65581D10F1066C04B8E58E812DE07E1DBA7ACA6FEB4D22F693A"]
     ]
   },
   installSteps: [
@@ -716,7 +739,7 @@ window.SPIRE_PLUS_DATA = {
         baseRelic("腌制活雾", "PRESERVED_FOG.description", ["\u5220\u724c"], "拾起时从牌组移除3张牌；将1张愚行加入牌组。", "拾起时从牌组移除4张牌；将1张愚行加入牌组。"),
         cardLoc("愚行", "FOLLY.description", ["\u8bc5\u5492", "\u5361\u724c\u672c\u4f53"], "无法打出。固有。永恒。虚无。"),
         baseRelic("\u74e6\u5e93\u539f\u521d\u4e4b\u722a", "SERE_TALON.description", ["\u8bc5\u5492", "\u8bb8\u613f"], "\u74e6\u5e93\u5956\u52b1\u3002\u62fe\u53d6\u65f6\uff0c\u4ece\u0034\u5f20\u8bc5\u5492\u4e2d\u9009\u62e9\u0031\u5f20\u3002\u52a0\u5165\u5b83\u3001\u0032\u5f20\u8bb8\u613f\u548c\u0031\u5f20\u8bb8\u613f+\u3002", "\u62fe\u53d6\u65f6\uff0c\u4ece\u0034\u5f20\u8bc5\u5492\u4e2d\u9009\u62e9\u0031\u5f20\u3002\u52a0\u5165\u5b83\u3001\u0032\u5f20\u8bb8\u613f\u548c\u0031\u5f20\u8bb8\u613f+\u3002"),
-        baseRelic("\u5766\u514b\u65af\u5229\u722a", "CLAWS.description", ["\u6495\u54ac+", "\u53d8\u5316"], "\u62fe\u53d6\u65f6\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac+\u201d\u3002", "\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac+\u201d\u3002"),
+        baseRelic("\u5766\u514b\u65af\u5229\u722a", "CLAWS.description", ["\u6495\u54ac", "\u53d8\u5316"], "\u62fe\u53d6\u65f6\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac\u201d\u3002", "\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac+\u201d\u3002"),
         baseRelic("\u9009\u62e9\u6096\u8bba", "CHOICES_PARADOX.description", ["\u7a00\u6709\u724c"], "每场战斗第1回合开始时，从5张随机牌中选择1张加入手牌；该牌获得保留。", "每场战斗开始时，从5张可用稀有牌中选择1张加入手牌；获得保留，并在战斗后移除。"),
         baseRelic("\u5b9d\u77f3\u9762\u5177", "JEWELED_MASK.description", ["\u80fd\u529b\u724c"], "每场战斗第1回合抽牌前，将抽牌堆中1张随机能力牌移入手牌；本回合费用为0。", "拾起时选择1张能力牌永久变为0费；每场战斗开始时，将它从抽牌堆移入手牌。"),
         baseRelic("\u5e15\u5c14\u4e4b\u89d2", "PAELS_HORN.description", ["\u653e\u677e"], "拾起时将2张放松加入牌组。", "拾起时将1张放松和1张已升级的放松+加入牌组。"),
@@ -753,6 +776,7 @@ window.SPIRE_PLUS_DATA = {
         ancient("urda_moss_map", "assets/ancients/urda/options/urda_moss_map.png", ["\u4e4c\u5c14\u59b2"]),
         ancient("urda_trial_branch", "assets/ancients/urda/options/urda_trial_branch.png", ["\u4e4c\u5c14\u59b2"]),
         ancient("urda_shallow_root_relic", "assets/ancients/urda/options/urda_shallow_root_relic.png", ["\u4e4c\u5c14\u59b2"]),
+        ancient("urda_elite_root", "assets/ancients/urda/options/urda_elite_root.png", ["\u4e4c\u5c14\u59b2"]),
         ancient("urda_rooted_route", "assets/ancients/urda/options/urda_rooted_route.png", ["\u4e4c\u5c14\u59b2"]),
         ancient("urda_after_rain", "assets/ancients/urda/options/urda_after_rain.png", ["\u4e4c\u5c14\u59b2"]),
         ancient("urda_root_sight", "assets/ancients/urda/options/urda_root_sight.png", ["\u4e4c\u5c14\u59b2"]),
@@ -843,10 +867,10 @@ window.SPIRE_PLUS_DATA = {
       defaultVanilla: "\u539f\u7248\u65e0\u6b64\u65b0\u589e\u5185\u5bb9\u3002",
       items: [
         {
-          ...manual("\u6c34\u6676\u7403\u9884\u77e5", "\u539f\u7248\u65e0\u9884\u77e5\u6309\u94ae\u3002", "\u6c34\u6676\u7403\u5c0f\u6e38\u620f\u4e2d\u663e\u793a\u9884\u77e5\u6309\u94ae\uff1b\u53ea\u6539\u53d8\u906e\u7f69\u53ef\u89c1\u6027\uff0c\u4e0d\u53d1\u653e\u5956\u52b1\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/relics/relic.png", "crystal_sphere_peek"),
+          ...manual("\u6c34\u6676\u7403\u9884\u77e5", "\u539f\u7248\u65e0\u9884\u77e5\u6309\u94ae\u3002", "\u6c34\u6676\u7403\u5c0f\u6e38\u620f\u4e2d\u663e\u793a\u9884\u77e5\u6309\u94ae\uff1b\u53ea\u6539\u53d8\u906e\u7f69\u53ef\u89c1\u6027\uff0c\u4e0d\u53d1\u653e\u5956\u52b1\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/source-art/events/crystal_sphere/small_divination_icon.png", "crystal_sphere_peek"),
           previewImage: "assets/previews/crystal_sphere_peek.png"
         },
-        manual("\u53d8\u6362\u771f\u5b9e\u9884\u89c8", "\u539f\u7248\u4e0d\u663e\u793a\u786e\u5b9a\u7ed3\u679c\u3002", "\u4f7f\u7528\u590d\u5236\u7684\u968f\u673a\u6570\u5feb\u7167\u9884\u6d4b\u53d8\u6362\u7ed3\u679c\uff1b\u4e0d\u521b\u5efa\u5361\u724c\uff0c\u4e0d\u63a8\u8fdb\u771f\u5b9e\u968f\u673a\u6570\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/relics/relic.png", "transform_preview"),
+        manual("\u53d8\u6362\u771f\u5b9e\u9884\u89c8", "\u539f\u7248\u4e0d\u663e\u793a\u786e\u5b9a\u7ed3\u679c\u3002", "\u4f7f\u7528\u590d\u5236\u7684\u968f\u673a\u6570\u5feb\u7167\u9884\u6d4b\u53d8\u6362\u7ed3\u679c\uff1b\u4e0d\u521b\u5efa\u5361\u724c\uff0c\u4e0d\u63a8\u8fdb\u771f\u5b9e\u968f\u673a\u6570\u3002", ["\u9884\u89c8\u5de5\u5177"], "assets/card_portraits/card.png", "transform_preview"),
         ...mechanicGlossary.map(mechanicCodexItem)
       ]
     }
@@ -1182,8 +1206,8 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,943,847 bytes"],
-        ["Hash", "97EBB00BD5E6602605C07EA6F8512051A8BAE4A96B111AF6C361FDD23D9594A2"]
+        ["Size", "18,943,880 bytes"],
+        ["Hash", "CA19F9CC83F3F65581D10F1066C04B8E58E812DE07E1DBA7ACA6FEB4D22F693A"]
       ]
     },
     installSteps: [

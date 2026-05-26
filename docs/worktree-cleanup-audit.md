@@ -1,4 +1,4 @@
-﻿# Worktree Cleanup Audit
+# Worktree Cleanup Audit
 
 Last updated: 2026-05-26
 
@@ -187,14 +187,14 @@ Owner decision statuses:
 - Current cleanup validation: `dotnet test EZMicroBalance.sln --filter "FullyQualifiedName~EngineeringGovernanceGuardTests|FullyQualifiedName~DocumentationCompactnessGuardTests"` passed, 25 passed / 0 skipped.
 - Website mechanism-codex cleanup validation: `node --check website\app.js`, `node --check website\content-data.js`, `dotnet test EZMicroBalance.sln --filter FullyQualifiedName~WebsiteContentGuardTests`, and targeted `git diff --check` passed.
 - Governance stale-state cleanup validation: `dotnet test EZMicroBalance.sln --filter FullyQualifiedName~DocumentationCompactnessGuardTests` passed, 20 passed / 0 skipped; current docs no longer claim the dirty worktree is clean, no longer reference beta.26 as the current pending loader target, and no longer say root `EzDailyContent.json` still exists.
-- Release-evidence package-path/hash helper validation: `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\spire-plus-package-evidence.ps1` passed; dot-sourced helper smoke derived `publish\SpirePlus-v0.1.0-private-beta.32.zip` and SHA256 `97EBB00BD5E6602605C07EA6F8512051A8BAE4A96B111AF6C361FDD23D9594A2`; `dotnet test EZMicroBalance.sln --filter "FullyQualifiedName~ReleaseEvidenceGateTests|FullyQualifiedName~ReleaseSafetyExpandedGuardTests"` passed, 22 passed; `dotnet test EZMicroBalance.sln --no-build --filter "FullyQualifiedName~EngineeringGovernanceGuardTests|FullyQualifiedName~DocumentationCompactnessGuardTests"` passed, 26 passed; `scripts\collect-release-evidence.ps1 -NoLaunch` smoke generated a 20-row manifest with the derived package path/hash, then the temporary smoke directory was deleted.
+- Release-evidence package-path/hash helper validation: `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\spire-plus-package-evidence.ps1` passed; dot-sourced helper smoke derived `publish\SpirePlus-v0.1.0-private-beta.32.zip` and SHA256 `CA19F9CC83F3F65581D10F1066C04B8E58E812DE07E1DBA7ACA6FEB4D22F693A`; `dotnet test EZMicroBalance.sln --filter "FullyQualifiedName~ReleaseEvidenceGateTests|FullyQualifiedName~ReleaseSafetyExpandedGuardTests"` passed, 22 passed; `dotnet test EZMicroBalance.sln --no-build --filter "FullyQualifiedName~EngineeringGovernanceGuardTests|FullyQualifiedName~DocumentationCompactnessGuardTests"` passed, 26 passed; `scripts\collect-release-evidence.ps1 -NoLaunch` smoke generated a 20-row manifest with the derived package path/hash, then the temporary smoke directory was deleted.
 - Current-package test helper validation: focused package/platform/release-hash/test-infrastructure/mod-info guard tests passed, 10 passed; `rg` found no hardcoded beta.32 path or old ZIP hash left under `tests\EZMicroBalance.Tests`.
-- Current batch classification: `scripts/report-worktree-batches.ps1 -FailOnUnclassified` passed with 50 dirty entries and 0 unclassified paths.
-- Current website/document hygiene validation: deleted 40 ignored `tests\EZMicroBalance.Tests\*.cs.uid` sidecars, repaired current Sere Talon/Tanx Claws Chinese queue text, synced `website/content-data.js` package size to 18,943,847 bytes, and focused website/current-doc/governance guard tests passed.
+- Current batch classification: `scripts/report-worktree-batches.ps1 -FailOnUnclassified` passed with 25 total dirty entries and 0 unclassified paths after referenced website mechanic/source-art icons and their guard coverage were included in the website public-info batch.
+- Current website/document hygiene validation: deleted 46 ignored `tests\EZMicroBalance.Tests\*.cs.uid` sidecars, repaired current Sere Talon/Tanx Claws Chinese queue text, synced `website/content-data.js` package size to 18,943,880 bytes, kept referenced website PNG assets in the public website surface, and focused website/current-doc/governance guard tests passed.
 - `git clean -ndX`: dry-run only; confirms broad ignored-file deletion would hit owner-sensitive/local-evidence paths and must not be used as cleanup.
 - Final `dotnet test EZMicroBalance.sln --no-build`: pass, 287 passed / 20 skipped.
 - Final `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: pass.
 - Final `node --check website\content-data.js`: pass.
-- Final `git diff --check`: pass, with existing CRLF normalization warnings only for Ascension localization JSON mirrors and `tests\EZMicroBalance.Tests\AscensionV2MilestoneGuardTests.cs` / `BossDedicatedAbilityV41GuardTests.cs`.
+- Final `git diff --check`: pass.
 
 Re-run validation after every subsequent cleanup batch.
