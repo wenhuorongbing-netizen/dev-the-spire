@@ -87,7 +87,7 @@ public sealed class VakuuTemptationGuardTests
     public void VakuuFightInjectsContractsOnlyInsideCustomVakuuTrialCombat()
     {
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightRunHook.cs");
+        var runHook = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var vakuuSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
         var gate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
@@ -182,7 +182,7 @@ public sealed class VakuuTemptationGuardTests
             combatManager,
             "private async Task SetupPlayerTurn",
             "public void SetReadyToEndTurn");
-        var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightRunHook.cs");
+        var vakuuHookSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
         var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
@@ -197,7 +197,7 @@ public sealed class VakuuTemptationGuardTests
             "await CardPileCmd.Draw(playerChoiceContext, handDraw, player, fromHandDraw: true)",
             "await Hook.AfterPlayerTurnStart(state, playerChoiceContext, player)");
         AssertSourceContains(
-            runHook,
+            vakuuHookSource,
             "public override Task AfterPlayerTurnStart",
             "VakuuContractService.AfterPlayerTurnStart(choiceContext, player)",
             "PileType.Hand");

@@ -63,6 +63,7 @@ These paths are active private-beta source, resource, test, script, or documenta
 | Active release resource predicates | `IsActiveExportResource` and `IsActiveReleaseResource` centralized in `TestRepo.cs`; duplicate package-boundary predicates removed from release guard tests. | Same infrastructure guard and test README. |
 | Ascension source tree test reads | `AscensionFeatureGuardTests` now uses shared `ReadSourceTree` instead of a local source-tree reader. | Same infrastructure guard. |
 | Ancient feature gate env parsing | Shared `AncientFeatureGate` helper under `EZMicroBalanceCode/Ancients/Common/`. | Release/source guards. |
+| Vakuu fight hook ownership split | `VakuuFightRunHook.cs` keeps initialization/subscription, `VakuuFightCombatHook.cs` owns combat hooks, and `VakuuContractService.cs` owns Contract/Cash Out injection. | `VakuuTemptationGuardTests` and active source manifest validation. |
 | Ascension combat metadata refresh | Duplicated metadata lookup consolidated in `AscensionCombatModifierService`. | `AscensionV2MilestoneGuardTests`. |
 | Stale Morvi v2.2 enable constant | Removed unused `LegacyEnableEnvironmentVariable` from `MorviFeatureGate`; Morvi is current default-on with disable/force gates. | Build/test validation. |
 | Current display-name docs | Updated current-facing intro/audit/status wording to use `Spire Plus` with `EZMicroBalance` only as the stable manifest id. | Diff-check and release/name guards. |
