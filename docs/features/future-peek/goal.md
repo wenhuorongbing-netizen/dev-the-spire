@@ -14,7 +14,7 @@ is folded into the single gameplay-affecting Spire Plus mod:
 ## Current Verified Package
 
 The current manual-test package line is
-`publish/SpirePlus-v0.1.0-private-beta.79.zip`.
+`publish/SpirePlus-v0.1.0-private-beta.80.zip`.
 
 Static guards for this compatibility goal live in
 `tests/EZMicroBalance.Tests/PreviewToolsGuardTests.cs`. They verify the single

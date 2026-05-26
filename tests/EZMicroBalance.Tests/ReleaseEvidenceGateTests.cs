@@ -1089,7 +1089,7 @@ public sealed partial class ReleaseEvidenceGateTests
 
         var projectState = ReadRepoText("PROJECT_STATE.md");
         Assert.Contains("current source defines 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("beta.79 ReleaseEvidence manual handoff test split package sync", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.80 AncientBehavior localization/docs guard split package sync", projectState, StringComparison.Ordinal);
         Assert.Contains("Found 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Found 22 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
     }
