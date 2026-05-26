@@ -112,6 +112,7 @@ public sealed class WebsiteContentGuardTests
             "...mechanicGlossary.map(mechanicCodexItem)",
             "function mechanicCodexItem(mech)",
             "isMechanicsCodex: true");
+        Assert.DoesNotContain("// Test Guard Check", websiteData, StringComparison.Ordinal);
 
         AssertSourceContains(
             appJs,

@@ -1,4 +1,4 @@
-# Development Environment
+﻿# Development Environment
 
 ## Machine
 - OS: Windows 11 Pro (`10.0.26200`, `64-bit`)
@@ -84,17 +84,17 @@
 - Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.39 Future Peek UI-only co-op refresh. Result: succeeded against the real installed mods root.
 - Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-26 after the beta.39 Future Peek UI-only co-op refresh. Result: succeeded against an isolated temporary mods root.
 - Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.39.zip`, the isolated `.tools\publish-game-root\mods\EZMicroBalance` folder, `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.39.zip` were refreshed and hash-checked on 2026-05-26 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The beta.19 loader row is historical startup/log proof only; beta.39 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
-- Last PCK hash check: the 2026-05-26 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `924E2D74E3FEE3CF76FBD68FE2123D4D9F1FD35BE1F849B4173A6CF52FC026A8`.
-- Last staging/versioned DLL hash check: SHA256 `82CCC267554D99DCE41092AF13C2E9388C5F65FC941386E4A025F04FD441DD4D`.
+- Last PCK hash check: the 2026-05-26 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `FDF2BFF9450734C7589DA39C7827EE04F65853A9501B9F1CB102CB9E01CE1895`.
+- Last staging/versioned DLL hash check: SHA256 `1CCB1E6B2587E052A177A1211F7CBEB4561B63F06543E4CCA9AE133CC48D279E`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
 - Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.39.zip` was rebuilt from isolated package staging, copied to the game root, and synced into the real installed mod folder on 2026-05-26. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `A57DE651A3B0428A43DE068CE89511121B43BA920BE0B722D5320C6D8227226D`
-  - DLL SHA256: `82CCC267554D99DCE41092AF13C2E9388C5F65FC941386E4A025F04FD441DD4D`
-  - README SHA256: `373CE7B8CDE3B1969C6BA7BB4E15AA4E6A62A371DC6167CFE57C636D396598BF`
-  - Manifest SHA256: `930C49F39DB48D8CD1118941F54532FC53073F1F7565C0D165F3F4B69581A6D5`
-  - PCK SHA256: `924E2D74E3FEE3CF76FBD68FE2123D4D9F1FD35BE1F849B4173A6CF52FC026A8`
+  - Zip SHA256: `992D2F38594357F1E0F8BC15D359ACB3E934A7DBEFD0817C8DCC5AD5858E3521`
+  - DLL SHA256: `1CCB1E6B2587E052A177A1211F7CBEB4561B63F06543E4CCA9AE133CC48D279E`
+  - README SHA256: `1DEEBD20570A780263CE7BA8AD4434BD72B7C2EB7F754A00BC9E3907B6043FEF`
+  - Manifest SHA256: `79DF5E0E7A63E17B9403471655C8414C87010A12152D6B2A0536454F5324C801`
+  - PCK SHA256: `FDF2BFF9450734C7589DA39C7827EE04F65853A9501B9F1CB102CB9E01CE1895`
   - Entries: `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
 - Last release art audit: `EZMicroBalance/mod_image.png` and `publish\EZMicroBalance-cover-source.png` currently have SHA256 `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75` and were manually checked as original generated art with no visible text, letters, numbers, numerals, logos, or official game assets.
 - Publish note: Headless Godot export requires `export_presets.cfg` to be UTF-8 without BOM and needs local runtime references available to the editor assembly scan. `EZMicroBalance.csproj` copies `sts2.dll`, `0Harmony.dll`, and BaseLib into the Godot temp build folders before export; the selected-resource PCK still contains only active mod resources.

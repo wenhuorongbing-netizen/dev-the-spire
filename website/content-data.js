@@ -683,8 +683,8 @@ window.SPIRE_PLUS_DATA = {
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,949,406 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "A57DE651A3B0428A43DE068CE89511121B43BA920BE0B722D5320C6D8227226D"]
+      ["\u4f53\u79ef", "18,949,399 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "992D2F38594357F1E0F8BC15D359ACB3E934A7DBEFD0817C8DCC5AD5858E3521"]
     ]
   },
   installSteps: [
@@ -859,7 +859,7 @@ window.SPIRE_PLUS_DATA = {
         card("EZMB_VAKUU_CASH_OUT_CONTRACT", ["\u74e6\u5e93"], "assets/card_portraits/vakuu_temptation.png")
       ]
     },
-        {
+    {
       short: "机制与工具",
       title: "先古与进阶机制详解",
       note: "收录 Spire Plus 提供的游戏便利性预知与预览工具。",
@@ -884,7 +884,8 @@ window.SPIRE_PLUS_DATA = {
           ["预览工具"],
           "assets/card_portraits/card.png",
           "transform_preview"
-        )
+        ),
+        ...mechanicGlossary.map(mechanicCodexItem)
       ]
     }
   ],
@@ -1016,7 +1017,6 @@ function manual(title, vanilla, current, tags, icon, i18nKey) {
   return { title, vanilla, current, tags, icon, i18nKey: finalKey, namespace: "mechanics" };
 }
 
-// Test Guard Check: ...mechanicGlossary.map(mechanicCodexItem)
 function mechanicCodexItem(mech) {
   const bulletDetails = (mech.bullets || []).map((bullet, index) =>
     detail(`\u8981\u70b9 ${index + 1}`, bullet, `Point ${index + 1}`, (mech.bulletsEn || [])[index] || bullet));
@@ -1220,8 +1220,8 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,949,406 bytes"],
-        ["Hash", "A57DE651A3B0428A43DE068CE89511121B43BA920BE0B722D5320C6D8227226D"]
+        ["Size", "18,949,399 bytes"],
+        ["Hash", "992D2F38594357F1E0F8BC15D359ACB3E934A7DBEFD0817C8DCC5AD5858E3521"]
       ]
     },
     installSteps: [
