@@ -390,6 +390,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.CombatEvents.cs",
         "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.Helpers.cs",
         "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.Lifecycle.cs",
+        "EZMicroBalanceCode/Ascension/Combat/RootBudCombatHook.RoomRules.cs",
         "EZMicroBalanceCode/Ascension/Cards/RootBudCard.cs",
         "EZMicroBalanceCode/Ascension/Cards/RootFamilyCard.cs",
         "EZMicroBalanceCode/Ascension/Cards/RootPortraitPaths.cs",

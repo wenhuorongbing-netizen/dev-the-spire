@@ -302,6 +302,7 @@ public sealed class AscensionFeatureGuardTests
         var combatHookCombatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
         var combatHookHelpers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Helpers.cs");
         var combatHookLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs");
+        var combatHookRoomRules = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.RoomRules.cs");
         var combatHook = string.Join(
             Environment.NewLine,
             combatHookMain,
@@ -309,7 +310,8 @@ public sealed class AscensionFeatureGuardTests
             combatHookCombatEnd,
             combatHookCombatEvents,
             combatHookHelpers,
-            combatHookLifecycle);
+            combatHookLifecycle,
+            combatHookRoomRules);
         var rootBudCard = ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootBudCard.cs");
 
         AssertSourceContains(
@@ -379,6 +381,16 @@ public sealed class AscensionFeatureGuardTests
         Assert.DoesNotContain("usedRounds.Add(bud.SproutRound)", combatHookHelpers, StringComparison.Ordinal);
         Assert.DoesNotContain("public override", combatHookHelpers, StringComparison.Ordinal);
         Assert.DoesNotContain(": AbstractModel", combatHookHelpers, StringComparison.Ordinal);
+        AssertSourceContains(
+            combatHookRoomRules,
+            "internal sealed partial class RootBudCombatHook",
+            "private static bool IsGameplayEnabledForCurrentRoom(CombatState state)",
+            "RoomType.Elite when IsEligibleEliteSproutFight(state)",
+            "private static int GetRootBudCountForCurrentRoom(CombatState state)",
+            "private static void NormalizeExistingRootBudRounds(CombatState state, IReadOnlyList<RootBud> existingBuds)",
+            "private static int GetRootBudSproutRoundForCurrentRoom(CombatState state, int budIndex)");
+        Assert.DoesNotContain("public override", combatHookRoomRules, StringComparison.Ordinal);
+        Assert.DoesNotContain(": AbstractModel", combatHookRoomRules, StringComparison.Ordinal);
 
         var beforeCombatStart = SliceBetween(
             combatHookLifecycle,
@@ -455,7 +467,8 @@ public sealed class AscensionFeatureGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEnd.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Helpers.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs"));
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.RoomRules.cs"));
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
