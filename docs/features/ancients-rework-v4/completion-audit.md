@@ -2,7 +2,7 @@
 
 Last updated: 2026-05-26
 
-Latest update: the Soul Tide / Fission Exhaust / Elite Root package refresh rebuilt `SpirePlus-v0.1.0-private-beta.46.zip` from installed artifacts after automated source validation. Earlier green runtime evidence remains useful history but is not live gameplay proof for this latest package.
+Latest update: the Soul Tide / Fission Exhaust / Elite Root package refresh rebuilt `SpirePlus-v0.1.0-private-beta.47.zip` from installed artifacts after automated source validation. Earlier green runtime evidence remains useful history but is not live gameplay proof for this latest package.
 
 ## Objective
 
@@ -52,10 +52,10 @@ Concrete deliverables for the current goal:
 | English localization valid and current | `LocalizationJsonIsValidUtf8AndKeyCompatible` parses active localization and checks key parity where applicable. | Pass pending in-game text spot check |
 | Simplified Chinese localization valid UTF-8 and current | Automated tests cover `zhs` JSON/key parity, banned English leftovers, Beautiful Bracelet Swift 2 wording, Jeweled Mask custom enchantment zhs text, no-space player-facing number formatting, and known mojibake fragments across active zhs localization JSON. | Pass pending in-game text spot check |
 | Build succeeds | Latest default Debug solution build passed with 0 warnings and 0 errors. Default `dotnet build` no longer overwrites installed release artifacts; `dotnet publish` remains the release install/copy path. | Pass |
-| Tests pass | `dotnet test EZMicroBalance.sln --no-build` passed with 295 passed / 20 skipped after the beta.46 Trial Branch combat resolution split package sync. `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed with 315 passed / 0 skipped after the same sync. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted. | Pass |
+| Tests pass | `dotnet test EZMicroBalance.sln --no-build` passed with 295 passed / 20 skipped after the beta.47 Root Sight selection commit split package sync. `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed with 315 passed / 0 skipped after the same sync. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted. | Pass |
 | Publish succeeds | Latest `dotnet publish EZMicroBalance.sln` passed on 2026-05-26, built `EZMicroBalance`, copied DLL/manifest, and exported the selected-resource PCK. | Pass |
 | Published artifacts exist | Installed `mods/EZMicroBalance` contains `.json`, `.dll`, and `.pck`; automated tests check PCK contents, installed manifest parity, and DLL parity. | Pass |
-| Private-beta package created | Current rebuilt zip `publish\SpirePlus-v0.1.0-private-beta.46.zip` has SHA256 `C1335C862152279DB69285D0D1A82A652AC35A0B5421D9D38F2165F000C78BCC`; staging/versioned DLL/JSON/PCK/README hashes match the zip entries. The installed mod folder and game-root zip were refreshed during this pass. Detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/package refresh and package artifact parity; beta.46 loader/gameplay proof pending |
+| Private-beta package created | Current rebuilt zip `publish\SpirePlus-v0.1.0-private-beta.47.zip` has SHA256 `8FAEB1172A39896AF3258054EA05790F25CF4417A6F97F0BA27B2BC3D03D5E30`; staging/versioned DLL/JSON/PCK/README hashes match the zip entries. The installed mod folder and game-root zip were refreshed during this pass. Detailed pass history lives in `docs/review.md` and `docs/archive/**`. | Pass for source/package refresh and package artifact parity; beta.47 loader/gameplay proof pending |
 | Harmony patch targets resolve | Automated test `HarmonyPatchesResolveAgainstInstalledGameApi` calls `Harmony.PatchAll` on installed DLL against local game/BaseLib assemblies. | Pass |
 | Game loads the mod | Historical beta.19 package smoke `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` reached startup completion with BaseLib plus Spire Plus, reported `v0.1.0-private-beta.19` and `Found 30 SavedSpireFields`, matched the beta.19 package hash, and audited clean. Limited A0/A10/A20, A11 map/save-load, Act 2/3 map-surface, and A14 Rootblight hover/notice evidence exists from earlier source states. | Beta.38 loader startup and gameplay/manual rows pending |
 | BaseLib loads | Controlled smoke, normal Steam startup log, and Mod Settings UI screenshot record BaseLib initialization and a visible enabled BaseLib config page. | Pass |
@@ -66,21 +66,21 @@ Concrete deliverables for the current goal:
 | Multiplayer behavior verified | Ancient and Ascension manual checklists include ownership/desync checks, but no multiplayer runtime pass was executed. | Pending |
 | Disable-mod behavior verified | Controlled loader-disable smoke passed; gameplay disable check remains pending. | Partial |
 | Final required command sequence executed | Build, normal tests, format, diff check, package refresh, hash checks, website syntax checks, isolated package checks, real installed-folder checks, and opt-in release-artifact tests were rerun after the Soul Tide timing refresh. Live load and gameplay verification were not rerun. | Pass for source/test-ready package; release readiness pending live evidence |
-| Worktree clean | `git status --short --branch` reports `## main...origin/main` after the beta.46 package-guard commit. | Pass |
-| Commit created | Current beta.46 package evidence is intentionally tied to the validated repository HEAD, not a hard-coded historical commit. Run `git log -1 --oneline --decorate` after validation for the exact commit. | Use current HEAD |
-| Push to `origin` after validation | Push the validated current HEAD to `origin/main`; do not treat older beta37 package-evidence commits as the current beta.46 baseline. | Use final git status |
+| Worktree clean | `git status --short --branch` reports `## main...origin/main` after the beta.47 package-guard commit. | Pass |
+| Commit created | Current beta.47 package evidence is intentionally tied to the validated repository HEAD, not a hard-coded historical commit. Run `git log -1 --oneline --decorate` after validation for the exact commit. | Use current HEAD |
+| Push to `origin` after validation | Push the validated current HEAD to `origin/main`; do not treat older beta37 package-evidence commits as the current beta.47 baseline. | Use final git status |
 
 ## Current Automated Evidence
 
 - `git status --short --branch`: `## main...origin/main`.
 - Current pushed package-evidence baseline must be read from `git log -1 --oneline --decorate` after the final validation commit; avoid copying stale beta37 commit labels into beta39 handoff notes.
 - `Get-Process SlayTheSpire2 -ErrorAction SilentlyContinue`: no SlayTheSpire2 process was left running after the English Rootblight hover/notice cleanup.
-- `dotnet build EZMicroBalance.sln`: passed on 2026-05-26 after the beta.46 package-guard sync, 0 warnings, 0 errors.
-- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-26 after the beta.46 Trial Branch combat resolution split package sync, 295 passed, 20 skipped release artifact/runtime evidence tests, 0 failed.
+- `dotnet build EZMicroBalance.sln`: passed on 2026-05-26 after the beta.47 package-guard sync, 0 warnings, 0 errors.
+- `dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-26 after the beta.47 Root Sight selection commit split package sync, 295 passed, 20 skipped release artifact/runtime evidence tests, 0 failed.
 - `dotnet test EZMicroBalance.sln -c Release`: passed on 2026-05-13 after the BaseLib-only plug-off startup/log refresh, 81 passed, 18 skipped release artifact/runtime evidence tests, 0 failed.
-- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed on 2026-05-26 after the beta.46 package-guard sync.
-- `dotnet publish EZMicroBalance.sln`: passed on 2026-05-26 after the beta.46 package-guard sync, with DLL/manifest installed and the selected-resource PCK exported.
-- Latest `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-26 after the beta.46 Trial Branch combat resolution split package sync, 315 passed, 0 skipped, 0 failed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
+- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed on 2026-05-26 after the beta.47 package-guard sync.
+- `dotnet publish EZMicroBalance.sln`: passed on 2026-05-26 after the beta.47 package-guard sync, with DLL/manifest installed and the selected-resource PCK exported.
+- Latest `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed on 2026-05-26 after the beta.47 Root Sight selection commit split package sync, 315 passed, 0 skipped, 0 failed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - Package verification: installed, staging, and versioned DLL/JSON/PCK/README hashes match; the zip contains only `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`. Package-facing `README_INSTALL.txt` is now a short tester-facing install note, names the technical id / install folder, and states that Ancient selections grant visible marker relics. The 2026-05-14 external smoke record remains historical loader/resource evidence and is not a live gameplay pass for this package.
 - Current package loader/resource verification:
   - `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` started the beta.19 package through Steam with only BaseLib plus Spire Plus.
@@ -100,8 +100,8 @@ Concrete deliverables for the current goal:
 - Rootblight-family generated portrait art: small portraits are 250x190 and big portraits are 1000x760 for Rootblight I/II/III and Blight Sprout. SHA256 values are `37E06A6BCEB585478F681D41A4AC14B0988C6067BE7DC983A7867C8D1A824536`, `6A307787999AF2D154BB320A4D8DCA4079D9060602B73B1AA6BC6E1A22F59D58`, `0C1784FD117A48D47D448972AB3F95BA92B4528A296FC2AE557B58B5AA5F4E4E`, `9BCEE9AD668F2D5DDA6842CBB3D189E8CA42045D51C38C134EECCF9DFF397DE3`, `52AE2A50E1EB6A64FFA243EA061A2B2B5A8EDE7A076C3503FE15F8460F70C97A`, `92EA23513D739DFA9ECB2B95949002346AD4E8D43AB323EF9E7AA949DEB5EC7D`, `4A99EAD43F719D3BB514F6DEF31B72C131D67BE57E2A7B5184B6D788161AAF6E`, and `D2ADB90836972A6903752BC26264A440947797E5CACD4642059B9A98C84DA808`.
 - `git diff --check`: exit code 0 after the 2026-05-14 Morvi reward/state lifecycle hardening implementation and documentation refresh; only CRLF normalization warnings were printed.
 - Active release art hash: `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75`.
-- Staging/versioned/zip-entry DLL hash: `BD0B096BB2FA866739CD4F11FA7CC9C60656FC566FC79DA7583E084772F36C80`. Current staging/versioned/zip-entry PCK hash is `7920760C27017036383BFE72E3CA5276DACE23CD128CDD7C8EA1B1402BA1EDBA`; manifest hash is `F1E713E606ABABA4014A6C09D0F29870F08BE2BD330D8AF335AD5BEEA0164451`; README hash is `6FBB2516907ED2CF0D509C18DF597C67A51656A47AA3B64E53494AFB13E85990`.
-- Private-beta package: `publish\SpirePlus-v0.1.0-private-beta.46.zip`, SHA256 `C1335C862152279DB69285D0D1A82A652AC35A0B5421D9D38F2165F000C78BCC`.
+- Staging/versioned/zip-entry DLL hash: `717D5AE76539CD2EA69137D147F6295D968DD8589501208B48924693EBA53B18`. Current staging/versioned/zip-entry PCK hash is `1304477970AB26D0429A8843A9865F643F9F4251CF211FA0FBFBC45F23B42D7F`; manifest hash is `F0C5A1DD86D200B7DEEA37D0779A1621E9BA967D339D18FA3AA5401D458E62C2`; README hash is `F429E19B6447B802B03B412AA5F39D77E2CA75B64FE38A551395C01182242191`.
+- Private-beta package: `publish\SpirePlus-v0.1.0-private-beta.47.zip`, SHA256 `8FAEB1172A39896AF3258054EA05790F25CF4417A6F97F0BA27B2BC3D03D5E30`.
 
 ## Remaining Gates
 

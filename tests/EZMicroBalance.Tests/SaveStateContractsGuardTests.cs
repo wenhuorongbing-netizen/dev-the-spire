@@ -84,7 +84,8 @@ public sealed class SaveStateContractsGuardTests
             [
                 ["EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.State.cs"],
-                ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSight.cs"],
+                ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightSelection.cs"],
+                ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightSelectionCommit.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightMarkers.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RunLifecycle.cs"]
             ],

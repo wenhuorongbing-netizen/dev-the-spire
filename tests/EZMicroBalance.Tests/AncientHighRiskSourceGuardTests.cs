@@ -143,9 +143,12 @@ public sealed class AncientHighRiskSourceGuardTests
     {
         var rootSight = string.Join(
             Environment.NewLine,
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSight.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightSelection.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightSelectionCommit.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightMarkers.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightTargets.cs"));
+        var rootSightSelection = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightSelection.cs");
+        var rootSightSelectionCommit = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightSelectionCommit.cs");
         var rootSightRouting = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightRouting.cs");
         var rootSightEntryLookup = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEntryLookup.cs");
         var rootSightEntryCommit = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEntryCommit.cs");
@@ -260,6 +263,8 @@ public sealed class AncientHighRiskSourceGuardTests
             "point.coord.row <= current.coord.row");
         Assert.DoesNotContain("HasBlockingRootSightQuestMarker(point)", rootSight, StringComparison.Ordinal);
         Assert.DoesNotContain("player.RunState.CurrentActIndex != 0", rootSight, StringComparison.Ordinal);
+        Assert.DoesNotContain("RootSightPreviewRecords =", rootSightSelection, StringComparison.Ordinal);
+        Assert.DoesNotContain("mapScreen.Open", rootSightSelectionCommit, StringComparison.Ordinal);
 
         AssertSourceContains(
             runLifecycle,
