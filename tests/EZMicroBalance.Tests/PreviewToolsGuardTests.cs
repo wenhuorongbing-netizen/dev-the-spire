@@ -287,6 +287,53 @@ public sealed class PreviewToolsGuardTests
     }
 
     [Fact]
+    public void PlayerFacingFuturePeekClaimsStayUiOnlyAndCardOnly()
+    {
+        var previewReadme = ReadRepoText("docs", "features", "preview-tools", "README.md");
+        var compatibilityGoal = ReadRepoText("docs", "features", "future-peek", "goal.md");
+        var websiteData = ReadRepoText("website", "content-data.js");
+        var websiteApp = ReadRepoText("website", "app.js");
+        var combinedPlayerText = string.Join(
+            Environment.NewLine,
+            previewReadme,
+            compatibilityGoal,
+            websiteData,
+            websiteApp);
+
+        AssertSourceContains(
+            combinedPlayerText,
+            "only changes the local",
+            "%ScryMask",
+            "must not reveal cells, spend charges, or grant rewards",
+            "It lowers the fog over already-placed items, without clearing cells, spending charges, or granting rewards.",
+            "Shows the predicted card for card transforms using a forked RNG snapshot.",
+            "It does not advance the real transform RNG or add reward choices.",
+            "按下后只降低雾层透明度",
+            "不翻开格子、不消耗次数、不发放奖励",
+            "右侧预览会显示这次会变成的牌",
+            "不会新增奖励选项",
+            "Map foresight and reward foresight are not implemented");
+
+        foreach (var overclaim in new[]
+                 {
+                     "reveals all hidden items",
+                     "reveal all hidden rewards instantly",
+                     "cards/relics",
+                     "card or relic",
+                     "exact cards/relics",
+                     "一键直接看透所有隐藏格",
+                     "一键透视水晶球底下的全部物品",
+                     "卡牌与遗物变换",
+                     "卡牌或遗物",
+                     "变化卡牌/遗物",
+                     "直接看到变换后会得到什么牌或遗物"
+                 })
+        {
+            Assert.DoesNotContain(overclaim, combinedPlayerText, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public void ProjectUsesOneRuntimeCodeRootAndNoSecondPreviewProject()
     {
         var project = ReadRepoText("EZMicroBalance.csproj");

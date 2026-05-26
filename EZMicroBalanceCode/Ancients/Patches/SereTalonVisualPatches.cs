@@ -10,7 +10,7 @@ internal static class SereTalonIconPathPatch
 {
     private static void Postfix(RelicModel __instance, ref string __result)
     {
-        SereTalonVisualAssetPaths.TryApply(__instance, SereTalonVisualAssetPaths.PackedIcon, ref __result);
+        SereTalonVisualRelicModelRoutes.TryApplyPath(__instance, SereTalonVisualAssetPaths.PackedIcon, ref __result);
     }
 }
 
@@ -19,7 +19,7 @@ internal static class SereTalonPackedIconPathPatch
 {
     private static void Postfix(RelicModel __instance, ref string __result)
     {
-        SereTalonVisualAssetPaths.TryApply(__instance, SereTalonVisualAssetPaths.PackedIcon, ref __result);
+        SereTalonVisualRelicModelRoutes.TryApplyPath(__instance, SereTalonVisualAssetPaths.PackedIcon, ref __result);
     }
 }
 
@@ -28,7 +28,7 @@ internal static class SereTalonPackedIconOutlinePathPatch
 {
     private static void Postfix(RelicModel __instance, ref string __result)
     {
-        SereTalonVisualAssetPaths.TryApply(__instance, SereTalonVisualAssetPaths.PackedIcon, ref __result);
+        SereTalonVisualRelicModelRoutes.TryApplyPath(__instance, SereTalonVisualAssetPaths.PackedIcon, ref __result);
     }
 }
 
@@ -37,7 +37,7 @@ internal static class SereTalonBigIconPathPatch
 {
     private static void Postfix(RelicModel __instance, ref string __result)
     {
-        SereTalonVisualAssetPaths.TryApply(__instance, SereTalonVisualAssetPaths.BigIcon, ref __result);
+        SereTalonVisualRelicModelRoutes.TryApplyPath(__instance, SereTalonVisualAssetPaths.BigIcon, ref __result);
     }
 }
 
@@ -46,7 +46,7 @@ internal static class SereTalonIconTexturePatch
 {
     private static void Postfix(RelicModel __instance, ref Texture2D __result)
     {
-        SereTalonVisualAssetPaths.TryApplyPackedTexture(__instance, ref __result);
+        SereTalonVisualRelicModelRoutes.TryApplyPackedTexture(__instance, ref __result);
     }
 }
 
@@ -55,7 +55,7 @@ internal static class SereTalonIconOutlineTexturePatch
 {
     private static void Postfix(RelicModel __instance, ref Texture2D __result)
     {
-        SereTalonVisualAssetPaths.TryApplyPackedTexture(__instance, ref __result);
+        SereTalonVisualRelicModelRoutes.TryApplyPackedTexture(__instance, ref __result);
     }
 }
 
@@ -64,7 +64,7 @@ internal static class SereTalonBigIconTexturePatch
 {
     private static void Postfix(RelicModel __instance, ref Texture2D __result)
     {
-        SereTalonVisualAssetPaths.TryApplyTexture(__instance, SereTalonVisualAssetPaths.BigIcon, ref __result);
+        SereTalonVisualRelicModelRoutes.TryApplyTexture(__instance, SereTalonVisualAssetPaths.BigIcon, ref __result);
     }
 }
 
@@ -76,7 +76,7 @@ internal static class SereTalonAncientEventOptionButtonPatch
         // Ancient option buttons assign the relic icon directly during _Ready().
         // Keep this surface explicit so a loader/UI drift report can name the
         // exact surface instead of grouping it with normal RelicModel getters.
-        SereTalonVisualAssetPaths.TryApplyEventOptionButton(__instance);
+        SereTalonVisualNodeRoutes.TryApplyEventOptionButton(__instance);
     }
 }
 
@@ -88,6 +88,6 @@ internal static class SereTalonRelicNodeReloadPatch
         // Relic-bar and inspect nodes can reload after the model texture getters
         // have already run. Reapply only to SereTalon so Tanx Claws keeps the
         // source Maul-transform visuals.
-        SereTalonVisualAssetPaths.TryApplyRelicNode(__instance);
+        SereTalonVisualNodeRoutes.TryApplyRelicNode(__instance);
     }
 }

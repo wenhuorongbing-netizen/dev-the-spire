@@ -362,6 +362,10 @@ public sealed class AncientHighRiskSourceGuardTests
         var sereTalonVisualSource = string.Join(
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualAssetPaths.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualRelicModelRoutes.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualNodeRoutes.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualTextures.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualRouteLog.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"));
         var tanxClawsTuningSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
         var vakuuEventSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Vakuu.cs");
@@ -462,6 +466,7 @@ public sealed class AncientHighRiskSourceGuardTests
             "Ancient option buttons assign the relic icon directly during _Ready()",
             "Relic-bar and inspect nodes can reload after the model texture getters",
             "TryApply",
+            "TryApplyPath",
             "TryApplyEventOptionButton",
             "TryApplyRelicNode",
             "IsNodeReady()",
@@ -471,12 +476,12 @@ public sealed class AncientHighRiskSourceGuardTests
             "TryApplyPackedTexture",
             "LoadPackedTexture",
             "TryApplyTexture",
-            "ResourceLoader.Load<Texture2D>(PackedIcon",
+            "ResourceLoader.Load<Texture2D>(SereTalonVisualAssetPaths.PackedIcon",
             "GetNodeOrNull<TextureRect>(\"%RelicIcon\")",
             "button.Option?.Relic is not SereTalon",
             "PreloadManager.Cache.GetTexture2D(iconPath)",
             "texture is null",
-            "LogSkippedPathOnce(iconPath, \"texture did not load\")",
+            "SereTalonVisualRouteLog.SkippedPathOnce(iconPath, \"texture did not load\")",
             "Vakuu Sere Talon Ancient option icon route skipped",
             "resource path does not exist",
             "icon route skipped because",

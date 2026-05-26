@@ -428,17 +428,17 @@
             <h3>${lang === 'en' ? 'Crystal Sphere Peek & Transform Preview' : '水晶球透视 与 变换真实预览'}</h3>
             <p class="qol-banner-desc">
               ${lang === 'en' 
-                ? 'Say goodbye to tedious backup save/load loops! Spire Plus adds built-in preview tools directly to the game: peeking inside the Crystal Sphere reveals all hidden items, and transforming cards/relics shows the exact result beforehand.' 
-                : '拒绝繁琐的备份/读档存档循环！Spire Plus 直接在游戏内集成了好用的便利工具：水晶球小游戏新增「预知」按钮一键直接看透所有隐藏格，卡牌与遗物变换直接在卡面显示确定性预测结果，帮您有规划地挑选变换。'}
+                ? 'Spire Plus adds built-in preview tools directly to the game: Crystal Sphere peek lowers the fog over already-placed items, and card transforms show a deterministic card preview before confirmation.'
+                : 'Spire Plus 直接在游戏内集成了便利预览工具：水晶球「预知」会降低已摆好格子的雾层，卡牌变换会在确认前显示这次会变成的牌。'}
             </p>
             <div class="qol-banner-features">
               <div class="qol-banner-feat-item">
                 <strong>${lang === 'en' ? '🔮 Crystal Sphere Peek' : '🔮 水晶球预知'}</strong>
-                <span>${lang === 'en' ? 'Peek button reveals hidden cards/relics/potions instantly' : '小游戏新增预知按钮，一键透视水晶球底下的全部物品，省去存档读档'}</span>
+                <span>${lang === 'en' ? 'Peek lowers the mask only; it does not spend charges or grant rewards' : '预知只降低雾层，不消耗次数，也不发放奖励'}</span>
               </div>
               <div class="qol-banner-feat-item">
                 <strong>${lang === 'en' ? '🃏 Deterministic Transform' : '🃏 变换真实预览'}</strong>
-                <span>${lang === 'en' ? 'Hover shows the exact cards/relics you will get before transforming' : '悬停在变化卡牌/遗物上时，提前显示最终变换出的结果，拒绝盲盒'}</span>
+                <span>${lang === 'en' ? 'Shows the predicted card before you commit' : '确认前显示这次会变成的牌'}</span>
               </div>
             </div>
           </div>
