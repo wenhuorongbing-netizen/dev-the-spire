@@ -24,17 +24,6 @@ internal static class TransformPreviewInitializePatch
         ref IEnumerable<CardTransformation> cardTransformations,
         out List<CardTransformation> __state)
     {
-        if (SpirePlusModConfig.EnableTransformPrediction &&
-            MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
-                MultiplayerFeaturePolicy.CurrentRunStateOrNull(),
-                "PreviewTransform",
-                "transform prediction preview is single-player only until co-op selection, RNG, and reconnect paths have live proof"))
-        {
-            __state = [];
-            TransformPreviewCyclePatch.ClearPredictions(__instance);
-            return;
-        }
-
         __state = cardTransformations.ToList();
         cardTransformations = __state;
         TransformPreviewCyclePatch.PreparePredictions(__instance, __state);
@@ -68,12 +57,17 @@ internal static class TransformPreviewCyclePatch
         try
         {
             var owner = transformations[0].Original.Owner;
-            if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
-                    owner.RunState,
-                    "PreviewTransform",
-                    "transform prediction preview is single-player only until co-op selection, RNG, and reconnect paths have live proof"))
+            if (!MultiplayerFeaturePolicy.IsSingleplayer(owner.RunState))
             {
-                return;
+                MultiplayerFeaturePolicy.LogCoopEvidence(
+                    "PreviewTransform",
+                    "prediction_prepared_multiplayer_ui_only",
+                    owner.RunState,
+                    new Dictionary<string, object?>
+                    {
+                        ["reason"] = "Transform prediction displays only the local preview card. It does not create a PlayerChoice, reward alternative, or advance the real transform RNG.",
+                        ["netMode"] = MultiplayerFeaturePolicy.DescribeNetMode(owner.RunState)
+                    });
             }
 
             if (!TransformPredictionRngContext.TryConsume(
@@ -145,43 +139,52 @@ internal static class TransformPreviewCyclePatch
 
     private static bool Prefix(NTransformPreview __instance, NPreviewCardHolder holder, CardPile cardPile, ref Task __result)
     {
-        if (!SpirePlusModConfig.EnableTransformPrediction || !SpirePlusModConfig.TransformPredictionAlwaysOn)
+        try
         {
-            return true;
-        }
+            if (!SpirePlusModConfig.EnableTransformPrediction || !SpirePlusModConfig.TransformPredictionAlwaysOn)
+            {
+                return true;
+            }
 
-        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
-                MultiplayerFeaturePolicy.CurrentRunStateOrNull(),
+            if (!PredictionsByPreview.TryGetValue(__instance, out var predictions) ||
+                predictions.Pending.Count == 0)
+            {
+                return true;
+            }
+
+            var predicted = predictions.Pending.Dequeue();
+            if (predicted == null)
+            {
+                return true;
+            }
+
+            holder.Hitbox.MouseFilter = Control.MouseFilterEnum.Stop;
+            holder.ReassignToCard(predicted, cardPile.Type, null, ModelVisibility.Visible);
+            ReleaseEvidenceLog.Log(
                 "PreviewTransform",
-                "transform prediction preview is single-player only until co-op selection, RNG, and reconnect paths have live proof"))
+                "prediction_displayed",
+                data: new Dictionary<string, object?>
+                {
+                    ["card"] = predicted.Id.Entry,
+                    ["netMode"] = MultiplayerFeaturePolicy.DescribeNetMode(MultiplayerFeaturePolicy.CurrentRunStateOrNull())
+                });
+            __result = Task.CompletedTask;
+            return false;
+        }
+        catch (Exception exception)
         {
             ClearPredictions(__instance);
+            ReleaseEvidenceLog.Log(
+                "PreviewTransform",
+                "prediction_display_failed_fallback_vanilla",
+                runState: MultiplayerFeaturePolicy.CurrentRunStateOrNull(),
+                data: new Dictionary<string, object?>
+                {
+                    ["exception"] = exception.GetType().Name
+                });
+            PreviewLog.Warn("Transform prediction display failed; falling back to vanilla cycling: " + exception.Message);
             return true;
         }
-
-        if (!PredictionsByPreview.TryGetValue(__instance, out var predictions) ||
-            predictions.Pending.Count == 0)
-        {
-            return true;
-        }
-
-        var predicted = predictions.Pending.Dequeue();
-        if (predicted == null)
-        {
-            return true;
-        }
-
-        holder.Hitbox.MouseFilter = Control.MouseFilterEnum.Stop;
-        holder.ReassignToCard(predicted, cardPile.Type, null, ModelVisibility.Visible);
-        ReleaseEvidenceLog.Log(
-            "PreviewTransform",
-            "prediction_displayed",
-            data: new Dictionary<string, object?>
-            {
-                ["card"] = predicted.Id.Entry
-            });
-        __result = Task.CompletedTask;
-        return false;
     }
 
     private sealed class PredictionQueue

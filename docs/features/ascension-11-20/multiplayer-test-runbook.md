@@ -34,7 +34,7 @@ Default co-op safety test:
 ```text
 Do not set SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY.
 Do not set SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS.
-Do not set SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS.
+Preview tools do not use a co-op override env var; if they appear during this run, confirm they stay local UI-only.
 ```
 
 Deliberate co-op debug opt-in:

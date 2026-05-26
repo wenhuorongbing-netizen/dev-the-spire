@@ -16,8 +16,8 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest verification after the beta.37 Soul Tide / Fission Exhaust / Elite Root refresh: `dotnet build EZMicroBalance.sln`, normal tests with 288 passed / 20 skipped, opt-in artifact tests with 308 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and installed-package checkers for both `.tools\publish-game-root\mods\EZMicroBalance` and the real game `mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff.
-- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.37 Soul Tide / Fission Exhaust / Elite Root refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
+- Latest verification after the beta.38 Future Peek UI-only co-op refresh: `dotnet build EZMicroBalance.sln`, normal tests with 288 passed / 20 skipped, opt-in artifact tests with 308 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and installed-package checkers for both `.tools\publish-game-root\mods\EZMicroBalance` and the real game `mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff.
+- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.38 Future Peek UI-only co-op refresh, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
 - The latest normal Steam smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` covered the beta.19 package hash: only BaseLib plus Spire Plus loaded, `v0.1.0-private-beta.19` was logged, `Found 30 SavedSpireFields`, startup completed, and the log audit was clean. Feature gameplay rows remain pending.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
@@ -41,18 +41,18 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.37.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.38.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `3DF27CE930CDCC9A163D27D9F490C4F793F11DA0D8B3E7BE1A281479BD796BF1`
+- Zip SHA256: `CE26889EA9B6FD95C5DBB3E13FC350969530D8430D4CFC9176FCB8A9C2571940`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `834AADBF7437366D21A73F8C3514D56E8B079C32E21CBFB22833BD244FA5F214`
-- Manifest SHA256: `9403F46F6F2041BB0A4A1D526CEAF8D229E8BF2E3E8DA09989486EA6CDAB0A05`
-- PCK SHA256: `8DDBBC1E44D73EC682C00BBF703EA7226EE69DA27DC9E3F73B7B202F5D537D2C`
-- README_INSTALL SHA256: `290856DFB3D51BD9A4B1A368050DB59E9BFBD48804EF7A306B5D4F329A6F1030`
+- DLL SHA256: `82CCC267554D99DCE41092AF13C2E9388C5F65FC941386E4A025F04FD441DD4D`
+- Manifest SHA256: `930C49F39DB48D8CD1118941F54532FC53073F1F7565C0D165F3F4B69581A6D5`
+- PCK SHA256: `924E2D74E3FEE3CF76FBD68FE2123D4D9F1FD35BE1F849B4173A6CF52FC026A8`
+- README_INSTALL SHA256: `373CE7B8CDE3B1969C6BA7BB4E15AA4E6A62A371DC6167CFE57C636D396598BF`
 
 ## Known Automated Evidence
 
-- Current automated snapshot: beta.37 passed `dotnet build`, normal `dotnet test`, isolated publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and isolated installed-package checking after the Seedbed strength/planting clarity refresh. Gameplay proof is still pending.
+- Current automated snapshot: beta.38 passed `dotnet build`, normal `dotnet test`, isolated publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and isolated installed-package checking after the Future Peek UI-only co-op refresh. Gameplay proof is still pending.
 - Current normal test count: 288 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 308 passed / 0 skipped.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory .tools\publish-game-root\mods\EZMicroBalance`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split. After the game is closed and `mods\EZMicroBalance` is refreshed, rerun the same checker against the real installed folder.
 - Historical loader/resource evidence remains useful context only. The current 30-field loader proof covers beta.19 loader/startup only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.

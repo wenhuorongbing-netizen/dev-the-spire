@@ -50,7 +50,7 @@ public sealed class PreviewToolsGuardTests
     }
 
     [Fact]
-    public void PreviewToolsFailClosedInUnverifiedCoopRuns()
+    public void PreviewToolsRunAsLocalUiOnlyInCoopRuns()
     {
         var policySource = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerFeaturePolicy.cs");
         var crystalSource = ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekPatch.cs");
@@ -58,24 +58,32 @@ public sealed class PreviewToolsGuardTests
         var transformContextSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionRngContext.cs");
         var combinedPreviewSource = crystalSource + Environment.NewLine + transformSource + Environment.NewLine + transformContextSource;
 
-        Assert.Contains("SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS", policySource, StringComparison.Ordinal);
-        Assert.Contains("EZMB_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS", policySource, StringComparison.Ordinal);
-        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", policySource, StringComparison.Ordinal);
-        Assert.Contains("coop_preview_tool_disabled", policySource, StringComparison.Ordinal);
-        Assert.Contains("coop_preview_tool_override_enabled", policySource, StringComparison.Ordinal);
-        Assert.Contains("LoggedCoopPreviewGateKeys", policySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS", policySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("EZMB_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS", policySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("ShouldDisableUnverifiedCoopPreviewTool", policySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("coop_preview_tool_disabled", policySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("coop_preview_tool_override_enabled", policySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("LoggedCoopPreviewGateKeys", policySource, StringComparison.Ordinal);
         Assert.Contains("netType is NetGameType.Singleplayer or NetGameType.None &&", policySource, StringComparison.Ordinal);
         Assert.Contains("if (netType == NetGameType.Host)", policySource, StringComparison.Ordinal);
         Assert.Contains("if (netType == NetGameType.Client)", policySource, StringComparison.Ordinal);
 
-        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", crystalSource, StringComparison.Ordinal);
-        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", transformSource, StringComparison.Ordinal);
-        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", transformContextSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("ShouldDisableUnverifiedCoopPreviewTool", combinedPreviewSource, StringComparison.Ordinal);
+        Assert.Contains("coop_local_ui_preview_enabled", crystalSource, StringComparison.Ordinal);
+        Assert.Contains("prediction_prepared_multiplayer_ui_only", transformSource, StringComparison.Ordinal);
+        Assert.Contains("coop_ui_only_rng_context_registered", transformContextSource, StringComparison.Ordinal);
+        Assert.Contains("Transform prediction displays only the local preview card", transformSource, StringComparison.Ordinal);
+        Assert.Contains("does not create a PlayerChoice, reward alternative, or advance the real transform RNG", transformSource, StringComparison.Ordinal);
         Assert.Contains("MultiplayerFeaturePolicy.CurrentRunStateOrNull()", transformSource, StringComparison.Ordinal);
-        Assert.Contains("__state = [];", transformSource, StringComparison.Ordinal);
         Assert.Contains("ClearPredictions(__instance)", transformSource, StringComparison.Ordinal);
         Assert.Contains("Clear(player)", transformContextSource, StringComparison.Ordinal);
-        Assert.Contains("two-client proof", combinedPreviewSource, StringComparison.Ordinal);
+        Assert.Contains("prediction_display_failed_fallback_vanilla", transformSource, StringComparison.Ordinal);
+        Assert.Contains("return true;", SliceFrom(transformSource, "catch (Exception exception)"), StringComparison.Ordinal);
+        Assert.DoesNotContain("PlayerChoiceSynchronizer", combinedPreviewSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("new PlayerChoice", combinedPreviewSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CardRewardAlternative", combinedPreviewSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddReward", combinedPreviewSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("FastForward", combinedPreviewSource, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -84,7 +92,8 @@ public sealed class PreviewToolsGuardTests
         var source = ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekPatch.cs");
 
         Assert.Contains("NCrystalSphereScreen", source, StringComparison.Ordinal);
-        Assert.Contains("ShouldDisableUnverifiedCoopPreviewTool", source, StringComparison.Ordinal);
+        Assert.Contains("coop_local_ui_preview_enabled", source, StringComparison.Ordinal);
+        Assert.Contains("Crystal Sphere peek only changes local ScryMask alpha", source, StringComparison.Ordinal);
         Assert.Contains("%ScryMask", source, StringComparison.Ordinal);
         Assert.Contains("GetPeekButtonText()", source, StringComparison.Ordinal);
         Assert.Contains("Modulate", source, StringComparison.Ordinal);

@@ -28,12 +28,17 @@ internal static class CrystalSpherePeekPatch
             return;
         }
 
-        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
-                RunManager.Instance?.DebugOnlyGetState(),
-                "PreviewCrystalSphere",
-                "Crystal Sphere peek is a local-only information UI until co-op fairness and reconnect behavior have live proof"))
+        var runState = RunManager.Instance?.DebugOnlyGetState();
+        if (!MultiplayerFeaturePolicy.IsSingleplayer(runState))
         {
-            return;
+            MultiplayerFeaturePolicy.LogCoopEvidence(
+                "PreviewCrystalSphere",
+                "coop_local_ui_preview_enabled",
+                runState,
+                new Dictionary<string, object?>
+                {
+                    ["reason"] = "Crystal Sphere peek only changes local ScryMask alpha and does not reveal cells, spend charges, or grant rewards."
+                });
         }
 
         var mask = __instance.GetNodeOrNull<Control>("%ScryMask");
@@ -89,7 +94,7 @@ internal static class CrystalSpherePeekPatch
         ReleaseEvidenceLog.Log(
             "PreviewCrystalSphere",
             "peek_button_added",
-            runState: RunManager.Instance?.DebugOnlyGetState(),
+            runState: runState,
             data: new Dictionary<string, object?>
             {
                 ["button"] = ButtonName,

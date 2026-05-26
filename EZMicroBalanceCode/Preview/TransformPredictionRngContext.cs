@@ -27,13 +27,20 @@ internal static class TransformPredictionRngContext
             return;
         }
 
-        if (MultiplayerFeaturePolicy.ShouldDisableUnverifiedCoopPreviewTool(
-                player.RunState,
-                "PreviewTransform",
-                "transform prediction previews use local UI and forked transform RNG contexts that still need two-client proof"))
+        if (!MultiplayerFeaturePolicy.IsSingleplayer(player.RunState))
         {
-            Clear(player);
-            return;
+            MultiplayerFeaturePolicy.LogCoopEvidence(
+                "PreviewTransform",
+                "coop_ui_only_rng_context_registered",
+                player.RunState,
+                new Dictionary<string, object?>
+                {
+                    ["reason"] = "Transform prediction uses a forked local RNG snapshot for the local preview card only.",
+                    ["source"] = sourceName,
+                    ["seed"] = source.Seed,
+                    ["counter"] = source.Counter,
+                    ["netMode"] = MultiplayerFeaturePolicy.DescribeNetMode(player.RunState)
+                });
         }
 
         SnapshotsByPlayer.Remove(player);
