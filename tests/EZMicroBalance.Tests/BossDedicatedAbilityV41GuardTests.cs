@@ -318,7 +318,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
     {
         var bossPowers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
         var aeonglassPower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "AeonglassHourglassPower.cs");
-        var residualSampleFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.PhaseCarryover.cs");
+        var residualSampleFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.ResidualSample.cs");
         var royalDecreeEnchantment = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "RoyalDecreeEnchantment.cs");
         var combinedPowerText = string.Join(Environment.NewLine, bossPowers, aeonglassPower, residualSampleFlow, royalDecreeEnchantment);
 
@@ -409,7 +409,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var combatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatEvents.cs");
         var rootBudEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
         var aeonglass = ReadAeonglassHourglassCombatSources();
-        var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.PhaseCarryover.cs");
+        var residualSample = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.ResidualSample.cs");
         var marginalNotePowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MarginalNotePowers.cs");
         var tracker = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatTracker.BossSeals.cs");
         var chosenDecreeAssignStart = SliceBetween(

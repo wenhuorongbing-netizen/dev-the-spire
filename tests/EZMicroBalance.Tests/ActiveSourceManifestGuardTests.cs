@@ -254,7 +254,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.MarginalNote.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.MartyrOath.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.MisalignedShell.cs",
-        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.PhaseCarryover.cs",
+        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.ResidualSample.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.SoulTide.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.StartledShell.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.BossSeals.StruggleBait.cs",

@@ -16,8 +16,8 @@ Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest verification after the beta.70 Lotha card-play dispatch / release-evidence helper split package sync: `dotnet build EZMicroBalance.sln`, normal tests with 296 passed / 20 skipped, opt-in artifact tests with 316 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and the real installed-package checker against `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff. `.tools\publish-game-root` is isolated tooling context only and is not the current package-parity source.
-- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.70 Lotha card-play dispatch / release-evidence helper split package sync, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
+- Latest verification after the beta.71 Residual Sample source-file rename package sync: `dotnet build EZMicroBalance.sln`, normal tests with 296 passed / 20 skipped, opt-in artifact tests with 316 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and the real installed-package checker against `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff. `.tools\publish-game-root` is isolated tooling context only and is not the current package-parity source.
+- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.71 Residual Sample source-file rename package sync, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
 - The latest normal Steam smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` covered the beta.19 package hash: only BaseLib plus Spire Plus loaded, `v0.1.0-private-beta.19` was logged, `Found 30 SavedSpireFields`, startup completed, and the log audit was clean. Feature gameplay rows remain pending.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
@@ -41,18 +41,18 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.70.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.71.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `779F506CE6DF12DD7C8AC246758E07C46C424AA1BB7B071817E73F0439AF3FDB`
+- Zip SHA256: `CE1CC4402AE8B1E76E30C76150A6F936F6E9A7148F2819E1578DDDA5BF67100C`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `8CA7161DEE41662DE76293BB5246C04531969CA7E1FF1318A4C308B027258AA3`
-- Manifest SHA256: `B92ED1A66A820771A4EFA7C71E6CD70719D198FF6DF1E210CB34508F7CD4EF42`
-- PCK SHA256: `44C62AD3F39DE63A85EEC55E24F0784464B72037853FE1F2DC702A65369B2D75`
-- README_INSTALL SHA256: `877513B83C1E21F52F9AF959E286971BD2D55E4A52B48682AE30B5FAEDBDD84F`
+- DLL SHA256: `6C8205733822F36CC1C684A76F31F2DEF98FED680325CC6C6362CC6AF8808EA1`
+- Manifest SHA256: `5C40F38C678F9D399A9C3C5108DCAD53A79D0490BEBE39A09E8AE550CA9A6778`
+- PCK SHA256: `8E918A7A55126C78106469EB06089F039E54C0972570A8F37AFAC2CAFBACBECB`
+- README_INSTALL SHA256: `8B0627A64E1F5A5511435049859466CE0109BD47FCD331F6843AFD15DE17EDB6`
 
 ## Known Automated Evidence
 
-- Current automated snapshot: beta.70 passed `dotnet build`, normal `dotnet test`, normal publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and real installed-package checking after the Lotha card-play dispatch / release-evidence helper split package sync. Gameplay proof is still pending.
+- Current automated snapshot: beta.71 passed `dotnet build`, normal `dotnet test`, normal publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and real installed-package checking after the Residual Sample source-file rename package sync. Gameplay proof is still pending.
 - Current normal test count: 296 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 316 passed / 0 skipped.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory "D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance"`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split.
 - Historical loader/resource evidence remains useful context only. The current 30-field loader proof covers beta.19 loader/startup only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
