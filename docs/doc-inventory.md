@@ -14,6 +14,7 @@
 - `docs/specs/release-scope-v1.md`
 - `docs/specs/release-traceability-matrix.md`
 - `docs/specs/website-claim-audit.md`
+- `docs/intro.zh.md`
 - `docs/month-plan/baseline-2026-05-20.md`
 - `docs/month-plan/commit-boundaries.md`
 - `docs/test-ready-development-goal.md`
@@ -76,6 +77,7 @@ Current support docs, not default reading path:
 - `docs/archive/implementation-records/`
 - `docs/archive/project-state-history-20260516.md`
 - `docs/archive/implementation-records/2026-05-15-current-package-verification-note.md`
+- `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`
 - `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`
 
 ## E. Clutter candidates handled
@@ -99,6 +101,9 @@ Current support docs, not default reading path:
 - top-level `EzDailyContent*` and `EZFuturePeek*` mod surfaces removed from the active root; the single active deliverable is `Spire Plus`.
 - stale root architecture audit with superseded `EZFuturePeek` separation advice -> `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md`
 - historical RC1 live-validation log for older package states -> `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`
+- `docs/介绍.md` -> `docs/intro.zh.md` to keep the Chinese intro active while avoiding quoted non-ASCII paths in Git/script output.
+- root `web_issue.md` -> `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`; current forum follow-up remains in `website/web_issue.md` and `docs/features/forum/`.
+- ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
 
 ## F. Archive entrypoints
 
@@ -115,6 +120,7 @@ Current support docs, not default reading path:
 - `docs/archive/feature-inputs/README.md`
 - `docs/archive/project-state-history-20260516.md`
 - `docs/archive/implementation-records/2026-05-15-current-package-verification-note.md`
+- `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`
 - `docs/archive/legacy-planning/legacy-project-files/README.md`
 - `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md`
 - `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`

@@ -95,7 +95,7 @@ public sealed class DocumentationCompactnessGuardTests
     [Fact]
     public void ChineseIntroKeepsPreviewToolsInsideSpirePlus()
     {
-        var intro = ReadRepoText("docs", "\u4ecb\u7ecd.md");
+        var intro = ReadRepoText("docs", "intro.zh.md");
         var packageScript = ReadRepoText("scripts", "package-spire-plus.ps1");
 
         AssertSourceContains(

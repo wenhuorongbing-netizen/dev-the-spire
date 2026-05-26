@@ -36,6 +36,7 @@
 | `docs/archive/feature-audits/toreview-pre-slim-20260518.md` | Archive | Full historical retest queue before the compact current `docs/toreview.md`. |
 | `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md` | Archive | Historical architecture/clean-code audit; superseded `EZFuturePeek` separation advice is not current direction. |
 | `docs/archive/implementation-records/` | Archive | Compact implementation records moved out of the active reading path. |
+| `docs/intro.zh.md` | Current support | Chinese Spire Plus feature summary kept under an ASCII path for stable Git/script output. |
 | `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Archive | Historical RC1 live-validation log for older package states; current evidence is in `docs/release-evidence-status.md`. |
 | `docs/archive/superseded/setup-spec-original-scaffold.md` | Archive | Historical original `EzDailyContent` setup specification; current setup starts from `README.md`, `docs/README.md`, and `docs/dev-environment.md`. |
 | `docs/archive/project-state-history-20260516.md` | Archive | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation/package history. |
@@ -108,6 +109,7 @@ The private beta zip should contain only those three installable files plus `REA
 | `.tools/archive/local-art-and-calibration-20260515/` | Ignored local archive | Former root `art_pipeline/` and `asset/` generated art/calibration material; not part of the active PCK unless explicitly revalidated and promoted later. |
 | `.tools/archive/local-root-clutter-20260515/` | Ignored local archive | Former root local-only package/source-analysis/website zip clutter preserved before any deletion decision. |
 | `.tools/archive/local-website-preview-20260516/` | Ignored local archive | Older snapshot of the pre-promotion website draft and Pages workflow; the current tracked source lives at root `website/` and `.github/workflows/spire-plus-site.yml`. |
+| `docs/archive/implementation-records/forum-public-integration-qa-20260526.md` | Archive | Former root `web_issue.md` forum QA note moved out of the root reading path; current forum follow-up lives in `website/web_issue.md` and `docs/features/forum/`. |
 
 ## Documentation Map
 
@@ -127,6 +129,7 @@ Start at `docs/README.md`.
 | Commit boundaries | `docs/month-plan/commit-boundaries.md` |
 | Full local CI lane | `.github/workflows/full-local-validation.yml` and `scripts/ci-full-validation.ps1` |
 | Public change log website | `website/README.md` and `.github/workflows/spire-plus-site.yml` |
+| Chinese feature summary | `docs/intro.zh.md` |
 | Test-ready development goal | `docs/test-ready-development-goal.md` |
 | Manual evidence queue | `docs/issues/waiting-tests.md` (compact support queue only; full historical rows are archived, and next development starts from `docs/test-ready-development-goal.md`) |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |

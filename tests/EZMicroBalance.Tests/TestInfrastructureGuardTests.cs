@@ -116,9 +116,19 @@ public sealed class TestInfrastructureGuardTests
         AssertRepoFileExists("website", "README.md");
         AssertRepoFileExists("website", "content-data.js");
         AssertRepoFileExists(".github", "workflows", "spire-plus-site.yml");
+        AssertRepoFileExists("docs", "intro.zh.md");
+        AssertRepoFileExists("docs", "archive", "implementation-records", "forum-public-integration-qa-20260526.md");
+        AssertRepoPathDoesNotExist("docs", "介绍.md");
+        AssertRepoPathDoesNotExist("web_issue.md");
         Assert.Contains("Promoted website source is tracked", projectMap, StringComparison.Ordinal);
         Assert.Contains(".tools/archive/local-website-preview-20260516", projectMap, StringComparison.Ordinal);
+        Assert.Contains("docs/intro.zh.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("forum-public-integration-qa-20260526.md", projectMap, StringComparison.Ordinal);
         Assert.Contains("current public site source is tracked", docInventory, StringComparison.Ordinal);
+        Assert.Contains("docs/intro.zh.md", docInventory, StringComparison.Ordinal);
+        Assert.Contains("docs/介绍.md` -> `docs/intro.zh.md", docInventory, StringComparison.Ordinal);
+        Assert.Contains("root `web_issue.md` -> `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`", docInventory, StringComparison.Ordinal);
+        Assert.Contains("ignored `forum/node_modules/` dependency cache deleted", docInventory, StringComparison.Ordinal);
         Assert.Contains("local-website-preview-20260516", docInventory, StringComparison.Ordinal);
         Assert.Contains("generated `website/forum/` output is ignored", docInventory, StringComparison.Ordinal);
     }

@@ -81,6 +81,8 @@ public sealed class EngineeringGovernanceGuardTests
             "SuggestedGitAddCommands",
             "GitAddCommand",
             "git add --pathspec-from-file=",
+            "docs/intro.zh.md",
+            "docs/archive/implementation-records/",
             "Local output hygiene",
             "Status and release docs",
             @"^tests/EZMicroBalance\.Tests/[^/]+\.cs\.uid$",
@@ -281,6 +283,7 @@ public sealed class EngineeringGovernanceGuardTests
             "`docs/specs/release-scope-v1.md`",
             "`docs/specs/release-traceability-matrix.md`",
             "`docs/specs/website-claim-audit.md`",
+            "`docs/intro.zh.md`",
             "`docs/source-research/multiplayer-save-rng.md`",
             "`docs/architecture/save-state-contracts.md`");
 

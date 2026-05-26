@@ -102,6 +102,7 @@ function Get-WorktreeBatch {
     if ($p -eq 'AGENTS.md' -or
         $p -eq 'PROJECT_STATE.md' -or
         $p -eq 'README.md' -or
+        $p -eq 'docs/intro.zh.md' -or
         $p -eq 'docs/BETA_COMPATIBILITY.md' -or
         $p -match '^docs/(issues|toreview|review|dev-environment|private-beta|release|test-ready|test-plan|mod-changelog).*\.md$') {
         return 1
@@ -114,14 +115,14 @@ function Get-WorktreeBatch {
         $p -eq 'docs/REMOTE_DEVELOPMENT_SETUP.md' -or
         $p.StartsWith('docs/archive/feature-inputs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/archive/feature-audits/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/archive/implementation-records/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -in @('docs/README.md', 'docs/PROJECT_MAP.md', 'docs/doc-inventory.md', 'docs/goal.md', 'docs/git-commit-push-policy.md', 'docs/worktree-cleanup-audit.md', 'docs/codex-workflow.md', 'docs/features/README.md')) {
         return 2
     }
 
     if ($p -eq 'EZMicroBalanceCode/README.md' -or
         $p -eq 'docs/implement.md' -or
-        $p.StartsWith('docs/audits/', [System.StringComparison]::OrdinalIgnoreCase) -or
-        $p -match '^docs/(介绍|/+344/+273/+213/+347/+273/+215)\.md$') {
+        $p.StartsWith('docs/audits/', [System.StringComparison]::OrdinalIgnoreCase)) {
         return 8
     }
 

@@ -58,7 +58,7 @@ These files are current support records but are not part of the default next-dev
 | `archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Historical RC1 source/live-validation notes for older packages. Current evidence is summarized in `release-evidence-status.md` and `dev-environment.md`. |
 | `issues/waiting-tests.md` | Compact manual evidence queue retained for guard/reference support. Full historical rows are archived under `archive/issues/`. |
 | `mod-changelog.md` | Player-facing change summary. Keep it short. |
-| `介绍.md` | Detailed feature and change summary for downstream web documentation. |
+| `intro.zh.md` | Chinese feature and change summary for downstream web documentation. |
 | `../website/README.md` | Public static site maintenance notes. |
 
 ## Setup And Workflow
