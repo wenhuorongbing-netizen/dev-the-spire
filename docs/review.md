@@ -16,7 +16,8 @@ Live-only blockers remain:
 
 ## Latest Fixed Findings
 
-- 2026-05-26 beta.43 package sync: `EZMicroBalance.json`, current package hash docs, release guards, website download metadata, and `website/README.md` now point at `SpirePlus-v0.1.0-private-beta.43.zip` with ZIP SHA256 `45F252F1EA9C509EA850ADE7DDE1C9ACBC79C642D53FBFA8AD6A15E3321BCC7A`. `dotnet publish`, `scripts/package-spire-plus.ps1`, default tests, opt-in artifact tests, website syntax checks, format, diff-check, batch classification, and generated-sidecar pruning passed. No game was opened.
+- 2026-05-26 beta.44 package sync: `EZMicroBalance.json`, current package hash docs, release guards, website download metadata, and `website/README.md` now point at `SpirePlus-v0.1.0-private-beta.44.zip` with ZIP SHA256 `F0E07A40BE20042AE3A4CA8F960F87BE2B65B048051D2D37848841F141F16404`. `dotnet publish`, `scripts/package-spire-plus.ps1`, default tests, opt-in artifact tests, website syntax checks, format, diff-check, batch classification, and generated-sidecar pruning passed. No game was opened.
+- 2026-05-26 Urda Seed Bank extraction-state split: `UrdaBlessingService.SeedBankExtraction.cs` now owns only the actual relic-click card selection/deck-add flow, while `UrdaBlessingService.SeedBankExtractionState.cs` owns the public relic-click entry point and per-player reentrancy guard. Save-field names, player-visible behavior, and call sites are unchanged. No game was opened.
 - 2026-05-26 Urda Seedbed state/patch split: `UrdaBlessingService.SeedbedCombat.cs` now keeps planting behavior only, `UrdaBlessingService.SeedbedState.cs` owns combat-slot persistence and planted-card markers, and `UrdaSeedbedAfterCardDrawnPatch.cs` owns the Harmony hook that suppresses draw hooks for planted cards. Save-field names, player-visible behavior, and call sites are unchanged. No game was opened.
 - 2026-05-26 docs implement-goal audit: the requested `docs/implement.md` target is an archived/removed alias, not an active source file. Current governance intentionally keeps `docs/implement.md` absent and uses `docs/goal.md` for the compact guard. Focused guard runs passed for goal compactness, Sere Talon/Tanx Claws separation, Preview Tools source safety, Ascension selector localization, and Ancient source slices; live loader/gameplay/save-load/co-op proof remains pending. No game was opened.
 - 2026-05-26 Urda state codec split: the Urda selected-blessing/progress wire format is now owned by `UrdaStateCodec.cs`; `UrdaBlessingService.State.cs` now delegates selected-blessing reads, progress reads, and writes through `UrdaStateSnapshot`/`UrdaProgress`. The guard checks the legacy short-state indexes and current HumusCompletionPending field order so save/load compatibility remains explicit. No game was opened.
@@ -57,7 +58,7 @@ Live-only blockers remain:
 
 Detailed pre-current pass notes remain in the archive files listed above. This active review keeps only context that still guides current manual testing and prevents stale release claims.
 
-- 2026-05-25 loader/startup context: historical beta.19 loader smoke reached the main menu with only BaseLib and Spire Plus enabled, registered `EZMicroBalance`, found 30 SavedSpireFields, and had a clean log audit. It is historical startup context only; beta.43 still needs fresh loader proof.
+- 2026-05-25 loader/startup context: historical beta.19 loader smoke reached the main menu with only BaseLib and Spire Plus enabled, registered `EZMicroBalance`, found 30 SavedSpireFields, and had a clean log audit. It is historical startup context only; beta.44 still needs fresh loader proof.
 - 2026-05-25 co-op fail-closed pass: multiplayer gameplay mutations, combat hooks, Ancient reward/run hooks, Ascension reward/gameplay hooks, and Urda reward alternatives fail closed by default unless explicit opt-in environment variables are set. The two crash logs remain useful co-op evidence, but they do not prove current-package co-op behavior. Preview tools were later narrowed to local UI-only behavior and still need live two-client proof.
 - 2026-05-25 player-facing polish: Seedbed / Planting, Seed Bank hover, A20 selector localization, Ancient direct-gain feedback, Fission Exhaust text, Soul Tide timing, Neow/Act 1 Ancient reroll, Elite Root, and high-pressure elite damage tuning are source/package-fixed and live-pending.
 - 2026-05-24 Sere Talon / Tanx Claws lineage: source, package, art-route, handoff, website, and installed-package checks were hardened across multiple passes. Historical command logs are archive/context evidence, not a substitute for current live UI proof.
@@ -66,7 +67,7 @@ Detailed pre-current pass notes remain in the archive files listed above. This a
 
 - Vakuu's Sere Talon must offer 4 Curses, choose 1, then add the selected Curse, 2 Wish, and 1 Wish+; its event option, relic bar, inspect screen, hover text, and log routes must not appear as Tanx Claws.
 - Tanx Claws must stay on the Tanx route and transform selected cards into upgraded Maul+ / 撕咬+.
-- Current-package Steam-client loader proof for beta.43 is pending; historical beta.19 and beta.17 loader rows are context only.
+- Current-package Steam-client loader proof for beta.44 is pending; historical beta.19 and beta.17 loader rows are context only.
 - Save/load, death/failure, co-op, clicked UI, hover, map traversal, preview tools, and gameplay evidence remain manual rows under `docs/issues.md`, `docs/toreview.md`, and the generated handoff.
 
 ## Still Not Claimed

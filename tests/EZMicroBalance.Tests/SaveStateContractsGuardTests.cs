@@ -100,6 +100,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.State.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs"],
+                ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"]
             ],
             ["SavedSpireField<Player, string> UrdaStateKey", "SavedSpireField<CardModel, string> UrdaDeckStateKey", "SeedBankCardIds"],

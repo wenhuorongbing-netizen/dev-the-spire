@@ -516,7 +516,10 @@ public sealed class UrdaReleaseCoverageGuardTests
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"));
+        var seedBankExtraction = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs");
+        var seedBankExtractionState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs");
         AssertSourceContains(
             seedBank,
             "GetSeedBankCardIds(progress)",
@@ -530,6 +533,14 @@ public sealed class UrdaReleaseCoverageGuardTests
             "AncientCardHelpers.RemoveUnpiledRunCard(card)",
             "RefreshSeedBankRelicStatus(player)",
             "SeedBankCardIds");
+        AssertSourceContains(
+            seedBankExtractionState,
+            "ConditionalWeakTable<Player, SeedBankExtractionState>",
+            "SeedBankExtractionInProgress.GetOrCreateValue(player)",
+            "if (extractionState.InProgress)",
+            "TryExtractSeedBankFromRelicClickOnce(player)",
+            "extractionState.InProgress = false");
+        Assert.DoesNotContain("ConditionalWeakTable<Player, SeedBankExtractionState>", seedBankExtraction, StringComparison.Ordinal);
         Assert.DoesNotContain("UrdaTrialPlantCard", seedBank, StringComparison.Ordinal);
         Assert.DoesNotContain("RootDeckService.FindRootFamilyCards(card.Owner)", seedbedSource, StringComparison.Ordinal);
         Assert.DoesNotContain("SettleSeedBankBeforeActOneBoss", urdaRunHook, StringComparison.Ordinal);
