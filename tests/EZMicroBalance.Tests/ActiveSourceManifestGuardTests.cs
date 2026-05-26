@@ -137,6 +137,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.Helpers.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.MisprintPress.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.OpenBook.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.OpenBookState.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.OverdueLibrary.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.Payments.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.Paperstorm.cs",

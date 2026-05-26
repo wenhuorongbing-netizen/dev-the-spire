@@ -13,7 +13,7 @@ Status: active summary only. The full chronological log was archived to `docs/ar
 ## Latest Refactor Notes
 
 - Urda hook logic has been split into small `UrdaBlessingService.*.cs` partial files by reward responsibility.
-- Morvi Forbidden Loan selection lives in `MorviBlessingService.ForbiddenLoan.cs`, borrowed-card play cost / Act 2 settlement / cleanup live in `MorviBlessingService.ForbiddenLoanBorrowedCards.cs`, Red Ink Overdraft lives in `MorviBlessingService.RedInkOverdraft.cs`, and Debt Settlement lives in `MorviBlessingService.DebtSettlement.cs`.
+- Morvi Forbidden Loan selection lives in `MorviBlessingService.ForbiddenLoan.cs`, borrowed-card play cost / Act 2 settlement / cleanup live in `MorviBlessingService.ForbiddenLoanBorrowedCards.cs`, Open-Book turn flow lives in `MorviBlessingService.OpenBook.cs`, Open-Book sealed-card restore/cleanup lives in `MorviBlessingService.OpenBookState.cs`, Red Ink Overdraft lives in `MorviBlessingService.RedInkOverdraft.cs`, and Debt Settlement lives in `MorviBlessingService.DebtSettlement.cs`.
 - Current docs and tests should point readers to `docs/test-ready-development-goal.md`, `docs/issues.md`, `docs/review.md`, and `docs/toreview.md` for active work.
 
 ## Validation Baseline

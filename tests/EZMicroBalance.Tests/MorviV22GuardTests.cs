@@ -216,6 +216,8 @@ public sealed class MorviV22GuardTests
         var forbiddenLoan = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoan.cs");
         var forbiddenLoanBorrowedCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoanBorrowedCards.cs");
         var redInk = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.RedInkOverdraft.cs");
+        var openBook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.OpenBook.cs");
+        var openBookState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.OpenBookState.cs");
         var debtSettlement = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.DebtSettlement.cs");
         var payments = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.Payments.cs");
         var ancient = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi");
@@ -239,6 +241,17 @@ public sealed class MorviV22GuardTests
             "public static async Task UseRedInkOverdraft(PlayerChoiceContext choiceContext, Player player)",
             "private static async Task AddRedInkOverdraftCard",
             "private static async Task PayRedInkOverdraftDebts");
+        AssertSourceContains(
+            openBook,
+            "private static async Task ResolveOpenBookTurnStart",
+            "private static async Task TrySealOpenBookAtTurnEnd",
+            "private static async Task SealOpenBookCards",
+            "private static async Task ReturnOpenBookCards");
+        AssertSourceContains(
+            openBookState,
+            "private static List<CardModel> FindOpenBookSealedCards",
+            "private static void ClearOpenBookMarkers",
+            "ReleaseEvidenceLog.Log(");
         AssertSourceContains(
             debtSettlement,
             "private static async Task ResolveDebtSettlementPickup",
@@ -275,6 +288,12 @@ public sealed class MorviV22GuardTests
             "private const int RedInkOverdraftGoldPerDebt = 12",
             "private const int RedInkOverdraftHpPerUnpaidDebt = 3");
         AssertSourceContains(
+            openBook,
+            "private const int OpenBookDraw = 5",
+            "private const int OpenBookEnergy = 2",
+            "private const int OpenBookSealTurn = 1",
+            "private const int OpenBookReturnTurn = 3");
+        AssertSourceContains(
             debtSettlement,
             "private const int DebtSettlementImmediateGold = 220",
             "private const int DebtSettlementStartingDebt = 320",
@@ -289,6 +308,7 @@ public sealed class MorviV22GuardTests
         Assert.DoesNotContain("public static async Task PayDebtSettlementDue", debtSettlement, StringComparison.Ordinal);
         Assert.DoesNotContain("public static async Task AutoSettleForbiddenLoan", forbiddenLoanBorrowedCards, StringComparison.Ordinal);
         Assert.DoesNotContain("public static async Task DamagePlayerNonlethal", payments, StringComparison.Ordinal);
+        Assert.DoesNotContain("ReleaseEvidenceLog.Log(", openBook, StringComparison.Ordinal);
     }
 
     [Fact]

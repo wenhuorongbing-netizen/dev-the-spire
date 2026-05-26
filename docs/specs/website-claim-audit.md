@@ -17,7 +17,7 @@ The archived website under `.tools/archive/local-website-preview-20260516/` is h
 
 | Claim | Source | Current evidence | Status | Release risk |
 | --- | --- | --- | --- | --- |
-| Download package `SpirePlus-v0.1.0-private-beta.67.zip` | `content-data.js` download block | `docs/issues.md`, `publish/SpirePlus-v0.1.0-private-beta.67.zip` | partial | Hash can go stale; website must read from release docs or be updated during package. |
+| Download package `SpirePlus-v0.1.0-private-beta.68.zip` | `content-data.js` download block | `docs/issues.md`, `publish/SpirePlus-v0.1.0-private-beta.68.zip` | partial | Hash can go stale; website must read from release docs or be updated during package. |
 | Product name / stale terminology / mojibake page copy | `content-data.js`, `website/README.md` | Current player name is `Spire Plus`; manifest id is `EZMicroBalance`; README is readable; A19/A20 website copy now uses dedicated abilities / Branded Form. | source-fixed / live-site-pending | Keep guarded because public pages can drift from current mod localization and package hashes. |
 | Ancient reward rebalance details | `content-data.js` rework groups | `EZMicroBalanceCode/Ancients/`, `docs/features/ancients-rework-v4/` | partial | Some claims are source-backed but live reward proof remains pending. |
 | Urda eleven blessings | `content-data.js` Urda section | `EZMicroBalanceCode/Ancients/Expansion/Urda/`, guard tests | partial | Live clicked UI, Root Eyes, Seed Bank, save/load, and co-op proof remain pending. |
