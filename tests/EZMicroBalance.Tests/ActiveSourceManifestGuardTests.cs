@@ -277,6 +277,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks.Targeting.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks.TurnFlow.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Firemarks.cs",
+        "EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.TurnLifecycle.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatTracker.Banners.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatTracker.BossSeals.cs",
         "EZMicroBalanceCode/Ascension/Combat/AscensionCombatTracker.Firemarks.cs",

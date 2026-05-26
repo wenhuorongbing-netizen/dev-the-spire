@@ -405,7 +405,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var struggleBait = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.StruggleBait.cs");
         var chosenDecree = ReadChosenDecreeCombatSources();
         var turnFlow = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.BossSeals.TurnFlow.cs");
-        var combatLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatLifecycle.cs");
+        var turnLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.TurnLifecycle.cs");
         var combatEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.CombatEvents.cs");
         var rootBudEvents = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.CombatEvents.cs");
         var aeonglass = ReadAeonglassHourglassCombatSources();
@@ -465,7 +465,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)",
             "AscensionCombatModifierService.BeforeTurnEnd(state, GetTracker(state), side, participants)");
         AssertSourceContains(
-            combatLifecycle,
+            turnLifecycle,
             "if (side == CombatSide.Player)",
             "metadata.BossSeal?.Id == BossSealId.SoulTide",
             "next player turn starts",

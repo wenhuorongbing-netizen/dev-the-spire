@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.72.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.73.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `31F110602473A7358DAB96ACF537B787A8577B11B8DF38B96F3D025168EFB0D9` |
-| DLL | `464131969A55D62E80448F35EF4715A3BD6CCC19468B972F87006350DBC40A0B` |
-| PCK | `FD5151B9CE434FDCF341A71FA2F1D8E4726DEAD56FC23EE5AE1AAD1BA63592B9` |
-| Manifest | `6565ACB2839C61206D1FA8C74AB39B06CE7C472B1829993A4DDAE678F4BE8F04` |
-| README_INSTALL | `015B51425D4A7A4765FF242391610C92B1508DA81C073BD93A3383575087AE77` |
+| ZIP | `281E3F3CE778EF2D642CD7E36AD2BDD6C0B973A270D3734EC40D5B2E24AAC2F6` |
+| DLL | `4FD2EFD4A78BB9D35B5E2DCD207073F3A93F339131F9FD38B1867121347C2A25` |
+| PCK | `9063E099C729D1C1DE94CA7A6D77DAE61DE298240B870EF8681DE2926046A7CD` |
+| Manifest | `37E732D2118C108BD762F5AD364C4BD99C1424D9FA05A5C4E2A6E80BC3F70685` |
+| README_INSTALL | `0B75DD611AD53CDDF600CFCFC2E6FBAF392CB26D8F2233677B31C229512EA80A` |
 
-Latest validation snapshot: beta.72 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.72 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: beta.73 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.73 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

@@ -474,6 +474,7 @@ public sealed class AscensionFeatureGuardTests
         var mapService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Map");
         var combatService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Combat");
         var firemarkTargeting = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.Firemarks.Targeting.cs");
+        var turnLifecycle = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.TurnLifecycle.cs");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
         AssertSourceContains(
@@ -524,13 +525,12 @@ public sealed class AscensionFeatureGuardTests
         Assert.DoesNotContain("FiremarkArmorBlockBaseline", combatService, StringComparison.Ordinal);
 
         var beforeSideTurnStart = SliceBetween(
-            combatService,
+            turnLifecycle,
             "public static async Task BeforeSideTurnStart",
             "public static async Task AfterTurnEnd");
-        var afterTurnEnd = SliceBetween(
-            combatService,
-            "public static async Task AfterTurnEnd",
-            "public static async Task AfterCombatEnd");
+        var afterTurnEnd = SliceFrom(
+            turnLifecycle,
+            "public static async Task AfterTurnEnd");
         Assert.DoesNotContain("ApplyShieldwallTurnBlock", beforeSideTurnStart, StringComparison.Ordinal);
         AssertSourceContains(
             afterTurnEnd,
