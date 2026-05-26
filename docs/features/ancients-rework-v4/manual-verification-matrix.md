@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and isolated package checker, `publish\SpirePlus-v0.1.0-private-beta.29.zip`, SHA256 `26A1DD6A6C6B3FBA9616C29202EED5B082BF46874FCCB17F66AB8BF304EFFBAD`; real installed-folder artifact tests require closing the game and refreshing `mods\EZMicroBalance` |
+| Private-beta package | Pass for package refresh and isolated package checker, `publish\SpirePlus-v0.1.0-private-beta.30.zip`, SHA256 `E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B`; real installed-folder artifact tests require closing the game and refreshing `mods\EZMicroBalance` |
 
 ## Runtime Load Checklist
 

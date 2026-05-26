@@ -2,11 +2,11 @@
 Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-26:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `26A1DD6A6C6B3FBA9616C29202EED5B082BF46874FCCB17F66AB8BF304EFFBAD` |
-| DLL | `3FA854F7988722AA088068C63FFCFE8AEB147BDF36A04B638A6D221A536F00B2` |
-| PCK | `42D7C8AC406FA54B2EF8EE3EF959BDBF45C188E2DA98DCDC918809A1B3925BD1` |
-| Manifest | `F8136E2E3D2935117124C0B592F2B1F75E02FE14326CF127AF8FAB8505BAC0D4` |
-| README_INSTALL | `7F0585D9B5174E758D24A4C367BA9806DC7AE9CD7A263F295EC3EE764E4C9092` |
+| ZIP | `E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B` |
+| DLL | `177A03863693F5F07DECE5605D0DD1C2047980129E17D8063998FDE8EBE1A959` |
+| PCK | `E0FC406D66F1FE9A170C3E3AA90EA30A661C96CE9730F588BCA42D0423FABA1C` |
+| Manifest | `F2DBE1806B2FDB4A673E71D1FD494BDE3360C24031B42844F194323F100A3C20` |
+| README_INSTALL | `C4ABC5CE1A4CEB570759809EF24FA3486D6503527DA8E394FC176B06AE0D5426` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -23,20 +23,20 @@ Current target: test-ready manual build, not release-ready. Current package hash
   - User log `godot2026-05-25T08.54.22.log` is latest crash evidence despite the stale beta label. It shows co-op A20, A14 Rootblight, Urda/Seed Bank, A13 Fission, reconnect, and `Aroma of Chaos` transform sync.
   - Source fix: transform prediction, Crystal Sphere peek, and broader Spire Plus co-op gameplay mutation fail closed by default.
   - Retest needs two-client combat start, transform event, Crystal Sphere if available, reconnect/save-load, and both clients' logs.
-- `ENEMY-DAMAGE-POLISH` P1 source-fixed / live-pending: Decimillipede, Terror Eel, and Phantasmal Gardener attack pressure is lightly reduced through damage getter patches so intent and real damage stay aligned; live elite-fight pacing proof remains pending.
+- `ENEMY-DAMAGE-POLISH` P1 open / user-regressed: strengthened Decimillipede still attacks for 7; recheck Decimillipede damage polish against intent and real damage.
 - `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
+- `QUEEN-BOSS-SEAL-RUNTIME` P0 open: user reports the Queen/Royal Decree fight cannot run correctly; reproduce on the current package and capture `godot.log`.
 - `URDA-PROTOTYPE` P0 open / live-pending: default-on with eleven source-backed ids, including Elite Root; live gameplay and save/load proof remain pending.
 - `MORVI/LOTHA/VAKUU` P0/P1 live-pending: default-on morvi_forbidden_loan/lotha_death_reprieve need gameplay proof; hidden Vakuu fight needs victory, death/failure, save/load, and no-black-screen proof.
 ## User manual-test findings, 2026-05-22/24
 - `HUSK-CARD-BEHAVIOR`, `ROOT-SIGHT-ENCOUNTER-POOL`, `FIREMARK-HEAL/TEXT` P1: check Husk block, Root Eyes previews, and Act Constant-Heal thresholds.
-- `UNKNOWN-EVENT-PREVIEW-READABILITY`, `ROOTBLIGHT-STARTER-MISSING`, `WATERFALL-BOSS-SEAL` P1: check event hover, Rootblight starter deck, and Waterfall Boss.
-- `HOURGLASS-BOSS-SEAL-DESIGN`, `QUEEN-BOSS-SEAL-WEAKNESS`, `FIREMARK-OVERFLOW/FORGE-ARMOR`, `BANNER-ROOM-PREVIEW` P1: check Time Sand, Royal Decree cards, Firemark, and Banners.
+- `UNKNOWN-EVENT-PREVIEW-READABILITY`, `ROOTBLIGHT-STARTER-MISSING`, `BOSS-BLIGHT-SPROUT-PLAYED-STILL-ROOTBLIGHT`, `WATERFALL-BOSS-SEAL` P1: check event hover, Rootblight starter deck, Boss Blight Sprout play prevention, and Waterfall Boss.
+- `HOURGLASS-BOSS-SEAL-DESIGN`, `QUEEN-BOSS-SEAL-WEAKNESS`, `FIREMARK-OVERFLOW/FORGE-ARMOR`, `BANNER-ROOM-PREVIEW` P1: check Time Sand, Royal Decree, Firemark secondary-target explanation, and Banners.
 - `ROOT-EYES-CONFLICTS-COOP`, `PREVIEW-TOOLS-REWARD-HOOKS`, `SEAL-BANNER-VISIBILITY`, `V33-DESIGN-PASS` P1: check co-op Root Eyes, preview rewards, seal visibility, and v3.3 designs.
-- `FISSION-EXHAUST-TRIGGERS` P1 open: Fission cards must count as real Exhaust when they leave play, not only move to the exhaust pile. Audit source and BaseLib/Core behavior so every "after this card is Exhausted" / "when a card is Exhausted" effect fires correctly, including examples like Beyond Roar / 彼岸咆哮 and War Drum / 战鼓. Acceptance: Fission uses the canonical exhaust path, intent/text explains it as true Exhaust, and source tests cover at least one card-owned exhaust trigger plus one relic/power-style exhaust listener.
-## Strict source/BaseLib audit no-go findings, 2026-05-20
-- `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
-## Engineering governance blockers
-- `GOV-WIP-SPLIT` P0 source-fixed: current worktree is clean after intentional batches. `GOV-CI-FIRST-RUN`, `DOC-CONFLICT-GOVERNANCE`, and `PLATFORM-PACKAGE-CHECKS` P2 remain pending.
+- `FISSION-EXHAUST-TRIGGERS` P1 open: Fission cards must count as real Exhaust when they leave play. Audit source/BaseLib/Core so Exhaust listeners fire, including Beyond Roar / 彼岸咆哮 and War Drum / 战鼓.
+  Acceptance: use the canonical exhaust path, update intent/text, and test one card-owned trigger plus one relic/power-style exhaust listener.
+- Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
+## Engineering governance blockers: `GOV-WIP-SPLIT` P0 source-fixed; current worktree is clean after intentional batches. `GOV-CI-FIRST-RUN`, `DOC-CONFLICT-GOVERNANCE`, and `PLATFORM-PACKAGE-CHECKS` P2 pending.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.

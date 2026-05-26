@@ -31,6 +31,7 @@ internal static partial class AscensionCombatModifierService
 
         if (metadata.BossSeal?.Id == BossSealId.SoulTide)
         {
+            await ApplySoulTidePendingBlock(combatState, tracker, metadata);
             await TrackSoulTideIntangible(combatState, tracker, metadata);
         }
 
@@ -75,9 +76,6 @@ internal static partial class AscensionCombatModifierService
                 break;
             case BossSealId.StartledShell:
                 TrackStartledShellEnemyMove(combatState, tracker);
-                break;
-            case BossSealId.SoulTide:
-                await ApplySoulTidePendingBlock(combatState, tracker, metadata);
                 break;
             case BossSealId.BoilingCritical:
                 await TrackBoilingCriticalSteam(combatState, tracker, metadata);

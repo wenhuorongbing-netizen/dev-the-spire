@@ -647,25 +647,25 @@ window.SPIRE_PLUS_DATA = {
     }
   ],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.29.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.30.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.29/SpirePlus-v0.1.0-private-beta.29.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.30/SpirePlus-v0.1.0-private-beta.30.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.29",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.30",
     baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.1.4/BaseLib.3.1.4.zip",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.29.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.29"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.30.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.30"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,943,764 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "26A1DD6A6C6B3FBA9616C29202EED5B082BF46874FCCB17F66AB8BF304EFFBAD"]
+      ["\u4f53\u79ef", "18,943,794 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.29.zip\u3002",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.30.zip\u3002",
     "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -698,7 +698,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.29"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.30"]
     ]
   },
   updateGroups: [
@@ -863,7 +863,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.29.zip；游戏内显示名为 Spire Plus。"],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.30.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -1045,7 +1045,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       }
     ],
     installSteps: [
-      "下载 SpirePlus-v0.1.0-private-beta.29.zip。",
+      "下载 SpirePlus-v0.1.0-private-beta.30.zip。",
       "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
       "常见 Windows 路径：Steam\\steamapps\\common\\Slay the Spire 2。",
       "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -1163,17 +1163,17 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.29.zip"],
-        ["Version", "v0.1.0-private-beta.29"],
+        ["File", "SpirePlus-v0.1.0-private-beta.30.zip"],
+        ["Version", "v0.1.0-private-beta.30"],
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,943,764 bytes"],
-        ["Hash", "26A1DD6A6C6B3FBA9616C29202EED5B082BF46874FCCB17F66AB8BF304EFFBAD"]
+        ["Size", "18,943,794 bytes"],
+        ["Hash", "E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.29.zip.",
+      "Download SpirePlus-v0.1.0-private-beta.30.zip.",
       "Download BaseLib.3.1.4.zip and extract it to the game's mods\\BaseLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
@@ -1205,7 +1205,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.29"]
+          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.30"]
         ]
       },
     updateGroups: [
@@ -1567,7 +1567,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.29.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.30.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]
@@ -1928,8 +1928,8 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "BOSS_SEAL_STARTLED_SHELL.summary": "族母醒来时获得[gold]多重护甲[/gold]。被攻击唤醒：[blue]4[/blue]层；自然醒来：[blue]8[/blue]层。多人模式按首领战规则缩放。首次[gold]摄魂[/gold]移除当前多重护甲的一半。",
       "BOSS_SEAL_STARTLED_SHELL.brand": "族母醒来时获得[gold]多重护甲[/gold]。被攻击唤醒：[blue]6[/blue]层；自然醒来：[blue]10[/blue]层。多人模式按首领战规则缩放。首次[gold]摄魂[/gold]移除当前多重护甲的三分之一。",
       "BOSS_SEAL_SOUL_TIDE.title": "魂潮",
-      "BOSS_SEAL_SOUL_TIDE.summary": "魂鱼获得[gold]无形[/gold]时，获得[blue]1[/blue]层[gold]人工制品[/gold]。手牌中每张[gold]呼唤[/gold]使它下个敌方回合获得[blue]2[/blue]点格挡。队伍上限：单人[blue]8[/blue]，2人[blue]12[/blue]，3-4人[blue]16[/blue]。",
-      "BOSS_SEAL_SOUL_TIDE.brand": "手牌中每张[gold]呼唤[/gold]使魂鱼下个敌方回合获得[blue]3[/blue]点格挡。队伍上限：单人[blue]12[/blue]，2人[blue]16[/blue]，3-4人[blue]20[/blue]。获得[gold]无形[/gold]时仍只获得[blue]1[/blue]层[gold]人工制品[/gold]。",
+      "BOSS_SEAL_SOUL_TIDE.summary": "魂鱼获得[gold]无形[/gold]时，获得[blue]1[/blue]层[gold]人工制品[/gold]。手牌中每张[gold]呼唤[/gold]使它下一次玩家回合开始时获得[blue]2[/blue]点格挡。队伍上限：单人[blue]8[/blue]，2人[blue]12[/blue]，3-4人[blue]16[/blue]。",
+      "BOSS_SEAL_SOUL_TIDE.brand": "手牌中每张[gold]呼唤[/gold]使魂鱼下一次玩家回合开始时获得[blue]3[/blue]点格挡。队伍上限：单人[blue]12[/blue]，2人[blue]16[/blue]，3-4人[blue]20[/blue]。获得[gold]无形[/gold]时仍只获得[blue]1[/blue]层[gold]人工制品[/gold]。",
       "BOSS_SEAL_BOILING_CRITICAL.title": "不可削弱",
       "BOSS_SEAL_BOILING_CRITICAL.summary": "爆发回合，瀑布巨兽清除[gold]虚弱[/gold]和攻击降低，本回合获得足够[gold]人工制品[/gold]，并使受爆发影响的玩家获得[blue]1[/blue]回合[gold]易伤[/gold]。",
       "BOSS_SEAL_BOILING_CRITICAL.brand": "爆发回合，受爆发影响的玩家获得[blue]2[/blue]回合[gold]易伤[/gold]。爆发仍不受[gold]虚弱[/gold]和攻击降低影响，但基础伤害不提高。",
@@ -2416,8 +2416,8 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "BOSS_SEAL_STARTLED_SHELL.summary": "When the Matriarch wakes, it gains [gold]Plating[/gold]. Hit wake: [blue]4[/blue]. Natural wake: [blue]8[/blue]. Multiplayer uses boss Plating scaling. The first [gold]Soul Siphon[/gold] removes half of its current Plating.",
       "BOSS_SEAL_STARTLED_SHELL.brand": "When the Matriarch wakes, it gains [gold]Plating[/gold]. Hit wake: [blue]6[/blue]. Natural wake: [blue]10[/blue]. Multiplayer uses boss Plating scaling. The first [gold]Soul Siphon[/gold] removes one-third of its current Plating.",
       "BOSS_SEAL_SOUL_TIDE.title": "Soul Tide",
-      "BOSS_SEAL_SOUL_TIDE.summary": "When Soul Fysh gains [gold]Intangible[/gold], it gains [blue]1[/blue] [gold]Artifact[/gold]. Each [gold]Beckon[/gold] left in hand gives it [blue]2[/blue] Block next enemy turn. Team cap: solo [blue]8[/blue], 2 players [blue]12[/blue], 3-4 players [blue]16[/blue].",
-      "BOSS_SEAL_SOUL_TIDE.brand": "Each [gold]Beckon[/gold] left in hand gives Soul Fysh [blue]3[/blue] Block next enemy turn. Team cap: solo [blue]12[/blue], 2 players [blue]16[/blue], 3-4 players [blue]20[/blue]. [gold]Artifact[/gold] gain remains [blue]1[/blue].",
+      "BOSS_SEAL_SOUL_TIDE.summary": "When Soul Fysh gains [gold]Intangible[/gold], it gains [blue]1[/blue] [gold]Artifact[/gold]. Each [gold]Beckon[/gold] left in hand gives it [blue]2[/blue] Block at the next player turn start. Team cap: solo [blue]8[/blue], 2 players [blue]12[/blue], 3-4 players [blue]16[/blue].",
+      "BOSS_SEAL_SOUL_TIDE.brand": "Each [gold]Beckon[/gold] left in hand gives Soul Fysh [blue]3[/blue] Block at the next player turn start. Team cap: solo [blue]12[/blue], 2 players [blue]16[/blue], 3-4 players [blue]20[/blue]. [gold]Artifact[/gold] gain remains [blue]1[/blue].",
       "BOSS_SEAL_BOILING_CRITICAL.title": "Unweakenable",
       "BOSS_SEAL_BOILING_CRITICAL.summary": "On the explosion turn, Waterfall Giant clears [gold]Weak[/gold] and attack-down, gains enough [gold]Artifact[/gold] for this turn, and gives affected players [blue]1[/blue] turn of [gold]Vulnerable[/gold].",
       "BOSS_SEAL_BOILING_CRITICAL.brand": "On the explosion turn, affected players gain [blue]2[/blue] turns of [gold]Vulnerable[/gold]. The explosion still ignores [gold]Weak[/gold] and attack-down, but its base damage is not increased.",

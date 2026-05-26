@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.29.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.30.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `26A1DD6A6C6B3FBA9616C29202EED5B082BF46874FCCB17F66AB8BF304EFFBAD` |
-| DLL | `3FA854F7988722AA088068C63FFCFE8AEB147BDF36A04B638A6D221A536F00B2` |
-| PCK | `42D7C8AC406FA54B2EF8EE3EF959BDBF45C188E2DA98DCDC918809A1B3925BD1` |
-| Manifest | `F8136E2E3D2935117124C0B592F2B1F75E02FE14326CF127AF8FAB8505BAC0D4` |
-| README_INSTALL | `7F0585D9B5174E758D24A4C367BA9806DC7AE9CD7A263F295EC3EE764E4C9092` |
+| ZIP | `E3EA7CA16F9FB7EC47A67BCAE9E2EB77912DE06DA3180C4AADD1482E0FEF0E9B` |
+| DLL | `177A03863693F5F07DECE5605D0DD1C2047980129E17D8063998FDE8EBE1A959` |
+| PCK | `E0FC406D66F1FE9A170C3E3AA90EA30A661C96CE9730F588BCA42D0423FABA1C` |
+| Manifest | `F2DBE1806B2FDB4A673E71D1FD494BDE3360C24031B42844F194323F100A3C20` |
+| README_INSTALL | `C4ABC5CE1A4CEB570759809EF24FA3486D6503527DA8E394FC176B06AE0D5426` |
 
-Latest validation snapshot: beta.29 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.29 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: beta.30 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.30 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |
@@ -31,6 +31,7 @@ Latest validation snapshot: beta.29 build, publish/package refresh, default test
 | MANUAL-20260524-SERE-TALON-TANX-CLAWS-REPORT | Ancient rewards / relic art | Treat any green Tanx Claws art on Vakuu's Sere Talon as our display/package route problem until live proof says otherwise. | If the effect is curse choice + 2 Wish + 1 Wish+ but art/title is Tanx Claws, capture `godot.log` route lines and the surface that bypassed the patch. |
 | ASCENSION-A11-A20 | Ascension | A11 map geometry, A12 Firemarked Elites, A13 Fission, A16 Banners, A17 Deep Branch, A19 dedicated abilities, A20 Branded Form, and Rootblight have guards. | Play A11-A20 paths, verify hovers, rewards, boss abilities, Rootblight timing, save/load, and co-op boundaries. |
 | ENEMY-DAMAGE-POLISH | Ascension / Elite combat | Decimillipede Writhe/Constrict, Terror Eel Crash/Thrash, and Phantasmal Gardener Bite/Lash are reduced through source getter patches so visible intent and real damage share the same values. | Fight these Elite encounters and compare first-cycle damage pacing against the previous build; confirm no intent/damage mismatch. |
+| MANUAL-20260526-LIVE-BUGS | Ascension live regressions | User reports: Queen/Royal Decree fight cannot run correctly, strengthened Decimillipede still attacks for 7, Firemarked Elite text does not explain secondary-target effects, and playing Blight Sprout in a Boss fight still awarded Rootblight after victory. | Reproduce each on the current package, capture screenshots and `godot.log`, then keep or move each row according to whether source work is needed. |
 | ASCENSION-SELECTOR-LOCALIZATION | Ascension UI | A11-A20 character-select panels use the Spire Plus localization bridge for current-language then English fallback. | On character select, check A20 shows `烙印形态` / `Branded Form` and a readable description instead of `ascension.LEVEL_20.title` or `ascension.LEVEL_20.description`. |
 | MANUAL-20260519-SEEDBED | Urda | Seedbed catches later Blight Sprouts, Rootblight, and temporary Status/Curse cards. It still skips Withered Husk and grants a Husk per planted card. | Check Seedbed option/card hover in EN/ZHS, then test Blight Sprout and Rootblight planting: Sprout should not add Rootblight I after combat; planted Rootblight should not grow, downgrade, or disappear at combat end. |
 | MANUAL-20260523-SEEDBED-REWARD-REENTRY | Urda | Seedbed reward alternatives have a per-reward handled guard. | Choose the Seedbed alternative once, then try rapid repeat clicks and save/load around the reward screen. |

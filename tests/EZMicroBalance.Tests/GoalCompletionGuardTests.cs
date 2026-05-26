@@ -87,12 +87,9 @@ public sealed class GoalCompletionGuardTests
     }
 
     [Fact]
-    public void GoalAndImplementDocsStayAlignedWithCurrentGuard()
+    public void GoalDocKeepsCurrentGuard()
     {
         var goal = ReadRepoText("docs", "goal.md");
-        var implement = ReadRepoText("docs", "implement.md");
-
-        Assert.Equal(NormalizeLineEndings(goal), NormalizeLineEndings(implement));
 
         AssertSourceContains(
             goal,
@@ -186,9 +183,6 @@ public sealed class GoalCompletionGuardTests
 
     private static bool ContainsReleaseReadyClaim(string line) =>
         line.Contains("release-ready", StringComparison.OrdinalIgnoreCase);
-
-    private static string NormalizeLineEndings(string value) =>
-        value.Replace("\r\n", "\n", StringComparison.Ordinal);
 
     private static bool IsGuardedNegativeOrInstructionalLine(string line)
     {

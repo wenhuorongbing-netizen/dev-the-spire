@@ -454,6 +454,16 @@ public sealed class BossDedicatedAbilityV41GuardTests
             "combatState.Players.Count(player => player.IsActiveForHooks)",
             "return playerCount <= 1 ? 12 : playerCount == 2 ? 16 : 20;",
             "return playerCount <= 1 ? 8 : playerCount == 2 ? 12 : 16;");
+        var bossSealPlayerTurnStart = SliceBetween(
+            turnFlow,
+            "private static async Task ApplyBossSealPlayerTurnStart(",
+            "private static async Task ApplyBossSealSideTurnStart(");
+        var bossSealEnemyTurnStart = SliceBetween(
+            turnFlow,
+            "private static async Task ApplyBossSealSideTurnStart(",
+            "private static async Task ApplyBossSealTurnEnd(");
+        Assert.Contains("await ApplySoulTidePendingBlock(combatState, tracker, metadata);", bossSealPlayerTurnStart, StringComparison.Ordinal);
+        Assert.DoesNotContain("ApplySoulTidePendingBlock", bossSealEnemyTurnStart, StringComparison.Ordinal);
 
         AssertSourceContains(
             boiling,

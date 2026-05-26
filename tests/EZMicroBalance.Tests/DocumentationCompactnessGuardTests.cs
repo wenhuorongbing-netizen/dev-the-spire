@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -12,6 +12,7 @@ public sealed class DocumentationCompactnessGuardTests
         var archiveReadme = ReadRepoText("docs", "archive", "feature-inputs", "README.md");
         var lineCount = goal.Split('\n').Length;
 
+        AssertRepoPathDoesNotExist("docs", "implement.md");
         Assert.True(lineCount <= 40, $"docs/goal.md should stay a compact guardrail; current line count is {lineCount}.");
         AssertSourceContains(
             goal,
@@ -81,8 +82,8 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.29 Seedbed planting rules refresh. Result: blocked by a running `SlayTheSpire2.exe` process locking `mods\\EZMicroBalance\\EZMicroBalance.dll`.",
-            "Last successful publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-26 after the beta.29 Seedbed planting rules refresh. Result: succeeded against an isolated temporary mods root.",
+            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-26 after the beta.30 Soul Tide timing refresh. Result: blocked by a running `SlayTheSpire2.exe` process locking `mods\\EZMicroBalance\\EZMicroBalance.dll`.",
+            "Last successful publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-26 after the beta.30 Soul Tide timing refresh. Result: succeeded against an isolated temporary mods root.",
             "isolated `.tools\\publish-game-root\\mods\\EZMicroBalance` folder",
             "matched the staging/versioned/zip-entry artifacts on 2026-05-26",
             "failed 5 installed-folder parity tests");
@@ -298,7 +299,7 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("beta.29 Seedbed planting rules and mod-overview refresh", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.30 Soul Tide timing refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta19-loader-smoke-20260525-213336", projectState, StringComparison.Ordinal);
@@ -375,7 +376,7 @@ public sealed class DocumentationCompactnessGuardTests
             "`SERE-TALON/TANX-CLAWS-ROUTING`",
             "`TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending",
             "`SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending",
-            "current worktree is clean after intentional batches",
+            "`GOV-WIP-SPLIT` P0 source-fixed",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source-split/refactor passes", issues, StringComparison.OrdinalIgnoreCase);
@@ -618,7 +619,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.29 package hash is pending",
+            "Fresh loader smoke for the current beta.30 package hash is pending",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

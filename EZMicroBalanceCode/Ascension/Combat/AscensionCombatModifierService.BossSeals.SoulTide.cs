@@ -82,6 +82,6 @@ internal static partial class AscensionCombatModifierService
         var block = tracker.PendingSoulTideBlock;
         tracker.PendingSoulTideBlock = 0m;
         await CreatureCmd.GainBlock(soulFysh, block, ValueProp.Move, null);
-        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Soul Tide converted Beckon hand pressure into {block} Block.");
+        MainFile.Logger.Info($"[Spire Plus] Ascension A19 applied: Soul Tide converted Beckon hand pressure into {block} Block at player turn start.");
     }
 }

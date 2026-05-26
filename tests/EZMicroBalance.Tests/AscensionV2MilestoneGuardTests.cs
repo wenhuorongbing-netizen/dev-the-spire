@@ -129,8 +129,8 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.Equal("Rootblight III", englishCards["EZMB_ROOTBLIGHT_III.title"]);
         Assert.Equal("Blight Sprout", englishCards["EZMB_ROOT_BUD.title"]);
         Assert.Contains("If seen and not played, add a [gold]Rootblight I[/gold] after combat.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
-        Assert.Contains("If never seen, it withers.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
-        Assert.Contains("No Rootblight IV.", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("if never drawn, it withers away.", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
+        Assert.Contains("stays as [gold]Rootblight III[/gold]", englishCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("your deck has no Rootblight", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
 
         foreach (var key in new[] { "EZMB_ROOT.title", "EZMB_DEEP_ROOT.title", "EZMB_ROOTBLIGHT_III.title", "EZMB_ROOT_BUD.title" })
@@ -548,6 +548,19 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("triggers up to [blue]3[/blue] times", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("SettleSoulTideBeckons(combatState, tracker, metadata)", combatService, StringComparison.Ordinal);
         Assert.DoesNotContain("PowerCmd.Apply<StrengthPower>", marginalNoteSource, StringComparison.Ordinal);
+        var bossSealPlayerTurnStartSlice = SliceBetween(
+            combatService,
+            "private static async Task ApplyBossSealPlayerTurnStart(",
+            "private static async Task ApplyBossSealSideTurnStart(");
+        var bossSealEnemyTurnStartSlice = SliceBetween(
+            combatService,
+            "private static async Task ApplyBossSealSideTurnStart(",
+            "private static async Task ApplyBossSealTurnEnd(");
+        Assert.Contains(
+            "await ApplySoulTidePendingBlock(combatState, tracker, metadata);",
+            bossSealPlayerTurnStartSlice,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("ApplySoulTidePendingBlock", bossSealEnemyTurnStartSlice, StringComparison.Ordinal);
         var playerTurnStartBannerSlice = SliceBetween(
             combatService,
             "private static async Task ApplyBannerTurnStart(",

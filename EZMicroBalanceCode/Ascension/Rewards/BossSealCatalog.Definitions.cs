@@ -40,7 +40,7 @@ internal static partial class BossSealCatalog
             [EncounterId("SOUL_FYSH_BOSS")] = new(
                 BossSealId.SoulTide,
                 "Soul Tide",
-                "Intangible grants 1 final Artifact. Beckons left in hand give Soul Fysh capped Block on the next enemy turn.",
+                "Intangible grants 1 final Artifact. Beckons left in hand give Soul Fysh capped Block at the next player turn start.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
                 "Uses enemy/player turn state scans for IntangiblePower entries, final Artifact correction, pre-flush Beckon-in-hand scans, and shared Block caps by player count; live Beckon timing verification pending.",
                 "Each Beckon gives 3 Block instead of 2 and uses higher team caps."),

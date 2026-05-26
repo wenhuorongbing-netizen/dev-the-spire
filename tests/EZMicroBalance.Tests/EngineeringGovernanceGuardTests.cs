@@ -22,7 +22,12 @@ public sealed class EngineeringGovernanceGuardTests
         AssertRepoFileExists("scripts", "report-worktree-batches.ps1");
 
         var gitignore = ReadRepoText(".gitignore");
+        Assert.Contains("/EZMicroBalanceCode/**/*.cs.uid", gitignore, StringComparison.Ordinal);
         Assert.Contains("/tests/**/*.cs.uid", gitignore, StringComparison.Ordinal);
+        var sourceUidFiles = Directory.GetFiles(RepoPath("EZMicroBalanceCode"), "*.cs.uid", SearchOption.AllDirectories);
+        Assert.True(
+            sourceUidFiles.Length == 0,
+            $"Godot C# source .uid sidecars are generated metadata and not part of the active deliverable:{Environment.NewLine}{string.Join(Environment.NewLine, sourceUidFiles)}");
         var testUidFiles = Directory.GetFiles(RepoPath("tests", "EZMicroBalance.Tests"), "*.cs.uid", SearchOption.TopDirectoryOnly);
         Assert.True(
             testUidFiles.Length == 0,

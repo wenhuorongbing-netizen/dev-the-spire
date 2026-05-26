@@ -1005,9 +1005,9 @@ public sealed class AscensionFeatureGuardTests
         Assert.Contains("[gold]Draw Pile[/gold]", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]Rootblight I[/gold]", englishCards["EZMB_ROOT_BUD.description"], StringComparison.Ordinal);
 
-        Assert.Contains("\u6218\u6597\u7ed3\u675f\u65f6\u672c\u724c\u4ecd\u5728\u4f60\u7684\u4e3b\u724c\u7ec4\u4e2d", simplifiedChineseCards["EZMB_ROOT.description"], StringComparison.Ordinal);
-        Assert.Contains("\u6218\u6597\u7ed3\u675f\u65f6\u672c\u724c\u4ecd\u5728\u4f60\u7684\u4e3b\u724c\u7ec4\u4e2d", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
-        Assert.Contains("\u6218\u6597\u7ed3\u675f\u65f6\u672c\u724c\u4ecd\u5728\u4f60\u7684\u4e3b\u724c\u7ec4\u4e2d", simplifiedChineseCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
+        Assert.Contains("\u82e5\u6218\u6597\u7ed3\u675f\u65f6\u672c\u724c\u4ecd\u5728\u4f60\u7684\u4e3b\u724c\u7ec4\u4e2d", simplifiedChineseCards["EZMB_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("\u82e5\u6218\u6597\u7ed3\u675f\u65f6\u672c\u724c\u4ecd\u5728\u4f60\u7684\u4e3b\u724c\u7ec4\u4e2d", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
+        Assert.Contains("\u82e5\u6218\u6597\u7ed3\u675f\u65f6\u672c\u724c\u4ecd\u5728\u4f60\u7684\u4e3b\u724c\u7ec4\u4e2d", simplifiedChineseCards["EZMB_ROOTBLIGHT_III.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u6839\u8680 II[/gold]", simplifiedChineseCards["EZMB_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u6839\u8680 I[/gold]", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);
         Assert.Contains("[gold]\u6839\u8680 III[/gold]", simplifiedChineseCards["EZMB_DEEP_ROOT.description"], StringComparison.Ordinal);

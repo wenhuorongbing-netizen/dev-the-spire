@@ -222,7 +222,7 @@ A19 gives each Boss one visible dedicated ability. It is not a shared generic se
 | Kin Priest | Martyr Oath: follower deaths strengthen the next debuff or attack. | Higher attack bonus; killing both followers in one turn grants 1 Artifact. |
 | Vantom | Ink Return: the first full Slippery removal returns a percentage next enemy turn. | Higher percentage and cap. |
 | Lagavulin Matriarch | Plating Wake: wake-up grants Plating; first Soul Siphon trims it. | More Plating; Soul Siphon trims less. |
-| Soul Fysh | Soul Tide: unanswered Beckons grant next-turn Block; Intangible grants 1 Artifact. | More Block per Beckon and a higher team cap. |
+| Soul Fysh | Soul Tide: unanswered Beckons grant Block at the next player turn start; Intangible grants 1 Artifact. | More Block per Beckon and a higher team cap. |
 | Waterfall Giant | Unweakenable: explosion ignores Weak/attack-down and applies Vulnerable. | Vulnerable lasts longer. |
 | Kaiser | Claw Calibration: uneven claw HP strengthens the healthier claw's next attack. | Lower HP-gap threshold and higher attack bonus. |
 | Knowledge Demon | Marginal Note: unplayed notes become Deep Thought for the next Knowledge curse. | Higher Deep Thought cap with per-turn gain cap. |
