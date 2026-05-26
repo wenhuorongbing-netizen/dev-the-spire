@@ -20,10 +20,12 @@ public sealed class EngineeringGovernanceGuardTests
         AssertRepoFileExists("scripts", "generate-patch-inventory.ps1");
         AssertRepoFileExists("scripts", "ci-full-validation.ps1");
         AssertRepoFileExists("scripts", "report-worktree-batches.ps1");
+        AssertRepoFileExists("scripts", "prune-generated-sidecars.ps1");
 
         var gitignore = ReadRepoText(".gitignore");
         Assert.Contains("/EZMicroBalanceCode/**/*.cs.uid", gitignore, StringComparison.Ordinal);
         Assert.Contains("/tests/**/*.cs.uid", gitignore, StringComparison.Ordinal);
+        Assert.Contains("/website/**/*.import", gitignore, StringComparison.Ordinal);
 
         var trackedSourceUidFiles = GitLsFiles("EZMicroBalanceCode/**/*.cs.uid");
         Assert.True(
@@ -88,6 +90,22 @@ public sealed class EngineeringGovernanceGuardTests
             "Website public-info surface",
             "Unclassified",
             "Found $unclassifiedCount unclassified dirty worktree entries.");
+        Assert.DoesNotContain("EZMicroBalanceCode/MainFile.cs.uid", worktreeBatchScript, StringComparison.Ordinal);
+
+        var sidecarPruneScript = ReadRepoText("scripts", "prune-generated-sidecars.ps1");
+        AssertSourceContains(
+            sidecarPruneScript,
+            "[switch]$DryRun",
+            "EZMicroBalanceCode",
+            "tests",
+            "website",
+            "*.cs.uid",
+            "*.import",
+            "Get-RepoRelativePath",
+            "Refusing to prune path outside expected parent",
+            "Remove-Item -LiteralPath $file.FullName -Force",
+            "Dry run complete");
+        Assert.DoesNotContain("git clean", sidecarPruneScript, StringComparison.OrdinalIgnoreCase);
 
         var pullRequestTemplate = ReadRepoText(".github", "pull_request_template.md");
         AssertSourceContains(
@@ -271,6 +289,7 @@ public sealed class EngineeringGovernanceGuardTests
             "`generate-patch-inventory.ps1`",
             "`validate-repository-hygiene.ps1`",
             "`report-worktree-batches.ps1`",
+            "`prune-generated-sidecars.ps1`",
             "`spire-plus-package-evidence.ps1`");
     }
 

@@ -84,7 +84,6 @@ function Get-WorktreeBatch {
         $p -eq 'EZMicroBalance.csproj' -or
         $p -eq 'project.godot' -or
         $p -eq 'EZMicroBalanceCode/MainFile.cs' -or
-        $p -eq 'EZMicroBalanceCode/MainFile.cs.uid' -or
         $p.StartsWith('EZMicroBalanceCode/Config/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Diagnostics/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Modding/', [System.StringComparison]::OrdinalIgnoreCase) -or
