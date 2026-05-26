@@ -37,34 +37,6 @@ internal static partial class AscensionCombatModifierService
             $"[Spire Plus] Ascension A12 applied: Firemark Host is {host.Name}; overflow affects at most one secondary enemy at a time.");
     }
 
-    private static async Task ApplyFiremarkSideTurnStart(
-        CombatState combatState,
-        AscensionCombatTracker tracker,
-        FiremarkKind firemark,
-        CombatSide side)
-    {
-        if (side != CombatSide.Enemy || firemark != FiremarkKind.Might)
-        {
-            return;
-        }
-
-        await ApplyMightOverflow(combatState, tracker);
-    }
-
-    private static async Task ApplyFiremarkPlayerTurnStart(
-        CombatState combatState,
-        AscensionCombatTracker tracker,
-        FiremarkKind firemark)
-    {
-        if (firemark != FiremarkKind.ForgeArmor)
-        {
-            return;
-        }
-
-        await ApplyForgeArmorGain(combatState, tracker);
-        await ApplyForgeArmorOverflow(combatState, tracker);
-    }
-
     private static async Task AfterFiremarkDamageReceived(
         CombatState combatState,
         AscensionCombatTracker tracker,
@@ -100,27 +72,6 @@ internal static partial class AscensionCombatModifierService
             result.UnblockedDamage > 0m)
         {
             await TrackMoltenCoreDamage(combatState, tracker, host, result.UnblockedDamage);
-        }
-
-    }
-
-    private static async Task ApplyFiremarkTurnEnd(
-        CombatState combatState,
-        AscensionCombatTracker tracker,
-        FiremarkKind firemark,
-        CombatSide side)
-    {
-        switch (firemark)
-        {
-            case FiremarkKind.Giant when side == CombatSide.Player:
-                await ResolveMoltenCoreWindow(tracker);
-                break;
-            case FiremarkKind.ForgeArmor when side == CombatSide.Player:
-                ResolveForgeArmorShatter(tracker);
-                break;
-            case FiremarkKind.ConstantHeal when side == CombatSide.Enemy:
-                await ResolveConstantHeal(combatState, tracker);
-                break;
         }
     }
 }

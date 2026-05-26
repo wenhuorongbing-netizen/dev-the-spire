@@ -48,13 +48,7 @@ internal static partial class AscensionCombatModifierService
 
         if (HasActiveFiremark(combatState, metadata))
         {
-            if (tracker.FiremarkDamageTrackingRound != combatState.RoundNumber)
-            {
-                tracker.FiremarkDamageTrackingRound = combatState.RoundNumber;
-                tracker.FiremarkDamageThisPlayerTurn = 0m;
-                tracker.FiremarkDamageThisEnemyCycle = 0m;
-            }
-
+            RefreshFiremarkRoundDamageTracking(combatState, tracker);
             await ApplyFiremarkPlayerTurnStart(combatState, tracker, metadata.Firemark!.Value);
         }
 
