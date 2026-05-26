@@ -182,16 +182,16 @@ Regenerate:
 | Mod info localization | Medium | `EZMicroBalanceCode/Modding/ModInfoLocalizationPatches.cs` | 12 | `[HarmonyPatch(typeof(NModInfoContainer), nameof(NModInfoContainer.Fill))]` |
 | Preview tools | Medium | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 14 | `[HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 160 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 122 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 125 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 130 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 135 | `[HarmonyPatch(typeof(Symbiote), "KillWithFire")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 140 | `[HarmonyPatch(typeof(WhisperingHollow), "Hug")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 149 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 152 | `[HarmonyPatch(typeof(MorphicGrove), "Group")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 157 | `[HarmonyPatch(typeof(Trial), "NondescriptInnocent")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 162 | `[HarmonyPatch(typeof(NewLeaf), nameof(NewLeaf.AfterObtained))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 167 | `[HarmonyPatch(typeof(Astrolabe), nameof(Astrolabe.AfterObtained))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionRngContext.cs` | 183 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 6 | `[HarmonyPatch]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 9 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 14 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 19 | `[HarmonyPatch(typeof(Symbiote), "KillWithFire")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 24 | `[HarmonyPatch(typeof(WhisperingHollow), "Hug")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 8 | `[HarmonyPatch]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 11 | `[HarmonyPatch(typeof(MorphicGrove), "Group")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 16 | `[HarmonyPatch(typeof(Trial), "NondescriptInnocent")]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 21 | `[HarmonyPatch(typeof(NewLeaf), nameof(NewLeaf.AfterObtained))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 26 | `[HarmonyPatch(typeof(Astrolabe), nameof(Astrolabe.AfterObtained))]` |
+| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionSelectionLifetimePatch.cs` | 8 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
 | Preview tools | Medium | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 19 | `[HarmonyPatch(typeof(NTransformPreview), nameof(NTransformPreview.Initialize))]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 38 | `[HarmonyPatch]` |

@@ -101,7 +101,10 @@ public sealed class CoopCombatSafetyGuardTests
     public void AncientRunHooksDoNotBypassTheCoopCombatGate()
     {
         var morviHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviHooks.cs");
-        var lothaHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaHooks.cs");
+        var lothaHooks = string.Join(
+            Environment.NewLine,
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaCombatHook.cs"));
         var urdaHooks = string.Join(
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs"),

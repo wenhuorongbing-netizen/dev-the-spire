@@ -30,7 +30,7 @@ public sealed class AncientStateMirrorGuardTests
         new(
             "Lotha",
             "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaBlessingService.State.cs",
-            "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaHooks.cs",
+            "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRunHook.cs",
             "LothaStateKey",
             "LothaDeckStateKey")
     ];

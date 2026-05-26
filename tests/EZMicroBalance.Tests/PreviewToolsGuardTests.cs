@@ -65,7 +65,7 @@ public sealed class PreviewToolsGuardTests
         var crystalSource = ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekPatch.cs");
         var transformSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPatch.cs");
         var transformContextSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionRngContext.cs");
-        var combinedPreviewSource = crystalSource + Environment.NewLine + transformSource + Environment.NewLine + transformContextSource;
+        var combinedPreviewSource = ReadSourceTree("EZMicroBalanceCode", "Preview");
 
         Assert.DoesNotContain("SPIREPLUS_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS", policySource, StringComparison.Ordinal);
         Assert.DoesNotContain("EZMB_ALLOW_UNVERIFIED_COOP_PREVIEW_TOOLS", policySource, StringComparison.Ordinal);
@@ -174,6 +174,10 @@ public sealed class PreviewToolsGuardTests
     public void TransformPredictionOnlyUsesSourceBackedRngContexts()
     {
         var contextSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionRngContext.cs");
+        var eventSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionEventRngSourcePatches.cs");
+        var nicheSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionNicheRngSourcePatches.cs");
+        var lifetimeSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionSelectionLifetimePatch.cs");
+        var combinedSource = string.Join(Environment.NewLine, contextSource, eventSource, nicheSource, lifetimeSource);
 
         foreach (var eventRngSource in new[]
         {
@@ -183,11 +187,11 @@ public sealed class PreviewToolsGuardTests
             "WhisperingHollow"
         })
         {
-            Assert.Contains(eventRngSource, contextSource, StringComparison.Ordinal);
+            Assert.Contains(eventRngSource, eventSource, StringComparison.Ordinal);
         }
 
-        Assert.Contains("RegisterEventRng(__instance", contextSource, StringComparison.Ordinal);
-        Assert.Contains("\"{sourceName}.Rng\"", contextSource, StringComparison.Ordinal);
+        Assert.Contains("RegisterEventRng(__instance", eventSource, StringComparison.Ordinal);
+        Assert.Contains("\"{sourceName}.Rng\"", eventSource, StringComparison.Ordinal);
 
         foreach (var nicheRngSource in new[]
         {
@@ -197,31 +201,32 @@ public sealed class PreviewToolsGuardTests
             "Astrolabe"
         })
         {
-            Assert.Contains(nicheRngSource, contextSource, StringComparison.Ordinal);
+            Assert.Contains(nicheRngSource, nicheSource, StringComparison.Ordinal);
         }
 
-        Assert.Contains("RegisterNicheRng(__instance.Owner", contextSource, StringComparison.Ordinal);
-        Assert.Contains("\"{sourceName}.RunState.Rng.Niche\"", contextSource, StringComparison.Ordinal);
-        Assert.Contains("upgradeReplacementPreview: true", contextSource, StringComparison.Ordinal);
+        Assert.Contains("RegisterNicheRng(__instance.Owner", nicheSource, StringComparison.Ordinal);
+        Assert.Contains("\"{sourceName}.RunState.Rng.Niche\"", nicheSource, StringComparison.Ordinal);
+        Assert.Contains("upgradeReplacementPreview: true", nicheSource, StringComparison.Ordinal);
 
         Assert.Contains("new Rng(snapshot.Seed, snapshot.Counter)", contextSource, StringComparison.Ordinal);
         Assert.Contains("snapshot.Source.Counter != snapshot.Counter", contextSource, StringComparison.Ordinal);
         Assert.Contains("ConditionalWeakTable<Player, Snapshot>", contextSource, StringComparison.Ordinal);
         Assert.Contains("SnapshotsByPlayer.TryGetValue(player", contextSource, StringComparison.Ordinal);
         Assert.DoesNotContain("Dictionary<Player, Snapshot>", contextSource, StringComparison.Ordinal);
-        Assert.Contains("TransformPredictionSelectionLifetimePatch", contextSource, StringComparison.Ordinal);
-        Assert.Contains("ClearContextWhenSelectionCompletes", contextSource, StringComparison.Ordinal);
-        Assert.Contains("TransformPredictionRngContext.Clear(player)", contextSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("NextItem", contextSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("FastForward", contextSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionSelectionLifetimePatch", lifetimeSource, StringComparison.Ordinal);
+        Assert.Contains("ClearContextWhenSelectionCompletes", lifetimeSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionRngContext.Clear(player)", lifetimeSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("NextItem", combinedSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("FastForward", combinedSource, StringComparison.Ordinal);
     }
 
     [Fact]
     public void TransformPredictionContextCannotBeReusedAfterSelection()
     {
         var contextSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionRngContext.cs");
+        var lifetimeSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionSelectionLifetimePatch.cs");
 
-        var clearSlice = SliceFrom(contextSource, "private static async Task<IEnumerable<CardModel>> ClearContextWhenSelectionCompletes");
+        var clearSlice = SliceFrom(lifetimeSource, "private static async Task<IEnumerable<CardModel>> ClearContextWhenSelectionCompletes");
         Assert.Contains("try", clearSlice, StringComparison.Ordinal);
         Assert.Contains("finally", clearSlice, StringComparison.Ordinal);
         Assert.Contains("TransformPredictionRngContext.Clear(player)", clearSlice, StringComparison.Ordinal);

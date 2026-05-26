@@ -10,14 +10,13 @@ public sealed class AncientHighRiskSourceGuardTests
     public void AncientRunAndCombatHooksKeepSingleDispatchOwnership()
     {
         var morviHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviHooks.cs");
-        var lothaHooks = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaHooks.cs");
+        var lothaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaRunHook.cs");
+        var lothaCombatHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaCombatHook.cs");
         var urdaRunHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var urdaCombatHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaCombatHook.cs");
 
         var morviRunHook = SliceBetween(morviHooks, "internal sealed class MorviRunHook", "internal sealed class MorviCombatHook");
         var morviCombatHook = SliceFrom(morviHooks, "internal sealed class MorviCombatHook");
-        var lothaRunHook = SliceBetween(lothaHooks, "internal sealed class LothaRunHook", "internal sealed class LothaCombatHook");
-        var lothaCombatHook = SliceFrom(lothaHooks, "internal sealed class LothaCombatHook");
 
         AssertSourceContains(
             morviRunHook,
@@ -80,6 +79,8 @@ public sealed class AncientHighRiskSourceGuardTests
             "ModifyPowerAmountGiven",
             "TryModifyPowerAmountReceived",
             "AfterPowerAmountChanged");
+
+        AssertRepoPathDoesNotExist("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaHooks.cs");
 
         Assert.DoesNotContain("public override Task AfterCardPlayed", urdaRunHook, StringComparison.Ordinal);
         Assert.Contains("public override Task AfterCardPlayed", urdaCombatHook, StringComparison.Ordinal);

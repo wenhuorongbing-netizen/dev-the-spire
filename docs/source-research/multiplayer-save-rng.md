@@ -32,7 +32,7 @@ Purpose: record multiplayer/save/RNG boundaries that affect Spire Plus, Ascensio
 | Banner and Firemark combat | `AscensionCombatModifierService*.cs` | Combat state must be owned by combat hooks and reset on combat lifecycle boundaries. |
 | Morvi/Lotha state | `MorviBlessingService.State.cs`, `MorviBlessingService.CombatState.cs`, `LothaBlessingService.State.cs`, `LothaBlessingService.DeathReprieveState.cs` | Deck/player mirrors mitigate persistent state loss; transient combat state and Death Reprieve restore state remain lifecycle-owned and live save/load still required. |
 | Crystal Sphere preview | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | Only touch `%ScryMask` and local button state; never call `ClearCell`, `RevealItem`, `CellClicked`, or `AddReward`. |
-| Transform preview | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs`, `TransformPredictionRngContext.cs` | Use snapshot/forked transformation RNG; do not call real replacement creation paths for preview. |
+| Transform preview | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs`, `TransformPredictionRngContext.cs`, `TransformPredictionEventRngSourcePatches.cs`, `TransformPredictionNicheRngSourcePatches.cs`, `TransformPredictionSelectionLifetimePatch.cs` | Use snapshot/forked transformation RNG; do not call real replacement creation paths for preview. |
 
 ## Desync Watchlist
 
