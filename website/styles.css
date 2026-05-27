@@ -959,8 +959,10 @@ main {
   opacity: 0.65;
 }
 
-.compare-card:hover::after {
-  animation: sweep-sheen 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+@media (hover: hover) {
+  .compare-card:hover::after {
+    animation: sweep-sheen 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  }
 }
 
 @keyframes sweep-sheen {
@@ -1006,21 +1008,26 @@ main {
   }
 }
 
-.compare-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  z-index: 5;
-  border-color: var(--border-active);
-  box-shadow:
-    0 0 8px var(--glow-color),
-    0 0 30px var(--glow-color),
-    0 10px 30px rgba(0, 0, 0, 0.65),
-    inset 0 0 12px var(--glow-color),
-    inset 0 0 24px var(--glow-color),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
+@media (hover: hover) {
+  .compare-card:hover {
+    transform: translateY(-2px) scale(1.01);
+    z-index: 5;
+    border-color: var(--border-active) !important;
+    box-shadow:
+      0 0 8px var(--glow-color),
+      0 4px 12px rgba(0, 0, 0, 0.55),
+      inset 0 0 10px var(--glow-color),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    animation: none !important;
+  }
 
-.compare-card:hover::before {
-  background: linear-gradient(135deg, rgba(28, 27, 38, 0.55) 0%, rgba(18, 17, 26, 0.55) 100%);
+  .compare-card:hover::before {
+    background: linear-gradient(135deg, rgba(28, 27, 38, 0.55) 0%, rgba(18, 17, 26, 0.55) 100%);
+  }
+
+  .compare-card.active-inspect:hover {
+    animation: none !important;
+  }
 }
 
 /* Card Pin State on List Cards */
@@ -1028,11 +1035,10 @@ main {
   z-index: 4;
   border-color: var(--border-active) !important;
   box-shadow:
-    0 0 12px var(--glow-color),
-    0 0 40px var(--glow-color),
-    0 12px 40px rgba(0, 0, 0, 0.75),
-    inset 0 0 14px var(--glow-color),
-    inset 0 0 28px var(--glow-color),
+    0 0 8px var(--glow-color),
+    0 6px 18px rgba(0, 0, 0, 0.65),
+    inset 0 0 10px var(--glow-color),
+    inset 0 0 20px var(--glow-color),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   animation: active-card-glow-pulse 3s infinite ease-in-out;
 }
@@ -1131,11 +1137,13 @@ main {
   transition: var(--transition);
 }
 
-.compare-card:hover .card-art-frame {
-  border-color: var(--sts-green);
-  background:
-    radial-gradient(circle at center, hsla(140, 85%, 45%, 0.15) 0%, transparent 80%),
-    #0a0c12;
+@media (hover: hover) {
+  .compare-card:hover .card-art-frame {
+    border-color: var(--sts-green);
+    background:
+      radial-gradient(circle at center, hsla(140, 85%, 45%, 0.15) 0%, transparent 80%),
+      #0a0c12;
+  }
 }
 
 .card-title-block {
@@ -1153,8 +1161,10 @@ main {
   transition: var(--transition);
 }
 
-.compare-card:hover .card-title-block h3 {
-  text-shadow: 0 0 8px var(--gold-bright);
+@media (hover: hover) {
+  .compare-card:hover .card-title-block h3 {
+    text-shadow: 0 0 8px var(--gold-bright);
+  }
 }
 
 .compare-card .tags {
@@ -1993,6 +2003,10 @@ main {
   transform: translateY(-2px) scale(1.01);
 }
 
+.inspector-mobile-close {
+  display: none;
+}
+
 /* Responsive Overrides */
 @media (max-width: 980px) {
   .site-header {
@@ -2024,10 +2038,53 @@ main {
   }
 
   .inspector-pane {
-    position: static;
-    min-height: auto;
-    margin-bottom: 24px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 70vh;
+    max-height: 550px;
+    background: var(--bg-panel);
+    border-top: 2px solid var(--border-active);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.9);
+    border-radius: 16px 16px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    margin-bottom: 0;
+    padding: 20px;
+    overflow-y: auto;
     clip-path: none;
+  }
+
+  .inspector-pane.mobile-open {
+    transform: translateY(0);
+  }
+
+  .inspector-mobile-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    color: var(--text-muted);
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 100;
+    transition: var(--transition);
+  }
+
+  .inspector-mobile-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-normal);
   }
 
   .tool-row {

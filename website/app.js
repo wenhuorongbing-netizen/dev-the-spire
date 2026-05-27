@@ -574,6 +574,7 @@
 
     return `
       <div class="inspector-card-preview">
+        <button type="button" class="inspector-mobile-close" id="inspectorMobileClose" aria-label="Close">&times;</button>
         <div class="inspector-art-frame">
           ${renderImage(item.icon, title)}
         </div>
@@ -1249,6 +1250,10 @@
             activeInspectItem = item;
           }
           updatePinStateInDOM();
+          const pane = document.getElementById("inspectorPane");
+          if (pane) {
+            pane.classList.add("mobile-open");
+          }
         });
       });
 
@@ -1288,6 +1293,16 @@
 
   // Dynamic navigation click bindings (including cross-card hyperlinks and hero choices)
   document.addEventListener("click", (event) => {
+    // Mobile close drawer trigger
+    const mobileCloseBtn = event.target.closest("#inspectorMobileClose");
+    if (mobileCloseBtn) {
+      const pane = document.getElementById("inspectorPane");
+      if (pane) {
+        pane.classList.remove("mobile-open");
+      }
+      return;
+    }
+
     // Lightbox image preview trigger
     const wrapper = event.target.closest(".inspector-preview-img-wrapper");
     if (wrapper) {
