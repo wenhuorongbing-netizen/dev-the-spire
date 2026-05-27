@@ -844,7 +844,7 @@ window.SPIRE_PLUS_DATA = {
         baseRelic("\u73e0\u5b9d\u76d2", "JEWELRY_BOX.description", ["\u795e\u5316"], "拾起时将1张神化加入牌组。", "拾起时将1张神化加入牌组；这张神化没有固有。"),
         baseRelic("腌制活雾", "PRESERVED_FOG.description", ["\u5220\u724c"], "拾起时从牌组移除3张牌；将1张愚行加入牌组。", "拾起时从牌组移除4张牌；将1张愚行加入牌组。"),
         cardLoc("愚行", "FOLLY.description", ["\u8bc5\u5492", "\u5361\u724c\u672c\u4f53"], "无法打出。固有。永恒。虚无。"),
-        baseRelic("\u74e6\u5e93\u539f\u521d\u4e4b\u722a", "SERE_TALON.description", ["\u8bc5\u5492", "\u8bb8\u613f"], "\u74e6\u5e93\u5956\u52b1\u3002\u62fe\u53d6\u65f6\uff0c\u4ece\u0034\u5f20\u8bc5\u5492\u4e2d\u9009\u62e9\u0031\u5f20\u3002\u52a0\u5165\u5b83\u3001\u0032\u5f20\u8bb8\u613f\u548c\u0031\u5f20\u8bb8\u613f+\u3002", "\u62fe\u53d6\u65f6\uff0c\u4ece\u0034\u5f20\u8bc5\u5492\u4e2d\u9009\u62e9\u0031\u5f20\u3002\u52a0\u5165\u5b83\u3001\u0032\u5f20\u8bb8\u613f\u548c\u0031\u5f20\u8bb8\u613f+\u3002"),
+        baseRelic("\u74e6\u5e93\u539f\u521d\u4e4b\u722a", "SERE_TALON.description", ["\u8bc5\u5492", "\u8bb8\u613f"], "\u62fe\u53d6\u65f6\uff0c\u5c062\u5f20\u968f\u673a\u8bc5\u5492\u548c3\u5f20\u8bb8\u613f\u52a0\u5165\u724c\u7ec4\u3002", "\u62fe\u53d6\u65f6\uff0c\u4ece\u0034\u5f20\u8bc5\u5492\u4e2d\u9009\u62e9\u0031\u5f20\u3002\u52a0\u5165\u5b83\u3001\u0032\u5f20\u8bb8\u613f\u548c\u0031\u5f20\u8bb8\u613f+\u3002"),
         baseRelic("\u5766\u514b\u65af\u5229\u722a", "CLAWS.description", ["\u6495\u54ac", "\u53d8\u5316"], "\u62fe\u53d6\u65f6\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac\u201d\u3002", "\u9009\u62e9\u81f3\u591a6\u5f20\u724c\uff0c\u5c06\u5b83\u4eec\u53d8\u5316\u4e3a\u201c\u6495\u54ac+\u201d\u3002"),
         baseRelic("\u9009\u62e9\u6096\u8bba", "CHOICES_PARADOX.description", ["\u7a00\u6709\u724c"], "每场战斗第1回合开始时，从5张随机牌中选择1张加入手牌；该牌获得保留。", "每场战斗开始时，从5张可用稀有牌中选择1张加入手牌；获得保留，并在战斗后移除。"),
         baseRelic("\u5b9d\u77f3\u9762\u5177", "JEWELED_MASK.description", ["\u80fd\u529b\u724c"], "每场战斗第1回合抽牌前，将抽牌堆中1张随机能力牌移入手牌；本回合费用为0。", "拾起时选择1张能力牌永久变为0费；每场战斗开始时，将它从抽牌堆移入手牌。"),
@@ -1502,7 +1502,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       },
       "SERE_TALON.description": {
         title: "Vakuu's Sere Talon",
-        vanilla: "Vakuu reward. On pickup, choose 1 of 4 Curses, then add that Curse, 2 Wish, and 1 Wish+.",
+        vanilla: "On pickup, add 2 random Curses and 3 Wish to your deck.",
         desc: "On pickup, choose 1 of 4 Curses. Add it, 2 Wish, and 1 Wish+."
       },
       "CLAWS.description": {

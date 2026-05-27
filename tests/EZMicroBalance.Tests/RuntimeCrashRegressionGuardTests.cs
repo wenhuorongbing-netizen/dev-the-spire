@@ -10,6 +10,12 @@ public sealed class RuntimeCrashRegressionGuardTests
         var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var seedbedState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedState.cs");
         var cardPileCmd = ReadRepoText("source code", "src", "Core", "Commands", "CardPileCmd.cs");
+        var seedbedAfterCardDrawnPatch = ReadRepoText(
+            "EZMicroBalanceCode",
+            "Ancients",
+            "Expansion",
+            "Urda",
+            "UrdaSeedbedAfterCardDrawnPatch.cs");
 
         AssertSourceContains(
             runHook,
@@ -38,6 +44,11 @@ public sealed class RuntimeCrashRegressionGuardTests
             "HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))",
             "BeginSeedbedDraw(player)",
             "EndSeedbedDraw(player)");
+        AssertSourceContains(
+            seedbedAfterCardDrawnPatch,
+            "HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))",
+            "__result = Task.CompletedTask",
+            "return false;");
         Assert.DoesNotContain("await UrdaBlessingService.TryPlantSeedbedCardFromHand(card, \"card entered hand\")", runHook, StringComparison.Ordinal);
     }
 

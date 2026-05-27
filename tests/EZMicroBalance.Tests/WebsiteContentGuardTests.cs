@@ -102,8 +102,8 @@ public sealed class WebsiteContentGuardTests
 
         AssertSourceContains(
             index,
-            "content-data.js?v=20260527-fix-card-hover",
-            "app.js?v=20260527-fix-card-hover");
+            "content-data.js?v=20260527-fix-sere-talon",
+            "app.js?v=20260527-fix-sere-talon");
 
         var appJs = ReadRepoText("website", "app.js");
 

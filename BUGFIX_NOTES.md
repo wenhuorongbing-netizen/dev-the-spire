@@ -1,40 +1,63 @@
 # BUGFIX_NOTES.md
 
 ## Bug Summary
-A crash in combat (`System.NullReferenceException` at `MegaCrit.Sts2.Core.Commands.CardPileCmd+<Draw>d__16.MoveNext_Patch1`) occurred during card drawing under Urda's Seedbed mechanics when an eligible card (e.g. `SLIMED`) was drawn and planted.
+Combat can crash with:
+
+`System.NullReferenceException: Object reference not set to an instance of an object.`
+at `MegaCrit.Sts2.Core.Commands.CardPileCmd+<Draw>d__16.MoveNext_Patch1`
+
+during Urda Seedbed sequencing when a card is planted from hand and becomes part of draw handling.
 
 ## Reproduction Status
-Confirmed by the provided runtime log `C:/Users/Jack/AppData/Roaming/SlayTheSpire2/logs/godot2026-05-27T02.37.23.log` at lines 1021-1024.
+Reproduced from provided log:
+`C:/Users/Jack/AppData/Roaming/SlayTheSpire2/logs/godot2026-05-27T02.37.23.log`
+lines around 1023–1030.
+
+The crash occurs after:
+`[EZMicroBalance] [Spire Plus] Urda Seedbed skipped AfterCardDrawn hooks for planted card ...`
 
 ## Expected Behavior
-1. Active drawing (`CardPileCmd.Draw`) should track draw depth correctly and prevent queued hand planting from running concurrently during the draw operation.
-2. If `Hook.AfterCardDrawn` is skipped for planted cards, the patch must return a completed `Task` to avoid throwing a `NullReferenceException` when the caller awaits the return value of `Hook.AfterCardDrawn`.
+When a patch skips `Hook.AfterCardDrawn` for a planted card, it must still return a valid `Task` to the Harmony hook pipeline so the call site in `CardPileCmd.Draw` can safely `await` it.
 
 ## Actual Behavior
-1. `UrdaSeedbedCardPileDrawPatch` patched `CardPileCmd.Draw` using wrapper Prefix/Finalizer. Because async methods return the task immediately at the first `await`, the finalizer ran prematurely, decrementing draw depth and allowing concurrent planting.
-2. `UrdaSeedbedAfterCardDrawnPatch.Prefix` skipped `Hook.AfterCardDrawn` by returning `false` but did not assign a `Task` value to `ref Task __result`. Harmony returned `default(Task)` (`null`), causing a `NullReferenceException` when `CardPileCmd.Draw` awaited it.
+`CardPileCmd.Draw` awaited a `null` task during the draw await chain, which propagated as `NullReferenceException` in the patched draw async state machine (`MoveNext_Patch1`).
 
 ## Investigation Steps
-1. Inspected `C:/Users/Jack/AppData/Roaming/SlayTheSpire2/logs/godot2026-05-27T02.37.23.log` to identify the stack trace.
-2. Traced the source of `CardPileCmd.Draw` and `Hook.AfterCardDrawn` in the game source code.
-3. Analyzed `UrdaSeedbedAfterCardDrawnPatch.cs` and `UrdaSeedbedCardPileDrawPatch.cs` to identify Harmony task-return and wrapper return behaviors.
+- Inspected runtime log and isolated the exception to `CardPileCmd.Draw`.
+- Followed `CardPileCmd.Draw` implementation in local source:
+  - `await Hook.AfterCardDrawn(combatState, choiceContext, card, fromHandDraw);`
+- Traced Urda-specific overrides:
+  - `UrdaSeedbedAfterCardDrawnPatch` (`HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))`)
+  - `UrdaSeedbedCardPileDrawPatch` depth-tracking wrapper for draw calls
+- Cross-checked patch source and call flow in:
+  - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedAfterCardDrawnPatch.cs`
+  - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedCardPileDrawPatch.cs`
+- Verified this is a historical failure shape in the log package (`v0.1.0-private-beta.82`) that is not a valid source marker for current working tree version.
 
 ## Root Cause
-1. **Wrapper-Level Async Patching**: `CardPileCmd.Draw` returns a `Task` immediately when it yields, so the `Finalizer` ran immediately, resetting the draw depth.
-2. **Missing Async Result Assignment**: Returning `false` in a prefix patching a `Task`-returning method without assigning `ref Task __result = Task.CompletedTask` causes the patch to return a `null` `Task`, throwing `NullReferenceException` upon await.
+`UrdaSeedbedAfterCardDrawnPatch.Prefix` skipped the hook by returning `false` without assigning `ref Task __result` to a completed task in an older code state, so `CardPileCmd.Draw` resumed with `null` and crashed when awaiting it.
 
 ## Affected Files
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedAfterCardDrawnPatch.cs`
 - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedCardPileDrawPatch.cs`
 
 ## Fix Strategy
-1. **Assign CompletedTask**: Modify `UrdaSeedbedAfterCardDrawnPatch.Prefix` to accept `ref Task __result` and assign `Task.CompletedTask` when returning `false`.
-2. **Async Task Postfix Wrapping**: Modify `UrdaSeedbedCardPileDrawPatch` to use a `Postfix` that wraps the returned `Task<IEnumerable<CardModel>>` and decrements draw depth only when the task completes.
+1. Keep the draw-depth tracking patch (`UrdaSeedbedCardPileDrawPatch`) wrapping the draw task and ending depth in a `finally`.
+2. Make `UrdaSeedbedAfterCardDrawnPatch` assign `Task.CompletedTask` when short-circuiting hook execution:
+   - include `ref Task __result`
+   - set `__result = Task.CompletedTask`
+   - return `false`
 
 ## Regression Test Plan
-- Run `dotnet test` to ensure existing regression tests pass.
-- Verify that `dotnet build` succeeds with zero errors.
+- Source-guard test to assert:
+  - the AfterCardDrawn prefix remains task-return-aware
+  - `__result` is explicitly completed when returning `false`
+- General build/test command set:
+  - `dotnet build EZMicroBalance.sln`
+  - `dotnet test EZMicroBalance.sln --no-build`
 
 ## Verification Commands
-- `dotnet build`
-- `dotnet test`
+- Executed during this pass:
+  - `dotnet build` ✅
+  - `dotnet test` ✅ (`dotnet test EZMicroBalance.sln --no-build`)
+  - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` ✅
