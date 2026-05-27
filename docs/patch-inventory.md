@@ -45,8 +45,8 @@ Regenerate:
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 43 | `[HarmonyPatch(typeof(NMapScreen), nameof(NMapScreen.Close))]` |
 | Urda | High | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightRoomPatches.cs` | 5 | `[HarmonyPatch(typeof(RunManager), "RollRoomTypeFor")]` |
 | Urda | High | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightRoomPatches.cs` | 21 | `[HarmonyPatch(typeof(RunManager), "CreateRoom")]` |
-| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedAfterCardDrawnPatch.cs` | 5 | `[HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedCardPileDrawPatch.cs` | 6 | `[HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))]` |
+| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedAfterCardDrawnPatch.cs` | 7 | `[HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))]` |
+| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedCardPileDrawPatch.cs` | 9 | `[HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaWitheredHuskTransformPatches.cs` | 3 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.IsTransformable), MethodType.Getter)]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaWitheredHuskTransformPatches.cs` | 15 | `[HarmonyPatch(typeof(CardFactory), nameof(CardFactory.GetDefaultTransformationOptions))]` |
 | Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 13 | `[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]` |

@@ -85,13 +85,13 @@
 - Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-27 after the beta.83 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.
 - Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.83.zip`, `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.83.zip` were refreshed and hash-checked on 2026-05-27 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The beta.19 loader row is historical startup/log proof only; beta.83 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
 - Last PCK hash check: the 2026-05-27 local manual-test package refresh left the staging, versioned, and zip-entry PCK at SHA256 `724C93030FEC6EB2889D4E622953A6DB55024FC489B942AA5D5070C36389B87C`.
-- Last staging/versioned DLL hash check: SHA256 `19A9A43F72C17B44BB44C999D617F5BCCDA5EA6F1743464BBF6CB196E6ADD6DB`.
+- Last staging/versioned DLL hash check: SHA256 `B4E57EB1D4C199BD7CF1582C31690B29BD44DA48F58E669D70ABBBC6EAF90296`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
 - Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.83.zip` was rebuilt from the real installed mod artifacts, copied to the game root, and synced into the real installed mod folder on 2026-05-27. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `6F5D27DF55EF8867CC26180A6DEAB7119C75BFED03EC7A6ED9C59FEFE6C2BA4D`
-  - DLL SHA256: `19A9A43F72C17B44BB44C999D617F5BCCDA5EA6F1743464BBF6CB196E6ADD6DB`
+  - Zip SHA256: `73002AEE180498879D5A13E45AB3C14AA056B1AD847350D891535C3FB96E00B4`
+  - DLL SHA256: `B4E57EB1D4C199BD7CF1582C31690B29BD44DA48F58E669D70ABBBC6EAF90296`
   - README SHA256: `498CB710A3242D1FBD5690C084E937A9487CEDA306A5AE8840E92632BE9F0BEB`
   - Manifest SHA256: `CEC00867D337984E2496E37030F6F2AE72429075963CD84698444C31711789BF`
   - PCK SHA256: `724C93030FEC6EB2889D4E622953A6DB55024FC489B942AA5D5070C36389B87C`
