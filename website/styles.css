@@ -947,31 +947,7 @@ main {
   transition: var(--transition);
 }
 
-/* High-contrast diagonal sweep sheen */
-.compare-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%);
-  background-size: 200% 200%;
-  background-position: -200% 0;
-  z-index: 10;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  transition: none;
-  opacity: 0.65;
-}
 
-@media (hover: hover) {
-  .compare-card:hover::after {
-    animation: sweep-sheen 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-  }
-}
-
-@keyframes sweep-sheen {
-  0% { background-position: -150% 0; }
-  100% { background-position: 150% 0; }
-}
 
 @keyframes cardDealFade {
   from { opacity: 0; transform: translateY(12px) rotate(0.5deg); }
