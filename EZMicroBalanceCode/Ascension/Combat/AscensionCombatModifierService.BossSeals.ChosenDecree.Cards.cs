@@ -17,7 +17,17 @@ internal static partial class AscensionCombatModifierService
             return;
         }
 
-        CardCmd.Enchant<RoyalDecreeEnchantment>(card, 1m);
+        try
+        {
+            CardCmd.Enchant<RoyalDecreeEnchantment>(card, 1m);
+        }
+        catch (InvalidOperationException ex)
+        {
+            MainFile.Logger.Warn(
+                $"[Spire Plus] Ascension A19 skipped Royal Decree mark for un-enchantable Bound card {card.Id}: {ex.Message}");
+            return;
+        }
+
         AscensionSavedStateFields.RoyalDecreeMarkedCard[card] = true;
         AscensionSavedStateFields.RoyalDecreePlayedCard[card] = false;
         AscensionSavedStateFields.RoyalDecreePlayedBoundCard[card] = false;
@@ -86,6 +96,8 @@ internal static partial class AscensionCombatModifierService
     {
         return card.Affliction is Bound &&
             card.Enchantment == null &&
+            card.Type is CardType.Attack or CardType.Skill or CardType.Power &&
+            !card.Keywords.Contains(CardKeyword.Unplayable) &&
             ModelDb.Enchantment<RoyalDecreeEnchantment>().CanEnchant(card);
     }
 

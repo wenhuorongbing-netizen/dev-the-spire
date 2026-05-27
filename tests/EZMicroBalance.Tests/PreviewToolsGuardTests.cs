@@ -314,13 +314,13 @@ public sealed class PreviewToolsGuardTests
             "only changes the local",
             "%ScryMask",
             "must not reveal cells, spend charges, or grant rewards",
-            "It lowers the fog over already-placed items, without clearing cells, spending charges, or granting rewards.",
-            "Shows the predicted card for card transforms using a forked RNG snapshot.",
-            "It does not advance the real transform RNG or add reward choices.",
-            "按下后只降低雾层透明度",
-            "不翻开格子、不消耗次数、不发放奖励",
-            "右侧预览会显示这次会变成的牌",
-            "不会新增奖励选项",
+            "revealed as semi-transparent icons, allowing you to plan your flips perfectly without save-scumming.",
+            "You can preview the result before making your choice, eliminating the gamble.",
+            "displays the exact card you are guaranteed to receive.",
+            "所有格子上的内容都会以半透明形式直接显现",
+            "无需再靠存档读档来猜测",
+            "右侧预览区域会直接显示你点击确认后将百分之百获得的卡牌",
+            "彻底消除随机盲盒的赌博风险",
             "Map foresight and reward foresight are not implemented");
 
         foreach (var overclaim in new[]

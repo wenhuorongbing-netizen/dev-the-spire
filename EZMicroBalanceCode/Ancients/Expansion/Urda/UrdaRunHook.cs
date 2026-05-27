@@ -59,19 +59,21 @@ internal sealed class UrdaRunHook : AbstractModel
         return UrdaBlessingService.BeforeRoomEntered(room);
     }
 
-    public override async Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
+    public override Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
     {
         if (card.Owner?.Creature.CombatState != null && ShouldSkipCoopCombat(card.Owner.RunState))
         {
-            return;
+            return Task.CompletedTask;
         }
 
         if (card.Pile?.Type == PileType.Hand)
         {
-            await UrdaBlessingService.TryPlantSeedbedCardFromHand(card, "card entered hand");
+            _ = UrdaBlessingService.QueueSeedbedPlantFromHand(card, "card entered hand");
         }
 
         UrdaBlessingService.SyncPersistentState(card.Owner);
+
+        return Task.CompletedTask;
     }
 
     public override Task AfterActEntered()

@@ -296,9 +296,10 @@ public sealed class UrdaReleaseCoverageGuardTests
         var seedbedSource = string.Join(Environment.NewLine, seedbedRewardSource, seedbedCombatSource, seedbedStateSource, seedbedPatchSource);
         AssertSourceContains(
             urdaRunHook,
-            "public override async Task AfterCardChangedPiles",
-            "UrdaBlessingService.TryPlantSeedbedCardFromHand(card, \"card entered hand\")",
+            "public override Task AfterCardChangedPiles",
+            "_ = UrdaBlessingService.QueueSeedbedPlantFromHand(card, \"card entered hand\")",
             "UrdaBlessingService.SyncPersistentState(card.Owner)");
+        Assert.DoesNotContain("TryPlantSeedbedCardFromHand(card, \"card entered hand\")", urdaRunHook, StringComparison.Ordinal);
         Assert.DoesNotContain("TryCatchSeedbedCardFromHand", urdaRunHook, StringComparison.Ordinal);
         AssertSourceContains(
             seedbedCombatSource,
@@ -313,6 +314,10 @@ public sealed class UrdaReleaseCoverageGuardTests
             "Planting skipped play, discard, and Exhaust synergies");
         AssertSourceContains(
             seedbedStateSource,
+            "Queue<SeedbedPlantingRequest> PendingRequests",
+            "Task<bool> QueueSeedbedPlantFromHand",
+            "bool IsProcessing",
+            "ProcessSeedbedPlantingQueue",
             "ConditionalWeakTable<Player, SeedbedCombatState>",
             "ConditionalWeakTable<CardModel, SeedbedPlantMarker>",
             "GetOrRestoreSeedbed(Player player)",

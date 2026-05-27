@@ -41,8 +41,7 @@ internal static partial class UrdaBlessingService
             return false;
         }
 
-        await PlantSeedbedCard(card, state, source);
-        return true;
+        return await PlantSeedbedCard(card, state, source);
     }
 
     public static bool IsSeedbedSeedableCard(CardModel card)
@@ -112,21 +111,21 @@ internal static partial class UrdaBlessingService
             .Concat(PileType.Discard.GetPile(player).Cards)
             .Where(IsSeedbedSeedableCard);
 
-    private static async Task PlantSeedbedCard(CardModel card, SeedbedCombatState state, string source)
+    private static async Task<bool> PlantSeedbedCard(CardModel card, SeedbedCombatState state, string source)
     {
         if (state.RemainingSlots <= 0 ||
             card.Owner is not { } player ||
             card.Pile?.Type is not (PileType.Hand or PileType.Draw or PileType.Discard) ||
             !IsSeedbedSeedableCard(card))
         {
-            return;
+            return false;
         }
 
         var sourcePile = card.Pile.Type;
         if (card is RootFamilyCard rootblight &&
             !RootDeckService.TryHoldRootblightBySeedbed(rootblight))
         {
-            return;
+            return false;
         }
 
         MarkSeedbedPlantedCard(card);
@@ -146,6 +145,8 @@ internal static partial class UrdaBlessingService
         MainFile.Logger.Info(
             $"[Spire Plus] Urda Seedbed planted {card.Id.Entry} from {sourcePile} via {source}; " +
             $"remaining slots {state.RemainingSlots}. Planting skipped play, discard, and Exhaust synergies.");
+        UnmarkSeedbedPlantedCard(card);
+        return true;
     }
 
 }
