@@ -152,7 +152,42 @@ const ascensionDetails = {
   ],
   FIREMARK_GIANT: [
     detail("数值", "最大/当前生命提高：第一幕20%，第二幕30%，第三幕45%。", "Values", "Max/current HP increase: Act 1/2/3 = +20%/+30%/+45%."),
-    detail("熔核", "半血后暴露熔核；窗口内造成原最大生命20%/25%/30%的伤害可打破并削弱它，否则获得1层人工制品。", "Molten Core", "At half HP, Molten Core opens. Deal 20%/25%/30% of original Max HP during the window const mechanicGlossary = [
+    detail("熔核", "半血后暴露熔核；窗口内造成原最大生命20%/25%/30%的伤害可打破并削弱它，否则获得1层人工制品。", "Molten Core", "At half HP, Molten Core opens. Deal 20%/25%/30% of original Max HP during the window to break and weaken it; otherwise it gains 1 Artifact."),
+    detail("溢火", "打破熔核时，对1名副目标造成6/12/24点溢火伤害。", "Overflow", "Breaking the core deals 6/12/24 overflow damage to 1 secondary enemy.")
+  ],
+  FIREMARK_FORGE_ARMOR: [
+    detail("数值", "你的回合开始时，宿主获得8/14/24点熔甲。", "Values", "At the start of your turn, the host gains 8/14/24 Molten Armor."),
+    detail("破甲", "回合结束时宿主没有格挡，则跳过下一次熔甲；每场最多触发2次。", "Break", "If the host has no Block at turn end, the next Molten Armor is skipped. Max 2 skips per combat."),
+    detail("溢火", "1名副目标获得3/6/12点格挡。", "Overflow", "1 secondary enemy gains 3/6/12 Block.")
+  ],
+  FIREMARK_CONSTANT_HEAL: [
+    detail("数值", "敌方回合结束时回复4/8/16 HP。", "Values", "At enemy turn end, heal 4/8/16 HP."),
+    detail("打断", "本轮对宿主造成12/24/48点伤害可中断本次治疗。", "Interrupt", "Deal 12/24/48 damage to the host during the round to interrupt that heal."),
+    detail("溢火", "治疗成功时，为1名受伤副目标回复2/4/8 HP。", "Overflow", "If the heal succeeds, 1 damaged secondary enemy heals 2/4/8 HP.")
+  ],
+  BANNER_VANGUARD: [
+    detail("数值", "所有主要敌人开战获得1/2/4点临时力量。", "Values", "All primary enemies start with 1/2/4 temporary Strength."),
+    detail("移除", "第3回合开始时移除这些力量。", "Removal", "Removed at the start of round 3.")
+  ],
+  BANNER_SHIELDWALL: [
+    detail("数值", "旗手存活时，其他敌人每个敌方回合后获得3/7/14点格挡。", "Values", "While the bannerbearer lives, other enemies gain 3/7/14 Block after each enemy turn."),
+    detail("死亡", "旗手死亡时，其他敌人获得5/10/20点格挡。", "Death", "When the bannerbearer dies, other enemies gain 5/10/20 Block.")
+  ],
+  BANNER_BLOOD_PRIZE: [
+    detail("奖励", "第3回合结束前击杀标记敌人，战后获得15/30/55金币。", "Reward", "Kill the marked enemy before round 3 ends to gain 15/30/55 Gold after combat."),
+    detail("失败", "若标记敌人存活，它获得1/2/4力量和1/1/2层人工制品。", "Miss", "If it survives, it gains 1/2/4 Strength and 1/1/2 Artifact.")
+  ],
+  BANNER_PRESSING_LINE: [
+    detail("触发", "每回合第4/5/6张牌给敌阵充能，最多3层。", "Trigger", "Each turn, cards 4/5/6 charge the enemy line, max 3 layers."),
+    detail("数值", "充能给敌人4-6/8-12/16-24点格挡；满层使下一次攻击+1/2/4伤害。", "Values", "Charge gives 4-6/8-12/16-24 Block. Full charge adds +1/2/4 damage to the next attack.")
+  ],
+  BANNER_LAST_STAND: [
+    detail("触发", "仅多敌人战。第一个主要敌人死亡时触发一次。", "Trigger", "Multi-enemy fights only. Triggers once when the first primary enemy dies."),
+    detail("数值", "剩余主要敌人获得6/12/24点格挡和1/2/4点临时力量。", "Values", "Remaining primary enemies gain 6/12/24 Block and 1/2/4 temporary Strength.")
+  ]
+};
+
+const mechanicGlossary = [
   mechanic(
     "archive_pages",
     "档案页",
@@ -520,8 +555,7 @@ const ascensionDetails = {
       termsEn: ["Trial Branch"],
       icon: "assets/ancients/urda/options/urda_trial_branch.png"
     }
-  )
-];,
+  ),
   mechanic(
     "fission",
     "裂变",
@@ -650,22 +684,6 @@ const ascensionDetails = {
       termsEn: ["Bound"],
       icon: "assets/ascension/boss_seals/chosen_decree.png"
     }
-  ),
-  mechanic(
-    "trial_branch",
-    "试炼枝条",
-    "乌尔妲的三场战斗小任务。选中的牌升级入库，但必须在接下来三场战斗里证明自己。",
-    ["从4张牌中选1张。", "该牌升级后加入牌组并获得试炼枝条标记。", "接下来3场战斗每场都要打出它；漏掉任何一场都会移除。"],
-    ["试炼枝条", "试种枝条"],
-    ["EZMB_URDA.pages.INITIAL.options.urda_trial_branch.description"],
-    [],
-    {
-      titleEn: "Trial Branch",
-      descEn: "Urda's three-combat mini-quest. The chosen card joins upgraded, but must prove itself over the next three combats.",
-      bulletsEn: ["Choose 1 of 4 cards.", "It is upgraded, added to the deck, and marked with Trial Branch.", "Play it in each of the next 3 combats; missing any combat removes it."],
-      termsEn: ["Trial Branch"],
-      icon: "assets/ancients/urda/options/urda_trial_branch.png"
-    }
   )
 ];
 
@@ -758,25 +776,25 @@ window.SPIRE_PLUS_DATA = {
     }
   ],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.83.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.84.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.83/SpirePlus-v0.1.0-private-beta.83.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.84/SpirePlus-v0.1.0-private-beta.84.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.83",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.84",
     baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.1.4/BaseLib.3.1.4.zip",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.83.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.83"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.84.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.84"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
-      ["\u4f53\u79ef", "18,954,276 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "73002AEE180498879D5A13E45AB3C14AA056B1AD847350D891535C3FB96E00B4"]
+      ["\u4f53\u79ef", "18,954,278 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "7B71487069A41F0AA7E3440845CE195D984F9F3C672EE49AF0F02C556861C82D"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.83.zip\u3002",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.84.zip\u3002",
     "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -809,7 +827,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.83"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.84"]
     ]
   },
   updateGroups: [
@@ -957,8 +975,8 @@ window.SPIRE_PLUS_DATA = {
         {
           ...manual(
             "水晶球预知",
-            "原版水晶球小游戏格子内容完全隐藏，需要盲猜翻牌。",
-            "新增「预视」按钮。点击后，所有格子上的内容都会以半透明形式直接显现（包括金币、遗物、药水等），让你能够一目了然，完美规划翻牌顺序，无需再靠存档读档来猜测。",
+            "原版水晶球事件的格子内容完全隐藏，只能盲翻。",
+            "在水晶球界面新增「预视」按钮。点击后可直接透视所有格子的内容（半透明显示金币、遗物、药水等），帮助你完美规划翻选路线，告别繁琐的存档读档。",
             ["预览工具"],
             "assets/source-art/events/crystal_sphere/small_divination_icon.png",
             "crystal_sphere_peek"
@@ -966,9 +984,9 @@ window.SPIRE_PLUS_DATA = {
           previewImage: "assets/previews/crystal_sphere_peek.png"
         },
         manual(
-          "变换真实预览",
-          "原版卡牌变换时只循环跳动展示可能出现的卡牌，无法知道最终变换出哪张牌。",
-          "在进行卡牌变换（如休息处、事件）时，右侧预览区域会直接显示你点击确认后将百分之百获得的卡牌。你可以先预览变换结果，再决定是否确认变换，彻底消除随机盲盒的赌博风险。",
+          "卡牌变换预览",
+          "原版卡牌变换时，画面仅进行循环跳动展示，无法得知最终获得的卡牌。",
+          "进行卡牌变换（如篝火、事件）时，直接在预览面板中显示该次变换锁定的最终卡牌。玩家可以提前预览变换结果并做出明智决策，消除随机猜测的负担。",
           ["预览工具"],
           "assets/card_portraits/card.png",
           "transform_preview"
@@ -985,7 +1003,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.83.zip；游戏内显示名为 Spire Plus。"],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.84.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -1100,8 +1118,8 @@ function card(id, tags, icon) {
 
 function manual(title, vanilla, current, tags, icon, i18nKey) {
   let finalKey = i18nKey || title;
-  if (title === "\u6c34\u6676\u7403\u9884\u77e5") finalKey = "crystal_sphere_peek";
-  if (title === "\u53d8\u6362\u771f\u5b9e\u9884\u89c8") finalKey = "transform_preview";
+  if (title === "\u6c34\u6676\u7403\u9884\u77e5" || title === "水晶球预知") finalKey = "crystal_sphere_peek";
+  if (title === "\u53d8\u6362\u771f\u5b9e\u9884\u89c8" || title === "卡牌变换预览" || title === "变换真实预览") finalKey = "transform_preview";
   return { title, vanilla, current, tags, icon, i18nKey: finalKey, namespace: "mechanics" };
 }
 
@@ -1185,7 +1203,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       }
     ],
     installSteps: [
-      "下载 SpirePlus-v0.1.0-private-beta.83.zip。",
+      "下载 SpirePlus-v0.1.0-private-beta.84.zip。",
       "下载 BaseLib.3.1.4.zip，并解压到游戏的 mods\\BaseLib 目录。",
       "常见 Windows 路径：Steam\\steamapps\\common\\Slay the Spire 2。",
       "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -1303,17 +1321,17 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.83.zip"],
-        ["Version", "v0.1.0-private-beta.83"],
+        ["File", "SpirePlus-v0.1.0-private-beta.84.zip"],
+        ["Version", "v0.1.0-private-beta.84"],
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.0"],
-        ["Size", "18,954,276 bytes"],
-        ["Hash", "73002AEE180498879D5A13E45AB3C14AA056B1AD847350D891535C3FB96E00B4"]
+        ["Size", "18,954,278 bytes"],
+        ["Hash", "7B71487069A41F0AA7E3440845CE195D984F9F3C672EE49AF0F02C556861C82D"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.83.zip.",
+      "Download SpirePlus-v0.1.0-private-beta.84.zip.",
       "Download BaseLib.3.1.4.zip and extract it to the game's mods\\BaseLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
@@ -1345,7 +1363,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.83"]
+          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.84"]
         ]
       },
     updateGroups: [
@@ -1707,7 +1725,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.83.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.84.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]

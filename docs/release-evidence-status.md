@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `73002AEE180498879D5A13E45AB3C14AA056B1AD847350D891535C3FB96E00B4` |
-| DLL | `B4E57EB1D4C199BD7CF1582C31690B29BD44DA48F58E669D70ABBBC6EAF90296` |
-| PCK | `724C93030FEC6EB2889D4E622953A6DB55024FC489B942AA5D5070C36389B87C` |
-| Manifest | `CEC00867D337984E2496E37030F6F2AE72429075963CD84698444C31711789BF` |
-| README_INSTALL | `498CB710A3242D1FBD5690C084E937A9487CEDA306A5AE8840E92632BE9F0BEB` |
+| ZIP | `7B71487069A41F0AA7E3440845CE195D984F9F3C672EE49AF0F02C556861C82D` |
+| DLL | `63E0528D3BBB1DFE89D5267109D6C674A904377A5A1AC445F76ED96B6F06F3FA` |
+| PCK | `067437EF0E6756C635B829C037ABA4AFB00A16626F62A25AC58617DFC0E1703B` |
+| Manifest | `0E62C2024D839093997511CA4038198B791C91111C7FB956EDFA5D443324879E` |
+| README_INSTALL | `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C` |
 
 ## Automation Summary
 
@@ -26,7 +26,7 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.83 loader proof and gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.84 loader proof and gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |

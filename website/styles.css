@@ -909,9 +909,9 @@ main {
   transition: var(--transition);
 
   /* Glow custom properties (default: Gold/Relic theme) */
-  --glow-color: rgba(223, 175, 83, 0.22);
-  --border-active: rgba(223, 175, 83, 0.65);
-  --border-active-glow: rgba(223, 175, 83, 0.35);
+  --glow-color: rgba(223, 175, 83, 0.35);
+  --border-active: rgba(223, 175, 83, 0.85);
+  --border-active-glow: rgba(223, 175, 83, 0.55);
   --art-glow-color: hsla(44, 73%, 58%, 0.15);
   --art-border-color: var(--gold-bright);
 }
@@ -976,25 +976,46 @@ main {
 @keyframes active-card-glow-pulse {
   0% {
     border-color: var(--border-active-glow) !important;
-    filter: drop-shadow(0 0 5px var(--glow-color)) drop-shadow(0 4px 15px rgba(0, 0, 0, 0.55));
+    box-shadow:
+      0 0 10px var(--glow-color),
+      0 0 22px var(--glow-color),
+      0 6px 20px rgba(0, 0, 0, 0.55),
+      inset 0 0 10px var(--glow-color),
+      inset 0 0 20px var(--glow-color),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
   50% {
     border-color: var(--border-active) !important;
-    filter: drop-shadow(0 0 12px var(--glow-color)) drop-shadow(0 4px 24px rgba(0, 0, 0, 0.75));
+    box-shadow:
+      0 0 15px var(--glow-color),
+      0 0 45px var(--glow-color),
+      0 12px 35px rgba(0, 0, 0, 0.75),
+      inset 0 0 16px var(--glow-color),
+      inset 0 0 32px var(--glow-color),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
   100% {
     border-color: var(--border-active-glow) !important;
-    filter: drop-shadow(0 0 5px var(--glow-color)) drop-shadow(0 4px 15px rgba(0, 0, 0, 0.55));
+    box-shadow:
+      0 0 10px var(--glow-color),
+      0 0 22px var(--glow-color),
+      0 6px 20px rgba(0, 0, 0, 0.55),
+      inset 0 0 10px var(--glow-color),
+      inset 0 0 20px var(--glow-color),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 }
 
 .compare-card:hover {
   transform: translateY(-4px) scale(1.02);
   z-index: 5;
-  border-color: var(--border-active-glow);
-  filter: drop-shadow(0 0 8px var(--glow-color)) drop-shadow(0 6px 20px rgba(0, 0, 0, 0.65));
+  border-color: var(--border-active);
   box-shadow:
-    inset 0 0 10px var(--glow-color),
+    0 0 8px var(--glow-color),
+    0 0 30px var(--glow-color),
+    0 10px 30px rgba(0, 0, 0, 0.65),
+    inset 0 0 12px var(--glow-color),
+    inset 0 0 24px var(--glow-color),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
@@ -1007,7 +1028,11 @@ main {
   z-index: 4;
   border-color: var(--border-active) !important;
   box-shadow:
+    0 0 12px var(--glow-color),
+    0 0 40px var(--glow-color),
+    0 12px 40px rgba(0, 0, 0, 0.75),
     inset 0 0 14px var(--glow-color),
+    inset 0 0 28px var(--glow-color),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   animation: active-card-glow-pulse 3s infinite ease-in-out;
 }
@@ -1020,48 +1045,47 @@ main {
 
 /* Relics: Gold/Bronze Theme */
 .compare-card.type-relics {
-  --glow-color: rgba(223, 175, 83, 0.25);
-  --border-active: rgba(223, 175, 83, 0.65);
-  --border-active-glow: rgba(223, 175, 83, 0.35);
+  --glow-color: rgba(223, 175, 83, 0.55);
+  --border-active: rgba(223, 175, 83, 0.95);
+  --border-active-glow: rgba(223, 175, 83, 0.65);
   --art-glow-color: hsla(44, 73%, 58%, 0.15);
   --art-border-color: var(--gold-bright);
 }
 
 /* Cards: Blue/Steel Theme */
 .compare-card.type-cards {
-  --glow-color: rgba(0, 176, 255, 0.25);
-  --border-active: rgba(0, 176, 255, 0.65);
-  --border-active-glow: rgba(0, 176, 255, 0.35);
+  --glow-color: rgba(0, 176, 255, 0.55);
+  --border-active: rgba(0, 176, 255, 0.95);
+  --border-active-glow: rgba(0, 176, 255, 0.65);
   --art-glow-color: hsla(195, 80%, 50%, 0.15);
-  --art-border-color: var(--sts-blue);
+  --art-border-color: #00b0ff;
 }
 
-/* Ancients: Teal/Emerald Theme */
+/* Ancients: Green/Moss Theme */
 .compare-card.type-ancients {
-  --glow-color: rgba(0, 230, 118, 0.25);
-  --border-active: rgba(0, 230, 118, 0.65);
-  --border-active-glow: rgba(0, 230, 118, 0.35);
+  --glow-color: rgba(0, 230, 118, 0.55);
+  --border-active: rgba(0, 230, 118, 0.95);
+  --border-active-glow: rgba(0, 230, 118, 0.65);
   --art-glow-color: hsla(140, 85%, 45%, 0.15);
-  --art-border-color: var(--sts-green);
+  --art-border-color: #00e676;
 }
 
-/* Ascension: Blood Red Theme */
+/* Ascension: Red/Fire Theme */
 .compare-card.type-ascension {
-  --glow-color: rgba(255, 23, 68, 0.25);
-  --border-active: rgba(255, 23, 68, 0.65);
-  --border-active-glow: rgba(255, 23, 68, 0.35);
+  --glow-color: rgba(255, 23, 68, 0.55);
+  --border-active: rgba(255, 23, 68, 0.95);
+  --border-active-glow: rgba(255, 23, 68, 0.65);
   --art-glow-color: hsla(12, 90%, 55%, 0.15);
-  --art-border-color: var(--sts-red);
+  --art-border-color: #ff1744;
 }
 
-/* Preview Tools & Mechanics: Purple Theme */
-.compare-card.type-preview,
-.compare-card.type-mechanic {
-  --glow-color: rgba(186, 104, 200, 0.25);
-  --border-active: rgba(186, 104, 200, 0.65);
-  --border-active-glow: rgba(186, 104, 200, 0.35);
+/* Mechanics: Purple/Void Theme */
+.compare-card.type-mechanics {
+  --glow-color: rgba(186, 104, 200, 0.55);
+  --border-active: rgba(186, 104, 200, 0.95);
+  --border-active-glow: rgba(186, 104, 200, 0.65);
   --art-glow-color: hsla(270, 75%, 72%, 0.15);
-  --art-border-color: var(--sts-purple);
+  --art-border-color: #ba68c8;
 }
 
 .compare-card:hover .card-art-frame,

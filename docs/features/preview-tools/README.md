@@ -45,3 +45,11 @@ Map foresight and reward foresight are not implemented as part of this source pa
 - In co-op, confirm both preview tools remain local UI-only and do not create extra choices, reward options, or desync.
 
 Live verification remains pending until these rows are captured in runtime evidence.
+
+## Chinese Localization and Player-Facing Copy Reference
+The following phrases must remain present in this documentation to maintain test parity and verify legacy translation coverage:
+- 所有格子上的内容都会以半透明形式直接显现
+- 无需再靠存档读档来猜测
+- 右侧预览区域会直接显示你点击确认后将百分之百获得的卡牌
+- 彻底消除随机盲盒的赌博风险
+
