@@ -1017,6 +1017,29 @@ window.SPIRE_PLUS_DATA = {
   }
 };
 
+function detail(label, text, labelEn, textEn) {
+  return { label, text, labelEn, textEn };
+}
+
+function mechanic(id, title, desc, bullets, terms, relatedItemKeys = [], relatedMechanicIds = [], options = {}) {
+  return {
+    id,
+    title,
+    titleEn: options.titleEn,
+    desc,
+    descEn: options.descEn,
+    bullets,
+    bulletsEn: options.bulletsEn,
+    terms,
+    termsEn: options.termsEn,
+    relatedItemKeys,
+    relatedMechanicIds,
+    tags: options.tags || ["机制"],
+    keywordClass: options.keywordClass || "sts-keyword-gold",
+    icon: options.icon || "assets/card_portraits/card.png"
+  };
+}
+
 function sourceRelicIcon(descKey) {
   const ownedIcon = ownedRelicIcons[descKey];
   if (ownedIcon) return ownedIcon;
