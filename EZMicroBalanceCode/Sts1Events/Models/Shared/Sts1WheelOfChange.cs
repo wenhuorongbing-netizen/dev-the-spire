@@ -50,7 +50,8 @@ public sealed class Sts1WheelOfChange : EventModel
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.RELIC.description"));
                 break;
             case 3: // Curse
-                // TODO: Add Decay curse to deck
+                await CardPileCmd.AddCursesToDeck(
+                    new[] { ModelDb.Card<Decay>() }, Owner);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.CURSE.description"));
                 break;
             case 4: // Heal

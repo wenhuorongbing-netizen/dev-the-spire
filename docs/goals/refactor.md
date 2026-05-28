@@ -1,488 +1,375 @@
 # 严格审核结论
 
-**结论：不能判定“完成”。应判定为：Phase 0/1 有真实进展，但完成声明过度；测试/验证声明不合格；下一步不能直接进入大规模实现。** 上传记录里他一边说 “All tests pass”，一边又写 “294 pass, 9 fail”，这是互相矛盾的完成声明，不能接受。
+**这次不能判定“全部完成”。** 更准确的判定是：
 
-我对照仓库事实后，认为：
+> **Refactor Phase 0/1 的结构性工作大部分完成；Vakuu initializer 文件拆分现在已完成；PR checklist 和 guard test 已补上；但验证闭环仍不合格，因为测试声明自相矛盾，且当前仓库没有把 8/9 个失败测试写入 issue / blocker。StS1Events 仍然是未完成 prototype，不能进入 full parity 或 release-ready 叙述。**
 
-* **Phase 0：部分完成，不应标全 Done。**
-* **Phase 1：大部分完成，但有两个关键缺口。**
-* **StS1 Events 新功能：明确未完成，且现在不应进入批量实现。**
-* **下一个月目标应该是 Prototype Batch 1，不是 full parity，不是 release-ready。**
-* **必须使用 subagent 分工，并且实现者不能自审。**
+本次上传日志里，工人先说 “295 pass, 8 fail, 21 skip，8 个失败都是 pre-existing”，随后又说 “All tests pass”，但同一段又写 “294 pass, 9 fail”。这不是合格交付报告，而是**验证声明不可信**。 
 
 ---
 
-## 1. 他当前工作完成度判定
+## 1. 逐步验收表
 
-| 范围                               | 他声称          | 审核结论                                                                                                                                                 | 判定                  |
-| -------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| Phase 0 patch count drift        | 已修           | `docs/patch-inventory.md` 当前是 157 total / 22 high-risk；`patch-boundaries.md` 已改为引用 patch inventory，同时仍写了 “as of 2026-05-28: 157 total, 22 high-risk” | **基本完成，但建议不要再复制数字** |
-| Phase 0 PR template              | 已加 checklist | PR template 确实新增 high-risk patch seam 和 source-only/live-proof checklist                                                                             | **完成**              |
-| Phase 0 no-game validation       | 已完成          | 上传记录自相矛盾；`docs/goals/refactor.md` 标 Done，但记录里出现 9 fail；当前 `dev-environment.md` 最后成功测试仍是 2026-05-27，不是这次 Phase 0/1                                    | **未通过完成审核**         |
-| Phase 1 FeatureOrders            | 已完成          | `FeatureOrders.cs` 已存在，常量替换了 100/200/300/400/500 魔法数字                                                                                                | **完成**              |
-| Phase 1 named feature modules    | 已完成          | Lotha/Morvi/Urda/Vakuu/Ascension module 文件已存在                                                                                                        | **完成**              |
-| Phase 1 Registry refactor        | 已完成          | Registry 已改为注册 named modules，但仍直接 import 所有 feature module；这比 lambda 好，但还不是完全解耦的 Feature Catalog                                                     | **部分完成**            |
-| Ascension `[ModInitializer]` 双入口 | 已处理          | 只是加了 compatibility fallback 注释，attribute 仍在；可以接受为短期处理，但不是彻底消除双入口                                                                                     | **部分完成**            |
-| VakuuFightInitializer 独立文件       | 声称完成         | 实际 `VakuuFightInitializer` 仍在 `VakuuFightRunHook.cs` 文件里，文件名与职责不符                                                                                    | **未完成**             |
-| Phase 2 patch adapter rule       | 下一步          | 文档仍是 planned，没有实现                                                                                                                                    | **未开始**             |
-
----
-
-## 2. 逐步证据审核
-
-### Step A — Patch inventory drift
-
-**Observation:** `docs/patch-inventory.md` 当前生成日期是 2026-05-28，记录 total patch declarations = 157、high risk = 22、medium = 43、low = 92、unclassified = 0。
-
-**Observation:** `docs/architecture/patch-boundaries.md` 已把 source of truth 指向 `docs/patch-inventory.md`，但同一行仍保留了 “As of 2026-05-28: 157 total, 22 high-risk”。
-
-**Verdict:** **基本完成，但仍有 drift 隐患。**
-
-**Required fix:** 后续文档不要硬编码 patch 总数，只写 “see `docs/patch-inventory.md`”。如果必须写日期数字，CI 要校验一致性。
+| Step       | 工作项                                             | 仓库证据                                                                                                                   | 审核结论                           |
+| ---------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| 0.1        | patch count drift 修复                            | `patch-boundaries.md` 已指向 `patch-inventory.md`，并写明当前 157 total / 22 high-risk。                                         | **基本完成，但仍不建议复制数字。**            |
+| 0.2        | PR template 加 high-risk seam / source-only gate | PR template 已新增两条 checklist。                                                                                           | **完成。**                        |
+| 0.3        | guard test 覆盖 PR template 新增项                   | `EngineeringGovernanceGuardTests` 已检查 `High-risk patch seams` 和 `Source-only pass does not close live proof gates`。    | **完成。**                        |
+| 0.4        | no-game validation                              | 上传日志有 8/9 个测试失败，且最终口径自相矛盾。                                                                                             | **未完成。不能写 All tests pass。**    |
+| 1.1        | FeatureOrders                                   | 已有 `FeatureOrders.cs`，定义 Lotha/Morvi/Urda/Vakuu/Ascension 顺序常量。                                                        | **完成。**                        |
+| 1.2        | named feature modules                           | Lotha/Morvi/Urda/Vakuu/Ascension feature module 已存在并实现 `IFeatureModule`。                                               | **完成。**                        |
+| 1.3        | Registry 去掉 inline lambda                       | `SpirePlusFeatureRegistry` 已注册 named modules，不再用 inline delegate。                                                      | **完成，但不是完全 module discovery。** |
+| 1.4        | AscensionInitializer 双入口说明                      | 已加 compatibility fallback 注释，仍保留 `[ModInitializer]`。                                                                   | **短期可接受，部分完成。**                |
+| 1.5        | VakuuFightInitializer 文件拆分                      | 当前 `VakuuFightInitializer.cs` 存在，旧 `VakuuFightRunHook.cs` 不存在；active source manifest 也已改为 `VakuuFightInitializer.cs`。  | **现在完成。**                      |
+| 1.6        | docs/goals/refactor 状态同步                        | `docs/goals/refactor.md` 仍写 “Vakuu initializer move pending / Not done”。                                               | **未完成，文档已 stale。**             |
+| 2          | Patch adapter rule                              | 仍未实现，仅在 spec 中作为下一阶段。                                                                                                  | **未开始。**                       |
+| StS1Events | prototype completion                            | `docs/goals/event.md` 明确写 Not complete，full parity 0%。                                                                 | **未完成。**                       |
 
 ---
 
-### Step B — PR template update
+## 2. 当前完成状态修正版
 
-**Observation:** PR template 新增两条关键 checklist：
-
-* touching high-risk patch seams 时必须写 owning service seam 和 risk level；
-* source-only pass 不能关闭 loader/UI/gameplay/save-load/failure/death/co-op live proof gates。
-
-**Verdict:** **完成。**
-
-**缺口:** `EngineeringGovernanceGuardTests` 仍只检查旧的 PR template 文本，没有检查新增两条 checklist。
-
-**Required fix:** 加测试断言：
-
-```csharp
-"High-risk patch seams"
-"Source-only pass does not close live proof gates"
-```
+| Area                      | Status       | 严格判定                                |
+| ------------------------- | ------------ | ----------------------------------- |
+| Phase 0 Stop Bleeding     | 大部分完成        | **Partial Pass**                    |
+| Phase 1 Bootstrap Cleanup | 大部分完成        | **Pass with validation/doc caveat** |
+| Vakuu initializer move    | 已完成          | **Pass**                            |
+| PR checklist + guard      | 已完成          | **Pass**                            |
+| Full no-game validation   | 失败/口径混乱      | **Fail**                            |
+| StS1Events                | 未完成          | **Fail for completion claim**       |
+| Release-ready             | 无 live proof | **No**                              |
+| Test-ready                | 因测试失败未闭环     | **No**                              |
+| 下一步可进入 Phase 2？           | 不能直接进入       | **先修验证与 StS1 gate**                 |
 
 ---
 
-### Step C — Validation / test result
+## 3. 关键问题
 
-**Observation:** `docs/goals/refactor.md` 把 “运行 no-game validation 命令” 标为 Done。
+### Issue 1: 测试声明不可信
 
-**Observation:** 当前项目目标文档明确要求：code/config changes 必须 run build、normal tests、format、diff check；live claims 需要 live evidence。
+**Observation:** 上传日志中出现两种互相冲突的说法：一处写 8 个 remaining failures，另一处写 “All tests pass”，但随即又写 294 pass / 9 fail。 
 
-**Observation:** `dev-environment.md` 记录的最后成功 normal test run 是 2026-05-27，结果 296 passed / 20 skipped / 0 failed；这不是他 2026-05-28 refactor pass 的完整验证证明。
+**Inference:** 这说明他在交付报告里把 “我改动相关测试通过” 和 “全测试通过” 混用了。
 
-**Observation:** 上传记录中出现 “All tests pass” 与 “294 pass, 9 fail” 的矛盾。
-
-**Verdict:** **未通过完成审核。**
-
-**Required fix:** 他必须补一份完整验证记录，至少包含：
-
-```powershell
-dotnet build EZMicroBalance.sln
-dotnet test EZMicroBalance.sln --no-build
-dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-git diff --check
-```
-
-如果仍有 9 个失败，必须列出：
-
-* 失败测试名；
-* 是否 pre-existing；
-* 对本次改动是否相关；
-* 为什么允许继续；
-* 哪个 issue 跟踪；
-* 不得写 “All tests pass”。
-
----
-
-### Step D — FeatureOrders
-
-**Observation:** `FeatureOrders.cs` 已存在，定义了 `AncientsLotha = 100`、`AncientsMorvi = 200`、`AncientsUrda = 300`、`AncientsVakuuFight = 400`、`AscensionA11A20 = 500`。
-
-**Verdict:** **完成。**
-
-**Minor concern:** 仍然是数字顺序，只是从 registry 移到了常量文件。短期可以接受；长期应该加说明为什么 Lotha/Morvi/Urda/Vakuu/Ascension 是这个顺序。
-
----
-
-### Step E — Named feature modules
-
-**Observation:** `UrdaFeatureModule`、`LothaFeatureModule`、`MorviFeatureModule`、`VakuuFightFeatureModule`、`AscensionFeatureModule` 都已存在，并实现 `IFeatureModule`。例如 Urda module 使用 `FeatureOrders.AncientsUrda` 并 delegate 到 `UrdaInitializer.Initialize()`。 Lotha、Morvi、Vakuu、Ascension 同样存在。   
-
-**Verdict:** **完成。**
-
-**Remaining issue:** module 现在仍然只是 thin wrapper；这是合理的第一步，但还没有真正把 feature ownership、gate evaluation、telemetry summary、submodule registration 都封进去。
-
----
-
-### Step F — Registry cleanup
-
-**Observation:** `SpirePlusFeatureRegistry` 已从 inline `DelegateFeatureModule` 改成 `.Register(new LothaFeatureModule())` 等 named module 注册。
-
-**Verdict:** **部分完成。**
-
-**Reason:** 它仍然直接 import 五个 feature namespace。新增 feature 仍要改 central registry。这个结果比原来好，但还不是我之前建议的真正 Feature Catalog / module discovery。
-
-**Required next step:** 不要继续大抽象；先接受当前状态。等 Preview / StS1 / RitsuLib 模块也进入 registry 时，再引入 `FeatureCatalog` 或 `FeatureModuleDescriptor`。
-
----
-
-### Step G — AscensionInitializer 双入口
-
-**Observation:** `AscensionInitializer` 仍保留 `[ModInitializer(nameof(Initialize))]`，但新增注释说明这是 compatibility fallback，primary bootstrap 走 `MainFile -> SpirePlusFeatureRegistry`，并通过 `initialized` guard 防重复初始化。
-
-**Verdict:** **部分完成。**
-
-**接受理由:** 作为短期兼容处理可以接受。
-
-**不接受为完全完成的原因:** source of truth 仍不是单一入口。若 loader 真的会发现该 attribute，则这是 fallback；若不会，则这个 attribute 是混淆。需要一条 test 或 source note 说明为什么保留。
-
----
-
-### Step H — VakuuFightInitializer 文件职责
-
-**Observation:** `VakuuFightInitializer` 仍在 `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightRunHook.cs`，文件内定义的类名是 `VakuuFightInitializer`，并非 run hook。
-
-**Observation:** `docs/goals/refactor.md` 却写 “`VakuuFightInitializer` 已在独立文件 `VakuuFightRunHook.cs` 中”，这句话本身矛盾：`VakuuFightRunHook.cs` 不是 initializer 独立文件，文件名表达错误。
-
-**Verdict:** **未完成。**
-
-**Required fix:** move-only：
-
-```text
-EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightRunHook.cs
-→ EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightInitializer.cs
-```
-
-并更新 active source manifest guard。
-
----
-
-## 3. 关于 StS1Events：必须单独拉出来审，不要混进“重构完成”
-
-仓库现在已经有 `Sts1Events` active surface。`PROJECT_MAP.md` 已把它列在 `EZMicroBalanceCode/Sts1Events/Runtime` 和 `Models/Shared/Act1/Act2/Act3`。
-
-但它当前不能算完成：
-
-* `docs/goals/event.md` 明确写 **Not complete**，并指出 planning/folder structure 只是 partial，canonical event catalog inconsistent，code mostly stubs/TODOs，in-game proof missing，full parity 0%。
-* `Sts1EventRegistrationService` 文件存在，并且里面注册了一长串事件，但 `.csproj` 明确把它 `Compile Remove` 掉了，所以它当前不是 build-active source。 
-* `MainFile.Initialize()` 当前没有调用 `Sts1EventRegistrationService.RegisterAll`，只做 RitsuLib bootstrap、config register、FeatureRegistry init。
-
-**判定：StS1Events 不能被视为完成，也不能被视为已安全注册。** 它现在应处于 **prototype planning / gated infrastructure repair** 阶段。
-
----
-
-## 4. 最严重的完成声明问题
-
-### 问题 1：测试结果自相矛盾
-
-他不能同时说：
-
-```text
-All tests pass
-```
-
-又说：
-
-```text
-294 pass, 9 fail
-```
-
-**处理要求：** 以后任何 handoff 必须用下面格式：
+**Recommendation:** 以后报告必须分四栏：
 
 ```text
 Build: pass/fail
-Normal tests: pass/fail, exact passed/skipped/failed
+Tests overall: pass/fail, passed/skipped/failed exact count
+Touched-scope tests: pass/fail, exact filters
+Known failures:
+  - Test name
+  - pre-existing? yes/no
+  - verified before changes? yes/no
+  - tracking issue
+  - why allowed to continue
 Format: pass/fail
 Diff check: pass/fail
-Known failures:
-  - TestName
-  - First observed date
-  - Related to this PR? yes/no
-  - Tracking issue
-  - Why handoff is allowed
 ```
 
-没有这个格式，不允许标 Done。
+**Acceptance:** 只要有 1 个失败测试，就不能写 “All tests pass”。
 
 ---
 
-### 问题 2：`docs/goals/refactor.md` 标 Done 过度
+### Issue 2: `docs/issues.md` 没记录 8/9 个失败测试
 
-`docs/goals/refactor.md` 把 Phase 0 和 Phase 1 都标 Completed。 但实际：
+**Observation:** 当前 `docs/issues.md` 没看到针对本轮 8/9 个 test failures 的新 blocker/known failure 记录。
 
-* validation 没有可靠闭环；
-* Vakuu initializer 文件职责未修；
-* registry 改善但没有完全达到 Feature Catalog；
-* test guard 没覆盖新增 PR checklist；
-* `PROJECT_STATE.md` 没记录本次 Phase 0/1 验证结果，当前仍强调 beta.84 loader/gameplay proof pending。
+**Inference:** 即使这些 failures 是 pre-existing，也必须有可追踪记录，否则下一位 reviewer 无法判断是否真的 unrelated。
 
-**处理要求：** 把 Completed 改为：
+**Recommendation:** 新增一个 `GOV-TEST-FAILURES-PREEXISTING-20260528` 条目，列出所有失败测试、失败原因、是否和本次 refactor 无关、下一步 owner。
+
+**Acceptance:** `docs/issues.md` 或专门 `docs/issues/test-failures.md` 能一眼看到这 8/9 个 failures。
+
+---
+
+### Issue 3: `docs/goals/refactor.md` 已经 stale
+
+**Observation:** 当前仓库已经有 `VakuuFightInitializer.cs`，旧 `VakuuFightRunHook.cs` 不存在；但 `docs/goals/refactor.md` 仍写 Phase 1 “Vakuu initializer move pending”，状态表也写 “Not done”。  
+
+**Inference:** 文档状态和源码状态冲突，说明 worker 修了代码但没有回写审计状态。
+
+**Recommendation:** 立刻更新 `docs/goals/refactor.md`：
 
 ```text
-Phase 0: Partially Completed / Validation Pending
-Phase 1: Mostly Completed / Vakuu initializer move pending
+Vakuu initializer file split: Done
+Required validation: Failed / pending due to 8 or 9 known test failures
+Phase 0: Mostly complete, validation not clean
+Phase 1: Structurally complete, validation not clean
+```
+
+**Acceptance:** 文档不再说 Vakuu move pending；但也不能把 validation 标 Done。
+
+---
+
+### Issue 4: StS1Events 仍然不是可验收功能
+
+**Observation:** `docs/goals/event.md` 明确写 StS1 Event Port “Not complete”，catalog inconsistent、spec mostly draft、code mostly stubs/TODO、assets/localization/tests/in-game proof 都不足，full parity 0%。
+
+**Observation:** `Sts1EventRegistrationService` 存在，但 `.csproj` 当前把它 `Compile Remove` 掉了，所以它不是 build-active source。
+
+**Observation:** `MainFile.Initialize()` 当前也没有调用 `Sts1EventRegistrationService.RegisterAll`，只执行 RitsuLib bootstrap、config register、feature registry。
+
+**Inference:** 这比“无条件注册所有事件”安全，但也说明 StS1Events 还没完成 feature gate / canary registration。
+
+**Recommendation:** 不允许继续说 “all 46 events registered” 或 “infrastructure done”。当前状态应是：
+
+```text
+StS1Events: prototype source present, registration inactive, feature gate not implemented, canary not verified.
 ```
 
 ---
 
-### 问题 3：新的 StS1Events 风险没有进入主线验证
+## 4. 是否允许进入下一阶段？
 
-`Sts1Events` 已经出现在 project map，但当前 source registration service 被 compile remove，且 docs/event 明确说不是完成。 
+**不允许直接进入 Phase 2 patch adapter rule 或 StS1 simple batch implementation。**
 
-**处理要求：** 下个月的 spec 必须把它作为独立 prototype feature，而不是把它混成“refactor done”。
+必须先完成以下 gate：
 
----
+1. 更新 `docs/goals/refactor.md` 的 stale 状态。
+2. 给 8/9 test failures 建 issue 追踪。
+3. 重新跑并记录：
 
-## 5. 修正后的完成状态
+   * build；
+   * touched-scope tests；
+   * full normal tests；
+   * format；
+   * diff check。
+4. 明确写：
 
-| 项目                           | 状态                                                    |
-| ---------------------------- | ----------------------------------------------------- |
-| Refactor Phase 0             | **Partial pass**                                      |
-| Refactor Phase 1             | **Partial pass**                                      |
-| Required validation          | **Not proven / contradictory**                        |
-| Patch inventory drift        | **Mostly fixed**                                      |
-| PR template                  | **Fixed but guard coverage incomplete**               |
-| Bootstrap cleanup            | **Mostly done**                                       |
-| Vakuu initializer file split | **Not done**                                          |
-| Phase 2 patch adapter rule   | **Not started**                                       |
-| StS1 Events prototype        | **Not complete**                                      |
-| Release readiness            | **No**                                                |
-| Test-ready claim             | **No, unless he reruns and reports clean validation** |
+   * “overall tests are not clean”；
+   * “touched-scope tests pass”；
+   * “known failures are tracked”。
 
 ---
 
-# Next Monthly Dev Spec
+# 下一步 Monthly Dev Spec
 
 ## 2026-05-28 → 2026-06-30
 
-这个月不要追求 full parity，也不要追求 release-ready。目标应定义为：
+目标不是 full parity，不是 release-ready，而是：
 
-> **Deliver StS1 Event Port Prototype Batch 1 + finish refactor validation repair.**
+> **StS1 Event Port Prototype Batch 1 + Refactor Validation Repair**
 
-这与仓库里的 `docs/goals/event.md` 一致：月底验收目标是默认 Off 零影响、CanaryOnly 四个事件 playable、六个 simple events debug-spawn verified、资产/本地化/状态板诚实、pool replacement 只做 gated prototype，不做 release claim。
-
----
-
-## Week 0：2026-05-28 → 2026-05-31
-
-### Audit repair + validation honesty
-
-**目标：先修完成声明，不继续堆功能。**
-
-Required work:
-
-1. 把 `docs/goals/refactor.md` 的 Phase 0/1 状态改成真实状态：
-
-   * Phase 0 = partial / validation pending；
-   * Phase 1 = mostly complete / Vakuu initializer file move pending。
-2. 移动 `VakuuFightInitializer`：
-
-   * `VakuuFightRunHook.cs` → `VakuuFightInitializer.cs`。
-3. 更新 `EngineeringGovernanceGuardTests`：
-
-   * assert PR template 新增 high-risk checklist；
-   * assert source-only live-proof checklist。
-4. 重新运行并记录：
-
-   * build；
-   * test；
-   * format；
-   * diff check。
-5. 如果测试仍有 9 fail：
-
-   * 写入 `docs/issues.md`；
-   * 不允许写 “All tests pass”。
-
-Acceptance:
-
-* build/test/format/diff check 结果完整记录；
-* 不再有 “Done 但测试失败”；
-* Vakuu initializer 文件名正确；
-* PR template 新增项被测试保护。
+这和 `docs/goals/event.md` 的月目标一致：默认 Off 不改变 Spire Plus 行为、CanaryOnly 注册并运行 4 个事件、4 个 canary playable/manual verified、6 个 simple events debug-spawn verified、10 个事件资产验证、状态板诚实、pool replacement 只做 prototype-gated。
 
 ---
 
-## Week 1：2026-06-01 → 2026-06-07
+## Week 0: 2026-05-28 → 2026-05-31
 
-### StS1 Event Port gate safety + source/API verification
+### Validation repair + documentation truth
 
-Required work:
+**Required Work**
 
-1. 新建或更新：
+1. 修正 `docs/goals/refactor.md`：
 
-   * `docs/features/sts1-events/audit-2026-05-28.md`
-   * `docs/features/sts1-events/source-research/sts2-act-event-registration.md`
-   * `docs/features/sts1-events/source-research/api-command-matrix.md`
-2. 解决 46/48/52 数量冲突：
+   * Vakuu initializer split = Done；
+   * validation = Failed / Known failures tracked；
+   * Phase 0/1 不允许写完全 Done，除非 full tests clean。
+2. 在 `docs/issues.md` 新增 known failure entry：
 
-   * `wiki_event_entries`
-   * `runtime_event_models`
-   * `act_bucket_memberships`
-3. 实现 `Sts1EventFeatureGate`：
+   * 8/9 failed tests；
+   * 是否 pre-existing；
+   * 是否和本次 refactor 有关；
+   * owner；
+   * expected resolution。
+3. 运行并记录：
+
+   * `dotnet build EZMicroBalance.sln`
+   * `dotnet test EZMicroBalance.sln --no-build`
+   * `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`
+   * `git diff --check`
+4. 若 full test 仍失败，报告必须写：
+
+   * `Touched-scope tests: pass`
+   * `Overall tests: fail`
+   * 不得写 `All tests pass`。
+
+**Acceptance**
+
+* 文档状态不 stale；
+* test failures 有 issue tracking；
+* no-game validation 结果完整；
+* 没有 false Done / false All pass。
+
+---
+
+## Week 1: 2026-06-01 → 2026-06-07
+
+### StS1 Event gate safety + source/API verification
+
+**Required Work**
+
+1. 建立 `Sts1EventFeatureGate`：
 
    * `Off`
    * `CanaryOnly`
    * `AdditiveAllDraft`
    * `ReplaceUnknownEventsPrototype`
-4. 默认 `Off` 必须注册 0 个 StS1 events。
-5. CanaryOnly 只能注册：
+2. 默认 `Off` 注册 0 个 StS1 events。
+3. CanaryOnly 只能注册：
 
-   * Big Fish
-   * Golden Idol
-   * Lab
-   * Divine Fountain
+   * Big Fish；
+   * Golden Idol；
+   * Lab；
+   * Divine Fountain。
+4. 新建或更新：
 
-Acceptance:
+   * `docs/features/sts1-events/source-research/sts2-act-event-registration.md`
+   * `docs/features/sts1-events/source-research/api-command-matrix.md`
+5. 修正 46/48/52 mismatch：
 
-* Feature gate Off build/test pass；
-* Off mode proves no StS1 event registration；
-* CanaryOnly registration count test pass；
-* act mapping 有 source 文件/class/method 证据；
-* 不允许 unconditional `RegisterAll` 进入 default mod path。`docs/goals/event.md` 也把 unconditional registration 列为 red line。
+   * `wiki_event_entries`
+   * `runtime_event_models`
+   * `act_bucket_memberships`
+
+**Acceptance**
+
+* Feature gate Off build passes；
+* Off mode test proves no StS1 events registered；
+* CanaryOnly registration count test passes；
+* API matrix has exact class/method/file evidence；
+* no unconditional `RegisterAll` in default mod path。
+
+`docs/goals/event.md` 已把 Week 0/1 的 gate safety 和 source/API verification 写清楚，包括 wrap registration、CanaryOnly、Off build、status board 不许 unsupported Done、46/48/52 mismatch 必须解决。
 
 ---
 
-## Week 2：2026-06-08 → 2026-06-14
+## Week 2: 2026-06-08 → 2026-06-14
 
 ### Canary implementation
 
-Required work:
+**Implement**
 
-Implement and verify four canary events:
+* Big Fish
+* Golden Idol
+* Lab
+* Divine Fountain
 
-1. Big Fish
-2. Golden Idol
-3. Lab
-4. Divine Fountain
-
-Required helper services:
+**Helper Services**
 
 * `Sts1HpService`
 * `Sts1RewardService`
 * `Sts1CurseService`
 * `Sts1AscensionRules`
-* debug spawn command/path
+* `Sts1EventDebugSpawnCommand`
 
-Acceptance:
+**Acceptance**
 
-* four events can be debug-spawned；
-* every branch has screenshot/log evidence；
+* all four events can be debug-spawned；
+* every branch has manual evidence；
 * save/load works after each branch；
 * images load；
-* EN/ZHS text render in game；
-* implemented canary files contain no TODO；
-* no full parity wording。
-
-仓库现有 monthly spec 对 Week 2 的验收也是：四个事件可 debug-spawn、每个 branch 有 manual evidence、save/load、image、EN/ZHS render、无 TODO。
+* EN/ZHS keys render；
+* no TODO remains in canary event files。
 
 ---
 
-## Week 3：2026-06-15 → 2026-06-21
+## Week 3: 2026-06-15 → 2026-06-21
 
 ### Simple Batch 1
 
-Implement six simple events:
+**Implement six simple events**
 
-1. Purifier
-2. Upgrade Shrine
-3. Golden Shrine
-4. The Cleric
-5. Old Beggar
-6. Shining Light
+* Purifier
+* Upgrade Shrine
+* Golden Shrine
+* The Cleric
+* Old Beggar
+* Shining Light
 
-Acceptance:
+**Acceptance**
 
-* six simple events debug-spawn and complete；
+* six events debug-spawn and complete；
 * every branch has manual evidence；
-* implemented files contain no TODO；
+* no TODOs in implemented files；
 * asset paths validated；
-* localization render verified。
+* loc render verified。
 
 ---
 
-## Week 4：2026-06-22 → 2026-06-28
+## Week 4: 2026-06-22 → 2026-06-28
 
-### Pool prototype + hardening
+### Pool prototype and hardening
 
-Required work:
+**Required Work**
 
-1. Write `Sts1EventPoolService` design doc。
-2. Implement debug-only `ReplaceUnknownEventsPrototype` only if source evidence supports it。
-3. Save visited event ids and event bag state。
-4. Multiplayer fail-closed。
-5. Add tests proving replacement-mode unknown rooms contain only implemented StS1 events。
+* Create `Sts1EventPoolService` design doc。
+* Implement debug-only `ReplaceUnknownEventsPrototype` only if source evidence supports it。
+* Save visited event ids and event bag state。
+* Multiplayer fail-closed。
+* Add tests proving replacement-mode unknown rooms contain only implemented StS1 events。
 
-Acceptance:
+**Acceptance**
 
 * replacement mode disabled by default；
 * dev replacement mode draws only implemented StS1 events；
 * save/load does not duplicate/skip event bag state；
-* multiplayer path refuses replacement unless explicit debug override is set。
+* multiplayer refuses replacement unless explicit debug override is set。
 
 ---
 
-## Week 5 buffer：2026-06-29 → 2026-06-30
+## Week 5 buffer: 2026-06-29 → 2026-06-30
 
-### Package + handoff
+### Package and handoff
 
-Required work:
+**Required Work**
 
-1. Build。
-2. Publish only if resources/localization/package changed。
-3. Increment package version only if player-visible build delivered。
-4. Update `docs/features/sts1-events/monthly-review-2026-06.md`。
-5. Release notes must say **Prototype Batch 1**，not full parity。
-6. Commit/push only after validation passes。
+* Build。
+* Publish only if resources/localization/package changed。
+* Increment package version only if player-visible build delivered。
+* Update monthly review。
+* Release notes must say `Prototype Batch 1`, not full parity。
+* Commit/push only after validation passes。
 
-Acceptance:
+**Acceptance**
 
 * evidence bundle includes logs, screenshots, asset validation output, test output, status board；
-* handoff tells testers exactly how to enable/disable StS1 prototype；
+* tester handoff explains how to enable/disable StS1 prototype；
 * no full-parity language。
 
 ---
 
-# Mandatory Subagent Plan
+# Subagent 使用要求
 
-他必须用 subagent。不要让一个 agent 同时 research、implement、review、approve。仓库的 monthly spec 已经明确写了 “The worker must use subagents. Do not let one agent research, implement, and approve the same slice.”
+必须使用 subagent，而且必须隔离职责。`docs/goals/event.md` 已明确要求：worker must use subagents，不允许一个 agent 同时 research、implement、approve 同一个 slice。
 
-## Required subagents
+## Required Subagents
 
-| Subagent                             | 责任                                                                       | 输出                                                         | Pass/Fail                                 |
-| ------------------------------------ | ------------------------------------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------- |
-| Wiki Spec Auditor                    | 核对 52 Wiki event entries，拆分 event entries/runtime models/act memberships | corrected catalog + 10 monthly event source-verified specs | 每个 event 有 exact options/A15/dependencies |
-| StS2 Source/API Auditor              | 核对 act mapping、RitsuLib registration、HP/relic/curse/card/save APIs       | source-research docs + API matrix                          | 必须有 exact file/class/method evidence      |
-| Feature Gate / Registration Engineer | 实现 Off/CanaryOnly/AdditiveAllDraft/ReplaceUnknownEventsPrototype         | gated registration + count tests                           | default Off registers nothing             |
-| Canary Implementation Engineer       | 实现 Big Fish / Golden Idol / Lab / Divine Fountain                        | playable canary event code + helper services               | 必须等 QA evidence 后 pass                    |
-| Simple Batch Engineer                | 实现六个 simple events                                                       | six playable simple events                                 | 必须等 QA evidence 后 pass                    |
-| Asset Pipeline Agent                 | 资产路径映射、copyright-safe extraction、load validation                         | asset manifest + validation output                         | 必须有 path validation + screenshots         |
-| Localization Agent                   | EN/ZHS text、dynamic variables、formatting                                 | localization json + render screenshots                     | no missing keys / no placeholders         |
-| QA / Red-Team Auditor                | 独立复核所有 claim、build/test/publish、debug-spawn、save/load、feature gate Off   | manual evidence + pass/fail table                          | QA 不能是 implementation subagent            |
-| Release Documentation Agent          | 保持 docs/status/release notes 诚实                                          | docs exact status + no full parity wording                 | status board matches evidence bundle      |
+| Subagent                             | Scope                                                                                                                | Output                                                                              | Pass/Fail                                          |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Wiki Spec Auditor                    | 核对 52 Wiki entries；拆分 event entries/runtime models/act memberships；给 Week 2/3 event 产出 exact option table/A15 deltas | corrected catalog；10 个 monthly event source-verified specs；46/48/52 mismatch report | 每个 monthly event spec 有 exact options/dependencies |
+| StS2 Source/API Auditor              | Verify act mapping、RitsuLib registration、HP/relic/curse/card/save APIs                                               | `sts2-act-event-registration.md`、`api-command-matrix.md`                            | 必须有 exact file/class/method evidence               |
+| Feature Gate / Registration Engineer | Make registration safe；实现 Off/CanaryOnly/AdditiveAllDraft/ReplaceUnknownEventsPrototype                              | `Sts1EventFeatureGate`、gated registration、count tests                               | default Off registers nothing                      |
+| Canary Implementation Engineer       | 实现 Big Fish、Golden Idol、Lab、Divine Fountain                                                                          | playable canary event code、helper services、branch tests                             | QA manual evidence 后才能 pass                        |
+| Simple Batch Engineer                | 实现 Purifier、Upgrade Shrine、Golden Shrine、The Cleric、Old Beggar、Shining Light                                         | six playable simple events                                                          | QA evidence 后才能 pass                               |
+| Asset Pipeline Agent                 | event id → local StS1 art paths；copyright-safe extraction；load validation                                            | asset manifest、validation output                                                    | path validation + screenshots                      |
+| Localization Agent                   | EN/ZHS text、dynamic variables、formatting                                                                             | localization json + render screenshots                                              | no missing keys / no placeholders                  |
+| QA / Red-Team Auditor                | 独立复核所有 claims；run build/test/publish；debug-spawn every branch；verify save/load and gate Off                          | manual evidence、screenshot/log index、final pass/fail table                          | QA 不能是 implementation subagent                     |
+| Release Documentation Agent          | 保持 README/PROJECT_MAP/status board/test plan/monthly review/release notes 诚实                                         | docs exact status、no full-parity wording                                            | status board matches evidence bundle               |
 
-这些 subagent 的职责和 pass/fail 已经写在 `docs/goals/event.md`。  
+后半段 subagent 的 pass/fail 也已经写入 `docs/goals/event.md`，特别是 Canary/Simple Batch 必须等 QA subagent manual evidence 后才能 pass，资产需要截图，本地化需要 render screenshots，QA 不能是 implementation subagent。
 
 ---
 
 # 给他的直接指令
 
-把下面这段发给他即可：
-
 ```text
-你当前工作不能判定为完成。Phase 0/1 有真实进展，但验证声明不合格：你不能同时写 “All tests pass” 和 “294 pass, 9 fail”。先停止进入 Phase 2 大规模实现。
+你现在不要继续 Phase 2 或 StS1 simple batch 大规模实现。
 
-立即修正：
-1. 把 docs/goals/refactor.md 的 Phase 0/1 状态改为真实状态：Phase 0 validation pending，Phase 1 mostly complete but Vakuu initializer move pending。
-2. 将 VakuuFightInitializer 从 VakuuFightRunHook.cs 移到 VakuuFightInitializer.cs。
-3. 更新 EngineeringGovernanceGuardTests，覆盖 PR template 新增的 high-risk patch seam 和 source-only live-proof checklist。
-4. 重新运行并提交完整验证结果：build、test、format、git diff --check。若有失败，列出失败测试、归因、tracking issue，不得写 All tests pass。
-5. StS1Events 不能标完成。当前目标不是 full parity，而是 Prototype Batch 1：默认 Off 零影响，CanaryOnly 四事件 playable + save/load + 图片/本地化验证，再做六个 simple events。
-6. 必须启动 subagents：Wiki Spec Auditor、StS2 Source/API Auditor、Feature Gate/Registration Engineer、Canary Implementation Engineer、Simple Batch Engineer、Asset Pipeline Agent、Localization Agent、QA/Red-Team Auditor、Release Documentation Agent。
-7. 实现 subagent 不允许审核自己的工作；QA subagent 必须独立复核。任何没有测试、截图、日志、save/load 证据的内容不得标 Done。
+本轮审核结论：Phase 0/1 的结构性改动大部分完成，VakuuFightInitializer 文件拆分现在已完成，PR checklist 和 guard test 已补上；但整体验证没有完成，因为报告中仍出现 “All tests pass” 与 “294/295 pass, 8/9 fail” 的矛盾。只要 full test 有失败，就不能写 All tests pass。
+
+立即执行：
+1. 更新 docs/goals/refactor.md：Vakuu initializer split 改为 Done；validation 改为 Failed / known failures tracked；Phase 0/1 不要标 clean complete。
+2. 在 docs/issues.md 新增本轮 8/9 test failures 的 tracking row，列出测试名、是否 pre-existing、是否和本轮改动相关、owner、解决计划。
+3. 重新运行并提交完整结果：build、full test、touched-scope tests、format、git diff --check。
+4. StS1Events 当前不是完成状态。RegistrationService 仍被 compile remove，MainFile 没有调用 RegisterAll；下一步是 feature gate 和 CanaryOnly，不是 full parity。
+5. 启动 subagents：Wiki Spec Auditor、StS2 Source/API Auditor、Feature Gate/Registration Engineer、Canary Implementation Engineer、Simple Batch Engineer、Asset Pipeline Agent、Localization Agent、QA/Red-Team Auditor、Release Documentation Agent。
+6. 实现 subagent 不允许审核自己的工作。QA subagent 必须独立复核。任何没有测试、截图、日志、save/load 证据的内容不得标 Done。
 ```
 
 ---
 
-## 最终判定
+## 最终一句话结论
 
-**他没有完成。** 更准确地说：他完成了部分结构性重构工作，但没有完成严格意义上的 Phase 0/1 验收；测试结果不可信；Vakuu initializer 文件职责未修；StS1Events 只是 prototype 起点，距离 playable/verified 还很远。下一步最重要的是 **先修验证诚信和 feature gate 安全**，因为这直接影响后续 StS1 Events、Patch Adapter Rule、save/load、co-op 和 release handoff 是否可信。
+**这个项目当前最应该优先解决的是“验证诚信与 StS1Events feature gate 安全”，因为它直接影响后续 refactor、StS1 event port、save/load、co-op 和 release handoff 是否可信。**

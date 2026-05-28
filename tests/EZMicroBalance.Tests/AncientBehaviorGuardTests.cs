@@ -164,9 +164,9 @@ public sealed partial class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCardPlayed))]",
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.BeforeSideTurnStart))]",
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))]",
-            "[HarmonyPatch(typeof(CardModel), \"get_CanonicalKeywords\")]",
-            "[HarmonyPatch(typeof(BrightestFlame), \"get_CanonicalVars\")]",
-            "[HarmonyPatch(typeof(CardModel), nameof(CardModel.OnPlayWrapper))]");
+            "ModPatchTarget(typeof(CardModel), \"get_CanonicalKeywords\"",
+            "ModPatchTarget(typeof(BrightestFlame), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(CardModel), nameof(CardModel.OnPlayWrapper))");
     }
 
     [Fact]

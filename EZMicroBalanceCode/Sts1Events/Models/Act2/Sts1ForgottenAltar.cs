@@ -37,7 +37,8 @@ public sealed class Sts1ForgottenAltar : EventModel
     {
         var maxHp = HasA15 ? PrayMaxHpA15 : PrayMaxHpNormal;
         await CreatureCmd.GainMaxHp(Owner.Creature, maxHp);
-        // TODO: Add Doubt curse to deck
+        await CardPileCmd.AddCursesToDeck(
+            new[] { ModelDb.Card<Doubt>() }, Owner);
         SetEventFinished(L10NLookup("STS1_FORGOTTEN_ALTAR.pages.PRAY.description"));
     }
 

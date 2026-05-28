@@ -15,10 +15,10 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 157 |
+| Total patch declarations | 141 |
 | High risk | 22 |
-| Medium risk | 43 |
-| Low risk | 92 |
+| Medium risk | 35 |
+| Low risk | 84 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -57,19 +57,6 @@ Regenerate:
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 107 | `[HarmonyPatch(typeof(EventRoom), nameof(EventRoom.EnterInternal))]` |
 | Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 121 | `[HarmonyPatch(typeof(AncientEventModel), "BeforeEventStarted")]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 140 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs` | 15 | `[HarmonyPatch(typeof(CardModel), "get_CanonicalKeywords")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs` | 33 | `[HarmonyPatch(typeof(BrightestFlame), "get_CanonicalVars")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs` | 49 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.OnPlayWrapper))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/CrossbowPatches.cs` | 3 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.BeforeSideTurnStart))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/CrossbowPatches.cs` | 60 | `[HarmonyPatch(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 3 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.AfterCreated))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 16 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.FromSerializable))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 29 | `[HarmonyPatch(typeof(Debt), "get_CanonicalKeywords")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 40 | `[HarmonyPatch(typeof(Debt), "get_CanonicalVars")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 51 | `[HarmonyPatch(typeof(Debt), "get_HasTurnEndInHandEffect")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 62 | `[HarmonyPatch(typeof(Debt), "OnTurnEndInHand")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 73 | `[HarmonyPatch(typeof(CardModel), "OnPlay")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 106 | `[HarmonyPatch(typeof(CardCmd), nameof(CardCmd.Exhaust))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JeweledMaskPatches.cs` | 3 | `[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 3 | `[HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 37 | `[HarmonyPatch(typeof(Apotheosis), "get_CanonicalKeywords")]` |
@@ -85,7 +72,6 @@ Regenerate:
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PaelsToothPatches.cs` | 24 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.AfterActEntered))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PickupRewardGatePatches.cs` | 3 | `[HarmonyPatch(typeof(Sozu), nameof(Sozu.ShouldProcurePotion))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PickupRewardGatePatches.cs` | 31 | `[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ShouldGainGold))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PickupRewardPatches.cs` | 3 | `[HarmonyPatch(typeof(RelicModel), nameof(RelicModel.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PreservedFogPatches.cs` | 3 | `[HarmonyPatch(typeof(PreservedFog), nameof(PreservedFog.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PreservedFogPatches.cs` | 29 | `[HarmonyPatch(typeof(Folly), "get_CanonicalKeywords")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemHoverPatches.cs` | 19 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTips")]` |
@@ -94,8 +80,6 @@ Regenerate:
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs` | 3 | `[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs` | 14 | `[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintPatch.cs` | 3 | `[HarmonyPatch( typeof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen), nameof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen.RefreshOptions))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs` | 3 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.ModifyMaxEnergy))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SealOfGoldPatches.cs` | 16 | `[HarmonyPatch(typeof(SealOfGold), nameof(SealOfGold.AfterSideTurnStart))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonPickupPatches.cs` | 3 | `[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 8 | `[HarmonyPatch(typeof(RelicModel), "get_IconPath")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 17 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]` |

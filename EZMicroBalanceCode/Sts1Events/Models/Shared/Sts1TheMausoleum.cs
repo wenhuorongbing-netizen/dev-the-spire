@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
@@ -23,28 +25,20 @@ public sealed class Sts1TheMausoleum : EventModel
         };
     }
 
-    private Task Open()
+    private async Task Open()
     {
-        if (HasA15)
+        if (HasA15 || Rng.NextInt(0, 2) != 0)
         {
-            // A15: always get curse
-            // TODO: Add Wound curse to deck
+            // Curse outcome (always on A15, 50% otherwise)
+            await CardPileCmd.AddCursesToDeck(
+                new[] { ModelDb.Card<Wound>() }, Owner);
             SetEventFinished(L10NLookup("STS1_THE_MAUSOLEUM.pages.OPEN_CURSE.description"));
         }
         else
         {
-            // 50/50 chance
-            if (Rng.NextInt(0, 2) == 0)
-            {
-                // TODO: Grant random relic
-                SetEventFinished(L10NLookup("STS1_THE_MAUSOLEUM.pages.OPEN_RELIC.description"));
-            }
-            else
-            {
-                // TODO: Add Wound curse to deck
-                SetEventFinished(L10NLookup("STS1_THE_MAUSOLEUM.pages.OPEN_CURSE.description"));
-            }
+            // Relic outcome (50% on non-A15)
+            // TODO: Grant random relic
+            SetEventFinished(L10NLookup("STS1_THE_MAUSOLEUM.pages.OPEN_RELIC.description"));
         }
-        return Task.CompletedTask;
     }
 }
