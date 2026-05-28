@@ -586,10 +586,10 @@ public sealed class AncientHighRiskSourceGuardTests
 
         AssertSourceContains(
             source,
-            "[HarmonyPatch(typeof(CardModel), \"get_CanonicalKeywords\")]",
+            "ModPatchTarget(typeof(CardModel), \"get_CanonicalKeywords\"",
             "__instance is not BrightestFlame",
             "CardKeyword.Exhaust",
-            "[HarmonyPatch(typeof(BrightestFlame), \"get_CanonicalVars\")]",
+            "ModPatchTarget(typeof(BrightestFlame), \"get_CanonicalVars\"",
             "dynamicVar is CardsVar cards",
             "new CardsVar(cards.IntValue + ExtraDraw)",
             "Vanilla: Gain Energy(2), Draw(2), LoseMaxHp(1). Upgrade: Energy+1, Draw+1.",

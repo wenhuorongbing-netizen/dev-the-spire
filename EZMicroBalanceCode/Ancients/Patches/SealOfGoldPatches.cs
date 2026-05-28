@@ -1,8 +1,14 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.ModifyMaxEnergy))]
-internal static class SealOfGoldMaxEnergyPatch
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+
+internal sealed class SealOfGoldMaxEnergyPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "seal-of-gold-max-energy";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add SealOfGold energy bonus to max energy";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(AbstractModel), nameof(AbstractModel.ModifyMaxEnergy))];
     [HarmonyPostfix]
     private static void Postfix(AbstractModel __instance, Player player, ref decimal __result)
     {
@@ -13,9 +19,13 @@ internal static class SealOfGoldMaxEnergyPatch
     }
 }
 
-[HarmonyPatch(typeof(SealOfGold), nameof(SealOfGold.AfterSideTurnStart))]
-internal static class SealOfGoldTurnPatch
+internal sealed class SealOfGoldTurnPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "seal-of-gold-turn";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Suppress vanilla SealOfGold after-side-turn-start behavior";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(SealOfGold), nameof(SealOfGold.AfterSideTurnStart))];
     [HarmonyPrefix]
     private static bool Prefix(ref Task __result)
     {

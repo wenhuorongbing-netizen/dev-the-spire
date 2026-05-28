@@ -66,6 +66,32 @@ internal static class RitsuLibBootstrap
 
         // BlackStarCompensationPatches (1 class)
         patcher.RegisterPatch<BlackStarObtainPatch>();
+
+        // CrossbowPatches (2 classes)
+        patcher.RegisterPatch<CrossbowOfferPatch>();
+        patcher.RegisterPatch<CrossbowVanillaAfterTurnPatch>();
+
+        // BrightestFlameExhaustDrawPatch (3 classes)
+        patcher.RegisterPatch<BrightestFlameCanonicalKeywordsPatch>();
+        patcher.RegisterPatch<BrightestFlameCanonicalVarsPatch>();
+        patcher.RegisterPatch<BrightestFlameExhaustOnPlayBackstopPatch>();
+
+        // DebtAndCardPatches (7 classes)
+        patcher.RegisterPatch<DebtAfterCreatedPatch>();
+        patcher.RegisterPatch<DebtFromSavePatch>();
+        patcher.RegisterPatch<DebtKeywordsPatch>();
+        patcher.RegisterPatch<DebtVarsPatch>();
+        patcher.RegisterPatch<DebtTurnEndEffectPatch>();
+        patcher.RegisterPatch<DebtTurnEndInHandPatch>();
+        patcher.RegisterPatch<CardModelOnPlayPatch>();
+        patcher.RegisterPatch<DebtExhaustPatch>();
+
+        // SealOfGoldPatches (2 classes)
+        patcher.RegisterPatch<SealOfGoldMaxEnergyPatch>();
+        patcher.RegisterPatch<SealOfGoldTurnPatch>();
+
+        // PickupRewardPatches (1 class)
+        patcher.RegisterPatch<AncientPickupBalancePatch>();
     }
 
     private static string GetRitsuLibVersion()

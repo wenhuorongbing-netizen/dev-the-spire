@@ -81,9 +81,13 @@ internal sealed class DebtTurnEndEffectPatch : IPatchMethod
     }
 }
 
-[HarmonyPatch(typeof(Debt), "OnTurnEndInHand")]
-internal static class DebtTurnEndInHandPatch
+internal sealed class DebtTurnEndInHandPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "debt-turn-end-in-hand";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Suppress Debt turn-end-in-hand behavior";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Debt), "OnTurnEndInHand")];
     [HarmonyPrefix]
     private static bool Prefix(ref Task __result)
     {
@@ -92,9 +96,13 @@ internal static class DebtTurnEndInHandPatch
     }
 }
 
-[HarmonyPatch(typeof(CardModel), "OnPlay")]
-internal static class CardModelOnPlayPatch
+internal sealed class CardModelOnPlayPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "card-model-on-play";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Handle Debt and Enthralled card play effects";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardModel), "OnPlay")];
     [HarmonyPrefix]
     private static bool Prefix(CardModel __instance, CardPlay cardPlay, ref Task __result)
     {
@@ -125,9 +133,13 @@ internal static class CardModelOnPlayPatch
     }
 }
 
-[HarmonyPatch(typeof(CardCmd), nameof(CardCmd.Exhaust))]
-internal static class DebtExhaustPatch
+internal sealed class DebtExhaustPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "debt-exhaust";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Lose gold when Debt card is exhausted";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardCmd), nameof(CardCmd.Exhaust))];
     [HarmonyPostfix]
     private static void Postfix(CardModel card, ref Task __result)
     {

@@ -1,8 +1,14 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(RelicModel), nameof(RelicModel.AfterObtained))]
-internal static class AncientPickupBalancePatch
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+
+internal sealed class AncientPickupBalancePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ancient-pickup-balance";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Handle Ancient relic pickup effects (WarHammer, Sozu, Ectoplasm, SealOfGold, JeweledMask)";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), nameof(RelicModel.AfterObtained))];
     [HarmonyPrefix]
     private static bool Prefix(RelicModel __instance, ref Task __result)
     {
