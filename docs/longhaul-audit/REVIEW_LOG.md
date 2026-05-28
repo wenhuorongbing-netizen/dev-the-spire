@@ -14,3 +14,9 @@ One entry per file audited.
 | 8 | EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRewardSelectionService.cs | cs-high-risk | skipped | Reward selection. All methods exist. Localization present in eng/zhs. Proper null handling for card selection. No real bugs. | 2026-05-28 |
 | 9 | EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRunHook.cs | cs-high-risk | skipped | Run lifecycle hook. Two-level co-op guard (combat vs gameplay). All methods delegate. SyncPersistentState handles null. No real bugs. | 2026-05-28 |
 | 10 | EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.CombatLifecycle.cs | cs-high-risk | skipped | Combat lifecycle. All referenced methods exist. ResetCombatState chains to ResetTurnState. Proper IsActiveForHooks checks. No real bugs. | 2026-05-28 |
+| 11 | EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.CombatState.cs | cs-high-risk | skipped | State class. ConditionalWeakTable. 15 properties. No real bugs. | 2026-05-28 |
+| 12 | EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviCombatHook.cs | cs-high-risk | skipped | Thin hook. Consistent co-op guard. All delegate. No real bugs. | 2026-05-28 |
+| 13 | EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviRunHook.cs | cs-high-risk | skipped | Run lifecycle hook. Two-level co-op guard. Same pattern as Lotha. No real bugs. | 2026-05-28 |
+| 14 | EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.RunLifecycle.cs | cs-high-risk | skipped | Run lifecycle. Complex act-gating logic. Correct. No real bugs. | 2026-05-28 |
+| 15 | EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.StateParsing.cs | cs-high-risk | skipped | Single helper method. SplitList with RemoveEmptyEntries. Clean. No real bugs. | 2026-05-28 |
+| 16 | EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.StateSchema.cs | cs-high-risk | skipped | Record type with 28 properties. Default factory matches all fields. Clean. No real bugs. | 2026-05-28 |

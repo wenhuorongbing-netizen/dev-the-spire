@@ -6,7 +6,7 @@
 
 | 位置 | 当前使用 | 建议补图路径 | 说明 |
 | --- | --- | --- | --- |
-| 变换真实预览 | `assets/card_portraits/card.png` | `website/assets/previews/transform_preview.png` | 需要一张能表示“变换结果预览”的小图或实机截图。 |
+| 变化真实预览 | `assets/card_portraits/card.png` | `website/assets/previews/transform_preview.png` | 需要一张能表示”变化结果预览”的小图或实机截图。 |
 | 临时机制 | `assets/card_portraits/card.png` | `website/assets/mechanics/temporary_card.png` | 需要一张泛用“临时牌/战后消失”的机制图标。 |
 
 ## 源码目前共享同一张图，若要区分可补

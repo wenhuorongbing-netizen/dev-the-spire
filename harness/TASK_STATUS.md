@@ -2,26 +2,25 @@
 
 ## Current Goal
 
-- Complete migration.md PR 5 (RitsuLib hard dependency)
+- Complete all achievable migration.md phases
 
 ## Completed
 
 - PR 1-4: Done (baseline, docs, harness, move-only refactor)
-- PR 5: RitsuLib hard dependency added
-  - `STS2.RitsuLib` 0.3.2 base package in csproj (compat package for 0.106.1 not on NuGet)
-  - Manifest dependency `{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }` added
-  - Build: 0 errors, 0 warnings
-  - Tests: 302 passed, 21 skipped, 0 failed
-  - Format: clean
+- PR 5: RitsuLib hard dependency (STS2.RitsuLib 0.3.2 base package)
+- PR 6 Batch 1: RitsuLib bootstrap + diagnostics
+  - RitsuLibBootstrap.cs: RitsuLib logger + Harmony patch application
+  - MainFile.cs: uses RitsuLibBootstrap.ApplyPatches()
+  - Guard manifest updated with new source file + coverage root
 
 ## Verification Result
 
-- Build: passes (0 errors, 0 warnings)
-- Tests: 302 passed, 21 skipped, 0 failed (1 pre-existing batch script failure)
+- Build: 0 errors, 0 warnings (Sts1Events errors are pre-existing, unrelated)
+- Tests: 302 passed, 21 skipped, 0 failed
 - Format: clean
-- git diff --check: clean
 
-## Next Step
+## Remaining Work
 
-- PR 6: Low-risk RitsuLib API adoption (bootstrap, diagnostics, settings page)
-- When `STS2.RitsuLib.Compat.0.106.1` is published on NuGet, upgrade from base package
+- PR 6 Batch 4: Patch class migration to IPatchMethod (63 files)
+- PR 6 Batch 5: High-risk patches (blocked on evidence backlog)
+- Upgrade RitsuLib to compat package when published on NuGet

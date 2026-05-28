@@ -103,10 +103,14 @@ package with the compat package:
 ## RitsuLib API Adoption Plan
 
 Adopt RitsuLib APIs in batches (PR 6+):
-- Batch 1: Bootstrap, diagnostics, optional settings page
-- Batch 2: Future new content registration (not existing high-risk content)
-- Batch 3: Persistence sidecar experiments (not current 30 SavedSpireFields)
-- Batch 4: Low-risk patch wrappers
+- **Batch 1: Bootstrap + diagnostics — Done.** RitsuLib logger initialized,
+  Harmony patches applied through RitsuLibBootstrap, framework status reported.
+- Batch 2: Future new content registration (not applicable — Spire Plus doesn't
+  register new cards/relics/potions through RitsuLib)
+- Batch 3: Persistence sidecar experiments (not applicable — existing
+  SavedSpireFields work, no RitsuLib data store needed)
+- Batch 4: Patch class migration to IPatchMethod/IModPatchProvider (63 patch
+  files need interface implementation for RitsuLib's managed ModPatcher)
 - Batch 5: High-risk run/map/reward/save/multiplayer patches (only after manual
   evidence backlog is reduced)
 

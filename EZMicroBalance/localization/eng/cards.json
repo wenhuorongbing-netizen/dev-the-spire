@@ -1,5 +1,5 @@
 {
-  "BRIGHTEST_FLAME.title": "Quality Flame",
+  "BRIGHTEST_FLAME.title": "Brilliant Flame",
   "BRIGHTEST_FLAME.description": "[gold]Exhaust[/gold].\nGain {Energy:energyIcons()}.\nDraw {Cards:diff()} {Cards:plural:card|cards}.\nLose {MaxHp:diff()} Max HP.",
   "DEBT.title": "Debt",
   "DEBT.description": "Exhaust. When Exhausted, lose 5 Gold.",
@@ -33,7 +33,7 @@
   "EZMB_VAKUU_KNIFE_CONTRACT.description": "Deal {Damage:diff()} damage to Vakuu and lose {HpLoss:diff()} HP. If a [gold]Stolen Lock[/gold] remains, break [blue]1[/blue] and add [blue]1[/blue] [gold]Blood Debt[/gold].",
   "EZMB_VAKUU_TEMPTATION.title": "Gold Contract",
   "EZMB_VAKUU_TEMPTATION.description": "Gain {Energy:energyIcons()} and draw {Cards:diff()} cards. Lose {HpLoss:diff()} HP. If a [gold]Stolen Lock[/gold] remains, break [blue]1[/blue] and add [blue]1[/blue] [gold]Blood Debt[/gold].",
-  "EZMB_VAKUU_SHELTER_CONTRACT.title": "Avoid Debt",
+  "EZMB_VAKUU_SHELTER_CONTRACT.title": "Shelter Contract",
   "EZMB_VAKUU_SHELTER_CONTRACT.description": "Gain {Block:diff()} [gold]Block[/gold]. Remove {Debt:diff()} [gold]Blood Debt[/gold].",
   "EZMB_VAKUU_TRICK_CONTRACT.title": "Fraud Contract",
   "EZMB_VAKUU_TRICK_CONTRACT.description": "Break [blue]1[/blue] [gold]Stolen Lock[/gold]. Add {Debt:diff()} [gold]Blood Debt[/gold]. Vakuu's attacks deal {Backlash:diff()} more damage.",

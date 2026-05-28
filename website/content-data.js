@@ -322,8 +322,8 @@ const mechanicGlossary = [
     {
       titleEn: "Contracts",
       descEn: "Powerful choices offered on turns 1, 3, and 5 in the Vakuu trial. They help break locks, draw cards, or defend, but usually increase your Blood Debt.",
-      bulletsEn: ["Knife Contract: Deals damage, loses HP, breaks 1 lock, and adds 1 Blood Debt.", "Gold Contract: Gains Energy, draws cards, loses HP, breaks 1 lock, and adds 1 Blood Debt.", "Avoid Debt: Gains Block and reduces your Blood Debt stacks.", "Fraud Contract: Breaks 1 lock and adds Blood Debt, while powering up Vakuu's next attack.", "Cash Out: Ends the fight and collects your broken-lock rewards (requires at least 1 broken lock)."],
-      termsEn: ["Contract", "Contracts", "Knife Contract", "Gold Contract", "Avoid Debt", "Fraud Contract", "Cash Out"],
+      bulletsEn: ["Knife Contract: Deals damage, loses HP, breaks 1 lock, and adds 1 Blood Debt.", "Gold Contract: Gains Energy, draws cards, loses HP, breaks 1 lock, and adds 1 Blood Debt.", "Shelter Contract: Gains Block and reduces your Blood Debt stacks.", "Fraud Contract: Breaks 1 lock and adds Blood Debt, while powering up Vakuu's next attack.", "Cash Out: Ends the fight and collects your broken-lock rewards (requires at least 1 broken lock)."],
+      termsEn: ["Contract", "Contracts", "Knife Contract", "Gold Contract", "Shelter Contract", "Fraud Contract", "Cash Out"],
       icon: "assets/card_portraits/vakuu_temptation.png"
     }
   ),
@@ -764,7 +764,7 @@ window.SPIRE_PLUS_DATA = {
   summary: [
     {
       title: "Spire Plus 做了什么",
-      copy: "Spire Plus 为《杀戮尖塔 2》加入了高进阶挑战（A11-A20）、全新先古奖励、原版遗物调整，以及水晶球透视和变换预览等便利工具。一个 Mod 搞定，每项改动都会说明触发时机、收益、代价和战后结算。"
+      copy: "Spire Plus 为《杀戮尖塔 2》加入了高进阶挑战（A11-A20）、全新先古奖励、原版遗物调整，以及水晶球透视和变化预览等便利工具。一个 Mod 搞定，每项改动都会说明触发时机、收益、代价和战后结算。"
     },
     {
       title: "苗床和种下",
@@ -984,9 +984,9 @@ window.SPIRE_PLUS_DATA = {
           previewImage: "assets/previews/crystal_sphere_peek.png"
         },
         manual(
-          "卡牌变换预览",
-          "原版卡牌变换时，画面仅进行循环跳动展示，无法得知最终获得的卡牌。",
-          "进行卡牌变换（如篝火、事件）时，直接在预览面板中显示该次变换锁定的最终卡牌。玩家可以提前预览变换结果并做出明智决策，消除随机猜测的负担。",
+          "卡牌变化预览",
+          "原版卡牌变化时，画面仅进行循环跳动展示，无法得知最终获得的卡牌。",
+          "进行卡牌变化（如篝火、事件）时，直接在预览面板中显示该次变化锁定的最终卡牌。玩家可以提前预览变化结果并做出明智决策，消除随机猜测的负担。",
           ["预览工具"],
           "assets/card_portraits/card.png",
           "transform_preview"
@@ -1142,7 +1142,7 @@ function card(id, tags, icon) {
 function manual(title, vanilla, current, tags, icon, i18nKey) {
   let finalKey = i18nKey || title;
   if (title === "\u6c34\u6676\u7403\u9884\u77e5" || title === "水晶球预知") finalKey = "crystal_sphere_peek";
-  if (title === "\u53d8\u6362\u771f\u5b9e\u9884\u89c8" || title === "卡牌变换预览" || title === "变换真实预览") finalKey = "transform_preview";
+  if (title === "\u53d8\u6362\u771f\u5b9e\u9884\u89c8" || title === "卡牌变化预览" || title === "变化真实预览") finalKey = "transform_preview";
   return { title, vanilla, current, tags, icon, i18nKey: finalKey, namespace: "mechanics" };
 }
 
@@ -1214,7 +1214,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     summary: [
       {
         title: "Spire Plus 做了什么",
-        copy: "Spire Plus 为杀戮尖塔 2 加入了高进阶挑战（A11-A20）、全新先古奖励、原版遗物调整，以及水晶球透视和变换预览等便利工具。一个 Mod 搞定，每项改动都会说明触发时机、收益、代价和战后结算。"
+        copy: "Spire Plus 为杀戮尖塔 2 加入了高进阶挑战（A11-A20）、全新先古奖励、原版遗物调整，以及水晶球透视和变化预览等便利工具。一个 Mod 搞定，每项改动都会说明触发时机、收益、代价和战后结算。"
       },
       {
         title: "苗床和种下",
@@ -2633,7 +2633,7 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "BOSS_SEAL_RESIDUAL_SAMPLE_CONTAMINATED.reason": "No clear pattern was recorded."
     },
     "cards": {
-      "BRIGHTEST_FLAME.title": "Quality Flame",
+      "BRIGHTEST_FLAME.title": "Brilliant Flame",
       "BRIGHTEST_FLAME.description": "[gold]Exhaust[/gold].\nGain {Energy:energyIcons()}.\nDraw {Cards:diff()} {Cards:plural:card|cards}.\nLose {MaxHp:diff()} Max HP.",
       "DEBT.title": "Debt",
       "DEBT.description": "Exhaust. When Exhausted, lose 5 Gold.",
@@ -2667,7 +2667,7 @@ window.SPIRE_PLUS_EMBEDDED_LOC = {
       "EZMB_VAKUU_KNIFE_CONTRACT.description": "Deal {Damage:diff()} damage to Vakuu and lose {HpLoss:diff()} HP. If a [gold]Stolen Lock[/gold] remains, break [blue]1[/blue] and add [blue]1[/blue] [gold]Blood Debt[/gold].",
       "EZMB_VAKUU_TEMPTATION.title": "Gold Contract",
       "EZMB_VAKUU_TEMPTATION.description": "Gain {Energy:energyIcons()} and draw {Cards:diff()} cards. Lose {HpLoss:diff()} HP. If a [gold]Stolen Lock[/gold] remains, break [blue]1[/blue] and add [blue]1[/blue] [gold]Blood Debt[/gold].",
-      "EZMB_VAKUU_SHELTER_CONTRACT.title": "Avoid Debt",
+      "EZMB_VAKUU_SHELTER_CONTRACT.title": "Shelter Contract",
       "EZMB_VAKUU_SHELTER_CONTRACT.description": "Gain {Block:diff()} [gold]Block[/gold]. Remove {Debt:diff()} [gold]Blood Debt[/gold].",
       "EZMB_VAKUU_TRICK_CONTRACT.title": "Fraud Contract",
       "EZMB_VAKUU_TRICK_CONTRACT.description": "Break [blue]1[/blue] [gold]Stolen Lock[/gold]. Add {Debt:diff()} [gold]Blood Debt[/gold]. Vakuu's attacks deal {Backlash:diff()} more damage.",

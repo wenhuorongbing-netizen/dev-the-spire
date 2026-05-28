@@ -36,6 +36,12 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 | `Ascension/Save/` | Reserved for Ascension save/load code. |
 | `Ascension/Ui/` | Reserved for Ascension UI patches. |
 | `Preview/` | Crystal Sphere peek and transform-preview helpers. |
+| `Sts1Events/` | StS1 events migration: Runtime registry and Shared/Act1/Act2/Act3 event models. |
+| `Sts1Events/Runtime/` | Event registry and Phase 6 pool replacement patch. |
+| `Sts1Events/Models/Shared/` | Shared events across all acts (Big Fish, Golden Idol, The Cleric, Divine Fountain, etc.). |
+| `Sts1Events/Models/Act1/` | Act 1 exclusive events (Shining Light, Dead Adventurer, Mushrooms, etc.). |
+| `Sts1Events/Models/Act2/` | Act 2 exclusive events (Altar, Council of Ghosts, Cursed Tome, etc.). |
+| `Sts1Events/Models/Act3/` | Act 3 exclusive events (Sensory Stone, Falling, Mind Bloom, etc.). |
 
 ## Extension Rules
 

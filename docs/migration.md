@@ -12,7 +12,7 @@ refactor work described in `docs/restructure.md`.
 | PR 3 | Move-only source folder refactor, no behavior changes | Low | Done |
 | PR 4 | Test/docs/script path updates after move-only refactor | Low | Done (no-op: no files moved) |
 | PR 5 | RitsuLib hard dependency (only after 0.106.1/0.106.1 decision) | Medium | Done |
-| PR 6 | Low-risk RitsuLib API adoption | Medium | Ready |
+| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 1 done |
 | PR 7+ | High-risk patch migrations, one feature surface at a time | High | Blocked |
 
 ## PR 1: Baseline + Docs-Only Codex Harness Integration
@@ -82,3 +82,37 @@ is published, upgrade to the compat package.
 4. Low-risk patch wrappers
 5. High-risk run/map/reward/save/multiplayer patches (only after manual
    evidence backlog is reduced)
+
+### Batch 1: Bootstrap + Diagnostics (Done)
+
+**What was added:**
+- `RitsuLibBootstrap.cs` — RitsuLib logger initialization, Harmony patch
+  application with diagnostics, framework status reporting.
+- `MainFile.cs` — now calls `RitsuLibBootstrap.ApplyPatches()` instead of
+  raw `new Harmony(id).PatchAll()`.
+- Guard manifest updated with new source file and coverage root.
+
+**What was NOT changed (deferred):**
+- Patch classes still use `[HarmonyPatch]` attributes, not RitsuLib's
+  `IPatchMethod`/`IModPatchProvider` interfaces. Migrating 63 patch classes
+  to RitsuLib's managed `ModPatcher` is a future batch.
+- No content registration (`CreateContentPack`) — Spire Plus doesn't register
+  new cards/relics/potions through RitsuLib.
+- No settings page (`RegisterModSettings`) — existing BaseLib config stays.
+- No persistence (`BeginModDataRegistration`) — existing SavedSpireFields stay.
+
+### Batch 4: Patch Class Migration (Blocked)
+
+Requires implementing `IPatchMethod` or `IModPatchProvider` on each of 63
+patch classes. RitsuLib's `ModPatcher.PatchAll()` only applies patches
+registered via `RegisterPatch()`/`RegisterPatches()` — it does NOT scan
+for `[HarmonyPatch]` attributes. Each patch class needs:
+- `PatchId` (unique identifier)
+- `IsCritical` (failure behavior)
+- `Description` (what the patch does)
+- `GetTargets()` (target method resolution)
+
+### Batch 5: High-Risk Patches (Blocked on Evidence)
+
+Run/map/reward/save/multiplayer patches require manual evidence backlog
+reduction before migration.

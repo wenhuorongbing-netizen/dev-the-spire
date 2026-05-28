@@ -1,4 +1,4 @@
-# Skipped Files
+﻿# Skipped Files
 
 Files checked with no real bugs found.
 
@@ -14,3 +14,4 @@ Files checked with no real bugs found.
 | EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRewardSelectionService.cs | 8 | 2026-05-28 | Reward selection. All methods exist. Localization present. Proper null handling. No real bugs. |
 | EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRunHook.cs | 9 | 2026-05-28 | Run lifecycle hook. Two-level co-op guard. All methods delegate. No real bugs. |
 | EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviBlessingService.CombatLifecycle.cs | 10 | 2026-05-28 | Combat lifecycle. All methods exist. ResetCombatState chains to ResetTurnState. No real bugs. |
+| EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.RunLifecycle.cs | 14 | 2026-05-28 | Run lifecycle. Complex act-gating logic. Correct. No real bugs. |

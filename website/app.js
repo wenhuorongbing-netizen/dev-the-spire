@@ -425,11 +425,11 @@
         <div class="qol-feature-banner">
           <div class="qol-banner-content">
             <span class="qol-badge">${lang === 'en' ? 'Quality of Life (QoL)' : '游戏体验便利性优化 (QoL)'}</span>
-            <h3>${lang === 'en' ? 'Crystal Sphere Foresight & Card Transform Preview' : '水晶球透视 与 卡牌变换预览'}</h3>
+            <h3>${lang === 'en' ? 'Crystal Sphere Foresight & Card Transform Preview' : '水晶球透视 与 卡牌变化预览'}</h3>
             <p class="qol-banner-desc">
               ${lang === 'en' 
                 ? 'Spire Plus integrates practical quality-of-life tools directly into the game: Crystal Sphere Foresight allows you to click a button to peek through cells, revealing their contents, and Card Transform Preview displays the exact card you will receive before confirming.'
-                : 'Spire Plus 直接在游戏内集成了实用的便利性（QoL）功能：水晶球「预知」允许玩家点击按钮提前透视格子内容，而「卡牌变换预览」则能在确认卡牌变换前展示锁定的结果。'}
+                : 'Spire Plus 直接在游戏内集成了实用的便利性（QoL）功能：水晶球「预知」允许玩家点击按钮提前透视格子内容，而「卡牌变化预览」则能在确认卡牌变化前展示锁定的结果。'}
             </p>
             <div class="qol-banner-features">
               <div class="qol-banner-feat-item">
@@ -437,8 +437,8 @@
                 <span>${lang === 'en' ? 'Click a button to reveal all grid contents under semi-transparent fog, planning your flips perfectly without save-scumming.' : '点击预知按钮直接透视所有格子内容，合理规划路线，告别繁琐的存档读档。'}</span>
               </div>
               <div class="qol-banner-feat-item">
-                <strong>${lang === 'en' ? '🃏 Card Transform Preview' : '🃏 卡牌变换预览'}</strong>
-                <span>${lang === 'en' ? 'Displays the exact resulting card in the preview panel before you commit, eliminating blind gambling.' : '在确认变换前，直接在预览面板中显示该次变换锁定的最终卡牌，告别盲盒赌博。'}</span>
+                <strong>${lang === 'en' ? '🃏 Card Transform Preview' : '🃏 卡牌变化预览'}</strong>
+                <span>${lang === 'en' ? 'Displays the exact resulting card in the preview panel before you commit, eliminating blind gambling.' : '在确认变化前，直接在预览面板中显示该次变化锁定的最终卡牌，告别盲盒赌博。'}</span>
               </div>
             </div>
           </div>

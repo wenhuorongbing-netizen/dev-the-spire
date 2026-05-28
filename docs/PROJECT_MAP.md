@@ -57,6 +57,9 @@
 | `docs/architecture/` | Current support | Bounded context, patch boundary, and save-state contract maps. |
 | `docs/month-plan/` | Current support | 30-day plan outputs such as baseline freeze and commit boundaries. |
 | `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi and Lotha source slices, and the hidden-by-default dedicated Vakuu fight slice; live verification remains pending. |
+| `docs/features/sts1-events/` | Current planning | StS1 events migration: 52 events ported to Spire Plus. Canary: Big Fish, Golden Idol. |
+| `EZMicroBalanceCode/Sts1Events/` | Current implementation | StS1 event code: Runtime registry, Shared/Act1/Act2/Act3 event models. |
+| `manifests/` | Current support | StS1 event manifest CSV/JSON and asset manifest for extraction scripts. |
 
 ## Active Mod Surface
 
@@ -77,6 +80,13 @@ EZMicroBalanceCode/
   Diagnostics/
   Map/
   Modding/
+  Sts1Events/
+    Runtime/                 (event registry and pool replacement)
+    Models/
+      Shared/                (shared events: Big Fish, Golden Idol, etc.)
+      Act1/                  (Act 1 exclusive events)
+      Act2/                  (Act 2 exclusive events)
+      Act3/                  (Act 3 exclusive events)
   Ancients/
     Common/
     Rebalance/               (reserved for shared rebalance helpers)

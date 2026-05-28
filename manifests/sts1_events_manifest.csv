@@ -1,0 +1,48 @@
+id,display_name,act,type,phase,wiki_page,big_fish,golden_idol,the_cleric,golden_wing,living_wall,old_beggar,the_woman_in_blue,bonfire_spirits,divine_fountain,duplicator,face_trader,fountain_of_cleansing,the_mausoleum,wheel_of_change,designer,the_lab,neow,combat_start,joust,the_ssssserpent,shining_light,dead_adventurer,mushrooms,scorpion_nest,treasure_ooze,altar,council_of_ghosts,cursed_tome,drug_dealer,forgotten_altar,the_ghost,knowing_skull,nest,the_library,masked_bandits,nloth,vampires,ancient_writing,augmenter,sensory_stone,falling,mind_bloom,moai_head,mysterious_sphere,tomb_of_lord_red_mask,winding_halls,transmogrifier,upgrade_shrine
+sts1_big_fish,Big Fish,shared,unknown,canary,Big_Fish,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_golden_idol,Golden Idol,shared,unknown,canary,Golden_Idol_(Event),0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_the_cleric,The Cleric,shared,unknown,simple,The_Cleric,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_golden_wing,Golden Wing,shared,unknown,simple,Golden_Wing,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_living_wall,Living Wall,shared,unknown,simple,Living_Wall,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_old_beggar,Old Beggar,shared,unknown,simple,Old_Beggar,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_the_woman_in_blue,The Woman in Blue,shared,unknown,custom_ui,The_Woman_in_Blue,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_bonfire_spirits,Bonfire Spirits,shared,unknown,simple,Bonfire_Spirits,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_divine_fountain,Divine Fountain,shared,unknown,simple,Divine_Fountain,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_duplicator,Duplicator,shared,unknown,simple,Duplicator,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_face_trader,Face Trader,shared,unknown,card_service,Face_Trader,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_fountain_of_cleansing,Fountain of Cleansing,shared,unknown,simple,Fountain_of_Cleansing,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_the_mausoleum,The Mausoleum,shared,unknown,card_service,The_Mausoleum,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_wheel_of_change,Wheel of Change,shared,unknown,custom_ui,Wheel_of_Change,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_designer,Designer,"2,3",unknown,custom_ui,Designer,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_the_lab,The Lab,shared,unknown,simple,The_Lab,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_neow,Neow,act1,start,special,Neow,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_shining_light,Shining Light,act1,unknown,simple,Shining_Light,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_dead_adventurer,Dead Adventurer,act1,unknown,combat,Dead_Adventurer,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_mushrooms,Mushrooms,act1,unknown,simple,Mushrooms,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_scorpion_nest,Scorpion Nest,act1,unknown,combat,Scorpion_Nest,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_treasure_ooze,Treasure Ooze,act1,unknown,combat,Treasure_Ooze,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_joust,Joust,act1,unknown,combat,Joust,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_the_ssssserpent,The Ssssserpent,act1,unknown,combat,The_Ssssserpent,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_altar,Altar,act2,unknown,simple,Altar,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_council_of_ghosts,Council of Ghosts,act2,unknown,card_service,Council_of_Ghosts,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_cursed_tome,Cursed Tome,act2,unknown,card_service,Cursed_Tome,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_drug_dealer,Drug Dealer,act2,unknown,simple,Drug_Dealer,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_forgotten_altar,Forgotten Altar,act2,unknown,custom_ui,Forgotten_Altar,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_the_ghost,The Ghost,act2,unknown,custom_ui,The_Ghost,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_knowing_skull,Knowing Skull,act2,unknown,card_service,Knowing_Skull,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_nest,Nest,act2,unknown,card_service,Nest,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_the_library,The Library,act2,unknown,simple,The_Library,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_masked_bandits,Masked Bandits,act2,unknown,combat,Masked_Bandits,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+sts1_nloth,N'loth,act2,unknown,custom_ui,Nloth,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+sts1_vampires,Vampires,act2,unknown,card_service,Vampires,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
+sts1_ancient_writing,Ancient Writing,act2,unknown,simple,Ancient_Writing,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0
+sts1_augmenter,Augmenter,act2,unknown,simple,Augmenter,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0
+sts1_sensory_stone,Sensory Stone,act3,unknown,simple,Sensory_Stone,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+sts1_falling,Falling,act3,unknown,card_service,Falling,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0
+sts1_mind_bloom,Mind Bloom,act3,unknown,card_service,Mind_Bloom,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0
+sts1_moai_head,Moai Head,act3,unknown,simple,Moai_Head,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0
+sts1_mysterious_sphere,Mysterious Sphere,act3,unknown,combat,Mysterious_Sphere,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0
+sts1_tomb_of_lord_red_mask,Tomb of Lord Red Mask,act3,unknown,custom_ui,Tomb_of_Lord_Red_Mask,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0
+sts1_winding_halls,Winding Halls,act3,unknown,custom_ui,Winding_Halls,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+sts1_transmogrifier,Transmogrifier,act3,unknown,simple,Transmogrifier,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+sts1_upgrade_shrine,Upgrade Shrine,act3,unknown,simple,Upgrade_Shrine,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
