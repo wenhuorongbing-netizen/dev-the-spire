@@ -469,7 +469,7 @@ public sealed class EngineeringGovernanceGuardTests
 
         AssertSourceContains(
             patchBoundaries,
-            "Current count: 137 Harmony patch declarations",
+            "157 total, 22 high-risk",
             "A20 dual boss",
             "RewardsSetSynchronizer",
             "StartRunLobby.SyncAscensionChange",

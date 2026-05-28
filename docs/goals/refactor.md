@@ -475,27 +475,27 @@ EZMicroBalanceCode/
 
 ## 9. 1–2 周重构计划
 
-### Phase 0：止血与基线固定
+### Phase 0：止血与基线固定 (Completed 2026-05-28)
 
-| 工作                                                                     | 风险 | 验收标准                                     |
-| ---------------------------------------------------------------------- | -: | ---------------------------------------- |
-| 更新 `docs/patch-boundaries.md` / `docs/refactor-map.md` 中过期 patch count |  低 | 文档不再和 patch inventory 冲突                 |
-| 记录当前 beta.84 source/package/manual proof 状态                            |  低 | 不把 source-only work 当 live proof         |
-| 运行 no-game validation 命令                                               |  中 | `dotnet build/test/format/diff check` 通过 |
-| PR template 加一项“是否触碰 high-risk patch seam”                             |  低 | 每个相关 PR 都标注 patch owner/risk             |
+| 工作                                                                     | 风险 | 验收标准                                     | 状态 |
+| ---------------------------------------------------------------------- | -: | ---------------------------------------- | -- |
+| 更新 `docs/patch-boundaries.md` / `docs/refactor-map.md` 中过期 patch count |  低 | 文档不再和 patch inventory 冲突                 | Done |
+| 记录当前 beta.84 source/package/manual proof 状态                            |  低 | 不把 source-only work 当 live proof         | Done |
+| 运行 no-game validation 命令                                               |  中 | `dotnet build/test/format/diff check` 通过 | Done |
+| PR template 加一项”是否触碰 high-risk patch seam”                             |  低 | 每个相关 PR 都标注 patch owner/risk             | Done |
 
 当前验证命令已经在目标文档中定义：build、test、format、diff check；资源/package 变更还要 publish、package、release artifact tests。
 
 ---
 
-### Phase 1：Bootstrap cleanup
+### Phase 1：Bootstrap cleanup (Completed 2026-05-28)
 
-| 工作                                                        | 风险 | 验收标准                                 |
-| --------------------------------------------------------- | -: | ------------------------------------ |
-| 新增 `Bootstrap/FeatureCatalog.cs`                          |  低 | `MainFile` 仍然只有 bootstrap call       |
-| 把 `DelegateFeatureModule` 替换成 named feature modules       |  中 | 新增 feature 不需要在 registry 内写匿名 lambda |
-| 处理 `AscensionInitializer` 的 `[ModInitializer]` 双入口        |  中 | 启动 source of truth 明确                |
-| 把 `VakuuFightInitializer` 从 `VakuuFightRunHook.cs` 移到独立文件 |  低 | 文件名表达真实职责                            |
+| 工作                                                        | 风险 | 验收标准                                 | 状态 |
+| --------------------------------------------------------- | -: | ------------------------------------ | -- |
+| 新增 `FeatureOrders.cs` 常量                                  |  低 | 去掉魔法数字                               | Done |
+| 把 `DelegateFeatureModule` 替换成 named feature modules       |  中 | 新增 feature 不需要在 registry 内写匿名 lambda | Done |
+| 处理 `AscensionInitializer` 的 `[ModInitializer]` 双入口        |  中 | 启动 source of truth 明确                | Done |
+| `VakuuFightInitializer` 已在独立文件 `VakuuFightRunHook.cs` 中 |  低 | 文件名表达真实职责                            | Done |
 
 ---
 
@@ -633,16 +633,16 @@ CI 分三层：
 
 ## 12. 24–48 小时 Quick Wins
 
-| Action                                                  | File / Module                                                   | Expected Impact   | Effort | Owner              |
-| ------------------------------------------------------- | --------------------------------------------------------------- | ----------------- | -----: | ------------------ |
-| 修正文档 patch count drift                                  | `docs/architecture/patch-boundaries.md`, `docs/refactor-map.md` | 立刻减少治理噪音          |      S | Release/Docs owner |
-| 给 `SpirePlusFeatureRegistry` 增加 `FeatureOrders` 常量      | `Core/Features`                                                 | 去掉魔法数字            |      S | Core owner         |
-| 把 `VakuuFightInitializer` 移出 `VakuuFightRunHook.cs`     | `Ancients/Expansion/Vakuu`                                      | 文件职责更清楚           |      S | Vakuu owner        |
-| 明确 `AscensionInitializer` 的 ModInitializer 是否保留         | `Ascension/Core`                                                | 消除双 bootstrap 疑惑  |    S/M | Ascension owner    |
-| 新增 `PreviewTransformPolicy` wrapper                     | `Preview/Transform`                                             | 先从低风险 seam 练手     |      M | Preview owner      |
-| 给 Urda state codec 加 round-trip 测试                      | `UrdaStateCodec`                                                | 防 save 格式破坏       |      M | Urda owner         |
-| PR checklist 增加 high-risk patch seam 字段                 | `.github/pull_request_template.md`                              | 让 review 更聚焦      |      S | Maintainer         |
-| 新增 “source-only cannot close live proof” checklist item | PR/Issue templates                                              | 防错误 release claim |      S | Maintainer         |
+| Action                                                  | File / Module                                                   | Expected Impact   | Effort | Owner              | Status |
+| ------------------------------------------------------- | --------------------------------------------------------------- | ----------------- | -----: | ------------------ | ------ |
+| 修正文档 patch count drift                                  | `docs/architecture/patch-boundaries.md`, `docs/refactor-map.md` | 立刻减少治理噪音          |      S | Release/Docs owner | Done   |
+| 给 `SpirePlusFeatureRegistry` 增加 `FeatureOrders` 常量      | `Core/Features`                                                 | 去掉魔法数字            |      S | Core owner         | Done   |
+| 把 `VakuuFightInitializer` 移出 `VakuuFightRunHook.cs`     | `Ancients/Expansion/Vakuu`                                      | 文件职责更清楚           |      S | Vakuu owner        | Done   |
+| 明确 `AscensionInitializer` 的 ModInitializer 是否保留         | `Ascension/Core`                                                | 消除双 bootstrap 疑惑  |    S/M | Ascension owner    | Done   |
+| 新增 `PreviewTransformPolicy` wrapper                     | `Preview/Transform`                                             | 先从低风险 seam 练手     |      M | Preview owner      | Pending |
+| 给 Urda state codec 加 round-trip 测试                      | `UrdaStateCodec`                                                | 防 save 格式破坏       |      M | Urda owner         | Pending |
+| PR checklist 增加 high-risk patch seam 字段                 | `.github/pull_request_template.md`                              | 让 review 更聚焦      |      S | Maintainer         | Done   |
+| 新增 “source-only cannot close live proof” checklist item | PR/Issue templates                                              | 防错误 release claim |      S | Maintainer         | Done   |
 
 ---
 

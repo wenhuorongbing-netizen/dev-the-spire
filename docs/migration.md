@@ -12,7 +12,7 @@ refactor work described in `docs/restructure.md`.
 | PR 3 | Move-only source folder refactor, no behavior changes | Low | Done |
 | PR 4 | Test/docs/script path updates after move-only refactor | Low | Done (no-op: no files moved) |
 | PR 5 | RitsuLib hard dependency (only after 0.106.1/0.106.1 decision) | Medium | Done |
-| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 1 done |
+| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 1 done, Batch 4a done |
 | PR 7+ | High-risk patch migrations, one feature surface at a time | High | Blocked |
 
 ## PR 1: Baseline + Docs-Only Codex Harness Integration
@@ -101,16 +101,36 @@ is published, upgrade to the compat package.
 - No settings page (`RegisterModSettings`) — existing BaseLib config stays.
 - No persistence (`BeginModDataRegistration`) — existing SavedSpireFields stay.
 
-### Batch 4: Patch Class Migration (Blocked)
+### Batch 4a: Low-Risk Patch Migration (Done)
 
-Requires implementing `IPatchMethod` or `IModPatchProvider` on each of 63
-patch classes. RitsuLib's `ModPatcher.PatchAll()` only applies patches
-registered via `RegisterPatch()`/`RegisterPatches()` — it does NOT scan
-for `[HarmonyPatch]` attributes. Each patch class needs:
-- `PatchId` (unique identifier)
-- `IsCritical` (failure behavior)
-- `Description` (what the patch does)
-- `GetTargets()` (target method resolution)
+Migrated 10 low-risk patch classes to RitsuLib's `IPatchMethod` interface.
+`RitsuLibBootstrap` now uses `ModPatcher` for migrated patches and raw
+`Harmony.PatchAll()` for the remaining 157 `[HarmonyPatch]`-attributed classes.
+
+**Migrated patches:**
+
+| File | Classes | PatchIds |
+| --- | --- | --- |
+| `FiddlePatches.cs` | 4 | `fiddle-vars`, `fiddle-hand-draw`, `fiddle-should-draw`, `fiddle-draw-cap` |
+| `ChoicesParadoxPatches.cs` | 1 | `choices-paradox-turn-start` |
+| `DistinguishedCapePatches.cs` | 3 | `distinguished-cape-vars`, `distinguished-cape-event-option`, `distinguished-cape-pickup` |
+| `BlackStarCompensationPatches.cs` | 1 | `black-star-obtain` |
+
+**Pattern:** Each class changed from `internal static class` with `[HarmonyPatch]`
+to `internal sealed class : IPatchMethod` with `GetTargets()` returning
+`ModPatchTarget[]`. `[HarmonyPrefix]`/`[HarmonyPostfix]` attributes kept.
+
+**Verification:** Build 0 errors, 4 migration-related tests pass, format clean.
+
+### Batch 4b: Medium-Risk Patch Migration (Pending)
+
+Migrate remaining medium-risk patches (UI, card, relic, reward surfaces).
+Same pattern as Batch 4a.
+
+### Batch 5: High-Risk Patches (Blocked on Evidence)
+
+Run/map/reward/save/multiplayer patches require manual evidence backlog
+reduction before migration.
 
 ### Batch 5: High-Risk Patches (Blocked on Evidence)
 

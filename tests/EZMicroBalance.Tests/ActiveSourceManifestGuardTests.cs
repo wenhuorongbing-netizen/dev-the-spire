@@ -483,6 +483,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1TheMausoleum.cs",
         "EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1TheWomanInBlue.cs",
         "EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1WheelOfChange.cs",
+        "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistrationService.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistry.cs",
         "EZMicroBalanceCode/MainFile.cs"
     ];
@@ -546,6 +547,7 @@ public sealed class ActiveSourceManifestGuardTests
         new("EZMicroBalanceCode/Ancients/Expansion/Vakuu/", "VakuuTemptationGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Vakuu\")"),
         new("EZMicroBalanceCode/Ascension/", "AscensionFeatureGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ascension\")"),
         new("EZMicroBalanceCode/Core/Features/", "EngineeringGovernanceGuardTests.cs", "SpirePlusFeatureRegistry.CreateDefault().InitializeAll()"),
+        new("EZMicroBalanceCode/Core/Integrations/RitsuLib/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
         new("EZMicroBalanceCode/Config/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
         new("EZMicroBalanceCode/Diagnostics/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
         new("EZMicroBalanceCode/Map/", "AncientHighRiskSourceGuardTests.cs", "ReadRepoText(\"EZMicroBalanceCode\", \"Map\", \"SpirePlusMapPointHoverComposer.cs\")"),
