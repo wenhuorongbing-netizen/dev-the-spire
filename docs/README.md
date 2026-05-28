@@ -1,4 +1,4 @@
-# Documentation Index
+﻿# Documentation Index
 
 This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). Keep the active reading path small: current development should start from the files below, not from archived prompts or old audit matrices.
 
@@ -74,6 +74,12 @@ These files are current support records but are not part of the default next-dev
 | `style/card-localization-style-guide.md` | Source-backed card text, keyword, preview, and bilingual terminology rules. |
 | `skills/sts2-godot-mod-development.md` | Repo-local StS2/Godot/.NET development reference. |
 | `adr/0000-template.md` | Template for architecture, patch-surface, saved-state, and release-scope decisions. |
+| `codex-harness/README.md` | Thin Codex harness template integration (adapted from codex-app-better-token). |
+| `codex-harness/PROMPTS.md` | Ready-to-copy task prompt templates for Codex. |
+| `codex-harness/templates/` | Empty templates for TASK_FOCUS_PACK, TASK_STATUS, TASK_RESULT, ERROR_LEDGER. |
+| `integrations/ritsulib.md` | RitsuLib runtime staging record, variant pack contents, version mismatch blocker, and future migration plan. |
+| `refactor-map.md` | Move-only folder refactor map for EZMicroBalanceCode (planning only, no moves executed). |
+| `migration.md` | Restructure migration plan and PR sequencing. |
 
 ## Code And Helper Indexes
 

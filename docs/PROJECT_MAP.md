@@ -1,4 +1,4 @@
-# Project Map
+﻿# Project Map
 
 `Spire Plus` is the single active private beta target. Its stable manifest id is `EZMicroBalance`. The old `EzDailyContent` scaffold and standalone `EZFuturePeek` prototype are no longer active root mod surfaces.
 
@@ -49,6 +49,11 @@
 | `docs/adr/` | Current support | Architecture decision records. Start with `docs/adr/0000-template.md`. |
 | `docs/specs/` | Current support | Release scope, website claim audit, and release traceability matrix. |
 | `docs/source-research/` | Current support | Compact source evidence for high-risk run, room, reward, save, RNG, and multiplayer surfaces. |
+| `docs/codex-harness/` | Current support | Thin Codex workflow templates adapted from codex-app-better-token harness. |
+| `docs/integrations/` | Current support | Runtime integration staging records (e.g., RitsuLib). |
+| `docs/refactor-map.md` | Current support | Move-only folder refactor map for EZMicroBalanceCode (planning only). |
+| `docs/migration.md` | Current support | Restructure migration plan and PR sequencing. |
+| `harness/` | Current support | Live task-scoped state files for Codex workflow (project root). |
 | `docs/architecture/` | Current support | Bounded context, patch boundary, and save-state contract maps. |
 | `docs/month-plan/` | Current support | 30-day plan outputs such as baseline freeze and commit boundaries. |
 | `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi and Lotha source slices, and the hidden-by-default dedicated Vakuu fight slice; live verification remains pending. |

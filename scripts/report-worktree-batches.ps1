@@ -1,4 +1,4 @@
-param(
+﻿param(
     [ValidateSet('Markdown', 'Json')]
     [string]$Format = 'Markdown',
 
@@ -121,7 +121,10 @@ function Get-WorktreeBatch {
         $p.StartsWith('docs/archive/feature-inputs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/archive/feature-audits/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/archive/implementation-records/', [System.StringComparison]::OrdinalIgnoreCase) -or
-        $p -in @('docs/README.md', 'docs/PROJECT_MAP.md', 'docs/archive/README.md', 'docs/doc-inventory.md', 'docs/goal.md', 'docs/git-commit-push-policy.md', 'docs/worktree-cleanup-audit.md', 'docs/codex-workflow.md', 'docs/features/README.md')) {
+        $p.StartsWith('docs/codex-harness/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/integrations/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('harness/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -in @('docs/README.md', 'docs/PROJECT_MAP.md', 'docs/archive/README.md', 'docs/doc-inventory.md', 'docs/goal.md', 'docs/git-commit-push-policy.md', 'docs/worktree-cleanup-audit.md', 'docs/codex-workflow.md', 'docs/features/README.md', 'docs/restructure.md', 'docs/migration.md', 'docs/refactor-map.md')) {
         return 2
     }
 
