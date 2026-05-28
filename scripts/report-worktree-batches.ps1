@@ -66,6 +66,7 @@ function Get-WorktreeBatch {
     }
 
     if ($p.StartsWith('EZMicroBalanceCode/Ancients/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('EZMicroBalanceCode/Sts1Events/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^EZMicroBalance/localization/[^/]+/(ancients|cards|card_keywords|powers|relics|static_hover_tips)\.json$' -or
         $p.StartsWith('docs/features/ancient-expansion-urda/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/features/ancients-rework-v4/', [System.StringComparison]::OrdinalIgnoreCase) -or
@@ -90,7 +91,7 @@ function Get-WorktreeBatch {
         $p.StartsWith('EZMicroBalanceCode/Diagnostics/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Modding/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Preview/', [System.StringComparison]::OrdinalIgnoreCase) -or
-        $p -match '^EZMicroBalance/localization/[^/]+/(settings_ui|card_reward_ui|encounters|events|monsters|rest_site_ui)\.json$' -or
+        $p -match '^EZMicroBalance/localization/[^/]+/(settings_ui|card_reward_ui|encounters|events|sts1_events|monsters|rest_site_ui)\.json$' -or
         $p.StartsWith('docs/features/future-peek/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/features/preview-tools/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('.github/', [System.StringComparison]::OrdinalIgnoreCase) -or
@@ -130,7 +131,8 @@ function Get-WorktreeBatch {
 
     if ($p -eq 'EZMicroBalanceCode/README.md' -or
         $p -eq 'docs/implement.md' -or
-        $p.StartsWith('docs/audits/', [System.StringComparison]::OrdinalIgnoreCase)) {
+        $p.StartsWith('docs/audits/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/goals/', [System.StringComparison]::OrdinalIgnoreCase)) {
         return 8
     }
 

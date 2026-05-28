@@ -37,7 +37,13 @@ public sealed class Sts1WindingHalls : EventModel
 
     private async Task Embrace()
     {
-        // TODO: Add Madness cards (×2 normal, ×3 A15)
+        // StS1 Madness curse doesn't exist in StS2; using Debt as substitute
+        var curseCount = HasA15 ? MadnessA15 : MadnessNormal;
+        var curses = new List<CardModel>();
+        for (int i = 0; i < curseCount; i++)
+            curses.Add(ModelDb.Card<Debt>());
+        await CardPileCmd.AddCursesToDeck(curses, Owner);
+
         var maxHpLossPct = HasA15 ? EmbraceMaxHpLossPctA15 : EmbraceMaxHpLossPctNormal;
         var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * maxHpLossPct);
         if (maxHpLoss > 0)

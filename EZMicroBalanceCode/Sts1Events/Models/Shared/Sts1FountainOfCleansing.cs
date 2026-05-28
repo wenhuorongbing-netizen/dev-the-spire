@@ -30,7 +30,15 @@ public sealed class Sts1FountainOfCleansing : EventModel
 
     private async Task Drink()
     {
-        // TODO: Remove all curses from deck
+        var curses = new List<CardModel>();
+        foreach (var card in Owner.Deck.Cards)
+        {
+            if (card.Type == MegaCrit.Sts2.Core.Entities.Cards.CardType.Curse)
+                curses.Add(card);
+        }
+        if (curses.Count > 0)
+            await CardPileCmd.RemoveFromDeck(curses, showPreview: false);
+
         var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * MaxHpLossPct);
         if (maxHpLoss > 0)
         {

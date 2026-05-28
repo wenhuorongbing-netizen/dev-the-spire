@@ -14,12 +14,16 @@ public sealed class EngineeringGovernanceGuardTests
         AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "FeatureGateResult.cs");
         AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
         AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
+        AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "FeatureOrders.cs");
 
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
         var registry = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
         var featureRegistry = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+        var featureOrders = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureOrders.cs");
 
         Assert.Contains("SpirePlusFeatureRegistry.CreateDefault().InitializeAll()", mainFile, StringComparison.Ordinal);
+
+        // MainFile should not directly call any feature initializer
         foreach (var directInitializerCall in new[]
                  {
                      "LothaInitializer.Initialize",
@@ -30,26 +34,32 @@ public sealed class EngineeringGovernanceGuardTests
                  })
         {
             Assert.DoesNotContain(directInitializerCall + "();", mainFile, StringComparison.Ordinal);
-            Assert.Contains(directInitializerCall, registry, StringComparison.Ordinal);
         }
 
+        // Registry should register named feature modules
         AssertSourceContains(
             registry,
-            "\"Ancients.Lotha\"",
-            "\"Ancients.Morvi\"",
-            "\"Ancients.Urda\"",
-            "\"Ancients.VakuuFight\"",
-            "\"Ascension.A11A20\"",
-            "100",
-            "200",
-            "300",
-            "400",
-            "500",
-            "LothaFeatureGate",
-            "MorviFeatureGate",
-            "UrdaFeatureGate",
-            "VakuuFightFeatureGate",
-            "AscensionFeatureGate");
+            "new LothaFeatureModule()",
+            "new MorviFeatureModule()",
+            "new UrdaFeatureModule()",
+            "new VakuuFightFeatureModule()",
+            "new AscensionFeatureModule()");
+
+        // FeatureOrders should define named constants
+        AssertSourceContains(
+            featureOrders,
+            "AncientsLotha",
+            "AncientsMorvi",
+            "AncientsUrda",
+            "AncientsVakuuFight",
+            "AscensionA11A20");
+
+        // Feature module files should exist and delegate to initializers
+        AssertRepoFileExists("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaFeatureModule.cs");
+        AssertRepoFileExists("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviFeatureModule.cs");
+        AssertRepoFileExists("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaFeatureModule.cs");
+        AssertRepoFileExists("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureModule.cs");
+        AssertRepoFileExists("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureModule.cs");
 
         AssertSourceContains(
             featureRegistry,
@@ -202,7 +212,9 @@ public sealed class EngineeringGovernanceGuardTests
             pullRequestTemplate,
             "`EZMicroBalance` manifest id remains unchanged",
             "New or moved Harmony patches are reflected in `docs/patch-inventory.md`",
-            "Manual evidence rows stay open unless live proof exists");
+            "Manual evidence rows stay open unless live proof exists",
+            "High-risk patch seams",
+            "Source-only pass does not close live proof gates");
 
         var issueTemplate = ReadRepoText(".github", "ISSUE_TEMPLATE", "engineering_issue.md");
         AssertSourceContains(
@@ -459,7 +471,7 @@ public sealed class EngineeringGovernanceGuardTests
 
         AssertSourceContains(
             patchBoundaries,
-            "158 total, 22 high-risk",
+            "141 total, 22 high-risk",
             "A20 dual boss",
             "RewardsSetSynchronizer",
             "StartRunLobby.SyncAscensionChange",

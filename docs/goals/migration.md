@@ -1,502 +1,63 @@
-# 严格验收结论
+## 严格验收结论
 
-**没有全部达成“全面迁移到 RitsuLib”的目标。**
-但它确实比上一轮前进了一大步：**RitsuLib 已经从“仅规划”变成了真实 compile dependency + runtime dependency + bootstrap logging layer**，并且 `MainFile` 已经通过轻量 `FeatureRegistry` 解耦了直接 initializer 调用。
+这轮 **Batch 4b 不是“全面 RitsuLib 迁移完成”**，但它确实推进了 **RitsuLib ModPatcher patch migration**。当前 GitHub 最新提交已经往前走到 `e7080aa try improve`，也就是说这不是只在本地的工作；远程主线已经包含本轮迁移痕迹。
 
-现在的真实状态应该定义为：
+准确状态应该写成：
 
 ```text
-RitsuLib Migration Phase 0/1: partially complete
-RitsuLib hard dependency: yes
-RitsuLib runtime dependency: yes
-RitsuLib bootstrap diagnostics: yes
-FeatureRegistry scaffold: yes
-RitsuLib lifecycle migration: no
-RitsuLib DataStore migration: no
-RitsuLib content-pack migration: no
-RitsuLib ModPatcher migration: no
-State codec migration: no
-Reward pipeline: no
-CardPlayContext: no
-DeathProtectionService: no
-MultiplayerPolicy: no
-Release-ready: no
+RitsuLib dependency: 完成
+RitsuLib runtime dependency: 完成
+RitsuLib bootstrap: 完成第一层
+FeatureRegistry scaffold: 完成第一层
+Batch 4a/4b patch migration: 部分完成
+RitsuLib lifecycle event migration: 未完成
+RitsuLib DataStore / persistence: 未完成
+RitsuLib settings: 未完成
+RitsuLib content pack: 未完成
+RewardPipeline / CardPlayContext / DeathProtection / MultiplayerPolicy: 未完成
+Full test suite truth: 未闭环
+Release-ready: 否
 ```
 
-也就是说：**这是 RitsuLib 接入 + 架构骨架阶段，不是全面迁移完成。**
+最重要的问题是：**本轮迁移数量和文档计数存在不一致，且报告只说 migration tests 通过，没有证明 full test suite 全绿。**
 
 ---
 
-## 1. GitHub 当前状态确认
+# 1. 每一步检查
 
-最新远端提交已经不是之前我看到的 `2f0afd`，而是：
-
-```text
-591b596 migration middle
-```
-
-提交列表里能看到你提到的那组 RitsuLib 迁移提交：`737acab`、`29d1b93`、`7d6d736`、`49435f0`、`2fd2b1a`、`6001a6e`，并且后面又有 `780c65d new era` 和 `591b596 migration middle`。
-
-这次它确实已经 push 到 GitHub 了，不是之前那种“本地 dirty / branch 找不到”的状态。
-
----
-
-# 2. 按迁移目标逐项验收
-
-## 2.1 RitsuLib NuGet dependency
+## 1.1 RitsuLib NuGet dependency
 
 **完成。**
 
-当前 `EZMicroBalance.csproj` 已经包含：
+`EZMicroBalance.csproj` 当前包含：
 
 ```xml
 <PackageReference Include="STS2.RitsuLib" Version="0.3.2" PrivateAssets="All"/>
 ```
 
-同时 BaseLib 仍然保留为：
+并且仍保留：
 
 ```xml
 <PackageReference Include="Alchyr.Sts2.BaseLib" Version="3.1.4" PrivateAssets="All"/>
 ```
 
-
-
-这符合我们原定的“不是立刻删除 BaseLib，而是先引入 RitsuLib 做架构层”的路线。
-
-### 风险
-
-当前使用的是 `STS2.RitsuLib` base package `0.3.2`，而 runtime variant pack 文档里写 runtime pack 是 `0.3.3`，并且 NuGet 没有 `STS2.RitsuLib.Compat.0.106.1`。`docs/integrations/ritsulib.md` 已明确记录：runtime variant `0.106.1` 可用，但 NuGet compat package 缺失，所以现在用 base NuGet 0.3.2 编译，运行时使用 variant pack 0.3.3。
-
-这不是立刻错误，但必须实机验证：
-
-```text
-BaseLib 3.1.4 + STS2-RitsuLib runtime 0.3.3 variant + Spire Plus
-```
-
-是否 clean load。
+这符合“RitsuLib 接入，但 BaseLib 仍在过渡期保留”的路线。
 
 ---
 
-## 2.2 Manifest runtime dependency
+## 1.2 RitsuLib runtime dependency
 
 **完成。**
 
-当前 `EZMicroBalance.json` dependencies 已包含：
+`EZMicroBalance.json` 当前 dependencies 里已经有：
 
 ```json
-{
-  "id": "STS2-RitsuLib",
-  "min_version": "0.3.2"
-}
+{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }
 ```
 
-同时仍依赖 BaseLib `v3.1.4`。
+同时也保留 BaseLib v3.1.4。
 
-### 风险
-
-`docs/integrations/ritsulib.md` 写 runtime variant pack manifest version 是 `0.3.3`，但项目 manifest 要求 `min_version: 0.3.2`。这通常没问题，因为 0.3.3 >= 0.3.2。但测试包说明里必须写清：
-
-```text
-玩家需要安装 STS2-RitsuLib variant pack，而不是普通单 DLL。
-```
-
-文档已有安装目录说明：`<GameRoot>/mods/STS2-RitsuLib/`，包含 root loader、manifest、variant config 和 `lib/0.106.1/`。
-
----
-
-## 2.3 RitsuLib bootstrap
-
-**部分完成。**
-
-`MainFile.Initialize()` 现在已经调用：
-
-```csharp
-RitsuLibBootstrap.ApplyPatches(ModId);
-ModConfigRegistry.Register(ModId, new SpirePlusModConfig());
-SpirePlusFeatureRegistry.CreateDefault().InitializeAll();
-```
-
-这比原来直接 `new Harmony(ModId).PatchAll()` + 所有 initializer 要好。
-
-`RitsuLibBootstrap` 当前会：
-
-```csharp
-var logger = RitsuLibFramework.CreateLogger(modId);
-logger.Info($"RitsuLib {GetRitsuLibVersion()} bootstrap starting.");
-var harmony = new Harmony(modId);
-harmony.PatchAll();
-logger.Info($"Harmony patches applied via {modId}.");
-if (RitsuLibFramework.IsActive) ...
-```
-
-
-
-### 关键问题
-
-它并没有使用 RitsuLib 的 `CreatePatcher` / `ModPatcher` / `IPatchMethod` / `IModPatchProvider`。文档自己也承认：
-
-* 当前仍然 raw Harmony；
-* 63 个 patch class 如果要迁到 RitsuLib managed patcher，需要实现 `IPatchMethod` 或 `IModPatchProvider`；
-* PR 6 Batch 1 只是 bootstrap + diagnostics；
-* Batch 4 patch class migration blocked。
-
-所以这里是：
-
-```text
-RitsuLib bootstrap logging: yes
-RitsuLib patcher migration: no
-```
-
----
-
-## 2.4 FeatureRegistry / 初始化解耦
-
-**部分完成。**
-
-`MainFile` 已经不直接调用 Lotha/Morvi/Urda/Vakuu/Ascension initializer，而是走 `SpirePlusFeatureRegistry.CreateDefault().InitializeAll()`。
-
-`FeatureRegistry` 会按 `InitOrder` 初始化 module，并打印：
-
-```text
-[Spire Plus] Feature {module.Id} bootstrap gate: enabled/disabled (reason)
-```
-
-
-
-`SpirePlusFeatureRegistry` 当前注册了：
-
-```text
-Ancients.Lotha
-Ancients.Morvi
-Ancients.Urda
-Ancients.VakuuFight
-Ascension.A11A20
-```
-
-并分别代理到旧的 initializer。
-
-### 仍未完成
-
-`IFeatureModule` 目前只有：
-
-```text
-Id
-InitOrder
-EvaluateGate()
-Initialize()
-```
-
-
-
-`FeatureGateResult` 也只有：
-
-```text
-bool IsEnabled
-string Reason
-```
-
-
-
-这还不是完整 feature architecture。它缺：
-
-```text
-DisplayName
-DefaultEnabled
-DisableEnvKeys
-ForceEnvKeys
-Dependencies
-RuntimeStatus
-Diagnostics
-MultiplayerPolicy
-PackageEvidenceStatus
-LiveVerificationStatus
-```
-
-更重要的是，`SpirePlusFeatureRegistry` 目前的 gate 文案是：
-
-```text
-default-on; Lotha runtime gates remain in LothaFeatureGate.
-default-on; Morvi runtime gates remain in MorviFeatureGate.
-```
-
-
-
-也就是说：**FeatureRegistry 现在只是 bootstrap gate，不是真正的 feature live gate。**
-
-这可以接受作为第一阶段，但不能说完全解耦。
-
----
-
-## 2.5 RitsuLib migration docs
-
-**部分完成，但目录设计和我们之前 spec 不一致。**
-
-我没有在 GitHub main 找到：
-
-```text
-docs/features/ritsulib-migration/README.md
-```
-
-但我找到了：
-
-```text
-docs/integrations/ritsulib.md
-docs/migration.md
-docs/refactor-map.md
-```
-
-`docs/integrations/ritsulib.md` 记录 RitsuLib hard dependency、runtime variant pack、NuGet package status、upgrade path 和 API adoption plan。
-
-`docs/migration.md` 记录 PR sequence，包含 PR1–PR6 的状态，说明 PR5 hard dependency done，PR6 Batch 1 bootstrap + diagnostics done，RitsuLib patch class migration blocked。
-
-`docs/refactor-map.md` 记录目录重构计划，并明确 `Core/Integrations/RitsuLib/` 是 future RitsuLib bootstrap module。
-
-### 问题
-
-我们之前建议的是：
-
-```text
-docs/features/ritsulib-migration/
-  migration-decision.md
-  base-vs-ritsulib-comparison.md
-  migration-spec.md
-  migration-plan.md
-  risk-register.md
-```
-
-现在实际是散在：
-
-```text
-docs/integrations/ritsulib.md
-docs/migration.md
-docs/refactor-map.md
-```
-
-这不是功能错误，但长期阅读成本仍偏高。建议后续把这些整理到 `docs/features/ritsulib-migration/`，然后保留旧路径 redirect/summary。
-
----
-
-## 2.6 RitsuLib lifecycle event migration
-
-**未完成。**
-
-当前 bootstrap 没有 `SubscribeLifecycle<TEvent>`。`RitsuLibBootstrap` 只创建 logger、调用 raw Harmony PatchAll、检查 `RitsuLibFramework.IsActive`。
-
-`docs/migration.md` 也没有声称 lifecycle 已迁，只说 Batch 1 bootstrap + diagnostics done。
-
-### 判定
-
-```text
-Lifecycle migration: not started
-```
-
----
-
-## 2.7 RitsuLib DataStore / persistence migration
-
-**未完成。**
-
-`docs/migration.md` 直接写：
-
-```text
-No persistence (BeginModDataRegistration) — existing SavedSpireFields stay.
-```
-
-并且 Batch 3 “Persistence sidecar experiments” 标成 not applicable / existing SavedSpireFields work。
-
-当前 `AncientSavedStateFields` 仍是大量 `SavedSpireField<Player, string>` / `SavedSpireField<CardModel, string>`。
-Urda 仍然有 string state parse/write 逻辑。
-
-### 判定
-
-```text
-DataStore migration: not done
-State codec migration: not done
-```
-
-这仍是下月的核心目标。
-
----
-
-## 2.8 Content registration migration
-
-**未完成。**
-
-`docs/migration.md` 明确写：
-
-```text
-No content registration (CreateContentPack) — Spire Plus doesn't register new cards/relics/potions through RitsuLib.
-```
-
-
-
-### 判定
-
-```text
-RitsuLib content pack migration: not done
-```
-
-这个可以暂缓，不是 P0。
-
----
-
-## 2.9 RitsuLib settings migration
-
-**未完成。**
-
-`docs/migration.md` 写：
-
-```text
-No settings page (RegisterModSettings) — existing BaseLib config stays.
-```
-
-
-
-### 判定
-
-```text
-Settings migration: not done
-```
-
-暂缓可接受。
-
----
-
-## 2.10 Patch migration to RitsuLib ModPatcher
-
-**未完成，而且文档已正确标记为 blocked。**
-
-`docs/migration.md` 写：
-
-```text
-Patch classes still use [HarmonyPatch] attributes, not RitsuLib's IPatchMethod/IModPatchProvider interfaces.
-Migrating 63 patch classes to RitsuLib's managed ModPatcher is a future batch.
-```
-
-
-
-这是合理的，因为一次迁 63 个 patch 很危险。
-
----
-
-# 3. 本轮是否完成“全面迁移到 RitsuLib”？
-
-严格说：**没有。**
-
-完成的是：
-
-```text
-[✓] 添加 STS2.RitsuLib NuGet dependency
-[✓] 添加 STS2-RitsuLib runtime dependency
-[✓] 添加 RitsuLibBootstrap
-[✓] 用 RitsuLib logger 打 bootstrap diagnostics
-[✓] MainFile 使用 FeatureRegistry
-[✓] 建立轻量 FeatureRegistry scaffold
-[✓] 记录 migration plan 和 blocker
-[✓] build 至少本地报告 0 warnings / 0 errors
-```
-
-未完成的是：
-
-```text
-[ ] RitsuLib lifecycle events
-[ ] RitsuLib DataStore
-[ ] RitsuLib content pack
-[ ] RitsuLib settings
-[ ] RitsuLib ModPatcher
-[ ] BaseLib dependency reduction
-[ ] typed state codec
-[ ] RewardPipeline
-[ ] CardPlayContext
-[ ] DeathProtectionService
-[ ] MultiplayerPolicy
-[ ] behavior-level tests
-[ ] clean Steam loader smoke with BaseLib + RitsuLib + Spire Plus
-[ ] co-op Ritsu dependency parity
-```
-
-所以应写成：
-
-```text
-RitsuLib Phase 0/1 complete.
-Full migration not complete.
-```
-
----
-
-# 4. 存在的可能 bug / 奇怪内容
-
-## 4.1 RitsuLib compile/runtime version mismatch
-
-当前 compile 使用 `STS2.RitsuLib` 0.3.2，runtime variant pack 是 0.3.3。
-
-这可能没问题，但必须实机验证。尤其是：
-
-```text
-RitsuLibFramework.CreateLogger
-RitsuLibFramework.IsActive
-```
-
-在 0.3.2 compile / 0.3.3 runtime 下必须行为一致。
-
-## 4.2 当前文档说 “current target v0.106.1”，但 PROJECT_STATE 仍多处写 v0.106.0
-
-`PROJECT_STATE.md` 当前 game target 写 `v0.106.0`。
-但 `docs/integrations/ritsulib.md` 写 current repo StS2 target 是 `v0.106.1`，runtime variant 也是 `0.106.1`。
-
-这是一个明确的不一致。
-
-### 必须修
-
-统一到底是：
-
-```text
-v0.106.0
-```
-
-还是：
-
-```text
-v0.106.1
-```
-
-如果游戏已更新到 v0.106.1，就 `PROJECT_STATE.md` 必须更新。如果仍是 v0.106.0，就 RitsuLib integration doc 的 “current repo target v0.106.1” 不应这么写。
-
-这个会直接影响源码证据和 runtime dependency。
-
----
-
-## 4.3 FeatureRegistry gate 只是文字，不是真正 gate
-
-当前 registry 总是 `EnabledByDefault(...)`，真实可用性仍在各 feature gate 内部。
-
-这可能导致 log 误导：
-
-```text
-Feature VakuuFight bootstrap gate: enabled
-```
-
-但实际 fight entry hidden by `VakuuFightFeatureGate`。
-
-建议改成两层状态：
-
-```text
-BootstrapRegistered
-LiveAvailable
-```
-
-日志写：
-
-```text
-Feature VakuuFight: bootstrap=enabled, live=disabled, reason=requires SPIREPLUS_ENABLE_VAKUU_FIGHT
-```
-
----
-
-## 4.4 RitsuLib hard dependency 会影响测试安装
-
-Manifest 已经要求 `STS2-RitsuLib`。
-这意味着现在测试员必须安装：
+这意味着测试员必须安装：
 
 ```text
 BaseLib
@@ -504,518 +65,616 @@ STS2-RitsuLib
 Spire Plus
 ```
 
-如果测试员没装 RitsuLib，游戏应该无法加载 Spire Plus。需要更新所有 tester handoff / install docs / website download instructions。
+这一步完成，但后续必须继续补 runtime smoke evidence。
 
 ---
 
-## 4.5 `docs/features/ritsulib-migration/` 缺失
+## 1.3 RitsuLib bootstrap
 
-这不是运行 bug，但和我们之前“monthly migration plan”不一致。现在文档分散在 `docs/integrations/ritsulib.md`、`docs/migration.md`、`docs/refactor-map.md`。
+**完成第一阶段。**
 
-建议下月第一步整理。
-
----
-
-# 5. 是否应该继续推进？
-
-是，但目标要改成：
-
-```text
-从“接入 RitsuLib”进入“用 RitsuLib 重构高收益低风险部分”。
-```
-
-不要马上迁 63 个 Harmony patch，不要马上迁所有 persistence。`docs/migration.md` 把 high-risk patch migrations 标成 blocked 是对的。
-
----
-
-# 6. 下一步 Monthly Dev Spec
-
-下面是我建议的 30 天开发规格。它不要求每天固定产出，但每周一个主目标。
-
----
-
-# Monthly Dev Spec：Spire Plus RitsuLib Stabilization & Architecture Month
-
-## 目标总述
-
-本月目标不是新增内容，而是让当前超大 Spire Plus 项目进入“可稳定测试、可维护、可逐步迁移”的状态。
-
-核心成果：
-
-```text
-1. RitsuLib runtime install + loader smoke 真实通过。
-2. v0.106.x 目标版本统一。
-3. FeatureRegistry 从轻量 wrapper 变成真实 feature status registry。
-4. Urda/Morvi/Lotha 的 state codec 开始替换脆弱 string 状态。
-5. RewardPipeline / CardPlayContext / DeathProtectionService 至少完成设计和一个最小实现。
-6. 多人策略矩阵落地。
-7. 所有测试员文档更新为 BaseLib + RitsuLib + Spire Plus。
-```
-
----
-
-## Week 1：RitsuLib Environment & Evidence Closure
-
-### Goal
-
-让 RitsuLib 依赖变成**真实可安装、可加载、可审计**，而不是只在 csproj/manifest 里存在。
-
-### Tasks
-
-#### 1.1 统一 v0.106 target
-
-修正文档冲突：
-
-```text
-PROJECT_STATE.md: v0.106.0
-docs/integrations/ritsulib.md: v0.106.1
-```
-
-必须确定当前实际游戏版本，然后统一：
-
-```text
-[ ] PROJECT_STATE.md
-[ ] docs/integrations/ritsulib.md
-[ ] docs/dev-environment.md
-[ ] docs/release-checklist.md
-[ ] docs/private-beta-verification-handoff.md
-[ ] website install docs
-```
-
-### Acceptance
-
-```text
-[ ] 所有 current docs 只写一个当前目标版本。
-[ ] 如果 v0.106.1 是 runtime target，source code/sourcecodeonlyaianalysis 也要记录是否匹配。
-```
-
-#### 1.2 Clean loader smoke
-
-必须实机跑：
-
-```text
-BaseLib 3.1.4
-STS2-RitsuLib variant pack 0.3.3
-Spire Plus
-```
-
-检查：
-
-```text
-[ ] RitsuLib loaded
-[ ] BaseLib loaded
-[ ] Spire Plus loaded
-[ ] RitsuLib bootstrap log present
-[ ] RitsuLibFramework.IsActive true
-[ ] Found expected SavedSpireFields
-[ ] no MissingMethodException
-[ ] no TypeLoadException
-[ ] no manifest dependency failure
-```
-
-### Acceptance
-
-```text
-[ ] clean godot.log saved
-[ ] audit-godot-log passes
-[ ] docs/release-evidence-status.md updated
-```
-
-#### 1.3 Install docs update
-
-更新：
-
-```text
-README.md
-README_INSTALL.txt
-website download/install page
-docs/private-beta-verification-handoff.md
-docs/platform-testing.md
-```
-
-写清：
-
-```text
-Install order:
-1. BaseLib
-2. STS2-RitsuLib variant pack
-3. Spire Plus
-```
-
-### Week 1 Definition of Done
-
-```text
-[ ] v0.106 target docs unified
-[ ] RitsuLib loader smoke passed
-[ ] install docs include RitsuLib
-[ ] package evidence updated if needed
-```
-
----
-
-## Week 2：FeatureRegistry Hardening
-
-### Goal
-
-把现有轻量 registry 从“wrapper”提升为“真实状态 registry”。
-
-### Tasks
-
-#### 2.1 Extend IFeatureModule
-
-当前接口只有 `Id / InitOrder / EvaluateGate / Initialize`。 扩展到：
+`MainFile.Initialize()` 现在调用：
 
 ```csharp
-string DisplayName { get; }
-FeatureCategory Category { get; }
-IReadOnlyList<string> DisableEnvKeys { get; }
-IReadOnlyList<string> ForceEnvKeys { get; }
-FeatureRuntimeStatus GetRuntimeStatus();
+RitsuLibBootstrap.ApplyPatches(ModId);
+ModConfigRegistry.Register(ModId, new SpirePlusModConfig());
+SpirePlusFeatureRegistry.CreateDefault().InitializeAll();
 ```
 
-#### 2.2 分离 BootstrapEnabled 和 LiveAvailable
 
-避免现在这种：
+
+`RitsuLibBootstrap` 当前会创建 RitsuLib logger、创建 RitsuLib patcher、注册已迁移 patch、执行 `patcher.PatchAll()`，然后再执行 raw `Harmony.PatchAll()` 来处理未迁移 patch。
+
+这是合理的混合模式：
 
 ```text
-VakuuFight bootstrap enabled, but live fight hidden
+已迁移 patch -> RitsuLib ModPatcher
+未迁移 patch -> raw Harmony
 ```
 
-新增：
+但这还不是完整 RitsuLib migration。
+
+---
+
+## 1.4 Batch 4a/4b patch migration
+
+**部分完成，但有计数错误。**
+
+`RitsuLibBootstrap.RegisterMigratedPatches()` 当前注册了：
+
+### Batch 4a
 
 ```text
-FeatureBootstrapStatus
-FeatureLiveStatus
+FiddlePatches: 4
+ChoicesParadoxPatch: 1
+DistinguishedCapePatches: 3
+BlackStarCompensationPatches: 1
 ```
 
-日志：
+总数是：
 
 ```text
-Feature VakuuFight:
-  bootstrap=enabled
-  live=disabled
-  reason=requires SPIREPLUS_ENABLE_VAKUU_FIGHT
+4 + 1 + 3 + 1 = 9
 ```
 
-#### 2.3 Feature status diagnostics
 
-新增命令/日志：
+
+但是 `docs/migration.md` 写 Batch 4a “Migrated 10 low-risk patch classes”。这和源码注册数不一致。
+
+### Batch 4b
+
+`RitsuLibBootstrap` 当前注册：
 
 ```text
-[Spire Plus Feature Status]
-Ancients.Urda: bootstrap yes, live yes
-Ancients.Morvi: bootstrap yes, live yes
-Ancients.Lotha: bootstrap yes, live yes
-Ancients.VakuuFight: bootstrap yes, live no
-Ascension.A11A20: bootstrap yes, live yes/co-op fail-closed
+CrossbowPatches: 2
+BrightestFlameExhaustDrawPatch: 3
+DebtAndCardPatches: 8
+SealOfGoldPatches: 2
+PickupRewardPatches: 1
 ```
 
-### Week 2 Definition of Done
+总数是：
 
 ```text
-[ ] Registry logs real bootstrap/live status.
-[ ] MainFile remains simple.
-[ ] Tests cover feature status output.
-[ ] No default-on behavior changed.
+2 + 3 + 8 + 2 + 1 = 16
+```
+
+
+
+`docs/migration.md` 写 Batch 4b migrated 16 classes，这部分是对的。
+
+### 总数
+
+源码注册总数是：
+
+```text
+9 + 16 = 25
+```
+
+但 `docs/migration.md` 写：
+
+```text
+Total migrated: 26 classes
+```
+
+
+
+所以这里有明确文档/计数 bug。不是大功能 bug，但会误导后续迁移计划。
+
+### 判定
+
+```text
+Batch 4b 源码迁移：完成。
+Batch 4a/总数文档计数：错误，需要修。
+Patch migration 总体：远未完成。
 ```
 
 ---
 
-## Week 3：State Codec + Persistence Bridge
+## 1.5 Patch inventory
 
-### Goal
+**完成一部分。**
 
-不要再让大型状态依赖 `;` 分隔 string + index。
-
-### Tasks
-
-#### 3.1 UrdaStateV1
-
-从 Urda 开始。当前 `UrdaBlessingService.State.cs` 按 `;` split 并 index 解析大量字段。
-
-新增：
+`docs/patch-inventory.md` 当前显示：
 
 ```text
-UrdaStateV1
-UrdaStateCodec
-UrdaStateMigration
+Total patch declarations: 141
+High risk: 22
+Medium risk: 35
+Low risk: 84
+Unclassified owner: 0
 ```
 
-先保留原 `SavedSpireField<string>`，但读写都走 codec。
 
-#### 3.2 MorviStateV1 / LothaStateV1 spec
 
-不一定本周全改，但要写 spec：
+这和 Codex 汇报“141 declarations remaining on raw Harmony”一致。
+
+但注意：这份 inventory 只列 raw `[HarmonyPatch]` declarations；它不等于“所有 migrated patches 的 inventory”。下一步应该新增：
 
 ```text
-Morvi debt/openbook/borrowed state
-Lotha mirror/reprieve/verdict/evidence state
+Migrated ModPatcher patch inventory
+Raw Harmony patch inventory
+High-risk blocked patch inventory
 ```
 
-#### 3.3 RitsuLib DataStore POC
+否则未来无法判断哪些 patch 已迁、哪些仍然 raw、哪些不该迁。
 
-本周目标不是立刻替换所有 SavedSpireField，而是做一个低风险 POC：
+---
+
+## 1.6 Full tests
+
+**未闭环。**
+
+Codex 汇报：
 
 ```text
-[ ] InMemory store smoke
-[ ] maybe RunSidecar research
-[ ] no gameplay dependency yet
+All 4 migration tests pass
+Build 0 errors
+Format clean
+Pre-existing failures (Sts1Events, documentation): unrelated
 ```
 
-### Week 3 Definition of Done
+这不是完整验收。只跑 “migration tests 4/4” 不等于：
 
 ```text
-[ ] UrdaStateCodec roundtrip tests
-[ ] malformed state tests
-[ ] old state migration tests
-[ ] no gameplay regression
-[ ] RitsuLib DataStore POC documented
+dotnet test EZMicroBalance.sln
+dotnet test EZMicroBalance.sln --no-build
+```
+
+全绿。
+
+如果仍有 Sts1Events / documentation failures，就必须修或者 quarantine；不能长期写“unrelated”。
+
+---
+
+## 1.7 Sts1Events scope creep
+
+**仍然是风险。**
+
+当前仓库里有 `Sts1DeadAdventurer.cs`，里面明确有：
+
+```csharp
+// TODO: Enter combat with random elite
+// TODO: Grant random relic
+```
+
+并且如果 roll 到 elite/relic 分支，当前只是 `SetEventFinished(...)`，不会真的打精英或给遗物。
+
+`Sts1Joust.cs` 则直接扣 50 金下注，没有看到 option 是否在金币不足时被禁用。
+
+这两个不是 RitsuLib 迁移必须内容，属于 scope creep。必须确认：
+
+```text
+[ ] 是否注册到 live event pool？
+[ ] 如果未注册，文档标 source skeleton only。
+[ ] 如果已注册，必须禁用或补完。
+[ ] 加 guard：含 TODO 的 EventModel 不能进入 live pool。
 ```
 
 ---
 
-## Week 4：Domain Pipelines
+## 1.8 RitsuLib lifecycle / DataStore / settings
 
-### Goal
+**未完成。**
 
-建立真正降低 bug 的 domain architecture。
-
-### Tasks
-
-#### 4.1 RewardPipeline skeleton
-
-建立：
+`docs/migration.md` 明确写 Batch 1 没有迁：
 
 ```text
-RewardPipeline
-RewardPipelineContext
-RewardPhase
-IRewardHandler
+No content registration
+No settings page
+No persistence
 ```
 
-先只做 diagnostics，不迁全部逻辑。
 
-阶段：
+
+也就是说：
 
 ```text
-BeforePopulate
-AfterPopulate
-ModifyOptions
-ModifyOptionsLate
-AddAlternatives
-OnPicked
-OnSkipped
-OnCompleted
+RitsuLib lifecycle events: 未迁
+RitsuLib DataStore: 未迁
+RitsuLib settings: 未迁
+RitsuLib content pack: 未迁
 ```
 
-覆盖文档/诊断：
+这没有问题，但必须诚实标注为下一阶段，不要说全面迁移完成。
+
+---
+
+# 2. 当前最大问题清单
+
+## P0：Patch migration 计数不一致
+
+文档写：
 
 ```text
-Urda Seedbed
-Urda Humus
-Morvi Forbidden Loan
-Morvi Debt Settlement
-Lotha Closed Court
-Prismatic Gem
-Fission
-A19 Boss Reward
+Batch 4a: 10
+Batch 4b: 16
+Total: 26
 ```
 
-#### 4.2 CardPlayContext skeleton
-
-建立：
+源码实际注册：
 
 ```text
-EzmbCardPlayContext
-ExtraPlayPolicy
+Batch 4a: 9
+Batch 4b: 16
+Total: 25
 ```
 
-先接入 Morvi Misprint 或 Lotha SingleSentence 的一个低风险入口。
+这个必须修。后续所有迁移统计都应由测试自动计算，不能人工写错。
 
-规则：
+---
+
+## P0：Full test truth 未闭环
+
+报告说 “Migration tests 4/4 pass”，但又说有 pre-existing failures。
+这不能算完成。
+
+必须要求：
 
 ```text
-Power fallback only
-No recursion
-No clone/autoplay first-card trigger
-Depth guard
+dotnet test EZMicroBalance.sln
+dotnet test EZMicroBalance.sln --no-build
 ```
 
-#### 4.3 DeathProtectionService design + minimal guard
+全量结果。如果失败，必须列出失败项、原因、是否 quarantine。
 
-建立：
+---
 
-```text
-DeathProtectionService
-DeathProtectionRequest
-DeathProtectionResult
-```
+## P0/P1：Sts1Events skeleton 不能进入 live pool
 
-先不全迁 Lotha Death Reprieve，但把 forced death / in-resolution policy 写清，并加 tests/guards。
+`Sts1DeadAdventurer` 有 TODO 且奖励/战斗分支未实现。
+`Sts1Joust` 可能金币不足仍可下注。
 
-#### 4.4 MultiplayerPolicy document
+这必须单独处理，不然会变成新的 runtime bug 来源。
 
-创建/更新：
+---
 
-```text
-docs/features/multiplayer-safety-policy.md
-```
+## P1：ModPatcher + raw Harmony 双 patch 风险仍需 guard
 
-标注：
+当前 `RitsuLibBootstrap` 同时运行 `patcher.PatchAll()` 和 `harmony.PatchAll()`。
+
+这很合理，但必须有 tests 保证：
 
 ```text
-Urda
-Morvi
-Lotha
-Vakuu
-Rootblight
-Ascension BossSeal
-Preview tools
-```
-
-### Week 4 Definition of Done
-
-```text
-[ ] RewardPipeline diagnostics exists
-[ ] CardPlayContext exists and one effect uses it or has adapter
-[ ] DeathProtectionService design exists
-[ ] MultiplayerPolicy doc exists
-[ ] Tests pass
+[ ] RegisterMigratedPatches 中的 class 不含 [HarmonyPatch]
+[ ] 含 [HarmonyPatch] 的 class 不在 RegisterMigratedPatches
+[ ] PatchId 唯一
+[ ] RegisterMigratedPatches count 与 docs 自动一致
 ```
 
 ---
 
-# 7. Monthly Acceptance Criteria
+## P1：RitsuLib runtime smoke 仍需要真实证据
 
-这个月结束时，必须满足：
+Manifest 已经依赖 STS2-RitsuLib。
+csproj 已经依赖 STS2.RitsuLib。
+但必须在游戏里证明：
 
 ```text
-[ ] RitsuLib runtime install and loader smoke passed.
-[ ] v0.106 target docs unified.
-[ ] FeatureRegistry has real status semantics.
-[ ] MainFile stays short and registry-driven.
-[ ] UrdaStateCodec implemented and tested.
-[ ] RitsuLib DataStore POC completed or explicitly blocked.
-[ ] RewardPipeline skeleton exists.
-[ ] CardPlayContext skeleton exists.
-[ ] DeathProtectionService design/minimal guard exists.
-[ ] MultiplayerPolicy matrix exists.
-[ ] Install docs include BaseLib + RitsuLib + Spire Plus.
-[ ] No new gameplay scope creep.
-[ ] Manual pending rows remain honest.
+RitsuLib framework is active
+ModPatcher applied expected patches
+BaseLib + RitsuLib + Spire Plus clean load
+```
+
+没有这个就不能说 runtime 迁移完成。
+
+---
+
+# 3. 本轮完成度表
+
+| 项目                                | 状态                                   |
+| --------------------------------- | ------------------------------------ |
+| STS2.RitsuLib NuGet               | 完成                                   |
+| STS2-RitsuLib manifest dependency | 完成                                   |
+| RitsuLibBootstrap                 | 完成第一层                                |
+| ModPatcher hybrid mode            | 完成第一层                                |
+| Batch 4a patch migration          | 源码完成 9 个；文档错写 10 个                   |
+| Batch 4b patch migration          | 完成 16 个                              |
+| Raw Harmony remaining count       | 141，已记录                              |
+| Patch inventory                   | 有 raw inventory；缺 migrated inventory |
+| Full tests                        | 未闭环                                  |
+| Sts1Events risk                   | 未闭环                                  |
+| Ritsu lifecycle                   | 未开始                                  |
+| Ritsu DataStore                   | 未开始                                  |
+| State codec                       | 未开始                                  |
+| RewardPipeline                    | 未开始                                  |
+| CardPlayContext                   | 未开始                                  |
+| DeathProtectionService            | 未开始                                  |
+| MultiplayerPolicy                 | 未开始                                  |
+| Release-ready                     | 否                                    |
+
+---
+
+# 4. 下一步 Monthly Dev Spec
+
+## 月度目标：RitsuLib Migration Stabilization Month
+
+本月不要继续无脑迁更多 patch。先把当前混合迁移模式稳定下来。
+
+核心目标：
+
+```text
+1. 证明 RitsuLib runtime 可用。
+2. 关闭 Batch 4a/4b 计数和 double-patch 风险。
+3. 清理 Sts1Events 未完成 skeleton 风险。
+4. 让 FeatureRegistry 从 wrapper 变成真实 status registry。
+5. 启动 StateCodec / RewardPipeline / CardPlayContext / DeathProtection / MultiplayerPolicy 的架构工作。
 ```
 
 ---
 
-# 8. Concrete Next Goal
+## Week 1：RitsuLib Runtime + Test Truth
 
-我建议下一步先做：
+### 工作
 
 ```text
-GOAL-2026-05-28-RITSULIB-LOADER-SMOKE-AND-FEATURE-STATUS-HARDENING
+[ ] 运行完整 dotnet test，不只 migration tests。
+[ ] 如果 Sts1Events/documentation failures 存在，修复或 quarantine。
+[ ] 运行 clean loader smoke：
+    BaseLib + STS2-RitsuLib + Spire Plus
+[ ] 记录 RitsuLib framework active。
+[ ] 记录 ModPatcher applied count。
+[ ] 更新 install docs。
 ```
 
-## Prompt
+### 验收
+
+```text
+[ ] full test suite 绿，或失败项有正式 quarantine issue。
+[ ] clean loader log 有 RitsuLib active。
+[ ] docs 不再只写 “migration tests pass”。
+```
+
+---
+
+## Week 2：Patch Migration Integrity
+
+### 工作
+
+```text
+[ ] 修 docs/migration.md 计数：Batch 4a 9，Batch 4b 16，总 25。
+[ ] 自动生成 migrated patch inventory。
+[ ] 自动生成 raw Harmony patch inventory。
+[ ] 自动生成 high-risk blocked patch inventory。
+[ ] 添加 PatchId 唯一测试。
+[ ] 添加 migrated/no-HarmonyPatch guard。
+[ ] 添加 raw/not-registered guard。
+```
+
+### 验收
+
+```text
+[ ] docs/migration.md 计数和源码一致。
+[ ] RegisterMigratedPatches 自动或测试覆盖。
+[ ] 没有 double patch 风险。
+```
+
+---
+
+## Week 3：Scope Creep / FeatureRegistry Hardening
+
+### 工作
+
+```text
+[ ] Sts1Events：确认是否 live。
+[ ] TODO EventModel 不得 live registered。
+[ ] Sts1Joust 金币不足逻辑做 source review。
+[ ] FeatureRegistry 增加：
+    DisplayName
+    Category
+    DisableEnvKeys
+    ForceEnvKeys
+    BootstrapStatus
+    LiveStatus
+```
+
+### 验收
+
+```text
+[ ] Sts1Events 安全状态明确。
+[ ] FeatureRegistry 区分 bootstrap enabled 和 live available。
+[ ] Vakuu log 显示 bootstrap enabled but live hidden。
+```
+
+---
+
+## Week 4：Architecture Foundation
+
+### 工作
+
+```text
+[ ] UrdaStateCodec V1：Encode/Decode/MalformedFallback/OldMigration。
+[ ] RewardPipeline skeleton：只做 diagnostics。
+[ ] CardPlayContext skeleton：Power fallback / recursion policy。
+[ ] DeathProtectionService spec：Lotha Reprieve。
+[ ] MultiplayerPolicy doc：所有 active feature 标 policy。
+```
+
+### 验收
+
+```text
+[ ] UrdaStateCodec tests pass。
+[ ] RewardPipeline handler order documented。
+[ ] CardPlayContext tests exist。
+[ ] DeathProtectionService spec exists。
+[ ] MultiplayerPolicy matrix exists。
+```
+
+---
+
+# 5. 下一个具体 Goal
+
+## GOAL：RitsuLib Batch 4a/4b Closure + Runtime Truth
+
+这是下一轮最合理目标。不要直接 Batch 4c。
+
+### 给 Codex 的 Prompt
 
 ```text
 你现在在 D:\Game\FOTN\dev-the-spire。
 
-目标：RitsuLib loader smoke + feature status hardening。
+目标：RitsuLib Batch 4a/4b closure + runtime truth。
 
 当前状态：
-- RitsuLib 0.3.2 已作为 NuGet dependency。
-- Manifest 已添加 STS2-RitsuLib min_version 0.3.2。
-- Runtime variant pack docs 记录 0.106.1 variant exists.
-- MainFile uses RitsuLibBootstrap.ApplyPatches and SpirePlusFeatureRegistry.
-- FeatureRegistry currently only wraps existing initializers.
-- Full RitsuLib migration is not complete.
+- STS2.RitsuLib 0.3.2 已加入 csproj。
+- STS2-RitsuLib 已加入 manifest。
+- RitsuLibBootstrap 使用 ModPatcher + raw Harmony fallback。
+- Batch 4a/4b 已迁移部分 patch。
+- docs/migration.md 当前计数可能不准确：Batch 4a 表写 10，但源码 RegisterMigratedPatches 中 Batch 4a 实际是 9；Batch 4b 是 16；总数应为 25，不是 26。
+- docs/patch-inventory.md 当前 raw Harmony declarations = 141。
+- Sts1Events 存在 TODO skeleton，需要确认未 live。
+- 报告说 pre-existing failures，不允许继续忽略。
 
 不要新增 gameplay。
-不要关闭默认开启功能。
-不要迁移高风险 patch。
+不要迁 high-risk patch。
 不要 claim release-ready。
+不要只跑 migration tests。
+
+必须使用 subagents：
+
+Subagent A — Runtime/RitsuLib Compatibility:
+- 检查 BaseLib + STS2-RitsuLib + Spire Plus 安装文档。
+- 准备/记录 loader smoke checklist。
+- 检查 RitsuLib runtime variant 和 target version 口径。
+
+Subagent B — Patch Migration Integrity:
+- 扫描 RegisterMigratedPatches。
+- 统计 migrated patch count。
+- 统计 raw HarmonyPatch count。
+- 检查 PatchId 唯一。
+- 检查 migrated class 不含 HarmonyPatch。
+- 检查 raw Harmony class 不在 RegisterMigratedPatches。
+
+Subagent C — Test Truth:
+- 运行 full dotnet test。
+- 列出所有失败。
+- 不允许只写 “migration tests pass”。
+- 失败要修复或 quarantine。
+
+Subagent D — Scope Creep/Sts1Events:
+- 检查 Sts1DeadAdventurer / Sts1Joust 是否注册进 live pool。
+- 如果未注册，文档标 inactive source skeleton。
+- 如果注册，必须禁用或完成。
+- 加 guard：TODO EventModel 不能 live registered。
+
+Subagent E — Monthly Architecture Planner:
+- 输出下一步 state codec / reward pipeline / cardplay context / death protection / multiplayer policy 计划。
 
 任务：
-1. 统一 v0.106 target docs：
-   - PROJECT_STATE.md
-   - docs/integrations/ritsulib.md
-   - docs/release-evidence-status.md
-   - docs/private-beta-verification-handoff.md
-   - website install docs if applicable
-
-2. 更新 install docs：
-   - BaseLib 3.1.4
-   - STS2-RitsuLib variant pack
-   - Spire Plus
-   - Windows/macOS install and hash instructions
-
-3. FeatureRegistry hardening:
-   - Add DisplayName, Category, DisableEnvKeys, ForceEnvKeys.
-   - Add BootstrapStatus vs LiveStatus distinction.
-   - Log both.
-   - Keep current default-on behavior unchanged.
-   - Vakuu should log bootstrap enabled but live hidden unless gate set.
-
-4. Tests:
-   - RitsuLib dependency exists in csproj.
-   - STS2-RitsuLib dependency exists in manifest.
-   - MainFile uses RitsuLibBootstrap and FeatureRegistry.
-   - FeatureRegistry reports bootstrap/live distinction.
-   - Docs no longer conflict on v0.106.0 vs v0.106.1.
-
-5. Validation:
-   - dotnet build
-   - dotnet test
-   - dotnet test --no-build
-   - dotnet format --verify-no-changes --no-restore
+1. 修 docs/migration.md 计数。
+2. 生成/更新 migrated patch inventory。
+3. 添加 double-patch guard tests。
+4. 处理 Sts1Events skeleton。
+5. 运行：
+   - dotnet build EZMicroBalance.sln
+   - dotnet test EZMicroBalance.sln
+   - dotnet test EZMicroBalance.sln --no-build
+   - dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
    - git diff --check
-   - If package/docs changed only, do not publish unless needed.
+6. 如果 code/package 变更，publish + release artifact tests。
 
-Final report:
-- current HEAD
-- files changed
-- target version unified to what
-- RitsuLib dependency status
-- FeatureRegistry changes
-- tests run
-- remaining blockers
+最终汇报：
+- 当前 HEAD
+- full test suite 是否全绿
+- Batch 4a/4b 实际 migrated count
+- raw Harmony remaining count
+- double-patch guard 结果
+- Sts1Events 状态
+- RitsuLib runtime smoke 状态
+- 下月计划
 - release-ready: no
+```
+
+---
+
+# 6. 最重要提醒：必须用 subagents
+
+这类任务已经超过单 agent 一口气处理的复杂度。必须拆成：
+
+### Subagent A：Runtime/RitsuLib Compatibility
+
+负责：
+
+```text
+RitsuLib variant pack
+install docs
+loader smoke
+v0.106.x 版本口径
+```
+
+### Subagent B：Patch Migration Integrity
+
+负责：
+
+```text
+RegisterMigratedPatches
+PatchId uniqueness
+double patch
+migrated/raw/high-risk inventory
+```
+
+### Subagent C：Test Truth
+
+负责：
+
+```text
+full dotnet test
+pre-existing failures
+quarantine policy
+no cherry-picked migration-only pass
+```
+
+### Subagent D：Scope Creep / Sts1Events
+
+负责：
+
+```text
+TODO skeleton
+live registration
+event pool safety
+gold/relic/combat branch completeness
+```
+
+### Subagent E：Architecture Planner
+
+负责：
+
+```text
+UrdaStateCodec
+RewardPipeline
+CardPlayContext
+DeathProtectionService
+MultiplayerPolicy
+monthly roadmap
 ```
 
 ---
 
 ## 最终判断
 
-这次不是失败，但也不是“完成全面迁移”。
+这轮工作有价值，但不能说“完成迁移”。
 
-它完成了：
-
-```text
-RitsuLib hard dependency
-runtime dependency
-bootstrap diagnostics
-FeatureRegistry wrapper
-migration docs
-```
-
-它没完成：
+它完成的是：
 
 ```text
-RitsuLib lifecycle
-RitsuLib DataStore
-RitsuLib ModPatcher
-state codec
-reward pipeline
-card play context
-death protection
-multiplayer policy
-live loader smoke
+RitsuLib Batch 4b patch migration source work
 ```
 
-所以下个月的主题应该是：
+但还必须补：
 
 ```text
-RitsuLib stabilization + feature status + state codec + domain pipelines
+migration count truth
+full test truth
+double-patch guards
+Sts1Events safety
+runtime loader evidence
+monthly architecture foundation
 ```
 
-而不是继续扩功能。
+所以，下一步不是继续 Batch 4c，而是先做：
+
+```text
+Batch 4a/4b closure + runtime truth
+```
+
+否则继续迁 patch 会把风险越滚越大。

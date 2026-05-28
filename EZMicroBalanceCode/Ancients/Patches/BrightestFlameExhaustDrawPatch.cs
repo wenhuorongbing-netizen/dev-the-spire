@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Cards;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
@@ -12,9 +13,13 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 /// Card text is updated via BRIGHTEST_FLAME localization overrides.
 /// Does not affect Pumpkin Candle relic vanilla behavior.
 /// </summary>
-[HarmonyPatch(typeof(CardModel), "get_CanonicalKeywords")]
-internal static class BrightestFlameCanonicalKeywordsPatch
+internal sealed class BrightestFlameCanonicalKeywordsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "brightest-flame-keywords";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add Exhaust keyword to BrightestFlame";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardModel), "get_CanonicalKeywords", HarmonyLib.MethodType.Getter)];
     [HarmonyPostfix]
     private static void AddVisibleExhaustKeyword(CardModel __instance, ref IEnumerable<CardKeyword> __result)
     {
@@ -30,9 +35,13 @@ internal static class BrightestFlameCanonicalKeywordsPatch
     }
 }
 
-[HarmonyPatch(typeof(BrightestFlame), "get_CanonicalVars")]
-internal static class BrightestFlameCanonicalVarsPatch
+internal sealed class BrightestFlameCanonicalVarsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "brightest-flame-vars";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Increase BrightestFlame draw by 1";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(BrightestFlame), "get_CanonicalVars", HarmonyLib.MethodType.Getter)];
     private const int ExtraDraw = 1;
 
     [HarmonyPostfix]
@@ -46,9 +55,13 @@ internal static class BrightestFlameCanonicalVarsPatch
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.OnPlayWrapper))]
-internal static class BrightestFlameExhaustOnPlayBackstopPatch
+internal sealed class BrightestFlameExhaustOnPlayBackstopPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "brightest-flame-exhaust-backstop";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Ensure BrightestFlame exhausts on play";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardModel), nameof(CardModel.OnPlayWrapper))];
     private static void Prefix(CardModel __instance)
     {
         if (__instance is BrightestFlame brightestFlame)

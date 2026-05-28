@@ -73,7 +73,7 @@ public sealed class MorviV22GuardTests
             "candidates.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()",
             "AncientInitialOptionReroll.CanOffer",
             "MorviAssetPaths.BackgroundScene");
-        Assert.Contains("MorviInitializer.Initialize", featureRegistry, StringComparison.Ordinal);
+        Assert.Contains("MorviFeatureModule", featureRegistry, StringComparison.Ordinal);
         AssertSourceContains(
             initializer,
             "ModHelper.SubscribeForRunStateHooks",

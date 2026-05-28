@@ -12,6 +12,11 @@ EZMicroBalanceCode/
   Config/                      (SpirePlusModConfig)
   Core/
     Features/                  (feature gates, registry, startup sequence)
+      IFeatureModule.cs        (feature module interface)
+      FeatureRegistry.cs       (registry that sorts and executes modules)
+      FeatureGateResult.cs     (gate result record)
+      FeatureOrders.cs         (named init-order constants)
+      SpirePlusFeatureRegistry.cs (registers named feature modules)
   Diagnostics/                 (release evidence log, live test console cmd)
   Map/                         (SpirePlusMapPointHoverComposer)
   Modding/                     (ModInfoLocalizationPatches)
@@ -19,12 +24,12 @@ EZMicroBalanceCode/
     Common/                    (shared Ancient state, card helpers, reward service)
     Patches/                   (Ancient Harmony patches)
     Expansion/
-      Urda/                    (Urda Ancient feature)
-      Morvi/                   (Morvi Ancient feature)
-      Lotha/                   (Lotha Ancient feature)
-      Vakuu/                   (Vakuu fight slice)
+      Urda/                    (Urda Ancient feature + UrdaFeatureModule)
+      Morvi/                   (Morvi Ancient feature + MorviFeatureModule)
+      Lotha/                   (Lotha Ancient feature + LothaFeatureModule)
+      Vakuu/                   (Vakuu fight slice + VakuuFightFeatureModule)
   Ascension/
-    Core/                      (Ascension core logic, feature gate, diagnostics)
+    Core/                      (Ascension core logic, feature gate, diagnostics + AscensionFeatureModule)
     Map/                       (Ascension map service, markers, deep branches)
     Combat/                    (Ascension combat modifiers, trackers, RootBud hooks)
     Rewards/                   (Ascension rewards, boss seals, forge tokens, RootDeck)
@@ -78,6 +83,24 @@ EZMicroBalanceCode/
 ```
 
 ## Changes Summary
+
+### Completed (2026-05-28)
+
+| Action | Path | Risk | Notes |
+| --- | --- | --- | --- |
+| NEW file | `Core/Features/FeatureOrders.cs` | Low | Named constants replacing magic numbers 100/200/300/400/500 |
+| NEW file | `Ancients/Expansion/Lotha/LothaFeatureModule.cs` | Low | Named IFeatureModule replacing DelegateFeatureModule lambda |
+| NEW file | `Ancients/Expansion/Morvi/MorviFeatureModule.cs` | Low | Named IFeatureModule replacing DelegateFeatureModule lambda |
+| NEW file | `Ancients/Expansion/Urda/UrdaFeatureModule.cs` | Low | Named IFeatureModule replacing DelegateFeatureModule lambda |
+| NEW file | `Ancients/Expansion/Vakuu/VakuuFightFeatureModule.cs` | Low | Named IFeatureModule replacing DelegateFeatureModule lambda |
+| NEW file | `Ascension/Core/AscensionFeatureModule.cs` | Low | Named IFeatureModule replacing DelegateFeatureModule lambda |
+| REFACTORED | `Core/Features/SpirePlusFeatureRegistry.cs` | Low | Now registers named modules instead of inline lambdas |
+| UPDATED | `Ascension/Core/AscensionInitializer.cs` | Low | Added comment clarifying [ModInitializer] is compatibility fallback |
+| UPDATED | `docs/architecture/patch-boundaries.md` | Low | Fixed patch count drift; now references patch-inventory.md |
+| UPDATED | `docs/refactor-map.md` | Low | Updated structure and patch count references |
+| UPDATED | `.github/pull_request_template.md` | Low | Added high-risk patch seam and source-only/live-proof checklist items |
+
+### Planned (Future)
 
 | Action | Path | Risk | Notes |
 | --- | --- | --- | --- |

@@ -121,7 +121,7 @@ public sealed class VakuuTemptationGuardTests
         var monster = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTrialMonster.cs");
         var battlewornDummy = ReadRepoText("source code", "src", "Core", "Models", "Encounters", "BattlewornDummyEventEncounter.cs");
 
-        Assert.Contains("VakuuFightInitializer.Initialize", featureRegistry, StringComparison.Ordinal);
+        Assert.Contains("VakuuFightFeatureModule", featureRegistry, StringComparison.Ordinal);
         AssertSourceContains(
             runHook,
             "ModHelper.SubscribeForCombatStateHooks",

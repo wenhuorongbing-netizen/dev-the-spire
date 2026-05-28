@@ -12,7 +12,7 @@ refactor work described in `docs/restructure.md`.
 | PR 3 | Move-only source folder refactor, no behavior changes | Low | Done |
 | PR 4 | Test/docs/script path updates after move-only refactor | Low | Done (no-op: no files moved) |
 | PR 5 | RitsuLib hard dependency (only after 0.106.1/0.106.1 decision) | Medium | Done |
-| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 1 done, Batch 4a done |
+| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 1 done, Batch 4a+4b done |
 | PR 7+ | High-risk patch migrations, one feature surface at a time | High | Blocked |
 
 ## PR 1: Baseline + Docs-Only Codex Harness Integration
@@ -107,7 +107,7 @@ Migrated 10 low-risk patch classes to RitsuLib's `IPatchMethod` interface.
 `RitsuLibBootstrap` now uses `ModPatcher` for migrated patches and raw
 `Harmony.PatchAll()` for the remaining `[HarmonyPatch]`-attributed classes.
 
-**Migrated patches (10 classes in 4 files):**
+**Migrated patches:**
 
 | File | Classes | PatchIds |
 | --- | --- | --- |
@@ -120,21 +120,26 @@ Migrated 10 low-risk patch classes to RitsuLib's `IPatchMethod` interface.
 to `internal sealed class : IPatchMethod` with `GetTargets()` returning
 `ModPatchTarget[]`. `[HarmonyPrefix]`/`[HarmonyPostfix]` attributes kept.
 
-**Verification:** Build 0 errors, migration tests pass, format clean.
+**Verification:** Build 0 errors, 4 migration-related tests pass, format clean.
 
-### Batch 4b: Remaining Patch Migration (In Progress)
+### Batch 4b: Medium-Risk Patch Migration (Done)
 
-Remaining 141 `[HarmonyPatch]` declarations across 54 files need migration.
-Each file must be migrated individually using the Edit tool to satisfy linter
-constraints. Bulk script migration triggers linter reverts.
+Migrated 16 medium-risk patch classes to `IPatchMethod`.
 
-**Remaining categories:**
-- Ancients/Patches/ (19 files, ~66 classes)
-- Ancients/Expansion/ (12 files, ~20 classes)
-- Ascension/ (13 files, ~30 classes)
-- Preview/ (5 files, ~5 classes)
-- Map/, Modding/ (2 files, ~2 classes)
-- Partial classes (PrismaticGemPatches, PrismaticGemRewardScreenHintPatch) — cannot implement IPatchMethod due to static partial constraint
+**Migrated patches:**
+
+| File | Classes | PatchIds |
+| --- | --- | --- |
+| `CrossbowPatches.cs` | 2 | `crossbow-offer`, `crossbow-vanilla-after-turn` |
+| `BrightestFlameExhaustDrawPatch.cs` | 3 | `brightest-flame-keywords`, `brightest-flame-vars`, `brightest-flame-exhaust-backstop` |
+| `DebtAndCardPatches.cs` | 7 | `debt-after-created`, `debt-from-save`, `debt-keywords`, `debt-vars`, `debt-turn-end-effect`, `debt-turn-end-in-hand`, `card-model-on-play`, `debt-exhaust` |
+| `SealOfGoldPatches.cs` | 2 | `seal-of-gold-max-energy`, `seal-of-gold-turn` |
+| `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` |
+
+**Total migrated:** 26 classes (10 from Batch 4a + 16 from Batch 4b).
+**Remaining:** 141 `[HarmonyPatch]` declarations still on raw Harmony.
+
+**Verification:** Build 0 errors, 4 migration tests pass, format clean.
 
 ### Batch 5: High-Risk Patches (Blocked on Evidence)
 

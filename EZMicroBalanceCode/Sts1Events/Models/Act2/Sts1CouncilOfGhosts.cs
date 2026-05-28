@@ -30,7 +30,12 @@ public sealed class Sts1CouncilOfGhosts : EventModel
 
     private async Task Accept()
     {
-        // TODO: Add Apparition cards (×5 normal, ×3 A15)
+        var count = HasA15 ? ApparitionsA15 : ApparitionsNormal;
+        var apparitions = new List<CardModel>();
+        for (int i = 0; i < count; i++)
+            apparitions.Add(ModelDb.Card<Apparition>());
+        await CardPileCmd.Add(apparitions, MegaCrit.Sts2.Core.Entities.Cards.PileType.Deck);
+
         var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * MaxHpLossPct);
         if (maxHpLoss > 0)
         {
