@@ -270,6 +270,56 @@ public sealed class ReleaseArtifactParityGuardTests
         Assert.False(IsControlledSmokePass(SmokeLogParser.Parse(historicalLog)));
     }
 
+    [Fact]
+    public void SmokeLogParserCapturesModManifestVersion()
+    {
+        var syntheticLog = string.Join(
+            Environment.NewLine,
+            "[INFO] [BaseLib] Finished init for BaseLib.",
+            "[WARN] Mod EZMicroBalance declares version v0.1.0-private-beta.82 which is not a valid Semantic Version",
+            "[INFO] Loaded some lines");
+
+        var summary = SmokeLogParser.Parse(syntheticLog);
+
+        Assert.Equal("v0.1.0-private-beta.82", summary.EzMicroBalanceVersion);
+    }
+
+    [Fact]
+    public void SmokeLogParserCapturesEZMicroBalanceStackTraceAsError()
+    {
+        var syntheticLog = string.Join(
+            Environment.NewLine,
+            "[ERROR] System.NullReferenceException: Object reference not set to an instance of an object.",
+            "   at EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda.UrdaRunHook.AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel source)",
+            "   at EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda.UrdaBlessingService.TryPlantSeedbedCardFromHand(CardModel card, String source)");
+
+        var summary = SmokeLogParser.Parse(syntheticLog);
+
+        Assert.Contains(
+            summary.EzMicroBalanceErrorLines,
+            line => line.Contains(
+                "at EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda.UrdaRunHook.AfterCardChangedPiles",
+                StringComparison.Ordinal));
+    }
+
+    [ReleaseArtifactFact]
+    public void CurrentRuntimeLogVersionMustMatchManifest()
+    {
+        var logPath = CurrentGodotLogPath();
+        if (!File.Exists(logPath))
+        {
+            return;
+        }
+
+        var summary = SmokeLogParser.Parse(ReadSharedText(logPath));
+        if (summary.EzMicroBalanceVersion is null)
+        {
+            return;
+        }
+
+        Assert.Equal(ManifestVersion(), summary.EzMicroBalanceVersion);
+    }
+
     [ReleaseArtifactFact]
     public void RecentRuntimeLogMustNotContainV105ApiDriftOrBaseLibDependencyFailures()
     {
@@ -445,6 +495,7 @@ public sealed class ReleaseArtifactParityGuardTests
         bool ReachedMainMenu,
         int? SavedSpireFieldCount,
         string[] EzMicroBalanceErrorLines,
+        string? EzMicroBalanceVersion,
         string[] UnrelatedManifestErrorLines);
 
     private static class SmokeLogParser
@@ -453,6 +504,9 @@ public sealed class ReleaseArtifactParityGuardTests
         {
             var lines = log.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
             var savedFieldCount = Regex.Match(log, @"Found (?<count>\d+) SavedSpireFields\.");
+            var versionMatch = Regex.Match(
+                log,
+                @"Mod EZMicroBalance declares version (?<version>[^\s]+)");
 
             return new SmokeLogSummary(
                 LoadedBaseLibDll: lines.Any(line => line.Contains("Loading assembly DLL", StringComparison.Ordinal) &&
@@ -471,6 +525,7 @@ public sealed class ReleaseArtifactParityGuardTests
                                     line.Contains("Spire Plus", StringComparison.Ordinal)) &&
                                    IsEzMicroBalanceErrorLine(line))
                     .ToArray(),
+                EzMicroBalanceVersion: versionMatch.Success ? versionMatch.Groups["version"].Value : null,
                 UnrelatedManifestErrorLines: lines
                     .Where(line => line.Contains("Mod manifest", StringComparison.Ordinal) &&
                                    line.Contains("[ERROR]", StringComparison.Ordinal) &&
@@ -481,6 +536,11 @@ public sealed class ReleaseArtifactParityGuardTests
 
         private static bool IsEzMicroBalanceErrorLine(string line)
         {
+            if (line.TrimStart().StartsWith("at EZMicroBalance.", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
             if (Regex.IsMatch(line, @"\b(exception|missingmethodexception)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
             {
                 return true;

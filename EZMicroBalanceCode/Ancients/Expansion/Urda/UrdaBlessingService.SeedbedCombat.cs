@@ -41,6 +41,11 @@ internal static partial class UrdaBlessingService
             return false;
         }
 
+        if (IsSeedbedDrawInProgress(player))
+        {
+            return await QueueSeedbedPlantFromHand(card, source);
+        }
+
         return await PlantSeedbedCard(card, state, source);
     }
 

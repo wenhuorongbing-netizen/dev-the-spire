@@ -1,63 +1,74 @@
 # BUGFIX_NOTES.md
 
 ## Bug Summary
-Combat can crash with:
-
-`System.NullReferenceException: Object reference not set to an instance of an object.`
-at `MegaCrit.Sts2.Core.Commands.CardPileCmd+<Draw>d__16.MoveNext_Patch1`
-
-during Urda Seedbed sequencing when a card is planted from hand and becomes part of draw handling.
+System.NullReferenceException in CardPileCmd.Draw was caused by Urda Seedbed planting while draw processing was still active.
 
 ## Reproduction Status
-Reproduced from provided log:
-`C:/Users/Jack/AppData/Roaming/SlayTheSpire2/logs/godot2026-05-27T02.37.23.log`
-lines around 1023–1030.
+Reproduction evidence is in the provided historical log:
+C:/Users/Jack/AppData/Roaming/SlayTheSpire2/logs/godot2026-05-27T02.37.23.log
 
-The crash occurs after:
-`[EZMicroBalance] [Spire Plus] Urda Seedbed skipped AfterCardDrawn hooks for planted card ...`
+I did not reproduce the crash in a fresh run with current source in this workspace. The available runtime evidence in godot.log reports EZMicroBalance version v0.1.0-private-beta.83 while source manifest is v0.1.0-private-beta.84, so exact same runtime conditions are currently unavailable.
+
+Closest local reproduction evidence remains the historical stack:
+CardPileCmd.Draw -> Hook.AfterCardChangedPiles -> UrdaRunHook.AfterCardChangedPiles ->
+UrdaBlessingService.TryPlantSeedbedCardFromHand -> UrdaBlessingService.PlantSeedbedCard
+followed by System.NullReferenceException.
 
 ## Expected Behavior
-When a patch skips `Hook.AfterCardDrawn` for a planted card, it must still return a valid `Task` to the Harmony hook pipeline so the call site in `CardPileCmd.Draw` can safely `await` it.
+When drawn-card flow triggers hand-entry seedbed logic, no immediate combat-pile mutation should occur inside the draw-hook chain.
+Hand-entry requests during draw should be deferred until draw completion.
 
 ## Actual Behavior
-`CardPileCmd.Draw` awaited a `null` task during the draw await chain, which propagated as `NullReferenceException` in the patched draw async state machine (`MoveNext_Patch1`).
+UrdaRunHook.AfterCardChangedPiles can route a hand-entry card into
+UrdaBlessingService.TryPlantSeedbedCardFromHand.
+That helper could still take its immediate branch and call PlantSeedbedCard even when CardPileCmd.Draw draw-depth was active,
+creating re-entrant pile mutation and null-state crashes.
 
 ## Investigation Steps
-- Inspected runtime log and isolated the exception to `CardPileCmd.Draw`.
-- Followed `CardPileCmd.Draw` implementation in local source:
-  - `await Hook.AfterCardDrawn(combatState, choiceContext, card, fromHandDraw);`
-- Traced Urda-specific overrides:
-  - `UrdaSeedbedAfterCardDrawnPatch` (`HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))`)
-  - `UrdaSeedbedCardPileDrawPatch` depth-tracking wrapper for draw calls
-- Cross-checked patch source and call flow in:
-  - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedAfterCardDrawnPatch.cs`
-  - `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedCardPileDrawPatch.cs`
-- Verified this is a historical failure shape in the log package (`v0.1.0-private-beta.82`) that is not a valid source marker for current working tree version.
+1. Parsed the provided log and mapped stack progression from draw execution to seedbed planting.
+2. Confirmed CardPileCmd.Draw draw completion and hook sequencing.
+3. Compared source callsites for seedbed hand-entry:
+   - queueing path in UrdaRunHook (QueueSeedbedPlantFromHand)
+   - direct helper path in TryPlantSeedbedCardFromHand.
+4. Identified the direct helper path was missing a draw-in-progress guard.
+5. Validated existing invariants already present:
+   - UrdaSeedbedCardPileDrawPatch draw-depth tracking with finally unwind,
+   - UrdaSeedbedAfterCardDrawnPatch skip for planted cards,
+   - queue processor wait loop in UrdaBlessingService.SeedbedState.
+6. Added parser-level smoke-log validation to classify stack-only EZMicroBalance traces as errors.
 
 ## Root Cause
-`UrdaSeedbedAfterCardDrawnPatch.Prefix` skipped the hook by returning `false` without assigning `ref Task __result` to a completed task in an older code state, so `CardPileCmd.Draw` resumed with `null` and crashed when awaiting it.
+The state-transition invariant was inconsistent across entrypoints:
+not all seedbed hand-entry entrypoints enforced deferred execution while draw depth was active.
+
+TryPlantSeedbedCardFromHand could execute PlantSeedbedCard synchronously during draw, causing hook-driven mutation re-entry.
 
 ## Affected Files
-- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedAfterCardDrawnPatch.cs`
-- `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedCardPileDrawPatch.cs`
+- EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaBlessingService.SeedbedCombat.cs
+- tests/EZMicroBalance.Tests/RuntimeCrashRegressionGuardTests.cs
+- tests/EZMicroBalance.Tests/ReleaseArtifactParityGuardTests.cs
 
 ## Fix Strategy
-1. Keep the draw-depth tracking patch (`UrdaSeedbedCardPileDrawPatch`) wrapping the draw task and ending depth in a `finally`.
-2. Make `UrdaSeedbedAfterCardDrawnPatch` assign `Task.CompletedTask` when short-circuiting hook execution:
-   - include `ref Task __result`
-   - set `__result = Task.CompletedTask`
-   - return `false`
+1. Preserve normal non-draw behavior.
+2. If draw is in progress, force TryPlantSeedbedCardFromHand to defer via QueueSeedbedPlantFromHand.
+3. Keep the existing queue/depth model intact so this is a boundary-fix, not a behavioral rewrite.
 
 ## Regression Test Plan
-- Source-guard test to assert:
-  - the AfterCardDrawn prefix remains task-return-aware
-  - `__result` is explicitly completed when returning `false`
-- General build/test command set:
-  - `dotnet build EZMicroBalance.sln`
-  - `dotnet test EZMicroBalance.sln --no-build`
+- Unit/source-level checks:
+  - assert draw-safe branch and queue routing are present in TryPlantSeedbedCardFromHand.
+  - assert seeded-husk AfterCardDrawn short-circuit and draw patch finally-unwind are present.
+- Regression/parity checks:
+  - classify stack-only EZMicroBalance lines as runtime errors.
+  - verify manifest/runtime parity when release artifact tests are enabled.
+- Manual verification (not possible with this exact historical artifact):
+  - clean reinstall current v0.1.0-private-beta.84 package,
+  - run a Seedbed-in-draw scenario and confirm no draw-time NullReferenceException.
 
 ## Verification Commands
-- Executed during this pass:
-  - `dotnet build` ✅
-  - `dotnet test` ✅ (`dotnet test EZMicroBalance.sln --no-build`)
-  - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` ✅
+- dotnet build -> pass
+- dotnet publish -> pass
+- dotnet test tests/EZMicroBalance.Tests/EZMicroBalance.Tests.csproj --filter "FullyQualifiedName~RuntimeCrashRegressionGuardTests" -> pass (3 passed)
+- dotnet test -> pass (303 passed, 21 skipped)
+- dotnet test tests/EZMicroBalance.Tests/EZMicroBalance.Tests.csproj --filter "FullyQualifiedName~ReleaseArtifactParityGuardTests" -> pass/skipped as expected (5 passed, 7 skipped without release flags)
+- powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit-godot-log.ps1 -Path "C:/Users/Jack/AppData/Roaming/SlayTheSpire2/logs/godot2026-05-27T02.37.23.log" -> parses historical crash and reports Clean=false
+- SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test tests/EZMicroBalance.Tests/EZMicroBalance.Tests.csproj --filter "FullyQualifiedName~ReleaseArtifactParityGuardTests" -> fails due environment drift (runtime v0.1.0-private-beta.83 vs manifest v0.1.0-private-beta.84) and stale packaged hash docs, not crash-path logic.

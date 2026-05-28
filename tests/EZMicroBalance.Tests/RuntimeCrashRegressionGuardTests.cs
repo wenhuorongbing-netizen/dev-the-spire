@@ -8,6 +8,7 @@ public sealed class RuntimeCrashRegressionGuardTests
     public void UrdaSeedbedPlantingIsQueuedOutOfDrawPileMutationPath()
     {
         var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
+        var seedbedCombat = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedCombat.cs");
         var seedbedState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedState.cs");
         var cardPileCmd = ReadRepoText("source code", "src", "Core", "Commands", "CardPileCmd.cs");
         var seedbedAfterCardDrawnPatch = ReadRepoText(
@@ -31,6 +32,10 @@ public sealed class RuntimeCrashRegressionGuardTests
             "state.IsProcessing = false;",
             "TaskHelper.RunSafely(ProcessSeedbedPlantingQueue(player, pending))");
         AssertSourceContains(
+            seedbedCombat,
+            "if (IsSeedbedDrawInProgress(player))",
+            "return await QueueSeedbedPlantFromHand(card, source)");
+        AssertSourceContains(
             cardPileCmd,
             "Hook.AfterCardChangedPiles(cardAdded.Owner.RunState, cardAdded.CombatState, cardAdded, item3.oldPile?.Type ?? PileType.None, clonedBy);");
         var seedbedDrawPatch = ReadRepoText(
@@ -43,12 +48,16 @@ public sealed class RuntimeCrashRegressionGuardTests
             seedbedDrawPatch,
             "HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))",
             "BeginSeedbedDraw(player)",
+            "EndSeedbedDraw(player)",
+            "try",
+            "finally",
             "EndSeedbedDraw(player)");
         AssertSourceContains(
             seedbedAfterCardDrawnPatch,
             "HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))",
             "__result = Task.CompletedTask",
             "return false;");
+        Assert.DoesNotContain("private static bool Prefix(CardModel card)", seedbedAfterCardDrawnPatch, StringComparison.Ordinal);
         Assert.DoesNotContain("await UrdaBlessingService.TryPlantSeedbedCardFromHand(card, \"card entered hand\")", runHook, StringComparison.Ordinal);
     }
 
