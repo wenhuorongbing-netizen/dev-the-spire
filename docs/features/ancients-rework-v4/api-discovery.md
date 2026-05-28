@@ -27,7 +27,7 @@ Evidence source:
 
 Findings:
 
-- 2026-05-22 v0.106.1 source refresh: `BrightestFlame` still exposes canonical `CardsVar` draw text and `CardKeyword.Exhaust` can be surfaced through canonical keyword patching. EZMB adjusts Quality Flame by adding the Exhaust keyword and increasing the existing dynamic draw var by 1, so vanilla upgrade scaling remains dynamic instead of adding a second post-play draw command.
+- 2026-05-22 v0.106.1 source refresh: `BrightestFlame` still exposes canonical `CardsVar` draw text and `CardKeyword.Exhaust` can be surfaced through canonical keyword patching. EZMB adjusts Brilliant Flame by adding the Exhaust keyword and increasing the existing dynamic draw var by 1, so vanilla upgrade scaling remains dynamic instead of adding a second post-play draw command.
 - `MegaCrit.Sts2.Core.Models.Events.Pael` is the Pael Ancient event model.
 - Pael's first option pool includes `MegaCrit.Sts2.Core.Models.Relics.PaelsHorn`.
 - `MegaCrit.Sts2.Core.Events.EventOption` stores the option `TextKey`, optional `Relic`, and private `OnChosen` callback. `Chosen()` invokes the callback after any `BeforeChosen` hook.
@@ -88,7 +88,7 @@ Implemented with narrow Harmony patches. The original batch was developed in the
 - Card patches:
   - `Debt` is configured as 1-cost, playable, `Exhaust`; `CardCmd.Exhaust(...)` loses up to 5 gold for `Debt`.
   - `Enthralled` gains 10 block on play while preserving the existing forced-priority behavior.
-  - `BrightestFlame` is the current game class behind Quality Flame. Vanilla source has `CardsVar(2)` and upgrades both `Energy` and `Cards` by 1. EZMB patches `BrightestFlame.CanonicalVars` so draw is vanilla +1 at the dynamic-var source, giving 3 cards unupgraded and 4 upgraded, and patches `CanonicalKeywords` so Exhaust is visible before play. The active localization override uses `BRIGHTEST_FLAME.title` / `BRIGHTEST_FLAME.description` with `{Cards:diff()}` instead of fixed draw text.
+  - `BrightestFlame` is the current game class behind Brilliant Flame. Vanilla source has `CardsVar(2)` and upgrades both `Energy` and `Cards` by 1. EZMB patches `BrightestFlame.CanonicalVars` so draw is vanilla +1 at the dynamic-var source, giving 3 cards unupgraded and 4 upgraded, and patches `CanonicalKeywords` so Exhaust is visible before play. The active localization override uses `BRIGHTEST_FLAME.title` / `BRIGHTEST_FLAME.description` with `{Cards:diff()}` instead of fixed draw text.
 
 Historical limits after batch 2, superseded by later finish evidence below:
 

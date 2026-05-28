@@ -599,12 +599,12 @@ public sealed class AncientHighRiskSourceGuardTests
         Assert.DoesNotContain("DrawExtraAfterVanilla", source, StringComparison.Ordinal);
         Assert.DoesNotContain("CardPileCmd.Draw(choiceContext, 1", source, StringComparison.Ordinal);
 
-        Assert.Equal("Quality Flame", englishCards["BRIGHTEST_FLAME.title"]);
+        Assert.Equal("Brilliant Flame", englishCards["BRIGHTEST_FLAME.title"]);
         Assert.Contains("{Cards:diff()}", englishCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
         Assert.Contains("{Cards:diff()}", simplifiedChineseCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("Draw 3 cards", englishCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
         Assert.DoesNotContain("鎶?寮犵墝", simplifiedChineseCards["BRIGHTEST_FLAME.description"], StringComparison.Ordinal);
-        Assert.Contains("Quality Flame / Brightest Flame", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Brilliant Flame / Brightest Flame", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("BrightestFlame", apiDiscovery, StringComparison.Ordinal);
     }
 

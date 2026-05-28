@@ -145,20 +145,22 @@ Lose {MaxHp:diff()} Max HP.
 
 ## 4. 修复清单
 
-### Phase 1: 术语修正（立即执行）
-- [ ] settings_ui.json: 变换 → 变化
-- [ ] content-data.js: 所有"变换" → "变化"
-- [ ] app.js: 所有"变换" → "变化"
-- [ ] eng/cards.json: Quality Flame → Brilliant Flame
-- [ ] eng/cards.json: Avoid Debt → Shelter Contract
+### Phase 1: 术语修正（已完成）
+- [x] settings_ui.json: 变换 → 变化
+- [x] content-data.js: 所有"变换" → "变化"
+- [x] app.js: 所有"变换" → "变化"
+- [x] eng/cards.json: Quality Flame → Brilliant Flame
+- [x] eng/cards.json: Avoid Debt → Shelter Contract
+- [x] 测试文件同步更新
+- [x] 文档同步更新
 
-### Phase 2: 精简描述（后续执行）
-- [ ] 精简 website heroCopy
-- [ ] 精简 mechanicGlossary 各条目 bullets
-- [ ] 精简 seedbed keyword description
-- [ ] 统一卡牌描述句式
+### Phase 2: 精简描述（已完成）
+- [x] 精简 website heroCopy
+- [x] 精简 mechanicGlossary 各条目 bullets（中/英）
+- [x] 精简 summary 条目
+- [ ] 统一卡牌描述句式（待后续）
 
-### Phase 3: 风格统一（后续执行）
+### Phase 3: 风格统一（待后续）
 - [ ] 统一中文描述主语
 - [ ] 统一句末标点
 - [ ] 统一英文描述句式

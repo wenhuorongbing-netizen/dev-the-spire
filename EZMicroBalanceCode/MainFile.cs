@@ -3,6 +3,7 @@ using BaseLib.Config;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Core.Features;
 using EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Modding;
 
 namespace EZMicroBalance.EZMicroBalanceCode;
@@ -17,9 +18,14 @@ public partial class MainFile : Node
 
     public static void Initialize()
     {
+        SpirePlusDebug.Log("Init", "Spire Plus initialization starting.");
+
         RitsuLibBootstrap.ApplyPatches(ModId);
 
         ModConfigRegistry.Register(ModId, new SpirePlusModConfig());
+        SpirePlusDebug.Log("Init", "ModConfig registered.");
+
         SpirePlusFeatureRegistry.CreateDefault().InitializeAll();
+        SpirePlusDebug.Log("Init", "Feature registry initialized.");
     }
 }

@@ -1,4 +1,5 @@
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Runs;
 
@@ -12,10 +13,13 @@ internal static class UrdaInitializer
     {
         if (initialized)
         {
+            SpirePlusDebug.LogAncient("Urda", "Already initialized, skipping.");
             return;
         }
 
         initialized = true;
+        SpirePlusDebug.LogAncient("Urda", "Registering run and combat hooks.");
+
         ModHelper.SubscribeForRunStateHooks(
             $"{MainFile.ModId}.Urda.RunHooks",
             CreateRunHookSubscribers);
@@ -26,6 +30,7 @@ internal static class UrdaInitializer
 
         MainFile.Logger.Info(
             $"[Spire Plus] Urda hooks registered. Urda is default-on for private-beta testing; set {UrdaFeatureGate.DisableAncientEnvironmentVariable}=1 to hide it for comparison. Legacy alias: {UrdaFeatureGate.LegacyDisableAncientEnvironmentVariable}=1.");
+        SpirePlusDebug.LogAncient("Urda", "Hooks registered successfully.");
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState) =>

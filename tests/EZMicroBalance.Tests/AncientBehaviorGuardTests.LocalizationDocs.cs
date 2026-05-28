@@ -94,7 +94,7 @@ public sealed partial class AncientBehaviorGuardTests
         "Crossbow",
         "Toasty Mittens",
         "Whispering Earring",
-        "Quality Flame / Brightest Flame",
+        "Brilliant Flame / Brightest Flame",
         "Meat Cleaver",
         "Blood-Soaked Rose / Enthralled"
     ];

@@ -159,7 +159,7 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] On turns 1, 3, and 5, after the normal hand draw, Vakuu shows contract choices; the chosen Contract is added to hand if there is hand space.
 - [ ] Contract cards show 0-cost Skill token behavior with Ethereal and Exhaust hover tips, plus Stolen Vault and Blood Debt hover tips, and no duplicated keyword body text.
 - [ ] Playing Knife Contract and Gold Contract costs HP, breaks one Stolen Vault lock if any remain, adds one Blood Debt, and resolves its listed effect without softlock.
-- [ ] Playing Avoid Debt grants Block and removes Blood Debt; playing Fraud Contract breaks a lock, adds two Blood Debt, and applies one-turn Backlash.
+- [ ] Playing Shelter Contract grants Block and removes Blood Debt; playing Fraud Contract breaks a lock, adds two Blood Debt, and applies one-turn Backlash.
 - [ ] Breaking at least one lock adds Cash Out when there is hand space; playing it ends the fight through the normal Vakuu victory path.
 - [ ] Dealing at least 40 unblocked damage to Vakuu in one player turn breaks one Stolen Vault lock once for that turn, including lethal hits.
 - [ ] Blood Debt increases each of Vakuu's powered attack hits by 2 damage per stack and the intent updates accordingly.

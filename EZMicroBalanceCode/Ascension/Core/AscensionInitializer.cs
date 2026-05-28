@@ -1,3 +1,4 @@
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Models;
@@ -14,10 +15,12 @@ public static class AscensionInitializer
     {
         if (initialized)
         {
+            SpirePlusDebug.LogAscension("Already initialized, skipping.");
             return;
         }
 
         initialized = true;
+        SpirePlusDebug.LogAscension("Registering run and combat hooks.");
 
         ModHelper.SubscribeForRunStateHooks(
             $"{MainFile.ModId}.Ascension.RunHooks",
@@ -29,6 +32,7 @@ public static class AscensionInitializer
 
         MainFile.Logger.Info(
             $"[Spire Plus] Ascension hooks registered. A11-A20 selection is default-on for single-player private-beta testing; multiplayer A11-A20 gameplay is fail-closed unless {MultiplayerFeaturePolicy.AllowUnverifiedCoopGameplayEnvironmentVariable}=1 is set for focused two-client debugging. Set {AscensionFeatureGate.DisablePublicSelectionEnvironmentVariable}=1 to restore vanilla A1-A10 selection, set {AscensionFeatureGate.DiagnosticsEnvironmentVariable}=1 for internal diagnostics, set {AscensionFeatureGate.MultiplayerDiagnosticsEnvironmentVariable}=1 for multiplayer run-start/Neow/save-quit diagnostics.");
+        SpirePlusDebug.LogAscension("Hooks registered successfully.");
     }
 
     private static IEnumerable<AbstractModel> CreateRunHookSubscribers(RunState runState)

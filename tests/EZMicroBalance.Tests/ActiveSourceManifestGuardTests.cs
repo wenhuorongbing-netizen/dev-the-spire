@@ -417,6 +417,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Diagnostics/ReleaseEvidenceLog.cs",
         "EZMicroBalanceCode/Diagnostics/SpirePlusAncientLiveTestConsoleCmd.RunSetup.cs",
         "EZMicroBalanceCode/Diagnostics/SpirePlusAncientLiveTestConsoleCmd.cs",
+        "EZMicroBalanceCode/Diagnostics/SpirePlusDebug.cs",
         "EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs",
         "EZMicroBalanceCode/Modding/ModInfoLocalizationPatches.cs",
         "EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs",

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using STS2RitsuLib;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
@@ -15,19 +16,23 @@ internal static class RitsuLibBootstrap
         var logger = RitsuLibFramework.CreateLogger(modId);
 
         logger.Info($"RitsuLib {GetRitsuLibVersion()} bootstrap starting.");
+        SpirePlusDebug.Log("RitsuLib", $"Bootstrap starting. RitsuLib {GetRitsuLibVersion()}.");
 
         var harmony = new Harmony(modId);
         harmony.PatchAll();
 
         logger.Info($"Harmony patches applied via {modId}.");
+        SpirePlusDebug.Log("RitsuLib", "Harmony patches applied.");
 
         if (RitsuLibFramework.IsActive)
         {
             logger.Info("RitsuLib framework is active.");
+            SpirePlusDebug.Log("RitsuLib", "Framework is active.");
         }
         else
         {
             logger.Warn("RitsuLib framework is not active; some features may be unavailable.");
+            SpirePlusDebug.Warn("RitsuLib", "Framework is not active; some features may be unavailable.");
         }
 
         return harmony;

@@ -3,6 +3,7 @@ using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Features;
 
@@ -61,6 +62,11 @@ internal static class SpirePlusFeatureRegistry
 
         public FeatureGateResult EvaluateGate() => evaluateGate();
 
-        public void Initialize() => initialize();
+        public void Initialize()
+        {
+            SpirePlusDebug.Log("Feature", $"Initializing {Id} (order={InitOrder}).");
+            initialize();
+            SpirePlusDebug.Log("Feature", $"{Id} initialized.");
+        }
     }
 }

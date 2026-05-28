@@ -134,7 +134,7 @@ Implemented behavior:
 - When explicitly enabled and Vakuu appears, add an extra fight option.
 - The current encounter uses a dedicated `EzmbVakuuTrialMonster`, a custom `ezmb_vakuu_trial.tscn` encounter scene, and a simple four-move Vakuu action loop. Live victory and restore behavior still need proof.
 - The option text tells the player Vakuu is a Stolen Locks trial: Contracts are chosen on turns 1/3/5, Cash Out can end the fight after a lock breaks, normal combat rewards are disabled, Blood Debt reduces loot and raises attack pressure, and death ends the run.
-- On player turns 1, 3, and 5, after the normal hand draw, the fight offers three 0-cost Contracts when source-safe. Knife and Gold support lock breaking, Avoid Debt reduces Blood Debt, and Fraud breaks a lock at higher risk.
+- On player turns 1, 3, and 5, after the normal hand draw, the fight offers three 0-cost Contracts when source-safe. Knife and Gold support lock breaking, Shelter Contract reduces Blood Debt, and Fraud breaks a lock at higher risk.
 - The Gold Contract is the localized face of the internal `EZMB_VAKUU_TEMPTATION` / Temptation card; it is implemented as a hidden Contract token, not future content.
 - Vakuu starts with three Stolen Vault locks. Contracts can break locks, and dealing at least 40 unblocked damage to Vakuu in one player turn can also break one lock without adding Blood Debt.
 - Blood Debt increases each of Vakuu's powered attack hits by 2 damage per stack. At victory settlement, each Blood Debt removes 15 loot Gold. If loot is not enough, each unpaid 15 Gold costs 3 nonlethal HP.

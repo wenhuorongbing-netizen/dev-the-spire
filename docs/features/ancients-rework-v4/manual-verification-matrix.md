@@ -98,7 +98,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Crossbow | Start enemy turn with Crossbow. | Generated attack is temporary; skipped card does not linger. | Pending |
 | Toasty Mittens | Start turn with a draw pile. | Top draw-pile card can be exhausted for Strength or kept. | Pending |
 | Whispering Earring | Start turn with eligible high-cost cards. | Auto-plays one highest-cost card once per turn. | Pending |
-| Quality Flame / Brightest Flame | Pick up Quality Flame, inspect BrightestFlame, then play upgraded and unupgraded versions. | BrightestFlame visibly has Exhaust and draws one more card than vanilla through dynamic text. | Pending |
+| Brilliant Flame / Brightest Flame | Pick up Brilliant Flame, inspect BrightestFlame, then play upgraded and unupgraded versions. | BrightestFlame visibly has Exhaust and draws one more card than vanilla through dynamic text. | Pending |
 | Meat Cleaver | Visit a rest site with at least two removable cards and more than 5 HP. | Adds a Cleaver option that removes 2 cards and loses 5 HP; disabled below the requirement. | Pending |
 | Blood-Soaked Rose / Enthralled | Pick up reward, draw Enthralled, then play it. | Adds `Enthralled` / `执迷`; it must be played before other cards while in hand, gives Block, and is Eternal. | Pending |
 
