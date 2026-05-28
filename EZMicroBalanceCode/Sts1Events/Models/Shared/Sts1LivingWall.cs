@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
@@ -22,24 +23,21 @@ public sealed class Sts1LivingWall : EventModel
         };
     }
 
-    private Task Forget()
+    private async Task Forget()
     {
-        // TODO: Open card removal UI
+        await Sts1EventHelpers.OpenCardRemoval(Owner);
         SetEventFinished(L10NLookup("STS1_LIVING_WALL.pages.FORGET.description"));
-        return Task.CompletedTask;
     }
 
-    private Task Change()
+    private async Task Change()
     {
-        // TODO: Open card transform UI
+        await Sts1EventHelpers.OpenCardTransform(Owner, Rng);
         SetEventFinished(L10NLookup("STS1_LIVING_WALL.pages.CHANGE.description"));
-        return Task.CompletedTask;
     }
 
-    private Task Trade()
+    private async Task Trade()
     {
-        // TODO: Open card upgrade UI
+        await Sts1EventHelpers.OpenCardUpgrade(Owner);
         SetEventFinished(L10NLookup("STS1_LIVING_WALL.pages.TRADE.description"));
-        return Task.CompletedTask;
     }
 }

@@ -27,7 +27,7 @@ internal static class RitsuLibBootstrap
         logger.Info($"ModPatcher applied {patcher.AppliedPatchCount} patches ({patcher.RegisteredPatchCount} registered).");
         SpirePlusDebug.Log("RitsuLib", $"ModPatcher applied {patcher.AppliedPatchCount} patches.");
 
-        // Apply remaining [HarmonyPatch]-attributed patches via raw Harmony
+        // Apply remaining Harmony-attributed patches via raw Harmony
         var harmony = new Harmony(modId);
         harmony.PatchAll();
 

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
@@ -52,11 +53,10 @@ public sealed class Sts1TheCleric : EventModel
         SetEventFinished(L10NLookup("STS1_THE_CLERIC.pages.HEAL.description"));
     }
 
-    private Task Purify()
+    private async Task Purify()
     {
-        // TODO: Open card remove UI
-        // For now, just finish the event
+        await PlayerCmd.GainGold(-PurifyCost, Owner);
+        await Sts1EventHelpers.OpenCardRemoval(Owner);
         SetEventFinished(L10NLookup("STS1_THE_CLERIC.pages.PURIFY.description"));
-        return Task.CompletedTask;
     }
 }

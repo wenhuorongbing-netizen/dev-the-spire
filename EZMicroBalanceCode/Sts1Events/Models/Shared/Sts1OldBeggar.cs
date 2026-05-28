@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
@@ -17,8 +18,6 @@ public sealed class Sts1OldBeggar : EventModel
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
-        var canAfford = (Owner?.Gold ?? 0) >= GoldCost;
-
         return new EventOption[]
         {
             new EventOption(this, OfferGold, InitialOptionKey("OFFER_GOLD")),
@@ -29,7 +28,7 @@ public sealed class Sts1OldBeggar : EventModel
     private async Task OfferGold()
     {
         await PlayerCmd.GainGold(-GoldCost, Owner);
-        // TODO: Open card removal UI
+        await Sts1EventHelpers.OpenCardRemoval(Owner);
         SetEventFinished(L10NLookup("STS1_OLD_BEGGAR.pages.OFFER_GOLD.description"));
     }
 }

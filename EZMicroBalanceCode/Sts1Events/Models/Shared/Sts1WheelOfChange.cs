@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
@@ -46,11 +48,11 @@ public sealed class Sts1WheelOfChange : EventModel
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.DAMAGE.description"));
                 break;
             case 2: // Relic
-                // TODO: Grant random relic
+                await Sts1EventHelpers.GrantRandomRelic(Owner);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.RELIC.description"));
                 break;
             case 3: // Curse
-                // TODO: Add Decay curse to deck
+                await Sts1EventHelpers.AddCurses<Decay>(Owner, 1);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.CURSE.description"));
                 break;
             case 4: // Heal
@@ -60,7 +62,7 @@ public sealed class Sts1WheelOfChange : EventModel
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.HEAL.description"));
                 break;
             case 5: // Card removal
-                // TODO: Open card removal UI
+                await Sts1EventHelpers.OpenCardRemoval(Owner);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.REMOVE.description"));
                 break;
         }

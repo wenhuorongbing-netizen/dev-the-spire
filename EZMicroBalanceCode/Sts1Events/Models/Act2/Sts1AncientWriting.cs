@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act2;
 
@@ -20,17 +21,15 @@ public sealed class Sts1AncientWriting : EventModel
         };
     }
 
-    private Task Elegance()
+    private async Task Elegance()
     {
-        // TODO: Open card upgrade UI
+        await Sts1EventHelpers.OpenCardUpgrade(Owner);
         SetEventFinished(L10NLookup("STS1_ANCIENT_WRITING.pages.ELEGANCE.description"));
-        return Task.CompletedTask;
     }
 
-    private Task Simplicity()
+    private async Task Simplicity()
     {
-        // TODO: Open card removal UI
+        await Sts1EventHelpers.OpenCardRemoval(Owner);
         SetEventFinished(L10NLookup("STS1_ANCIENT_WRITING.pages.SIMPLICITY.description"));
-        return Task.CompletedTask;
     }
 }

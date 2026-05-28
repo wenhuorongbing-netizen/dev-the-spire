@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act2;
 
@@ -37,7 +38,7 @@ public sealed class Sts1ForgottenAltar : EventModel
     {
         var maxHp = HasA15 ? PrayMaxHpA15 : PrayMaxHpNormal;
         await CreatureCmd.GainMaxHp(Owner.Creature, maxHp);
-        // TODO: Add Doubt curse to deck
+        await Sts1EventHelpers.AddCurses<Doubt>(Owner, 1);
         SetEventFinished(L10NLookup("STS1_FORGOTTEN_ALTAR.pages.PRAY.description"));
     }
 
@@ -51,7 +52,7 @@ public sealed class Sts1ForgottenAltar : EventModel
 
     private async Task Desecrate()
     {
-        // TODO: Grant random relic
+        await Sts1EventHelpers.GrantRandomRelic(Owner);
         var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * DesecrateMaxHpLossPct);
         if (maxHpLoss > 0)
         {

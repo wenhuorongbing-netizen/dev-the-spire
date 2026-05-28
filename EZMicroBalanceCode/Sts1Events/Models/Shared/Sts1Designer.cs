@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
@@ -25,24 +27,22 @@ public sealed class Sts1Designer : EventModel
         };
     }
 
-    private Task Upgrade()
+    private async Task Upgrade()
     {
-        // TODO: Open card upgrade UI
+        await Sts1EventHelpers.OpenCardUpgrade(Owner);
         SetEventFinished(L10NLookup("STS1_DESIGNER.pages.UPGRADE.description"));
-        return Task.CompletedTask;
     }
 
-    private Task Remove()
+    private async Task Remove()
     {
-        // TODO: Pay 50 gold, open card removal UI
+        await PlayerCmd.GainGold(-RemoveCost, Owner);
+        await Sts1EventHelpers.OpenCardRemoval(Owner);
         SetEventFinished(L10NLookup("STS1_DESIGNER.pages.REMOVE.description"));
-        return Task.CompletedTask;
     }
 
-    private Task Transform()
+    private async Task Transform()
     {
-        // TODO: Open card transform UI (choose 2 cards)
+        await Sts1EventHelpers.OpenCardTransform(Owner, Rng, count: 2);
         SetEventFinished(L10NLookup("STS1_DESIGNER.pages.TRANSFORM.description"));
-        return Task.CompletedTask;
     }
 }
