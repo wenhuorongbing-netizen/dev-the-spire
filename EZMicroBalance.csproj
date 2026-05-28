@@ -41,6 +41,7 @@
 
     <ItemGroup>
         <Compile Include="EZMicroBalanceCode/**/*.cs" />
+        <Compile Remove="EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistrationService.cs" />
     </ItemGroup>
 
     <ItemGroup>
