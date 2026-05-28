@@ -788,7 +788,7 @@ window.SPIRE_PLUS_DATA = {
       ["\u7248\u672c", "v0.1.0-private-beta.84"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
-      ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.0"],
+      ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.1"],
       ["\u4f53\u79ef", "18,954,278 \u5b57\u8282"],
       ["\u54c8\u5e0c", "7B71487069A41F0AA7E3440845CE195D984F9F3C672EE49AF0F02C556861C82D"]
     ]
@@ -804,7 +804,7 @@ window.SPIRE_PLUS_DATA = {
     "此版本仍处于私测；如果遇到问题，论坛里直接发帖即可。"
   ],
   requirements: [
-    "Slay the Spire 2 public beta v0.106.0\u3002",
+    "Slay the Spire 2 public beta v0.106.1\u3002",
     "BaseLib v3.1.4；此版本按该依赖构建。",
     "\u6a21\u7ec4\u5217\u8868\u4e2d\u7684\u663e\u793a\u540d\u5e94\u4e3a Spire Plus\u3002",
     "为兼容现有存档，压缩包内的技术目录名暂不手动修改；玩家看到的模组名应为 Spire Plus。"
@@ -1236,7 +1236,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       "这是私测构建。遇到问题请把截图和 godot.log 发到论坛。"
     ],
     requirements: [
-      "Slay the Spire 2 public beta v0.106.0。",
+      "Slay the Spire 2 public beta v0.106.1。",
       "BaseLib v3.1.4。这个构建按该依赖版本测试。",
       "模组列表应显示 Spire Plus。",
       "不要手动重命名压缩包内的技术目录；游戏内显示名应为 Spire Plus。"
@@ -1348,7 +1348,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Version", "v0.1.0-private-beta.84"],
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
-        ["Game version", "Slay the Spire 2 v0.106.0"],
+        ["Game version", "Slay the Spire 2 v0.106.1"],
         ["Size", "18,954,278 bytes"],
         ["Hash", "7B71487069A41F0AA7E3440845CE195D984F9F3C672EE49AF0F02C556861C82D"]
       ]
@@ -1364,7 +1364,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       "This is a private test build. If something breaks, post it in the forum."
     ],
     requirements: [
-      "Slay the Spire 2 public beta v0.106.0.",
+      "Slay the Spire 2 public beta v0.106.1.",
       "BaseLib v3.1.4. This build targets that dependency version.",
       "The mod list should show Spire Plus.",
       "For save compatibility, do not manually rename the technical folder inside the zip. The in-game mod name should be Spire Plus."

@@ -10,7 +10,7 @@ Ascension 11-20 is available by default for single-player testing, but it is not
 | --- | --- |
 | `development-checklist-v2.md` | Compact current checklist. Full v2.0 design draft is archived under `docs/archive/feature-inputs/ascension-11-20/`. |
 | `source-design.md` | Behavior design and scope boundaries. |
-| `api-research.md` | Local v0.106.0 source evidence, safe APIs, and risky patch points. |
+| `api-research.md` | Local v0.106.1 source evidence, safe APIs, and risky patch points. |
 | `implementation-plan.md` | Implementation phases and safety strategy. |
 | `manual-test-checklist.md` | Manual single-player and feature verification checklist. |
 | `multiplayer-test-runbook.md` | Two-PC multiplayer setup, test matrix, and log checks. |

@@ -128,7 +128,7 @@ internal static partial class LothaBlessingService
 
     private static bool IsPublicEvidenceExcludedDamageDebuff(PowerModel power)
     {
-        // Core v0.106.0 models these as Debuffs, but their source resolves damage, kill, or poison ticks.
+        // Core v0.106.1 models these as Debuffs, but their source resolves damage, kill, or poison ticks.
         return power is PoisonPower
             or ConstrictPower
             or DemisePower

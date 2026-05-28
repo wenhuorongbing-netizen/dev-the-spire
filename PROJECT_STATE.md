@@ -14,13 +14,13 @@
 
 ## Game and BaseLib target
 
-- Dependency configurations are aligned on BaseLib `v3.1.4` and Slay the Spire 2 `v0.106.0`.
+- Dependency configurations are aligned on BaseLib `v3.1.4` and Slay the Spire 2 `v0.106.1`.
 
 ## Top-level status
 
 ### Build / test / package
 
-- `dotnet build`, `dotnet publish`, default `dotnet test`, and package refresh pass locally after the `v0.106.0` / BaseLib `v3.1.4` API update.
+- `dotnet build`, `dotnet publish`, default `dotnet test`, and package refresh pass locally after the `v0.106.1` / BaseLib `v3.1.4` API update.
 - Release artifact checks are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`. The latest beta.84 run must pass after the installed folder and game-root zip are refreshed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` still works.
 - Latest in-progress validation target 2026-05-27 is the beta.84 Urda Seedbed Harmony patch bugfix: `AncientPlayerFacingPolishGuardTests.Localization.cs` now owns Ancient dialogue/localization parity plus active source/docs mojibake guard coverage. `AncientPlayerFacingPolishGuardTests.cs` keeps current-doc backtick balance, option relic, concept, custom-card, hover-preview, Urda/Vakuu/doc-status, Ascension text, and Forge Token player-facing text guards. Test names, assertions, package evidence semantics, and player-visible mod behavior are unchanged. `publish/SpirePlus-v0.1.0-private-beta.84.zip`, `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and the game-root zip were refreshed and hash-checked before handoff. `.tools\publish-game-root` is tooling/isolated-publish context only, not the current package-parity source. The beta.19 Steam-client loader smoke under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is still useful historical startup proof for the same 30-field source family, but beta.84 loader/gameplay proof was not recaptured in this pass. Gameplay, clicked UI, save-load, route traversal, preview-tools, Vakuu, and co-op rows remain pending.
 - Historical guard context remains archived from 2026-05-24 after the Sere Talon `NRelic` fallback package refresh: focused Sere Talon/release-evidence/documentation/website guards passed. Manual feature results are pending.

@@ -357,7 +357,7 @@ Scope:
 
 Implemented:
 
-- `BossSealDefinition` and `BossSealCatalog` define all active v4.1 Boss dedicated abilities by boss encounter: Holy Daze, Martyr Oath, Ink Return, Plating Wake, Soul Tide, Unweakenable, Claw Calibration, Marginal Note, Escape Fatigue, Time Sand Reflow, Royal Decree, and Experimental Record. Door Wedge is removed from active v0.106.0 scope because Doormaker was replaced by Aeonglass.
+- `BossSealDefinition` and `BossSealCatalog` define all active v4.1 Boss dedicated abilities by boss encounter: Holy Daze, Martyr Oath, Ink Return, Plating Wake, Soul Tide, Unweakenable, Claw Calibration, Marginal Note, Escape Fatigue, Time Sand Reflow, Royal Decree, and Experimental Record. Door Wedge is removed from active v0.106.1 scope because Doormaker was replaced by Aeonglass.
 - A19 boss nodes receive boss-specific dedicated ability metadata from the active boss encounter instead of the older generic Armor/Rage/Barrier/Chaos placeholder set.
 - A19 combat logs the armed dedicated ability and source evidence, then applies only the current source-guarded hook paths; live runtime verification is still required before release-readiness claims.
 - A19 boss card rewards add a fourth option through `CardFactory.CreateForReward` with hook recursion disabled.

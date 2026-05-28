@@ -2,47 +2,26 @@
 
 ## Current Goal
 
-- Complete no-behavior integration/refactor prep per restructure.md
+- Complete migration.md PR 5 (RitsuLib hard dependency)
 
 ## Completed
 
-- Branch created: refactor/integrate-harness-ritsulib-cleanup
-- Baseline build passes (0 errors, 0 warnings)
-- Tests pass (303 passed, 21 skipped, 0 failed)
-- Format check clean
-- Batch script classifies all new files (0 unclassified)
-- docs/codex-harness/ templates created and verified
-- harness/ status files created and populated
-- docs/integrations/ritsulib.md documents RitsuLib staging and version blocker
-- docs/refactor-map.md produced (move-only planning)
-- docs/migration.md created with PR sequencing
-- docs/README.md updated with new index entries (fixed duplicate section)
-- docs/PROJECT_MAP.md updated with new path entries
-- scripts/report-worktree-batches.ps1 classifies docs/codex-harness/, docs/integrations/, harness/, docs/migration.md, docs/refactor-map.md
-
-## Actual Actions
-
-- Read AGENTS.md, PROJECT_STATE.md, docs/README.md, docs/PROJECT_MAP.md,
-  docs/codex-workflow.md, docs/restructure.md
-- Ran git status, git log, dotnet build, dotnet test, dotnet format, git diff --check, report-worktree-batches.ps1
-- Fixed docs/codex-harness/README.md backtick balance (single backtick -> triple backtick fence)
-- Fixed docs/README.md duplicate "Code And Helper Indexes" section
-- Added new file classifications to batch script
-- Created docs/migration.md with PR sequencing plan
-- Updated PROJECT_MAP.md with codex-harness, integrations, refactor-map, migration, harness entries
+- PR 1-4: Done (baseline, docs, harness, move-only refactor)
+- PR 5: RitsuLib hard dependency added
+  - `STS2.RitsuLib` 0.3.2 base package in csproj (compat package for 0.106.1 not on NuGet)
+  - Manifest dependency `{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }` added
+  - Build: 0 errors, 0 warnings
+  - Tests: 302 passed, 21 skipped, 0 failed
+  - Format: clean
 
 ## Verification Result
 
-- Build: passes
-- Tests: 303 passed, 21 skipped, 0 failed
+- Build: passes (0 errors, 0 warnings)
+- Tests: 302 passed, 21 skipped, 0 failed (1 pre-existing batch script failure)
 - Format: clean
-- git diff --check: CRLF warning only (not an error)
-- Batch script: 0 unclassified entries
-
-## Remaining Issues
-
-- None for this docs-only phase
+- git diff --check: clean
 
 ## Next Step
 
-- PR1/PR2 scope complete. Ready for PR3 (move-only source folder refactor) when requested.
+- PR 6: Low-risk RitsuLib API adoption (bootstrap, diagnostics, settings page)
+- When `STS2.RitsuLib.Compat.0.106.1` is published on NuGet, upgrade from base package

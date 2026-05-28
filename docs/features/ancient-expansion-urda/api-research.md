@@ -34,7 +34,7 @@ The current local evidence indicates two families of ancient patterns:
 
 Current risk:
 
-- `CustomAncientModel`, `AncientOption<T>()`, `OptionPools`, and `MakePool(...)` support should be revalidated against local `v0.106.0` runtime signatures before finalizing Urda registration code.
+- `CustomAncientModel`, `AncientOption<T>()`, `OptionPools`, and `MakePool(...)` support should be revalidated against local `v0.106.1` runtime signatures before finalizing Urda registration code.
 - If registration is unsafe, temporary diagnostics/test-force path should remain default-off and documented.
 
 ## 2. Planned evidence questions before implementation

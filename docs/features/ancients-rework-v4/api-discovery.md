@@ -21,13 +21,13 @@ Tutorial mismatch:
 Evidence source:
 
 - Local game assembly: `D:\Steam\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll`
-- Runtime target in `docs/dev-environment.md`: public beta `v0.106.0`, source-refreshed locally on `2026-05-22`
+- Runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`
 - Local project package: `Alchyr.Sts2.BaseLib` `3.1.4`
 - Tooling used for API inspection: local ignored `.tools/ilspy` install of `ilspycmd` `8.2.0.7535`
 
 Findings:
 
-- 2026-05-22 v0.106.0 source refresh: `BrightestFlame` still exposes canonical `CardsVar` draw text and `CardKeyword.Exhaust` can be surfaced through canonical keyword patching. EZMB adjusts Quality Flame by adding the Exhaust keyword and increasing the existing dynamic draw var by 1, so vanilla upgrade scaling remains dynamic instead of adding a second post-play draw command.
+- 2026-05-22 v0.106.1 source refresh: `BrightestFlame` still exposes canonical `CardsVar` draw text and `CardKeyword.Exhaust` can be surfaced through canonical keyword patching. EZMB adjusts Quality Flame by adding the Exhaust keyword and increasing the existing dynamic draw var by 1, so vanilla upgrade scaling remains dynamic instead of adding a second post-play draw command.
 - `MegaCrit.Sts2.Core.Models.Events.Pael` is the Pael Ancient event model.
 - Pael's first option pool includes `MegaCrit.Sts2.Core.Models.Relics.PaelsHorn`.
 - `MegaCrit.Sts2.Core.Events.EventOption` stores the option `TextKey`, optional `Relic`, and private `OnChosen` callback. `Chosen()` invokes the callback after any `BeforeChosen` hook.
@@ -64,7 +64,7 @@ Historical phase-1 limits from before the finish batches:
 
 ## Batch 2 API Evidence
 
-Current authoritative source is the refreshed local public beta `v0.106.0` assembly/source noted above. The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`) plus the live RitsuLib/BaseLib tutorial references; keep those older notes as historical context only and revalidate against `v0.106.0` before treating an old Batch 2 detail as current API authority.
+Current authoritative source is the refreshed local public beta `v0.106.1` assembly/source noted above. The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`) plus the live RitsuLib/BaseLib tutorial references; keep those older notes as historical context only and revalidate against `v0.106.1` before treating an old Batch 2 detail as current API authority.
 
 Implemented with narrow Harmony patches. The original batch was developed in the legacy `EzDailyContentCode/Ancients/AncientRewardBalancePatches.cs`; the active release implementation now lives in grouped files under `EZMicroBalanceCode/Ancients/Patches/`:
 

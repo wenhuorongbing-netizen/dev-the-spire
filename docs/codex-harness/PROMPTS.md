@@ -12,11 +12,12 @@ Requirements:
 4. Read only README, dependency config, project structure, start/build/test config,
    and files I explicitly name for the current task.
 5. Do not scan the whole project without a clear reason.
-6. Fill TASK_FOCUS_PACK and TASK_STATUS for the current task.
-7. Mark unconfirmed history, decisions, and completed work as "unconfirmed".
-8. Record known mistakes, user prohibitions, and prior pitfalls in ERROR_LEDGER.
-9. Report only updated files, confirmed modules, missing information, next
-   suggestions, and current progress.
+6. Fill HCA_PROJECT_MAP only from real files and information I provide.
+7. Fill TASK_FOCUS_PACK and TASK_STATUS for the current task.
+8. Mark unconfirmed history, decisions, and completed work as "unconfirmed".
+9. Record known mistakes, user prohibitions, and prior pitfalls in ERROR_LEDGER.
+10. Report only updated files, confirmed modules, missing information, next
+    suggestions, and current progress.
 ```
 
 ## 2. Every New Task
@@ -56,7 +57,7 @@ Requirements:
 Continue the current task according to AGENTS.md and harness/ rules.
 
 Requirements:
-1. Read TASK_FOCUS_PACK, TASK_STATUS, and ERROR_LEDGER first.
+1. Read HCA_PROJECT_MAP, TASK_FOCUS_PACK, TASK_STATUS, and ERROR_LEDGER first.
 2. Do not depend on chat history. Prefer harness files for recovery.
 3. If TASK_STATUS conflicts with actual files, stop and point out the mismatch.
 4. Before continuing, define the goal, completed work, remaining work, next step,
@@ -65,7 +66,22 @@ Requirements:
 6. Update TASK_STATUS and TASK_RESULT when done.
 ```
 
-## 5. Review A Task
+## 5. Update Error Ledger After A Mistake
+
+```
+A mistake occurred. Update ERROR_LEDGER according to AGENTS.md.
+
+Mistake: [describe the mistake]
+Requirements:
+1. Stop the current execution path first.
+2. Record the symptom, location, root cause, fix, recurrence-prevention rule,
+   what to check next time, and verification method.
+3. Update TASK_FOCUS_PACK with the new prevention constraint.
+4. Propose the smallest repair plan.
+5. Do not continue before ERROR_LEDGER is updated.
+```
+
+## 6. Review A Task
 
 ```
 Review this task according to AGENTS.md and harness/ rules.

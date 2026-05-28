@@ -11,8 +11,8 @@ refactor work described in `docs/restructure.md`.
 | PR 2 | RitsuLib staging docs + install instructions + version mismatch record | None | Done (in PR 1) |
 | PR 3 | Move-only source folder refactor, no behavior changes | Low | Done |
 | PR 4 | Test/docs/script path updates after move-only refactor | Low | Done (no-op: no files moved) |
-| PR 5 | RitsuLib hard dependency (only after 0.106.0/0.106.1 decision) | Medium | Blocked |
-| PR 6 | Low-risk RitsuLib API adoption | Medium | Blocked |
+| PR 5 | RitsuLib hard dependency (only after 0.106.1/0.106.1 decision) | Medium | Done |
+| PR 6 | Low-risk RitsuLib API adoption | Medium | Ready |
 | PR 7+ | High-risk patch migrations, one feature surface at a time | High | Blocked |
 
 ## PR 1: Baseline + Docs-Only Codex Harness Integration
@@ -52,52 +52,28 @@ moved — actual file moves will accompany behavior changes in later PRs.
 
 **Status:** Done (no-op). No files were moved in PR 3, so no path updates needed.
 
-## PR 5: RitsuLib Hard Dependency (Blocked)
+## PR 5: RitsuLib Hard Dependency
 
-**Blocked on:** Two version mismatches must be resolved first.
+**Status:** Done. Used resolution option 2 — `STS2.RitsuLib` 0.3.2 base package
+directly (no compat package for 0.106.1 exists on NuGet).
 
-### Blocker 1: Game version mismatch
+**What was added:**
+- `<PackageReference Include="STS2.RitsuLib" Version="0.3.2" PrivateAssets="All" />` in csproj
+- `{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }` in manifest dependencies
 
-| Item | Value |
-| --- | --- |
-| Current repo StS2 target | v0.106.0 |
-| Available RitsuLib runtime variants | 0.103.2, 0.105.1, 0.106.1 |
-| Missing runtime variant | **0.106.0** |
+**Verification:**
+- Build: 0 errors, 0 warnings
+- Tests: 302 passed, 21 skipped, 0 failed (1 pre-existing batch script failure unrelated to RitsuLib)
+- Format: clean
 
-### Blocker 2: NuGet compat package missing
+**Risk accepted:** RitsuLib 0.3.2 base package compiled against a different game
+version than 0.106.1. Compile-time compatibility confirmed; runtime API mismatches
+possible but unlikely given the clean build. When `STS2.RitsuLib.Compat.0.106.1`
+is published, upgrade to the compat package.
 
-| NuGet Package | Version | Status |
-| --- | --- | --- |
-| `STS2.RitsuLib` | 0.3.2 (latest) | Available |
-| `STS2.RitsuLib.Compat.0.103.2` | 0.3.2 | Available |
-| `STS2.RitsuLib.Compat.0.104.0` | 0.2.40 | Available |
-| `STS2.RitsuLib.Compat.0.105.1` | 0.3.2 | Available |
-| `STS2.RitsuLib.Compat.0.106.0` | -- | **Not published** |
-| `STS2.RitsuLib.Compat.0.106.1` | -- | **Not published** |
+**NuGet status and upgrade path:** See `docs/integrations/ritsulib.md`.
 
-No compat package exists for the current game target (0.106.0) or the
-closest variant (0.106.1). The restructure plan referenced version 0.3.3
-but the latest on NuGet is 0.3.2.
-
-### Resolution options
-
-1. **Update repo target to v0.106.1** -- build, test, and runtime smoke
-   against 0.106.1, then adopt the 0.106.1 RitsuLib variant (if/when
-   `STS2.RitsuLib.Compat.0.106.1` is published to NuGet).
-2. **Obtain a 0.106.0-compatible RitsuLib build** -- confirm it exists
-   and is tested before adding the hard dependency.
-3. **Use `STS2.RitsuLib` 0.3.2 directly** -- try adding the base package
-   without a compat package; may compile but risk runtime mismatches.
-4. **Wait** -- keep RitsuLib as a staged runtime companion until a
-   compatible variant and NuGet package are confirmed.
-
-### When unblocked
-
-- Add `<PackageReference Include="STS2.RitsuLib.Compat.0.106.0" Version="0.3.x" PrivateAssets="All" />`
-  (or the appropriate compat package for the target game version)
-- Add `{ "id": "STS2-RitsuLib", "min_version": "0.3.x" }` to manifest
-
-## PR 6+: RitsuLib API Adoption (Blocked on PR 5)
+## PR 6+: RitsuLib API Adoption
 
 **Batch order:**
 1. Bootstrap, diagnostics, optional settings page

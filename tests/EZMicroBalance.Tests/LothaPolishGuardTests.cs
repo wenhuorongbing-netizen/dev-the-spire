@@ -564,7 +564,7 @@ public sealed class LothaPolishGuardTests
             "or MagicBombPower",
             "or StranglePower",
             "or TheGambitPower",
-            "Core v0.106.0 models these as Debuffs");
+            "Core v0.106.1 models these as Debuffs");
         AssertSourceContains(
             powers,
             "internal sealed class LothaEnlightenmentPower",

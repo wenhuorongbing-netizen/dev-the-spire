@@ -12,7 +12,7 @@ public sealed class SourceApiDriftAuditGuardTests
 
         AssertSourceContains(
             audit,
-            "v0.106.0",
+            "v0.106.1",
             "Alchyr.Sts2.BaseLib` `v3.1.4",
             "`source code/src/Core/**`",
             "`sourcecodeonlyaianalysis/**` is not present",

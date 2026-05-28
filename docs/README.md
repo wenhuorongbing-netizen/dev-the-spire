@@ -59,8 +59,13 @@ These files are current support records but are not part of the default next-dev
 | `archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md` | Historical runtime-smoke detail moved out of `dev-environment.md`; use only when investigating old launch/helper behavior. |
 | `archive/implementation-records/website-localization-qa-20260522.md` | Historical website localization/render QA journal moved out of the public website source. |
 | `issues/waiting-tests.md` | Compact manual evidence queue retained for guard/reference support. Full historical rows are archived under `archive/issues/`. |
+| `issues/ancient-expansion-v2.2.md` | Ancient expansion v2.2 active issues. |
+| `issues/urda.md` | Urda-specific issues. |
+| `issues/v3.3-design-review.md` | RitsuLib v3.3 design review issues. |
 | `mod-changelog.md` | Player-facing change summary. Keep it short. |
 | `intro.zh.md` | Chinese feature and change summary for downstream web documentation. |
+| `reviews/red-team-goal-implementation-pass-1.md` | Red-team review of goal implementation pass. |
+| `month-plan/commit-boundaries.md` | Commit boundary planning for the current cycle. |
 | `../website/README.md` | Public static site maintenance notes. |
 
 ## Setup And Workflow
@@ -74,12 +79,13 @@ These files are current support records but are not part of the default next-dev
 | `style/card-localization-style-guide.md` | Source-backed card text, keyword, preview, and bilingual terminology rules. |
 | `skills/sts2-godot-mod-development.md` | Repo-local StS2/Godot/.NET development reference. |
 | `adr/0000-template.md` | Template for architecture, patch-surface, saved-state, and release-scope decisions. |
-| `codex-harness/README.md` | Thin Codex harness template integration (adapted from codex-app-better-token). |
+| `codex-harness/README.md` | Codex harness template directory pointer; see `harness/README.md` for rules. |
 | `codex-harness/PROMPTS.md` | Ready-to-copy task prompt templates for Codex. |
-| `codex-harness/templates/` | Empty templates for TASK_FOCUS_PACK, TASK_STATUS, TASK_RESULT, ERROR_LEDGER. |
+| `codex-harness/templates/` | Empty templates for HCA_PROJECT_MAP, TASK_FOCUS_PACK, TASK_STATUS, TASK_RESULT, ERROR_LEDGER. |
 | `integrations/ritsulib.md` | RitsuLib runtime staging record, variant pack contents, version mismatch blocker, and future migration plan. |
 | `refactor-map.md` | Move-only folder refactor map for EZMicroBalanceCode (planning only, no moves executed). |
 | `migration.md` | Restructure migration plan and PR sequencing. |
+| `restructure.md` | Source design document for the integration and refactor plan. |
 
 ## Code And Helper Indexes
 
@@ -98,7 +104,7 @@ These files are current support records but are not part of the default next-dev
 | `architecture/bounded-contexts.md` | Feature/context ownership map. |
 | `architecture/patch-boundaries.md` | Harmony patch boundary rules. |
 | `architecture/save-state-contracts.md` | Stateful feature save/load contract map. |
-| `audits/v0.106-source-api-drift.md` | Source/API drift audit for the refreshed `v0.106.0` Core snapshot. |
+| `audits/v0.106-source-api-drift.md` | Source/API drift audit for the refreshed `v0.106.1` Core snapshot. |
 | `../scripts/ci-full-validation.ps1` | Full no-game validation entry point for self-hosted CI or a local release machine. |
 | `archive/legacy-planning/legacy-project-files/README.md` | Preserved migration artifact map. |
 

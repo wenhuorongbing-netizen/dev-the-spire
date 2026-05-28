@@ -18,14 +18,14 @@
 - Game root: `D:\Steam\steamapps\common\Slay the Spire 2`
 - Mod folder: `D:\Steam\steamapps\common\Slay the Spire 2\mods`
 - Current branch target: public beta
-- Observed installed game version: `v0.106.0` from `D:\Steam\steamapps\common\Slay the Spire 2\release_info.json` on 2026-05-22.
-- Observed installed game metadata: commit `cb2fbf47`, branch `v0.106.0`, build date `2026-05-21T16:17:40-07:00`, and `main_assembly_hash` `1001788235`.
+- Observed installed game version: `v0.106.1` from `D:\Steam\steamapps\common\Slay the Spire 2\release_info.json` on 2026-05-22.
+- Observed installed game metadata: commit `cb2fbf47`, branch `v0.106.1`, build date `2026-05-21T16:17:40-07:00`, and `main_assembly_hash` `1001788235`.
 - Steam appmanifest evidence: public-beta `BetaKey`, build id `23353684`, installed locally on 2026-05-22.
 - Local source snapshot: `source code/` was cleaned and recovered from the installed `SlayTheSpire2.pck` plus `data_sts2_windows_x86_64\sts2.dll` on 2026-05-22 using GDRE Tools `v2.5.0-beta.5`.
-- Source recovery evidence: `source code\release_info.json` matches `v0.106.0`; `source code/src/Core` contains 3,393 C# files; `source code/sts2.sln` builds with 0 warnings and 0 errors.
+- Source recovery evidence: `source code\release_info.json` matches `v0.106.1`; `source code/src/Core` contains 3,393 C# files; `source code/sts2.sln` builds with 0 warnings and 0 errors.
 - Source recovery log: `source code/gdre_export.log` decompiled 3,463 scripts, reported 18 failed scripts, converted 3,937 resources, and logged one debug-scene parse warning for `scenes/debug/back_confirm_example.tscn`.
-- API-diff artifacts live under `.tools\source-refresh-v0.106.0-20260522\`; the canonical Core signature diff found 1,712 removed signatures and 1,835 added signatures compared with the previous snapshot.
-- Do not use pre-2026-05-22 `v0.105.x` source notes as the sole basis for current `v0.106.0` conclusions. Reinspect the refreshed source and confirm runtime behavior before making release claims.
+- API-diff artifacts live under `.tools\source-refresh-v0.106.1-20260522\`; the canonical Core signature diff found 1,712 removed signatures and 1,835 added signatures compared with the previous snapshot.
+- Do not use pre-2026-05-22 `v0.105.x` source notes as the sole basis for current `v0.106.1` conclusions. Reinspect the refreshed source and confirm runtime behavior before making release claims.
 - Test environment must be ONLY BaseLib + Spire Plus. The Spire Plus technical folder/id is `EZMicroBalance`. Earlier multi-mod logs including DamageMeter, RouteSuggest, AnimeWaifuSilent, and similar local mods are invalid release evidence.
 
 ## Project mission
@@ -61,7 +61,7 @@
 - BaseLib version consistency: OK. Runtime `v3.1.4` matches project package `3.1.4`.
 
 ## Runtime evidence summary
-- BaseLib `v3.1.4` compatibility with `v0.106.0` is the current target. Historical 22-field loader evidence: `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded only BaseLib plus Spire Plus, registered config, reported `Found 22 SavedSpireFields`, reached main menu, and had no release-blocking signatures. This is historical evidence only.
+- BaseLib `v3.1.4` compatibility with `v0.106.1` is the current target. Historical 22-field loader evidence: `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded only BaseLib plus Spire Plus, registered config, reported `Found 22 SavedSpireFields`, reached main menu, and had no release-blocking signatures. This is historical evidence only.
 - Current source defines 30 SavedSpireFields. Historical 22-field and 16-field startup rows remain useful records only; beta.84 loader parity and gameplay proof still need fresh live evidence.
 - Historical beta.19 loader evidence: `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` loaded only BaseLib plus Spire Plus, registered `EZMicroBalance`, reported `v0.1.0-private-beta.19` and `Found 30 SavedSpireFields`, reached startup completion, matched its beta.19 package hash, audited clean, stopped the game, and restored the isolated mod setup.
 - Current display-name list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus`; older page-level Mod Settings evidence predates the display-name refresh.

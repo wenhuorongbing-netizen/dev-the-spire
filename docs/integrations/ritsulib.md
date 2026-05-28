@@ -2,9 +2,10 @@
 
 ## Status
 
-**Staging only.** RitsuLib is not yet a compile or runtime dependency of Spire Plus.
-This document records the variant pack contents, installation instructions, and
-the version mismatch that blocks hard dependency adoption.
+**Hard dependency (compile + runtime).** RitsuLib 0.3.2 is a compile dependency
+via NuGet and a runtime dependency via manifest. Using the base package because
+no compat package for game v0.106.1 exists on NuGet. Players must install the
+RitsuLib runtime variant pack to `<GameRoot>/mods/STS2-RitsuLib/`.
 
 ## What is RitsuLib
 
@@ -35,26 +36,37 @@ Do not commit `STS2-RitsuLib.dll`, `*.pck`, or `*.zip` into this repository.
 ## Variant Pack Contents (Uploaded)
 
 The uploaded `STS2-RitsuLib.0.3.3.variant-pack.zip` contains three game-version
-variants:
+variants plus a root loader:
 
-| Variant | Game Version | Compatibility |
+| File | Size | Purpose |
 | --- | --- | --- |
-| `0.103.2` | Slay the Spire 2 v0.103.2 | Not applicable to current target |
-| `0.105.1` | Slay the Spire 2 v0.105.1 | Not applicable to current target |
-| `0.106.1` | Slay the Spire 2 v0.106.1 | Closest to current target |
+| `STS2-RitsuLib.dll` | 22 KB | Root loader (selects variant at runtime) |
+| `STS2-RitsuLib.Loader.pdb` | 15 KB | Debug symbols for loader |
+| `mod_manifest.json` | 413 B | Mod manifest (id: `STS2-RitsuLib`, version `0.3.3`) |
+| `ritsulib-variants.json` | 644 B | Variant selection config (schema 1) |
 
-## Version Mismatch Blocker
+| Variant Directory | Game Version | DLL Size | Compatibility |
+| --- | --- | --- | --- |
+| `lib/0.103.2/` | Slay the Spire 2 v0.103.2 | 3.7 MB | Not applicable to current target |
+| `lib/0.105.1/` | Slay the Spire 2 v0.105.1 | 3.7 MB | Not applicable to current target |
+| `lib/0.106.1/` | Slay the Spire 2 v0.106.1 | 3.7 MB | **Matches current target** |
+
+Each variant directory contains `STS2-RitsuLib.dll`, `.pdb`, `.xml` (XML doc),
+and `compat-target.txt`.
+
+## Blocker: NuGet Compat Package Missing
 
 | Item | Value |
 | --- | --- |
-| Current repo StS2 target | v0.106.0 |
+| Current repo StS2 target | v0.106.1 |
 | Current repo BaseLib target | v3.1.4 |
-| Available RitsuLib runtime variants | 0.103.2, 0.105.1, 0.106.1 |
-| Missing RitsuLib runtime variant | **0.106.0** |
+| Available RitsuLib runtime variants | 0.103.2, 0.105.1, **0.106.1** |
+| Runtime variant status | **0.106.1 available** |
 
-**No 0.106.0-compatible RitsuLib variant exists in the uploaded pack.**
+The runtime variant pack now matches the game target. The remaining blocker
+is the NuGet compilation package.
 
-### NuGet Package Status
+### NuGet Package Status (checked 2026-05-28)
 
 | NuGet Package | Version | Status |
 | --- | --- | --- |
@@ -62,51 +74,41 @@ variants:
 | `STS2.RitsuLib.Compat.0.103.2` | 0.3.2 | Available |
 | `STS2.RitsuLib.Compat.0.104.0` | 0.2.40 | Available |
 | `STS2.RitsuLib.Compat.0.105.1` | 0.3.2 | Available |
-| `STS2.RitsuLib.Compat.0.106.0` | -- | **Not published** |
 | `STS2.RitsuLib.Compat.0.106.1` | -- | **Not published** |
 
-The restructure plan referenced RitsuLib 0.3.3 but the latest on NuGet is 0.3.2.
-No compat package exists for game version 0.106.0 or 0.106.1.
+The variant pack ships RitsuLib 0.3.3 but the latest on NuGet is 0.3.2.
+No compat package exists for game version 0.106.1. The variant pack DLLs
+(0.3.3) are runtime-only; compilation uses the NuGet base package.
 
-Until this is resolved, do **not** add RitsuLib to the manifest dependencies:
+### Current dependency setup
 
-```json
-"dependencies": [
-  {
-    "id": "BaseLib",
-    "min_version": "v3.1.4"
-  }
-]
+csproj (compile):
+```xml
+<PackageReference Include="STS2.RitsuLib" Version="0.3.2" PrivateAssets="All" />
 ```
 
-### Resolution options
+manifest (runtime):
+```json
+{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }
+```
 
-1. **Update repo target to v0.106.1** -- build, test, and runtime smoke against
-   0.106.1, then adopt the 0.106.1 RitsuLib variant.
-2. **Obtain a 0.106.0-compatible RitsuLib build** -- confirm it exists and is
-   tested before adding the hard dependency.
-3. **Wait** -- keep RitsuLib as a staged runtime companion until a compatible
-   variant is confirmed.
+### Upgrade path
 
-## Future Migration Plan (When Unblocked)
+When `STS2.RitsuLib.Compat.0.106.1` is published on NuGet, replace the base
+package with the compat package:
+```xml
+<PackageReference Include="STS2.RitsuLib.Compat.0.106.1" Version="0.3.x" PrivateAssets="All" />
+```
 
-When the version blocker is resolved:
+## RitsuLib API Adoption Plan
 
-1. Add `PackageReference` to the `.csproj`:
-   ```xml
-   <PackageReference Include="STS2.RitsuLib" Version="0.3.3" PrivateAssets="All" />
-   ```
-2. Add manifest dependency:
-   ```json
-   { "id": "STS2-RitsuLib", "min_version": "0.3.3" }
-   ```
-3. Adopt RitsuLib APIs in batches:
-   - Batch 1: Bootstrap, diagnostics, optional settings page
-   - Batch 2: Future new content registration (not existing high-risk content)
-   - Batch 3: Persistence sidecar experiments (not current 30 SavedSpireFields)
-   - Batch 4: Low-risk patch wrappers
-   - Batch 5: High-risk run/map/reward/save/multiplayer patches (only after manual
-     evidence backlog is reduced)
+Adopt RitsuLib APIs in batches (PR 6+):
+- Batch 1: Bootstrap, diagnostics, optional settings page
+- Batch 2: Future new content registration (not existing high-risk content)
+- Batch 3: Persistence sidecar experiments (not current 30 SavedSpireFields)
+- Batch 4: Low-risk patch wrappers
+- Batch 5: High-risk run/map/reward/save/multiplayer patches (only after manual
+  evidence backlog is reduced)
 
 ## References
 

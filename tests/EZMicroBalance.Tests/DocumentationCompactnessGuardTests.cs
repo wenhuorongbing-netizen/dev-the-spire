@@ -210,14 +210,14 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             apiDiscovery,
-            "Runtime target in `docs/dev-environment.md`: public beta `v0.106.0`, source-refreshed locally on `2026-05-22`",
-            "Current authoritative source is the refreshed local public beta `v0.106.0` assembly/source noted above.",
+            "Runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`",
+            "Current authoritative source is the refreshed local public beta `v0.106.1` assembly/source noted above.",
             "The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`)",
             "historical context only",
-            "revalidate against `v0.106.0`");
+            "revalidate against `v0.106.1`");
         AssertSourceContains(
             manualChecklist,
-            "- Target game version: public beta `v0.106.0`, refreshed locally on `2026-05-22` per `docs/dev-environment.md`",
+            "- Target game version: public beta `v0.106.1`, refreshed locally on `2026-05-22` per `docs/dev-environment.md`",
             "- Legacy baseline: `v0.104.0` (`2026.04.23`) is historical only and is not the target for this checklist.");
 
         Assert.DoesNotContain("Evidence source remains local `sts2.dll` from public beta `v0.104.0`", apiDiscovery, StringComparison.Ordinal);

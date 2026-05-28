@@ -23,7 +23,7 @@ Best release test setup:
 
 Same-PC multi-open is not reliable for real Steam multiplayer and should not be the primary release test. It can be useful for rough local investigation only if Steam permits it, but it does not replace the two-PC matrix.
 
-**Known-incompatible mods:** earlier v0.105.x logs showed DamageMeter calling removed `Creature.get_ShowsInfiniteHp()` and interrupting combat startup. Do not enable DamageMeter during EZMB v0.106.0 testing until an updated version is confirmed compatible.
+**Known-incompatible mods:** earlier v0.105.x logs showed DamageMeter calling removed `Creature.get_ShowsInfiniteHp()` and interrupting combat startup. Do not enable DamageMeter during EZMB v0.106.1 testing until an updated version is confirmed compatible.
 
 `--force-steam off` is valid for controlled loader smoke only. It is not a replacement for real multiplayer lobby, Steam-client Mod Settings, save/load, or co-op desync testing.
 

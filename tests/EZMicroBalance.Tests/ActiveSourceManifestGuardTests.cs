@@ -412,6 +412,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Core/Features/FeatureRegistry.cs",
         "EZMicroBalanceCode/Core/Features/IFeatureModule.cs",
         "EZMicroBalanceCode/Core/Features/SpirePlusFeatureRegistry.cs",
+        "EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs",
         "EZMicroBalanceCode/Config/SpirePlusModConfig.cs",
         "EZMicroBalanceCode/Diagnostics/ReleaseEvidenceLog.cs",
         "EZMicroBalanceCode/Diagnostics/SpirePlusAncientLiveTestConsoleCmd.RunSetup.cs",

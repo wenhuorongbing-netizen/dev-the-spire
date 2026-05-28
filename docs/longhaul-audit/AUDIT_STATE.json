@@ -1,0 +1,32 @@
+{
+  "initialized": "2026-05-28",
+  "version": 1,
+  "total_files": 1248,
+  "by_status": {
+    "queued": 1238,
+    "current": 0,
+    "skipped": 10,
+    "done": 0,
+    "blocked": 0
+  },
+  "by_category": {
+    "cs-high-risk": 187,
+    "cs-feature-state": 17,
+    "cs-normal": 221,
+    "test": 47,
+    "localization": 26,
+    "resource": 252,
+    "scene": 4,
+    "workflow": 5,
+    "script": 30,
+    "config": 24,
+    "docs": 197,
+    "website": 139,
+    "forum": 22,
+    "harness": 5,
+    "output": 72
+  },
+  "last_round": 9,
+  "last_file": "EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaRunHook.cs",
+  "last_decision": "skipped"
+}

@@ -13,7 +13,7 @@
 
 `STS2-RitsuLib.0.3.3.variant-pack.zip` 是运行时库包。RitsuLib 官方 README/文档建议 mod 项目通过 `PackageReference Include="STS2.RitsuLib"` 编译引用，并在 manifest 里声明运行时依赖 `{ "id": "STS2-RitsuLib" }`；variant-pack 是给玩家安装到 `mods/STS2-RitsuLib/` 的运行时包，root DLL 是 loader，真实 API build 在 `lib/<api-version>/` 下。([RitsuLib][1]) ([GitHub][2])
 
-但这里有一个关键阻塞：当前 repo 目标是 **Slay the Spire 2 v0.106.0 + BaseLib v3.1.4**，而你上传的 RitsuLib variant pack 里我看到的是 `0.103.2`、`0.105.1`、`0.106.1` 三个变体，没有 `0.106.0`。所以我的建议是：**先 staging，不要马上把 RitsuLib 写进 `EZMicroBalance.json` 的 required dependency**。要么把项目目标更新并验证到 `0.106.1`，要么拿到/确认 `0.106.0` 兼容包，再进入硬依赖迁移。repo 当前目标和命令状态在 `PROJECT_STATE.md`/README 里也写得很清楚。 
+但这里有一个关键阻塞：当前 repo 目标是 **Slay the Spire 2 v0.106.1 + BaseLib v3.1.4**，而你上传的 RitsuLib variant pack 里我看到的是 `0.103.2`、`0.105.1`、`0.106.1` 三个变体，没有 `0.106.1`。所以我的建议是：**先 staging，不要马上把 RitsuLib 写进 `EZMicroBalance.json` 的 required dependency**。要么把项目目标更新并验证到 `0.106.1`，要么拿到/确认 `0.106.1` 兼容包，再进入硬依赖迁移。repo 当前目标和命令状态在 `PROJECT_STATE.md`/README 里也写得很清楚。 
 
 ## 我建议的执行顺序
 
@@ -113,7 +113,7 @@ docs/codex-workflow.md 更新一行
 ]
 ```
 
-除非你决定把当前 StS2 target 从 `v0.106.0` 推到 `v0.106.1` 并完成 build/test/runtime smoke。当前 manifest 只依赖 BaseLib，版本是 `v0.1.0-private-beta.84`。
+除非你决定把当前 StS2 target 从 `v0.106.1` 推到 `v0.106.1` 并完成 build/test/runtime smoke。当前 manifest 只依赖 BaseLib，版本是 `v0.1.0-private-beta.84`。
 
 ### 4. 文件夹重构：先 move-only，再行为迁移
 
@@ -226,7 +226,7 @@ PR 1: baseline + docs-only Codex harness integration
 PR 2: RitsuLib staging docs + install instructions + version mismatch record
 PR 3: move-only source folder refactor, no behavior changes
 PR 4: test/docs/script path updates after move-only refactor
-PR 5: RitsuLib hard dependency, only after 0.106.0/0.106.1 decision
+PR 5: RitsuLib hard dependency, only after 0.106.1/0.106.1 decision
 PR 6: low-risk RitsuLib API adoption
 PR 7+: high-risk patch migrations, one feature surface at a time
 ```
@@ -242,14 +242,14 @@ PR 7+: high-risk patch migrations, one feature surface at a time
 1. 不要覆盖 root AGENTS.md。
 2. 不要改名 EZMicroBalance manifest id、project、resource folder、code folder、DLL、PCK、install folder。
 3. 不要提交 DLL/PCK/ZIP、本地工具、runtime evidence 或 build output。
-4. 先记录 RitsuLib 版本阻塞：当前 repo target 是 StS2 v0.106.0；上传的 RitsuLib variant pack 有 0.103.2、0.105.1、0.106.1，没有 0.106.0。
+4. 先记录 RitsuLib 版本阻塞：当前 repo target 是 StS2 v0.106.1；上传的 RitsuLib variant pack 有 0.103.2、0.105.1、0.106.1，没有 0.106.1。
 5. 这一步只允许 docs/harness/staging/refactor map，不允许改玩家可见行为。
 
 步骤：
 A. 读取 AGENTS.md、PROJECT_STATE.md、docs/README.md、docs/PROJECT_MAP.md、docs/worktree-cleanup-audit.md、docs/codex-workflow.md。
 B. 运行 git status --short --branch、git log -1 --oneline --decorate、dotnet build、dotnet test --no-build、dotnet format --verify-no-changes、git diff --check、scripts/report-worktree-batches.ps1 -FailOnUnclassified。
 C. 把上传的 Codex harness 作为 docs/codex-harness 模板接入，不覆盖 root AGENTS.md，不重复长期项目事实。
-D. 写 docs/integrations/ritsulib.md，说明 runtime 安装位置、variant pack 内容、0.106.0/0.106.1 阻塞、暂不改 manifest dependency。
+D. 写 docs/integrations/ritsulib.md，说明 runtime 安装位置、variant pack 内容、0.106.1/0.106.1 阻塞、暂不改 manifest dependency。
 E. 产出 move-only folder refactor map，不实际移动高风险文件。
 F. 更新 PROJECT_STATE/docs/PROJECT_MAP/docs/README 中必要索引。
 G. 最后重新跑 build/test/format/diff-check，并汇报实际文件、命令结果、阻塞和下一步。

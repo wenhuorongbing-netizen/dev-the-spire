@@ -4,7 +4,7 @@
 
 Current dependency and architecture baseline:
 
-- Base game source refresh target: `v0.106.0`.
+- Base game source refresh target: `v0.106.1`.
 - BaseLib package target: `v3.1.4`.
 - nctive private-beta project: `EZMicroBalance`.
 

@@ -2,48 +2,33 @@
 
 ## Task Goal
 
-- Implement restructure.md no-behavior integration prep phase (PR1 + PR2)
+- Integrate codex-app-better-token-main.zip and STS2-RitsuLib.0.3.3.variant-pack.zip
 
 ## Actual Result
 
-- Complete. All docs/harness/staging/refactor-map artifacts created and verified.
-  No behavior changes. No DLL/PCK/ZIP committed. Root AGENTS.md not overwritten.
-  EZMicroBalance manifest id and naming untouched.
+- Codex harness templates enriched with HCA_PROJECT_MAP, README_HOW_TO_USE, and bilingual PROMPTS
+- RitsuLib variant pack 0.3.3 contents fully documented in docs/integrations/ritsulib.md
+- NuGet status confirmed: 0.3.3 not published, 0.106.1 compat still missing
+- PR5 completed by user: RitsuLib 0.3.2 base package added to csproj + manifest
+- PR6 ready: low-risk RitsuLib API adoption
 
 ## Changed Files
 
-- `docs/codex-harness/README.md` -- thin Codex harness template integration
-- `docs/codex-harness/PROMPTS.md` -- ready-to-copy task prompt templates
-- `docs/codex-harness/templates/TASK_FOCUS_PACK.md` -- empty template
-- `docs/codex-harness/templates/TASK_STATUS.md` -- empty template
-- `docs/codex-harness/templates/TASK_RESULT.md` -- empty template
-- `docs/codex-harness/templates/ERROR_LEDGER.md` -- empty template
-- `harness/README.md` -- live task-scoped state readme
-- `harness/TASK_FOCUS_PACK.md` -- current task context
-- `harness/TASK_STATUS.md` -- task progress status
-- `harness/TASK_RESULT.md` -- this file
-- `harness/ERROR_LEDGER.md` -- error ledger (no entries yet)
-- `docs/integrations/ritsulib.md` -- RitsuLib staging record, variant pack contents, version mismatch blocker
-- `docs/refactor-map.md` -- move-only folder refactor map
-- `docs/migration.md` -- PR sequencing plan
-- `docs/README.md` -- updated index with new entries, fixed duplicate section
-- `docs/PROJECT_MAP.md` -- updated path map with new entries
-- `scripts/report-worktree-batches.ps1` -- classify docs/codex-harness/, docs/integrations/, harness/, docs/migration.md, docs/refactor-map.md
+- `docs/codex-harness/PROMPTS.md` -- merged bilingual templates (added error ledger, new project init)
+- `docs/codex-harness/README_HOW_TO_USE.md` -- new usage guide
+- `docs/codex-harness/templates/HCA_PROJECT_MAP.md` -- new project map template
+- `docs/codex-harness/README.md` -- updated directory layout
+- `docs/integrations/ritsulib.md` -- updated variant pack inventory, NuGet status
+- `docs/migration.md` -- updated blocker table, added variant pack resolution option
+- `harness/TASK_FOCUS_PACK.md` -- updated for current task
+- `harness/TASK_STATUS.md` -- updated status
+- `harness/TASK_RESULT.md` -- updated evidence
 
 ## Verification Commands
 
 - `dotnet build EZMicroBalance.sln`: passes (0 errors, 0 warnings)
-- `dotnet test EZMicroBalance.sln --no-build`: 303 passed, 21 skipped, 0 failed
-- `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: clean
-- `git diff --check`: CRLF warning only
-- `scripts/report-worktree-batches.ps1 -FailOnUnclassified`: 0 unclassified entries
 
-## Remaining Risks
+## Remaining Items
 
-- None for this docs-only phase
-
-## Suggested Next Steps
-
-- PR3: Move-only source folder refactor (see docs/refactor-map.md)
-- PR4: Test/docs/script path updates after move-only refactor
-- PR5: RitsuLib hard dependency (blocked on version mismatch resolution)
+- When `STS2.RitsuLib.Compat.0.106.1` is published on NuGet, upgrade from base package
+- PR6: low-risk RitsuLib API adoption (bootstrap, diagnostics, settings page)

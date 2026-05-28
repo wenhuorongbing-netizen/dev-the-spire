@@ -3,7 +3,7 @@
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Applies to: `EZMicroBalance/localization/{eng,zhs}/cards.json` and matching `CardModel` source.
 
-This guide follows local Slay the Spire 2 `v0.106.0` source behavior.
+This guide follows local Slay the Spire 2 `v0.106.1` source behavior.
 
 ## Source evidence
 

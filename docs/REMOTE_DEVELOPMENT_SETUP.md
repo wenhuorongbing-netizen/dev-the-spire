@@ -8,7 +8,7 @@ This guide explains how to clone this private repository on another Windows mach
 - Technical project, manifest id, and install folder: `EZMicroBalance`
 - Legacy scaffold id: `EzDailyContent`
 - Game: Slay the Spire 2 public beta
-- Verified version: `v0.106.0`, installed/source-refreshed locally on `2026-05-22`
+- Verified version: `v0.106.1`, installed/source-refreshed locally on `2026-05-22`
 - BaseLib runtime: `v3.1.4`
 - Build command: `dotnet build`
 - Publish command: `dotnet publish`

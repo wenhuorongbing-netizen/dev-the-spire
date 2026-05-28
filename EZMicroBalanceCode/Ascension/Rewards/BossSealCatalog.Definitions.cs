@@ -77,7 +77,7 @@ internal static partial class BossSealCatalog
                 "Time Sand Reflow",
                 "After Ebb, create 2 shared Time Sand. Each energy spent removes 1; remaining Time Sand makes the next Increasing Intensity add extra Wither.",
                 BossSealImplementationStatus.SourceGuardedPendingLiveVerification,
-                "v0.106.0 Aeonglass source uses EBB_MOVE, EYE_LASERS_MOVE, and INCREASING_INTENSITY_MOVE; this seal watches Ebb, tracks shared Time Sand through AfterEnergySpent, converts leftovers to extra Wither, and arms up to two branded Eye Laser extra-hit powers with an intent-label patch. Live energy and move-order verification pending.",
+                "v0.106.1 Aeonglass source uses EBB_MOVE, EYE_LASERS_MOVE, and INCREASING_INTENSITY_MOVE; this seal watches Ebb, tracks shared Time Sand through AfterEnergySpent, converts leftovers to extra Wither, and arms up to two branded Eye Laser extra-hit powers with an intent-label patch. Live energy and move-order verification pending.",
                 "Ebb creates 3 Time Sand. If Eye Lasers starts while Time Sand remains, Eye Lasers hits 1 extra time, up to twice per combat."),
             [EncounterId("QUEEN_BOSS")] = new(
                 BossSealId.ChosenDecree,

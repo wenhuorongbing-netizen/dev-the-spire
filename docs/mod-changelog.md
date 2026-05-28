@@ -78,7 +78,7 @@ Append only short tester/player-facing entries here when behavior or release val
 ## 2026-05-08
 
 - Multiplayer A20: fixed a black-screen run-start crash caused by hard references to optional Early Access dedicated ability types missing from the current installed game DLL.
-- Compatibility: Debt patch paths avoid direct assumptions about game members that changed across local Early Access builds. Pumpkin Candle and Door Wedge EZMB overrides are removed from the active v0.106.0 package; Pumpkin Candle is vanilla and Doormaker/Door Wedge is replaced by Aeonglass Time Sand Reflow.
+- Compatibility: Debt patch paths avoid direct assumptions about game members that changed across local Early Access builds. Pumpkin Candle and Door Wedge EZMB overrides are removed from the active v0.106.1 package; Pumpkin Candle is vanilla and Doormaker/Door Wedge is replaced by Aeonglass Time Sand Reflow.
 - A11-A20 selection is default-on for single-player standard lobbies. Host-multiplayer A11-A20 selection/gameplay now fails closed by default after the 2026-05-25 co-op crash logs unless `SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY=1` is deliberately set for two-client debugging.
 - Set `SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1` to restore vanilla A1-A10 selection for comparison.
 - Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.

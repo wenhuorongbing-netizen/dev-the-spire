@@ -1,8 +1,8 @@
 ﻿using Godot;
-using HarmonyLib;
 using BaseLib.Config;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Core.Features;
+using EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 using MegaCrit.Sts2.Core.Modding;
 
 namespace EZMicroBalance.EZMicroBalanceCode;
@@ -17,9 +17,8 @@ public partial class MainFile : Node
 
     public static void Initialize()
     {
-        Harmony harmony = new(ModId);
+        RitsuLibBootstrap.ApplyPatches(ModId);
 
-        harmony.PatchAll();
         ModConfigRegistry.Register(ModId, new SpirePlusModConfig());
         SpirePlusFeatureRegistry.CreateDefault().InitializeAll();
     }
