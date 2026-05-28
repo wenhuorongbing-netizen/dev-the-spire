@@ -1,8 +1,14 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.AfterCreated))]
-internal static class DebtAfterCreatedPatch
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+
+internal sealed class DebtAfterCreatedPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "debt-after-created";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Configure Debt card when created";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardModel), nameof(CardModel.AfterCreated))];
     [HarmonyPostfix]
     private static void Postfix(CardModel __instance)
     {
@@ -13,9 +19,13 @@ internal static class DebtAfterCreatedPatch
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.FromSerializable))]
-internal static class DebtFromSavePatch
+internal sealed class DebtFromSavePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "debt-from-save";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Configure Debt card when loaded from save";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardModel), nameof(CardModel.FromSerializable))];
     [HarmonyPostfix]
     private static void Postfix(CardModel __result)
     {
@@ -26,9 +36,13 @@ internal static class DebtFromSavePatch
     }
 }
 
-[HarmonyPatch(typeof(Debt), "get_CanonicalKeywords")]
-internal static class DebtKeywordsPatch
+internal sealed class DebtKeywordsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "debt-keywords";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Override Debt keywords to Exhaust only";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Debt), "get_CanonicalKeywords", HarmonyLib.MethodType.Getter)];
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<CardKeyword> __result)
     {
@@ -37,9 +51,13 @@ internal static class DebtKeywordsPatch
     }
 }
 
-[HarmonyPatch(typeof(Debt), "get_CanonicalVars")]
-internal static class DebtVarsPatch
+internal sealed class DebtVarsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "debt-vars";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Override Debt vars to 5 gold";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Debt), "get_CanonicalVars", HarmonyLib.MethodType.Getter)];
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
     {
@@ -48,9 +66,13 @@ internal static class DebtVarsPatch
     }
 }
 
-[HarmonyPatch(typeof(Debt), "get_HasTurnEndInHandEffect")]
-internal static class DebtTurnEndEffectPatch
+internal sealed class DebtTurnEndEffectPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "debt-turn-end-effect";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Disable Debt turn-end-in-hand effect";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Debt), "get_HasTurnEndInHandEffect", HarmonyLib.MethodType.Getter)];
     [HarmonyPrefix]
     private static bool Prefix(ref bool __result)
     {

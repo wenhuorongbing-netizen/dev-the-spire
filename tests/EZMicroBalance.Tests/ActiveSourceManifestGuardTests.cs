@@ -107,7 +107,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightOptionRelic.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPowers.cs",
-        "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightRunHook.cs",
+        "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightInitializer.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightService.BloodDebt.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightService.Contracts.cs",
         "EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightService.Entry.cs",

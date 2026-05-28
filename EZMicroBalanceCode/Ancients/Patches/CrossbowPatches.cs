@@ -1,8 +1,14 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.BeforeSideTurnStart))]
-internal static class CrossbowOfferPatch
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+
+internal sealed class CrossbowOfferPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "crossbow-offer";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Override Crossbow to offer temporary attack cards on side turn start";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(AbstractModel), nameof(AbstractModel.BeforeSideTurnStart))];
     [HarmonyPrefix]
     private static bool Prefix(AbstractModel __instance, PlayerChoiceContext choiceContext, CombatSide side, ICombatState combatState, ref Task __result)
     {
@@ -57,9 +63,13 @@ internal static class CrossbowOfferPatch
     }
 }
 
-[HarmonyPatch(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart))]
-internal static class CrossbowVanillaAfterTurnPatch
+internal sealed class CrossbowVanillaAfterTurnPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "crossbow-vanilla-after-turn";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Suppress vanilla Crossbow after-side-turn-start behavior";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart))];
     [HarmonyPrefix]
     private static bool Prefix(ref Task __result)
     {

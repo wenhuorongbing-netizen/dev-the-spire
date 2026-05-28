@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using MegaCrit.Sts2.Core.Modding;

@@ -70,7 +70,7 @@ public sealed class CoopCombatSafetyGuardTests
         var morviInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviInitializer.cs");
         var lothaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaInitializer.cs");
         var urdaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaInitializer.cs");
-        var vakuuInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightRunHook.cs");
+        var vakuuInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightInitializer.cs");
 
         Assert.Contains("SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS", policy, StringComparison.Ordinal);
         Assert.Contains("EZMB_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS", policy, StringComparison.Ordinal);

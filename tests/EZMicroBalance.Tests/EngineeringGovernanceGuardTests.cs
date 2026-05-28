@@ -212,7 +212,9 @@ public sealed class EngineeringGovernanceGuardTests
             pullRequestTemplate,
             "`EZMicroBalance` manifest id remains unchanged",
             "New or moved Harmony patches are reflected in `docs/patch-inventory.md`",
-            "Manual evidence rows stay open unless live proof exists");
+            "Manual evidence rows stay open unless live proof exists",
+            "High-risk patch seams",
+            "Source-only pass does not close live proof gates");
 
         var issueTemplate = ReadRepoText(".github", "ISSUE_TEMPLATE", "engineering_issue.md");
         AssertSourceContains(
