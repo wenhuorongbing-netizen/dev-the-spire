@@ -23,7 +23,7 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
         var engCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
         var zhsCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
 
-        Assert.Contains("MorviInitializer.Initialize", featureRegistry, StringComparison.Ordinal);
+        Assert.Contains("MorviFeatureModule", featureRegistry, StringComparison.Ordinal);
         Assert.Contains("MorviStateKey", savedFields, StringComparison.Ordinal);
         Assert.Contains("EZMicroBalanceMorviStateKey", savedFields, StringComparison.Ordinal);
         Assert.Contains("MorviBorrowedAncientCard", savedFields, StringComparison.Ordinal);
@@ -186,7 +186,7 @@ public sealed class AncientExpansionReleaseCoverageGuardTests
         var engPowers = JsonStringMap("EZMicroBalance", "localization", "eng", "powers.json");
         var zhsPowers = JsonStringMap("EZMicroBalance", "localization", "zhs", "powers.json");
 
-        Assert.Contains("LothaInitializer.Initialize", featureRegistry, StringComparison.Ordinal);
+        Assert.Contains("LothaFeatureModule", featureRegistry, StringComparison.Ordinal);
         AssertSourceContains(savedFields, "SavedSpireField<Player, string> LothaStateKey", "SavedSpireField<CardModel, string> LothaDeckStateKey", "SavedSpireField<CardModel, bool> LothaMirrorRebuttalCard");
         AssertSourceContains(
             lothaGate,
