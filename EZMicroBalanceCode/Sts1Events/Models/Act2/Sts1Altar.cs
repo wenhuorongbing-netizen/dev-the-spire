@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act2;
 
@@ -20,17 +21,16 @@ public sealed class Sts1Altar : EventModel
         };
     }
 
-    private Task Pray()
+    private async Task Pray()
     {
-        // TODO: Upgrade 3 random cards
+        await Sts1EventHelpers.OpenCardUpgrade(Owner, count: 3);
         SetEventFinished(L10NLookup("STS1_ALTAR.pages.PRAY.description"));
-        return Task.CompletedTask;
     }
 
-    private Task Sacrifice()
+    private async Task Sacrifice()
     {
-        // TODO: Remove a card from deck, grant random relic
+        await Sts1EventHelpers.OpenCardRemoval(Owner);
+        await Sts1EventHelpers.GrantRandomRelic(Owner);
         SetEventFinished(L10NLookup("STS1_ALTAR.pages.SACRIFICE.description"));
-        return Task.CompletedTask;
     }
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act1;
 
@@ -38,8 +39,7 @@ public sealed class Sts1DeadAdventurer : EventModel
         }
         else if (roll < eliteChance + 25)
         {
-            // Find a relic
-            // TODO: Grant random relic
+            await Sts1EventHelpers.GrantRandomRelic(Owner);
             SetEventFinished(L10NLookup("STS1_DEAD_ADVENTURER.pages.RELIC.description"));
         }
         else

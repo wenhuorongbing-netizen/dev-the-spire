@@ -1,14 +1,7 @@
-﻿using STS2RitsuLib.Patching.Models;
-
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-internal sealed class SozuPotionGatePatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "s-o-z-u-p-o-t-i-o-n-g-a-t-e-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch Sozu.ShouldProcurePotion";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(Sozu), nameof(Sozu.ShouldProcurePotion))];
+[HarmonyPatch(typeof(Sozu), nameof(Sozu.ShouldProcurePotion))]
+internal static class SozuPotionGatePatch
 {
     private static readonly HashSet<Player> InitialPotionFillOwners = [];
 
@@ -35,13 +28,8 @@ internal sealed class SozuPotionGatePatch : IPatchMethod
     }
 }
 
-internal sealed class EctoplasmGoldGatePatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "e-c-t-o-p-l-a-s-m-g-o-l-d-g-a-t-e-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch Ectoplasm.ShouldGainGold";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(Ectoplasm), nameof(Ectoplasm.ShouldGainGold))];
+[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ShouldGainGold))]
+internal static class EctoplasmGoldGatePatch
 {
     private static readonly HashSet<Player> InitialGoldOwners = [];
 
@@ -67,5 +55,3 @@ internal sealed class EctoplasmGoldGatePatch : IPatchMethod
         return true;
     }
 }
-
-

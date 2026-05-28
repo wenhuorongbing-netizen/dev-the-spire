@@ -1,14 +1,7 @@
-﻿using STS2RitsuLib.Patching.Models;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
-
-internal sealed class JewelryBoxPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "j-e-w-e-l-r-y-b-o-x-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch JewelryBox.AfterObtained";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))];
+[HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]
+internal static class JewelryBoxPatch
 {
     [HarmonyPrefix]
     private static bool Prefix(JewelryBox __instance, ref Task __result)
@@ -41,13 +34,8 @@ internal sealed class JewelryBoxPatch : IPatchMethod
     }
 }
 
-internal sealed class JewelryBoxApotheosisCanonicalKeywordsPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "j-e-w-e-l-r-y-b-o-x-a-p-o-t-h-e-o-s-i-s-c-a-n-o-n-i-c-a-l-k-e-y-w-o-r-d-s-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch Apotheosis.get_CanonicalKeywords";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(Apotheosis), "get_CanonicalKeywords", HarmonyLib.MethodType.Getter)];
+[HarmonyPatch(typeof(Apotheosis), "get_CanonicalKeywords")]
+internal static class JewelryBoxApotheosisCanonicalKeywordsPatch
 {
     [HarmonyPostfix]
     private static void RemoveInnateForMarkedJewelryBoxApotheosis(Apotheosis __instance, ref IEnumerable<CardKeyword> __result)
@@ -84,13 +72,8 @@ internal static class JewelryBoxApotheosisMarker
     }
 }
 
-internal sealed class JewelryBoxExtraHoverTipsPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "j-e-w-e-l-r-y-b-o-x-e-x-t-r-a-h-o-v-e-r-t-i-p-s-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch JewelryBox.get_ExtraHoverTips";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(JewelryBox), "get_ExtraHoverTips", HarmonyLib.MethodType.Getter)];
+[HarmonyPatch(typeof(JewelryBox), "get_ExtraHoverTips")]
+internal static class JewelryBoxExtraHoverTipsPatch
 {
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<MegaCrit.Sts2.Core.HoverTips.IHoverTip> __result)
@@ -100,13 +83,8 @@ internal sealed class JewelryBoxExtraHoverTipsPatch : IPatchMethod
     }
 }
 
-internal sealed class JewelryBoxHoverTipsPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "j-e-w-e-l-r-y-b-o-x-h-o-v-e-r-t-i-p-s-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch RelicModel.get_HoverTips";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(RelicModel), "get_HoverTips", HarmonyLib.MethodType.Getter)];
+[HarmonyPatch(typeof(RelicModel), "get_HoverTips")]
+internal static class JewelryBoxHoverTipsPatch
 {
     [HarmonyPrefix]
     private static bool Prefix(RelicModel __instance, ref IEnumerable<MegaCrit.Sts2.Core.HoverTips.IHoverTip> __result)
@@ -122,13 +100,8 @@ internal sealed class JewelryBoxHoverTipsPatch : IPatchMethod
     }
 }
 
-internal sealed class JewelryBoxHoverTipsExcludingRelicPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "j-e-w-e-l-r-y-b-o-x-h-o-v-e-r-t-i-p-s-e-x-c-l-u-d-i-n-g-r-e-l-i-c-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch RelicModel.get_HoverTipsExcludingRelic";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(RelicModel), "get_HoverTipsExcludingRelic", HarmonyLib.MethodType.Getter)];
+[HarmonyPatch(typeof(RelicModel), "get_HoverTipsExcludingRelic")]
+internal static class JewelryBoxHoverTipsExcludingRelicPatch
 {
     [HarmonyPrefix]
     private static bool Prefix(RelicModel __instance, ref IEnumerable<MegaCrit.Sts2.Core.HoverTips.IHoverTip> __result)
@@ -142,5 +115,3 @@ internal sealed class JewelryBoxHoverTipsExcludingRelicPatch : IPatchMethod
         return false;
     }
 }
-
-

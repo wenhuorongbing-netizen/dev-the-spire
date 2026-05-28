@@ -1,6 +1,4 @@
-﻿using MegaCrit.Sts2.Core.HoverTips;
-
-using STS2RitsuLib.Patching.Models;
+using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
@@ -41,13 +39,8 @@ internal static class SovereignBladeJadeBoons
     }
 }
 
-internal sealed class SovereignBladeForgeExhaustPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "s-o-v-e-r-e-i-g-n-b-l-a-d-e-f-o-r-g-e-e-x-h-a-u-s-t-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch ForgeCmd.Forge";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(ForgeCmd), nameof(ForgeCmd.Forge))];
+[HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]
+internal static class SovereignBladeForgeExhaustPatch
 {
     [HarmonyPostfix]
     private static void Postfix(Player player, ref Task<IEnumerable<SovereignBlade>> __result)
@@ -79,13 +72,8 @@ internal sealed class SovereignBladeForgeExhaustPatch : IPatchMethod
     }
 }
 
-internal sealed class SovereignBladeJadeBoonsOnPlayPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "s-o-v-e-r-e-i-g-n-b-l-a-d-e-j-a-d-e-b-o-o-n-s-o-n-p-l-a-y-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch SovereignBlade.OnPlay";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(SovereignBlade), nameof(SovereignBlade.OnPlay))];
+[HarmonyPatch(typeof(SovereignBlade), "OnPlay")]
+internal static class SovereignBladeJadeBoonsOnPlayPatch
 {
     [HarmonyPostfix]
     private static void Postfix(SovereignBlade __instance, PlayerChoiceContext choiceContext, ref Task __result)
@@ -94,13 +82,8 @@ internal sealed class SovereignBladeJadeBoonsOnPlayPatch : IPatchMethod
     }
 }
 
-internal sealed class SovereignBladeJadeBoonsHoverTipsPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "s-o-v-e-r-e-i-g-n-b-l-a-d-e-j-a-d-e-b-o-o-n-s-h-o-v-e-r-t-i-p-s-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch CardModel.get_HoverTips";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(CardModel), "get_HoverTips", HarmonyLib.MethodType.Getter)];
+[HarmonyPatch(typeof(CardModel), "get_HoverTips")]
+internal static class SovereignBladeJadeBoonsHoverTipsPatch
 {
     [HarmonyPostfix]
     private static void Postfix(CardModel __instance, ref IEnumerable<IHoverTip> __result)
@@ -111,5 +94,3 @@ internal sealed class SovereignBladeJadeBoonsHoverTipsPatch : IPatchMethod
         }
     }
 }
-
-

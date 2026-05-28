@@ -1,14 +1,7 @@
-﻿using STS2RitsuLib.Patching.Models;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
-
-internal sealed class ToastyMittensPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "t-o-a-s-t-y-m-i-t-t-e-n-s-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch ToastyMittens.BeforeHandDraw";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))];
+[HarmonyPatch(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))]
+internal static class ToastyMittensPatch
 {
     [HarmonyPrefix]
     private static bool Prefix(ToastyMittens __instance, Player player, PlayerChoiceContext choiceContext, ICombatState combatState, ref Task __result)
@@ -50,5 +43,3 @@ internal sealed class ToastyMittensPatch : IPatchMethod
         MainFile.Logger.Info($"[Spire Plus] ToastyMittens applied: exhausted {topCard.Id.Entry} and gained Strength.");
     }
 }
-
-

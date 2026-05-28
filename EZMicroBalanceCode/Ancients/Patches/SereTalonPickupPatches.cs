@@ -1,14 +1,7 @@
-﻿using STS2RitsuLib.Patching.Models;
-
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-internal sealed class SereTalonPickupPatches : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-p-i-c-k-u-p-p-a-t-c-h-e-s";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch SereTalon.AfterObtained";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(SereTalon), nameof(SereTalon.AfterObtained))];
+[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]
+internal static class SereTalonPickupPatches
 {
     private const int CurseOfferCount = 4;
     private const int CursePickCount = 1;
@@ -143,5 +136,3 @@ internal sealed class SereTalonPickupPatches : IPatchMethod
         }
     }
 }
-
-

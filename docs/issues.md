@@ -10,12 +10,12 @@ Current target: test-ready manual build, not release-ready. Current package hash
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
-- `SOUL-TIDE-BLOCK-TIMING` P0 source/package-fixed / live-pending: user retest still saw only Artifact. Pending Block now waits through Soul Fysh's enemy turn and is granted at the next player side start; enemy-turn-end no longer consumes it early.
+- `SOUL-TIDE-BLOCK-TIMING` P0 source/package-fixed / live-pending: user still saw only Artifact; pending Block now grants at next player start and enemy-turn-end no longer consumes it early.
 - `URDA-SEED-BANK-HOVER` P0 source/package-fixed / live-pending: Seed Bank relic hover now shows a compact stored-card list instead of full card previews that can clip offscreen and spawn unrelated keyword tips.
 - `URDA-SEEDBED-PLANTING` P0 source/package-fixed / live-pending: Planting text marks it as non-play/non-discard/non-Exhaust; planted Sprouts add no Rootblight I, and planted Rootblight keeps its master-deck stage.
 - `COOP-COMBAT-START-CRASH` P0 source/package-fixed / live-pending: co-op fails closed for unproven shared-state mutations; local UI-only preview tools are exempt.
 - `COOP-PREVIEW-TOOLS-CRASH` P0 source/package-fixed / live-pending: Crystal Sphere and transform preview now run in co-op as local UI only; no choices, rewards, or real RNG calls.
-- `ENEMY-DAMAGE-POLISH` P1 source/package-fixed / live-pending: Decimillipede's strengthened Bulk attack now uses the same source getter polish as Writhe/Constrict, so the visible intent and real damage no longer stay at the old 7-damage value.
+- `ENEMY-DAMAGE-POLISH` P1 source/package-fixed / live-pending: strengthened Bulk now uses the same getter polish as Writhe/Constrict, so visible intent and real damage no longer stay at 7.
 - `ROOTBLIGHT-STARTER-MISSING` / `BOSS-BLIGHT-SPROUT-PLAYED-STILL-ROOTBLIGHT` P1 source-fixed / live-pending: combat start retries A14 starter Rootblight before growth marking; played/planted Blight Sprouts still do not grow.
 - `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
 - `QUEEN-BOSS-SEAL-RUNTIME` P0 source/package-fixed / live-pending: Royal Decree now skips un-enchantable Bound cards before `CardCmd.Enchant`; retest Queen/Royal Decree and capture `godot.log`.
@@ -35,7 +35,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
   Use `scripts/check-github-workflow-runs.ps1 -RequireSuccessfulRun` before closing this.
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
-- `REFACTOR-PHASE0-1-VALIDATION` P1 done (2026-05-28): build 0 errors, 303 pass / 0 fail / 21 skip. Phase 0 (patch count drift, PR template, guard tests) and Phase 1 (FeatureOrders, named feature modules, registry refactor, VakuuFightInitializer split) structural work complete. Phase 2 (patch adapter rule) not started.
+- `REFACTOR-PHASE0-1-VALIDATION` P1 done (2026-05-28): build 0 errors, 303 pass / 0 fail / 21 skip. Phase 0/1 structural work complete; Phase 2 patch adapter rule not started.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.

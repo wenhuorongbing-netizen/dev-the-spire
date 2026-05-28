@@ -1,14 +1,7 @@
-﻿using STS2RitsuLib.Patching.Models;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
-
-internal sealed class JeweledMaskCombatStartPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "j-e-w-e-l-e-d-m-a-s-k-c-o-m-b-a-t-s-t-a-r-t-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch JeweledMask.BeforeHandDraw";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))];
+[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]
+internal static class JeweledMaskCombatStartPatch
 {
     [HarmonyPrefix]
     private static bool Prefix(JeweledMask __instance, Player player, ICombatState combatState, ref Task __result)
@@ -43,5 +36,3 @@ internal sealed class JeweledMaskCombatStartPatch : IPatchMethod
         MainFile.Logger.Info("[Spire Plus] JeweledMask skipped pull: no marked power in draw pile or hand.");
     }
 }
-
-

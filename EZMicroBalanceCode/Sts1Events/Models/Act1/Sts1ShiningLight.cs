@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act1;
 
@@ -34,7 +35,7 @@ public sealed class Sts1ShiningLight : EventModel
             Owner.Creature, (decimal)damage,
             MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered,
             null, null);
-        // TODO: Upgrade 2 random cards
+        await Sts1EventHelpers.OpenCardUpgrade(Owner, count: 2);
         SetEventFinished(L10NLookup("STS1_SHINING_LIGHT.pages.ENTER.description"));
     }
 }

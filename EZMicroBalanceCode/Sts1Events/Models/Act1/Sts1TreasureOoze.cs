@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act1;
 
@@ -26,7 +27,7 @@ public sealed class Sts1TreasureOoze : EventModel
     private async Task Offer()
     {
         await PlayerCmd.GainGold(-OfferCost, Owner);
-        // TODO: Grant random relic
+        await Sts1EventHelpers.GrantRandomRelic(Owner);
         SetEventFinished(L10NLookup("STS1_TREASURE_OOZE.pages.OFFER.description"));
     }
 

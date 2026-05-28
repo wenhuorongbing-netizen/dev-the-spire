@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act2;
 
@@ -20,17 +21,15 @@ public sealed class Sts1Augmenter : EventModel
         };
     }
 
-    private Task Transform()
+    private async Task Transform()
     {
-        // TODO: Transform 2 random cards
+        await Sts1EventHelpers.OpenCardTransform(Owner, Rng, count: 2);
         SetEventFinished(L10NLookup("STS1_AUGMENTER.pages.TRANSFORM.description"));
-        return Task.CompletedTask;
     }
 
-    private Task Mutate()
+    private async Task Mutate()
     {
-        // TODO: Open card upgrade UI
+        await Sts1EventHelpers.OpenCardUpgrade(Owner);
         SetEventFinished(L10NLookup("STS1_AUGMENTER.pages.MUTATE.description"));
-        return Task.CompletedTask;
     }
 }

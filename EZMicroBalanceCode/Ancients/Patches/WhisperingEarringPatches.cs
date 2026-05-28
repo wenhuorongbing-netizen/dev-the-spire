@@ -1,14 +1,7 @@
-﻿using STS2RitsuLib.Patching.Models;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
-
-internal sealed class WhisperingEarringPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "w-h-i-s-p-e-r-i-n-g-e-a-r-r-i-n-g-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))];
+[HarmonyPatch(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))]
+internal static class WhisperingEarringPatch
 {
     [HarmonyPrefix]
     private static bool Prefix(WhisperingEarring __instance, PlayerChoiceContext choiceContext, Player player, ref Task __result)
@@ -59,5 +52,3 @@ internal sealed class WhisperingEarringPatch : IPatchMethod
         MainFile.Logger.Info($"[Spire Plus] WhisperingEarring applied: auto-played {card.Id.Entry} on round {combatState.RoundNumber}.");
     }
 }
-
-

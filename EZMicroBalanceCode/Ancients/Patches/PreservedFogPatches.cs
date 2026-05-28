@@ -1,14 +1,7 @@
-﻿using STS2RitsuLib.Patching.Models;
+﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
-
-internal sealed class PreservedFogPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "p-r-e-s-e-r-v-e-d-f-o-g-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch PreservedFog.AfterObtained";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(PreservedFog), nameof(PreservedFog.AfterObtained))];
+[HarmonyPatch(typeof(PreservedFog), nameof(PreservedFog.AfterObtained))]
+internal static class PreservedFogPatch
 {
     [HarmonyPrefix]
     private static bool Prefix(PreservedFog __instance, ref Task __result)
@@ -33,13 +26,8 @@ internal sealed class PreservedFogPatch : IPatchMethod
     }
 }
 
-internal sealed class FollyKeywordsPatch : IPatchMethod
-{
-    static string IPatchMethod.PatchId => "f-o-l-l-y-k-e-y-w-o-r-d-s-p-a-t-c-h";
-    static bool IPatchMethod.IsCritical => false;
-    static string IPatchMethod.Description => "Patch Folly.get_CanonicalKeywords";
-    static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(Folly), "get_CanonicalKeywords", HarmonyLib.MethodType.Getter)];
+[HarmonyPatch(typeof(Folly), "get_CanonicalKeywords")]
+internal static class FollyKeywordsPatch
 {
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<CardKeyword> __result)
@@ -48,5 +36,3 @@ internal sealed class FollyKeywordsPatch : IPatchMethod
         return false;
     }
 }
-
-
