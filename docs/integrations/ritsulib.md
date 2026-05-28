@@ -49,10 +49,24 @@ variants:
 | --- | --- |
 | Current repo StS2 target | v0.106.0 |
 | Current repo BaseLib target | v3.1.4 |
-| Available RitsuLib variants | 0.103.2, 0.105.1, 0.106.1 |
-| Missing RitsuLib variant | **0.106.0** |
+| Available RitsuLib runtime variants | 0.103.2, 0.105.1, 0.106.1 |
+| Missing RitsuLib runtime variant | **0.106.0** |
 
 **No 0.106.0-compatible RitsuLib variant exists in the uploaded pack.**
+
+### NuGet Package Status
+
+| NuGet Package | Version | Status |
+| --- | --- | --- |
+| `STS2.RitsuLib` | 0.3.2 (latest) | Available |
+| `STS2.RitsuLib.Compat.0.103.2` | 0.3.2 | Available |
+| `STS2.RitsuLib.Compat.0.104.0` | 0.2.40 | Available |
+| `STS2.RitsuLib.Compat.0.105.1` | 0.3.2 | Available |
+| `STS2.RitsuLib.Compat.0.106.0` | -- | **Not published** |
+| `STS2.RitsuLib.Compat.0.106.1` | -- | **Not published** |
+
+The restructure plan referenced RitsuLib 0.3.3 but the latest on NuGet is 0.3.2.
+No compat package exists for game version 0.106.0 or 0.106.1.
 
 Until this is resolved, do **not** add RitsuLib to the manifest dependencies:
 
