@@ -7,10 +7,10 @@ refactor work described in `docs/restructure.md`.
 
 | PR | Scope | Risk | Status |
 | --- | --- | --- | --- |
-| PR 1 | Baseline lock + docs-only Codex harness integration | None | **Current** |
+| PR 1 | Baseline lock + docs-only Codex harness integration | None | Done |
 | PR 2 | RitsuLib staging docs + install instructions + version mismatch record | None | Done (in PR 1) |
-| PR 3 | Move-only source folder refactor, no behavior changes | Low | Planned |
-| PR 4 | Test/docs/script path updates after move-only refactor | Low | Planned |
+| PR 3 | Move-only source folder refactor, no behavior changes | Low | Done |
+| PR 4 | Test/docs/script path updates after move-only refactor | Low | Done (no-op: no files moved) |
 | PR 5 | RitsuLib hard dependency (only after 0.106.0/0.106.1 decision) | Medium | Blocked |
 | PR 6 | Low-risk RitsuLib API adoption | Medium | Blocked |
 | PR 7+ | High-risk patch migrations, one feature surface at a time | High | Blocked |
@@ -39,20 +39,18 @@ documentation, produce move-only refactor map. No behavior changes.
 
 ## PR 3: Move-Only Source Folder Refactor
 
-**Goal:** Restructure `EZMicroBalanceCode/` internal directories without
-changing behavior. See `docs/refactor-map.md` for the target layout.
+**Status:** Done. Directory scaffolds created per `docs/refactor-map.md`. No files
+moved — actual file moves will accompany behavior changes in later PRs.
 
-**New directories:**
-- `Core/Integrations/RitsuLib/` -- future RitsuLib bootstrap module
-- `Ancients/Rebalance/` -- shared rebalance helpers
-- `Ascension/Ui/` -- Ascension UI patches (if separated)
-- `Ascension/Save/` -- Ascension save/load code (if separated)
+**Directories created:**
+- `Core/Integrations/RitsuLib/` — future RitsuLib bootstrap module
+- `Ancients/Rebalance/` — shared rebalance helpers (extracted from Common)
+- `Ascension/Ui/` — Ascension UI patches (if separated)
+- `Ascension/Save/` — Ascension save/load code (if separated)
 
-**Constraints:**
-- No behavior changes in this PR
-- High-risk patches (run, room, save, lobby, multiplayer, lifecycle) not moved
-  with behavior changes
-- RitsuLib patcher migration not mixed with folder moves
+## PR 4: Test/Docs/Script Path Updates
+
+**Status:** Done (no-op). No files were moved in PR 3, so no path updates needed.
 
 ## PR 5: RitsuLib Hard Dependency (Blocked)
 
