@@ -1,6 +1,6 @@
 # Harmony Patch Inventory
 
-Generated: 2026-05-27
+Generated: 2026-05-28
 
 Purpose: keep every Harmony patch visible, owned, and risk-labeled. Regenerate after adding, moving, or deleting patch declarations.
 
@@ -15,10 +15,10 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 166 |
+| Total patch declarations | 157 |
 | High risk | 22 |
-| Medium risk | 45 |
-| Low risk | 99 |
+| Medium risk | 43 |
+| Low risk | 92 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -57,11 +57,9 @@ Regenerate:
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 107 | `[HarmonyPatch(typeof(EventRoom), nameof(EventRoom.EnterInternal))]` |
 | Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 121 | `[HarmonyPatch(typeof(AncientEventModel), "BeforeEventStarted")]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 140 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/BlackStarCompensationPatches.cs` | 3 | `[HarmonyPatch(typeof(RelicCmd), nameof(RelicCmd.Obtain), typeof(RelicModel), typeof(Player), typeof(int))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs` | 15 | `[HarmonyPatch(typeof(CardModel), "get_CanonicalKeywords")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs` | 33 | `[HarmonyPatch(typeof(BrightestFlame), "get_CanonicalVars")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/BrightestFlameExhaustDrawPatch.cs` | 49 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.OnPlayWrapper))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/ChoicesParadoxPatches.cs` | 3 | `[HarmonyPatch(typeof(ChoicesParadox), nameof(ChoicesParadox.AfterPlayerTurnStart))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/CrossbowPatches.cs` | 3 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.BeforeSideTurnStart))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/CrossbowPatches.cs` | 60 | `[HarmonyPatch(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 3 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.AfterCreated))]` |
@@ -72,13 +70,6 @@ Regenerate:
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 62 | `[HarmonyPatch(typeof(Debt), "OnTurnEndInHand")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 73 | `[HarmonyPatch(typeof(CardModel), "OnPlay")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DebtAndCardPatches.cs` | 106 | `[HarmonyPatch(typeof(CardCmd), nameof(CardCmd.Exhaust))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DistinguishedCapePatches.cs` | 3 | `[HarmonyPatch(typeof(DistinguishedCape), "get_CanonicalVars")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DistinguishedCapePatches.cs` | 19 | `[HarmonyPatch(typeof(Vakuu), "GenerateInitialOptions")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/DistinguishedCapePatches.cs` | 104 | `[HarmonyPatch(typeof(DistinguishedCape), nameof(DistinguishedCape.AfterObtained))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/FiddlePatches.cs` | 3 | `[HarmonyPatch(typeof(Fiddle), "get_CanonicalVars")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/FiddlePatches.cs` | 14 | `[HarmonyPatch(typeof(Fiddle), nameof(Fiddle.ModifyHandDrawLate))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/FiddlePatches.cs` | 37 | `[HarmonyPatch(typeof(Fiddle), nameof(Fiddle.ShouldDraw))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/FiddlePatches.cs` | 59 | `[HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JeweledMaskPatches.cs` | 3 | `[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 3 | `[HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 37 | `[HarmonyPatch(typeof(Apotheosis), "get_CanonicalKeywords")]` |

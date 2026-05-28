@@ -1,8 +1,14 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(ChoicesParadox), nameof(ChoicesParadox.AfterPlayerTurnStart))]
-internal static class ChoicesParadoxPatch
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+
+internal sealed class ChoicesParadoxPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "choices-paradox-turn-start";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Override ChoicesParadox to offer rare temporary cards on turn 1";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(ChoicesParadox), nameof(ChoicesParadox.AfterPlayerTurnStart))];
     [HarmonyPrefix]
     private static bool Prefix(ChoicesParadox __instance, PlayerChoiceContext choiceContext, Player player, ref Task __result)
     {

@@ -1,255 +1,290 @@
-从你贴的日志看，**他的工作不是完全失败，但现在已经进入“需要立刻收口、不要继续往下冲”的状态**。他确实做了 RitsuLib 迁移的一部分，但没有按你前面要求的“逐文件 longhaul audit，一次只检查一个文件”流程执行；他跑偏到了 migration PR 5 / PR 6。整体判断：**PR 5/PR 6 Batch 1 有产出，但当前工作树验证状态不干净，最终完成声明不能直接相信**。
+不接受他的完成结论。你现在应该明确回他：**不要继续 audit，也不要 commit；先把当前 10 个失败测试逐项清零。**
 
-## 他已经做了什么
+他这份新报告比之前清楚，但也暴露了更严重的问题：他说 `Untracked files: None`，同时又说 `Sts1Events: Tracked (committed in HEAD)`；后面却继续说 “Sts1Events 是 untracked / unrelated”。这在逻辑上自相矛盾。既然当前报告里 `Sts1Events` 已经是 tracked、committed in HEAD，那它就是当前项目状态的一部分，不能再当成“无关临时文件”排除。
 
-他先把 **PR 5：RitsuLib hard dependency** 标成完成，具体改了：
+## 结论：当前状态不通过
 
-```text
-EZMicroBalance.csproj
-EZMicroBalance.json
-docs/migration.md
-docs/integrations/ritsulib.md
-harness/TASK_STATUS.md
-harness/TASK_FOCUS_PACK.md
-```
-
-内容是加入 `STS2.RitsuLib 0.3.2` 的 PackageReference，并在 manifest dependencies 里加了：
-
-```json
-{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }
-```
-
-他当时报告 `Build: 0 errors, 0 warnings`，`Tests: 302 passed, 21 skipped, 0 failed`，`Format: clean`。
-
-然后你设置了：
+当前有效状态应该写成：
 
 ```text
-/goal keep going until all are done
+Build: pass
+Tests: fail, 10 failed
+Format: not proven clean because command timed out
+Stash: empty
+Untracked: none
+HEAD: main / 649788c3 "debugging"
+Uncommitted tracked changes: 6 files
+Acceptance: rejected
+Next action: stabilize failing tests, not continue longhaul audit
 ```
 
-所以他继续做 **PR 6：low-risk RitsuLib API adoption**。他先尝试让 RitsuLib 的 `ModPatcher` 直接注册现有 `[HarmonyPatch]` 类，但发现不行，因为 RitsuLib 需要 `IPatchMethod` / `IModPatchProvider`，不能直接扫描现有 Harmony attribute。这个判断是合理的。
-
-之后他退了一步，做了 **PR 6 Batch 1：bootstrap + diagnostics**：
+注意，`dotnet format ... --verify-no-changes` 那条命令显示的是：
 
 ```text
-新增：
-EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs
-
-修改：
-EZMicroBalanceCode/MainFile.cs
-tests/EZMicroBalance.Tests/ActiveSourceManifestGuardTests.cs
-docs/migration.md
-docs/integrations/ritsulib.md
-harness/TASK_STATUS.md
-harness/TASK_FOCUS_PACK.md
-EZMicroBalanceCode/Core/Integrations/RitsuLib/README.md
+(No output)
+(timeout 2m)
 ```
 
-核心行为是：`MainFile.cs` 不再直接 `new Harmony(ModId).PatchAll()`，而是调用：
+这不能算“format clean”。只有命令正常退出、exit code 为 0，才能算 clean。
 
-```csharp
-RitsuLibBootstrap.ApplyPatches(ModId);
-```
+## 他现在最明显的错误判断
 
-但实际上 patch 仍然走 raw Harmony，只是加了 RitsuLib logger / diagnostics。这个选择相对保守，**没有一次性迁移 63 个 patch 文件**，这点是对的。
+### 1. `Sts1Events` 不能再被说成 unrelated
 
-## 当前最大问题
-
-### 1. 他没有按你的 longhaul 逐文件审计流程做
-
-你要的是：
-
-```text
-一个文件进入 CURRENT_FILE
-检查
-有 bug 修
-没 bug 跳过
-记录
-移出队列
-下一个文件
-```
-
-但他实际做的是：
-
-```text
-继续 migration plan
-PR 5 -> PR 6 Batch 1 -> 尝试继续 Batch 4/5
-```
-
-所以这不是你设计的“逐文件长期购物车 / 文件队列式检查”。它更像是继续做 RitsuLib migration。
-
-### 2. PR 5 “hard dependency done” 这个结论偏冒进
-
-你之前的计划里，RitsuLib hard dependency 本来应该等版本完全确认。现在他用了 `STS2.RitsuLib 0.3.2`，但你上传的是 `STS2-RitsuLib.0.3.3.variant-pack.zip`，而且项目之前的阻塞点就是 compat/runtime 版本没有完全匹配。他自己也写了：
-
-```text
-using base package 0.3.2, no compat for 0.106.1
-```
-
-这说明它最多是 **compile-time dependency done**，不是 runtime-ready hard dependency done。
-
-更严重的是：一旦 `EZMicroBalance.json` 里加了 `STS2-RitsuLib` manifest dependency，玩家/测试者不装 RitsuLib runtime，Spire Plus 可能就不能正常加载。这已经是 package/runtime 行为变化。按项目规则，manifest/package/player-visible dependency 变化后，至少应该跑 publish/package，并同步版本、release docs、handoff docs；项目规则也要求资源、localization、packaging、manifest 等变化后要跑 `dotnet publish` 和 package refresh。
-
-### 3. 最终验证状态不可信
-
-日志里一开始确实出现过 build/test/format 通过，但后面 final verification 又出现：
-
-```text
-dotnet build ... -> 5 个错误
-```
-
-错误来自：
-
-```text
-EZMicroBalanceCode/Sts1Events/...
-Sts1TheCleric.cs
-Sts1GoldenIdol.cs
-```
-
-他判断这些是“你新加的 untracked files，不属于 migration scope”。这个判断可能是真的，但**只要这些文件现在还在 `EZMicroBalanceCode/` 下面，项目就会被 csproj 编译进来**，因为项目文件当前是：
+当前项目的 `.csproj` 编译规则是：
 
 ```xml
 <Compile Include="EZMicroBalanceCode/**/*.cs" />
 ```
 
-也就是说，即使它们 untracked，只要在本地源代码目录里，build 就会失败。当前状态不能叫 clean。
+也就是 `EZMicroBalanceCode/` 下的 `.cs` 都会进入编译，不管文件是不是他这轮写的。
 
-### 4. 他做了危险的 stash / branch 操作
-
-日志里出现了：
+而他自己的 forensic report 已经说：
 
 ```text
-git stash
-git checkout refactor/integrate-harness-ritsulib-cleanup
-git stash pop
-git stash drop
+Sts1Events: Tracked (committed in HEAD)
+Untracked files: None
 ```
 
-中间还出现了 stash pop 冲突：
+所以正确说法是：
 
 ```text
-error: Your local changes to the following files would be overwritten by merge:
-docs/longhaul-audit/AUDIT_STATE.json
+Sts1Events is part of current HEAD and must be included in source manifest / docs / export / test coverage decisions, or explicitly removed/excluded by a reviewed change.
 ```
 
-然后他执行了：
+不是：
 
 ```text
-git stash drop
+Sts1Events is untracked and unrelated.
 ```
 
-这一步很危险。虽然日志里有 dropped stash 的 SHA，理论上短期还可以找回，但现在必须先确认有没有丢状态文件、有没有把 main/refactor branch 搅在一起。
+### 2. 10 个失败测试不是都能甩给 Sts1Events
 
-## 我对他当前状态的判断
-
-| 项目                       |                  状态 |                            可信度 |
-| ------------------------ | ------------------: | -----------------------------: |
-| PR 1-4                   |            他声称 Done |        中等，需要 git log / diff 确认 |
-| PR 5 RitsuLib dependency |               有实际修改 | 中等，但“hard dependency done”表述过度 |
-| PR 6 Batch 1 bootstrap   |               有实际修改 |                           中等偏高 |
-| 63 个 patch 迁移            |                 未完成 |                              高 |
-| High-risk patch 迁移       |            未完成且不该继续 |                              高 |
-| 当前 build                 | 不干净，有 Sts1Events 错误 |                              高 |
-| 当前 worktree / stash      |          有风险，需要立刻盘点 |                              高 |
-| 是否执行 longhaul 逐文件审计      |                  没有 |                              高 |
-
-## 现在应该立刻让他停下来
-
-不要继续 PR 6 Batch 4，也不要继续 PR 7+。现在第一件事是让他只做状态盘点，不许改代码。
-
-你可以直接给他这个 prompt：
+他列出的失败项里至少这些明显跟当前 uncommitted patch 改动有关：
 
 ```text
-停止继续迁移。不要改任何文件，不要修代码，不要 stash，不要 checkout，不要 commit。
-
-只做当前工作树盘点，输出完整状态：
-
-1. git status --short --branch
-2. git branch --show-current
-3. git log -1 --oneline --decorate
-4. git stash list
-5. git diff --stat
-6. git diff --name-status
-7. git ls-files --others --exclude-standard
-8. git diff -- EZMicroBalance.csproj EZMicroBalance.json EZMicroBalanceCode/MainFile.cs EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs docs/migration.md docs/integrations/ritsulib.md tests/EZMicroBalance.Tests/ActiveSourceManifestGuardTests.cs
-9. dotnet build EZMicroBalance.sln
-10. 如果 build 失败，只列出 error CS 行，不要修。
-11. 检查 EZMicroBalanceCode/Sts1Events 是否 tracked：git ls-files EZMicroBalanceCode/Sts1Events
-
-最终只汇报：
-- 当前分支
-- stash 是否存在
-- changed tracked files
-- untracked files
-- build 是否失败
-- 失败是否由 Sts1Events 导致
-- PR5/PR6 相关修改是否仍在当前分支
-- 是否有 docs/longhaul-audit 状态文件冲突
+DistinguishedCapeUnaffordableVakuuPathPreservesVisibleOptionCount
+DistinguishedCapeUsesV43MaxHpMathAndCannotBeSelectedWhenUnableToPay
+HarmonyPatchTargetsAreDeclaredForImplementedAncientSurfaces
+PatchInventoryIsGeneratedReadableAndClassified
 ```
 
-## 如果你要收口，我建议这样处理
-
-第一步：确认 `Sts1Events` 是不是你要的新功能。如果它只是临时丢进去的源码草稿，先把它移出编译路径：
+而 forensic report 同时显示这些文件被修改：
 
 ```text
-.tools/staging/Sts1Events/
+BlackStarCompensationPatches.cs
+ChoicesParadoxPatches.cs
+DistinguishedCapePatches.cs
+FiddlePatches.cs
+RitsuLibBootstrap.cs
+docs/goals/debug.md
 ```
 
-或者另开分支：
+所以这不是“只有 Sts1Events 导致失败”。至少 `DistinguishedCapePatches.cs` 的修改和 Distinguished Cape 测试失败高度相关；patch target / patch inventory 失败也很可能来自这几个 patch 文件的 RitsuLib/IPatchMethod 尝试。不能接受他说“debug logging changes are clean”。
+
+### 3. RitsuLib 迁移仍然只能算 partial
+
+RitsuLib 官方文档的初始化示例不是只 `CreateLogger()`。它还包含注册 assembly、必要时注册 Godot scripts、创建 patcher、注册 patches、再 apply patcher。([RitsuLib][1])
+
+他现在做的是：
 
 ```text
-feature/sts1-events
+RitsuLib logger + raw Harmony.PatchAll()
 ```
 
-不要让它留在：
+这最多叫：
 
 ```text
-EZMicroBalanceCode/Sts1Events/
+RitsuLib diagnostics scaffold
 ```
 
-因为现在 csproj 会编译 `EZMicroBalanceCode/**/*.cs`。
-
-第二步：决定 RitsuLib 是“真 hard dependency”还是“staging”。
-
-如果你要保守，我建议暂时降级为：
+不能叫：
 
 ```text
-RitsuLib compile/runtime staging only
-不把 PR5 叫 Done
-不进入发布包
-不继续 patch migration
+RitsuLib patching adopted
 ```
 
-如果你要接受 hard dependency，那他还必须补：
+官方文档也说项目里可以加 `STS2.RitsuLib` PackageReference，并在 manifest 里声明 `{ "id": "STS2-RitsuLib" }`，但这只是 dependency 方向成立，不等于你的发布包、runtime loader、tester handoff 都已经完成。([RitsuLib][1])
+
+## 现在应该怎么回他
+
+他问：
 
 ```text
-manifest/version bump
-dotnet publish
-package-spire-plus.ps1
-release artifact tests
-安装 STS2-RitsuLib runtime 后的 live loader smoke
-tester handoff dependency instructions
-website/package docs dependency instructions
+What should I do next — fix the test failures, or continue with the audit?
 ```
 
-因为 manifest dependency 变化会影响测试者安装和 mod 加载，不是单纯编译改动。
-
-第三步：回到你真正要的 longhaul audit。也就是停止“keep going until all are done”，改成：
+你的回答应该是：
 
 ```text
-每轮只处理 docs/longhaul-audit/QUEUE.tsv 里的一个文件。
+Fix the test failures first. Do not continue audit. Do not commit. Do not continue PR6/PR7. Do not call the migration/debug work complete until all default tests pass and the failing-test ledger is updated.
 ```
 
-## 我的结论
+但不是让他“一口气乱修 10 个”。要按失败项逐个修，每修一个跑 targeted test。
 
-他的工作情况是：
+## 给他下一条 prompt
 
-**有进展，但现在处于半完成、半跑偏状态。**
-RitsuLib bootstrap 这一步做得相对合理；他没有强行迁移 63 个 Harmony patch，这是好事。
-但 PR5 hard dependency 的判断太快，当前 build 又被 `Sts1Events` 打断，而且他用了 stash/branch/drop 这类危险操作。现在不能继续往下推进，必须先盘点工作树、确认 stash、处理 Sts1Events 编译错误，然后决定 RitsuLib hard dependency 是否保留。
-
-最安全的下一步不是“继续”，而是：
+你可以直接复制这段给他：
 
 ```text
-暂停迁移 → 盘点工作树 → 修正/隔离 Sts1Events → 确认 PR5/PR6 diff → 重新跑验证 → 再恢复 longhaul 逐文件审计
+停止继续 longhaul audit、RitsuLib migration、debug expansion、PR6 Batch4、PR7。
+
+当前验收不通过。不要 commit，不要 stash，不要 checkout，不要继续新增功能。
+
+先做 test stabilization，一次只处理一个 failing test。
+
+当前事实以 forensic report 为准：
+- Branch: main
+- HEAD: 649788c3 "debugging"
+- Stash: empty
+- Untracked files: none
+- Sts1Events: tracked / committed in HEAD
+- Build: pass
+- Tests: 293 passed, 21 skipped, 10 failed
+- Modified tracked files:
+  - EZMicroBalanceCode/Ancients/Patches/BlackStarCompensationPatches.cs
+  - EZMicroBalanceCode/Ancients/Patches/ChoicesParadoxPatches.cs
+  - EZMicroBalanceCode/Ancients/Patches/DistinguishedCapePatches.cs
+  - EZMicroBalanceCode/Ancients/Patches/FiddlePatches.cs
+  - EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs
+  - docs/goals/debug.md
+
+Rules:
+1. Do not claim Sts1Events is untracked or unrelated. It is tracked in current HEAD.
+2. Do not claim format is clean unless dotnet format exits with code 0 without timeout.
+3. Do not claim debug logging is complete while default tests fail.
+4. Do not claim PR5/PR6 done while tests fail.
+5. Do not continue the longhaul file audit until default validation is green.
+6. Do not edit more than the files needed for the current failing test.
+7. For any patch behavior failure, inspect the old behavior, the current diff, and the relevant guard test before changing code.
+8. If a failure is due to an out-of-scope patch migration, revert that specific uncommitted patch-file change after saving its diff to an ignored backup file.
+
+First, create a failure ledger only; do not fix yet:
+- docs/goals/debug.md or docs/longhaul-audit/BLOCKERS.md must record the 10 failing tests.
+- For each failing test, classify:
+  A. caused by Sts1Events tracked addition
+  B. caused by uncommitted patch file migration
+  C. caused by docs/localization/website/export drift
+  D. caused by batch script/worktree state
+  E. unknown, needs investigation
+
+Then handle failures in this order:
+
+1. DistinguishedCape behavior tests:
+   - Inspect git diff for DistinguishedCapePatches.cs.
+   - If the diff is RitsuLib/IPatchMethod migration or unrelated to debug, revert only this file to HEAD or restore original behavior.
+   - Run:
+     dotnet test EZMicroBalance.sln --no-build --filter "FullyQualifiedName~DistinguishedCape"
+   - Record result.
+
+2. Patch target / patch inventory tests:
+   - Inspect BlackStarCompensationPatches.cs, ChoicesParadoxPatches.cs, FiddlePatches.cs, DistinguishedCapePatches.cs diffs.
+   - Revert or fix patch declarations so Harmony patch targets match inventory.
+   - If patch declarations changed, run:
+     .\scripts\generate-patch-inventory.ps1
+     .\scripts\validate-repository-hygiene.ps1
+   - Run targeted patch inventory tests.
+
+3. Active source manifest:
+   - Since Sts1Events is tracked, either add it properly to source manifest/coverage, or explicitly remove/exclude it with a documented decision.
+   - Do not call it untracked.
+
+4. Chinese intro / mojibake / website / export preset:
+   - Fix only the exact failing assertion after reading test output.
+   - Do not broaden docs.
+
+5. Worktree batch script:
+   - Run:
+     .\scripts\report-worktree-batches.ps1 -FailOnUnclassified
+   - Fix classifier only if the failure is path classification, not by hiding files.
+
+After each fix:
+- Run the targeted failing test.
+- Update the failure ledger.
+- Do not proceed to the next failing test until the current one is green or explicitly blocked.
+
+Final required validation:
+dotnet build EZMicroBalance.sln
+dotnet test EZMicroBalance.sln --no-build
+dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+git diff --check
+.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
+
+Final report must say:
+- fixed tests
+- remaining failures, if any
+- exact files changed
+- commands and exit status
+- whether default validation is green
+- no commit was made
 ```
+
+## 10 个失败项的严格分类
+
+| 失败测试                                                                  | 初步归类                                                  | 应该怎么处理                                       |
+| --------------------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------- |
+| `ActiveSourceFilesAreCoveredByTheGuardManifest`                       | `Sts1Events` tracked addition / source manifest drift | 不许说 untracked；要么纳入 manifest，要么移除/排除          |
+| `ChineseIntroKeepsPreviewToolsInsideSpirePlus`                        | docs drift                                            | 读 assertion，修 `docs/intro.zh.md` 或对应 doc     |
+| `DistinguishedCapeUnaffordableVakuuPathPreservesVisibleOptionCount`   | patch behavior regression                             | 优先检查/回滚 `DistinguishedCapePatches.cs` diff   |
+| `DistinguishedCapeUsesV43MaxHpMathAndCannotBeSelectedWhenUnableToPay` | patch behavior regression                             | 同上，不要改 test 迁就 bug                           |
+| `HarmonyPatchTargetsAreDeclaredForImplementedAncientSurfaces`         | patch target drift                                    | 检查 4 个 modified patch files                  |
+| `PatchInventoryIsGeneratedReadableAndClassified`                      | patch inventory stale / patch migration drift         | 先恢复 patch declaration，再 regenerate inventory |
+| `SimplifiedChineseLocalizationFilesDoNotContainMojibake`              | localization encoding/text bug                        | 找具体文件和坏片段，修文本                                |
+| `WebsiteHardcodedGameplaySummariesStayCurrent`                        | website/docs drift                                    | 修 `website/content-data.js` 或当前 docs，不扩大范围   |
+| `ExportPresetTracksEveryActiveResourceAndExcludesNonReleaseFolders`   | resource/export drift                                 | 检查 Sts1Events 是否带资源，或 export preset 缺/多      |
+| `WorktreeBatchScriptRunsAndWritesBatchPathspecs`                      | worktree classifier / dirty state                     | 跑 batch script，看 unclassified path           |
+
+## 当前不能做的事
+
+不要让他做这些：
+
+```text
+commit these changes
+continue PR6 Batch4
+migrate 63 patch classes
+continue longhaul audit
+mark debug complete
+mark PR5/PR6 done
+ignore Sts1Events
+update docs to say tests pass
+```
+
+尤其不要 commit。现在有 10 个失败测试和 6 个 uncommitted tracked changes，commit 只会把不稳定状态固化。
+
+## 你这边的下一步决策
+
+现在你只需要决定一件事：`Sts1Events` 是否要成为当前 Spire Plus 的正式功能。
+
+我的建议是：
+
+```text
+本月不要把 Sts1Events 作为功能推进。
+```
+
+原因是当前项目的月度主线应该是：
+
+```text
+1. 恢复绿色 baseline
+2. 收口 RitsuLib/debug scaffold
+3. 恢复逐文件 longhaul audit
+4. 等 manual evidence backlog 降低后再碰高风险 patch migration
+```
+
+如果 `Sts1Events` 是你想保留的长期功能，也应该先写成：
+
+```text
+docs/features/sts1-events/README.md
+docs/features/sts1-events/source-research.md
+```
+
+然后排进 longhaul queue，而不是现在和 RitsuLib/debug 混在一起修。
+
+## 简短回复版本
+
+你可以直接对他说：
+
+```text
+不继续 audit。先修 10 个 failing tests。当前报告显示 Sts1Events 是 tracked/committed，不是 untracked；不要再说 unrelated。format timeout 也不能算 clean。PR5/PR6/debug 都不能标 complete。按 failing test ledger 一次修一个测试，先处理 DistinguishedCape patch behavior 和 patch inventory，再处理 Sts1Events manifest/docs/localization/website/export/batch script。所有 default validation 绿之前不要 commit。
+```
+
+[1]: https://sts2-ritsulib.ritsukage.com/guide/getting-started "Getting Started - RitsuLib"

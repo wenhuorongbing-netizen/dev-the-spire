@@ -6,6 +6,8 @@ using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
+// [ModInitializer] is a compatibility fallback; primary bootstrap goes through MainFile -> SpirePlusFeatureRegistry.
+// The initialized guard prevents double-init if the loader discovers this attribute directly.
 [ModInitializer(nameof(Initialize))]
 public static class AscensionInitializer
 {

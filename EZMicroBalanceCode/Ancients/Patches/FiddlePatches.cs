@@ -1,8 +1,15 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(Fiddle), "get_CanonicalVars")]
-internal static class FiddleVarsPatch
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+
+internal sealed class FiddleVarsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "fiddle-vars";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Override Fiddle canonical vars to use 7-card hand limit";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Fiddle), "get_CanonicalVars", HarmonyLib.MethodType.Getter)];
+
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
     {
@@ -11,9 +18,14 @@ internal static class FiddleVarsPatch
     }
 }
 
-[HarmonyPatch(typeof(Fiddle), nameof(Fiddle.ModifyHandDrawLate))]
-internal static class FiddleHandDrawPatch
+internal sealed class FiddleHandDrawPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "fiddle-hand-draw";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Limit Fiddle hand draw to 7-card cap";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ModifyHandDrawLate))];
+
     [HarmonyPrefix]
     private static bool Prefix(Fiddle __instance, Player player, decimal count, ref decimal __result)
     {
@@ -34,9 +46,14 @@ internal static class FiddleHandDrawPatch
     }
 }
 
-[HarmonyPatch(typeof(Fiddle), nameof(Fiddle.ShouldDraw))]
-internal static class FiddleShouldDrawPatch
+internal sealed class FiddleShouldDrawPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "fiddle-should-draw";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Allow Fiddle draw when melted or for owner";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ShouldDraw))];
+
     [HarmonyPrefix]
     private static bool Prefix(Fiddle __instance, Player player, ref bool __result)
     {
@@ -56,9 +73,15 @@ internal static class FiddleShouldDrawPatch
     }
 }
 
-[HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))]
-internal static class FiddleDrawCapPatch
+internal sealed class FiddleDrawCapPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "fiddle-draw-cap";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Cap Fiddle draw count to prevent overflow above 7-card hand limit";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardPileCmd), nameof(CardPileCmd.Draw),
+            [typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool)])];
+
     [HarmonyPrefix]
     private static bool Prefix(ref decimal count, Player player, bool fromHandDraw, ref Task<IEnumerable<CardModel>> __result)
     {

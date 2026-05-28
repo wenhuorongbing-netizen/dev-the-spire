@@ -1,8 +1,14 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(DistinguishedCape), "get_CanonicalVars")]
-internal static class DistinguishedCapeVarsPatch
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+
+internal sealed class DistinguishedCapeVarsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "distinguished-cape-vars";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Override DistinguishedCape canonical vars with HP loss and Apparition count";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(DistinguishedCape), "get_CanonicalVars", HarmonyLib.MethodType.Getter)];
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
     {
@@ -16,9 +22,13 @@ internal static class DistinguishedCapeVarsPatch
     }
 }
 
-[HarmonyPatch(typeof(Vakuu), "GenerateInitialOptions")]
-internal static class DistinguishedCapeEventOptionPatch
+internal sealed class DistinguishedCapeEventOptionPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "distinguished-cape-event-option";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Replace unaffordable DistinguishedCape in Vakuu options when max HP is too low";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Vakuu), "GenerateInitialOptions")];
     [HarmonyPostfix]
     private static void ReplaceUnaffordableCapeWithPayableVakuuOption(
         Vakuu __instance,
@@ -101,9 +111,13 @@ internal static class DistinguishedCapeEventOptionPatch
     }
 }
 
-[HarmonyPatch(typeof(DistinguishedCape), nameof(DistinguishedCape.AfterObtained))]
-internal static class DistinguishedCapePickupPatch
+internal sealed class DistinguishedCapePickupPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "distinguished-cape-pickup";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Replace DistinguishedCape obtain with max HP loss and Apparition cards";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(DistinguishedCape), nameof(DistinguishedCape.AfterObtained))];
     public const decimal MaxHpLossPercent = 0.30m;
 
     public const int MinimumMaxHpLoss = 18;

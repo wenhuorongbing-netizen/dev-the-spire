@@ -99,7 +99,7 @@ public sealed partial class AncientBehaviorGuardTests
             allSource,
             "[HarmonyPatch(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))]",
             "[HarmonyPatch(typeof(RelicModel), nameof(RelicModel.AfterObtained))]",
-            "[HarmonyPatch(typeof(RelicCmd), nameof(RelicCmd.Obtain), typeof(RelicModel), typeof(Player), typeof(int))]",
+            "ModPatchTarget(typeof(RelicCmd), nameof(RelicCmd.Obtain)",
             "[HarmonyPatch(typeof(Sozu), nameof(Sozu.ShouldProcurePotion))]",
             "[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ShouldGainGold))]",
             "[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.ModifyMaxEnergy))]",
@@ -115,9 +115,9 @@ public sealed partial class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]",
             "[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]",
             "[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]",
-            "[HarmonyPatch(typeof(DistinguishedCape), \"get_CanonicalVars\")]",
-            "[HarmonyPatch(typeof(Vakuu), \"GenerateInitialOptions\")]",
-            "[HarmonyPatch(typeof(DistinguishedCape), nameof(DistinguishedCape.AfterObtained))]",
+            "ModPatchTarget(typeof(DistinguishedCape), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(Vakuu), \"GenerateInitialOptions\")",
+            "ModPatchTarget(typeof(DistinguishedCape), nameof(DistinguishedCape.AfterObtained))",
             "[HarmonyPatch(typeof(VelvetChoker), \"get_CanonicalVars\")]",
             "[HarmonyPatch(typeof(VelvetChoker), \"get_DisplayAmount\")]",
             "[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.ShouldPlay))]",
@@ -150,12 +150,12 @@ public sealed partial class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(RelicModel), \"get_HoverTipsExcludingRelic\")]",
             "[HarmonyPatch(typeof(PreservedFog), nameof(PreservedFog.AfterObtained))]",
             "[HarmonyPatch(typeof(Folly), \"get_CanonicalKeywords\")]",
-            "[HarmonyPatch(typeof(ChoicesParadox), nameof(ChoicesParadox.AfterPlayerTurnStart))]",
+            "ModPatchTarget(typeof(ChoicesParadox), nameof(ChoicesParadox.AfterPlayerTurnStart))",
             "[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]",
-            "[HarmonyPatch(typeof(Fiddle), \"get_CanonicalVars\")]",
-            "[HarmonyPatch(typeof(Fiddle), nameof(Fiddle.ModifyHandDrawLate))]",
-            "[HarmonyPatch(typeof(Fiddle), nameof(Fiddle.ShouldDraw))]",
-            "[HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))]",
+            "ModPatchTarget(typeof(Fiddle), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ModifyHandDrawLate))",
+            "ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ShouldDraw))",
+            "ModPatchTarget(typeof(CardPileCmd), nameof(CardPileCmd.Draw)",
             "[HarmonyPatch(typeof(IronClub), \"get_CanonicalVars\")]",
             "[HarmonyPatch(typeof(BrilliantScarf), \"get_CanonicalVars\")]",
             "[HarmonyPatch(typeof(BeautifulBracelet), \"get_CanonicalVars\")]",
@@ -389,7 +389,7 @@ public sealed partial class AncientBehaviorGuardTests
         Assert.DoesNotContain(".Where(option => option.Relic is not DistinguishedCape)", source, StringComparison.Ordinal);
         Assert.DoesNotContain("AccessTools.Field(typeof(AncientEventModel)", source, StringComparison.Ordinal);
 
-        var distinguishedCapeSection = SliceBetween(source, "internal static class DistinguishedCapePickupPatch", "[HarmonyPatch(typeof(PreservedFog)");
+        var distinguishedCapeSection = SliceBetween(source, "internal sealed class DistinguishedCapePickupPatch", "[HarmonyPatch(typeof(PreservedFog)");
         Assert.DoesNotContain("CreatureCmd.Damage", distinguishedCapeSection, StringComparison.Ordinal);
         Assert.DoesNotContain("ValueProp", distinguishedCapeSection, StringComparison.Ordinal);
 
@@ -418,7 +418,7 @@ public sealed partial class AncientBehaviorGuardTests
         var lockedFallback = SliceBetween(
             source,
             "private static MegaCrit.Sts2.Core.Events.EventOption CreateLockedCapeOption",
-            "[HarmonyPatch(typeof(DistinguishedCape)");
+            "class DistinguishedCapePickupPatch : IPatchMethod");
 
         AssertSourceContains(
             replacementBranch,

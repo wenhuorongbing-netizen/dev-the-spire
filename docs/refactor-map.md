@@ -86,7 +86,7 @@ EZMicroBalanceCode/
 | NEW directory | `Ascension/Ui/` | Low | UI-related Ascension patches (if separated) |
 | NEW directory | `Ascension/Save/` | Medium | Save/load-related Ascension code (if separated) |
 | NO rename | Root `EZMicroBalance*` files | -- | Hard constraint: do not rename manifest id, project, DLL, PCK, install folder |
-| NO move | High-risk patches | -- | 137 Harmony patches, 22 high-risk; do not move with behavior changes |
+| NO move | High-risk patches | -- | See `docs/patch-inventory.md` for current count (157 total, 22 high-risk as of 2026-05-28); do not move with behavior changes |
 | KEEP | `Config/`, `Diagnostics/`, `Map/`, `Modding/` at root | -- | No structural benefit to moving; keep flat |
 
 ## Constraints

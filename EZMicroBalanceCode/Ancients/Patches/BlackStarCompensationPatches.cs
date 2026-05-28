@@ -1,8 +1,15 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(RelicCmd), nameof(RelicCmd.Obtain), typeof(RelicModel), typeof(Player), typeof(int))]
-internal static class BlackStarObtainPatch
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+
+internal sealed class BlackStarObtainPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "black-star-obtain";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Grant act 3+ compensation relic when BlackStar is obtained";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicCmd), nameof(RelicCmd.Obtain),
+            [typeof(RelicModel), typeof(Player), typeof(int)])];
     [HarmonyPostfix]
     private static void Postfix(ref Task<RelicModel> __result)
     {

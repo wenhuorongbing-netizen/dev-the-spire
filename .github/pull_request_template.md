@@ -13,6 +13,8 @@
 - [ ] English and Simplified Chinese localization keys/placeholders stay aligned when text changed.
 - [ ] Save/load, co-op, and UI risks are recorded when touched.
 - [ ] Manual evidence rows stay open unless live proof exists.
+- [ ] High-risk patch seams: if touching run/room/save/lobby/multiplayer/lifecycle patches, name the owning service seam and risk level.
+- [ ] Source-only pass does not close live proof gates (loader, UI, gameplay, save/load, failure/death, co-op).
 
 ## Validation
 
