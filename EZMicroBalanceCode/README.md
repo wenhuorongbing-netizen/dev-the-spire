@@ -8,9 +8,15 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 | Area | Responsibility |
 | --- | --- |
 | `MainFile.cs` | Mod entry point for Harmony patching, config registration, and feature-registry bootstrap. |
+| `Config/` | Mod configuration (SpirePlusModConfig). |
 | `Core/Features/` | Small module registry that keeps startup order and feature ownership out of `MainFile.cs`. |
+| `Core/Integrations/RitsuLib/` | Reserved for future RitsuLib bootstrap module (blocked on version mismatch). |
+| `Diagnostics/` | Release evidence log and live test console command. |
+| `Map/` | Spire Plus map point hover composer. |
+| `Modding/` | Mod info localization patches. |
 | `Ancients/` | Ancient reward rebalance implementation. |
 | `Ancients/Common/` | Shared saved fields, card helpers, selection relic service, feature-gate helpers, and small model/enchantment helpers. |
+| `Ancients/Rebalance/` | Reserved for shared Ancient rebalance helpers. |
 | `Ancients/Patches/` | Harmony patches grouped by reward surface or relic family. |
 | `Ancients/Expansion/Urda/` | Urda Ancient expansion prototype, blessing ids, and activation gate. |
 | `Ancients/Expansion/Morvi/` | Morvi Ancient expansion implementation, cards, powers, blessing ids, and activation gate. |
@@ -27,6 +33,8 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 | `Ascension/Powers/` | Firemark, Banner, and boss dedicated ability powers. |
 | `Ascension/Relics/` | Ascension-specific relic models. |
 | `Ascension/Events/` | Ascension-specific event models. |
+| `Ascension/Save/` | Reserved for Ascension save/load code. |
+| `Ascension/Ui/` | Reserved for Ascension UI patches. |
 | `Preview/` | Crystal Sphere peek and transform-preview helpers. |
 
 ## Extension Rules

@@ -69,8 +69,17 @@ EZMicroBalance/
 
 EZMicroBalanceCode/
   MainFile.cs
+  Config/
+  Core/
+    Features/
+    Integrations/
+      RitsuLib/              (reserved for future RitsuLib bootstrap)
+  Diagnostics/
+  Map/
+  Modding/
   Ancients/
     Common/
+    Rebalance/               (reserved for shared rebalance helpers)
     Patches/
     Expansion/
       Urda/
@@ -88,6 +97,8 @@ EZMicroBalanceCode/
     Powers/
     Relics/
     Rewards/
+    Save/                    (reserved for save/load code)
+    Ui/                      (reserved for UI patches)
   Preview/
 ```
 
