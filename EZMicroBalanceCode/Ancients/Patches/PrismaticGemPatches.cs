@@ -1,3 +1,5 @@
+﻿using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]
@@ -50,3 +52,5 @@ internal static partial class PrismaticGemRewardPatch
         return false;
     }
 }
+
+

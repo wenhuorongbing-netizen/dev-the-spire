@@ -1,4 +1,6 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
+
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(
     typeof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen),
@@ -38,3 +40,5 @@ internal static partial class PrismaticGemRewardScreenHintPatch
             "[Spire Plus] PrismaticGem reward-screen hint unavailable: private _banner and UI/Banner fallback both failed; visible all-off-color cards and the Prismatic Gem relic hover count remain available for manual confirmation.");
     }
 }
+
+

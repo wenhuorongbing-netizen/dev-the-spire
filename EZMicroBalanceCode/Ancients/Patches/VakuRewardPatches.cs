@@ -1,7 +1,14 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(IronClub), "get_CanonicalVars")]
-internal static class IronClubVarsPatch
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+
+internal sealed class IronClubVarsPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "i-r-o-n-c-l-u-b-v-a-r-s-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch IronClub.get_CanonicalVars";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(IronClub), "get_CanonicalVars", HarmonyLib.MethodType.Getter)];
 {
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
@@ -11,8 +18,13 @@ internal static class IronClubVarsPatch
     }
 }
 
-[HarmonyPatch(typeof(BrilliantScarf), "get_CanonicalVars")]
-internal static class BrilliantScarfVarsPatch
+internal sealed class BrilliantScarfVarsPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "b-r-i-l-l-i-a-n-t-s-c-a-r-f-v-a-r-s-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch BrilliantScarf.get_CanonicalVars";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(BrilliantScarf), "get_CanonicalVars", HarmonyLib.MethodType.Getter)];
 {
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
@@ -22,8 +34,13 @@ internal static class BrilliantScarfVarsPatch
     }
 }
 
-[HarmonyPatch(typeof(BeautifulBracelet), "get_CanonicalVars")]
-internal static class BeautifulBraceletVarsPatch
+internal sealed class BeautifulBraceletVarsPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "b-e-a-u-t-i-f-u-l-b-r-a-c-e-l-e-t-v-a-r-s-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch BeautifulBracelet.get_CanonicalVars";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(BeautifulBracelet), "get_CanonicalVars", HarmonyLib.MethodType.Getter)];
 {
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
@@ -33,8 +50,13 @@ internal static class BeautifulBraceletVarsPatch
     }
 }
 
-[HarmonyPatch(typeof(BeautifulBracelet), nameof(BeautifulBracelet.AfterObtained))]
-internal static class BeautifulBraceletPatch
+internal sealed class BeautifulBraceletPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "b-e-a-u-t-i-f-u-l-b-r-a-c-e-l-e-t-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch BeautifulBracelet.AfterObtained";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(BeautifulBracelet), nameof(BeautifulBracelet.AfterObtained))];
 {
     [HarmonyPrefix]
     private static bool Prefix(BeautifulBracelet __instance, ref Task __result)
@@ -57,8 +79,13 @@ internal static class BeautifulBraceletPatch
     }
 }
 
-[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.BeforeCardPlayed))]
-internal static class MusicBoxBeforeCardPlayedPatch
+internal sealed class MusicBoxBeforeCardPlayedPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "m-u-s-i-c-b-o-x-b-e-f-o-r-e-c-a-r-d-p-l-a-y-e-d-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch MusicBox.BeforeCardPlayed";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(MusicBox), nameof(MusicBox.BeforeCardPlayed))];
 {
     [HarmonyPrefix]
     private static bool Prefix(ref Task __result)
@@ -93,8 +120,13 @@ internal static class MusicBoxStateTracker
     }
 }
 
-[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCardPlayed))]
-internal static class MusicBoxAfterCardPlayedPatch
+internal sealed class MusicBoxAfterCardPlayedPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "m-u-s-i-c-b-o-x-a-f-t-e-r-c-a-r-d-p-l-a-y-e-d-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch MusicBox.AfterCardPlayed";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(MusicBox), nameof(MusicBox.AfterCardPlayed))];
 {
     [HarmonyPrefix]
     private static bool Prefix(MusicBox __instance, CardPlay cardPlay, ref Task __result)
@@ -128,8 +160,13 @@ internal static class MusicBoxAfterCardPlayedPatch
     }
 }
 
-[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.BeforeSideTurnStart))]
-internal static class MusicBoxTurnResetPatch
+internal sealed class MusicBoxTurnResetPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "m-u-s-i-c-b-o-x-t-u-r-n-r-e-s-e-t-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch MusicBox.BeforeSideTurnStart";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(MusicBox), nameof(MusicBox.BeforeSideTurnStart))];
 {
     [HarmonyPostfix]
     private static void ResetOnTurnStart(MusicBox __instance, CombatSide side)
@@ -141,8 +178,13 @@ internal static class MusicBoxTurnResetPatch
     }
 }
 
-[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))]
-internal static class MusicBoxCombatResetPatch
+internal sealed class MusicBoxCombatResetPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "m-u-s-i-c-b-o-x-c-o-m-b-a-t-r-e-s-e-t-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch MusicBox.AfterCombatEnd";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))];
 {
     [HarmonyPostfix]
     private static void ResetAfterCombat(MusicBox __instance)
@@ -150,4 +192,6 @@ internal static class MusicBoxCombatResetPatch
         MusicBoxStateTracker.Reset(__instance);
     }
 }
+
+
 

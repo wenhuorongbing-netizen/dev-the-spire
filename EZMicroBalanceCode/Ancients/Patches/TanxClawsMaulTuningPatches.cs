@@ -1,7 +1,14 @@
+﻿using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]
-internal static class TanxClawsMaulTuningPatches
+internal sealed class TanxClawsMaulTuningPatches : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "t-a-n-x-c-l-a-w-s-m-a-u-l-t-u-n-i-n-g-p-a-t-c-h-e-s";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch Claws.AfterObtained";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Claws), nameof(Claws.AfterObtained))];
 {
     [HarmonyPrefix]
     private static bool UpgradeAllCreatedMauls(Claws __instance, ref Task __result)
@@ -75,3 +82,5 @@ internal static class TanxClawsMaulTuningPatches
         return maul;
     }
 }
+
+

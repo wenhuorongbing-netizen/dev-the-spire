@@ -1,12 +1,19 @@
-using Godot;
+﻿using Godot;
 using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Nodes.Events;
 using MegaCrit.Sts2.Core.Nodes.Relics;
 
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(RelicModel), "get_IconPath")]
-internal static class SereTalonIconPathPatch
+internal sealed class SereTalonIconPathPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-i-c-o-n-p-a-t-h-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch RelicModel.get_IconPath";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), "get_IconPath", HarmonyLib.MethodType.Getter)];
 {
     private static void Postfix(RelicModel __instance, ref string __result)
     {
@@ -14,8 +21,13 @@ internal static class SereTalonIconPathPatch
     }
 }
 
-[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]
-internal static class SereTalonPackedIconPathPatch
+internal sealed class SereTalonPackedIconPathPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-p-a-c-k-e-d-i-c-o-n-p-a-t-h-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch RelicModel.get_PackedIconPath";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), "get_PackedIconPath", HarmonyLib.MethodType.Getter)];
 {
     private static void Postfix(RelicModel __instance, ref string __result)
     {
@@ -23,8 +35,13 @@ internal static class SereTalonPackedIconPathPatch
     }
 }
 
-[HarmonyPatch(typeof(RelicModel), "get_PackedIconOutlinePath")]
-internal static class SereTalonPackedIconOutlinePathPatch
+internal sealed class SereTalonPackedIconOutlinePathPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-p-a-c-k-e-d-i-c-o-n-o-u-t-l-i-n-e-p-a-t-h-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch RelicModel.get_PackedIconOutlinePath";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), "get_PackedIconOutlinePath", HarmonyLib.MethodType.Getter)];
 {
     private static void Postfix(RelicModel __instance, ref string __result)
     {
@@ -32,8 +49,13 @@ internal static class SereTalonPackedIconOutlinePathPatch
     }
 }
 
-[HarmonyPatch(typeof(RelicModel), "get_BigIconPath")]
-internal static class SereTalonBigIconPathPatch
+internal sealed class SereTalonBigIconPathPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-b-i-g-i-c-o-n-p-a-t-h-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch RelicModel.get_BigIconPath";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), "get_BigIconPath", HarmonyLib.MethodType.Getter)];
 {
     private static void Postfix(RelicModel __instance, ref string __result)
     {
@@ -41,8 +63,13 @@ internal static class SereTalonBigIconPathPatch
     }
 }
 
-[HarmonyPatch(typeof(RelicModel), "get_Icon")]
-internal static class SereTalonIconTexturePatch
+internal sealed class SereTalonIconTexturePatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-i-c-o-n-t-e-x-t-u-r-e-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch RelicModel.get_Icon";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), "get_Icon", HarmonyLib.MethodType.Getter)];
 {
     private static void Postfix(RelicModel __instance, ref Texture2D __result)
     {
@@ -50,8 +77,13 @@ internal static class SereTalonIconTexturePatch
     }
 }
 
-[HarmonyPatch(typeof(RelicModel), "get_IconOutline")]
-internal static class SereTalonIconOutlineTexturePatch
+internal sealed class SereTalonIconOutlineTexturePatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-i-c-o-n-o-u-t-l-i-n-e-t-e-x-t-u-r-e-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch RelicModel.get_IconOutline";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), "get_IconOutline", HarmonyLib.MethodType.Getter)];
 {
     private static void Postfix(RelicModel __instance, ref Texture2D __result)
     {
@@ -59,8 +91,13 @@ internal static class SereTalonIconOutlineTexturePatch
     }
 }
 
-[HarmonyPatch(typeof(RelicModel), "get_BigIcon")]
-internal static class SereTalonBigIconTexturePatch
+internal sealed class SereTalonBigIconTexturePatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-b-i-g-i-c-o-n-t-e-x-t-u-r-e-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch RelicModel.get_BigIcon";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), "get_BigIcon", HarmonyLib.MethodType.Getter)];
 {
     private static void Postfix(RelicModel __instance, ref Texture2D __result)
     {
@@ -68,8 +105,13 @@ internal static class SereTalonBigIconTexturePatch
     }
 }
 
-[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]
-internal static class SereTalonAncientEventOptionButtonPatch
+internal sealed class SereTalonAncientEventOptionButtonPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-a-n-c-i-e-n-t-e-v-e-n-t-o-p-t-i-o-n-b-u-t-t-o-n-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch NEventOptionButton._Ready";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))];
 {
     private static void Postfix(NEventOptionButton __instance)
     {
@@ -80,8 +122,13 @@ internal static class SereTalonAncientEventOptionButtonPatch
     }
 }
 
-[HarmonyPatch(typeof(NRelic), "Reload")]
-internal static class SereTalonRelicNodeReloadPatch
+internal sealed class SereTalonRelicNodeReloadPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "s-e-r-e-t-a-l-o-n-r-e-l-i-c-n-o-d-e-r-e-l-o-a-d-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch NRelic.Reload";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NRelic), nameof(NRelic.Reload))];
 {
     private static void Postfix(NRelic __instance)
     {
@@ -91,3 +138,5 @@ internal static class SereTalonRelicNodeReloadPatch
         SereTalonVisualNodeRoutes.TryApplyRelicNode(__instance);
     }
 }
+
+

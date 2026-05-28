@@ -6,10 +6,17 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))]
-internal static class PaelsHornPhase1Patch
+internal sealed class PaelsHornPhase1Patch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "p-a-e-l-s-h-o-r-n-p-h-a-s-e1-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch PaelsHorn.AfterObtained";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))];
 {
     [HarmonyPrefix]
     private static bool Prefix(PaelsHorn __instance, ref Task __result)
@@ -35,3 +42,5 @@ internal static class PaelsHornPhase1Patch
         MainFile.Logger.Info("[Spire Plus] PaelsHornPhase1 applied: added Relax and Relax+.");
     }
 }
+
+

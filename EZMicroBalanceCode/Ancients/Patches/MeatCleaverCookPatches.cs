@@ -1,4 +1,6 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+﻿using STS2RitsuLib.Patching.Models;
+
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(CookRestSiteOption), MethodType.Constructor, typeof(Player))]
 internal static class MeatCleaverCookCtorPatch
@@ -13,8 +15,13 @@ internal static class MeatCleaverCookCtorPatch
     }
 }
 
-[HarmonyPatch(typeof(CookRestSiteOption), "get_Description")]
-internal static class MeatCleaverCookDescriptionPatch
+internal sealed class MeatCleaverCookDescriptionPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "m-e-a-t-c-l-e-a-v-e-r-c-o-o-k-d-e-s-c-r-i-p-t-i-o-n-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch CookRestSiteOption.get_Description";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CookRestSiteOption), "get_Description", HarmonyLib.MethodType.Getter)];
 {
     [HarmonyPrefix]
     private static bool Prefix(CookRestSiteOption __instance, ref LocString __result)
@@ -34,8 +41,13 @@ internal static class MeatCleaverCookDescriptionPatch
     }
 }
 
-[HarmonyPatch(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))]
-internal static class MeatCleaverCookPatch
+internal sealed class MeatCleaverCookPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "m-e-a-t-c-l-e-a-v-e-r-c-o-o-k-p-a-t-c-h";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Patch CookRestSiteOption.OnSelect";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))];
 {
     public const int CardsToRemove = 2;
 
@@ -97,3 +109,5 @@ internal static class MeatCleaverCookPatch
         return true;
     }
 }
+
+

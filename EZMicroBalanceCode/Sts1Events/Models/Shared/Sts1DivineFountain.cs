@@ -21,11 +21,16 @@ public sealed class Sts1DivineFountain : EventModel
         };
     }
 
-    private Task Pray()
+    private async Task Pray()
     {
-        // TODO: Remove all curses from deck
-        // CardPileCmd.RemoveAllCurses(Owner) or similar
+        var curses = new List<CardModel>();
+        foreach (var card in Owner.Deck.Cards)
+        {
+            if (card.Type == MegaCrit.Sts2.Core.Entities.Cards.CardType.Curse)
+                curses.Add(card);
+        }
+        if (curses.Count > 0)
+            await CardPileCmd.RemoveFromDeck(curses, showPreview: false);
         SetEventFinished(L10NLookup("STS1_DIVINE_FOUNTAIN.pages.PRAY.description"));
-        return Task.CompletedTask;
     }
 }
