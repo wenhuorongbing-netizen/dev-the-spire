@@ -5,6 +5,8 @@ sts1_golden_idol,Golden Idol,Shared,All,Sts1GoldenIdol,1,shared,true,compiled,no
 sts1_golden_wing,Golden Wing,Shared+Act1,All+Act1,Sts1GoldenWing,1,shared,true,compiled,none
 sts1_living_wall,Living Wall,Shared,All,Sts1LivingWall,1,shared,true,compiled,none
 sts1_old_beggar,Old Beggar,Shared,All,Sts1OldBeggar,1,shared,true,compiled,none
+sts1_purifier,Purifier,Shared,All,Sts1Purifier,1,shared,true,compiled,none
+sts1_golden_shrine,Golden Shrine,Shared,All,Sts1GoldenShrine,1,shared,true,compiled,none
 sts1_the_woman_in_blue,The Woman in Blue,Shared+Act2,All+Act2,Sts1TheWomanInBlue,1,shared,true,compiled,none
 sts1_bonfire_spirits,Bonfire Spirits,Shared,All,Sts1BonfireSpirits,1,shared,true,compiled,none
 sts1_divine_fountain,Divine Fountain,Shared,All,Sts1DivineFountain,1,shared,true,compiled,none

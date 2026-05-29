@@ -25,7 +25,9 @@ public partial class MainFile : Node
         ModConfigRegistry.Register(ModId, new SpirePlusModConfig());
         SpirePlusDebug.Log("Init", "ModConfig registered.");
 
-        SpirePlusFeatureRegistry.CreateDefault().InitializeAll();
+        var registry = SpirePlusFeatureRegistry.CreateDefault();
+        registry.InitializeAll();
+        registry.LogFeatureSummary();
         SpirePlusDebug.Log("Init", "Feature registry initialized.");
     }
 }

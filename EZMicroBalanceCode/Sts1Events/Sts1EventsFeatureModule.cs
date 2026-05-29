@@ -11,6 +11,9 @@ internal sealed class Sts1EventsFeatureModule : IFeatureModule
 {
     public string Id => "Sts1Events";
     public int InitOrder => FeatureOrders.Sts1Events;
+    public string DisplayName => "StS1 Event Port";
+    public string Category => "Events";
+    public IReadOnlyList<string> DisableEnvKeys => ["SPIREPLUS_STS1_EVENT_MODE"];
 
     public FeatureGateResult EvaluateGate() => Sts1EventFeatureGate.EvaluateGate();
 

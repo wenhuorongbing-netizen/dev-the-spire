@@ -205,7 +205,7 @@ public sealed class Sts1EventFeatureGuardTests
         Assert.True(Directory.Exists(sharedDir), $"Shared events directory not found: {sharedDir}");
 
         var csFiles = Directory.GetFiles(sharedDir, "*.cs");
-        Assert.True(csFiles.Length >= 15, $"Expected at least 15 shared event models, found {csFiles.Length}");
+        Assert.True(csFiles.Length >= 17, $"Expected at least 17 shared event models, found {csFiles.Length}");
 
         foreach (var filePath in csFiles)
         {
@@ -215,26 +215,26 @@ public sealed class Sts1EventFeatureGuardTests
     }
 
     [Fact]
-    public void RegistryEntryCountIs48()
+    public void RegistryEntryCountIs50()
     {
-        // 48 entries: 45 compiling + 1 compile-excluded (Duplicator) + 2 Special stubs (Neow, Combat Start).
+        // 50 entries: 47 compiling + 1 compile-excluded (Duplicator) + 2 Special stubs (Neow, Combat Start).
         var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistry.cs");
         var entriesBlock = SliceBetween(source, "private static readonly List<Sts1EventEntry> Events = new()", "};");
         var entryCount = CountOccurrences(entriesBlock, "new(\"");
-        Assert.Equal(48, entryCount);
+        Assert.Equal(50, entryCount);
     }
 
     [Fact]
-    public void RegisterAllSharedEventCountIs15()
+    public void RegisterAllSharedEventCountIs17()
     {
-        // 15 SharedEvent calls in RegisterAll: Big Fish, Golden Idol, The Cleric, Golden Wing,
-        // Living Wall, Old Beggar, Bonfire Spirits, Divine Fountain, Fountain of Cleansing,
-        // The Lab, Face Trader, The Mausoleum, Designer, The Woman in Blue, Wheel of Change.
-        // Sts1Duplicator is excluded from compilation.
+        // 17 SharedEvent calls in RegisterAll: Big Fish, Golden Idol, The Cleric, Golden Wing,
+        // Living Wall, Old Beggar, Purifier, Golden Shrine, Bonfire Spirits, Divine Fountain,
+        // Fountain of Cleansing, The Lab, Face Trader, The Mausoleum, Designer, The Woman in Blue,
+        // Wheel of Change. Sts1Duplicator is excluded from compilation.
         var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
         var registerAllMethod = SliceBetween(source, "public static void RegisterAll(string modId)", "content.Apply();");
         var sharedEventCount = CountOccurrences(registerAllMethod, "content.SharedEvent<");
-        Assert.Equal(15, sharedEventCount);
+        Assert.Equal(17, sharedEventCount);
     }
 
     [Fact]
@@ -266,13 +266,13 @@ public sealed class Sts1EventFeatureGuardTests
     }
 
     [Fact]
-    public void RegisterAllTotalRegistrationCallsIs52()
+    public void RegisterAllTotalRegistrationCallsIs54()
     {
-        // 15 shared × 1 + 7 Act1 × 2 + 14 Act2 × 1 + 9 Act3 × 1 = 52 total registration calls.
+        // 17 shared × 1 + 7 Act1 × 2 + 14 Act2 × 1 + 9 Act3 × 1 = 54 total registration calls.
         var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
         var registerAllMethod = SliceBetween(source, "public static void RegisterAll(string modId)", "content.Apply();");
         var totalRegistrations = CountOccurrences(registerAllMethod, "content.ActEvent<") + CountOccurrences(registerAllMethod, "content.SharedEvent<");
-        Assert.Equal(52, totalRegistrations);
+        Assert.Equal(54, totalRegistrations);
     }
 
     [Fact]

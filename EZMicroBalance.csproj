@@ -16,6 +16,10 @@
         <NoWarn>$(NoWarn);MSB3270</NoWarn>
     </PropertyGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="EZMicroBalance.Tests" />
+    </ItemGroup>
+
     <ItemGroup Condition="Exists('$(Sts2DataDir)')" >
         <Reference Include="0Harmony">
             <HintPath>$(Sts2DataDir)/0Harmony.dll</HintPath>

@@ -88,6 +88,8 @@ internal static class Sts1EventRegistrationService
         content.SharedEvent<Sts1GoldenWing>();
         content.SharedEvent<Sts1LivingWall>();
         content.SharedEvent<Sts1OldBeggar>();
+        content.SharedEvent<Sts1Purifier>();
+        content.SharedEvent<Sts1GoldenShrine>();
         content.SharedEvent<Sts1BonfireSpirits>();
         content.SharedEvent<Sts1DivineFountain>();
         // Sts1Duplicator excluded from compilation — uses CardSelectCmd/CardPileCmd APIs not yet available.

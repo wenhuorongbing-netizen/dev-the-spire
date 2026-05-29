@@ -19,6 +19,8 @@ internal static class Sts1EventRegistry
         new("sts1_golden_wing", "Golden Wing", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_living_wall", "Living Wall", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_old_beggar", "Old Beggar", Sts1EventPhase.Simple, Sts1EventAct.Shared),
+        new("sts1_purifier", "Purifier", Sts1EventPhase.Simple, Sts1EventAct.Shared),
+        new("sts1_golden_shrine", "Golden Shrine", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_bonfire_spirits", "Bonfire Spirits", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_divine_fountain", "Divine Fountain", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_duplicator", "Duplicator", Sts1EventPhase.Simple, Sts1EventAct.Shared),

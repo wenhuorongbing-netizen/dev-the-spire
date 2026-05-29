@@ -8,33 +8,34 @@ The counts refer to different dimensions:
 
 | Dimension | Count | Explanation |
 | --- | --- | --- |
-| `wiki_event_entries` | **52** | Total entries on the Slay the Spire Wiki event page. Includes Neow and Combat Start (special start-of-run events with no unknown-room equivalent). |
-| `runtime_event_models` | **46** | C# model files in `EZMicroBalanceCode/Sts1Events/Models/`. Excludes Neow and Combat Start (start-of-run only), plus 4 entries that share a model with their parent (Golden Wing Act1, The Cleric Act1, The Mausoleum Act2, The Woman in Blue Act2). Includes `Sts1Duplicator.cs` (compile-excluded). |
-| `register_all_calls` | **52** | Total RitsuLib registration calls in `RegisterAll` mode: 15 shared × 1 + 7 Act1 × 2 (Overgrowth + Underdocks) + 14 Act2 × 1 + 9 Act3 × 1 = 52. Verified against `Sts1EventRegistrationService.RegisterAll()`. |
+| `wiki_event_entries` | **54** | Total entries on the Slay the Spire Wiki event page. Includes Neow and Combat Start (special start-of-run events with no unknown-room equivalent), plus Purifier and Golden Shrine (StS1 shrine events added to Spire Plus). |
+| `runtime_event_models` | **48** | C# model files in `EZMicroBalanceCode/Sts1Events/Models/`. Excludes Neow and Combat Start (start-of-run only), plus 4 entries that share a model with their parent (Golden Wing Act1, The Cleric Act1, The Mausoleum Act2, The Woman in Blue Act2). Includes `Sts1Duplicator.cs` (compile-excluded). Includes Purifier and Golden Shrine (newly added). |
+| `register_all_calls` | **54** | Total RitsuLib registration calls in `RegisterAll` mode: 17 shared × 1 + 7 Act1 × 2 (Overgrowth + Underdocks) + 14 Act2 × 1 + 9 Act3 × 1 = 54. Verified against `Sts1EventRegistrationService.RegisterAll()`. |
 | `canary_only_calls` | **4** | Subset used in `CanaryOnly` mode: Big Fish, Golden Idol, The Lab, Divine Fountain (all shared events). A strict subset of the 15 shared calls in `RegisterAll`. |
 
 `canary_only_calls` is **not** additive with `register_all_calls`. Canary mode replaces RegisterAll; it does not add to it.
 
-### Why 52 Wiki Entries but Only 46 Models?
+### Why 54 Wiki Entries but Only 48 Models?
 
 - **Neow** and **Combat Start** are start-of-run special events. They have no unknown-room pool entry and no `ModEventTemplate` model. Neow is handled by the base game's `Neow` class; Combat Start is a tutorial flow.
 - **Golden Wing** appears in both Shared and Act 1 on the wiki. The wiki lists it twice (#4 Shared, #23 Act1 exclusive), but it's one model (`Sts1GoldenWing.cs`).
 - **The Cleric** appears in both Shared and Act 1 on the wiki (#2 Shared, #26 Act1 exclusive). One model (`Sts1TheCleric.cs`).
 - **The Mausoleum** appears in both Shared and Act 2 (#13 Shared, #38 Act2 exclusive). One model (`Sts1TheMausoleum.cs`).
 - **The Woman in Blue** appears in both Shared and Act 2 (#7 Shared, #40 Act2 exclusive). One model (`Sts1TheWomanInBlue.cs`).
+- **Purifier** and **Golden Shrine** are StS1 shrine events added to Spire Plus (entries #53, #54).
 
-So: 52 wiki entries − 2 special (Neow, Combat Start) − 4 duplicates (shared/act split) = **46 unique models**.
+So: 54 wiki entries − 2 special (Neow, Combat Start) − 4 duplicates (shared/act split) = **48 unique models**.
 
-### Why 52 Registration Calls?
+### Why 54 Registration Calls?
 
 Each Act 1 event registers twice (once for `Overgrowth`, once for `Underdocks`):
-- 15 shared events × 1 call each = 15
+- 17 shared events × 1 call each = 17
 - 7 Act 1 events × 2 acts = 14
 - 14 Act 2 events × 1 act = 14
 - 9 Act 3 events × 1 act = 9
-- Total = 52 (in `RegisterAll` mode)
+- Total = 54 (in `RegisterAll` mode)
 
-Canary mode uses 4 of the 15 shared event registrations (subset, not additive).
+Canary mode uses 4 of the 17 shared event registrations (subset, not additive).
 
 ## Canonical Matrix
 
@@ -56,6 +57,8 @@ Canary mode uses 4 of the 15 shared event registrations (subset, not additive).
 | 14 | Wheel of Change | `Sts1WheelOfChange.cs` | Yes | All acts (shared) | CustomUI | spec-drafted |
 | 15 | Designer | `Sts1Designer.cs` | Yes | All acts (shared) | CustomUI | spec-drafted |
 | 16 | The Lab | `Sts1TheLab.cs` | Yes | All acts (shared) | Canary | spec-drafted |
+| 53 | Purifier | `Sts1Purifier.cs` | Yes | All acts (shared) | Simple | compiled |
+| 54 | Golden Shrine | `Sts1GoldenShrine.cs` | Yes | All acts (shared) | Simple | compiled |
 | 17 | — | — | — | — | — | Neow: start-of-run only, no model |
 | 18 | — | — | — | — | — | Combat Start: tutorial only, no model |
 | 19 | Joust | `Sts1Joust.cs` | No | Overgrowth + Underdocks | Combat | spec-drafted |
@@ -95,8 +98,8 @@ Canary mode uses 4 of the 15 shared event registrations (subset, not additive).
 
 ## Event Classification by Complexity
 
-### Simple (21 events)
-Big Fish, The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits,
+### Simple (23 events)
+Big Fish, The Cleric, Golden Wing, Living Wall, Old Beggar, Purifier, Golden Shrine, Bonfire Spirits,
 Divine Fountain, Fountain of Cleansing, The Lab, Shining Light, Mushrooms,
 The Ssssserpent, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter,
 Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine

@@ -378,5 +378,26 @@
     "STS1_VAMPIRES.pages.ACCEPT.description":  "吸血鬼改造了你。你的打击变成了噬咬。你感觉更虚弱了，但也更多样化。",
     "STS1_SENSORY_STONE.pages.TOUCH.description":  "幻象涌入你的脑海。你选择了一个来铭记。",
     "STS1_TRANSMOGRIFIER.pages.TRANSFORM.description":  "设备将你的牌转化成了新的东西。",
-    "STS1_UPGRADE_SHRINE.pages.PRAY.description":  "神龛的能量强化了你选择的牌。"
+    "STS1_UPGRADE_SHRINE.pages.PRAY.description":  "神龛的能量强化了你选择的牌。",
+
+    "STS1_PURIFIER.title":  "净化者",
+    "STS1_PURIFIER.pages.INITIAL.description":  "一座带有净化之火的神龛矗立在你面前。它提出要净化你的牌组。",
+    "STS1_PURIFIER.pages.INITIAL.options.PURIFY.title":  "净化",
+    "STS1_PURIFIER.pages.INITIAL.options.PURIFY.description":  "从你的牌组中移除一张牌。",
+    "STS1_PURIFIER.pages.INITIAL.options.LEAVE.title":  "离开",
+    "STS1_PURIFIER.pages.INITIAL.options.LEAVE.description":  "什么也不会发生。",
+    "STS1_PURIFIER.pages.PURIFY.description":  "你向净化之火献上一张牌。",
+    "STS1_PURIFIER.pages.LEAVE.description":  "你离开了神龛。",
+
+    "STS1_GOLDEN_SHRINE.title":  "金色神龛",
+    "STS1_GOLDEN_SHRINE.pages.INITIAL.description":  "一座华丽的金色神龛在你面前闪闪发光。它散发着财富与力量的气息。",
+    "STS1_GOLDEN_SHRINE.pages.INITIAL.options.TAKE_GOLD.title":  "拿走金币",
+    "STS1_GOLDEN_SHRINE.pages.INITIAL.options.TAKE_GOLD.description":  "获得250金币。（升15时为100金币）",
+    "STS1_GOLDEN_SHRINE.pages.INITIAL.options.DESECRATE.title":  "亵渎",
+    "STS1_GOLDEN_SHRINE.pages.INITIAL.options.DESECRATE.description":  "移除你牌组中的所有诅咒。",
+    "STS1_GOLDEN_SHRINE.pages.INITIAL.options.LEAVE.title":  "离开",
+    "STS1_GOLDEN_SHRINE.pages.INITIAL.options.LEAVE.description":  "什么也不会发生。",
+    "STS1_GOLDEN_SHRINE.pages.TAKE_GOLD.description":  "你抓起了尽可能多的金币！",
+    "STS1_GOLDEN_SHRINE.pages.DESECRATE.description":  "你亵渎了神龛，移除了所有诅咒。",
+    "STS1_GOLDEN_SHRINE.pages.LEAVE.description":  "你离开了神龛。"
 }

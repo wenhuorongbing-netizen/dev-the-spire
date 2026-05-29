@@ -13,7 +13,7 @@ Created: 2026-05-29 | Status: code-verified
 
 ## Per-Event Matrix
 
-### Shared-Act Events (16 models — all IsShared = true)
+### Shared-Act Events (18 models — all IsShared = true)
 
 | # | Event ID | Model Class | Act | IsShared | Reason | Co-op Behavior | RNG Owner | Save/Load | Test Evidence |
 |---|----------|-------------|-----|----------|--------|----------------|-----------|-----------|---------------|
@@ -23,16 +23,18 @@ Created: 2026-05-29 | Status: code-verified
 | 4 | `sts1_golden_wing` | `Sts1GoldenWing` | All | `true` | Shared-act event; vote determines option for all | All players vote Accept/Decline; each player gets own rare card from own card pool | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
 | 5 | `sts1_living_wall` | `Sts1LivingWall` | All | `true` | Shared-act event; vote determines option for all | All players vote Forget/Change/Trade; each player selects own card for removal/transform/upgrade | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
 | 6 | `sts1_old_beggar` | `Sts1OldBeggar` | All | `true` | Shared-act event; vote determines option for all | All players vote Offer/Leave; each player spends own 75g and removes own card | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 7 | `sts1_the_woman_in_blue` | `Sts1TheWomanInBlue` | All | `true` | Shared-act event; vote determines option for all | All players vote Buy1/Buy2/Buy3/Leave; each player spends own gold and gets own potion | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 8 | `sts1_bonfire_spirits` | `Sts1BonfireSpirits` | All | `true` | Shared-act event; vote determines option for all | All players vote Offer/Leave; each player removes own card and heals to own max HP | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 9 | `sts1_divine_fountain` | `Sts1DivineFountain` | All | `true` | Shared-act event; vote determines option for all | All players vote Pray/Leave; each player's curses removed from own deck | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 10 | `sts1_duplicator` | `Sts1Duplicator` | All | `true` | Shared-act event; vote determines option for all `[EXCLUDED]` | All players vote Duplicate/Leave; each player selects own card to duplicate | Host | Shared state on host | `Sts1DuplicatorExcludedFromCompilation` |
-| 11 | `sts1_face_trader` | `Sts1FaceTrader` | All | `true` | Shared-act event; vote determines option for all | All players vote Trade/Leave; each player loses own max HP and gets own relic | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 12 | `sts1_fountain_of_cleansing` | `Sts1FountainOfCleansing` | All | `true` | Shared-act event; vote determines option for all | All players vote Drink/Leave; each player's curses removed and max HP lost independently | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 13 | `sts1_the_mausoleum` | `Sts1TheMausoleum` | All | `true` | Shared-act event; shared RNG roll | All players vote Open/Leave; 50/50 roll is shared — all get relic or all get curse | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 14 | `sts1_wheel_of_change` | `Sts1WheelOfChange` | All | `true` | Shared-act event; shared RNG spin | All players spin together; same outcome (gold/damage/relic/curse/heal/remove) for all, but effects applied per-player | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 15 | `sts1_designer` | `Sts1Designer` | All | `true` | Shared-act event; vote determines option for all | All players vote Upgrade/Remove/Transform/Leave; each player acts on own cards | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 16 | `sts1_the_lab` | `Sts1TheLab` | All | `true` | Shared-act event; vote determines option for all | All players vote Open/Leave; each player receives 3 own random potions | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 7 | `sts1_purifier` | `Sts1Purifier` | All | `true` | Shared-act event; vote determines option for all | All players vote Purify/Leave; each player removes own card | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 8 | `sts1_golden_shrine` | `Sts1GoldenShrine` | All | `true` | Shared-act event; vote determines option for all | All players vote Take Gold/Desecrate/Leave; each player gains own gold or removes own curses | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 9 | `sts1_the_woman_in_blue` | `Sts1TheWomanInBlue` | All | `true` | Shared-act event; vote determines option for all | All players vote Buy1/Buy2/Buy3/Leave; each player spends own gold and gets own potion | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 10 | `sts1_bonfire_spirits` | `Sts1BonfireSpirits` | All | `true` | Shared-act event; vote determines option for all | All players vote Offer/Leave; each player removes own card and heals to own max HP | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 11 | `sts1_divine_fountain` | `Sts1DivineFountain` | All | `true` | Shared-act event; vote determines option for all | All players vote Pray/Leave; each player's curses removed from own deck | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 12 | `sts1_duplicator` | `Sts1Duplicator` | All | `true` | Shared-act event; vote determines option for all `[EXCLUDED]` | All players vote Duplicate/Leave; each player selects own card to duplicate | Host | Shared state on host | `Sts1DuplicatorExcludedFromCompilation` |
+| 13 | `sts1_face_trader` | `Sts1FaceTrader` | All | `true` | Shared-act event; vote determines option for all | All players vote Trade/Leave; each player loses own max HP and gets own relic | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 14 | `sts1_fountain_of_cleansing` | `Sts1FountainOfCleansing` | All | `true` | Shared-act event; vote determines option for all | All players vote Drink/Leave; each player's curses removed and max HP lost independently | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 15 | `sts1_the_mausoleum` | `Sts1TheMausoleum` | All | `true` | Shared-act event; shared RNG roll | All players vote Open/Leave; 50/50 roll is shared — all get relic or all get curse | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 16 | `sts1_wheel_of_change` | `Sts1WheelOfChange` | All | `true` | Shared-act event; shared RNG spin | All players spin together; same outcome (gold/damage/relic/curse/heal/remove) for all, but effects applied per-player | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 17 | `sts1_designer` | `Sts1Designer` | All | `true` | Shared-act event; vote determines option for all | All players vote Upgrade/Remove/Transform/Leave; each player acts on own cards | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 18 | `sts1_the_lab` | `Sts1TheLab` | All | `true` | Shared-act event; vote determines option for all | All players vote Open/Leave; each player receives 3 own random potions | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
 
 ### Act 1 Events (7 models)
 

@@ -423,5 +423,26 @@
   "STS1_UPGRADE_SHRINE.pages.INITIAL.options.PRAY.description": "Choose a card to upgrade.",
   "STS1_UPGRADE_SHRINE.pages.INITIAL.options.LEAVE.title": "Leave",
   "STS1_UPGRADE_SHRINE.pages.INITIAL.options.LEAVE.description": "Nothing happens.",
-  "STS1_UPGRADE_SHRINE.pages.PRAY.description": "The shrine's energy enhances your chosen card."
+  "STS1_UPGRADE_SHRINE.pages.PRAY.description": "The shrine's energy enhances your chosen card.",
+
+  "STS1_PURIFIER.title": "Purifier",
+  "STS1_PURIFIER.pages.INITIAL.description": "A shrine with a purifying flame stands before you. It offers to cleanse your deck.",
+  "STS1_PURIFIER.pages.INITIAL.options.PURIFY.title": "Purify",
+  "STS1_PURIFIER.pages.INITIAL.options.PURIFY.description": "Remove a card from your deck.",
+  "STS1_PURIFIER.pages.INITIAL.options.LEAVE.title": "Leave",
+  "STS1_PURIFIER.pages.INITIAL.options.LEAVE.description": "Nothing happens.",
+  "STS1_PURIFIER.pages.PURIFY.description": "You offer a card to the purifying flame.",
+  "STS1_PURIFIER.pages.LEAVE.description": "You leave the shrine.",
+
+  "STS1_GOLDEN_SHRINE.title": "Golden Shrine",
+  "STS1_GOLDEN_SHRINE.pages.INITIAL.description": "A magnificent golden shrine gleams before you. It radiates with wealth and power.",
+  "STS1_GOLDEN_SHRINE.pages.INITIAL.options.TAKE_GOLD.title": "Take Gold",
+  "STS1_GOLDEN_SHRINE.pages.INITIAL.options.TAKE_GOLD.description": "Gain 250 gold. (100 on Ascension 15)",
+  "STS1_GOLDEN_SHRINE.pages.INITIAL.options.DESECRATE.title": "Desecrate",
+  "STS1_GOLDEN_SHRINE.pages.INITIAL.options.DESECRATE.description": "Remove all Curses from your deck.",
+  "STS1_GOLDEN_SHRINE.pages.INITIAL.options.LEAVE.title": "Leave",
+  "STS1_GOLDEN_SHRINE.pages.INITIAL.options.LEAVE.description": "Nothing happens.",
+  "STS1_GOLDEN_SHRINE.pages.TAKE_GOLD.description": "You grab as much gold as you can carry!",
+  "STS1_GOLDEN_SHRINE.pages.DESECRATE.description": "You desecrate the shrine, removing all curses.",
+  "STS1_GOLDEN_SHRINE.pages.LEAVE.description": "You leave the shrine."
 }

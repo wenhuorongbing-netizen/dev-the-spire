@@ -6,6 +6,8 @@ internal sealed class VakuuFightFeatureModule : IFeatureModule
 {
     public string Id => "Ancients.VakuuFight";
     public int InitOrder => FeatureOrders.AncientsVakuuFight;
+    public string DisplayName => "Vakuu Fight";
+    public string Category => "Ancients";
 
     public FeatureGateResult EvaluateGate() =>
         FeatureGateResult.EnabledByDefault("hooks registered; fight entry remains hidden by VakuuFightFeatureGate.");

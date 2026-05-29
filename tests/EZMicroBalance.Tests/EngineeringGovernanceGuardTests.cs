@@ -526,6 +526,94 @@ public sealed class EngineeringGovernanceGuardTests
         Assert.DoesNotContain("| 5 | 79 |", commitBoundaries, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void IFeatureModuleDeclaresMetadataProperties()
+    {
+        var source = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "IFeatureModule.cs");
+
+        AssertSourceContains(source,
+            "string DisplayName => Id;",
+            "string Category => \"General\";",
+            "IReadOnlyList<string> DisableEnvKeys =>",
+            "IReadOnlyList<string> ForceEnvKeys =>");
+    }
+
+    [Fact]
+    public void FeatureRegistryTracksBootstrapRecords()
+    {
+        var source = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+
+        AssertSourceContains(source,
+            "List<FeatureBootstrapRecord> bootstrapRecords",
+            "IReadOnlyList<FeatureBootstrapRecord> BootstrapRecords",
+            "GetBootstrapRecord(string id)",
+            "LogFeatureSummary()");
+    }
+
+    [Fact]
+    public void FeatureBootstrapRecordDefinesLiveStatus()
+    {
+        var source = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureBootstrapRecord.cs");
+
+        AssertSourceContains(source,
+            "enum FeatureLiveStatus",
+            "Enabled = 0",
+            "Disabled = 1",
+            "Failed = 2",
+            "record FeatureBootstrapRecord",
+            "bool IsActive");
+    }
+
+    [Fact]
+    public void AllFeatureModulesProvideDisplayName()
+    {
+        var moduleFiles = new[]
+        {
+            RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Sts1Events", "Sts1EventsFeatureModule.cs"),
+        };
+
+        foreach (var filePath in moduleFiles)
+        {
+            Assert.True(File.Exists(filePath), $"Feature module file not found: {filePath}");
+            var source = File.ReadAllText(filePath);
+            AssertSourceContains(source, "string DisplayName =>");
+        }
+    }
+
+    [Fact]
+    public void AllFeatureModulesProvideCategory()
+    {
+        var moduleFiles = new[]
+        {
+            RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureModule.cs"),
+            RepoPath("EZMicroBalanceCode", "Sts1Events", "Sts1EventsFeatureModule.cs"),
+        };
+
+        foreach (var filePath in moduleFiles)
+        {
+            Assert.True(File.Exists(filePath), $"Feature module file not found: {filePath}");
+            var source = File.ReadAllText(filePath);
+            AssertSourceContains(source, "string Category =>");
+        }
+    }
+
+    [Fact]
+    public void MainFileCallsLogFeatureSummary()
+    {
+        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+
+        Assert.Contains("registry.LogFeatureSummary()", mainFile, StringComparison.Ordinal);
+    }
+
     private static (int ExitCode, string Output, string Error) RunPowerShell(string scriptPath, params string[] arguments)
     {
         var executable = OperatingSystem.IsWindows() ? "powershell.exe" : "pwsh";
