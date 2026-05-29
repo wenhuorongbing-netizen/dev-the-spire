@@ -16,9 +16,11 @@ Regenerate:
 | Metric | Count |
 | --- | ---: |
 | Total patch declarations | 141 |
-| High risk | 22 |
-| Medium risk | 35 |
-| Low risk | 84 |
+| Migrated to RitsuLib ModPatcher | 25 |
+| Raw HarmonyPatch remaining | 141 |
+| High risk (raw Harmony) | 22 |
+| Medium risk (raw Harmony) | 35 |
+| Low risk (raw Harmony) | 84 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -27,7 +29,30 @@ Regenerate:
 - Medium: UI, card, relic, reward, combat object, or model hook surface.
 - Low: narrow local hook with lower source-drift blast radius.
 
-## Patches
+## Migrated Patches (RitsuLib ModPatcher)
+
+These 25 patch classes implement `IPatchMethod` and are registered via
+`RitsuLibBootstrap.RegisterMigratedPatches()`. They use `ModPatcher.PatchAll()`
+and are NOT picked up by raw `Harmony.PatchAll()`.
+
+| File | Classes | PatchIds | Batch |
+| --- | --- | --- | --- |
+| `FiddlePatches.cs` | 4 | `fiddle-vars`, `fiddle-hand-draw`, `fiddle-should-draw`, `fiddle-draw-cap` | 4a |
+| `ChoicesParadoxPatches.cs` | 1 | `choices-paradox-turn-start` | 4a |
+| `DistinguishedCapePatches.cs` | 3 | `distinguished-cape-vars`, `distinguished-cape-event-option`, `distinguished-cape-pickup` | 4a |
+| `BlackStarCompensationPatches.cs` | 1 | `black-star-obtain` | 4a |
+| `CrossbowPatches.cs` | 2 | `crossbow-offer`, `crossbow-vanilla-after-turn` | 4b |
+| `BrightestFlameExhaustDrawPatch.cs` | 3 | `brightest-flame-keywords`, `brightest-flame-vars`, `brightest-flame-exhaust-backstop` | 4b |
+| `DebtAndCardPatches.cs` | 8 | `debt-after-created`, `debt-from-save`, `debt-keywords`, `debt-vars`, `debt-turn-end-effect`, `debt-turn-end-in-hand`, `card-model-on-play`, `debt-exhaust` | 4b |
+| `SealOfGoldPatches.cs` | 2 | `seal-of-gold-max-energy`, `seal-of-gold-turn` | 4b |
+| `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` | 4b |
+
+Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
+`Harmony.PatchAll()` will not pick them up. Verified clean separation.
+
+## Raw HarmonyPatch Declarations (Unmigrated)
+
+These 141 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |

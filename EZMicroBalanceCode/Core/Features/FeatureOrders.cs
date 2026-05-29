@@ -7,4 +7,5 @@ internal static class FeatureOrders
     public const int AncientsUrda = 300;
     public const int AncientsVakuuFight = 400;
     public const int AscensionA11A20 = 500;
+    public const int Sts1Events = 600;
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -48,14 +49,14 @@ public sealed class Sts1TheCleric : EventModel
 
     private async Task Heal()
     {
-        await PlayerCmd.GainGold(-HealCost, Owner);
+        await PlayerCmd.LoseGold(HealCost, Owner, GoldLossType.Spent);
         await CreatureCmd.Heal(Owner.Creature, DynamicVars.Heal.IntValue);
         SetEventFinished(L10NLookup("STS1_THE_CLERIC.pages.HEAL.description"));
     }
 
     private async Task Purify()
     {
-        await PlayerCmd.GainGold(-PurifyCost, Owner);
+        await PlayerCmd.LoseGold(PurifyCost, Owner, GoldLossType.Spent);
         await Sts1EventHelpers.OpenCardRemoval(Owner);
         SetEventFinished(L10NLookup("STS1_THE_CLERIC.pages.PURIFY.description"));
     }

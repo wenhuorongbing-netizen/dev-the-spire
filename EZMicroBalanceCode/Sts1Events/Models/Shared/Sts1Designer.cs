@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
@@ -35,7 +36,7 @@ public sealed class Sts1Designer : EventModel
 
     private async Task Remove()
     {
-        await PlayerCmd.GainGold(-RemoveCost, Owner);
+        await PlayerCmd.LoseGold(RemoveCost, Owner, GoldLossType.Spent);
         await Sts1EventHelpers.OpenCardRemoval(Owner);
         SetEventFinished(L10NLookup("STS1_DESIGNER.pages.REMOVE.description"));
     }

@@ -11,8 +11,8 @@ refactor work described in `docs/restructure.md`.
 | PR 2 | RitsuLib staging docs + install instructions + version mismatch record | None | Done (in PR 1) |
 | PR 3 | Move-only source folder refactor, no behavior changes | Low | Done |
 | PR 4 | Test/docs/script path updates after move-only refactor | Low | Done (no-op: no files moved) |
-| PR 5 | RitsuLib hard dependency (only after 0.106.1/0.106.1 decision) | Medium | Done |
-| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 1 done, Batch 4a+4b done |
+| PR 5 | RitsuLib hard dependency (only after 0.106.1/0.106.1 decision) | Medium | Compile/manifest dependency added; runtime unverified |
+| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 1 scaffold; Batch 4a+4b source migrated (25 classes); runtime unverified |
 | PR 7+ | High-risk patch migrations, one feature surface at a time | High | Blocked |
 
 ## PR 1: Baseline + Docs-Only Codex Harness Integration
@@ -54,7 +54,7 @@ moved — actual file moves will accompany behavior changes in later PRs.
 
 ## PR 5: RitsuLib Hard Dependency
 
-**Status:** Done. Used resolution option 2 — `STS2.RitsuLib` 0.3.2 base package
+**Status:** Compile/manifest dependency added. Runtime verification pending. Used resolution option 2 — `STS2.RitsuLib` 0.3.2 base package
 directly (no compat package for 0.106.1 exists on NuGet).
 
 **What was added:**
@@ -62,8 +62,8 @@ directly (no compat package for 0.106.1 exists on NuGet).
 - `{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }` in manifest dependencies
 
 **Verification:**
-- Build: 0 errors, 0 warnings
-- Tests: 302 passed, 21 skipped, 0 failed (1 pre-existing batch script failure unrelated to RitsuLib)
+- Build: 0 errors, 0 warnings (Sts1Events nullable warnings excluded)
+- Tests: 311 passed, 21 skipped, 0 failed
 - Format: clean
 
 **Risk accepted:** RitsuLib 0.3.2 base package compiled against a different game
@@ -83,7 +83,7 @@ is published, upgrade to the compat package.
 5. High-risk run/map/reward/save/multiplayer patches (only after manual
    evidence backlog is reduced)
 
-### Batch 1: Bootstrap + Diagnostics (Done)
+### Batch 1: Bootstrap + Diagnostics (Scaffold complete; runtime unverified)
 
 **What was added:**
 - `RitsuLibBootstrap.cs` — RitsuLib logger initialization, Harmony patch
@@ -101,9 +101,9 @@ is published, upgrade to the compat package.
 - No settings page (`RegisterModSettings`) — existing BaseLib config stays.
 - No persistence (`BeginModDataRegistration`) — existing SavedSpireFields stay.
 
-### Batch 4a: Low-Risk Patch Migration (Done)
+### Batch 4a: Low-Risk Patch Migration (Source migrated; runtime unverified)
 
-Migrated 10 low-risk patch classes to RitsuLib's `IPatchMethod` interface.
+Migrated 9 low-risk patch classes to RitsuLib's `IPatchMethod` interface.
 `RitsuLibBootstrap` now uses `ModPatcher` for migrated patches and raw
 `Harmony.PatchAll()` for the remaining `[HarmonyPatch]`-attributed classes.
 
@@ -120,9 +120,9 @@ Migrated 10 low-risk patch classes to RitsuLib's `IPatchMethod` interface.
 to `internal sealed class : IPatchMethod` with `GetTargets()` returning
 `ModPatchTarget[]`. `[HarmonyPrefix]`/`[HarmonyPostfix]` attributes kept.
 
-**Verification:** Build 0 errors, 4 migration-related tests pass, format clean.
+**Verification:** Build 0 errors, 4 migration-related tests pass, format clean. Runtime ModPatcher behavior unverified.
 
-### Batch 4b: Medium-Risk Patch Migration (Done)
+### Batch 4b: Medium-Risk Patch Migration (Source migrated; runtime unverified)
 
 Migrated 16 medium-risk patch classes to `IPatchMethod`.
 
@@ -132,14 +132,14 @@ Migrated 16 medium-risk patch classes to `IPatchMethod`.
 | --- | --- | --- |
 | `CrossbowPatches.cs` | 2 | `crossbow-offer`, `crossbow-vanilla-after-turn` |
 | `BrightestFlameExhaustDrawPatch.cs` | 3 | `brightest-flame-keywords`, `brightest-flame-vars`, `brightest-flame-exhaust-backstop` |
-| `DebtAndCardPatches.cs` | 7 | `debt-after-created`, `debt-from-save`, `debt-keywords`, `debt-vars`, `debt-turn-end-effect`, `debt-turn-end-in-hand`, `card-model-on-play`, `debt-exhaust` |
+| `DebtAndCardPatches.cs` | 8 | `debt-after-created`, `debt-from-save`, `debt-keywords`, `debt-vars`, `debt-turn-end-effect`, `debt-turn-end-in-hand`, `card-model-on-play`, `debt-exhaust` |
 | `SealOfGoldPatches.cs` | 2 | `seal-of-gold-max-energy`, `seal-of-gold-turn` |
 | `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` |
 
-**Total migrated:** 26 classes (10 from Batch 4a + 16 from Batch 4b).
+**Total migrated:** 25 classes (9 from Batch 4a + 16 from Batch 4b).
 **Remaining:** 141 `[HarmonyPatch]` declarations still on raw Harmony.
 
-**Verification:** Build 0 errors, 4 migration tests pass, format clean.
+**Verification:** Build 0 errors, 4 migration tests pass, format clean. Runtime ModPatcher behavior unverified.
 
 ### Batch 5: High-Risk Patches (Blocked on Evidence)
 

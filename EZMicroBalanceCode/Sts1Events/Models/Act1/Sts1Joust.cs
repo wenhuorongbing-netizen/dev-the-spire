@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 
@@ -30,7 +31,7 @@ public sealed class Sts1Joust : EventModel
 
     private async Task BetSelf()
     {
-        await PlayerCmd.GainGold(-BetCost, Owner);
+        await PlayerCmd.LoseGold(BetCost, Owner, GoldLossType.Spent);
         if (Rng.NextInt(0, 2) == 0)
         {
             await PlayerCmd.GainGold(WinAmount, Owner);
@@ -39,14 +40,14 @@ public sealed class Sts1Joust : EventModel
         else
         {
             if (HasA15)
-                await PlayerCmd.GainGold(-A15Loss, Owner);
+                await PlayerCmd.LoseGold(A15Loss, Owner);
             SetEventFinished(L10NLookup("STS1_JOUST.pages.LOSE.description"));
         }
     }
 
     private async Task BetOpponent()
     {
-        await PlayerCmd.GainGold(-BetCost, Owner);
+        await PlayerCmd.LoseGold(BetCost, Owner, GoldLossType.Spent);
         if (Rng.NextInt(0, 2) == 0)
         {
             await PlayerCmd.GainGold(WinAmount, Owner);
@@ -55,7 +56,7 @@ public sealed class Sts1Joust : EventModel
         else
         {
             if (HasA15)
-                await PlayerCmd.GainGold(-A15Loss, Owner);
+                await PlayerCmd.LoseGold(A15Loss, Owner);
             SetEventFinished(L10NLookup("STS1_JOUST.pages.LOSE.description"));
         }
     }

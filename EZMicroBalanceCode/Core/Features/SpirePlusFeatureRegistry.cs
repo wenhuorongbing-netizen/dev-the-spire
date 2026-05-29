@@ -3,6 +3,7 @@ using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Features;
 
@@ -16,5 +17,6 @@ internal static class SpirePlusFeatureRegistry
             .Register(new MorviFeatureModule())
             .Register(new UrdaFeatureModule())
             .Register(new VakuuFightFeatureModule())
-            .Register(new AscensionFeatureModule());
+            .Register(new AscensionFeatureModule())
+            .Register(new Sts1EventsFeatureModule());
 }

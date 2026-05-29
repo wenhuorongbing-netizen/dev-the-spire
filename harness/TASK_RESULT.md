@@ -9,7 +9,7 @@
 - Codex harness templates enriched with HCA_PROJECT_MAP, README_HOW_TO_USE, and bilingual PROMPTS
 - RitsuLib variant pack 0.3.3 contents fully documented in docs/integrations/ritsulib.md
 - NuGet status confirmed: 0.3.3 not published, 0.106.1 compat still missing
-- PR5 completed by user: RitsuLib 0.3.2 base package added to csproj + manifest
+- PR5 compile/manifest dependency added by user: RitsuLib 0.3.2 base package added to csproj + manifest; runtime unverified
 - PR6 ready: low-risk RitsuLib API adoption
 
 ## Changed Files
@@ -26,7 +26,7 @@
 
 ## Verification Commands
 
-- `dotnet build EZMicroBalance.sln`: passes (0 errors, 0 warnings)
+- `dotnet build EZMicroBalance.sln`: passes (0 errors, 69 warnings — all Sts1Events nullable)
 
 ## Remaining Items
 

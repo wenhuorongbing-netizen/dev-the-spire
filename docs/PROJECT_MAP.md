@@ -163,6 +163,9 @@ Start at `docs/README.md`.
 | Manual evidence queue | `docs/issues/waiting-tests.md` (compact support queue only; full historical rows are archived, and next development starts from `docs/test-ready-development-goal.md`) |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |
 | Ancient expansion v2.2 | `docs/features/ancient-expansion-v2.2/README.md` |
+| RitsuLib migration | `docs/features/ritsulib-migration/monthly-dev-spec.md` |
+| RitsuLib migration runtime smoke | `docs/features/ritsulib-migration/runtime-smoke-checklist.md` |
+| RitsuLib migration next run | `docs/features/ritsulib-migration/next-overnight-run.md` |
 | Ancient expansion v2.2 source audit archive | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/README.md` |
 | Urda support evidence | `docs/features/ancient-expansion-urda/README.md` |
 | Ascension 11-20 | `docs/features/ascension-11-20/README.md` |

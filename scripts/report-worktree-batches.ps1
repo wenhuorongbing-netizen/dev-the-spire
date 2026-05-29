@@ -58,6 +58,10 @@ function Get-WorktreeBatch {
         return 5
     }
 
+    if ($p.StartsWith('manifests/', [System.StringComparison]::OrdinalIgnoreCase)) {
+        return 3
+    }
+
     if ($p.StartsWith('EZMicroBalanceCode/Ascension/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^EZMicroBalance/localization/[^/]+/ascension\.json$' -or
         $p.StartsWith('docs/features/ascension-11-20/', [System.StringComparison]::OrdinalIgnoreCase) -or
@@ -94,13 +98,14 @@ function Get-WorktreeBatch {
         $p -match '^EZMicroBalance/localization/[^/]+/(settings_ui|card_reward_ui|encounters|events|sts1_events|monsters|rest_site_ui)\.json$' -or
         $p.StartsWith('docs/features/future-peek/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/features/preview-tools/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/features/ritsulib-migration/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('.github/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -eq 'tests/EZMicroBalance.Tests/README.md' -or
         $p -eq 'tests/EZMicroBalance.Tests/TestRepo.cs' -or
         $p -eq 'docs/patch-inventory.md' -or
         $p -eq 'docs/platform-testing.md' -or
         $p -in @('BUGFIX_NOTES.md', 'BUGFIX_REPORT.md') -or
-        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|CoopCombatSafety|PreviewTools|SaveStateContracts|ModInfoLocalization|GoalCompletion|RuntimeCrash|Audit).*\.cs(\.uid)?$') {
+        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|CoopCombatSafety|PreviewTools|SaveStateContracts|ModInfoLocalization|GoalCompletion|RuntimeCrash|Audit|RitsuLib|Sts1Event).*\.cs(\.uid)?$') {
         return 5
     }
 
@@ -122,8 +127,10 @@ function Get-WorktreeBatch {
         $p.StartsWith('docs/archive/feature-inputs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/archive/feature-audits/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/archive/implementation-records/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/archive/sts1-events-feature-module-draft/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/codex-harness/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/integrations/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/features/ritsulib-migration/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('harness/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -in @('docs/README.md', 'docs/PROJECT_MAP.md', 'docs/archive/README.md', 'docs/doc-inventory.md', 'docs/goal.md', 'docs/git-commit-push-policy.md', 'docs/worktree-cleanup-audit.md', 'docs/codex-workflow.md', 'docs/features/README.md', 'docs/restructure.md', 'docs/migration.md', 'docs/refactor-map.md')) {
         return 2

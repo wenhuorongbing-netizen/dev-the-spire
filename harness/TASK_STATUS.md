@@ -15,12 +15,13 @@
 
 ## Verification Result
 
-- Build: 0 errors, 0 warnings (Sts1Events errors are pre-existing, unrelated)
-- Tests: 302 passed, 21 skipped, 0 failed
+- Build: 0 errors, 69 warnings (all CS8602/CS8604/CS8625 nullable reference warnings in Sts1Events staging code)
+- Tests: 311 passed, 21 skipped, 0 failed
 - Format: clean
 
 ## Remaining Work
 
 - PR 6 Batch 4: Patch class migration to IPatchMethod (63 files)
 - PR 6 Batch 5: High-risk patches (blocked on evidence backlog)
+- RitsuLib runtime verification (loader smoke, godot.log evidence)
 - Upgrade RitsuLib to compat package when published on NuGet

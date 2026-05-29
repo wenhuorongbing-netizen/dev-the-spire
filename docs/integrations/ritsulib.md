@@ -2,10 +2,14 @@
 
 ## Status
 
-**Hard dependency (compile + runtime).** RitsuLib 0.3.2 is a compile dependency
-via NuGet and a runtime dependency via manifest. Using the base package because
+**Compile/manifest dependency attempted; runtime unverified.** RitsuLib 0.3.2 is a compile dependency
+via NuGet and a declared runtime dependency via manifest. Using the base package because
 no compat package for game v0.106.1 exists on NuGet. Players must install the
 RitsuLib runtime variant pack to `<GameRoot>/mods/STS2-RitsuLib/`.
+
+Runtime verification status: no RitsuLib loader smoke, no godot.log evidence,
+and no in-game RitsuLib loading proof exists. The manifest declaration is done,
+but the runtime dependency has never been exercised in a live game session.
 
 ## What is RitsuLib
 
@@ -103,16 +107,20 @@ package with the compat package:
 ## RitsuLib API Adoption Plan
 
 Adopt RitsuLib APIs in batches (PR 6+):
-- **Batch 1: Bootstrap + diagnostics — Done.** RitsuLib logger initialized,
-  Harmony patches applied through RitsuLibBootstrap, framework status reported.
+- **Batch 1: Bootstrap + diagnostics — scaffold complete; runtime unverified.** RitsuLib logger initialized,
+  Harmony patches applied through RitsuLibBootstrap, framework status reported. No live game session has
+  exercised the RitsuLib bootstrap path.
 - Batch 2: Future new content registration (not applicable — Spire Plus doesn't
   register new cards/relics/potions through RitsuLib)
 - Batch 3: Persistence sidecar experiments (not applicable — existing
   SavedSpireFields work, no RitsuLib data store needed)
-- Batch 4: Patch class migration to IPatchMethod/IModPatchProvider (63 patch
-  files need interface implementation for RitsuLib's managed ModPatcher)
-- Batch 5: High-risk run/map/reward/save/multiplayer patches (only after manual
-  evidence backlog is reduced)
+- **Batch 4a: Low-risk patch migration — Done.** 9 patch classes migrated to
+  `IPatchMethod` (Fiddle, ChoicesParadox, DistinguishedCape, BlackStar).
+- **Batch 4b: Medium-risk patch migration — Done.** 16 patch classes migrated
+  to `IPatchMethod` (Crossbow, BrightestFlame, DebtAndCard, SealOfGold,
+  PickupReward). Total migrated: 25.
+- Batch 5: High-risk run/map/reward/save/multiplayer patches (blocked on
+  evidence backlog reduction)
 
 ## References
 

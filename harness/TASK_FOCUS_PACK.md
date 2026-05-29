@@ -2,14 +2,14 @@
 
 ## Current Task
 
-- PR 5 complete. Ready for PR 6: Low-risk RitsuLib API adoption.
+- PR 5 compile/manifest dependency added. Runtime verification pending. Ready for continued PR 6 work.
 
-## Acceptance Criteria (PR 5 - Done)
+## Acceptance Criteria (PR 5 - Compile/manifest dependency added; runtime unverified)
 
 - RitsuLib 0.3.2 NuGet package added to csproj
 - Manifest dependency added for STS2-RitsuLib
-- Build: 0 errors, 0 warnings
-- Tests: 302 passed, 21 skipped, 0 failed
+- Build: 0 errors, 69 warnings (all Sts1Events nullable)
+- Tests: 311 passed, 21 skipped, 0 failed
 - Format: clean
 - migration.md updated
 - docs/integrations/ritsulib.md updated
@@ -32,5 +32,6 @@
 ## Risks
 
 - RitsuLib 0.3.2 base package may have runtime API mismatches with v0.106.1
-  (compile-time verified clean, runtime unverified)
+  (compile-time verified clean, runtime unverified — no loader smoke or godot.log evidence)
 - Upgrade to compat package when available on NuGet
+- Runtime ModPatcher behavior for 25 migrated patches unverified

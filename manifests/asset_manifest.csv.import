@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://c1qky6bvpgu48"
+
+[deps]
+
+files=["res://manifests/asset_manifest.sts2.translation", "res://manifests/asset_manifest.source.translation", "res://manifests/asset_manifest.dest.translation", "res://manifests/asset_manifest.required.translation"]
+
+source_file="res://manifests/asset_manifest.csv"
+dest_files=["res://manifests/asset_manifest.sts2.translation", "res://manifests/asset_manifest.source.translation", "res://manifests/asset_manifest.dest.translation", "res://manifests/asset_manifest.required.translation"]
+
+[params]
+
+compress=true
+delimiter=0

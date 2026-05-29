@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
@@ -27,7 +28,7 @@ public sealed class Sts1OldBeggar : EventModel
 
     private async Task OfferGold()
     {
-        await PlayerCmd.GainGold(-GoldCost, Owner);
+        await PlayerCmd.LoseGold(GoldCost, Owner, GoldLossType.Spent);
         await Sts1EventHelpers.OpenCardRemoval(Owner);
         SetEventFinished(L10NLookup("STS1_OLD_BEGGAR.pages.OFFER_GOLD.description"));
     }

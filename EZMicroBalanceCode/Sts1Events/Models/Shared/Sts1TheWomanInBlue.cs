@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 
@@ -30,21 +31,21 @@ public sealed class Sts1TheWomanInBlue : EventModel
 
     private async Task Buy1()
     {
-        await PlayerCmd.GainGold(-Potion1Cost, Owner);
+        await PlayerCmd.LoseGold(Potion1Cost, Owner, GoldLossType.Spent);
         // TODO: Obtain a random potion
         SetEventFinished(L10NLookup("STS1_THE_WOMAN_IN_BLUE.pages.BUY_1.description"));
     }
 
     private async Task Buy2()
     {
-        await PlayerCmd.GainGold(-Potion2Cost, Owner);
+        await PlayerCmd.LoseGold(Potion2Cost, Owner, GoldLossType.Spent);
         // TODO: Obtain a random potion
         SetEventFinished(L10NLookup("STS1_THE_WOMAN_IN_BLUE.pages.BUY_2.description"));
     }
 
     private async Task Buy3()
     {
-        await PlayerCmd.GainGold(-Potion3Cost, Owner);
+        await PlayerCmd.LoseGold(Potion3Cost, Owner, GoldLossType.Spent);
         // TODO: Obtain a random potion
         SetEventFinished(L10NLookup("STS1_THE_WOMAN_IN_BLUE.pages.BUY_3.description"));
     }

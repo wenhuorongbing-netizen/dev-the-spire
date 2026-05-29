@@ -389,29 +389,31 @@
   }
 
   function HeroComponent() {
-    const imagesHtml = [
-      "assets/events/ezmb_urda.png",
-      "assets/events/ezmb_morvi.png",
-      "assets/events/ezmb_lotha.png"
-    ].map(src => renderImage(src, "")).join("");
+    const mainImg = renderImage("assets/events/ezmb_urda.png", lang === 'en' ? 'Urda Event' : '先古之民 乌尔达');
+    const thumb1 = renderImage("assets/events/ezmb_morvi.png", lang === 'en' ? 'Morvi Event' : '先古之民 默维');
+    const thumb2 = renderImage("assets/events/ezmb_lotha.png", lang === 'en' ? 'Lotha Event' : '先古之民 罗萨');
 
     return `
       <section class="hero">
-        <div class="hero-images">${imagesHtml}</div>
         <div class="hero-copy">
           ${labels.releaseLine ? `<p class="release-line">${labels.releaseLine}</p>` : ""}
           <h1>${labels.heroTitle}</h1>
           <p>${labels.heroCopy}</p>
           <div class="hero-choices-list">
             <button type="button" class="hero-choice-btn" data-choice="install">
-              <span class="choice-prefix">[${lang === 'en' ? 'Option A' : '选项一'}]</span>
-              <span class="choice-text">${labels.download || '下载模组'} (Receive Spire Plus. Lose 0 HP)</span>
+              <span class="choice-prefix">[I]</span>
+              <span class="choice-text"><strong>${labels.download || (lang === 'en' ? 'Download Mod Package' : '下载当前测试包')}</strong> (Lose 0 HP)</span>
             </button>
             <button type="button" class="hero-choice-btn" data-choice="updates">
-              <span class="choice-prefix">[${lang === 'en' ? 'Option B' : '选项二'}]</span>
-              <span class="choice-text">${lang === 'en' ? 'Browse balance improvements' : '浏览平衡性优化项目'}</span>
+              <span class="choice-prefix">[II]</span>
+              <span class="choice-text"><strong>${lang === 'en' ? 'View Balance Archive' : '查看平衡性档案'}</strong></span>
             </button>
           </div>
+        </div>
+        <div class="hero-images">
+          ${mainImg}
+          ${thumb1}
+          ${thumb2}
         </div>
       </section>
     `;
@@ -631,6 +633,7 @@
     const namespaceClass = (item.isMechanicsCodex || item.namespace === "mechanics" || item.namespace === "mechanic") ? "type-mechanic" : (item.namespace ? `type-${item.namespace}` : "");
     const hasPreviewTag = (item.tags || []).some(t => t === "Preview tool" || t === "预览工具") ? "type-preview" : "";
     const cardClasses = ["compare-card", isActive ? "active-inspect" : "", namespaceClass, hasPreviewTag, isUpdatesPageLoaded ? "loaded" : ""].filter(Boolean).join(" ");
+    const displayIndex = String(index + 1).padStart(2, '0');
 
     return `
       <article class="${cardClasses}" style="--index: ${index}" data-search="${searchString}" data-index="${index}">
@@ -640,14 +643,14 @@
             ${renderImage(item.icon, title)}
           </div>
           <div class="card-title-block">
-            <h3>${title}</h3>
+            <div class="card-title-row-ex">
+              <span class="card-index-num">${displayIndex}</span>
+              <h3>${title}</h3>
+            </div>
             <div class="tags">${tagsHtml}</div>
           </div>
         </div>
-        <dl>
-          <dt>${labels.current}</dt>
-          <dd class="sts-card-current">${formatStsText(current, true)}</dd>
-        </dl>
+        <p class="sts-card-current">${formatStsText(current, true)}</p>
       </article>
     `;
   }

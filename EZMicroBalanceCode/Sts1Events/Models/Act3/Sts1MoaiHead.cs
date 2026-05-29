@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 
@@ -33,7 +34,7 @@ public sealed class Sts1MoaiHead : EventModel
 
     private async Task Offer()
     {
-        await PlayerCmd.GainGold(-OfferCost, Owner);
+        await PlayerCmd.LoseGold(OfferCost, Owner, GoldLossType.Spent);
         await CreatureCmd.GainMaxHp(Owner.Creature, OfferMaxHp);
         SetEventFinished(L10NLookup("STS1_MOAI_HEAD.pages.OFFER.description"));
     }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 
@@ -24,7 +25,7 @@ public sealed class Sts1MaskedBandits : EventModel
 
     private async Task Pay()
     {
-        await PlayerCmd.GainGold(-PayCost, Owner);
+        await PlayerCmd.LoseGold(PayCost, Owner, GoldLossType.Spent);
         SetEventFinished(L10NLookup("STS1_MASKED_BANDITS.pages.PAY.description"));
     }
 

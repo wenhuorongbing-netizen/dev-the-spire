@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
@@ -44,7 +45,7 @@ public sealed class Sts1ForgottenAltar : EventModel
 
     private async Task Offer()
     {
-        await PlayerCmd.GainGold(-OfferCost, Owner);
+        await PlayerCmd.LoseGold(OfferCost, Owner, GoldLossType.Spent);
         var maxHp = HasA15 ? OfferMaxHpA15 : OfferMaxHpNormal;
         await CreatureCmd.GainMaxHp(Owner.Creature, maxHp);
         SetEventFinished(L10NLookup("STS1_FORGOTTEN_ALTAR.pages.OFFER.description"));
