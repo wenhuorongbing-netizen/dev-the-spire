@@ -22,5 +22,7 @@
         <Compile Include="..\..\EZMicroBalanceCode\Ancients\Expansion\Urda\UrdaBlessingService.StateSchema.cs" Link="UrdaBlessingService.StateSchema.cs" />
         <Compile Include="..\..\EZMicroBalanceCode\Core\Architecture\RewardPipeline.cs" Link="Architecture\RewardPipeline.cs" />
         <Compile Include="..\..\EZMicroBalanceCode\Core\Architecture\CardPlayContext.cs" Link="Architecture\CardPlayContext.cs" />
+        <Compile Include="..\..\EZMicroBalanceCode\Core\Architecture\DeathProtectionService.cs" Link="Architecture\DeathProtectionService.cs" />
+        <Compile Include="..\..\EZMicroBalanceCode\Core\Architecture\MultiplayerPolicy.cs" Link="Architecture\MultiplayerPolicy.cs" />
     </ItemGroup>
 </Project>

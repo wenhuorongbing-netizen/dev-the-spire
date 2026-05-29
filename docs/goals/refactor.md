@@ -38,7 +38,7 @@
 | -------------------------- | ------------------------------- | ------------------------------------------------- |
 | Phase 0 structural work    | Done                            | **Pass**                                          |
 | Phase 1 structural work    | Done                            | **Pass**                                          |
-| Validation truth           | Single truth (361/0/21)         | **Pass** — verified 2026-05-29 (evidence hardening) |
+| Validation truth           | Single truth (444/0/21)         | **Pass** — verified 2026-05-29 (overnight run, +16 behavioral canary) |
 | Phase 2 patch adapter rule | Started / adapter checklist drafted | **Pass (Pack 1)** — not claimed Done             |
 | Phase 3 seam extraction    | Not Started                     | **Not complete**                                  |
 | Phase 4 state/save cleanup | Not Started                     | **Not complete**                                  |

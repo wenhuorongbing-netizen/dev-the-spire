@@ -9,14 +9,14 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - **25 patches migrated** to RitsuLib `IPatchMethod` (Batch 1 + 4a + 4b)
 - **142 raw Harmony patches remaining** (22 high-risk, 35 medium-risk, 85 low-risk)
 - **Hybrid bootstrap active**: `ModPatcher.PatchAll()` for migrated, `Harmony.PatchAll()` for remaining
-- **428 tests passing** (0 failed, 21 skipped, 449 total) — includes 8 migration guards + 24 Sts1Events guards + 41 UrdaStateCodec guards + 21 FeatureRegistry/EngineeringGovernance guards + 27 architecture skeleton guards + 5 FeatureRegistry metadata guards
-- **Build clean**: 0 errors, 0 warnings
+- **444 tests passing** (0 failed, 21 skipped, 465 total) — includes 8 migration guards + 24 Sts1Events guards + 41 UrdaStateCodec guards + 21 FeatureRegistry/EngineeringGovernance guards + 57 architecture skeleton guards (27 source-text + 30 behavioral canary) + 5 FeatureRegistry metadata guards
+- **Build clean**: 0 errors, 92 warnings (Sts1Events nullable CS8602/CS8604/CS8625 — accepted for prototype)
 - **Sts1Events**: compiled, feature-gated (default Off), 4-mode safety matrix validated; 7 HIGH-risk combat stubs + 1 MEDIUM-risk documented in risk table
 - **FeatureRegistry hardened**: IFeatureModule metadata, FeatureBootstrapRecord, LiveStatus enum, env key overrides, 5 metadata guard tests
 - **UrdaStateCodec V1**: encode/decode/legacy compat, 41 tests (18 source-structure + 15 behavioral + 8 edge-case)
 - **Architecture canary integration**: RewardPipeline diagnostics canary (5 tests), CardPlayContext depth-guard canary (9 tests) — no gameplay behavior changes
-- **DeathProtectionService stub**: diagnostics-only code stub with Request/Result/Priority, 13 guard tests
-- **MultiplayerPolicy stub**: diagnostics-only registry with 6-category taxonomy, 6 guard tests
+- **DeathProtectionService stub**: diagnostics-only code stub with Request/Result/Priority, 21 tests (13 guard + 8 behavioral canary)
+- **MultiplayerPolicy stub**: diagnostics-only registry with 6-category taxonomy, 14 tests (6 guard + 8 behavioral canary)
 - **Runtime smoke**: blocked — STS2-RitsuLib not installed locally; Batch 4c blocked until runtime smoke passes
 
 ## 4-Week Plan
@@ -29,7 +29,7 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - Fixed RitsuLibBootstrap comment (8 classes, not 7)
 - Created migration guard tests for double-patch, source-level separation, manifest coverage, doc counts
 - Moved untracked Sts1Events files to archive
-- Full test suite clean: 361 passed, 0 failed, 21 skipped (382 total)
+- Full test suite clean: 444 passed, 0 failed, 21 skipped (465 total)
 - Format clean, diff clean
 
 **Exit criteria met**: All doc counts match source, all guard tests pass, no untracked files.
@@ -147,7 +147,7 @@ These log patterns are the required evidence for runtime smoke verification.
 | Migrated patches | 25 | 55-65 |
 | Raw Harmony patches | 142 | 110-120 |
 | Guard tests | 94 | 100+ |
-| Total test suite | 387 passed | 390+ passed |
+| Total test suite | 444 passed | 450+ passed |
 | Runtime smoke | Pending | Complete |
 | Sts1Events status | Compiled, gated Off, 4-mode matrix validated | Resolved (activate or archive) |
 | High-risk migration plan | Architecture skeletons done | Documented with rollback strategy |

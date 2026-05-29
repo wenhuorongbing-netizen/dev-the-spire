@@ -24,8 +24,8 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | ZHS localization keys | 399 (0 placeholder) | zhs/sts1_events.json verified |
 | Event images | 0 | No redistributable art available |
 | Guard tests | 24 | Sts1EventFeatureGuardTests.cs — all pass |
-| Build | 0 errors, 0 warnings | dotnet build 2026-05-29 |
-| Tests | 428 passed, 0 failed, 21 skipped | dotnet test 2026-05-29 |
+| Build | 0 errors, 92 warnings (all Sts1Events nullable) | dotnet build 2026-05-29 |
+| Tests | 444 passed, 0 failed, 21 skipped | dotnet test 2026-05-29 |
 
 ## Phase Status
 

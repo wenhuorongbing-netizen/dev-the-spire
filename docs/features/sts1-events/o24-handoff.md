@@ -8,11 +8,11 @@ Session: Mandatory Overnight Run v2 → v9 refresh
 | Metric | Value | Evidence File |
 |--------|-------|---------------|
 | Build errors | 0 | `dotnet build` 2026-05-29 |
-| Build warnings | 0 | `dotnet build` 2026-05-29 |
-| Tests passed | 428 | `dotnet test` 2026-05-29 |
+| Build warnings | 92 (all Sts1Events nullable) | `dotnet build` 2026-05-29 |
+| Tests passed | 444 | `dotnet test` 2026-05-29 |
 | Tests failed | 0 | `dotnet test` 2026-05-29 |
 | Tests skipped | 21 | (release artifact tests, require `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`) |
-| Total tests | 449 | `dotnet test` 2026-05-29 |
+| Total tests | 465 | `dotnet test` 2026-05-29 |
 | Guard tests | 24/24 pass | `dotnet test --filter Sts1EventFeatureGuardTests` 2026-05-29 |
 
 ## Gate Status Summary
@@ -21,7 +21,7 @@ Session: Mandatory Overnight Run v2 → v9 refresh
 |------|------|--------|----------|
 | O0 | Worktree snapshot | **GREEN** | `o0-git-status.txt`, `o0-head.txt`, `o0-diff-stat.txt` |
 | O1 | Full build | **GREEN** | `o1-build-full.log` (0 errors) |
-| O2 | Full tests | **GREEN** | `dotnet test` 2026-05-29 (428 pass, 0 fail, 21 skip) |
+| O2 | Full tests | **GREEN** | `dotnet test` 2026-05-29 (444 pass, 0 fail, 21 skip) |
 | O3 | Status truth | **GREEN** | `status-board.md` — no false Done |
 | O4 | Canonical matrix | **GREEN** | `canonical-event-matrix.csv` (54 entries), `registry-reconciliation.md` |
 | O5 | Act mapping | **GREEN** | Guard tests: `ActMappingUsesOvergrowthAndUnderdocksForAct1`, `ActMappingUsesHiveForAct2`, `ActMappingUsesGloryForAct3` |
@@ -87,7 +87,7 @@ Session: Mandatory Overnight Run v2 → v9 refresh
 | Registration calls | 52 | 54 | +2 |
 | Guard tests | 21 | 24 | +3 (updated counts + FeatureBootstrapRecord manifest fix) |
 | EN/ZHS keys | 380 | 399 | +19 per language |
-| Tests passed | 361 | 428 | +67 (includes worktree batch fix) |
+| Tests passed | 361 | 444 | +83 (includes worktree batch fix + behavioral canary tests) |
 
 ## Honest Assessment
 
@@ -96,7 +96,7 @@ Session: Mandatory Overnight Run v2 → v9 refresh
 - O17 (simple batch specs): All 6 events spec'd; 2 new models created (Purifier, Golden Shrine)
 - O18 (simple batch implementation): 6/6 code-complete with real APIs
 - All guard tests updated and passing (24/24)
-- Full test suite clean (428 pass, 0 fail)
+- Full test suite clean (444 pass, 0 fail)
 - Worktree batch script fix resolved stale test failure
 - All documentation updated with accurate counts
 

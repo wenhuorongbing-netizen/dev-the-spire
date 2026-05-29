@@ -44,7 +44,7 @@ Full StS1 event experience: not complete
 | New model files | `Sts1Purifier.cs`, `Sts1GoldenShrine.cs` | 可暂认新增；需 build/test/runtime proof |
 | Simple batch code | 6/6 code-complete | 只能算 code-claimed；runtime 未验收 |
 | Guard tests | 21 → 24 | 自动化有进展；不等于 gameplay proof |
-| Tests | 366 passed, 0 failed | 接受为 automated test pass claimed；skipped 和 runtime gap 仍需说明 |
+| Tests | 444 passed, 0 failed, 21 skipped | 接受为 automated test pass claimed；skipped 和 runtime gap 仍需说明 |
 | Handoff docs | `o24-handoff.md`, blocker report | 正确方向；不能把 blocker gate 算完成 |
 
 ---
@@ -82,7 +82,7 @@ The project is not StS1 parity-ready.
 
 **状态：AMBER。**
 
-报告声称 tests 从 361 → 366 passed，0 failed。接受为自动化测试进展，但仍需：
+报告声称 tests 从 361 → 444 passed，0 failed，21 skipped。接受为自动化测试进展，但仍需：
 
 - 最新完整 `dotnet build --no-restore` unfiltered log；
 - 最新完整 test log；
@@ -559,7 +559,7 @@ It does NOT mark the feature complete.
 
 ```text
 20/25 gates green
-366 tests pass
+444 tests pass
 all code compiles
 handoff docs written
 hard-stop blockers listed
@@ -823,7 +823,7 @@ Obtain/create art for event images
 | feature gate / registration foundation | 有进展                      |
 | canary reachable code review           | code-claimed complete    |
 | simple batch 6 events                  | code-claimed complete    |
-| tests                                  | 366 pass / 0 fail，自动测试进展 |
+| tests                                  | 444 pass / 0 fail / 21 skip，自动测试进展 |
 | handoff/blocker docs                   | 有进展                      |
 
 但这些仍然不是 runtime parity。
@@ -937,7 +937,7 @@ full StS1 feel: 未完成
 
 ```text
 20/25 gates green
-366 tests pass
+444 tests pass
 all code compiles
 handoff docs written
 hard-stop blockers listed

@@ -10,9 +10,9 @@ TBD (next available overnight session)
 
 ## Current State
 
-- HEAD: `d290598c` on `main`
-- Build: 0 errors, 0 warnings
-- Tests: 428 passed, 0 failed, 21 skipped (449 total)
+- HEAD: `aed2a498` on `main`
+- Build: 0 errors, 92 warnings (Sts1Events nullable CS8602/CS8604/CS8625)
+- Tests: 444 passed, 0 failed, 21 skipped (465 total)
 - 25 patches migrated, 142 raw Harmony remaining
 - Architecture canary integration complete (RewardPipeline diagnostics + CardPlayContext depth guard)
 - DeathProtectionService + MultiplayerPolicy stubs created (diagnostics-only)
@@ -21,8 +21,8 @@ TBD (next available overnight session)
 ## Pre-Run Checklist
 
 1. Confirm `main` branch is clean: `git status` shows no uncommitted changes
-2. Confirm full test suite passes: `dotnet test EZMicroBalance.sln --no-build` → 428+ passed, 0 failed
-3. Confirm build is clean: `dotnet build EZMicroBalance.sln` → 0 errors, 0 warnings
+2. Confirm full test suite passes: `dotnet test EZMicroBalance.sln --no-build` → 444+ passed, 0 failed
+3. Confirm build is clean: `dotnet build EZMicroBalance.sln` → 0 errors, 92 warnings (Sts1Events nullable)
 4. Confirm format is clean: `dotnet format --verify-no-changes`
 
 ## Run Steps

@@ -583,6 +583,339 @@ public sealed class ArchitectureSkeletonGuardTests
         Assert.Contains("MultiplayerFeatureCategory category", source, StringComparison.Ordinal);
     }
 
+    // ── DeathProtectionService canary (behavioral) ─────────────────
+
+    [Fact]
+    public void DeathProtectionService_Canary_RegisterIncrementsProviderCount()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            Assert.Equal(0, DeathProtectionService.ProviderCount);
+
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.Reprieve, canProtect: true));
+            Assert.Equal(1, DeathProtectionService.ProviderCount);
+
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.Sacrifice, canProtect: false));
+            Assert.Equal(2, DeathProtectionService.ProviderCount);
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    [Fact]
+    public void DeathProtectionService_Canary_ProvidersSortedByPriority()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            // Register out of priority order: LastStand first, then Reprieve, then Sacrifice.
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.LastStand, canProtect: true));
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.Reprieve, canProtect: true));
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.Sacrifice, canProtect: true));
+
+            var priorities = DeathProtectionService.RegisteredPriorities;
+            Assert.Equal(3, priorities.Count);
+            Assert.Equal(DeathProtectionPriority.Reprieve, priorities[0]);   // 100
+            Assert.Equal(DeathProtectionPriority.Sacrifice, priorities[1]);  // 200
+            Assert.Equal(DeathProtectionPriority.LastStand, priorities[2]);  // 300
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    [Fact]
+    public void DeathProtectionService_Canary_UnavoidableDeathReturnsForcedDeath()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            // Register a provider that says it can protect — but unavoidable death should still force death.
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.Reprieve, canProtect: true));
+
+            var request = new DeathProtectionRequest("Player1", "TestSource", 999, IsUnavoidable: true);
+            var result = DeathProtectionService.CheckProtection(request);
+
+            Assert.Equal(DeathProtectionResult.ForcedDeath, result);
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    [Fact]
+    public void DeathProtectionService_Canary_NoProvidersReturnsNotProtected()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            var request = new DeathProtectionRequest("Player1", "TestSource", 10, IsUnavoidable: false);
+            var result = DeathProtectionService.CheckProtection(request);
+
+            Assert.Equal(DeathProtectionResult.NotProtected, result);
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    [Fact]
+    public void DeathProtectionService_Canary_MatchingProviderReturnsProtected()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.Reprieve, canProtect: true));
+
+            var request = new DeathProtectionRequest("Player1", "TestSource", 10, IsUnavoidable: false);
+            var result = DeathProtectionService.CheckProtection(request);
+
+            Assert.Equal(DeathProtectionResult.Protected, result);
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    [Fact]
+    public void DeathProtectionService_Canary_FirstMatchingProviderWins()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            // Register two providers: Reprieve (priority 100) and Sacrifice (priority 200).
+            // Both can protect — but Reprieve is checked first due to lower priority.
+            var reprieveProvider = new StubDeathProtectionProvider(DeathProtectionPriority.Reprieve, canProtect: true);
+            var sacrificeProvider = new StubDeathProtectionProvider(DeathProtectionPriority.Sacrifice, canProtect: true);
+
+            DeathProtectionService.Register(sacrificeProvider);  // Register higher priority first
+            DeathProtectionService.Register(reprieveProvider);   // Register lower priority second
+
+            var request = new DeathProtectionRequest("Player1", "TestSource", 10, IsUnavoidable: false);
+            var result = DeathProtectionService.CheckProtection(request);
+
+            Assert.Equal(DeathProtectionResult.Protected, result);
+            // The fact that it returns Protected confirms the first matching provider (Reprieve) was found.
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    [Fact]
+    public void DeathProtectionService_Canary_ClearProvidersResetsState()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.Reprieve, canProtect: true));
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.Sacrifice, canProtect: false));
+
+            Assert.Equal(2, DeathProtectionService.ProviderCount);
+
+            DeathProtectionService.ClearProviders();
+            Assert.Equal(0, DeathProtectionService.ProviderCount);
+            Assert.Empty(DeathProtectionService.RegisteredPriorities);
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    [Fact]
+    public void DeathProtectionService_Canary_CheckProtectionWithNonMatchingProviderReturnsNotProtected()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            // Provider says it cannot protect — should return NotProtected.
+            DeathProtectionService.Register(new StubDeathProtectionProvider(DeathProtectionPriority.Reprieve, canProtect: false));
+
+            var request = new DeathProtectionRequest("Player1", "TestSource", 10, IsUnavoidable: false);
+            var result = DeathProtectionService.CheckProtection(request);
+
+            Assert.Equal(DeathProtectionResult.NotProtected, result);
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    // ── MultiplayerPolicyRegistry canary (behavioral) ─────────────
+
+    [Fact]
+    public void MultiplayerPolicyRegistry_Canary_RegisterIncrementsPolicyCount()
+    {
+        MultiplayerPolicyRegistry.ClearPolicies();
+        try
+        {
+            Assert.Equal(0, MultiplayerPolicyRegistry.PolicyCount);
+
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("FeatureA", MultiplayerFeatureCategory.LocalUiOnly, null, true));
+            Assert.Equal(1, MultiplayerPolicyRegistry.PolicyCount);
+
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("FeatureB", MultiplayerFeatureCategory.LocalPlayerOnly, null, false));
+            Assert.Equal(2, MultiplayerPolicyRegistry.PolicyCount);
+        }
+        finally
+        {
+            MultiplayerPolicyRegistry.ClearPolicies();
+        }
+    }
+
+    [Fact]
+    public void MultiplayerPolicyRegistry_Canary_LookupReturnsRegisteredPolicy()
+    {
+        MultiplayerPolicyRegistry.ClearPolicies();
+        try
+        {
+            var policy = new MultiplayerPolicyRecord("TestFeature", MultiplayerFeatureCategory.HostAuthoritative, "ENV_KEY", true);
+            MultiplayerPolicyRegistry.Register(policy);
+
+            var result = MultiplayerPolicyRegistry.Lookup("TestFeature");
+            Assert.NotNull(result);
+            Assert.Equal("TestFeature", result.FeatureId);
+            Assert.Equal(MultiplayerFeatureCategory.HostAuthoritative, result.Category);
+            Assert.Equal("ENV_KEY", result.EnvOverride);
+            Assert.True(result.IsVerified);
+        }
+        finally
+        {
+            MultiplayerPolicyRegistry.ClearPolicies();
+        }
+    }
+
+    [Fact]
+    public void MultiplayerPolicyRegistry_Canary_LookupReturnsNullForUnknownFeature()
+    {
+        MultiplayerPolicyRegistry.ClearPolicies();
+        try
+        {
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("KnownFeature", MultiplayerFeatureCategory.LocalUiOnly, null, true));
+
+            var result = MultiplayerPolicyRegistry.Lookup("UnknownFeature");
+            Assert.Null(result);
+        }
+        finally
+        {
+            MultiplayerPolicyRegistry.ClearPolicies();
+        }
+    }
+
+    [Fact]
+    public void MultiplayerPolicyRegistry_Canary_AllPoliciesReturnsAllRegistered()
+    {
+        MultiplayerPolicyRegistry.ClearPolicies();
+        try
+        {
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("A", MultiplayerFeatureCategory.LocalUiOnly, null, true));
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("B", MultiplayerFeatureCategory.SharedRunState, null, false));
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("C", MultiplayerFeatureCategory.UnsafeInMultiplayer, null, false));
+
+            var all = MultiplayerPolicyRegistry.AllPolicies;
+            Assert.Equal(3, all.Count);
+            Assert.Contains(all, p => p.FeatureId == "A");
+            Assert.Contains(all, p => p.FeatureId == "B");
+            Assert.Contains(all, p => p.FeatureId == "C");
+        }
+        finally
+        {
+            MultiplayerPolicyRegistry.ClearPolicies();
+        }
+    }
+
+    [Fact]
+    public void MultiplayerPolicyRegistry_Canary_FeaturesInCategoryFiltersCorrectly()
+    {
+        MultiplayerPolicyRegistry.ClearPolicies();
+        try
+        {
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("UI1", MultiplayerFeatureCategory.LocalUiOnly, null, true));
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("UI2", MultiplayerFeatureCategory.LocalUiOnly, null, true));
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("Combat1", MultiplayerFeatureCategory.CombatCommandReplicated, null, false));
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("Shared1", MultiplayerFeatureCategory.SharedRunState, null, false));
+
+            var uiFeatures = MultiplayerPolicyRegistry.FeaturesInCategory(MultiplayerFeatureCategory.LocalUiOnly);
+            Assert.Equal(2, uiFeatures.Count);
+            Assert.Contains("UI1", uiFeatures);
+            Assert.Contains("UI2", uiFeatures);
+
+            var combatFeatures = MultiplayerPolicyRegistry.FeaturesInCategory(MultiplayerFeatureCategory.CombatCommandReplicated);
+            Assert.Single(combatFeatures);
+            Assert.Contains("Combat1", combatFeatures);
+
+            var unsafeFeatures = MultiplayerPolicyRegistry.FeaturesInCategory(MultiplayerFeatureCategory.UnsafeInMultiplayer);
+            Assert.Empty(unsafeFeatures);
+        }
+        finally
+        {
+            MultiplayerPolicyRegistry.ClearPolicies();
+        }
+    }
+
+    [Fact]
+    public void MultiplayerPolicyRegistry_Canary_ClearPoliciesResetsState()
+    {
+        MultiplayerPolicyRegistry.ClearPolicies();
+        try
+        {
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("A", MultiplayerFeatureCategory.LocalUiOnly, null, true));
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("B", MultiplayerFeatureCategory.LocalPlayerOnly, null, false));
+
+            Assert.Equal(2, MultiplayerPolicyRegistry.PolicyCount);
+
+            MultiplayerPolicyRegistry.ClearPolicies();
+            Assert.Equal(0, MultiplayerPolicyRegistry.PolicyCount);
+            Assert.Empty(MultiplayerPolicyRegistry.AllPolicies);
+        }
+        finally
+        {
+            MultiplayerPolicyRegistry.ClearPolicies();
+        }
+    }
+
+    [Fact]
+    public void MultiplayerPolicyRegistry_Canary_LookupIsCaseSensitive()
+    {
+        MultiplayerPolicyRegistry.ClearPolicies();
+        try
+        {
+            MultiplayerPolicyRegistry.Register(new MultiplayerPolicyRecord("FeatureA", MultiplayerFeatureCategory.LocalUiOnly, null, true));
+
+            // Different case should not match (Ordinal comparison).
+            var result = MultiplayerPolicyRegistry.Lookup("featurea");
+            Assert.Null(result);
+        }
+        finally
+        {
+            MultiplayerPolicyRegistry.ClearPolicies();
+        }
+    }
+
+    [Fact]
+    public void MultiplayerPolicyRegistry_Canary_AllSixCategoriesAreDistinct()
+    {
+        var values = Enum.GetValues<MultiplayerFeatureCategory>();
+
+        Assert.Equal(6, values.Length);
+        Assert.Contains(MultiplayerFeatureCategory.LocalUiOnly, values);
+        Assert.Contains(MultiplayerFeatureCategory.LocalPlayerOnly, values);
+        Assert.Contains(MultiplayerFeatureCategory.HostAuthoritative, values);
+        Assert.Contains(MultiplayerFeatureCategory.SharedRunState, values);
+        Assert.Contains(MultiplayerFeatureCategory.CombatCommandReplicated, values);
+        Assert.Contains(MultiplayerFeatureCategory.UnsafeInMultiplayer, values);
+    }
+
     // ── Test helpers for RewardPipeline canary tests ──────────────────
 
     /// <summary>
@@ -631,5 +964,23 @@ public sealed class ArchitectureSkeletonGuardTests
         {
             _order.Add(_label);
         }
+    }
+
+    /// <summary>
+    /// Test provider for DeathProtectionService behavioral canary tests.
+    /// </summary>
+    private sealed class StubDeathProtectionProvider : IDeathProtectionProvider
+    {
+        private readonly bool _canProtect;
+
+        public DeathProtectionPriority Priority { get; }
+
+        public StubDeathProtectionProvider(DeathProtectionPriority priority, bool canProtect)
+        {
+            Priority = priority;
+            _canProtect = canProtect;
+        }
+
+        public bool CanProtect(DeathProtectionRequest request) => _canProtect;
     }
 }

@@ -108,7 +108,7 @@ patch-inventory.md lists migrated patches
 `monthly-dev-spec.md` 当前写：
 
 ```text
-387 total tests passing
+444 total tests passing
 0 failed
 21 skipped
 ```
@@ -119,7 +119,7 @@ patch-inventory.md lists migrated patches
 
 ```text
 dotnet build: 0 errors, 92 warnings
-dotnet test: 387 passed, 0 failed, 21 skipped
+dotnet test: 444 passed, 0 failed, 21 skipped
 ```
 
 这和最新 monthly spec 的 387 passed 对上。
@@ -137,7 +137,7 @@ dotnet test: 387 passed, 0 failed, 21 skipped
 
 ```text
 Build: 0 errors, 92 warnings
-Test: 387 passed, 0 failed, 21 skipped
+Test: 444 passed, 0 failed, 21 skipped
 ```
 
 并明确 92 个 warning 是否全部属于 Sts1Events null-safety，是否接受，何时清理。
@@ -706,7 +706,7 @@ MindBloom War blocked
 - 141 raw Harmony patches remain (1 additional dead-code declaration behind #if).
 - Batch 4a/4b counts fixed.
 - RitsuLibMigrationGuardTests pass source-level double-patch checks.
-- Full test truth currently reported as 387 passed / 0 failed / 21 skipped.
+- Full test truth currently reported as 444 passed / 0 failed / 21 skipped.
 - Build has 92 warnings, all Sts1Events null-safety per prior report.
 - Runtime smoke blocked because STS2-RitsuLib not installed locally.
 - Sts1Events default Off and CanaryOnly are guarded.
