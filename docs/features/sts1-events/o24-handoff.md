@@ -1,19 +1,19 @@
 # O24: Handoff — StS1 Event Port Overnight Run Evidence Summary
 
-Date: 2026-05-29
-Session: Mandatory Overnight Run v2
+Date: 2026-05-29 (v9 refresh)
+Session: Mandatory Overnight Run v2 → v9 refresh
 
 ## Build & Test Evidence
 
 | Metric | Value | Evidence File |
 |--------|-------|---------------|
-| Build errors | 0 | `o1-build-full.log` |
-| Build warnings | 0 (incremental) | `o1-build-full.log` |
-| Tests passed | 366 | `o2-test-full.log` |
-| Tests failed | 0 | `o2-test-full.log` |
-| Tests skipped | 21 | `o2-test-full.log` (release artifact tests, require `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`) |
-| Total tests | 387 | `o2-test-full.log` |
-| Guard tests | 24 | `dotnet test --filter Sts1EventFeatureGuardTests` |
+| Build errors | 0 | `dotnet build` 2026-05-29 |
+| Build warnings | 0 | `dotnet build` 2026-05-29 |
+| Tests passed | 428 | `dotnet test` 2026-05-29 |
+| Tests failed | 0 | `dotnet test` 2026-05-29 |
+| Tests skipped | 21 | (release artifact tests, require `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`) |
+| Total tests | 449 | `dotnet test` 2026-05-29 |
+| Guard tests | 24/24 pass | `dotnet test --filter Sts1EventFeatureGuardTests` 2026-05-29 |
 
 ## Gate Status Summary
 
@@ -21,7 +21,7 @@ Session: Mandatory Overnight Run v2
 |------|------|--------|----------|
 | O0 | Worktree snapshot | **GREEN** | `o0-git-status.txt`, `o0-head.txt`, `o0-diff-stat.txt` |
 | O1 | Full build | **GREEN** | `o1-build-full.log` (0 errors) |
-| O2 | Full tests | **GREEN** | `o2-test-full.log` (366 pass, 0 fail, 21 skip) |
+| O2 | Full tests | **GREEN** | `dotnet test` 2026-05-29 (428 pass, 0 fail, 21 skip) |
 | O3 | Status truth | **GREEN** | `status-board.md` — no false Done |
 | O4 | Canonical matrix | **GREEN** | `canonical-event-matrix.csv` (54 entries), `registry-reconciliation.md` |
 | O5 | Act mapping | **GREEN** | Guard tests: `ActMappingUsesOvergrowthAndUnderdocksForAct1`, `ActMappingUsesHiveForAct2`, `ActMappingUsesGloryForAct3` |
@@ -78,8 +78,8 @@ Session: Mandatory Overnight Run v2
 
 ### Key Metrics Update
 
-| Metric | Before | After | Delta |
-|--------|--------|-------|-------|
+| Metric | Before | After (v9) | Delta |
+|--------|--------|------------|-------|
 | Wiki entries | 52 | 54 | +2 (Purifier, Golden Shrine) |
 | Runtime models | 46 | 48 | +2 |
 | Registry entries | 48 | 50 | +2 |
@@ -87,7 +87,7 @@ Session: Mandatory Overnight Run v2
 | Registration calls | 52 | 54 | +2 |
 | Guard tests | 21 | 24 | +3 (updated counts + FeatureBootstrapRecord manifest fix) |
 | EN/ZHS keys | 380 | 399 | +19 per language |
-| Tests passed | 361 | 366 | +5 |
+| Tests passed | 361 | 428 | +67 (includes worktree batch fix) |
 
 ## Honest Assessment
 
@@ -96,7 +96,8 @@ Session: Mandatory Overnight Run v2
 - O17 (simple batch specs): All 6 events spec'd; 2 new models created (Purifier, Golden Shrine)
 - O18 (simple batch implementation): 6/6 code-complete with real APIs
 - All guard tests updated and passing (24/24)
-- Full test suite clean (366 pass, 0 fail)
+- Full test suite clean (428 pass, 0 fail)
+- Worktree batch script fix resolved stale test failure
 - All documentation updated with accurate counts
 
 **What remains blocked (requires game launch):**

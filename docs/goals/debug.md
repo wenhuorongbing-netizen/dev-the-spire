@@ -1,332 +1,528 @@
 ﻿## 严格审核结论
 
-这次我会把结论分成两层：
+这次不能简单判定“完成”。更准确的结论是：
 
 ```text
-M2 Revision E terminal validation gate：有条件通过
-M2 / 当前开发任务整体：未完成
-Commit readiness：未通过
-下一步方向：优化 + 有限推进，两者兼顾，但先优化到可提交状态
+M2 Revision F terminal validation：通过
+M2 Revision F overall / commit-readiness：未完成
+下个月方向：优化 + 有限推进，两者兼顾，但先优化到 owner-review / commit-ready
 ```
 
-也就是说，他这轮确实比之前明显进步：5 个 terminal validation commands 都报告 exit 0，测试从之前的失败状态变成 `354 passed / 0 failed / 21 skipped`，并创建了 warning ledger 和 diff ledger。这可以接受为 **“验证门通过”**。
+他这轮确实完成了重要进展：`dotnet clean + build`、test、format、whitespace、batch classification 都有绿色结果；测试数也从 Revision E 的 354 提升到 361，且 0 failed；`report-worktree-batches.ps1` 现在是 9 个 worktree entries、0 unclassified。
 
-但这还不是“任务完成”。他自己也列出了关键 pending：`32 dirty files` 还需要 owner commit decision，`Sts1Events governance` 还没决定 formal/staging/remove，`RitsuLib runtime verification` 仍 pending。再加上 clean build 仍有 `87 CS warnings`，这些 warnings 还和 Sts1Events 决策绑定。因此现在不能直接说“完成”，也不能直接推进到 RitsuLib 高风险 migration 或恢复 longhaul audit。
+但他自己的状态里也写明：最终 Revision F 报告还没整合、CommitSliceAgent 还没准备提交计划、`debug.md` 仍有 stale counts、`migration.md` 可能还有 stale references、RitsuLib runtime 未验证且没有 fallback、Sts1Events runtime 未验证、ZHS 还有 38 个 placeholder entries。
 
-你之前上传的历史记录也支持这个严格口径：此前他曾把 `WorktreeBatchScriptRunsAndWritesBatchPathspecs` 失败说成“commit 后会过”，但当时测试仍是 `302 passed / 21 skipped / 1 failed`，format 还是 timeout，却写成 clean；这种过度声明必须继续防止。 记录里还显示他把 Sts1Events 纳入 source manifest、export preset、localization，又把 registration service 排除编译，这说明它已经不是“untracked/unrelated”的无关文件。
+所以现在不是失败状态，而是：
+
+```text
+验证门已过，但还没到可提交 / 可推进功能 / 可恢复 longhaul audit 的状态。
+```
 
 ---
 
-## 与我们的目标对比
+## 当前状态与目标对比
 
-我们的目标不是“让命令临时绿一下”，而是：
+我们的原目标是：
 
 ```text
 1. 恢复真实绿色 baseline
-2. 用 subagent 分拆审计，避免主 agent 自我验收
-3. 所有 dirty files 可解释、可分组、可回滚
+2. 用 subagent 分拆审计
+3. 所有 dirty / untracked 文件可解释、可分组、可回滚
 4. Sts1Events / Debug / RitsuLib 状态真实，不 overclaim
-5. 只有在 commit-ready 后，才进入 Week 2 governance 或 longhaul audit
+5. 只有 commit-ready 后，才进入 Week 2 governance 或恢复 longhaul audit
 ```
 
-当前对比：
+当前对比结果：
 
-| 目标                         |                                      当前状态 | 审核                                |
-| -------------------------- | ----------------------------------------: | --------------------------------- |
-| 5 个 terminal validation 全绿 |                              他报告全部 exit 0 | **通过，但需复核 clean/rebuild warning** |
-| 默认测试全绿                     |      `354 passed / 0 failed / 21 skipped` | **通过**                            |
-| Format 正常 exit 0           |                                他报告 exit 0 | **通过，前提是当前报告真实**                  |
-| Batch classification       |                          `0 unclassified` | **通过**                            |
-| Dirty files 全部解释           |              32 dirty files，有 diff ledger | **部分通过，需要核对每个文件 commit slice**    |
-| Warning ledger             |                           87 warnings 已记录 | **部分通过，需要 owner 决策绑定**            |
-| Test change review         |                                最新摘要没有明确完成 | **未确认，必须补 subagent review**       |
-| Sts1Events                 |                  formal/staging/remove 未决 | **未完成**                           |
-| RitsuLib runtime           |                                       未验证 | **未完成**                           |
-| Debug                      | validated scaffold，但 not feature-complete | **未完成**                           |
-| Commit readiness           |                         32 dirty files 未决 | **未完成**                           |
-| Longhaul audit readiness   |                            governance 未完成 | **不能恢复**                          |
+| 目标                 |                                                                                                            当前状态 | 审核                            |
+| ------------------ | --------------------------------------------------------------------------------------------------------------: | ----------------------------- |
+| 终端验证全绿             |                clean build 0 errors / 87 warnings，361 tests passed，format clean，diff clean，batch 0 unclassified | **通过**                        |
+| 真实 warning 状态      |                                            87 CS warnings，全是 Sts1Events nullable；incremental build 会隐藏 warnings | **部分通过，需要治理决策**               |
+| dirty/untracked 解释 |                                                                   9 total：8 dirty + 1 untracked；diff ledger 已重写 | **部分通过，仍需 commit slices**     |
+| subagent 使用        |                                                                                                5 个 subagents 完成 | **部分通过，CommitSliceAgent 未完成** |
+| Sts1Events 状态      |                             建议 staging-only，runtime 未验证，87 warnings，8 blocked combat events，38 ZHS placeholders | **未完成治理**                     |
+| Debug 状态           | 建议 accept-scaffold；default-off，但 Warn 无条件、LogPreview dead code、无 dedicated behavioral tests、无 settings exposure | **scaffold 可接受，feature 未完成**  |
+| RitsuLib 状态        |     attempted；compile/manifest wired，25 patches migrated，但 runtime 未验证，bootstrap 无 fallback，0.3.2 vs 0.3.3 skew | **未完成 / runtime blocker**     |
+| 文档真相               |                                                        已修一部分，但 debug.md、migration.md 仍有 stale counts/references | **未完成**                       |
+| 可提交状态              |                                                                             还需要 CommitSliceAgent 和 final report | **未完成**                       |
+
+---
+
+## 逐步严格审核
+
+### 1. Terminal validation：通过，但不能扩大解释
+
+他报告：
+
+```text
+dotnet clean + dotnet build .\EZMicroBalance.csproj → 0 errors, 87 CS warnings
+dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj → 361 passed, 0 failed, 21 skipped
+dotnet format .\EZMicroBalance.csproj --verify-no-changes → clean
+git diff --check → clean
+report-worktree-batches.ps1 → 9 dirty, 0 unclassified
+```
+
+这可以接受为：
+
+```text
+Validation gate passed.
+```
+
+但不能扩大成：
+
+```text
+全部完成
+release-ready
+runtime-ready
+可直接 commit
+```
+
+因为 warnings、runtime、commit slices、governance 都还没收口。
+
+---
+
+### 2. Dirty / untracked 状态：部分收口，但还不能 commit
+
+当前关键数字是：
+
+```text
+9 total worktree entries
+8 dirty + 1 untracked
+0 unclassified
+```
+
+具体包括：
+
+```text
+batch 3: 3 docs
+batch 5: 1 localization JSON
+batch 8: 5 goals docs
+```
+
+这已经比之前的 32 dirty files 清晰很多。但下一步还必须由 `CommitSliceAgent` 把这 9 个文件分成可审查提交片：
+
+```text
+1. goals/status truth fixes
+2. Sts1Events staging docs / research
+3. localization staging debt
+4. migration / RitsuLib truth alignment
+```
+
+没有 commit slices 前，不要 commit。
+
+---
+
+### 3. Sts1Events：建议 staging-only，不能 formal
+
+Subagent 建议是：
+
+```text
+Sts1Events governance = staging-only
+```
+
+理由合理：feature gate 有双重安全，env unset 会 disabled，`RegisterGated()` 有 explicit `Off: return`，CanaryOnly 只注册 4 个正确事件，并且有 20 个 guard tests。
+
+但不能 formal，因为还有：
+
+```text
+runtime gameplay unverified
+87 nullable warnings
+8 blocked combat events
+38 ZHS placeholder entries
+no event images
+```
+
+所以结论：
+
+```text
+Sts1Events 可以作为 staging-only 保留。
+不能作为正式功能推进。
+不能进入 release claim。
+不能恢复 full gameplay implementation。
+```
+
+---
+
+### 4. Debug：accept-scaffold，但不是 feature-complete
+
+Subagent 建议是：
+
+```text
+Debug = accept-scaffold
+```
+
+这可以接受，但要写清楚边界：
+
+```text
+default-off internal scaffold
+zero runtime side effects when off
+SpirePlusDebug.Warn() 无条件 log，需文档说明
+LogPreview() dead code，需 backlog
+没有 dedicated behavioral test coverage
+没有 settings exposure
+not feature-complete
+```
+
+所以结论：
+
+```text
+Debug scaffold 可保留。
+不能写 debug complete。
+不能继续扩展 debug，除非进入单独 feature-complete spec。
+```
+
+---
+
+### 5. RitsuLib：仍然是 attempted，不是 runtime-ready
+
+这是最大风险。Subagent 报告：
+
+```text
+RitsuLib = attempted
+compile/manifest wired
+STS2.RitsuLib 0.3.2
+25 patches migrated via ModPatcher
+RitsuLibBootstrap.ApplyPatches() unconditionally called from MainFile.Initialize()
+no try-catch / feature gate / null guard
+no runtime proof
+version skew: NuGet 0.3.2 vs variant pack 0.3.3
+will throw TypeLoadException/FileNotFoundException if STS2-RitsuLib.dll missing
+```
+
+这意味着：
+
+```text
+RitsuLib hard dependency / runtime integration 未完成。
+```
+
+更严格地说：如果 `EZMicroBalance.json` 已经声明 `STS2-RitsuLib` runtime dependency，那么 tester install instructions、package docs、loader smoke 都必须跟上。否则就是“compile/manifest attempted; runtime unverified”。
+
+当前必须禁止这些表述：
+
+```text
+RitsuLib complete
+hard dependency verified
+release-ready
+runtime validated
+```
+
+---
+
+### 6. Patch inventory：需要专门核对
+
+当前记录里有一个需要审查的数字组合：
+
+```text
+Patch inventory: 142 total declarations
+25 migrated to RitsuLib ModPatcher
+142 raw HarmonyPatch remaining
+```
+
+这个表述可能有歧义：如果 25 个已经迁移到 RitsuLib ModPatcher，为什么 raw HarmonyPatch remaining 仍是 142？是否存在 double-patching？是否是“142 raw Harmony attributes 仍存在，但 25 也有 ModPatcher wrapper”？这必须交给 `PatchInventoryAgent` 复核，不能直接接受。
 
 结论：
 
 ```text
-当前不是“失败状态”，而是“验证通过后的未收口状态”。
-下一步应该做 commit-readiness 和 governance 决策，不应该继续大改功能。
+Patch inventory / migrated count 需要再核对。
 ```
 
 ---
 
-## 逐步审核
+### 7. 文档真相：仍未完成
 
-### 1. Terminal validations
-
-他说：
+他已修：
 
 ```text
-Clean build: 0 errors, 87 CS warnings
-Tests: 354 passed, 0 failed, 21 skipped
-Format, whitespace, batch classification: clean
+TASK_STATUS.md
+TASK_FOCUS_PACK.md
+overnight-run-status.md
+overnight-diff-ledger.md
+migration.md blockquote
 ```
 
-这比之前合格。但 `87 CS warnings` 不能被忽略，尤其他说 warnings 全在 `Sts1Events` nullable 上。若 Sts1Events 选择正式功能，这 87 个 warnings 必须修或逐项接受；若选择 staging/remove，则 warning 处理方式完全不同。
-
-严格状态：
+但他也承认：
 
 ```text
-Validation gate: pass
-Warning governance: pending
+debug.md still references "354 passed" and "32 dirty files"
+migration.md may still have additional stale references
+overnight-run-ledger.md still Revision D internally
 ```
 
-### 2. 修复项
+所以文档不能算收口。下一轮必须由 `DocsTruthAgent` 修完 stale counts 和 unsupported claims。
 
-他列出的修复包括：
+---
+
+## 综合判断：优化、推进，还是两者兼顾？
+
+我的决定是：
 
 ```text
-corrected stale test counts
-corrected warning count
-removed duplicate §2.2
-fixed trailing whitespace
-added Architecture to batch classifier regex
-created warning-ledger.md
-created overnight-diff-ledger.md
-updated status/ledger to Revision E
+两者兼顾，但先优化，后推进。
 ```
 
-这些都属于 stabilization / truth alignment 范围，是正确方向。尤其 batch classifier 从失败到通过，说明他终于没有再用“commit 后会过”来逃避。
-
-但 `added Architecture to batch classifier regex` 需要二次检查：不要让 regex 过宽，把不该归类的路径吞掉。这个应该交给 `BatchClassifierReviewAgent` 或 `TestChangeReviewAgent` 审。
-
-### 3. Dirty files
-
-他说还有：
+具体比例：
 
 ```text
-32 dirty files in working tree need owner commit decision
+70% 优化 / 收口：
+- final report
+- commit slices
+- stale docs
+- warning ledger
+- patch inventory reconciliation
+- runtime status truth
+
+30% 推进：
+- Sts1Events staging decision
+- Debug scaffold acceptance
+- RitsuLib runtime verification plan
 ```
 
-这就是不能直接验收的核心原因。`terminal validation green` 不等于 `commit ready`。现在必须把 32 个 dirty files 切成 commit slices：
+不能做的推进：
 
 ```text
-1. 纯文档 truth fixes
-2. overnight status / ledger files
-3. batch classifier fix
-4. RitsuLib truth alignment
-5. Sts1Events governance surface
-6. debug scaffold surface
-7. test guard changes
+继续 PR6 Batch4
+继续 PR7
+继续迁移高风险 patch
+扩展 debug
+把 Sts1Events formalize
+恢复 longhaul audit
 ```
 
-每一组都要有：
+---
+
+## 下个月开发规范：M3 June 2026
+
+我已经写成文件：
+[下载 M3 June 2026 Overnight Commit Governance Spec](sandbox:/mnt/data/devspire_m3_june_overnight_commit_governance_spec.md)
+
+### M3 总目标
 
 ```text
-purpose
-risk
-files
-validation evidence
-rollback option
-owner decision
+把 M2 Revision F 的绿色验证状态，转成 owner 可审、可提交、可回滚的 commit-ready packet；
+然后完成 Sts1Events / Debug / RitsuLib governance；
+最后恢复 one-file longhaul audit。
 ```
 
-### 4. Sts1Events
+---
 
-当前状态：
+## M3 Week 1：Commit Readiness Gate
+
+### 目标
+
+完成 Revision F 收口，不写新功能。
+
+### 必须产出
 
 ```text
-Sts1Events governance pending
-87 warnings depend on this
+docs/goals/revision-f-final-report.md
+docs/goals/revision-f-commit-slices.md
+updated docs/goals/overnight-run-status.md
+updated docs/goals/overnight-run-ledger.md
+updated docs/goals/overnight-diff-ledger.md
+updated docs/goals/warning-ledger.md
+fixed docs/goals/debug.md
+fixed docs/goals/migration.md
 ```
 
-这说明它仍未完成。三选一：
+### 必跑验证
 
-```text
-A. Formal feature
-B. Staging-only
-C. Remove / exclude
+```powershell
+dotnet clean .\EZMicroBalance.csproj
+dotnet build .\EZMicroBalance.csproj
+dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build
+dotnet format .\EZMicroBalance.csproj --verify-no-changes
+git diff --check
+.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
 ```
 
-我的建议仍然是：**本月选 staging-only 或 remove/exclude**。不要在 RitsuLib runtime 还没验证、debug 还没 feature-complete 的时候，把 Sts1Events 正式功能化。
-
-### 5. RitsuLib
-
-他说：
+### Week 1 完成条件
 
 ```text
-RitsuLib runtime verification still pending
+1. 所有命令 exit 0
+2. warning count 真实
+3. 9 个 worktree entries 全部 reconciled
+4. CommitSliceAgent 完成
+5. final report 完成
+6. stale counts 全部修正
+7. RitsuLib/Sts1Events/Debug 状态真实
+8. 没有 owner 授权前不 commit
 ```
 
-所以 PR5/PR6 只能写：
+---
+
+## M3 Week 2：Governance decisions
+
+### Sts1Events
+
+默认建议：
 
 ```text
-RitsuLib compile/manifest dependency attempted
-RitsuLib bootstrap/diagnostics scaffold validated by tests
-runtime unverified
-release readiness false
+staging-only
 ```
 
-不能写：
+除非 owner 明确要 formalize。
+
+Formalize 前必须完成：
 
 ```text
-hard dependency complete
-release-ready
-runtime verified
+87 nullable warnings 修复或正式接受
+38 ZHS placeholders 翻译
+8 blocked combat events 处理
+event images / resource plan
+runtime gameplay proof
+manual test plan
 ```
 
-如果要继续推进 RitsuLib，下一阶段必须补：
+### Debug
+
+默认建议：
 
 ```text
-dotnet publish
-package-spire-plus.ps1
-release artifact tests
+accept-scaffold
+```
+
+Feature-complete 前必须完成：
+
+```text
+settings exposure
+behavioral tests
+side-effect audit
+Warn() policy docs
+LogPreview() use/remove decision
+```
+
+---
+
+## M3 Week 3：RitsuLib runtime truth
+
+当前状态必须写成：
+
+```text
+compile/manifest dependency attempted; runtime unverified
+```
+
+如果要升级为 runtime-validated，必须补：
+
+```powershell
+dotnet publish .\EZMicroBalance.csproj
+.\scripts\package-spire-plus.ps1
+$env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'
+dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build
+Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS
+```
+
+还要补：
+
+```text
 BaseLib + STS2-RitsuLib + Spire Plus loader smoke
+godot.log audit
 tester handoff dependency instructions
-package/version/hash docs
-```
-
-### 6. Debug
-
-他说：
-
-```text
-Debug scaffold validated but not feature-complete
-```
-
-这个表述现在是合理的。下一步要决定：
-
-```text
-A. 接受为 internal default-off scaffold
-B. 做成 feature-complete debug system
-C. rollback
-```
-
-不要把它写成 complete，除非完成 config exposure、persistence、docs、tests、runtime side-effect audit。
-
----
-
-## 综合判断：继续优化、推进，还是两者兼顾？
-
-我的建议是：
-
-```text
-两者兼顾，但顺序必须是：先优化到 commit-ready，再推进 Week 2 governance。
-```
-
-不能直接推进功能，也不能继续 PR6 Batch4 / PR7。正确顺序：
-
-```text
-1. 复核 terminal validation 和 clean/rebuild warning
-2. 对 32 dirty files 做 commit-slice 审计
-3. 完成 TestChangeReviewAgent
-4. 决定 Sts1Events formal/staging/remove
-5. 决定 Debug accept/feature-complete/rollback
-6. 只在 owner 批准后 commit 稳定化 slice
-7. 再进入 RitsuLib runtime verification 或恢复 longhaul audit
+package/hash/version docs
+runtime fallback or install-enforced hard dependency decision
 ```
 
 ---
 
-## 下个月开发规范：M2 Revision F
+## M3 Week 4：恢复 one-file longhaul audit
 
-我已经把新的 monthly dev spec 写成文件，包含 overnight run 停止条件、subagent 分工、commit readiness、Week 2/3/4 计划：
-[下载 M2 Revision F — Commit Readiness Overnight Spec](sandbox:/mnt/data/devspire_m2_revision_f_commit_readiness_overnight_spec.md)
-
-### M2 Revision F 目标
+只有这些完成后才能恢复：
 
 ```text
-把“terminal validation green”的工作树，转成“owner 可审、可提交、可回滚”的 commit-ready packet。
+commit-ready packet 完成
+owner 处理 commit decision
+Sts1Events/Debug/RitsuLib governance 已记录
+terminal validation 仍然全绿
 ```
 
-不是继续写新功能。
-
-### Revision F 完成条件
-
-必须全部满足：
+第一批文件建议：
 
 ```text
-1. 5 个 terminal validation commands 继续 exit 0
-2. clean/rebuild 记录真实 warning 状态
-3. 32 dirty files 全部进入 diff ledger
-4. 87 warnings 全部进入 warning ledger
-5. TestChangeReviewAgent 完成，不能 interrupted
-6. Sts1Events 状态明确：formal / staging-only / remove-exclude
-7. Debug 状态明确：accept / feature-complete / rollback
-8. RitsuLib 状态真实：compile-only / attempted / runtime validated / release-ready
-9. CommitSliceAgent 给出 commit slices
-10. 未经 owner 明确授权，不 commit
+EZMicroBalance.csproj
+EZMicroBalance.json
+EZMicroBalanceCode/MainFile.cs
+EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs
+EZMicroBalanceCode/Diagnostics/SpirePlusDebug.cs
+EZMicroBalanceCode/Config/SpirePlusModConfig.cs
+tests/EZMicroBalance.Tests/RitsuLibMigrationGuardTests.cs
+tests/EZMicroBalance.Tests/Sts1EventFeatureGuardTests.cs
+docs/goals/debug.md
+docs/integrations/ritsulib.md
+```
+
+每次仍然只允许一个文件，结果只能是：
+
+```text
+fixed
+skipped
+blocked
 ```
 
 ---
 
-## 必须提醒他使用 subagent
+## 必须使用的 subagent
 
-这次虽然他说用了 subagent，但最新摘要没有列出完整 subagent 结果，尤其没有看到 `TestChangeReviewAgent` 完成。之前他曾经出现过 `TestChangeReviewAgent: Interrupted`，这次必须补齐。
-
-必须使用这些 subagent：
+下一轮不能让主 agent 自己一边做一边验收，必须先开 subagents：
 
 ```text
 ValidationReplayAgent
-- 重新跑 terminal validation。
-- 跑 clean/rebuild，确认 87 warnings 是否真实。
+- 重新跑 clean build / test / format / diff / batch classification。
 
 DiffReconciliationAgent
-- 核对 32 dirty files。
-- 每个 dirty file 标 owner、purpose、risk、commit slice。
-
-TestChangeReviewAgent
-- 审所有 test 改动。
-- 特别审 patch count、ModPatchTarget pattern、source manifest、coverage root。
-- 标明 coverage 是 equivalent / stronger / weaker / unknown。
-
-WarningLedgerAgent
-- 审 87 warnings。
-- 判断哪些依赖 Sts1Events 决策。
-
-Sts1EventsGovernanceAgent
-- 给 formal / staging-only / remove-exclude 三方案。
-- 推荐一个，不准再说 unrelated。
-
-DebugDecisionAgent
-- 判断 debug 是 internal scaffold、feature-complete，还是 rollback。
-
-RitsuLibRuntimeAgent
-- 判断 RitsuLib 是 attempted 还是 runtime validated。
-- 列出 publish/package/loader/handoff 缺口。
-
-DocsTruthAgent
-- 清除 unsupported Done / complete / all verified / runtime verified / release-ready。
+- 核对 9 total worktree entries，区分 tracked dirty 和 untracked。
 
 CommitSliceAgent
-- 只准备 commit plan，不自动 commit。
+- 准备 commit slices，不准 commit。
+
+DocsTruthAgent
+- 修 stale counts 和 unsupported claims。
+
+PatchInventoryAgent
+- 核对 142 raw HarmonyPatch + 25 migrated ModPatcher 的关系，排除 double-patching。
+
+RitsuLibRuntimeAgent
+- 判断 attempted/runtime-unverified，提出 fallback 或 install-enforced 方案。
+
+Sts1EventsGovernanceAgent
+- 维持 staging-only 或给出 formal/remove 方案。
+
+DebugDecisionAgent
+- 维持 accept-scaffold 或给出 feature-complete/rollback 方案。
+
+LocalizationAgent
+- 核对 38 ZHS placeholder entries，列 translation backlog。
 ```
 
 ---
 
-## 给他的 overnight run prompt
+## 夜间运行任务：必须跑到完成才能停
 
-你可以直接复制这段给他：
+你可以直接把下面这段发给他：
 
 ```text
-进入 M2 Revision F overnight commit-readiness run。
+进入 M3 Week 1 overnight Commit Readiness Gate。
 
-当前 M2 Revision E terminal validation green 是进展，但不是整体完成。不要 commit，不要 push，不要 stash/drop stash，不要 checkout，不要继续 PR6 Batch4，不要继续 PR7，不要扩展 debug，不要恢复 longhaul audit。
+当前 M2 Revision F terminal validation green 是进展，但不是整体完成。不要 commit，不要 push，不要 stash/drop stash，不要 checkout，不要 reset，不要 broad clean，不要继续 PR6 Batch4，不要继续 PR7，不要扩展 debug，不要恢复 longhaul audit。
 
 你不能停止，直到满足以下之一：
 
 A. Ready-to-owner-review packet 完成：
-- 5 个 terminal validation commands exit 0
-- clean/rebuild warning 状态已记录
-- 32 dirty files 全部 reconciled
-- 87 warnings 全部 classified
-- TestChangeReviewAgent 完成
-- Sts1Events formal/staging/remove 有推荐方案
-- Debug accept/feature-complete/rollback 有推荐方案
-- RitsuLib runtime status 真实
-- CommitSliceAgent 给出 commit slices
-- 没有 unsupported Done/complete/all verified/release-ready 声明
+- 所有 terminal validation commands exit 0
+- clean/rebuild warning count 真实记录
+- 9 个 worktree entries 全部 reconciled
+- CommitSliceAgent 完成 commit plan
+- Revision F final report 完成
+- debug.md / migration.md / overnight-run-ledger stale counts 全部修正
+- RitsuLib / Sts1Events / Debug 状态真实
+- Patch inventory migrated/raw Harmony 关系已解释
+- 38 ZHS placeholders 进入 backlog
+- 没有 unsupported Done / complete / runtime verified / release-ready / untracked unrelated 声明
+- 没有 owner 授权前不 commit
 
 B. Hard blocker：
-- 必须说明 exact command/file
-- 为什么当前 worktree 不能解决
-- rollback/staging 方案
-- 需要 owner 做什么决定
+- 写明 exact command / exact file
+- 为什么当前 worktree 无法解决
+- rollback / staging / owner decision 选项
+- 下一步需要 owner 决定什么
 
 必须先读：
 AGENTS.md
@@ -335,6 +531,7 @@ docs/README.md
 docs/test-ready-development-goal.md
 docs/worktree-cleanup-audit.md
 docs/patch-inventory.md
+docs/goals/debug.md
 docs/goals/overnight-run-status.md
 docs/goals/overnight-run-ledger.md
 docs/goals/overnight-diff-ledger.md
@@ -344,53 +541,42 @@ docs/migration.md
 harness/TASK_STATUS.md
 harness/TASK_FOCUS_PACK.md
 
-必须使用 subagents，先调查后修改：
+必须先用 subagents，只调查后修改：
 1. ValidationReplayAgent
 2. DiffReconciliationAgent
-3. TestChangeReviewAgent
-4. WarningLedgerAgent
-5. Sts1EventsGovernanceAgent
-6. DebugDecisionAgent
-7. RitsuLibRuntimeAgent
-8. DocsTruthAgent
-9. CommitSliceAgent
+3. CommitSliceAgent
+4. DocsTruthAgent
+5. PatchInventoryAgent
+6. RitsuLibRuntimeAgent
+7. Sts1EventsGovernanceAgent
+8. DebugDecisionAgent
+9. LocalizationAgent
 
-ValidationReplayAgent 必须运行：
-dotnet build EZMicroBalance.sln
-dotnet test EZMicroBalance.sln --no-build
-dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+必跑命令：
+dotnet clean .\EZMicroBalance.csproj
+dotnet build .\EZMicroBalance.csproj
+dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build
+dotnet format .\EZMicroBalance.csproj --verify-no-changes
 git diff --check
 .\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-dotnet clean EZMicroBalance.sln
-dotnet build EZMicroBalance.sln
 
-CommitSliceAgent 只能准备 commit plan，不允许 commit，除非 owner 明确授权。
+必须产出：
+docs/goals/revision-f-final-report.md
+docs/goals/revision-f-commit-slices.md
+updated docs/goals/overnight-run-status.md
+updated docs/goals/overnight-run-ledger.md
+updated docs/goals/overnight-diff-ledger.md
+updated docs/goals/warning-ledger.md
+fixed docs/goals/debug.md
+fixed docs/goals/migration.md
 
-最终报告只能在以下条件全部满足时写 Complete：
-- 每个 validation command exit 0
-- dirty files 数量和列表完全一致
-- diff ledger 覆盖全部 dirty files
-- warning ledger 覆盖全部 warnings
-- TestChangeReviewAgent 完成
-- Sts1Events / Debug / RitsuLib 状态真实
-- commit slices 明确
-- 没有自动 commit
-
-否则写 Not complete，并列出 exact blocker。
+最终报告只能写两种之一：
+Complete：ready-to-owner-review packet 完成，且所有命令 exit 0。
+Not complete：遇到 hard blocker，并列出 exact blocker。
 ```
 
 ---
 
-## 简短判断
+## 一句话总评
 
-这次不是失败，而是到了一个新阶段：
-
-```text
-验证门：通过
-可提交状态：未通过
-月度任务：未完成
-下一步：M2 Revision F overnight commit-readiness run
-方向：先优化收口，再有限推进 governance 决策
-```
-
-不要让他继续写新功能，也不要让他直接 commit。先让 subagents 把 32 dirty files、87 warnings、Sts1Events、Debug、RitsuLib runtime 和 test-change integrity 全部审完。
+他现在已经把**验证门**跑绿了，这是实际进展；但还没完成**提交门**和**治理门**。下一步不是继续写功能，也不是直接 commit，而是进入 M3 Week 1 overnight commit-readiness run：用 subagents 把 9 个 worktree entries、87 warnings、RitsuLib runtime 风险、Sts1Events staging、Debug scaffold、patch inventory、stale docs 全部收口。

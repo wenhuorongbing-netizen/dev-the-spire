@@ -21,7 +21,8 @@ public sealed class EngineeringGovernanceGuardTests
         var featureRegistry = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
         var featureOrders = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureOrders.cs");
 
-        Assert.Contains("SpirePlusFeatureRegistry.CreateDefault().InitializeAll()", mainFile, StringComparison.Ordinal);
+        Assert.Contains("var registry = SpirePlusFeatureRegistry.CreateDefault();", mainFile, StringComparison.Ordinal);
+        Assert.Contains("registry.InitializeAll();", mainFile, StringComparison.Ordinal);
 
         // MainFile should not directly call any feature initializer
         foreach (var directInitializerCall in new[]
@@ -612,6 +613,189 @@ public sealed class EngineeringGovernanceGuardTests
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
 
         Assert.Contains("registry.LogFeatureSummary()", mainFile, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AllFeatureModulesHaveNonEmptyDisplayName()
+    {
+        var moduleDisplayNames = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Ancients.Lotha"] = "Lotha Ancient",
+            ["Ancients.Morvi"] = "Morvi Ancient",
+            ["Ancients.Urda"] = "Urda Ancient",
+            ["Ancients.VakuuFight"] = "Vakuu Fight",
+            ["Ascension.A11A20"] = "Ascension 11-20",
+            ["Sts1Events"] = "StS1 Event Port",
+        };
+
+        var moduleFiles = new (string Id, string Path)[]
+        {
+            ("Ancients.Lotha", RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaFeatureModule.cs")),
+            ("Ancients.Morvi", RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviFeatureModule.cs")),
+            ("Ancients.Urda", RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaFeatureModule.cs")),
+            ("Ancients.VakuuFight", RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureModule.cs")),
+            ("Ascension.A11A20", RepoPath("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureModule.cs")),
+            ("Sts1Events", RepoPath("EZMicroBalanceCode", "Sts1Events", "Sts1EventsFeatureModule.cs")),
+        };
+
+        foreach (var (id, filePath) in moduleFiles)
+        {
+            Assert.True(File.Exists(filePath), $"Feature module file not found: {filePath}");
+            var source = File.ReadAllText(filePath);
+
+            // Must declare DisplayName
+            AssertSourceContains(source, "string DisplayName =>");
+
+            // Extract the DisplayName value — must match a quoted non-empty string
+            var match = System.Text.RegularExpressions.Regex.Match(
+                source, @"string\s+DisplayName\s+=>\s*""(?<name>[^""]+)""");
+            Assert.True(match.Success, $"Module {id}: DisplayName must return a quoted string literal. File: {filePath}");
+            var displayName = match.Groups["name"].Value;
+            Assert.False(string.IsNullOrWhiteSpace(displayName), $"Module {id}: DisplayName must not be empty.");
+            Assert.True(
+                moduleDisplayNames.TryGetValue(id, out var expected) && displayName == expected,
+                $"Module {id}: expected DisplayName '{expected}' but got '{displayName}'.");
+        }
+    }
+
+    [Fact]
+    public void AllFeatureModulesHaveValidCategory()
+    {
+        var validCategories = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "Ancients",
+            "Ascension",
+            "Events",
+            "General",
+            "Preview",
+            "Diagnostics",
+        };
+
+        var moduleFiles = new (string Id, string Path)[]
+        {
+            ("Ancients.Lotha", RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaFeatureModule.cs")),
+            ("Ancients.Morvi", RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviFeatureModule.cs")),
+            ("Ancients.Urda", RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaFeatureModule.cs")),
+            ("Ancients.VakuuFight", RepoPath("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureModule.cs")),
+            ("Ascension.A11A20", RepoPath("EZMicroBalanceCode", "Ascension", "Core", "AscensionFeatureModule.cs")),
+            ("Sts1Events", RepoPath("EZMicroBalanceCode", "Sts1Events", "Sts1EventsFeatureModule.cs")),
+        };
+
+        foreach (var (id, filePath) in moduleFiles)
+        {
+            Assert.True(File.Exists(filePath), $"Feature module file not found: {filePath}");
+            var source = File.ReadAllText(filePath);
+
+            AssertSourceContains(source, "string Category =>");
+
+            var match = System.Text.RegularExpressions.Regex.Match(
+                source, @"string\s+Category\s+=>\s*""(?<cat>[^""]+)""");
+            Assert.True(match.Success, $"Module {id}: Category must return a quoted string literal. File: {filePath}");
+            var category = match.Groups["cat"].Value;
+            Assert.False(string.IsNullOrWhiteSpace(category), $"Module {id}: Category must not be empty.");
+            Assert.True(validCategories.Contains(category), $"Module {id}: Category '{category}' is not in the recognized set.");
+        }
+    }
+
+    [Fact]
+    public void Sts1EventsModuleIsOffByDefault()
+    {
+        // Verify the Sts1EventFeatureGate evaluates to Disabled when env var is unset.
+        var gateSource = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventFeatureGate.cs");
+
+        // ResolveMode must return Off when env var is empty/null
+        AssertSourceContains(gateSource,
+            "string.IsNullOrWhiteSpace(envValue)",
+            "return Sts1EventRegistrationMode.Off;");
+
+        // EvaluateGate must map Off to Disabled
+        AssertSourceContains(gateSource,
+            "Sts1EventRegistrationMode.Off => FeatureGateResult.Disabled(",
+            "StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.");
+
+        // The module should declare SPIREPLUS_STS1_EVENT_MODE as a DisableEnvKey
+        var moduleSource = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Sts1EventsFeatureModule.cs");
+        AssertSourceContains(moduleSource,
+            "DisableEnvKeys =>",
+            "SPIREPLUS_STS1_EVENT_MODE");
+    }
+
+    [Fact]
+    public void VakuuFightModuleRegistersHooksButFightIsHiddenByDefault()
+    {
+        // The feature module itself is EnabledByDefault (registers hooks),
+        // but the fight entry is gated by VakuuFightFeatureGate at runtime.
+        var moduleSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureModule.cs");
+        AssertSourceContains(moduleSource,
+            "FeatureGateResult.EnabledByDefault(",
+            "hooks registered; fight entry remains hidden by VakuuFightFeatureGate.");
+
+        // The runtime gate requires env vars to enable the fight
+        var gateSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
+        AssertSourceContains(gateSource,
+            "EnableEnvironmentVariable",
+            "DisableEnvironmentVariable",
+            "ShouldEnableFight",
+            "IsFightEnabled(");
+
+        // ShouldEnableFight requires at least one env var to be truthy (no unconditional true path)
+        Assert.DoesNotContain("ShouldEnableFight => true", gateSource, StringComparison.Ordinal);
+
+        // IsFightEnabled must check ShouldEnableFight AND NOT disable vars
+        AssertSourceContains(gateSource,
+            "ShouldEnableFight &&",
+            "!AncientFeatureGate.IsTruthyEnvironmentVariable(DisableEnvironmentVariable)");
+    }
+
+    [Fact]
+    public void FeatureBootstrapRecordCapturesCorrectFieldsPerModule()
+    {
+        // Verify FeatureBootstrapRecord is a record with all required fields
+        var recordSource = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureBootstrapRecord.cs");
+        AssertSourceContains(recordSource,
+            "string Id,",
+            "string DisplayName,",
+            "string Category,",
+            "FeatureGateResult Gate,",
+            "FeatureLiveStatus LiveStatus,",
+            "string? FailureMessage",
+            "bool IsActive");
+
+        // Verify the registry creates records with all fields populated
+        var registrySource = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+        AssertSourceContains(registrySource,
+            "new FeatureBootstrapRecord(",
+            "module.Id, module.DisplayName, module.Category,",
+            "gate, FeatureLiveStatus.Disabled)",
+            "gate, FeatureLiveStatus.Enabled)",
+            "gate, FeatureLiveStatus.Failed");
+
+        // Verify the summary log includes Id, DisplayName, Category, Gate, LiveStatus, Reason
+        AssertSourceContains(registrySource,
+            "record.DisplayName",
+            "record.Gate.IsEnabled",
+            "record.LiveStatus",
+            "record.Gate.Reason");
+
+        // Verify SpirePlusFeatureRegistry registers exactly the 6 expected modules
+        var registryFactory = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
+        AssertSourceContains(registryFactory,
+            "new LothaFeatureModule()",
+            "new MorviFeatureModule()",
+            "new UrdaFeatureModule()",
+            "new VakuuFightFeatureModule()",
+            "new AscensionFeatureModule()",
+            "new Sts1EventsFeatureModule()");
+
+        // Each registered module must have a matching FeatureOrders constant
+        var featureOrders = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureOrders.cs");
+        AssertSourceContains(featureOrders,
+            "AncientsLotha",
+            "AncientsMorvi",
+            "AncientsUrda",
+            "AncientsVakuuFight",
+            "AscensionA11A20",
+            "Sts1Events");
     }
 
     private static (int ExitCode, string Output, string Error) RunPowerShell(string scriptPath, params string[] arguments)

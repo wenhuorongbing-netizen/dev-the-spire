@@ -4,16 +4,19 @@
 
 Define the 4-week plan for completing the RitsuLib migration of Spire Plus from raw Harmony patches to managed RitsuLib `IPatchMethod` patches, including evidence backlog reduction and architecture hardening.
 
-## Current State (End of Architecture Stabilization 2026-05-29)
+## Current State (Architecture Integration Overnight Run 2026-05-29)
 
 - **25 patches migrated** to RitsuLib `IPatchMethod` (Batch 1 + 4a + 4b)
 - **142 raw Harmony patches remaining** (22 high-risk, 35 medium-risk, 85 low-risk)
 - **Hybrid bootstrap active**: `ModPatcher.PatchAll()` for migrated, `Harmony.PatchAll()` for remaining
-- **8 migration guard tests** + 22 Sts1Events guard tests + 18 UrdaStateCodec guards + 10 FeatureRegistry guards + 13 architecture skeleton guards active, 361 total tests passing (0 failed, 21 skipped)
-- **Sts1Events**: compiled, feature-gated (default Off), 4-mode safety matrix validated (Off/CanaryOnly/AdditiveAllDraft/ReplaceUnknownEventsPrototype)
-- **FeatureRegistry hardened**: IFeatureModule metadata (DisplayName, Category, DisableEnvKeys, ForceEnvKeys), FeatureBootstrapRecord status tracking, env key override
-- **UrdaStateCodec V1**: encode/decode/legacy compat complete, 18 source-level guard tests
-- **Architecture skeletons**: RewardPipeline, CardPlayContext, DeathProtectionService spec, MultiplayerPolicy taxonomy
+- **428 tests passing** (0 failed, 21 skipped, 449 total) — includes 8 migration guards + 24 Sts1Events guards + 41 UrdaStateCodec guards + 21 FeatureRegistry/EngineeringGovernance guards + 27 architecture skeleton guards + 5 FeatureRegistry metadata guards
+- **Build clean**: 0 errors, 0 warnings
+- **Sts1Events**: compiled, feature-gated (default Off), 4-mode safety matrix validated; 7 HIGH-risk combat stubs + 1 MEDIUM-risk documented in risk table
+- **FeatureRegistry hardened**: IFeatureModule metadata, FeatureBootstrapRecord, LiveStatus enum, env key overrides, 5 metadata guard tests
+- **UrdaStateCodec V1**: encode/decode/legacy compat, 41 tests (18 source-structure + 15 behavioral + 8 edge-case)
+- **Architecture canary integration**: RewardPipeline diagnostics canary (5 tests), CardPlayContext depth-guard canary (9 tests) — no gameplay behavior changes
+- **DeathProtectionService stub**: diagnostics-only code stub with Request/Result/Priority, 13 guard tests
+- **MultiplayerPolicy stub**: diagnostics-only registry with 6-category taxonomy, 6 guard tests
 - **Runtime smoke**: blocked — STS2-RitsuLib not installed locally; Batch 4c blocked until runtime smoke passes
 
 ## 4-Week Plan
@@ -61,8 +64,8 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - Sts1EventRegistrationService IS compiled, gated behind Sts1EventFeatureGate (default Off)
 - 22 Sts1Event guard tests (including 4 mode-safety guards)
 - FeatureRegistry hardened: IFeatureModule metadata (DisplayName, Category, DisableEnvKeys, ForceEnvKeys), FeatureBootstrapRecord status tracking, IsTruthyEnv helper
-- 10 EngineeringGovernance guard tests (including 3 FeatureRegistry guards)
-- UrdaStateCodec V1 complete: encode/decode/legacy compat, 18 source-level guard tests
+- 16 EngineeringGovernance guard tests (including 6 FeatureRegistry guards, 3 metadata guards, 6 module bootstrap guards)
+- UrdaStateCodec V1 complete: encode/decode/legacy compat, 18 source-level guard tests + 15 behavioral tests
 - `docs/issues/ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md` rewritten with mode safety matrix
 
 ### Week 4: High-Risk Migration Prep
@@ -74,7 +77,7 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - CardPlayContext skeleton: `ExtraPlayPolicy` enum, `CardPlayContext` with depth guard (MaxDepth=10), power fallback tracking
 - DeathProtectionService spec: documents Lotha DeathReprieve lifecycle, inReprieve flag, forced death bypass, co-op owner attribution, future `IDeathProtectionProvider` interface
 - MultiplayerPolicy taxonomy: 6 categories (LocalUiOnly, LocalPlayerOnly, HostAuthoritative, SharedRunState, CombatCommandReplicated, UnsafeInMultiplayer) mapped to existing MultiplayerFeaturePolicy
-- 13 architecture skeleton guard tests
+- 13 architecture skeleton guards + 15 UrdaStateCodec behavioral tests
 
 **Remaining**:
 - [ ] Catalog high-risk patches (22 total) by subsystem
@@ -143,8 +146,8 @@ These log patterns are the required evidence for runtime smoke verification.
 |--------|---------|------------------------|
 | Migrated patches | 25 | 55-65 |
 | Raw Harmony patches | 142 | 110-120 |
-| Guard tests | 71 | 80+ |
-| Total test suite | 361 passed | 370+ passed |
+| Guard tests | 94 | 100+ |
+| Total test suite | 387 passed | 390+ passed |
 | Runtime smoke | Pending | Complete |
 | Sts1Events status | Compiled, gated Off, 4-mode matrix validated | Resolved (activate or archive) |
 | High-risk migration plan | Architecture skeletons done | Documented with rollback strategy |

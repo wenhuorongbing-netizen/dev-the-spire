@@ -8,8 +8,8 @@
 
 - RitsuLib 0.3.2 NuGet package added to csproj
 - Manifest dependency added for STS2-RitsuLib
-- Build: 0 errors, 87 warnings (all Sts1Events nullable)
-- Tests: 361 passed, 21 skipped, 0 failed (382 total)
+- Build: 0 errors, 92 warnings (all Sts1Events nullable)
+- Tests: 387 passed, 21 skipped, 0 failed (408 total)
 - Format: clean (verified at Revision F replay)
 - migration.md updated
 - docs/integrations/ritsulib.md updated

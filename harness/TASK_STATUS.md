@@ -15,8 +15,8 @@
 
 ## Verification Result
 
-- Build: 0 errors, 87 warnings (all CS8602/CS8604/CS8625 nullable reference warnings in Sts1Events staging code)
-- Tests: 361 passed, 21 skipped, 0 failed (382 total)
+- Build: 0 errors, 92 warnings (all CS8602/CS8604/CS8625 nullable reference warnings in Sts1Events staging code)
+- Tests: 387 passed, 21 skipped, 0 failed (408 total)
 - Format: clean (verified at Revision F replay)
 
 ## Remaining Work

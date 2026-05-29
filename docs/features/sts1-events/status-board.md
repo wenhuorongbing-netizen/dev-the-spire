@@ -1,7 +1,7 @@
 # StS1 Events Status Board
 
-> Last updated: 2026-05-29  
-> Audit standard: strict v8 — no generic "Done", only evidence-backed statuses
+> Last updated: 2026-05-29 (v9 refresh)
+> Audit standard: strict v9 — no generic "Done", only evidence-backed statuses
 
 ## Allowed Statuses
 
@@ -14,24 +14,25 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 
 | Metric | Count | Evidence |
 |--------|-------|----------|
-| Wiki event entries | 52 | canonical-event-matrix.csv |
-| Runtime registry entries | 48 | registry-reconciliation.md |
-| Registration calls (RegisterAll) | 52 | Sts1EventRegistrationService.cs |
-| Model files (C#) | 46 | Models/ directory |
-| Compiling models | 45 | dotnet build (1 compile-excluded) |
-| EN localization keys | 380 | eng/sts1_events.json |
-| ZHS localization keys | 380 (0 placeholder) | zhs/sts1_events.json verified |
+| Wiki event entries | 54 | canonical-event-matrix.csv |
+| Runtime registry entries | 50 | registry-reconciliation.md |
+| Registration calls (RegisterAll) | 54 | Sts1EventRegistrationService.cs |
+| Shared event registrations | 17 | Sts1EventRegistrationService.cs (RegisterGated path) |
+| Model files (C#) | 48 | Models/ directory (1 compile-excluded: Duplicator) |
+| Compiling models | 47 | dotnet build (1 compile-excluded) |
+| EN localization keys | 399 | eng/sts1_events.json |
+| ZHS localization keys | 399 (0 placeholder) | zhs/sts1_events.json verified |
 | Event images | 0 | No redistributable art available |
-| Guard tests | 20 | Sts1EventFeatureGuardTests.cs |
-| Build | 0 errors, 87 warnings | o1-build-full.log |
-| Tests | 361 passed, 0 failed, 21 skipped | o2-test-full.log |
+| Guard tests | 24 | Sts1EventFeatureGuardTests.cs — all pass |
+| Build | 0 errors, 0 warnings | dotnet build 2026-05-29 |
+| Tests | 428 passed, 0 failed, 21 skipped | dotnet test 2026-05-29 |
 
 ## Phase Status
 
 | Phase | Events | Compiled | Blocked | Status |
 |-------|--------|----------|---------|--------|
 | Canary (4) | Big Fish, Golden Idol, The Lab, Divine Fountain | 4 | 0 | compiled, test-guarded, source/API verified |
-| Simple (17) | Shining Light, Mushrooms, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter, Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine, The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits, Fountain of Cleansing | 17 | 0 | compiled, test-guarded |
+| Simple (19) | Shining Light, Mushrooms, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter, Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine, The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits, Fountain of Cleansing, Purifier, Golden Shrine | 19 | 0 | compiled, test-guarded |
 | CardService (9) | Face Trader, The Mausoleum, Council of Ghosts, Cursed Tome, Knowing Skull, Nest, Vampires, Falling, Mind Bloom | 9 | 0 | compiled (3 temporary-substitute) |
 | Combat (7) | Dead Adventurer, Scorpion Nest, Treasure Ooze, Joust, The Ssssserpent, Masked Bandits, Mysterious Sphere | 7 | 5 | compiled (5 blocked by missing encounter models) |
 | CustomUI (8) | The Woman in Blue, Wheel of Change, Designer, Forgotten Altar, The Ghost, N'loth, Tomb of Lord Red Mask, Winding Halls | 8 | 1 | compiled (1 blocked: N'loth) |

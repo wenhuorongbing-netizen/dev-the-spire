@@ -28,13 +28,30 @@ StS1 event port model files (`Sts1Events/Models/`) are compiled into the Spire P
 |------|--------------|-------------------|------------|----------|
 | Off | unset / empty / invalid | 0 | **Safe** | Default — production |
 | CanaryOnly | `CanaryOnly` | 4 (Big Fish, Golden Idol, Lab, Divine Fountain) | **Controlled** | Test harness |
-| AdditiveAllDraft | `AdditiveAllDraft` | 52 (all drafted events) | **Unsafe / dev-only** | Includes TODO/BLOCKED events |
-| ReplaceUnknownEventsPrototype | `ReplaceUnknownEventsPrototype` | 52 (all drafted events) | **Unsafe / dev-only** | Debug-only replacement |
+| AdditiveAllDraft | `AdditiveAllDraft` | 54 registration calls (47 unique event types) | **Unsafe / dev-only** | Includes TODO/BLOCKED events |
+| ReplaceUnknownEventsPrototype | `ReplaceUnknownEventsPrototype` | 54 registration calls (47 unique event types) | **Unsafe / dev-only** | Debug-only replacement, compile-excluded by default |
+
+### AdditiveAllDraft Risk Table
+
+Events with TODO/BLOCKED/partial status in AdditiveAllDraft mode:
+
+| Event ID | Display Name | Status | Missing API | Risk |
+|----------|-------------|--------|-------------|------|
+| `sts1_dead_adventurer` | Dead Adventurer | TODO — combat path is no-op stub | Encounter model for random elite | **HIGH** |
+| `sts1_scorpion_nest` | Scorpion Nest | TODO — combat path is no-op stub | Encounter model for 3 Louses | **HIGH** |
+| `sts1_treasure_ooze` | Treasure Ooze | TODO — combat path is no-op stub | Encounter model for large slime | **HIGH** |
+| `sts1_masked_bandits` | Masked Bandits | TODO — FIGHT path is no-op stub | Encounter model for 3 bandits | **HIGH** |
+| `sts1_mind_bloom` | Mind Bloom | BLOCKED — WAR option is no-op stub | Encounter model for Act 1 boss | **HIGH** |
+| `sts1_mysterious_sphere` | Mysterious Sphere | TODO — combat path is no-op stub | Encounter model for 2 Orb Walkers | **HIGH** |
+| `sts1_nloth` | N'loth | BLOCKED — OFFER option is no-op stub | RelicSelectCmd API | **HIGH** |
+| `sts1_vampires` | Vampires | Partial — removes Strikes but no Bite cards | Custom Bite card model | **MEDIUM** |
+
+7 HIGH-risk events (6 combat stubs + 1 BLOCKED relic-select), 1 MEDIUM-risk (partial Vampires).
 
 ### Guard tests
 
-- 15+ dedicated tests in `Sts1EventFeatureGuardTests.cs`
-- Tests verify gate defaults, canary events, act mapping, registry presence, registration counts, patch-boundaries row
+- 24 dedicated tests in `Sts1EventFeatureGuardTests.cs`
+- Tests verify gate defaults, canary events, act mapping, registry presence, registration counts, patch-boundaries row, mode safety
 - Safe modes (Off, CanaryOnly) are verified by guard tests
 - CanaryOnly events are hardcoded — no TODO/BLOCKED events can enter safe modes
 

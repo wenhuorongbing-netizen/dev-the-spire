@@ -1,878 +1,1038 @@
-﻿# StS1 Event Port 严格审核 v8 + June Monthly Dev Spec + Mandatory Overnight Run
+﻿# StS1 Event Port 严格审核 v9 — Current State, Monthly Dev Spec, Subagents, Mandatory Overnight Run
 
 日期：2026-05-29
-项目：`dev-the-spire` / `Spire Plus` / technical manifest id `EZMicroBalance`
-审核对象：最新 session summary、此前 overnight gates、StS1 event port 目标与当前实现状态
+目标项目：Devspire / Spire Plus (`EZMicroBalance`)
+目标功能：在 StS2 mod 中迁移 StS1 事件体验
 
 ---
 
-## 0. 总结论
+## 0. 总判定
 
 **没有完成。**
 
-这次 session 可以承认一个局部完成项：**stash incident recovery / multiplayer IsShared guard recovery 基本完成**。他重新应用了 6 个 combat event 的 `IsShared => true` override，增加了 6 个 guard tests，并报告 full suite 为 `361 passed, 0 failed, 21 skipped`。这说明代码健康度和回归测试有明显进展。
+本次报告中的“Overnight Run Complete — 20 of 25 gates GREEN, 5 gates HARD STOP BLOCKED”只能说明：
 
-但这不等于 StS1 事件迁移完成，更不等于“和杀戮尖塔 1 完全一样”。最新 summary 自己仍列出这些 pending：
+1. 本轮夜跑可以因硬阻塞而暂时停下；
+2. 一部分代码、guard tests、handoff 文档已经推进；
+3. 但 `O12 / O15 / O16 / O19 / O23` 仍未完成，且这些 gate 正好覆盖 runtime gameplay、save/load、replacement pool、QA/red-team、图片/外部资源等 StS1 体验核心；
+4. 因此不能写“StS1 event port complete”，只能写“code-side Batch 1 foundation advanced; runtime parity blocked”。
 
-- runtime gameplay verification requires game launch；
-- ZHS localization 仍有 38 placeholder entries；
-- combat encounter models for 7 blocked events；
-- event images；
-- replacement pool 只有 structure/file guard，不是 functional proof；
-- 还没有 canary save/load、截图、实际 unknown room 抽取、事件池替换证明。
-
-因此当前状态应写为：
+正确结论：
 
 ```text
-Stash recovery: completed / verified by tests.
-StS1 event port: not complete.
-Parity foundation: partially improved.
-Runtime parity: unverified.
-Full StS1 experience: not achieved.
+Stash/recovery/infrastructure: 部分完成
+Canary code review: claimed complete, pending runtime proof
+Simple batch code: claimed code-complete, pending runtime proof
+Runtime gameplay: blocked / not verified
+Images: blocked / not complete
+ZHS localization: not complete unless placeholders cleared and render proof exists
+Replacement pool: not complete unless functional runtime proof exists
+Full StS1 event experience: not complete
 ```
 
 ---
 
-## 1. 当前状况 vs 最终目标
+## 1. 当前报告中可以接受的进展
 
-### 1.1 最终目标
+基于本次 summary，可以暂时承认以下进展，但每一项仍需对应 evidence 文件或 git diff 复核：
 
-用户目标是：在 StS2 `Spire Plus` mod 中迁移 StS1 全事件，使事件、图片、文本、选项、奖励、伤害、A15 差异、事件池、抽取节奏、保存读取和整体体验尽量与《杀戮尖塔 1》一致。
-
-### 1.2 当前状况
-
-当前完成的是基础设施和部分测试防线，不是体验迁移：
-
-| Area | 当前状态 | 审核结论 |
+| 项目 | 本次声称 | 审核判定 |
 | --- | --- | --- |
-| Stash recovery | 6 个 combat `IsShared` override 重新应用；guard tests 增加 | **局部完成** |
-| Build/test | summary 报告 361 pass / 0 fail / 21 skipped | **代码健康度通过，但不是 runtime parity** |
-| Feature gate | Off mode guard 存在 | **部分通过，还需 runtime registration proof** |
-| Registry count | guard 写 `RegistryEntryCountIs48` | **需解释 48 runtime entries vs 52 wiki target** |
-| Shared/combat IsShared | shared + combat guard 有进展 | **部分完成，仍需完整 per-event matrix** |
-| Replacement prototype | 只验证 source exists / gated structure | **未完成，缺 functional proof** |
-| Canary gameplay | 未报告 playable proof | **未完成** |
-| ZHS localization | 38 placeholders | **未完成** |
-| Event images | 未完成 | **未完成** |
-| Combat events | 7 blocked encounter models | **未完成** |
-| Runtime verification | 需要 game launch | **未完成** |
-| Full StS1 parity | 未证明 | **0% release-ready** |
-
-### 1.3 管理判断
-
-**策略：优化与推进两者兼顾，但必须 gate-first。**
-
-不是回到纯文档，也不是继续盲目批量写事件。正确路线是：
-
-1. **先优化基础真实性**：status、matrix、feature gate、registry count、IsShared matrix、build/test evidence；
-2. **同时推进有限 playable 范围**：只推进 4 个 canary + 6 个 simple batch；
-3. **暂缓 full parity 宣称**：combat events、custom UI、replacement pool、images、ZHS 没完成前不得写 all done。
+| Overnight gates | 20/25 GREEN | 有进展，但不是完成；5 个 hard-stop gate 仍阻塞 |
+| Canary implementation review | 4 个 canary reachable code 0 TODO | 代码层可暂认 AMBER/GREEN；需要 runtime proof |
+| Simple batch specs | 6 个 simple events exact spec | 可暂认 spec-drafted/source-claimed；需 source/API/red-team 复核 |
+| New model files | `Sts1Purifier.cs`, `Sts1GoldenShrine.cs` | 可暂认新增；需 build/test/runtime proof |
+| Simple batch code | 6/6 code-complete | 只能算 code-claimed；runtime 未验收 |
+| Guard tests | 21 → 24 | 自动化有进展；不等于 gameplay proof |
+| Tests | 366 passed, 0 failed | 接受为 automated test pass claimed；skipped 和 runtime gap 仍需说明 |
+| Handoff docs | `o24-handoff.md`, blocker report | 正确方向；不能把 blocker gate 算完成 |
 
 ---
 
-## 2. 严格逐步审核
+## 2. 当前不能接受的完成声明
 
-### Step A — Stash incident recovery
-
-**他声称：** 已恢复 6 个 combat events 的 `IsShared => true` override，并新增 guard tests。
-
-**审核：PASS, scope-limited。**
-
-这只说明 stash incident 相关变更已恢复，不能扩展为全事件迁移完成。
-
-验收保留条件：
-
-- `CombatEventsDeclareIsSharedTrue` 通过；
-- `AllSharedEventModelsDeclareIsSharedTrue` 通过；
-- 6 个 combat events 文件确实有 override；
-- 这 6 个事件不得被标为 playable，除非 encounter model 和 combat runtime proof 完成。
-
-### Step B — Build and test claim
-
-**他声称：** full suite `361 passed, 0 failed, 21 skipped`。
-
-**审核：AMBER/GREEN。**
-
-可以接受为 automated test baseline clean，但它不能证明：
-
-- 游戏能启动；
-- unknown room 抽取正确；
-- 图片加载正确；
-- EN/ZHS 渲染正确；
-- save/load 正确；
-- multiplayer voting / independent choice 正确；
-- StS1 rewards / relics / curses / card pools 体验一致。
-
-必须保留完整 evidence：
-
-```powershell
-dotnet build --no-restore *> .tools/runtime-evidence/sts1-events-overnight-202606/o1-build-full.log
-dotnet test --no-build *> .tools/runtime-evidence/sts1-events-overnight-202606/o1-test-full.log
-```
-
-### Step C — Status-board rewrite
-
-**他声称：** status-board 已更新。
-
-**审核：AMBER。**
-
-必须检查是否还存在泛化 `Done`。允许状态只能是：
+以下声明不应出现在 status-board、handoff、release note、monthly review 中：
 
 ```text
-planned
-spec-drafted
-wiki-verified
-source-verified
-api-verified
-implemented
-compiled
-test-guarded
-asset-mapped
-asset-verified
-loc-filed
-loc-render-verified
-manual-verified
-save-load-verified
-blocked
-temporary-substitute
+All tasks are complete
+All StS1 events are complete
+Full parity complete
+和杀戮尖塔1完全一样
+release-ready
+runtime verified
+images complete
+ZHS complete
+replacement pool complete
 ```
 
-禁止：
+允许的诚实表述：
 
 ```text
-Code Done
-Localization Done
-Assets Done
-All events Done
-Build passes => complete
+Overnight code-side pass reached 20/25 gates green.
+5 gates are hard-stop blocked and documented.
+Canary and simple batch code are claimed complete but runtime evidence is still pending.
+The project is not StS1 parity-ready.
 ```
 
-### Step D — Registry count and canonical target
+---
 
-**他当前 guard：** `RegistryEntryCountIs48`。
+## 3. Step-by-step 审核
 
-**审核：AMBER/RED until explained。**
+### Step 1 — Build / automated tests
 
-StS1 Wiki target 应以 52 listed event entries 管理；runtime model/registry 可以合并 shared/semi-common 或特殊 entries，但必须解释。不能用 48 registry count 取代 52 target。
+**状态：AMBER。**
 
-必须建立：
+报告声称 tests 从 361 → 366 passed，0 failed。接受为自动化测试进展，但仍需：
+
+- 最新完整 `dotnet build --no-restore` unfiltered log；
+- 最新完整 test log；
+- skipped tests 数量与原因；
+- 证明这不是仅基于 tail/grep 的局部输出。
+
+验收标准：
 
 ```text
-docs/features/sts1-events/canonical-event-matrix.csv
+build exit code = 0
+full test exit code = 0
+log path recorded
+no grep/tail-only proof
+skipped tests explained
 ```
 
-必填字段：
+### Step 2 — Gate accounting
+
+**状态：NOT COMPLETE。**
+
+20/25 GREEN 不等于全部完成。5 个 hard-stop gate 必须留在 monthly dev spec 中继续执行。
+
+严禁把 hard-stop blocker report 当作 feature completion。它只是允许 overnight run 在当前环境停下。
+
+### Step 3 — Canonical matrix / count reconciliation
+
+**状态：AMBER/RED。**
+
+本次指标变更：
+
+```text
+Wiki entries: 52 -> 54
+Runtime models: 46 -> 48
+Registry entries: 48 -> 50
+Shared events: 15 -> 17
+Registration calls: 52 -> 54
+```
+
+这些数字不是坏事，但必须解释。StS1 Wiki visible event buckets 是 16 shared + 12 Act 1 + 16 Act 2 + 8 Act 3，总和 52。任何 `54 wiki entries` 或 `50 registry entries` 都必须在 canonical matrix 中解释为：
+
+- duplicate act membership；
+- runtime split model；
+- shared/semi-shared special case；
+- intentionally skipped event；
+- unsupported/blocked placeholder；
+- registry-only helper；
+- error。
+
+必须生成：
 
 ```csv
-wiki_entry_id,wiki_name,wiki_bucket,st1_acts_allowed,runtime_model,registry_entries,sts2_acts_registered,is_shared,status,parity_gap,proof_paths
+event_key,wiki_name,wiki_bucket,st1_acts_allowed,sts2_acts_registered,runtime_model,registry_entry,registration_call_count,is_shared,mode,has_spec,has_code,has_en,has_zhs,has_asset,has_runtime_proof,status,notes
+```
+
+### Step 4 — Feature gate / default Off
+
+**状态：必须继续守住。**
+
+默认模式必须是 Off，未设置 `SPIREPLUS_STS1_EVENT_MODE` 时注册 0 个 StS1 events。
+
+允许模式：
+
+```text
+Off                         default, 0 registrations
+CanaryOnly                  Big Fish / Golden Idol / Lab / Divine Fountain only
+AdditiveBatch1              canary + verified simple batch only
+AdditiveAllDraft            non-default dev only
+ReplaceUnknownEventsPrototype debug-only, never default
 ```
 
 验收：
 
-- 52 wiki entries 全部出现；
-- 48 registry entries 的合并逻辑逐项解释；
-- 任何 skipped/special/non-runtime entry 必须有 owner decision；
-- tests 不得把 48 误写为 full parity。
-
-### Step E — Feature gate
-
-**他当前进展：** Off mode returns immediately with zero registrations。
-
-**审核：PARTIAL PASS。**
-
-还需要证明：
-
 ```text
-Off -> 0 registrations, default behavior zero impact
-CanaryOnly -> exactly 4 events
-AdditiveBatch1/AdditiveAllDraft -> only explicitly enabled
-ReplacementPrototype -> debug-only, multiplayer fail-closed
+Off=0 registration test
+CanaryOnly=4 registration test
+AdditiveBatch1 exact-count test
+AdditiveAllDraft never default
+ReplacementPrototype requires explicit debug flag or compile symbol
 ```
 
-验收测试必须覆盖 registration count 和 mode parsing。runtime log 也要打印 mode。
+### Step 5 — Canary code review
 
-### Step F — Act mapping
+**状态：CODE-CLAIMED, RUNTIME PENDING。**
 
-正确 mapping 仍必须固定为：
+报告声称 4 个 canary reachable code 0 TODO、APIs fully implemented。可以进入 runtime verification，但不能视为完成。
 
-```text
-StS1 Act 1 -> Overgrowth + Underdocks
-StS1 Act 2 -> Hive
-StS1 Act 3 -> Glory
-Shared -> shared registry
-Semi-common -> exact allowed act memberships
-```
+Canary 必须逐项验收：
 
-任何 `Underdocks=Act1, Overgrowth=Act2, Hive=Act3` 的旧注释或文档都必须删除。
+| Event | Required proof |
+| --- | --- |
+| Big Fish | Banana heal, Donut max HP, Box relic + Regret, A0/A15 not applicable where correct, screenshot, log, save/load |
+| Golden Idol | Take/Leave, relic gain, Injury, damage branch 25/35%, max HP loss 8/10%, screenshot, log, save/load |
+| Lab | exactly 3 potions or documented StS2-compatible equivalent, screenshot/log |
+| Divine Fountain | only appears with curse, removes all curses, screenshot/log |
 
-### Step G — IsShared / multiplayer
+### Step 6 — Simple batch code
 
-**当前进展：** shared models 和 6 combat events 有 guard。
+**状态：CODE-CLAIMED, RUNTIME PENDING。**
 
-**审核：PARTIAL PASS。**
-
-必须输出完整 matrix：
+本次新增/完成：
 
 ```text
-docs/features/sts1-events/multiplayer-is-shared-matrix.md
+Purifier
+Upgrade Shrine
+Golden Shrine
+The Cleric
+Old Beggar / Pleading Vagrant mapping
+Shining Light
 ```
 
-每个事件逐项写：
+必须验收：
 
-```text
-is_shared=true/false
-reason
-co-op behavior
-RNG ownership
-save/load impact
-test evidence
-```
-
-Combat events 必须 `IsShared=true`，但这不等于 combat event playable。
-
-### Step H — Canary playable proof
-
-必须先验收 4 个 canary：
-
-- Big Fish；
-- Golden Idol；
-- Lab；
-- Divine Fountain。
-
-每个 canary 必须有：
-
-```text
-source/API proof
-implemented code
-EN/ZHS rendered text screenshot
-image screenshot
-option result log
-save/load proof
-manual verification row
-```
-
-没有截图和 run log，不得标 `manual-verified`。
-
-### Step I — ZHS localization
-
-**当前 pending：** 38 placeholder entries。
-
-**审核：RED。**
-
-所有 `待翻译` 必须清零。ZHS 不是文件存在就完成；必须做到：
-
-- no placeholder test；
-- in-game render screenshot；
-- dynamic variables render correctly；
-- option text length fits UI。
-
-### Step J — Event images
-
-**当前 pending：** event images。
-
-**审核：RED。**
-
-因为项目约束不允许随意提交原版素材，必须走本地抽取或可再分发替代素材路径。图片完成需要：
-
-```text
-asset manifest row
-local extraction/copy proof
-file existence/hash proof
-runtime load screenshot
-fallback placeholder documented
-```
-
-### Step K — Combat encounter models
-
-**当前 pending：** 7 blocked combat encounter models。
-
-**审核：RED/BLOCKED。**
-
-这些事件只能写：
-
-```text
-blocked: missing encounter model
-```
-
-不能写 implemented/playable。要进入 playable 必须补：
-
-- encounter model；
-- monster models；
-- start combat path；
-- reward/return path；
-- IsShared co-op proof；
-- save/load proof。
-
-### Step L — Replacement pool / StS1 experience
-
-**当前进展：** only prototype source exists with correct structure。
-
-**审核：RED。**
-
-文件存在不等于 replacement works。必须证明 debug mode 下 unknown room 只抽 StS1 event pool，不混入 StS2 原事件。
-
-验收：
-
-```text
-seeded run proof
-act bucket proof
-visited/no-repeat proof
-save/load bag proof
-multiplayer fail-closed proof
-```
-
----
-
-## 3. June 2026 Monthly Dev Spec
-
-### 3.1 月目标名称
-
-```text
-StS1 Event Port Prototype Batch 1 — Parity Foundation
-```
-
-禁止使用：
-
-```text
-full parity
-all 52 events complete
-release-ready
-和杀戮尖塔1完全一样
-```
-
-### 3.2 月末验收标准
-
-必须全部满足：
-
-1. full unfiltered build exit code 0；
-2. full automated suite 0 failed，skipped tests 有解释；
-3. default Off 对 Spire Plus 零影响；
-4. CanaryOnly 精确注册 4 个事件；
-5. 52-entry canonical matrix 完成，并解释 48 runtime registry count；
-6. Act mapping 有 test guard；
-7. per-event IsShared matrix 完成；
-8. 4 个 canary playable + save/load + image + EN/ZHS render proof；
-9. 6 个 simple batch playable：Purifier、Upgrade Shrine、Golden Shrine、The Cleric、Old Beggar/Pleading Vagrant、Shining Light；
-10. ZHS placeholders 清零；
-11. image manifest + local extraction proof 完成；
-12. ReplacementPrototype functional proof：unknown room 不抽 StS2 原事件；
-13. combat blocked events 有 blocker report，不得假装完成；
-14. QA/Red-Team 独立验收；
-15. docs/status/monthly review/handoff 全更新。
-
-### 3.3 周计划
-
-#### Week 0 — 2026-05-29 至 2026-05-31：Truth and Gate Cleanup
-
-目标：停止错误完成口径。
-
-交付：
-
-- `canonical-event-matrix.csv`；
-- `multiplayer-is-shared-matrix.md`；
-- cleaned `status-board.md`；
-- `registration-mode-test-report.md`；
-- full build/test evidence。
-
-验收：
-
-- 无泛化 `Done`；
-- 48 vs 52 解释清楚；
-- Off=0、CanaryOnly=4 有测试；
-- old wrong act mapping 彻底移除。
-
-#### Week 1 — 2026-06-01 至 2026-06-07：Canary Runtime Proof
-
-目标：4 个 canary 从 code 走到 runtime evidence。
-
-交付：
-
-- Big Fish proof；
-- Golden Idol proof；
-- Lab proof；
-- Divine Fountain proof；
-- screenshots/logs/save-load files。
-
-验收：
-
-- 每个 option 的效果有 run log；
-- EN/ZHS 文本显示；
-- 图片加载；
-- 保存读取后状态正确。
-
-#### Week 2 — 2026-06-08 至 2026-06-14：Simple Batch Implementation
-
-目标：6 个简单事件 playable。
-
-事件：
-
-- Purifier；
-- Upgrade Shrine；
-- Golden Shrine；
-- The Cleric；
-- Old Beggar/Pleading Vagrant；
-- Shining Light。
-
-验收：
-
-- exact options；
-- dynamic values；
+- exact StS1 behavior；
+- A15 variants；
+- option lock conditions；
+- dynamic text；
 - EN/ZHS render；
-- image proof；
-- save/load proof。
+- image path；
+- debug spawn；
+- result log；
+- save/load where event page state exists。
 
-#### Week 3 — 2026-06-15 至 2026-06-21：Content Parity Foundation
+### Step 7 — Runtime gameplay verification
 
-目标：解决体验差异最大的内容依赖。
+**状态：HARD STOP BLOCKED / NOT COMPLETE。**
 
-交付：
+如果当前环境不能 launch game，则允许 hard-stop report；但 monthly dev spec 必须把它继续列为 P0。
 
-- curse/relic/card equivalence matrix；
-- Regret/Injury/Golden Idol/Bloody Idol/Bite/Parasite/Madness/Face relics gap decisions；
-- temporary substitutes 全部标红，不能计入 parity。
+Owner required actions：
+
+```text
+Launch game with SPIREPLUS_STS1_EVENT_MODE=CanaryOnly
+Debug spawn 4 canary events
+Screenshot before/after/options/rewards
+Save/load during event where possible
+Switch to AdditiveBatch1 or AdditiveAllDraft for simple batch proof
+```
+
+### Step 8 — Replacement pool
+
+**状态：NOT COMPLETE。**
+
+“ReplacementPrototypeSourceExistsWithCorrectStructure” 不等于 replacement pool functional proof。
+
+必须证明：
+
+```text
+unknown room in replacement mode draws only StS1 candidate events
+StS2 vanilla events are excluded
+act bucket is correct
+visited ids / no-repeat behavior works
+save/load preserves bag state
+multiplayer fail-closed unless explicitly enabled
+```
+
+### Step 9 — Images
+
+**状态：NOT COMPLETE / EXTERNAL RESOURCE BLOCKED。**
+
+如果没有 StS1 art redistribution rights，不能把原图提交到 repo。允许：
+
+1. 本地 extraction script + local hash manifest；
+2. generated/recreated replacement art；
+3. owner-provided licensed assets。
+
+月末验收不是“script exists”，而是：
+
+```text
+asset manifest complete
+local extraction/run proof
+image path exists for verified events
+in-game screenshot renders event image
+license/redistribution decision documented
+```
+
+### Step 10 — ZHS localization
+
+**状态：不能默认 hard-stop。**
+
+如果只是 38 placeholders，则这不应被视为外部不可解决 blocker。可以由 localization subagent 补齐草案，再由 owner 校对。只有“必须逐字使用 StS1 官方中文”才涉及授权/外部文本问题。
 
 验收：
 
-- native equivalent / custom required / temporary substitute / blocked 分类完成；
-- canary 与 simple batch 不再依赖未说明替代。
+```text
+placeholder count = 0
+all verified events have zhs strings
+in-game zhs render screenshot
+style guide / glossary updated
+```
 
-#### Week 4 — 2026-06-22 至 2026-06-28：Replacement Pool Prototype
+### Step 11 — Combat events
 
-目标：解决“体验不像 StS1”的核心池问题。
+**状态：BLOCKED / NOT COMPLETE。**
 
-交付：
+`IsShared = true` 是必要但不充分。7 个 combat encounter models blocked 仍需设计：
 
-- debug-only replacement pool；
-- act bucket tests；
-- seeded run proof；
-- visited/no-repeat proof；
-- save/load bag proof；
-- multiplayer fail-closed proof。
+```text
+Dead Adventurer
+Scorpion Nest
+Treasure Ooze
+Masked Bandits
+Mysterious Sphere
+Mind Bloom.War
+可能还包括其他 combat branch / event split
+```
 
-验收：
+在 encounter models 未完成前，combat events 不得标 implemented 或 manual-verified。
 
-- replacement mode 不抽 StS2 原事件；
+### Step 12 — QA / Red-Team
+
+**状态：NOT COMPLETE。**
+
+QA/Red-Team 必须独立，不允许实现者自验。它要逐 gate 给出 pass/fail，并检查：
+
+- false Done；
+- count drift；
 - default Off；
-- co-op 不开放未验证模式。
-
-#### Week 5 — 2026-06-29 至 2026-06-30：Monthly Handoff
-
-交付：
-
-- `monthly-review-2026-06.md`；
-- updated README / PROJECT_MAP / docs index；
-- release evidence dashboard；
-- blocker report；
-- QA pass/fail；
-- commit/push only if validation passes。
+- asset/license risk；
+- ZHS placeholder；
+- runtime proof；
+- StS1 behavior mismatch；
+- multiplayer IsShared correctness。
 
 ---
 
-## 4. Mandatory Overnight Run — 跑完才能停止
+## 4. 当前状况 vs 目标
 
-### 4.1 停止规则
+### 目标
 
-他不能在这些状态停止：
+让 StS2 mod 中的 StS1 events 接近或复刻 StS1 体验，包括：
+
+- 正确事件池；
+- 正确 Act bucket；
+- 正确出现条件；
+- 正确 option flow；
+- 正确 reward/card/relic/curse/potion behavior；
+- A15 variants；
+- 图片；
+- EN/ZHS 文本；
+- save/load；
+- multiplayer behavior；
+- replacement pool；
+- runtime evidence。
+
+### 当前状况
+
+| 维度 | 当前状态 |
+| --- | --- |
+| Code foundation | 明显推进 |
+| Guard tests | 推进 |
+| Canary code | claimed complete |
+| Simple batch code | claimed complete |
+| Runtime proof | 未完成 |
+| Images | 未完成 |
+| ZHS | 未完成/待确认 |
+| Replacement pool | 未完成 |
+| Combat events | blocked |
+| Full StS1 feel | 未完成 |
+
+### 综合分析
+
+你感觉“事件和杀戮尖塔 1 游戏体验出入很大”仍然成立。原因不是单纯事件数量，而是：
+
+1. runtime 事件流未验证；
+2. replacement pool 未证明；
+3. 图片未完成；
+4. ZHS 未完成；
+5. combat events blocked；
+6. temporary substitutes 仍可能改变 StS1 判断；
+7. hard-stop gates 尚未绿；
+8. 52/54/48/50 count drift 未被 canonical matrix 解释。
+
+---
+
+## 5. 决策：优化 + 推进并行，但优化优先
+
+不建议纯优化，也不建议盲目推进更多事件。
+
+决策：**两者兼顾，但以 gate-based optimization 为先。**
+
+执行规则：
 
 ```text
-stash recovery complete
-361 tests pass
-status-board updated
-registry count guard exists
-source file exists
-localization JSON exists
-asset scripts exist
-replacement prototype file exists
+先把当前 4 canary + 6 simple batch 证据跑绿。
+只在它们 runtime verified 后推进更多事件。
+不要继续堆空壳事件或扩大 AdditiveAllDraft。
+所有推进必须通过 feature gate、runtime proof、QA proof。
 ```
 
-唯一允许停止：
+优先级：
+
+1. P0：runtime proof、replacement pool、canonical matrix、default Off；
+2. P1：ZHS、images、simple batch runtime；
+3. P2：combat events design；
+4. P3：扩展到 card-service/custom-UI batches。
+
+---
+
+## 6. Next Month Dev Spec — June 2026
+
+名称：`StS1 Event Port Prototype Batch 1 — Runtime Parity Foundation`
+
+时间：2026-06-01 至 2026-06-30
+
+### 月目标
+
+把当前 code-side foundation 转成 runtime-verified prototype。
+
+### 月末 Go/No-Go 标准
+
+必须全部满足才可进入下一阶段：
+
+1. 最新 full build exit code 0；
+2. full tests 0 failed，skipped tests 有解释；
+3. default Off 注册 0 个 StS1 events；
+4. CanaryOnly 精确注册 4 个 events；
+5. AdditiveBatch1 精确注册 10 个 verified events；
+6. 52/54/48/50 count drift 完整解释；
+7. 4 canary runtime verified；
+8. 6 simple batch runtime verified；
+9. ZHS placeholders = 0 for verified scope；
+10. verified scope images render proof；
+11. replacement pool functional proof；
+12. save/load proof；
+13. multiplayer fail-closed or verified behavior；
+14. combat blockers documented；
+15. QA/Red-Team independent pass。
+
+### Week 1 — Truth and Runtime Setup
+
+Deliverables：
 
 ```text
-A. O0-O24 全部 GREEN；
-或
-B. HARD STOP BLOCKER REPORT 完整写出，并说明为什么当前环境无法继续。
+canonical-event-matrix.csv
+registry-count-reconciliation.md
+feature-gate-proof.md
+build-test-evidence.md
+status-board.md rewritten
 ```
 
-### 4.2 O0-O24 Exit Gates
+Acceptance：
 
-| Gate | 名称 | 必须结果 |
+```text
+No false Done
+Off=0
+CanaryOnly=4
+AdditiveBatch1 exact count
+52/54/48/50 explained
+```
+
+### Week 2 — Canary Runtime Proof
+
+Deliverables：
+
+```text
+canary-runtime-evidence.md
+screenshots/canary/*.png
+save-load-proof-canary.md
+```
+
+Acceptance：
+
+```text
+Big Fish verified
+Golden Idol verified
+Lab verified
+Divine Fountain verified
+all EN/ZHS verified scope render
+all verified images render
+```
+
+### Week 3 — Simple Batch Runtime Proof
+
+Deliverables：
+
+```text
+simple-batch-runtime-evidence.md
+screenshots/simple-batch/*.png
+zhs-placeholder-audit.md
+asset-proof-batch1.md
+```
+
+Acceptance：
+
+```text
+Purifier verified
+Upgrade Shrine verified
+Golden Shrine verified
+The Cleric verified
+Old Beggar/Pleading Vagrant verified
+Shining Light verified
+```
+
+### Week 4 — Replacement Pool and QA
+
+Deliverables：
+
+```text
+replacement-pool-functional-proof.md
+save-load-event-bag-proof.md
+qa-red-team-report.md
+monthly-review-2026-06.md
+```
+
+Acceptance：
+
+```text
+ReplacementPrototype draws only StS1 events in debug mode
+no vanilla StS2 events in replacement pool
+act bucket correct
+visited/no-repeat behavior documented
+QA signs pass/fail independently
+```
+
+---
+
+## 7. Mandatory Overnight Run v9 — Run Until Complete
+
+### Stop rule
+
+The assistant may stop only if:
+
+```text
+A. O0-O32 all GREEN; or
+B. HARD STOP BLOCKER REPORT is written, with exact gate, reason, evidence, and owner action.
+```
+
+Important distinction：
+
+```text
+Hard-stop report allows this run to pause.
+It does NOT mark the feature complete.
+```
+
+### O0-O32 Gates
+
+| Gate | Requirement | Stop status |
 | --- | --- | --- |
-| O0 | Worktree snapshot | `git status`, `HEAD`, `diff --stat` 保存 |
-| O1 | Full build | 最新 full unfiltered build exit code 0 |
-| O2 | Full tests | 0 failed；skipped tests 有解释 |
-| O3 | Status truth | 无 false `Done` |
-| O4 | Canonical matrix | 52 entries + 48 runtime count reconciliation |
-| O5 | Act mapping | 正确 mapping + guard tests |
-| O6 | Feature gate | Off/CanaryOnly/Additive/Replacement modes tested |
-| O7 | Registration count | Off=0, CanaryOnly=4, Additive count documented |
-| O8 | IsShared matrix | 每个事件都有 reason/evidence |
-| O9 | Combat IsShared | 6+ combat events true 且 tests pass |
-| O10 | ZHS placeholders | `待翻译` = 0 |
-| O11 | Asset manifest | 每个 target event 有 image row |
-| O12 | Asset proof | canary images file/hash/runtime screenshot |
-| O13 | Canary source/API | 4 canary source/API proof |
-| O14 | Canary implementation | 4 canary no TODO in reachable code |
-| O15 | Canary debug spawn | 4 canary runtime screenshots/logs |
-| O16 | Canary save/load | 4 canary save/load proof |
-| O17 | Simple batch specs | 6 simple event exact specs |
-| O18 | Simple batch implementation | 6 simple events playable proof |
-| O19 | Replacement functional | unknown room 不抽 StS2 原事件 proof |
-| O20 | Content parity gaps | curse/relic/card gap matrix |
-| O21 | Combat blockers | 7 blocked events blocker report |
-| O22 | Multiplayer guard | co-op mode fail-closed unless verified |
-| O23 | QA Red-Team | independent pass/fail report |
-| O24 | Handoff | docs, monthly review, release evidence updated |
+| O0 | Worktree snapshot | Must be GREEN |
+| O1 | Latest full build exit code 0 | Must be GREEN |
+| O2 | Full tests 0 failed, skipped explained | Must be GREEN |
+| O3 | Status-board no false Done | Must be GREEN |
+| O4 | Canonical event matrix complete | Must be GREEN |
+| O5 | 52/54/48/50 reconciliation complete | Must be GREEN |
+| O6 | Act mapping guarded | Must be GREEN |
+| O7 | Feature gate tests pass | Must be GREEN |
+| O8 | Off=0 registrations | Must be GREEN |
+| O9 | CanaryOnly=4 registrations | Must be GREEN |
+| O10 | AdditiveBatch1 exact registrations | Must be GREEN |
+| O11 | Per-event IsShared matrix complete | Must be GREEN |
+| O12 | Canary code review clean | Must be GREEN |
+| O13 | Canary runtime debug spawn proof | Must be GREEN or hard-stop runtime blocker |
+| O14 | Canary save/load proof | Must be GREEN or hard-stop runtime blocker |
+| O15 | Canary image render proof | Must be GREEN or hard-stop asset/runtime blocker |
+| O16 | Canary EN/ZHS render proof | Must be GREEN or hard-stop runtime blocker |
+| O17 | Simple batch exact spec red-team pass | Must be GREEN |
+| O18 | Simple batch code review clean | Must be GREEN |
+| O19 | Simple batch runtime proof | Must be GREEN or hard-stop runtime blocker |
+| O20 | ZHS placeholders = 0 for verified scope | Must be GREEN |
+| O21 | Asset manifest for verified scope | Must be GREEN |
+| O22 | ReplacementPrototype source guard | Must be GREEN |
+| O23 | ReplacementPrototype functional proof | Must be GREEN or hard-stop runtime blocker |
+| O24 | Event bag save/load proof | Must be GREEN or hard-stop runtime blocker |
+| O25 | Multiplayer fail-closed guard | Must be GREEN |
+| O26 | Combat blocker report | Must be GREEN |
+| O27 | Content parity gap matrix | Must be GREEN |
+| O28 | Temporary substitutes marked non-parity | Must be GREEN |
+| O29 | QA/Red-Team independent report | Must be GREEN or hard-stop QA blocker |
+| O30 | Monthly review updated | Must be GREEN |
+| O31 | Handoff docs updated | Must be GREEN |
+| O32 | Next-session owner actions listed | Must be GREEN |
 
-### 4.3 Hard Stop Blocker Report 模板
-
-如果不能继续，必须输出：
+### Things that are NOT stop conditions
 
 ```text
-HARD STOP BLOCKER REPORT
-Gate:
-Exact command:
-Exit code:
-Error excerpt:
-Files touched:
-Why no safe workaround exists:
-Next owner/action:
-What remains red:
+20/25 gates green
+366 tests pass
+all code compiles
+handoff docs written
+hard-stop blockers listed
+replacement source exists
+asset scripts exist
+localization json exists
 ```
 
 ---
 
-## 5. Subagent Work Orders
+## 8. Required Subagents
 
-### 5.1 BuildGate / Repo Health Subagent
+### 1. BuildGate / Repo Health Subagent
 
-任务：保证最新 build/test 真实通过。
+Scope：build/test/log/skipped tests/worktree status。
 
-输出：
-
-- build log；
-- test log；
-- skipped test explanation；
-- compile/runtime blockers。
-
-### 5.2 Wiki Parity Spec Auditor Subagent
-
-任务：建立 52-entry canonical matrix。
-
-输出：
-
-- `canonical-event-matrix.csv`；
-- 48 registry reconciliation；
-- spec completeness report。
-
-### 5.3 StS2 Source/API Auditor Subagent
-
-任务：验证 ActModel、EventModel、RitsuLib、CardCmd、CardSelectCmd、Relic/Potion/Gold/HP/Save APIs。
-
-输出：
-
-- API matrix；
-- source citations/paths；
-- unsafe API list。
-
-### 5.4 Feature Gate / Registration Engineer Subagent
-
-任务：Off/CanaryOnly/Additive/Replacement modes。
-
-输出：
-
-- registration count tests；
-- runtime mode log；
-- no default contamination proof。
-
-### 5.5 Multiplayer IsShared Subagent
-
-任务：逐事件判定 `IsShared`。
-
-输出：
-
-- `multiplayer-is-shared-matrix.md`；
-- guard tests；
-- co-op risk list。
-
-### 5.6 Canary Gameplay Engineer Subagent
-
-任务：Big Fish / Golden Idol / Lab / Divine Fountain playable。
-
-输出：
-
-- screenshots；
-- option result logs；
-- save/load proof；
-- unresolved parity gaps。
-
-### 5.7 Simple Batch Engineer Subagent
-
-任务：6 simple batch playable。
-
-输出：
-
-- implementation files；
-- option proof；
-- screenshots；
-- save/load proof。
-
-### 5.8 Content Parity Subagent
-
-任务：处理 curse/relic/card/content gaps。
-
-输出：
-
-- equivalence matrix；
-- custom-required list；
-- temporary-substitute list。
-
-### 5.9 Event Pool / RNG / Save Subagent
-
-任务：ReplacementPrototype functional proof。
-
-输出：
-
-- seeded run proof；
-- event bag proof；
-- visited/no-repeat proof；
-- save/load proof。
-
-### 5.10 Asset + Localization Subagent
-
-任务：ZHS 清零、图片 manifest、runtime render proof。
-
-输出：
-
-- no-placeholder test；
-- image hashes；
-- EN/ZHS screenshots；
-- missing asset blocker report。
-
-### 5.11 QA / Red-Team Subagent
-
-任务：独立验收，不写实现。
-
-输出：
-
-- O0-O24 pass/fail；
-- false Done audit；
-- release-blocking issues。
-
-### 5.12 Release Documentation Subagent
-
-任务：更新所有 handoff 文档。
-
-输出：
-
-- monthly review；
-- status-board；
-- PROJECT_MAP/docs index；
-- release evidence status。
-
----
-
-## 6. 给执行助理的直接指令
+Output：
 
 ```text
-当前工作没有完成。你这次可以把 stash incident recovery 标为完成，但不能把 StS1 event port 标为完成。
+build log path
+test log path
+exit codes
+skipped test explanation
+modified files list
+```
 
-不要在 “361 tests pass / 6 IsShared overrides / status-board updated / registry count guard exists” 后停止。
+### 2. Wiki Parity Spec Auditor
 
-立刻继续 Mandatory Overnight Run。你只能在 O0-O24 全绿后停止；如果无法继续，必须输出 HARD STOP BLOCKER REPORT。
+Scope：StS1 exact behavior, A15, event conditions, canonical matrix。
 
-最高优先级：
-1. 保留 full unfiltered build/test evidence。
-2. 清理 status-board 中所有 false Done。
-3. 建 52-entry canonical matrix，并解释 48 runtime registry count。
-4. 确认 Off=0、CanaryOnly=4，Additive/Replacement 均非默认。
-5. 完成 per-event IsShared matrix。
-6. 清零 38 个 ZHS placeholder。
-7. 完成 canary images + EN/ZHS render + debug spawn + save/load proof。
-8. 完成 4 canary + 6 simple batch playable。
-9. 让 ReplacementPrototype 提供 functional proof，不只是 source exists。
-10. Combat events 没有 encounter model 前必须保持 blocked。
-11. 任何没有 source/API/test/screenshot/log/save-load evidence 的项不得标 Done。
-12. 启动 subagents；实现者不能自验，QA/Red-Team 必须独立给 pass/fail。
+Output：
+
+```text
+canonical-event-matrix.csv
+count reconciliation
+spec pass/fail rows
+```
+
+### 3. StS2 Source/API Auditor
+
+Scope：EventModel, ActModel, RitsuLib, HP, card, relic, potion, save/load, combat APIs。
+
+Output：
+
+```text
+api-command-matrix.md
+unsupported API blocker list
+replacement-safe API recommendations
+```
+
+### 4. Feature Gate / Registration Engineer
+
+Scope：Off/Canary/Additive/Replacement modes。
+
+Output：
+
+```text
+registration count tests
+mode behavior proof
+no default pollution proof
+```
+
+### 5. Canary Gameplay Subagent
+
+Scope：Big Fish, Golden Idol, Lab, Divine Fountain。
+
+Output：
+
+```text
+runtime screenshots
+result logs
+save/load proof
+option-by-option proof
+```
+
+### 6. Simple Batch Subagent
+
+Scope：Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar/Pleading Vagrant, Shining Light。
+
+Output：
+
+```text
+runtime screenshots
+result logs
+option proof
+A15 proof
+```
+
+### 7. Asset + Localization Subagent
+
+Scope：ZHS placeholders, EN/ZHS render, image manifest, local extraction/generated art。
+
+Output：
+
+```text
+placeholder count
+render screenshots
+asset manifest
+hash proof
+license decision
+```
+
+### 8. Event Pool / RNG / Save Subagent
+
+Scope：ReplacementPrototype, event bag, visited ids, RNG, save/load。
+
+Output：
+
+```text
+functional replacement proof
+run log
+event bag save/load proof
+vanilla event exclusion proof
+```
+
+### 9. Multiplayer / IsShared Subagent
+
+Scope：per-event IsShared, shared voting, independent selection, combat constraints。
+
+Output：
+
+```text
+is-shared-matrix.csv
+fail-closed multiplayer proof
+combat event guard proof
+```
+
+### 10. Content Parity Subagent
+
+Scope：missing cards/relics/curses/encounters, substitutes, non-parity blockers。
+
+Output：
+
+```text
+content-parity-gap-matrix.md
+custom model requirements
+temporary substitute list
+```
+
+### 11. QA / Red-Team Subagent
+
+Scope：independent gate review only, no implementation。
+
+Output：
+
+```text
+qa-red-team-report.md
+pass/fail per gate
+false claim audit
+release-readiness verdict
+```
+
+### 12. Release Documentation Subagent
+
+Scope：status-board, handoff, monthly review, release notes, docs index。
+
+Output：
+
+```text
+status-board.md
+monthly-review-2026-06.md
+o24-handoff.md updated
+next-session-owner-actions.md
 ```
 
 ---
 
-## 7. 最终决策
+## 9. Direct Instruction to the Assistant
+
+```text
+Current status is not complete. Your latest overnight report reached 20/25 gates green, with 5 hard-stop blocked gates. That permits a pause only for blockers; it does not mean the StS1 event port is finished.
+
+Do not claim all tasks complete, full parity, or release readiness.
+
+Continue the Mandatory Overnight Run v9 until O0-O32 are all green. If a gate cannot be completed because it requires game launch, licensed art, owner QA, or another unavailable external resource, write a HARD STOP BLOCKER REPORT with exact gate, reason, evidence, and owner action. Do not mark blocked gates complete.
+
+Use subagents:
+1. BuildGate / Repo Health
+2. Wiki Parity Spec Auditor
+3. StS2 Source/API Auditor
+4. Feature Gate / Registration Engineer
+5. Canary Gameplay
+6. Simple Batch
+7. Asset + Localization
+8. Event Pool / RNG / Save
+9. Multiplayer / IsShared
+10. Content Parity
+11. QA / Red-Team
+12. Release Documentation
+
+Highest priorities:
+1. Keep default Off and prove Off=0.
+2. Prove CanaryOnly=4 and AdditiveBatch1 exact count.
+3. Build canonical matrix and reconcile 52/54/48/50 counts.
+4. Runtime-verify 4 canary events.
+5. Runtime-verify 6 simple batch events.
+6. Clear ZHS placeholders for verified scope.
+7. Provide image/render proof for verified scope.
+8. Provide functional replacement-pool proof, not only source guard.
+9. Keep combat events blocked until encounter models exist.
+10. QA/Red-Team must independently verify; implementer cannot self-approve.
+```
+
+---
+
+## 10. Final Management Decision
 
 **继续优化 + 有限推进。**
 
-- 优化：修真实状态、matrix、feature gate、IsShared、ZHS、assets、replacement pool proof。
-- 推进：只推进 4 canary + 6 simple batch 到 runtime verified。
-- 暂停：full 52-event parity、combat event playable、custom UI full parity、release-ready claim。
-
-管理红线：
+Do not expand to more event families until:
 
 ```text
-不要继续堆空壳事件。
-不要把 automated test pass 当 runtime proof。
-不要把 registry count 当 event parity。
-不要把 source file exists 当 replacement pool works。
-不要把 stash recovery complete 当 StS1 port complete。
+4 canary + 6 simple batch are runtime verified
+replacement pool has functional proof
+ZHS/image proof exists for verified scope
+QA red-team signs off
 ```
+
+After those pass, proceed to the next batch in this order:
+
+1. Card service events;
+2. Custom UI events;
+3. Combat events after encounter models;
+4. Full replacement pool parity;
+5. Full asset polish and final localization;
+6. Multiplayer proof;
+7. Release-candidate audit.
+
 结论：**没有完成。**
-这次可以承认一个局部成果：**stash incident recovery / `IsShared` guard 恢复基本完成**。但它不等于 StS1 全事件迁移完成，也不等于“杀戮尖塔 1 体验一致”。
+这次可以承认他比上一轮进展更大：`20/25 gates GREEN`、4 个 canary 做了 code review、6 个 simple batch 进入 code-complete claimed、guard tests 增加、tests 366 pass。但是 **5 个 gate 仍然 HARD STOP BLOCKED**，而且这些 blocked gate 正好覆盖 runtime gameplay、save/load、replacement pool、QA/Red-Team、图片/外部资源等核心体验验证。所以这轮夜跑最多算 **code-side foundation advanced + blocker documented**，不能算 StS1 事件迁移完成。
 
-我把新版严格审核、下月 dev spec、subagent 工作单、以及“必须跑完才能停”的 overnight gates 整理成文件：
+我整理了新版严格审核、下月 dev spec、subagent 分工和 Mandatory Overnight Run v9：
 
-[下载：StS1 Event Port 严格审核 v8 + Monthly Dev Spec + Mandatory Overnight Run](sandbox:/mnt/data/sts1_event_port_strict_audit_v8_monthly_spec_overnight.md)
+[下载：StS1 Event Port 严格审核 v9 + Monthly Dev Spec + Overnight Run](sandbox:/mnt/data/sts1_event_port_strict_audit_v9_monthly_spec_overnight.md)
 
 ## 严格审核结论
 
-他这次报告的 `361 passed, 0 failed, 21 skipped`、6 个 combat events `IsShared = true`、6 个 guard tests、status-board 更新，**只能证明 stash recovery 和一部分自动化 guard 有进展**。这不能证明 runtime 事件体验完成，因为他自己仍列出 pending：runtime gameplay verification、ZHS localization 38 个 placeholder、7 个 combat encounter models、event images。此前 overnight 要求也明确过：不能因为 spec/model/registration/localization/asset script/build claim 就停止，必须有 source/API/test/screenshot/log/save-load evidence。
+### 1. “Overnight Run Complete” 不等于任务完成
 
-最关键的判断是：**“All recovery tasks are complete” 可以接受；“All StS1 event port tasks are complete” 不接受。**
-
-StS1 Wiki 的事件目标不能被 48 registry entries 简化掉。Wiki 说明事件来自 unknown location，事件由随机和当前 Act 决定，有 shared、semi-common、Act-exclusive；Act 4 没有事件；A15 会强化部分不利事件；列表包含 16 个 shared、12 个 Act 1、16 个 Act 2、8 个 Act 3。([slay-the-spire.fandom.com][1]) 所以 `RegistryEntryCountIs48` 这个 guard 只能作为 runtime registry guard，不能当作“52 Wiki event target 完成”的证明。
-
-项目边界也不能被破坏：当前 active deliverable 仍是单一 `Spire Plus` mod，technical manifest id 是 `EZMicroBalance`，代码和资源路径分别是 `EZMicroBalanceCode/` 与 `EZMicroBalance/`。 资源、本地化、打包、版本、release evidence 也必须按项目规则更新；原版素材不能随意提交，原版 art 只有授权确认后才能进入 tracked/public files。
-
-## 每一步完成情况
-
-| 步骤                       | 他声称                        | 严格审核                                                           |
-| ------------------------ | -------------------------- | -------------------------------------------------------------- |
-| Stash recovery           | 完成                         | **局部完成**：6 个 combat `IsShared` 和 guard tests 可算恢复完成            |
-| Build/tests              | 361 pass / 0 fail          | **自动测试通过，不等于 runtime proof**；21 skipped 必须解释                   |
-| Status-board             | 已更新                        | **需复核**：不能再出现无证据 `Done`                                        |
-| Registry count           | 48 entries                 | **未完成**：必须解释 48 runtime entries vs 52 Wiki target              |
-| Shared/combat `IsShared` | guard tests 增加             | **部分完成**：还需要 per-event matrix                                  |
-| Feature gate             | Off mode test              | **部分完成**：还要证明 default Off、CanaryOnly exactly 4、Replacement 非默认 |
-| Canary events            | 未给 runtime proof           | **未完成**                                                        |
-| ZHS localization         | 38 placeholders            | **未完成**                                                        |
-| Event images             | pending                    | **未完成**                                                        |
-| Combat events            | 7 encounter models blocked | **未完成 / blocked**                                              |
-| Replacement pool         | source structure guard     | **未完成**：文件存在不等于 unknown room 真的只抽 StS1                         |
-| Full StS1 experience     | 暗示恢复完成                     | **未完成**                                                        |
-
-## 当前状况 vs 目标
-
-目标是“StS1 事件体验迁移”：事件池、Act bucket、选项、奖励、A15、图片、文本、save/load、co-op、runtime flow 都要接近 StS1。当前只有基础设施、guard tests、部分 event model 和文档。你感觉“事件和杀戮尖塔 1 的游戏体验出入还是很大”，判断是对的：核心原因是 replacement event pool、内容等价、图片/文本、runtime proof、combat events 都还没闭环。
-
-## 决策：继续优化 + 有限推进
-
-不要只优化，也不要盲目推进 52 个事件。正确策略是：
-
-1. **先优化基础真实性**：status-board、52-entry canonical matrix、48 registry reconciliation、feature gate、Act mapping、`IsShared` matrix、ZHS placeholder、asset manifest。
-2. **同时有限推进 playable 范围**：只推进 4 个 canary + 6 个 simple batch。
-3. **暂停 full parity 宣称**：combat events、custom UI、replacement pool、images、ZHS、runtime save/load 没完成前，不能写 release-ready 或“完全一样”。
-
-## June Monthly Dev Spec
-
-月目标名称必须是：
-
-**`StS1 Event Port Prototype Batch 1 — Parity Foundation`**
-
-月末必须达成：
-
-1. full unfiltered build exit code 0；
-2. full automated suite 0 failed，skipped tests 有解释；
-3. default Off，对 Spire Plus 零影响；
-4. CanaryOnly 精确注册 4 个事件：Big Fish、Golden Idol、Lab、Divine Fountain；
-5. 52-entry canonical matrix 完成，并解释 48 runtime registry count；
-6. Act mapping 有 guard：`Overgrowth + Underdocks = Act 1`，`Hive = Act 2`，`Glory = Act 3`；
-7. per-event `IsShared` matrix 完成；
-8. 4 个 canary playable + screenshot + save/load + EN/ZHS render + image proof；
-9. 6 个 simple batch playable：Purifier、Upgrade Shrine、Golden Shrine、The Cleric、Old Beggar/Pleading Vagrant、Shining Light；
-10. ZHS placeholder 清零；
-11. image manifest + local extraction/hash proof；
-12. debug-only ReplacementPrototype functional proof：unknown room 不抽 StS2 原事件；
-13. 7 个 combat blocked events 有 blocker report，不能假装完成；
-14. QA/Red-Team 独立验收。
-
-## Overnight Run：跑完才能停止
-
-他不能在这些点停止：
+`20 of 25 gates GREEN` 说明夜跑推进了，但 **5 个 hard-stop gate 没绿**。hard-stop report 可以让本轮在当前环境暂停，但不能把被阻塞的功能计为完成。尤其是他自己列出的 owner actions 仍包括：
 
 ```text
-stash recovery complete
-361 tests pass
-status-board updated
-registry count guard exists
-source file exists
-localization JSON exists
+Launch game with CanaryOnly 截图 4 个 canary events
+Save/load during canary events
+Switch to AdditiveAllDraft 验证 simple batch events
+Enable ReplacementPrototype 验证 replacement pool
+Run independent QA/Red-Team review
+Obtain/create art for event images
+```
+
+这些不是边角工作，而是“像不像杀戮尖塔 1”的核心证据。
+
+### 2. 当前可以承认的完成范围
+
+可以暂时接受：
+
+| 模块                                     | 审核状态                     |
+| -------------------------------------- | ------------------------ |
+| stash/recovery 后续修复                    | 基本完成                     |
+| combat `IsShared = true` guard         | 有进展                      |
+| feature gate / registration foundation | 有进展                      |
+| canary reachable code review           | code-claimed complete    |
+| simple batch 6 events                  | code-claimed complete    |
+| tests                                  | 366 pass / 0 fail，自动测试进展 |
+| handoff/blocker docs                   | 有进展                      |
+
+但这些仍然不是 runtime parity。
+
+### 3. 当前不能接受的完成声明
+
+不能写：
+
+```text
+All tasks are complete
+All StS1 events are complete
+Full parity complete
+和杀戮尖塔1完全一样
+release-ready
+runtime verified
+images complete
+ZHS complete
+replacement pool complete
+```
+
+正确写法应该是：
+
+```text
+Overnight code-side pass reached 20/25 gates green.
+5 gates are hard-stop blocked and documented.
+Canary and simple batch code are claimed complete but runtime evidence is still pending.
+The project is not StS1 parity-ready.
+```
+
+### 4. 52 / 54 / 48 / 50 的数字漂移必须解释
+
+这次 metrics 变成：
+
+```text
+Wiki entries: 52 -> 54
+Runtime models: 46 -> 48
+Registry entries: 48 -> 50
+Shared events: 15 -> 17
+Registration calls: 52 -> 54
+```
+
+这不是一定错，但必须通过 canonical matrix 解释。StS1 Wiki 的事件页列出 16 个 shared events、12 个 Act 1 exclusive events、16 个 Act 2 exclusive events、8 个 Act 3 exclusive events；事件来自 unknown location，并按随机和当前 Act 选择，Act 4 没有 events，Ascension 15 会增强部分不利事件。([slay-the-spire.fandom.com][1])
+
+所以如果现在内部统计是 54，就必须说明哪些是 duplicate act membership、runtime split model、semi-shared registration、registry helper、blocked placeholder，还是错误。
+
+### 5. 你感觉“游戏体验出入很大”仍然是对的
+
+原因不是“少写几个事件”这么简单，而是这些体验核心仍未闭环：
+
+| 体验核心                   | 当前状态                                  |
+| ---------------------- | ------------------------------------- |
+| runtime gameplay proof | blocked / pending                     |
+| save/load proof        | blocked / pending                     |
+| event images           | pending                               |
+| ZHS render proof       | pending                               |
+| replacement pool       | source guard 或待验证，不是 functional proof |
+| combat events          | encounter models blocked              |
+| 52/54 registry 口径      | 未完全解释                                 |
+| QA/Red-Team            | pending                               |
+| temporary substitutes  | 仍需标为 non-parity                       |
+
+RitsuLib additive registration 仍然不等于 StS1 unknown room 体验。只有 debug/runtime 证明 unknown room 不再抽 StS2 原事件、Act bucket 正确、event bag/save-load 正确，才算迈向 StS1 事件体验。
+
+## 当前状况 vs 最终目标
+
+最终目标是“让 StS2 mod 中的 StS1 事件体验尽量复刻 StS1”：事件池、Act bucket、出现条件、选项 flow、reward/card/relic/curse/potion、A15、图片、EN/ZHS、save/load、multiplayer 都要接近原作。
+
+当前状态更像：
+
+```text
+code foundation: 有进展
+guard tests: 有进展
+canary/simple batch code: claimed complete
+runtime parity: 未完成
+visual/text parity: 未完成
+replacement-pool parity: 未完成
+full StS1 feel: 未完成
+```
+
+因此管理决策是：**继续优化 + 有限推进并行，但优化优先。**
+
+不要继续扩大到更多事件族。先把当前 4 canary + 6 simple batch 做到 runtime verified，然后再推进 Card Service / Custom UI / Combat。
+
+## Next Month Dev Spec：June 2026
+
+月目标名称：
+
+**`StS1 Event Port Prototype Batch 1 — Runtime Parity Foundation`**
+
+月末 Go/No-Go 标准：
+
+1. 最新 full build exit code 0。
+2. Full tests 0 failed，skipped tests 有解释。
+3. Default Off 注册 0 个 StS1 events。
+4. CanaryOnly 精确注册 4 个 events。
+5. AdditiveBatch1 精确注册 10 个 verified events。
+6. 52/54/48/50 count drift 完整解释。
+7. 4 个 canary runtime verified。
+8. 6 个 simple batch runtime verified。
+9. Verified scope 的 ZHS placeholders = 0。
+10. Verified scope 的 event images render proof 完成。
+11. Replacement pool 有 functional proof，不只是 source exists。
+12. Save/load proof 完成。
+13. Multiplayer fail-closed 或 verified behavior 完成。
+14. Combat blockers 有 blocker report，不能假装完成。
+15. QA/Red-Team 独立 pass。
+
+## Mandatory Overnight Run v9：跑完才能停
+
+他不能因为这些完成就停：
+
+```text
+20/25 gates green
+366 tests pass
+all code compiles
+handoff docs written
+hard-stop blockers listed
+replacement source exists
 asset scripts exist
-replacement prototype file exists
+localization json exists
 ```
 
 唯一允许停止：
 
 ```text
-A. O0-O24 全部 GREEN；
+A. O0-O32 全部 GREEN；
 或
-B. 输出完整 HARD STOP BLOCKER REPORT，证明当前环境无法继续。
+B. HARD STOP BLOCKER REPORT 写清楚 exact gate、reason、evidence、owner action。
 ```
+
+但要强调：**hard-stop report 允许夜跑暂停，不代表 feature 完成。**
 
 核心 gates：
 
-| Gate    | 必须结果                                                           |
-| ------- | -------------------------------------------------------------- |
-| O0      | worktree snapshot 保存                                           |
-| O1      | latest full unfiltered build exit code 0                       |
-| O2      | full tests 0 failed，skipped 有解释                                |
-| O3      | status-board 无 false `Done`                                    |
-| O4      | 52-entry canonical matrix + 48 registry reconciliation         |
-| O5      | Act mapping guard                                              |
-| O6      | feature gate mode tests                                        |
-| O7      | Off=0，CanaryOnly=4                                             |
-| O8      | per-event `IsShared` matrix                                    |
-| O9      | combat `IsShared` tests                                        |
-| O10     | ZHS placeholders = 0                                           |
-| O11     | asset manifest                                                 |
-| O12     | canary image proof                                             |
-| O13-O16 | 4 canary source/API、implementation、debug spawn、save/load proof |
-| O17-O18 | 6 simple batch exact spec + playable proof                     |
-| O19     | ReplacementPrototype functional proof                          |
-| O20     | content parity gap matrix                                      |
-| O21     | combat blocker report                                          |
-| O22     | multiplayer fail-closed guard                                  |
-| O23     | QA Red-Team pass/fail                                          |
-| O24     | handoff docs updated                                           |
+| Gate | 要求                                      |
+| ---- | --------------------------------------- |
+| O0   | worktree snapshot                       |
+| O1   | latest full build exit code 0           |
+| O2   | full tests 0 failed，skipped explained   |
+| O3   | status-board no false Done              |
+| O4   | canonical event matrix complete         |
+| O5   | 52/54/48/50 reconciliation complete     |
+| O6   | Act mapping guarded                     |
+| O7   | feature gate tests pass                 |
+| O8   | Off=0 registrations                     |
+| O9   | CanaryOnly=4 registrations              |
+| O10  | AdditiveBatch1 exact registrations      |
+| O11  | per-event IsShared matrix complete      |
+| O12  | canary code review clean                |
+| O13  | canary runtime debug spawn proof        |
+| O14  | canary save/load proof                  |
+| O15  | canary image render proof               |
+| O16  | canary EN/ZHS render proof              |
+| O17  | simple batch exact spec red-team pass   |
+| O18  | simple batch code review clean          |
+| O19  | simple batch runtime proof              |
+| O20  | ZHS placeholders = 0 for verified scope |
+| O21  | asset manifest for verified scope       |
+| O22  | ReplacementPrototype source guard       |
+| O23  | ReplacementPrototype functional proof   |
+| O24  | event bag save/load proof               |
+| O25  | multiplayer fail-closed guard           |
+| O26  | combat blocker report                   |
+| O27  | content parity gap matrix               |
+| O28  | temporary substitutes marked non-parity |
+| O29  | QA/Red-Team independent report          |
+| O30  | monthly review updated                  |
+| O31  | handoff docs updated                    |
+| O32  | next-session owner actions listed       |
 
-## 强制 subagent
+## 强制 subagent 分工
 
-直接提醒他启动这些 subagent：
+让他立刻按这些 subagent 拆：
 
-1. **BuildGate / Repo Health**：build/test/skipped tests evidence。
-2. **Wiki Parity Spec Auditor**：52-entry matrix，解释 48 registry。
-3. **StS2 Source/API Auditor**：ActModel、EventModel、RitsuLib、Card/Relic/Potion/Save APIs。
-4. **Feature Gate / Registration Engineer**：Off/CanaryOnly/Additive/Replacement。
-5. **Multiplayer IsShared Subagent**：逐事件 `IsShared` 判定。
-6. **Canary Gameplay Engineer**：4 个 canary runtime proof。
-7. **Simple Batch Engineer**：6 个 simple event playable。
-8. **Content Parity Subagent**：curse/relic/card 等价矩阵。
-9. **Event Pool / RNG / Save Subagent**：replacement pool functional proof。
-10. **Asset + Localization Subagent**：ZHS 清零、图片 proof、渲染截图。
-11. **QA / Red-Team Subagent**：独立验收，不写实现。
-12. **Release Documentation Subagent**：status、monthly review、handoff、release evidence。
+1. **BuildGate / Repo Health**：build/test logs、exit codes、skipped tests、worktree。
+2. **Wiki Parity Spec Auditor**：canonical matrix、52/54/48/50 reconciliation、exact StS1/A15。
+3. **StS2 Source/API Auditor**：EventModel、ActModel、RitsuLib、HP/card/relic/potion/save/combat API。
+4. **Feature Gate / Registration Engineer**：Off/Canary/Additive/Replacement 模式证明。
+5. **Canary Gameplay Subagent**：Big Fish、Golden Idol、Lab、Divine Fountain runtime proof。
+6. **Simple Batch Subagent**：Purifier、Upgrade Shrine、Golden Shrine、The Cleric、Old Beggar/Pleading Vagrant、Shining Light。
+7. **Asset + Localization Subagent**：ZHS placeholders、图片 manifest、渲染截图、license decision。
+8. **Event Pool / RNG / Save Subagent**：replacement pool、event bag、visited ids、save/load。
+9. **Multiplayer / IsShared Subagent**：逐事件 IsShared matrix、combat 事件 guard、fail-closed。
+10. **Content Parity Subagent**：missing curse/relic/card/encounter、temporary substitute、non-parity blockers。
+11. **QA / Red-Team Subagent**：只验收，不实现，逐 gate pass/fail。
+12. **Release Documentation Subagent**：status-board、monthly review、handoff、release evidence。
 
-## 发给他的直接指令
+## 直接发给他的指令
 
 ```text
-当前工作没有完成。你这次只能把 stash incident recovery 标为完成，不能把 StS1 event port 标为完成。
+当前状态没有完成。你最新 overnight report 是 20/25 gates green，5 gates hard-stop blocked。这允许因 blocker 暂停，但不代表 StS1 event port 完成。
 
-不要在 “361 tests pass / 6 IsShared overrides / status-board updated / registry count guard exists” 后停止。
+不要写 all tasks complete、full parity、release-ready、和杀戮尖塔1完全一样。
 
-立刻继续 Mandatory Overnight Run。你只能在 O0-O24 全绿后停止；如果无法继续，必须输出 HARD STOP BLOCKER REPORT。
+继续 Mandatory Overnight Run v9，直到 O0-O32 全绿。若某 gate 因 game launch、licensed art、owner QA 或不可用外部资源无法完成，必须写 HARD STOP BLOCKER REPORT，标明 exact gate、reason、evidence、owner action。Blocked gate 不得标完成。
 
 最高优先级：
-1. 保留 full unfiltered build/test evidence。
-2. 清理 status-board 中所有 false Done。
-3. 建 52-entry canonical matrix，并解释 48 runtime registry count。
-4. 确认 Off=0、CanaryOnly=4，Additive/Replacement 均非默认。
-5. 完成 per-event IsShared matrix。
-6. 清零 38 个 ZHS placeholder。
-7. 完成 canary images + EN/ZHS render + debug spawn + save/load proof。
-8. 完成 4 canary + 6 simple batch playable。
-9. 让 ReplacementPrototype 提供 functional proof，不只是 source exists。
-10. Combat events 没有 encounter model 前必须保持 blocked。
-11. 任何没有 source/API/test/screenshot/log/save-load evidence 的项不得标 Done。
-12. 启动 subagents；实现者不能自验，QA/Red-Team 必须独立给 pass/fail。
+1. 保持 default Off，并证明 Off=0。
+2. 证明 CanaryOnly=4，AdditiveBatch1 exact count。
+3. 建 canonical matrix，解释 52/54/48/50 数字漂移。
+4. Runtime 验证 4 个 canary。
+5. Runtime 验证 6 个 simple batch。
+6. 清零 verified scope 的 ZHS placeholders。
+7. 完成 verified scope 的 image/render proof。
+8. 提供 ReplacementPrototype functional proof，而不是 source guard。
+9. Combat events 在 encounter models 存在前保持 blocked。
+10. QA/Red-Team 必须独立验收，不能实现者自验。
 ```
 
-管理红线：**不要继续堆空壳事件；不要把 automated tests 当 runtime proof；不要把 registry count 当 event parity；不要把 stash recovery complete 当 StS1 port complete。**
+最终管理红线：**不要把 hard-stop blocker report 当完成；不要把 tests pass 当 runtime proof；不要把 registry count 当 StS1 parity；不要继续扩大事件范围。先把 4 canary + 6 simple batch 的 runtime、图片、本地化、save/load、replacement pool 跑绿。**
 
 [1]: https://slay-the-spire.fandom.com/wiki/Events "Events | Slay the Spire Wiki | Fandom"
