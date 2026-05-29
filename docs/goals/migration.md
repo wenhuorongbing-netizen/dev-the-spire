@@ -108,7 +108,7 @@ patch-inventory.md lists migrated patches
 `monthly-dev-spec.md` 当前写：
 
 ```text
-361 total tests passing
+387 total tests passing
 0 failed
 21 skipped
 ```
@@ -118,11 +118,11 @@ patch-inventory.md lists migrated patches
 用户报告也说：
 
 ```text
-dotnet build: 0 errors, 87 warnings
-dotnet test: 361 passed, 0 failed, 21 skipped
+dotnet build: 0 errors, 92 warnings
+dotnet test: 387 passed, 0 failed, 21 skipped
 ```
 
-这和最新 monthly spec 的 361 passed 对上。
+这和最新 monthly spec 的 387 passed 对上。
 但是旧的 `docs/reviews/overnight-run-20260529.md` 仍记录的是：
 
 ```text
@@ -136,11 +136,11 @@ dotnet test: 361 passed, 0 failed, 21 skipped
 下一步需要一个 canonical validation doc，把当前最终测试事实统一为：
 
 ```text
-Build: 0 errors, 87 warnings
-Test: 361 passed, 0 failed, 21 skipped
+Build: 0 errors, 92 warnings
+Test: 387 passed, 0 failed, 21 skipped
 ```
 
-并明确 87 个 warning 是否全部属于 Sts1Events null-safety，是否接受，何时清理。
+并明确 92 个 warning 是否全部属于 Sts1Events null-safety，是否接受，何时清理。
 
 ---
 
@@ -151,11 +151,11 @@ Test: 361 passed, 0 failed, 21 skipped
 用户报告说：
 
 ```text
-87 warnings, all CS8602/CS8604 in Sts1Events models
+92 warnings, all CS8602/CS8604/CS8625 in Sts1Events models
 ```
 
-这比“0 warnings”更真实，也更值得保留。
-问题是：**87 warnings 不能长期当作无影响噪音**。既然 Sts1Events 已经编译进项目，而且有 FeatureGate，那么 warnings 会持续污染 build truth。
+这比"0 warnings"更真实，也更值得保留。
+问题是：**92 warnings 不能长期当作无影响噪音**。既然 Sts1Events 已经编译进项目，而且有 FeatureGate，那么 warnings 会持续污染 build truth。
 
 **判定：OPEN。**
 
@@ -543,7 +543,7 @@ RitsuLib Runtime Proof + Architecture Integration Month
 [ ] 0 manifest dependency failure
 ```
 
-同时处理 87 warnings：
+同时处理 92 warnings：
 
 ```text
 [ ] 列出 87 warning 文件分布
@@ -703,11 +703,11 @@ MindBloom War blocked
 当前状态：
 - Latest main includes RitsuLib dependency and runtime dependency.
 - 25 patches migrated to RitsuLib ModPatcher.
-- 142 raw Harmony patches remain.
+- 141 raw Harmony patches remain (1 additional dead-code declaration behind #if).
 - Batch 4a/4b counts fixed.
 - RitsuLibMigrationGuardTests pass source-level double-patch checks.
-- Full test truth currently reported as 361 passed / 0 failed / 21 skipped.
-- Build has 87 warnings, all Sts1Events null-safety per prior report.
+- Full test truth currently reported as 387 passed / 0 failed / 21 skipped.
+- Build has 92 warnings, all Sts1Events null-safety per prior report.
 - Runtime smoke blocked because STS2-RitsuLib not installed locally.
 - Sts1Events default Off and CanaryOnly are guarded.
 - AdditiveAllDraft and ReplaceUnknownEventsPrototype are unsafe/dev-only.
@@ -907,7 +907,7 @@ Death/Multiplayer docs
 RitsuLib runtime proof 没有
 架构 skeleton 大多没接入真实系统
 Sts1Events 仍是 dev/prototype
-87 warnings 仍未清
+92 warnings 仍未清
 release 仍不可能
 ```
 

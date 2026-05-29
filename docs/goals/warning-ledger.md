@@ -1,16 +1,16 @@
-# Warning Ledger — M2 Revision E
+# Warning Ledger — M3 Week 1
 
 Date: 2026-05-29
-Verified: Clean build (`dotnet clean` + `dotnet build .\EZMicroBalance.csproj`)
+Verified: Clean build (`dotnet clean` + `dotnet build .\EZMicroBalance.csproj`) at HEAD `d290598c`
 
 ## Summary
 
 | Metric | Value |
 |---|---|
-| Total CS warnings | **87** |
-| CS8604 (possible null reference argument) | **53** |
-| CS8602 (dereference of possibly null reference) | **33** |
-| CS8625 (cannot convert null literal) | **1** |
+| Total CS warnings | **92** |
+| CS8604 (possible null reference argument) | **TBD (needs recount)** |
+| CS8602 (dereference of possibly null reference) | **TBD (needs recount)** |
+| CS8625 (cannot convert null literal) | **TBD (needs recount)** |
 | Warnings outside Sts1Events/ | **0** |
 | MSB3026 (env artifact, not code) | **10** (non-blocking, ignored) |
 
@@ -19,7 +19,9 @@ Verified: Clean build (`dotnet clean` + `dotnet build .\EZMicroBalance.csproj`)
 Every CS warning is a nullable reference type warning in the Sts1Events staging code.
 No warnings exist in core Spire Plus code, RitsuLib integration, preview tools, or tests.
 
-## Per-file Breakdown
+## Per-file Breakdown (Revision E — 87 warnings)
+
+**Note**: Current clean build produces 92 warnings (+5 from Revision E). The per-file breakdown below is from Revision E and needs recount. All new warnings are in `EZMicroBalanceCode/Sts1Events/Models/`.
 
 | File | CS8604 | CS8602 | CS8625 | Total |
 |---|---|---|---|---|
@@ -81,3 +83,4 @@ All 87 warnings depend on the Week 2 Sts1Events governance decision:
 |---|---|---|
 | 2026-05-29 (Rev D) | 69 | First clean-build count |
 | 2026-05-29 (Rev E) | 87 | Updated after new IsShared property additions in 6 files |
+| 2026-05-29 (M3 Week 1) | 92 | Updated after UrdaStateCodec/Sts1Events model changes at d290598c |

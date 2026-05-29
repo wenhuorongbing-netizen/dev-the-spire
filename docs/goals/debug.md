@@ -8,7 +8,7 @@ M2 Revision F overall / commit-readiness：未完成
 下个月方向：优化 + 有限推进，两者兼顾，但先优化到 owner-review / commit-ready
 ```
 
-他这轮确实完成了重要进展：`dotnet clean + build`、test、format、whitespace、batch classification 都有绿色结果；测试数也从 Revision E 的 354 提升到 361，且 0 failed；`report-worktree-batches.ps1` 现在是 9 个 worktree entries、0 unclassified。
+他这轮确实完成了重要进展：`dotnet clean + build`、test、format、whitespace、batch classification 都有绿色结果；测试数也从 Revision E 的 354 提升到 387，且 0 failed；`report-worktree-batches.ps1` 现在是 10 个 worktree entries (script output)、0 unclassified，实际 git status 显示 12 dirty + 3 untracked = 15 total entries。
 
 但他自己的状态里也写明：最终 Revision F 报告还没整合、CommitSliceAgent 还没准备提交计划、`debug.md` 仍有 stale counts、`migration.md` 可能还有 stale references、RitsuLib runtime 未验证且没有 fallback、Sts1Events runtime 未验证、ZHS 还有 38 个 placeholder entries。
 
@@ -36,13 +36,13 @@ M2 Revision F overall / commit-readiness：未完成
 
 | 目标                 |                                                                                                            当前状态 | 审核                            |
 | ------------------ | --------------------------------------------------------------------------------------------------------------: | ----------------------------- |
-| 终端验证全绿             |                clean build 0 errors / 87 warnings，361 tests passed，format clean，diff clean，batch 0 unclassified | **通过**                        |
-| 真实 warning 状态      |                                            87 CS warnings，全是 Sts1Events nullable；incremental build 会隐藏 warnings | **部分通过，需要治理决策**               |
-| dirty/untracked 解释 |                                                                   9 total：8 dirty + 1 untracked；diff ledger 已重写 | **部分通过，仍需 commit slices**     |
+| 终端验证全绿             |                clean build 0 errors / 92 warnings，387 tests passed，format clean，diff clean，batch 0 unclassified | **通过**                        |
+| 真实 warning 状态      |                                            92 CS warnings，全是 Sts1Events nullable；incremental build 会隐藏 warnings | **部分通过，需要治理决策**               |
+| dirty/untracked 解释 |                                                                   15 total：12 dirty + 3 untracked；diff ledger 已重写 | **部分通过，仍需 commit slices**     |
 | subagent 使用        |                                                                                                5 个 subagents 完成 | **部分通过，CommitSliceAgent 未完成** |
-| Sts1Events 状态      |                             建议 staging-only，runtime 未验证，87 warnings，8 blocked combat events，38 ZHS placeholders | **未完成治理**                     |
+| Sts1Events 状态      |                             建议 staging-only，runtime 未验证，92 warnings，8 blocked combat events，33 missing ZHS result-page keys | **未完成治理**                     |
 | Debug 状态           | 建议 accept-scaffold；default-off，但 Warn 无条件、LogPreview dead code、无 dedicated behavioral tests、无 settings exposure | **scaffold 可接受，feature 未完成**  |
-| RitsuLib 状态        |     attempted；compile/manifest wired，25 patches migrated，但 runtime 未验证，bootstrap 无 fallback，0.3.2 vs 0.3.3 skew | **未完成 / runtime blocker**     |
+| RitsuLib 状态        |     attempted；compile/manifest wired，25 patches migrated，但 runtime 未验证，bootstrap 无 fallback，0.3.2 = 0.3.2 aligned | **未完成 / runtime blocker**     |
 | 文档真相               |                                                        已修一部分，但 debug.md、migration.md 仍有 stale counts/references | **未完成**                       |
 | 可提交状态              |                                                                             还需要 CommitSliceAgent 和 final report | **未完成**                       |
 
@@ -55,11 +55,11 @@ M2 Revision F overall / commit-readiness：未完成
 他报告：
 
 ```text
-dotnet clean + dotnet build .\EZMicroBalance.csproj → 0 errors, 87 CS warnings
-dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj → 361 passed, 0 failed, 21 skipped
+dotnet clean + dotnet build .\EZMicroBalance.csproj → 0 errors, 92 CS warnings
+dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj → 387 passed, 0 failed, 21 skipped
 dotnet format .\EZMicroBalance.csproj --verify-no-changes → clean
 git diff --check → clean
-report-worktree-batches.ps1 → 9 dirty, 0 unclassified
+report-worktree-batches.ps1 → 10 dirty (script), 0 unclassified
 ```
 
 这可以接受为：
@@ -86,20 +86,22 @@ runtime-ready
 当前关键数字是：
 
 ```text
-9 total worktree entries
-8 dirty + 1 untracked
+15 total worktree entries
+12 dirty + 3 untracked
 0 unclassified
 ```
 
 具体包括：
 
 ```text
-batch 3: 3 docs
-batch 5: 1 localization JSON
-batch 8: 5 goals docs
+batch 1: 1 docs
+batch 3: 1 test
+batch 5: 6 files (scripts, tests, test config)
+batch 8: 3 goals docs
+untracked: 2 source stubs + 1 test stub
 ```
 
-这已经比之前的 32 dirty files 清晰很多。但下一步还必须由 `CommitSliceAgent` 把这 9 个文件分成可审查提交片：
+这已经比之前的 32 dirty files 清晰很多。但下一步还必须由 `CommitSliceAgent` 把这 15 个文件分成可审查提交片：
 
 ```text
 1. goals/status truth fixes
@@ -120,15 +122,15 @@ Subagent 建议是：
 Sts1Events governance = staging-only
 ```
 
-理由合理：feature gate 有双重安全，env unset 会 disabled，`RegisterGated()` 有 explicit `Off: return`，CanaryOnly 只注册 4 个正确事件，并且有 20 个 guard tests。
+理由合理：feature gate 有双重安全，env unset 会 disabled，`RegisterGated()` 有 explicit `Off: return`，CanaryOnly 只注册 4 个正确事件，并且有 24 个 guard tests。
 
 但不能 formal，因为还有：
 
 ```text
 runtime gameplay unverified
-87 nullable warnings
+92 nullable warnings
 8 blocked combat events
-38 ZHS placeholder entries
+33 missing ZHS result-page keys
 no event images
 ```
 
@@ -185,7 +187,7 @@ STS2.RitsuLib 0.3.2
 RitsuLibBootstrap.ApplyPatches() unconditionally called from MainFile.Initialize()
 no try-catch / feature gate / null guard
 no runtime proof
-version skew: NuGet 0.3.2 vs variant pack 0.3.3
+version aligned: NuGet 0.3.2 = manifest min_version 0.3.2
 will throw TypeLoadException/FileNotFoundException if STS2-RitsuLib.dll missing
 ```
 
@@ -213,9 +215,17 @@ runtime validated
 当前记录里有一个需要审查的数字组合：
 
 ```text
-Patch inventory: 142 total declarations
+Patch inventory: 141 compile-active raw declarations + 25 migrated = 166 runtime-active
 25 migrated to RitsuLib ModPatcher
-142 raw HarmonyPatch remaining
+141 raw HarmonyPatch remaining (1 additional dead-code declaration behind #if REPLACEMENT_PROTOTYPE_ENABLED)
+```
+
+这个表述可能有歧义：如果 25 个已经迁移到 RitsuLib ModPatcher，为什么 raw HarmonyPatch remaining 仍是 141？是否存在 double-patching？是否是"141 raw Harmony attributes 仍存在，但 25 也有 ModPatcher wrapper"？这必须交给 `PatchInventoryAgent` 复核，不能直接接受。
+
+结论：
+
+```text
+PatchInventoryAgent 已复核：无 double-patching。25 migrated 类无 [HarmonyPatch] 属性。
 ```
 
 这个表述可能有歧义：如果 25 个已经迁移到 RitsuLib ModPatcher，为什么 raw HarmonyPatch remaining 仍是 142？是否存在 double-patching？是否是“142 raw Harmony attributes 仍存在，但 25 也有 ModPatcher wrapper”？这必须交给 `PatchInventoryAgent` 复核，不能直接接受。
@@ -339,8 +349,8 @@ git diff --check
 
 ```text
 1. 所有命令 exit 0
-2. warning count 真实
-3. 9 个 worktree entries 全部 reconciled
+2. warning count 真实 (92, not 87)
+3. 15 个 worktree entries 全部 reconciled (12 dirty + 3 untracked)
 4. CommitSliceAgent 完成
 5. final report 完成
 6. stale counts 全部修正
@@ -365,8 +375,8 @@ staging-only
 Formalize 前必须完成：
 
 ```text
-87 nullable warnings 修复或正式接受
-38 ZHS placeholders 翻译
+92 nullable warnings 修复或正式接受
+33 missing ZHS result-page keys 翻译
 8 blocked combat events 处理
 event images / resource plan
 runtime gameplay proof
@@ -477,7 +487,7 @@ DocsTruthAgent
 - 修 stale counts 和 unsupported claims。
 
 PatchInventoryAgent
-- 核对 142 raw HarmonyPatch + 25 migrated ModPatcher 的关系，排除 double-patching。
+- 核对 141 raw HarmonyPatch + 25 migrated ModPatcher 的关系，排除 double-patching。
 
 RitsuLibRuntimeAgent
 - 判断 attempted/runtime-unverified，提出 fallback 或 install-enforced 方案。
@@ -489,7 +499,7 @@ DebugDecisionAgent
 - 维持 accept-scaffold 或给出 feature-complete/rollback 方案。
 
 LocalizationAgent
-- 核对 38 ZHS placeholder entries，列 translation backlog。
+- 核对 33 missing ZHS result-page keys，列 translation backlog。
 ```
 
 ---
@@ -508,13 +518,13 @@ LocalizationAgent
 A. Ready-to-owner-review packet 完成：
 - 所有 terminal validation commands exit 0
 - clean/rebuild warning count 真实记录
-- 9 个 worktree entries 全部 reconciled
+- 15 个 worktree entries 全部 reconciled (12 dirty + 3 untracked)
 - CommitSliceAgent 完成 commit plan
 - Revision F final report 完成
 - debug.md / migration.md / overnight-run-ledger stale counts 全部修正
 - RitsuLib / Sts1Events / Debug 状态真实
 - Patch inventory migrated/raw Harmony 关系已解释
-- 38 ZHS placeholders 进入 backlog
+- 33 missing ZHS result-page keys 进入 backlog
 - 没有 unsupported Done / complete / runtime verified / release-ready / untracked unrelated 声明
 - 没有 owner 授权前不 commit
 
@@ -579,4 +589,4 @@ Not complete：遇到 hard blocker，并列出 exact blocker。
 
 ## 一句话总评
 
-他现在已经把**验证门**跑绿了，这是实际进展；但还没完成**提交门**和**治理门**。下一步不是继续写功能，也不是直接 commit，而是进入 M3 Week 1 overnight commit-readiness run：用 subagents 把 9 个 worktree entries、87 warnings、RitsuLib runtime 风险、Sts1Events staging、Debug scaffold、patch inventory、stale docs 全部收口。
+他现在已经把**验证门**跑绿了，这是实际进展；但还没完成**提交门**和**治理门**。下一步不是继续写功能，也不是直接 commit，而是进入 M3 Week 1 overnight commit-readiness run：用 subagents 把 15 个 worktree entries (12 dirty + 3 untracked)、92 warnings、RitsuLib runtime 风险、Sts1Events staging、Debug scaffold、patch inventory、stale docs 全部收口。

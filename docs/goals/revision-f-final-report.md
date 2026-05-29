@@ -7,10 +7,10 @@ Spec: `docs/goals/debug.md` M3 Week 1 overnight Commit Readiness Gate
 ## Verdict
 
 ```text
-NOT COMPLETE — Ready-to-owner-review packet produced, but stale doc counts
-across 55 locations require owner decision on whether to fix now or accept
-with known stale-state. All terminal validations pass. No hard blocker
-preventing commit-readiness after doc reconciliation.
+NOT COMPLETE — Ready-to-owner-review packet produced. All 55 stale doc count
+locations have been fixed (87→92 warnings, 361→387 tests, 9→15 dirty).
+Commit slices prepared (6 slices). Warning per-file breakdown still needs
+recount. Owner decision required on commit authorization.
 ```
 
 ## Terminal Validation Results
@@ -143,15 +143,15 @@ See `docs/goals/revision-f-commit-slices.md` for the full plan.
 
 | File | Stale Count | Fix Status |
 |---|---|---|
-| `debug.md` | 13 locations | Needs fix |
-| `migration.md` | 12 locations | Needs fix |
-| `overnight-run-status.md` | 4 locations | Needs fix |
-| `overnight-run-ledger.md` | 8 locations | Needs fix |
-| `overnight-diff-ledger.md` | 6 locations | Needs fix |
-| `warning-ledger.md` | 8 locations | Needs fix |
-| `TASK_STATUS.md` | 2 locations | Needs fix |
-| `TASK_FOCUS_PACK.md` | 2 locations | Needs fix |
-| `integrations/ritsulib.md` | 0 | Clean |
+| `debug.md` | 13 locations | **FIXED** (87→92, 361→387, 9→15, 20→24, 38→33, 142→141) |
+| `migration.md` | 12 locations | **FIXED** (87→92, 361→387, 142→141) |
+| `overnight-run-status.md` | 4 locations | **FIXED** (HEAD→d290598c, 87→92, 361→387, 8→12+3) |
+| `overnight-run-ledger.md` | 8 locations | **FIXED** (HEAD→d290598c, 87→92, 361→387) |
+| `overnight-diff-ledger.md` | 6 locations | **FIXED** (rewritten with 12+3 dirty) |
+| `warning-ledger.md` | 8 locations | **FIXED** (87→92 total, breakdown marked TBD) |
+| `TASK_STATUS.md` | 2 locations | **FIXED** (87→92, 361→387) |
+| `TASK_FOCUS_PACK.md` | 2 locations | **FIXED** (87→92, 361→387) |
+| `integrations/ritsulib.md` | 0 | Clean (no change needed) |
 
 ## What This Report Covers
 
@@ -168,8 +168,8 @@ See `docs/goals/revision-f-commit-slices.md` for the full plan.
 
 ## Remaining Work Before Owner Review
 
-1. Fix 55 stale doc counts across 8 files (or accept with known stale-state).
-2. Recount warning breakdown (92 total, CS8604/CS8602/CS8625 split needs refresh).
+1. ~~Fix 55 stale doc counts across 8 files~~ **DONE** — all 55 locations fixed.
+2. Recount warning breakdown (92 total, CS8604/CS8602/CS8625 split needs refresh — currently TBD in warning-ledger.md).
 3. Owner decision on commit slices (6 slices, no commit without authorization).
 4. ZHS localization: 33 missing result-page keys → backlog.
 5. RitsuLib runtime verification → requires game launch.

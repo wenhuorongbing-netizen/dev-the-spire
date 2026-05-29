@@ -1,8 +1,8 @@
-# Overnight Run Ledger — M2 Revision D
+# Overnight Run Ledger — M3 Week 1
 
 Date: 2026-05-29
 Agent: Kilo (mimo-v2.5-pro)
-Spec: `docs/goals/debug.md` M2 Revision D
+Spec: `docs/goals/debug.md` M3 Week 1 Commit Readiness Gate
 
 ## 1. Subagent Reports
 
@@ -11,8 +11,8 @@ Spec: `docs/goals/debug.md` M2 Revision D
 | Field | Value |
 |---|---|
 | Branch | `main` |
-| HEAD | `ad5cdd6f` ("large debug") |
-| Dirty files | 2 unstaged modified (at time of subagent run) |
+| HEAD | `d290598c` ("debugging") |
+| Dirty files | 12 tracked + 3 untracked = 15 total (at time of M3 validation) |
 | Stashes | None |
 | Merge conflicts | None |
 | Whitespace errors | 3 trailing whitespace in debug.md (subagent check; `git diff --check` clean at final run) |
@@ -72,7 +72,7 @@ Spec: `docs/goals/debug.md` M2 Revision D
 ### 1.6 TestChangeReviewAgent
 
 **Status: INTERRUPTED** — subagent did not return results. Manual review of test suite showed:
-- 361 passed, 0 failed, 21 skipped (382 total)
+- 387 passed, 0 failed, 21 skipped (408 total)
 - No tests were weakened to pass
 - All guard tests intact
 
@@ -100,12 +100,12 @@ Spec: `docs/goals/debug.md` M2 Revision D
 
 | Metric | Value |
 |---|---|
-| Total warnings | 87 |
-| CS8604 | 41 |
-| CS8602 | 27 |
-| CS8625 | 1 |
+| Total warnings | 92 |
+| CS8604 | TBD (needs recount) |
+| CS8602 | TBD (needs recount) |
+| CS8625 | TBD (needs recount) |
 | All in Sts1Events/ | Yes (0 warnings outside Sts1Events/) |
-| Previous 69-warning claim | Still accurate |
+| Previous 87-warning count | Stale — +5 new warnings from UrdaStateCodec/Sts1Events model changes |
 
 ## 2. Fixes Applied
 
@@ -145,27 +145,31 @@ No C# source files, csproj, localization, or test files were modified during thi
 
 | Command | Exit Code | Notes |
 |---|---|---|
-| `dotnet build .\EZMicroBalance.sln` | 0 | 0 errors, 87 warnings |
-| `dotnet test .\EZMicroBalance.sln --no-build` | 0 | 361 passed, 0 failed, 21 skipped (382 total) |
-| `dotnet format .\EZMicroBalance.sln --verify-no-changes --no-restore` | 0 | Clean |
+| `dotnet clean .\EZMicroBalance.csproj` | 0 | Clean |
+| `dotnet build .\EZMicroBalance.csproj` | 0 | 0 errors, 92 warnings |
+| `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` | 0 | 387 passed, 0 failed, 21 skipped (408 total) |
+| `dotnet format .\EZMicroBalance.csproj --verify-no-changes` | 0 | Clean |
 | `git diff --check` | 0 | No whitespace errors |
-| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | Pass (0 unclassified) |
+| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | 10 dirty (script), 0 unclassified |
 
 ## 4. Remaining Risks
 
 1. **RitsuLib runtime unverified** — compile dependency and manifest declaration in place, but no runtime evidence. The unconditional bootstrap call in `MainFile.cs` will crash if RitsuLib is not installed.
-2. **Sts1Events governance** — compiled, feature-gated, dormant by default. Needs formal Week 2 decision (formal/staging/remove).
-3. **Debug scaffold** — validated (default-off, proper guarding), but not feature-complete. Needs Week 2 acceptance or rollback decision.
-4. **Test count drift** — 361 passed (up from 324 in previous harness claims). Future runs should verify fresh counts.
-5. **Clean build warnings** — 87 nullable warnings exist in Sts1Events/ code (only visible on clean build, hidden by incremental cache).
-6. **No commit made** — all changes are unstaged working tree modifications.
+2. **Sts1Events governance** — compiled, feature-gated, dormant by default. 24 guard tests. Staging-only recommendation correct. 92 nullable warnings.
+3. **Debug scaffold** — validated (default-off, proper guarding), but not feature-complete. Accept-scaffold recommendation correct.
+4. **Test count drift** — 387 passed (up from 361 in Revision F). Future runs should verify fresh counts.
+5. **Clean build warnings** — 92 nullable warnings exist in Sts1Events/ code (only visible on clean build, hidden by incremental cache).
+6. **Stale docs** — 55 count locations across 8 files still reference old numbers. Fixes in progress.
+7. **No commit made** — all changes are unstaged working tree modifications.
 
 ## 5. Final Verdict
 
 ```text
-Complete: all terminal validation commands passed. Overnight run Packs 0-5 green. Green Stop condition met.
+NOT COMPLETE — All terminal validation commands pass. 55 stale doc count locations need reconciliation. 6 commit slices prepared. No hard blocker preventing commit-readiness after doc fix.
 ```
 
 ## 6. Next Exact Task
 
-Owner decision: commit all overnight run changes (code fixes + docs), then proceed to Week 1 source/API verification and CanaryOnly registration tests.
+1. Fix stale doc counts across 8 files (87→92 warnings, 361→387 tests, 9→15 dirty).
+2. Owner decision on commit slices (6 slices, no commit without authorization).
+3. Owner decision on warning recount (92 total, per-file breakdown needs refresh).
