@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
@@ -21,10 +25,18 @@ public sealed class Sts1GoldenWing : EventModel
         };
     }
 
-    private Task Accept()
+    private async Task Accept()
     {
-        // TODO: Obtain a random rare card from player's class
+        var options = new CardCreationOptions(
+            new[] { Owner.Character.CardPool },
+            CardCreationSource.Other,
+            CardRarityOddsType.Uniform,
+            (CardModel c) => c.Rarity == CardRarity.Rare
+        ).WithFlags(CardCreationFlags.NoUpgradeRoll);
+
+        var cards = CardFactory.CreateForReward(Owner, 1, options).Select(r => r.Card).ToList();
+        if (cards.Count > 0)
+            await CardPileCmd.Add(cards, MegaCrit.Sts2.Core.Entities.Cards.PileType.Deck);
         SetEventFinished(L10NLookup("STS1_GOLDEN_WING.pages.ACCEPT.description"));
-        return Task.CompletedTask;
     }
 }

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act3;
 
@@ -32,14 +34,20 @@ public sealed class Sts1MindBloom : EventModel
 
     private Task War()
     {
-        // TODO: Enter combat with random Act 1 boss, reward: relic
+        // BLOCKED: Enter combat with random Act 1 boss requires encounter model.
+        // TODO: Implement when combat encounter system is available.
         SetEventFinished(L10NLookup("STS1_MIND_BLOOM.pages.WAR.description"));
         return Task.CompletedTask;
     }
 
     private Task Awake()
     {
-        // TODO: Upgrade all cards in deck
+        // Upgrade all cards in deck
+        foreach (var card in Owner.Deck.Cards)
+        {
+            if (card.IsUpgradable)
+                CardCmd.Upgrade(card);
+        }
         SetEventFinished(L10NLookup("STS1_MIND_BLOOM.pages.AWAKE.description"));
         return Task.CompletedTask;
     }

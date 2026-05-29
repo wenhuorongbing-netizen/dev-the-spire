@@ -7,8 +7,8 @@
 ## Completed
 
 - PR 1-4: Done (baseline, docs, harness, move-only refactor)
-- PR 5: RitsuLib hard dependency (STS2.RitsuLib 0.3.2 base package)
-- PR 6 Batch 1: RitsuLib bootstrap + diagnostics
+- PR 5: Compile/manifest dependency attempted; runtime/package/handoff unverified
+- PR 6 Batch 1: Partial diagnostics/bootstrap scaffold; runtime unverified
   - RitsuLibBootstrap.cs: RitsuLib logger + Harmony patch application
   - MainFile.cs: uses RitsuLibBootstrap.ApplyPatches()
   - Guard manifest updated with new source file + coverage root
@@ -16,8 +16,8 @@
 ## Verification Result
 
 - Build: 0 errors, 69 warnings (all CS8602/CS8604/CS8625 nullable reference warnings in Sts1Events staging code)
-- Tests: 311 passed, 21 skipped, 0 failed
-- Format: clean
+- Tests: 324 passed, 21 skipped, 0 failed
+- Format: unverified at time of last harness update
 
 ## Remaining Work
 

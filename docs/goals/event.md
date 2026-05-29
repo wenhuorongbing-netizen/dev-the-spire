@@ -1,896 +1,749 @@
-结论：**没有完成，而且这次暴露出一个更大的问题：他的 Act 映射很可能是错的，这会直接导致事件体验和《杀戮尖塔 1》差很多。**
+﻿结论：**没有完成；他现在应该立刻停止“继续批量写事件”，改为跑一个强制 overnight gate。**
+我已经把新版严格审核、June monthly dev spec、subagent 工作单、以及“跑完才能停止”的 overnight run 写成文件：
 
-我把完整严格审核、June 2026 monthly dev spec、以及 subagent 分工写成了文档：
+[下载：StS1 Event Port 严格审核 v6 + Monthly Dev Spec + Overnight Run + Subagent 工作单](sandbox:/mnt/data/sts1_event_port_strict_audit_monthly_spec_v6_overnight_subagents.md)
 
-## 最关键审核结论
+## 严格审核结论
 
-### 1. “build passes / compiles”这个说法不成立
+### 1. 不能接受他说的 “Done”
 
-你贴的日志里，正常 `dotnet build --no-restore` 先失败了，原因是 `VakuuFightInitializer` 重复定义。后来他用：
+他把 `Infrastructure`、`48 spec files`、`assets.md`、`localization.md`、`test-plan.md` 都标成 `Done`，但同一个 status-board 里仍然列着 Regret、Injury、random relic helper、card removal/transform/upgrade UI、combat encounter models 等 blocker。这个状态最多叫 **spec-drafted / registration-claimed / blocked**，不能叫完成。
 
-```bash
-grep -v "Vakuu"
+### 2. build 说法仍不合格
+
+日志里出现过 `dotnet build --no-restore | tail -10`，之前也出现过过滤 Vakuu 错误后宣称 StS1 代码没错的口径。严格审核下，`tail` / `grep -v` 都不能作为 build pass。必须要求：
+
+```powershell
+dotnet build --no-restore > .tools/runtime-evidence/sts1-events/build-full.log 2>&1
 ```
 
-过滤掉 Vakuu 错误，然后说 “Zero errors from StS1 event code”。
+并且 **完整 unfiltered build exit code 0**。否则只能写 `build-claimed`，不能写 `compiles` 或 `Done`。
 
-这个只能说明：**过滤已知 Vakuu blocker 后，暂时没有看到 StS1 事件代码的 compiler error**。它不能等价于：
+### 3. 46 / 48 / 52 口径混乱，必须重做 matrix
 
-> 46 个事件 Done, compiles
-> build passes
-> 可以进入下一阶段
+StS1 Wiki 事件页说明事件来自 unknown location，事件选择受随机和当前 Act 影响，部分事件只在特定 Act 出现；Act 4 没有事件，A15 会让不利事件更可能或更强。Wiki 列表本身给出 16 个 shared、12 个 Act 1、16 个 Act 2、8 个 Act 3。不能简单说“48 specs cover 52 entries”。([Slay the Spire Wiki][1])
 
-正确表述应该是：
+必须新建 canonical matrix：
 
-> whole-repo build blocked by pre-existing Vakuu duplicate-class error; StS1 code shows no extra `error CS` after filtering known Vakuu blocker.
-
-本月验收必须要求 **不带 grep 的完整 `dotnet build --no-restore` exit code 0**。否则不能标 Done。
-
----
-
-### 2. 他发现的 StS2 Act 映射是错的，这会严重破坏体验
-
-他写的是：
-
-> StS2 acts are Underdocks = Act 1, Overgrowth = Act 2, Hive = Act 3
-
-我检查了你上传的 StS2 v0.106.0 source。正确关系应是：
-
-| StS1 bucket        | 应注册到的 StS2 Act                 |
-| ------------------ | ------------------------------ |
-| Act 1 exclusive    | `Overgrowth` + `Underdocks`    |
-| Act 2 exclusive    | `Hive`                         |
-| Act 3 exclusive    | `Glory`                        |
-| Shared events      | shared event registry          |
-| Semi-shared events | 精确按 StS1 允许 Act 注册，不能全部 shared |
-
-也就是说，**Underdocks 不是唯一 Act 1；它是 alternate Act 1。Overgrowth 也是 Act 1。Hive 是 Act 2。Glory 才是 Act 3。**
-
-这点非常严重。如果他把 Act 2 事件注册到 `Overgrowth`，那 Act 2 的 StS1 事件会跑到 StS2 Act 1。把 Act 3 事件注册到 `Hive`，那 Act 3 事件会跑到 StS2 Act 2。`Glory` 如果完全没注册，真正 Act 3 就缺 StS1 Act 3 事件。你觉得“事件和杀戮尖塔 1 游戏体验出入很大”，这很可能是第一大原因。
-
----
-
-### 3. `RegisterAll(ModId)` 被无条件接进 `MainFile`，这是危险的
-
-他把：
-
-```csharp
-Sts1EventRegistrationService.RegisterAll(ModId);
+```csv
+event_id,wiki_name,wiki_bucket,st1_acts_allowed,sts2_acts_registered,runtime_model,has_spec,has_code,has_loc_en,has_loc_zhs,has_asset_map,has_manual_proof,status
 ```
 
-直接放到 `MainFile.Initialize()` 里。这意味着只要 Spire Plus 启动，StS1 事件就可能默认注册。
+### 4. Act mapping 错误会直接导致体验不像 StS1
 
-这不符合当前项目边界。你的项目当前仍是单一 active mod：`Spire Plus`，技术 manifest id 仍是 `EZMicroBalance`，代码/资源目录分别是 `EZMicroBalanceCode/` 和 `EZMicroBalance/`。 发布结构也仍应是 `EZMicroBalance.json / EZMicroBalance.dll / EZMicroBalance.pck`。
+他写的 `Underdocks=Act1, Overgrowth=Act2, Hive=Act3` 必须视为严重错误。按你上传的 StS2 v0.106.0 source，应改成：
 
-StS1 event port 现在只能是 prototype feature，必须默认 Off。正确模式应该是：
+| StS1 bucket | StS2 ActModel               |
+| ----------- | --------------------------- |
+| Act 1       | `Overgrowth` + `Underdocks` |
+| Act 2       | `Hive`                      |
+| Act 3       | `Glory`                     |
+| Shared      | shared registry             |
+| Semi-common | 按 StS1 允许 Act 精确注册          |
+
+如果 Act 2 事件注册到 `Overgrowth`，会跑到 StS2 Act 1；Act 3 事件注册到 `Hive`，会跑到 StS2 Act 2；`Glory` 漏掉则真正 Act 3 没有 StS1 Act 3 事件。这是你感觉“和杀戮尖塔 1 游戏体验出入很大”的核心原因之一。
+
+### 5. `RegisterAll(ModId)` 默认接入是危险的
+
+他把 `Sts1EventRegistrationService.RegisterAll(ModId)` 接到 `MainFile.Initialize()`，这意味着未验证事件可能默认进入 Spire Plus。当前项目仍是单一 active mod：`Spire Plus`，technical id 仍是 `EZMicroBalance`，代码和资源目录分别是 `EZMicroBalanceCode/` 与 `EZMicroBalance/`。
+
+必须改成 feature gate：
 
 ```text
 Off                           默认，注册 0 个 StS1 事件
 CanaryOnly                    只注册 Big Fish / Golden Idol / Lab / Divine Fountain
 AdditiveBatch1                只注册已验证 Batch 1
-ReplaceUnknownEventsPrototype debug-only，替换未知房间事件池
+ReplacementPrototype          debug-only，替换 unknown room event pool
 ```
 
-`RegisterAll` 不能无条件进入默认初始化路径。
+### 6. RitsuLib 注册不是 StS1 体验
 
----
+RitsuLib additive registration 只能说明事件被加入候选池；它不代表 unknown room 只抽 StS1 事件，不代表 Act bucket、条件过滤、事件去重、A15、RNG、save/load 和 StS1 一样。要解决“体验不像 StS1”，必须做 debug-only replacement pool prototype。
 
-### 4. 46 / 48 / 52 的口径仍然混乱
+### 7. Canary 没完成
 
-他现在同时说：
+Big Fish 必须实现 Banana heal `floor(maxHP / 3)`、Donut `Max HP +5`、Box 随机 common/uncommon/rare relic + Regret。([Slay the Spire Wiki][2])
+Golden Idol 必须实现 Take 获得 Golden Idol、Outrun 给 Injury、Smash 25%/35% max HP 伤害、Hide 8%/10% max HP 损失、Leave 无事发生。([Slay the Spire Wiki][3])
+
+他现在 blocker 还列着 Regret、Injury、random relic helper，所以 Big Fish / Golden Idol 都不能验收。
+
+## 下一步 Monthly Dev Spec
+
+月目标名称：
+
+**`StS1 Event Port Prototype Batch 1 — Parity Foundation`**
+
+不是 full parity，不是 all events complete。
+
+月末必须达成：
+
+1. full unfiltered `dotnet build --no-restore` exit code 0。
+2. 默认 `Off`，对 Spire Plus 零影响。
+3. `CanaryOnly` 只注册 4 个事件。
+4. Act mapping 修正：`Overgrowth + Underdocks = Act 1`，`Hive = Act 2`，`Glory = Act 3`。
+5. 52-entry canonical matrix 完成。
+6. Big Fish / Golden Idol / Lab / Divine Fountain playable。
+7. Canary save/load proof、图片 proof、EN/ZHS 渲染 proof 完成。
+8. 六个 simple batch playable：Purifier、Upgrade Shrine、Golden Shrine、The Cleric、Old Beggar/Pleading Vagrant、Shining Light。
+9. Debug-only replacement pool 证明 unknown room 不再抽 StS2 原事件。
+10. QA Red-Team 独立验收，不允许实现者自验。
+
+项目规则也要求代码/资源改动后运行对应验证；资源、本地化、打包改动后要 publish，并且不能随意复制原版素材或大段反编译代码。
+
+## Overnight Run：跑完才能停止
+
+我给他设定的停止条件是：**O0–O15 全绿，或者 hard stop blocker report。**
+
+不能因为这些完成就停：
 
 ```text
-52 StS1 events
-48 spec docs Done
-46 event C# models Done
+48 spec files generated
+46 event models generated
+localization JSON exists
+asset scripts exist
+RitsuLib registration exists
+tail -10 看起来 0 errors
+status-board 写了 Done
 ```
 
-这不是一个可接受的完成口径。
+Overnight gates 摘要：
 
-Wiki 事件页写得很清楚：事件来自 unknown location，事件选择受随机和当前 Act 影响，有的事件只在特定 Act 出现；Act 4 没有 unknown location/event；Ascension 15 会增强不利事件的概率或强度。Wiki 事件列表还给出 16 个 Shared events、12 个 Act 1 exclusive events、16 个 Act 2 exclusive events、8 个 Act 3 exclusive events。([Slay the Spire Wiki][1])
+| Gate | 必须通过                                                                  |
+| ---- | --------------------------------------------------------------------- |
+| O0   | worktree snapshot                                                     |
+| O1   | full unfiltered build exit code 0                                     |
+| O2   | 删除所有无证据 `Done`                                                        |
+| O3   | 52-entry canonical matrix                                             |
+| O4   | Act mapping 修正                                                        |
+| O5   | Off / CanaryOnly / AdditiveBatch1 / ReplacementPrototype feature gate |
+| O6   | Off=0，CanaryOnly=4 registration test                                  |
+| O7   | Canary API/source matrix                                              |
+| O8   | 四个 canary implemented                                                 |
+| O9   | 四个 canary debug spawn proof                                           |
+| O10  | canary save/load proof                                                |
+| O11  | canary asset proof                                                    |
+| O12  | EN/ZHS render proof                                                   |
+| O13  | simple batch scope ready                                              |
+| O14  | replacement pool prototype proof                                      |
+| O15  | QA Red-Team pass/fail report                                          |
 
-正确文档必须拆成三列：
-
-| 字段                       | 意义                     |
-| ------------------------ | ---------------------- |
-| `wiki_event_entries`     | Wiki 目标条目，默认按 52 管     |
-| `runtime_event_models`   | 实际写了几个 `EventModel` 类  |
-| `act_bucket_memberships` | 每个事件出现在哪些 Act / bucket |
-
-没有这个映射表之前，不能说“48 specs cover all unique events”，也不能说“46 models done”。
-
----
-
-### 5. RitsuLib 注册只是 additive，不等于 StS1 体验
-
-他发现 RitsuLib 的 `RegisterSharedEvent<T>()`、`RegisterActEvent<TAct, TEvent>()`、`CreateContentPack().SharedEvent<T>() / ActEvent<TAct, TEvent>()`，这一步是有价值的。
-
-但这只代表：事件被加入 StS2 的事件枚举或候选池。
-
-它不代表：
-
-```text
-unknown room 只会抽 StS1 事件
-Act 1/2/3 事件池和 StS1 一样
-事件权重/去重/条件过滤一样
-A15 差异一样
-reward/card/relic/potion pool 一样
-save/load 后事件 bag 一样
-```
-
-StS2 源码里 `ActModel.GenerateRooms` 会把本 Act 的 `AllEvents` 和 `ModelDb.AllSharedEvents` 合并后打乱，所以单纯注册 StS1 事件会和 StS2 原生事件混在一起。这是“游戏体验不像 StS1”的第二大原因。
-
----
-
-### 6. Canary 事件仍没完成
-
-Big Fish 的 Wiki 行为是：Act 1 专属；Banana 回复 `floor(maxHP / 3)`，Donut 增加 5 最大生命，Box 给随机 common/uncommon/rare relic 并加入 Regret。([Slay the Spire Wiki][2])
-
-Golden Idol 的 Wiki 行为是：Act 1 专属；Take 获得 Golden Idol 并触发陷阱；Outrun 给 Injury；Smash 造成 25% max HP 伤害，A15+ 为 35%；Hide 损失 8% max HP，A15+ 为 10%；Leave 无事发生。([Slay the Spire Wiki][3])
-
-但他自己的日志还写着：
+## 直接发给他的指令
 
 ```text
-Next: resolve missing curse card model references and test canary events in-game.
-Blockers: Regret, Injury, random relic helper...
-```
-
-所以 Big Fish / Golden Idol 都不能验收。缺 Regret、Injury、random relic helper、Golden Idol relic、HP/max HP helper、save/load/manual proof，就不能叫 canary done。
-
----
-
-### 7. “替代内容”会破坏 StS1 体验
-
-他写：
-
-```text
-Missing curses: Parasite → Clumsy substitute
-Madness → Debt substitute
-Bite → needs custom card
-```
-
-这个方向只能叫 prototype compatibility，不叫 parity。
-
-尤其是“Parasite → Clumsy”这种替代，会改变 deck 负担、curse synergy、移除价值、事件收益判断；“Madness → Debt”更不是 StS1 等价体验。要做“和杀戮尖塔 1 完全一样”，这些必须分类：
-
-| 状态                     | 含义                                      |
-| ---------------------- | --------------------------------------- |
-| `native-equivalent`    | StS2 已有完全等价模型                           |
-| `custom-required`      | 必须新建 StS1-compatible card/relic/monster |
-| `temporary-substitute` | 只允许 prototype 临时用，阻塞 parity             |
-| `blocked`              | 当前无法安全实现                                |
-
-任何 `temporary-substitute` 都不能算完成。
-
----
-
-## 每一步完成情况
-
-| 模块                    | 他声称                            | 严格审核                                                          |
-| --------------------- | ------------------------------ | ------------------------------------------------------------- |
-| Wiki catalog          | 52 events / 48 specs cover all | **未通过**，46/48/52 口径冲突                                         |
-| Event specs           | Done                           | **不接受**，需要逐事件 exact options / A15 / dependency / source proof |
-| C# models             | 46 Done, compiles              | **不接受**，whole repo build 失败，且大量 gameplay 未闭环                  |
-| Registration service  | Done, wired                    | **部分完成但危险**，无条件注册 + Act 映射错                                   |
-| RitsuLib API research | Done                           | **部分通过**，但版本/Act mapping 仍需 source-backed matrix              |
-| Build                 | passes                         | **不成立**，grep 过滤不算 pass                                        |
-| Canary events         | In progress / source done      | **未完成**，关键 curse/relic/reward helper 缺失                       |
-| Localization          | 46 events Done                 | **未完成**，没有 in-game render proof                               |
-| Assets                | scripts Done                   | **未完成**，没有 52-event image mapping 和截图验证                       |
-| Tests                 | 未见有效 evidence                  | **未完成**，build 不等于 gameplay/manual proof                       |
-| StS1-only event pool  | 未做                             | **未完成**，additive registration 不等于替换池                          |
-| 游戏体验 parity           | 暗示接近                           | **0% full parity**，目前只是 prototype infrastructure              |
-
-我的严格评分：
-
-```text
-文档/研究框架：25%
-Source/API 正确性：15% —— Act 映射错
-Build readiness：0% —— whole repo build 失败
-Registration safety：20% —— 有服务，但默认无条件且映射错
-Canary gameplay：5%
-资产/本地化实证：0–10%
-StS1 游戏体验：0–5%
-Full parity：0%
-```
-
----
-
-## 为什么你会感觉“和杀戮尖塔 1 出入很大”
-
-主要原因不是“事件数量还不够”，而是底层体验没有被复刻：
-
-1. **Act 映射错**：Act 2/Act 3 事件可能进错章节。
-2. **只是 additive 注册**：StS1 事件和 StS2 原事件混池，不是 StS1 unknown room 体验。
-3. **Reward pool 不同**：StS2 relic/card/potion pool 和 StS1 不一样，事件收益判断会变。
-4. **替代卡/诅咒破坏判断**：Parasite、Bite、Madness、Apparition 等不能随便替代。
-5. **A15 差异未闭环**：StS1 事件在 A15 的变化是体验核心之一。
-6. **事件条件缺失**：例如 Divine Fountain 必须有 curse 才能出现，很多事件也有遗物/金币/牌组条件。
-7. **图像/文本/页面节奏没验证**：事件不是只有效果，还包括图片、页面、选项锁、hover、死亡提示、动态数值。
-8. **没有 StS1 event bag / no-repeat / save-load parity**：事件抽取节奏不像原作。
-
----
-
-## 下一步 Monthly Dev Spec：June 2026
-
-本月目标不要叫 full parity，应该叫：
-
-```text
-StS1 Event Port Prototype Batch 1 — Parity Foundation
-截止：2026-06-30
-```
-
-### 月末验收标准
-
-必须达到：
-
-1. 默认 Off，对 Spire Plus 零行为影响。
-2. `CanaryOnly` 只注册 Big Fish / Golden Idol / Lab / Divine Fountain。
-3. Act 映射正确：Overgrowth + Underdocks = Act 1，Hive = Act 2，Glory = Act 3。
-4. 完整 `dotnet build --no-restore` 0 errors，不允许 grep 过滤。
-5. 四个 canary playable + save/load + image render + EN/ZHS render。
-6. 六个简单事件 playable：Purifier、Upgrade Shrine、Golden Shrine、The Cleric、Old Beggar、Shining Light。
-7. 有 debug-only StS1 replacement pool prototype。
-8. 所有 status 不再用泛泛的 `Done`，改用证据状态。
-9. QA subagent 独立验收，不能实现者自验。
-
-项目规则也要求代码/资源改动后跑对应验证；资源、本地化、打包改动后还要 publish，并保持 release 文档、版本、package metadata 对齐。 原版素材也不能随意复制进仓库，原版 art 需要授权确认，否则只能本地抽取/替代。
-
-### Week 0：2026-05-28 至 2026-05-31
-
-目标：停止虚假完成口径，修正方向。
-
-必须交付：
-
-```text
-docs/features/sts1-events/audit-2026-05-28.md
-docs/features/sts1-events/source-research/sts2-act-mapping.md
-docs/features/sts1-events/source-research/api-command-matrix.md
-docs/features/sts1-events/status-board.md
-```
-
-验收：
-
-```text
-不再有 46/48/52 混乱
-不再有无证据 Done
-RegisterAll 从默认路径撤掉
-Vakuu build blocker 明确修复或标为 blocking issue
-Act mapping 修正
-```
-
-### Week 1：2026-06-01 至 2026-06-07
-
-目标：安全注册和 clean build。
-
-必须交付：
-
-```text
-Sts1EventFeatureGate
-Sts1EventRegistrationService modes
-registration count tests
-act bucket mapping tests
-完整 build evidence
-```
-
-验收：
-
-```text
-Off 模式注册 0 个 StS1 事件
-CanaryOnly 精确注册 4 个事件
-Act 1 事件注册到 Overgrowth + Underdocks
-Act 2 事件注册到 Hive
-Act 3 事件注册到 Glory
-dotnet build --no-restore 0 errors
-```
-
-### Week 2：2026-06-08 至 2026-06-14
-
-目标：四个 canary 真正 playable。
-
-事件：
-
-```text
-Big Fish
-Golden Idol
-Lab
-Divine Fountain
-```
-
-必须补齐：
-
-```text
-Sts1HpService
-Sts1RewardService
-Sts1CurseService
-Sts1RelicService
-Sts1AscensionRules
-Golden Idol relic / exact equivalent
-Regret / Injury exact model usage
-```
-
-验收：
-
-```text
-Big Fish 三选项完全正确
-Golden Idol 全分支 + A15 完全正确
-Lab 药水数量/池明确
-Divine Fountain 只在有 curse 时出现并移除所有 curse
-四事件都有 debug spawn 截图、结果日志、save/load 证明
-```
-
-### Week 3：2026-06-15 至 2026-06-21
-
-目标：简单事件 Batch 1。
-
-实现：
-
-```text
-Purifier
-Upgrade Shrine
-Golden Shrine
-The Cleric
-Old Beggar
-Shining Light
-```
-
-验收：
-
-```text
-每个事件 exact options
-每个事件动态数值正确
-每个事件 EN/ZHS 渲染通过
-每个事件图片加载通过
-每个事件 manual debug-spawn proof
-```
-
-### Week 4：2026-06-22 至 2026-06-28
-
-目标：修复“体验不像 StS1”的核心问题。
-
-必须交付：
-
-```text
-Sts1EventPoolService prototype
-ReplaceUnknownEventsPrototype debug-only mode
-event bag save/load
-visited ids save/load
-run log evidence
-```
-
-验收：
-
-```text
-debug replacement mode 不抽 StS2 原事件
-默认关闭
-multiplayer fail-closed
-同一 run 不重复抽未允许重复的事件
-Act bucket 正确
-```
-
-### Week 5：2026-06-29 至 2026-06-30
-
-目标：月末 handoff。
-
-必须交付：
-
-```text
-monthly-review-2026-06.md
-updated feature README
-updated PROJECT_MAP / docs index
-evidence screenshots/logs
-package version bump, only if shipped player-visible behavior
-```
-
-验收：
-
-```text
-release note 只能写 Prototype Batch 1
-不能写 full parity
-所有 blocker 明确列出
-commit + push 只能在验证通过后做
-```
-
----
-
-## 必须提醒他使用 subagent
-
-直接给他的指令可以这样发：
-
-```text
-不要继续按“46 个事件 Done / 48 specs Done”的口径推进。当前不是完成状态。
-
-立刻使用 subagents：
-
-1. BuildGate / Repo Health Subagent
-2. StS2 Source/API Auditor Subagent
-3. Wiki Parity Spec Auditor Subagent
-4. Feature Gate / Registration Engineer Subagent
-5. Canary Gameplay Engineer Subagent
-6. Content Parity Subagent
-7. Event Pool / RNG / Save Subagent
-8. Asset + Localization Subagent
-9. QA / Red-Team Subagent
-10. Release Documentation Subagent
+当前工作没有完成。不要再用“46 event models Done / 48 specs Done / localization Done / registration Done / build passes”推进 Phase 2。
+
+立刻启动 Overnight Run。你不能在只生成 spec、model、localization、asset scripts、或 RitsuLib registration 后停止。你只能在 O0-O15 全绿后停止；如果遇到 hard stop，必须写 BLOCKER REPORT。
+
+必须启动 subagents：
+1. BuildGate / Repo Health
+2. StS2 Source/API Auditor
+3. Wiki Parity Spec Auditor
+4. Feature Gate / Registration Engineer
+5. Canary Gameplay Engineer
+6. Content Parity
+7. Event Pool / RNG / Save
+8. Asset + Localization
+9. QA / Red-Team
+10. Release Documentation
 
 最高优先级：
-
-1. 修正 build gate：unfiltered dotnet build 必须 0 errors；grep -v Vakuu 不算 build pass。
-2. 修正 StS2 act mapping：Overgrowth + Underdocks = Act 1，Hive = Act 2，Glory = Act 3。
-3. 删除默认无条件 RegisterAll；StS1 events 必须默认 Off，只能用 CanaryOnly / AdditiveBatch1 / ReplacementPrototype 开启。
-4. 修复 46/48/52 口径；用 wiki_event_entries / runtime_event_models / act_bucket_memberships 三栏记录。
-5. 先把 Big Fish、Golden Idol、Lab、Divine Fountain 做到 playable + save/load + image/loc render proof。
-6. 任何没有测试、截图、日志、source/API 证据的内容不得标 Done。
-7. RitsuLib 注册只是 additive，不等于 StS1-only event pool，也不等于杀戮尖塔1体验。
+1. full unfiltered dotnet build --no-restore exit code 0；tail/grep 不算。
+2. 修正 Act mapping：Overgrowth + Underdocks = StS1 Act 1，Hive = StS1 Act 2，Glory = StS1 Act 3。
+3. 移除默认无条件 RegisterAll；StS1 events 默认 Off。
+4. 建立 52 wiki entries / runtime models / act memberships canonical matrix。
+5. 先完成 Big Fish、Golden Idol、Lab、Divine Fountain playable + save/load + image/loc proof。
+6. 做 debug-only ReplacementPrototype，证明 unknown room 不再抽 StS2 原事件。
+7. 任何没有 source/API/test/screenshot/log/save-load 证据的内容不得标 Done。
+8. RitsuLib registration 只是 additive，不等于杀戮尖塔1事件体验。
 ```
 
-最重要的一句话：**不要让他继续“批量写 46 个空壳事件”。先把 build、Act 映射、feature gate、canary、replacement pool 这五件事做对，否则事件数量越多，离《杀戮尖塔 1》体验越远。**
+最重要的管理红线：**不要继续堆 46 个空壳事件。先把 build、Act mapping、feature gate、canary、asset/localization proof、replacement pool 跑绿；这些没跑完前，不准停止，也不准写 Done。**
 
 [1]: https://slay-the-spire.fandom.com/wiki/Events "Events | Slay the Spire Wiki | Fandom"
 [2]: https://slay-the-spire.fandom.com/wiki/Big_Fish "Big Fish | Slay the Spire Wiki | Fandom"
 [3]: https://slay-the-spire.fandom.com/wiki/Golden_Idol_%28Event%29 "Golden Idol (Event) | Slay the Spire Wiki | Fandom"
+# StS1 Event Port 严格审核 v5 — Monthly Dev Spec + Overnight Run + Subagent 工作单
 
-# StS1 Event Port 严格审核 v3 + June 2026 Monthly Dev Spec + Subagent Work Orders
+日期：2026-05-28
+对象：Devspire / `dev-the-spire` / Spire Plus (`EZMicroBalance`) 中的 StS1 events migration 工作
 
-Date: 2026-05-28
-Scope: audit of the latest pasted implementation log for the StS1 event-port work inside `dev-the-spire` / `Spire Plus` (`EZMicroBalance`).
+---
 
-## Executive Verdict
+## 0. 审核结论
 
-**Status: Not complete. Do not mark as full parity, release-ready, or player-ready.**
+**没有完成。**
 
-The latest work is an infrastructure/registration partial pass, not a gameplay parity implementation. The most important new finding is that the claimed StS2 act mapping is wrong:
+当前工作可以承认为：
 
-- `Overgrowth` is the default Act 1.
-- `Underdocks` can replace Act 1 when unlocked / selected by run generation.
-- `Hive` is Act 2.
-- `Glory` is Act 3.
+- 已有一批 `Sts1Events` 代码文件与文档草稿；
+- 已写 `Sts1EventRegistrationService`；
+- 已把 `Sts1EventRegistrationService.RegisterAll(ModId)` 接入 `MainFile.Initialize()`；
+- 声称 `dotnet build --no-restore` 现在 0 errors；
+- 声称有 46 个 event C# model、48 个 spec doc、EN/ZHS localization、asset scripts、manifest。
 
-Therefore, any registration map that treats `Underdocks = Act 1`, `Overgrowth = Act 2`, `Hive = Act 3` will place StS1 Act 2 events in an Act 1 pool, StS1 Act 3 events in an Act 2 pool, and miss the true Act 3 (`Glory`). This alone can explain why the event/gameplay feel is far away from Slay the Spire 1.
+但这不能被验收为“杀戮尖塔 1 事件迁移完成”，甚至不能被验收为“Batch 1 playable”。原因：
 
-## Severity-A Findings
+1. **事件体验不是 StS1 parity**：RitsuLib 注册是 additive，不是 StS1-only unknown room pool。
+2. **Act mapping 明显有误/至少未 source-backed**：他写了 `Underdocks=Act1, Overgrowth=Act2, Hive=Act3`，这会把事件放错章节；本地 v0.106.0 source 显示 `Overgrowth` 和 `Underdocks` 都是 Act 1 风格，`Hive` 是 Act 2，`Glory` 是 Act 3。
+3. **默认无条件注册危险**：`RegisterAll(ModId)` 直接接入 `MainFile.Initialize()`，会污染现有 Spire Plus 默认体验。
+4. **46 / 48 / 52 口径混乱**：缺少 canonical matrix，不知道哪些是 Wiki 条目、哪些是 runtime model、哪些是 act bucket membership。
+5. **`Done` 状态词滥用**：spec、localization、assets、test-plan、canary source 被标 Done，但无 in-game proof / screenshot / save-load / event result log。
+6. **关键内容仍缺失**：Regret、Injury、Golden Idol relic、random relic helper、HP/max HP command helper、card remove/upgrade/transform UI、combat event encounters、event pool save/load。
+7. **StS1 游戏体验差异非常大**：Reward/card/relic/potion pool、curse equivalence、A15 modifiers、条件过滤、event bag/no-repeat、图片/文本节奏都未闭环。
 
-### A1. Build gate is not actually passed
+---
 
-The pasted log first shows `dotnet build --no-restore` failing with duplicate `VakuuFightInitializer` errors in `VakuuFightRunHook.cs`. Filtering out Vakuu errors with `grep -v Vakuu` is a useful triage step, but it is not a valid build pass.
+## 1. 逐步审核
 
-Acceptable wording:
-
-> Current whole-repo build is blocked by pre-existing Vakuu duplicate-class errors; the StS1 code path shows no additional `error CS` after filtering the known Vakuu blocker.
-
-Unacceptable wording:
-
-> Event C# models are Done, compiles / build passes.
-
-Release or monthly gate must require a normal unfiltered `dotnet build --no-restore` exit code 0.
-
-### A2. StS2 act mapping is wrong
-
-The agent's note says:
-
-> StS2 acts are Underdocks (Act 1), Overgrowth (Act 2), Hive (Act 3).
-
-This is wrong for the uploaded StS2 source snapshot. In the source, `ActModel.GetDefaultList()` returns `Overgrowth`, `Hive`, `Glory`, while `Underdocks` replaces `list[0]` when its epoch is revealed / selected. The correct mapping for StS1 event registration is:
-
-| StS1 bucket | StS2 act models |
-|---|---|
-| Act 1 exclusive | `Overgrowth` and `Underdocks` |
-| Act 2 exclusive | `Hive` |
-| Act 3 exclusive | `Glory` |
-| Shared | shared-event registry, plus exact StS1 eligibility rules |
-| Semi-shared | act-scoped registration for exact allowed buckets, not blanket shared |
-
-This must be fixed before any gameplay testing claim.
-
-### A3. `RegisterAll(ModId)` was wired unconditionally
-
-The pasted log shows `Sts1EventRegistrationService.RegisterAll(ModId)` added directly after `RitsuLibBootstrap.ApplyPatches(ModId)` in `MainFile.Initialize()`.
-
-That is unsafe. StS1 events are a prototype port, not the default Spire Plus behavior. Registration must be behind an explicit feature gate. Required modes:
-
-- `Off`: default, registers zero StS1 events.
-- `CanaryOnly`: registers only Big Fish, Golden Idol, Lab, Divine Fountain.
-- `AdditiveBatch1`: registers only manually verified Batch 1 events.
-- `ReplaceUnknownEventsPrototype`: debug-only replacement pool; multiplayer fail-closed.
-
-### A4. 46 / 48 / 52 inconsistency is unresolved
-
-The agent claims:
-
-- 52 StS1 events as the goal.
-- 48 spec files cover all unique events.
-- 46 event C# models are done.
-
-This is not an acceptable accounting model. It must be split into three explicit counts:
-
-| Count type | Meaning | Required status |
-|---|---|---|
-| `wiki_event_entries` | Wiki-listed target entries | Canonical list, default target = 52 |
-| `runtime_event_models` | actual `EventModel` subclasses | must map to one or more wiki entries |
-| `act_bucket_memberships` | where each event appears | must be exact per StS1 |
-
-No event may be marked Done until all three columns are reconciled.
-
-### A5. RitsuLib registration is additive, not StS1 parity
-
-RitsuLib event registration is useful and probably the right modding entry point, but registration alone only adds events to StS2's existing event enumeration. It does not reproduce StS1's experience.
-
-A true StS1-feel mode also needs:
-
-- correct act bucket mapping;
-- exact event preconditions via `IsAllowed`;
-- StS1 event order / no-repeat behavior;
-- replacement of StS2 native events in unknown rooms for the debug parity mode;
-- save/load of shuffled event bag and visited ids;
-- multiplayer fail-closed behavior;
-- screenshot/log/manual evidence.
-
-### A6. Canary gameplay is not complete
-
-The canary events cannot be accepted as complete until the key StS1 effects are implemented exactly.
-
-Big Fish must implement:
-
-- Banana: heal `floor(maxHP / 3)`;
-- Donut: gain +5 max HP and heal the gained HP;
-- Box: random common/uncommon/rare relic from the correct pool and add Regret.
-
-Golden Idol must implement:
-
-- Take: obtain Golden Idol relic and open trap page;
-- Outrun: add Injury;
-- Smash: current HP damage equal to 25% max HP, 35% at A15+;
-- Hide: lose 8% max HP, 10% at A15+;
-- Leave: no effect.
-
-The pasted log still lists curse model references and random relic helper as next steps, so these canary events are not complete.
-
-### A7. Substituting missing StS1 content is not parity
-
-The log says some StS1 content is missing and proposes substitutes, such as Parasite → Clumsy and Madness → Debt. This may be acceptable for an explicitly marked compatibility placeholder, but it is not "和杀戮尖塔1完全一模一样".
-
-For parity work, missing content must be tracked as:
-
-- `native-equivalent`: exact StS2 model matches StS1 behavior;
-- `custom-required`: implement StS1-compatible custom model;
-- `temporary-substitute`: allowed only in prototype, must block parity status;
-- `blocked`: no safe or legal implementation path yet.
-
-### A8. Localization and asset status cannot be Done without render proof
-
-EN/ZHS JSON entries and extraction scripts are not enough. Asset/localization status requires:
-
-- the expected image exists under the mod resource path;
-- the image loads in Godot / event layout;
-- the event page renders in-game in English and Simplified Chinese;
-- option text and dynamic values match the current game state;
-- screenshots are stored as evidence.
-
-Also, original StS1 art should be extracted from a local legitimate installation and not committed/distributed unless redistribution permission is documented.
-
-### A9. Experience gap diagnosis
-
-The user impression that the event experience differs significantly from StS1 is supported by the current implementation state. The highest-probability causes are:
-
-1. wrong StS2 act mapping;
-2. additive registration mixing StS1 events with StS2 events;
-3. wrong or missing event preconditions;
-4. StS2 reward/card/relic/potion pools replacing StS1 pools;
-5. missing custom StS1 cards/relics/monsters;
-6. placeholder localization and missing images;
-7. no StS1 event RNG / no-repeat / save-load parity;
-8. no manual visual comparison pass;
-9. default-on registration polluting Spire Plus instead of a controlled prototype flag.
-
-## Step-by-Step Audit Table
-
-| Step | Claim | Audit verdict | Required correction |
+| Step | 他声称 | 审核判定 | 必须修正 |
 |---|---|---|---|
-| Wiki catalog | 52 events, 48 specs are enough | Failed / unresolved | Build canonical `wiki_event_entries` table and model-mapping table |
-| Event specs | all specs Done | Not accepted | Use statuses: planned, spec-drafted, source-verified, api-verified, implemented, asset-verified, loc-render-verified, manual-verified, blocked |
-| C# event models | 46 Done, compiles | Not accepted | Whole repo build must pass; each model needs behavior tests and manual proof |
-| Registration service | Done, wired into MainFile | Partially useful but unsafe | Add feature gate and correct act mapping |
-| RitsuLib API usage | API discovered | Likely useful | Verify against installed RitsuLib version and current game target |
-| Build | build passes | False for whole repo | Fix Vakuu duplicate blocker or document blocked build; do not claim pass |
-| Curse/relic dependencies | next step | Incomplete | Implement exact StS1-compatible models/helpers before canary verification |
-| Images | asset scripts Done | Incomplete | Fill 52-event asset map and verify in-game render |
-| Localization | EN/ZHS Done | Incomplete | Need non-placeholder text and render screenshots |
-| Event pool | events appear in pool | Not parity | Build debug-only StS1 replacement pool |
-| Save/load | not shown | Not done | Save shuffled bag, visited ids, event page state when needed |
-| Manual gameplay | not shown | Not done | Debug spawn + unknown room + screenshots + logs |
-| Full parity | implied | 0% | Do not claim until all evidence gates pass |
+| 1. Wiki/event catalog | 52 events / 48 unique specs | **未通过**。必须拆成 `wiki_event_entries`、`runtime_event_models`、`act_bucket_memberships`。 | 建立 canonical matrix，禁止再笼统说 48 covers all。 |
+| 2. Event specs | 48 specs Done | **只算 draft**。没有逐事件 source proof、exact options、A15、dependency、StS2 command mapping 的 spec 不能标 Done。 | 每个 spec 必须有 source-backed option table + implementation checklist。 |
+| 3. C# event models | 46 models Done | **未通过**。空壳/半成品不等于 playable。 | 每个 model 必须通过 debug spawn、结果校验、save/load 后才算 implemented。 |
+| 4. Registration service | Done | **部分完成但高风险**。无条件注册 + act mapping 需要修。 | 默认 Off；只允许 gated modes；修正 Act mapping。 |
+| 5. Build | 声称 0 errors | **只能标 Build Claimed**。必须保存 full unfiltered log + exit code。tail/grep 不算。 | `dotnet build --no-restore *> evidence/build.log`，记录 `$LASTEXITCODE`。 |
+| 6. Localization | 46 EN/ZHS Done | **未通过**。JSON 存在不等于游戏内渲染正确。 | 每个 playable event 需要 EN/ZHS screenshot。 |
+| 7. Assets | scripts Done | **未完成**。script 不是图片。 | 52-entry asset map + local extraction + file existence + event-screen screenshot。 |
+| 8. Canary events | Big Fish / Golden Idol source done | **未完成**。缺 Regret/Injury/random relic/Golden Idol exact effect proof。 | 先完成 Big Fish、Golden Idol、Lab、Divine Fountain。 |
+| 9. StS1-only pool | 未见实现 | **0%**。RitsuLib additive 不等于替换池。 | 做 debug-only `ReplaceUnknownEventsPrototype`。 |
+| 10. Release/readiness | 暗示可继续 Phase 2 | **不允许**。当前应回到 parity foundation。 | 禁止继续堆空壳；先修 foundation gates。 |
 
-## Corrected Monthly Dev Spec: June 2026
+---
 
-### Monthly target
+## 2. 体验差异根因
 
-Deliver **StS1 Event Port Prototype Batch 1 — Parity Foundation**, not full parity.
+用户反馈“事件和杀戮尖塔 1 的游戏体验出入很大”是合理的。根因不是事件数量不足，而是系统层没有复刻：
 
-By 2026-06-30, the repo should have:
+1. **章节映射错**：Act 2/Act 3 事件可能出现在错误 StS2 act。
+2. **事件池混合**：StS1 事件和 StS2 原事件混在 unknown room pool 里。
+3. **没有 StS1 event bag/no-repeat/save-load**：事件抽取节奏不像原作。
+4. **Reward pool 不同**：StS2 relic/card/potion pool 与 StS1 不同，事件价值判断会改变。
+5. **Curse/relic/card 临时代用品破坏 parity**：`Parasite -> Clumsy`、`Madness -> Debt` 只能算 prototype substitute，不能算完成。
+6. **A15 未闭环**：StS1 A15 会改变部分不利事件的概率或强度。
+7. **条件过滤未闭环**：如 Divine Fountain 必须有 curse 才能出现，很多事件有金币、牌组、遗物条件。
+8. **图片/文本/页面节奏未验证**：事件体验包括图片、选项锁、动态数值、死亡提示、hover、分页。
 
-1. default Off mode with zero player-visible impact;
-2. correct StS2 act mapping;
-3. unfiltered `dotnet build --no-restore` passing;
-4. four canary events fully playable and manually verified;
-5. six simple Batch 1 events playable;
-6. debug-only StS1 replacement-pool prototype for the verified events;
-7. asset and localization render proof for all implemented events;
-8. strict status board with no false Done labels;
-9. subagent outputs attached to the feature docs.
+---
 
-### Week 0: 2026-05-28 to 2026-05-31 — Stop false progress and fix gates
+## 3. 正确完成定义
 
-Deliverables:
+以后每个事件只允许这些状态：
 
-- `docs/features/sts1-events/audit-2026-05-28.md`
-- corrected `status-board.md`
-- `source-research/sts2-act-mapping.md`
-- `source-research/api-command-matrix.md`
-- feature gate implementation plan
+```text
+planned
+spec-drafted
+wiki-verified
+api-verified
+dependency-ready
+implemented
+asset-verified
+loc-render-verified
+manual-verified
+save-load-verified
+blocked
+```
 
-Acceptance:
+禁止使用泛泛的 `Done`。
 
-- no event marked Done without implementation + evidence;
-- `RegisterAll` removed from the default unconditional path;
-- act mapping fixed to Overgrowth/Underdocks = Act 1, Hive = Act 2, Glory = Act 3;
-- Vakuu duplicate build blocker either fixed or tracked as a blocking issue, not ignored.
+事件只有同时满足以下条件，才能进入 `manual-verified`：
 
-### Week 1: 2026-06-01 to 2026-06-07 — Build and registration foundation
+- Wiki spec 有 exact option table；
+- A15 差异已写明；
+- dependencies 已列出并验收；
+- StS2 API/command mapping 已验证；
+- event model 可 debug spawn；
+- 每个选项能执行并产生正确结果；
+- EN/ZHS 游戏内渲染截图；
+- 图片加载截图；
+- save/load 后状态正确；
+- release note 不夸大为 full parity。
 
-Deliverables:
+---
+
+## 4. Monthly Dev Spec — June 2026
+
+### 名称
+
+`StS1 Event Port Prototype Batch 1 — Parity Foundation`
+
+### 截止
+
+2026-06-30
+
+### 非目标
+
+- 不叫 full parity。
+- 不叫 all events complete。
+- 不继续批量堆 46 个空壳。
+- 不把 RitsuLib registration 当作 StS1-only event pool。
+- 不把 substitute content 当作 exact parity。
+
+### 月末 Must Pass
+
+1. **默认 Off**：不开 feature flag 时，对 Spire Plus 零行为影响。
+2. **安全注册**：`CanaryOnly` 只注册 Big Fish / Golden Idol / Lab / Divine Fountain。
+3. **Act mapping 修正**：
+   - StS1 Act 1 -> `Overgrowth` + `Underdocks`
+   - StS1 Act 2 -> `Hive`
+   - StS1 Act 3 -> `Glory`
+4. **完整 build 绿灯**：unfiltered `dotnet build --no-restore` exit code 0。
+5. **四个 canary playable**：
+   - Big Fish
+   - Golden Idol
+   - Lab
+   - Divine Fountain
+6. **六个 simple batch playable**：
+   - Purifier
+   - Upgrade Shrine
+   - Golden Shrine
+   - The Cleric
+   - Old Beggar / Pleading Vagrant canonical mapping
+   - Shining Light
+7. **debug-only replacement prototype**：`ReplaceUnknownEventsPrototype` 能证明 unknown room 不抽 StS2 原事件。
+8. **证据完整**：build/test/publish logs、screenshots、save-load proof、status-board、monthly review。
+9. **QA subagent 独立验收**：实现者不能自己给自己盖章。
+
+---
+
+## 5. Weekly Plan
+
+### Week 0 — 2026-05-28 至 2026-05-31
+
+目标：停止错误方向。
+
+必须完成：
+
+- 修 `status-board.md`：移除所有无证据 `Done`。
+- 新建 `wiki-event-canonical-matrix.md`。
+- 新建 `source-research/sts2-act-mapping.md`。
+- 新建 `source-research/api-command-matrix.md`。
+- 从默认初始化移除无条件 `RegisterAll(ModId)`。
+- 记录 full build 状态；如果仍有 Vakuu blocker，作为 repo health blocker 修复或隔离。
+
+验收：
+
+- 46/48/52 口径解释清楚。
+- Act mapping 已修。
+- 默认 Off 注册 0 个 StS1 event。
+- 不再宣称 full parity。
+
+### Week 1 — 2026-06-01 至 2026-06-07
+
+目标：Feature gate + clean build。
+
+必须完成：
 
 - `Sts1EventFeatureGate`
-- `Sts1EventRegistrationService` with modes: Off / CanaryOnly / AdditiveBatch1 / ReplaceUnknownEventsPrototype
-- registration tests for act buckets
-- build-gate evidence
+- `Sts1EventRegistrationMode`
+  - `Off`
+  - `CanaryOnly`
+  - `AdditiveBatch1`
+  - `ReplaceUnknownEventsPrototype`
+- registration count tests
+- act bucket tests
+- full build evidence
 
-Acceptance:
+验收：
 
-- default mode registers zero StS1 events;
-- CanaryOnly registers exactly Big Fish, Golden Idol, Lab, Divine Fountain;
-- Act 1 canary events are registered to both Overgrowth and Underdocks;
-- Act 2 events register to Hive;
-- Act 3 events register to Glory;
-- `dotnet build --no-restore` passes without grep filtering.
+- Off = 0 registrations。
+- CanaryOnly = 4 registrations。
+- Act 1 event 同时注册到 Overgrowth + Underdocks。
+- Act 2 event 注册到 Hive。
+- Act 3 event 注册到 Glory。
+- `dotnet build --no-restore` unfiltered 0 errors。
 
-### Week 2: 2026-06-08 to 2026-06-14 — Canary parity
+### Week 2 — 2026-06-08 至 2026-06-14
 
-Events:
+目标：四个 canary 真正可玩。
 
-- Big Fish
-- Golden Idol
-- Lab
-- Divine Fountain
-
-Support services:
+必须实现：
 
 - `Sts1HpService`
 - `Sts1RewardService`
 - `Sts1CurseService`
 - `Sts1RelicService`
 - `Sts1AscensionRules`
+- Regret / Injury exact model 或 StS1 custom-compatible model
+- Golden Idol exact relic 或 StS1 custom-compatible relic
+- random relic reward helper
+- potion reward helper
+- curse removal helper
 
-Acceptance:
+验收：
 
-- Big Fish all three options match StS1 behavior;
-- Golden Idol all branches match StS1 behavior and A15 deltas;
-- Lab gives the correct potion count / StS2-compatible exact documented behavior;
-- Divine Fountain only appears when the run has curses and removes all curses;
-- no placeholder substitutions are called parity;
-- each event has debug spawn screenshot, option-result evidence, and save/load proof.
+- Big Fish 三选项完全正确。
+- Golden Idol 全分支 + A15 完全正确。
+- Lab 药水奖励正确或 source-backed equivalent。
+- Divine Fountain 只在有 curse 时出现并移除所有 curse。
+- 四事件都有 debug spawn、截图、result log、save-load proof。
 
-### Week 3: 2026-06-15 to 2026-06-21 — Simple Batch 1
+### Week 3 — 2026-06-15 至 2026-06-21
 
-Implement six events:
+目标：Simple Batch 1 playable。
+
+实现：
 
 - Purifier
 - Upgrade Shrine
 - Golden Shrine
 - The Cleric
-- Old Beggar
+- Old Beggar / Pleading Vagrant canonical mapping
 - Shining Light
 
-Acceptance:
+验收：
 
-- each event has exact option values, locks, A15 differences, and dynamic text;
-- each event has EN/ZHS render proof;
-- each event has image proof;
-- each event has manual debug-spawn proof;
-- tests verify manifest/spec/localization coverage.
+- 每个事件 exact options。
+- 每个事件动态数值正确。
+- EN/ZHS render proof。
+- image render proof。
+- save/load proof。
+- status-board 更新为证据状态。
 
-### Week 4: 2026-06-22 to 2026-06-28 — Event pool and gameplay feel
+### Week 4 — 2026-06-22 至 2026-06-28
 
-Deliverables:
+目标：修复“体验不像 StS1”的核心。
 
-- `Sts1EventPoolService` prototype;
-- debug-only unknown-room replacement mode for implemented events;
-- save/load proof for event bag and visited ids;
-- gameplay comparison checklist.
+必须完成：
 
-Acceptance:
+- `Sts1EventPoolService`
+- `ReplaceUnknownEventsPrototype`
+- event bag saved fields
+- visited ids saved fields
+- condition filters
+- no-repeat proof
+- multiplayer fail-closed
 
-- replacement mode does not draw StS2 native events in the controlled test set;
-- replacement mode is disabled by default;
-- multiplayer fails closed;
-- run logs prove correct act buckets and no repeated event unless all unique events are exhausted.
+验收：
 
-### Week 5 buffer: 2026-06-29 to 2026-06-30 — Packaging and handoff
+- Replacement mode 下 unknown room 不抽 StS2 原事件。
+- 默认关闭。
+- save/load 后 event bag 不乱序、不重复、不跨 act。
+- multiplayer 默认 fail-closed。
 
-Deliverables:
+### Week 5 — 2026-06-29 至 2026-06-30
+
+目标：月末收口。
+
+必须完成：
 
 - `monthly-review-2026-06.md`
-- updated `README.md`, `PROJECT_MAP.md`, feature README, test plan
-- package version bump if player-visible behavior is shipped
-- evidence folder with screenshots/logs/build output
+- updated feature README
+- updated PROJECT_MAP/docs index
+- evidence folder
+- version bump if player-visible behavior shipped
+- package/release note 只能写 Prototype Batch 1
 
-Acceptance:
+验收：
 
-- release notes say Prototype Batch 1, not full parity;
-- all blockers are explicit;
-- no false Done labels remain;
-- commit + push only if validation passes.
+- 所有 blocker 明确列出。
+- QA subagent pass。
+- commit + push 只能在验证通过后执行。
 
-## Required Subagent Work Orders
+---
 
-Use subagents now. Do not continue serially writing dozens of event stubs.
+# 6. Overnight Run Spec — 必须跑完才能停
 
-### 1. BuildGate / Repo Health Subagent
+## 6.1 运行目标
 
-Mission: get the whole repo back to a clean build.
+这是一次 **overnight run**，目标不是“写更多事件”，而是把 parity foundation 跑到可验收状态。
 
-Tasks:
+**不能在只完成 spec、只完成 model、只完成 registration、或只 build pass 时停止。**
 
-- fix or isolate the duplicate `VakuuFightInitializer` definition;
-- run unfiltered `dotnet build --no-restore`;
-- record build output in docs.
+允许停止的唯一条件：
 
-Pass condition: build exit code 0, no grep filtering.
+1. 所有 Overnight Exit Gates 全部 GREEN；或
+2. 出现 Hard Stop Blocker，且已输出完整 blocker report、失败命令、日志路径、根因假设、下一步最小修复。
 
-### 2. StS2 Source/API Auditor Subagent
+## 6.2 Overnight Exit Gates
 
-Mission: prevent wrong API assumptions.
+| Gate | 名称 | 必须结果 |
+|---|---|---|
+| O0 | Worktree gate | 当前分支、diff、文件清单记录完成，无无关改动。 |
+| O1 | Build health | `dotnet build --no-restore` unfiltered exit code 0；日志保存。 |
+| O2 | Status truth | 所有无证据 `Done` 被替换为证据状态。 |
+| O3 | Canonical matrix | 52 wiki entries / runtime models / act memberships 映射完成。 |
+| O4 | Act mapping | Overgrowth+Underdocks/Hive/Glory 映射修正并测试。 |
+| O5 | Feature gate | Off/CanaryOnly/AdditiveBatch1/ReplacementPrototype 实现；默认 Off。 |
+| O6 | Canary compile | CanaryOnly 模式只注册 4 个 canary。 |
+| O7 | Canary gameplay | Big Fish / Golden Idol / Lab / Divine Fountain playable。 |
+| O8 | Canary evidence | 四事件截图、result log、save-load proof。 |
+| O9 | Simple batch scope | 六个 simple event 至少 spec/API/dependency ready；实现优先级明确。 |
+| O10 | Replacement prototype | debug-only pool replacement 能证明不抽 StS2 原事件。 |
+| O11 | QA red-team | 独立 QA subagent pass/fail 报告。 |
+| O12 | Handoff docs | monthly spec、status board、README/PROJECT_MAP 更新。 |
 
-Tasks:
+## 6.3 Overnight Loop
 
-- document exact act mapping;
-- document EventModel lifecycle;
-- document EventOption APIs;
-- document HP, max HP, relic, card, potion, reward, save/load commands;
-- document RitsuLib version actually installed.
-
-Pass condition: `source-research/api-command-matrix.md` has source-backed command names and owners.
-
-### 3. Wiki Parity Spec Auditor Subagent
-
-Mission: make the 52-event target honest.
-
-Tasks:
-
-- build canonical 52-row wiki-event table;
-- split `wiki_event_entries`, `runtime_event_models`, and `act_bucket_memberships`;
-- check every spec for exact options and A15 deltas;
-- mark missing data as blocked, not Done.
-
-Pass condition: no 46/48/52 contradiction remains.
-
-### 4. Feature Gate / Registration Engineer Subagent
-
-Mission: make registration safe and correct.
-
-Tasks:
-
-- remove unconditional `RegisterAll`;
-- implement Off / CanaryOnly / AdditiveBatch1 / ReplacementPrototype modes;
-- correct act registration mapping;
-- add tests for registration counts.
-
-Pass condition: default mode registers zero StS1 events; CanaryOnly count is exact.
-
-### 5. Canary Gameplay Engineer Subagent
-
-Mission: implement the four canary events exactly.
-
-Tasks:
-
-- implement Big Fish, Golden Idol, Lab, Divine Fountain;
-- use exact service helpers;
-- no temporary substitutes can be marked parity.
-
-Pass condition: four event screenshots, result logs, and save/load proof.
-
-### 6. Content Parity Subagent
-
-Mission: resolve missing StS1 content.
-
-Tasks:
-
-- curses: Regret, Injury, Parasite, Shame, Pain, Normality, Decay, Doubt, Writhe, Clumsy as needed;
-- special cards: Bite, Apparition, Ritual Dagger, J.A.X., etc.;
-- relics: Golden Idol, Bloody Idol, Red Mask, Necronomicon, Neow's Lament, etc.;
-- potions/reward pools.
-
-Pass condition: every dependency is native-equivalent, custom-required, temporary-substitute, or blocked.
-
-### 7. Event Pool / RNG / Save Subagent
-
-Mission: make it feel like StS1, not mixed StS2.
-
-Tasks:
-
-- implement debug-only replacement pool;
-- save event bag and visited ids;
-- enforce no-repeat and IsAllowed rules;
-- multiplayer fail-closed.
-
-Pass condition: controlled unknown-room tests draw only implemented StS1 events.
-
-### 8. Asset + Localization Subagent
-
-Mission: make visuals/text real.
-
-Tasks:
-
-- build 52-event asset extraction map;
-- extract from a local legitimate StS1 install;
-- verify images load in Godot;
-- verify EN/ZHS localization in-game;
-- collect screenshots.
-
-Pass condition: every implemented event has image and text render proof.
-
-### 9. QA / Red-Team Subagent
-
-Mission: independently reject false completion.
-
-Tasks:
-
-- compare each implemented event against Wiki/spec;
-- verify build, screenshots, and logs;
-- test default Off mode;
-- test bad/missing dependency cases;
-- test save/load.
-
-Pass condition: QA signs off or blocks with exact reasons. Implementation subagents may not self-approve.
-
-### 10. Release Documentation Subagent
-
-Mission: keep docs honest.
-
-Tasks:
-
-- update feature README, status board, test plan, monthly review;
-- keep release notes from saying full parity;
-- document blockers and substitutions.
-
-Pass condition: docs match evidence.
-
-## Direct instruction to send to the implementer
+他必须按下面循环执行，直到 O0-O12 全绿或 hard stop：
 
 ```text
-不要继续按“46 个事件 Done / 48 specs Done”的口径推进。当前不是完成状态。
+while not all_exit_gates_green:
+    run BuildGate subagent
+    if build fails:
+        diagnose root cause
+        patch smallest safe fix
+        rerun full unfiltered build
+        continue
 
-立刻使用 subagents：BuildGate、StS2 Source/API Auditor、Wiki Parity Spec Auditor、Feature Gate/Registration Engineer、Canary Gameplay Engineer、Content Parity、Event Pool/RNG/Save、Asset/Localization、QA Red-Team、Release Documentation。
+    run Source/API Auditor subagent
+    patch act mapping and API misuse
+    rerun build and registration tests
 
-最高优先级：
-1. 修正 build gate：unfiltered dotnet build 必须 0 errors；grep -v Vakuu 不算 build pass。
-2. 修正 StS2 act mapping：Overgrowth + Underdocks = Act 1，Hive = Act 2，Glory = Act 3。
-3. 删除默认无条件 RegisterAll；StS1 events 必须默认 Off，只能用 CanaryOnly/AdditiveBatch1/ReplacementPrototype 开启。
-4. 修复 46/48/52 口径；用 wiki_event_entries / runtime_event_models / act_bucket_memberships 三栏记录。
-5. 先把 Big Fish、Golden Idol、Lab、Divine Fountain 做到 playable + save/load + image/loc render proof。
-6. 任何没有测试、截图、日志、source/API 证据的内容不得标 Done。
-7. RitsuLib 注册只是 additive，不等于 StS1-only event pool，也不等于杀戮尖塔1体验。
+    run FeatureGate/Registration subagent
+    enforce default Off and CanaryOnly
+    rerun build and count tests
+
+    run Wiki Spec Auditor subagent
+    repair canonical matrix and status board
+    rerun doc tests
+
+    run Canary Gameplay subagent
+    implement missing services and four canaries
+    rerun build, debug spawn tests, save/load tests
+
+    run Asset/Localization subagent
+    validate images and EN/ZHS render
+    capture screenshots
+
+    run EventPool/RNG/Save subagent
+    implement debug replacement prototype
+    verify no StS2 original events in replacement mode
+
+    run QA/Red-Team subagent
+    reject any unsupported Done
+    reject any substitute marked parity
+    record blocker list
+
+    run Release Documentation subagent
+    update monthly-review/status-board/docs index
 ```
 
-## Completion Score
+## 6.4 Overnight Command Evidence
 
-| Area | Score | Reason |
-|---|---:|---|
-| Research/document framework | 25% | Useful but inconsistent counts and false Done labels |
-| Source/API correctness | 15% | RitsuLib discovered, but act mapping is wrong |
-| Build readiness | 0% | Whole repo build fails in pasted log |
-| Registration safety | 20% | Service exists, but unconditional and incorrectly mapped |
-| Canary gameplay | 5% | Key effects/dependencies unresolved |
-| Asset/localization proof | 0-10% | JSON/scripts are not render proof |
-| StS1 gameplay feel | 0-5% | Additive mixed pool and wrong act mapping break feel |
-| Full StS1 parity | 0% | Not close to complete |
+必须保存以下证据：
 
+```powershell
+mkdir .tools/runtime-evidence/sts1-events-overnight-202606
+
+dotnet build --no-restore *> .tools/runtime-evidence/sts1-events-overnight-202606/build.log
+echo $LASTEXITCODE > .tools/runtime-evidence/sts1-events-overnight-202606/build.exitcode.txt
+
+dotnet test --no-restore *> .tools/runtime-evidence/sts1-events-overnight-202606/test.log
+echo $LASTEXITCODE > .tools/runtime-evidence/sts1-events-overnight-202606/test.exitcode.txt
+
+dotnet publish --no-restore *> .tools/runtime-evidence/sts1-events-overnight-202606/publish.log
+echo $LASTEXITCODE > .tools/runtime-evidence/sts1-events-overnight-202606/publish.exitcode.txt
+```
+
+如果某命令因已知环境限制不能执行，必须写：
+
+```text
+command:
+reason not run:
+evidence gap created:
+next unblock step:
+owner:
+```
+
+## 6.5 禁止停止条件
+
+以下情况不允许停止：
+
+- “48 specs Done”
+- “46 models Done”
+- “RitsuLib registration done”
+- “build passes”
+- “localization files exist”
+- “asset scripts exist”
+- “StS1 events appear in event pool”
+- “canary source done”
+
+这些都只是中间态，不是 overnight exit。
+
+## 6.6 Hard Stop Blocker 模板
+
+只有写出以下报告，才能因 blocker 停止：
+
+```text
+Hard Stop Blocker:
+Gate blocked:
+Command/output:
+Files touched:
+Root cause:
+Why cannot proceed safely:
+Smallest next patch:
+Subagent owner:
+Evidence path:
+```
+
+---
+
+# 7. Subagent 工作单
+
+## 7.1 BuildGate / Repo Health Subagent
+
+目标：让 full unfiltered build 可信。
+
+任务：
+
+- 不允许 `grep -v`。
+- 不允许只看 `tail`。
+- 保存完整 build log 和 exit code。
+- 如果 Vakuu 或其他历史错误存在，修复或明确隔离。
+- 给出 pass/fail。
+
+输出：
+
+```text
+build.log
+build.exitcode.txt
+repo-health-report.md
+```
+
+## 7.2 StS2 Source/API Auditor Subagent
+
+目标：防止错用 API 和错配 Act。
+
+任务：
+
+- 验证 `Overgrowth`、`Underdocks`、`Hive`、`Glory` 的 act role。
+- 验证 RitsuLib `SharedEvent` / `ActEvent` 行为。
+- 验证 HP、max HP、relic obtain、curse add/remove、potion、card remove/upgrade/transform、save fields API。
+- 输出 `api-command-matrix.md`。
+
+## 7.3 Wiki Parity Spec Auditor Subagent
+
+目标：把 spec 从模板变成可编码规格。
+
+任务：
+
+- 建立 52-entry canonical matrix。
+- 每个事件写 exact options、A15、dependencies、condition filters。
+- 任何未 source-backed 的 spec 只能是 `spec-drafted`，不能 Done。
+
+## 7.4 Feature Gate / Registration Engineer Subagent
+
+目标：安全注册，不污染默认 Spire Plus。
+
+任务：
+
+- 实现 `Sts1EventFeatureGate`。
+- `RegisterAll` 改成 mode-based。
+- 默认 Off。
+- CanaryOnly 精确 4 事件。
+- 修正 Act mapping。
+- 写 registration count tests。
+
+## 7.5 Canary Gameplay Engineer Subagent
+
+目标：四个 canary playable。
+
+任务：
+
+- Big Fish。
+- Golden Idol。
+- Lab。
+- Divine Fountain。
+- 补齐 hp/reward/curse/relic services。
+- debug spawn + result logs + save/load。
+
+## 7.6 Content Parity Subagent
+
+目标：处理 StS1-specific cards/relics/monsters。
+
+任务：
+
+- Regret、Injury、Golden Idol、Bloody Idol。
+- Parasite、Bite、Madness、Apparition 等 parity blockers。
+- 每项标 `native-equivalent` / `custom-required` / `temporary-substitute` / `blocked`。
+- `temporary-substitute` 不允许计入 parity。
+
+## 7.7 Event Pool / RNG / Save Subagent
+
+目标：修复事件池体验。
+
+任务：
+
+- `Sts1EventPoolService`。
+- debug-only replacement mode。
+- no-repeat event bag。
+- visited ids。
+- condition filters。
+- save/load。
+- multiplayer fail-closed。
+
+## 7.8 Asset + Localization Subagent
+
+目标：图片和文本不再停留在脚本层。
+
+任务：
+
+- 52-entry image mapping。
+- 本地 extraction 验证。
+- 每个 canary 的 event image render screenshot。
+- EN/ZHS render screenshot。
+- placeholder 扫描。
+
+## 7.9 QA / Red-Team Subagent
+
+目标：独立否决虚假完成。
+
+任务：
+
+- 审核所有 `Done`。
+- 审核 canary 是否真可玩。
+- 审核 substitute 是否被错误标 parity。
+- 审核 screenshot/log/save-load evidence。
+- 审核 default Off 是否真的零影响。
+
+## 7.10 Release Documentation Subagent
+
+目标：让 handoff 不误导测试者。
+
+任务：
+
+- 更新 feature README。
+- 更新 status-board。
+- 更新 PROJECT_MAP / docs index。
+- 更新 monthly-review。
+- release note 只能写 Prototype Batch 1。
+
+---
+
+# 8. 直接发给他的指令
+
+```text
+当前工作没有完成。不要再用“46 event models Done / 48 specs Done / build passes”推进 Phase 2。
+
+从现在开始跑 Overnight Run。你不能在只完成 spec、model、registration、localization 文件、asset script、或单次 build pass 后停止。
+
+必须启动 subagents：
+1. BuildGate / Repo Health
+2. StS2 Source/API Auditor
+3. Wiki Parity Spec Auditor
+4. Feature Gate / Registration Engineer
+5. Canary Gameplay Engineer
+6. Content Parity
+7. Event Pool / RNG / Save
+8. Asset + Localization
+9. QA / Red-Team
+10. Release Documentation
+
+Overnight Exit Gates O0-O12 必须全绿才能停止。Hard stop 只能用于不可继续的 blocker，并必须输出 blocker report。
+
+最高优先级：
+1. full unfiltered dotnet build exit code 0，保存完整 log；grep/tail 不算。
+2. 修正 Act mapping：Overgrowth + Underdocks = StS1 Act 1，Hive = StS1 Act 2，Glory = StS1 Act 3。
+3. 移除默认无条件 RegisterAll；StS1 events 默认 Off。
+4. 建立 52 wiki entries / runtime models / act memberships canonical matrix。
+5. 先完成 Big Fish、Golden Idol、Lab、Divine Fountain playable + image/loc render + save/load。
+6. 做 debug-only ReplacementPrototype，证明 unknown room 不再抽 StS2 原事件。
+7. 任何没有 source/API/test/screenshot/log/save-load 证据的内容不得标 Done。
+8. RitsuLib registration 只是 additive，不等于杀戮尖塔1事件体验。
+```
+
+---
+
+# 9. 一句话决策
+
+**不要让他继续堆更多空壳事件；让他跑 overnight run，把 build、Act mapping、feature gate、canary、asset/loc proof、replacement pool 这些 foundation gates 全部跑绿，跑完前不准停止并不准再说 Done。**

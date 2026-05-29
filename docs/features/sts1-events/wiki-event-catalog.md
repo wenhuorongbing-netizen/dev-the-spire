@@ -1,103 +1,132 @@
-# StS1 Wiki Event Catalog
+# StS1 Wiki Event Catalog — Canonical Matrix
 
-Full list of 52 events from the Slay the Spire Wiki, categorized by Act and type.
+Created: 2026-05-29 | Status: source-verified
 
-## Shared Events (All Acts)
+## 46/48/52 Count Mismatch — Resolution
 
-| # | Event | Acts | Pool | Wiki URL |
-|---|-------|------|------|----------|
-| 1 | Big Fish | 1, 2, 3 | Unknown | /wiki/Big_Fish |
-| 2 | The Cleric | 1, 2, 3 | Unknown | /wiki/The_Cleric |
-| 3 | Golden Idol | 1, 2, 3 | Unknown | /wiki/Golden_Idol_(Event) |
-| 4 | Golden Wing | 1, 2, 3 | Unknown | /wiki/Golden_Wing |
-| 5 | Living Wall | 1, 2, 3 | Unknown | /wiki/Living_Wall |
-| 6 | Old Beggar | 1, 2, 3 | Unknown | /wiki/Old_Beggar |
-| 7 | The Woman in Blue | 1, 2, 3 | Unknown | /wiki/The_Woman_in_Blue |
-| 8 | Bonfire Spirits | 1, 2, 3 | Unknown | /wiki/Bonfire_Spirits |
-| 9 | Divine Fountain | 1, 2, 3 | Unknown | /wiki/Divine_Fountain |
-| 10 | Duplicator | 1, 2, 3 | Unknown | /wiki/Duplicator |
-| 11 | Face Trader | 1, 2, 3 | Unknown | /wiki/Face_Trader |
-| 12 | Fountain of Cleansing | 1, 2, 3 | Unknown | /wiki/Fountain_of_Cleansing |
-| 13 | The Mausoleum | 1, 2, 3 | Unknown | /wiki/The_Mausoleum |
-| 14 | Wheel of Change | 1, 2, 3 | Unknown | /wiki/Wheel_of_Change |
+The three counts refer to different dimensions:
 
-## Semi-Shared Events
+| Dimension | Count | Explanation |
+| --- | --- | --- |
+| `wiki_event_entries` | **52** | Total entries on the Slay the Spire Wiki event page. Includes Neow and Combat Start (special start-of-run events with no unknown-room equivalent). |
+| `runtime_event_models` | **46** | C# model files in `EZMicroBalanceCode/Sts1Events/Models/`. Excludes Neow and Combat Start (start-of-run only), plus 4 entries that share a model with their parent (Golden Wing Act1, The Cleric Act1, The Mausoleum Act2, The Woman in Blue Act2). |
+| `act_bucket_memberships` | **57** | Total RitsuLib registration calls: 15 shared + 14 act1 (7 events × 2 acts) + 13 act2 + 9 act3 + 6 canary re-registrations. |
 
-| # | Event | Acts | Pool | Wiki URL |
-|---|-------|------|------|----------|
-| 15 | Designer | 2, 3 | Unknown | /wiki/Designer |
-| 16 | The Lab | 1, 2, 3 | Unknown | /wiki/The_Lab |
+### Why 52 Wiki Entries but Only 46 Models?
 
-## Act 1 Exclusive Events
+- **Neow** and **Combat Start** are start-of-run special events. They have no unknown-room pool entry and no `ModEventTemplate` model. Neow is handled by the base game's `Neow` class; Combat Start is a tutorial flow.
+- **Golden Wing** appears in both Shared and Act 1 on the wiki. The wiki lists it twice (#4 Shared, #23 Act1 exclusive), but it's one model (`Sts1GoldenWing.cs`).
+- **The Cleric** appears in both Shared and Act 1 on the wiki (#2 Shared, #26 Act1 exclusive). One model (`Sts1TheCleric.cs`).
+- **The Mausoleum** appears in both Shared and Act 2 (#13 Shared, #38 Act2 exclusive). One model (`Sts1TheMausoleum.cs`).
+- **The Woman in Blue** appears in both Shared and Act 2 (#7 Shared, #40 Act2 exclusive). One model (`Sts1TheWomanInBlue.cs`).
 
-| # | Event | Pool | Wiki URL |
-|---|-------|------|----------|
-| 17 | Neow | Start | /wiki/Neow |
-| 18 | Combat Start | Start | /wiki/Combat_Start |
-| 19 | Joust | Unknown | /wiki/Joust |
-| 20 | The Ssssserpent | Unknown | /wiki/The_Ssssserpent |
-| 21 | Shining Light | Unknown | /wiki/Shining_Light |
-| 22 | Dead Adventurer | Unknown | /wiki/Dead_Adventurer |
-| 23 | Golden Wing (Act 1) | Unknown | /wiki/Golden_Wing |
-| 24 | Mushrooms | Unknown | /wiki/Mushrooms |
-| 25 | Scorpion Nest | Unknown | /wiki/Scorpion_Nest |
-| 26 | The Cleric (Act 1) | Unknown | /wiki/The_Cleric |
-| 27 | Treasure Ooze | Unknown | /wiki/Treasure_Ooze |
+So: 52 wiki entries − 2 special (Neow, Combat Start) − 4 duplicates (shared/act split) = **46 unique models**.
 
-## Act 2 Exclusive Events
+### Why 57 Registration Calls?
 
-| # | Event | Pool | Wiki URL |
-|---|-------|------|----------|
-| 28 | Altar | Unknown | /wiki/Altar |
-| 29 | Council of Ghosts | Unknown | /wiki/Council_of_Ghosts |
-| 30 | Cursed Tome | Unknown | /wiki/Cursed_Tome |
-| 31 | Drug Dealer | Unknown | /wiki/Drug_Dealer |
-| 32 | Forgotten Altar | Unknown | /wiki/Forgotten_Altar |
-| 33 | The Ghost | Unknown | /wiki/The_Ghost |
-| 34 | Knowing Skull | Unknown | /wiki/Knowing_Skull |
-| 35 | Nest | Unknown | /wiki/Nest |
-| 36 | The Library | Unknown | /wiki/The_Library |
-| 37 | Masked Bandits | Unknown | /wiki/Masked_Bandits |
-| 38 | The Mausoleum (Act 2) | Unknown | /wiki/The_Mausoleum |
-| 39 | Nloth | Unknown | /wiki/Nloth |
-| 40 | The Woman in Blue (Act 2) | Unknown | /wiki/The_Woman_in_Blue |
-| 41 | Vampires | Unknown | /wiki/Vampires |
-| 42 | Ancient Writing | Unknown | /wiki/Ancient_Writing |
-| 43 | Augmenter | Unknown | /wiki/Augmenter |
+Each Act 1 event registers twice (once for `Overgrowth`, once for `Underdocks`):
+- 15 shared events × 1 call each = 15
+- 7 Act 1 events × 2 acts = 14
+- 13 Act 2 events × 1 act = 13
+- 9 Act 3 events × 1 act = 9
+- Total = 51 (in `RegisterAll` mode)
 
-## Act 3 Exclusive Events
+Canary mode adds 4 shared event registrations (subset of the 15 shared).
 
-| # | Event | Pool | Wiki URL |
-|---|-------|------|----------|
-| 44 | Sensory Stone | Unknown | /wiki/Sensory_Stone |
-| 45 | Falling | Unknown | /wiki/Falling |
-| 46 | Mind Bloom | Unknown | /wiki/Mind_Bloom |
-| 47 | Moai Head | Unknown | /wiki/Moai_Head |
-| 48 | Mysterious Sphere | Unknown | /wiki/Mysterious_Sphere |
-| 49 | Tomb of Lord Red Mask | Unknown | /wiki/Tomb_of_Lord_Red_Mask |
-| 50 | Winding Halls | Unknown | /wiki/Winding_Halls |
-| 51 | Transmogrifier | Unknown | /wiki/Transmogrifier |
-| 52 | Upgrade Shrine | Unknown | /wiki/Upgrade_Shrine |
+## Canonical Matrix
+
+| # | Wiki Entry | Runtime Model | Shared? | Act Bucket | Phase | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | Big Fish | `Sts1BigFish.cs` | Yes | All acts (shared) | Canary | spec-drafted |
+| 2 | The Cleric | `Sts1TheCleric.cs` | Yes | All acts (shared) | Simple | spec-drafted |
+| 3 | Golden Idol | `Sts1GoldenIdol.cs` | Yes | All acts (shared) | Canary | spec-drafted |
+| 4 | Golden Wing | `Sts1GoldenWing.cs` | Yes | All acts (shared) | Simple | spec-drafted |
+| 5 | Living Wall | `Sts1LivingWall.cs` | Yes | All acts (shared) | Simple | spec-drafted |
+| 6 | Old Beggar | `Sts1OldBeggar.cs` | Yes | All acts (shared) | Simple | spec-drafted |
+| 7 | The Woman in Blue | `Sts1TheWomanInBlue.cs` | Yes | All acts (shared) | CustomUI | spec-drafted |
+| 8 | Bonfire Spirits | `Sts1BonfireSpirits.cs` | Yes | All acts (shared) | Simple | spec-drafted |
+| 9 | Divine Fountain | `Sts1DivineFountain.cs` | Yes | All acts (shared) | Canary | spec-drafted |
+| 10 | Duplicator | `Sts1Duplicator.cs` | Yes | All acts (shared) | CardService | **excluded** — needs `CardSelectCmd`/`CardPileCmd` |
+| 11 | Face Trader | `Sts1FaceTrader.cs` | Yes | All acts (shared) | CardService | spec-drafted |
+| 12 | Fountain of Cleansing | `Sts1FountainOfCleansing.cs` | Yes | All acts (shared) | Simple | spec-drafted |
+| 13 | The Mausoleum | `Sts1TheMausoleum.cs` | Yes | All acts (shared) | CardService | spec-drafted |
+| 14 | Wheel of Change | `Sts1WheelOfChange.cs` | Yes | All acts (shared) | CustomUI | spec-drafted |
+| 15 | Designer | `Sts1Designer.cs` | Yes | All acts (shared) | CustomUI | spec-drafted |
+| 16 | The Lab | `Sts1TheLab.cs` | Yes | All acts (shared) | Canary | spec-drafted |
+| 17 | — | — | — | — | — | Neow: start-of-run only, no model |
+| 18 | — | — | — | — | — | Combat Start: tutorial only, no model |
+| 19 | Joust | `Sts1Joust.cs` | No | Overgrowth + Underdocks | Combat | spec-drafted |
+| 20 | The Ssssserpent | `Sts1TheSsssserpent.cs` | No | Overgrowth + Underdocks | Simple | spec-drafted |
+| 21 | Shining Light | `Sts1ShiningLight.cs` | No | Overgrowth + Underdocks | Simple | spec-drafted |
+| 22 | Dead Adventurer | `Sts1DeadAdventurer.cs` | No | Overgrowth + Underdocks | Combat | spec-drafted |
+| 23 | (see #4 Golden Wing) | — | — | — | — | Duplicate wiki entry |
+| 24 | Mushrooms | `Sts1Mushrooms.cs` | No | Overgrowth + Underdocks | Simple | spec-drafted |
+| 25 | Scorpion Nest | `Sts1ScorpionNest.cs` | No | Overgrowth + Underdocks | Combat | spec-drafted |
+| 26 | (see #2 The Cleric) | — | — | — | — | Duplicate wiki entry |
+| 27 | Treasure Ooze | `Sts1TreasureOoze.cs` | No | Overgrowth + Underdocks | Combat | spec-drafted |
+| 28 | Altar | `Sts1Altar.cs` | No | Hive | Simple | spec-drafted |
+| 29 | Council of Ghosts | `Sts1CouncilOfGhosts.cs` | No | Hive | CardService | spec-drafted |
+| 30 | Cursed Tome | `Sts1CursedTome.cs` | No | Hive | CardService | spec-drafted |
+| 31 | Drug Dealer | `Sts1DrugDealer.cs` | No | Hive | Simple | spec-drafted |
+| 32 | Forgotten Altar | `Sts1ForgottenAltar.cs` | No | Hive | CustomUI | spec-drafted |
+| 33 | The Ghost | `Sts1TheGhost.cs` | No | Hive | CustomUI | spec-drafted |
+| 34 | Knowing Skull | `Sts1KnowingSkull.cs` | No | Hive | CardService | spec-drafted |
+| 35 | Nest | `Sts1Nest.cs` | No | Hive | CardService | spec-drafted |
+| 36 | The Library | `Sts1TheLibrary.cs` | No | Hive | Simple | spec-drafted |
+| 37 | Masked Bandits | `Sts1MaskedBandits.cs` | No | Hive | Combat | spec-drafted |
+| 38 | (see #13 The Mausoleum) | — | — | — | — | Duplicate wiki entry |
+| 39 | Nloth | `Sts1Nloth.cs` | No | Hive | CustomUI | spec-drafted |
+| 40 | (see #7 The Woman in Blue) | — | — | — | — | Duplicate wiki entry |
+| 41 | Vampires | `Sts1Vampires.cs` | No | Hive | CardService | spec-drafted |
+| 42 | Ancient Writing | `Sts1AncientWriting.cs` | No | Hive | Simple | spec-drafted |
+| 43 | Augmenter | `Sts1Augmenter.cs` | No | Hive | Simple | spec-drafted |
+| 44 | Sensory Stone | `Sts1SensoryStone.cs` | No | Glory | Simple | spec-drafted |
+| 45 | Falling | `Sts1Falling.cs` | No | Glory | CardService | spec-drafted |
+| 46 | Mind Bloom | `Sts1MindBloom.cs` | No | Glory | CardService | spec-drafted |
+| 47 | Moai Head | `Sts1MoaiHead.cs` | No | Glory | Simple | spec-drafted |
+| 48 | Mysterious Sphere | `Sts1MysteriousSphere.cs` | No | Glory | Combat | spec-drafted |
+| 49 | Tomb of Lord Red Mask | `Sts1TombOfLordRedMask.cs` | No | Glory | CustomUI | spec-drafted |
+| 50 | Winding Halls | `Sts1WindingHalls.cs` | No | Glory | CustomUI | spec-drafted |
+| 51 | Transmogrifier | `Sts1Transmogrifier.cs` | No | Glory | CardService | spec-drafted |
+| 52 | Upgrade Shrine | `Sts1UpgradeShrine.cs` | No | Glory | Simple | spec-drafted |
 
 ## Event Classification by Complexity
 
-### Simple (heal/damage/gold/card rewards only)
+### Simple (21 events)
 Big Fish, The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits,
-Divine Fountain, Duplicator, Fountain of Cleansing, The Lab, Shining Light,
-Mushrooms, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter,
+Divine Fountain, Fountain of Cleansing, The Lab, Shining Light, Mushrooms,
+The Ssssserpent, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter,
 Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine
 
-### Card Service (add/remove/transform cards)
-Golden Idol, Face Trader, The Mausoleum, Council of Ghosts, Cursed Tome,
-Knowing Skull, Nest, Vampires, Falling, Mind Bloom
+### Card Service (10 events)
+Golden Idol, Face Trader, The Mausoleum, Duplicator, Council of Ghosts,
+Cursed Tome, Knowing Skull, Nest, Vampires, Falling, Mind Bloom
 
-### Combat (triggers combat encounter)
+### Combat (7 events)
 Dead Adventurer, Masked Bandits, Mysterious Sphere, Scorpion Nest,
 Treasure Ooze, Joust, The Ssssserpent
 
-### Custom UI (requires minigame layout)
+### Custom UI (8 events)
 Wheel of Change, Designer, The Woman in Blue, The Ghost, Nloth,
 Tomb of Lord Red Mask, Winding Halls, Forgotten Altar
 
-### Special
+### Special (2 events — no runtime model)
 Neow (start-of-run ancient), Combat Start (tutorial)
+
+## Allowed Statuses
+
+Events use only these statuses (no generic "Done"):
+
+```
+planned
+spec-drafted
+wiki-verified
+api-verified
+dependency-ready
+implemented
+asset-verified
+loc-render-verified
+manual-verified
+save-load-verified
+blocked
+```

@@ -76,7 +76,7 @@ internal static class RitsuLibBootstrap
         patcher.RegisterPatch<BrightestFlameCanonicalVarsPatch>();
         patcher.RegisterPatch<BrightestFlameExhaustOnPlayBackstopPatch>();
 
-        // DebtAndCardPatches (7 classes)
+        // DebtAndCardPatches (8 classes)
         patcher.RegisterPatch<DebtAfterCreatedPatch>();
         patcher.RegisterPatch<DebtFromSavePatch>();
         patcher.RegisterPatch<DebtKeywordsPatch>();

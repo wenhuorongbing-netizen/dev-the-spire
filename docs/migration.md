@@ -63,8 +63,8 @@ directly (no compat package for 0.106.1 exists on NuGet).
 
 **Verification:**
 - Build: 0 errors, 0 warnings (Sts1Events nullable warnings excluded)
-- Tests: 311 passed, 21 skipped, 0 failed
-- Format: clean
+- Tests: 324 passed, 21 skipped, 0 failed
+- Format: unverified at time of last doc update
 
 **Risk accepted:** RitsuLib 0.3.2 base package compiled against a different game
 version than 0.106.1. Compile-time compatibility confirmed; runtime API mismatches
@@ -120,7 +120,7 @@ Migrated 9 low-risk patch classes to RitsuLib's `IPatchMethod` interface.
 to `internal sealed class : IPatchMethod` with `GetTargets()` returning
 `ModPatchTarget[]`. `[HarmonyPrefix]`/`[HarmonyPostfix]` attributes kept.
 
-**Verification:** Build 0 errors, 4 migration-related tests pass, format clean. Runtime ModPatcher behavior unverified.
+**Verification:** Build 0 errors, 4 migration-related tests pass. Runtime ModPatcher behavior unverified.
 
 ### Batch 4b: Medium-Risk Patch Migration (Source migrated; runtime unverified)
 
@@ -139,7 +139,7 @@ Migrated 16 medium-risk patch classes to `IPatchMethod`.
 **Total migrated:** 25 classes (9 from Batch 4a + 16 from Batch 4b).
 **Remaining:** 141 `[HarmonyPatch]` declarations still on raw Harmony.
 
-**Verification:** Build 0 errors, 4 migration tests pass, format clean. Runtime ModPatcher behavior unverified.
+**Verification:** Build 0 errors, 4 migration tests pass. Runtime ModPatcher behavior unverified.
 
 ### Batch 5: High-Risk Patches (Blocked on Evidence)
 

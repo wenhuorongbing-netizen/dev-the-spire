@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act2;
 
@@ -33,7 +34,7 @@ public sealed class Sts1CursedTome : EventModel
             Owner.Creature, (decimal)damage,
             MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered,
             null, null);
-        // TODO: Grant random rare relic
+        await Sts1EventHelpers.GrantRandomRareRelic(Owner);
         SetEventFinished(L10NLookup("STS1_CURSED_TOME.pages.READ.description"));
     }
 }

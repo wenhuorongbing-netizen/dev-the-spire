@@ -10,21 +10,27 @@ Current count: see `docs/patch-inventory.md` (source of truth). As of 2026-05-28
 - Patches touching run, room, save, lobby, multiplayer, or lifecycle are release-sensitive.
 - Moving or adding a patch requires regenerating `docs/patch-inventory.md`.
 - No patch may be used as proof that live UI, save/load, or co-op works.
+- **Phase 2 adapter rule:** Every high-risk patch must be a thin adapter. The Harmony prefix/postfix forwards into a named service method; business logic lives in the service.
+- **No same-PR move + behavior change** for any high-risk patch. Move first, verify build/tests pass, then change behavior in a separate PR.
+- Forbidden behaviors (see table above) are enforced by source guard tests where possible.
+
+## Phase 2 Patch Adapter Rule — Status: Started / adapter checklist drafted (2026-05-29)
+
+Every high-risk patch group must be a **thin adapter**: the Harmony patch forwards into a named service; business logic, state mutation, and fallback logging live in the service, not the patch. A high-risk patch must **never** combine a file move and a behavior change in the same PR.
 
 ## High-Risk Owners
 
-| Owner | Patch surface | Required boundary |
-| --- | --- | --- |
-| Vakuu | `CombatRoom.ToSerializable`, `EventRoom.EnterInternal`, `CombatRoom.OfferRoomEndRewards` | Keep child-combat flow in `VakuuFightService`-style logic; every fallback logs a reason. |
-| Urda Root Eyes | `RunManager.RollRoomTypeFor`, `RunManager.CreateRoom`, map click/hover UI | Preview storage/commit logic stays in `UrdaBlessingService.RootSight*`; UI patches only select targets. |
-| A20 dual boss | `RunManager.GenerateRooms`, `RunManager.ProceedFromTerminalRewardsScreen`, reward screen patches | Boss-chain and courtyard transitions stay in A20 services/events; no direct screen black-box state is accepted without live proof. |
-| Ascension selector | `StartRunLobby` private selection/update methods and `SyncAscensionChange` | Selector expansion stays gated; multiplayer downgrade and warning behavior remain documented until proven. |
-| Ascension map | `ActModel.CreateMap`, map hover/icon patches | Map graph changes and metadata assignment stay in `AscensionMapService`. |
-| Ascension combat | combat/card/power hooks | Act-scaled Banner, Firemark, and boss dedicated ability logic stays in combat services and powers. |
-| Multiplayer diagnostics | `JoinFlow`, `StartRunLobby`, `NGame`, `SaveManager`, `RunManager.EnterAct` | Diagnostics may log only; they must not change join, save, quit, or act-entry state. |
-| Reward sync | `RewardsSetSynchronizer`, reward button/screen patches | Reward alternatives and hints must keep vanilla reward identity and avoid client-local reward state. |
-| Release evidence | scripts/tests/workflows | Release rows close only through evidence files and verifier rules. |
-| Preview tools | `NCrystalSphereScreen`, `NTransformPreview`, transform command contexts | Preview-only patches must not call reward, reveal, or real transform mutation paths. |
+| Owner | Patch surface | Service seam | Forbidden behavior | Manual evidence row |
+| --- | --- | --- | --- | --- |
+| Vakuu child combat | `CombatRoom.ToSerializable`, `EventRoom.EnterInternal`, `CombatRoom.OfferRoomEndRewards` | `VakuuFightService` (current); future `VakuuFightFlow` | No direct `ParentEventId` mutation in patch; no reward bypass without logging; no screen state change without service delegation. | Start Vakuu fight, win, lose/die, save/load, restore prefinished no-reward state, confirm no black screen. |
+| Urda Root Eyes | `RunManager.RollRoomTypeFor`, `RunManager.CreateRoom`, map click/hover UI | `UrdaBlessingService.RootSight*`; future `RootSightPreviewPolicy` | No RNG advancement outside committed room entry; no co-op mutation without gate; no room commit without preview validation. | Preview monster/event/unknown nodes, enter selected nodes, verify room matches preview, verify non-selected previews refund. |
+| A20 dual boss | `RunManager.GenerateRooms`, `RunManager.ProceedFromTerminalRewardsScreen`, reward screen patches | A20 services/events; future `A20BossChainFlow` | No direct screen black-box state mutation; no boss chain without courtyard transition; no duplicate reward injection. | Run A20 through Boss 1 rewards, courtyard heal, Boss 2 reveal/entry, victory, save/load between stages, confirm no duplicate rewards. |
+| Ascension selector | `StartRunLobby` private selection/update methods and `SyncAscensionChange` | `AscensionSelectionService`; future `LobbyAdapterGate` | No global progress/character stat patch in selection methods; no multiplayer downgrade without explicit env gate. | Single-player A11-A20 selection, host multiplayer selection, mismatch warning, host/client downgrade, env-gated vanilla A1-A10 fallback. |
+| Ascension map | `ActModel.CreateMap`, map hover/icon patches | `AscensionMapService` | No map graph mutation outside service; no metadata assignment in patch body; no chokepoint removal without source evidence. | Natural route-click traversal, save/load on map, Firemark/Banner/Deep Branch/Root Eyes stacked hover, A17 branch completion. |
+| Ascension combat | combat/card/power hooks | Banner/Firemark/boss combat services; future `BannerCombatPolicy`, `FiremarkWindowPolicy` | No direct power application in patch; no boss dedicated ability logic inline; no damage scaling without service delegation. | A19 dedicated boss ability proof, A20 Banner/Firemark effect timing, save/load mid-combat. |
+| Multiplayer diagnostics | `JoinFlow`, `StartRunLobby`, `NGame`, `SaveManager`, `RunManager.EnterAct` | Diagnostics logging service | **Absolutely no state mutation**: no join/save/quit/act-entry changes; log-only. | Two-client join, start, save, quit, reconnect/failure logs, no unexpected disconnect beyond intended mismatch guard. |
+| Reward sync | `RewardsSetSynchronizer`, reward button/screen patches | Reward service; future `RewardIdentityPreserver` | No client-local reward state; no reward identity change; no alternative reward bypass without vanilla authority. | Boss reward screen after A20 Boss 1, Crystal Sphere preview toggle, deterministic transform preview, save/reopen, co-op disposition. |
+| Preview tools | `NCrystalSphereScreen`, `NTransformPreview`, transform command contexts | `PreviewTransformPolicy` | No real transform mutation; no reward reveal; no RNG state change outside forked preview RNG. | Crystal Sphere preview toggle, deterministic transform preview result, save/reopen, co-op disposition. |
 
 ## High-Risk Manual Evidence Map
 

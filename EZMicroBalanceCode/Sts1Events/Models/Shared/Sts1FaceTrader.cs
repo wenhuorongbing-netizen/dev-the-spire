@@ -3,11 +3,14 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
 /// <summary>
-/// StS1 Face Trader event: trade max HP for a face relic, or leave.
+/// StS1 Face Trader event: trade max HP for a random relic, or leave.
+/// Note: StS1 face relics (Face of Cleric/Guardian/Healer/Navigator/Soldier) don't exist in StS2.
+/// Uses random relic as substitute.
 /// </summary>
 public sealed class Sts1FaceTrader : EventModel
 {
@@ -30,7 +33,6 @@ public sealed class Sts1FaceTrader : EventModel
 
     private async Task Trade()
     {
-        // TODO: Grant a random face relic (Face of Cleric/Guardian/Healer/Navigator/Soldier)
         var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * MaxHpLossPct);
         if (maxHpLoss > 0)
         {
@@ -38,6 +40,8 @@ public sealed class Sts1FaceTrader : EventModel
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
                 Owner.Creature, maxHpLoss, isFromCard: false);
         }
+        // temporary-substitute: StS1 face relics don't exist in StS2; use random relic
+        await Sts1EventHelpers.GrantRandomRelic(Owner);
         SetEventFinished(L10NLookup("STS1_FACE_TRADER.pages.TRADE.description"));
     }
 }

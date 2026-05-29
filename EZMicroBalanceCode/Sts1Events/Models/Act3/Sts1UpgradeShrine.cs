@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act3;
 
@@ -19,10 +20,9 @@ public sealed class Sts1UpgradeShrine : EventModel
         };
     }
 
-    private Task Pray()
+    private async Task Pray()
     {
-        // TODO: Open card upgrade UI
+        await Sts1EventHelpers.OpenCardUpgrade(Owner);
         SetEventFinished(L10NLookup("STS1_UPGRADE_SHRINE.pages.PRAY.description"));
-        return Task.CompletedTask;
     }
 }

@@ -1,38 +1,130 @@
-# DevSpire M2 Revision A — Strict Stabilization, Subagent-Gated Review, and Longhaul Recovery
+﻿# DevSpire M2 Revision D — Overnight Subagent Completion Gate
 
-Date: 2026-05-28
-Scope: `dev-the-spire` / `Spire Plus` / `EZMicroBalance` technical manifest id
-Status: **Not complete until default validation is fully green.**
+Date: 2026-05-29
+Scope: dev-the-spire / Spire Plus (manifest id: `EZMicroBalance`)
+Status at intake: NOT COMPLETE. Do not commit. Do not continue PR6 Batch 4, PR7, debug expansion, or longhaul audit until the completion gate is green.
 
-## 0. Current audit verdict
+## 0. Non-negotiable summary
 
-The latest reported state is progress but not completion:
+The current work is not accepted until all terminal validation commands pass in the active worktree without timeout:
 
-- Build: reported pass with `0 errors`, but `45–47 warnings` remain and need a warning ledger.
-- Tests: `302 passed`, `21 skipped`, `1 failed`.
-- Remaining failing test: `EngineeringGovernanceGuardTests.WorktreeBatchScriptRunsAndWritesBatchPathspecs`.
-- Format: reported as clean, but the command output shows a timeout; timeout is not a clean pass.
-- Debug/RitsuLib/Sts1Events work is not accepted while one default test fails.
-- No commit should be made until the remaining failing test is fixed or formally blocked with owner approval.
+```powershell
+dotnet build EZMicroBalance.sln
+dotnet test EZMicroBalance.sln --no-build
+dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+git diff --check
+.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
+```
 
-Strict status: **Not complete / Not accepted / Do not continue PR6 Batch4, PR7, or longhaul audit yet.**
+The agent must not stop the overnight run until either:
 
-## 1. Non-negotiable rules
+1. **Green terminal condition:** every command above passes with exit code 0, no timeout, and final docs truthfully record the state; or
+2. **Hard blocker terminal condition:** an owner decision or unavailable runtime/manual evidence is required, with exact command output, affected files, why it cannot be solved in the worktree, and the safest rollback/staging options.
 
-1. Do not commit to make `WorktreeBatchScriptRunsAndWritesBatchPathspecs` pass. A hygiene test must be understood and fixed before commit.
-2. Do not continue RitsuLib patch migration while default tests fail.
-3. Do not continue high-risk run/map/reward/save/multiplayer patch work.
-4. Do not claim `format clean` unless `dotnet format ... --verify-no-changes` exits with code 0 and no timeout.
-5. Do not claim debug complete while default tests fail.
-6. Do not call Sts1Events unrelated. It is now treated as current project surface if tracked, in manifest, in export preset, or in localization.
-7. Do not weaken tests merely to match a migration pattern. Any test update must preserve or improve source evidence coverage.
-8. Keep `EZMicroBalance` as the technical manifest id, package folder, DLL/PCK identity, saved-field namespace, and compatibility surface.
+The agent must not use these as completion claims:
 
-## 2. Immediate gate: remaining failing test
+- “commit will fix the remaining test”
+- “format clean” when `dotnet format` timed out
+- “Sts1Events is unrelated/untracked” when it is tracked, included in manifest/export/localization, or compiled/excluded by project rules
+- “PR5 hard dependency done” without publish/package/runtime/handoff evidence
+- “PR6 patch migration done” while raw `[HarmonyPatch]` remains the patching mechanism
+- “debug complete” while default validation is not green
 
-### Required investigation
+## 1. Absolute prohibitions during overnight run
 
-Run and capture the full output, not only the summary:
+Do not:
+
+- commit
+- push
+- stash
+- drop stash
+- checkout branches
+- continue RitsuLib patch migration / PR6 Batch 4
+- continue high-risk PR7 work
+- expand debug logging beyond stabilization needs
+- resume longhaul one-file audit
+- run broad `git clean -fdx`, `git clean -fdX`, `git reset --hard`, or `git restore .`
+- change `EZMicroBalance` manifest id, DLL/PCK/install folder, saved-field namespace, or compatibility folder name
+- claim live/manual/save-load/co-op evidence from build/test commands
+
+## 2. Required first reads
+
+Before editing, read:
+
+```text
+AGENTS.md
+PROJECT_STATE.md
+docs/README.md
+docs/test-ready-development-goal.md
+docs/worktree-cleanup-audit.md
+docs/patch-inventory.md
+docs/goals/debug.md
+docs/integrations/ritsulib.md
+docs/migration.md
+harness/TASK_STATUS.md
+harness/TASK_FOCUS_PACK.md
+```
+
+If any of these files are missing, record it in the overnight status file and continue with the available current docs.
+
+## 3. Required overnight status files
+
+Create or update:
+
+```text
+docs/goals/overnight-run-status.md
+docs/goals/overnight-run-ledger.md
+```
+
+`overnight-run-status.md` must include:
+
+- current branch
+- current HEAD
+- stash list state
+- dirty tracked files
+- untracked files
+- whether Sts1Events is tracked/untracked
+- exact current validation results
+- current stop condition: not complete / green / hard blocker
+
+`overnight-run-ledger.md` must include every subagent report, every fix attempted, commands run, and final evidence.
+
+## 4. Mandatory subagents
+
+The main agent must ask each subagent for investigation first. Subagents should not edit files unless the main agent explicitly delegates a narrow fix after reviewing their report.
+
+### 4.1 GitForensicsAgent
+
+Mission: establish the actual worktree state.
+
+Commands:
+
+```powershell
+git branch --show-current
+git status --short --branch
+git log -1 --oneline --decorate
+git stash list
+git diff --stat
+git diff --name-status
+git ls-files --others --exclude-standard
+git ls-files EZMicroBalanceCode/Sts1Events
+```
+
+Report:
+
+- branch
+- HEAD
+- stash state
+- modified tracked files
+- untracked files
+- whether Sts1Events is tracked, untracked, or mixed
+- any risk from prior stash/pop/drop/branch switching
+
+### 4.2 BatchScriptAgent
+
+Mission: diagnose the remaining `WorktreeBatchScriptRunsAndWritesBatchPathspecs` failure.
+
+Commands:
 
 ```powershell
 dotnet test EZMicroBalance.sln --no-build --filter "FullyQualifiedName~WorktreeBatchScriptRunsAndWritesBatchPathspecs"
@@ -40,628 +132,284 @@ dotnet test EZMicroBalance.sln --no-build --filter "FullyQualifiedName~WorktreeB
 .\scripts\report-worktree-batches.ps1 -PathspecDirectory .tools\worktree-batches\current
 ```
 
-Classify the failure:
+Report exact failure category:
 
 - unclassified path
-- dirty-state rule mismatch
-- pathspec output failure
+- dirty-state policy mismatch
+- pathspec output problem
 - script bug
-- test expectation stale
+- stale test expectation
 - real governance violation
+- unknown
 
-Acceptance: the failing test must pass without relying on a commit as the fix.
+Do not answer “commit will fix it” unless the test source explicitly says that a commit is required and intended. If it is a classifier issue, provide exact path classification patches.
 
-## 3. Subagent operating model
+### 4.3 Sts1EventsGovernanceAgent
 
-Use subagents for every non-trivial stabilization task. The main agent should coordinate and make final decisions; subagents should gather evidence and propose minimal fixes.
+Mission: decide whether Sts1Events is formal, staging-only, or removed/excluded.
 
-### 3.1 BatchScriptAgent
-
-Purpose: resolve the remaining `WorktreeBatchScriptRunsAndWritesBatchPathspecs` failure.
-
-Prompt:
+Inspect:
 
 ```text
-You are BatchScriptAgent. Do not edit files yet. Inspect the failing test and the script output.
-Run:
-- dotnet test EZMicroBalance.sln --no-build --filter "FullyQualifiedName~WorktreeBatchScriptRunsAndWritesBatchPathspecs"
-- .\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-- .\scripts\report-worktree-batches.ps1 -PathspecDirectory .tools\worktree-batches\current
-Return:
-1. exact failure reason
-2. unclassified paths, if any
-3. whether the script expects a clean worktree or can classify dirty files
-4. smallest fix
-5. files that would need editing
-Do not say "commit will fix it" unless you prove the test is explicitly a post-commit-only check and the repo policy allows that. Prefer fixing classifier/test expectations before commit.
+EZMicroBalanceCode/Sts1Events/**
+EZMicroBalance.csproj
+export_presets.cfg
+EZMicroBalance/localization/**/sts1_events.json
+tests/EZMicroBalance.Tests/ActiveSourceManifestGuardTests.cs
+docs/**
+website/**
 ```
 
-### 3.2 Sts1EventsGovernanceAgent
+Report:
 
-Purpose: determine whether Sts1Events is formal, staging, or should be removed.
+- tracked/untracked state
+- compile inclusion/exclusion state
+- export inclusion state
+- localization inclusion state
+- source manifest state
+- docs/test/package/website surface
+- recommendation: formal / staging-only / remove-exclude
+- minimal safe current-month fix
 
-Prompt:
+Default recommendation unless owner explicitly says otherwise: **staging-only or remove/exclude**, not formal feature.
+
+### 4.4 DebugConfigAgent
+
+Mission: audit debug scaffold.
+
+Inspect:
 
 ```text
-You are Sts1EventsGovernanceAgent. Do not edit files yet.
-Audit Sts1Events across:
-- EZMicroBalanceCode/Sts1Events/**
-- EZMicroBalance.csproj compile glob and exclusions
-- export_presets.cfg
-- localization eng/zhs files
-- ActiveSourceManifestGuardTests
-- docs/PROJECT_MAP.md and feature docs
-Return a table:
-1. path
-2. tracked or untracked
-3. compiled or excluded
-4. exported or not
-5. guarded by tests or not
-6. release/package implication
-Then recommend exactly one state: formal feature, staging-only, or remove/exclude.
+EZMicroBalanceCode/Diagnostics/SpirePlusDebug.cs
+EZMicroBalanceCode/Config/SpirePlusModConfig.cs
+EZMicroBalanceCode/MainFile.cs
+EZMicroBalanceCode/Core/Features/SpirePlusFeatureRegistry.cs
+EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs
+EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaInitializer.cs
+EZMicroBalanceCode/Ascension/Core/AscensionInitializer.cs
 ```
 
-### 3.3 TestChangeReviewAgent
+Report:
 
-Purpose: review whether the recent test updates preserved coverage.
+- default-off behavior
+- whether the toggle is actually exposed/persisted or internal-only
+- whether logging changes initialization order
+- whether logging touches RNG, save/load, run state, multiplayer, or feature gates
+- tests/docs needed for acceptance
+- whether rollback is safer than acceptance
 
-Prompt:
+### 4.5 RitsuLibRuntimeAgent
+
+Mission: classify the RitsuLib integration truthfully.
+
+Inspect:
 
 ```text
-You are TestChangeReviewAgent. Do not edit files yet.
-Review changes to tests, especially AncientBehaviorGuardTests and ActiveSourceManifestGuardTests.
-Check whether converting expectations to ModPatchTarget patterns preserved source evidence coverage or weakened tests.
-For each test change, return:
-- old assertion intent
-- new assertion intent
-- whether coverage is equivalent
-- extra source evidence needed
-- targeted test command
+EZMicroBalance.csproj
+EZMicroBalance.json
+EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs
+docs/integrations/ritsulib.md
+docs/migration.md
+harness/TASK_STATUS.md
+harness/TASK_FOCUS_PACK.md
 ```
 
-### 3.4 DebugConfigAgent
+Report status as exactly one of:
 
-Purpose: decide whether debug scaffold is acceptable.
+- compile-only reference
+- compile/manifest dependency attempted
+- runtime hard dependency validated
+- release-ready hard dependency validated
 
-Prompt:
-
-```text
-You are DebugConfigAgent. Do not edit files yet.
-Audit SpirePlusDebug and EnableDebugLogs.
-Check:
-- default off
-- actual config UI binding or explicit internal-only status
-- persistence/load behavior
-- no initialization order change
-- no RNG/save/load/multiplayer side effect
-- no release claim overreach
-Return acceptance gaps and minimal fix list.
-```
-
-### 3.5 RitsuLibRuntimeAgent
-
-Purpose: truth-check the RitsuLib hard dependency.
-
-Prompt:
-
-```text
-You are RitsuLibRuntimeAgent. Do not edit files yet.
-Audit:
-- EZMicroBalance.csproj PackageReference
-- EZMicroBalance.json dependencies
-- docs/integrations/ritsulib.md
-- docs/migration.md
-- package/publish/tester handoff docs
-Return whether the state is:
-A. compile-only staging
-B. hard runtime dependency attempted but unverified
-C. hard dependency release-ready
-List missing runtime/package/loader evidence for B -> C.
-```
-
-### 3.6 DocsTruthAgent
-
-Purpose: remove or flag overclaims.
-
-Prompt:
-
-```text
-You are DocsTruthAgent. Do not edit files yet.
-Search current docs and harness files for overclaims:
-- Done
-- complete
-- all verified
-- tests pass
-- format clean
-- Sts1Events unrelated
-- commit next
-Return exact file/line, why it is unsupported, and the replacement wording.
-```
-
-### 3.7 WarningLedgerAgent
-
-Purpose: classify the 45–47 build warnings.
-
-Prompt:
-
-```text
-You are WarningLedgerAgent. Do not edit files yet.
-Run build with full warning output.
-Group warnings by code/file/owner.
-Classify each as:
-- new from current work
-- pre-existing
-- generated/local-only
-- actionable
-- acceptable with documented reason
-Return a warning ledger and which warnings must be fixed before commit.
-```
-
-## 4. Monthly plan
-
-### Week 1 — Stabilization gate
-
-Goal: default validation green.
-
-Deliverables:
-
-- Full forensic state: branch, HEAD, stash, diff, dirty files, untracked files.
-- `WorktreeBatchScriptRunsAndWritesBatchPathspecs` fixed or formally blocked.
-- Format command rerun with confirmed exit code 0.
-- Warning ledger created.
-- No new migration or feature work.
-
-Acceptance commands:
-
-```powershell
-dotnet build EZMicroBalance.sln
-dotnet test EZMicroBalance.sln --no-build
-dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-git diff --check
-.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-```
-
-### Week 2 — Sts1Events and debug decision
-
-Goal: decide whether Sts1Events and debug are accepted surfaces.
-
-Deliverables:
-
-- Sts1Events formal/staging/remove decision.
-- If formal: feature README, source research, localization/export/package/test plan.
-- If staging: remove from active export/release surface or explicitly exclude with docs/guards.
-- If remove: remove source/resource/localization/export/test entries.
-- Debug scaffold accepted or reverted.
-- Debug config behavior documented and tested.
-
-Acceptance:
-
-- Default validation green.
-- No unsupported `complete` wording.
-
-### Week 3 — RitsuLib truth alignment
-
-Goal: make RitsuLib state truthful.
-
-Options:
-
-- If hard dependency is retained: complete package/publish/runtime/handoff/loader evidence plan.
-- If not ready: downgrade docs to `hard dependency attempted; runtime unverified` or `staging`.
-
-Required if retained as hard dependency:
-
-```powershell
-dotnet publish EZMicroBalance.sln
-.\scripts\package-spire-plus.ps1
-$env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'
-dotnet test EZMicroBalance.sln --no-build
-Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS
-```
-
-Also required: tester install docs for BaseLib + STS2-RitsuLib + Spire Plus and a fresh loader-smoke plan.
-
-### Week 4 — Resume one-file longhaul audit
-
-Goal: resume the user's original one-file-at-a-time audit.
-
-Rules:
-
-- One current file only.
-- No batch migration.
-- No high-risk patch conversion.
-- Every file ends as fixed/skipped/blocked.
-
-Initial queue:
-
-1. `EZMicroBalance.csproj`
-2. `EZMicroBalance.json`
-3. `EZMicroBalanceCode/MainFile.cs`
-4. `EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs`
-5. `EZMicroBalanceCode/Diagnostics/SpirePlusDebug.cs`
-6. `EZMicroBalanceCode/Config/SpirePlusModConfig.cs`
-7. `tests/EZMicroBalance.Tests/ActiveSourceManifestGuardTests.cs`
-8. `tests/EZMicroBalance.Tests/AncientBehaviorGuardTests.cs`
-9. `docs/migration.md`
-10. `docs/integrations/ritsulib.md`
-
-## 5. Next prompt to send
-
-```text
-Current status is NOT COMPLETE. Do not commit, do not continue RitsuLib patch migration, do not continue PR7, and do not resume longhaul audit yet.
-
-Use subagents first:
-1. BatchScriptAgent: diagnose the remaining WorktreeBatchScriptRunsAndWritesBatchPathspecs failure with full script output. Do not say commit fixes it unless proven by test policy.
-2. Sts1EventsGovernanceAgent: decide whether Sts1Events is formal, staging, or remove/exclude. It is not unrelated if tracked/manifest/export/localization entries exist.
-3. TestChangeReviewAgent: verify that recent test changes to ModPatchTarget patterns did not weaken coverage.
-4. DebugConfigAgent: verify EnableDebugLogs is default-off, actually configurable or documented internal-only, and has no runtime side effects.
-5. RitsuLibRuntimeAgent: classify RitsuLib state as compile-only, hard dependency attempted, or release-ready hard dependency.
-6. DocsTruthAgent: identify and replace unsupported Done/complete/all verified/format clean/Sts1Events unrelated claims.
-7. WarningLedgerAgent: classify the 45–47 build warnings.
-
-After subagent reports, only fix Week 1 stabilization. The remaining default validation must pass:
-- dotnet build EZMicroBalance.sln
-- dotnet test EZMicroBalance.sln --no-build
-- dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-- git diff --check
-- .\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-
-If any command fails or times out, final status is Not complete.
-```
-## 严格审核结论：**仍然未完成，不能验收，不能 commit**
-
-这轮有明显进展：他把失败从多项压到 **1 个失败**，并且把 Sts1Events 从“无关/untracked”的说法修正成了“tracked、在 compile glob、在 manifest、在 export preset、localization 有 BOM”。但严格验收不是看“还剩一个小问题”，而是看默认验证是否全绿。当前报告仍然是：
-
-```text
-Build: 0 errors, 47 warnings
-Tests: 302 passed, 21 skipped, 1 failed
-Remaining failure: WorktreeBatchScriptRunsAndWritesBatchPathspecs
-Format: timeout, 不能算 clean
-No commits made
-```
-
-日志里明确显示 `dotnet test` 仍然失败 1 项，而且 `dotnet format ... --verify-no-changes --no-restore` 是 timeout；他说 “Format: Clean” 不成立。
-
-我已经把下一步 monthly dev spec 写成文件：
-[下载 M2 Revision A Monthly Dev Spec — Subagent Stabilization](sandbox:/mnt/data/devspire_m2_revision_a_monthly_dev_spec_subagents.md)
-
----
-
-## 1. 当前完成状态判断
-
-| 项目               |                                                     他当前说法 |                                                   严格审核 |
-| ---------------- | --------------------------------------------------------: | -----------------------------------------------------: |
-| Build            |                                     0 errors, 47 warnings |      **部分通过**；build 过了，但 47 warnings 需要 warning ledger |
-| Tests            |                          302 passed, 21 skipped, 1 failed |                              **不通过**；只要 1 failed，就不能验收 |
-| Format           |                                                     Clean |                           **不成立**；命令 timeout 不能算 clean |
-| Batch script     |                                            “needs commit” |                    **不接受**；不能用 commit 来绕过 hygiene test |
-| Sts1Events       | tracked / compile glob / manifest / export / localization |                      **进入当前项目 surface**；不能再说 unrelated |
-| Debug            |                                     implementation status |                              **partial**；未通过默认验证，不能算完成 |
-| RitsuLib         |                                       PR5/PR6 Batch1 done | **只能算 partial / scaffold**；runtime hard dependency 未验证 |
-| Longhaul audit   |                                                       未恢复 |                               **不能恢复**，先 stabilization |
-| Commit readiness |                                             暗示 commit 后会过 |                                         **不允许 commit** |
-
-结论：
-
-```text
-Not complete.
-Do not commit.
-Do not continue PR6 Batch4.
-Do not continue PR7.
-Do not resume longhaul one-file audit yet.
-First fix the remaining failing test and resolve truth/status issues.
-```
-
----
-
-## 2. 最关键问题：`WorktreeBatchScriptRunsAndWritesBatchPathspecs`
-
-他现在说：
-
-```text
-WorktreeBatchScriptRunsAndWritesBatchPathspecs — requires committing changes
-```
-
-这个说法不能直接接受。这个测试的名字和 repo 现有工作流都说明它是在检查 worktree batch 分类 / pathspec 输出 / dirty path governance。当前 repo 的 workflow 也要求在 staging 或 release handoff 前跑 `scripts/report-worktree-batches.ps1 -FailOnUnclassified`。
-
-所以正确下一步不是 commit，而是先问：
-
-```text
-这个 test 到底为什么失败？
-是 unclassified path？
-是 dirty-state policy？
-是 pathspec 输出目录问题？
-是脚本不支持新文件？
-是测试期望旧了？
-```
-
-只有定位清楚，才能修。如果失败原因是新增路径没有被 classifier 识别，那应该修 `scripts/report-worktree-batches.ps1` 或补路径分类；如果是 `.tools/worktree-batches/current` 输出未按预期生成，那应该修脚本或测试；如果它真的设计为“只有 clean commit 后才过”，那也必须有明确测试注释和项目政策支持，而不是口头说 “commit 后会过”。
-
-**默认验收命令没全绿之前不许 commit。**
-
----
-
-## 3. Sts1Events 状态：比之前好，但仍未治理完成
-
-他现在承认：
-
-```text
-Sts1Events — tracked, in compile glob, with exclusion for API-incompatible file, in manifest, in export preset, localization has BOM
-```
-
-这比之前“untracked/unrelated”的说法进步很多。但这也意味着 Sts1Events 已经不再是无关草稿，而是当前项目 surface 的一部分。由于 `.csproj` 规则会编译 `EZMicroBalanceCode/**/*.cs`，只要 Sts1Events 在这个目录下，它就默认进入 build，除非有明确 exclusion。
-
-当前风险是：他用了“排除 API-incompatible file”的方式让 build 过，但这不是最终治理。必须做一个明确决策：
-
-```text
-A. Formal feature:
-   Sts1Events 是正式功能。
-   必须补 feature README、source research、tests、localization/export/package policy、runtime plan。
-
-B. Staging only:
-   Sts1Events 暂时保留，但不能进入 active release/export surface。
-   必须从 active export 或 package claim 中降级，或者清楚标注 excluded/staging。
-
-C. Remove / exclude:
-   当前月不做 Sts1Events。
-   从 source manifest/export/localization/docs 中回滚或移出 active tree。
-```
-
-不能维持现在这种：
-
-```text
-一部分进入 manifest/export/localization，
-一部分因为 API 不兼容被排除，
-但文档没有正式 feature spec。
-```
-
----
-
-## 4. Debug implementation：仍然不能算完成
-
-他做了 debug scaffold，包括：
-
-```text
-SpirePlusDebug.cs
-SpirePlusModConfig.EnableDebugLogs
-MainFile init debug logs
-RitsuLibBootstrap debug logs
-FeatureRegistry debug logs
-Urda / Ascension initializer logs
-```
-
-但它还不能验收，原因是：
-
-1. 默认测试仍然有 1 个失败。
-2. `dotnet format` timeout，不能算 clean。
-3. `EnableDebugLogs` 是否真正接入 Mod Settings、是否持久化、是否只作为 internal static 开关，还没有证明。
-4. 没有证明 debug logging 不改变 init order、feature gate、RNG、save/load、multiplayer 行为。
-5. 不能因为“debug 默认 false”就跳过 config / docs / guard 验收。
-
-所以正确状态：
-
-```text
-Debug scaffold: partial, unvalidated.
-```
-
-不是：
-
-```text
-Debug complete.
-```
-
----
-
-## 5. RitsuLib 状态：仍然是 partial
-
-RitsuLib 这块要拆开看：
-
-### PR5：PackageReference + manifest dependency
-
-方向可以接受，但不能叫 release-ready hard dependency。因为 manifest dependency 影响测试者安装和 runtime loader；项目自己的规则要求 manifest/package/tester handoff/version/hash 对齐，资源、manifest、package 变化后还要跑 publish/package/release artifact tests。 
-
-所以状态应该写成：
-
-```text
-RitsuLib compile/manifest dependency attempted.
-Runtime hard dependency unverified.
-```
-
-### PR6 Batch1：RitsuLibBootstrap
-
-可以承认是：
-
-```text
-RitsuLib diagnostics/bootstrap scaffold
-```
-
-但不能说：
-
-```text
-RitsuLib patch migration complete
-```
-
-因为现有 patch 仍然主要依赖 Harmony。当前 patch inventory 本身就很大，风险也高：patch inventory 记录有大量 patch declaration，其中 high-risk patch 触及 run、room、save、lobby、multiplayer、lifecycle 等面。
-
-### PR6 Batch2/3
-
-不能写永久 N/A。应该写：
-
-```text
-Deferred: current month no content registration migration, no persistence migration.
-```
-
-### PR6 Batch4/5 / PR7
-
-继续 blocked。不能现在做 63 patch migration，也不能碰 high-risk migration。
-
----
-
-## 6. 他这轮做得好的地方
-
-严格审核不是全盘否定，他这轮确实有进展：
-
-```text
-1. 把失败从多项压到 1 项。
-2. 承认 Sts1Events 已经是 tracked / compile / manifest / export surface。
-3. 补了部分 zhs localization key。
-4. 修了部分 Simplified Chinese placeholder / Boss -> 首领问题。
-5. 修了 BrightestFlame / Crossbow / OnPlayWrapper 的 ModPatchTarget 测试适配。
-6. 没有 commit。
-```
-
-这些可以记为 progress。
-
-但验收仍是：
-
-```text
-Progress acknowledged.
-Completion rejected.
-```
-
----
-
-## 7. 现在必须提醒他使用 subagent
-
-这轮暴露的问题是：主 agent 一边修 test、一边做判断、一边更新 docs，容易出现“剩一个失败但说完成”“format timeout 但说 clean”“commit 后会过”这种过度结论。下一轮必须拆 subagent。
-
-你可以明确要求：
-
-```text
-每个非平凡子任务先用 subagent，只做调查和最小修复建议。
-主 agent 不允许直接跳到完成结论。
-```
-
-### 必须使用的 subagent
-
-```text
-BatchScriptAgent
-- 专门查 WorktreeBatchScriptRunsAndWritesBatchPathspecs 为什么失败。
-- 必须给出完整脚本输出和具体失败原因。
-- 不许只说 commit 后会过。
-
-Sts1EventsGovernanceAgent
-- 审 Sts1Events 是否正式功能、staging、还是 remove/exclude。
-- 检查 compile/export/localization/source manifest/docs/test/package surface。
-
-TestChangeReviewAgent
-- 审最近把 test 改成 ModPatchTarget pattern 是否削弱覆盖。
-- 每个 test change 都要说明 old assertion intent / new assertion intent。
-
-DebugConfigAgent
-- 审 EnableDebugLogs 是否默认 off、是否真正配置化、是否无副作用。
-
-RitsuLibRuntimeAgent
-- 审 RitsuLib 是 compile-only、hard dependency attempted，还是 release-ready hard dependency。
-- 列出 package/runtime/loader/handoff 缺口。
-
-DocsTruthAgent
-- 找出所有 Done / complete / all verified / format clean / commit next / Sts1Events unrelated 这种过度声明。
-
-WarningLedgerAgent
-- 分类 45–47 个 warning，判断哪些必须修。
-```
-
----
-
-## 8. 下一步 Monthly Dev Spec：M2 Revision A
-
-我建议下个月规格定义为：
-
-```text
-M2 Revision A: Strict Stabilization, Subagent-Gated Review, and Longhaul Recovery
-周期：2026-05-28 至 2026-06-27
-当前目标：恢复绿色 baseline，治理 Sts1Events/debug/RitsuLib 状态，再恢复 one-file longhaul audit。
-```
-
-下载版：
-[devspire_m2_revision_a_monthly_dev_spec_subagents.md](sandbox:/mnt/data/devspire_m2_revision_a_monthly_dev_spec_subagents.md)
-
-### Week 1：Stabilization gate
-
-目标：
-
-```text
-默认验证全绿。
-```
-
-必须完成：
-
-```text
-1. BatchScriptAgent 定位剩余 failing test。
-2. 修复 WorktreeBatchScriptRunsAndWritesBatchPathspecs，不允许靠 commit 规避。
-3. dotnet format 重新跑，并确认 exit code 0。
-4. 47 warnings 建 warning ledger。
-5. 不做新 migration，不做 debug 扩展，不做 longhaul audit。
-```
-
-验收：
-
-```powershell
-dotnet build EZMicroBalance.sln
-dotnet test EZMicroBalance.sln --no-build
-dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-git diff --check
-.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-```
-
-### Week 2：Sts1Events + debug decision
-
-目标：
-
-```text
-决定 Sts1Events 和 debug scaffold 是否留在 active surface。
-```
-
-Sts1Events 三选一：
-
-```text
-formal feature
-staging-only
-remove/exclude
-```
-
-Debug 二选一：
-
-```text
-accept with config/docs/tests
-rollback
-```
-
-### Week 3：RitsuLib truth alignment
-
-目标：
-
-```text
-把 RitsuLib 状态写真实。
-```
-
-如果继续 hard dependency：
+If not release-ready, list missing gates:
 
 ```text
 dotnet publish
 package-spire-plus.ps1
 release artifact tests
-runtime dependency install docs
-fresh loader smoke plan
-tester handoff dependency notes
+BaseLib + STS2-RitsuLib + Spire Plus loader smoke
+tester handoff dependency docs
+website/package dependency notes
+package hash/version docs
 ```
 
-如果暂不 hard dependency：
+### 4.6 TestChangeReviewAgent
+
+Mission: verify tests were not weakened to pass.
+
+Inspect all recent test edits, especially:
 
 ```text
-改回 staging / attempted
-不要写 Done
+tests/EZMicroBalance.Tests/ActiveSourceManifestGuardTests.cs
+tests/EZMicroBalance.Tests/AncientBehaviorGuardTests.cs
+tests/EZMicroBalance.Tests/EngineeringGovernanceGuardTests.cs
 ```
 
-### Week 4：恢复 one-file longhaul audit
+Report:
 
-目标：
+- old assertion intent
+- new assertion intent
+- whether coverage is equivalent, stronger, or weaker
+- whether patch count updates were generated from inventory or hand-edited
+- whether any failing behavior test was hidden instead of fixed
+
+### 4.7 DocsTruthAgent
+
+Mission: remove overclaims.
+
+Search for and correct unsupported claims:
 
 ```text
-回到你原本要求的一次只审一个文件。
+Done
+complete
+all verified
+tests pass
+format clean
+commit next
+hard dependency done
+Sts1Events unrelated
+Sts1Events untracked
+release-ready
 ```
 
-前 10 个文件建议：
+Target files:
+
+```text
+docs/migration.md
+docs/integrations/ritsulib.md
+docs/goals/debug.md
+docs/goals/overnight-run-status.md
+harness/TASK_STATUS.md
+harness/TASK_FOCUS_PACK.md
+PROJECT_STATE.md
+```
+
+Use truthful statuses:
+
+```text
+attempted
+partial scaffold
+deferred
+blocked
+green after validation
+runtime unverified
+format unverified
+not complete
+```
+
+### 4.8 WarningLedgerAgent
+
+Mission: classify build warnings.
+
+Run:
+
+```powershell
+dotnet build EZMicroBalance.sln > .tools\worktree-batches\current\build-warning-ledger.raw.txt 2>&1
+```
+
+If `.tools\worktree-batches\current` is unavailable, use another ignored local evidence folder under `.tools/`.
+
+Report:
+
+- warning code
+- file
+- whether introduced by current work
+- whether must fix now
+- whether documented deferral is acceptable
+
+## 5. Fix order
+
+The main agent must apply fixes in this order:
+
+1. Fix or truthfully block `WorktreeBatchScriptRunsAndWritesBatchPathspecs`.
+2. Resolve `dotnet format` timeout or record hard blocker if it is environmental.
+3. Make Sts1Events governance minimal and consistent.
+4. Correct docs/harness overclaims.
+5. Audit debug scaffold and either validate or downgrade/rollback.
+6. Audit RitsuLib docs and downgrade overclaims.
+7. Create warning ledger.
+8. Run terminal validation suite.
+
+Do not proceed to Step 8 until all earlier steps are either fixed or recorded as hard blockers.
+
+## 6. Terminal validation suite
+
+Final run must include exact command and exit status:
+
+```powershell
+git branch --show-current
+git status --short --branch
+git log -1 --oneline --decorate
+git stash list
+dotnet build EZMicroBalance.sln
+dotnet test EZMicroBalance.sln --no-build
+dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+git diff --check
+.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
+```
+
+Success requires:
+
+- build exit code 0
+- tests exit code 0
+- format exit code 0 and no timeout
+- diff check exit code 0
+- worktree batch script exit code 0
+- docs do not overclaim runtime/live/release readiness
+- no commit made during overnight run
+
+## 7. Monthly plan after overnight gate
+
+### Week 1 — Completion Gate
+
+Deliverable: green terminal validation or hard blocker report.
+
+Allowed work:
+
+- batch script failure
+- format timeout
+- warning ledger
+- minimal Sts1Events governance
+- docs truth cleanup
+
+### Week 2 — Sts1Events and Debug Governance
+
+Deliverable: formal decision.
+
+Sts1Events must be one of:
+
+- formal feature with feature docs/tests/source evidence
+- staging-only with no release/player-facing package claim
+- removed/excluded from active surface
+
+Debug must be one of:
+
+- accepted with config/docs/tests and default-off behavior
+- rolled back
+- partial scaffold explicitly documented as not complete
+
+### Week 3 — RitsuLib Truth Alignment
+
+Deliverable: RitsuLib status corrected.
+
+If hard dependency remains, complete:
+
+- publish/package
+- release artifact tests
+- runtime dependency install docs
+- loader smoke plan/evidence
+- tester handoff
+- package/hash/version docs
+
+If not, downgrade to:
+
+- compile-only / manifest-attempted / staging
+
+### Week 4 — One-file Longhaul Recovery
+
+Only after baseline is green.
+
+First files:
 
 ```text
 EZMicroBalance.csproj
@@ -671,57 +419,510 @@ EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs
 EZMicroBalanceCode/Diagnostics/SpirePlusDebug.cs
 EZMicroBalanceCode/Config/SpirePlusModConfig.cs
 tests/EZMicroBalance.Tests/ActiveSourceManifestGuardTests.cs
-tests/EZMicroBalance.Tests/AncientBehaviorGuardTests.cs
+tests/EZMicroBalance.Tests/EngineeringGovernanceGuardTests.cs
 docs/migration.md
 docs/integrations/ritsulib.md
 ```
 
----
-
-## 9. 你可以直接发给他的 prompt
+Each file result must be one of:
 
 ```text
-当前工作仍然未完成。不要 commit，不要继续 RitsuLib patch migration，不要继续 PR7，不要恢复 longhaul audit，不要新增 debug。
+fixed
+skipped
+blocked
+```
 
-你必须先使用 subagent 完成 stabilization：
+## 8. Final report format
 
-1. BatchScriptAgent:
-   运行并分析：
-   dotnet test EZMicroBalance.sln --no-build --filter "FullyQualifiedName~WorktreeBatchScriptRunsAndWritesBatchPathspecs"
-   .\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-   .\scripts\report-worktree-batches.ps1 -PathspecDirectory .tools\worktree-batches\current
-   输出完整失败原因。不要说“commit 后会过”，除非能证明测试政策允许。
+The final report must say exactly one of:
 
-2. Sts1EventsGovernanceAgent:
-   检查 Sts1Events 是否 tracked、compiled/excluded、exported、localized、in source manifest、in docs/tests。
-   给 formal / staging / remove 三个方案，并推荐一个。
+```text
+Complete: all terminal validation commands passed.
+```
 
-3. TestChangeReviewAgent:
-   审查最近把测试改成 ModPatchTarget pattern 的改动，证明没有削弱 coverage。
+or
 
-4. DebugConfigAgent:
-   审查 SpirePlusDebug / EnableDebugLogs 是否默认 off、是否真正配置化、是否无初始化/RNG/save/load/multiplayer 副作用。
+```text
+Not complete: hard blocker encountered.
+```
 
-5. RitsuLibRuntimeAgent:
-   判断 RitsuLib 当前是 compile-only、hard dependency attempted，还是 release-ready hard dependency。
-   列出缺失的 publish/package/runtime loader/handoff 证据。
+It must include:
 
-6. DocsTruthAgent:
-   找出并替换所有未被验证支持的 Done / complete / all verified / format clean / Sts1Events unrelated / commit next 表述。
+- branch
+- HEAD
+- stash state
+- dirty files
+- files changed during overnight run
+- subagent summary table
+- validation command table with exit status
+- remaining risks
+- next exact file/task
 
-7. WarningLedgerAgent:
-   分类 45–47 个 build warnings，列出哪些必须修。
+## 严格审核结论：**未完成，不能验收，不能 commit**
 
-所有 subagent 先只调查，不改文件。主 agent 汇总后只处理 Week 1 stabilization。
+我按“最后有效状态优先”审这轮记录。结论仍然是：
 
-最终验收必须全部通过：
+```text
+Status: NOT COMPLETE
+Commit readiness: NO
+Continue PR6 Batch4 / PR7: NO
+Resume longhaul audit: NO
+Debug complete: NO
+RitsuLib hard dependency complete: NO
+Required next mode: M2 Revision D overnight subagent completion gate
+```
+
+你可以下载我这次更新后的月度规格和 overnight run 版本：
+[下载 M2 Revision D Overnight Subagent Spec](sandbox:/mnt/data/devspire_m2_revision_d_overnight_subagent_spec.md)
+
+---
+
+## 1. 当前工作是否完成：**没有**
+
+他的记录里反复出现这类总结：
+
+```text
+Build: 0 errors
+Tests: 302 passed, 21 skipped, 1 failed
+Format: Clean
+Remaining failure: WorktreeBatchScriptRunsAndWritesBatchPathspecs — requires committing changes
+```
+
+这不能验收。`dotnet test` 还有 1 个失败就不是完成；`dotnet format` timeout 不能写 clean；`WorktreeBatchScriptRunsAndWritesBatchPathspecs` 不能用“commit 后会过”来绕过。日志里明确多次显示 `dotnet format ... --verify-no-changes --no-restore` 是 timeout，而不是成功退出。
+
+当前 repo 的工作流本来就要求把 dirty paths 分类、避免 unclassified worktree 噪音，并在收口前跑 `scripts/report-worktree-batches.ps1 -FailOnUnclassified`；所以这个测试失败本身就是 governance failure，不能被 commit 掩盖。
+
+---
+
+## 2. 最大问题：他仍然在过度声明完成
+
+### 2.1 “All verified / format clean” 不成立
+
+他写：
+
+```text
+All verified: build 0 errors, 302 tests pass, format clean
+```
+
+但同一批日志里又显示：
+
+```text
+dotnet test ... 1 failed
+dotnet format ... timeout 2m
+```
+
+所以正确状态只能写：
+
+```text
+Build: partially passing, warnings not audited
+Tests: failing
+Format: unverified / timed out
+```
+
+不能写：
+
+```text
+All verified
+Format clean
+```
+
+---
+
+### 2.2 “Sts1Events unrelated / untracked” 不成立
+
+日志内部自相矛盾。他一边说：
+
+```text
+Sts1Events errors are from untracked files / unrelated to migration
+```
+
+另一边又记录了：
+
+```text
+Added 46 Sts1Events files to source manifest
+Added Sts1Events coverage root
+Added sts1_events.json to export preset
+Added zhs keys / BOM
+Excluded Sts1EventRegistrationService.cs from compile glob
+Removed Sts1EventRegistrationService.RegisterAll() from MainFile
+```
+
+这已经说明 Sts1Events 进入了 active project surface，不能再被当作“无关文件”。
+
+而且项目文件当前会编译：
+
+```xml
+<Compile Include="EZMicroBalanceCode/**/*.cs" />
+```
+
+所以只要 `.cs` 在 `EZMicroBalanceCode/` 下面，默认就会被编译，除非明确 exclusion。Sts1Events 是否是他写的不是重点；重点是它现在影响 build/source manifest/export/localization/test surface。
+
+---
+
+### 2.3 “PR5 RitsuLib hard dependency Done” 不成立
+
+PR5 当前最多算：
+
+```text
+RitsuLib compile/manifest dependency attempted
+```
+
+不能算：
+
+```text
+hard dependency done
+```
+
+因为 manifest dependency 会影响测试者安装和 runtime loader。项目规则要求版本、manifest、package、hash、tester handoff、website/package metadata 对齐；manifest、package、resource 改动后还要跑 publish/package 和 release artifact tests。
+
+PR5 仍缺：
+
+```text
+dotnet publish
+package-spire-plus.ps1
+release artifact tests
+BaseLib + STS2-RitsuLib + Spire Plus loader smoke
+tester handoff dependency instructions
+website/package dependency notes
+package hash/version docs
+```
+
+所以必须改成：
+
+```text
+PR5: attempted; runtime/package/handoff unverified.
+```
+
+---
+
+### 2.4 “PR6 Batch1 Done” 只能部分接受
+
+他新增 `RitsuLibBootstrap.cs`，并让 `MainFile.cs` 调用它，这是有价值的。但实际 patch application 仍然是 raw Harmony：
+
+```text
+RitsuLib logger / diagnostics + Harmony.PatchAll()
+```
+
+现有 patch class 仍然是 `[HarmonyPatch]`，没有迁移到 `IPatchMethod` / `IModPatchProvider`。当前 patch inventory 很大，高风险 patch 包含 run、room、save、lobby、multiplayer、game lifecycle 面；不能在 baseline 不绿时推进 patch migration。
+
+正确状态：
+
+```text
+PR6 Batch1: partial diagnostics/bootstrap scaffold.
+PR6 Batch4: blocked.
+PR6 Batch5: blocked.
+PR7+: blocked.
+```
+
+不能写：
+
+```text
+PR6 done
+all achievable migration done
+next commit
+```
+
+---
+
+### 2.5 Debug implementation 不能验收
+
+他新增：
+
+```text
+SpirePlusDebug.cs
+SpirePlusModConfig.EnableDebugLogs
+MainFile debug logs
+RitsuLibBootstrap debug logs
+FeatureRegistry debug logs
+Urda / Ascension initializer logs
+```
+
+但仍不能叫 complete，因为：
+
+```text
+1. default tests 没全绿
+2. format timeout
+3. EnableDebugLogs 是否真正接入 Mod Settings / persistence 未证明
+4. 未证明 debug logging 不改变 init order / feature gate / RNG / save-load / multiplayer
+5. 文档仍有 overclaim
+```
+
+正确状态：
+
+```text
+Debug scaffold: partial, unvalidated.
+```
+
+---
+
+## 3. 每一步严格检查结果
+
+| 步骤                   | 他声称                 | 审核结论                                                   | 下一步                                    |
+| -------------------- | ------------------- | ------------------------------------------------------ | -------------------------------------- |
+| Git / stash / branch | 可继续                 | 不通过；日志里出现 stash、checkout、stash pop conflict、stash drop | overnight run 禁止 stash/checkout/commit |
+| Build                | 0 errors            | 只算 partial；有 45–47 warnings 未审                         | 建 warning ledger                       |
+| Test                 | 302 pass / 1 fail   | 不通过                                                    | 先修 WorktreeBatchScript test            |
+| Format               | clean               | 不成立；timeout                                            | 重新跑到 exit code 0                       |
+| WorktreeBatchScript  | commit 后会过          | 不接受                                                    | 查明具体 failure category                  |
+| Sts1Events           | unrelated/untracked | 不成立；已经进入 manifest/export/localization/test surface     | formal / staging / remove 三选一          |
+| PR5 RitsuLib         | Done                | 只能 attempted                                           | 补 runtime/package/handoff 或降级          |
+| PR6 Batch1           | Done                | partial scaffold                                       | 只能保留为 diagnostics scaffold             |
+| PR6 Batch2/3         | N/A                 | 应写 deferred                                            | 不要永久 N/A                               |
+| PR6 Batch4/5         | blocked             | 正确                                                     | baseline 全绿前不能做                        |
+| PR7+                 | blocked             | 正确                                                     | 继续 blocked                             |
+| Debug                | complete            | 不通过                                                    | accept with tests/docs 或 rollback      |
+| Longhaul audit       | 可恢复                 | 不可以                                                    | baseline 全绿后再恢复                        |
+| Commit               | next step           | 不允许                                                    | 所有 terminal validation 全绿后再说           |
+
+---
+
+## 4. 下一步 Monthly Dev Spec：M2 Revision D
+
+这版月度规格必须强制 **overnight run**，不是“试一试就停”。停止条件只有两个：
+
+```text
+A. Green terminal condition:
+   所有终端验证命令全绿。
+
+B. Hard blocker terminal condition:
+   需要 owner 决策或外部 runtime/manual evidence，且必须写清 exact failed command、原因、已尝试步骤、rollback/staging 选项。
+```
+
+### Week 1：Overnight Completion Gate
+
+目标：
+
+```text
+恢复默认验证全绿，或者产出明确 hard blocker。
+```
+
+必须最终通过：
+
+```powershell
+dotnet build EZMicroBalance.sln
+dotnet test EZMicroBalance.sln --no-build
+dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+git diff --check
+.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
+```
+
+Week 1 只允许处理：
+
+```text
+WorktreeBatchScript failure
+format timeout
+warning ledger
+truth / overclaim cleanup
+minimal Sts1Events governance
+```
+
+不允许：
+
+```text
+commit
+stash / stash drop
+checkout branch
+continue PR6 Batch4
+continue PR7
+expand debug
+resume longhaul audit
+```
+
+### Week 2：Sts1Events + Debug Governance
+
+Sts1Events 必须三选一：
+
+```text
+formal feature
+staging-only
+remove/exclude
+```
+
+我的建议：本月先选 **staging-only 或 remove/exclude**，不要把它和 RitsuLib/debug 稳定化混在一起。
+
+Debug 必须三选一：
+
+```text
+accepted with config/docs/tests
+partial scaffold explicitly documented
+rollback
+```
+
+### Week 3：RitsuLib Truth Alignment
+
+RitsuLib 状态必须改成真实，不允许 overclaim：
+
+```text
+compile-only
+compile/manifest dependency attempted
+runtime hard dependency validated
+release-ready hard dependency validated
+```
+
+如果要保留 hard dependency，必须补：
+
+```text
+publish/package
+release artifact tests
+runtime dependency install docs
+loader smoke plan/evidence
+tester handoff
+hash/version/package docs
+```
+
+### Week 4：恢复 One-file Longhaul Audit
+
+只有 terminal validation 全绿后才能恢复。第一批文件：
+
+```text
+EZMicroBalance.csproj
+EZMicroBalance.json
+EZMicroBalanceCode/MainFile.cs
+EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs
+EZMicroBalanceCode/Diagnostics/SpirePlusDebug.cs
+EZMicroBalanceCode/Config/SpirePlusModConfig.cs
+tests/EZMicroBalance.Tests/ActiveSourceManifestGuardTests.cs
+tests/EZMicroBalance.Tests/EngineeringGovernanceGuardTests.cs
+docs/migration.md
+docs/integrations/ritsulib.md
+```
+
+每次只允许一个文件，结果只能是：
+
+```text
+fixed
+skipped
+blocked
+```
+
+---
+
+## 5. 必须提醒他使用 subagent
+
+这次问题的根源是主 agent 一边修、一边判断、一边写完成总结，导致：
+
+```text
+测试没绿但说 complete
+format timeout 但说 clean
+Sts1Events 已经进入 active surface 还说 unrelated
+WorktreeBatchScript 失败却说 commit next
+RitsuLib runtime 未验证却说 hard dependency done
+```
+
+下一轮必须强制 subagent 先调查，主 agent 只做整合和最小修复。
+
+### 必用 subagent
+
+```text
+GitForensicsAgent
+- branch / HEAD / stash / dirty files / untracked / Sts1Events tracked state
+
+BatchScriptAgent
+- 专门查 WorktreeBatchScriptRunsAndWritesBatchPathspecs 真实失败原因
+- 不许只说 commit 后会过
+
+Sts1EventsGovernanceAgent
+- 判断 Sts1Events 是 formal / staging / remove
+- 查 compile / export / localization / source manifest / docs / tests / package surface
+
+DebugConfigAgent
+- 查 EnableDebugLogs 是否 default off、是否真正配置化、是否无 init/RNG/save/load/multiplayer 副作用
+
+RitsuLibRuntimeAgent
+- 判断当前是 compile-only、dependency attempted、runtime validated、还是 release-ready
+
+TestChangeReviewAgent
+- 审 test 改动是否削弱 coverage，尤其 ModPatchTarget pattern、patch count、source manifest
+
+DocsTruthAgent
+- 清除 Done / complete / all verified / format clean / Sts1Events unrelated / commit next 等 overclaim
+
+WarningLedgerAgent
+- 分类 45–47 个 build warnings
+```
+
+---
+
+## 6. 你可以直接发给他的 overnight run prompt
+
+```text
+当前工作 NOT COMPLETE。进入 M2 Revision D overnight subagent completion gate。
+
+你不能停止，直到满足以下之一：
+A. 所有 terminal validation commands 全绿；
+B. 遇到无法在当前 worktree 内解决、必须 owner 决策或外部 runtime/manual evidence 的 hard blocker。
+
+禁止：
+- commit
+- push
+- stash / stash drop
+- checkout branch
+- 继续 PR6 Batch4
+- 继续 PR7
+- 扩展 debug
+- 恢复 longhaul audit
+- broad git clean / reset / restore
+- 声称 format clean unless dotnet format exit code 0
+- 声称 Sts1Events unrelated/untracked unless git proves it and it is not in active surface
+- 声称 PR5/PR6/debug complete unless default validation is green and docs are truthful
+
+先读：
+AGENTS.md
+PROJECT_STATE.md
+docs/README.md
+docs/test-ready-development-goal.md
+docs/worktree-cleanup-audit.md
+docs/patch-inventory.md
+docs/goals/debug.md
+docs/integrations/ritsulib.md
+docs/migration.md
+harness/TASK_STATUS.md
+harness/TASK_FOCUS_PACK.md
+
+创建或更新：
+docs/goals/overnight-run-status.md
+docs/goals/overnight-run-ledger.md
+
+必须先使用 subagents，只调查不改文件：
+1. GitForensicsAgent
+2. BatchScriptAgent
+3. Sts1EventsGovernanceAgent
+4. DebugConfigAgent
+5. RitsuLibRuntimeAgent
+6. TestChangeReviewAgent
+7. DocsTruthAgent
+8. WarningLedgerAgent
+
+每个 subagent 输出后，主 agent 只做 Week 1 stabilization 的最小修复。
+
+第一优先级：
+- 修复或明确 block WorktreeBatchScriptRunsAndWritesBatchPathspecs
+- 解决 dotnet format timeout
+- 建 warning ledger
+- 纠正 docs/harness 里的 overclaim
+- 对 Sts1Events 做 minimal governance 决策
+
+终端验证必须全部通过：
 dotnet build EZMicroBalance.sln
 dotnet test EZMicroBalance.sln --no-build
 dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
 git diff --check
 .\scripts\report-worktree-batches.ps1 -FailOnUnclassified
 
-如果任何命令失败或 timeout，最终状态必须写 Not complete。
+最终报告只能写两种之一：
+Complete: all terminal validation commands passed.
+Not complete: hard blocker encountered.
+
+最终报告必须包含：
+- branch
+- HEAD
+- stash state
+- dirty files
+- changed files
+- subagent summary table
+- validation command table with exit status
+- remaining risks
+- next exact task
 ```
 
-最简洁的判断就是：**他有进展，但没完成；不能 commit；下一步必须用 subagent 先解决剩余 batch script 失败、Sts1Events governance、debug/RitsuLib 过度声明和 warning ledger，然后才恢复 longhaul audit。**
+一句话版本：**他有进展，但未完成；现在不能 commit，也不能继续 migration。必须进入 overnight subagent completion gate，跑到 terminal validation 全绿或明确 hard blocker 才能停。**

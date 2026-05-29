@@ -74,6 +74,7 @@ function Get-WorktreeBatch {
         $p -match '^EZMicroBalance/localization/[^/]+/(ancients|cards|card_keywords|powers|relics|static_hover_tips)\.json$' -or
         $p.StartsWith('docs/features/ancient-expansion-urda/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/features/ancients-rework-v4/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/features/sts1-events/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^tests/EZMicroBalance\.Tests/(Ancient|Urda|Morvi|Lotha|Vakuu).*\.cs(\.uid)?$') {
         return 3
     }

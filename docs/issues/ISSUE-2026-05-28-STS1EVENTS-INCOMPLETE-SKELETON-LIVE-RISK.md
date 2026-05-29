@@ -2,71 +2,47 @@
 
 ## Status
 
-**Closed as safe — inactive source skeleton.**
+**Stale — needs rewrite.** Current HEAD state differs from claims below.
+See Sts1Events governance status in overnight run ledger for accurate state.
 
 ## Summary
 
 StS1 event port model files (`Sts1Events/Models/`) are compiled into the
-Spire Plus assembly but are **dead code**: the registration service that would
-register them with the game's event system is compile-excluded and has no
-call site in the live initialization path.
+Spire Plus assembly. The feature module (`Sts1EventsFeatureModule`) is
+registered in `SpirePlusFeatureRegistry` and gated to Off by default
+via environment variable `SPIREPLUS_STS1_EVENT_MODE`.
 
-## Evidence
+## Current State (as of 2026-05-29 overnight run)
 
-### Compile exclusion
+### Compile status
 
-`EZMicroBalance.csproj` excludes the registration service:
+- 52 C# files under `EZMicroBalanceCode/Sts1Events/`
+- 51 compiled, 1 compile-excluded (`Sts1Duplicator.cs`)
+- `Sts1EventRegistrationService.cs` IS compiled (not compile-excluded)
 
-```xml
-<Compile Remove="EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistrationService.cs" />
-```
+### Feature registration
 
-The only file that calls `content.SharedEvent<>()` / `content.ActEvent<>()` is
-`Sts1EventRegistrationService.cs`, which is never compiled.
+- `SpirePlusFeatureRegistry` registers `Sts1EventsFeatureModule`
+- Feature gate defaults to Off when env var `SPIREPLUS_STS1_EVENT_MODE` is unset
+- Zero events registered at runtime unless env var is set
 
-### No call site in MainFile.cs
+### Guard tests
 
-`MainFile.Initialize()` does not call `Sts1EventRegistrationService.RegisterAll()`.
-The feature registry (`SpirePlusFeatureRegistry.CreateDefault()`) does not register
-a `Sts1EventsFeatureModule`. The committed feature orders do not include `Sts1Events`.
-
-### Draft feature module archived
-
-A local draft `Sts1EventsFeatureModule.cs` and `Sts1EventFeatureGate.cs` existed
-in the working tree but were never committed. They reference the compile-excluded
-`Sts1EventRegistrationService` and would cause a build error if compiled. They have
-been archived to `docs/archive/sts1-events-feature-module-draft/`.
-
-### TODO branches in model files
-
-1. **Sts1DeadAdventurer** (Act 1): Line 37 has `// TODO: Enter combat with random elite`.
-   When the elite branch is rolled, the event ends without entering combat.
-
-2. **Sts1Joust** (Act 1): No gold-sufficiency check. `BetSelf()` and `BetOpponent()`
-   call `PlayerCmd.GainGold(-50, Owner)` without checking if the player has ≥50 gold.
-   On A15 failure, an additional 100g is deducted unconditionally.
+- 13+ dedicated tests in `Sts1EventFeatureGuardTests.cs`
+- Tests verify gate defaults, canary events, act mapping, registry presence
 
 ### Why this is safe
 
-Both TODO branches are unreachable in live gameplay because:
-- The registration service is compile-excluded
-- No code path in `MainFile.Initialize()` or the feature registry triggers registration
-- The model files are compiled but never instantiated by the game's event system
+The feature gate defaults to Off, so no events are registered at runtime
+unless the environment variable is explicitly set. Guard tests verify this
+behavior. The model files compile but are never instantiated by the game's
+event system in the default configuration.
 
-## Guard
+## Previous claims (stale — kept for history)
 
-`RitsuLibMigrationGuardTests.Sts1EventRegistrationServiceIsCompileExcluded()` verifies
-that `Sts1EventRegistrationService.cs` remains in the `<Compile Remove>` list.
+The following claims were accurate at time of writing (2026-05-28) but are
+now stale:
 
-## Resolution criteria
-
-Before Sts1Events can go live:
-- [ ] Complete Sts1DeadAdventurer elite combat branch
-- [ ] Add gold-sufficiency check to Sts1Joust
-- [ ] Add negative-gold protection
-- [ ] Implement and register `Sts1EventsFeatureModule` with proper feature gate
-- [ ] Add runtime smoke test for event registration
-
-## Created
-
-2026-05-28
+1. "Registration service is compile-excluded" — now compiled
+2. "Feature registry does not register Sts1EventsFeatureModule" — now registered
+3. "Draft feature module archived" — now promoted to live source

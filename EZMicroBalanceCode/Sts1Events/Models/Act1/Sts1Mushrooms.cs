@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act1;
 
@@ -32,7 +33,7 @@ public sealed class Sts1Mushrooms : EventModel
             await CreatureCmd.LoseMaxHp(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
                 Owner.Creature, MaxHpChange, isFromCard: false);
-            // TODO: Grant random potion
+            await Sts1EventHelpers.GrantRandomPotion(Owner, Rng);
             SetEventFinished(L10NLookup("STS1_MUSHROOMS.pages.EAT_BAD.description"));
         }
         else

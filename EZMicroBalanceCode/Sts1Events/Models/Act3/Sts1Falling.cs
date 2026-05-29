@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act3;
 
@@ -27,11 +28,10 @@ public sealed class Sts1Falling : EventModel
         };
     }
 
-    private Task LetGo()
+    private async Task LetGo()
     {
-        // TODO: Open card removal UI
+        await Sts1EventHelpers.OpenCardRemoval(Owner);
         SetEventFinished(L10NLookup("STS1_FALLING.pages.LET_GO.description"));
-        return Task.CompletedTask;
     }
 
     private async Task HoldOn()
@@ -46,10 +46,9 @@ public sealed class Sts1Falling : EventModel
         SetEventFinished(L10NLookup("STS1_FALLING.pages.HOLD_ON.description"));
     }
 
-    private Task Fly()
+    private async Task Fly()
     {
-        // TODO: Open card transform UI
+        await Sts1EventHelpers.OpenCardTransform(Owner, Rng);
         SetEventFinished(L10NLookup("STS1_FALLING.pages.FLY.description"));
-        return Task.CompletedTask;
     }
 }

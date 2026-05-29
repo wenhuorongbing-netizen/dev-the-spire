@@ -1,20 +1,20 @@
 # Golden Idol — Event Specification
 
+Status: spec-drafted / source-verified
+
 ## StS1 Wiki Behavior
 
-**Acts:** 1, 2, 3 (Unknown room pool)
+**Acts:** 1, 2, 3 (Unknown room pool — shared event)
 **Wiki:** https://slay-the-spire.fandom.com/wiki/Golden_Idol_(Event)
 
-### Options
-
-**Initial Page:**
+### Initial Page Options
 
 | Option | Effect |
 |--------|--------|
 | Take | Obtain Golden Idol relic. Go to TRAP page. |
 | Leave | Nothing happens. Event ends. |
 
-**Trap Page (after taking):**
+### Trap Page (after taking)
 
 | Option | Effect | A15+ Change |
 |--------|--------|-------------|
@@ -23,18 +23,43 @@
 | Destroy | Lose 10% max HP | Lose 15% max HP |
 
 ### Ascension Differences
-- A15+: Jump damage increases from 25% to 35% current HP
-- A15+: Destroy max HP loss increases from 10% to 15%
+- **A15+**: Jump damage increases from 25% to 35% current HP
+- **A15+**: Destroy max HP loss increases from 10% to 15%
 
-## StS2 Implementation
+## Normal Values
 
-### Class: `Sts1GoldenIdol`
-- **Base:** `ModEventTemplate` (RitsuLib)
-- **Registration:** `[RegisterSharedEvent]` (shared across acts)
-- **Layout:** Default event layout
-- **LocTable:** "events" (default)
+| Value | Amount |
+|-------|--------|
+| Jump HP loss | 25% of current HP |
+| Destroy max HP loss | 10% of max HP |
+| Smash curse | 1 Injury added to deck |
+| Take relic | Golden Idol relic obtained |
 
-### Localization Keys
+## A15 Values
+
+| Value | Amount |
+|-------|--------|
+| Jump HP loss | 35% of current HP |
+| Destroy max HP loss | 15% of max HP |
+| Smash curse | 1 Injury (unchanged) |
+
+## Option Table
+
+| Page | Option | Effect | Dependencies |
+|------|--------|--------|-------------|
+| INITIAL | Take | `RelicCmd.Obtain(Golden Idol, Owner)` → GoToPage("TRAP") | Golden Idol relic model |
+| INITIAL | Leave | `SetEventFinished(...)` | None |
+| TRAP | Smash | `CardPileCmd.AddCursesToDeck([Injury])` | Injury curse model |
+| TRAP | Jump | `CreatureCmd.Damage(null, Owner, CurrentHp * pct, ...)` | None |
+| TRAP | Destroy | `CreatureCmd.LoseMaxHp(Owner, MaxHp * pct)` | None |
+
+## Dependencies
+
+- **Golden Idol relic model**: Check if StS2 has a Golden Idol relic. If not, create custom `Sts1GoldenIdolRelic : RelicModel`.
+- **Injury curse card**: Check if StS2 has `Injury`. If not, create custom `Sts1Injury : CardModel`.
+- **A15 check**: `HasAscension(15)` — available in `EventModel` base class.
+
+## Localization Key Plan
 
 ```
 STS1_GOLDEN_IDOL.title
@@ -55,6 +80,21 @@ STS1_GOLDEN_IDOL.pages.JUMP.description
 STS1_GOLDEN_IDOL.pages.DESTROY.description
 ```
 
+## Asset Path Plan
+
+- Portrait: `EZMicroBalance/images/events/sts1_golden_idol.png`
+- Source: Extract from local StS1 installation via `extract-sts1-event-assets.ps1`
+- Format: 1024×600 PNG
+- Phobia mode: `sts1_golden_idol_phobia_mode.png` (optional)
+
+## StS2 Implementation
+
+### Class: `Sts1GoldenIdol`
+- **Base:** `ModEventTemplate` (RitsuLib)
+- **Registration:** `content.SharedEvent<Sts1GoldenIdol>()`
+- **Layout:** Default event layout
+- **LocTable:** "events"
+
 ### Dynamic Variables
 
 | Variable | Type | Base | A15+ |
@@ -62,18 +102,12 @@ STS1_GOLDEN_IDOL.pages.DESTROY.description
 | JumpDamagePct | DamageVar | 25% | 35% |
 | DestroyMaxHpPct | MaxHpVar | 10% | 15% |
 
-### Dependencies
-- Golden Idol relic model (check if StS2 has one; if not, create)
-- Injury curse card model
-
 ### Code Skeleton
 
 ```csharp
 [RegisterSharedEvent]
 public sealed class Sts1GoldenIdol : ModEventTemplate
 {
-    private bool _tookIdol;
-
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
         return
@@ -85,7 +119,6 @@ public sealed class Sts1GoldenIdol : ModEventTemplate
 
     private Task TakeIdol()
     {
-        _tookIdol = true;
         // Grant Golden Idol relic
         return GoToPage("TRAP");
     }
@@ -133,6 +166,29 @@ public sealed class Sts1GoldenIdol : ModEventTemplate
 }
 ```
 
-### Asset Requirements
-- Portrait: `EZMicroBalance/images/events/sts1_golden_idol.png`
-- Source: Extract from local StS1 installation via `extract-sts1-event-assets.ps1`
+## Manual Evidence Checklist
+
+- [ ] Debug-spawn Golden Idol in Act 1, Act 2, Act 3
+- [ ] Select "Leave" — verify event ends, no changes
+- [ ] Select "Take" — verify Golden Idol relic obtained, TRAP page appears
+- [ ] TRAP: Select "Smash" — verify Injury curse added to deck
+- [ ] TRAP: Select "Jump" — verify 25% current HP lost (A10+: 35%)
+- [ ] TRAP: Select "Destroy" — verify 10% max HP lost (A15+: 15%)
+- [ ] EN text renders correctly
+- [ ] ZHS text renders correctly
+- [ ] Event portrait loads
+- [ ] Dynamic variables show correct % in option tooltips (damage/maxHP markers)
+- [ ] A15 scaling: verify Jump 35% and Destroy 15% at A15+
+- [ ] Save after Take, reload — Golden Idol relic persists
+- [ ] Save after Smash, reload — Injury curse persists
+- [ ] Save after Jump, reload — HP loss persists
+- [ ] Save after Destroy, reload — max HP loss persists
+- [ ] Golden Idol relic icon displays correctly
+
+## Save/Load Notes
+
+- Relic obtained persists after save/load.
+- Curse added to deck persists after save/load.
+- HP/max HP changes persist after save/load.
+- Event state (current page) persists with room serialization.
+- Multi-page event: if player saves on TRAP page, reload should restore to TRAP page.

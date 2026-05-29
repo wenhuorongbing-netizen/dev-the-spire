@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act2;
 
@@ -31,21 +34,28 @@ public sealed class Sts1KnowingSkull : EventModel
     private async Task Question1()
     {
         await TakeDamage();
-        // TODO: Show lore text
         SetEventFinished(L10NLookup("STS1_KNOWING_SKULL.pages.QUESTION_1.description"));
     }
 
     private async Task Question2()
     {
         await TakeDamage();
-        // TODO: Show lore text
         SetEventFinished(L10NLookup("STS1_KNOWING_SKULL.pages.QUESTION_2.description"));
     }
 
     private async Task Question3()
     {
         await TakeDamage();
-        // TODO: Grant random rare card
+        var options = new CardCreationOptions(
+            new[] { Owner.Character.CardPool },
+            CardCreationSource.Other,
+            CardRarityOddsType.Uniform,
+            (CardModel c) => c.Rarity == CardRarity.Rare
+        ).WithFlags(CardCreationFlags.NoUpgradeRoll);
+
+        var cards = CardFactory.CreateForReward(Owner, 1, options).Select(r => r.Card).ToList();
+        if (cards.Count > 0)
+            await CardPileCmd.Add(cards, PileType.Deck);
         SetEventFinished(L10NLookup("STS1_KNOWING_SKULL.pages.QUESTION_3.description"));
     }
 

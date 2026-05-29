@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act3;
 
@@ -19,10 +20,9 @@ public sealed class Sts1Transmogrifier : EventModel
         };
     }
 
-    private Task Transform()
+    private async Task Transform()
     {
-        // TODO: Open card transform UI
+        await Sts1EventHelpers.OpenCardTransform(Owner, Rng);
         SetEventFinished(L10NLookup("STS1_TRANSMOGRIFIER.pages.TRANSFORM.description"));
-        return Task.CompletedTask;
     }
 }

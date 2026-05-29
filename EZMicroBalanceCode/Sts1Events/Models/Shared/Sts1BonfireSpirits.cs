@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
@@ -24,14 +25,12 @@ public sealed class Sts1BonfireSpirits : EventModel
 
     private async Task Offer()
     {
-        // TODO: Open card removal UI first, then heal to full
+        await Sts1EventHelpers.OpenCardRemoval(Owner);
         var maxHp = Owner?.Creature.MaxHp ?? 0m;
         var currentHp = Owner?.Creature.CurrentHp ?? 0m;
         var healAmount = maxHp - currentHp;
         if (healAmount > 0)
-        {
             await CreatureCmd.Heal(Owner.Creature, healAmount);
-        }
         SetEventFinished(L10NLookup("STS1_BONFIRE_SPIRITS.pages.OFFER.description"));
     }
 }

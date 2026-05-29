@@ -1,0 +1,113 @@
+# Overnight Run Final Validation — 2026-05-29
+
+Date: 2026-05-29
+Agent: Kilo (mimo-v2.5-pro)
+Spec: `docs/goals/refactor.md` Pack 5 — Final Overnight Validation
+
+## 1. Terminal Validation Results
+
+| Command | Exit Code | Result |
+|---|---|---|
+| `dotnet build EZMicroBalance.sln` | 0 | 0 errors, 0 warnings |
+| `dotnet test EZMicroBalance.sln --no-build` | 0 | 324 passed, 21 skipped, 0 failed (345 total) |
+| `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` | 0 | Clean |
+| `git diff --check` | 0 | No whitespace errors |
+| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | Pass (0 unclassified) |
+
+**Stop Condition: GREEN** — All terminal validation commands passed with exit code 0.
+
+## 2. Pack Completion Status
+
+| Pack | Description | Status | Evidence |
+|---|---|---|---|
+| Pack 0 | Final Validation Truth Gate | **DONE** | Terminal validation table above; single test count truth (324/0/21) |
+| Pack 1 | Phase 2 Patch Adapter Rule | **DONE** | `docs/architecture/patch-boundaries.md` expanded with Phase 2 adapter checklist, 5-column table (10 owner groups), 3 new rules |
+| Pack 2 | StS1EventFeatureGate + guard tests | **DONE** | `Sts1EventFeatureGate.cs` implemented (env var `SPIREPLUS_STS1_EVENT_MODE`); 13 guard tests in `Sts1EventFeatureGuardTests.cs`; default Off registers 0 events; CanaryOnly = exactly 4 events |
+| Pack 3 | Source/API docs | **DONE** | Created `sts2-act-event-registration.md`, `api-command-matrix.md`; updated `wiki-event-catalog.md` with 46/48/52 mismatch policy |
+| Pack 4 | Canary Spec Readiness | **DONE** | Updated all 4 canary event specs (big-fish, golden-idol, the-lab, divine-fountain) with full required fields |
+| Pack 5 | Final Overnight Validation | **THIS DOC** | Terminal validation + handoff |
+
+## 3. Code Fixes Applied This Session
+
+| # | File | Fix | Error Resolved |
+|---|---|---|---|
+| 1 | `EZMicroBalanceCode/Sts1Events/Models/Act3/Sts1MindBloom.cs` | Changed `await CardCmd.UpgradeCard(card)` to `CardCmd.Upgrade(card)` per-card loop | CS0117: 'CardCmd' does not contain a definition for 'UpgradeCard' |
+| 2 | `docs/goals/debug.md` | Removed trailing whitespace | `git diff --check` whitespace error |
+| 3 | `docs/goals/event.md` | Removed trailing whitespace | `git diff --check` whitespace error |
+| 4 | `scripts/report-worktree-batches.ps1` | Added `docs/features/sts1-events/` to batch 3 classification | `WorktreeBatchScriptRunsAndWritesBatchPathspecs` test failure |
+
+## 4. Pack 1–4 Detail
+
+### Pack 1 — Phase 2 Patch Adapter Rule
+
+- Updated `docs/architecture/patch-boundaries.md` with:
+  - Phase 2 adapter checklist (every high-risk patch must be a thin adapter)
+  - 5-column table covering 10 high-risk owner groups (Vakuu child combat, Urda Root Eyes, A20 dual boss, Ascension selector, Ascension map, Ascension combat, Multiplayer diagnostics, Reward sync, Preview tools, Sts1Events)
+  - 3 new rules: no same-PR move+behavior change, adapter separation, documentation requirement
+- Phase 2 status: **Started / adapter checklist drafted** — NOT marked Done
+
+### Pack 2 — StS1EventFeatureGate
+
+- `Sts1EventFeatureGate.cs`: env var gate (`SPIREPLUS_STS1_EVENT_MODE`), 4 modes (Off=0, CanaryOnly=1, AdditiveAllDraft=2, ReplaceUnknownEventsPrototype=3)
+- `Sts1EventsFeatureModule.cs`: IFeatureModule impl registered in `SpirePlusFeatureRegistry`
+- `Sts1EventRegistrationService.cs`: rewritten with `RegisterGated`/`RegisterCanaryOnly`/`RegisterAll`
+- 13 guard tests in `Sts1EventFeatureGuardTests.cs` covering default Off, CanaryOnly count, feature gate evaluation
+- Default Off = 0 registrations, zero impact on live Spire Plus
+
+### Pack 3 — Source/API Docs
+
+- `sts2-act-event-registration.md`: Act mapping research (Overgrowth+Underdocks=Act1, Hive=Act2, Glory=Act3)
+- `api-command-matrix.md`: HP heal/damage, card add/remove/upgrade/transform, relic grant, potion grant, event option APIs
+- `wiki-event-catalog.md`: Updated with 46/48/52 mismatch policy (52=wiki entries, 46=unique models, 57=registration calls)
+
+### Pack 4 — Canary Spec Readiness
+
+All 4 canary specs updated with:
+- Wiki behavior summary (rewritten, not copied)
+- Normal/A15 values
+- Option table
+- Dependencies
+- Localization key plan
+- Asset path plan
+- Manual evidence checklist
+- Save/load notes
+
+Status: **source-verified** or **blocked** per canary.
+
+## 5. Subagent Pass/Fail Summary
+
+| Subagent | Scope | Output | Pass/Fail |
+|---|---|---|---|
+| Patch Adapter Auditor | High-risk patches thin adapter audit | Owner/seam/checklist map in `patch-boundaries.md` | **PASS** — every high-risk group has owner + seam |
+| Feature Gate Engineer | Off/CanaryOnly gate implementation | `Sts1EventFeatureGate`, 13 guard tests | **PASS** — default Off registers nothing |
+| StS2 Source/API Auditor | Act mapping, API command matrix | `sts2-act-event-registration.md`, `api-command-matrix.md` | **PASS** — exact file/class/method evidence |
+| Wiki Spec Auditor | 46/48/52 mismatch, canary specs | Updated `wiki-event-catalog.md`, 4 canary specs | **PASS** — mismatch policy documented |
+| QA / Red-Team Auditor | Independent validation | This review document | **PASS** — all terminal commands green |
+
+## 6. Remaining Risks and Not-Done Items
+
+| # | Risk | Status |
+|---|---|---|
+| 1 | Phase 2 patch adapter rule | Started (checklist drafted), NOT Done |
+| 2 | StS1Events not marked complete | Prototype only |
+| 3 | Canary events not playable | Source-verified specs exist, implementation pending |
+| 4 | RitsuLib runtime unverified | Compile dependency in place, no runtime evidence |
+| 5 | No live gameplay proof | All evidence is source/build/test only |
+| 6 | Clean build warnings | 0 warnings on clean rebuild (improved from prior 69-warning claim) |
+
+## 7. Green Stop Checklist
+
+- [x] `git status --short` recorded
+- [x] `dotnet build EZMicroBalance.sln` — 0 errors, 0 warnings
+- [x] `dotnet test EZMicroBalance.sln --no-build` — 324 pass / 0 fail / 21 skip
+- [x] `dotnet format --verify-no-changes` — clean
+- [x] `git diff --check` — clean
+- [x] Single test count truth: 324/0/21
+- [x] `docs/issues.md`, `docs/goals/refactor.md`, StS1Events docs status consistent
+- [x] Phase 2 patch adapter owner/seam checklist complete
+- [x] StS1Events feature gate Off/CanaryOnly designed and implemented
+- [x] All subagent outputs have pass/fail
+- [x] No full parity / release-ready / live-ready claims
+- [x] No false green
+
+**GREEN STOP condition met.**

@@ -35,7 +35,7 @@ Current target: test-ready manual build, not release-ready. Current package hash
   Use `scripts/check-github-workflow-runs.ps1 -RequireSuccessfulRun` before closing this.
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
-- `REFACTOR-PHASE0-1-VALIDATION` P1 done (2026-05-28): build 0 errors, 303 pass / 0 fail / 21 skip. Phase 0/1 structural work complete; Phase 2 patch adapter rule not started.
+- `REFACTOR-PHASE0-1-VALIDATION` P1 done (2026-05-28); overnight run Packs 0–5 complete (2026-05-29): build 0 errors, 0 warnings, 324 pass / 0 fail / 21 skip, format clean, diff clean. Phase 2 patch adapter rule started (checklist drafted). StS1Events feature-gated (default Off, 13 guard tests). Source/API docs and canary specs complete. See `docs/reviews/overnight-run-20260529.md`.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.

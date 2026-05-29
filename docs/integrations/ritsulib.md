@@ -114,9 +114,9 @@ Adopt RitsuLib APIs in batches (PR 6+):
   register new cards/relics/potions through RitsuLib)
 - Batch 3: Persistence sidecar experiments (not applicable — existing
   SavedSpireFields work, no RitsuLib data store needed)
-- **Batch 4a: Low-risk patch migration — Done.** 9 patch classes migrated to
+- **Batch 4a: Low-risk patch migration — Source migrated; runtime unverified.** 9 patch classes migrated to
   `IPatchMethod` (Fiddle, ChoicesParadox, DistinguishedCape, BlackStar).
-- **Batch 4b: Medium-risk patch migration — Done.** 16 patch classes migrated
+- **Batch 4b: Medium-risk patch migration — Source migrated; runtime unverified.** 16 patch classes migrated
   to `IPatchMethod` (Crossbow, BrightestFlame, DebtAndCard, SealOfGold,
   PickupReward). Total migrated: 25.
 - Batch 5: High-risk run/map/reward/save/multiplayer patches (blocked on

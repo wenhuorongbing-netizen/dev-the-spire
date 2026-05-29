@@ -10,7 +10,7 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - **141 raw Harmony patches remaining** (22 high-risk, 35 medium-risk, 84 low-risk)
 - **Hybrid bootstrap active**: `ModPatcher.PatchAll()` for migrated, `Harmony.PatchAll()` for remaining
 - **8 migration guard tests** + 1 Sts1Events guard test active, 311 total tests passing
-- **Sts1Events**: compile-excluded skeleton, not live-registered, dormant risk tracked in issue doc
+- **Sts1Events**: compiled, feature-gated (default Off), dormant by default; guard tests active
 - **Runtime smoke**: pending — no local game environment available
 
 ## 4-Week Plan
@@ -104,7 +104,7 @@ Source-level separation: migrated patch classes live in `RitsuLib/` namespace an
 
 ### Sts1Events Dormant Risk
 
-Sts1Events source code compiles but is not live-registered. The registration service is compile-excluded. This is safe for now but creates maintenance burden. Resolution options:
+Sts1Events source code compiles and is registered in the feature registry with a gate that defaults to Off. The registration service is compiled (not compile-excluded). Guard tests verify the gate behavior. This is safe for now but creates maintenance burden. Resolution options:
 1. Complete registration infrastructure and go live (requires testing)
 2. Archive permanently (reduces code surface)
 
@@ -117,7 +117,7 @@ Sts1Events source code compiles but is not live-registered. The registration ser
 | Guard tests | 9 | 15-20 |
 | Total test suite | 311 passed | 320+ passed |
 | Runtime smoke | Pending | Complete |
-| Sts1Events status | Dormant skeleton | Resolved |
+| Sts1Events status | Compiled, gated Off | Resolved |
 | High-risk migration plan | Not started | Documented |
 
 ## References

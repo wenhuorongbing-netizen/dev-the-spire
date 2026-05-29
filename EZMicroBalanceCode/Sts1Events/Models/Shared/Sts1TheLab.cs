@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
@@ -21,10 +22,10 @@ public sealed class Sts1TheLab : EventModel
         };
     }
 
-    private Task Open()
+    private async Task Open()
     {
-        // TODO: Grant 3 random potions
+        for (int i = 0; i < 3; i++)
+            await Sts1EventHelpers.GrantRandomPotion(Owner, Rng);
         SetEventFinished(L10NLookup("STS1_THE_LAB.pages.OPEN.description"));
-        return Task.CompletedTask;
     }
 }
