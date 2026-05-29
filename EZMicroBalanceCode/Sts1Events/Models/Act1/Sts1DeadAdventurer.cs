@@ -12,6 +12,9 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act1;
 /// </summary>
 public sealed class Sts1DeadAdventurer : EventModel
 {
+    // Combat event: EnterCombatWithoutExitingEvent requires IsShared = true.
+    public override bool IsShared => true;
+
     private const int GoldMin = 30;
     private const int GoldMax = 50;
 

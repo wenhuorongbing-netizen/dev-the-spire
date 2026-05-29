@@ -173,4 +173,95 @@ public sealed class Sts1EventFeatureGuardTests
         var csproj = ReadRepoText("EZMicroBalance.csproj");
         Assert.DoesNotContain("Sts1EventRegistrationService.cs", csproj, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void CombatEventsDeclareIsSharedTrue()
+    {
+        // Combat events MUST have IsShared = true because EnterCombatWithoutExitingEvent requires it.
+        var combatEventFiles = new[]
+        {
+            Path.Combine("Act1", "Sts1DeadAdventurer.cs"),
+            Path.Combine("Act1", "Sts1ScorpionNest.cs"),
+            Path.Combine("Act1", "Sts1TreasureOoze.cs"),
+            Path.Combine("Act2", "Sts1MaskedBandits.cs"),
+            Path.Combine("Act3", "Sts1MysteriousSphere.cs"),
+            Path.Combine("Act3", "Sts1MindBloom.cs"),
+        };
+
+        foreach (var relativePath in combatEventFiles)
+        {
+            var filePath = Path.Combine(Root, "EZMicroBalanceCode", "Sts1Events", "Models", relativePath);
+            Assert.True(File.Exists(filePath), $"Combat event model file not found: {relativePath}");
+            var source = File.ReadAllText(filePath);
+            AssertSourceContains(source, "public override bool IsShared => true;");
+        }
+    }
+
+    [Fact]
+    public void AllSharedEventModelsDeclareIsSharedTrue()
+    {
+        // All Shared-act models must declare IsShared => true for consistent multiplayer behavior.
+        var sharedDir = Path.Combine(Root, "EZMicroBalanceCode", "Sts1Events", "Models", "Shared");
+        Assert.True(Directory.Exists(sharedDir), $"Shared events directory not found: {sharedDir}");
+
+        var csFiles = Directory.GetFiles(sharedDir, "*.cs");
+        Assert.True(csFiles.Length >= 15, $"Expected at least 15 shared event models, found {csFiles.Length}");
+
+        foreach (var filePath in csFiles)
+        {
+            var source = File.ReadAllText(filePath);
+            AssertSourceContains(source, "public override bool IsShared => true;");
+        }
+    }
+
+    [Fact]
+    public void RegistryEntryCountIs48()
+    {
+        // 48 entries: 45 compiling + 1 compile-excluded (Duplicator) + 2 Special stubs (Neow, Combat Start).
+        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistry.cs");
+        var entriesBlock = SliceBetween(source, "private static readonly List<Sts1EventEntry> Events = new()", "};");
+        var entryCount = CountOccurrences(entriesBlock, "new(\"");
+        Assert.Equal(48, entryCount);
+    }
+
+    [Fact]
+    public void RegisterAllSharedEventCountIs15()
+    {
+        // 15 SharedEvent calls in RegisterAll: Big Fish, Golden Idol, The Cleric, Golden Wing,
+        // Living Wall, Old Beggar, Bonfire Spirits, Divine Fountain, Fountain of Cleansing,
+        // The Lab, Face Trader, The Mausoleum, Designer, The Woman in Blue, Wheel of Change.
+        // Sts1Duplicator is excluded from compilation.
+        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
+        var registerAllMethod = SliceBetween(source, "public static void RegisterAll(string modId)", "content.Apply();");
+        var sharedEventCount = CountOccurrences(registerAllMethod, "content.SharedEvent<");
+        Assert.Equal(15, sharedEventCount);
+    }
+
+    [Fact]
+    public void OffModeReturnsImmediatelyWithZeroRegistrations()
+    {
+        // Off mode must return without registering any events.
+        var source = ReadSts1RuntimeSources();
+        var gatedMethod = SliceBetween(source, "public static void RegisterGated(string modId, Sts1EventRegistrationMode mode)", "}");
+
+        AssertSourceContains(gatedMethod,
+            "case Sts1EventRegistrationMode.Off:",
+            "return;");
+    }
+
+    [Fact]
+    public void ReplacementPrototypeSourceExistsWithCorrectStructure()
+    {
+        // The ReplacementPrototype Harmony patch must exist and be gated behind #if REPLACEMENT_PROTOTYPE_ENABLED.
+        var filePath = Path.Combine(Root, "EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1ReplacementPrototype.cs");
+        Assert.True(File.Exists(filePath), "Sts1ReplacementPrototype.cs not found in Runtime directory.");
+
+        var source = File.ReadAllText(filePath);
+        AssertSourceContains(source,
+            "#if REPLACEMENT_PROTOTYPE_ENABLED",
+            "HarmonyPatch",
+            "GenerateRooms",
+            "Sts1EventRegistrationMode.ReplaceUnknownEventsPrototype",
+            "#endif");
+    }
 }

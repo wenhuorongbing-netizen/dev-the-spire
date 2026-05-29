@@ -12,6 +12,9 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act2;
 /// </summary>
 public sealed class Sts1MaskedBandits : EventModel
 {
+    // Combat event: EnterCombatWithoutExitingEvent requires IsShared = true.
+    public override bool IsShared => true;
+
     private const int PayCost = 75;
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()

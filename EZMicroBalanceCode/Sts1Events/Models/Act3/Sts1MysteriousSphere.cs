@@ -10,6 +10,9 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act3;
 /// </summary>
 public sealed class Sts1MysteriousSphere : EventModel
 {
+    // Combat event: EnterCombatWithoutExitingEvent requires IsShared = true.
+    public override bool IsShared => true;
+
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
         return new EventOption[]

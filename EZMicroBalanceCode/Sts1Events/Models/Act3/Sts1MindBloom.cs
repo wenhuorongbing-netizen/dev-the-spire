@@ -15,6 +15,9 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act3;
 /// </summary>
 public sealed class Sts1MindBloom : EventModel
 {
+    // Combat event: EnterCombatWithoutExitingEvent requires IsShared = true.
+    public override bool IsShared => true;
+
     private const int GoldAmount = 999;
     private const int CursesNormal = 2;
     private const int CursesA15 = 3;

@@ -6,12 +6,12 @@ TBD (next available overnight session)
 
 ## Objective
 
-Continue RitsuLib migration by executing Batch 4c (low-risk patches) and preparing evidence backlog reduction for high-risk patches (Batch 5).
+Continue RitsuLib migration by executing Batch 4c (low-risk patches) and preparing evidence backlog reduction for high-risk patches (Batch 5). Architecture skeletons are complete; focus shifts to actual migration work.
 
 ## Pre-Run Checklist
 
 1. Confirm `main` branch is clean: `git status` shows no uncommitted changes
-2. Confirm full test suite passes: `dotnet test EZMicroBalance.sln --no-build` → 311+ passed, 0 failed
+2. Confirm full test suite passes: `dotnet test EZMicroBalance.sln --no-build` → 361+ passed, 0 failed
 3. Confirm build is clean: `dotnet build EZMicroBalance.sln` → 0 errors
 4. Confirm format is clean: `dotnet format --verify-no-changes`
 

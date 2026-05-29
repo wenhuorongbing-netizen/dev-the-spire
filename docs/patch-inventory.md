@@ -15,12 +15,12 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 141 |
+| Total patch declarations | 142 |
 | Migrated to RitsuLib ModPatcher | 25 |
-| Raw HarmonyPatch remaining | 141 |
+| Raw HarmonyPatch remaining | 142 |
 | High risk (raw Harmony) | 22 |
 | Medium risk (raw Harmony) | 35 |
-| Low risk (raw Harmony) | 84 |
+| Low risk (raw Harmony) | 85 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning

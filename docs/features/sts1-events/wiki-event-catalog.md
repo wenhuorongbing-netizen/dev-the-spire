@@ -2,15 +2,18 @@
 
 Created: 2026-05-29 | Status: source-verified
 
-## 46/48/52 Count Mismatch — Resolution
+## 46/52 Count Mismatch — Resolution
 
-The three counts refer to different dimensions:
+The counts refer to different dimensions:
 
 | Dimension | Count | Explanation |
 | --- | --- | --- |
 | `wiki_event_entries` | **52** | Total entries on the Slay the Spire Wiki event page. Includes Neow and Combat Start (special start-of-run events with no unknown-room equivalent). |
-| `runtime_event_models` | **46** | C# model files in `EZMicroBalanceCode/Sts1Events/Models/`. Excludes Neow and Combat Start (start-of-run only), plus 4 entries that share a model with their parent (Golden Wing Act1, The Cleric Act1, The Mausoleum Act2, The Woman in Blue Act2). |
-| `act_bucket_memberships` | **57** | Total RitsuLib registration calls: 15 shared + 14 act1 (7 events × 2 acts) + 13 act2 + 9 act3 + 6 canary re-registrations. |
+| `runtime_event_models` | **46** | C# model files in `EZMicroBalanceCode/Sts1Events/Models/`. Excludes Neow and Combat Start (start-of-run only), plus 4 entries that share a model with their parent (Golden Wing Act1, The Cleric Act1, The Mausoleum Act2, The Woman in Blue Act2). Includes `Sts1Duplicator.cs` (compile-excluded). |
+| `register_all_calls` | **52** | Total RitsuLib registration calls in `RegisterAll` mode: 15 shared × 1 + 7 Act1 × 2 (Overgrowth + Underdocks) + 14 Act2 × 1 + 9 Act3 × 1 = 52. Verified against `Sts1EventRegistrationService.RegisterAll()`. |
+| `canary_only_calls` | **4** | Subset used in `CanaryOnly` mode: Big Fish, Golden Idol, The Lab, Divine Fountain (all shared events). A strict subset of the 15 shared calls in `RegisterAll`. |
+
+`canary_only_calls` is **not** additive with `register_all_calls`. Canary mode replaces RegisterAll; it does not add to it.
 
 ### Why 52 Wiki Entries but Only 46 Models?
 

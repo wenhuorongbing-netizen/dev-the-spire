@@ -413,6 +413,8 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.State.cs",
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.cs",
         "EZMicroBalanceCode/Ascension/Patches/RootRunHook.cs",
+        "EZMicroBalanceCode/Core/Architecture/CardPlayContext.cs",
+        "EZMicroBalanceCode/Core/Architecture/RewardPipeline.cs",
         "EZMicroBalanceCode/Core/Features/FeatureGateResult.cs",
         "EZMicroBalanceCode/Core/Features/FeatureRegistry.cs",
         "EZMicroBalanceCode/Core/Features/IFeatureModule.cs",
@@ -488,6 +490,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistrationMode.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistrationService.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistry.cs",
+        "EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs",
         "EZMicroBalanceCode/Sts1Events/Sts1EventsFeatureModule.cs",
         "EZMicroBalanceCode/MainFile.cs"
     ];
@@ -550,6 +553,7 @@ public sealed class ActiveSourceManifestGuardTests
         new("EZMicroBalanceCode/Ancients/Expansion/Lotha/", "LothaPolishGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Lotha\")"),
         new("EZMicroBalanceCode/Ancients/Expansion/Vakuu/", "VakuuTemptationGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Vakuu\")"),
         new("EZMicroBalanceCode/Ascension/", "AscensionFeatureGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ascension\")"),
+        new("EZMicroBalanceCode/Core/Architecture/", "ArchitectureSkeletonGuardTests.cs", "RewardPipelineDefinesRewardPhaseEnum"),
         new("EZMicroBalanceCode/Core/Features/", "EngineeringGovernanceGuardTests.cs", "SpirePlusFeatureRegistry.CreateDefault().InitializeAll()"),
         new("EZMicroBalanceCode/Core/Integrations/RitsuLib/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
         new("EZMicroBalanceCode/Config/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),

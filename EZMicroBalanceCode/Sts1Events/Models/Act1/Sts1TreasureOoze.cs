@@ -13,6 +13,9 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act1;
 /// </summary>
 public sealed class Sts1TreasureOoze : EventModel
 {
+    // Combat event: EnterCombatWithoutExitingEvent requires IsShared = true.
+    public override bool IsShared => true;
+
     private const int OfferCost = 50;
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()

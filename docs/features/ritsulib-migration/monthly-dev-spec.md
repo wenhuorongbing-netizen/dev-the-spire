@@ -4,14 +4,17 @@
 
 Define the 4-week plan for completing the RitsuLib migration of Spire Plus from raw Harmony patches to managed RitsuLib `IPatchMethod` patches, including evidence backlog reduction and architecture hardening.
 
-## Current State (End of Overnight Run 2026-05-28)
+## Current State (End of Architecture Stabilization 2026-05-29)
 
 - **25 patches migrated** to RitsuLib `IPatchMethod` (Batch 1 + 4a + 4b)
-- **141 raw Harmony patches remaining** (22 high-risk, 35 medium-risk, 84 low-risk)
+- **142 raw Harmony patches remaining** (22 high-risk, 35 medium-risk, 85 low-risk)
 - **Hybrid bootstrap active**: `ModPatcher.PatchAll()` for migrated, `Harmony.PatchAll()` for remaining
-- **8 migration guard tests** + 1 Sts1Events guard test active, 311 total tests passing
-- **Sts1Events**: compiled, feature-gated (default Off), dormant by default; guard tests active
-- **Runtime smoke**: pending — no local game environment available
+- **8 migration guard tests** + 22 Sts1Events guard tests + 18 UrdaStateCodec guards + 10 FeatureRegistry guards + 13 architecture skeleton guards active, 361 total tests passing (0 failed, 21 skipped)
+- **Sts1Events**: compiled, feature-gated (default Off), 4-mode safety matrix validated (Off/CanaryOnly/AdditiveAllDraft/ReplaceUnknownEventsPrototype)
+- **FeatureRegistry hardened**: IFeatureModule metadata (DisplayName, Category, DisableEnvKeys, ForceEnvKeys), FeatureBootstrapRecord status tracking, env key override
+- **UrdaStateCodec V1**: encode/decode/legacy compat complete, 18 source-level guard tests
+- **Architecture skeletons**: RewardPipeline, CardPlayContext, DeathProtectionService spec, MultiplayerPolicy taxonomy
+- **Runtime smoke**: pending — STS2-RitsuLib not installed locally
 
 ## 4-Week Plan
 
@@ -50,33 +53,30 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 
 ### Week 3: Sts1Events Scope Closure + FeatureRegistry Hardening
 
-**Status**: Pending
+**Status**: Complete
 
-**Goals**:
-1. Resolve Sts1Events dormant skeleton: either complete registration infrastructure or archive permanently
-2. Harden FeatureRegistry with explicit feature ordering and fail-closed guards
-3. Migrate low-risk patches from raw Harmony to RitsuLib (target: 20-30 patches)
-
-**Tasks**:
-- [ ] Decide Sts1Events fate: complete registration or permanent archive
-- [ ] If completing: implement `Sts1EventRegistrationService.RegisterAll()` call in `MainFile.cs`
-- [ ] If archiving: remove Sts1Events source, update csproj, update guard tests
-- [ ] Add FeatureRegistry ordering assertions to guard tests
-- [ ] Identify and migrate next batch of low-risk patches (Batch 4c)
-- [ ] Run full test suite after each migration batch
-
-**Exit criteria**: Sts1Events resolved, FeatureRegistry hardened, Batch 4c complete with guard tests.
+**Completed**:
+- Sts1Events 4-mode safety matrix validated: Off (default), CanaryOnly (4 safe shared events), AdditiveAllDraft (all events), ReplaceUnknownEventsPrototype (all events)
+- CanaryOnly registers: BigFish, GoldenIdol, TheLab, DivineFountain — all safe, no TODOs
+- Sts1EventRegistrationService IS compiled, gated behind Sts1EventFeatureGate (default Off)
+- 22 Sts1Event guard tests (including 4 mode-safety guards)
+- FeatureRegistry hardened: IFeatureModule metadata (DisplayName, Category, DisableEnvKeys, ForceEnvKeys), FeatureBootstrapRecord status tracking, IsTruthyEnv helper
+- 10 EngineeringGovernance guard tests (including 3 FeatureRegistry guards)
+- UrdaStateCodec V1 complete: encode/decode/legacy compat, 18 source-level guard tests
+- `docs/issues/ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md` rewritten with mode safety matrix
 
 ### Week 4: High-Risk Migration Prep
 
-**Status**: Pending
+**Status**: In Progress (architecture skeletons complete)
 
-**Goals**:
-1. Prepare for high-risk patch migration (Batch 5) by reducing evidence backlog
-2. Document migration strategy for run/map/reward/save/multiplayer patches
-3. Establish rollback plan for high-risk migrations
+**Completed**:
+- RewardPipeline skeleton: `RewardPhase` enum, `IRewardHandler` interface, `RewardPipeline` diagnostics-only orchestrator
+- CardPlayContext skeleton: `ExtraPlayPolicy` enum, `CardPlayContext` with depth guard (MaxDepth=10), power fallback tracking
+- DeathProtectionService spec: documents Lotha DeathReprieve lifecycle, inReprieve flag, forced death bypass, co-op owner attribution, future `IDeathProtectionProvider` interface
+- MultiplayerPolicy taxonomy: 6 categories (LocalUiOnly, LocalPlayerOnly, HostAuthoritative, SharedRunState, CombatCommandReplicated, UnsafeInMultiplayer) mapped to existing MultiplayerFeaturePolicy
+- 13 architecture skeleton guard tests
 
-**Tasks**:
+**Remaining**:
 - [ ] Catalog high-risk patches (22 total) by subsystem
 - [ ] Prioritize by evidence availability and blast radius
 - [ ] Create migration plan for top 5 high-risk patches
@@ -102,10 +102,17 @@ Source-level separation: migrated patch classes live in `RitsuLib/` namespace an
 - **Medium-risk**: UI, card, relic, reward, combat model hooks — requires targeted testing
 - **Low-risk**: Narrow local hooks with isolated blast radius — can migrate with guard tests only
 
-### Sts1Events Dormant Risk
+### Sts1Events Mode Safety
 
-Sts1Events source code compiles and is registered in the feature registry with a gate that defaults to Off. The registration service is compiled (not compile-excluded). Guard tests verify the gate behavior. This is safe for now but creates maintenance burden. Resolution options:
-1. Complete registration infrastructure and go live (requires testing)
+Sts1Events source code compiles and is registered in the feature registry with a gate that defaults to Off. The registration service is compiled (not compile-excluded). Four modes validated:
+
+- **Off** (default): returns immediately, 0 events registered
+- **CanaryOnly**: registers 4 safe shared events (BigFish, GoldenIdol, TheLab, DivineFountain)
+- **AdditiveAllDraft**: registers all 51 events, including DeadAdventurer (TODO elite) and Joust (no gold guard)
+- **ReplaceUnknownEventsPrototype**: debug-only, replaces unknown events
+
+Guard tests verify mode behavior. Resolution options:
+1. Complete registration infrastructure and go live (requires runtime testing)
 2. Archive permanently (reduces code surface)
 
 ## Success Metrics
@@ -113,12 +120,13 @@ Sts1Events source code compiles and is registered in the feature registry with a
 | Metric | Current | Target (End of Week 4) |
 |--------|---------|------------------------|
 | Migrated patches | 25 | 55-65 |
-| Raw Harmony patches | 141 | 110-120 |
-| Guard tests | 9 | 15-20 |
-| Total test suite | 311 passed | 320+ passed |
+| Raw Harmony patches | 142 | 110-120 |
+| Guard tests | 71 | 80+ |
+| Total test suite | 361 passed | 370+ passed |
 | Runtime smoke | Pending | Complete |
-| Sts1Events status | Compiled, gated Off | Resolved |
-| High-risk migration plan | Not started | Documented |
+| Sts1Events status | Compiled, gated Off, 4-mode matrix validated | Resolved (activate or archive) |
+| High-risk migration plan | Architecture skeletons done | Documented with rollback strategy |
+| Architecture skeletons | Complete (RewardPipeline, CardPlayContext, DeathProtectionService, MultiplayerPolicy) | N/A (done) |
 
 ## References
 
@@ -128,3 +136,7 @@ Sts1Events source code compiles and is registered in the feature registry with a
 - `docs/features/ritsulib-migration/runtime-smoke-checklist.md` — runtime smoke verification
 - `docs/features/ritsulib-migration/next-overnight-run.md` — next automated run instructions
 - `docs/issues/ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md` — Sts1Events safety issue
+- `docs/architecture/death-protection-spec.md` — DeathProtectionService contract and Lotha DeathReprieve lifecycle
+- `docs/architecture/multiplayer-policy-taxonomy.md` — 6-category multiplayer safety classification
+- `docs/architecture/patch-boundaries.md` — high-risk surface owners and service seams
+- `docs/architecture/save-state-contracts.md` — durable vs transient state contracts
