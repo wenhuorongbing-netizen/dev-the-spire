@@ -6,7 +6,7 @@ Verify that the RitsuLib migration does not change runtime behavior by loading t
 
 ## Status
 
-**PENDING** — no local game environment available for automated runtime smoke. Manual execution required before claiming runtime parity.
+**BLOCKED** — STS2-RitsuLib is not installed at `<GameRoot>\mods\STS2-RitsuLib`. The installed Spire Plus package (`v0.1.0-private-beta.84`) declares a dependency on `STS2-RitsuLib >= 0.3.2`. Runtime smoke cannot proceed until STS2-RitsuLib is installed. Batch 4c is blocked until runtime smoke passes.
 
 ## Prerequisites
 

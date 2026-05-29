@@ -62,8 +62,8 @@ directly (no compat package for 0.106.1 exists on NuGet).
 - `{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }` in manifest dependencies
 
 **Verification:**
-- Build: 0 errors, 0 warnings (Sts1Events nullable warnings excluded)
-- Tests: 324 passed, 21 skipped, 0 failed
+- Build: 0 errors, 87 warnings (all CS8602/CS8604 in Sts1Events models)
+- Tests: 361 passed, 0 failed, 21 skipped (382 total)
 - Format: unverified at time of last doc update
 
 **Risk accepted:** RitsuLib 0.3.2 base package compiled against a different game

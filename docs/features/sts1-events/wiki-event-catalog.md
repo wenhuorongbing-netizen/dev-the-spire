@@ -25,16 +25,16 @@ The counts refer to different dimensions:
 
 So: 52 wiki entries − 2 special (Neow, Combat Start) − 4 duplicates (shared/act split) = **46 unique models**.
 
-### Why 57 Registration Calls?
+### Why 52 Registration Calls?
 
 Each Act 1 event registers twice (once for `Overgrowth`, once for `Underdocks`):
 - 15 shared events × 1 call each = 15
 - 7 Act 1 events × 2 acts = 14
-- 13 Act 2 events × 1 act = 13
+- 14 Act 2 events × 1 act = 14
 - 9 Act 3 events × 1 act = 9
-- Total = 51 (in `RegisterAll` mode)
+- Total = 52 (in `RegisterAll` mode)
 
-Canary mode adds 4 shared event registrations (subset of the 15 shared).
+Canary mode uses 4 of the 15 shared event registrations (subset, not additive).
 
 ## Canonical Matrix
 

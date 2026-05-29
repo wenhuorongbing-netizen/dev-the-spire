@@ -14,7 +14,7 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - **FeatureRegistry hardened**: IFeatureModule metadata (DisplayName, Category, DisableEnvKeys, ForceEnvKeys), FeatureBootstrapRecord status tracking, env key override
 - **UrdaStateCodec V1**: encode/decode/legacy compat complete, 18 source-level guard tests
 - **Architecture skeletons**: RewardPipeline, CardPlayContext, DeathProtectionService spec, MultiplayerPolicy taxonomy
-- **Runtime smoke**: pending — STS2-RitsuLib not installed locally
+- **Runtime smoke**: blocked — STS2-RitsuLib not installed locally; Batch 4c blocked until runtime smoke passes
 
 ## 4-Week Plan
 
@@ -26,14 +26,14 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - Fixed RitsuLibBootstrap comment (8 classes, not 7)
 - Created migration guard tests for double-patch, source-level separation, manifest coverage, doc counts
 - Moved untracked Sts1Events files to archive
-- Full test suite clean: 311 passed, 21 skipped, 0 failed
+- Full test suite clean: 361 passed, 0 failed, 21 skipped (382 total)
 - Format clean, diff clean
 
 **Exit criteria met**: All doc counts match source, all guard tests pass, no untracked files.
 
 ### Week 2: Runtime Smoke + Full Test Truth
 
-**Status**: In Progress
+**Status**: Blocked (STS2-RitsuLib not installed locally; Batch 4c blocked until runtime smoke passes)
 
 **Goals**:
 1. Execute runtime smoke checklist (requires manual game load)
@@ -108,12 +108,34 @@ Sts1Events source code compiles and is registered in the feature registry with a
 
 - **Off** (default): returns immediately, 0 events registered
 - **CanaryOnly**: registers 4 safe shared events (BigFish, GoldenIdol, TheLab, DivineFountain)
-- **AdditiveAllDraft**: registers all 51 events, including DeadAdventurer (TODO elite) and Joust (no gold guard)
+- **AdditiveAllDraft**: registers all 52 events, including DeadAdventurer (TODO elite) and Joust (no gold guard)
 - **ReplaceUnknownEventsPrototype**: debug-only, replaces unknown events
 
 Guard tests verify mode behavior. Resolution options:
 1. Complete registration infrastructure and go live (requires runtime testing)
 2. Archive permanently (reduces code surface)
+
+### Runtime Log Plan — Off / CanaryOnly
+
+When runtime smoke becomes available, the following log entries must be verified:
+
+**Off mode (default, env var unset):**
+- `[Spire Plus] Feature Sts1Events bootstrap gate: disabled (StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.).`
+- No `[StS1 Events]` log lines (RegisterGated returns immediately)
+- 0 StS1 events registered in RitsuLib content pack
+
+**CanaryOnly mode (env var = `CanaryOnly`):**
+- `[Spire Plus] Feature Sts1Events bootstrap gate: enabled (StS1 events CanaryOnly mode: registering 4 canary events.).`
+- `[StS1 Events] Registering canary events (Big Fish, Golden Idol, Lab, Divine Fountain)...`
+- `[StS1 Events] Canary events registered successfully.`
+- Exactly 4 SharedEvent registrations visible in RitsuLib debug log
+- No `ActEvent` registrations (canary events are shared-only)
+
+**If RitsuLib not active:**
+- `[StS1 Events] RitsuLib not active; skipping canary event registration.` (CanaryOnly)
+- `[StS1 Events] RitsuLib not active; skipping event registration.` (AdditiveAllDraft/ReplaceUnknownEventsPrototype)
+
+These log patterns are the required evidence for runtime smoke verification.
 
 ## Success Metrics
 

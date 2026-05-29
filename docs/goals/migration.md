@@ -1,612 +1,469 @@
-# 严格验收结论
+# 严格审核结论
 
-**没有完成。**
-这轮可以承认为：**RitsuLib Batch 4b 源码迁移已经推进，但 Batch 4a/4b 还没有完成闭环验收，更不能叫 RitsuLib 全面迁移完成。**
-
-当前 GitHub `main` 最新提交是：
+这轮工作 **比上一轮明显推进**，但不能判定为“月度架构稳定化目标完成”。更准确的状态是：
 
 ```text
-c06ff17 Resolve merge conflict decisions
+已完成：
+- Batch 4a/4b 计数修正；
+- RitsuLib patch migration guard 增强；
+- Sts1Events 默认关闭 gate；
+- CanaryOnly 4 事件安全矩阵；
+- source/API 文档和 canary specs；
+- no-build test 绿灯证据；
+- monthly-dev-spec / next-overnight-run 文档已存在。
+
+未完成：
+- RitsuLib runtime smoke；
+- Mod Settings UI 实测；
+- live gameplay proof；
+- dotnet build warning 状态有冲突；
+- dotnet test 非 --no-build 是否全绿未在 review 文档中完整证明；
+- FeatureRegistry 还没真正变成完整 runtime status registry；
+- UrdaStateCodec 仍主要是 source-level guard，不等于完整迁移；
+- RewardPipeline / CardPlayContext 仍是 skeleton；
+- DeathProtectionService 仍是 spec；
+- MultiplayerPolicy 仍是 taxonomy 文档；
+- release-ready 仍然不是。
 ```
 
-说明这轮工作已经 push 到远程，可以验收；不是本地未提交状态。
-
-当前真实状态：
+当前最新 GitHub 提交是：
 
 ```text
-RitsuLib compile/runtime dependency：完成
-RitsuLibBootstrap：完成第一层
-ModPatcher + raw Harmony hybrid mode：完成第一层
-Batch 4a/4b patch migration：源码部分完成
-Batch 4a/4b 计数和文档：仍有错误
-double-patch guard：未证明完成
-full test truth：未证明完成
-RitsuLib runtime smoke：未证明完成
-Sts1Events 未完成 skeleton：仍存在风险
-RitsuLib lifecycle/DataStore/settings/content pack：未迁
-RewardPipeline/CardPlayContext/DeathProtection/MultiplayerPolicy：未完成
-release-ready：否
+faf5860 — overnight run Packs 0-5: fix Sts1MindBloom build error, Phase 2 adapter checklist, StS1EventFeatureGate, source/API docs, canary specs, final validation review
 ```
+
+这个提交已经在远程 main 上，说明这轮不是本地未提交。
 
 ---
 
-# 1. 分步骤验收
+# 1. 当前状态与目标对比
 
-## 1.1 RitsuLib NuGet dependency
+## 1.1 Batch 4a/4b closure
 
-**状态：完成。**
+**基本完成。**
 
-`EZMicroBalance.csproj` 已经加入：
-
-```xml
-<PackageReference Include="STS2.RitsuLib" Version="0.3.2" PrivateAssets="All"/>
-```
-
-BaseLib 3.1.4 仍保留，这符合当前“RitsuLib 主导迁移，但 BaseLib 过渡期保留”的策略。
-
-结论：
-
-```text
-PASS
-```
-
----
-
-## 1.2 RitsuLib runtime dependency
-
-**状态：完成。**
-
-`EZMicroBalance.json` 已经声明：
-
-```json
-{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }
-```
-
-同时仍依赖 BaseLib。
-
-这意味着测试安装链路现在必须是：
-
-```text
-BaseLib
-STS2-RitsuLib
-Spire Plus
-```
-
-结论：
-
-```text
-PASS
-```
-
----
-
-## 1.3 MainFile / bootstrap 解耦
-
-**状态：部分完成。**
-
-`MainFile.Initialize()` 现在调用：
-
-```csharp
-RitsuLibBootstrap.ApplyPatches(ModId);
-ModConfigRegistry.Register(ModId, new SpirePlusModConfig());
-SpirePlusFeatureRegistry.CreateDefault().InitializeAll();
-```
-
-说明入口已经不再直接手写所有 feature initializer，而是经过 RitsuLib bootstrap 和 FeatureRegistry。
-
-结论：
-
-```text
-PARTIAL PASS
-```
-
-但注意：这只是第一层解耦。FeatureRegistry 仍然不是完整模块系统，还缺 live status、dependencies、diagnostics、multiplayer policy 等。
-
----
-
-## 1.4 RitsuLibBootstrap / hybrid patching
-
-**状态：部分完成。**
-
-当前 `RitsuLibBootstrap` 会：
-
-```csharp
-RitsuLibFramework.CreateLogger(...)
-RitsuLibFramework.CreatePatcher(...)
-RegisterMigratedPatches(patcher)
-patcher.PatchAll()
-new Harmony(modId).PatchAll()
-```
-
-也就是说：
-
-```text
-已迁移 patch -> RitsuLib ModPatcher
-未迁移 patch -> raw Harmony.PatchAll()
-```
-
-
-
-这是合理的过渡方案，但它不是完整 RitsuLib patch migration。
-
-结论：
-
-```text
-PARTIAL PASS
-```
-
----
-
-## 1.5 Batch 4a / 4b patch migration
-
-**状态：源码部分完成，但文档计数错误。**
-
-### 源码实际注册数
-
-`RitsuLibBootstrap.RegisterMigratedPatches()` 当前注册：
-
-Batch 4a：
-
-```text
-FiddlePatches: 4
-ChoicesParadoxPatch: 1
-DistinguishedCapePatches: 3
-BlackStarCompensationPatches: 1
-```
-
-实际总数：
-
-```text
-4 + 1 + 3 + 1 = 9
-```
-
-Batch 4b：
-
-```text
-CrossbowPatches: 2
-BrightestFlameExhaustDrawPatch: 3
-DebtAndCardPatches: 8
-SealOfGoldPatches: 2
-PickupRewardPatches: 1
-```
-
-实际总数：
-
-```text
-2 + 3 + 8 + 2 + 1 = 16
-```
-
-所以源码真实总数是：
-
-```text
-25 migrated classes
-```
-
-
-
-### 文档错误
-
-`docs/migration.md` 当前写：
-
-```text
-Batch 4a: 10
-Batch 4b: 16
-Total migrated: 26
-```
-
-还把 `DebtAndCardPatches.cs` 写成 `7` 个 class，但列出的 patch ids 实际有 8 个。
-
-正确应该是：
+之前最大问题是迁移计数错误：Batch 4a 文档写 10，实际 9；总数文档写 26，实际 25。现在 `docs/migration.md` 已经修正：
 
 ```text
 Batch 4a = 9
 Batch 4b = 16
-Total = 25
-DebtAndCardPatches = 8
+Total migrated = 25
+Remaining raw HarmonyPatch = 141
 ```
 
-结论：
+并且 `DebtAndCardPatches.cs` 已从 7 修成 8。
+
+`docs/patch-inventory.md` 也已经新增 migrated section，明确：
 
 ```text
-SOURCE PARTIAL PASS
-DOC FAIL
+Migrated to RitsuLib ModPatcher: 25
+Raw HarmonyPatch remaining: 141
+High risk raw: 22
+Medium risk raw: 35
+Low risk raw: 84
 ```
 
-这不是小问题。迁移表如果错了，后续 Batch 4c/4d 会继续基于错误数量推进。
+并列出所有 25 个 migrated patch。
+
+**判定：PASS。**
 
 ---
 
-## 1.6 Patch inventory
+## 1.2 Double-patch guard
 
-**状态：部分完成。**
+**source-level 完成。**
 
-`docs/patch-inventory.md` 当前记录：
-
-```text
-Total patch declarations: 141
-High risk: 22
-Medium risk: 35
-Low risk: 84
-Unclassified owner: 0
-```
-
-
-
-这说明 raw `[HarmonyPatch]` 剩余数量已经被统计。
-
-但它仍然缺：
+`RitsuLibMigrationGuardTests.cs` 已经有 8 个 guard，覆盖：
 
 ```text
-MigratedToRitsuModPatcher inventory
-RawHarmonyRemaining inventory
-HighRiskBlocked inventory
+PatchId unique
+migrated patch count = 25
+migrated classes have no HarmonyPatch attribute
+raw HarmonyPatch classes are not registered
+RegisterMigratedPatches count matches source
+migration.md count matches source
+patch-inventory.md lists migrated patches
+all expected PatchId strings appear in source
 ```
 
-也就是说，它只回答了“剩多少 raw Harmony”，没有完整回答：
+这些测试已经能防止最明显的 double-patch 风险。
 
-```text
-哪些已迁？
-哪些未迁？
-哪些禁止迁？
-哪些必须等 evidence？
-```
+**判定：source-level PASS。**
 
-结论：
-
-```text
-PARTIAL PASS
-```
+但注意：这仍然不是 runtime proof。它证明“源码结构上不会明显 double patch”，不证明 RitsuLib ModPatcher 在游戏 runtime 中行为完全等价。
 
 ---
 
-## 1.7 Double-patch safety
+## 1.3 Sts1Events 安全治理
 
-**状态：未证明完成。**
+**完成了一层 gate，但还不是完整内容完成。**
 
-当前同时执行：
+当前 review 文档记录：
 
 ```text
-RitsuLib ModPatcher.PatchAll()
-raw Harmony.PatchAll()
+Sts1EventFeatureGate
+SPIREPLUS_STS1_EVENT_MODE
+Off = 0
+CanaryOnly = 1
+AdditiveAllDraft = 2
+ReplaceUnknownEventsPrototype = 3
+默认 Off = 0 registrations
+CanaryOnly = exactly 4 events
+13 guard tests
 ```
 
 
 
-这必须有 guard 保证：
+`Sts1EventFeatureGuardTests.cs` 也验证：
 
 ```text
-[ ] RegisterMigratedPatches 里的 class 不含 [HarmonyPatch]
-[ ] 含 [HarmonyPatch] 的 class 没有被 RegisterPatch 注册
-[ ] PatchId 全局唯一
-[ ] RegisterMigratedPatches 数量和 docs/inventory 一致
-[ ] 不会同一个 target 被 patch 两次
+默认 env unset 时 Off；
+CanaryOnly 正好 4 个事件；
+RegisterCanaryOnly 只注册 Big Fish / Golden Idol / The Lab / Divine Fountain；
+FeatureRegistry 注册 Sts1EventsFeatureModule；
+Sts1Duplicator 被 compile-excluded；
+Sts1EventRegistrationService 编译进来。
 ```
 
-目前我没有看到 GitHub 上能证明这些已经完全覆盖的 guard。
 
-结论：
+
+**判定：默认 Off / CanaryOnly 安全层 PASS。**
+
+但它还不是“Sts1Events 完成”。review 文档自己也写：
 
 ```text
-FAIL / NOT PROVEN
+StS1Events not marked complete
+Canary events not playable
+Prototype only
 ```
+
+
+
+并且 `ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md` 仍写当前是 gated Off、CanaryOnly 有 guard，但这只是说明默认安全，不是说明所有 draft events 可用。
+
+**结论：Sts1Events 默认安全，内容未完成。**
 
 ---
 
-## 1.8 Full test truth
+## 1.4 Full test truth
 
-**状态：未闭环。**
+**部分完成，有冲突必须澄清。**
 
-Codex 汇报只说：
+review 文档记录：
 
 ```text
-All 4 migration tests pass
-Build 0 errors
-Format clean
-Pre-existing failures: Sts1Events, documentation
+dotnet build EZMicroBalance.sln -> 0 errors, 87 warnings (all Sts1Events nullable)
+dotnet test EZMicroBalance.sln --no-build -> 361 passed, 21 skipped, 0 failed (382 total)
+dotnet format EZMicroBalance.sln --verify-no-changes --no-restore -> clean
+git diff --check -> clean (after trailing whitespace fix in event.md)
+report-worktree-batches -> pass (3 dirty, 0 unclassified)
 ```
 
-这不能算完整验收。
 
-必须跑并报告：
+
+但是你这次贴的 summary 说：
+
+```text
+Build: 0 errors, 87 warnings (pre-existing Sts1Events null-safety)
+Tests: 361 passed, 0 failed, 21 skipped
+```
+
+这和 repo 中 review 文档的 `0 warnings` / `324 passed` 不一致。
+
+**严格判定：FULL TEST TRUTH 仍需复核。**
+
+下一步必须让 Codex 重新跑并记录同一轮完整命令：
 
 ```powershell
+dotnet build EZMicroBalance.sln
 dotnet test EZMicroBalance.sln
 dotnet test EZMicroBalance.sln --no-build
+dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+git diff --check
 ```
 
-而不是只跑 migration tests。
+并统一写入同一份 review 文件。现在不能同时接受“0 warnings”和“87 warnings”。
 
-`docs/migration.md` 也写了类似：
+---
+
+## 1.5 Runtime smoke
+
+**未完成。**
+
+`runtime-smoke-checklist.md` 当前明确写：
 
 ```text
-Tests: 302 passed, 21 skipped, 0 failed (1 pre-existing batch script failure unrelated to RitsuLib)
+Status: PENDING — no local game environment available for automated runtime smoke.
 ```
 
-这个表述本身不严谨。如果有 failure，就不能写 0 failed；如果不是测试失败，就必须说明是哪条脚本、是否影响 validation。
+所有 runtime evidence 仍是 `[PENDING]`。
 
-结论：
+这说明：
 
 ```text
-FAIL / INCOMPLETE
+RitsuLib compile dependency 已经有；
+RitsuLib runtime dependency 已经有；
+但 BaseLib + STS2-RitsuLib + Spire Plus 的真实游戏加载仍未证明。
+```
+
+**判定：FAIL / PENDING。**
+
+这仍然是最大 blocker。没有 runtime smoke，就不能说 RitsuLib migration runtime-safe。
+
+---
+
+## 1.6 Monthly dev spec
+
+**已创建，但方向需要修订。**
+
+`monthly-dev-spec.md` 已存在，记录当前状态：
+
+```text
+25 patches migrated
+141 raw Harmony remaining
+8 migration guard tests + 1 Sts1Events guard test
+Sts1Events default Off
+runtime smoke pending
+```
+
+它也把 Week 1 标为 DONE，Week 2 runtime smoke 标为 In Progress。
+
+但这份计划的问题是：Week 3 仍然写了继续迁 Batch 4c，Week 4 写 high-risk migration prep。
+
+在 runtime smoke pending、test count 有冲突、架构 skeleton 还很薄的情况下，**继续 Batch 4c 不是最优先**。
+
+---
+
+## 1.7 next-overnight-run
+
+当前 `next-overnight-run.md` 的 objective 是：
+
+```text
+Continue RitsuLib migration by executing Batch 4c
+```
+
+并要求迁 10–15 个新的 low-risk patches。
+
+**我不建议执行这个版本。**
+
+现在应该替换为：
+
+```text
+Runtime proof + test truth reconciliation + architecture foundation overnight run
+```
+
+而不是继续 patch 迁移。
+
+---
+
+# 2. 当前总体判断：继续优化、推进，还是两者兼顾？
+
+结论：**两者兼顾，但优先优化/稳定化。**
+
+具体优先级：
+
+```text
+第一优先级：优化与稳定
+- runtime smoke；
+- test truth reconciliation；
+- Sts1Events governance；
+- FeatureRegistry hardening；
+- UrdaStateCodec；
+- RewardPipeline / CardPlayContext / DeathProtection / MultiplayerPolicy skeleton。
+
+第二优先级：有限推进
+- 只在 runtime smoke 和 full tests 过后，再考虑 Batch 4c；
+- 不碰 high-risk run/map/reward/save/multiplayer patches；
+- 不新增玩法。
+```
+
+不建议现在继续“推进功能”。当前项目最大风险不是“迁得不够快”，而是：
+
+```text
+编译/测试证据和 runtime 证据之间还断着；
+架构 skeleton 还没转化为行为安全；
+Sts1Events 只是 gate 安全，内容不完整；
+RitsuLib 只接管了部分 patch，没有接管生命周期/状态/设置/内容注册。
 ```
 
 ---
 
-## 1.9 Sts1Events scope creep
+# 3. 修订后的 Monthly Dev Spec
 
-**状态：未闭环。**
-
-`Sts1DeadAdventurer` 已经修了一部分。随机遗物分支现在调用：
-
-```csharp
-await Sts1EventHelpers.GrantRandomRelic(Owner);
-```
-
-而 helper 也确实会拉取 relic 并 `RelicCmd.Obtain(...)`。
-
-但精英分支仍然是：
-
-```csharp
-// TODO: Enter combat with random elite
-SetEventFinished(...)
-```
-
-也就是说，roll 到 elite 分支时不会进入精英战，只会结束事件。
-
-`Sts1Joust` 仍然直接：
-
-```csharp
-await PlayerCmd.GainGold(-BetCost, Owner);
-```
-
-没有看到金币不足下注防护。
-
-结论：
+## 月度主题
 
 ```text
-FAIL / OPEN RISK
+RitsuLib Runtime Proof + Architecture Foundation Month
 ```
 
-必须确认 Sts1Events 是否 live registered。如果未注册，要明确标 inactive skeleton 并加 guard；如果已注册，必须禁用或补完。
-
----
-
-## 1.10 RitsuLib runtime smoke
-
-**状态：未证明。**
-
-虽然 csproj 和 manifest 都接入了 RitsuLib，但现在还没有看到 clean game log 证明：
+## 本月总目标
 
 ```text
-BaseLib + STS2-RitsuLib + Spire Plus
-RitsuLib framework is active
-ModPatcher applied expected patch count
-No MissingMethodException
-No TypeLoadException
-```
-
-结论：
-
-```text
-NOT PROVEN
-```
-
-这必须进入 overnight run。
-
----
-
-# 2. 完成度总表
-
-| 项目                           | 状态             |
-| ---------------------------- | -------------- |
-| RitsuLib NuGet dependency    | 完成             |
-| RitsuLib manifest dependency | 完成             |
-| RitsuLibBootstrap            | 第一层完成          |
-| ModPatcher hybrid mode       | 第一层完成          |
-| Batch 4a migrated patches    | 源码 9 个，文档错写 10 |
-| Batch 4b migrated patches    | 源码 16 个        |
-| Total migrated               | 源码 25，文档错写 26  |
-| Raw Harmony remaining        | 141，已记录        |
-| Migrated inventory           | 缺              |
-| Double-patch guard           | 未证明            |
-| Full test suite              | 未证明            |
-| Sts1Events skeleton          | 风险未闭环          |
-| Runtime smoke                | 未证明            |
-| RitsuLib lifecycle           | 未开始            |
-| RitsuLib DataStore           | 未开始            |
-| RitsuLib settings            | 未开始            |
-| RitsuLib content pack        | 未开始            |
-| StateCodec                   | 未开始            |
-| RewardPipeline               | 未开始            |
-| CardPlayContext              | 未开始            |
-| DeathProtectionService       | 未开始            |
-| MultiplayerPolicy            | 未开始            |
-| Release-ready                | 否              |
-
----
-
-# 3. 下一步不要做什么
-
-现在不要继续 Batch 4c。
-
-原因：
-
-```text
-Batch 4a/4b 自身没有闭环；
-迁移计数错误；
-full test truth 不完整；
-double-patch guard 不完整；
-Sts1Events skeleton 仍然危险；
-runtime smoke 未证明。
-```
-
-继续迁 patch 会扩大风险面。
-
----
-
-# 4. Monthly Dev Spec：RitsuLib Migration Stabilization Month
-
-## 月度目标
-
-本月目标不是新增内容，也不是盲目继续迁更多 patch，而是：
-
-```text
-1. 关闭 Batch 4a/4b 迁移真相。
-2. 证明 RitsuLib runtime 能 clean load。
-3. 修复或隔离 Sts1Events 未完成 skeleton。
-4. 建立 double-patch 防护。
-5. 开始 FeatureRegistry / StateCodec / RewardPipeline / CardPlayContext / DeathProtection / MultiplayerPolicy 架构基础。
+1. 证明 RitsuLib runtime 真能加载。
+2. 统一 build/test truth，解决 0 warnings vs 87 warnings、324 pass vs 361 pass 的冲突。
+3. 固化 Sts1Events 安全边界。
+4. 强化 FeatureRegistry，让它不只是 wrapper。
+5. 把 UrdaStateCodec 从 source-level guard 推进到实际状态安全。
+6. 将 RewardPipeline / CardPlayContext / DeathProtectionService / MultiplayerPolicy 从 skeleton/spec 推进到最小可测试架构。
+7. 继续阻塞 high-risk patch migration。
 ```
 
 ---
 
-## Week 1：Batch 4a/4b Truth Closure
+## Week 1：Runtime Smoke + Test Truth Reconciliation
 
 ### 任务
 
 ```text
-[ ] 修 docs/migration.md：
-    Batch 4a = 9
-    Batch 4b = 16
-    Total = 25
+[ ] 重新跑完整命令：
+    dotnet build EZMicroBalance.sln
+    dotnet test EZMicroBalance.sln
+    dotnet test EZMicroBalance.sln --no-build
+    dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+    git diff --check
 
-[ ] 修 DebtAndCardPatches row：
-    Classes = 8
+[ ] 统一测试事实：
+    - build warnings 到底是 0 还是 87？
+    - tests 到底是 324 passed 还是 361 passed？
+    - skipped 到底是多少？
+    - 是否有任何 warning 应该转 issue？
 
-[ ] 新增/扩展 patch inventory：
-    - MigratedToRitsuModPatcher
-    - RawHarmonyRemaining
-    - HighRiskBlocked
+[ ] clean runtime smoke：
+    BaseLib v3.1.4
+    STS2-RitsuLib
+    Spire Plus
+    no other mods
 
-[ ] 添加 tests：
-    - PatchId unique
-    - migrated patch classes do not contain HarmonyPatch
-    - raw Harmony patch classes are not registered in RitsuLibBootstrap
-    - RegisterMigratedPatches count matches docs
-    - docs/migration.md count matches source
+[ ] runtime log 必须检查：
+    - RitsuLib bootstrap starting
+    - ModPatcher applied 25/25 patches
+    - RitsuLib framework is active
+    - SavedSpireFields count
+    - no MissingMethodException
+    - no TypeLoadException
+    - no manifest dependency failure
 ```
 
 ### 验收
 
 ```text
-[ ] 源码和文档计数一致
-[ ] patch inventory 有 migrated/raw/high-risk 三类
-[ ] double-patch risk 有 guard
+[ ] docs/reviews/current-validation.md 写入唯一 test truth
+[ ] runtime-smoke-checklist.md 至少 loader smoke 不再全 PENDING
+[ ] 如果 runtime smoke 无法执行，明确 pending，并禁止 Batch 4c
 ```
 
 ---
 
-## Week 2：Runtime Smoke + Full Test Truth
+## Week 2：Sts1Events Governance Hardening
 
 ### 任务
 
 ```text
-[ ] dotnet build EZMicroBalance.sln
-[ ] dotnet test EZMicroBalance.sln
-[ ] dotnet test EZMicroBalance.sln --no-build
-[ ] dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-[ ] git diff --check
-```
+[ ] 重写 Sts1Events issue，移除 stale wording。
+[ ] 明确 4 个 mode 的风险等级：
+    Off = safe default
+    CanaryOnly = controlled test
+    AdditiveAllDraft = unsafe/dev-only
+    ReplaceUnknownEventsPrototype = unsafe/dev-only
 
-必须做 clean loader smoke：
+[ ] guard：
+    - Off registers 0
+    - CanaryOnly registers exactly 4
+    - AdditiveAllDraft cannot be used in release package unless dev env explicitly set
+    - TODO/BLOCKED events cannot enter safe modes
 
-```text
-Only:
-- BaseLib
-- STS2-RitsuLib
-- Spire Plus
-```
-
-log 必须包含：
-
-```text
-RitsuLib bootstrap starting
-ModPatcher applied X/Y patches
-RitsuLib framework is active
-0 MissingMethodException
-0 TypeLoadException
-0 manifest dependency failure
+[ ] 对 Sts1DeadAdventurer / Sts1Joust：
+    - 若只在 unsafe draft mode，可文档标明；
+    - 若进入 CanaryOnly，必须补完。
 ```
 
 ### 验收
 
 ```text
-[ ] full tests green，或失败项有 formal quarantine issue
-[ ] clean loader log 通过 audit-godot-log
-[ ] handoff/evidence docs 更新
+[ ] default package 不会加载未完成 Sts1Events
+[ ] CanaryOnly 只含 source-verified canary events
+[ ] Sts1Events docs 不再自称完成
 ```
 
 ---
 
-## Week 3：Sts1Events Scope Closure
+## Week 3：FeatureRegistry Hardening
 
 ### 任务
 
-```text
-[ ] 确认 Sts1DeadAdventurer / Sts1Joust 是否注册到 live event pool
-[ ] 若未注册：
-    - docs 标 inactive source skeleton
-    - guard：TODO EventModel 不能 live registered
+扩展 feature model：
 
-[ ] 若已注册：
-    - 禁用或补完 DeadAdventurer elite branch
-    - 修 Sts1Joust 金币不足下注
+```text
+DisplayName
+Category
+DisableEnvKeys
+ForceEnvKeys
+BootstrapStatus
+LiveStatus
+RuntimeStatus
+Dependencies
 ```
 
-新增或更新 issue：
+日志示例：
 
 ```text
-ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK
+Feature Sts1Events:
+  bootstrap=enabled
+  live=disabled
+  reason=SPIREPLUS_STS1_EVENT_MODE unset -> Off
+
+Feature VakuuFight:
+  bootstrap=enabled
+  live=hidden
+  reason=explicit enable env not set
+
+Feature Morvi:
+  bootstrap=enabled
+  live=enabled
 ```
 
 ### 验收
 
 ```text
-[ ] Dead Adventurer 不会假装进入精英战
-[ ] Joust 不会金币不足仍扣到负数
-[ ] TODO EventModel 不能进入 live pool
+[ ] MainFile 保持短
+[ ] FeatureRegistry 不只是 wrapper
+[ ] bootstrap/live status 有 tests
+[ ] 默认开启行为不变
 ```
 
 ---
 
-## Week 4：Architecture Foundation
+## Week 4：State / Pipeline / Death / Multiplayer Foundations
 
 ### 任务
 
 ```text
-[ ] FeatureRegistry 增加：
-    - DisplayName
-    - Category
-    - DisableEnvKeys
-    - ForceEnvKeys
-    - BootstrapStatus
-    - LiveStatus
-
-[ ] UrdaStateCodec V1：
+[ ] UrdaStateCodec V1
     - Encode
     - Decode
-    - MalformedFallback
-    - OldStateMigration
-    - RoundTrip tests
+    - malformed fallback
+    - old-state migration
+    - roundtrip tests
 
-[ ] RewardPipeline skeleton：
+[ ] RewardPipeline minimum testable skeleton
     - RewardPhase
     - IRewardHandler
-    - diagnostics only
+    - priority
+    - diagnostics
 
-[ ] CardPlayContext skeleton：
+[ ] CardPlayContext minimum testable skeleton
     - ExtraPlayPolicy
-    - Power fallback
-    - no recursion
     - depth guard
+    - Power fallback flag
+    - no-recursion test
 
-[ ] DeathProtectionService spec：
-    - Lotha Reprieve
-    - forced unavoidable death
+[ ] DeathProtectionService spec + code stub
+    - Lotha DeathReprieve lifecycle
     - inReprieve flag
-    - co-op owner
+    - forced unavoidable death
+    - co-op owner attribution
 
-[ ] MultiplayerPolicy doc：
+[ ] MultiplayerPolicy taxonomy + feature matrix
     - LocalUiOnly
     - LocalPlayerOnly
     - HostAuthoritative
@@ -618,116 +475,89 @@ ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK
 ### 验收
 
 ```text
-[ ] FeatureRegistry 不再只是 wrapper
-[ ] UrdaStateCodec tests pass
-[ ] RewardPipeline / CardPlayContext / DeathProtection / MultiplayerPolicy 至少有 skeleton/spec
+[ ] UrdaStateCodec has behavior tests
+[ ] RewardPipeline and CardPlayContext are more than docs-only if possible
+[ ] DeathProtectionService at least has enforceable guard/spec
+[ ] MultiplayerPolicy covers active systems
 ```
 
 ---
 
-# 5. Overnight Run Spec：必须跑完才能停
+# 4. 新 Overnight Run Spec：必须跑到完成才停
 
-下面这段可以直接发给 Codex。重点是：**不允许它只做一小块就停**。它必须跑完所有 phase；如果遇到 blocker，必须留下 issue、证据和下一步。
+这版应该替换当前 `next-overnight-run.md`。当前仓库里的版本太偏向继续 Batch 4c，不符合当前风险优先级。
 
 ```text
 你现在在 D:\Game\FOTN\dev-the-spire。
 
-目标：RitsuLib Batch 4a/4b closure + runtime truth + monthly architecture foundation。
+目标：RitsuLib Runtime Proof + Test Truth Reconciliation + Architecture Foundation Overnight Run。
 
 这不是 Batch 4c。
-这不是新增 gameplay。
-这不是 release build。
-这是一个 overnight stabilization run。必须跑完所有 phase；如果遇到真实 blocker，必须记录证据、创建/更新 issue、给出下一步，而不是直接停止。
+不要迁更多 patch，除非是修复当前 guard/bug 必需。
+不要新增 gameplay。
+不要 claim release-ready。
 
-当前审核发现：
-- GitHub main 已有 RitsuLib dependency 和 manifest dependency。
-- RitsuLibBootstrap 使用 ModPatcher + raw Harmony fallback。
-- Batch 4a/4b 已迁移部分 patch。
-- 源码实际迁移数：
-  - Batch 4a = 9
-  - Batch 4b = 16
-  - Total = 25
-- docs/migration.md 当前写 Batch 4a=10, Total=26，错误。
-- DebtAndCardPatches row 写 7，但实际有 8 个 patch ids。
-- docs/patch-inventory.md 当前只统计 raw Harmony declarations = 141。
-- 需要 migrated/raw/high-risk 三类 inventory。
-- Sts1DeadAdventurer 仍有 TODO elite branch。
-- Sts1Joust 可能没有金币不足下注保护。
-- full test truth 未闭环，不允许只报告 migration tests pass。
-- RitsuLib runtime smoke 未证明。
-- 不能 claim release-ready。
+当前状态：
+- latest main 已有 RitsuLib dependency and manifest dependency。
+- 25 patches migrated to RitsuLib ModPatcher。
+- 141 raw HarmonyPatch declarations remain。
+- Batch 4a/4b count fixed。
+- RitsuLibMigrationGuardTests exist。
+- Sts1Events default Off / CanaryOnly 4 events。
+- Runtime smoke still PENDING。
+- Review docs contain conflicting test/build facts:
+  - review doc says build 0 warnings, 324 passed / 21 skipped;
+  - latest user summary says build 87 warnings, 361 passed / 21 skipped.
+- FeatureRegistry still scaffold-level。
+- UrdaStateCodec / RewardPipeline / CardPlayContext / DeathProtection / MultiplayerPolicy not complete.
 
-硬规则：
-- 不要新增 gameplay。
-- 不要迁 high-risk patch。
-- 不要开始 Batch 4c。
-- 不要关闭现有默认开启功能。
-- 不要改 manifest id。
-- 不要只跑 migration tests。
-- 不要忽略 pre-existing failures。
-- 不要 claim release-ready。
-- 必须使用 subagents。
+Hard rules:
+- Do not start Batch 4c.
+- Do not migrate high-risk patch.
+- Do not add new gameplay.
+- Do not change default-on feature policy.
+- Do not ignore warnings.
+- Do not only run --no-build tests.
+- Do not claim release-ready.
+- Use subagents.
 
 Subagents:
 
-1. Patch Migration Integrity Agent
-   - 扫描 RitsuLibBootstrap.RegisterMigratedPatches。
-   - 统计 migrated patch count。
-   - 统计 raw HarmonyPatch count。
-   - 统计 high-risk blocked patch count。
-   - 检查 PatchId 唯一。
-   - 检查 migrated patch 不含 HarmonyPatch。
-   - 检查 raw Harmony patch 未被 RegisterPatch 注册。
-   - 生成/更新 patch inventory。
+1. Runtime/Test Truth Agent
+   Scope:
+   - Run full validation commands.
+   - Reconcile build warning count and test count.
+   - Execute runtime smoke if local game environment exists.
+   - If runtime smoke cannot run, mark pending and block Batch 4c.
 
-2. Runtime/Test Truth Agent
-   - 运行 full build/test。
-   - 不允许只跑 migration tests。
-   - 记录 dotnet build/test/test --no-build/format/diff。
-   - 准备或执行 clean loader smoke checklist：
-     BaseLib + STS2-RitsuLib + Spire Plus。
-   - 如果不能执行 live loader，明确标 pending，不许说 complete。
+2. Sts1Events Governance Agent
+   Scope:
+   - Rewrite stale Sts1Events issue.
+   - Verify Off / CanaryOnly / AdditiveAllDraft / ReplaceUnknownEventsPrototype safety.
+   - Ensure TODO/BLOCKED events cannot enter safe modes.
+   - Add/update guard tests.
 
-3. Sts1Events Scope Agent
-   - 检查 Sts1Events 是否 live registered。
-   - 检查 Sts1DeadAdventurer elite TODO。
-   - 检查 Sts1Joust 金币不足下注。
-   - 未注册则标 inactive skeleton 并加 guard。
-   - 已注册则禁用或补完。
-   - 创建/更新 ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK。
+3. FeatureRegistry Agent
+   Scope:
+   - Add DisplayName, Category, DisableEnvKeys, ForceEnvKeys.
+   - Add BootstrapStatus and LiveStatus distinction.
+   - Add feature status logs and tests.
 
-4. Docs/Version Agent
-   - 修 docs/migration.md 计数。
-   - 更新 docs/integrations/ritsulib.md。
-   - 更新 docs/patch-inventory.md。
-   - 确认 v0.106.x 目标口径一致。
-   - docs 不得说 full migration complete。
-   - docs 必须写 release-ready: no。
+4. State/Persistence Agent
+   Scope:
+   - Implement or complete UrdaStateCodec V1.
+   - Add roundtrip/malformed/old-state tests.
+   - Document RitsuLib DataStore future migration.
 
-5. Architecture Planner Agent
-   - 产出下一月 architecture plan。
-   - 包含 FeatureRegistry hardening。
-   - 包含 UrdaStateCodec。
-   - 包含 RewardPipeline。
-   - 包含 CardPlayContext。
-   - 包含 DeathProtectionService。
-   - 包含 MultiplayerPolicy。
+5. Architecture Pipeline Agent
+   Scope:
+   - RewardPipeline skeleton.
+   - CardPlayContext skeleton.
+   - DeathProtectionService spec/stub.
+   - MultiplayerPolicy taxonomy/matrix.
 
-Phase 1 — Patch truth
-- 修 docs/migration.md 计数：
-  Batch 4a = 9
-  Batch 4b = 16
-  Total = 25
-- 修 DebtAndCardPatches row 为 8。
-- 生成/更新 migrated/raw/high-risk patch inventory。
-- 添加 tests：
-  - PatchId unique
-  - migrated class has no HarmonyPatch
-  - raw HarmonyPatch class not registered in RitsuLibBootstrap
-  - RegisterMigratedPatches count matches docs
-  - docs/migration.md count matches source
+Phase 1 — Full validation truth
 
-Phase 2 — Full test truth
 Run:
 - git status --short --branch
 - git log -1 --oneline --decorate
@@ -737,104 +567,202 @@ Run:
 - dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
 - git diff --check
 
+Write one canonical validation section:
+- build warnings exact count
+- test passed/failed/skipped exact count
+- whether warnings are accepted or issue-worthy
+
 If tests fail:
-- list exact failed tests
 - fix if in scope
-- otherwise create explicit quarantine issue
-- do not claim pass
+- otherwise create quarantine issue
+- do not continue as green
 
-Phase 3 — Sts1Events safety
-- Determine whether Sts1DeadAdventurer/Sts1Joust are live registered.
-- If not live:
-  - add docs: inactive source skeleton
-  - add guard: TODO EventModel cannot be live registered
-- If live:
-  - disable or complete:
-    - DeadAdventurer elite branch
-    - Joust insufficient gold path
-- No TODO branch may be reachable in live gameplay.
+Phase 2 — Runtime smoke
 
-Phase 4 — Runtime smoke evidence
-- If local game environment available, run clean loader smoke:
-  - BaseLib
-  - STS2-RitsuLib
-  - Spire Plus
-- Require log:
-  - RitsuLib bootstrap starting
-  - ModPatcher applied expected count
-  - RitsuLib framework is active
-  - no MissingMethodException
-  - no TypeLoadException
-- If not available, update manual checklist and mark pending.
+If local game environment exists:
+- install only BaseLib + STS2-RitsuLib + Spire Plus
+- launch game
+- collect godot.log
+- run audit-godot-log
+- update runtime-smoke-checklist.md
 
-Phase 5 — Architecture monthly spec
-Create/update:
+Required log evidence:
+- RitsuLib bootstrap starting
+- ModPatcher applied 25 patches
+- RitsuLib framework is active
+- BaseLib initialized
+- Spire Plus initialized
+- no MissingMethodException
+- no TypeLoadException
+- no manifest dependency failure
+
+If local game environment unavailable:
+- mark runtime smoke pending
+- update monthly spec
+- block Batch 4c
+
+Phase 3 — Sts1Events governance
+
+- Rewrite issue status so it is not stale.
+- Document:
+  Off = safe default
+  CanaryOnly = controlled test
+  AdditiveAllDraft = unsafe/dev-only unless all events pass blockers
+  ReplaceUnknownEventsPrototype = unsafe/dev-only
+- Guard:
+  safe modes do not register TODO/BLOCKED events
+  default Off registers 0
+  CanaryOnly registers exactly 4
+
+Phase 4 — FeatureRegistry hardening
+
+- Extend IFeatureModule metadata.
+- Add BootstrapStatus / LiveStatus distinction.
+- Keep existing default-on behavior unchanged.
+- Add tests for status logs and env keys.
+
+Phase 5 — UrdaStateCodec
+
+- Implement/complete UrdaStateV1 and UrdaStateCodec.
+- Maintain compatibility with existing SavedSpireField bridge.
+- Tests:
+  empty
+  malformed
+  old state
+  current state
+  roundtrip
+
+Phase 6 — Architecture skeletons
+
+- RewardPipeline skeleton with phases and diagnostics.
+- CardPlayContext skeleton with ExtraPlayPolicy/depth guard.
+- DeathProtectionService spec/stub.
+- MultiplayerPolicy doc + active feature matrix.
+
+Phase 7 — Docs update
+
+Update:
 - docs/features/ritsulib-migration/monthly-dev-spec.md
 - docs/features/ritsulib-migration/next-overnight-run.md
+- docs/reviews/current-validation.md or equivalent
+- docs/issues for Sts1Events and runtime smoke blockers
 
-Must include:
-- Week 1: runtime/test truth
-- Week 2: patch integrity
-- Week 3: Sts1Events scope closure + FeatureRegistry hardening
-- Week 4: UrdaStateCodec + RewardPipeline + CardPlayContext + DeathProtectionService + MultiplayerPolicy
-- subagent assignments
-- acceptance criteria
-- stop conditions
-
-Phase 6 — Package
-If code changed:
-- dotnet publish EZMicroBalance.sln
-- EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build
-- refresh hashes only from actual artifacts
-
-If docs/tests only:
-- do not publish unless needed.
+Next overnight run rule:
+- If runtime smoke passed and architecture phase complete, Batch 4c may be considered.
+- If runtime smoke pending/failed, Batch 4c remains blocked.
+- If test truth inconsistent, Batch 4c remains blocked.
 
 Final report must include:
 1. current HEAD
-2. files changed
-3. Batch 4a/4b exact migrated count
-4. raw Harmony remaining count
-5. double-patch guard status
-6. full test suite result
-7. Sts1Events live status
-8. RitsuLib runtime smoke status
-9. monthly dev spec path
-10. subagent findings
-11. remaining blockers
+2. full validation results
+3. runtime smoke status
+4. Sts1Events safe-mode status
+5. FeatureRegistry status
+6. UrdaStateCodec status
+7. RewardPipeline/CardPlayContext/DeathProtection/MultiplayerPolicy status
+8. subagent findings
+9. files changed
+10. remaining blockers
+11. explicit decision: optimize, advance, or both
 12. release-ready: no
 
-Do not stop until all phases are either:
+Stop condition:
+Do not stop until every phase is either:
 - complete and verified, or
-- blocked with explicit blocker issue, source evidence, and next action.
+- blocked with explicit issue, evidence, and next action.
 ```
 
 ---
 
-# 最终判断
+# 5. Subagent 使用要求
 
-当前工作有进展，但还没有完成。
+必须让 Codex 显式分派子代理。建议如下：
 
-可以承认：
+## Subagent A — Runtime/Test Truth Agent
 
-```text
-Batch 4b source migration exists.
-```
-
-不能承认：
+负责：
 
 ```text
-Batch 4a/4b closure complete.
-RitsuLib migration complete.
-Runtime proof complete.
-Full tests complete.
-Release-ready.
+full build/test
+warning count reconciliation
+runtime smoke
+log audit
+canonical validation report
 ```
 
-下一步必须是：
+## Subagent B — Sts1Events Governance Agent
+
+负责：
 
 ```text
-Batch 4a/4b closure + runtime truth + architecture foundation
+Sts1Events 4 mode 安全性
+TODO/BLOCKED event guard
+issue rewrite
+canary-only scope
 ```
 
-并且必须使用 subagents。否则 Codex 很容易继续只完成“一个小批次 patch 迁移”，然后又把它总结成“migration complete”。
+## Subagent C — FeatureRegistry Agent
+
+负责：
+
+```text
+IFeatureModule metadata
+BootstrapStatus / LiveStatus
+env key docs
+status logs
+tests
+```
+
+## Subagent D — State/Persistence Agent
+
+负责：
+
+```text
+UrdaStateCodec
+malformed fallback
+old-state migration
+SavedSpireField bridge
+RitsuLib DataStore future plan
+```
+
+## Subagent E — Architecture Pipeline Agent
+
+负责：
+
+```text
+RewardPipeline
+CardPlayContext
+DeathProtectionService
+MultiplayerPolicy
+next monthly plan
+```
+
+---
+
+# 6. 最终战略判断
+
+现在应该 **优化为主，有限推进为辅**。
+
+```text
+继续优化：
+- runtime smoke
+- test truth
+- Sts1Events governance
+- FeatureRegistry hardening
+- state/pipeline/death/multiplayer foundations
+
+有限推进：
+- 只有以上完成后，才考虑 Batch 4c
+```
+
+不要现在继续迁 patch。
+不要现在扩玩法。
+不要把 skeleton 当完成。
+
+当前最正确的下一步是：
+
+```text
+Runtime Proof + Architecture Foundation Overnight Run
+```
+
+跑完之后，再决定是否进入 Batch 4c。

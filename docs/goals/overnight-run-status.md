@@ -3,7 +3,7 @@
 Date: 2026-05-29
 Run started: 2026-05-29T07:57:57+02:00 (Revision D)
 Revision E completed: 2026-05-29T09:50:00+02:00
-Revision F completed: 2026-05-29T10:12:00+02:00
+Revision F replay: 2026-05-29T11:45:00+02:00
 
 ## Branch State
 
@@ -12,8 +12,8 @@ Revision F completed: 2026-05-29T10:12:00+02:00
 | Branch | `main` |
 | HEAD | `faf5860d` ("overnight run Packs 0-5") |
 | Stash list | Empty |
-| Dirty tracked files | 15 (unstaged modifications) |
-| Untracked files | 8 (new source, tests, docs) |
+| Dirty tracked files | 8 (unstaged modifications) |
+| Untracked files | 1 |
 
 ## Evidence Hardening Pass (Revision F)
 
@@ -32,10 +32,10 @@ Additional fixes:
 
 | Command | Exit Code | Result |
 |---|---|---|
-| `dotnet build EZMicroBalance.sln` | 0 | 0 errors, 0 warnings |
+| `dotnet build EZMicroBalance.sln` | 0 | 0 errors, 87 warnings (all Sts1Events nullable) |
 | `dotnet test EZMicroBalance.sln` | 0 | 361 passed, 21 skipped, 0 failed (382 total) |
 | `dotnet format EZMicroBalance.sln --verify-no-changes` | 0 | Clean |
-| `git diff --check` | 0 | No whitespace errors |
+| `git diff --check` | 0 | Clean (trailing whitespace in event.md fixed during replay) |
 
 ## Stop Condition
 

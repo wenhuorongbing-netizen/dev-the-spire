@@ -8,7 +8,7 @@ Spec: `docs/goals/refactor.md` Pack 5 — Final Overnight Validation
 
 | Command | Exit Code | Result |
 |---|---|---|
-| `dotnet build EZMicroBalance.sln` | 0 | 0 errors, 0 warnings |
+| `dotnet build EZMicroBalance.sln` | 0 | 0 errors, 87 warnings |
 | `dotnet test EZMicroBalance.sln` | 0 | 361 passed, 21 skipped, 0 failed (382 total) |
 | `dotnet format EZMicroBalance.sln --verify-no-changes` | 0 | Clean |
 | `git diff --check` | 0 | No whitespace errors |
@@ -106,12 +106,12 @@ Status: **source-verified** or **blocked** per canary.
 | 3 | Canary events not playable | Source-verified specs exist, implementation pending |
 | 4 | RitsuLib runtime unverified | Compile dependency in place, no runtime evidence |
 | 5 | No live gameplay proof | All evidence is source/build/test only |
-| 6 | Clean build warnings | 0 warnings on clean rebuild |
+| 6 | Clean build warnings | 87 warnings on clean rebuild |
 
 ## 7. Green Stop Checklist
 
 - [x] `git status --short` recorded
-- [x] `dotnet build EZMicroBalance.sln` — 0 errors, 0 warnings
+- [x] `dotnet build EZMicroBalance.sln` — 0 errors, 87 warnings
 - [x] `dotnet test EZMicroBalance.sln` — 361 pass / 0 fail / 21 skip
 - [x] `dotnet format --verify-no-changes` — clean
 - [x] `git diff --check` — clean

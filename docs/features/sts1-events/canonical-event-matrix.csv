@@ -1,0 +1,53 @@
+wiki_entry_id,wiki_name,wiki_bucket,st1_acts_allowed,runtime_model,registry_count,sts2_acts_registered,is_shared,status,parity_gap
+sts1_big_fish,Big Fish,Shared,All,Sts1BigFish,1,shared,true,compiled,none
+sts1_the_cleric,The Cleric,Shared+Act1,All+Act1,Sts1TheCleric,1,shared,true,compiled,none
+sts1_golden_idol,Golden Idol,Shared,All,Sts1GoldenIdol,1,shared,true,compiled,none
+sts1_golden_wing,Golden Wing,Shared+Act1,All+Act1,Sts1GoldenWing,1,shared,true,compiled,none
+sts1_living_wall,Living Wall,Shared,All,Sts1LivingWall,1,shared,true,compiled,none
+sts1_old_beggar,Old Beggar,Shared,All,Sts1OldBeggar,1,shared,true,compiled,none
+sts1_the_woman_in_blue,The Woman in Blue,Shared+Act2,All+Act2,Sts1TheWomanInBlue,1,shared,true,compiled,none
+sts1_bonfire_spirits,Bonfire Spirits,Shared,All,Sts1BonfireSpirits,1,shared,true,compiled,none
+sts1_divine_fountain,Divine Fountain,Shared,All,Sts1DivineFountain,1,shared,true,compiled,none
+sts1_duplicator,Duplicator,Shared,All,Sts1Duplicator,1,shared,true,compile-excluded,CardSelectCmd.FromDeckForRewards missing in RitsuLib 0.3.2
+sts1_face_trader,Face Trader,Shared,All,Sts1FaceTrader,1,shared,true,temporary-substitute,Face relics → random relic (no face relic models)
+sts1_fountain_of_cleansing,Fountain of Cleansing,Shared,All,Sts1FountainOfCleansing,1,shared,true,compiled,none
+sts1_the_mausoleum,The Mausoleum,Shared+Act2,All+Act2,Sts1TheMausoleum,1,shared,true,compiled,none
+sts1_wheel_of_change,Wheel of Change,Shared,All,Sts1WheelOfChange,1,shared,true,compiled,none
+sts1_designer,Designer,Shared,All,Sts1Designer,1,shared,true,compiled,none
+sts1_the_lab,The Lab,Shared,All,Sts1TheLab,1,shared,true,compiled,none
+neow,Neow,Special,Act1,none,1,none,false,special-stub,Start-of-run only — no unknown-room model
+combat_start,Combat Start,Special,Act1,none,1,none,false,special-stub,Tutorial only — no unknown-room model
+sts1_joust,Joust,Act1,Act1,Sts1Joust,1,Overgrowth+Underdocks,true,blocked,Missing encounter model (Lagavulin)
+sts1_the_ssssserpent,The Ssssserpent,Act1,Act1,Sts1TheSsssserpent,1,Overgrowth+Underdocks,false,blocked,Missing encounter model (3 Ssssents)
+sts1_shining_light,Shining Light,Act1,Act1,Sts1ShiningLight,1,Overgrowth+Underdocks,false,compiled,none
+sts1_dead_adventurer,Dead Adventurer,Act1,Act1,Sts1DeadAdventurer,1,Overgrowth+Underdocks,true,blocked,Missing encounter model (random elite)
+golden_wing_act1,Golden Wing (Act1),Act1,Act1,(see Golden Wing),0,Overgrowth+Underdocks,false,duplicate-wiki-entry,Shares model with Shared Golden Wing
+sts1_mushrooms,Mushrooms,Act1,Act1,Sts1Mushrooms,1,Overgrowth+Underdocks,false,compiled,none
+sts1_scorpion_nest,Scorpion Nest,Act1,Act1,Sts1ScorpionNest,1,Overgrowth+Underdocks,true,blocked,Missing encounter model (3 Louses)
+the_cleric_act1,The Cleric (Act1),Act1,Act1,(see The Cleric),0,Overgrowth+Underdocks,false,duplicate-wiki-entry,Shares model with Shared The Cleric
+sts1_treasure_ooze,Treasure Ooze,Act1,Act1,Sts1TreasureOoze,1,Overgrowth+Underdocks,true,blocked,Missing encounter model (large slime)
+sts1_altar,Altar,Act2,Act2,Sts1Altar,1,Hive,false,compiled,none
+sts1_council_of_ghosts,Council of Ghosts,Act2,Act2,Sts1CouncilOfGhosts,1,Hive,false,compiled,none
+sts1_cursed_tome,Cursed Tome,Act2,Act2,Sts1CursedTome,1,Hive,false,compiled,none
+sts1_drug_dealer,Drug Dealer,Act2,Act2,Sts1DrugDealer,1,Hive,false,compiled,none
+sts1_forgotten_altar,Forgotten Altar,Act2,Act2,Sts1ForgottenAltar,1,Hive,false,compiled,none
+sts1_the_ghost,The Ghost,Act2,Act2,Sts1TheGhost,1,Hive,false,compiled,none
+sts1_knowing_skull,Knowing Skull,Act2,Act2,Sts1KnowingSkull,1,Hive,false,compiled,none
+sts1_nest,Nest,Act2,Act2,Sts1Nest,1,Hive,false,temporary-substitute,Parasite curse → Clumsy (no Parasite model)
+sts1_the_library,The Library,Act2,Act2,Sts1TheLibrary,1,Hive,false,compiled,none
+sts1_masked_bandits,Masked Bandits,Act2,Act2,Sts1MaskedBandits,1,Hive,true,blocked,Missing encounter model (3 bandits)
+the_mausoleum_act2,The Mausoleum (Act2),Act2,Act2,(see The Mausoleum),0,Hive,false,duplicate-wiki-entry,Shares model with Shared The Mausoleum
+sts1_nloth,N'loth,Act2,Act2,Sts1Nloth,1,Hive,false,blocked,No RelicSelectCmd API in StS2
+the_woman_in_blue_act2,The Woman in Blue (Act2),Act2,Act2,(see The Woman in Blue),0,Hive,false,duplicate-wiki-entry,Shares model with Shared The Woman in Blue
+sts1_vampires,Vampires,Act2,Act2,Sts1Vampires,1,Hive,false,temporary-substitute,Bite card missing — removes Strikes but cannot add Bite
+sts1_ancient_writing,Ancient Writing,Act2,Act2,Sts1AncientWriting,1,Hive,false,compiled,none
+sts1_augmenter,Augmenter,Act2,Act2,Sts1Augmenter,1,Hive,false,compiled,none
+sts1_sensory_stone,Sensory Stone,Act3,Act3,Sts1SensoryStone,1,Glory,false,compiled,none
+sts1_falling,Falling,Act3,Act3,Sts1Falling,1,Glory,false,compiled,none
+sts1_mind_bloom,Mind Bloom,Act3,Act3,Sts1MindBloom,1,Glory,true,temporary-substitute,War option blocked (no Act1 boss encounter); Awake/Rich implemented
+sts1_moai_head,Moai Head,Act3,Act3,Sts1MoaiHead,1,Glory,false,compiled,none
+sts1_mysterious_sphere,Mysterious Sphere,Act3,Act3,Sts1MysteriousSphere,1,Glory,true,blocked,Missing encounter model (2 Orb Walkers)
+sts1_tomb_of_lord_red_mask,Tomb of Lord Red Mask,Act3,Act3,Sts1TombOfLordRedMask,1,Glory,false,compiled,none
+sts1_winding_halls,Winding Halls,Act3,Act3,Sts1WindingHalls,1,Glory,false,temporary-substitute,Madness curse → Debt (no Madness model)
+sts1_transmogrifier,Transmogrifier,Act3,Act3,Sts1Transmogrifier,1,Glory,false,compiled,none
+sts1_upgrade_shrine,Upgrade Shrine,Act3,Act3,Sts1UpgradeShrine,1,Glory,false,compiled,none

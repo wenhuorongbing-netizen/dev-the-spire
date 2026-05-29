@@ -1,97 +1,109 @@
 # StS1 Events Status Board
 
-> Last updated: 2026-05-29
+> Last updated: 2026-05-29  
+> Audit standard: strict v8 — no generic "Done", only evidence-backed statuses
 
-## Overall Progress
+## Allowed Statuses
 
-| Phase | Status | Events | Notes |
-|-------|--------|--------|-------|
-| 0: Infrastructure | **Done** | — | Feature gate, registry, feature module, registration service |
-| 1: Canary | **Code Done** | 4 | Big Fish, Golden Idol, Lab, Divine Fountain |
-| 2: Simple Batch | **Code Done** | 17 | All compile, EN localized |
-| 3: Card Service | **Code Done** | 9 | All compile, EN localized |
-| 4: Combat | **Code Done** | 7 | All compile, EN localized. Combat TODOs remain. |
-| 5: Custom UI | **Code Done** | 8 | All compile, EN localized. UI simplified to option-based. |
-| 6: Pool Replacement | **Prototype** | — | `Sts1ReplacementPrototype.cs` exists, gated `#if REPLACEMENT_PROTOTYPE_ENABLED` |
+```
+planned → spec-drafted → wiki-verified → api-verified → implemented → compiled → test-guarded → asset-mapped → loc-render-verified → manual-verified → save-load-verified
+blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wiki-entry
+```
 
-## Registration Summary
+## Overall Summary
 
-| Metric | Count |
-|--------|-------|
-| Registry entries (Sts1EventRegistry) | 48 |
-| Model files (C#) | 46 |
-| Model files compiling | 45 (Duplicator excluded via csproj) |
-| Registration calls in RegisterAll | 52 |
-| SharedEvent calls | 15 |
-| ActEvent calls (Act1: 7×2, Act2: 14, Act3: 9) | 37 |
-| EN localization keys | 380 |
-| ZHS localization keys | 380 (342 translated, 38 placeholder "待翻译") |
-| Event images | 0 (directory only has Ancient portraits) |
+| Metric | Count | Evidence |
+|--------|-------|----------|
+| Wiki event entries | 52 | canonical-event-matrix.csv |
+| Runtime registry entries | 48 | registry-reconciliation.md |
+| Registration calls (RegisterAll) | 52 | Sts1EventRegistrationService.cs |
+| Model files (C#) | 46 | Models/ directory |
+| Compiling models | 45 | dotnet build (1 compile-excluded) |
+| EN localization keys | 380 | eng/sts1_events.json |
+| ZHS localization keys | 380 (0 placeholder) | zhs/sts1_events.json verified |
+| Event images | 0 | No redistributable art available |
+| Guard tests | 20 | Sts1EventFeatureGuardTests.cs |
+| Build | 0 errors, 87 warnings | o1-build-full.log |
+| Tests | 361 passed, 0 failed, 21 skipped | o2-test-full.log |
 
-## Build & Test Status
+## Phase Status
 
-- `dotnet build`: **0 errors**, 87 nullable warnings (CS8602/CS8604 only)
-- `dotnet test`: **361 passed, 0 failed, 21 skipped** (382 total)
-  - 21 skipped are release artifact tests requiring `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`
-- 20 Sts1EventFeatureGuardTests all pass
+| Phase | Events | Compiled | Blocked | Status |
+|-------|--------|----------|---------|--------|
+| Canary (4) | Big Fish, Golden Idol, The Lab, Divine Fountain | 4 | 0 | compiled, test-guarded, source/API verified |
+| Simple (17) | Shining Light, Mushrooms, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter, Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine, The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits, Fountain of Cleansing | 17 | 0 | compiled, test-guarded |
+| CardService (9) | Face Trader, The Mausoleum, Council of Ghosts, Cursed Tome, Knowing Skull, Nest, Vampires, Falling, Mind Bloom | 9 | 0 | compiled (3 temporary-substitute) |
+| Combat (7) | Dead Adventurer, Scorpion Nest, Treasure Ooze, Joust, The Ssssserpent, Masked Bandits, Mysterious Sphere | 7 | 5 | compiled (5 blocked by missing encounter models) |
+| CustomUI (8) | The Woman in Blue, Wheel of Change, Designer, Forgotten Altar, The Ghost, N'loth, Tomb of Lord Red Mask, Winding Halls | 8 | 1 | compiled (1 blocked: N'loth) |
+| Special (2) | Neow, Combat Start | 0 | 2 | special-stub (no unknown-room model) |
 
-## Multiplayer IsShared Status
+## Per-Event Status
 
-All 22 event models with `IsShared => true`:
+### Canary Events (4)
 
-| Category | Events | IsShared |
-|----------|--------|----------|
-| Shared (16 models) | Big Fish, Golden Idol, The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits, Divine Fountain, Duplicator*, Fountain of Cleansing, The Lab, Face Trader, The Mausoleum, Designer, The Woman in Blue, Wheel of Change | `true` |
-| Combat (6 models) | Dead Adventurer, Scorpion Nest, Treasure Ooze, Masked Bandits, Mysterious Sphere, Mind Bloom | `true` (required for EnterCombatWithoutExitingEvent) |
+| Event | Status | TODOs | IsShared | Parity Gap | Proof |
+|-------|--------|-------|----------|------------|-------|
+| Big Fish | compiled, test-guarded, source-API-verified | none | true | none | canary-source-api-proof.md |
+| Golden Idol | compiled, test-guarded, source-API-verified | none | true | none | canary-source-api-proof.md |
+| The Lab | compiled, test-guarded, source-API-verified | none | true | none | canary-source-api-proof.md |
+| Divine Fountain | compiled, test-guarded, source-API-verified | none | true | none | canary-source-api-proof.md |
 
-*Sts1Duplicator is compile-excluded.
+### Blocked Events (7)
 
-## What's Implemented (per event)
+| Event | Status | Blocker |
+|-------|--------|---------|
+| Dead Adventurer | blocked | Missing encounter model (random elite) |
+| Scorpion Nest | blocked | Missing encounter model (3 Louses) |
+| Treasure Ooze | blocked | Missing encounter model (large slime) |
+| Masked Bandits | blocked | Missing encounter model (3 bandits) |
+| Mysterious Sphere | blocked | Missing encounter model (2 Orb Walkers) |
+| Mind Bloom (War option) | temporary-substitute | War blocked; Awake/Rich implemented |
+| N'loth | blocked | No RelicSelectCmd API in StS2 |
 
-Every compiling event has:
-- C# model class with options, effects, A15/A15+ logic
-- EN localization (380 keys complete)
-- Registry entry and registration call
-- `IsShared` override where required
+### Temporary Substitutes (4)
 
-## TODOs Still Present in Code
+| Event | Substitute | Parity Gap |
+|-------|------------|------------|
+| Face Trader | Random relic instead of face relics | Face relic models don't exist in StS2 |
+| Nest | Clumsy curse instead of Parasite | Parasite curse doesn't exist in StS2 |
+| Vampires | Removes Strikes but cannot add Bite | Bite card doesn't exist in StS2 |
+| Winding Halls | Debt curse instead of Madness | Madness curse doesn't exist in StS2 |
 
-| Event | TODO | Severity |
-|-------|------|----------|
-| Dead Adventurer | Enter combat with random elite | Blocked (needs encounter model) |
-| Scorpion Nest | Enter combat with 3 Louses | Blocked (needs encounter model) |
-| Treasure Ooze | Enter combat with large slime | Blocked (needs encounter model) |
-| Joust | Enter combat with Lagavulin | Blocked (needs encounter model) |
-| The Ssssserpent | Enter combat with 3 Ssssents | Blocked (needs encounter model) |
-| Masked Bandits | Enter combat with 3 bandits | Blocked (needs encounter model) |
-| Mysterious Sphere | Enter combat with 2 Orb Walkers | Blocked (needs encounter model) |
-| Mind Bloom (War) | Enter combat with random Act 1 boss | Blocked (needs encounter model) |
+### Compile-Excluded (1)
 
-## Active Blockers
+| Event | Reason |
+|-------|--------|
+| Duplicator | CardSelectCmd.FromDeckForRewards and CardSelectorPrefs.DuplicateSelectionPrompt don't exist in RitsuLib 0.3.2 |
 
-1. **Combat encounter models**: 7 events need encounter definitions for combat phases
-2. **Sts1Duplicator**: `CardSelectCmd.FromDeckForRewards` and `CardSelectorPrefs.DuplicateSelectionPrompt` don't exist in RitsuLib 0.3.2
-3. **Sts1Nloth**: No `RelicSelectCmd` API for relic selection UI
-4. **ZHS localization**: 38 entries are "待翻译" placeholder
-5. **Event images**: 0 images exist
-6. **Runtime gameplay verification**: Requires game launch with `SPIREPLUS_STS1_EVENT_MODE` env var
+### Special Stubs (2)
 
-## Feature Gate
+| Event | Reason |
+|-------|--------|
+| Neow | Start-of-run only; handled by base game Neow class |
+| Combat Start | Tutorial flow; no unknown-room model needed |
 
-Default: **Off** — zero StS1 event registrations unless explicitly enabled.
+## Runtime Unverified (requires game launch)
 
-| Mode | Env Var Value | Behavior |
-|------|---------------|----------|
-| Off | (default/unset) | No registrations |
-| CanaryOnly | `canaryonly` | 4 SharedEvent registrations only |
-| AdditiveAllDraft | `additivealldraft` | All 52 registrations, adds to native pool |
-| ReplaceUnknownEventsPrototype | `replaceunknowneventsprototype` | All 52 + Harmony postfix to filter event pool |
+| Gate | Status | Blocker |
+|------|--------|---------|
+| Canary debug spawn (O15) | **unverified** | Requires game launch + SPIREPLUS_STS1_EVENT_MODE env var |
+| Canary save/load (O16) | **unverified** | Requires game launch |
+| Canary images (O12) | **unverified** | No redistributable art; requires runtime load test |
+| Simple batch playable (O18) | **unverified** | Requires game launch |
+| Replacement functional (O19) | **unverified** | Requires game launch + seeded run proof |
+| Multiplayer co-op (O22) | **unverified** | Requires multiplayer session |
+| QA Red-Team (O23) | **unverified** | Requires independent verification |
 
-## Next Steps
+## Evidence Files
 
-1. Runtime gameplay verification of canary events (requires game launch)
-2. ZHS localization: translate 38 placeholder entries
-3. Combat encounter models for 7 blocked events
-4. Event images for all 46 events
-5. StS2 source audit of event selection system
-6. Wiki parity check against wiki-event-catalog.md
+| Evidence | Path |
+|----------|------|
+| Build log | .tools/runtime-evidence/sts1-events-overnight-202606/o1-build-full.log |
+| Test log | .tools/runtime-evidence/sts1-events-overnight-202606/o2-test-full.log |
+| Git snapshot | .tools/runtime-evidence/sts1-events-overnight-202606/o0-*.txt |
+| Canonical matrix | docs/features/sts1-events/canonical-event-matrix.csv |
+| Registry reconciliation | docs/features/sts1-events/registry-reconciliation.md |
+| IsShared matrix | docs/features/sts1-events/multiplayer-is-shared-matrix.md |
+| Content parity gaps | docs/features/sts1-events/content-parity-gaps.md |
+| Canary source/API proof | docs/features/sts1-events/canary-source-api-proof.md |
+| Combat blockers report | docs/features/sts1-events/combat-blockers-report.md |

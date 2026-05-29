@@ -72,7 +72,7 @@ Spec: `docs/goals/debug.md` M2 Revision D
 ### 1.6 TestChangeReviewAgent
 
 **Status: INTERRUPTED** — subagent did not return results. Manual review of test suite showed:
-- 324 passed, 21 skipped, 0 failed
+- 361 passed, 0 failed, 21 skipped (382 total)
 - No tests were weakened to pass
 - All guard tests intact
 
@@ -100,7 +100,7 @@ Spec: `docs/goals/debug.md` M2 Revision D
 
 | Metric | Value |
 |---|---|
-| Total warnings | 69 |
+| Total warnings | 87 |
 | CS8604 | 41 |
 | CS8602 | 27 |
 | CS8625 | 1 |
@@ -145,8 +145,8 @@ No C# source files, csproj, localization, or test files were modified during thi
 
 | Command | Exit Code | Notes |
 |---|---|---|
-| `dotnet build .\EZMicroBalance.sln` | 0 | 0 errors, 0 warnings |
-| `dotnet test .\EZMicroBalance.sln --no-build` | 0 | 324 passed, 21 skipped, 0 failed |
+| `dotnet build .\EZMicroBalance.sln` | 0 | 0 errors, 87 warnings |
+| `dotnet test .\EZMicroBalance.sln --no-build` | 0 | 361 passed, 0 failed, 21 skipped (382 total) |
 | `dotnet format .\EZMicroBalance.sln --verify-no-changes --no-restore` | 0 | Clean |
 | `git diff --check` | 0 | No whitespace errors |
 | `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | Pass (0 unclassified) |
@@ -156,8 +156,8 @@ No C# source files, csproj, localization, or test files were modified during thi
 1. **RitsuLib runtime unverified** — compile dependency and manifest declaration in place, but no runtime evidence. The unconditional bootstrap call in `MainFile.cs` will crash if RitsuLib is not installed.
 2. **Sts1Events governance** — compiled, feature-gated, dormant by default. Needs formal Week 2 decision (formal/staging/remove).
 3. **Debug scaffold** — validated (default-off, proper guarding), but not feature-complete. Needs Week 2 acceptance or rollback decision.
-4. **Test count drift** — 324 passed (up from 311 in previous harness claims). Future runs should verify fresh counts.
-5. **Clean build warnings** — 69 nullable warnings exist in Sts1Events/ code (only visible on clean build, hidden by incremental cache).
+4. **Test count drift** — 361 passed (up from 324 in previous harness claims). Future runs should verify fresh counts.
+5. **Clean build warnings** — 87 nullable warnings exist in Sts1Events/ code (only visible on clean build, hidden by incremental cache).
 6. **No commit made** — all changes are unstaged working tree modifications.
 
 ## 5. Final Verdict

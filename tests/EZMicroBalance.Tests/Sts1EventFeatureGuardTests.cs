@@ -250,6 +250,73 @@ public sealed class Sts1EventFeatureGuardTests
     }
 
     [Fact]
+    public void PatchBoundariesDocumentsSts1EventsRow()
+    {
+        // patch-boundaries.md must have a StS1Events high-risk owner row
+        // with forbidden behavior, manual evidence row, and source guard description.
+        var source = ReadRepoText("docs", "architecture", "patch-boundaries.md");
+
+        AssertSourceContains(source,
+            "StS1Events",
+            "Sts1EventRegistrationService",
+            "Sts1EventsFeatureModule",
+            "No unconditional `RegisterAll` in default init path",
+            "Default Off loads 0 StS1 events",
+            "CanaryOnly registers exactly 4");
+    }
+
+    [Fact]
+    public void RegisterAllTotalRegistrationCallsIs52()
+    {
+        // 15 shared × 1 + 7 Act1 × 2 + 14 Act2 × 1 + 9 Act3 × 1 = 52 total registration calls.
+        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
+        var registerAllMethod = SliceBetween(source, "public static void RegisterAll(string modId)", "content.Apply();");
+        var totalRegistrations = CountOccurrences(registerAllMethod, "content.ActEvent<") + CountOccurrences(registerAllMethod, "content.SharedEvent<");
+        Assert.Equal(52, totalRegistrations);
+    }
+
+    [Fact]
+    public void CanaryOnlyEventsAreHardcodedNotDynamic()
+    {
+        // CanaryOnly must use hardcoded SharedEvent calls, not a loop or dynamic list.
+        // This prevents TODO/BLOCKED events from accidentally entering safe modes.
+        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
+        var canaryMethod = SliceBetween(source, "RegisterCanaryOnly(string modId)", "content.Apply()");
+
+        // Must not contain any dynamic registration patterns
+        Assert.DoesNotContain("foreach", canaryMethod, StringComparison.Ordinal);
+        Assert.DoesNotContain("RegisterAll", canaryMethod, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void UnsafeModesAreDocumentedAsDevOnly()
+    {
+        // AdditiveAllDraft and ReplaceUnknownEventsPrototype must be documented as unsafe/dev-only.
+        var source = ReadRepoText("docs", "issues", "ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md");
+
+        AssertSourceContains(source,
+            "Unsafe / dev-only",
+            "AdditiveAllDraft",
+            "ReplaceUnknownEventsPrototype");
+    }
+
+    [Fact]
+    public void IssueDocumentsModeSafetyMatrix()
+    {
+        // The Sts1Events issue must document all 4 modes with risk levels.
+        var source = ReadRepoText("docs", "issues", "ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md");
+
+        AssertSourceContains(source,
+            "Off",
+            "CanaryOnly",
+            "AdditiveAllDraft",
+            "ReplaceUnknownEventsPrototype",
+            "Safe",
+            "Controlled",
+            "Unsafe");
+    }
+
+    [Fact]
     public void ReplacementPrototypeSourceExistsWithCorrectStructure()
     {
         // The ReplacementPrototype Harmony patch must exist and be gated behind #if REPLACEMENT_PROTOTYPE_ENABLED.

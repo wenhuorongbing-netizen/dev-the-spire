@@ -15,9 +15,9 @@
 
 ## Verification Result
 
-- Build: 0 errors, 69 warnings (all CS8602/CS8604/CS8625 nullable reference warnings in Sts1Events staging code)
-- Tests: 324 passed, 21 skipped, 0 failed
-- Format: unverified at time of last harness update
+- Build: 0 errors, 87 warnings (all CS8602/CS8604/CS8625 nullable reference warnings in Sts1Events staging code)
+- Tests: 361 passed, 21 skipped, 0 failed (382 total)
+- Format: clean (verified at Revision F replay)
 
 ## Remaining Work
 
