@@ -7,7 +7,7 @@
 
 | Metric | Count |
 |--------|-------|
-| Target events needing images | 46 (all compiling models) |
+| Target events needing images | 47 compiling models (48 tracked model files including compile-excluded Duplicator) |
 | Images available | 0 |
 | Images in `images/events/` | 3 (Ancient portraits only: ezmb_lotha, ezmb_morvi, ezmb_urda) |
 | Redistribution permission | Not confirmed for StS1 original art |

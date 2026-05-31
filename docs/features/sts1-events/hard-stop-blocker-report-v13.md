@@ -16,11 +16,11 @@ Scope: Mandatory Overnight Run v13 for `docs/goals/event.md`
 ## Current Source-Side Evidence
 
 - O1 build: `dotnet clean EZMicroBalance.sln -m:1` and `dotnet build EZMicroBalance.sln -m:1` completed with 0 errors and 89 tracked Sts1Events nullable warnings in the clean build.
-- O2/O3 tests: `dotnet test EZMicroBalance.sln --no-build` passed with `461 passed + 0 failed + 21 skipped = 482 total` after v13 source/doc guard reconciliation.
+- O2/O3 tests: current project no-build validation passed with `464 passed + 0 failed + 21 skipped = 485 total` after Revision I source/doc guard reconciliation.
 - Final command-layer rerun: clean, build, full tests, normal no-build tests, format, and `git diff --check` all passed after compactness guard and test-harness stabilization.
 - O4 skipped tests: 21 skipped tests are release-artifact, installed-package, or runtime-evidence guards; they do not prove live gameplay.
-- O8-O16 source guards: focused `Sts1EventFeatureGuardTests` passed `28/28`.
-- O10-O14 source-mode evidence: Off defaults to 0 registrations; CanaryOnly is exactly Big Fish, Golden Idol, The Lab, and Divine Fountain; AdditiveBatch1 is 10 event types through 11 registration calls; AdditiveAllDraft is dev-only; `ReplaceUnknownEventsPrototype` is debug-symbol gated.
+- O8-O16 source guards: focused `Sts1EventFeatureGuardTests` passed `28/28` in v13; the current guard set has since expanded.
+- O10-O14 source-mode evidence: Off defaults to 0 registrations; CanaryOnly is exactly Big Fish, Golden Idol, The Lab, and Divine Fountain; AdditiveBatch1 is 10 event types through 11 registration calls; AdditiveAllDraft is dev-only and now requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; `ReplaceUnknownEventsPrototype` is debug-symbol gated and also requires the unsafe override.
 - O7 matrix red-team: independent audit found the matrix mostly consistent but required v13 fixes for the 52 baseline explanation and stale Joust / The Ssssserpent combat classification. Those source/docs corrections were applied.
 
 ## Runtime Prerequisite Check
@@ -40,7 +40,7 @@ E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance: True
 | --- | --- | --- | --- |
 | O18-O22 | BLOCKED | Canary runtime screenshots, result logs, save/load, EN/ZHS render, and image/render proof require live game execution. | Install STS2-RitsuLib, launch with `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`, capture screenshots/logs/save-load/render evidence. |
 | O25-O30 | BLOCKED | AdditiveBatch1 simple-batch runtime/result/save-load/render/image proof requires live game execution and art/license decisions. | Launch with `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1`; capture Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, and Shining Light evidence; provide art/license strategy. |
-| O32-O35 | BLOCKED | `ReplaceUnknownEventsPrototype` functional proof requires debug symbol, game launch, seeded unknown-room proof, event-bag/no-repeat proof, and save/load proof. | Compile with `REPLACEMENT_PROTOTYPE_ENABLED`, launch with `SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype`, and capture seeded runtime/save-load evidence. |
+| O32-O35 | BLOCKED | `ReplaceUnknownEventsPrototype` functional proof requires debug symbol, unsafe override, game launch, seeded unknown-room proof, event-bag/no-repeat proof, and save/load proof. | Compile with `REPLACEMENT_PROTOTYPE_ENABLED`, launch with `SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype` and `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`, then capture seeded runtime/save-load evidence. |
 | O36 | BLOCKED | Multiplayer fail-closed or verified behavior requires a runtime multiplayer session. | Run multiplayer smoke or two-client proof and capture logs. |
 | O40 | FAIL / BLOCKED | Independent QA/Red-Team ran and returned fail because runtime gates are missing. | Rerun QA after runtime evidence exists. |
 | O42-O46 | BLOCKED | Handoff/next-run closure cannot be green while runtime, art, replacement, multiplayer, and QA-pass gates remain open. | Start the next run from the unresolved gates above; do not expand to broad Phase 2 content. |

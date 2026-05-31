@@ -2,12 +2,14 @@
 
 ## Objective
 
-Migrate all Slay the Spire 1 events into the Spire Plus mod (EZMicroBalance)
-so that StS1 event gameplay is fully playable within Slay the Spire 2.
+Long-term target: account for the Slay the Spire 1 public event baseline inside
+the Spire Plus mod (`EZMicroBalance`) and prove a playable StS1-like event
+experience in Slay the Spire 2. Current source status is a gated prototype, not
+runtime gameplay proof.
 
 ## Success Criteria
 
-- [ ] All 52 StS1 Wiki events are implemented as `EventModel` subclasses
+- [ ] Public 52-event baseline is reconciled with the current source counts (`54` canonical rows, `50` registry identities, `48` model files, `47` compiling models)
 - [ ] Each event has correct StS1 behavior (options, rewards, conditions)
 - [ ] Ascension 15 differences are applied where applicable
 - [ ] Events are registered via RitsuLib `RegisterActEvent`/`RegisterSharedEvent`

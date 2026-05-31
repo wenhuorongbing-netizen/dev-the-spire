@@ -1,14 +1,15 @@
 # StS1 Events Migration
 
-Migrate all Slay the Spire 1 events into Spire Plus (EZMicroBalance) as a
-compact, integrated feature within the existing mod structure.
+Track the Slay the Spire 1 public event baseline inside Spire Plus (`EZMicroBalance`)
+as a compact, integrated feature within the existing mod structure.
 
 ## Goal
 
-Port all 52 StS1 Wiki events to StS2 using RitsuLib `ModEventTemplate` and
-`RegisterActEvent`/`RegisterSharedEvent` attributes. Events live inside
-`EZMicroBalanceCode/Sts1Events/` and localization inside
-`EZMicroBalance/localization/`.
+Account for the public 52-event StS1 Wiki baseline and the internal source
+reconciliation (`54` canonical rows, `50` registry identities, `48` model files,
+`47` compiling models). Events live inside `EZMicroBalanceCode/Sts1Events/` and
+localization inside `EZMicroBalance/localization/`. Runtime gameplay, save/load,
+image rendering, and replacement-pool behavior remain unverified.
 
 ## Canary Events (Phase 1)
 
@@ -31,7 +32,7 @@ Port all 52 StS1 Wiki events to StS2 using RitsuLib `ModEventTemplate` and
 | File | Purpose |
 |------|---------|
 | `goal.md` | Migration goal and success criteria |
-| `wiki-event-catalog.md` | Full 52-event catalog from StS1 Wiki |
+| `wiki-event-catalog.md` | Public 52-event baseline plus internal count reconciliation |
 | `implementation-plan.md` | Phased implementation roadmap |
 | `source-research/sts2-event-engine.md` | StS2 event engine research |
 | `event-specs/*.md` | Per-event specification documents |

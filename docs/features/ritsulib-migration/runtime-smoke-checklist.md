@@ -23,6 +23,8 @@ Verify that the RitsuLib migration does not change runtime behavior by loading t
 
 No Off, CanaryOnly, or AdditiveBatch1 `godot.log` runtime smoke was captured. The source emits additional FeatureRegistry/RewardPipeline, CardPlayContext, DeathProtection, and multiplayer-policy diagnostics, but those diagnostics remain source-level until live loader proof exists.
 
+Latest prerequisite evidence: `.tools/runtime-evidence/refactor-overnight-20260531/runtime-prereq-paths.txt` at HEAD `87820303`.
+
 ## Prerequisites
 
 1. Clean Steam client install with Slay the Spire 2 v0.106.1
@@ -55,8 +57,8 @@ No Off, CanaryOnly, or AdditiveBatch1 `godot.log` runtime smoke was captured. Th
 | Off | unset / empty / invalid `SPIREPLUS_STS1_EVENT_MODE` | 0 Sts1Events registrations, no `[StS1 Events]` registration lines | [BLOCKED] Missing STS2-RitsuLib/runtime log |
 | CanaryOnly | `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` | Exactly 4 canary registrations: Big Fish, Golden Idol, The Lab, Divine Fountain | [BLOCKED] Missing STS2-RitsuLib/runtime log |
 | AdditiveBatch1 | `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` | Controlled prototype only: 11 registration calls / 10 event types, no TODO/BLOCKED events | [PENDING] Only after Off + CanaryOnly smoke passes |
-| AdditiveAllDraft | `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft` | Not release-safe; dev-only all-draft mode includes TODO/BLOCKED content | [DO NOT USE for tester/release paths] |
-| ReplaceUnknownEventsPrototype | `SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype` plus compile symbol | Not release-safe; debug-only replacement prototype | [DO NOT USE for tester/release paths] |
+| AdditiveAllDraft | `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | Not release-safe; dev-only all-draft mode includes TODO/BLOCKED content | [DO NOT USE for tester/release paths] |
+| ReplaceUnknownEventsPrototype | `SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype` plus `REPLACEMENT_PROTOTYPE_ENABLED` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | Not release-safe; debug-only replacement prototype; normal builds fail closed | [DO NOT USE for tester/release paths] |
 
 ### Mod Settings UI
 

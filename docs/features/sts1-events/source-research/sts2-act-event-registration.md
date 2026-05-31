@@ -43,11 +43,12 @@ content.ActEvent<Underdocks, Sts1ShiningLight>();
 
 | Category | Count | Registration Method |
 | --- | --- | --- |
-| Shared events | 15 (+1 excluded) | `content.SharedEvent<T>()` |
+| Shared events | 17 registered (+1 compile-excluded model) | `content.SharedEvent<T>()` |
 | Act 1 events (per act) | 7 | `content.ActEvent<Overgrowth, T>()` + `content.ActEvent<Underdocks, T>()` |
 | Act 2 events | 14 | `content.ActEvent<Hive, T>()` |
 | Act 3 events | 9 | `content.ActEvent<Glory, T>()` |
-| **Total registration calls** | **52** | (15 shared × 1 + 7 act1 × 2 + 14 act2 × 1 + 9 act3 × 1) |
+| **RegisterAll registration calls** | **54** | (17 shared × 1 + 7 act1 × 2 + 14 act2 × 1 + 9 act3 × 1) |
+| **AdditiveBatch1 registration calls** | **11** | 10 verified-scope event types; Shining Light registers to both Overgrowth and Underdocks |
 | **Excluded** | 1 | `Sts1Duplicator` — uses `CardSelectCmd`/`CardPileCmd` APIs not yet available |
 
 ### Canary Mode Registration

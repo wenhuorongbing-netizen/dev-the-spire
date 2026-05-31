@@ -5,7 +5,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events;
 
 /// <summary>
 /// Feature module for StS1 event port. Default Off — zero registrations unless
-/// explicitly enabled via SPIREPLUS_STS1_EVENT_MODE environment variable.
+/// explicitly enabled through the StS1 event mode selector.
 /// </summary>
 internal sealed class Sts1EventsFeatureModule : IFeatureModule
 {
@@ -13,7 +13,6 @@ internal sealed class Sts1EventsFeatureModule : IFeatureModule
     public int InitOrder => FeatureOrders.Sts1Events;
     public string DisplayName => "StS1 Event Port";
     public string Category => "Events";
-    public IReadOnlyList<string> DisableEnvKeys => ["SPIREPLUS_STS1_EVENT_MODE"];
 
     public FeatureGateResult EvaluateGate() => Sts1EventFeatureGate.EvaluateGate();
 

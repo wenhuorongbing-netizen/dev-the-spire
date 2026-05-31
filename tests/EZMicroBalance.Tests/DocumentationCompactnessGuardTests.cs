@@ -991,6 +991,10 @@ public sealed class DocumentationCompactnessGuardTests
             "452 passed, 21 skipped",
             "455 passed / 21 skipped",
             "455 passed, 21 skipped",
+            "461 passed / 21 skipped",
+            "461 passed, 21 skipped",
+            "462 passed / 21 skipped",
+            "462 passed, 21 skipped",
             "270 passed / 0 skipped",
             "270 passed, 0 skipped",
             "288 passed / 20 skipped",
@@ -1033,7 +1037,7 @@ public sealed class DocumentationCompactnessGuardTests
         var currentDocs = string.Join(
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains("461 passed / 21 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("464 passed / 21 skipped", currentDocs, StringComparison.Ordinal);
         Assert.Contains("473 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
     }
 

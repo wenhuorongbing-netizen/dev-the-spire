@@ -27,7 +27,7 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Event images | 0 | No redistributable art available |
 | Guard tests | source-guarded | Sts1EventFeatureGuardTests.cs |
 | Build | 0 errors / 89 warnings | 2026-05-31 clean solution build; warnings are Sts1Events nullable staging warnings |
-| Tests | 461 passed / 0 failed / 21 skipped (482 total) | 2026-05-31 `dotnet test EZMicroBalance.sln` and `dotnet test EZMicroBalance.sln --no-build` after v13 source/doc guard reconciliation |
+| Tests | 464 passed / 0 failed / 21 skipped (485 total) | 2026-05-31 current project no-build validation after Revision I reconciliation |
 
 ## Phase Status
 
@@ -103,17 +103,17 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Canary save/load (O20) | **unverified** | Requires game launch |
 | Canary EN/ZHS render and images (O21/O22) | **unverified** | No redistributable art; requires runtime load test |
 | Simple batch playable (O25/O26/O27) | **unverified** | Requires game launch with `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` |
-| Replacement functional (O32/O33/O34/O35) | **unverified** | Requires debug symbol, game launch, seeded run proof, and save/load proof |
+| Replacement functional (O32/O33/O34/O35) | **unverified** | Requires debug symbol, explicit unsafe env gate, game launch, seeded run proof, and save/load proof |
 | Multiplayer co-op (O36) | **unverified** | Requires multiplayer session or runtime fail-closed proof |
 | QA Red-Team (O40) | **fail / blocked** | Independent v13 QA ran; O0-O46 are not all green because runtime gates are missing |
 
-## v13 Gate Alignment Notes
+## Current Gate Alignment Notes
 
 - `CanaryOnly` remains exactly Big Fish, Golden Idol, The Lab, and Divine Fountain.
 - `AdditiveBatch1` is now a separate mode and must not be described as `AdditiveAllDraft`.
 - `AdditiveBatch1` registers 10 event types through 11 registration calls because Shining Light is available in both StS2 Act 1 buckets: Overgrowth and Underdocks.
-- `AdditiveAllDraft` remains unsafe/dev-only and is the only non-prototype all-draft additive mode.
-- `ReplaceUnknownEventsPrototype` remains debug-only and does not register events unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED`.
+- `AdditiveAllDraft` remains unsafe/dev-only and now requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` in addition to `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft`.
+- `ReplaceUnknownEventsPrototype` remains debug-only and does not register events unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED` and explicitly allowed with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`.
 - Joust and The Ssssserpent are source-classified as non-combat Act 1 events; encounter-model blockers apply only to actual combat-entry events.
 - Runtime gameplay, image rendering, save/load, ReplaceUnknownEventsPrototype functional proof, multiplayer proof, and independent QA pass remain blocked/unverified.
 
@@ -131,3 +131,4 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Content parity gaps | docs/features/sts1-events/content-parity-gaps.md |
 | Canary source/API proof | docs/features/sts1-events/canary-source-api-proof.md |
 | Combat blockers report | docs/features/sts1-events/combat-blockers-report.md |
+| v14 hard stop report | docs/features/sts1-events/hard-stop-blocker-report-v14.md |

@@ -7,11 +7,11 @@
 - [x] Create localization files under `EZMicroBalance/localization/`
 - [x] Create asset extraction scripts
 - [x] Create event manifests
-- [ ] Verify `dotnet build` compiles with new event files
+- [x] Verify source builds with the current StS1 event files; runtime proof remains separate
 
 ## Phase 1: Canary Events
 
-Implement Big Fish and Golden Idol to prove the full pipeline works.
+Implement Big Fish, Golden Idol, The Lab, and Divine Fountain to prove the bounded canary pipeline before broader runtime claims.
 
 ### Big Fish (Act 1 Shared)
 
@@ -43,12 +43,9 @@ Implement Big Fish and Golden Idol to prove the full pipeline works.
 
 ## Phase 2: Simple Batch
 
-Events with straightforward heal/damage/gold/card rewards:
+Current AdditiveBatch1 verified-scope prototype events with straightforward heal/damage/gold/card rewards:
 
-The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits,
-Divine Fountain, Duplicator, Fountain of Cleansing, The Lab, Shining Light,
-Mushrooms, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter,
-Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine
+Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar / Pleading Vagrant, and Shining Light. AdditiveBatch1 registers 10 event types total when the 4 canaries are included, through 11 registration calls because Shining Light is registered for both StS2 Act 1 buckets.
 
 ## Phase 3: Card Service Batch
 
@@ -61,8 +58,7 @@ Knowing Skull, Nest, Vampires, Falling, Mind Bloom
 
 Events that trigger combat encounters:
 
-Dead Adventurer, Masked Bandits, Mysterious Sphere, Scorpion Nest,
-Treasure Ooze, Joust, The Ssssserpent
+Dead Adventurer, Masked Bandits, Mysterious Sphere, Scorpion Nest, and Treasure Ooze. Mind Bloom has a blocked combat option. Joust and The Ssssserpent are source-classified as non-combat events.
 
 ## Phase 5: Custom UI Batch
 
@@ -73,9 +69,7 @@ Tomb of Lord Red Mask, Winding Halls, Forgotten Altar
 
 ## Phase 6: Pool Replacement
 
-Implement `ReplaceUnknownEvents` to create an StS1-only event pool that
-replaces StS2 events in Unknown rooms. This requires patching the event
-selection system.
+Prototype `ReplaceUnknownEvents` only in debug builds to create an StS1-only event pool that replaces StS2 events in Unknown rooms. Normal builds fail closed; the prototype requires `REPLACEMENT_PROTOTYPE_ENABLED`, `SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype`, and `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` before runtime testing.
 
 ## Dependencies Per Phase
 

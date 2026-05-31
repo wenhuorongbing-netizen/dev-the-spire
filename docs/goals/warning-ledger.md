@@ -1,7 +1,7 @@
-# Warning Ledger — M3 Week 1
+# Warning Ledger — Revision I Current State
 
-Date: 2026-05-29
-Verified: Clean solution build (`dotnet clean EZMicroBalance.sln -m:1` + `dotnet build EZMicroBalance.sln -m:1`) at HEAD `24d4fe9a`
+Date: 2026-05-31
+Verified: Revision I project clean/build replay (`dotnet clean .\EZMicroBalance.csproj` + `dotnet build .\EZMicroBalance.csproj`) at HEAD `87820303`
 
 ## Summary
 
@@ -12,14 +12,14 @@ Verified: Clean solution build (`dotnet clean EZMicroBalance.sln -m:1` + `dotnet
 | CS8602 (dereference of possibly null reference) | **34** |
 | CS8625 (cannot convert null literal) | **1** |
 | Warnings outside Sts1Events/ | **0** |
-| MSB3026 (env artifact, not code) | **10** (non-blocking, ignored) |
+| MSBuild locked-file/env artifact warnings | **0** in Revision I replay; earlier non-code artifacts remain ignored |
 
 ## All warnings are in `EZMicroBalanceCode/Sts1Events/Models/`
 
-Every CS warning in the Revision H replay is a nullable reference type warning in the Sts1Events staging code.
+Every CS warning in the Revision I replay is a nullable reference type warning in the Sts1Events staging code.
 No warnings exist in core Spire Plus code, RitsuLib integration, preview tools, or tests.
 
-Current replay command: `dotnet clean EZMicroBalance.sln -m:1` followed by `dotnet build EZMicroBalance.sln -m:1` at HEAD `24d4fe9a` on 2026-05-31.
+Current replay command: `dotnet clean .\EZMicroBalance.csproj` followed by `dotnet build .\EZMicroBalance.csproj` at HEAD `87820303` on 2026-05-31.
 
 ## Per-file Breakdown (Historical Revision E — 87 warnings)
 
@@ -86,5 +86,5 @@ All 89 current warnings depend on the Sts1Events governance decision:
 | 2026-05-29 (Rev D) | 69 | First clean-build count |
 | 2026-05-29 (Rev E) | 87 | Updated after new IsShared property additions in 6 files |
 | 2026-05-29 (M3 Week 1) | 92 | Previous report after UrdaStateCodec/Sts1Events model changes at d290598c |
-| 2026-05-31 (Revision H replay) | 89 | Current clean solution build; all warnings in Sts1Events model staging code |
-| 2026-05-31 (M4 replay) | 89 | Current project clean/build replay at `24d4fe9a`; all warnings in Sts1Events model staging code |
+| 2026-05-31 (Revision H replay) | 89 | Historical clean solution build; all warnings in Sts1Events model staging code |
+| 2026-05-31 (Revision I replay) | 89 | Current project clean/build replay at `87820303`; all warnings in Sts1Events model staging code |

@@ -10,9 +10,9 @@ TBD (next available runtime session)
 
 ## Current State
 
-- HEAD: `24d4fe9a` on `main` before local governance-closure edits.
+- HEAD: `87820303` on `main` before local refactor-overrun edits.
 - Build: 2026-05-31 clean build passes with 0 errors, 89 Sts1Events nullable warnings (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1).
-- Tests: 2026-05-31 full and no-build no-game tests pass with 461 passed, 0 failed, 21 skipped, 482 total. See `docs/reviews/current-validation.md`.
+- Tests: 2026-05-31 current project no-build tests pass with 464 passed, 0 failed, 21 skipped, 485 total. See `docs/reviews/current-validation.md`.
 - Patch state: 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
 - Architecture canary status: RewardPipeline, CardPlayContext, DeathProtectionService, and MultiplayerPolicy are diagnostics-only; no gameplay behavior or enforcement claim.
 - Runtime smoke: **HARD BLOCKED**. STS2-RitsuLib is missing at both `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` and `D:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib`; E-drive BaseLib and Spire Plus package folders exist. No active `godot.log` exists at `C:\Users\zihao\AppData\Roaming\SlayTheSpire2\logs\godot.log`.
@@ -54,7 +54,7 @@ Run the loader smoke checklist per `runtime-smoke-checklist.md`:
 1. Off mode: unset/empty/invalid `SPIREPLUS_STS1_EVENT_MODE`; verify 0 Sts1Events registrations.
 2. CanaryOnly mode: set `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`; verify exactly 4 canary registrations.
 3. AdditiveBatch1 remains source/prototype-only until Off and CanaryOnly pass.
-4. Do not use AdditiveAllDraft or ReplaceUnknownEventsPrototype for tester/release paths.
+4. Do not use AdditiveAllDraft or ReplaceUnknownEventsPrototype for tester/release paths; both require `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`, and replacement also requires `REPLACEMENT_PROTOTYPE_ENABLED`.
 
 ### Step 4: If Runtime Smoke Passes
 

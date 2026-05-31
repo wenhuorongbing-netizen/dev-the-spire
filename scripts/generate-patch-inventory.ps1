@@ -121,6 +121,7 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'PickupRewardPatches.cs'; Classes = 1; PatchIds = 'ancient-pickup-balance'; Batch = '4b' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
+$trackedPatchUnitCount = $migratedPatchCount + $patches.Count
 
 $builder = [System.Text.StringBuilder]::new()
 [void]$builder.AppendLine('# Harmony Patch Inventory')
@@ -140,9 +141,10 @@ $builder = [System.Text.StringBuilder]::new()
 [void]$builder.AppendLine()
 [void]$builder.AppendLine("| Metric | Count |")
 [void]$builder.AppendLine("| --- | ---: |")
-[void]$builder.AppendLine("| Total patch declarations | $($patches.Count) |")
+[void]$builder.AppendLine("| Total raw HarmonyPatch declarations | $($patches.Count) |")
 [void]$builder.AppendLine("| Migrated to RitsuLib ModPatcher | $migratedPatchCount |")
 [void]$builder.AppendLine("| Raw HarmonyPatch remaining | $($patches.Count) |")
+[void]$builder.AppendLine("| Tracked patch units total | $trackedPatchUnitCount |")
 [void]$builder.AppendLine("| High risk (raw Harmony) | $highCount |")
 [void]$builder.AppendLine("| Medium risk (raw Harmony) | $mediumCount |")
 [void]$builder.AppendLine("| Low risk (raw Harmony) | $lowCount |")

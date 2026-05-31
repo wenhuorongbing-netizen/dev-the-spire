@@ -34,10 +34,11 @@ Baseline setup is complete on the local machine:
 - Publish has succeeded.
 - Historical `EzDailyContent` Mod Settings verification succeeded on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
 - `EZMicroBalance` build and publish have succeeded.
-- Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, and documentation freshness guards.
+- Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, documentation freshness guards, and the current RitsuLib/Sts1Events governance guards.
 - Current local source is refreshed from Slay the Spire 2 `v0.106.1`; BaseLib runtime/project package are aligned on `v3.1.4`.
-- Controlled `--force-steam off` smoke loading has verified only BaseLib and `EZMicroBalance` initialization to main menu from the final installed artifacts.
-- Normal Steam-client startup/log verification exists for earlier `Spire Plus` display-name packages with exactly BaseLib and `EZMicroBalance` loaded, config registration, and 0 release-blocking log hits. Current source defines 30 SavedSpireFields after the latest static fixes, while the latest live loader log still reports an earlier package; rerun live loader smoke before claiming current-package runtime parity. Mod Settings UI screenshot evidence for `EZMicroBalance` is still partly historical from before the display-name refresh. Live gameplay feature verification remains pending.
+- Current no-game validation at HEAD `87820303` passes with 0 build errors, 89 Sts1Events nullable warnings, and 464 passed / 0 failed / 21 skipped / 485 total tests.
+- Controlled `--force-steam off` smoke loading and normal Steam-client startup/log verification exist for earlier package states only.
+- Current runtime smoke is hard blocked because `STS2-RitsuLib` is missing at the checked game-root mod paths and no active `godot.log` exists. Do not claim current-package runtime parity, Off=0, CanaryOnly=4, runtime safety, live-ready, or release-ready until fresh live evidence exists. Mod Settings UI screenshot evidence for `EZMicroBalance` is still partly historical from before the display-name refresh. Live gameplay feature verification remains pending.
 
 Revalidate build, publish, and game load before claiming private beta readiness.
 

@@ -2,7 +2,8 @@
 
 ## Current Task
 
-- Runtime Proof + Governance Closure. Runtime verification is the gate; continued PR 6/Batch 4c migration is blocked.
+- Revision I current-state reconciliation and owner-review packet. Runtime verification is the gate; Batch 4c and high-risk migration remain blocked.
+- Current HEAD for this focus pack: `87820303 (HEAD -> main, origin/main, origin/HEAD) sprint 1`, with a dirty worktree.
 
 ## Acceptance Criteria
 
@@ -10,6 +11,8 @@
 - Manifest dependency for STS2-RitsuLib remains present.
 - Build: 0 errors, current warning count recaptured from clean build.
 - Tests: 0 failed in no-game validation.
+- Current docs and harness status no longer treat older HEADs or stale test counts as current.
+- Owner-review packet records Sts1Events, Debug, RitsuLib, Batch 4c, and release-readiness decisions without runtime claims.
 - Runtime: STS2-RitsuLib installed and fresh `godot.log` captured.
 - Off mode: 0 Sts1Events registrations proven in `godot.log`.
 - CanaryOnly mode: exactly 4 canary registrations proven in `godot.log`.
@@ -26,6 +29,8 @@
 
 - `EZMicroBalance.csproj` (RitsuLib PackageReference)
 - `EZMicroBalance.json` (manifest dependency)
+- `docs/goals/revision-i-owner-review-packet.md`
+- `docs/goals/revision-i-final-report.md`
 - `docs/features/ritsulib-migration/runtime-smoke-checklist.md`
 - `docs/features/ritsulib-migration/monthly-dev-spec.md`
 - `docs/reviews/current-validation.md`
@@ -36,3 +41,4 @@
 - STS2-RitsuLib is not installed in the active E-drive game root.
 - Runtime ModPatcher behavior for 25 migrated patches is unverified.
 - Sts1Events warning debt remains open while the feature is default Off and prototype-gated.
+- Dirty worktree state includes source/test/docs changes that need owner-approved slicing before any commit.

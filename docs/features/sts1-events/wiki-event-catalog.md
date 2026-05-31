@@ -2,20 +2,24 @@
 
 Created: 2026-05-29 | Status: source-verified
 
-## 46/52 Count Mismatch — Resolution
+## 52 / 54 / 50 / 48 / 47 Count Reconciliation
 
 The counts refer to different dimensions:
 
 | Dimension | Count | Explanation |
 | --- | --- | --- |
-| `wiki_event_entries` | **54** | Total entries on the Slay the Spire Wiki event page. Includes Neow and Combat Start (special start-of-run events with no unknown-room equivalent), plus Purifier and Golden Shrine (StS1 shrine events added to Spire Plus). |
+| `public_wiki_baseline` | **52** | Public unknown-room target from the StS1 Wiki category counts: 16 shared, 12 Act 1, 16 Act 2, 8 Act 3. |
+| `canonical_rows` | **54** | Internal audit rows: public baseline plus local special rows used for source/registry governance. |
+| `registry_entries` | **50** | Unique identities in `Sts1EventRegistry.cs`, including 2 special stubs and excluding 4 duplicate wiki rows. |
 | `runtime_event_models` | **48** | C# model files in `EZMicroBalanceCode/Sts1Events/Models/`. Excludes Neow and Combat Start (start-of-run only), plus 4 entries that share a model with their parent (Golden Wing Act1, The Cleric Act1, The Mausoleum Act2, The Woman in Blue Act2). Includes `Sts1Duplicator.cs` (compile-excluded). Includes Purifier and Golden Shrine (newly added). |
+| `compiling_models` | **47** | Model files minus compile-excluded `Sts1Duplicator.cs`. |
 | `register_all_calls` | **54** | Total RitsuLib registration calls in `RegisterAll` mode: 17 shared × 1 + 7 Act1 × 2 (Overgrowth + Underdocks) + 14 Act2 × 1 + 9 Act3 × 1 = 54. Verified against `Sts1EventRegistrationService.RegisterAll()`. |
-| `canary_only_calls` | **4** | Subset used in `CanaryOnly` mode: Big Fish, Golden Idol, The Lab, Divine Fountain (all shared events). A strict subset of the 15 shared calls in `RegisterAll`. |
+| `canary_only_calls` | **4** | Subset used in `CanaryOnly` mode: Big Fish, Golden Idol, The Lab, Divine Fountain (all shared events). A strict subset of the 17 shared calls in `RegisterAll`. |
+| `additive_batch1_calls` | **11** | 10 verified-scope event types; Shining Light registers to both StS2 Act 1 buckets. |
 
 `canary_only_calls` is **not** additive with `register_all_calls`. Canary mode replaces RegisterAll; it does not add to it.
 
-### Why 54 Wiki Entries but Only 48 Models?
+### Why 54 Canonical Rows but Only 48 Models?
 
 - **Neow** and **Combat Start** are start-of-run special events. They have no unknown-room pool entry and no `ModEventTemplate` model. Neow is handled by the base game's `Neow` class; Combat Start is a tutorial flow.
 - **Golden Wing** appears in both Shared and Act 1 on the wiki. The wiki lists it twice (#4 Shared, #23 Act1 exclusive), but it's one model (`Sts1GoldenWing.cs`).
@@ -24,7 +28,7 @@ The counts refer to different dimensions:
 - **The Woman in Blue** appears in both Shared and Act 2 (#7 Shared, #40 Act2 exclusive). One model (`Sts1TheWomanInBlue.cs`).
 - **Purifier** and **Golden Shrine** are StS1 shrine events added to Spire Plus (entries #53, #54).
 
-So: 54 wiki entries − 2 special (Neow, Combat Start) − 4 duplicates (shared/act split) = **48 unique models**.
+So: 54 canonical rows - 2 special (Neow, Combat Start) - 4 duplicates (shared/act split) = **48 model files**, of which **47 compile** because `Sts1Duplicator.cs` is excluded.
 
 ### Why 54 Registration Calls?
 
@@ -61,7 +65,7 @@ Canary mode uses 4 of the 17 shared event registrations (subset, not additive).
 | 54 | Golden Shrine | `Sts1GoldenShrine.cs` | Yes | All acts (shared) | Simple | compiled |
 | 17 | — | — | — | — | — | Neow: start-of-run only, no model |
 | 18 | — | — | — | — | — | Combat Start: tutorial only, no model |
-| 19 | Joust | `Sts1Joust.cs` | No | Overgrowth + Underdocks | Combat | spec-drafted |
+| 19 | Joust | `Sts1Joust.cs` | No | Overgrowth + Underdocks | Simple | spec-drafted |
 | 20 | The Ssssserpent | `Sts1TheSsssserpent.cs` | No | Overgrowth + Underdocks | Simple | spec-drafted |
 | 21 | Shining Light | `Sts1ShiningLight.cs` | No | Overgrowth + Underdocks | Simple | spec-drafted |
 | 22 | Dead Adventurer | `Sts1DeadAdventurer.cs` | No | Overgrowth + Underdocks | Combat | spec-drafted |
@@ -108,9 +112,9 @@ Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine
 Golden Idol, Face Trader, The Mausoleum, Duplicator, Council of Ghosts,
 Cursed Tome, Knowing Skull, Nest, Vampires, Falling, Mind Bloom
 
-### Combat (7 events)
-Dead Adventurer, Masked Bandits, Mysterious Sphere, Scorpion Nest,
-Treasure Ooze, Joust, The Ssssserpent
+### Combat (5 events + 1 blocked combat option)
+Dead Adventurer, Masked Bandits, Mysterious Sphere, Scorpion Nest, Treasure Ooze.
+Mind Bloom has a blocked combat option. Joust and The Ssssserpent are source-classified as non-combat events.
 
 ### Custom UI (8 events)
 Wheel of Change, Designer, The Woman in Blue, The Ghost, Nloth,

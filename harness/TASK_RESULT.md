@@ -2,33 +2,43 @@
 
 ## Task Goal
 
-- Integrate codex-app-better-token-main.zip and STS2-RitsuLib.0.3.3.variant-pack.zip
+- Revision I current-state reconciliation and owner-review packet for RitsuLib/Sts1Events governance.
 
 ## Actual Result
 
-- Codex harness templates enriched with HCA_PROJECT_MAP, README_HOW_TO_USE, and bilingual PROMPTS
-- RitsuLib variant pack 0.3.3 contents fully documented in docs/integrations/ritsulib.md
-- NuGet status confirmed: 0.3.3 not published, 0.106.1 compat still missing
-- PR5 compile/manifest dependency added by user: RitsuLib 0.3.2 base package added to csproj + manifest; runtime unverified
-- PR6 ready: low-risk RitsuLib API adoption
+- Current HEAD reconciled as `87820303 (main...origin/main) sprint 1`.
+- Revision I owner-review artifacts prepared under `docs/goals/`; runtime/release readiness was not claimed.
+- Warning ledger and harness status refreshed to 89 Sts1Events nullable warnings and the 464 passed / 0 failed / 21 skipped no-build test result.
+- `docs/patch-inventory.md` regenerated after the patch-inventory check reported it stale.
+- Runtime smoke remains hard blocked because `STS2-RitsuLib` is missing at checked game-root mod paths and no active `godot.log` exists.
+- No commit, push, stash, checkout, reset, restore, or broad clean was performed.
 
 ## Changed Files
 
-- `docs/codex-harness/PROMPTS.md` -- merged bilingual templates (added error ledger, new project init)
-- `docs/codex-harness/README_HOW_TO_USE.md` -- new usage guide
-- `docs/codex-harness/templates/HCA_PROJECT_MAP.md` -- new project map template
-- `docs/codex-harness/README.md` -- updated directory layout
-- `docs/integrations/ritsulib.md` -- updated variant pack inventory, NuGet status
-- `docs/migration.md` -- updated blocker table, added variant pack resolution option
-- `harness/TASK_FOCUS_PACK.md` -- updated for current task
-- `harness/TASK_STATUS.md` -- updated status
-- `harness/TASK_RESULT.md` -- updated evidence
+- `docs/goals/revision-i-owner-review-packet.md` -- owner-review summary and decisions needed
+- `docs/goals/revision-i-final-report.md` -- hard-blocked final report
+- `docs/goals/revision-i-commit-slices.md` -- proposed slices only; no commit made
+- `docs/goals/revision-i-parallel-commit-audit.md` -- commit/HEAD audit artifact
+- `docs/reviews/current-validation.md` -- Revision I validation and runtime path truth
+- `docs/goals/warning-ledger.md` -- current warning count and replay command
+- `harness/TASK_FOCUS_PACK.md` -- current task focus and blocked scope
+- `harness/TASK_STATUS.md` -- current short status
+- `harness/TASK_RESULT.md` -- current evidence summary
+- `docs/patch-inventory.md` -- regenerated patch inventory
 
 ## Verification Commands
 
-- `dotnet build EZMicroBalance.sln`: passes (0 errors, 69 warnings — all Sts1Events nullable)
+- `dotnet clean .\EZMicroBalance.csproj`: pass.
+- `dotnet build .\EZMicroBalance.csproj`: pass, 0 errors, 89 warnings.
+- `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build`: pass on final rerun, 464 passed, 0 failed, 21 skipped, 485 total.
+- `dotnet format .\EZMicroBalance.csproj --verify-no-changes`: pass.
+- `git diff --check`: pass.
+- `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified`: pass on final rerun with 55 dirty entries, 0 unclassified.
 
 ## Remaining Items
 
-- When `STS2.RitsuLib.Compat.0.106.1` is published on NuGet, upgrade from base package
-- PR6: low-risk RitsuLib API adoption (bootstrap, diagnostics, settings page)
+- Install `STS2-RitsuLib` at `<GameRoot>\mods\STS2-RitsuLib`.
+- Capture fresh `godot.log` with only BaseLib, STS2-RitsuLib, and Spire Plus enabled.
+- Prove Sts1Events Off mode has 0 registrations and CanaryOnly mode has exactly 4 canary registrations.
+- Keep Batch 4c, high-risk migration, live-ready, and release-ready claims blocked until runtime proof exists.
+- Get owner approval before committing or pushing any Revision I slices.

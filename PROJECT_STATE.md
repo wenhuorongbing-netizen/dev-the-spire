@@ -8,7 +8,7 @@
 ## Current reviewed state
 
 - Ancient Expansion v2.2 audit baseline reviewed on 2026-05-12: `a2183ee`.
-- Latest pushed cleanup/package evidence baseline: current beta.84 Urda Seedbed Harmony patch bugfix; refresh the exact pushed HEAD with `git log -1 --oneline --decorate` before release packaging or final handoff.
+- Latest pushed cleanup/package evidence baseline: current beta.84 Urda Seedbed Harmony patch bugfix; current validation reconciliation baseline is HEAD `87820303 (HEAD -> main, origin/main, origin/HEAD) sprint 1`. Refresh the exact pushed HEAD with `git log -1 --oneline --decorate` before release packaging or final handoff.
 - Refresh the exact `git log -1 --oneline --decorate` HEAD again before release packaging or final handoff, because future documentation and validation passes may create newer commits.
 - Superseded per-pass validation/package history was moved to `docs/archive/project-state-history-20260516.md` so this first-read file stays focused on current state.
 
@@ -21,6 +21,7 @@
 ### Build / test / package
 
 - `dotnet build`, `dotnet publish`, default `dotnet test`, and package refresh pass locally after the `v0.106.1` / BaseLib `v3.1.4` API update.
+- Latest no-game validation at HEAD `87820303` passes with 0 build errors, 89 Sts1Events nullable warnings, and 464 passed / 0 failed / 21 skipped / 485 total tests. Format and diff-check passed in the same reconciliation family, but should be rerun before handoff if more files change.
 - Release artifact checks are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`. The latest beta.84 run must pass after the installed folder and game-root zip are refreshed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` still works.
 - Latest in-progress validation target 2026-05-27 is the beta.84 Urda Seedbed Harmony patch bugfix: `AncientPlayerFacingPolishGuardTests.Localization.cs` now owns Ancient dialogue/localization parity plus active source/docs mojibake guard coverage. `AncientPlayerFacingPolishGuardTests.cs` keeps current-doc backtick balance, option relic, concept, custom-card, hover-preview, Urda/Vakuu/doc-status, Ascension text, and Forge Token player-facing text guards. Test names, assertions, package evidence semantics, and player-visible mod behavior are unchanged. `publish/SpirePlus-v0.1.0-private-beta.84.zip`, `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and the game-root zip were refreshed and hash-checked before handoff. `.tools\publish-game-root` is tooling/isolated-publish context only, not the current package-parity source. The beta.19 Steam-client loader smoke under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is still useful historical startup proof for the same 30-field source family, but beta.84 loader/gameplay proof was not recaptured in this pass. Gameplay, clicked UI, save-load, route traversal, preview-tools, Vakuu, and co-op rows remain pending.
 - Historical guard context remains archived from 2026-05-24 after the Sere Talon `NRelic` fallback package refresh: focused Sere Talon/release-evidence/documentation/website guards passed. Manual feature results are pending.
@@ -31,6 +32,8 @@
 - Current cleanup/refactor audit is `docs/worktree-cleanup-audit.md`; top-level legacy project metadata was moved into `docs/archive/legacy-planning/legacy-project-files/`, targeted `.tools/` clutter was pruned, and the ignored website draft was deleted after preserving the `.tools/archive/local-website-preview-20260516/` snapshot. The current `publish/` package output and local game `source code/` are intentionally retained. Godot 4.5.1 mono and `.tools\publish-game-root` were restored after the latest local cleanup so publish/package validation can still run; raw local `.tools` runtime-evidence folders were pruned and historical evidence notes in docs should be treated as records, not currently present local raw artifacts.
 
 ### Runtime
+
+- Current RitsuLib runtime smoke is hard blocked: `STS2-RitsuLib` is missing at the checked game-root mod paths and no active `godot.log` exists. Do not claim Off=0, CanaryOnly=4, runtime-safe, live-ready, release-ready, Batch 4c, or high-risk migration readiness until fresh loader evidence exists.
 
 - Current source defines 30 SavedSpireFields. Historical docs record that the Steam-client startup/log evidence originally captured under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` loaded exactly BaseLib plus Spire Plus, config registered, reported `v0.1.0-private-beta.19`, `Found 30 SavedSpireFields`, reached main menu in 13,668ms, found 0 release-blocking log signatures, stopped the game, and restored settings plus 24 isolated mod entries. That is historical beta.19 startup context only; the raw local evidence folder may need to be recaptured after cleanup, and beta.84 loader proof still needs a fresh run. Previous beta.17, beta.13, `20260524-161744`, `20260523-current`, `Found 22 SavedSpireFields`, and 16-field loader logs remain historical context only.
 - Headless installed-PCK Ancient resource verification passed under `.tools/runtime-evidence/current-package-smoke-20260514-015901`: Urda, Morvi, and Lotha background scenes instantiate, Ancient textures load from the installed PCK, option marker paths exist/export, and referenced EN/zhs localization keys exist. This is resource-load evidence, not clicked live Ancient UI evidence.
@@ -70,6 +73,7 @@
 - Multiplayer co-op verification matrix remains pending.
 - Live visual verification for generated Rootblight art remains pending.
 - Release-note closure is blocked until manual verification evidence is complete.
+- RitsuLib runtime smoke is blocked until `STS2-RitsuLib` is installed and fresh `godot.log` evidence is captured.
 
 ## Commands that work
 

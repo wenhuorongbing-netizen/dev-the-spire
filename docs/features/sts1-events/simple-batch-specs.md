@@ -7,14 +7,16 @@ Gate: 6 simple events with exact specs
 
 | # | Event | Model Exists? | File | Implementation Status |
 |---|---|---|---|---|
-| 1 | Purifier | **NO** | — | Needs creation |
+| 1 | Purifier | YES | `Models/Shared/Sts1Purifier.cs` | Implemented; runtime unverified |
 | 2 | Upgrade Shrine | YES | `Models/Act3/Sts1UpgradeShrine.cs` | Implemented |
-| 3 | Golden Shrine | **NO** | — | Needs creation |
+| 3 | Golden Shrine | YES | `Models/Shared/Sts1GoldenShrine.cs` | Implemented; runtime unverified |
 | 4 | The Cleric | YES | `Models/Shared/Sts1TheCleric.cs` | Implemented |
 | 5 | Old Beggar | YES | `Models/Shared/Sts1OldBeggar.cs` | Implemented |
 | 6 | Shining Light | YES | `Models/Act1/Sts1ShiningLight.cs` | Implemented |
 
-4 of 6 already implemented. 2 need creation: Purifier, Golden Shrine.
+All 6 simple-batch models exist and are in the AdditiveBatch1 source scope. Runtime gameplay, EN/ZHS render, image render/license, and save/load proof remain unverified.
+
+AdditiveBatch1 exact source scope is 10 event types total (4 canary + these 6 simple events) through 11 registration calls because Shining Light registers to both Overgrowth and Underdocks.
 
 ---
 
@@ -32,14 +34,18 @@ Gate: 6 simple events with exact specs
 - **Purify**: Open card removal UI → remove 1 card from deck. Free, no gold cost.
 - **Leave**: Do nothing.
 
-**APIs Needed**:
-- `Sts1EventHelpers.OpenCardRemoval(Owner)` — already exists, opens `CardSelectCmd.FromDeckForRemoval`
+**Current Implementation** (`Models/Shared/Sts1Purifier.cs`):
+- `Purify()`: calls `Sts1EventHelpers.OpenCardRemoval(Owner)`.
+- Leave: null handler.
+
+**APIs Used**:
+- `Sts1EventHelpers.OpenCardRemoval(Owner)` — opens `CardSelectCmd.FromDeckForRemoval`.
 
 **DynamicVars**: None
 
 **A15 Behavior**: None (no A15 variant in StS1)
 
-**Parity Notes**: Exact StS1 parity achievable with existing APIs.
+**Parity Notes**: Source implementation uses existing APIs; runtime proof remains pending.
 
 ---
 
@@ -86,15 +92,20 @@ Gate: 6 simple events with exact specs
 - **Desecrate**: Remove all Curses from deck. Only available if player has curses.
 - **Leave**: Do nothing.
 
-**APIs Needed**:
-- `PlayerCmd.GainGold(amount, Owner)` — for gold gain
-- `Sts1EventHelpers.RemoveAllCurses(Owner)` — already exists, removes all curses from deck
+**Current Implementation** (`Models/Shared/Sts1GoldenShrine.cs`):
+- `TakeGold()`: calls `PlayerCmd.GainGold(amount, Owner)`.
+- `Desecrate()`: calls `Sts1EventHelpers.RemoveAllCurses(Owner)`.
+- Leave: null handler.
+
+**APIs Used**:
+- `PlayerCmd.GainGold(amount, Owner)` — for gold gain.
+- `Sts1EventHelpers.RemoveAllCurses(Owner)` — removes all curses from deck.
 
 **DynamicVars**: `GoldVar(250)` (or 100 on A15)
 
 **A15 Behavior**: Gold reduced from 250 to 100.
 
-**Parity Notes**: Exact StS1 parity achievable with existing APIs. The "Desecrate" option should be conditionally shown only when the player has curses in deck.
+**Parity Notes**: Source implementation uses existing APIs; runtime proof remains pending. The "Desecrate" option should be conditionally locked when the player has no curses in deck.
 
 ---
 
@@ -189,21 +200,13 @@ Gate: 6 simple events with exact specs
 
 | Event | Gap | Effort |
 |---|---|---|
-| Purifier | Model file does not exist | Low — use `OpenCardRemoval` |
-| Golden Shrine | Model file does not exist | Low — use `GainGold` + `RemoveAllCurses` |
+| Purifier | Runtime gameplay/render/save-load proof missing | Owner/game launch |
+| Golden Shrine | Runtime gameplay/render/save-load proof missing | Owner/game launch |
 | Upgrade Shrine | None | Already done |
 | The Cleric | None | Already done |
 | Old Beggar | None | Already done |
 | Shining Light | None | Already done |
 
-## Required New Files
+## Registration Status
 
-1. `EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1Purifier.cs`
-2. `EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1GoldenShrine.cs`
-
-## Registration Changes Needed
-
-Both new events are Shared, so they need:
-- `content.SharedEvent<Sts1Purifier>()` in `RegisterAll()`
-- `content.SharedEvent<Sts1GoldenShrine>()` in `RegisterAll()`
-- Optionally add to `RegisterCanaryOnly()` if desired (not required for simple batch)
+Both events are Shared and are registered by `RegisterAll()`. They are included in `RegisterAdditiveBatch1()` for bounded prototype runtime smoke, not in `RegisterCanaryOnly()`.

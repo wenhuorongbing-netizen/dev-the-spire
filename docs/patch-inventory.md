@@ -15,9 +15,10 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total patch declarations | 142 |
+| Total raw HarmonyPatch declarations | 142 |
 | Migrated to RitsuLib ModPatcher | 25 |
 | Raw HarmonyPatch remaining | 142 |
+| Tracked patch units total | 167 |
 | High risk (raw Harmony) | 22 |
 | Medium risk (raw Harmony) | 35 |
 | Low risk (raw Harmony) | 85 |
@@ -197,4 +198,4 @@ These 142 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionSelectionLifetimePatch.cs` | 8 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
 | Preview tools | Medium | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 13 | `[HarmonyPatch(typeof(NTransformPreview), nameof(NTransformPreview.Initialize))]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 32 | `[HarmonyPatch]` |
-| STS1 event replacements | Low | `EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs` | 44 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]` |
+| STS1 event replacements | Low | `EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs` | 45 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]` |

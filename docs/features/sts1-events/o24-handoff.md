@@ -3,7 +3,7 @@
 Date: 2026-05-29 (v10 refresh)
 Session: Mandatory Overnight Run v2 → v10 refresh
 
-> Superseded for v13 governance: this file is historical O0-O24 handoff context only. Do not use the old O23 GREEN row as a v13 QA pass; current v13 QA is fail / blocked until runtime gameplay, save/load, image/render, replacement, multiplayer, and full O0-O46 evidence exist.
+> Superseded for current governance: this file is historical O0-O24 handoff context only. Do not use old GREEN rows, "all documentation updated" wording, or the old O23 row as current QA/runtime proof. Current status lives in `status-board.md`, `registry-reconciliation.md`, and the latest hard-stop report.
 
 ## Build & Test Evidence
 
@@ -145,7 +145,7 @@ Session: Mandatory Overnight Run v2 → v10 refresh
 - All guard tests updated and passing (24/24)
 - Full test suite clean (444 pass, 0 fail)
 - Worktree batch script fix resolved stale test failure
-- All documentation updated with accurate counts
+- Documentation was updated for v9/v10 counts, but current docs are governed by `status-board.md` and `registry-reconciliation.md`; do not treat this historical row as current closure.
 
 **What remains blocked (requires game launch):**
 - O12: Event images (no redistributable art)
@@ -166,6 +166,6 @@ Session: Mandatory Overnight Run v2 → v10 refresh
 2. **Screenshot** each canary event's options and results
 3. **Save/load** during a canary event to verify state persistence
 4. **Switch to** `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` to verify the bounded simple batch prototype scope; keep `AdditiveAllDraft` dev-only/unsafe
-5. **Enable** `#define REPLACEMENT_PROTOTYPE_ENABLED` and test replacement pool
+5. **Enable** `#define REPLACEMENT_PROTOTYPE_ENABLED`, set `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`, and test replacement pool
 6. **Obtain** or create redistributable art for event images
 7. **Run** independent QA/Red-Team review

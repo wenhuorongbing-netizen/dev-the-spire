@@ -16,6 +16,12 @@
 
 Owner for every row: Sts1Events implementation pass.
 
+Fix batch groups:
+
+- Canary null-guard batch 1: `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain` before CanaryOnly live proof expands beyond loader smoke.
+- AdditiveBatch1 null-guard batch 2: `Sts1ShiningLight`, `Sts1GoldenShrine`, `Sts1OldBeggar`, `Sts1Purifier`, `Sts1TheCleric`, `Sts1UpgradeShrine` before AdditiveBatch1 runtime proof.
+- Draft/deferred null-guard batch 3+: all remaining prototype, blocked combat, and unsafe draft events before any promotion beyond dev-only scope.
+
 | File | `CS8602` | `CS8604` | `CS8625` | Disposition |
 | --- | ---: | ---: | ---: | --- |
 | `Models/Act1/Sts1DeadAdventurer.cs` | 0 | 2 | 0 | Defer; unsafe draft combat event |

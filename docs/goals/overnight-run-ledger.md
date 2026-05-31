@@ -1,4 +1,32 @@
-# Overnight Run Ledger — M3 Week 1
+# Overnight Run Ledger — Revision I Current-State Reconciliation
+
+Date: 2026-05-31
+
+## Revision I Summary
+
+| Area | Finding |
+| --- | --- |
+| Git forensics | Current HEAD is `87820303`; `faf5860d`, `f4247553`, `85a38dd1`, and `24d4fe9a` are present in history. |
+| Dirty state | Dirty tracked files remain; no commit, stash, checkout, reset, restore, or broad clean was performed. |
+| Validation replay | Required project clean/build/format/diff-check passed; final no-build test rerun passed with 464/0/21/485. |
+| Warning recount | 89 warnings, all Sts1Events nullable staging debt. |
+| Patch inventory | 142 raw Harmony declarations + 25 migrated `IPatchMethod` classes = 167 tracked runtime patch units; source-level double-patch guard exists. |
+| Sts1Events | staging-only recommended. |
+| Debug | accept-scaffold recommended. |
+| RitsuLib | compile/manifest dependency attempted; runtime unverified. |
+| Runtime | hard blocked because `STS2-RitsuLib` and active `godot.log` are missing. |
+| Commit slices | prepared for owner review only; no commit authorized. |
+
+## Revision I Subagent Findings
+
+- Git forensics: all relevant historical commits are present; current dirty files appear owner-authored or from concurrent/previous agent work and were preserved.
+- Governance: Sts1Events should remain staging-only, Debug should remain accept-scaffold, and RitsuLib should remain compile/manifest only until runtime smoke passes.
+- Docs truth: older `aed2a498`, `85a38dd1`, and `24d4fe9a` headings are historical; current active HEAD is `87820303`.
+- Patch inventory: Batch 4c remains blocked despite source-level separation guards.
+
+---
+
+# Historical Overnight Run Ledger — M3 Week 1
 
 Date: 2026-05-29
 Agent: Kilo (mimo-v2.5-pro)
@@ -133,7 +161,7 @@ Spec: `docs/goals/debug.md` M3 Week 1 Commit Readiness Gate
 
 | File | Fix |
 |---|---|
-| `docs/goals/refactor.md` | Status table updated: Phase 2 started, StS1Events feature-gated, Green Stop met |
+| `docs/goals/refactor.md` | Historical status table update; Revision I rejects Green Stop because runtime proof is missing |
 | `docs/issues.md` | `REFACTOR-PHASE0-1-VALIDATION` updated with overnight run Packs 0–5 completion |
 | `docs/reviews/overnight-run-20260529.md` | NEW — Pack 5 final validation review |
 
@@ -157,7 +185,7 @@ No C# source files, csproj, localization, or test files were modified during thi
 1. **RitsuLib runtime unverified** — compile dependency and manifest declaration in place, but no runtime evidence. The unconditional bootstrap call in `MainFile.cs` will crash if RitsuLib is not installed.
 2. **Sts1Events governance** — compiled, feature-gated, dormant by default. Staging-only recommendation correct. 89 nullable warnings.
 3. **Debug scaffold** — validated (default-off, proper guarding), but not feature-complete. Accept-scaffold recommendation correct.
-4. **Test count drift** — current solution validation is 461 passed / 0 failed / 21 skipped / 482 total. Future runs should verify fresh counts.
+4. **Test count drift** — current project validation is 464 passed / 0 failed / 21 skipped / 485 total. Future runs should verify fresh counts.
 5. **Clean build warnings** — 89 nullable warnings exist in Sts1Events/ code.
 6. **Stale docs** — primary validation/runtime docs were reconciled; older revision reports remain historical unless explicitly promoted.
 7. **No commit made** — all changes are unstaged working tree modifications.

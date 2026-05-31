@@ -10,9 +10,9 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - **Raw Harmony remaining**: 142 source declarations tracked by the current inventory family; runtime migration beyond Batch 4b remains blocked.
 - **Tracked patch units total**: 167 (`25` migrated `IPatchMethod` classes + `142` raw `[HarmonyPatch]` declarations).
 - **Hybrid bootstrap active**: `ModPatcher.PatchAll()` for migrated patches, `Harmony.PatchAll()` for remaining raw patches.
-- **Latest no-game validation**: 2026-05-31 clean/build/full-test/no-build-test validation is 0 build errors / 89 Sts1Events nullable warnings, 461 passed / 0 failed / 21 skipped / 482 total, format clean, and diff-check clean after governance closure edits. See `docs/reviews/current-validation.md`.
+- **Latest no-game validation**: 2026-05-31 clean/build/project no-build-test validation is 0 build errors / 89 Sts1Events nullable warnings, 464 passed / 0 failed / 21 skipped / 485 total, format clean, and diff-check clean after Revision I reconciliation. See `docs/reviews/current-validation.md`.
 - **Build warning debt**: 89 nullable warnings in `EZMicroBalanceCode/Sts1Events/Models/` (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1). See `docs/issues/ISSUE-2026-05-31-STS1EVENTS-NULL-SAFETY-WARNINGS.md`.
-- **Sts1Events**: compiled, feature-gated default Off, and source-guarded by a 5-mode safety matrix. CanaryOnly and AdditiveBatch1 are bounded source-test/prototype scopes. AdditiveAllDraft and ReplaceUnknownEventsPrototype are unsafe/dev-only and not tester/release-safe.
+- **Sts1Events**: compiled, feature-gated default Off, and source-guarded by a 5-mode safety matrix. CanaryOnly and AdditiveBatch1 are bounded source-test/prototype scopes. AdditiveAllDraft and ReplaceUnknownEventsPrototype are unsafe/dev-only, require `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`, and are not tester/release-safe. The mode env var is handled by `Sts1EventFeatureGate`, not by generic FeatureRegistry disable overrides.
 - **FeatureRegistry hardened**: `IFeatureModule` metadata, `FeatureBootstrapRecord`, `LiveStatus` enum, unified truthy env key overrides before bootstrap record creation, metadata/override guard tests.
 - **UrdaStateCodec V1**: encode/decode/legacy compat, including current full positional decode, legacy full positional decode, null-string encode behavior, and edge cases.
 - **Architecture canary integration**: RewardPipeline diagnostics are wired into FeatureRegistry bootstrap events and low-risk Ascension reward/card-reward surfaces; CardPlayContext canary emits diagnostics through the existing Lotha extra-play allow-only adapter; active multiplayer policy records are registered for diagnostics. No gameplay behavior changes are claimed.
@@ -30,7 +30,7 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - Fixed RitsuLibBootstrap comment (8 classes, not 7).
 - Created migration guard tests for double-patch, source-level separation, manifest coverage, doc counts.
 - Moved untracked Sts1Events files to archive.
-- Historical validation totals remain historical only; current source validation is 461 passed / 0 failed / 21 skipped / 482 total.
+- Historical validation totals remain historical only; current source validation is 464 passed / 0 failed / 21 skipped / 485 total.
 
 **Exit criteria status**: Source/doc counts match source and guard tests pass. Worktree cleanliness is not met in this local run; existing dirty edits are preserved.
 
@@ -67,8 +67,8 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - Sts1Events 5-mode safety matrix source-guarded: Off, CanaryOnly, AdditiveBatch1, AdditiveAllDraft, ReplaceUnknownEventsPrototype.
 - CanaryOnly registers Big Fish, Golden Idol, The Lab, and Divine Fountain only.
 - AdditiveBatch1 registers 10 event types through 11 registration calls and is controlled prototype-only.
-- AdditiveAllDraft registers all draft calls, including blocked/TODO and temporary-substitute events; unsafe/dev-only.
-- ReplaceUnknownEventsPrototype is compile-symbol-gated and debug-only.
+- AdditiveAllDraft registers all draft calls only when the unsafe dev override is set; it includes blocked/TODO and temporary-substitute events and remains unsafe/dev-only.
+- ReplaceUnknownEventsPrototype is compile-symbol-gated, also requires the unsafe override, and is debug-only.
 - Sts1Event guard tests cover default Off, CanaryOnly, AdditiveBatch1, AdditiveAllDraft, replacement prototype governance, shared/combat event behavior, mode safety, and registry presence.
 - `docs/issues/ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md` records the risk table.
 
@@ -124,8 +124,8 @@ Sts1Events source code compiles and is registered in the feature registry with a
 - **Off** (default): returns immediately, 0 events registered.
 - **CanaryOnly**: registers 4 safe shared events: Big Fish, Golden Idol, The Lab, Divine Fountain.
 - **AdditiveBatch1**: registers 10 event types through 11 registration calls; controlled prototype, runtime unverified.
-- **AdditiveAllDraft**: registers all draft calls, including blocked/TODO and temporary-substitute events; unsafe/dev-only.
-- **ReplaceUnknownEventsPrototype**: debug-only and compile-symbol-gated; unsafe/dev-only.
+- **AdditiveAllDraft**: registers all draft calls only with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; includes blocked/TODO and temporary-substitute events; unsafe/dev-only.
+- **ReplaceUnknownEventsPrototype**: debug-only and compile-symbol-gated, with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` also required; unsafe/dev-only.
 
 Guard tests verify mode behavior. Runtime promotion requires live smoke and manual proof.
 
@@ -150,7 +150,8 @@ When runtime smoke becomes available, the following log entries must be verified
 **If RitsuLib is not active:**
 
 - `[StS1 Events] RitsuLib not active; skipping canary event registration.` (CanaryOnly)
-- `[StS1 Events] RitsuLib not active; skipping event registration.` (AdditiveAllDraft/ReplaceUnknownEventsPrototype)
+- `[Spire Plus] Feature Sts1Events bootstrap gate: disabled (...unsafe/dev-only...SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1...)` for unsafe modes without the explicit override.
+- `[StS1 Events] RitsuLib not active; skipping event registration.` only after an unsafe all-draft/debug mode is explicitly allowed.
 
 These log patterns are required evidence for runtime smoke verification.
 
@@ -161,7 +162,7 @@ These log patterns are required evidence for runtime smoke verification.
 | Migrated patches | 25 | Hold at 25 until runtime smoke passes |
 | Raw Harmony declarations | 142 | Hold at 142 until runtime smoke passes |
 | Tracked patch units | 167 | Reconcile on every inventory refresh |
-| Total test suite | 461 passed / 0 failed / 21 skipped / 482 total | Keep 0 failed |
+| Total test suite | 464 passed / 0 failed / 21 skipped / 485 total | Keep 0 failed |
 | Runtime smoke | Blocked by missing STS2-RitsuLib | Complete Off + CanaryOnly loader smoke |
 | Sts1Events status | Compiled, gated Off, 5-mode matrix source-guarded | Runtime proof required before activation/archive decision |
 | High-risk migration plan | Frozen | Catalog-only until runtime smoke passes |

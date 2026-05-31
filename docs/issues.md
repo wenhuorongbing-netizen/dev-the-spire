@@ -33,7 +33,7 @@
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 open: 89 nullable warnings are tracked as Sts1Events-only staging debt (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1); see `docs/issues/ISSUE-2026-05-31-STS1EVENTS-NULL-SAFETY-WARNINGS.md`.
-- `REFACTOR-PHASE0-1-VALIDATION` P1 historical done; current no-game validation is 0 build errors / 89 warnings and 461 passed / 0 failed / 21 skipped / 482 total. Runtime smoke remains blocked.
+- `REFACTOR-PHASE0-1-VALIDATION` P1 historical done; current no-game validation is 0 build errors / 89 warnings and 464 passed / 0 failed / 21 skipped / 485 total. Runtime smoke remains blocked.
   Phase 2 patch adapter rule started (checklist drafted). StS1Events feature-gated (default Off, guard tests active). Combat events now declare `IsShared`. See `docs/reviews/overnight-run-20260529.md`.
 - `RITSULIB-RUNTIME-SMOKE` P0 hard blocked: `STS2-RitsuLib` missing at checked D/E mod paths; E-drive BaseLib and Spire Plus exist; active `godot.log` is missing.
   Batch 4c, high-risk migration, Off/CanaryOnly runtime claims, live-ready, and release-ready stay blocked until install + fresh `godot.log`. See `docs/reviews/current-validation.md` and `docs/features/ritsulib-migration/runtime-smoke-checklist.md`.

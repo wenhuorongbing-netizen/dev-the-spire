@@ -3,11 +3,11 @@
 Date: 2026-05-29
 Session: Mandatory Overnight Run v2
 
-> Superseded for v13 governance: this file is historical O0-O24 context only. Current O0-O46 status is tracked by the v13 evidence/report and must not inherit this file's old "code-doable gates" wording as a v13 pass.
+> Superseded for current governance: this file is historical O0-O24 context only. Current status is tracked by `status-board.md`, `registry-reconciliation.md`, and the latest hard-stop report. Do not treat any old GREEN, code-complete, or handoff wording below as current runtime, QA, or release proof.
 
 ## Summary
 
-**20 of 25 gates are GREEN.** 5 gates require game launch or external resources that cannot be obtained from code-only work.
+Historical v2 snapshot claimed 20 of 25 code/source gates green. That claim is superseded; current O0-O50 gates remain blocked by missing runtime, image/render, replacement-pool, multiplayer, and independent QA evidence.
 
 ---
 
@@ -69,7 +69,8 @@ What remains red: 4 canary events have no save/load persistence proof
 ```
 Gate: O19 — ReplaceUnknownEventsPrototype functional proof
 Exact command: Enable #define REPLACEMENT_PROTOTYPE_ENABLED, set
-  SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype, launch game,
+  SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype and
+  SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1, launch game,
   verify unknown rooms only draw StS1 events (not StS2 originals)
 Exit code: N/A (requires game launch)
 Error excerpt: The ReplaceUnknownEventsPrototype Harmony patch (Sts1ReplacementPrototype.cs)
@@ -81,7 +82,7 @@ Files touched: EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs
   (untracked, compile-gated)
 Why no safe workaround exists: Event pool filtering depends on game's room generation
   system, event bag state, and RNG. Cannot be verified without running the game.
-Next owner/action: Owner must enable REPLACEMENT_PROTOTYPE_ENABLED, run a full act,
+Next owner/action: Owner must enable REPLACEMENT_PROTOTYPE_ENABLED plus the unsafe override, run a full act,
   and verify all unknown rooms spawn StS1 events only. Document seeded run proof,
   act bucket proof, visited/no-repeat proof, and save/load bag proof.
 What remains red: ReplaceUnknownEventsPrototype has no functional runtime proof
@@ -105,7 +106,7 @@ What remains red: No independent QA pass/fail exists
 
 ---
 
-## What IS Green (20 gates)
+## Historical v2 Source Gates
 
 | Gate | Name | Evidence |
 |------|------|----------|
@@ -132,7 +133,7 @@ What remains red: No independent QA pass/fail exists
 
 ## Conclusion
 
-**All code-doable gates are GREEN.** The remaining 5 blockers all require either:
+Historical v2 code-doable gates were source-green only. Current governance requires more evidence, and the remaining blockers still require either:
 1. **Game launch** (O15, O16, O19) — cannot be done from CLI
 2. **External resources** (O12) — no redistributable art available
 3. **Independent review** (O23) — cannot self-verify

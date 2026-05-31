@@ -15,7 +15,7 @@ The StS1 event system is **fail-closed** by default:
 
 3. **No events registered = no events in pool** — RitsuLib's `ModContentPackBuilder.Apply()` is never called, so no StS1 events enter the event pool.
 
-4. **Multiplayer implication** — If a co-op session has one player with StS1 events enabled and another without, the event registration is host-side only. The host's RitsuLib configuration determines which events are available. Clients don't need to know about StS1 events — they receive event state via the game's multiplayer synchronization.
+4. **Multiplayer implication** — Host-authoritative event registration is the design assumption, but this is runtime-unverified. Co-op needs either fail-closed proof or two-client behavior proof before any gameplay claim.
 
 ## Fail-Closed Behavior
 
@@ -26,8 +26,8 @@ The StS1 event system is **fail-closed** by default:
 | Unknown value | Off | 0 | 0 |
 | `canaryonly` | CanaryOnly | 4 | 4 Shared events |
 | `additivebatch1` | AdditiveBatch1 | 11 calls / 10 event types | Controlled prototype batch |
-| `additivealldraft` | AdditiveAllDraft | 54 calls / 47 event types | All compiling draft events (unsafe/dev-only) |
-| `replaceunknowneventsprototype` | ReplaceUnknownEventsPrototype | 0 unless `REPLACEMENT_PROTOTYPE_ENABLED` is defined | Debug-only replacement prototype |
+| `additivealldraft` | AdditiveAllDraft | 0 unless `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; then 54 calls / 47 event types | All compiling draft events (unsafe/dev-only) |
+| `replaceunknowneventsprototype` | ReplaceUnknownEventsPrototype | 0 unless `REPLACEMENT_PROTOTYPE_ENABLED` and `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` are both present | Debug-only replacement prototype |
 
 ## IsShared / Co-op Behavior
 
@@ -40,7 +40,9 @@ The StS1 event system is **fail-closed** by default:
 | Test | What It Verifies |
 |------|------------------|
 | `FeatureGateDefaultsToOffWhenEnvVarIsUnset` | Default is Off when env var missing |
-| `FeatureGateEvaluatesAllModes` | All 5 modes have correct gate results |
+| `FeatureGateEvaluatesAllModes` | All 5 modes route through the correct gate paths |
+| `UnsafeModesRequireExplicitUnsafeOverride` | Unsafe all-draft/debug modes require `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` |
+| `ReplacementPrototypeGateFailsClosedWithoutCompileSymbol` | Replacement prototype reports disabled in normal builds without `REPLACEMENT_PROTOTYPE_ENABLED` |
 | `OffModeReturnsImmediatelyWithZeroRegistrations` | Off mode returns without registering |
 | `RegisterCanaryOnlyRegistersExactlyFourSharedEvents` | CanaryOnly = exactly 4 |
 | `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` | AdditiveBatch1 = 11 calls / 10 event types |
@@ -53,7 +55,7 @@ The StS1 event system is **fail-closed** by default:
 1. `SPIREPLUS_STS1_EVENT_MODE=Off` (default) — verify no StS1 events appear
 2. `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` — verify exactly 4 events appear
 3. `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` — verify the bounded prototype batch only in a controlled runtime smoke
-4. Multiplayer session — verify host controls event registration
+4. Multiplayer session — capture fail-closed proof or two-client behavior proof before making co-op claims
 
 ## Verdict
 

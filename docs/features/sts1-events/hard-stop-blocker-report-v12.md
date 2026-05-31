@@ -15,9 +15,9 @@ Scope: Mandatory Overnight Run v12 for `docs/goals/event.md`
 
 - O0 worktree snapshot captured.
 - O1 latest build evidence: `dotnet clean EZMicroBalance.sln -m:1` and `dotnet build EZMicroBalance.sln -m:1` succeeded with 0 errors and 89 tracked Sts1Events nullable warnings.
-- O2/O3 latest full-test evidence is superseded by v13: `dotnet test EZMicroBalance.sln --no-build` passed with `461 passed + 0 failed + 21 skipped = 482 total`.
+- O2/O3 latest full-test evidence is superseded by Revision I: current project no-build validation passed with `464 passed + 0 failed + 21 skipped = 485 total`.
 - O8-O14 focused StS1 guard evidence is superseded by v13: `dotnet test --filter Sts1EventFeatureGuardTests` passed `28/28`.
-- Default Off, CanaryOnly=4 exact identity, AdditiveBatch1=10 event types / 11 registration calls, AdditiveAllDraft=54 calls, and ReplacementPrototype source gating are source-guarded.
+- Default Off, CanaryOnly=4 exact identity, AdditiveBatch1=10 event types / 11 registration calls, AdditiveAllDraft unsafe override gating, and ReplacementPrototype compile-symbol plus unsafe override gating are source-guarded in the current docs/tests.
 - Canonical matrix red-team was run by an independent subagent. Initial result: fail due stale docs. Follow-up docs aligned the main reconciliation counts to 54 canonical rows, 50 registry entries, 54 RegisterAll calls, and 10/11 AdditiveBatch1.
 
 ## Non-Green Gates / Blockers
@@ -51,6 +51,6 @@ Continuation cannot make O0-O44 all green in the current environment because run
 
 - Provide or authorize live game runtime validation for CanaryOnly and AdditiveBatch1.
 - Provide an image/license strategy for StS1 event art.
-- Decide whether to compile and run `REPLACEMENT_PROTOTYPE_ENABLED` for replacement-pool proof.
+- Decide whether to compile and run `REPLACEMENT_PROTOTYPE_ENABLED` with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` for replacement-pool proof.
 - Run or delegate independent QA/Red-Team after runtime evidence exists.
 - Install STS2-RitsuLib before attempting Off, CanaryOnly, or AdditiveBatch1 runtime smoke.

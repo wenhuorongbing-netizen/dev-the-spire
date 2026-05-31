@@ -1,4 +1,31 @@
-# Overnight Run Status — M3 Week 1 Commit Readiness Gate
+# Overnight Run Status — Revision I Current-State Reconciliation
+
+Date: 2026-05-31
+
+## Revision I Current Stop Condition
+
+```text
+Status: OWNER-REVIEW PACKET PREPARED / RUNTIME HARD BLOCKED
+HEAD: 87820303 (main...origin/main) sprint 1
+Validation: clean/build/format/diff-check pass; no-build tests pass on final rerun with 464 passed, 0 failed, 21 skipped, 485 total
+Warnings: 89 Sts1Events nullable warnings remain as staging debt
+Dirty state: worktree remains dirty; use the latest batch classifier output before any commit planning
+Sts1Events: staging-only recommended
+Debug: accept-scaffold recommended
+RitsuLib: compile/manifest dependency attempted; runtime unverified
+Runtime: blocked because STS2-RitsuLib and active godot.log are missing
+Batch 4c: blocked
+Release-ready: no
+Commit/push: not authorized
+```
+
+## Revision I Required Next Action
+
+Install `STS2-RitsuLib` under the active game root, rerun BaseLib + STS2-RitsuLib + Spire Plus loader smoke, capture `godot.log`, then rerun Off and CanaryOnly Sts1Events runtime checks. Do not resume Batch 4c or high-risk migration before that evidence exists.
+
+---
+
+# Historical Overnight Run Status — M3 Week 1 Commit Readiness Gate
 
 Date: 2026-05-29
 Run started: 2026-05-29T07:57:57+02:00 (Revision D)
@@ -55,13 +82,13 @@ Additional fixes:
 | Tests | `ArchitectureSkeletonGuardTests.cs` (new) | Covers CardPlayContext + RewardPipeline |
 | Docs | `overnight-run-status.md`, `issues.md`, `refactor.md`, `patch-inventory.md` | Updated counts and status |
 
-## Current Stop Condition
+## Historical M4 Stop Condition
 
 ```text
-Status: BLOCKED — M4 validation replay is source-green, but runtime smoke is hard-blocked
-M4 replay: Terminal validations replayed at 24d4fe9a
+Status: BLOCKED — historical M4 validation replay was source-green, but runtime smoke was hard-blocked
+M4 replay: Terminal validations replayed at 24d4fe9a; superseded by Revision I at 87820303
 Build: 0 errors, 89 warnings (all Sts1Events nullable: CS8604=54, CS8602=34, CS8625=1)
-Test: passed (461 passed, 0 failed, 21 skipped, 482 total)
+Test: historical pass (461 passed, 0 failed, 21 skipped, 482 total); current Revision I project no-build pass is 464/0/21/485
 Dirty: worktree remains dirty with preserved source/docs/harness changes; batch classifier was not rerun in this continuation
 Commit slices: Revision G/M4 plan updated for owner review only; no commit authorized
 Stale docs: primary validation/runtime docs reconciled; remaining revision-report docs are historical unless explicitly promoted

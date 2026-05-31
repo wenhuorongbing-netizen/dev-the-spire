@@ -1,8 +1,8 @@
 # StS1 Events — Content Parity Gap Analysis
 
 > **Generated:** 2026-05-29
-> **Source:** 46 model files in `EZMicroBalanceCode/Sts1Events/Models/` + `Sts1EventHelpers.cs`
-> **Scope:** Identifies game-object dependencies that prevent full StS1 parity in each event model.
+> **Source:** Historical 46-model gap audit plus `Sts1EventHelpers.cs`. Current count reconciliation is `48` model files / `47` compiling models in `registry-reconciliation.md`; this table is a dependency backlog, not current completeness proof.
+> **Scope:** Identifies game-object dependencies that prevent full StS1 parity in event models.
 
 ## Classification Key
 
@@ -22,7 +22,7 @@
 | 1 | BigFish | Shared | **OK** | `native-equivalent` | Regret curse, random relic |
 | 2 | GoldenIdol | Shared | **OK** | `native-equivalent` | Injury curse |
 | 3 | LivingWall | Shared | **OK** | `native-equivalent` | Card removal/transform/upgrade |
-| 4 | Duplicator | Shared | **OK** | `native-equivalent` | Card duplication |
+| 4 | Duplicator | Shared | **GAP** | `blocked` | Compile-excluded; card duplication selection APIs not available |
 | 5 | DivineFountain | Shared | **OK** | `native-equivalent` | Curse removal |
 | 6 | FountainOfCleansing | Shared | **OK** | `native-equivalent` | Curse removal + max HP loss |
 | 7 | TheCleric | Shared | **OK** | `native-equivalent` | Gold, heal, card removal |
@@ -66,7 +66,7 @@
 | 45 | MoaiHead | Act3 | **OK** | `native-equivalent` | Gold, max HP |
 | 46 | **WindingHalls** | Act3 | **GAP** | `temporary-substitute` | Madness curse → Debt |
 
-**Totals:** 37 at parity · 3 temporary substitutes · 5 blocked · 1 custom-required
+**Historical table totals:** 37 at parity · 3 temporary substitutes · 5 blocked · 1 custom-required. Current blocker handling is authoritative in `status-board.md` and `registry-reconciliation.md`.
 
 ---
 

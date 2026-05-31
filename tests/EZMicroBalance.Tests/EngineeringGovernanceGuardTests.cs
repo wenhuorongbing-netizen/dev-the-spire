@@ -245,7 +245,8 @@ public sealed class EngineeringGovernanceGuardTests
             .GetFiles(RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories)
             .Sum(path => Regex.Matches(File.ReadAllText(path), @"\[HarmonyPatch").Count);
 
-        Assert.Contains($"| Total patch declarations | {sourcePatchCount} |", inventory, StringComparison.Ordinal);
+        Assert.Contains($"| Total raw HarmonyPatch declarations | {sourcePatchCount} |", inventory, StringComparison.Ordinal);
+        Assert.Contains($"| Tracked patch units total | {sourcePatchCount + 25} |", inventory, StringComparison.Ordinal);
         Assert.Contains("| Unclassified owner | 0 |", inventory, StringComparison.Ordinal);
         Assert.DoesNotContain("$(", inventory, StringComparison.Ordinal);
         Assert.DoesNotContain("@{File=", inventory, StringComparison.Ordinal);
@@ -826,11 +827,10 @@ public sealed class EngineeringGovernanceGuardTests
             "Sts1EventRegistrationMode.Off => FeatureGateResult.Disabled(",
             "StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.");
 
-        // The module should declare SPIREPLUS_STS1_EVENT_MODE as a DisableEnvKey
+        // The mode variable is handled by Sts1EventFeatureGate; treating it as a
+        // generic disable key would block CanaryOnly/AdditiveBatch1 before init.
         var moduleSource = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Sts1EventsFeatureModule.cs");
-        AssertSourceContains(moduleSource,
-            "DisableEnvKeys =>",
-            "SPIREPLUS_STS1_EVENT_MODE");
+        Assert.DoesNotContain("DisableEnvKeys", moduleSource, StringComparison.Ordinal);
     }
 
     [Fact]

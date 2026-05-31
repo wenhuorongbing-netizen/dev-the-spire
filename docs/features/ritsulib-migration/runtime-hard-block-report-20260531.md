@@ -8,7 +8,7 @@
 
 | Check | Result |
 | --- | --- |
-| HEAD | `24d4fe9a (HEAD -> main, origin/main, origin/HEAD) ci: regenerate patch inventory consistently` |
+| HEAD | `87820303 (HEAD -> main, origin/main, origin/HEAD) sprint 1` |
 | Branch | `main...origin/main` |
 | `D:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` | Missing |
 | `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib` | Missing |
@@ -33,3 +33,5 @@
 ## Next Action
 
 Install STS2-RitsuLib in the active E-drive game root, rerun runtime smoke from `docs/features/ritsulib-migration/runtime-smoke-checklist.md`, and update `docs/reviews/current-validation.md` with the captured `godot.log` evidence. Do not start Batch 4c before this proof exists.
+
+Latest local prerequisite evidence: `.tools/runtime-evidence/refactor-overnight-20260531/runtime-prereq-paths.txt`.
