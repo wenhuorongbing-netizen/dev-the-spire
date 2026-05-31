@@ -36,6 +36,7 @@ public sealed class Sts1EventFeatureGuardTests
             source,
             "Sts1EventRegistrationMode.Off => FeatureGateResult.Disabled(",
             "Sts1EventRegistrationMode.CanaryOnly => FeatureGateResult.Enabled(",
+            "Sts1EventRegistrationMode.AdditiveBatch1 => FeatureGateResult.Enabled(",
             "Sts1EventRegistrationMode.AdditiveAllDraft => FeatureGateResult.Enabled(",
             "Sts1EventRegistrationMode.ReplaceUnknownEventsPrototype => FeatureGateResult.Enabled(");
     }
@@ -56,7 +57,28 @@ public sealed class Sts1EventFeatureGuardTests
     }
 
     [Fact]
-    public void RegistrationModeEnumDefinesFourModes()
+    public void AdditiveBatch1EventIdsContainsExactlyVerifiedScope()
+    {
+        var source = ReadSts1RuntimeSources();
+
+        var batchBlock = SliceBetween(source, "AdditiveBatch1EventIds { get; } =", "]");
+        AssertSourceContains(batchBlock,
+            "\"sts1_big_fish\"",
+            "\"sts1_golden_idol\"",
+            "\"sts1_the_lab\"",
+            "\"sts1_divine_fountain\"",
+            "\"sts1_purifier\"",
+            "\"sts1_upgrade_shrine\"",
+            "\"sts1_golden_shrine\"",
+            "\"sts1_the_cleric\"",
+            "\"sts1_old_beggar\"",
+            "\"sts1_shining_light\"");
+
+        Assert.Equal(10, CountOccurrences(batchBlock, "\"sts1_"));
+    }
+
+    [Fact]
+    public void RegistrationModeEnumDefinesFiveModes()
     {
         var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationMode.cs");
 
@@ -64,8 +86,9 @@ public sealed class Sts1EventFeatureGuardTests
             source,
             "Off = 0,",
             "CanaryOnly = 1,",
-            "AdditiveAllDraft = 2,",
-            "ReplaceUnknownEventsPrototype = 3,");
+            "AdditiveBatch1 = 2,",
+            "AdditiveAllDraft = 3,",
+            "ReplaceUnknownEventsPrototype = 4,");
     }
 
     [Fact]
@@ -78,6 +101,8 @@ public sealed class Sts1EventFeatureGuardTests
             "public static void RegisterGated(string modId, Sts1EventRegistrationMode mode)",
             "case Sts1EventRegistrationMode.CanaryOnly:",
             "RegisterCanaryOnly(modId);",
+            "case Sts1EventRegistrationMode.AdditiveBatch1:",
+            "RegisterAdditiveBatch1(modId);",
             "case Sts1EventRegistrationMode.Off:",
             "return;",
             "RegisterAll(modId);");
@@ -96,6 +121,30 @@ public sealed class Sts1EventFeatureGuardTests
             "content.SharedEvent<Sts1DivineFountain>()");
 
         Assert.Equal(4, CountOccurrences(canaryMethod, "content.SharedEvent<"));
+    }
+
+    [Fact]
+    public void RegisterAdditiveBatch1RegistersOnlyVerifiedScope()
+    {
+        var source = ReadSts1RuntimeSources();
+
+        var batchMethod = SliceBetween(source, "RegisterAdditiveBatch1(string modId)", "content.Apply()");
+        AssertSourceContains(batchMethod,
+            "content.SharedEvent<Sts1BigFish>()",
+            "content.SharedEvent<Sts1GoldenIdol>()",
+            "content.SharedEvent<Sts1TheLab>()",
+            "content.SharedEvent<Sts1DivineFountain>()",
+            "content.SharedEvent<Sts1Purifier>()",
+            "content.ActEvent<Glory, Sts1UpgradeShrine>()",
+            "content.SharedEvent<Sts1GoldenShrine>()",
+            "content.SharedEvent<Sts1TheCleric>()",
+            "content.SharedEvent<Sts1OldBeggar>()",
+            "content.ActEvent<Overgrowth, Sts1ShiningLight>()",
+            "content.ActEvent<Underdocks, Sts1ShiningLight>()");
+
+        var totalRegistrations = CountOccurrences(batchMethod, "content.ActEvent<") + CountOccurrences(batchMethod, "content.SharedEvent<");
+        Assert.Equal(11, totalRegistrations);
+        Assert.DoesNotContain("RegisterAll", batchMethod, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -225,6 +274,21 @@ public sealed class Sts1EventFeatureGuardTests
     }
 
     [Fact]
+    public void RegistryCanaryPhaseMatchesCanaryEventIds()
+    {
+        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistry.cs");
+        var entriesBlock = SliceBetween(source, "private static readonly List<Sts1EventEntry> Events = new()", "// Phase 2: Simple batch");
+
+        AssertSourceContains(entriesBlock,
+            "new(\"sts1_big_fish\", \"Big Fish\", Sts1EventPhase.Canary, Sts1EventAct.Shared)",
+            "new(\"sts1_golden_idol\", \"Golden Idol\", Sts1EventPhase.Canary, Sts1EventAct.Shared)",
+            "new(\"sts1_the_lab\", \"The Lab\", Sts1EventPhase.Canary, Sts1EventAct.Shared)",
+            "new(\"sts1_divine_fountain\", \"Divine Fountain\", Sts1EventPhase.Canary, Sts1EventAct.Shared)");
+
+        Assert.Equal(4, CountOccurrences(entriesBlock, "Sts1EventPhase.Canary"));
+    }
+
+    [Fact]
     public void RegisterAllSharedEventCountIs17()
     {
         // 17 SharedEvent calls in RegisterAll: Big Fish, Golden Idol, The Cleric, Golden Wing,
@@ -303,12 +367,13 @@ public sealed class Sts1EventFeatureGuardTests
     [Fact]
     public void IssueDocumentsModeSafetyMatrix()
     {
-        // The Sts1Events issue must document all 4 modes with risk levels.
+        // The Sts1Events issue must document all 5 modes with risk levels.
         var source = ReadRepoText("docs", "issues", "ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md");
 
         AssertSourceContains(source,
             "Off",
             "CanaryOnly",
+            "AdditiveBatch1",
             "AdditiveAllDraft",
             "ReplaceUnknownEventsPrototype",
             "Safe",

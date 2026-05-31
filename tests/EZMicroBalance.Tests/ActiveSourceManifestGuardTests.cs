@@ -413,6 +413,7 @@ public sealed class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.State.cs",
         "EZMicroBalanceCode/Ascension/Rewards/RootDeckService.cs",
         "EZMicroBalanceCode/Ascension/Patches/RootRunHook.cs",
+        "EZMicroBalanceCode/Core/Architecture/ArchitectureCanaryBootstrap.cs",
         "EZMicroBalanceCode/Core/Architecture/CardPlayContext.cs",
         "EZMicroBalanceCode/Core/Architecture/DeathProtectionService.cs",
         "EZMicroBalanceCode/Core/Architecture/MultiplayerPolicy.cs",

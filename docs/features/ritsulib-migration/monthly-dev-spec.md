@@ -4,17 +4,17 @@
 
 Define the 4-week plan for completing the RitsuLib migration of Spire Plus from raw Harmony patches to managed RitsuLib `IPatchMethod` patches, including evidence backlog reduction and architecture hardening.
 
-## Current State (Architecture Integration Overnight Run 2026-05-29)
+## Current State (Architecture Integration Validation 2026-05-31)
 
 - **25 patches migrated** to RitsuLib `IPatchMethod` (Batch 1 + 4a + 4b)
-- **142 raw Harmony patches remaining** (22 high-risk, 35 medium-risk, 85 low-risk)
+- **Raw Harmony remaining**: 142 source declarations tracked by the current inventory family; runtime migration beyond Batch 4b remains blocked
 - **Hybrid bootstrap active**: `ModPatcher.PatchAll()` for migrated, `Harmony.PatchAll()` for remaining
-- **444 tests passing** (0 failed, 21 skipped, 465 total) — includes 8 migration guards + 24 Sts1Events guards + 41 UrdaStateCodec guards + 21 FeatureRegistry/EngineeringGovernance guards + 57 architecture skeleton guards (27 source-text + 30 behavioral canary) + 5 FeatureRegistry metadata guards
-- **Build clean**: 0 errors, 92 warnings (Sts1Events nullable CS8602/CS8604/CS8625 — accepted for prototype)
-- **Sts1Events**: compiled, feature-gated (default Off), 4-mode safety matrix validated; 7 HIGH-risk combat stubs + 1 MEDIUM-risk documented in risk table
-- **FeatureRegistry hardened**: IFeatureModule metadata, FeatureBootstrapRecord, LiveStatus enum, env key overrides, 5 metadata guard tests
+- **Latest validation**: 2026-05-31 clean build passed with 0 errors / 89 warnings; full tests passed with 452 passed / 0 failed / 21 skipped (473 total). Format and diff-check passed. See `docs/reviews/current-validation.md`.
+- **Build**: 0 errors, 89 warnings (Sts1Events nullable CS8602/CS8604/CS8625 — accepted for prototype until StS1Events prototype hardening)
+- **Sts1Events**: compiled, feature-gated (default Off), 5-mode safety matrix validated; CanaryOnly and AdditiveBatch1 are bounded test scopes, AdditiveAllDraft and replacement remain unsafe/dev-only
+- **FeatureRegistry hardened**: IFeatureModule metadata, FeatureBootstrapRecord, LiveStatus enum, unified truthy env key overrides before bootstrap record creation, metadata/override guard tests
 - **UrdaStateCodec V1**: encode/decode/legacy compat, 41 tests (18 source-structure + 15 behavioral + 8 edge-case)
-- **Architecture canary integration**: RewardPipeline diagnostics canary (5 tests), CardPlayContext depth-guard canary (9 tests) — no gameplay behavior changes
+- **Architecture canary integration**: RewardPipeline diagnostics are wired into FeatureRegistry bootstrap events, CardPlayContext canary is touched by Lotha extra-play through an allow-only adapter, and active multiplayer policy records are registered for diagnostics only. No gameplay behavior changes are intended.
 - **DeathProtectionService stub**: diagnostics-only code stub with Request/Result/Priority, 21 tests (13 guard + 8 behavioral canary)
 - **MultiplayerPolicy stub**: diagnostics-only registry with 6-category taxonomy, 14 tests (6 guard + 8 behavioral canary)
 - **Runtime smoke**: blocked — STS2-RitsuLib not installed locally; Batch 4c blocked until runtime smoke passes
@@ -29,7 +29,7 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 - Fixed RitsuLibBootstrap comment (8 classes, not 7)
 - Created migration guard tests for double-patch, source-level separation, manifest coverage, doc counts
 - Moved untracked Sts1Events files to archive
-- Full test suite clean: 444 passed, 0 failed, 21 skipped (465 total)
+- Historical full test suite clean: 444 passed, 0 failed, 21 skipped (465 total); current source now has 452 passed, 0 failed, 21 skipped (473 total)
 - Format clean, diff clean
 
 **Exit criteria met**: All doc counts match source, all guard tests pass, no untracked files.
@@ -59,11 +59,11 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 **Status**: Complete
 
 **Completed**:
-- Sts1Events 4-mode safety matrix validated: Off (default), CanaryOnly (4 safe shared events), AdditiveAllDraft (all events), ReplaceUnknownEventsPrototype (all events)
+- Sts1Events 5-mode safety matrix validated: Off (default), CanaryOnly (4 safe shared events), AdditiveBatch1 (10 event types through 11 registration calls), AdditiveAllDraft (all draft calls), ReplaceUnknownEventsPrototype (compile-symbol-gated debug prototype)
 - CanaryOnly registers: BigFish, GoldenIdol, TheLab, DivineFountain — all safe, no TODOs
 - Sts1EventRegistrationService IS compiled, gated behind Sts1EventFeatureGate (default Off)
-- 22 Sts1Event guard tests (including 4 mode-safety guards)
-- FeatureRegistry hardened: IFeatureModule metadata (DisplayName, Category, DisableEnvKeys, ForceEnvKeys), FeatureBootstrapRecord status tracking, IsTruthyEnv helper
+- Sts1Event guard tests cover default Off, CanaryOnly, AdditiveBatch1, AdditiveAllDraft, and replacement prototype governance
+- FeatureRegistry hardened: IFeatureModule metadata (DisplayName, Category, DisableEnvKeys, ForceEnvKeys), FeatureBootstrapRecord status tracking, ForceEnvKeys/DisableEnvKeys override evaluation, IsTruthyEnv helper
 - 16 EngineeringGovernance guard tests (including 6 FeatureRegistry guards, 3 metadata guards, 6 module bootstrap guards)
 - UrdaStateCodec V1 complete: encode/decode/legacy compat, 18 source-level guard tests + 15 behavioral tests
 - `docs/issues/ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md` rewritten with mode safety matrix
@@ -111,8 +111,9 @@ Sts1Events source code compiles and is registered in the feature registry with a
 
 - **Off** (default): returns immediately, 0 events registered
 - **CanaryOnly**: registers 4 safe shared events (BigFish, GoldenIdol, TheLab, DivineFountain)
-- **AdditiveAllDraft**: registers all 52 events, including DeadAdventurer (TODO elite) and Joust (no gold guard)
-- **ReplaceUnknownEventsPrototype**: debug-only, replaces unknown events
+- **AdditiveBatch1**: registers 10 event types through 11 registration calls; runtime unverified
+- **AdditiveAllDraft**: registers all draft calls, including blocked/TODO and temporary-substitute events; unsafe/dev-only
+- **ReplaceUnknownEventsPrototype**: debug-only and compile-symbol gated
 
 Guard tests verify mode behavior. Resolution options:
 1. Complete registration infrastructure and go live (requires runtime testing)
@@ -147,7 +148,7 @@ These log patterns are the required evidence for runtime smoke verification.
 | Migrated patches | 25 | 55-65 |
 | Raw Harmony patches | 142 | 110-120 |
 | Guard tests | 94 | 100+ |
-| Total test suite | 444 passed | 450+ passed |
+| Total test suite | 452 passed | Keep 0 failed |
 | Runtime smoke | Pending | Complete |
 | Sts1Events status | Compiled, gated Off, 4-mode matrix validated | Resolved (activate or archive) |
 | High-risk migration plan | Architecture skeletons done | Documented with rollback strategy |

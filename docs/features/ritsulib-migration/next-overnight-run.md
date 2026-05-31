@@ -10,19 +10,20 @@ TBD (next available overnight session)
 
 ## Current State
 
-- HEAD: `aed2a498` on `main`
-- Build: 0 errors, 92 warnings (Sts1Events nullable CS8602/CS8604/CS8625)
-- Tests: 444 passed, 0 failed, 21 skipped (465 total)
+- HEAD: `85a38dd1` on `main` before local refactor-governance edits
+- Build: 2026-05-31 clean build passed with 0 errors, 89 warnings (Sts1Events nullable CS8602/CS8604/CS8625)
+- Tests: 2026-05-31 full `dotnet test --no-build` passed with 452 passed, 0 failed, 21 skipped (473 total). See `docs/reviews/current-validation.md`.
 - 25 patches migrated, 142 raw Harmony remaining
 - Architecture canary integration complete (RewardPipeline diagnostics + CardPlayContext depth guard)
 - DeathProtectionService + MultiplayerPolicy stubs created (diagnostics-only)
-- Runtime smoke: **BLOCKED** — STS2-RitsuLib not installed
+- Runtime smoke: **BLOCKED** — STS2-RitsuLib not installed. 2026-05-31 `Test-Path` checks returned `False` at both `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` and `D:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib`. Batch 4c, Off/CanaryOnly runtime smoke claims, and live-ready claims remain blocked until STS2-RitsuLib is installed and logs are captured.
+- FeatureRegistry source hardening: unified ForceEnvKeys/DisableEnvKeys truthy override evaluation was added before bootstrap record creation; this is source-level governance only and does not close runtime smoke.
 
 ## Pre-Run Checklist
 
 1. Confirm `main` branch is clean: `git status` shows no uncommitted changes
-2. Confirm full test suite passes: `dotnet test EZMicroBalance.sln --no-build` → 444+ passed, 0 failed
-3. Confirm build is clean: `dotnet build EZMicroBalance.sln` → 0 errors, 92 warnings (Sts1Events nullable)
+2. Confirm full test suite passes: `dotnet test EZMicroBalance.sln --no-build` → expected current target is 0 failed
+3. Confirm build is clean: `dotnet build EZMicroBalance.sln` → 0 errors; warning count must be recaptured from the current source
 4. Confirm format is clean: `dotnet format --verify-no-changes`
 
 ## Run Steps

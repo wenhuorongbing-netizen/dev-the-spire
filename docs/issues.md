@@ -2,10 +2,10 @@
 Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-27:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `7B71487069A41F0AA7E3440845CE195D984F9F3C672EE49AF0F02C556861C82D` |
-| DLL | `63E0528D3BBB1DFE89D5267109D6C674A904377A5A1AC445F76ED96B6F06F3FA` |
-| PCK | `067437EF0E6756C635B829C037ABA4AFB00A16626F62A25AC58617DFC0E1703B` |
-| Manifest | `0E62C2024D839093997511CA4038198B791C91111C7FB956EDFA5D443324879E` |
+| ZIP | `8D3C1969C4442213E43F81C7D8C5EA09AC22778D13996B67CB357821256F62CF` |
+| DLL | `222D47886483F0C245740B25E7427F2C1DF04EDD38801634187605B9036B963A` |
+| PCK | `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA` |
+| Manifest | `47658D7593FE8DF23C4E5B3413CA53B1C7F1B779109A42A8B65E381C4C0FEDAC` |
 | README_INSTALL | `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
@@ -30,13 +30,12 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
 ## Engineering governance blockers
 - `GOV-WIP-SPLIT` P0 source-fixed; current committed worktree is clean after the beta.84 batch commit, and the batch classifier reports 0 dirty entries / 0 unclassified entries.
-- `GOV-CI-FIRST-RUN` P2 pending: self-hosted lane exists, but first GitHub/self-hosted run evidence is not recorded.
-  GitHub Actions API check on 2026-05-26 21:36 +02:00 queried the latest 100 `main` runs and found 0 `Full Local Validation` runs.
-  Use `scripts/check-github-workflow-runs.ps1 -RequireSuccessfulRun` before closing this.
+- `GOV-CI-FIRST-RUN` P2 pending: self-hosted lane exists, but first run evidence is missing; 2026-05-26 API check found 0 completed `Full Local Validation` runs.
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 done (2026-05-28); overnight run Packs 0–5 complete (2026-05-29), evidence hardening pass applied: build 0 errors / 92 warnings, 444 pass / 0 fail / 21 skip (465 total).
   Phase 2 patch adapter rule started (checklist drafted). StS1Events feature-gated (default Off, guard tests active). Combat events now declare `IsShared`. See `docs/reviews/overnight-run-20260529.md`.
+- `RITSULIB-RUNTIME-SMOKE` P0 blocked: `STS2-RitsuLib` is not installed at the checked game-root mod paths; Batch 4c and runtime-safety claims stay blocked. See `docs/reviews/current-validation.md`.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.

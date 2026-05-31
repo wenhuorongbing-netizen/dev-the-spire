@@ -11,11 +11,11 @@ M3 Week 1 validation: 2026-05-29T16:14:00+02:00
 | Field | Value |
 |---|---|
 | Branch | `main` |
-| HEAD | `d290598c` ("debugging") |
+| HEAD | `aed2a498` ("debug") |
 | Stash list | Empty |
-| Dirty tracked files | 12 (unstaged modifications) |
-| Untracked entries | 3 (2 files + 1 directory) |
-| **Total entries** | **15** |
+| Dirty tracked files | 11 (unstaged modifications) |
+| Untracked entries | 0 |
+| **Total entries** | **11** |
 
 ## Evidence Hardening Pass (Revision F)
 
@@ -36,10 +36,10 @@ Additional fixes:
 |---|---|---|
 | `dotnet clean .\EZMicroBalance.csproj` | 0 | Clean |
 | `dotnet build .\EZMicroBalance.csproj` | 0 | 0 errors, 92 warnings (all Sts1Events nullable) |
-| `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` | 0 | 387 passed, 0 failed, 21 skipped (408 total) |
+| `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` | 0 | 444 passed, 0 failed, 21 skipped (465 total) |
 | `dotnet format .\EZMicroBalance.csproj --verify-no-changes` | 0 | Clean |
 | `git diff --check` | 0 | Clean |
-| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | 10 dirty (script output), 0 unclassified |
+| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | 11 dirty (script output), 0 unclassified |
 
 ## Stop Condition
 
@@ -58,16 +58,16 @@ Additional fixes:
 ## Current Stop Condition
 
 ```text
-Status: GREEN — all terminal validation commands passed
-M3 Week 1: Terminal validations replayed at d290598c
-Build: 0 errors, 92 warnings (all Sts1Events nullable)
-Test: 387 passed, 0 failed, 21 skipped (408 total)
-Dirty: 12 tracked + 3 untracked = 15 total entries
-Commit slices: 6 slices prepared (revision-f-commit-slices.md)
-Stale docs: 55 count locations identified, fixes in progress
-Sts1Events: Staging-only (24 guard tests, 92 warnings, runtime unverified)
+Status: BLOCKED — Revision H validation replay failed on current dirty state
+M3 Revision H: Terminal validations replayed at 85a38dd1
+Build: 0 errors, 89 warnings (all Sts1Events nullable: CS8604=54, CS8602=34, CS8625=1)
+Test: failed/aborted (13 failed, 427 passed, 21 skipped, 461 total before host crash)
+Dirty: batch classifier reports 39 dirty entries after validation/build outputs, 0 unclassified
+Commit slices: Revision H plan prepared for owner review only; no commit authorized
+Stale docs: active docs still mix Revision G/H state and validation failures
+Sts1Events: Staging-only (warnings/runtime unverified; ZHS sts1_events key parity currently complete)
 RitsuLib: Attempted/runtime-unverified (no error handling, no runtime proof)
 Debug: Accept-scaffold (default-off, Warn unconditional, LogPreview dead)
 Release-ready: No
-Required next: Fix stale doc counts, owner decision on commit slices
+Required next: owner decision on guarded doc deletions, untracked ArchitectureCanaryBootstrap, Sts1Events enum intent, package hash/site refresh, and parallel commit acceptance notation
 ```

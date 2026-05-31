@@ -15,9 +15,9 @@
 
 ## Verification Result
 
-- Build: 0 errors, 92 warnings (all CS8602/CS8604/CS8625 nullable reference warnings in Sts1Events staging code)
-- Tests: 387 passed, 21 skipped, 0 failed (408 total)
-- Format: clean (verified at Revision F replay)
+- Build: 0 errors, 89 warnings in Revision H replay (all CS8602/CS8604/CS8625 nullable reference warnings in Sts1Events staging code)
+- Tests: failing on current dirty state in Revision H replay (13 failed, 427 passed, 21 skipped, 461 total before host crash)
+- Format: clean in Revision H replay; `git diff --check` fails on trailing whitespace in `docs/goals/event.md`
 
 ## Remaining Work
 
@@ -25,3 +25,4 @@
 - PR 6 Batch 5: High-risk patches (blocked on evidence backlog)
 - RitsuLib runtime verification (loader smoke, godot.log evidence)
 - Upgrade RitsuLib to compat package when published on NuGet
+- Resolve Revision H hard blocker before any commit: guarded doc deletions, untracked architecture canary, Sts1Events enum/test alignment, package hash/site metadata, and diff whitespace.

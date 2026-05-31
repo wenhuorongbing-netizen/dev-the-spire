@@ -1,75 +1,142 @@
-# 严格审核结论
+我会先说明一个限制：你之前某些上传文件已经过期，我现在不能再读取那些旧附件内容。如果你需要我重新审旧日志或旧报告，需要再上传一次。下面这份审核**只基于当前 GitHub 仓库状态和你这轮提供的报告**，不依赖旧附件。
 
-**没有完全完成。**
-这轮工作比之前扎实很多，但当前状态仍应定义为：
+# 一、从头重建当前项目上下文
 
-```text
-RitsuLib 架构稳定化：阶段性完成
-RitsuLib runtime 证明：未完成
-Sts1Events 默认安全：完成
-Sts1Events 内容完成：未完成
-架构 skeleton：已创建
-架构接入实际业务：大多未完成
-可继续开发：可以
-可 release：不可以
-```
-
-另外要先校准一个事实：你贴的报告说当前 HEAD 是 `a647c44d`，但我查 GitHub 当前 `main` 最新已经是：
+项目是：
 
 ```text
-d290598c — debugging
+wenhuorongbing-netizen/dev-the-spire
+当前 mod 名称/方向：Spire Plus（保留 `EZMicroBalance` 作为技术 manifest id）
+当前主线方向：大型玩法包 + RitsuLib 迁移 + 架构稳定化
 ```
 
-`a647c44d` 确实存在，是上一条提交；但它不是当前最新 main。
-所以严格验收必须以 `d290598c` 当前 `main` 为准。
+目前项目已经不是一个小型平衡 mod，而是包含多条大系统：
+
+```text
+1. Ancient reward rebalance v4
+2. Ascension 11–20
+3. Rootblight / Blight Sprout
+4. Urda / Morvi / Lotha / Vakuu Ancient expansion
+5. StS1 event port prototype
+6. RitsuLib migration
+7. Preview tools / website / art / package evidence
+8. Multiplayer diagnostics / fail-closed gates
+```
+
+过去几轮的核心目标已经从“加内容”转成：
+
+```text
+RitsuLib-first migration
+架构解耦
+状态稳定
+runtime smoke
+多人和 save/load 风险控制
+```
 
 ---
 
-# 1. 逐项验收
+# 二、当前 GitHub 真实状态
 
-## 1.1 RitsuLib 依赖和 runtime dependency
-
-**完成。**
-
-之前已经确认：
+最新提交搜索显示，远程仓库里最新可见提交已经出现：
 
 ```text
-STS2.RitsuLib 0.3.2 已加入 csproj
-STS2-RitsuLib 已加入 manifest dependency
-BaseLib 3.1.4 保留
+85a38dd — architecture canary: add DeathProtectionService + MultiplayerPolicy behavioral tests, update test counts to 444/465
 ```
 
-这部分没被回滚。当前后续文档也继续围绕 RitsuLib migration 展开。
-**判定：PASS。**
+它在 `f4247553`、`aed2a49` 之后。
 
-但注意：dependency 加入不等于 runtime 已证明。
+但同时我也发现一个**文档真相问题**：`next-overnight-run.md` 仍写当前 HEAD 是 `aed2a498`，测试数是 `444 passed`，build 是 `92 warnings`。 这说明当前仓库仍存在“最新提交、文档状态、用户报告”之间的同步问题。
+
+所以严格结论是：
+
+```text
+当前不是最终完成态。
+当前是“架构稳定化持续推进中，但 runtime proof 未完成，文档真相仍需统一”的状态。
+```
 
 ---
 
-## 1.2 Batch 4a / 4b 计数修正
+# 三、逐项严格验收
 
-**完成。**
+## 1. RitsuLib 依赖接入
 
-`docs/migration.md` 当前已经修正为：
+状态：**完成。**
+
+项目已经添加了 RitsuLib 编译依赖：
+
+```xml
+<PackageReference Include="STS2.RitsuLib" Version="0.3.2" PrivateAssets="All"/>
+```
+
+同时仍保留 BaseLib 3.1.4。
+
+manifest 也已经添加 runtime dependency：
+
+```json
+{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }
+```
+
+
+
+结论：
+
+```text
+PASS
+```
+
+但这只是接入，不等于 runtime 已验证。
+
+---
+
+## 2. RitsuLibBootstrap / hybrid patch 模式
+
+状态：**第一阶段完成。**
+
+当前 `RitsuLibBootstrap` 会：
+
+```text
+1. CreateLogger
+2. CreatePatcher
+3. RegisterMigratedPatches
+4. patcher.PatchAll()
+5. raw Harmony.PatchAll()
+6. log RitsuLibFramework.IsActive
+```
+
+
+
+这意味着当前是混合模式：
+
+```text
+已迁移 patch -> RitsuLib ModPatcher
+未迁移 patch -> raw Harmony.PatchAll()
+```
+
+结论：
+
+```text
+PASS for hybrid bootstrap
+NOT complete for full RitsuLib migration
+```
+
+---
+
+## 3. Batch 4a / 4b patch migration
+
+状态：**源码和文档基础闭环基本完成。**
+
+之前有错误：Batch 4a 文档写 10，实际 9；总数写 26，实际 25。现在 `docs/migration.md` 已修正为：
 
 ```text
 Batch 4a = 9
 Batch 4b = 16
 Total migrated = 25
-Remaining raw HarmonyPatch = 141
+Remaining = 141 HarmonyPatch declarations
 ```
 
-并且 `DebtAndCardPatches.cs` 已修为 8 个 class。
 
-**判定：PASS。**
 
----
-
-## 1.3 Patch inventory 和 double-patch guard
-
-**source-level 完成。**
-
-`docs/patch-inventory.md` 现在记录：
+`docs/patch-inventory.md` 也记录：
 
 ```text
 Migrated to RitsuLib ModPatcher: 25
@@ -79,175 +146,185 @@ Medium risk raw: 35
 Low risk raw: 84
 ```
 
-并且有独立的 `Migrated Patches (RitsuLib ModPatcher)` section，明确这些 25 个 patch 由 `RitsuLibBootstrap.RegisterMigratedPatches()` 注册，不会被 raw `Harmony.PatchAll()` 拾取。
+并列出了 migrated patches。
 
-`RitsuLibMigrationGuardTests.cs` 也已经有专门 guard，覆盖：
+结论：
 
 ```text
-PatchId unique
+PASS for Batch 4a/4b source + doc count
+```
+
+但这只是 25 个 patch。仍有大量 raw Harmony patch，尤其 high-risk run/map/save/multiplayer/reward patch 不应继续贸然迁。
+
+---
+
+## 4. Double-patch guard
+
+状态：**source-level 完成。**
+
+`RitsuLibMigrationGuardTests` 已经覆盖：
+
+```text
+PatchId 唯一
 migrated patch count = 25
-migrated class has no HarmonyPatch
-raw HarmonyPatch class not registered
+migrated classes have no HarmonyPatch attribute
+raw HarmonyPatch classes are not registered
 RegisterMigratedPatches count matches source
 migration.md count matches source
 patch-inventory.md lists migrated patches
+all expected PatchId strings appear in source
 ```
 
 
 
-**判定：PASS。**
+结论：
 
-但这是 source-level guard，不是 runtime 行为证明。
+```text
+PASS for source-level double-patch prevention
+```
+
+但仍不是 runtime proof。ModPatcher 在真实游戏里是否完全等价，还需要 loader smoke 和 gameplay smoke。
 
 ---
 
-## 1.4 Full test truth
+## 5. Full validation truth
 
-**部分完成，但仍需统一最终 evidence。**
+状态：**仍有文档不一致，必须统一。**
 
-`monthly-dev-spec.md` 当前写：
+你这轮报告说：
 
 ```text
-444 total tests passing
-0 failed
-21 skipped
+Build: 0 errors, 0 warnings
+Tests: 428 passed, 0 failed, 21 skipped
 ```
 
-并写 architecture skeleton guard、UrdaStateCodec guard、FeatureRegistry guard、Sts1Events guard 都已存在。
+最新提交搜索又显示 `85a38dd` 的 commit message 说测试数更新到 `444/465`。
 
-用户报告也说：
+`monthly-dev-spec.md` 的版本也出现过多个状态：先是 428，后续 diff 表示改到 444。
 
-```text
-dotnet build: 0 errors, 92 warnings
-dotnet test: 444 passed, 0 failed, 21 skipped
-```
-
-这和最新 monthly spec 的 387 passed 对上。
-但是旧的 `docs/reviews/overnight-run-20260529.md` 仍记录的是：
+`next-overnight-run.md` 当前仍写：
 
 ```text
-324 passed, 21 skipped, 0 failed
-```
-
-那是旧 overnight review。
-
-**判定：PARTIAL PASS。**
-
-下一步需要一个 canonical validation doc，把当前最终测试事实统一为：
-
-```text
+HEAD: aed2a498
 Build: 0 errors, 92 warnings
-Test: 444 passed, 0 failed, 21 skipped
+Tests: 444 passed, 0 failed, 21 skipped
 ```
 
-并明确 92 个 warning 是否全部属于 Sts1Events null-safety，是否接受，何时清理。
 
----
 
-## 1.5 Build warnings
-
-**未完成。**
-
-用户报告说：
+结论：
 
 ```text
-92 warnings, all CS8602/CS8604/CS8625 in Sts1Events models
+PARTIAL PASS
 ```
 
-这比"0 warnings"更真实，也更值得保留。
-问题是：**92 warnings 不能长期当作无影响噪音**。既然 Sts1Events 已经编译进项目，而且有 FeatureGate，那么 warnings 会持续污染 build truth。
+自动化测试趋势是绿的，但当前文档仍有“哪个 HEAD、哪个测试数、是否 0 warnings”的真相不统一问题。
 
-**判定：OPEN。**
-
-建议下月把它归为 P1：
+下一轮第一件事必须是：
 
 ```text
-ISSUE-2026-05-29-STS1EVENTS-NULL-SAFETY-WARNINGS
-```
-
-不要急着全修，但要分类：
-
-```text
-[ ] Owner nullability
-[ ] Deck nullability
-[ ] Rng nullability
-[ ] Option availability
-[ ] Event owner/player availability
+git log -1
+dotnet clean
+dotnet build
+dotnet test
+dotnet test --no-build
+format
+diff check
+然后写入唯一 canonical validation doc
 ```
 
 ---
 
-## 1.6 Runtime smoke
+## 6. Runtime smoke
 
-**未完成，是当前最大 blocker。**
+状态：**未完成，当前最大 blocker。**
 
-`runtime-smoke-checklist.md` 仍明确写：
+`runtime-smoke-checklist.md` 明确写：
 
 ```text
 PENDING — no local game environment available for automated runtime smoke.
 ```
 
-要求 clean Steam client、Slay the Spire 2 v0.106.1、BaseLib、STS2-RitsuLib、Spire Plus，并且所有 evidence 都是 `[PENDING]`。
-
-`monthly-dev-spec.md` 也写：
+并要求安装：
 
 ```text
-Runtime smoke: blocked — STS2-RitsuLib not installed locally; Batch 4c blocked until runtime smoke passes
+Slay the Spire 2 v0.106.1
+BaseLib v3.1.4
+STS2-RitsuLib
+Spire Plus
+No other mods
+```
+
+所有 loader smoke、Mod Settings UI、gameplay、multiplayer evidence 仍是 pending。
+
+`next-overnight-run.md` 也明确说：
+
+```text
+Batch 4c cannot proceed until STS2-RitsuLib is installed and runtime smoke passes.
 ```
 
 
 
-**判定：FAIL / BLOCKED。**
+结论：
 
-没有 runtime smoke，就不能说 RitsuLib migration runtime-safe，也不能进入更多 patch migration。
+```text
+FAIL / BLOCKED
+```
+
+没有 runtime smoke，就不能说 RitsuLib migration runtime-safe，也不能 release。
 
 ---
 
-## 1.7 Sts1Events safe-mode status
+## 7. Sts1Events governance
 
-**默认安全完成，内容完成未完成。**
+状态：**默认安全完成；内容完成未完成。**
 
-现在 Sts1Events 已经有明确 gate：
+Sts1Events 当前设计：
 
 ```text
-Off = safe default
-CanaryOnly = 4 safe shared events
-AdditiveAllDraft = all 52 events, includes DeadAdventurer TODO and Joust no gold guard
-ReplaceUnknownEventsPrototype = debug-only
+Off = default, 0 registrations
+CanaryOnly = 4 safe events
+AdditiveAllDraft = all events, unsafe/dev-only
+ReplaceUnknownEventsPrototype = debug-only/unsafe
 ```
 
-`monthly-dev-spec.md` 也明确记录了这些模式，并指出 AdditiveAllDraft 包含 DeadAdventurer TODO 和 Joust no-gold-guard。
-
-`Sts1EventFeatureGuardTests.cs` 确认：
+`Sts1EventFeatureGuardTests` 确认：
 
 ```text
 env unset -> Off
 CanaryOnly exactly 4 events
-RegisterCanaryOnly only registers BigFish, GoldenIdol, TheLab, DivineFountain
-Feature module registered in SpirePlusFeatureRegistry
+CanaryOnly only registers BigFish, GoldenIdol, TheLab, DivineFountain
+Feature module registered
 ```
 
 
 
-**判定：安全 gate PASS；内容完整性 FAIL / OPEN。**
-
-这正是应该的当前状态：
+当前 issue 也记录：
 
 ```text
-Default Off = safe
-CanaryOnly = testable
-AllDraft / ReplaceUnknown = unsafe dev-only
+Feature gate defaults to Off
+Zero events registered unless env var set
+CanaryOnly / AdditiveAllDraft / ReplaceUnknownEventsPrototype 有明确风险
 ```
 
-不要把 Sts1Events 当作可发布内容。
+
+
+结论：
+
+```text
+PASS for default-safe governance
+NOT complete for Sts1Events content
+```
+
+AllDraft 里仍有高风险/未完成事件。不能让测试员把它当可玩内容。
 
 ---
 
-## 1.8 FeatureRegistry hardening
+## 8. FeatureRegistry hardening
 
-**部分完成。**
+状态：**第一层完成。**
 
-`IFeatureModule` 已经扩展出：
+`IFeatureModule` 已扩展：
 
 ```text
 DisplayName
@@ -258,7 +335,7 @@ ForceEnvKeys
 
 
 
-`FeatureBootstrapRecord` 已经有：
+`FeatureBootstrapRecord` 已有：
 
 ```text
 Id
@@ -270,36 +347,50 @@ FailureMessage
 IsActive
 ```
 
-并有 `FeatureLiveStatus.Enabled / Disabled / Failed`。
 
-`FeatureRegistry` 已经会记录 bootstrapRecords，并且有 `LogFeatureSummary()` 输出：
+
+`FeatureRegistry` 已支持：
 
 ```text
-bootstrap=enabled/disabled
-live=Enabled/Disabled/Failed
-reason=...
+BootstrapRecords
+GetBootstrapRecord
+LogFeatureSummary
+```
+
+并输出：
+
+```text
+bootstrap enabled/disabled
+live Enabled/Disabled/Failed
+reason
 ```
 
 
 
-**判定：PASS for scaffold。**
-
-但还没达到“完整 feature governance”：
+结论：
 
 ```text
-[ ] Dependencies 没有
-[ ] Runtime diagnostics 没有统一导出
-[ ] LiveStatus 仍基于 bootstrap gate，不等于真实 gameplay live availability
-[ ] DisableEnvKeys / ForceEnvKeys 只是 metadata，还没有统一 gate evaluation
+PASS for scaffold hardening
+PARTIAL for full runtime governance
+```
+
+尚未完成：
+
+```text
+Dependencies
+runtime evidence status
+real gameplay live availability
+feature dependency graph
+multiplayer policy integration
 ```
 
 ---
 
-## 1.9 UrdaStateCodec
+## 9. UrdaStateCodec
 
-**完成第一层，但不是完整 state migration。**
+状态：**第一层完成。**
 
-`UrdaStateCodec.cs` 已存在，包含：
+`UrdaStateCodec` 已存在，支持：
 
 ```text
 Decode
@@ -307,42 +398,36 @@ Encode
 legacy minimum part count
 legacy/current index handling
 malformed fallback
-semicolon wire format
-sanitize
+sanitize state fields
 ```
 
 
 
-这解决了之前“裸 split + index parse”最不透明的问题。
-
-**判定：PASS for codec scaffold。**
-
-但它仍然是：
+结论：
 
 ```text
-SavedSpireField string bridge + codec
+PASS for string-state codec bridge
 ```
 
-不是 RitsuLib DataStore migration，也不是完整 typed persistence。
-这可以接受，作为阶段一。
+但它仍是 SavedSpireField string bridge，不是 RitsuLib DataStore 迁移。下一步应逐渐增加 behavior tests 和 DataStore migration spec。
 
 ---
 
-## 1.10 RewardPipeline skeleton
+## 10. RewardPipeline
 
-**存在，但 diagnostics-only。**
+状态：**skeleton 完成，业务未接入。**
 
-`RewardPipeline.cs` 已有：
+`RewardPipeline` 有：
 
 ```text
 RewardPhase enum
-IRewardHandler interface
+IRewardHandler
 RewardPipelineContext
-RewardPipeline.Register()
-RewardPipeline.Diagnose()
+Register
+Diagnose
 HandlerCount
 RegisteredPhases
-ClearHandlers()
+ClearHandlers
 ```
 
 并明确写：
@@ -353,50 +438,82 @@ Skeleton only — diagnostics and contract enforcement, no behavior changes.
 
 
 
-**判定：PASS for skeleton。**
+结论：
 
-但还没有接入 Urda/Morvi/Lotha/Fission/Prismatic/ClosedCourt 等真实 reward mutation。
+```text
+PASS for skeleton
+NOT wired into reward gameplay yet
+```
 
 ---
 
-## 1.11 CardPlayContext skeleton
+## 11. CardPlayContext
 
-**存在，但未接入实际 extra-play 逻辑。**
+状态：**skeleton 完成，业务未接入。**
 
-`CardPlayContext.cs` 已有：
+`CardPlayContext` 有：
 
 ```text
-ExtraPlayPolicy Allow / Block / FallbackToPower
+ExtraPlayPolicy
 MaxDepth = 10
-TryIncrementDepth()
-DecrementDepth()
-Reset()
+TryIncrementDepth
+DecrementDepth
+Reset
 IsPowerFallback
 ```
 
-并明确写目前是 skeleton，现有 Lotha extra-play 仍使用 per-blessing flags。
+并明确写现有 Lotha extra-play 仍使用 per-blessing flags。
 
-**判定：PASS for skeleton。**
+结论：
 
-但还没解决真实递归问题，下一步必须接入一个低风险 extra-play effect 做 canary。
-
----
-
-## 1.12 DeathProtectionService
-
-**只有 spec，没有代码服务。**
-
-`monthly-dev-spec.md` 写 DeathProtectionService 当前是 spec，文档描述 Lotha DeathReprieve lifecycle、inReprieve flag、forced death bypass、co-op owner attribution、future `IDeathProtectionProvider` interface。
-
-**判定：DOC PASS；CODE NOT DONE。**
+```text
+PASS for skeleton
+NOT wired into actual extra-play yet
+```
 
 ---
 
-## 1.13 MultiplayerPolicy
+## 12. DeathProtectionService
 
-**taxonomy 完成，行为接入未完成。**
+状态：**diagnostics-only stub 完成。**
 
-`monthly-dev-spec.md` 记录 MultiplayerPolicy taxonomy 有 6 类：
+`DeathProtectionService` 有：
+
+```text
+DeathProtectionRequest
+DeathProtectionResult
+DeathProtectionPriority
+IDeathProtectionProvider
+Register
+CheckProtection
+ProviderCount
+RegisteredPriorities
+ClearProviders
+```
+
+但源码注释明确说：
+
+```text
+Diagnostics-only stub — not wired into game logic.
+No actual death prevention occurs.
+```
+
+
+
+结论：
+
+```text
+PASS for stub
+NOT real death-protection fix
+```
+
+---
+
+## 13. MultiplayerPolicy
+
+状态：**diagnostics-only registry 完成。**
+
+`MultiplayerPolicy` 定义了 6 类：
 
 ```text
 LocalUiOnly
@@ -407,360 +524,336 @@ CombatCommandReplicated
 UnsafeInMultiplayer
 ```
 
-并映射到现有 MultiplayerFeaturePolicy。
+并有 `MultiplayerPolicyRegistry`。但注释明确写：
 
-**判定：DOC PASS；CODE/POLICY ENFORCEMENT NOT DONE。**
+```text
+Diagnostics-only stub — not wired into game logic.
+No actual gating or enforcement occurs.
+```
+
+
+
+结论：
+
+```text
+PASS for taxonomy/stub
+NOT real multiplayer enforcement
+```
 
 ---
 
-## 1.14 Latest `d290598` 后续改动风险
-
-最新 `d290598` commit 又做了新变化：加了 `InternalsVisibleTo`、新增 Sts1 Purifier / Golden Shrine localization 和 models、FeatureModule DisplayName/Category、MainFile 调用 `registry.LogFeatureSummary()` 等。
-
-这里有两个重要提醒：
-
-1. **最新 HEAD 已经超出用户报告的 `a647c44d`。**
-2. **Sts1Events 又新增了更多事件内容，虽然 default Off，但 AllDraft 风险面继续扩大。**
-
-这强化了结论：下一轮不能继续扩 Sts1Events 或 Batch 4c，必须先 runtime smoke + governance。
-
----
-
-# 2. 当前目标对比
+# 四、当前与我们的目标对比
 
 ## 我们的目标
 
 ```text
-1. RitsuLib runtime proof
-2. RitsuLib migration batch closure
-3. Sts1Events default safety
-4. FeatureRegistry hardening
-5. State codec foundation
-6. Reward/CardPlay/Death/Multiplayer architecture skeletons
-7. 不 release-ready
-8. subagent 工作流
+1. 全面 RitsuLib 迁移
+2. Runtime proof
+3. Patch migration 安全
+4. FeatureRegistry 解耦
+5. State codec
+6. Reward / CardPlay / Death / Multiplayer architecture
+7. Sts1Events 安全治理
+8. 继续推进但不制造更多 runtime 风险
 ```
 
 ## 当前结果
 
-| 目标                        | 状态                      |
-| ------------------------- | ----------------------- |
-| RitsuLib runtime proof    | 未完成                     |
-| Batch 4a/4b closure       | 完成                      |
-| Sts1Events default safety | 完成                      |
-| FeatureRegistry hardening | 部分完成                    |
-| UrdaStateCodec            | 完成第一层                   |
-| RewardPipeline skeleton   | 完成                      |
-| CardPlayContext skeleton  | 完成                      |
-| DeathProtectionService    | spec only               |
-| MultiplayerPolicy         | taxonomy only           |
-| subagent 工作流              | 文档中记录有 subagent summary |
-| release-ready no          | 保持正确                    |
+| 目标                          | 当前状态             | 结论      |
+| --------------------------- | ---------------- | ------- |
+| RitsuLib dependency         | 已完成              | PASS    |
+| Runtime smoke               | 未完成              | BLOCKER |
+| Patch migration Batch 4a/4b | 已完成 source-level | PASS    |
+| Batch 4c                    | 阻塞               | 正确      |
+| FeatureRegistry             | 第一层完成            | PARTIAL |
+| UrdaStateCodec              | 第一层完成            | PARTIAL |
+| RewardPipeline              | skeleton         | PARTIAL |
+| CardPlayContext             | skeleton         | PARTIAL |
+| DeathProtectionService      | diagnostics-only | PARTIAL |
+| MultiplayerPolicy           | diagnostics-only | PARTIAL |
+| Sts1Events Off/CanaryOnly   | 完成               | PASS    |
+| Sts1Events full content     | 未完成              | BLOCKER |
+| Release-ready               | 否                | 正确      |
 
 ---
 
-# 3. 综合决策：继续优化、推进，还是两者兼顾？
+# 五、综合决策：继续优化、推进，还是两者兼顾？
 
-**决策：优化为主，推进为辅。**
-
-原因：
+结论：
 
 ```text
-RitsuLib runtime smoke 未通过；
-build warnings 87 个；
-Sts1Events AllDraft 仍有半成品内容；
-架构 skeleton 大多未接入实际系统；
-高风险 patch 迁移仍 blocked。
+优化为主，有限推进为辅。
 ```
 
-所以：
+比例建议：
 
 ```text
-80% 优化/硬化
-20% 有限推进
+80% optimization / hardening
+20% limited advancement
 ```
 
-可以推进的只有：
+现在不该做：
 
 ```text
-Runtime smoke evidence
-FeatureRegistry status refinement
-UrdaStateCodec tests
-RewardPipeline/CardPlayContext canary integration
-Sts1Events canary proof
+Batch 4c 大量 patch migration
+high-risk patch migration
+Sts1Events AllDraft live
+新增 gameplay
+release packaging
 ```
 
-不能推进的：
+现在应该做：
 
 ```text
-Batch 4c 大量迁 patch
-High-risk patches
-Sts1Events AdditiveAllDraft live
-Release packaging
+runtime smoke
+canonical validation truth
+Sts1Events governance
+FeatureRegistry runtime status
+RewardPipeline / CardPlayContext canary 接入
+DeathProtection / MultiplayerPolicy 从 stub 走向 enforcement prep
 ```
 
 ---
 
-# 4. 下个月开发规范 Monthly Dev Spec
+# 六、下个月开发规范 Monthly Dev Spec
 
 ## 月度主题
 
 ```text
-RitsuLib Runtime Proof + Architecture Integration Month
+Runtime Proof + Architecture Integration Month
 ```
 
 ---
 
-## Week 1：Runtime Proof + Warning Truth
+## Week 1：Canonical Validation + Runtime Smoke
 
-### 目标
+目标：把测试真相和 runtime 真相统一。
 
-把 RitsuLib 从“编译通过”推进到“真实游戏加载通过”。
-
-### 任务
+任务：
 
 ```text
-[ ] 安装 BaseLib v3.1.4
-[ ] 安装 STS2-RitsuLib variant pack
-[ ] 安装 Spire Plus
-[ ] 只启用这三个
-[ ] 启动 Steam 客户端
-[ ] 收集 godot.log
-[ ] 运行 audit-godot-log
+[ ] git status --short --branch
+[ ] git log -1 --oneline --decorate
+[ ] dotnet clean
+[ ] dotnet build EZMicroBalance.sln
+[ ] dotnet test EZMicroBalance.sln
+[ ] dotnet test EZMicroBalance.sln --no-build
+[ ] dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+[ ] git diff --check
 ```
 
-日志必须证明：
+创建/更新：
 
 ```text
-[ ] RitsuLib bootstrap starting
-[ ] ModPatcher applied 25 patches
-[ ] RitsuLib framework is active
-[ ] BaseLib initialized
-[ ] Spire Plus initialized
-[ ] SavedSpireFields expected count
-[ ] 0 MissingMethodException
-[ ] 0 TypeLoadException
-[ ] 0 manifest dependency failure
+docs/reviews/current-validation.md
 ```
 
-同时处理 92 warnings：
+必须写唯一真相：
 
 ```text
-[ ] 列出 87 warning 文件分布
-[ ] 按 Owner null / Rng null / Deck null / Option null 分类
-[ ] 先不要求全部修，但必须建立 warning issue
+HEAD
+build warnings count
+tests passed/failed/skipped
+format status
+diff status
+whether package was published
+```
+
+runtime smoke：
+
+```text
+BaseLib v3.1.4
+STS2-RitsuLib
+Spire Plus
+no other mods
+```
+
+log 必须证明：
+
+```text
+RitsuLib bootstrap starting
+ModPatcher applied 25 patches
+RitsuLib framework is active
+BaseLib initialized
+Spire Plus initialized
+SavedSpireFields expected count
+0 MissingMethodException
+0 TypeLoadException
+0 manifest dependency failure
 ```
 
 验收：
 
 ```text
-[ ] runtime-smoke-checklist.md 有真实证据
-[ ] docs/reviews/current-validation.md 有唯一 validation truth
-[ ] 若 runtime smoke 无法跑，Batch 4c 继续 blocked
+[ ] current-validation.md 是唯一真相
+[ ] runtime-smoke-checklist.md 至少 loader smoke 有证据
+[ ] 若 runtime smoke 失败/无法跑，Batch 4c 继续 blocked
 ```
 
 ---
 
-## Week 2：Sts1Events Governance
+## Week 2：Sts1Events Governance Finalization
 
-### 目标
+目标：让 Sts1Events 的 4 个模式成为明确、不可误用的治理状态。
 
-把 Sts1Events 从“default safe”推进到“测试边界完全清晰”。
-
-### 任务
+任务：
 
 ```text
-[ ] Off 模式：确认注册 0
-[ ] CanaryOnly：确认 4 个 canary 事件均无 TODO/BLOCKED
-[ ] AdditiveAllDraft：列出所有 TODO/BLOCKED/partial-substitute events
+[ ] Off：确认注册 0
+[ ] CanaryOnly：确认 4 个 canary safe events
+[ ] AdditiveAllDraft：列出所有 HIGH/MEDIUM/TODO/BLOCKED/partial events
 [ ] ReplaceUnknownEventsPrototype：标 debug-only unsafe
-[ ] GoldenShrine / Purifier 新增事件进入 registry 后更新 canary/all draft 风险
-```
-
-特别检查：
-
-```text
-DeadAdventurer elite TODO
-Joust no-gold-guard
-Vampires no Bite custom card
-Nloth no RelicSelectCmd
-MindBloom War blocked
-所有新加 shrine/purifier 是否 source/API safe
+[ ] DeadAdventurer / Joust / Nloth / Vampires / MindBloom War 进入 blockers
+[ ] ZHS missing keys / placeholders 进入 backlog
 ```
 
 验收：
 
 ```text
-[ ] Sts1Events current issue 不再 stale
-[ ] AdditiveAllDraft 不被测试员误认为可玩
-[ ] CanaryOnly 可进入手测矩阵
+[ ] 默认包不加载 Sts1Events
+[ ] CanaryOnly 可以手测
+[ ] AllDraft/ReplaceUnknown 明确 dev-only
 ```
 
 ---
 
-## Week 3：Architecture Skeleton 接入 canary
+## Week 3：Architecture Canary Integration
 
-### 目标
+目标：让 skeleton 开始接触真实系统，但不改变玩法。
 
-不再只写 skeleton，选低风险系统做真实接入。
-
-### 任务
-
-#### RewardPipeline canary
+任务：
 
 ```text
-[ ] 选择 1 个 diagnostics-only reward path
-[ ] 不改变 reward 行为
-[ ] 只打印 phase / handler / context
-[ ] 证明 pipeline 不 softlock
-```
-
-#### CardPlayContext canary
-
-```text
-[ ] 选择 1 个低风险 extra-play 或 fallback source
-[ ] 接入 depth guard
-[ ] 不改变玩家可见行为
-[ ] 添加 recursion test
-```
-
-#### FeatureRegistry canary
-
-```text
-[ ] 所有 module 输出 DisplayName / Category / live status
-[ ] Sts1Events 显示 live=disabled unless env mode
-[ ] VakuuFight 显示 live=hidden
+[ ] RewardPipeline diagnostics 接入一个低风险 reward surface
+[ ] CardPlayContext 接入一个低风险 extra-play/fallback path 或 no-op adapter
+[ ] FeatureRegistry summary 输出所有 module status
+[ ] MultiplayerPolicy 为 active systems 注册 diagnostics policy
 ```
 
 验收：
 
 ```text
-[ ] 至少一个 skeleton 被真实系统使用
-[ ] 没有 gameplay behavior change
-[ ] tests + diagnostics 通过
+[ ] 至少一个真实系统调用 RewardPipeline diagnostics
+[ ] 至少一个真实系统使用 CardPlayContext 或 adapter
+[ ] 无 gameplay behavior change
+[ ] tests 覆盖
 ```
 
 ---
 
 ## Week 4：State / Death / Multiplayer Foundations
 
-### 目标
+目标：从 skeleton/spec 走向可测试架构。
 
-为后续高风险系统做准备，不迁 high-risk patch。
-
-### 任务
-
-#### UrdaStateCodec
+任务：
 
 ```text
-[ ] 行为级测试补充
-[ ] malformed state 不丢 selected blessing
-[ ] old-state migration 覆盖更多字段
-[ ] 写明 RitsuLib DataStore 迁移计划
-```
-
-#### DeathProtectionService
-
-```text
-[ ] 建立 code stub，不只是 docs
-[ ] Define Request/Result/Priority
-[ ] 不接入 Lotha 真实行为前先测试 forced-unpreventable semantics
-```
-
-#### MultiplayerPolicy
-
-```text
-[ ] 把当前 active features 标 policy
-[ ] 每个 policy 写 required evidence
-[ ] co-op unsafe features fail-closed list
+[ ] UrdaStateCodec 增加 behavior tests
+[ ] DeathProtectionService 增加 provider tests
+[ ] MultiplayerPolicyRegistry 注册 active feature policies
+[ ] Lotha DeathReprieve adapter plan
+[ ] high-risk migration rollback strategy
 ```
 
 验收：
 
 ```text
-[ ] no high-risk patch migrated
-[ ] next high-risk migration plan 有 rollback strategy
+[ ] high-risk patch 不迁
+[ ] Death/Multiplayer/State 有可执行 plan
+[ ] Runtime smoke 仍未过时继续阻塞 Batch 4c
 ```
 
 ---
 
-# 5. 新 Overnight Run Spec：跑完才能停
+# 七、给 Codex 的 Overnight Run：必须跑完才能停
 
-下面这版建议替换现有 `next-overnight-run.md`。当前不要以 Batch 4c 为目标。
+下面这段可以直接发给 Codex，替换当前任何偏向 Batch 4c 的计划。
 
 ```text
 你现在在 D:\Game\FOTN\dev-the-spire。
 
-目标：RitsuLib Runtime Proof + Architecture Integration Overnight Run。
+目标：Runtime Proof + Architecture Integration Overnight Run。
 
 这不是 Batch 4c。
-不要迁更多 patches，除非是修复 guard 或 runtime blocker。
+不要迁更多 patches，除非是修复 guard/runtime blocker 必需。
 不要新增 gameplay。
 不要 claim release-ready。
 必须使用 subagents。
 必须跑完所有 phase；如果 blocker 存在，必须记录 issue、证据、下一步，不能直接停止。
 
 当前状态：
-- Latest main includes RitsuLib dependency and runtime dependency.
+- Latest main must be rechecked at start; user reports f4247553 but GitHub may be newer.
+- RitsuLib dependency and manifest dependency exist.
 - 25 patches migrated to RitsuLib ModPatcher.
-- 141 raw Harmony patches remain (1 additional dead-code declaration behind #if).
-- Batch 4a/4b counts fixed.
-- RitsuLibMigrationGuardTests pass source-level double-patch checks.
-- Full test truth currently reported as 444 passed / 0 failed / 21 skipped.
-- Build has 92 warnings, all Sts1Events null-safety per prior report.
-- Runtime smoke blocked because STS2-RitsuLib not installed locally.
-- Sts1Events default Off and CanaryOnly are guarded.
+- raw Harmony count must be reconciled with latest source.
+- Batch 4a/4b source-level closure mostly done.
+- Runtime smoke is blocked / pending.
+- Sts1Events default Off and CanaryOnly are safe.
 - AdditiveAllDraft and ReplaceUnknownEventsPrototype are unsafe/dev-only.
-- FeatureRegistry metadata exists but live semantics need stronger diagnostics.
-- RewardPipeline/CardPlayContext are skeletons.
-- DeathProtectionService and MultiplayerPolicy are docs/spec, not enforcement.
+- FeatureRegistry metadata exists but live semantics need runtime proof.
+- UrdaStateCodec exists but still uses SavedSpireField bridge.
+- RewardPipeline and CardPlayContext are skeletons.
+- DeathProtectionService and MultiplayerPolicy are diagnostics-only stubs.
+- Do not proceed to Batch 4c until runtime smoke passes.
 
 Subagents:
 
 1. Runtime/Test Truth Agent
-   - Run full build/test/test --no-build/format/diff.
-   - Reconcile warning count.
-   - Execute runtime smoke if game environment exists.
-   - If runtime smoke unavailable, update blocker docs and keep Batch 4c blocked.
+   - Run complete validation.
+   - Reconcile all test/warning counts.
+   - Execute runtime smoke if possible.
+   - If runtime smoke blocked, keep Batch 4c blocked.
 
-2. Sts1Events Governance Agent
-   - Audit all four Sts1 modes.
-   - List TODO/BLOCKED/partial events in AdditiveAllDraft.
-   - Confirm CanaryOnly has no TODO/BLOCKED.
-   - Update issue docs and guard tests.
+2. Docs Truth Agent
+   - Find stale counts: 324, 361, 387, 428, 444, 0 warnings, 87 warnings, 92 warnings.
+   - Replace with canonical latest values.
+   - Update current-validation doc.
 
-3. FeatureRegistry Agent
-   - Verify DisplayName/Category/env keys on all modules.
-   - Improve BootstrapStatus vs LiveStatus logging.
-   - Add tests for Sts1Events Off/CanaryOnly and Vakuu hidden status.
+3. Sts1Events Governance Agent
+   - Audit Off / CanaryOnly / AdditiveAllDraft / ReplaceUnknown modes.
+   - List all unsafe events and blockers.
+   - Ensure safe modes contain no TODO/BLOCKED events.
 
-4. Architecture Integration Agent
-   - Wire RewardPipeline diagnostics into one low-risk reward surface.
-   - Wire CardPlayContext into one low-risk extra-play or no-op diagnostic path.
-   - Do not change gameplay behavior.
+4. FeatureRegistry Agent
+   - Verify all modules expose DisplayName / Category / EnvKeys.
+   - Improve bootstrap/live status logs.
+   - Add tests for status output.
 
-5. State/Death/Multiplayer Agent
-   - Expand UrdaStateCodec tests.
-   - Create DeathProtectionService code stub if not present.
-   - Create active feature MultiplayerPolicy matrix.
+5. Architecture Integration Agent
+   - Wire RewardPipeline diagnostics into one low-risk surface.
+   - Wire CardPlayContext into one low-risk canary path.
+   - No gameplay behavior change.
 
-Phase 1 — Full validation truth
+6. State/Death/Multiplayer Agent
+   - Expand UrdaStateCodec behavior tests.
+   - Convert DeathProtectionService from pure stub toward provider-testable service.
+   - Register MultiplayerPolicy records for active systems.
+
+Phase 1 — Canonical validation
+
 Run:
 - git status --short --branch
 - git log -1 --oneline --decorate
+- dotnet clean
 - dotnet build EZMicroBalance.sln
 - dotnet test EZMicroBalance.sln
 - dotnet test EZMicroBalance.sln --no-build
 - dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
 - git diff --check
 
-Output canonical:
-- exact warnings count
-- exact passed/failed/skipped count
-- list top warning owners
-- whether warnings accepted or issue-worthy
+Write:
+- docs/reviews/current-validation.md
+
+Include:
+- exact HEAD
+- build warning count
+- tests passed/failed/skipped
+- format result
+- diff result
+- whether package publish was run
 
 Phase 2 — Runtime smoke
+
 If local game environment exists:
 - install only BaseLib + STS2-RitsuLib + Spire Plus
 - launch game
@@ -774,25 +867,29 @@ If local game environment exists:
   - no MissingMethodException
   - no TypeLoadException
   - no manifest dependency failure
+- update runtime-smoke-checklist.md
 
-If unavailable:
-- mark blocked
-- create/update runtime blocker issue
-- do not proceed to Batch 4c
+If environment unavailable:
+- mark blocker
+- do not continue Batch 4c
 
 Phase 3 — Sts1Events governance
-- Confirm Off registers 0.
-- Confirm CanaryOnly registers exactly 4 safe canaries.
-- Produce AdditiveAllDraft risk table:
-  - event id
-  - TODO/BLOCKED/partial status
-  - missing API
-  - manual risk
-- Mark AdditiveAllDraft and ReplaceUnknownEventsPrototype dev-only.
-- Add tests if safe modes can include unsafe events.
 
-Phase 4 — FeatureRegistry hardening
-- Log feature summary with:
+- Make issue doc current.
+- Off = safe default
+- CanaryOnly = controlled test
+- AdditiveAllDraft = unsafe/dev-only
+- ReplaceUnknownEventsPrototype = unsafe/dev-only
+- Add event risk table:
+  - event id
+  - risk
+  - missing API
+  - manual evidence needed
+- No TODO/BLOCKED event in safe modes.
+
+Phase 4 — FeatureRegistry runtime status
+
+- Log FeatureRegistry summary with:
   - Id
   - DisplayName
   - Category
@@ -802,44 +899,45 @@ Phase 4 — FeatureRegistry hardening
 - Add tests for all feature modules.
 - Keep default-on behavior unchanged.
 
-Phase 5 — Architecture canary integration
-- RewardPipeline: attach diagnostics to one low-risk reward path.
-- CardPlayContext: attach to one low-risk extra-play/fallback path or create no-op canary test.
-- No gameplay behavior changes.
+Phase 5 — Architecture canary
+
+- RewardPipeline diagnostics on one low-risk reward surface.
+- CardPlayContext canary on one low-risk extra-play/fallback path.
+- No behavior changes.
 - Add tests.
 
 Phase 6 — State/Death/Multiplayer foundation
-- Add/extend UrdaStateCodec tests.
-- Add DeathProtectionService code stub with Request/Result/Priority.
-- Add MultiplayerPolicy matrix for active systems.
-- Keep high-risk behavior unmodified.
 
-Phase 7 — Docs/monthly update
+- UrdaStateCodec edge cases.
+- DeathProtectionService provider registration tests.
+- MultiplayerPolicy records for active features.
+- No high-risk gameplay wiring.
+
+Phase 7 — Monthly spec update
+
 Update:
 - docs/features/ritsulib-migration/monthly-dev-spec.md
 - docs/features/ritsulib-migration/next-overnight-run.md
-- runtime-smoke-checklist.md
-- Sts1Events issue
-- current validation review
+- docs/reviews/current-validation.md
+- docs/issues for runtime/Sts1Events blockers.
 
-Next action decision:
-- If runtime smoke passes and architecture canary passes: Batch 4c may be considered.
-- If runtime smoke remains blocked: focus on runtime setup, not patch migration.
-- If warnings remain 87: create warning cleanup sprint.
-- If Sts1Events unsafe events remain: keep AllDraft dev-only.
+Final decision:
+- If runtime smoke passed: Batch 4c may be considered next.
+- If runtime smoke blocked/failed: optimization continues; Batch 4c blocked.
+- If canonical validation has warnings/failures: fix or quarantine before any migration.
 
-Final report:
-1. current HEAD
+Final report must include:
+1. actual HEAD
 2. full validation results
 3. runtime smoke status
-4. warning analysis
-5. Sts1Events mode safety
+4. docs truth cleanup status
+5. Sts1Events governance status
 6. FeatureRegistry status
 7. RewardPipeline/CardPlayContext canary status
 8. DeathProtectionService/MultiplayerPolicy status
 9. subagent findings
 10. files changed
-11. next decision: optimize / advance / both
+11. decision: optimize / advance / both
 12. release-ready: no
 
 Stop condition:
@@ -848,73 +946,88 @@ Do not stop until every phase is complete or blocked with issue, evidence, and n
 
 ---
 
-# 6. 子代理要求
+# 八、子代理分工提醒
 
-必须显式要求 Codex 使用子代理：
+必须要求它显式使用 subagents：
 
 ## Runtime/Test Truth Agent
 
 ```text
-build/test/warning/runtime log
+验证命令
+warning count
+runtime log
+RitsuLib active
+```
+
+## Docs Truth Agent
+
+```text
+清理 stale counts
+统一 HEAD/test/warnings
+更新 current-validation
 ```
 
 ## Sts1Events Governance Agent
 
 ```text
-Off/CanaryOnly/AdditiveAllDraft/ReplaceUnknown
-TODO/BLOCKED event table
+四模式风险
+safe modes
+unsafe draft blockers
+ZHS/missing keys
 ```
 
 ## FeatureRegistry Agent
 
 ```text
-metadata/live status/env keys/logs/tests
+metadata
+env keys
+bootstrap/live status
+module tests
 ```
 
 ## Architecture Integration Agent
 
 ```text
-RewardPipeline/CardPlayContext canary wiring
+RewardPipeline
+CardPlayContext
+canary wiring
+无行为改动
 ```
 
 ## State/Death/Multiplayer Agent
 
 ```text
 UrdaStateCodec
-DeathProtectionService stub
-MultiplayerPolicy matrix
+DeathProtection provider tests
+MultiplayerPolicy active feature records
 ```
 
 ---
 
-# 7. 最终结论
+# 九、最终判断
 
-这轮工作不是失败。它完成了不少基础设施：
+这轮工作不是失败。它已经把项目推进到一个更健康的架构阶段。
 
-```text
-Batch 4a/4b closure
-Sts1Events gate
-FeatureRegistry metadata
-UrdaStateCodec
-RewardPipeline skeleton
-CardPlayContext skeleton
-Death/Multiplayer docs
-```
-
-但还没有达到我们的最终目标：
+但它也还没完成目标：
 
 ```text
-RitsuLib runtime proof 没有
-架构 skeleton 大多没接入真实系统
-Sts1Events 仍是 dev/prototype
-92 warnings 仍未清
-release 仍不可能
+RitsuLib runtime proof 没有；
+架构 skeleton 大多没有接入真实系统；
+Sts1Events 仍是 default-off prototype；
+Batch 4c 不应继续；
+release-ready 否。
 ```
 
-当前决策应该是：
+当前战略：
 
 ```text
 继续优化为主，有限推进为辅。
 ```
 
-只有当 runtime smoke 真正通过之后，才考虑继续 Batch 4c。
+下一步唯一合理方向：
+
+```text
+Runtime smoke + canonical validation + architecture canary integration
+```
+
+跑完这些，再决定是否进入 Batch 4c。

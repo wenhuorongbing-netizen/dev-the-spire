@@ -97,3 +97,14 @@ internal sealed class CardPlayContext
         IsPowerFallback = false;
     }
 }
+
+internal static class CardPlayContextCanary
+{
+    public static ExtraPlayPolicy EvaluateSingleExtraPlay(string feature, string reason)
+    {
+        var context = new CardPlayContext();
+        return context.TryIncrementDepth()
+            ? context.Policy
+            : ExtraPlayPolicy.Block;
+    }
+}

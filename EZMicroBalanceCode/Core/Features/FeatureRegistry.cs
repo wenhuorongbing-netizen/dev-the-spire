@@ -1,3 +1,5 @@
+using EZMicroBalance.EZMicroBalanceCode.Core.Architecture;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Features;
 
 internal sealed class FeatureRegistry
@@ -21,18 +23,22 @@ internal sealed class FeatureRegistry
 
     public void InitializeAll()
     {
+        bootstrapRecords.Clear();
+
         foreach (var module in modules
                      .OrderBy(module => module.InitOrder)
                      .ThenBy(module => module.Id, StringComparer.Ordinal))
         {
-            var gate = module.EvaluateGate();
+            var gate = ApplyEnvironmentOverrides(module, module.EvaluateGate());
             logInfo($"[Spire Plus] Feature {module.DisplayName} ({module.Category}) bootstrap gate: {(gate.IsEnabled ? "enabled" : "disabled")} ({gate.Reason}).");
+            RewardPipeline.Diagnose(CreateBootstrapContext(module, gate, "FeatureBootstrapGate"));
 
             if (!gate.IsEnabled)
             {
                 bootstrapRecords.Add(new FeatureBootstrapRecord(
                     module.Id, module.DisplayName, module.Category,
                     gate, FeatureLiveStatus.Disabled));
+                RewardPipeline.Diagnose(CreateBootstrapContext(module, gate, "FeatureBootstrapDisabled", FeatureLiveStatus.Disabled));
                 continue;
             }
 
@@ -42,6 +48,7 @@ internal sealed class FeatureRegistry
                 bootstrapRecords.Add(new FeatureBootstrapRecord(
                     module.Id, module.DisplayName, module.Category,
                     gate, FeatureLiveStatus.Enabled));
+                RewardPipeline.Diagnose(CreateBootstrapContext(module, gate, "FeatureBootstrapInitialized", FeatureLiveStatus.Enabled));
             }
             catch (Exception exception)
             {
@@ -49,6 +56,7 @@ internal sealed class FeatureRegistry
                 bootstrapRecords.Add(new FeatureBootstrapRecord(
                     module.Id, module.DisplayName, module.Category,
                     gate, FeatureLiveStatus.Failed, $"{exception.GetType().Name}: {exception.Message}"));
+                RewardPipeline.Diagnose(CreateBootstrapContext(module, gate, "FeatureBootstrapFailed", FeatureLiveStatus.Failed, exception.Message));
                 throw;
             }
         }
@@ -72,7 +80,72 @@ internal sealed class FeatureRegistry
     {
         foreach (var record in bootstrapRecords)
         {
-            logInfo($"[Spire Plus] Feature {record.DisplayName}: bootstrap={(record.Gate.IsEnabled ? "enabled" : "disabled")}, live={record.LiveStatus}, reason={record.Gate.Reason}");
+            logInfo($"[Spire Plus] Feature {record.Id} ({record.DisplayName}, {record.Category}): bootstrap={(record.Gate.IsEnabled ? "enabled" : "disabled")}, live={record.LiveStatus}, reason={record.Gate.Reason}");
         }
     }
+
+    private static RewardPipelineContext CreateBootstrapContext(
+        IFeatureModule module,
+        FeatureGateResult gate,
+        string eventName,
+        FeatureLiveStatus? liveStatus = null,
+        string? failureMessage = null) =>
+        new()
+        {
+            Feature = "FeatureRegistry",
+            EventName = eventName,
+            Data = new Dictionary<string, object?>
+            {
+                ["id"] = module.Id,
+                ["displayName"] = module.DisplayName,
+                ["category"] = module.Category,
+                ["bootstrapEnabled"] = gate.IsEnabled,
+                ["reason"] = gate.Reason,
+                ["liveStatus"] = liveStatus?.ToString(),
+                ["failureMessage"] = failureMessage
+            }
+        };
+
+    private static FeatureGateResult ApplyEnvironmentOverrides(IFeatureModule module, FeatureGateResult gate)
+    {
+        var forceKey = FirstTruthyEnvironmentKey(module.ForceEnvKeys);
+        if (forceKey is not null)
+        {
+            return FeatureGateResult.Enabled($"forced by {forceKey}; original gate: {gate.Reason}");
+        }
+
+        var disableKey = FirstTruthyEnvironmentKey(module.DisableEnvKeys);
+        if (disableKey is not null)
+        {
+            return FeatureGateResult.Disabled($"disabled by {disableKey}; original gate: {gate.Reason}");
+        }
+
+        return gate;
+    }
+
+    private static string? FirstTruthyEnvironmentKey(IEnumerable<string> keys)
+    {
+        foreach (var key in keys)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                continue;
+            }
+
+            var value = Environment.GetEnvironmentVariable(key);
+            if (IsTruthyEnvironmentValue(value))
+            {
+                return key;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool IsTruthyEnvironmentValue(string? value) =>
+        !string.IsNullOrWhiteSpace(value)
+        && !string.Equals(value, "0", StringComparison.OrdinalIgnoreCase)
+        && !string.Equals(value, "false", StringComparison.OrdinalIgnoreCase)
+        && !string.Equals(value, "off", StringComparison.OrdinalIgnoreCase)
+        && !string.Equals(value, "no", StringComparison.OrdinalIgnoreCase);
 }

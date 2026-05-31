@@ -31,9 +31,18 @@ internal static class Sts1EventRegistrationService
             case Sts1EventRegistrationMode.CanaryOnly:
                 RegisterCanaryOnly(modId);
                 return;
+            case Sts1EventRegistrationMode.AdditiveBatch1:
+                RegisterAdditiveBatch1(modId);
+                return;
             case Sts1EventRegistrationMode.AdditiveAllDraft:
-            case Sts1EventRegistrationMode.ReplaceUnknownEventsPrototype:
                 RegisterAll(modId);
+                return;
+            case Sts1EventRegistrationMode.ReplaceUnknownEventsPrototype:
+#if REPLACEMENT_PROTOTYPE_ENABLED
+                RegisterAll(modId);
+#else
+                MainFile.Logger.Warn("[StS1 Events] ReplaceUnknownEventsPrototype requested, but REPLACEMENT_PROTOTYPE_ENABLED is not defined; no StS1 events registered.");
+#endif
                 return;
         }
     }
@@ -62,6 +71,39 @@ internal static class Sts1EventRegistrationService
         content.Apply();
 
         logger.Info("[StS1 Events] Canary events registered successfully.");
+    }
+
+    /// <summary>
+    /// Registers exactly 10 verified-scope prototype events: four canary events plus six simple batch events.
+    /// </summary>
+    public static void RegisterAdditiveBatch1(string modId)
+    {
+        if (!RitsuLibFramework.IsActive)
+        {
+            MainFile.Logger.Warn("[StS1 Events] RitsuLib not active; skipping AdditiveBatch1 event registration.");
+            return;
+        }
+
+        var logger = RitsuLibFramework.CreateLogger(modId);
+        logger.Info("[StS1 Events] Registering AdditiveBatch1 events (4 canary + 6 simple)...");
+
+        var content = RitsuLibFramework.CreateContentPack(modId);
+
+        content.SharedEvent<Sts1BigFish>();
+        content.SharedEvent<Sts1GoldenIdol>();
+        content.SharedEvent<Sts1TheLab>();
+        content.SharedEvent<Sts1DivineFountain>();
+        content.SharedEvent<Sts1Purifier>();
+        content.ActEvent<Glory, Sts1UpgradeShrine>();
+        content.SharedEvent<Sts1GoldenShrine>();
+        content.SharedEvent<Sts1TheCleric>();
+        content.SharedEvent<Sts1OldBeggar>();
+        content.ActEvent<Overgrowth, Sts1ShiningLight>();
+        content.ActEvent<Underdocks, Sts1ShiningLight>();
+
+        content.Apply();
+
+        logger.Info("[StS1 Events] AdditiveBatch1 events registered successfully.");
     }
 
     /// <summary>

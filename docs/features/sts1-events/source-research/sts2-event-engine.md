@@ -38,7 +38,7 @@
 `MegaCrit.Sts2.Core.Events.EventOption` represents a player choice:
 - `Title` / `Description` — localized text
 - `OnChosen` — async callback when chosen
-- `IsLocked` — true if `onChosen` is null (no action)
+- `IsLocked` — true if `onChosen` is null (no action). **CONFIRMED via IL decompilation**: Constructor #2 IL at offset 0x44 sets `IsLocked = (OnChosen == null)`. To create a disabled/locked option (e.g. when the player doesn't meet a condition), pass `null` as the `onChosen` handler: `new EventOption(this, condition ? ActionHandler : null, textKey)`. Do NOT use `condition ? null : null` — both branches produce `null` and the ternary is a no-op.
 - `IsProceed` — "continue" button
 - `HoverTips` — tooltip hints for the option
 - `WillKillPlayer` — predicate for death warning

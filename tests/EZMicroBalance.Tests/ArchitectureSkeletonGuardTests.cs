@@ -230,6 +230,22 @@ public sealed class ArchitectureSkeletonGuardTests
         Assert.Contains("FallbackToPower", source, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void CardPlayContextCanaryAdapterIsWiredIntoLothaExtraPlay()
+    {
+        var contextSource = TestRepo.ReadRepoText("EZMicroBalanceCode", "Core", "Architecture", "CardPlayContext.cs");
+        var lothaSource = TestRepo.ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardPlayCount.cs");
+
+        Assert.Contains("static class CardPlayContextCanary", contextSource, StringComparison.Ordinal);
+        Assert.Contains("EvaluateSingleExtraPlay", contextSource, StringComparison.Ordinal);
+        Assert.Contains("context.TryIncrementDepth()", contextSource, StringComparison.Ordinal);
+
+        Assert.Contains("CardPlayContextCanary.EvaluateSingleExtraPlay(\"Lotha\", \"mirror_rebuttal\")", lothaSource, StringComparison.Ordinal);
+        Assert.Contains("CardPlayContextCanary.EvaluateSingleExtraPlay(\"Lotha\", \"mirror_hall_echo\")", lothaSource, StringComparison.Ordinal);
+        Assert.Contains("CardPlayContextCanary.EvaluateSingleExtraPlay(\"Lotha\", \"deferred_verdict\")", lothaSource, StringComparison.Ordinal);
+        Assert.Contains("CardPlayContextCanary.EvaluateSingleExtraPlay(\"Lotha\", \"single_sentence\")", lothaSource, StringComparison.Ordinal);
+    }
+
     // ── CardPlayContext canary (behavioral) ────────────────────────
 
     [Fact]
@@ -361,6 +377,14 @@ public sealed class ArchitectureSkeletonGuardTests
     {
         // Guard: MaxDepth must be exactly 10 for the depth guard contract.
         Assert.Equal(10, CardPlayContext.MaxDepth);
+    }
+
+    [Fact]
+    public void CardPlayContext_Canary_AdapterAllowsSingleExtraPlay()
+    {
+        var policy = CardPlayContextCanary.EvaluateSingleExtraPlay("CanaryTest", "unit_test");
+
+        Assert.Equal(ExtraPlayPolicy.Allow, policy);
     }
 
     // ── DeathProtectionService spec ────────────────────────────────

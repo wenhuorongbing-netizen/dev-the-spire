@@ -43,8 +43,7 @@ public sealed class Sts1GoldenShrine : EventModel
         return new EventOption[]
         {
             new EventOption(this, TakeGold, InitialOptionKey("TAKE_GOLD")),
-            new EventOption(this, Desecrate, InitialOptionKey("DESECRATE"),
-                hasCurses ? null : null),
+            new EventOption(this, hasCurses ? Desecrate : null, InitialOptionKey("DESECRATE")),
             new EventOption(this, null, InitialOptionKey("LEAVE"))
         };
     }

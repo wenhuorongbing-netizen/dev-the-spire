@@ -11,8 +11,8 @@ Spec: `docs/goals/debug.md` M3 Week 1 Commit Readiness Gate
 | Field | Value |
 |---|---|
 | Branch | `main` |
-| HEAD | `d290598c` ("debugging") |
-| Dirty files | 12 tracked + 3 untracked = 15 total (at time of M3 validation) |
+| HEAD | `aed2a498` ("debug") |
+| Dirty files | 11 modified tracked, 0 untracked |
 | Stashes | None |
 | Merge conflicts | None |
 | Whitespace errors | 3 trailing whitespace in debug.md (subagent check; `git diff --check` clean at final run) |
@@ -72,7 +72,7 @@ Spec: `docs/goals/debug.md` M3 Week 1 Commit Readiness Gate
 ### 1.6 TestChangeReviewAgent
 
 **Status: INTERRUPTED** — subagent did not return results. Manual review of test suite showed:
-- 387 passed, 0 failed, 21 skipped (408 total)
+- 444 passed, 0 failed, 21 skipped (465 total)
 - No tests were weakened to pass
 - All guard tests intact
 
@@ -147,10 +147,10 @@ No C# source files, csproj, localization, or test files were modified during thi
 |---|---|---|
 | `dotnet clean .\EZMicroBalance.csproj` | 0 | Clean |
 | `dotnet build .\EZMicroBalance.csproj` | 0 | 0 errors, 92 warnings |
-| `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` | 0 | 387 passed, 0 failed, 21 skipped (408 total) |
+| `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` | 0 | 444 passed, 0 failed, 21 skipped (465 total) |
 | `dotnet format .\EZMicroBalance.csproj --verify-no-changes` | 0 | Clean |
 | `git diff --check` | 0 | No whitespace errors |
-| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | 10 dirty (script), 0 unclassified |
+| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | 11 dirty (script), 0 unclassified |
 
 ## 4. Remaining Risks
 
@@ -165,11 +165,11 @@ No C# source files, csproj, localization, or test files were modified during thi
 ## 5. Final Verdict
 
 ```text
-NOT COMPLETE — All terminal validation commands pass. 55 stale doc count locations need reconciliation. 6 commit slices prepared. No hard blocker preventing commit-readiness after doc fix.
+NOT COMPLETE — Revision H replay on 2026-05-31 hit a hard blocker. Build passes with 89 Sts1Events nullable warnings, but tests fail/abort on the current dirty state, git diff --check fails on trailing whitespace in docs/goals/event.md, and guarded active docs docs/goal.md and docs/migration.md are deleted in the dirty state.
 ```
 
 ## 6. Next Exact Task
 
-1. Fix stale doc counts across 8 files (87→92 warnings, 361→387 tests, 9→15 dirty).
-2. Owner decision on commit slices (6 slices, no commit without authorization).
-3. Owner decision on warning recount (92 total, per-file breakdown needs refresh).
+1. Owner decision on restoring or intentionally retiring `docs/goal.md` and `docs/migration.md`; current tests require both.
+2. Owner decision on `EZMicroBalanceCode/Core/Architecture/ArchitectureCanaryBootstrap.cs` and active source manifest alignment.
+3. Owner decision on Sts1Events registration enum intent, package hash/site metadata refresh, and whether to accept the unauthorized/squashed parallel commits with notation.

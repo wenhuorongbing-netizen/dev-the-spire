@@ -2,24 +2,19 @@
 
 Date: 2026-05-29
 Verified: `git status --short --porcelain` at M3 Week 1 validation (16:14 CEST)
-HEAD: `d290598c` ("debugging")
+HEAD: `aed2a498` ("debug")
 
 ## Summary
 
 | Category | Count | Description |
 |---|---|---|
-| Modified (tracked) | 12 | Unstaged modifications to existing tracked files |
-| Untracked | 3 | 2 files + 1 directory |
-| **Total dirty** | **15** | All classified (0 unclassified) |
+| Modified (tracked) | 11 | Unstaged modifications to existing tracked files |
+| Untracked | 0 | None |
+| **Total dirty** | **11** | All classified (0 unclassified) |
 
-## Batch Classification Discrepancy
+## Batch Classification
 
-`report-worktree-batches.ps1` reports 10 dirty entries. Actual `git status` shows 12 dirty + 3 untracked = 15 entries. The script missed:
-- `docs/goals/event.md` (batch 8)
-- `tests/.../ArchitectureSkeletonGuardTests.cs` (batch 5)
-- All 3 untracked entries
-
-All entries are classified. 0 unclassified.
+`report-worktree-batches.ps1` reports 11 dirty entries. `git status` also shows 11 modified tracked files. No discrepancy.
 
 ## Per-file Reconciliation
 
@@ -67,27 +62,31 @@ All entries are classified. 0 unclassified.
 
 All entries are docs, tests, scripts, test config, or source/test stubs. No production behavior changes. Build safety verified (0 errors, 92 warnings).
 
-## Comparison: Revision E → Revision F → M3 Week 1
+## Comparison: Revision E → Revision F → M3 Week 1 → Revision G
 
-| Metric | Revision E | Revision F | M3 Week 1 |
-|---|---|---|---|
-| Dirty tracked | 16 | 8 | 12 |
-| Untracked | 1 | 1 | 3 |
-| Total | 17 | 9 | 15 |
-| Unclassified | 0 | 0 | 0 |
-| Build errors | 0 | 0 | 0 |
-| Build warnings | 87 | 87 | 92 |
-| Tests passed | 361 | 361 | 387 |
-| Tests failed | 0 | 0 | 0 |
-| Tests skipped | 21 | 21 | 21 |
-| Tests total | 382 | 382 | 408 |
+| Metric | Revision E | Revision F | M3 Week 1 | Revision G |
+|---|---|---|---|---|
+| Dirty tracked | 16 | 8 | 12→15 | 11 |
+| Untracked | 1 | 1 | 3 | 0 |
+| Total | 17 | 9 | 15 | 11 |
+| Unclassified | 0 | 0 | 0 | 0 |
+| Build errors | 0 | 0 | 0 | 0 |
+| Build warnings | 87 | 87 | 92 | 92 |
+| Tests passed | 361 | 361 | 387→428 | 444 |
+| Tests failed | 0 | 0 | 0 | 0 |
+| Tests skipped | 21 | 21 | 21 | 21 |
+| Tests total | 382 | 382 | 408→449 | 465 |
 
 ## Build/Test Impact
 
 | Check | Result |
 |---|---|
-| Clean build | 0 errors, 92 warnings (all Sts1Events nullable) |
-| Tests | 387 passed, 0 failed, 21 skipped (408 total) |
+| Clean build | Revision H replay at `85a38dd1`: 0 errors, 89 warnings (all Sts1Events nullable: CS8604=54, CS8602=34, CS8625=1) |
+| Tests | Revision H replay failed/aborted: 13 failed, 427 passed, 21 skipped, 461 total before host crash |
 | Format | Clean |
-| Whitespace | Clean |
-| Batch classification | 0 unclassified (script reports 10, actual 15) |
+| Whitespace | Fails: trailing whitespace in `docs/goals/event.md` lines 324, 325, 636 |
+| Batch classification | 0 unclassified; 39 dirty entries after validation/build outputs |
+
+## Revision H Current Snapshot
+
+The older Revision G counts above are historical. Current Revision H replay on 2026-05-31 found HEAD `85a38dd1`, dirty worktree, 32 tracked changed paths in `git diff --name-status`, 3 untracked paths in `git status`, and 39 dirty entries in the batch classifier after validation/build outputs. Current state is blocked, not commit-ready.

@@ -1,3 +1,5 @@
+using EZMicroBalance.EZMicroBalanceCode.Core.Architecture;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 internal static partial class LothaBlessingService
@@ -25,7 +27,8 @@ internal static partial class LothaBlessingService
         if (selectedBlessing == LothaBlessingIds.MirrorRebuttal &&
             !combatState.MirrorRebuttalResolved &&
             IsMirrorRebuttalCombatCard(card) &&
-            IsEligibleCard(card))
+            IsEligibleCard(card) &&
+            CardPlayContextCanary.EvaluateSingleExtraPlay("Lotha", "mirror_rebuttal") == ExtraPlayPolicy.Allow)
         {
             combatState.MirrorRebuttalResolved = true;
             LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "mirror_rebuttal", extraPlayCount: MirrorRebuttalExtraPlayCount);
@@ -36,7 +39,8 @@ internal static partial class LothaBlessingService
         if (selectedBlessing == LothaBlessingIds.MirrorHallEcho &&
             !combatState.MirrorHallEchoConsumedThisTurn &&
             combatState.MirrorHallEchoArmedType == card.Type &&
-            IsEligibleCard(card))
+            IsEligibleCard(card) &&
+            CardPlayContextCanary.EvaluateSingleExtraPlay("Lotha", "mirror_hall_echo") == ExtraPlayPolicy.Allow)
         {
             combatState.MirrorHallEchoConsumedThisTurn = true;
             combatState.MirrorHallEchoArmedType = null;
@@ -48,7 +52,8 @@ internal static partial class LothaBlessingService
         if (selectedBlessing == LothaBlessingIds.DeferredVerdict &&
             combatState.DeferredVerdictActiveThisTurn &&
             HasDeferredVerdictStacks(player) &&
-            IsDeferredVerdictExtraPlayCard(card))
+            IsDeferredVerdictExtraPlayCard(card) &&
+            CardPlayContextCanary.EvaluateSingleExtraPlay("Lotha", "deferred_verdict") == ExtraPlayPolicy.Allow)
         {
             LogExtraPlayAttempt(player, selectedBlessing, card, allowed: true, reason: "deferred_verdict", extraPlayCount: DeferredVerdictExtraPlayCount);
             MainFile.Logger.Info($"[Spire Plus] Lotha Deferred Verdict extra-played {card.Id.Entry} one additional time.");
@@ -57,7 +62,8 @@ internal static partial class LothaBlessingService
 
         if (selectedBlessing == LothaBlessingIds.SingleSentence &&
             !combatState.SingleSentenceUsedThisTurn &&
-            IsEligibleCard(card))
+            IsEligibleCard(card) &&
+            CardPlayContextCanary.EvaluateSingleExtraPlay("Lotha", "single_sentence") == ExtraPlayPolicy.Allow)
         {
             combatState.SingleSentenceUsedThisTurn = true;
             combatState.SingleSentenceRulingCard = card;

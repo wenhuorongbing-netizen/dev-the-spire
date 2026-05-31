@@ -616,6 +616,46 @@ public sealed class EngineeringGovernanceGuardTests
     }
 
     [Fact]
+    public void FeatureRegistryEmitsRewardPipelineDiagnostics()
+    {
+        var registrySource = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+        var canarySource = ReadRepoText("EZMicroBalanceCode", "Core", "Architecture", "ArchitectureCanaryBootstrap.cs");
+        var registryFactory = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
+
+        AssertSourceContains(registrySource,
+            "RewardPipeline.Diagnose(CreateBootstrapContext(module, gate, \"FeatureBootstrapGate\"))",
+            "FeatureBootstrapInitialized",
+            "FeatureBootstrapDisabled",
+            "FeatureBootstrapFailed",
+            "Feature = \"FeatureRegistry\"");
+
+        AssertSourceContains(canarySource,
+            "RewardPipeline.Register(new FeatureBootstrapRewardDiagnosticsHandler())",
+            "RewardPipeline diagnostics observed",
+            "string.Equals(context.Feature, \"FeatureRegistry\", StringComparison.Ordinal)");
+
+        Assert.Contains("ArchitectureCanaryBootstrap.Initialize();", registryFactory, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void MultiplayerPolicyRegistersActiveFeatureRecords()
+    {
+        var canarySource = ReadRepoText("EZMicroBalanceCode", "Core", "Architecture", "ArchitectureCanaryBootstrap.cs");
+
+        AssertSourceContains(canarySource,
+            "RegisterPolicy(\"Preview.CrystalSphere\", MultiplayerFeatureCategory.LocalUiOnly",
+            "RegisterPolicy(\"Preview.Transform\", MultiplayerFeatureCategory.LocalUiOnly",
+            "RegisterPolicy(\"Ancients.Urda\", MultiplayerFeatureCategory.SharedRunState",
+            "RegisterPolicy(\"Ancients.Morvi\", MultiplayerFeatureCategory.SharedRunState",
+            "RegisterPolicy(\"Ancients.Lotha\", MultiplayerFeatureCategory.SharedRunState",
+            "RegisterPolicy(\"Ancients.VakuuFight\", MultiplayerFeatureCategory.UnsafeInMultiplayer",
+            "RegisterPolicy(\"Ascension.A11A20\", MultiplayerFeatureCategory.SharedRunState",
+            "RegisterPolicy(\"CombatHooks.AncientExpansion\", MultiplayerFeatureCategory.CombatCommandReplicated",
+            "SPIREPLUS_ALLOW_UNVERIFIED_COOP_GAMEPLAY",
+            "SPIREPLUS_ALLOW_UNVERIFIED_COOP_COMBAT_HOOKS");
+    }
+
+    [Fact]
     public void AllFeatureModulesHaveNonEmptyDisplayName()
     {
         var moduleDisplayNames = new Dictionary<string, string>(StringComparer.Ordinal)
@@ -796,6 +836,20 @@ public sealed class EngineeringGovernanceGuardTests
             "AncientsVakuuFight",
             "AscensionA11A20",
             "Sts1Events");
+    }
+
+    [Fact]
+    public void FeatureRegistryAppliesUnifiedEnvironmentOverrides()
+    {
+        var source = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+
+        AssertSourceContains(source,
+            "ApplyEnvironmentOverrides(module, module.EvaluateGate())",
+            "FirstTruthyEnvironmentKey(module.ForceEnvKeys)",
+            "FirstTruthyEnvironmentKey(module.DisableEnvKeys)",
+            "forced by {forceKey}; original gate:",
+            "disabled by {disableKey}; original gate:",
+            "IsTruthyEnvironmentValue");
     }
 
     private static (int ExitCode, string Output, string Error) RunPowerShell(string scriptPath, params string[] arguments)

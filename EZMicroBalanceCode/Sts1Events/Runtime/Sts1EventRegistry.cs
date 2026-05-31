@@ -13,6 +13,8 @@ internal static class Sts1EventRegistry
         // Phase 1: Canary
         new("sts1_big_fish", "Big Fish", Sts1EventPhase.Canary, Sts1EventAct.Shared),
         new("sts1_golden_idol", "Golden Idol", Sts1EventPhase.Canary, Sts1EventAct.Shared),
+        new("sts1_divine_fountain", "Divine Fountain", Sts1EventPhase.Canary, Sts1EventAct.Shared),
+        new("sts1_the_lab", "The Lab", Sts1EventPhase.Canary, Sts1EventAct.Shared),
 
         // Phase 2: Simple batch
         new("sts1_the_cleric", "The Cleric", Sts1EventPhase.Simple, Sts1EventAct.Shared),
@@ -22,10 +24,8 @@ internal static class Sts1EventRegistry
         new("sts1_purifier", "Purifier", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_golden_shrine", "Golden Shrine", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_bonfire_spirits", "Bonfire Spirits", Sts1EventPhase.Simple, Sts1EventAct.Shared),
-        new("sts1_divine_fountain", "Divine Fountain", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_duplicator", "Duplicator", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_fountain_of_cleansing", "Fountain of Cleansing", Sts1EventPhase.Simple, Sts1EventAct.Shared),
-        new("sts1_the_lab", "The Lab", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_shining_light", "Shining Light", Sts1EventPhase.Simple, Sts1EventAct.Act1),
         new("sts1_mushrooms", "Mushrooms", Sts1EventPhase.Simple, Sts1EventAct.Act1),
         new("sts1_altar", "Altar", Sts1EventPhase.Simple, Sts1EventAct.Act2),

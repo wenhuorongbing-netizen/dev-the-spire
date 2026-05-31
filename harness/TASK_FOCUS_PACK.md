@@ -8,9 +8,9 @@
 
 - RitsuLib 0.3.2 NuGet package added to csproj
 - Manifest dependency added for STS2-RitsuLib
-- Build: 0 errors, 92 warnings (all Sts1Events nullable)
-- Tests: 387 passed, 21 skipped, 0 failed (408 total)
-- Format: clean (verified at Revision F replay)
+- Build: 0 errors, 89 warnings in Revision H replay (all Sts1Events nullable)
+- Tests: failing on current dirty state in Revision H replay (13 failed, 427 passed, 21 skipped, 461 total before host crash)
+- Format: clean in Revision H replay; diff whitespace check fails on `docs/goals/event.md`
 - migration.md updated
 - docs/integrations/ritsulib.md updated
 

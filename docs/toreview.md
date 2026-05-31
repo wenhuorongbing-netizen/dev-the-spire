@@ -5,10 +5,10 @@ Current test package: `publish/SpirePlus-v0.1.0-private-beta.84.zip`.
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `7B71487069A41F0AA7E3440845CE195D984F9F3C672EE49AF0F02C556861C82D` |
-| DLL | `63E0528D3BBB1DFE89D5267109D6C674A904377A5A1AC445F76ED96B6F06F3FA` |
-| PCK | `067437EF0E6756C635B829C037ABA4AFB00A16626F62A25AC58617DFC0E1703B` |
-| Manifest | `0E62C2024D839093997511CA4038198B791C91111C7FB956EDFA5D443324879E` |
+| ZIP | `8D3C1969C4442213E43F81C7D8C5EA09AC22778D13996B67CB357821256F62CF` |
+| DLL | `222D47886483F0C245740B25E7427F2C1DF04EDD38801634187605B9036B963A` |
+| PCK | `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA` |
+| Manifest | `47658D7593FE8DF23C4E5B3413CA53B1C7F1B779109A42A8B65E381C4C0FEDAC` |
 | README_INSTALL | `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C` |
 
 Latest validation snapshot: beta.81 build, publish/package refresh, default tests, opt-in artifact tests, website syntax checks, format check, diff check, and installed-package check passed. The beta.19 loader/startup proof under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` is historical; beta.84 loader/gameplay proof remains pending. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.

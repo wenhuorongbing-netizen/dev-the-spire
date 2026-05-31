@@ -8,6 +8,8 @@ Verify that the RitsuLib migration does not change runtime behavior by loading t
 
 **BLOCKED** — STS2-RitsuLib is not installed at `<GameRoot>\mods\STS2-RitsuLib`. The installed Spire Plus package (`v0.1.0-private-beta.84`) declares a dependency on `STS2-RitsuLib >= 0.3.2`. Runtime smoke cannot proceed until STS2-RitsuLib is installed. Batch 4c is blocked until runtime smoke passes.
 
+2026-05-31 blocker check: `Test-Path` returned `False` for `D:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib`, `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib`, `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib`. No Off, CanaryOnly, or AdditiveBatch1 `godot.log` runtime smoke was captured in this pass. The source now emits additional FeatureRegistry/RewardPipeline and multiplayer-policy diagnostics, but those diagnostics still require live loader proof.
+
 ## Prerequisites
 
 1. Clean Steam client install with Slay the Spire 2 v0.106.1

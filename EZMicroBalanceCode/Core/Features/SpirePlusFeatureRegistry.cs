@@ -3,14 +3,18 @@ using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Core.Architecture;
 using EZMicroBalance.EZMicroBalanceCode.Sts1Events;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Features;
 
 internal static class SpirePlusFeatureRegistry
 {
-    public static FeatureRegistry CreateDefault() =>
-        new FeatureRegistry(
+    public static FeatureRegistry CreateDefault()
+    {
+        ArchitectureCanaryBootstrap.Initialize();
+
+        return new FeatureRegistry(
             message => MainFile.Logger.Info(message),
             message => MainFile.Logger.Warn(message))
             .Register(new LothaFeatureModule())
@@ -19,4 +23,5 @@ internal static class SpirePlusFeatureRegistry
             .Register(new VakuuFightFeatureModule())
             .Register(new AscensionFeatureModule())
             .Register(new Sts1EventsFeatureModule());
+    }
 }

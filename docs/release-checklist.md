@@ -27,7 +27,7 @@ Target manifest id: `EZMicroBalance`
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
 - [x] `publish/SpirePlus-v0.1.0-private-beta.84.zip` was rebuilt from the current source and copied to the local game root for manual testing.
-  - Current package hashes: DLL `63E0528D3BBB1DFE89D5267109D6C674A904377A5A1AC445F76ED96B6F06F3FA`; manifest `0E62C2024D839093997511CA4038198B791C91111C7FB956EDFA5D443324879E`; PCK `067437EF0E6756C635B829C037ABA4AFB00A16626F62A25AC58617DFC0E1703B`; README `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C`; zip `7B71487069A41F0AA7E3440845CE195D984F9F3C672EE49AF0F02C556861C82D`.
+  - Current package hashes: DLL `222D47886483F0C245740B25E7427F2C1DF04EDD38801634187605B9036B963A`; manifest `47658D7593FE8DF23C4E5B3413CA53B1C7F1B779109A42A8B65E381C4C0FEDAC`; PCK `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA`; README `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C`; zip `8D3C1969C4442213E43F81C7D8C5EA09AC22778D13996B67CB357821256F62CF`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 

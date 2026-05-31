@@ -2,7 +2,7 @@
 
 ## Status
 
-**Open — governance hardened, content incomplete.** Default Off is safe; CanaryOnly is controlled; AdditiveAllDraft and ReplaceUnknownEventsPrototype are dev-only/unsafe.
+**Open — governance hardened, content incomplete.** Default Off is safe; CanaryOnly and AdditiveBatch1 are controlled source-test modes; AdditiveAllDraft and ReplaceUnknownEventsPrototype are dev-only/unsafe.
 
 ## Summary
 
@@ -27,9 +27,10 @@ StS1 event port model files (`Sts1Events/Models/`) are compiled into the Spire P
 | Mode | Env var value | Registration count | Risk level | Use case |
 |------|--------------|-------------------|------------|----------|
 | Off | unset / empty / invalid | 0 | **Safe** | Default — production |
-| CanaryOnly | `CanaryOnly` | 4 (Big Fish, Golden Idol, Lab, Divine Fountain) | **Controlled** | Test harness |
+| CanaryOnly | `CanaryOnly` | 4 registrations / 4 event types (Big Fish, Golden Idol, Lab, Divine Fountain) | **Controlled** | Canary test harness |
+| AdditiveBatch1 | `AdditiveBatch1` | 11 registrations / 10 event types (4 canary + 6 simple; Shining Light registers to two Act 1 buckets) | **Controlled** | Verified-scope prototype testing only |
 | AdditiveAllDraft | `AdditiveAllDraft` | 54 registration calls (47 unique event types) | **Unsafe / dev-only** | Includes TODO/BLOCKED events |
-| ReplaceUnknownEventsPrototype | `ReplaceUnknownEventsPrototype` | 54 registration calls (47 unique event types) | **Unsafe / dev-only** | Debug-only replacement, compile-excluded by default |
+| ReplaceUnknownEventsPrototype | `ReplaceUnknownEventsPrototype` | 0 unless `REPLACEMENT_PROTOTYPE_ENABLED` is compiled; then 54 registration calls (47 unique event types) | **Unsafe / debug-only** | Debug-only replacement prototype |
 
 ### AdditiveAllDraft Risk Table
 
@@ -50,17 +51,18 @@ Events with TODO/BLOCKED/partial status in AdditiveAllDraft mode:
 
 ### Guard tests
 
-- 24 dedicated tests in `Sts1EventFeatureGuardTests.cs`
-- Tests verify gate defaults, canary events, act mapping, registry presence, registration counts, patch-boundaries row, mode safety
-- Safe modes (Off, CanaryOnly) are verified by guard tests
+- Dedicated tests in `Sts1EventFeatureGuardTests.cs`
+- Tests verify gate defaults, canary events, AdditiveBatch1 verified scope, act mapping, registry presence, registration counts, patch-boundaries row, mode safety
+- Safe/controlled modes (Off, CanaryOnly, AdditiveBatch1) are verified by guard tests
 - CanaryOnly events are hardcoded — no TODO/BLOCKED events can enter safe modes
 
 ### Why this is safe
 
 1. The feature gate defaults to Off, so no events are registered at runtime unless the environment variable is explicitly set.
 2. CanaryOnly registers exactly 4 hardcoded shared events — all in `spec-drafted` status, none TODO/BLOCKED.
-3. AdditiveAllDraft and ReplaceUnknownEventsPrototype require explicit env var setting and are documented as dev-only.
-4. Guard tests verify Off=0, CanaryOnly=4, and that the registration service is compiled.
+3. AdditiveBatch1 registers only the current verified prototype scope and is separate from AdditiveAllDraft.
+4. AdditiveAllDraft and ReplaceUnknownEventsPrototype require explicit env var setting and are documented as dev-only; ReplacementPrototype also fails closed unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED`.
+5. Guard tests verify Off=0, CanaryOnly=4, AdditiveBatch1 exact scope, and that the registration service is compiled.
 5. `Sts1Duplicator` is compile-excluded (needs `CardSelectCmd`/`CardPileCmd` APIs not yet available).
 
 ### What remains incomplete

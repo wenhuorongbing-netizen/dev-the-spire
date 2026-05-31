@@ -39,10 +39,8 @@ public sealed class Sts1TheCleric : EventModel
 
         return new EventOption[]
         {
-            new EventOption(this, Heal, InitialOptionKey("HEAL"),
-                canHeal ? null : null),
-            new EventOption(this, Purify, InitialOptionKey("PURIFY"),
-                canPurify ? null : null),
+            new EventOption(this, canHeal ? Heal : null, InitialOptionKey("HEAL")),
+            new EventOption(this, canPurify ? Purify : null, InitialOptionKey("PURIFY")),
             new EventOption(this, null, InitialOptionKey("LEAVE"))
         };
     }

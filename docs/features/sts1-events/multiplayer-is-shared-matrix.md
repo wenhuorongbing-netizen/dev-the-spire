@@ -87,10 +87,10 @@ Created: 2026-05-29 | Status: code-verified
 
 | Category | Count |
 |----------|-------|
-| Total model files | 46 |
-| Compiling models | 45 |
+| Total event models in this matrix | 46 |
+| Compiling event models in this matrix | 45 |
 | Compile-excluded models | 1 (`Sts1Duplicator.cs`) |
-| **IsShared = true** | **22** (16 shared-act + 6 combat) |
+| **IsShared = true** | **24** (18 shared-act + 6 combat) |
 | **IsShared = false** | **23** (4 Act1 + 12 Act2 + 7 Act3 non-combat) |
 
 ### Combat Events with IsShared = true (6 events)
@@ -106,11 +106,11 @@ All guarded by `CombatEventsDeclareIsSharedTrue` test:
 | Mind Bloom | `EZMicroBalanceCode/Sts1Events/Models/Act3/Sts1MindBloom.cs` | Act 1 boss combat (TODO: encounter model) |
 | Mysterious Sphere | `EZMicroBalanceCode/Sts1Events/Models/Act3/Sts1MysteriousSphere.cs` | 2 Orb Walker combat (TODO: encounter model) |
 
-### Shared-Act Events with IsShared = true (16 models)
+### Shared-Act Events with IsShared = true (18 models)
 
 All guarded by `AllSharedEventModelsDeclareIsSharedTrue` test (verifies every `.cs` in `Models/Shared/`):
 
-Big Fish, The Cleric, Golden Idol, Golden Wing, Living Wall, Old Beggar, The Woman in Blue, Bonfire Spirits, Divine Fountain, Duplicator (excluded), Face Trader, Fountain of Cleansing, The Mausoleum, Wheel of Change, Designer, The Lab.
+Big Fish, The Cleric, Golden Idol, Golden Wing, Living Wall, Old Beggar, Purifier, Golden Shrine, The Woman in Blue, Bonfire Spirits, Divine Fountain, Duplicator (excluded), Face Trader, Fountain of Cleansing, The Mausoleum, Wheel of Change, Designer, The Lab.
 
 ### Events Where IsShared Decision Is Debatable
 
@@ -161,8 +161,8 @@ The following tests in `tests/EZMicroBalance.Tests/Sts1EventFeatureGuardTests.cs
 |-----------|------------------|
 | `CombatEventsDeclareIsSharedTrue` | All 6 combat event model files contain `public override bool IsShared => true;` |
 | `AllSharedEventModelsDeclareIsSharedTrue` | All `.cs` files in `Models/Shared/` (≥15) contain `public override bool IsShared => true;` |
-| `RegisterAllSharedEventCountIs15` | `RegisterAll` registers exactly 15 `SharedEvent<>` calls (16 shared models minus 1 excluded) |
-| `RegistryEntryCountIs48` | Total registry entries: 45 compiling + 1 excluded + 2 special stubs = 48 |
+| `RegisterAllSharedEventCountIs17` | `RegisterAll` registers exactly 17 `SharedEvent<>` calls (18 shared models minus 1 excluded) |
+| `RegistryEntryCountIs50` | Total registry entries: 47 compiling + 1 excluded + 2 special stubs = 50 |
 | `Sts1DuplicatorExcludedFromCompilation` | `Sts1Duplicator.cs` is in `<Compile Remove>` in `.csproj` |
 
 ## File Paths Reference

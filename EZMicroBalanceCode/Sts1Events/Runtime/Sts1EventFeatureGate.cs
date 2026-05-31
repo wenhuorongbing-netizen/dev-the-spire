@@ -10,6 +10,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 /// - Default mode is <see cref="Sts1EventRegistrationMode.Off"/> (zero registrations).
 /// - <see cref="Sts1EventRegistrationMode.CanaryOnly"/> targets exactly 4 events:
 ///   Big Fish, Golden Idol, Lab, Divine Fountain.
+/// - <see cref="Sts1EventRegistrationMode.AdditiveBatch1"/> targets exactly the verified 10-event prototype scope.
 /// - <see cref="Sts1EventRegistrationMode.AdditiveAllDraft"/> registers all drafted events
 ///   additively (not replacing StS2 events).
 /// - <see cref="Sts1EventRegistrationMode.ReplaceUnknownEventsPrototype"/> is debug-only.
@@ -47,6 +48,8 @@ internal static class Sts1EventFeatureGate
                 "StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable."),
             Sts1EventRegistrationMode.CanaryOnly => FeatureGateResult.Enabled(
                 "StS1 events CanaryOnly mode: registering 4 canary events."),
+            Sts1EventRegistrationMode.AdditiveBatch1 => FeatureGateResult.Enabled(
+                "StS1 events AdditiveBatch1 mode: registering 10 verified-scope events."),
             Sts1EventRegistrationMode.AdditiveAllDraft => FeatureGateResult.Enabled(
                 "StS1 events AdditiveAllDraft mode: registering all drafted events."),
             Sts1EventRegistrationMode.ReplaceUnknownEventsPrototype => FeatureGateResult.Enabled(
@@ -65,5 +68,22 @@ internal static class Sts1EventFeatureGate
         "sts1_golden_idol",
         "sts1_the_lab",
         "sts1_divine_fountain",
+    ];
+
+    /// <summary>
+    /// Canonical event IDs for <see cref="Sts1EventRegistrationMode.AdditiveBatch1"/>.
+    /// </summary>
+    public static IReadOnlyList<string> AdditiveBatch1EventIds { get; } =
+    [
+        "sts1_big_fish",
+        "sts1_golden_idol",
+        "sts1_the_lab",
+        "sts1_divine_fountain",
+        "sts1_purifier",
+        "sts1_upgrade_shrine",
+        "sts1_golden_shrine",
+        "sts1_the_cleric",
+        "sts1_old_beggar",
+        "sts1_shining_light",
     ];
 }

@@ -18,14 +18,20 @@ internal enum Sts1EventRegistrationMode
     CanaryOnly = 1,
 
     /// <summary>
+    /// Registers only the current verified prototype scope: four canary events plus six simple batch events.
+    /// This is deliberately smaller than <see cref="AdditiveAllDraft"/>.
+    /// </summary>
+    AdditiveBatch1 = 2,
+
+    /// <summary>
     /// Registers all drafted StS1 events additively alongside existing StS2 events.
     /// Not a replacement for the StS2 event pool — events coexist.
     /// </summary>
-    AdditiveAllDraft = 2,
+    AdditiveAllDraft = 3,
 
     /// <summary>
     /// Debug-only prototype: replaces unknown room events with StS1 events.
     /// Must not be enabled in release builds without explicit debug override.
     /// </summary>
-    ReplaceUnknownEventsPrototype = 3,
+    ReplaceUnknownEventsPrototype = 4,
 }

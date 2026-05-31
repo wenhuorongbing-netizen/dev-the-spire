@@ -1,5 +1,9 @@
 # Revision F Final Report — M3 Week 1 Commit Readiness Gate
 
+> **SUPERSEDED by Revision G.** This report captures the state at Revision F (HEAD `d290598c`).
+> Current state: HEAD `aed2a498`, 92 warnings, 444 tests, 11 dirty files.
+> See `revision-g-final-report.md` for current status.
+
 Date: 2026-05-29T16:15:00+02:00
 HEAD: `d290598c` ("debugging")
 Spec: `docs/goals/debug.md` M3 Week 1 overnight Commit Readiness Gate
@@ -169,8 +173,8 @@ See `docs/goals/revision-f-commit-slices.md` for the full plan.
 ## Remaining Work Before Owner Review
 
 1. ~~Fix 55 stale doc counts across 8 files~~ **DONE** — all 55 locations fixed.
-2. Recount warning breakdown (92 total, CS8604/CS8602/CS8625 split needs refresh — currently TBD in warning-ledger.md).
+2. ~~Recount warning breakdown~~ **DONE in Revision G** — CS8604=57, CS8602=34, CS8625=1.
 3. Owner decision on commit slices (6 slices, no commit without authorization).
-4. ZHS localization: 33 missing result-page keys → backlog.
+4. ~~ZHS localization: 33 missing result-page keys~~ **DONE** — 399/399 keys complete, 0 missing.
 5. RitsuLib runtime verification → requires game launch.
 6. Sts1Events runtime verification → requires game launch.
