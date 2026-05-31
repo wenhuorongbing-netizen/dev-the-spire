@@ -195,7 +195,7 @@ public sealed class DocumentationCompactnessGuardTests
             "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against the real installed mods root.",
             "Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.",
             "is not the current package-parity source",
-            "`D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance`",
+            "`E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance`",
             "staging, versioned, installed, game-root zip, and zip-entry artifacts match");
         Assert.DoesNotContain("failed 5 installed-folder parity tests", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Sovereign Blade jade boon refresh", devEnvironment, StringComparison.Ordinal);
@@ -502,7 +502,7 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-05-27:",
+            "Current package hashes, 2026-05-31:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
@@ -1029,8 +1029,8 @@ public sealed class DocumentationCompactnessGuardTests
         var currentDocs = string.Join(
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains("296 passed / 20 skipped", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("316 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("452 passed / 21 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("473 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -11,6 +11,7 @@ $ErrorActionPreference = 'Stop'
 if (-not $ModDirectory) {
     $defaultRoots = @(
         (Join-Path (Get-Location) 'mods\EZMicroBalance'),
+        "E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance",
         "D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance"
     )
 

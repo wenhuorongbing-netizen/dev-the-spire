@@ -18,7 +18,15 @@ if ($manifest.name -ne 'Spire Plus') {
 }
 
 if ([string]::IsNullOrWhiteSpace($GameRoot)) {
-    $GameRoot = 'D:\Steam\steamapps\common\Slay the Spire 2'
+    $candidateRoots = @(
+        'E:\Steam\steamapps\common\Slay the Spire 2',
+        'D:\Steam\steamapps\common\Slay the Spire 2'
+    )
+
+    $GameRoot = $candidateRoots | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+    if ([string]::IsNullOrWhiteSpace($GameRoot)) {
+        $GameRoot = $candidateRoots[0]
+    }
 }
 
 $publishRoot = Join-Path $repoRoot 'publish'

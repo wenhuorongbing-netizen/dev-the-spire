@@ -43,9 +43,9 @@
 - Active manifest path: `D:\Game\FOTN\dev-the-spire\EZMicroBalance.json`
 - Legacy project metadata path: `D:\Game\FOTN\dev-the-spire\docs\archive\legacy-planning\legacy-project-files\EzDailyContent\EzDailyContent.csproj.legacy.xml`
 - Legacy installed files under `D:\Steam\steamapps\common\Slay the Spire 2\mods\EzDailyContent\` are historical scaffold artifacts, not current deliverables.
-- Target DLL path: `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance\EZMicroBalance.dll`
-- Target PCK path: `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance\EZMicroBalance.pck`
-- Target JSON path: `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance\EZMicroBalance.json`
+- Target DLL path: `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance\EZMicroBalance.dll`
+- Target PCK path: `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance\EZMicroBalance.pck`
+- Target JSON path: `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance\EZMicroBalance.json`
 
 ## Dependencies
 - Template package: `Alchyr.Sts2.Templates` `2.3.9`
@@ -75,23 +75,23 @@
 ## Last known commands
 - Last attempted default build: `dotnet build EZMicroBalance.sln` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded with 0 warnings and 0 errors.
 - Last successful build: `dotnet build EZMicroBalance.sln` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded with 0 warnings and 0 errors.
-- Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: passed, 296 passed, 20 skipped release artifact/runtime evidence tests, 0 failed.
+- Last successful normal test run: `dotnet test EZMicroBalance.sln --no-build` on 2026-05-31 after the E-drive package refresh. Result: passed, 452 passed, 21 skipped release artifact/runtime evidence tests, 0 failed.
 - Last successful Release test run: `dotnet test EZMicroBalance.sln -c Release` on 2026-05-13 after the BaseLib-only plug-off startup/log refresh. Result: passed, 81 passed, 18 skipped release artifact/runtime evidence tests, 0 failed.
-- Latest opt-in artifact-validation run: `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: passed, 316 passed, 0 skipped, 0 failed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
+- Latest opt-in artifact-validation run: `STS2_PATH=E:\Steam\steamapps\common\Slay the Spire 2` and `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln` on 2026-05-31 after the E-drive package refresh. Result: passed, 473 passed, 0 skipped, 0 failed. This is source/package artifact validation; fresh beta.84 loader smoke remains pending. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - Latest full local CI-script run: `scripts\ci-full-validation.ps1` on 2026-05-20 with explicit `STS2_PATH` and `GODOT_PATH`. Result: passed. This is local no-game validation, not live loader or gameplay proof.
 - Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: exit code 0.
 - Last required diff check: `git diff --check` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: exit code 0 with no warnings.
 - Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against the real installed mods root.
 - Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.
-- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.84.zip`, `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `D:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.84.zip` were refreshed and hash-checked on 2026-05-27 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The beta.19 loader row is historical startup/log proof only; beta.84 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
+- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.84.zip`, `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `E:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.84.zip` were refreshed and hash-checked on 2026-05-31 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The beta.19 loader row is historical startup/log proof only; beta.84 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
 - Last PCK hash check: the 2026-05-31 local package-hash refresh found the staging, versioned, and zip-entry PCK at SHA256 `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA`.
-- Last staging/versioned DLL hash check: SHA256 `222D47886483F0C245740B25E7427F2C1DF04EDD38801634187605B9036B963A`.
+- Last staging/versioned DLL hash check: SHA256 `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
-- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.84.zip` was rebuilt from the real installed mod artifacts, copied to the game root, and synced into the real installed mod folder on 2026-05-27. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
+- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.84.zip` was rebuilt from the real installed mod artifacts, copied to the game root, and synced into the real installed mod folder on 2026-05-31. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `8D3C1969C4442213E43F81C7D8C5EA09AC22778D13996B67CB357821256F62CF`
-  - DLL SHA256: `222D47886483F0C245740B25E7427F2C1DF04EDD38801634187605B9036B963A`
+  - Zip SHA256: `9F0656DEDF57598D3A26743FD1A3061E669EF21354D6E12A6AA4C4AF44796894`
+  - DLL SHA256: `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`
   - README SHA256: `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C`
   - Manifest SHA256: `47658D7593FE8DF23C4E5B3413CA53B1C7F1B779109A42A8B65E381C4C0FEDAC`
   - PCK SHA256: `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA`

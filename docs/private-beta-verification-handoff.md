@@ -10,13 +10,13 @@ Current naming note: testers should see `Spire Plus`. The technical manifest id 
 
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
-Latest package note, 2026-05-23: the package hashes below identify the current manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**` and feature work logs; `docs/review.md` keeps only compact current source-review context. This handoff keeps only current tester-facing facts.
+Latest package note, 2026-05-31: the package hashes below identify the current manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**` and feature work logs; `docs/review.md` keeps only compact current source-review context. This handoff keeps only current tester-facing facts.
 
 Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest verification after the beta.84 Urda Seedbed Harmony patch bugfix: `dotnet build EZMicroBalance.sln`, normal tests with 296 passed / 20 skipped, opt-in artifact tests with 316 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and the real installed-package checker against `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff. `.tools\publish-game-root` is isolated tooling context only and is not the current package-parity source.
+- Latest verification after the 2026-05-31 E-drive package refresh: `dotnet build EZMicroBalance.sln`, normal tests with 452 passed / 21 skipped, opt-in artifact tests with 473 passed / 0 skipped, website syntax checks, `dotnet format`, `git diff --check`, and the real installed-package checker against `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` passed. The current installed folder and game-root zip match this handoff. `.tools\publish-game-root` is isolated tooling context only and is not the current package-parity source.
 - `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. After the beta.84 Urda Seedbed Harmony patch bugfix, the current package loader row is pending; the verifier is expected to fail closed until loader, feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
 - The latest normal Steam smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` covered the beta.19 package hash: only BaseLib plus Spire Plus loaded, `v0.1.0-private-beta.19` was logged, `Found 30 SavedSpireFields`, startup completed, and the log audit was clean. Feature gameplay rows remain pending.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
@@ -43,9 +43,9 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 - Package: `publish\SpirePlus-v0.1.0-private-beta.84.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `8D3C1969C4442213E43F81C7D8C5EA09AC22778D13996B67CB357821256F62CF`
+- Zip SHA256: `9F0656DEDF57598D3A26743FD1A3061E669EF21354D6E12A6AA4C4AF44796894`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `222D47886483F0C245740B25E7427F2C1DF04EDD38801634187605B9036B963A`
+- DLL SHA256: `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`
 - Manifest SHA256: `47658D7593FE8DF23C4E5B3413CA53B1C7F1B779109A42A8B65E381C4C0FEDAC`
 - PCK SHA256: `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA`
 - README_INSTALL SHA256: `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C`
@@ -53,8 +53,8 @@ Clicked Ancient UI handoff, 2026-05-15:
 ## Known Automated Evidence
 
 - Current automated snapshot: beta.84 passed `dotnet build`, normal `dotnet test`, normal publish/package refresh, `dotnet format`, `git diff --check`, website syntax checks, and real installed-package checking after the AscensionFeature rootblight guard split package sync. Gameplay proof is still pending.
-- Current normal test count: 296 passed / 20 skipped. Current opt-in artifact test count with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 316 passed / 0 skipped.
-- Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory "D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance"`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split.
+- Current normal test count: 452 passed / 21 skipped. Current opt-in artifact test count with `STS2_PATH=E:\Steam\steamapps\common\Slay the Spire 2` and `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 473 passed / 0 skipped. Fresh beta.84 loader smoke remains pending; the stale local `godot.log` from beta.0 was archived so it is not treated as current evidence.
+- Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory "E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance"`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split.
 - Historical loader/resource evidence remains useful context only. The current 30-field loader proof covers beta.19 loader/startup only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
 - Historical detailed command logs are preserved in `docs/archive/project-state-history-20260516.md`, `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`, and feature work logs; `docs/review.md` keeps compact current source-review context. This handoff intentionally keeps only the current tester-facing summary.
 - Automated evidence does not close clicked UI, live gameplay, save-load, death/failure, route traversal, preview-tools, or co-op rows.

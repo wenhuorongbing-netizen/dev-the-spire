@@ -10,8 +10,8 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `8D3C1969C4442213E43F81C7D8C5EA09AC22778D13996B67CB357821256F62CF` |
-| DLL | `222D47886483F0C245740B25E7427F2C1DF04EDD38801634187605B9036B963A` |
+| ZIP | `9F0656DEDF57598D3A26743FD1A3061E669EF21354D6E12A6AA4C4AF44796894` |
+| DLL | `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766` |
 | PCK | `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA` |
 | Manifest | `47658D7593FE8DF23C4E5B3413CA53B1C7F1B779109A42A8B65E381C4C0FEDAC` |
 | README_INSTALL | `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C` |
@@ -22,7 +22,7 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, real installed package checker, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Source/package automation passes for beta.81, but live loader/gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, real installed package checker, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Source/package automation passes for beta.84, but live loader/gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 
@@ -30,7 +30,7 @@ These are the exact row IDs required by `scripts/verify-spire-plus-release-evide
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Pending | User | Capture a beta.81 `godot.log`, clean `godot-log-audit.json`, `environment.json`, `package-hashes.json`, `enabled-mods.txt`, current package hash parity, BaseLib plus Spire Plus only, startup completion, stopped game, and restored mod isolation. The beta.19 loader smoke remains historical startup evidence only. |
+| fresh-current-package-loader-smoke | loader | Pending | User | Capture a beta.84 `godot.log`, clean `godot-log-audit.json`, `environment.json`, `package-hashes.json`, `enabled-mods.txt`, current package hash parity, BaseLib plus Spire Plus only, startup completion, stopped game, and restored mod isolation. The beta.19 loader smoke remains historical startup evidence only. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |

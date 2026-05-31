@@ -789,8 +789,8 @@ window.SPIRE_PLUS_DATA = {
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "BaseLib v3.1.4"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.106.1"],
-      ["\u4f53\u79ef", "19,010,404 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "8D3C1969C4442213E43F81C7D8C5EA09AC22778D13996B67CB357821256F62CF"]
+      ["\u4f53\u79ef", "19,011,545 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "9F0656DEDF57598D3A26743FD1A3061E669EF21354D6E12A6AA4C4AF44796894"]
     ]
   },
   installSteps: [
@@ -1349,8 +1349,8 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Display name", "Spire Plus"],
         ["Dependency", "BaseLib v3.1.4"],
         ["Game version", "Slay the Spire 2 v0.106.1"],
-        ["Size", "19,010,404 bytes"],
-        ["Hash", "8D3C1969C4442213E43F81C7D8C5EA09AC22778D13996B67CB357821256F62CF"]
+        ["Size", "19,011,545 bytes"],
+        ["Hash", "9F0656DEDF57598D3A26743FD1A3061E669EF21354D6E12A6AA4C4AF44796894"]
       ]
     },
     installSteps: [
