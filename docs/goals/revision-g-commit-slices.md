@@ -92,3 +92,16 @@ Total changes: ~3500 insertions, ~3000 deletions across 18 doc/config/test files
 ## Authorization
 
 **No commits will be made without explicit owner authorization.** This plan is prepared for owner review only.
+
+## M4 Update — 2026-05-31
+
+Current HEAD is `24d4fe9a`; the previous 18-file Revision G plan is historical. The current pre-validation dirty state was four Batch 8 audit docs:
+
+| Slice | Files | Purpose | Precondition |
+|---|---|---|---|
+| 1 | `docs/goals/debug.md` | M4 owner-review governance spec | Remove trailing whitespace; owner accepts scope |
+| 2 | `docs/goals/event.md` | StS1 Event Port audit rewrite | Remove trailing whitespace; owner accepts scope |
+| 3 | `docs/goals/migration.md` | RitsuLib migration audit rewrite | Fix old display-name wording; owner accepts scope |
+| 4 | `docs/goals/refactor.md` | Refactor/architecture hardening audit rewrite | Owner accepts scope |
+
+Do not commit these slices as-is. Current validation fails tests and `git diff --check`.

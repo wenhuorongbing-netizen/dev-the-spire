@@ -155,21 +155,21 @@ No C# source files, csproj, localization, or test files were modified during thi
 ## 4. Remaining Risks
 
 1. **RitsuLib runtime unverified** — compile dependency and manifest declaration in place, but no runtime evidence. The unconditional bootstrap call in `MainFile.cs` will crash if RitsuLib is not installed.
-2. **Sts1Events governance** — compiled, feature-gated, dormant by default. 24 guard tests. Staging-only recommendation correct. 92 nullable warnings.
+2. **Sts1Events governance** — compiled, feature-gated, dormant by default. Staging-only recommendation correct. 89 nullable warnings.
 3. **Debug scaffold** — validated (default-off, proper guarding), but not feature-complete. Accept-scaffold recommendation correct.
-4. **Test count drift** — 387 passed (up from 361 in Revision F). Future runs should verify fresh counts.
-5. **Clean build warnings** — 92 nullable warnings exist in Sts1Events/ code (only visible on clean build, hidden by incremental cache).
-6. **Stale docs** — 55 count locations across 8 files still reference old numbers. Fixes in progress.
+4. **Test count drift** — current solution validation is 461 passed / 0 failed / 21 skipped / 482 total. Future runs should verify fresh counts.
+5. **Clean build warnings** — 89 nullable warnings exist in Sts1Events/ code.
+6. **Stale docs** — primary validation/runtime docs were reconciled; older revision reports remain historical unless explicitly promoted.
 7. **No commit made** — all changes are unstaged working tree modifications.
 
 ## 5. Final Verdict
 
 ```text
-NOT COMPLETE — Revision H replay on 2026-05-31 hit a hard blocker. Build passes with 89 Sts1Events nullable warnings, but tests fail/abort on the current dirty state, git diff --check fails on trailing whitespace in docs/goals/event.md, and guarded active docs docs/goal.md and docs/migration.md are deleted in the dirty state.
+NOT COMPLETE — M4 replay on 2026-05-31 reached Hard Block Stop. Clean/build/test/format/diff-check pass with 89 Sts1Events nullable warnings, but runtime smoke is blocked because STS2-RitsuLib is missing at the checked game-root mod paths.
 ```
 
 ## 6. Next Exact Task
 
-1. Owner decision on restoring or intentionally retiring `docs/goal.md` and `docs/migration.md`; current tests require both.
-2. Owner decision on `EZMicroBalanceCode/Core/Architecture/ArchitectureCanaryBootstrap.cs` and active source manifest alignment.
-3. Owner decision on Sts1Events registration enum intent, package hash/site metadata refresh, and whether to accept the unauthorized/squashed parallel commits with notation.
+1. Install STS2-RitsuLib at `<GameRoot>\mods\STS2-RitsuLib`.
+2. Rerun Off and CanaryOnly runtime smoke and capture `godot.log` evidence.
+3. Owner decision on whether to accept unauthorized/squashed commits `f4247553` and `aed2a498` with governance notation.

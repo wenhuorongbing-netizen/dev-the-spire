@@ -512,8 +512,8 @@ public sealed class DocumentationCompactnessGuardTests
             "`GOV-WIP-SPLIT` P0 source-fixed",
             "`DOC-CONFLICT-GOVERNANCE` P2 source-fixed",
             "`PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending",
-            "current committed worktree is clean after the beta.84 batch commit",
-            "0 dirty entries / 0 unclassified entries",
+            "current local Runtime Proof + Governance Closure worktree is dirty",
+            "preserved shared edits and new diagnostics/doc/test updates",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source-split/refactor passes", issues, StringComparison.OrdinalIgnoreCase);
@@ -987,6 +987,10 @@ public sealed class DocumentationCompactnessGuardTests
             "275 passed / 0 skipped",
             "275 passed, 0 skipped",
             "264 passed / 0 skipped",
+            "452 passed / 21 skipped",
+            "452 passed, 21 skipped",
+            "455 passed / 21 skipped",
+            "455 passed, 21 skipped",
             "270 passed / 0 skipped",
             "270 passed, 0 skipped",
             "288 passed / 20 skipped",
@@ -1029,7 +1033,7 @@ public sealed class DocumentationCompactnessGuardTests
         var currentDocs = string.Join(
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains("452 passed / 21 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("461 passed / 21 skipped", currentDocs, StringComparison.Ordinal);
         Assert.Contains("473 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
     }
 

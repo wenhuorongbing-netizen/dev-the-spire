@@ -1,80 +1,80 @@
-# Registry Reconciliation — 48 vs 52
+# Registry Reconciliation - 52 / 54 / 48 / 50 / 54 / 399
 
-> Created: 2026-05-29
+> Updated: 2026-05-31 v13 red-team reconciliation
 
-## Three Counts Explained
+This file reconciles the StS1 event-port source counts. These counts are source/doc counts only; they do not prove runtime gameplay, save/load, image rendering, replacement-pool behavior, or parity.
 
-| Dimension | Count | What It Is |
-|-----------|-------|------------|
-| Wiki event entries | **52** | All events listed on the StS1 Wiki event page |
-| Runtime registry entries | **48** | Entries in `Sts1EventRegistry.cs` `Events` list |
-| Registration calls (RegisterAll) | **52** | Calls to `content.SharedEvent<T>()` / `content.ActEvent<TAct, TEvent>()` in `RegisterAll()` |
+## Current Counts
 
-## Why 52 Wiki → 48 Registry
+| Dimension | Count | What It Is | Evidence |
+|-----------|-------|------------|----------|
+| Public wiki baseline | 52 | External unknown-room target from the v13 goal (`16 shared + 12 Act 1 + 16 Act 2 + 8 Act 3`) | `docs/goals/event.md` |
+| Canonical matrix rows | 54 | Public/wiki-derived rows plus local special/debug rows tracked for audit | `canonical-event-matrix.csv` |
+| Runtime registry entries | 50 | Unique identities in `Sts1EventRegistry.cs`, including 2 special stubs and excluding 4 duplicate wiki rows | `RegistryEntryCountIs50` |
+| Model files | 48 | C# event model files under `EZMicroBalanceCode/Sts1Events/Models/` | source tree |
+| Compiling models | 47 | 48 model files minus compile-excluded `Sts1Duplicator.cs` | `Sts1DuplicatorExcludedFromCompilation` |
+| RegisterAll calls | 54 | `content.SharedEvent<T>()` plus `content.ActEvent<TAct,TEvent>()` calls in all-draft mode | `RegisterAllTotalRegistrationCallsIs54` |
+| AdditiveBatch1 calls | 11 | 10 verified-scope event types; Shining Light registers to both StS2 Act 1 buckets | `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` |
 
-4 wiki entries have no dedicated registry entry:
+## Why 54 Rows Become 50 Registry Entries
 
-| Wiki Entry | Reason | Handling |
-|------------|--------|----------|
-| Neow | Start-of-run special event; no unknown-room model | 1 registry entry as Special stub, no model file |
-| Combat Start | Tutorial flow; no unknown-room model | 1 registry entry as Special stub, no model file |
-| Golden Wing (Act1 duplicate) | Same event as Shared Golden Wing | 1 model serves both wiki rows |
-| The Cleric (Act1 duplicate) | Same event as Shared The Cleric | 1 model serves both wiki rows |
-| The Mausoleum (Act2 duplicate) | Same event as Shared The Mausoleum | 1 model serves both wiki rows |
-| The Woman in Blue (Act2 duplicate) | Same event as Shared The Woman in Blue | 1 model serves both wiki rows |
+The public target remains 52 unknown-room wiki entries. The active audit matrix carries 54 rows because it also tracks two local special stubs, `sts1_neow` and `sts1_combat_start`, so source and registry guards can keep start/tutorial surfaces explicit without treating them as unknown-room parity proof.
 
-Math: 52 wiki − 2 special stubs (counted once each in registry) − 2 duplicate pairs (4 entries → 2 counted) = 48 unique registry entries.
+Four canonical matrix rows are duplicate wiki/bucket memberships and intentionally do not receive separate registry identities:
 
-Wait, let me recount:
-- 52 wiki entries
-- Neow and Combat Start DO have registry entries (they're in the Special section)
-- The 4 duplicates (Golden Wing Act1, Cleric Act1, Mausoleum Act2, Woman in Blue Act2) do NOT have registry entries
-- So: 52 − 4 duplicates = 48 registry entries ✓
+| Duplicate row | Canonical handling |
+|---------------|--------------------|
+| `golden_wing_act1` | Shares `sts1_golden_wing` |
+| `the_cleric_act1` | Shares `sts1_the_cleric` |
+| `the_mausoleum_act2` | Shares `sts1_the_mausoleum` |
+| `the_woman_in_blue_act2` | Shares `sts1_the_woman_in_blue` |
 
-The 2 Special stubs (Neow, Combat Start) have registry entries but no model files.
+Math: 54 canonical rows - 4 duplicate rows = 50 registry identities.
 
-## Why 52 Registration Calls
+`sts1_neow` and `sts1_combat_start` are special registry stubs. They count as registry identities but have no unknown-room model files.
 
-Each Act 1 event registers in 2 acts (Overgrowth + Underdocks):
+## Why RegisterAll Has 54 Calls
 
-| Bucket | Events | Acts per Event | Calls |
-|--------|--------|----------------|-------|
-| Shared | 15 | 1 (shared registry) | 15 |
-| Act 1 | 7 | 2 (Overgrowth + Underdocks) | 14 |
-| Act 2 | 14 | 1 (Hive) | 14 |
-| Act 3 | 9 | 1 (Glory) | 9 |
-| **Total** | **45 unique** | — | **52** |
+| Bucket | Event types | Calls per event | Calls |
+|--------|-------------|-----------------|-------|
+| Shared | 17 registered shared models | 1 | 17 |
+| StS1 Act 1 | 7 event types | 2 (`Overgrowth` + `Underdocks`) | 14 |
+| StS1 Act 2 | 14 event types | 1 (`Hive`) | 14 |
+| StS1 Act 3 | 9 event types | 1 (`Glory`) | 9 |
+| **Total** | **47 compiling registered event types** | - | **54** |
 
-Note: 45 unique models (not 46) because Sts1Duplicator is compile-excluded and not registered.
+`Sts1Duplicator` is compile-excluded and is not registered by `RegisterAll`.
 
-## Why 46 Model Files
-
-```
-Shared models:  16 (including Sts1Duplicator.cs which is compile-excluded)
-Act 1 models:    7
-Act 2 models:   14
-Act 3 models:    9
-Total:          46
-```
-
-46 models − 1 compile-excluded = 45 compiling models.
-
-## Registry Entry Breakdown (48)
+## Registry Entry Breakdown
 
 | Phase | Count | Entries |
 |-------|-------|---------|
-| Canary | 2 | Big Fish, Golden Idol |
-| Simple | 20 | The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits, Divine Fountain, Duplicator, Fountain of Cleansing, The Lab, Shining Light, Mushrooms, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter, Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine |
+| Canary | 4 | Big Fish, Golden Idol, Divine Fountain, The Lab |
+| Simple | 22 | The Cleric, Golden Wing, Living Wall, Old Beggar, Purifier, Golden Shrine, Bonfire Spirits, Duplicator, Fountain of Cleansing, Shining Light, Mushrooms, Joust, The Ssssserpent, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter, Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine |
 | CardService | 9 | Face Trader, The Mausoleum, Council of Ghosts, Cursed Tome, Knowing Skull, Nest, Vampires, Falling, Mind Bloom |
-| Combat | 7 | Dead Adventurer, Scorpion Nest, Treasure Ooze, Joust, The Ssssserpent, Masked Bandits, Mysterious Sphere |
+| Combat | 5 | Dead Adventurer, Scorpion Nest, Treasure Ooze, Masked Bandits, Mysterious Sphere |
 | CustomUi | 8 | The Woman in Blue, Wheel of Change, Designer, Forgotten Altar, The Ghost, N'loth, Tomb of Lord Red Mask, Winding Halls |
 | Special | 2 | Neow, Combat Start |
-| **Total** | **48** | — |
+| **Total** | **50** | - |
 
-## Guard Test
+One Simple entry, Duplicator, is compile-excluded and not registered by `RegisterAll`.
 
-`RegistryEntryCountIs48` in `Sts1EventFeatureGuardTests.cs` verifies exactly 48 entries using `CountOccurrences(entriesBlock, "new(\"")`.
+## Guard Tests
 
-## Key Insight
+- `RegistryEntryCountIs50` guards the registry count.
+- `RegisterAllTotalRegistrationCallsIs54` guards all-draft registration calls.
+- `RegisterAllSharedEventCountIs17` guards shared registration calls.
+- `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` guards Batch1 identity and count.
+- `RegistryCanaryPhaseMatchesCanaryEventIds` guards canary phase metadata.
 
-48 registry entries is **correct** — it represents the 48 unique event identities. The 52 registration calls reflect the act-mapping strategy (Act1 events dual-registered). Neither number alone tells the full story; the canonical matrix tracks all 52 wiki entries with proper reconciliation.
+## Non-Claims
+
+These counts do not prove:
+
+- runtime event spawning;
+- unknown room replacement behavior;
+- save/load event bag persistence;
+- EN/ZHS render behavior;
+- image rendering or license parity;
+- co-op behavior;
+- StS1 full event parity.

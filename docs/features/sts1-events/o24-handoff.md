@@ -3,6 +3,8 @@
 Date: 2026-05-29 (v10 refresh)
 Session: Mandatory Overnight Run v2 → v10 refresh
 
+> Superseded for v13 governance: this file is historical O0-O24 handoff context only. Do not use the old O23 GREEN row as a v13 QA pass; current v13 QA is fail / blocked until runtime gameplay, save/load, image/render, replacement, multiplayer, and full O0-O46 evidence exist.
+
 ## Build & Test Evidence
 
 | Metric | Value | Evidence File |
@@ -54,7 +56,7 @@ Session: Mandatory Overnight Run v2 → v10 refresh
 | O12 | No redistributable StS1 art | Obtain art permission or create replacement art |
 | O15 | Requires game launch | Launch game with `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`, screenshot 4 events |
 | O16 | Requires game launch | Save/load during canary events, verify state persistence |
-| O19 | Requires game launch | Run ReplacementPrototype mode, verify unknown room only draws StS1 events |
+| O19 | Requires game launch | Run ReplaceUnknownEventsPrototype mode, verify unknown room only draws StS1 events |
 
 ## Changes Made This Session (v10)
 
@@ -149,7 +151,7 @@ Session: Mandatory Overnight Run v2 → v10 refresh
 - O12: Event images (no redistributable art)
 - O15: Canary runtime screenshots/logs
 - O16: Canary save/load proof
-- O19: ReplacementPrototype functional proof
+- O19: ReplaceUnknownEventsPrototype functional proof
 
 **What cannot be done from code alone:**
 - Runtime gameplay verification
@@ -163,7 +165,7 @@ Session: Mandatory Overnight Run v2 → v10 refresh
 1. **Launch game** with `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` to verify 4 canary events spawn
 2. **Screenshot** each canary event's options and results
 3. **Save/load** during a canary event to verify state persistence
-4. **Switch to** `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft` to verify simple batch events
+4. **Switch to** `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` to verify the bounded simple batch prototype scope; keep `AdditiveAllDraft` dev-only/unsafe
 5. **Enable** `#define REPLACEMENT_PROTOTYPE_ENABLED` and test replacement pool
 6. **Obtain** or create redistributable art for event images
 7. **Run** independent QA/Red-Team review

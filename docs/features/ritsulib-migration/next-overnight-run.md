@@ -2,72 +2,87 @@
 
 ## Run Date
 
-TBD (next available overnight session)
+TBD (next available runtime session)
 
 ## Objective
 
-**Runtime Proof + Architecture Integration.** Runtime smoke remains the critical path blocker. Batch 4c cannot proceed until STS2-RitsuLib is installed and runtime smoke passes. Focus on runtime environment setup, not patch migration.
+**Runtime Proof + Governance Closure.** Runtime smoke remains the critical path blocker. Batch 4c cannot proceed until STS2-RitsuLib is installed and runtime smoke passes. Focus on runtime environment setup, Off/CanaryOnly proof, and evidence capture, not patch migration.
 
 ## Current State
 
-- HEAD: `85a38dd1` on `main` before local refactor-governance edits
-- Build: 2026-05-31 clean build passed with 0 errors, 89 warnings (Sts1Events nullable CS8602/CS8604/CS8625)
-- Tests: 2026-05-31 full `dotnet test --no-build` passed with 452 passed, 0 failed, 21 skipped (473 total). See `docs/reviews/current-validation.md`.
-- 25 patches migrated, 142 raw Harmony remaining
-- Architecture canary integration complete (RewardPipeline diagnostics + CardPlayContext depth guard)
-- DeathProtectionService + MultiplayerPolicy stubs created (diagnostics-only)
-- Runtime smoke: **BLOCKED** — STS2-RitsuLib not installed. 2026-05-31 `Test-Path` checks returned `False` at both `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` and `D:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib`. Batch 4c, Off/CanaryOnly runtime smoke claims, and live-ready claims remain blocked until STS2-RitsuLib is installed and logs are captured.
-- FeatureRegistry source hardening: unified ForceEnvKeys/DisableEnvKeys truthy override evaluation was added before bootstrap record creation; this is source-level governance only and does not close runtime smoke.
+- HEAD: `24d4fe9a` on `main` before local governance-closure edits.
+- Build: 2026-05-31 clean build passes with 0 errors, 89 Sts1Events nullable warnings (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1).
+- Tests: 2026-05-31 full and no-build no-game tests pass with 461 passed, 0 failed, 21 skipped, 482 total. See `docs/reviews/current-validation.md`.
+- Patch state: 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
+- Architecture canary status: RewardPipeline, CardPlayContext, DeathProtectionService, and MultiplayerPolicy are diagnostics-only; no gameplay behavior or enforcement claim.
+- Runtime smoke: **HARD BLOCKED**. STS2-RitsuLib is missing at both `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` and `D:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib`; E-drive BaseLib and Spire Plus package folders exist. No active `godot.log` exists at `C:\Users\zihao\AppData\Roaming\SlayTheSpire2\logs\godot.log`.
+- Sts1Events status: Off, CanaryOnly, and AdditiveBatch1 are source-guarded only. Off=0 and CanaryOnly=4 still require live `godot.log` proof.
+- Release gate: no release-ready, live-ready, runtime-safe, Batch 4c, high-risk migration, or new gameplay claim.
 
 ## Pre-Run Checklist
 
-1. Confirm `main` branch is clean: `git status` shows no uncommitted changes
-2. Confirm full test suite passes: `dotnet test EZMicroBalance.sln --no-build` → expected current target is 0 failed
-3. Confirm build is clean: `dotnet build EZMicroBalance.sln` → 0 errors; warning count must be recaptured from the current source
-4. Confirm format is clean: `dotnet format --verify-no-changes`
+1. Confirm current branch and dirty state with `git status --short --branch`.
+2. Confirm full test suite passes: `dotnet test EZMicroBalance.sln --no-build` with 0 failed.
+3. Confirm build result: `dotnet build EZMicroBalance.sln` with 0 errors; warning count must be recaptured from current source.
+4. Confirm format is clean: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`.
+5. Confirm `git diff --check` passes.
 
 ## Run Steps
 
 ### Step 1: Install STS2-RitsuLib
 
-1. Download STS2-RitsuLib v0.3.2+ from the official source
-2. Install to `<GameRoot>\mods\STS2-RitsuLib`
-3. Verify BaseLib v3.1.4 is installed at `<GameRoot>\mods\BaseLib`
-4. Verify Spire Plus package is installed at `<GameRoot>\mods\EZMicroBalance`
-5. Remove all other mods from `<GameRoot>\mods\` for clean smoke
+1. Download STS2-RitsuLib v0.3.2+ from the official source.
+2. Install to `<GameRoot>\mods\STS2-RitsuLib`.
+3. Verify BaseLib v3.1.4 is installed at `<GameRoot>\mods\BaseLib`.
+4. Verify Spire Plus package is installed at `<GameRoot>\mods\EZMicroBalance`.
+5. Enable only BaseLib, STS2-RitsuLib, and Spire Plus for clean smoke.
+6. If using `scripts\spire-plus-live-session.ps1`, pass the E-drive `-GameRoot`, E-drive `-SteamExe`, a specific `-SteamUserId`, and preserve `STS2-RitsuLib` during mod isolation.
 
-### Step 2: Execute Runtime Smoke
+### Step 2: Execute Loader Smoke
 
-Run the full runtime smoke checklist per `runtime-smoke-checklist.md`:
-1. Launch game via Steam
-2. Check `godot.log` for RitsuLib bootstrap, ModPatcher, BaseLib, Spire Plus init
-3. Verify 25 ModPatcher patches applied
-4. Verify SavedSpireFields count (30)
-5. Verify Mod Settings UI renders
-6. Verify no MissingMethodException, TypeLoadException, or manifest dependency failure
+Run the loader smoke checklist per `runtime-smoke-checklist.md`:
 
-### Step 3: If Runtime Smoke Passes
+1. Launch game via Steam.
+2. Check `godot.log` for RitsuLib bootstrap, ModPatcher, BaseLib, and Spire Plus init.
+3. Verify 25 ModPatcher patches applied.
+4. Verify SavedSpireFields count (30).
+5. Verify no `MissingMethodException`, `TypeLoadException`, or manifest dependency failure.
+6. Audit `godot.log` with `scripts\audit-godot-log.ps1`.
 
-1. Update `runtime-smoke-checklist.md` with evidence
-2. Update `docs/dev-environment.md` with runtime evidence
-3. Consider Batch 4c migration (10-15 low-risk patches)
+### Step 3: Execute Sts1Events Runtime Gates
 
-### Step 4: If Runtime Smoke Fails
+1. Off mode: unset/empty/invalid `SPIREPLUS_STS1_EVENT_MODE`; verify 0 Sts1Events registrations.
+2. CanaryOnly mode: set `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`; verify exactly 4 canary registrations.
+3. AdditiveBatch1 remains source/prototype-only until Off and CanaryOnly pass.
+4. Do not use AdditiveAllDraft or ReplaceUnknownEventsPrototype for tester/release paths.
 
-1. Document exact failure in runtime-smoke-checklist.md
-2. Create issue with error excerpts and next action
-3. Do NOT proceed to Batch 4c
-4. Focus on fixing the runtime blocker
+### Step 4: If Runtime Smoke Passes
+
+1. Update `runtime-smoke-checklist.md` with evidence paths and log excerpts.
+2. Update `docs/dev-environment.md` with runtime evidence.
+3. Update `docs/reviews/current-validation.md` with exact runtime proof.
+4. Propose 5-10 low-risk Batch 4c candidates only as a decision list.
+5. Do not migrate Batch 4c candidates unless explicitly accepted after the decision gate.
+
+### Step 5: If Runtime Smoke Fails Or Remains Blocked
+
+1. Document exact failure/blocker in `runtime-smoke-checklist.md` and `docs/reviews/current-validation.md`.
+2. Create or update the relevant issue with evidence and next action.
+3. Do not proceed to Batch 4c.
+4. Keep runtime-ready/live-ready/release-ready claims blocked.
 
 ## Success Criteria
 
-- [ ] STS2-RitsuLib installed locally
-- [ ] Runtime smoke checklist completed (at least loader smoke)
-- [ ] godot.log captured and stored in `docs/evidence/`
-- [ ] Batch 4c decision made (proceed or block)
+- [ ] STS2-RitsuLib installed locally.
+- [ ] Runtime smoke checklist completed at least through loader smoke.
+- [ ] `godot.log` captured and audited.
+- [ ] Off mode proves 0 Sts1Events registrations.
+- [ ] CanaryOnly proves exactly 4 canary registrations.
+- [ ] Batch 4c decision made as `advance` or `blocked`; no migration without explicit acceptance.
 
 ## Risk Mitigation
 
-- **RitsuLib version mismatch**: Check manifest dependency against installed version
-- **MissingMethodException**: Check RitsuLib API changes against bootstrap code
-- **Game crash on startup**: Check godot.log for exact error, revert to clean state
+- **RitsuLib version mismatch**: Check manifest dependency against installed version.
+- **MissingMethodException**: Check RitsuLib API changes against bootstrap code.
+- **Game crash on startup**: Check `godot.log` for exact error and preserve the blocker report.
+- **False green**: Treat missing `godot.log`, stale beta logs, source-only tests, or skipped release artifact tests as insufficient runtime proof.

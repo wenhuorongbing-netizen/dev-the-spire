@@ -234,11 +234,15 @@ public sealed class ArchitectureSkeletonGuardTests
     public void CardPlayContextCanaryAdapterIsWiredIntoLothaExtraPlay()
     {
         var contextSource = TestRepo.ReadRepoText("EZMicroBalanceCode", "Core", "Architecture", "CardPlayContext.cs");
+        var diagnosticsSource = TestRepo.ReadRepoText("EZMicroBalanceCode", "Core", "Architecture", "CardPlayContextCanary.Diagnostics.cs");
         var lothaSource = TestRepo.ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CardPlayCount.cs");
 
-        Assert.Contains("static class CardPlayContextCanary", contextSource, StringComparison.Ordinal);
+        Assert.Contains("static partial class CardPlayContextCanary", contextSource, StringComparison.Ordinal);
         Assert.Contains("EvaluateSingleExtraPlay", contextSource, StringComparison.Ordinal);
         Assert.Contains("context.TryIncrementDepth()", contextSource, StringComparison.Ordinal);
+        Assert.Contains("LogSingleExtraPlay", contextSource, StringComparison.Ordinal);
+        Assert.Contains("ReleaseEvidenceLog.Log", diagnosticsSource, StringComparison.Ordinal);
+        Assert.Contains("single_extra_play_evaluated", diagnosticsSource, StringComparison.Ordinal);
 
         Assert.Contains("CardPlayContextCanary.EvaluateSingleExtraPlay(\"Lotha\", \"mirror_rebuttal\")", lothaSource, StringComparison.Ordinal);
         Assert.Contains("CardPlayContextCanary.EvaluateSingleExtraPlay(\"Lotha\", \"mirror_hall_echo\")", lothaSource, StringComparison.Ordinal);
@@ -494,6 +498,8 @@ public sealed class ArchitectureSkeletonGuardTests
         Assert.Contains("Protected", source, StringComparison.Ordinal);
         Assert.Contains("NotProtected", source, StringComparison.Ordinal);
         Assert.Contains("ForcedDeath", source, StringComparison.Ordinal);
+        Assert.Contains("record DeathProtectionCheck", source, StringComparison.Ordinal);
+        Assert.Contains("IDeathProtectionProvider? Provider", source, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -525,6 +531,7 @@ public sealed class ArchitectureSkeletonGuardTests
         Assert.Contains("Diagnostics-only", source, StringComparison.Ordinal);
         Assert.Contains("Not wired into game logic", source, StringComparison.Ordinal);
         Assert.Contains("CheckProtection", source, StringComparison.Ordinal);
+        Assert.Contains("CheckProtectionDetailed", source, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -673,6 +680,28 @@ public sealed class ArchitectureSkeletonGuardTests
     }
 
     [Fact]
+    public void DeathProtectionService_Canary_UnavoidableDeathDoesNotQueryProviders()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            var provider = new StubDeathProtectionProvider(DeathProtectionPriority.Reprieve, canProtect: true);
+            DeathProtectionService.Register(provider);
+
+            var request = new DeathProtectionRequest("Player1", "TestSource", 999, IsUnavoidable: true);
+            var result = DeathProtectionService.CheckProtectionDetailed(request);
+
+            Assert.Equal(DeathProtectionResult.ForcedDeath, result.Result);
+            Assert.Null(result.Provider);
+            Assert.Equal(0, provider.CallCount);
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    [Fact]
     public void DeathProtectionService_Canary_NoProvidersReturnsNotProtected()
     {
         DeathProtectionService.ClearProviders();
@@ -723,10 +752,37 @@ public sealed class ArchitectureSkeletonGuardTests
             DeathProtectionService.Register(reprieveProvider);   // Register lower priority second
 
             var request = new DeathProtectionRequest("Player1", "TestSource", 10, IsUnavoidable: false);
-            var result = DeathProtectionService.CheckProtection(request);
+            var result = DeathProtectionService.CheckProtectionDetailed(request);
 
-            Assert.Equal(DeathProtectionResult.Protected, result);
-            // The fact that it returns Protected confirms the first matching provider (Reprieve) was found.
+            Assert.Equal(DeathProtectionResult.Protected, result.Result);
+            Assert.Same(reprieveProvider, result.Provider);
+            Assert.Equal(1, reprieveProvider.CallCount);
+            Assert.Equal(0, sacrificeProvider.CallCount);
+        }
+        finally
+        {
+            DeathProtectionService.ClearProviders();
+        }
+    }
+
+    [Fact]
+    public void DeathProtectionService_Canary_DetailedCheckReturnsMatchingProvider()
+    {
+        DeathProtectionService.ClearProviders();
+        try
+        {
+            var nonMatchingProvider = new StubDeathProtectionProvider(DeathProtectionPriority.Reprieve, canProtect: false);
+            var matchingProvider = new StubDeathProtectionProvider(DeathProtectionPriority.Sacrifice, canProtect: true);
+            DeathProtectionService.Register(matchingProvider);
+            DeathProtectionService.Register(nonMatchingProvider);
+
+            var request = new DeathProtectionRequest("Player1", "TestSource", 10, IsUnavoidable: false);
+            var result = DeathProtectionService.CheckProtectionDetailed(request);
+
+            Assert.Equal(DeathProtectionResult.Protected, result.Result);
+            Assert.Same(matchingProvider, result.Provider);
+            Assert.Equal(1, nonMatchingProvider.CallCount);
+            Assert.Equal(1, matchingProvider.CallCount);
         }
         finally
         {
@@ -998,6 +1054,7 @@ public sealed class ArchitectureSkeletonGuardTests
         private readonly bool _canProtect;
 
         public DeathProtectionPriority Priority { get; }
+        public int CallCount { get; private set; }
 
         public StubDeathProtectionProvider(DeathProtectionPriority priority, bool canProtect)
         {
@@ -1005,6 +1062,10 @@ public sealed class ArchitectureSkeletonGuardTests
             _canProtect = canProtect;
         }
 
-        public bool CanProtect(DeathProtectionRequest request) => _canProtect;
+        public bool CanProtect(DeathProtectionRequest request)
+        {
+            CallCount++;
+            return _canProtect;
+        }
     }
 }

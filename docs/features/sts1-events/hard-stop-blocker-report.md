@@ -3,6 +3,8 @@
 Date: 2026-05-29
 Session: Mandatory Overnight Run v2
 
+> Superseded for v13 governance: this file is historical O0-O24 context only. Current O0-O46 status is tracked by the v13 evidence/report and must not inherit this file's old "code-doable gates" wording as a v13 pass.
+
 ## Summary
 
 **20 of 25 gates are GREEN.** 5 gates require game launch or external resources that cannot be obtained from code-only work.
@@ -65,12 +67,12 @@ What remains red: 4 canary events have no save/load persistence proof
 ## Blocker 4: O19 — Replacement Functional Proof
 
 ```
-Gate: O19 — ReplacementPrototype functional proof
+Gate: O19 — ReplaceUnknownEventsPrototype functional proof
 Exact command: Enable #define REPLACEMENT_PROTOTYPE_ENABLED, set
   SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype, launch game,
   verify unknown rooms only draw StS1 events (not StS2 originals)
 Exit code: N/A (requires game launch)
-Error excerpt: The ReplacementPrototype Harmony patch (Sts1ReplacementPrototype.cs)
+Error excerpt: The ReplaceUnknownEventsPrototype Harmony patch (Sts1ReplacementPrototype.cs)
   exists and is correctly gated behind #if REPLACEMENT_PROTOTYPE_ENABLED. It patches
   ActModel.GenerateRooms() to filter event pool to StS1 namespace only. But functional
   proof requires running the game and verifying that unknown rooms never spawn
@@ -82,7 +84,7 @@ Why no safe workaround exists: Event pool filtering depends on game's room gener
 Next owner/action: Owner must enable REPLACEMENT_PROTOTYPE_ENABLED, run a full act,
   and verify all unknown rooms spawn StS1 events only. Document seeded run proof,
   act bucket proof, visited/no-repeat proof, and save/load bag proof.
-What remains red: ReplacementPrototype has no functional runtime proof
+What remains red: ReplaceUnknownEventsPrototype has no functional runtime proof
 ```
 
 ## Blocker 5: O23 — QA Red-Team
@@ -135,4 +137,4 @@ What remains red: No independent QA pass/fail exists
 2. **External resources** (O12) — no redistributable art available
 3. **Independent review** (O23) — cannot self-verify
 
-The codebase is ready for runtime verification. All guards pass, all tests pass, all documentation is accurate, and no false claims exist.
+The codebase is ready only for the next runtime-verification attempt after current validation is recaptured. Source guards and tests are tracked in `docs/reviews/current-validation.md`; runtime gameplay, save/load, image/render, replacement-pool, multiplayer, and independent QA gates remain open until live evidence exists.

@@ -58,16 +58,16 @@ Additional fixes:
 ## Current Stop Condition
 
 ```text
-Status: BLOCKED — Revision H validation replay failed on current dirty state
-M3 Revision H: Terminal validations replayed at 85a38dd1
+Status: BLOCKED — M4 validation replay is source-green, but runtime smoke is hard-blocked
+M4 replay: Terminal validations replayed at 24d4fe9a
 Build: 0 errors, 89 warnings (all Sts1Events nullable: CS8604=54, CS8602=34, CS8625=1)
-Test: failed/aborted (13 failed, 427 passed, 21 skipped, 461 total before host crash)
-Dirty: batch classifier reports 39 dirty entries after validation/build outputs, 0 unclassified
-Commit slices: Revision H plan prepared for owner review only; no commit authorized
-Stale docs: active docs still mix Revision G/H state and validation failures
+Test: passed (461 passed, 0 failed, 21 skipped, 482 total)
+Dirty: worktree remains dirty with preserved source/docs/harness changes; batch classifier was not rerun in this continuation
+Commit slices: Revision G/M4 plan updated for owner review only; no commit authorized
+Stale docs: primary validation/runtime docs reconciled; remaining revision-report docs are historical unless explicitly promoted
 Sts1Events: Staging-only (warnings/runtime unverified; ZHS sts1_events key parity currently complete)
-RitsuLib: Attempted/runtime-unverified (no error handling, no runtime proof)
+RitsuLib: Hard-blocked/runtime-unverified because STS2-RitsuLib is missing at checked game-root mod paths
 Debug: Accept-scaffold (default-off, Warn unconditional, LogPreview dead)
 Release-ready: No
-Required next: owner decision on guarded doc deletions, untracked ArchitectureCanaryBootstrap, Sts1Events enum intent, package hash/site refresh, and parallel commit acceptance notation
+Required next: install STS2-RitsuLib, rerun Off and CanaryOnly runtime smoke, capture `godot.log`, and keep Batch 4c blocked until that passes
 ```

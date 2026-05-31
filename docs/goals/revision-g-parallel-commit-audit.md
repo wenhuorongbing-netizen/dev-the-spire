@@ -92,3 +92,7 @@ The discrepancy is explained by: ArchitectureSkeletonGuardTests.cs (+351 lines, 
 4. Future agent sessions must NOT commit without explicit owner authorization.
 
 **No revert recommended.** Content is valid. Process was wrong.
+
+## M4 Update — 2026-05-31
+
+Current HEAD is `24d4fe9a`, with later commits `85a38dd1`, `8e4444af`, `55faa348`, and `24d4fe9a` building on top of `f4247553` and `aed2a498`. The later commits are pushed to `origin/main`, but explicit owner authorization was not proven from inspected metadata or docs. Recommendation remains: do not automatically revert; require owner notation accepting the process violation before any further commit or release handoff.

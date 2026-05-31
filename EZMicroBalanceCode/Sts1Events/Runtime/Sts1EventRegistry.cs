@@ -28,6 +28,8 @@ internal static class Sts1EventRegistry
         new("sts1_fountain_of_cleansing", "Fountain of Cleansing", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_shining_light", "Shining Light", Sts1EventPhase.Simple, Sts1EventAct.Act1),
         new("sts1_mushrooms", "Mushrooms", Sts1EventPhase.Simple, Sts1EventAct.Act1),
+        new("sts1_joust", "Joust", Sts1EventPhase.Simple, Sts1EventAct.Act1),
+        new("sts1_the_ssssserpent", "The Ssssserpent", Sts1EventPhase.Simple, Sts1EventAct.Act1),
         new("sts1_altar", "Altar", Sts1EventPhase.Simple, Sts1EventAct.Act2),
         new("sts1_drug_dealer", "Drug Dealer", Sts1EventPhase.Simple, Sts1EventAct.Act2),
         new("sts1_the_library", "The Library", Sts1EventPhase.Simple, Sts1EventAct.Act2),
@@ -53,8 +55,6 @@ internal static class Sts1EventRegistry
         new("sts1_dead_adventurer", "Dead Adventurer", Sts1EventPhase.Combat, Sts1EventAct.Act1),
         new("sts1_scorpion_nest", "Scorpion Nest", Sts1EventPhase.Combat, Sts1EventAct.Act1),
         new("sts1_treasure_ooze", "Treasure Ooze", Sts1EventPhase.Combat, Sts1EventAct.Act1),
-        new("sts1_joust", "Joust", Sts1EventPhase.Combat, Sts1EventAct.Act1),
-        new("sts1_the_ssssserpent", "The Ssssserpent", Sts1EventPhase.Combat, Sts1EventAct.Act1),
         new("sts1_masked_bandits", "Masked Bandits", Sts1EventPhase.Combat, Sts1EventAct.Act2),
         new("sts1_mysterious_sphere", "Mysterious Sphere", Sts1EventPhase.Combat, Sts1EventAct.Act3),
 

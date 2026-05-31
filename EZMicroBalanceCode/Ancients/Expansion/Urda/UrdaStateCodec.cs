@@ -27,8 +27,8 @@ internal static class UrdaStateCodec
         }
 
         // Keep the historical wire format stable. The current format inserted
-        // HumusCompletionPending before MoltingActive; older short states omit it.
-        var hasHumusPendingField = parts.Length >= CurrentBaseIndex;
+        // HumusCompletionPending before MoltingActive; older full states have 28 parts.
+        var hasHumusPendingField = parts.Length >= CurrentBaseIndex && parts.Length != 28;
         var baseIndex = hasHumusPendingField ? CurrentBaseIndex : LegacyBaseIndex;
 
         return new UrdaStateSnapshot(

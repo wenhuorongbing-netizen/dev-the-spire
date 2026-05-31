@@ -1,18 +1,18 @@
 # Combat Events — Blocker Report
 
-> Generated from source code inspection on 2026-05-29.
+> Generated from source code inspection on 2026-05-29; v13 status alignment refreshed on 2026-05-31.
 > Source of truth: `EZMicroBalanceCode/Sts1Events/Models/` and `docs/features/sts1-events/status-board.md`.
 
 ## Summary
 
-**8 of 52 registrations** (7 events + 1 partial) are blocked by missing encounter/monster models. All blockers share the same root cause: the `EnterCombatWithoutExitingEvent` API requires a concrete `EncounterModel` (and its constituent `MonsterModel` entries) that do not yet exist. No combat encounter models have been authored for StS1 event fights.
+**5 full combat events plus 1 partial option** are blocked by missing encounter/monster models. All combat blockers share the same root cause: the `EnterCombatWithoutExitingEvent` API requires a concrete `EncounterModel` (and its constituent `MonsterModel` entries) that do not yet exist. No combat encounter models have been authored for StS1 event fights.
 
 | Metric | Count |
 |--------|-------|
-| Total event registrations | 52 |
-| Fully blocked events | 6 |
+| Canonical audit rows | 54 |
+| Fully blocked combat events | 5 |
 | Partially blocked events | 1 (Mind Bloom — War option only) |
-| Combat options that short-circuit | 8 |
+| Combat options that short-circuit | 6 |
 | Encounter models available | 0 |
 
 ---
@@ -64,11 +64,11 @@
 
 - **Wiki behavior**: Two knights joust. Bet 50 gold on yourself or opponent; 50/50 win 200 gold. At A15, lose an additional 100 gold on failure. **No combat in StS1.**
 - **Current code state** (`Sts1Joust.cs`): Fully implemented as a pure gold-bet event. No TODO comments. No combat branch exists.
-- **Missing**: **Nothing — this event is NOT a combat event.** The status board (`status-board.md:64`) lists a TODO for "Enter combat with Lagavulin" but the source code contains no such TODO and no combat path. The Joust event is a gambling mechanic, not a fight.
+- **Missing**: **Nothing — this event is NOT a combat event.** The Joust event is a gambling mechanic, not a fight.
 - **IsShared**: Not overridden (defaults to `false`) — correct, since no combat is needed.
 - **Unblock requires**: N/A. This event is playable as-is. If the status board entry is a reference to a planned StS2 adaptation (e.g., a Lagavulin fight replacing the joust), that would be a design decision, not a code blocker.
 
-> **Note**: The status board lists "Enter combat with Lagavulin" as a Joust TODO. Source code inspection (`Sts1Joust.cs`) shows no such TODO and no combat logic. This appears to be a stale or speculative status-board entry. If a Lagavulin fight is an intentional StS2 adaptation, a separate design spec is needed.
+> **v13 note**: Earlier docs classified Joust as a combat blocker. Source inspection (`Sts1Joust.cs`) shows no combat logic; v13 status now treats it as a compiled non-combat Act 1 event.
 
 ---
 
@@ -80,7 +80,7 @@
 - **IsShared**: Not overridden (defaults to `false`) — correct for a non-combat event.
 - **Unblock requires**: N/A. This event is playable as-is.
 
-> **Note**: The status board lists "Enter combat with 3 Ssssents" as a Ssssserpent TODO. Source code inspection (`Sts1TheSsssserpent.cs`) shows no such TODO and no combat logic. This appears to be a stale or speculative status-board entry.
+> **v13 note**: Earlier docs classified The Ssssserpent as a combat blocker. Source inspection (`Sts1TheSsssserpent.cs`) shows no combat logic; v13 status now treats it as a compiled non-combat Act 1 event.
 
 ---
 

@@ -6,13 +6,14 @@
 // pool with only StS1 events. This proves that unknown rooms will not draw native
 // StS2 events when the prototype mode is enabled.
 //
-// SAFETY: This file is compile-excluded by default (<Compile Remove> in csproj).
-// It must be explicitly re-enabled for debug testing. It will NOT affect release builds.
+// SAFETY: This file is compiled by default, but all patch code is gated behind
+// REPLACEMENT_PROTOTYPE_ENABLED. It will NOT affect release builds unless that
+// debug symbol is deliberately defined.
 //
 // RUNTIME VERIFICATION: Requires game launch with SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype.
 // Log evidence should show only StS1 events appearing in unknown rooms.
 //
-// STATUS: Implementation complete. Compile-excluded pending runtime verification.
+// STATUS: Source-gated prototype only. Runtime replacement behavior remains unverified.
 
 #if REPLACEMENT_PROTOTYPE_ENABLED
 using System.Collections.Generic;

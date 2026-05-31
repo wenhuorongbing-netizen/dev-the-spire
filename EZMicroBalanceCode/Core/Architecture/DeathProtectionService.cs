@@ -31,6 +31,14 @@ internal enum DeathProtectionResult
 }
 
 /// <summary>
+/// Diagnostics-only death protection check result with the provider that would have handled it.
+/// Not wired into game logic.
+/// </summary>
+internal sealed record DeathProtectionCheck(
+    DeathProtectionResult Result,
+    IDeathProtectionProvider? Provider);
+
+/// <summary>
 /// Priority ordering for death protection providers. Lower values are checked first.
 /// Diagnostics-only stub — not wired into game logic.
 /// </summary>
@@ -97,7 +105,14 @@ internal static class DeathProtectionService
     /// Diagnostics-only check. Logs which provider would protect (if any)
     /// but does NOT actually prevent death. Not wired into game logic.
     /// </summary>
-    public static DeathProtectionResult CheckProtection(DeathProtectionRequest request)
+    public static DeathProtectionResult CheckProtection(DeathProtectionRequest request) =>
+        CheckProtectionDetailed(request).Result;
+
+    /// <summary>
+    /// Diagnostics-only check with provider attribution for tests and evidence.
+    /// No actual death prevention occurs.
+    /// </summary>
+    internal static DeathProtectionCheck CheckProtectionDetailed(DeathProtectionRequest request)
     {
         List<IDeathProtectionProvider> snapshot;
         lock (RegistrationLock)
@@ -107,18 +122,18 @@ internal static class DeathProtectionService
 
         if (request.IsUnavoidable)
         {
-            return DeathProtectionResult.ForcedDeath;
+            return new DeathProtectionCheck(DeathProtectionResult.ForcedDeath, Provider: null);
         }
 
         foreach (var provider in snapshot)
         {
             if (provider.CanProtect(request))
             {
-                return DeathProtectionResult.Protected;
+                return new DeathProtectionCheck(DeathProtectionResult.Protected, provider);
             }
         }
 
-        return DeathProtectionResult.NotProtected;
+        return new DeathProtectionCheck(DeathProtectionResult.NotProtected, Provider: null);
     }
 
     /// <summary>

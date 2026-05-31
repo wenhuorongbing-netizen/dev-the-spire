@@ -247,6 +247,18 @@ public sealed class Sts1EventFeatureGuardTests
     }
 
     [Fact]
+    public void RegistryDoesNotClassifyNonCombatAct1EventsAsCombat()
+    {
+        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistry.cs");
+
+        AssertSourceContains(source,
+            "new(\"sts1_joust\", \"Joust\", Sts1EventPhase.Simple, Sts1EventAct.Act1)",
+            "new(\"sts1_the_ssssserpent\", \"The Ssssserpent\", Sts1EventPhase.Simple, Sts1EventAct.Act1)");
+        Assert.DoesNotContain("new(\"sts1_joust\", \"Joust\", Sts1EventPhase.Combat", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("new(\"sts1_the_ssssserpent\", \"The Ssssserpent\", Sts1EventPhase.Combat", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void AllSharedEventModelsDeclareIsSharedTrue()
     {
         // All Shared-act models must declare IsShared => true for consistent multiplayer behavior.

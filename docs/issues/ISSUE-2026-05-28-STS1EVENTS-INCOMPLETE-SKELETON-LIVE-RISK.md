@@ -2,13 +2,13 @@
 
 ## Status
 
-**Open — governance hardened, content incomplete.** Default Off is safe; CanaryOnly and AdditiveBatch1 are controlled source-test modes; AdditiveAllDraft and ReplaceUnknownEventsPrototype are dev-only/unsafe.
+**Open — governance hardened, content incomplete, runtime proof blocked.** Default Off is source-safe; CanaryOnly and AdditiveBatch1 are controlled source-test modes; AdditiveAllDraft and ReplaceUnknownEventsPrototype are dev-only/unsafe.
 
 ## Summary
 
 StS1 event port model files (`Sts1Events/Models/`) are compiled into the Spire Plus assembly. The feature module (`Sts1EventsFeatureModule`) is registered in `SpirePlusFeatureRegistry` and gated to Off by default via environment variable `SPIREPLUS_STS1_EVENT_MODE`.
 
-## Current State (as of 2026-05-29 overnight run)
+## Current State (as of 2026-05-31 governance closure run)
 
 ### Compile status
 
@@ -32,6 +32,16 @@ StS1 event port model files (`Sts1Events/Models/`) are compiled into the Spire P
 | AdditiveAllDraft | `AdditiveAllDraft` | 54 registration calls (47 unique event types) | **Unsafe / dev-only** | Includes TODO/BLOCKED events |
 | ReplaceUnknownEventsPrototype | `ReplaceUnknownEventsPrototype` | 0 unless `REPLACEMENT_PROTOTYPE_ENABLED` is compiled; then 54 registration calls (47 unique event types) | **Unsafe / debug-only** | Debug-only replacement prototype |
 
+### AdditiveBatch1 Risk Table
+
+AdditiveBatch1 is source-guarded but runtime-unverified. It may be used only for prototype runtime smoke after RitsuLib is installed; it is not a tester-facing gameplay claim.
+
+| Scope | Event IDs | Risk |
+|----------|-------------|------|
+| Canary shared events | `sts1_big_fish`, `sts1_golden_idol`, `sts1_the_lab`, `sts1_divine_fountain` | Controlled; still needs live Off/Canary smoke and save/load proof |
+| Simple batch events | `sts1_purifier`, `sts1_upgrade_shrine`, `sts1_golden_shrine`, `sts1_the_cleric`, `sts1_old_beggar`, `sts1_shining_light` | Controlled source-test scope; still needs live event flow, EN/ZHS render, image, and save/load proof |
+| Act duplicate | `sts1_shining_light` registers to both Overgrowth and Underdocks | Count drift risk if registration calls are treated as unique events |
+
 ### AdditiveAllDraft Risk Table
 
 Events with TODO/BLOCKED/partial status in AdditiveAllDraft mode:
@@ -49,27 +59,36 @@ Events with TODO/BLOCKED/partial status in AdditiveAllDraft mode:
 
 7 HIGH-risk events (6 combat stubs + 1 BLOCKED relic-select), 1 MEDIUM-risk (partial Vampires).
 
+### ReplaceUnknownEventsPrototype Risk Table
+
+| Surface | Status | Risk |
+|----------|--------|------|
+| Compile gate | Requires `REPLACEMENT_PROTOTYPE_ENABLED` | Fail-closed by default, but unsafe if compiled without runtime proof |
+| Unknown room replacement | Not runtime-verified | Could alter event pool, act buckets, event bag, or save/load behavior |
+| Registration scope | Uses the all-draft registration family when compiled | Inherits AdditiveAllDraft blocked/TODO event risks |
+| Release disposition | Debug-only | Must not be enabled in tester package or release path |
+
 ### Guard tests
 
-- Dedicated tests in `Sts1EventFeatureGuardTests.cs`
+- Dedicated tests in `Sts1EventFeatureGuardTests.cs` (28 focused guards in v13)
 - Tests verify gate defaults, canary events, AdditiveBatch1 verified scope, act mapping, registry presence, registration counts, patch-boundaries row, mode safety
-- Safe/controlled modes (Off, CanaryOnly, AdditiveBatch1) are verified by guard tests
+- Safe/controlled modes (Off, CanaryOnly, AdditiveBatch1) are source-verified by guard tests; runtime proof remains blocked until STS2-RitsuLib is installed
 - CanaryOnly events are hardcoded — no TODO/BLOCKED events can enter safe modes
 
 ### Why this is safe
 
-1. The feature gate defaults to Off, so no events are registered at runtime unless the environment variable is explicitly set.
+1. The feature gate defaults to Off, so source flow registers no events unless the environment variable is explicitly set.
 2. CanaryOnly registers exactly 4 hardcoded shared events — all in `spec-drafted` status, none TODO/BLOCKED.
 3. AdditiveBatch1 registers only the current verified prototype scope and is separate from AdditiveAllDraft.
-4. AdditiveAllDraft and ReplaceUnknownEventsPrototype require explicit env var setting and are documented as dev-only; ReplacementPrototype also fails closed unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED`.
-5. Guard tests verify Off=0, CanaryOnly=4, AdditiveBatch1 exact scope, and that the registration service is compiled.
-5. `Sts1Duplicator` is compile-excluded (needs `CardSelectCmd`/`CardPileCmd` APIs not yet available).
+4. AdditiveAllDraft and ReplaceUnknownEventsPrototype require explicit env var setting and are documented as dev-only; the replacement prototype also fails closed unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED`.
+5. Guard tests verify Off=0, CanaryOnly=4, AdditiveBatch1 exact scope, and that the registration service is compiled; live `godot.log` proof is still required.
+6. `Sts1Duplicator` is compile-excluded (needs `CardSelectCmd`/`CardPileCmd` APIs not yet available).
 
 ### What remains incomplete
 
 - Runtime gameplay verification (requires STS2-RitsuLib installation + game launch)
-- ZHS localization (38 placeholder entries)
-- Combat encounter models for 7 blocked events
+- ZHS localization has source-file placeholder guards, but live EN/ZHS render proof is still pending
+- Combat encounter models for 5 fully blocked combat events plus the Mind Bloom War option
 - Event images
 - Replacement pool has structure/file guard only, not functional proof
 - No canary save/load, screenshot, unknown room extraction, or event pool replacement proof

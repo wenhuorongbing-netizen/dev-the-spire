@@ -2,27 +2,28 @@
 
 ## Current Goal
 
-- Complete all achievable migration.md phases
+- Runtime Proof + Governance Closure for RitsuLib migration.
 
-## Completed
+## Completed In Current Governance Run
 
-- PR 1-4: Done (baseline, docs, harness, move-only refactor)
-- PR 5: Compile/manifest dependency attempted; runtime/package/handoff unverified
-- PR 6 Batch 1: Partial diagnostics/bootstrap scaffold; runtime unverified
-  - RitsuLibBootstrap.cs: RitsuLib logger + Harmony patch application
-  - MainFile.cs: uses RitsuLibBootstrap.ApplyPatches()
-  - Guard manifest updated with new source file + coverage root
+- Verified current HEAD: `24d4fe9a` on `main`.
+- Verified STS2-RitsuLib is missing at checked D/E mod paths; E-drive BaseLib and Spire Plus package folders exist.
+- Preserved dirty shared worktree state while adding diagnostics-only architecture canary evidence and tests.
+- Added warning triage issue for 89 Sts1Events nullable warnings.
+- Updated runtime smoke, migration monthly spec, and validation docs to keep Batch 4c blocked.
 
 ## Verification Result
 
-- Build: 0 errors, 89 warnings in Revision H replay (all CS8602/CS8604/CS8625 nullable reference warnings in Sts1Events staging code)
-- Tests: failing on current dirty state in Revision H replay (13 failed, 427 passed, 21 skipped, 461 total before host crash)
-- Format: clean in Revision H replay; `git diff --check` fails on trailing whitespace in `docs/goals/event.md`
+- Build: 0 errors, 89 warnings (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1) in Sts1Events staging code.
+- Tests: current no-game target is 461 passed, 0 failed, 21 skipped, 482 total.
+- Runtime smoke: hard blocked until STS2-RitsuLib is installed and fresh `godot.log` evidence is captured.
+- Format/diff-check: rerun as part of final validation before handoff.
 
 ## Remaining Work
 
-- PR 6 Batch 4: Patch class migration to IPatchMethod (63 files)
-- PR 6 Batch 5: High-risk patches (blocked on evidence backlog)
-- RitsuLib runtime verification (loader smoke, godot.log evidence)
-- Upgrade RitsuLib to compat package when published on NuGet
-- Resolve Revision H hard blocker before any commit: guarded doc deletions, untracked architecture canary, Sts1Events enum/test alignment, package hash/site metadata, and diff whitespace.
+- Install STS2-RitsuLib at `<GameRoot>\mods\STS2-RitsuLib`.
+- Run Off mode smoke and prove 0 Sts1Events registrations.
+- Run CanaryOnly smoke and prove exactly 4 canary registrations.
+- Keep AdditiveBatch1 prototype-only until Off/CanaryOnly pass.
+- Keep AdditiveAllDraft and ReplaceUnknownEventsPrototype dev-only/unsafe.
+- Do not start Batch 4c, high-risk migration, or new gameplay before runtime smoke passes.

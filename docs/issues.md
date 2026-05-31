@@ -1,5 +1,4 @@
-﻿# Spire Plus Issues
-Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-31:
+﻿# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-31:
 | Artifact | SHA256 |
 | --- | --- |
 | ZIP | `9F0656DEDF57598D3A26743FD1A3061E669EF21354D6E12A6AA4C4AF44796894` |
@@ -29,13 +28,15 @@ Current target: test-ready manual build, not release-ready. Current package hash
 - `FISSION-EXHAUST-TRIGGERS` P1 source/package-fixed / live-pending: canonical Exhaust path guarded through Fission keyword, `CardCmd.Exhaust(...)`, `AfterCardExhausted(...)`, and Drum/Howl/power/relic listeners.
 - Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
 ## Engineering governance blockers
-- `GOV-WIP-SPLIT` P0 source-fixed; current committed worktree is clean after the beta.84 batch commit, and the batch classifier reports 0 dirty entries / 0 unclassified entries.
+- `GOV-WIP-SPLIT` P0 source-fixed for the committed baseline; current local Runtime Proof + Governance Closure worktree is dirty with preserved shared edits and new diagnostics/doc/test updates.
 - `GOV-CI-FIRST-RUN` P2 pending: self-hosted lane exists, but first run evidence is missing; 2026-05-26 API check found 0 completed `Full Local Validation` runs.
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
-- `REFACTOR-PHASE0-1-VALIDATION` P1 done (2026-05-28); overnight run Packs 0–5 complete (2026-05-29), evidence hardening pass applied: build 0 errors / 92 warnings, 444 pass / 0 fail / 21 skip (465 total).
+- `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 open: 89 nullable warnings are tracked as Sts1Events-only staging debt (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1); see `docs/issues/ISSUE-2026-05-31-STS1EVENTS-NULL-SAFETY-WARNINGS.md`.
+- `REFACTOR-PHASE0-1-VALIDATION` P1 historical done; current no-game validation is 0 build errors / 89 warnings and 461 passed / 0 failed / 21 skipped / 482 total. Runtime smoke remains blocked.
   Phase 2 patch adapter rule started (checklist drafted). StS1Events feature-gated (default Off, guard tests active). Combat events now declare `IsShared`. See `docs/reviews/overnight-run-20260529.md`.
-- `RITSULIB-RUNTIME-SMOKE` P0 blocked: `STS2-RitsuLib` is not installed at the checked game-root mod paths; Batch 4c and runtime-safety claims stay blocked. See `docs/reviews/current-validation.md`.
+- `RITSULIB-RUNTIME-SMOKE` P0 hard blocked: `STS2-RitsuLib` missing at checked D/E mod paths; E-drive BaseLib and Spire Plus exist; active `godot.log` is missing.
+  Batch 4c, high-risk migration, Off/CanaryOnly runtime claims, live-ready, and release-ready stay blocked until install + fresh `godot.log`. See `docs/reviews/current-validation.md` and `docs/features/ritsulib-migration/runtime-smoke-checklist.md`.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.

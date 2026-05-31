@@ -4,96 +4,108 @@
 
 Define the 4-week plan for completing the RitsuLib migration of Spire Plus from raw Harmony patches to managed RitsuLib `IPatchMethod` patches, including evidence backlog reduction and architecture hardening.
 
-## Current State (Architecture Integration Validation 2026-05-31)
+## Current State (Runtime Proof + Governance Closure 2026-05-31)
 
-- **25 patches migrated** to RitsuLib `IPatchMethod` (Batch 1 + 4a + 4b)
-- **Raw Harmony remaining**: 142 source declarations tracked by the current inventory family; runtime migration beyond Batch 4b remains blocked
-- **Hybrid bootstrap active**: `ModPatcher.PatchAll()` for migrated, `Harmony.PatchAll()` for remaining
-- **Latest validation**: 2026-05-31 clean build passed with 0 errors / 89 warnings; full tests passed with 452 passed / 0 failed / 21 skipped (473 total). Format and diff-check passed. See `docs/reviews/current-validation.md`.
-- **Build**: 0 errors, 89 warnings (Sts1Events nullable CS8602/CS8604/CS8625 — accepted for prototype until StS1Events prototype hardening)
-- **Sts1Events**: compiled, feature-gated (default Off), 5-mode safety matrix validated; CanaryOnly and AdditiveBatch1 are bounded test scopes, AdditiveAllDraft and replacement remain unsafe/dev-only
-- **FeatureRegistry hardened**: IFeatureModule metadata, FeatureBootstrapRecord, LiveStatus enum, unified truthy env key overrides before bootstrap record creation, metadata/override guard tests
-- **UrdaStateCodec V1**: encode/decode/legacy compat, 41 tests (18 source-structure + 15 behavioral + 8 edge-case)
-- **Architecture canary integration**: RewardPipeline diagnostics are wired into FeatureRegistry bootstrap events, CardPlayContext canary is touched by Lotha extra-play through an allow-only adapter, and active multiplayer policy records are registered for diagnostics only. No gameplay behavior changes are intended.
-- **DeathProtectionService stub**: diagnostics-only code stub with Request/Result/Priority, 21 tests (13 guard + 8 behavioral canary)
-- **MultiplayerPolicy stub**: diagnostics-only registry with 6-category taxonomy, 14 tests (6 guard + 8 behavioral canary)
-- **Runtime smoke**: blocked — STS2-RitsuLib not installed locally; Batch 4c blocked until runtime smoke passes
+- **25 patches migrated** to RitsuLib `IPatchMethod` (Batch 1 + 4a + 4b).
+- **Raw Harmony remaining**: 142 source declarations tracked by the current inventory family; runtime migration beyond Batch 4b remains blocked.
+- **Tracked patch units total**: 167 (`25` migrated `IPatchMethod` classes + `142` raw `[HarmonyPatch]` declarations).
+- **Hybrid bootstrap active**: `ModPatcher.PatchAll()` for migrated patches, `Harmony.PatchAll()` for remaining raw patches.
+- **Latest no-game validation**: 2026-05-31 clean/build/full-test/no-build-test validation is 0 build errors / 89 Sts1Events nullable warnings, 461 passed / 0 failed / 21 skipped / 482 total, format clean, and diff-check clean after governance closure edits. See `docs/reviews/current-validation.md`.
+- **Build warning debt**: 89 nullable warnings in `EZMicroBalanceCode/Sts1Events/Models/` (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1). See `docs/issues/ISSUE-2026-05-31-STS1EVENTS-NULL-SAFETY-WARNINGS.md`.
+- **Sts1Events**: compiled, feature-gated default Off, and source-guarded by a 5-mode safety matrix. CanaryOnly and AdditiveBatch1 are bounded source-test/prototype scopes. AdditiveAllDraft and ReplaceUnknownEventsPrototype are unsafe/dev-only and not tester/release-safe.
+- **FeatureRegistry hardened**: `IFeatureModule` metadata, `FeatureBootstrapRecord`, `LiveStatus` enum, unified truthy env key overrides before bootstrap record creation, metadata/override guard tests.
+- **UrdaStateCodec V1**: encode/decode/legacy compat, including current full positional decode, legacy full positional decode, null-string encode behavior, and edge cases.
+- **Architecture canary integration**: RewardPipeline diagnostics are wired into FeatureRegistry bootstrap events and low-risk Ascension reward/card-reward surfaces; CardPlayContext canary emits diagnostics through the existing Lotha extra-play allow-only adapter; active multiplayer policy records are registered for diagnostics. No gameplay behavior changes are claimed.
+- **DeathProtectionService**: diagnostics-only, provider-testable service with request/result/check/provider attribution tests; not wired into gameplay death prevention.
+- **MultiplayerPolicy**: diagnostics-only registry/taxonomy with active-system records and co-op evidence metadata; not a gameplay enforcement system.
+- **Runtime smoke**: hard blocked because STS2-RitsuLib is not installed locally. Batch 4c, high-risk migration, Off/CanaryOnly runtime claims, live-ready, and release-ready remain blocked.
 
 ## 4-Week Plan
 
 ### Week 1: Batch 4a/4b Truth Closure (DONE)
 
-**Status**: Complete
+**Status**: Complete for source-level closure.
 
-- Fixed Batch 4a count (9, not 10) and Batch 4b count (16)
-- Fixed RitsuLibBootstrap comment (8 classes, not 7)
-- Created migration guard tests for double-patch, source-level separation, manifest coverage, doc counts
-- Moved untracked Sts1Events files to archive
-- Historical full test suite clean: 444 passed, 0 failed, 21 skipped (465 total); current source now has 452 passed, 0 failed, 21 skipped (473 total)
-- Format clean, diff clean
+- Fixed Batch 4a count (9, not 10) and Batch 4b count (16).
+- Fixed RitsuLibBootstrap comment (8 classes, not 7).
+- Created migration guard tests for double-patch, source-level separation, manifest coverage, doc counts.
+- Moved untracked Sts1Events files to archive.
+- Historical validation totals remain historical only; current source validation is 461 passed / 0 failed / 21 skipped / 482 total.
 
-**Exit criteria met**: All doc counts match source, all guard tests pass, no untracked files.
+**Exit criteria status**: Source/doc counts match source and guard tests pass. Worktree cleanliness is not met in this local run; existing dirty edits are preserved.
 
 ### Week 2: Runtime Smoke + Full Test Truth
 
-**Status**: Blocked (STS2-RitsuLib not installed locally; Batch 4c blocked until runtime smoke passes)
+**Status**: Hard blocked by missing STS2-RitsuLib.
 
 **Goals**:
-1. Execute runtime smoke checklist (requires manual game load)
-2. Capture `godot.log` evidence for loader smoke
-3. Verify Mod Settings UI renders correctly
-4. Confirm SavedSpireFields count matches source (30)
-5. Document any runtime regressions found
+
+1. Execute runtime smoke checklist after STS2-RitsuLib is installed.
+2. Capture `godot.log` evidence for loader smoke.
+3. Verify Mod Settings UI renders correctly.
+4. Confirm SavedSpireFields count matches source (30).
+5. Verify Sts1Events Off = 0 registrations and CanaryOnly = exactly 4 registrations.
+6. Document any runtime regressions found.
 
 **Tasks**:
-- [ ] Run manual loader smoke per `runtime-smoke-checklist.md`
-- [ ] Capture `godot.log` and store in `docs/evidence/`
-- [ ] Verify Mod Settings UI screenshot
-- [ ] Update `docs/dev-environment.md` with runtime evidence
-- [ ] Update `docs/release-checklist.md` with completed runtime items
 
-**Exit criteria**: Loader smoke passes, Mod Settings UI verified, 0 release-blocking log hits.
+- [ ] Install STS2-RitsuLib v0.3.2+ at `<GameRoot>\mods\STS2-RitsuLib`.
+- [ ] Run manual loader smoke per `runtime-smoke-checklist.md`.
+- [ ] Capture `godot.log` and store evidence.
+- [ ] Verify Mod Settings UI screenshot.
+- [ ] Update `docs/dev-environment.md` with runtime evidence.
+- [ ] Keep release checklist runtime rows pending until live evidence exists.
+
+**Exit criteria**: Loader smoke passes, Off and CanaryOnly registration counts are proven in `godot.log`, Mod Settings UI verified, and 0 release-blocking log hits.
 
 ### Week 3: Sts1Events Scope Closure + FeatureRegistry Hardening
 
-**Status**: Complete
+**Status**: Source-level governance complete; runtime proof blocked.
 
 **Completed**:
-- Sts1Events 5-mode safety matrix validated: Off (default), CanaryOnly (4 safe shared events), AdditiveBatch1 (10 event types through 11 registration calls), AdditiveAllDraft (all draft calls), ReplaceUnknownEventsPrototype (compile-symbol-gated debug prototype)
-- CanaryOnly registers: BigFish, GoldenIdol, TheLab, DivineFountain — all safe, no TODOs
-- Sts1EventRegistrationService IS compiled, gated behind Sts1EventFeatureGate (default Off)
-- Sts1Event guard tests cover default Off, CanaryOnly, AdditiveBatch1, AdditiveAllDraft, and replacement prototype governance
-- FeatureRegistry hardened: IFeatureModule metadata (DisplayName, Category, DisableEnvKeys, ForceEnvKeys), FeatureBootstrapRecord status tracking, ForceEnvKeys/DisableEnvKeys override evaluation, IsTruthyEnv helper
-- 16 EngineeringGovernance guard tests (including 6 FeatureRegistry guards, 3 metadata guards, 6 module bootstrap guards)
-- UrdaStateCodec V1 complete: encode/decode/legacy compat, 18 source-level guard tests + 15 behavioral tests
-- `docs/issues/ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md` rewritten with mode safety matrix
 
-### Week 4: High-Risk Migration Prep
+- Sts1Events 5-mode safety matrix source-guarded: Off, CanaryOnly, AdditiveBatch1, AdditiveAllDraft, ReplaceUnknownEventsPrototype.
+- CanaryOnly registers Big Fish, Golden Idol, The Lab, and Divine Fountain only.
+- AdditiveBatch1 registers 10 event types through 11 registration calls and is controlled prototype-only.
+- AdditiveAllDraft registers all draft calls, including blocked/TODO and temporary-substitute events; unsafe/dev-only.
+- ReplaceUnknownEventsPrototype is compile-symbol-gated and debug-only.
+- Sts1Event guard tests cover default Off, CanaryOnly, AdditiveBatch1, AdditiveAllDraft, replacement prototype governance, shared/combat event behavior, mode safety, and registry presence.
+- `docs/issues/ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md` records the risk table.
 
-**Status**: In Progress (architecture skeletons complete)
+**Runtime status**: Off, CanaryOnly, and AdditiveBatch1 are not runtime-verified until fresh `godot.log` evidence exists.
 
-**Completed**:
-- RewardPipeline skeleton: `RewardPhase` enum, `IRewardHandler` interface, `RewardPipeline` diagnostics-only orchestrator
-- CardPlayContext skeleton: `ExtraPlayPolicy` enum, `CardPlayContext` with depth guard (MaxDepth=10), power fallback tracking
-- DeathProtectionService spec: documents Lotha DeathReprieve lifecycle, inReprieve flag, forced death bypass, co-op owner attribution, future `IDeathProtectionProvider` interface
-- MultiplayerPolicy taxonomy: 6 categories (LocalUiOnly, LocalPlayerOnly, HostAuthoritative, SharedRunState, CombatCommandReplicated, UnsafeInMultiplayer) mapped to existing MultiplayerFeaturePolicy
-- 13 architecture skeleton guards + 15 UrdaStateCodec behavioral tests
+### Week 4: Post-Smoke Migration Decision Backlog
 
-**Remaining**:
-- [ ] Catalog high-risk patches (22 total) by subsystem
-- [ ] Prioritize by evidence availability and blast radius
-- [ ] Create migration plan for top 5 high-risk patches
-- [ ] Establish rollback strategy: feature flags, compile-exclude guards
-- [ ] Document expected behavior changes for each high-risk migration
-- [ ] Update `docs/migration.md` with Batch 5 plan
+**Status**: Frozen until runtime smoke passes.
 
-**Exit criteria**: High-risk migration plan documented, rollback strategy established, top 5 patches ready for migration.
+**Allowed before runtime smoke**:
+
+- Catalog high-risk patch owners/read-only evidence.
+- Document rollback strategy in general terms.
+- Keep diagnostics-only canary tests and source guards current.
+- Do not migrate patches.
+
+**Not allowed before runtime smoke**:
+
+- Batch 4c migration.
+- High-risk patch migration.
+- New `IPatchMethod` migration beyond the current 25.
+- Any gameplay behavior expansion.
+- Any runtime-safe/live-ready/release-ready claim.
+
+**Conditional post-smoke tasks**:
+
+- [ ] Propose 5-10 low-risk Batch 4c candidates after runtime smoke passes.
+- [ ] Require explicit owner acceptance before migrating any candidate.
+- [ ] Keep high-risk migration as a later planning item only.
+
+**Exit criteria**: Runtime smoke is passed and independently reviewed before any Batch 4c decision advances.
 
 ## Architecture Decisions
 
 ### Hybrid Bootstrap
 
-The current hybrid approach (ModPatcher for migrated, raw Harmony for remaining) is intentional. It allows incremental migration without requiring all patches to move at once. The double-patch guard tests ensure no patch is applied twice.
+The current hybrid approach is intentional. It allows incremental migration without requiring all patches to move at once. The double-patch guard tests ensure no patch is applied twice.
 
 ### Double-Patch Guard
 
@@ -101,58 +113,59 @@ Source-level separation: migrated patch classes live in `RitsuLib/` namespace an
 
 ### Risk Classification
 
-- **High-risk**: Run lifecycle, map generation, save/load, multiplayer, lobby — requires runtime evidence before migration
-- **Medium-risk**: UI, card, relic, reward, combat model hooks — requires targeted testing
-- **Low-risk**: Narrow local hooks with isolated blast radius — can migrate with guard tests only
+- **High-risk**: Run lifecycle, map generation, save/load, multiplayer, lobby. Requires runtime evidence before migration.
+- **Medium-risk**: UI, card, relic, reward, combat model hooks. Requires targeted testing.
+- **Low-risk**: Narrow local hooks with isolated blast radius. Can be proposed only after runtime smoke passes in this run family.
 
 ### Sts1Events Mode Safety
 
-Sts1Events source code compiles and is registered in the feature registry with a gate that defaults to Off. The registration service is compiled (not compile-excluded). Four modes validated:
+Sts1Events source code compiles and is registered in the feature registry with a gate that defaults to Off. The registration service is compiled, not compile-excluded. Five modes are source-guarded:
 
-- **Off** (default): returns immediately, 0 events registered
-- **CanaryOnly**: registers 4 safe shared events (BigFish, GoldenIdol, TheLab, DivineFountain)
-- **AdditiveBatch1**: registers 10 event types through 11 registration calls; runtime unverified
-- **AdditiveAllDraft**: registers all draft calls, including blocked/TODO and temporary-substitute events; unsafe/dev-only
-- **ReplaceUnknownEventsPrototype**: debug-only and compile-symbol gated
+- **Off** (default): returns immediately, 0 events registered.
+- **CanaryOnly**: registers 4 safe shared events: Big Fish, Golden Idol, The Lab, Divine Fountain.
+- **AdditiveBatch1**: registers 10 event types through 11 registration calls; controlled prototype, runtime unverified.
+- **AdditiveAllDraft**: registers all draft calls, including blocked/TODO and temporary-substitute events; unsafe/dev-only.
+- **ReplaceUnknownEventsPrototype**: debug-only and compile-symbol-gated; unsafe/dev-only.
 
-Guard tests verify mode behavior. Resolution options:
-1. Complete registration infrastructure and go live (requires runtime testing)
-2. Archive permanently (reduces code surface)
+Guard tests verify mode behavior. Runtime promotion requires live smoke and manual proof.
 
 ### Runtime Log Plan — Off / CanaryOnly
 
 When runtime smoke becomes available, the following log entries must be verified:
 
 **Off mode (default, env var unset):**
-- `[Spire Plus] Feature Sts1Events bootstrap gate: disabled (StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.).`
-- No `[StS1 Events]` log lines (RegisterGated returns immediately)
-- 0 StS1 events registered in RitsuLib content pack
 
-**CanaryOnly mode (env var = `CanaryOnly`):**
+- `[Spire Plus] Feature Sts1Events bootstrap gate: disabled (StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.).`
+- No `[StS1 Events]` registration lines.
+- 0 StS1 events registered in RitsuLib content pack.
+
+**CanaryOnly mode (`SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`):**
+
 - `[Spire Plus] Feature Sts1Events bootstrap gate: enabled (StS1 events CanaryOnly mode: registering 4 canary events.).`
 - `[StS1 Events] Registering canary events (Big Fish, Golden Idol, Lab, Divine Fountain)...`
 - `[StS1 Events] Canary events registered successfully.`
-- Exactly 4 SharedEvent registrations visible in RitsuLib debug log
-- No `ActEvent` registrations (canary events are shared-only)
+- Exactly 4 SharedEvent registrations visible in RitsuLib debug log.
+- No `ActEvent` registrations.
 
-**If RitsuLib not active:**
+**If RitsuLib is not active:**
+
 - `[StS1 Events] RitsuLib not active; skipping canary event registration.` (CanaryOnly)
 - `[StS1 Events] RitsuLib not active; skipping event registration.` (AdditiveAllDraft/ReplaceUnknownEventsPrototype)
 
-These log patterns are the required evidence for runtime smoke verification.
+These log patterns are required evidence for runtime smoke verification.
 
 ## Success Metrics
 
-| Metric | Current | Target (End of Week 4) |
-|--------|---------|------------------------|
-| Migrated patches | 25 | 55-65 |
-| Raw Harmony patches | 142 | 110-120 |
-| Guard tests | 94 | 100+ |
-| Total test suite | 452 passed | Keep 0 failed |
-| Runtime smoke | Pending | Complete |
-| Sts1Events status | Compiled, gated Off, 4-mode matrix validated | Resolved (activate or archive) |
-| High-risk migration plan | Architecture skeletons done | Documented with rollback strategy |
-| Architecture skeletons | Complete (RewardPipeline, CardPlayContext, DeathProtectionService, MultiplayerPolicy) | N/A (done) |
+| Metric | Current | Gate Target |
+|--------|---------|-------------|
+| Migrated patches | 25 | Hold at 25 until runtime smoke passes |
+| Raw Harmony declarations | 142 | Hold at 142 until runtime smoke passes |
+| Tracked patch units | 167 | Reconcile on every inventory refresh |
+| Total test suite | 461 passed / 0 failed / 21 skipped / 482 total | Keep 0 failed |
+| Runtime smoke | Blocked by missing STS2-RitsuLib | Complete Off + CanaryOnly loader smoke |
+| Sts1Events status | Compiled, gated Off, 5-mode matrix source-guarded | Runtime proof required before activation/archive decision |
+| High-risk migration plan | Frozen | Catalog-only until runtime smoke passes |
+| Architecture skeletons | Diagnostics-only canary integration | No gameplay enforcement claim |
 
 ## References
 
@@ -162,6 +175,7 @@ These log patterns are the required evidence for runtime smoke verification.
 - `docs/features/ritsulib-migration/runtime-smoke-checklist.md` — runtime smoke verification
 - `docs/features/ritsulib-migration/next-overnight-run.md` — next automated run instructions
 - `docs/issues/ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md` — Sts1Events safety issue
+- `docs/issues/ISSUE-2026-05-31-STS1EVENTS-NULL-SAFETY-WARNINGS.md` — warning debt triage
 - `docs/architecture/death-protection-spec.md` — DeathProtectionService contract and Lotha DeathReprieve lifecycle
 - `docs/architecture/multiplayer-policy-taxonomy.md` — 6-category multiplayer safety classification
 - `docs/architecture/patch-boundaries.md` — high-risk surface owners and service seams

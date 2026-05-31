@@ -25,8 +25,9 @@ The StS1 event system is **fail-closed** by default:
 | Empty env var | Off | 0 | 0 |
 | Unknown value | Off | 0 | 0 |
 | `canaryonly` | CanaryOnly | 4 | 4 Shared events |
-| `additivealldraft` | AdditiveAllDraft | 52 | All StS1 events (additive) |
-| `replaceunknowneventsprototype` | ReplaceUnknownEventsPrototype | 52 + Harmony patch | StS1-only pool |
+| `additivebatch1` | AdditiveBatch1 | 11 calls / 10 event types | Controlled prototype batch |
+| `additivealldraft` | AdditiveAllDraft | 54 calls / 47 event types | All compiling draft events (unsafe/dev-only) |
+| `replaceunknowneventsprototype` | ReplaceUnknownEventsPrototype | 0 unless `REPLACEMENT_PROTOTYPE_ENABLED` is defined | Debug-only replacement prototype |
 
 ## IsShared / Co-op Behavior
 
@@ -39,20 +40,22 @@ The StS1 event system is **fail-closed** by default:
 | Test | What It Verifies |
 |------|------------------|
 | `FeatureGateDefaultsToOffWhenEnvVarIsUnset` | Default is Off when env var missing |
-| `FeatureGateEvaluatesAllModes` | All 4 modes have correct gate results |
+| `FeatureGateEvaluatesAllModes` | All 5 modes have correct gate results |
 | `OffModeReturnsImmediatelyWithZeroRegistrations` | Off mode returns without registering |
 | `RegisterCanaryOnlyRegistersExactlyFourSharedEvents` | CanaryOnly = exactly 4 |
+| `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` | AdditiveBatch1 = 11 calls / 10 event types |
 | `CombatEventsDeclareIsSharedTrue` | All 6 combat events have IsShared=true |
-| `AllSharedEventModelsDeclareIsSharedTrue` | All 16 shared models have IsShared=true |
+| `AllSharedEventModelsDeclareIsSharedTrue` | At least 17 shared models have IsShared=true |
 
 ## Runtime Verification Status
 
 **UNVERIFIED** — requires game launch with:
 1. `SPIREPLUS_STS1_EVENT_MODE=Off` (default) — verify no StS1 events appear
 2. `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` — verify exactly 4 events appear
-3. Multiplayer session — verify host controls event registration
+3. `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` — verify the bounded prototype batch only in a controlled runtime smoke
+4. Multiplayer session — verify host controls event registration
 
 ## Verdict
 
-**Code-level fail-closed: VERIFIED (guard tests pass).**  
-**Runtime-level fail-closed: UNVERIFIED (requires game launch).**
+**Source-level fail-closed: VERIFIED by guard tests.**
+**Runtime-level fail-closed: HARD BLOCKED until STS2-RitsuLib is installed and Off/CanaryOnly `godot.log` evidence is captured.**

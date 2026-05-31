@@ -111,7 +111,15 @@ internal static class RewardPipeline
 
         foreach (var handler in snapshot)
         {
-            handler.Handle(context);
+            try
+            {
+                handler.Handle(context);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[Spire Plus] RewardPipeline diagnostics handler {handler.GetType().Name} failed for {context.Feature}:{context.EventName}: {ex.GetType().Name}: {ex.Message}");
+            }
         }
     }
 

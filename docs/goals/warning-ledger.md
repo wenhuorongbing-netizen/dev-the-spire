@@ -1,7 +1,7 @@
 # Warning Ledger — M3 Week 1
 
 Date: 2026-05-29
-Verified: Clean solution build (`dotnet clean EZMicroBalance.sln` + `dotnet build EZMicroBalance.sln`) at HEAD `85a38dd1`
+Verified: Clean solution build (`dotnet clean EZMicroBalance.sln -m:1` + `dotnet build EZMicroBalance.sln -m:1`) at HEAD `24d4fe9a`
 
 ## Summary
 
@@ -19,7 +19,7 @@ Verified: Clean solution build (`dotnet clean EZMicroBalance.sln` + `dotnet buil
 Every CS warning in the Revision H replay is a nullable reference type warning in the Sts1Events staging code.
 No warnings exist in core Spire Plus code, RitsuLib integration, preview tools, or tests.
 
-Revision H replay command: `dotnet clean .\EZMicroBalance.csproj` followed by `dotnet build .\EZMicroBalance.csproj` at HEAD `85a38dd1` on 2026-05-31.
+Current replay command: `dotnet clean EZMicroBalance.sln -m:1` followed by `dotnet build EZMicroBalance.sln -m:1` at HEAD `24d4fe9a` on 2026-05-31.
 
 ## Per-file Breakdown (Historical Revision E — 87 warnings)
 
@@ -87,3 +87,4 @@ All 89 current warnings depend on the Sts1Events governance decision:
 | 2026-05-29 (Rev E) | 87 | Updated after new IsShared property additions in 6 files |
 | 2026-05-29 (M3 Week 1) | 92 | Previous report after UrdaStateCodec/Sts1Events model changes at d290598c |
 | 2026-05-31 (Revision H replay) | 89 | Current clean solution build; all warnings in Sts1Events model staging code |
+| 2026-05-31 (M4 replay) | 89 | Current project clean/build replay at `24d4fe9a`; all warnings in Sts1Events model staging code |

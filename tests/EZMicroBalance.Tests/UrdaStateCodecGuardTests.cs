@@ -309,6 +309,136 @@ public sealed class UrdaStateCodecGuardTests
     }
 
     [Fact]
+    public void Decode_CurrentFullWireFormat_MapsEveryFieldByPosition()
+    {
+        var input = string.Join(
+            ';',
+            "full_blessing",
+            1,
+            2,
+            1,
+            3,
+            1,
+            1,
+            0,
+            4,
+            5,
+            6,
+            1,
+            0,
+            1,
+            0,
+            "shallow_relic",
+            "rooted_coord",
+            1,
+            0,
+            1,
+            0,
+            7,
+            8,
+            1,
+            "marked_coords",
+            "seed_bank_cards",
+            1,
+            "preview_records",
+            9);
+
+        var result = UrdaStateCodec.Decode(input);
+
+        Assert.Equal("full_blessing", result.SelectedBlessing);
+        Assert.Equal(1, result.Progress.SeedbedChecks);
+        Assert.Equal(2, result.Progress.SeedbedAccepted);
+        Assert.True(result.Progress.SeedbedTransformed);
+        Assert.Equal(3, result.Progress.HumusSkips);
+        Assert.True(result.Progress.HumusCompleted);
+        Assert.True(result.Progress.HumusCompletionPending);
+        Assert.False(result.Progress.MoltingActive);
+        Assert.Equal(4, result.Progress.MossRoomMask);
+        Assert.Equal(5, result.Progress.TrialCombats);
+        Assert.Equal(6, result.Progress.TrialSuccessfulCombats);
+        Assert.True(result.Progress.TrialPlayedThisCombat);
+        Assert.False(result.Progress.TrialSettled);
+        Assert.True(result.Progress.ShallowRelicPending);
+        Assert.False(result.Progress.ShallowRelicRooted);
+        Assert.Equal("shallow_relic", result.Progress.ShallowRelicId);
+        Assert.Equal("rooted_coord", result.Progress.RootedRouteCoord);
+        Assert.True(result.Progress.RootedRouteResolved);
+        Assert.False(result.Progress.RootedRouteWithered);
+        Assert.True(result.Progress.AfterRainTriggeredThisCombat);
+        Assert.False(result.Progress.AfterRainCompensated);
+        Assert.Equal(7, result.Progress.AfterRainTriggerCount);
+        Assert.Equal(8, result.Progress.RootSightEyes);
+        Assert.True(result.Progress.RootSightFirstPotionGranted);
+        Assert.Equal("marked_coords", result.Progress.RootSightMarkedCoords);
+        Assert.Equal("seed_bank_cards", result.Progress.SeedBankCardIds);
+        Assert.True(result.Progress.SeedBankSettled);
+        Assert.Equal("preview_records", result.Progress.RootSightPreviewRecords);
+        Assert.Equal(9, result.Progress.SeedbedCombatSlots);
+    }
+
+    [Fact]
+    public void Decode_LegacyFullWireFormat_MapsTrailingFieldsFromLegacyBaseIndex()
+    {
+        var input = string.Join(
+            ';',
+            "legacy_full",
+            1,
+            2,
+            1,
+            3,
+            1,
+            0,
+            4,
+            5,
+            6,
+            1,
+            0,
+            1,
+            0,
+            "shallow_relic",
+            "rooted_coord",
+            1,
+            0,
+            1,
+            0,
+            7,
+            8,
+            1,
+            "marked_coords",
+            "seed_bank_cards",
+            1,
+            "preview_records",
+            9);
+
+        var result = UrdaStateCodec.Decode(input);
+
+        Assert.Equal("legacy_full", result.SelectedBlessing);
+        Assert.False(result.Progress.HumusCompletionPending);
+        Assert.False(result.Progress.MoltingActive);
+        Assert.Equal(4, result.Progress.MossRoomMask);
+        Assert.Equal(5, result.Progress.TrialCombats);
+        Assert.Equal(6, result.Progress.TrialSuccessfulCombats);
+        Assert.True(result.Progress.TrialPlayedThisCombat);
+        Assert.False(result.Progress.TrialSettled);
+        Assert.True(result.Progress.ShallowRelicPending);
+        Assert.False(result.Progress.ShallowRelicRooted);
+        Assert.Equal("shallow_relic", result.Progress.ShallowRelicId);
+        Assert.Equal("rooted_coord", result.Progress.RootedRouteCoord);
+        Assert.True(result.Progress.RootedRouteResolved);
+        Assert.False(result.Progress.RootedRouteWithered);
+        Assert.True(result.Progress.AfterRainTriggeredThisCombat);
+        Assert.False(result.Progress.AfterRainCompensated);
+        Assert.Equal(7, result.Progress.AfterRainTriggerCount);
+        Assert.Equal(8, result.Progress.RootSightEyes);
+        Assert.True(result.Progress.RootSightFirstPotionGranted);
+        Assert.Equal("marked_coords", result.Progress.RootSightMarkedCoords);
+        Assert.Equal("seed_bank_cards", result.Progress.SeedBankCardIds);
+        Assert.True(result.Progress.SeedBankSettled);
+        Assert.Equal("preview_records", result.Progress.RootSightPreviewRecords);
+        Assert.Equal(9, result.Progress.SeedbedCombatSlots);
+    }
+
+    [Fact]
     public void Roundtrip_EncodeDecode_DefaultSnapshot()
     {
         var original = UrdaStateSnapshot.Default;
@@ -394,6 +524,49 @@ public sealed class UrdaStateCodecGuardTests
         // After encoding, semicolons in field values should be underscores
         Assert.DoesNotContain("abc;def", encoded, StringComparison.Ordinal);
         Assert.Contains("abc_def", encoded, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Encode_NullStringFields_SerializesAsEmptyFields()
+    {
+        var progress = new UrdaProgress(
+            SeedbedChecks: 0,
+            SeedbedAccepted: 0,
+            SeedbedTransformed: false,
+            HumusSkips: 0,
+            HumusCompleted: false,
+            HumusCompletionPending: false,
+            MoltingActive: false,
+            MossRoomMask: 0,
+            TrialCombats: 0,
+            TrialSuccessfulCombats: 0,
+            TrialPlayedThisCombat: false,
+            TrialSettled: false,
+            ShallowRelicPending: false,
+            ShallowRelicRooted: false,
+            ShallowRelicId: null!,
+            RootedRouteCoord: null!,
+            RootedRouteResolved: false,
+            RootedRouteWithered: false,
+            AfterRainTriggeredThisCombat: false,
+            AfterRainCompensated: false,
+            AfterRainTriggerCount: 0,
+            RootSightEyes: 0,
+            RootSightFirstPotionGranted: false,
+            RootSightMarkedCoords: null!,
+            SeedBankCardIds: null!,
+            SeedBankSettled: false,
+            RootSightPreviewRecords: null!,
+            SeedbedCombatSlots: 0);
+
+        var encoded = UrdaStateCodec.Encode(new UrdaStateSnapshot("test", progress));
+        var decoded = UrdaStateCodec.Decode(encoded);
+
+        Assert.Equal(string.Empty, decoded.Progress.ShallowRelicId);
+        Assert.Equal(string.Empty, decoded.Progress.RootedRouteCoord);
+        Assert.Equal(string.Empty, decoded.Progress.RootSightMarkedCoords);
+        Assert.Equal(string.Empty, decoded.Progress.SeedBankCardIds);
+        Assert.Equal(string.Empty, decoded.Progress.RootSightPreviewRecords);
     }
 
     [Fact]

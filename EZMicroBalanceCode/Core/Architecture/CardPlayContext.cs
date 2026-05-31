@@ -98,13 +98,25 @@ internal sealed class CardPlayContext
     }
 }
 
-internal static class CardPlayContextCanary
+internal static partial class CardPlayContextCanary
 {
     public static ExtraPlayPolicy EvaluateSingleExtraPlay(string feature, string reason)
     {
         var context = new CardPlayContext();
-        return context.TryIncrementDepth()
+        var depthIncremented = context.TryIncrementDepth();
+        var policy = depthIncremented
             ? context.Policy
             : ExtraPlayPolicy.Block;
+
+        LogSingleExtraPlay(feature, reason, policy, context.CurrentDepth, depthIncremented);
+
+        return policy;
     }
+
+    static partial void LogSingleExtraPlay(
+        string feature,
+        string reason,
+        ExtraPlayPolicy policy,
+        int currentDepth,
+        bool depthIncremented);
 }

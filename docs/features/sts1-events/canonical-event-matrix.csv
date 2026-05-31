@@ -17,10 +17,10 @@ sts1_the_mausoleum,The Mausoleum,Shared+Act2,All+Act2,Sts1TheMausoleum,1,shared,
 sts1_wheel_of_change,Wheel of Change,Shared,All,Sts1WheelOfChange,1,shared,true,compiled,none
 sts1_designer,Designer,Shared,All,Sts1Designer,1,shared,true,compiled,none
 sts1_the_lab,The Lab,Shared,All,Sts1TheLab,1,shared,true,compiled,none
-neow,Neow,Special,Act1,none,1,none,false,special-stub,Start-of-run only — no unknown-room model
-combat_start,Combat Start,Special,Act1,none,1,none,false,special-stub,Tutorial only — no unknown-room model
-sts1_joust,Joust,Act1,Act1,Sts1Joust,1,Overgrowth+Underdocks,true,blocked,Missing encounter model (Lagavulin)
-sts1_the_ssssserpent,The Ssssserpent,Act1,Act1,Sts1TheSsssserpent,1,Overgrowth+Underdocks,false,blocked,Missing encounter model (3 Ssssents)
+sts1_neow,Neow,Special,Act1,none,1,none,false,special-stub,Start-of-run only — no unknown-room model
+sts1_combat_start,Combat Start,Special,Act1,none,1,none,false,special-stub,Tutorial only — no unknown-room model
+sts1_joust,Joust,Act1,Act1,Sts1Joust,1,Overgrowth+Underdocks,false,compiled,Gold-bet event; no combat branch in current source
+sts1_the_ssssserpent,The Ssssserpent,Act1,Act1,Sts1TheSsssserpent,1,Overgrowth+Underdocks,false,compiled,Gold+curse trade; no combat branch in current source
 sts1_shining_light,Shining Light,Act1,Act1,Sts1ShiningLight,1,Overgrowth+Underdocks,false,compiled,none
 sts1_dead_adventurer,Dead Adventurer,Act1,Act1,Sts1DeadAdventurer,1,Overgrowth+Underdocks,true,blocked,Missing encounter model (random elite)
 golden_wing_act1,Golden Wing (Act1),Act1,Act1,(see Golden Wing),0,Overgrowth+Underdocks,false,duplicate-wiki-entry,Shares model with Shared Golden Wing

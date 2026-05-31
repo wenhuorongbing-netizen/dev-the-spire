@@ -81,12 +81,16 @@ All entries are docs, tests, scripts, test config, or source/test stubs. No prod
 
 | Check | Result |
 |---|---|
-| Clean build | Revision H replay at `85a38dd1`: 0 errors, 89 warnings (all Sts1Events nullable: CS8604=54, CS8602=34, CS8625=1) |
-| Tests | Revision H replay failed/aborted: 13 failed, 427 passed, 21 skipped, 461 total before host crash |
+| Clean build | M4 replay at `24d4fe9a`: 0 errors, 89 warnings (all Sts1Events nullable: CS8604=54, CS8602=34, CS8625=1) |
+| Tests | M4/v13 continuation replay passed: 461 passed, 0 failed, 21 skipped, 482 total |
 | Format | Clean |
-| Whitespace | Fails: trailing whitespace in `docs/goals/event.md` lines 324, 325, 636 |
-| Batch classification | 0 unclassified; 39 dirty entries after validation/build outputs |
+| Whitespace | Clean after removing trailing whitespace in `docs/goals/debug.md` and `docs/goals/event.md` |
+| Batch classification | Not rerun in the validation/runtime doc reconciliation continuation |
 
 ## Revision H Current Snapshot
 
-The older Revision G counts above are historical. Current Revision H replay on 2026-05-31 found HEAD `85a38dd1`, dirty worktree, 32 tracked changed paths in `git diff --name-status`, 3 untracked paths in `git status`, and 39 dirty entries in the batch classifier after validation/build outputs. Current state is blocked, not commit-ready.
+The older Revision G counts above are historical. Earlier Revision H replay on 2026-05-31 found HEAD `85a38dd1`, dirty worktree, 32 tracked changed paths in `git diff --name-status`, 3 untracked paths in `git status`, and 39 dirty entries in the batch classifier after validation/build outputs. That historical state was blocked, not commit-ready.
+
+## M4 Current Snapshot
+
+Current M4/v13 continuation on 2026-05-31 found HEAD `24d4fe9a`. Clean/build/test/format/diff-check now pass with 89 tracked Sts1Events nullable warnings and 461 passed / 0 failed / 21 skipped / 482 total. Current state is still blocked, not commit-ready, because STS2-RitsuLib is missing and runtime smoke evidence is unavailable.
