@@ -49,6 +49,7 @@ function Get-OwnerFromPath {
     if ($RelativePath -like 'EZMicroBalanceCode/Map/*') { return 'Map hover composition' }
     if ($RelativePath -like 'EZMicroBalanceCode/Modding/*') { return 'Mod info localization' }
     if ($RelativePath -like 'EZMicroBalanceCode/Preview/*') { return 'Preview tools' }
+    if ($RelativePath -like 'EZMicroBalanceCode/Sts1Events/*') { return 'STS1 event replacements' }
     return 'Unclassified'
 }
 
@@ -108,6 +109,18 @@ $highCount = @($patches | Where-Object Risk -eq 'High').Count
 $mediumCount = @($patches | Where-Object Risk -eq 'Medium').Count
 $lowCount = @($patches | Where-Object Risk -eq 'Low').Count
 $unclassifiedCount = @($patches | Where-Object Owner -eq 'Unclassified').Count
+$migratedPatchRows = @(
+    [pscustomobject]@{ File = 'FiddlePatches.cs'; Classes = 4; PatchIds = 'fiddle-vars, fiddle-hand-draw, fiddle-should-draw, fiddle-draw-cap'; Batch = '4a' },
+    [pscustomobject]@{ File = 'ChoicesParadoxPatches.cs'; Classes = 1; PatchIds = 'choices-paradox-turn-start'; Batch = '4a' },
+    [pscustomobject]@{ File = 'DistinguishedCapePatches.cs'; Classes = 3; PatchIds = 'distinguished-cape-vars, distinguished-cape-event-option, distinguished-cape-pickup'; Batch = '4a' },
+    [pscustomobject]@{ File = 'BlackStarCompensationPatches.cs'; Classes = 1; PatchIds = 'black-star-obtain'; Batch = '4a' },
+    [pscustomobject]@{ File = 'CrossbowPatches.cs'; Classes = 2; PatchIds = 'crossbow-offer, crossbow-vanilla-after-turn'; Batch = '4b' },
+    [pscustomobject]@{ File = 'BrightestFlameExhaustDrawPatch.cs'; Classes = 3; PatchIds = 'brightest-flame-keywords, brightest-flame-vars, brightest-flame-exhaust-backstop'; Batch = '4b' },
+    [pscustomobject]@{ File = 'DebtAndCardPatches.cs'; Classes = 8; PatchIds = 'debt-after-created, debt-from-save, debt-keywords, debt-vars, debt-turn-end-effect, debt-turn-end-in-hand, card-model-on-play, debt-exhaust'; Batch = '4b' },
+    [pscustomobject]@{ File = 'SealOfGoldPatches.cs'; Classes = 2; PatchIds = 'seal-of-gold-max-energy, seal-of-gold-turn'; Batch = '4b' },
+    [pscustomobject]@{ File = 'PickupRewardPatches.cs'; Classes = 1; PatchIds = 'ancient-pickup-balance'; Batch = '4b' }
+)
+$migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 
 $builder = [System.Text.StringBuilder]::new()
 [void]$builder.AppendLine('# Harmony Patch Inventory')
@@ -128,9 +141,11 @@ $builder = [System.Text.StringBuilder]::new()
 [void]$builder.AppendLine("| Metric | Count |")
 [void]$builder.AppendLine("| --- | ---: |")
 [void]$builder.AppendLine("| Total patch declarations | $($patches.Count) |")
-[void]$builder.AppendLine("| High risk | $highCount |")
-[void]$builder.AppendLine("| Medium risk | $mediumCount |")
-[void]$builder.AppendLine("| Low risk | $lowCount |")
+[void]$builder.AppendLine("| Migrated to RitsuLib ModPatcher | $migratedPatchCount |")
+[void]$builder.AppendLine("| Raw HarmonyPatch remaining | $($patches.Count) |")
+[void]$builder.AppendLine("| High risk (raw Harmony) | $highCount |")
+[void]$builder.AppendLine("| Medium risk (raw Harmony) | $mediumCount |")
+[void]$builder.AppendLine("| Low risk (raw Harmony) | $lowCount |")
 [void]$builder.AppendLine("| Unclassified owner | $unclassifiedCount |")
 [void]$builder.AppendLine()
 [void]$builder.AppendLine('## Risk Meaning')
@@ -139,7 +154,24 @@ $builder = [System.Text.StringBuilder]::new()
 [void]$builder.AppendLine('- Medium: UI, card, relic, reward, combat object, or model hook surface.')
 [void]$builder.AppendLine('- Low: narrow local hook with lower source-drift blast radius.')
 [void]$builder.AppendLine()
-[void]$builder.AppendLine('## Patches')
+[void]$builder.AppendLine('## Migrated Patches (RitsuLib ModPatcher)')
+[void]$builder.AppendLine()
+[void]$builder.AppendLine("These $migratedPatchCount patch classes implement ``IPatchMethod`` and are registered via")
+[void]$builder.AppendLine('`RitsuLibBootstrap.RegisterMigratedPatches()`. They use `ModPatcher.PatchAll()`')
+[void]$builder.AppendLine('and are NOT picked up by raw `Harmony.PatchAll()`.')
+[void]$builder.AppendLine()
+[void]$builder.AppendLine('| File | Classes | PatchIds | Batch |')
+[void]$builder.AppendLine('| --- | --- | --- | --- |')
+foreach ($row in $migratedPatchRows) {
+    [void]$builder.AppendLine(('| `{0}` | {1} | `{2}` | {3} |' -f $row.File, $row.Classes, $row.PatchIds, $row.Batch))
+}
+[void]$builder.AppendLine()
+[void]$builder.AppendLine('Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.')
+[void]$builder.AppendLine('`Harmony.PatchAll()` will not pick them up. Verified clean separation.')
+[void]$builder.AppendLine()
+[void]$builder.AppendLine('## Raw HarmonyPatch Declarations (Unmigrated)')
+[void]$builder.AppendLine()
+[void]$builder.AppendLine("These $($patches.Count) ``[HarmonyPatch]`` declarations remain on raw ``Harmony.PatchAll()``.")
 [void]$builder.AppendLine()
 [void]$builder.AppendLine('| Owner | Risk | File | Line | Patch |')
 [void]$builder.AppendLine('| --- | --- | --- | ---: | --- |')

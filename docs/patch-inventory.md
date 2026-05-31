@@ -1,6 +1,6 @@
 # Harmony Patch Inventory
 
-Generated: 2026-05-28
+Generated: 2026-05-31
 
 Purpose: keep every Harmony patch visible, owned, and risk-labeled. Regenerate after adding, moving, or deleting patch declarations.
 
@@ -37,14 +37,14 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 
 | File | Classes | PatchIds | Batch |
 | --- | --- | --- | --- |
-| `FiddlePatches.cs` | 4 | `fiddle-vars`, `fiddle-hand-draw`, `fiddle-should-draw`, `fiddle-draw-cap` | 4a |
+| `FiddlePatches.cs` | 4 | `fiddle-vars, fiddle-hand-draw, fiddle-should-draw, fiddle-draw-cap` | 4a |
 | `ChoicesParadoxPatches.cs` | 1 | `choices-paradox-turn-start` | 4a |
-| `DistinguishedCapePatches.cs` | 3 | `distinguished-cape-vars`, `distinguished-cape-event-option`, `distinguished-cape-pickup` | 4a |
+| `DistinguishedCapePatches.cs` | 3 | `distinguished-cape-vars, distinguished-cape-event-option, distinguished-cape-pickup` | 4a |
 | `BlackStarCompensationPatches.cs` | 1 | `black-star-obtain` | 4a |
-| `CrossbowPatches.cs` | 2 | `crossbow-offer`, `crossbow-vanilla-after-turn` | 4b |
-| `BrightestFlameExhaustDrawPatch.cs` | 3 | `brightest-flame-keywords`, `brightest-flame-vars`, `brightest-flame-exhaust-backstop` | 4b |
-| `DebtAndCardPatches.cs` | 8 | `debt-after-created`, `debt-from-save`, `debt-keywords`, `debt-vars`, `debt-turn-end-effect`, `debt-turn-end-in-hand`, `card-model-on-play`, `debt-exhaust` | 4b |
-| `SealOfGoldPatches.cs` | 2 | `seal-of-gold-max-energy`, `seal-of-gold-turn` | 4b |
+| `CrossbowPatches.cs` | 2 | `crossbow-offer, crossbow-vanilla-after-turn` | 4b |
+| `BrightestFlameExhaustDrawPatch.cs` | 3 | `brightest-flame-keywords, brightest-flame-vars, brightest-flame-exhaust-backstop` | 4b |
+| `DebtAndCardPatches.cs` | 8 | `debt-after-created, debt-from-save, debt-keywords, debt-vars, debt-turn-end-effect, debt-turn-end-in-hand, card-model-on-play, debt-exhaust` | 4b |
+| `SealOfGoldPatches.cs` | 2 | `seal-of-gold-max-energy, seal-of-gold-turn` | 4b |
 | `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` | 4b |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
@@ -52,7 +52,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 141 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 142 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -101,10 +101,10 @@ These 141 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PreservedFogPatches.cs` | 29 | `[HarmonyPatch(typeof(Folly), "get_CanonicalKeywords")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemHoverPatches.cs` | 19 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTips")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemHoverPatches.cs` | 39 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTipsExcludingRelic")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemPatches.cs` | 3 | `[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemPatches.cs` | 5 | `[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs` | 3 | `[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs` | 14 | `[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintPatch.cs` | 3 | `[HarmonyPatch( typeof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen), nameof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen.RefreshOptions))]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintPatch.cs` | 5 | `[HarmonyPatch( typeof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen), nameof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen.RefreshOptions))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonPickupPatches.cs` | 3 | `[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 8 | `[HarmonyPatch(typeof(RelicModel), "get_IconPath")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 17 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]` |
@@ -197,3 +197,4 @@ These 141 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionSelectionLifetimePatch.cs` | 8 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
 | Preview tools | Medium | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 13 | `[HarmonyPatch(typeof(NTransformPreview), nameof(NTransformPreview.Initialize))]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPreviewPatch.cs` | 32 | `[HarmonyPatch]` |
+| STS1 event replacements | Low | `EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs` | 44 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]` |
