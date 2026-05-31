@@ -6,7 +6,7 @@ Date: 2026-05-31
 
 Not complete: hard blocker remains.
 
-The current-state reconciliation packet is prepared for owner review, but runtime smoke is blocked because `STS2-RitsuLib` is not installed at the checked game-root mod paths and no active `godot.log` exists.
+The historical Revision I current-state reconciliation packet is prepared for owner review, but runtime smoke was blocked at that time. Revision J supersedes the blocker details: `STS2-RitsuLib` is installed and a loader log reaches main menu with Spire Plus, but clean-audit runtime proof remains blocked.
 
 ## Files Changed In This Pass
 
@@ -24,7 +24,7 @@ Existing dirty source/test/goal-doc edits were preserved and documented, not rev
 - `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build`: pass on final rerun, 464 passed, 0 failed, 21 skipped, 485 total.
 - `dotnet format .\EZMicroBalance.csproj --verify-no-changes`: pass.
 - `git diff --check`: pass.
-- `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified`: pass on final rerun with 55 dirty entries, 0 unclassified.
+- `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified`: historical Revision I pass with 55 dirty entries, 0 unclassified; superseded by Revision J classifier at 49 dirty entries, 0 unclassified.
 
 ## Decisions Recorded
 
@@ -36,4 +36,4 @@ Existing dirty source/test/goal-doc edits were preserved and documented, not rev
 
 ## Blocker
 
-Runtime smoke cannot proceed until `STS2-RitsuLib` is installed alongside BaseLib and Spire Plus. Do not claim Off mode, CanaryOnly, ModPatcher runtime equivalence, or release readiness before live loader evidence exists.
+Runtime smoke cannot close until loader audit errors are resolved or explicitly accepted and Off/CanaryOnly logs pass. Do not claim Off mode, CanaryOnly, ModPatcher runtime equivalence, or release readiness before clean live loader evidence exists.

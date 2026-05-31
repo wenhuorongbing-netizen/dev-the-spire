@@ -19,6 +19,7 @@ public sealed class AuditGodotLogGuardTests
             "[INFO] Found mod manifest file D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\RouteSuggest-v1.9.0\\RouteSuggest.json\r\n" +
             "[ERROR] Mod manifest D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\RouteSuggest-v1.9.0\\RouteSuggestConfig.json is missing the 'id' field! This is not allowed. The mod will not be loaded.\r\n" +
             "[ERROR] Mod manifest D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\sts2-heybox-support\\mod_mainfest.json is missing the 'id' field! This is not allowed. The mod will not be loaded.\r\n" +
+            "[ERROR] Mod manifest D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\ritsulib-variants.json is missing the 'id' field! This is not allowed. The mod will not be loaded.\r\n" +
             "[INFO] Found mod manifest file D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\DamageMeter\\DamageMeter.json\r\n" +
             "[INFO] [Other] Completed startup");
 

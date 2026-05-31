@@ -31,7 +31,7 @@ Scope: Mandatory Overnight Run v14 continuation for `docs/goals/event.md`
 
 | Gate | Status | Blocker reason | Evidence path | Attempted actions | Required owner/external action |
 | --- | --- | --- | --- | --- | --- |
-| O18-O22 | BLOCKED | Canary runtime screenshots, result logs, save/load proof, EN/ZHS render proof, and image/render proof require live game execution. | `status-board.md`, `runtime-smoke-checklist.md` | Source guards and docs were updated; no live game evidence exists. | Install STS2-RitsuLib, launch with `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`, capture screenshots, logs, save/load, EN/ZHS, and image/render evidence. |
+| O18-O22 | BLOCKED | Canary runtime screenshots, result logs, save/load proof, EN/ZHS render proof, and image/render proof require live game execution. | `status-board.md`, `runtime-smoke-checklist.md` | Source guards and docs were updated; no live game evidence exists. | Launch with installed STS2-RitsuLib and `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`, capture screenshots, logs, save/load, EN/ZHS, and image/render evidence. |
 | O25-O30 | BLOCKED | Simple batch runtime, result logs, save/load where applicable, ZHS render, asset manifest proof, and image/license decision require live game execution and art/license input. | `simple-batch-specs.md`, `asset-manifest.md`, `status-board.md` | Simple-batch docs now reflect the current source scope; no runtime proof was captured. | Launch with `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1`; capture Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, and Shining Light evidence; provide art/license strategy. |
 | O32-O35 | BLOCKED | Replacement functional proof requires debug symbol, unsafe override, seeded game-run proof of unknown-room replacement, Act bucket behavior, event bag/no-repeat behavior, and save/load persistence. | `multiplayer-fail-closed-guard.md`, `runtime-smoke-checklist.md` | Source gate now fails closed in normal builds; no replacement runtime run exists. | Compile with `REPLACEMENT_PROTOTYPE_ENABLED`, set `SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype` and `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`, then capture seeded runtime/save-load proof. |
 | O36 | BLOCKED | Multiplayer fail-closed or verified behavior requires a multiplayer runtime session. | `multiplayer-fail-closed-guard.md` | Docs now label host-authoritative behavior as a design assumption, not proof. | Run multiplayer smoke or two-client proof and capture logs/results. |
@@ -40,11 +40,11 @@ Scope: Mandatory Overnight Run v14 continuation for `docs/goals/event.md`
 
 ## Hard Stop Reason
 
-Continuation cannot make O0-O50 all green in the current environment. STS2-RitsuLib is still missing from the checked game-root mod paths, no active `godot.log` exists, and live gameplay, save-load, image/render/license, replacement-pool, multiplayer, and independent QA-pass evidence require game execution or owner/external action.
+Continuation cannot make O0-O50 all green in the current environment. STS2-RitsuLib is now installed locally and fresh loader evidence exists, but the log is not clean and live gameplay, save-load, image/render/license, replacement-pool, multiplayer, and independent QA-pass evidence require further game execution or owner/external action.
 
 ## Next Owner Actions
 
-1. Install STS2-RitsuLib under the active game root and rerun loader smoke with only BaseLib, STS2-RitsuLib, and Spire Plus enabled.
+1. Rerun loader smoke with only BaseLib, installed STS2-RitsuLib, and Spire Plus enabled.
 2. Capture Off and CanaryOnly `godot.log` evidence before attempting AdditiveBatch1 or replacement-pool proof.
 3. Provide an art/license strategy for StS1 event images.
 4. Rerun independent QA only after runtime evidence exists.

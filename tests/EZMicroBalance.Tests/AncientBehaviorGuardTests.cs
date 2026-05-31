@@ -106,16 +106,16 @@ public sealed partial class AncientBehaviorGuardTests
             "ModPatchTarget(typeof(SealOfGold), nameof(SealOfGold.AfterSideTurnStart))",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.AfterCreated))",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.FromSerializable))",
-            "ModPatchTarget(typeof(Debt), \"get_CanonicalKeywords\"",
-            "ModPatchTarget(typeof(Debt), \"get_CanonicalVars\"",
-            "ModPatchTarget(typeof(Debt), \"get_HasTurnEndInHandEffect\"",
+            "ModPatchTarget(typeof(Debt), nameof(Debt.CanonicalKeywords)",
+            "ModPatchTarget(typeof(Debt), \"CanonicalVars\"",
+            "ModPatchTarget(typeof(Debt), nameof(Debt.HasTurnEndInHandEffect)",
             "ModPatchTarget(typeof(Debt), \"OnTurnEndInHand\")",
             "ModPatchTarget(typeof(CardModel), \"OnPlay\")",
             "ModPatchTarget(typeof(CardCmd), nameof(CardCmd.Exhaust))",
             "[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]",
             "[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]",
             "[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]",
-            "ModPatchTarget(typeof(DistinguishedCape), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(DistinguishedCape), \"CanonicalVars\"",
             "ModPatchTarget(typeof(Vakuu), \"GenerateInitialOptions\")",
             "ModPatchTarget(typeof(DistinguishedCape), nameof(DistinguishedCape.AfterObtained))",
             "[HarmonyPatch(typeof(VelvetChoker), \"get_CanonicalVars\")]",
@@ -137,8 +137,8 @@ public sealed partial class AncientBehaviorGuardTests
             "ModPatchTarget(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart)",
             "[HarmonyPatch(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))]",
             "[HarmonyPatch(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))]",
-            "ModPatchTarget(typeof(CardModel), \"get_CanonicalKeywords\"",
-            "ModPatchTarget(typeof(BrightestFlame), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(CardModel), nameof(CardModel.CanonicalKeywords)",
+            "ModPatchTarget(typeof(BrightestFlame), \"CanonicalVars\"",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.OnPlayWrapper))",
             "[HarmonyPatch(typeof(CookRestSiteOption), MethodType.Constructor, typeof(Player))]",
             "[HarmonyPatch(typeof(CookRestSiteOption), \"get_Description\")]",
@@ -152,7 +152,7 @@ public sealed partial class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(Folly), \"get_CanonicalKeywords\")]",
             "ModPatchTarget(typeof(ChoicesParadox), nameof(ChoicesParadox.AfterPlayerTurnStart))",
             "[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]",
-            "ModPatchTarget(typeof(Fiddle), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(Fiddle), \"CanonicalVars\"",
             "ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ModifyHandDrawLate))",
             "ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ShouldDraw))",
             "ModPatchTarget(typeof(CardPileCmd), nameof(CardPileCmd.Draw)",
@@ -164,8 +164,8 @@ public sealed partial class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCardPlayed))]",
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.BeforeSideTurnStart))]",
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))]",
-            "ModPatchTarget(typeof(CardModel), \"get_CanonicalKeywords\"",
-            "ModPatchTarget(typeof(BrightestFlame), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(CardModel), nameof(CardModel.CanonicalKeywords)",
+            "ModPatchTarget(typeof(BrightestFlame), \"CanonicalVars\"",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.OnPlayWrapper))");
     }
 
@@ -372,7 +372,7 @@ public sealed partial class AncientBehaviorGuardTests
             "return Math.Max(proportionalLoss, MinimumMaxHpLoss)",
             "public static bool CanPayMaxHpCost(int currentMaxHp)",
             "return currentMaxHp > CalculateMaxHpLoss(currentMaxHp)",
-            "ReplaceUnaffordableCapeWithPayableVakuuOption",
+            "static string IPatchMethod.PatchId => \"distinguished-cape-event-option\"",
             "CreateVakuuSecondPoolReplacement",
             "vakuu.AllPossibleOptions",
             "option.Relic is PreservedFog or SereTalon",
@@ -401,11 +401,11 @@ public sealed partial class AncientBehaviorGuardTests
     [Fact]
     public void DistinguishedCapeUnaffordableVakuuPathPreservesVisibleOptionCount()
     {
-        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
+        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "DistinguishedCapePatches.cs");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
         var replacementBranch = SliceBetween(
             source,
-            "private static void ReplaceUnaffordableCapeWithPayableVakuuOption",
+            "private static void Postfix(",
             "private static MegaCrit.Sts2.Core.Events.EventOption? CreateVakuuSecondPoolReplacement");
         var replacementFactory = SliceBetween(
             source,

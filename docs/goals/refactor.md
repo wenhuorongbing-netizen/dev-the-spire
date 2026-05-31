@@ -1,477 +1,406 @@
 # 严格审核结论
 
-**不能判定“全部完成”。**
-当前最准确的状态是：
+**当前任务没有完成；当前状态是：验证清理通过，但整体仍 HARD BLOCKED。**
 
-> **No-game / source-level 架构硬化已经有明显进展，当前 build/test/format/diff-check 可算通过；但 runtime smoke、STS2-RitsuLib 实机加载证明、Off/CanaryOnly 运行时日志仍未完成。独立 QA/Red-Team 已运行并返回 FAIL / HARD BLOCKED。因此本轮目标没有完全完成，必须继续进入 Runtime Proof + Governance Closure Overnight Run 或 Hard Block Stop。**
+可以认可的是：这次 validation cleanup 已经把测试口径收敛到当前最新事实：`dotnet test EZMicroBalance.sln --no-build` 通过，**464 passed / 0 failed / 21 skipped / 485 total**；build 也通过，0 errors / 89 warnings；format 和 diff-check 都通过。
 
-你上传的任务要求非常明确：本轮目标是 **RitsuLib Runtime Proof + Test Truth Reconciliation + Architecture Foundation Overnight Run**，包含 validation truth、runtime smoke、Sts1Events governance、FeatureRegistry hardening、Architecture canary integration、State/Death/Multiplayer foundation、docs update；同时明确 **不是 Batch 4c，不允许新 gameplay，不允许 release-ready claim**，并要求 runtime smoke 必须捕获 `SPIREPLUS_STS1_EVENT_MODE=Off` 和 `CanaryOnly` 的真实 game logs，且 QA/Red-Team 必须独立复核，不能自审。
+不能认可的是：这仍不是 Green Stop。`current-validation.md` 明确写着当前 worktree 仍 dirty，runtime smoke 仍 hard blocked，因为 `STS2-RitsuLib` 缺失且没有 active `godot.log`。 独立 QA/Red-Team 也明确给出 **FAIL / HARD BLOCKED**，并说明 Green Stop is not allowed。
 
-仓库当前可引用的最新 validation truth 是 `docs/reviews/current-validation.md` 和本轮 refactor evidence：HEAD `87820303`，build 0 errors / 89 warnings，current project no-build tests 464 passed / 0 failed / 21 skipped / 485 total，format 和 diff-check 均 PASS。 Runtime smoke 仍 **HARD BLOCKED**：E-drive `BaseLib` 和 `EZMicroBalance` 存在，但 `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` 缺失，且没有可用 `godot.log`；不能做 runtime safety 或 release-readiness claim。
+所以最终判断是：
 
----
-
-## 1. Step-by-step 完成度审核
-
-| Step                             | 目标                                                             | 当前证据                                                                                                                                                               | 严格判定                                      |
-| -------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
-| Phase 1 — Validation truth       | `dotnet clean && build`、test、format、diff-check clean           | 当前 validation 记录 build PASS、project no-build tests 464/0/21/485、format PASS、diff-check PASS。                                                                                        | **PASS，但 89 warnings 仍是 debt**            |
-| Raw test truth                   | 不再使用旧数字 / claimed number                                       | 上传文件仍记录旧 session raw count 428/0/21/449，并强调 counts 必须来自 raw logs。 当前仓库已更新到 464/0/21/485。                                                                           | **当前 PASS；必须禁止旧 428/449 继续传播**            |
-| Build warning truth              | 不把 warning 写成 clean                                            | current validation 明确 89 warnings，全部集中在 Sts1Events Models。                                                                                                         | **PASS for honesty；warning cleanup OPEN** |
-| Phase 2 — Runtime smoke          | game launch + `godot.log` + Off/CanaryOnly proof               | runtime checklist 写 BLOCKED：STS2-RitsuLib 未安装，Off/CanaryOnly/AdditiveBatch1 log 均未捕获。                                                                              | **FAIL / BLOCKED**                        |
-| RitsuLib migration               | 25 patches migrated，hybrid bootstrap active                    | monthly spec 记录 25 patches migrated、142 raw Harmony remaining、hybrid bootstrap active。                                                                             | **source-level PASS**                     |
-| Batch 4c                         | 继续迁移更多 patch                                                   | monthly spec 与 next overnight 都写 Batch 4c blocked until runtime smoke passes。                                                                                      | **不得开始**                                  |
-| Sts1Events default safety        | 默认 Off，feature gated                                           | monthly spec 记录 Sts1Events compiled、default Off、5-mode safety matrix validated；本轮修复 `SPIREPLUS_STS1_EVENT_MODE` 被误当作通用 DisableEnvKey 的 bootstrap bug。                 | **source-level PASS**                     |
-| Sts1Events runtime safety        | Off=0 / CanaryOnly=4 runtime proof                             | runtime smoke 未跑；无 `godot.log`。                                                                                                                                    | **BLOCKED**                               |
-| FeatureRegistry hardening        | metadata / FeatureBootstrapRecord / LiveStatus / env overrides | monthly spec 记录 metadata、FeatureBootstrapRecord、LiveStatus、env override guard tests。                                                                               | **source-level PASS**                     |
-| UrdaStateCodec                   | V1 encode/decode/legacy compat                                 | monthly spec 记录 41 tests。                                                                                                                                          | **PASS**                                  |
-| RewardPipeline / CardPlayContext | diagnostics-only canary integration                            | current validation 记录 RewardPipeline diagnostics wired into FeatureRegistry bootstrap；CardPlayContext touched through Lotha allow-only adapter，gameplay unchanged。 | **diagnostics-only PASS**                 |
-| DeathProtectionService           | diagnostics-only stub                                          | monthly spec 记录 diagnostics-only stub + tests。                                                                                                                     | **stub PASS；behavior NOT DONE**           |
-| MultiplayerPolicy                | taxonomy / diagnostics-only registry                           | monthly spec 记录 6-category taxonomy + tests。                                                                                                                       | **taxonomy PASS；enforcement NOT DONE**    |
-| Independent QA                   | QA/Red-Team 独立复核                                               | 独立 QA/Red-Team 已运行；结果为 FAIL / HARD BLOCKED，因为 runtime proof、Off/CanaryOnly `godot.log`、active game evidence 缺失。                                             | **DONE as fail/block report；不能 Green Stop** |
-| Docs update                      | 所有 active docs 数字一致                                            | current-validation 与本轮 docs 已更新到 464/485；旧 428/449、452/473、461/482、462/483 只允许作为历史 false-green 风险出现。                                                     | **PASS；仍需继续防 stale**                    |
+```text
+No-game validation: PASS
+Docs/test truth cleanup: PASS
+Runtime proof: FAIL / BLOCKED
+Independent QA: FAIL / BLOCKED
+Batch 4c readiness: NO
+Release-ready / live-ready: NO
+总体任务完成: NO
+```
 
 ---
 
-## 2. 当前目标对比
+## 1. Step-by-step 审核
 
-当前月度目标是 **RitsuLib Runtime Proof + Architecture Integration Month**。`monthly-dev-spec.md` 记录当前状态：25 patches migrated、142 raw Harmony remaining、FeatureRegistry hardened、UrdaStateCodec V1、architecture canary integration、DeathProtection/MultiplayerPolicy stubs；但 runtime smoke blocked。
-
-| 目标                           | 当前结果                | 缺口                             |
-| ---------------------------- | ------------------- | ------------------------------ |
-| RitsuLib runtime proof       | 未完成                 | STS2-RitsuLib 未安装，game log 未捕获 |
-| Batch 4a/4b closure          | 完成                  | 可保留                            |
-| Batch 4c readiness           | 未完成                 | runtime smoke 前不得推进            |
-| Sts1Events default safety    | source-level 完成     | 缺 Off runtime proof            |
-| CanaryOnly safety            | source-level 完成     | 缺 CanaryOnly runtime proof     |
-| FeatureRegistry hardening    | source-level 完成     | 缺 runtime diagnostic proof     |
-| UrdaStateCodec foundation    | V1 完成               | 不是完整 DataStore migration       |
-| Reward/CardPlay architecture | diagnostics-only 接入 | 不是业务 policy 完成                 |
-| Death/Multiplayer foundation | stub/taxonomy       | enforcement 未完成                |
-| QA subagent                  | 已运行但 FAIL / HARD BLOCKED | runtime proof 缺失，不能 Green Stop |
-| release-ready                | 正确地没有 claim         | 仍不可 release                    |
-
-**综合判断：最大 blocker 是 runtime proof；independent QA 已给出 fail/block 判定，不是代码能不能继续写。**
+| Step                       | 目标                                                         | 当前状态                                                                                      | 严格判定                        |
+| -------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------- | --------------------------- |
+| Validation truth           | 替换旧的 462/483、428/449、387 等旧口径                              | 当前已统一到 464 / 0 / 21 / 485。                                                                | **完成**                      |
+| Build                      | 0 errors，warning truth 不隐藏                                 | build PASS，0 errors / 89 warnings；warnings 是 Sts1Events nullable staging debt。            | **完成，但 warning debt 未清**    |
+| Format                     | format clean                                               | PASS。                                                                                     | **完成**                      |
+| Diff check                 | whitespace clean                                           | PASS；无 whitespace errors。                                                                 | **完成**                      |
+| Patch inventory check      | patch inventory fresh                                      | `generate-patch-inventory.ps1 -Check` PASS。                                               | **完成**                      |
+| Worktree                   | Green Stop 前 clean 或有 blocker                              | Revision J 当前仍 dirty；dirty entries 必须以最终 batch classifier 为准。                                              | **未完成 / 需要 owner decision** |
+| Runtime path check         | STS2-RitsuLib / BaseLib / EZMicroBalance 存在                | E 盘 game root、mods、BaseLib、EZMicroBalance 存在，但 `STS2-RitsuLib` 不存在；没有 active `godot.log`。 | **BLOCKED**                 |
+| Runtime smoke              | Off=0 / CanaryOnly=4 game log proof                        | 未捕获 runtime smoke；QA confirms no runtime proof。                                           | **未完成**                     |
+| QA / Red-Team              | 独立复核                                                       | QA verdict = FAIL / HARD BLOCKED。                                                         | **未完成**                     |
+| Sts1Events gate bug fix    | `SPIREPLUS_STS1_EVENT_MODE` 不再被当成 generic disable override | 已修，QA 文件记录 fix applied。                                                                   | **完成**                      |
+| Batch 4c                   | 是否可继续迁 patch                                               | 当前 Batch 4c remains blocked。                                                              | **不能推进**                    |
+| Release-ready / live-ready | 是否可声明                                                      | current validation 和 QA 都明确 no。                                                           | **不能声明**                    |
 
 ---
 
-# 3. 关键问题
+## 2. 与目标对比
 
-## Issue 1: Runtime smoke 是 P0 blocker
+这次目标不是单纯跑测试，而是 **Runtime Proof + Governance Closure**。任务要求里明确说：runtime smoke 必须捕获 `SPIREPLUS_STS1_EVENT_MODE=Off` 和 `CanaryOnly` 的真实 game logs；不能 soft stop；不能 false green；不能启动 Batch 4c；不能迁 high-risk patches；不能新增 gameplay。
+
+当前结果与目标对比如下：
+
+| 目标                       | 当前结果                              | 差距                   |
+| ------------------------ | --------------------------------- | -------------------- |
+| validation truth         | 464/0/21/485 已统一                  | 通过                   |
+| build truth              | 0 errors / 89 warnings            | 通过，但 warning debt 未清 |
+| format/diff check        | 通过                                | 通过                   |
+| runtime smoke            | STS2-RitsuLib 缺失，无 `godot.log`    | 阻塞                   |
+| Off mode runtime proof   | 未捕获                               | 阻塞                   |
+| CanaryOnly runtime proof | 未捕获                               | 阻塞                   |
+| independent QA           | 已运行，但 verdict FAIL / HARD BLOCKED | 未完成                  |
+| Batch 4c                 | blocked                           | 正确，不得推进              |
+| release/live readiness   | no                                | 正确，不得声明              |
+
+**结论：目标只完成了 no-game validation 与部分 source governance；核心 runtime proof 没完成。**
+
+---
+
+## 3. 主要问题
+
+### Issue 1: STS2-RitsuLib 缺失导致 runtime smoke 阻塞
 
 * **Severity:** 4
 * **Priority:** P0
-* **Evidence:** `runtime-smoke-checklist.md` 明确 BLOCKED：`STS2-RitsuLib` 未安装，本轮没有 Off / CanaryOnly / AdditiveBatch1 `godot.log`。
-* **Observation:** 真实游戏环境没有跑起来。
-* **Inference:** 不能证明 RitsuLib runtime dependency、ModPatcher 25 patches、Sts1Events gate、BaseLib/Spire Plus 初始化在真实 loader 下安全。
-* **Recommendation:** 下一个 overnight run 必须第一步做 runtime environment setup，不允许继续做 Batch 4c 或扩展 gameplay。
-* **Acceptance Criteria:** `godot.log` 证明 RitsuLib active、BaseLib initialized、Spire Plus initialized、25 ModPatcher patches applied、Off=0 registration、CanaryOnly=4 registration、0 MissingMethodException / TypeLoadException / manifest dependency failure。
+* **Evidence:** Runtime path check 显示 E 盘 `BaseLib` 和 `EZMicroBalance` 存在，但 `E:\...\mods\STS2-RitsuLib` 为 False，D 盘也不存在；没有 active `godot.log`。
+* **Impact:** 不能证明 RitsuLib bootstrap、ModPatcher、manifest dependency、Off/CanaryOnly Sts1Events gate 在真实游戏中可用。
+* **Recommendation:** 下一个 overnight run 第一任务就是安装/验证 STS2-RitsuLib，然后跑 Off / CanaryOnly runtime smoke。
+* **Acceptance:** `godot.log` 证明 RitsuLib active，Off=0 registration，CanaryOnly=4 registration，0 MissingMethodException / TypeLoadException / dependency failure。
 
 ---
 
-## Issue 2: Build warning debt 未清
+### Issue 2: QA 已明确 FAIL / HARD BLOCKED，不能 Green Stop
+
+* **Severity:** 4
+* **Priority:** P0
+* **Evidence:** QA verdict 明确是 FAIL / HARD BLOCKED，Green Stop is not allowed。
+* **Impact:** 当前不能交付为“完成”，只能交付为“validation cleanup pass completed, runtime blocked”。
+* **Recommendation:** 只有安装 STS2-RitsuLib 并捕获 runtime evidence 后，才能重新跑 QA。
+* **Acceptance:** QA subagent rerun 后出具 PASS / PARTIAL / BLOCKED 明确结论。
+
+---
+
+### Issue 3: Worktree 仍 dirty，不能 commit-ready / handoff-ready
 
 * **Severity:** 3
 * **Priority:** P1
-* **Evidence:** current validation 记录 89 warnings，warning codes 是 CS8602 / CS8604 / CS8625，scope 是 `EZMicroBalanceCode/Sts1Events/Models/`。
-* **Observation:** warnings 被接受只是因为 Sts1Events 仍是 gated prototype。
-* **Inference:** 一旦 Sts1Events CanaryOnly / AdditiveBatch1 进入 tester path，这些 nullability warnings 会变成真实稳定性风险。
-* **Recommendation:** 建立 warning matrix，按 Owner null、Deck null、Rng null、Option null、Event state null 分类。
-* **Acceptance Criteria:** `STS1EVENTS-NULL-SAFETY-WARNINGS` issue 有文件、warning code、owner、修复批次。
+* **Evidence:** `current-validation.md` 说 worktree dirty before this pass and still dirty；Revision J 必须以最终 `report-worktree-batches.ps1 -FailOnUnclassified` 输出为准。
+* **Impact:** 不能安全 push / release / handoff；只能作为中间状态。
+* **Recommendation:** 需要 owner 决定：commit/push 当前验证清理，或保留 dirty 但写清每个 dirty batch 的 owner 和原因。
+* **Acceptance:** `git status --short` clean，或 blocker report 逐项列出 dirty files。
 
 ---
 
-## Issue 3: Independent QA 已运行但未放行
-
-* **Severity:** 4
-* **Priority:** P0
-* **Evidence:** 本轮 QA/Red-Team subagent 已独立复核 build/test/runtime/docs/worktree。
-* **Observation:** QA 结论是 FAIL / HARD BLOCKED：缺 STS2-RitsuLib、缺 active `godot.log`、缺 Off=0 runtime proof、缺 CanaryOnly=4 runtime proof。
-* **Inference:** 当前 pass 不能 Green Stop；QA 已完成 pass/fail 输出，但结果不是通过。
-* **Recommendation:** 保留 QA fail/block 结论；安装 STS2-RitsuLib 并完成 runtime smoke 后再次启动 QA。
-* **Acceptance Criteria:** 下一次 QA 报告必须复核 fresh runtime evidence，并明确是否允许 Green Stop。
-
----
-
-## Issue 4: Batch 4c 不能启动
-
-* **Severity:** 4
-* **Priority:** P0
-* **Evidence:** `next-overnight-run.md` 写 runtime smoke 是 critical path blocker，Batch 4c cannot proceed until STS2-RitsuLib installed and runtime smoke passes。
-* **Observation:** Batch 4c 是后续 patch migration，而 runtime 未证实。
-* **Inference:** 继续迁 patch 会扩大无法验证的 runtime 风险。
-* **Recommendation:** 禁止 Batch 4c 和 high-risk patch migration，直到 runtime smoke PASS + QA PASS。
-* **Acceptance Criteria:** 没有新的 IPatchMethod migration；若有，必须回滚或标 blocked。
-
----
-
-## Issue 5: Architecture skeleton 不能等于业务完成
+### Issue 4: Sts1Events warning debt 仍未处理
 
 * **Severity:** 3
 * **Priority:** P1
-* **Evidence:** current validation 说 RewardPipeline diagnostics wired into FeatureRegistry bootstrap events；CardPlayContext touches Lotha extra-play through single-depth allow adapter，play counts and gameplay branches unchanged。
-* **Observation:** 这是 no-op/diagnostics-only。
-* **Inference:** 它不是完整 reward pipeline，也不是 card-play policy 完成。
-* **Recommendation:** 保持 diagnostics-only，并只增加 characterization tests 和 logs。
-* **Acceptance Criteria:** 不改变 gameplay；日志证明不 softlock；测试证明 branch behavior unchanged。
+* **Evidence:** 当前 build 有 89 warnings，codes 为 CS8602 / CS8604 / CS8625，scope 全在 `EZMicroBalanceCode/Sts1Events/Models/`。
+* **Impact:** CanaryOnly / AdditiveBatch1 后续进入 tester path 时，nullable warnings 会变成稳定性风险。
+* **Recommendation:** 建立 warning debt matrix，按 owner/player/deck/rng/option/event-state nullability 分类。
+* **Acceptance:** 每类 warning 有 owner、文件列表、修复批次。
 
 ---
 
-# 4. 当前是否完成？
+### Issue 5: Batch 4c 仍然必须阻塞
 
-## 已完成
+* **Severity:** 4
+* **Priority:** P0
+* **Evidence:** current validation 写 Batch 4c remains blocked until STS2-RitsuLib install plus loader smoke passes。
+* **Impact:** 如果现在继续迁 patch，会扩大 runtime 风险。
+* **Recommendation:** 禁止 Batch 4c、高风险 patch migration、新 gameplay，直到 runtime smoke + QA 通过。
+* **Acceptance:** 无新的 IPatchMethod migration；如果有，必须回滚或单独审查。
 
-* No-game validation: build/test/format/diff-check 当前 PASS。
-* Test truth 当前收敛为 464 pass / 0 fail / 21 skip / 485 total。
-* RitsuLib Batch 4a/4b source-level closure。
-* Sts1Events 5-mode safety matrix source-level 完成。
-* FeatureRegistry metadata / env override / LiveStatus source-level hardening。
-* UrdaStateCodec V1。
-* RewardPipeline / CardPlayContext diagnostics-only canary。
-* DeathProtectionService / MultiplayerPolicy foundation。
+---
 
-## 未完成
+## 4. 当前是否完成？
 
-* RitsuLib runtime smoke。
-* STS2-RitsuLib local install verification。
+### 已完成
+
+* 最新 no-game validation truth：464 pass / 0 fail / 21 skip / 485 total。
+* build 0 errors。
+* format clean。
+* diff check clean。
+* patch inventory check fresh。
+* Sts1Events `SPIREPLUS_STS1_EVENT_MODE` 错误 generic disable override 已修。
+* docs 中 runtime blocker 已更诚实地记录。
+* 独立 QA 已运行并给出明确 HARD BLOCKED 结论。
+
+### 未完成
+
+* STS2-RitsuLib 安装。
+* runtime smoke。
 * Off mode runtime proof。
 * CanaryOnly runtime proof。
-* Mod Settings UI screenshot。
-* Basic gameplay / save-load proof。
-* Multiplayer fail-closed runtime proof。
-* Independent QA / Red-Team PASS（当前只有 FAIL / HARD BLOCKED）。
-* Warning debt cleanup。
+* active `godot.log`。
+* Mod Settings UI evidence。
+* gameplay/save-load proof。
+* independent QA pass。
+* clean worktree。
+* warning cleanup。
 * Batch 4c。
-* High-risk patch migration。
 * release-ready / live-ready。
 
 ---
 
 # 5. 决策：继续优化、推进，还是两者兼顾？
 
-**结论：优化为主，有限推进。**
+**决策：优化为主，有限推进。**
 
-建议比例：
+推荐比例：
 
 ```text
-75% 优化 / 验证 / runtime proof / warning debt / QA
-25% 有限推进 diagnostics-only canary
+80% runtime / QA / warning / worktree / docs hardening
+20% diagnostics-only architecture refinement
 ```
 
-允许推进：
+不能推进的内容：
 
 ```text
-- Runtime smoke
-- QA independent review
-- Warning triage
-- Runtime log instrumentation
-- Diagnostics-only architecture evidence
-- Sts1Events governance matrix
+Batch 4c
+High-risk patch migration
+Sts1Events AdditiveAllDraft live
+Release packaging
+New gameplay behavior
 ```
 
-禁止推进：
+可以推进的内容：
 
 ```text
-- Batch 4c
-- High-risk patch migration
-- Sts1Events AdditiveAllDraft live
-- Release packaging
-- New gameplay behavior
+STS2-RitsuLib install verification
+Off / CanaryOnly runtime smoke
+Warning triage
+Independent QA rerun
+Dirty worktree closure
+Diagnostics-only evidence logging
 ```
 
 ---
 
 # 6. 下个月开发规范
 
-## Monthly Dev Spec: 2026-06 — RitsuLib Runtime Proof + Architecture Governance Month
+## Monthly Dev Spec: 2026-06 — Runtime Proof & Governance Closure
 
-## 月度目标
+### 月度目标
 
 1. 完成 RitsuLib runtime smoke。
 2. 完成 Sts1Events Off / CanaryOnly runtime proof。
-3. 完成 independent QA / Red-Team。
-4. 建立 warning debt matrix。
-5. 保持 Batch 4c blocked，直到 runtime smoke 通过。
-6. 保持 architecture canary diagnostics-only，不改变 gameplay。
+3. 让 QA / Red-Team 从 HARD BLOCKED 转成 PASS 或明确 PARTIAL。
+4. 清理或分类 89 个 Sts1Events nullable warnings。
+5. 关闭 dirty worktree。
+6. 保持 Batch 4c blocked，直到 runtime smoke 通过。
 7. 不 claim release-ready / live-ready / full parity。
 
 ---
 
-## Week 1 — Runtime Proof + Warning Truth
-
-### Required Work
-
-1. 安装 / 验证：
-
-   * BaseLib v3.1.4
-   * STS2-RitsuLib
-   * EZMicroBalance / Spire Plus
-2. 只启用这三个 mod。
-3. 运行 Steam client。
-4. 收集 `godot.log`。
-5. audit log：
-
-   * BaseLib initialized
-   * RitsuLib initialized
-   * RitsuLib bootstrap starting
-   * ModPatcher applied 25 patches
-   * Spire Plus initialized
-   * SavedSpireFields expected count
-   * 0 MissingMethodException
-   * 0 TypeLoadException
-   * 0 manifest dependency failure
-6. 建立 warning matrix：
-
-   * CS8602
-   * CS8604
-   * CS8625
-   * owner
-   * target fix week
-
-### Acceptance Criteria
-
-* `runtime-smoke-checklist.md` 从 BLOCKED 改为 PASS 或明确 Hard Block。
-* `docs/reviews/current-validation.md` 更新 runtime evidence。
-* Batch 4c 状态明确。
-* Warning issue 建立。
-
----
-
-## Week 2 — Sts1Events Runtime Gate
-
-### Required Work
-
-1. Off mode runtime:
-
-   * env unset
-   * 0 Sts1Events registration
-   * log proof
-2. CanaryOnly runtime:
-
-   * `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`
-   * 4 canary registrations
-   * log proof
-3. AdditiveBatch1 / AdditiveAllDraft governance:
-
-   * dev-only warning
-   * TODO/BLOCKED table
-   * not tester-facing
-4. ReplacementPrototype:
-
-   * compile-symbol-gated
-   * debug-only
-
-### Acceptance Criteria
-
-* Off and CanaryOnly runtime logs captured。
-* CanaryOnly 可进入 manual test matrix。
-* AdditiveAllDraft 不被误标为 playable。
-* issues/docs 状态一致。
-
----
-
-## Week 3 — Architecture Diagnostics Hardening
-
-### RewardPipeline
+## Week 1 — Runtime Environment Setup
 
 Required:
 
-* 保持 diagnostics-only。
-* 记录 FeatureRegistry bootstrap event。
-* 不改变 reward 行为。
-* 添加 behavior unchanged test。
+* 安装 `STS2-RitsuLib v0.3.2+` 到 active game root。
+* 确认：
+
+  * `BaseLib`
+  * `STS2-RitsuLib`
+  * `EZMicroBalance`
+  * 只有这三个 mod active。
+* 捕获 path check。
+* 更新 `runtime-smoke-checklist.md`。
 
 Acceptance:
 
-* no softlock。
-* no reward mutation。
-* log evidence exists。
-
-### CardPlayContext
-
-Required:
-
-* 保持 allow-only adapter。
-* 在 Lotha extra-play path 记录 depth/policy。
-* 不改变 result。
-
-Acceptance:
-
-* no recursion regression。
-* branch behavior unchanged。
+* `STS2-RitsuLib` path exists。
+* active game root 确认。
+* 若仍缺失，写 Hard Block report。
 
 ---
 
-## Week 4 — Death / Multiplayer Foundation
-
-### DeathProtectionService
+## Week 2 — Off / CanaryOnly Runtime Smoke
 
 Required:
 
-* diagnostics-only。
-* tracked source。
-* tests。
-* Lotha DeathReprieve mapping stays spec-only。
+* env unset / Off mode launch。
+* `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` launch。
+* 捕获 `godot.log`。
+* 验证：
 
-### MultiplayerPolicy
-
-Required:
-
-* active feature matrix:
-
-  * Preview tools
-  * Urda Root Eyes
-  * Ascension combat
-  * Sts1Events
-  * Vakuu fight
-* category guard tests:
-
-  * LocalUiOnly
-  * LocalPlayerOnly
-  * HostAuthoritative
-  * SharedRunState
-  * CombatCommandReplicated
-  * UnsafeInMultiplayer
+  * RitsuLib active
+  * BaseLib initialized
+  * Spire Plus initialized
+  * ModPatcher applied migrated patches
+  * Off = 0 Sts1Events registration
+  * CanaryOnly = 4 canary registrations
+  * 0 MissingMethodException
+  * 0 TypeLoadException
+  * 0 dependency failure
 
 Acceptance:
 
-* every active feature has policy category。
-* co-op unsafe remains fail-closed。
-* no behavior enforcement unless explicitly documented。
+* runtime evidence doc 存在。
+* QA 可以复核 log。
+* Batch 4c 状态更新为 proceed / still blocked。
 
 ---
 
-## Week 5 — QA / Consolidation / Handoff
+## Week 3 — Warning Debt + Worktree Closure
 
 Required:
 
-1. Independent QA/Red-Team review。
-2. Build/test/format/diff-check。
-3. Runtime evidence summary。
-4. Warning matrix summary。
-5. Monthly review。
-6. No release-ready wording。
-7. Commit/push only after Green Stop。
+* 建立 warning matrix：
+
+  * CS8602
+  * CS8604
+  * CS8625
+  * file
+  * owner
+  * nullable category
+* 优先修 CanaryOnly 相关 warning。
+* Current dirty entries 分类：
+
+  * keep
+  * commit
+  * archive
+  * defer
+* build/test/format/diff-check rerun。
 
 Acceptance:
 
-* QA report exists。
-* worktree clean。
-* runtime evidence or hard blocker exists。
-* docs numbers unified。
-* Batch 4c decision documented。
-* no high-risk migration。
+* warning issue 存在。
+* dirty worktree clean 或有 owner-approved blocker report。
+* no false-green wording。
+
+---
+
+## Week 4 — Diagnostics-only Architecture Consolidation
+
+Required:
+
+* RewardPipeline remains diagnostics-only。
+* CardPlayContext remains allow-only。
+* DeathProtectionService remains no-op / diagnostics-only。
+* MultiplayerPolicy remains taxonomy / diagnostics-only。
+* 不增加 gameplay behavior。
+
+Acceptance:
+
+* tests pass。
+* docs 明确 “no behavior change”。
+* QA confirms no release/live claim。
+
+---
+
+## Week 5 — QA / Handoff
+
+Required:
+
+* 独立 QA / Red-Team rerun。
+* build/test/format/diff-check。
+* runtime smoke evidence review。
+* warning matrix review。
+* monthly review。
+* owner handoff。
+
+Acceptance:
+
+* QA verdict 不再 HARD BLOCKED，或 blocker report 完整。
+* no Batch 4c unless runtime passed。
+* no release-ready claim。
+* worktree clean or explicitly approved dirty state。
 
 ---
 
 # 7. Overnight Run 设置
 
-## Runtime Proof + Governance Closure Overnight Run
+## Runtime Proof + QA Closure Overnight Run
 
-**必须持续运行到 Green Stop 或 Hard Block Stop。不得 soft stop。**
+**必须持续运行到 Green Stop 或 Hard Block Stop；不能 soft stop。**
 
-## Green Stop 条件
+### Green Stop 条件
 
 全部满足才允许停止：
 
-1. `git status --short` clean，或 dirty files 有完整 blocker report。
+1. `git status --short` clean，或 dirty state 有完整 owner-approved blocker report。
 2. `dotnet clean && dotnet build` raw log 存档。
 3. `dotnet test` raw log 存档。
 4. `dotnet format` clean。
 5. `git diff --check` clean。
-6. validation truth 与 raw log 一致。
-7. STS2-RitsuLib install status verified。
-8. Off mode runtime smoke PASS，或 Hard Block。
-9. CanaryOnly runtime smoke PASS，或 Hard Block。
-10. QA/Red-Team subagent 输出 pass/fail。
-11. runtime-smoke-checklist、current-validation、issues、monthly-dev-spec 同步。
-12. 不 claim release-ready / live-ready / full parity。
-13. 不启动 Batch 4c，除非 runtime smoke PASS。
-14. 不迁 high-risk patches。
-15. 不添加 new gameplay。
+6. `STS2-RitsuLib` install status verified。
+7. Off mode runtime smoke captured。
+8. CanaryOnly runtime smoke captured。
+9. QA/Red-Team subagent rerun。
+10. runtime-smoke-checklist、current-validation、issues、monthly spec 同步。
+11. no release-ready / live-ready / full parity claim。
+12. no Batch 4c unless smoke passed。
+13. no high-risk migration。
+14. no new gameplay。
 
-## Hard Block Stop 模板
+### Hard Block Stop 模板
 
 ```text
 Blocker:
 Failed command:
 Exact error:
 Runtime/log evidence path:
-Files touched:
 Current git status:
+Dirty files:
+Files touched:
 What remains:
 Owner:
 Next command:
 ```
 
-## 禁止停止
+### 禁止停止
 
-* Runtime smoke 没跑，却说 source proof 够了。
-* QA 没跑，却说自审通过。
-* Worktree dirty，却没有 blocker report。
-* DeathProtection / MultiplayerPolicy stub 存在就说功能完成。
-* CanaryOnly 没 runtime proof 就说 tester-ready。
-* Batch 4c 在 smoke 前启动。
+* STS2-RitsuLib 没装，却继续做 Batch 4c。
+* 没有 `godot.log` 却说 runtime-safe。
+* QA 仍 HARD BLOCKED 却说完成。
+* Worktree dirty 却没有 blocker report。
+* Warnings 未分类却继续扩 Sts1Events。
+* 任何 release-ready / live-ready 说法。
 
 ---
 
-# 8. Subagent Plan
+# 8. 必须使用的子代理
 
-| Subagent                       | Scope                                                      | Output                                  | Pass/Fail                             |
-| ------------------------------ | ---------------------------------------------------------- | --------------------------------------- | ------------------------------------- |
-| Runtime Smoke Agent            | 安装/验证 STS2-RitsuLib，跑 Off / CanaryOnly                     | godot.log + runtime report              | Off=0 / CanaryOnly=4 or blocker       |
-| QA / Red-Team Auditor          | 独立复核 build/test/runtime/docs/worktree                      | QA pass/fail report                     | cannot be implementation agent        |
-| Warning Triage Agent           | 分类 89 warnings                                             | warning matrix + issue row              | owner assigned                        |
-| Sts1Events Governance Agent    | AdditiveBatch1 / AdditiveAllDraft / Replacement risk table | governance audit doc                    | dev-only surfaces clear               |
-| FeatureRegistry Agent          | BootstrapStatus vs LiveStatus tests/logs                   | guard tests + docs                      | Off/Canary/Vakuu hidden status tested |
-| Architecture Integration Agent | RewardPipeline/CardPlayContext diagnostics-only canary     | code + tests + no behavior-change proof | low-risk path integrated              |
-| State/Death/Multiplayer Agent  | DeathProtection/MultiplayerPolicy diagnostics-only tests   | tracked source + tests + matrix         | no gameplay behavior                  |
-| Documentation Agent            | docs/issues/monthly spec/runtime checklist sync            | unified docs                            | no stale counts                       |
-| Release Safety Agent           | 防止 release/live/full parity claim                          | release-safety checklist                | runtime rows remain open              |
+| Subagent                    | Scope                                       | Output                     | Pass/Fail                       |
+| --------------------------- | ------------------------------------------- | -------------------------- | ------------------------------- |
+| Runtime Smoke Agent         | 安装/验证 STS2-RitsuLib，跑 Off/CanaryOnly        | godot.log + runtime report | Off=0 / CanaryOnly=4 or blocker |
+| QA / Red-Team Auditor       | 独立复核 runtime/build/test/docs/worktree       | QA pass/fail report        | cannot be implementation agent  |
+| Warning Triage Agent        | 分类 89 warnings                              | warning matrix + issue row | owner assigned                  |
+| Worktree Governance Agent   | Current dirty entries 分类                    | clean/commit/defer matrix  | owner decision recorded         |
+| Sts1Events Governance Agent | AdditiveBatch1/AdditiveAllDraft risk table  | governance audit           | dev-only scopes clear           |
+| FeatureRegistry Agent       | BootstrapStatus vs LiveStatus runtime logs  | guard + runtime evidence   | source/runtime status separated |
+| Documentation Agent         | current-validation/issues/monthly spec sync | unified docs               | no stale counts                 |
+| Release Safety Agent        | 禁止 release/live/full parity claim           | release safety checklist   | runtime rows remain open        |
 
 ---
 
 ## 9. 给助理的直接指令
 
 ```text
-当前不能判定全部完成。No-game validation 与 architecture hardening 有进展，Sts1Events mode bootstrap bug 已修复，但 runtime smoke、QA PASS、warning debt cleanup、Batch 4c readiness 仍未完成。
+当前不能判定完成。Validation cleanup 已通过，但 runtime proof 和 QA 仍 HARD BLOCKED。
 
-现在进入 Runtime Proof + Governance Closure Overnight Run，不允许 soft stop。
+立即进入 Runtime Proof + QA Closure Overnight Run，不能 soft stop：
 
-立即执行：
-1. 以 docs/reviews/current-validation.md 和本轮 raw logs 为当前事实：464 pass / 0 fail / 21 skip / 485 total；build 0 errors / 89 warnings。若有新 raw log，必须替换所有 active docs。
-2. 验证 STS2-RitsuLib 是否安装。若未安装，写 Hard Block report；若已安装，跑 Off + CanaryOnly runtime smoke。
+1. 以 docs/reviews/current-validation.md 为当前 validation truth：464 pass / 0 fail / 21 skip / 485 total；build 0 errors / 89 warnings。
+2. 先验证 STS2-RitsuLib 是否安装。若缺失，写 Hard Block report；若安装，立即跑 Off + CanaryOnly runtime smoke。
 3. Off mode 必须证明 0 Sts1Events registration；CanaryOnly 必须证明 4 canary registrations。
-4. independent QA/Red-Team 已运行并返回 FAIL / HARD BLOCKED；runtime proof 完成后必须再次启动，不能自审。
-5. 建立 warning triage issue，分类 89 nullable warnings。
-6. 保持 RewardPipeline/CardPlayContext/DeathProtection/MultiplayerPolicy diagnostics-only，不要 claim gameplay behavior。
-7. 完成 Sts1Events governance audit：AdditiveBatch1 / AdditiveAllDraft / ReplaceUnknown risk table。
-8. build/test/format/diff-check clean 后，更新 runtime-smoke-checklist、issues、monthly-dev-spec、current-validation。
-9. 禁止 Batch 4c、禁止 high-risk migration、禁止新增 gameplay、禁止 release-ready/live-ready claim。
+4. 捕获 godot.log，更新 runtime-smoke-checklist。
+5. 重新运行 QA/Red-Team subagent；不能自审。
+6. 建立 warning triage matrix，分类 89 nullable warnings。
+7. 处理或记录 current dirty entries；没有 clean worktree 或 owner-approved blocker report，不允许 Green Stop。
+8. 禁止 Batch 4c、禁止 high-risk patch migration、禁止新增 gameplay。
+9. 禁止 release-ready / live-ready / full parity claim。
 10. 只有 Green Stop 或 Hard Block Stop 才能停止。
 ```
 
 ---
 
-# 10. 总评分
+## 最终一句话结论
 
-| 维度       |           分数 | 理由                                                                          |
-| -------- | -----------: | --------------------------------------------------------------------------- |
-| 架构清晰度    |         8/12 | bounded context 和 feature registry 明显改善，但 runtime proof 缺                   |
-| 模块解耦与边界  |         7/12 | Sts1Events / FeatureRegistry / Architecture skeleton 有边界，high-risk patch 仍多 |
-| 领域建模     |         6/10 | UrdaStateCodec 和 policy skeleton 有进展，Death/Multiplayer 仍是 stub              |
-| 代码可读性    |         7/10 | no-game scaffold 更清晰，但 warnings 仍多                                          |
-| 可维护性     |         7/12 | tests 多，source guards 多，但 runtime evidence 缺                                |
-| 可拓展性     |         7/10 | 5-mode gate、FeatureRegistry metadata、diagnostics skeleton 有利扩展              |
-| 可测试性     |         7/10 | 464 pass，但主要 source/no-game；runtime/E2E 缺                                   |
-| CI/CD    |          5/8 | workflows 存在，但 runtime smoke 依赖本地环境                                         |
-| 项目管理     |          6/8 | docs/spec 很强，仍有数字口径 drift 风险                                                |
-| 文档       |          4/5 | 文档丰富，但需要持续防 stale                                                           |
-| 稳定性/生产准备 |          1/3 | release-ready 明确不成立                                                         |
-| **总分**   | **67 / 100** | source-level 工程治理强，runtime proof 是主要短板；QA 已 fail/block 而不是 pass                  |
-
----
-
-# 最终一句话结论
-
-**当前最应该优先解决的是 RitsuLib runtime smoke；independent QA 已给出 fail/block，必须在 fresh runtime evidence 存在后重跑，因为它直接决定 Batch 4c、Sts1Events CanaryOnly、architecture canary integration 能否从 source-level 进展变成可信的 runtime-safe 交付。**
+**当前最应该优先解决的是 STS2-RitsuLib runtime smoke 与 QA hard block，因为它直接决定 RitsuLib migration、Sts1Events CanaryOnly、Batch 4c 和后续 tester handoff 是否可信。**

@@ -178,6 +178,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Move-NewCurrentRunsBeforeRestore",
             "Restore-MovedItems",
             "live-spire-plus-disabled-session",
+            "$defaultAllowedModIds = @('BaseLib', 'STS2-RitsuLib', 'EZMicroBalance')",
+            "id = 'STS2-RitsuLib'",
             "DisableSpirePlus requires -MoveOtherMods",
             "$allowedModIds = if ($DisableSpirePlus) { @('BaseLib') } else { $defaultAllowedModIds }",
             "AllowedModIds = @($allowedModIds)",

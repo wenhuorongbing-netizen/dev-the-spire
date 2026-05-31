@@ -1,27 +1,27 @@
-# Overnight Run Status — Revision I Current-State Reconciliation
+# Overnight Run Status — Revision J Runtime Hard-Blocker Closure
 
 Date: 2026-05-31
 
-## Revision I Current Stop Condition
+## Revision J Current Stop Condition
 
 ```text
 Status: OWNER-REVIEW PACKET PREPARED / RUNTIME HARD BLOCKED
-HEAD: 87820303 (main...origin/main) sprint 1
-Validation: clean/build/format/diff-check pass; no-build tests pass on final rerun with 464 passed, 0 failed, 21 skipped, 485 total
+HEAD: 6b149ba0 (main...origin/main) sprint 2
+Validation: clean/build/test/format/diff-check/patch-inventory/batch-classifier replay passes; latest target is 464 passed, 0 failed, 21 skipped, 485 total
 Warnings: 89 Sts1Events nullable warnings remain as staging debt
-Dirty state: worktree remains dirty; use the latest batch classifier output before any commit planning
+Dirty state: 49 dirty entries, 0 unclassified in the final Revision J classifier run
 Sts1Events: staging-only recommended
 Debug: accept-scaffold recommended
 RitsuLib: compile/manifest dependency attempted; runtime unverified
-Runtime: blocked because STS2-RitsuLib and active godot.log are missing
+Runtime: blocked at clean-audit/runtime-proof stage; fresh loader log reaches main menu with BaseLib, RitsuLib, and Spire Plus, but has 11 Godot ERROR hits including ritsulib-variants.json parsing and 8 optional Spire Plus ModPatcher failures
 Batch 4c: blocked
 Release-ready: no
 Commit/push: not authorized
 ```
 
-## Revision I Required Next Action
+## Revision J Required Next Action
 
-Install `STS2-RitsuLib` under the active game root, rerun BaseLib + STS2-RitsuLib + Spire Plus loader smoke, capture `godot.log`, then rerun Off and CanaryOnly Sts1Events runtime checks. Do not resume Batch 4c or high-risk migration before that evidence exists.
+Keep `STS2-RitsuLib` installed under the active E-drive game root, resolve or explicitly disposition the 11 loader error hits, rerun BaseLib + STS2-RitsuLib + Spire Plus loader smoke, capture a clean `godot.log`, then rerun Off and CanaryOnly Sts1Events runtime checks. Do not resume Batch 4c or high-risk migration before that evidence exists.
 
 ---
 
@@ -93,7 +93,7 @@ Dirty: worktree remains dirty with preserved source/docs/harness changes; batch 
 Commit slices: Revision G/M4 plan updated for owner review only; no commit authorized
 Stale docs: primary validation/runtime docs reconciled; remaining revision-report docs are historical unless explicitly promoted
 Sts1Events: Staging-only (warnings/runtime unverified; ZHS sts1_events key parity currently complete)
-RitsuLib: Hard-blocked/runtime-unverified because STS2-RitsuLib is missing at checked game-root mod paths
+RitsuLib: Hard-blocked/runtime-unverified because fresh `godot.log` evidence is missing after local STS2-RitsuLib install
 Debug: Accept-scaffold (default-off, Warn unconditional, LogPreview dead)
 Release-ready: No
 Required next: install STS2-RitsuLib, rerun Off and CanaryOnly runtime smoke, capture `godot.log`, and keep Batch 4c blocked until that passes

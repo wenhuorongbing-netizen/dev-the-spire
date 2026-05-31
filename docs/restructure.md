@@ -11,9 +11,9 @@
 
 `codex-app-better-token-main.zip` 是一套 Codex 工作流/状态模板，不是代码依赖。它里面有自己的 `AGENTS.md`、`PROMPTS.md` 和 `harness/` 模板。**不能直接覆盖 root `AGENTS.md`**，因为当前 repo 的 `AGENTS.md` 已经包含 StS2、BaseLib、manifest、source evidence、release validation 的硬规则。正确做法是“薄接入”：把它变成 `docs/codex-harness/` 模板或很薄的 `harness/` 状态文件，长期事实仍然回指 `PROJECT_STATE.md`、`docs/PROJECT_MAP.md`、`docs/issues.md`、`docs/codex-workflow.md`。 
 
-`STS2-RitsuLib.0.3.3.variant-pack.zip` 是运行时库包。RitsuLib 官方 README/文档建议 mod 项目通过 `PackageReference Include="STS2.RitsuLib"` 编译引用，并在 manifest 里声明运行时依赖 `{ "id": "STS2-RitsuLib" }`；variant-pack 是给玩家安装到 `mods/STS2-RitsuLib/` 的运行时包，root DLL 是 loader，真实 API build 在 `lib/<api-version>/` 下。([RitsuLib][1]) ([GitHub][2])
+`STS2-RitsuLib.0.3.10.variant-pack.zip` 是当前本机安装的运行时库包。RitsuLib 官方 README/文档建议 mod 项目通过 `PackageReference Include="STS2.RitsuLib"` 编译引用，并在 manifest 里声明运行时依赖 `{ "id": "STS2-RitsuLib" }`；variant-pack 是给玩家安装到 `mods/STS2-RitsuLib/` 的运行时包，root DLL 是 loader，真实 API build 在 `lib/<api-version>/` 下。([RitsuLib][1]) ([GitHub][2])
 
-但这里有一个关键阻塞：当前 repo 目标是 **Slay the Spire 2 v0.106.1 + BaseLib v3.1.4**，而你上传的 RitsuLib variant pack 里我看到的是 `0.103.2`、`0.105.1`、`0.106.1` 三个变体，没有 `0.106.1`。所以我的建议是：**先 staging，不要马上把 RitsuLib 写进 `EZMicroBalance.json` 的 required dependency**。要么把项目目标更新并验证到 `0.106.1`，要么拿到/确认 `0.106.1` 兼容包，再进入硬依赖迁移。repo 当前目标和命令状态在 `PROJECT_STATE.md`/README 里也写得很清楚。 
+当前 repo 目标是 **Slay the Spire 2 v0.106.1 + BaseLib v3.1.4**，官方 RitsuLib `v0.3.10` variant pack 已确认包含 `0.106.1` 变体。当前 `EZMicroBalance.json` 已声明 `STS2-RitsuLib >= 0.3.2`，但 runtime smoke 仍必须等 fresh `godot.log` 证明后才算通过。repo 当前目标和命令状态在 `PROJECT_STATE.md`/README 里也写得很清楚。
 
 ## 我建议的执行顺序
 
@@ -81,7 +81,7 @@ docs/features/*/README.md
 
 ### 3. RitsuLib：先作为 runtime companion staging
 
-先把上传的 RitsuLib variant pack 解压到游戏 mods 目录，而不是 repo：
+先把官方 RitsuLib variant pack 解压到游戏 mods 目录，而不是 repo（当前本机已安装 `v0.3.10`）：
 
 ```text
 <GameRoot>/mods/STS2-RitsuLib/
@@ -102,18 +102,22 @@ docs/PROJECT_MAP.md 更新一行
 docs/codex-workflow.md 更新一行
 ```
 
-暂时不要改：
+当前 manifest 已保留 BaseLib 和 RitsuLib runtime dependency；不要改 manifest id，也不要仅因为本机 runtime pack 更新就提高 minimum version：
 
 ```json
 "dependencies": [
   {
     "id": "BaseLib",
     "min_version": "v3.1.4"
+  },
+  {
+    "id": "STS2-RitsuLib",
+    "min_version": "0.3.2"
   }
 ]
 ```
 
-除非你决定把当前 StS2 target 从 `v0.106.1` 推到 `v0.106.1` 并完成 build/test/runtime smoke。当前 manifest 只依赖 BaseLib，版本是 `v0.1.0-private-beta.84`。
+除非后续 RitsuLib API 使用确实需要更高版本并完成 build/test/runtime smoke。当前 manifest 版本是 `v0.1.0-private-beta.84`。
 
 ### 4. 文件夹重构：先 move-only，再行为迁移
 
@@ -162,13 +166,13 @@ EZMicroBalanceCode/
 等版本问题解决后，再进入硬依赖：
 
 ```xml
-<PackageReference Include="STS2.RitsuLib" Version="0.3.3" PrivateAssets="All" />
+<PackageReference Include="STS2.RitsuLib" Version="0.3.2" PrivateAssets="All" />
 ```
 
 然后 manifest 加：
 
 ```json
-{ "id": "STS2-RitsuLib", "min_version": "0.3.3" }
+{ "id": "STS2-RitsuLib", "min_version": "0.3.2" }
 ```
 
 RitsuLib 官方文档列出的主入口包括 `CreateContentPack`、`CreatePatcher`、`SubscribeLifecycle<TEvent>`、`BeginModDataRegistration/GetDataStore`、`RegisterModSettings`，这些适合逐步替换 scattered helpers，而不是一次性替换所有 Harmony 和 BaseLib 用法。([RitsuLib][3])

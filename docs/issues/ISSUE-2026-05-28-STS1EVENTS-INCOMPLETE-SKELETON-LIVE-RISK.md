@@ -73,7 +73,7 @@ Events with TODO/BLOCKED/partial status in AdditiveAllDraft mode:
 
 - Dedicated tests in `Sts1EventFeatureGuardTests.cs` cover the current focused guard set
 - Tests verify gate defaults, canary events, AdditiveBatch1 verified scope, act mapping, registry presence, registration counts, patch-boundaries row, mode safety
-- Safe/controlled modes (Off, CanaryOnly, AdditiveBatch1) are source-verified by guard tests; runtime proof remains blocked until STS2-RitsuLib is installed
+- Safe/controlled modes (Off, CanaryOnly, AdditiveBatch1) are source-verified by guard tests; runtime proof remains blocked until fresh `godot.log` evidence is captured with installed STS2-RitsuLib
 - CanaryOnly events are hardcoded — no TODO/BLOCKED events can enter safe modes
 
 ### Why this is safe

@@ -10,7 +10,7 @@
 - Revision I owner-review artifacts prepared under `docs/goals/`; runtime/release readiness was not claimed.
 - Warning ledger and harness status refreshed to 89 Sts1Events nullable warnings and the 464 passed / 0 failed / 21 skipped no-build test result.
 - `docs/patch-inventory.md` regenerated after the patch-inventory check reported it stale.
-- Runtime smoke remains hard blocked because `STS2-RitsuLib` is missing at checked game-root mod paths and no active `godot.log` exists.
+- Runtime smoke remains hard blocked for live proof: official `STS2-RitsuLib` `v0.3.10` is installed at the E-drive game-root mod path and fresh loader evidence reaches main menu with BaseLib, RitsuLib, and Spire Plus, but the audit has 11 `Godot ERROR` hits and Off/CanaryOnly proof remains open.
 - No commit, push, stash, checkout, reset, restore, or broad clean was performed.
 
 ## Changed Files
@@ -33,12 +33,12 @@
 - `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build`: pass on final rerun, 464 passed, 0 failed, 21 skipped, 485 total.
 - `dotnet format .\EZMicroBalance.csproj --verify-no-changes`: pass.
 - `git diff --check`: pass.
-- `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified`: pass on final rerun with 55 dirty entries, 0 unclassified.
+- `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified`: pass on Revision J classifier rerun with 49 dirty entries, 0 unclassified.
 
 ## Remaining Items
 
-- Install `STS2-RitsuLib` at `<GameRoot>\mods\STS2-RitsuLib`.
-- Capture fresh `godot.log` with only BaseLib, STS2-RitsuLib, and Spire Plus enabled.
+- Keep installed `STS2-RitsuLib` `v0.3.10` at `<GameRoot>\mods\STS2-RitsuLib`.
+- Capture clean fresh `godot.log` with only BaseLib, STS2-RitsuLib, and Spire Plus enabled, or explicitly disposition every loader audit error.
 - Prove Sts1Events Off mode has 0 registrations and CanaryOnly mode has exactly 4 canary registrations.
 - Keep Batch 4c, high-risk migration, live-ready, and release-ready claims blocked until runtime proof exists.
 - Get owner approval before committing or pushing any Revision I slices.

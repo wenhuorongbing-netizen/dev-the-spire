@@ -536,8 +536,8 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             docsByPath["PROJECT_STATE.md"],
-            "beta.84 startup remains pending",
-            "beta.84 loader proof still needs a fresh run");
+            "target-fix",
+            "versioned tester-package proof remain pending");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
             "Current beta.84 evidence should be read from the latest validated HEAD");

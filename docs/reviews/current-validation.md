@@ -2,25 +2,51 @@
 
 Date: 2026-05-31
 
-## Revision I Current Snapshot
+## Revision J Current Snapshot
 
-- HEAD: `87820303 (HEAD -> main, origin/main, origin/HEAD) sprint 1`
+- HEAD: `6b149ba0 (HEAD -> main, origin/main, origin/HEAD) sprint 2`
 - Branch: `main...origin/main`
-- Worktree: dirty before this pass and still dirty. Current-state reconciliation preserves existing source/test/goal-doc edits and adds owner-review artifacts; no commit, push, stash, checkout, reset, restore, or broad clean was performed.
-- Runtime smoke: hard blocked because `STS2-RitsuLib` is missing at checked D/E game-root mod paths and no active `godot.log` exists.
+- Worktree: dirty before this pass and still dirty. Existing source/docs/harness edits were preserved; no commit, push, stash, checkout, reset, restore, or broad clean was performed.
+- Runtime smoke: target-fix follow-up evidence under `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\` and `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\` reaches main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied. Off mode proves 0 StS1 registration lines; CanaryOnly proves exactly 4 canary content registrations. Live gameplay, UI, save-load, co-op, independent QA rerun, clean worktree, versioned tester-package handoff, live-ready, and release-ready claims remain blocked.
 
-## Revision I Required Commands
+## Revision J Required Commands
 
 | Command | Result | Notes |
 | --- | --- | --- |
 | `dotnet clean .\EZMicroBalance.csproj` | PASS | 0 warnings, 0 errors. |
 | `dotnet build .\EZMicroBalance.csproj` | PASS | 0 errors, 89 warnings. Warnings remain Sts1Events nullable staging debt (`CS8602`, `CS8604`, `CS8625`). |
-| `dotnet test EZMicroBalance.sln --no-build` | PASS | Current rerun passed with 464 passed, 0 failed, 21 skipped, 485 total. Earlier plain no-build attempts intermittently aborted with a test-host crash and no assertion failures; the single-worker VSTest command remains a fallback if the crash recurs. |
+| `dotnet build .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj` | PASS | Test assembly builds against the current project. |
+| `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` | PASS | 464 passed, 0 failed, 21 skipped, 485 total. |
 | `dotnet format .\EZMicroBalance.csproj --verify-no-changes` | PASS | No formatting changes required. |
 | `git diff --check` | PASS | No whitespace errors. |
-| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | PASS | Final rerun reported 55 dirty entries, 0 unclassified. |
-| `.\scripts\generate-patch-inventory.ps1 -Check` | PASS | Final check reported `docs/patch-inventory.md` is fresh. |
-| `dotnet publish EZMicroBalance.sln` | NOT RUN | No resource, localization, manifest, export, or package refresh was performed in this pass. |
+| `.\scripts\generate-patch-inventory.ps1 -Check` | PASS | Patch inventory is fresh. |
+| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | PASS | Revision J classifier reports 49 dirty entries, 0 unclassified. |
+| `dotnet publish EZMicroBalance.sln` | PASS | Published the target-fix build to the local installed mod folder for diagnostic runtime smoke; no new versioned tester package was created. |
+
+## v15 Continuation Validation Rerun
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `dotnet build EZMicroBalance.sln -m:1 --no-incremental` | PASS | 0 errors, 89 Sts1Events nullable warnings. |
+| `dotnet test EZMicroBalance.sln --no-build -- RunConfiguration.MaxCpuCount=1` | PASS | 464 passed, 0 failed, 21 skipped, 485 total. |
+| `dotnet test --filter Sts1EventFeatureGuardTests --no-build -- RunConfiguration.MaxCpuCount=1` | PASS | 31 passed, 0 failed, 0 skipped. |
+| `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` | PASS | No formatting changes required. |
+| `git diff --check` | PASS | No whitespace errors. |
+
+## Revision J Runtime Attempt
+
+| Evidence | Result | Notes |
+| --- | --- | --- |
+| `.tools\runtime-evidence\sts1-events-v15-loader-20260531-231135\godot.log.after-launch` | FAIL / reaches menu with errors | BaseLib, RitsuLib, and Spire Plus loaded and reached main menu, but audit is not clean: 11 Godot ERROR hits, including `ritsulib-variants.json` manifest parsing and 8 optional Spire Plus ModPatcher failures. |
+| `.tools\runtime-evidence\sts1-events-v15-loader-20260531-231135\audit-godot-log.after-launch.json` | FAIL | Not clean; 11 Godot ERROR lines. No `MissingMethodException` or `TypeLoadException` hits. |
+| `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\godot.log.after-launch` | PASS | Off-mode Steam smoke reached main menu, loaded exactly BaseLib/RitsuLib/Spire Plus, applied 25/25 Spire Plus patches, found 30 SavedSpireFields, and logged Sts1Events disabled/default Off. |
+| `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\godot-log-audit.json` | PASS | Clean audit with 0 release-blocking signature hits. |
+| `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\godot.log.after-direct-launch` | PASS | CanaryOnly direct smoke reached main menu, loaded exactly 3 mods, applied 25/25 patches, found 30 SavedSpireFields, and registered `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, and `Sts1DivineFountain`. |
+| `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\godot-log-audit.json` | PASS | Clean audit with 0 release-blocking signature hits. |
+| `.tools\runtime-evidence\ritsulib-runtime-proof-20260531-2304\godot-direct-exe-steam-init-fail.log` | FAIL | Direct executable launch failed Steam initialization before mod loading. |
+| `.tools\runtime-evidence\ritsulib-runtime-proof-20260531-2304\godot-steam-applaunch.log` | FAIL / invalid Spire Plus proof | RitsuLib `0.3.10` loaded with compat branch `0.106.1`; RitsuLib framework patches reported 0 failed; BaseLib `3.1.4` loaded. `EZMicroBalance` was skipped as disabled in settings, so Spire Plus initialization, 30 SavedSpireFields, and Spire Plus ModPatcher proof were not established. |
+| `.tools\runtime-evidence\ritsulib-runtime-proof-20260531-2304\godot-steam-applaunch-audit.json` | FAIL | Audit was not clean: 3 Godot ERROR lines. No `MissingMethodException` or `TypeLoadException` hits were found. |
+| Cleanup | PASS | Stopped `SlayTheSpire2`; restored `settings.save` for Steam user `76561199353211250` with matching before/after SHA256. |
 
 ## StS1 Unsafe-Gate Continuation Validation
 
@@ -33,7 +59,7 @@ Date: 2026-05-31
 | `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` | PASS | No formatting changes required. |
 | `git diff --check` | PASS | No whitespace errors; PowerShell emitted a CRLF normalization warning for existing `docs/patch-inventory.md`. |
 
-## Revision I Runtime Path Check
+## Revision J Runtime Path Check
 
 | Path | Exists |
 | --- | --- |
@@ -41,17 +67,18 @@ Date: 2026-05-31
 | `E:\Steam\steamapps\common\Slay the Spire 2\mods` | True |
 | `E:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib` | True |
 | `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` | True |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` | False |
+| `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` | True (`v0.3.10`, includes `lib\0.106.1`) |
 | `D:\Steam\steamapps\common\Slay the Spire 2` | False |
 | `D:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` | False |
-| `C:\Users\zihao\AppData\Roaming\SlayTheSpire2\logs\godot.log` | False |
+| `C:\Users\zihao\AppData\Roaming\SlayTheSpire2\logs\godot.log` | True, but current content is from runtime smoke attempts with non-clean audit; use copied evidence logs for review |
 
-## Revision I Stop Decision
+## Revision J Stop Decision
 
-- Status: NOT COMPLETE / HARD BLOCKED.
-- Owner-review packet: prepared for review; no owner approval recorded.
-- Commit readiness: not complete because the worktree is dirty and runtime smoke is blocked.
-- Batch 4c: remains blocked until STS2-RitsuLib install plus loader smoke passes.
+- Status: PARTIAL PASS / RELEASE STILL BLOCKED.
+- Runtime dependency path blocker: cleared locally by installed STS2-RitsuLib `v0.3.10`.
+- Runtime loader gate: Off and CanaryOnly diagnostic smokes now pass with clean audits and 25/25 Spire Plus patches.
+- Commit readiness: not complete because the worktree is dirty and no commit/push was requested.
+- Batch 4c: remains blocked until independent QA reruns against the new evidence and the owner accepts the dirty-worktree/package state.
 - Release-ready: no.
 
 ## Governance Closure Validation Snapshot (Supersedes 24d4fe9a)
@@ -98,16 +125,16 @@ Date: 2026-05-31
 
 ## Runtime Smoke
 
-- Status: BLOCKED.
-- Local checks: `E:\Steam\steamapps\common\Slay the Spire 2` and `E:\Steam\steamapps\common\Slay the Spire 2\mods` returned `True`; E-drive `BaseLib` and `EZMicroBalance` returned `True`; E-drive `STS2-RitsuLib` returned `False`. The D-drive game root, `mods` folder, `BaseLib`, `STS2-RitsuLib`, and `EZMicroBalance` checks returned `False`. Latest evidence: `.tools/runtime-evidence/refactor-overnight-20260531/runtime-prereq-paths.txt`.
-- Decision: Hard Block Stop. Batch 4c remains blocked. Off mode `0` registrations, CanaryOnly `4` registrations, runtime safety, and release-readiness are not claimed.
+- Status: LOADER/GATE PASS, RELEASE BLOCKED.
+- Local checks: `E:\Steam\steamapps\common\Slay the Spire 2` and `E:\Steam\steamapps\common\Slay the Spire 2\mods` returned `True`; E-drive `BaseLib`, `EZMicroBalance`, and `STS2-RitsuLib` returned `True`; installed `STS2-RitsuLib` manifest version is `0.3.10`, and `lib\0.106.1\STS2-RitsuLib.dll` exists. The Off and CanaryOnly target-fix smoke folders contain clean `godot-log-audit.json` files.
+- Decision: loader/runtime gate proof is now available for Off=0 and CanaryOnly=4. Batch 4c, runtime safety beyond loader gates, live-ready, and release-ready remain blocked pending gameplay/manual proof, clean worktree or owner decision, and versioned tester-package handoff.
 
 ## Independent QA
 
-- Subagent QA/Red-Team verdict: FAIL / HARD BLOCKED.
-- QA-confirmed blocker: no STS2-RitsuLib install, no active `godot.log`, no Off=0 runtime proof, and no CanaryOnly=4 runtime proof.
-- QA fixes applied: current docs no longer say all runtime path checks failed, the StS1 guard-test score row uses current source guards instead of stale 24/24, and Default Off is labeled source-level/runtime-blocked instead of green/amber.
-- Stop decision: Hard Block Stop remains required; Green Stop is not allowed.
+- Target-fix QA/Red-Team verdict: CONDITIONAL PASS for loader gates, not release-ready.
+- QA-supported proof: Off=0 and CanaryOnly=4 loader-gate evidence is supported by the target-fix smoke logs and clean audits.
+- QA fixes applied after review: removed stale hard-block wording that still claimed no CanaryOnly proof or non-clean loader audit in active docs.
+- Stop decision: release/live Green Stop remains disallowed until gameplay/manual proof, clean worktree or owner decision, and versioned tester-package handoff are complete.
 
 ## Architecture Status
 

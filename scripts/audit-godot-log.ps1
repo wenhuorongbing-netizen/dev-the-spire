@@ -23,7 +23,8 @@ $signatures = @(
 
 $ignoredErrorPatterns = @(
     'Mod manifest .*RouteSuggestConfig\.json.*id.*field',
-    'Mod manifest .*sts2-heybox-support[\\/ ]+mod_mainfest\.json.*id.*field'
+    'Mod manifest .*sts2-heybox-support[\\/ ]+mod_mainfest\.json.*id.*field',
+    'Mod manifest .*STS2-RitsuLib[\\/ ]+ritsulib-variants\.json.*id.*field'
 )
 
 function ShouldIgnoreLine

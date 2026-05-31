@@ -19,9 +19,9 @@ internal sealed class BrightestFlameCanonicalKeywordsPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Add Exhaust keyword to BrightestFlame";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(CardModel), "get_CanonicalKeywords", HarmonyLib.MethodType.Getter)];
+        [new ModPatchTarget(typeof(CardModel), nameof(CardModel.CanonicalKeywords), HarmonyLib.MethodType.Getter)];
     [HarmonyPostfix]
-    private static void AddVisibleExhaustKeyword(CardModel __instance, ref IEnumerable<CardKeyword> __result)
+    private static void Postfix(CardModel __instance, ref IEnumerable<CardKeyword> __result)
     {
         if (__instance is not BrightestFlame)
         {
@@ -41,11 +41,11 @@ internal sealed class BrightestFlameCanonicalVarsPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Increase BrightestFlame draw by 1";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(BrightestFlame), "get_CanonicalVars", HarmonyLib.MethodType.Getter)];
+        [new ModPatchTarget(typeof(BrightestFlame), "CanonicalVars", HarmonyLib.MethodType.Getter)];
     private const int ExtraDraw = 1;
 
     [HarmonyPostfix]
-    private static void AddOneToBaseDraw(ref IEnumerable<DynamicVar> __result)
+    private static void Postfix(ref IEnumerable<DynamicVar> __result)
     {
         __result = __result
             .Select(dynamicVar => dynamicVar is CardsVar cards

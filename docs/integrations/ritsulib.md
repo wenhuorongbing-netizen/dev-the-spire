@@ -2,14 +2,14 @@
 
 ## Status
 
-**Compile/manifest dependency attempted; runtime unverified.** RitsuLib 0.3.2 is a compile dependency
+**Compile/manifest dependency attempted; runtime loader unverified.** RitsuLib 0.3.2 is a compile dependency
 via NuGet and a declared runtime dependency via manifest. Using the base package because
-no compat package for game v0.106.1 exists on NuGet. Players must install the
-RitsuLib runtime variant pack to `<GameRoot>/mods/STS2-RitsuLib/`.
+no compat package for game v0.106.1 exists on NuGet. The local runtime dependency is now installed from the official
+RitsuLib runtime variant pack at `<GameRoot>/mods/STS2-RitsuLib/`.
 
-Runtime verification status: no RitsuLib loader smoke, no godot.log evidence,
-and no in-game RitsuLib loading proof exists. The manifest declaration is done,
-but the runtime dependency has never been exercised in a live game session.
+Runtime verification status: STS2-RitsuLib `v0.3.10` is installed locally with a `0.106.1` variant, but no RitsuLib loader smoke, no fresh `godot.log` evidence,
+and no in-game RitsuLib loading proof exists. The manifest declaration and local dependency install are done,
+but the runtime dependency has not yet been exercised in a live game session.
 
 ## What is RitsuLib
 
@@ -37,16 +37,16 @@ The variant pack should be extracted to the game mods directory, not the repo:
 
 Do not commit `STS2-RitsuLib.dll`, `*.pck`, or `*.zip` into this repository.
 
-## Variant Pack Contents (Uploaded)
+## Variant Pack Contents (Installed)
 
-The uploaded `STS2-RitsuLib.0.3.3.variant-pack.zip` contains three game-version
+The installed official `STS2-RitsuLib.0.3.10.variant-pack.zip` contains three game-version
 variants plus a root loader:
 
 | File | Size | Purpose |
 | --- | --- | --- |
 | `STS2-RitsuLib.dll` | 22 KB | Root loader (selects variant at runtime) |
 | `STS2-RitsuLib.Loader.pdb` | 15 KB | Debug symbols for loader |
-| `mod_manifest.json` | 413 B | Mod manifest (id: `STS2-RitsuLib`, version `0.3.3`) |
+| `mod_manifest.json` | 413 B | Mod manifest (id: `STS2-RitsuLib`, version `0.3.10`) |
 | `ritsulib-variants.json` | 644 B | Variant selection config (schema 1) |
 
 | Variant Directory | Game Version | DLL Size | Compatibility |
@@ -80,9 +80,9 @@ is the NuGet compilation package.
 | `STS2.RitsuLib.Compat.0.105.1` | 0.3.2 | Available |
 | `STS2.RitsuLib.Compat.0.106.1` | -- | **Not published** |
 
-The variant pack ships RitsuLib 0.3.3 but the latest on NuGet is 0.3.2.
+The installed runtime variant pack ships RitsuLib 0.3.10 while the current compile package remains 0.3.2.
 No compat package exists for game version 0.106.1. The variant pack DLLs
-(0.3.3) are runtime-only; compilation uses the NuGet base package.
+(0.3.10) are runtime-only in this workspace; compilation uses the NuGet base package.
 
 ### Current dependency setup
 

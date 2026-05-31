@@ -60,4 +60,4 @@ The StS1 event system is **fail-closed** by default:
 ## Verdict
 
 **Source-level fail-closed: VERIFIED by guard tests.**
-**Runtime-level fail-closed: HARD BLOCKED until STS2-RitsuLib is installed and Off/CanaryOnly `godot.log` evidence is captured.**
+**Runtime-level fail-closed: HARD BLOCKED until Off/CanaryOnly `godot.log` evidence is captured with installed STS2-RitsuLib.**

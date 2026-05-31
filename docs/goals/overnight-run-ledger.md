@@ -1,27 +1,27 @@
-# Overnight Run Ledger — Revision I Current-State Reconciliation
+# Overnight Run Ledger — Revision J Runtime Hard-Blocker Closure
 
 Date: 2026-05-31
 
-## Revision I Summary
+## Revision J Summary
 
 | Area | Finding |
 | --- | --- |
-| Git forensics | Current HEAD is `87820303`; `faf5860d`, `f4247553`, `85a38dd1`, and `24d4fe9a` are present in history. |
-| Dirty state | Dirty tracked files remain; no commit, stash, checkout, reset, restore, or broad clean was performed. |
-| Validation replay | Required project clean/build/format/diff-check passed; final no-build test rerun passed with 464/0/21/485. |
+| Git forensics | Current HEAD is `6b149ba0`; Revision I `87820303` and earlier audit commits are historical. |
+| Dirty state | 49 dirty entries and 0 unclassified in the final Revision J classifier run; no commit, stash, checkout, reset, restore, or broad clean was performed. |
+| Validation replay | Required clean/build/test/format/diff-check/patch-inventory/batch-classifier replay passes; target no-build result remains 464/0/21/485. |
 | Warning recount | 89 warnings, all Sts1Events nullable staging debt. |
 | Patch inventory | 142 raw Harmony declarations + 25 migrated `IPatchMethod` classes = 167 tracked runtime patch units; source-level double-patch guard exists. |
 | Sts1Events | staging-only recommended. |
 | Debug | accept-scaffold recommended. |
 | RitsuLib | compile/manifest dependency attempted; runtime unverified. |
-| Runtime | hard blocked because `STS2-RitsuLib` and active `godot.log` are missing. |
+| Runtime | hard blocked at clean-audit/runtime-proof stage; fresh loader log reaches main menu with BaseLib, RitsuLib, and Spire Plus, but has 11 Godot ERROR hits including `ritsulib-variants.json` parsing and 8 optional Spire Plus ModPatcher failures. |
 | Commit slices | prepared for owner review only; no commit authorized. |
 
-## Revision I Subagent Findings
+## Revision J Subagent Findings
 
-- Git forensics: all relevant historical commits are present; current dirty files appear owner-authored or from concurrent/previous agent work and were preserved.
-- Governance: Sts1Events should remain staging-only, Debug should remain accept-scaffold, and RitsuLib should remain compile/manifest only until runtime smoke passes.
-- Docs truth: older `aed2a498`, `85a38dd1`, and `24d4fe9a` headings are historical; current active HEAD is `87820303`.
+- Runtime dependency: E-drive game root, BaseLib, STS2-RitsuLib, EZMicroBalance, and RitsuLib runtime DLL paths exist; fresh loader proof exists but is not clean enough for runtime-ready claims.
+- Governance: Sts1Events should remain staging-only, Debug should remain accept-scaffold, and RitsuLib should remain compile/manifest attempted until runtime smoke passes.
+- Docs truth: older `87820303`, `85a38dd1`, and `24d4fe9a` headings are historical; current active HEAD is `6b149ba0`.
 - Patch inventory: Batch 4c remains blocked despite source-level separation guards.
 
 ---
@@ -193,11 +193,11 @@ No C# source files, csproj, localization, or test files were modified during thi
 ## 5. Final Verdict
 
 ```text
-NOT COMPLETE — M4 replay on 2026-05-31 reached Hard Block Stop. Clean/build/test/format/diff-check pass with 89 Sts1Events nullable warnings, but runtime smoke is blocked because STS2-RitsuLib is missing at the checked game-root mod paths.
+NOT COMPLETE — M4 replay on 2026-05-31 reached Hard Block Stop. Clean/build/test/format/diff-check pass with 89 Sts1Events nullable warnings, but runtime smoke is blocked because fresh `godot.log` evidence is unavailable despite the local STS2-RitsuLib install.
 ```
 
 ## 6. Next Exact Task
 
-1. Install STS2-RitsuLib at `<GameRoot>\mods\STS2-RitsuLib`.
+1. Keep STS2-RitsuLib installed at `<GameRoot>\mods\STS2-RitsuLib`.
 2. Rerun Off and CanaryOnly runtime smoke and capture `godot.log` evidence.
 3. Owner decision on whether to accept unauthorized/squashed commits `f4247553` and `aed2a498` with governance notation.

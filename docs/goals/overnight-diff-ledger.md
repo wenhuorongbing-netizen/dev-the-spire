@@ -1,30 +1,30 @@
-# Overnight Diff Ledger — Revision I Current-State Reconciliation
+# Overnight Diff Ledger — Revision J Runtime Hard-Blocker Closure
 
 Date: 2026-05-31
 
-## Revision I Current Diff Summary
+## Revision J Current Diff Summary
 
-Current HEAD is `87820303`. The worktree remains dirty and should be reviewed by commit slice instead of committed wholesale.
+Current HEAD is `6b149ba0`. The worktree remains dirty and should be reviewed by commit slice instead of committed wholesale.
 
 Final batch classifier result:
 
 | Batch | Count | Meaning |
 | --- | ---: | --- |
-| 1 | 11 | Status and release docs |
-| 2 | 4 | Governance and architecture docs |
-| 3 | 17 | Ancient/Sts1Events source and docs |
-| 5 | 10 | Scripts, CI, and validation tests |
-| 8 | 12 | Goal docs/audits |
+| 1 | 7 | Status and release docs |
+| 2 | 6 | Governance and architecture docs |
+| 3 | 10 | Ancient/Sts1Events source, tests, and docs |
+| 5 | 9 | RitsuLib runtime docs, scripts, and validation tests |
+| 8 | 17 | Goal docs/audits and Revision J artifacts |
 | -1 | 0 | unclassified |
 
-Final rerun reported 54 dirty entries total. Rerun `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` again before commit planning if any files change.
+Final Revision J classifier reported 49 dirty entries total. Rerun `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` again before commit planning if any files change.
 
-## Revision I Reconciliation
+## Revision J Reconciliation
 
 - Source/test dirty entries are grouped in proposed Slice A.
 - Runtime/RitsuLib docs and generated patch inventory are grouped in proposed Slice B.
 - Goal-doc rewrites are grouped in proposed Slice C.
-- Revision I owner-review artifacts are grouped in proposed Slice D.
+- Revision J owner-review artifacts are grouped in proposed Slice D.
 - No untracked runtime binaries, package files, or local evidence files should be committed without owner approval.
 
 ---
@@ -124,4 +124,4 @@ The older Revision G counts above are historical. Earlier Revision H replay on 2
 
 ## Historical M4 Snapshot
 
-Historical M4/v13 continuation on 2026-05-31 found HEAD `24d4fe9a`. Clean/build/test/format/diff-check passed with 89 tracked Sts1Events nullable warnings and 461 passed / 0 failed / 21 skipped / 482 total. Revision I supersedes this with HEAD `87820303` and current project no-build tests at 464/0/21/485. Current state is still blocked, not commit-ready, because STS2-RitsuLib is missing and runtime smoke evidence is unavailable.
+Historical M4/v13 continuation on 2026-05-31 found HEAD `24d4fe9a`. Clean/build/test/format/diff-check passed with 89 tracked Sts1Events nullable warnings and 461 passed / 0 failed / 21 skipped / 482 total. Revision I supersedes this with HEAD `87820303` and current project no-build tests at 464/0/21/485. Current state is still blocked, not commit-ready, because live runtime smoke evidence is unavailable even though STS2-RitsuLib is now installed.

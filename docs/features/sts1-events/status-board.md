@@ -1,7 +1,7 @@
 # StS1 Events Status Board
 
-> Last updated: 2026-05-31 (runtime-truth continuation)
-> Audit standard: strict v13 — no generic "Done", only evidence-backed statuses
+> Last updated: 2026-05-31 (v15 loader-smoke continuation)
+> Audit standard: strict v15 - no generic "Done", only evidence-backed statuses
 
 ## Allowed Statuses
 
@@ -26,8 +26,8 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | ZHS localization keys | 399 (0 placeholder) | zhs/sts1_events.json verified |
 | Event images | 0 | No redistributable art available |
 | Guard tests | source-guarded | Sts1EventFeatureGuardTests.cs |
-| Build | 0 errors / 89 warnings | 2026-05-31 clean solution build; warnings are Sts1Events nullable staging warnings |
-| Tests | 464 passed / 0 failed / 21 skipped (485 total) | 2026-05-31 current project no-build validation after Revision I reconciliation |
+| Build | 0 errors / 89 warnings | 2026-05-31 v15 continuation solution build; warnings are Sts1Events nullable staging warnings |
+| Tests | 464 passed / 0 failed / 21 skipped (485 total) | 2026-05-31 v15 continuation no-build validation with single VSTest worker |
 
 ## Phase Status
 
@@ -94,18 +94,20 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Neow | Start-of-run only; handled by base game Neow class |
 | Combat Start | Tutorial flow; no unknown-room model needed |
 
-## Runtime Unverified (requires game launch)
+## Runtime Gates (v15)
 
 | Gate | Status | Blocker |
 |------|--------|---------|
-| Canary debug spawn/screenshots (O18) | **unverified** | Requires game launch + `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` |
-| Canary result logs (O19) | **unverified** | Requires game launch |
-| Canary save/load (O20) | **unverified** | Requires game launch |
-| Canary EN/ZHS render and images (O21/O22) | **unverified** | No redistributable art; requires runtime load test |
-| Simple batch playable (O25/O26/O27) | **unverified** | Requires game launch with `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` |
-| Replacement functional (O32/O33/O34/O35) | **unverified** | Requires debug symbol, explicit unsafe env gate, game launch, seeded run proof, and save/load proof |
-| Multiplayer co-op (O36) | **unverified** | Requires multiplayer session or runtime fail-closed proof |
-| QA Red-Team (O40) | **fail / blocked** | Independent v13 QA ran; O0-O46 are not all green because runtime gates are missing |
+| Runtime path report (O21) | **partial/pass** | E-drive game root, BaseLib, STS2-RitsuLib, and Spire Plus paths exist; D-drive historical paths remain missing. |
+| STS2-RitsuLib installed (O22) | **pass** | `STS2-RitsuLib` `v0.3.10` with `lib\0.106.1\STS2-RitsuLib.dll` is installed on E-drive. |
+| Active `godot.log` generated (O23) | **pass for existence** | v15 log archived at `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/godot.log.after-launch`. |
+| Loader proof (O24) | **blocked / not clean** | BaseLib, RitsuLib, and Spire Plus loaded and reached main menu, but audit reports 11 `Godot ERROR` hits: `ritsulib-variants.json` manifest parsing and 8 optional Spire Plus ModPatcher failures. |
+| Default Off runtime state (O13/O24 support) | **partial** | v15 log shows `Feature StS1 Event Port` disabled/default Off; clean Off=0 closure is not claimed while loader audit is red. |
+| Canary runtime launch/screenshots (O25-O32) | **blocked** | Requires clean/dispositioned loader smoke, `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`, screenshots, result logs, save-load, EN/ZHS, and image/license/render proof. |
+| Simple batch runtime proof (O33-O42) | **blocked** | Requires `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1`, screenshots, result logs, EN/ZHS, image/license/render proof, and save-load where applicable. |
+| Replacement functional proof (O43-O46) | **blocked** | Requires debug symbol, explicit unsafe env gate, game launch, seeded unknown-room replacement proof, event bag/no-repeat proof, and save-load proof. |
+| Multiplayer fail-closed (O47) | **blocked** | Requires multiplayer session or runtime fail-closed proof. |
+| QA Red-Team (O51/O52) | **fail / blocked** | Independent QA cannot pass while loader audit, runtime, replacement, multiplayer, and asset gates remain blocked. |
 
 ## Current Gate Alignment Notes
 
@@ -115,7 +117,7 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 - `AdditiveAllDraft` remains unsafe/dev-only and now requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` in addition to `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft`.
 - `ReplaceUnknownEventsPrototype` remains debug-only and does not register events unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED` and explicitly allowed with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`.
 - Joust and The Ssssserpent are source-classified as non-combat Act 1 events; encounter-model blockers apply only to actual combat-entry events.
-- Runtime gameplay, image rendering, save/load, ReplaceUnknownEventsPrototype functional proof, multiplayer proof, and independent QA pass remain blocked/unverified.
+- Runtime loader existence advanced in v15, but clean loader audit, CanaryOnly runtime proof, image rendering, save/load, ReplaceUnknownEventsPrototype functional proof, multiplayer proof, and independent QA pass remain blocked/unverified.
 
 ## Evidence Files
 
@@ -132,3 +134,7 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Canary source/API proof | docs/features/sts1-events/canary-source-api-proof.md |
 | Combat blockers report | docs/features/sts1-events/combat-blockers-report.md |
 | v14 hard stop report | docs/features/sts1-events/hard-stop-blocker-report-v14.md |
+| v15 loader log | .tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/godot.log.after-launch |
+| v15 loader audit | .tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/audit-godot-log.after-launch.json |
+| v15 live-session restore | .tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/restore-state.json |
+| v15 hard stop report | docs/features/sts1-events/hard-stop-blocker-report-v15.md |

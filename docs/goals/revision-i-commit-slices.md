@@ -28,7 +28,7 @@ Files:
 - `docs/issues/ISSUE-2026-05-31-STS1EVENTS-NULL-SAFETY-WARNINGS.md`
 - `docs/patch-inventory.md`
 
-Purpose: keep runtime-smoke, warning, and patch-inventory truth aligned with HEAD `87820303` and the missing `STS2-RitsuLib` blocker.
+Purpose: keep runtime-smoke, warning, and patch-inventory truth aligned with HEAD `87820303`; STS2-RitsuLib is now installed, but runtime smoke remains blocked by missing live `godot.log` evidence.
 
 Risk: documentation and generated inventory only.
 
