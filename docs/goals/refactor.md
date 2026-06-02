@@ -441,3 +441,60 @@ Next command:
 最后一句话：
 
 **这个项目当前最应该优先解决的是 CanaryOnly manual proof 与 worktree/package governance，因为 loader proof 已经达成，下一步是否能进入 tester-ready 取决于 event UI、save/load、QA 和交付物是否可信。**
+
+---
+
+# 11. 2026-06-02 实施结果
+
+## Green Stop 检查
+
+| # | Condition | Status |
+|---|-----------|--------|
+| 1 | `git status --short` clean or owner-approved dirty state | **PASS** — 0 dirty entries |
+| 2 | build/test/format/diff-check green | **PASS** — 0 errors / 79 warnings / 464 passed / format clean / diff clean |
+| 3 | Off loader evidence retained | **PASS** — clean audit |
+| 4 | CanaryOnly loader evidence retained | **PASS** — clean audit, fresh smoke with mod isolation |
+| 5 | Basic gameplay smoke completed | **FAIL** — game launched, reached main menu, but no interactive gameplay |
+| 6 | Mod Settings UI screenshot captured | **FAIL** — not captured |
+| 7 | CanaryOnly event UI proof for 4 events | **FAIL** — loader proof only, no in-game event UI |
+| 8 | Save/load attempt captured | **FAIL** — not attempted |
+| 9 | Independent QA rerun | **PASS** — QA Round 2: CONDITIONAL PASS |
+| 10 | Package decision recorded | **PENDING** — owner decision needed |
+| 11 | No release-ready / live-ready claim | **PASS** |
+| 12 | No Batch 4c execution | **PASS** |
+| 13 | No high-risk migration | **PASS** |
+| 14 | No new gameplay expansion | **PASS** |
+
+**Green Stop: NOT ALLOWED** (conditions #5, #6, #7, #8 fail — no gameplay/UI proof).
+
+**Hard Block Stop: NOT REQUIRED** (no command failed, no hard block exists).
+
+**Current state: CONDITIONAL STOP** — loader gates + warning fixes + worktree clean + QA passed; gameplay/UI proof remains.
+
+## 本次完成
+
+1. ✅ Worktree cleaned: committed 24+18 dirty entries across 2 commits. Worktree now 0 dirty.
+2. ✅ CanaryOnly warning fix: 10 nullable warnings eliminated from 4 canary event files (BigFish, GoldenIdol, TheLab, DivineFountain). Warning count: 89 → 79.
+3. ✅ CanaryOnly fresh runtime smoke: launched with mod isolation, confirmed 4 canary registrations, clean log.
+4. ✅ QA Round 2: CONDITIONAL PASS (upgraded from Round 1).
+5. ✅ Current-validation.md updated with latest evidence.
+6. ✅ Build/test/format/diff-check all green.
+7. ✅ Patch inventory fresh.
+
+## 未完成（仍阻塞）
+
+1. ❌ Gameplay proof — no combat, shop, Ancient reward evidence.
+2. ❌ Mod Settings UI screenshot.
+3. ❌ Canary event UI screenshots (Big Fish, Golden Idol, The Lab, Divine Fountain in-game).
+4. ❌ Save/load proof.
+5. ❌ Versioned tester package.
+6. ❌ Warning burn-down for remaining 79 warnings.
+7. ❌ Batch 4c candidate proposal.
+
+## 下一步（Owner Action Required）
+
+1. **Gameplay smoke**: Manual playthrough — start run, first combat, shop, save/load.
+2. **Canary event proof**: Encounter 4 canary events in-game, screenshot UI.
+3. **Package decision**: Versioned tester package or local diagnostic only.
+4. **Warning burn-down**: Fix remaining 79 nullable warnings using same early-exit guard pattern.
+5. **Batch 4c proposal**: Low-risk candidate list for owner approval.
