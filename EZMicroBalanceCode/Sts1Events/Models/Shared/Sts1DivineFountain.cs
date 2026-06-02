@@ -23,8 +23,9 @@ public sealed class Sts1DivineFountain : EventModel
 
     private async Task Pray()
     {
+        if (Owner is not { } owner) return;
         var curses = new List<CardModel>();
-        foreach (var card in Owner.Deck.Cards)
+        foreach (var card in owner.Deck.Cards)
         {
             if (card.Type == MegaCrit.Sts2.Core.Entities.Cards.CardType.Curse)
                 curses.Add(card);

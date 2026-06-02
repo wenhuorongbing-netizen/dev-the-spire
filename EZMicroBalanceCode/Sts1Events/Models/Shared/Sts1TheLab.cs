@@ -24,8 +24,9 @@ public sealed class Sts1TheLab : EventModel
 
     private async Task Open()
     {
+        if (Owner is not { } owner) return;
         for (int i = 0; i < 3; i++)
-            await Sts1EventHelpers.GrantRandomPotion(Owner, Rng);
+            await Sts1EventHelpers.GrantRandomPotion(owner, Rng);
         SetEventFinished(L10NLookup("STS1_THE_LAB.pages.OPEN.description"));
     }
 }

@@ -41,23 +41,26 @@ public sealed class Sts1BigFish : EventModel
 
     private async Task Banana()
     {
+        if (Owner is not { } owner) return;
         var healAmount = DynamicVars.Heal.IntValue;
-        await CreatureCmd.Heal(Owner.Creature, healAmount);
+        await CreatureCmd.Heal(owner.Creature, healAmount);
         SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.BANANA.description"));
     }
 
     private async Task Donut()
     {
-        await CreatureCmd.GainMaxHp(Owner.Creature, DynamicVars.MaxHp.BaseValue);
+        if (Owner is not { } owner) return;
+        await CreatureCmd.GainMaxHp(owner.Creature, DynamicVars.MaxHp.BaseValue);
         SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.DONUT.description"));
     }
 
     private async Task Shoe()
     {
-        var relic = RelicFactory.PullNextRelicFromFront(Owner).ToMutable();
-        await RelicCmd.Obtain(relic, Owner);
+        if (Owner is not { } owner) return;
+        var relic = RelicFactory.PullNextRelicFromFront(owner).ToMutable();
+        await RelicCmd.Obtain(relic, owner);
         await CardPileCmd.AddCursesToDeck(
-            new[] { ModelDb.Card<Regret>() }, Owner);
+            new[] { ModelDb.Card<Regret>() }, owner);
         SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.SHOE.description"));
     }
 }

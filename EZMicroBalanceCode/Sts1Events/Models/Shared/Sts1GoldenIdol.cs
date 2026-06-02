@@ -60,8 +60,9 @@ public sealed class Sts1GoldenIdol : EventModel
 
     private IReadOnlyList<EventOption> GenerateTrapOptions()
     {
-        var jumpDamage = (int)(Owner.Creature.CurrentHp * JumpPct);
-        var destroyMaxHp = (int)(Owner.Creature.MaxHp * DestroyPct);
+        if (Owner is not { } owner) return System.Array.Empty<EventOption>();
+        var jumpDamage = (int)(owner.Creature.CurrentHp * JumpPct);
+        var destroyMaxHp = (int)(owner.Creature.MaxHp * DestroyPct);
 
         return new EventOption[]
         {
@@ -78,27 +79,30 @@ public sealed class Sts1GoldenIdol : EventModel
 
     private async Task Smash()
     {
+        if (Owner is not { } owner) return;
         await CardPileCmd.AddCursesToDeck(
-            new[] { ModelDb.Card<Injury>() }, Owner);
+            new[] { ModelDb.Card<Injury>() }, owner);
         SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.SMASH.description"));
     }
 
     private async Task Jump(int damage)
     {
+        if (Owner is not { } owner) return;
         var damageVar = new DamageVar(
             (decimal)damage,
             MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered);
         await CreatureCmd.Damage(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-            Owner.Creature, damageVar, (CardModel?)null);
+            owner.Creature, damageVar, (CardModel?)null!);
         SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.JUMP.description"));
     }
 
     private async Task Destroy(int maxHpLoss)
     {
+        if (Owner is not { } owner) return;
         await CreatureCmd.LoseMaxHp(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-            Owner.Creature, maxHpLoss, isFromCard: false);
+            owner.Creature, maxHpLoss, isFromCard: false);
         SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.DESTROY.description"));
     }
 
