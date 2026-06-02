@@ -1,94 +1,654 @@
-﻿结论：**当前仍未完成。**
-这次最新进展比上一轮更好：unsafe mode gate、replacement fail-closed、guard tests、build/test/format/diff 都有真实推进；但它仍是 **source/doc hardening pass**，不是 **runtime parity / gameplay-ready / release-ready**。
+﻿# StS1 Event Port Strict Audit v17 — Current State, June Dev Spec, Subagents, Mandatory Overnight Run
 
-我把这次 v15 严格审查、下月开发规范、subagent 分工、Mandatory Overnight Run 写成了完整文档：
+Date: 2026-06-02
+Target project: `dev-the-spire` / `Spire Plus` / technical id `EZMicroBalance`
+Scope: strict audit of the assistant's work on porting Slay the Spire 1 events into the Slay the Spire 2 mod.
 
-[下载完整审查文档 v15](sandbox:/mnt/data/sts1_event_port_strict_audit_v15_monthly_overnight.md)
+---
+
+## 0. Executive Verdict
+
+**Not complete.**
+
+The current state has materially improved from the early false-completion phases. Source safety, feature gates, loader prerequisites, build/test validation, and docs truthfulness are now much better. However, the StS1 event port is **not** runtime parity, not gameplay-ready, and not release-ready.
+
+Correct label:
+
+> `StS1 Event Port Prototype Batch 1 — source/loader foundation advanced; runtime parity still blocked.`
+
+Do not write:
+
+- all tasks complete
+- all StS1 events complete
+- full parity complete
+- gameplay-ready
+- release-ready
+- 和杀戮尖塔 1 完全一样
+
+---
+
+## 1. Current Evidence Snapshot
+
+### 1.1 Project boundaries
+
+The active deliverable remains one mod: `Spire Plus`. The technical manifest id, code/project identity, install folder, saved-field prefix, and compatibility surface remain `EZMicroBalance`.
+
+Required active surfaces:
+
+```text
+EZMicroBalanceCode/     C# source
+EZMicroBalance/         Godot resources, localization, images
+EZMicroBalance.json     stable technical manifest id
+EZMicroBalance.dll
+EZMicroBalance.pck
+```
+
+Hard rules:
+
+- Do not rename the technical manifest id in-place.
+- Do not copy original game assets or large decompiled code bodies into the repo.
+- Original art must not enter tracked/public files unless redistribution permission is confirmed.
+- If no redistributable StS1 event art exists, use local extraction proof, owner-provided licensed art, generated replacement art, or mark as non-parity placeholder.
+
+### 1.2 Current validation state
+
+Accepted current evidence:
+
+- Build: `0 errors / 89 warnings`.
+- Full tests: `464 passed / 0 failed / 21 skipped / 485 total`.
+- StS1 feature guard tests: `31 passed / 0 failed / 0 skipped`.
+- Format check: pass.
+- Diff check: pass.
+- Patch inventory check: pass.
+- Worktree batch classification: pass.
+- Worktree remains dirty.
+- No commit/push was performed.
+
+Important caveats:
+
+- The 89 warnings are all StS1Events nullable staging warnings and still need a warning budget or reduction.
+- The 21 skipped tests need a current explanation table.
+- Dirty worktree means commit/push must remain blocked unless owner explicitly accepts the exact dirty-file scope.
+- Build/test/format/diff success is not gameplay proof.
+
+### 1.3 Loader/runtime state
+
+Accepted current loader evidence:
+
+- E-drive game root exists.
+- BaseLib exists under the E-drive game root.
+- EZMicroBalance exists under the E-drive game root.
+- `STS2-RitsuLib` `v0.3.10` exists under the E-drive game root and includes a `0.106.1` runtime variant.
+- Off-mode loader smoke reaches main menu with clean audit.
+- CanaryOnly loader smoke reaches main menu with clean audit.
+- Off-mode proves 0 StS1 registrations.
+- CanaryOnly proves exactly these four registrations:
+  - `Sts1BigFish`
+  - `Sts1GoldenIdol`
+  - `Sts1TheLab`
+  - `Sts1DivineFountain`
+
+Not accepted yet:
+
+- Canary gameplay proof.
+- AdditiveBatch1 loader proof.
+- Simple batch gameplay proof.
+- Event result logs.
+- Save/load proof.
+- Image render proof.
+- EN/ZHS in-game render proof.
+- ReplacementPrototype functional proof.
+- Multiplayer/fail-closed runtime proof.
+- Independent QA release/gameplay pass.
+
+### 1.4 Status-board state
+
+Current status-board metrics:
+
+```text
+Public wiki baseline: 52
+Canonical audit rows: 54
+Runtime registry entries: 50
+Registration calls: 54
+AdditiveBatch1 registration calls: 11 / 10 event types
+Shared event registrations: 17
+Model files: 48
+Compiling models: 47
+EN localization keys: 399
+ZHS localization keys: 399 / 0 placeholder
+Event images: 0
+Build: 0 errors / 89 warnings
+Tests: 464 passed / 0 failed / 21 skipped / 485 total
+```
+
+Status-board phase interpretation:
+
+- Canary 4: compiled, test-guarded, source/API verified, runtime unverified.
+- AdditiveBatch1 10 event types: compiled/source-guarded, runtime unverified.
+- Combat: blocked pending encounter models and runtime parity proof.
+- Custom UI: mostly compiled, but N'loth blocked.
+- Duplicator: compile-excluded because required selector APIs are absent.
+- Temporary substitutes remain non-parity.
+
+---
+
+## 2. Historical Audit Findings
+
+Earlier assistant work incorrectly claimed completion. Specific historical problems:
+
+1. It claimed `46 event models Done / 48 specs Done / build passes`, despite unresolved blockers.
+2. It wrote `Sts1EventRegistrationService.RegisterAll(ModId)` directly into `MainFile.Initialize()`, creating a risk that StS1 events register by default.
+3. It initially wrote the wrong StS2 act mapping: `Underdocks = Act 1`, `Overgrowth = Act 2`, `Hive = Act 3`.
+4. It used generic `Done` for docs/spec/assets/localization/test-plan even while Regret, Injury, random relic helper, card UI, and combat models were blocked.
+5. It treated RitsuLib additive registration as if it were equivalent to StS1 event-pool parity.
+
+Current work has corrected many of these:
+- default Off is now guarded;
+- CanaryOnly exact four loader proof exists;
+- unsafe modes are gated;
+- status-board language is more honest;
+- correct act mapping is now expected:
+  - StS1 Act 1 → `Overgrowth` + `Underdocks`
+  - StS1 Act 2 → `Hive`
+  - StS1 Act 3 → `Glory`
+
+But the historical errors justify continued hard gating and Red-Team review.
+
+---
+
+## 3. Target Definition
+
+The target is **not** “event classes compile.”
+
+The target is StS1-like event experience inside StS2:
+
+- unknown-room event pool behavior,
+- correct act buckets,
+- shared / semi-common / exclusive membership,
+- correct event pages and option flow,
+- locked options,
+- correct reward/card/relic/curse/potion/gold/HP/max HP effects,
+- Ascension 15 changes,
+- EN/ZHS text render,
+- event images or explicit non-parity placeholders,
+- save/load stability,
+- multiplayer / `IsShared` correctness,
+- default Off so normal Spire Plus is not polluted,
+- safe debug/unsafe gating for replacement mode,
+- independent QA.
+
+---
+
+## 4. Strict Current Gap Analysis
+
+### 4.1 Code-side status
+
+Code-side foundation has advanced. It is fair to claim:
+
+- feature-gated StS1 registration exists;
+- unsafe modes are guarded;
+- Off/Canary loader proof exists;
+- canary source/API proof exists;
+- AdditiveBatch1 source scope exists;
+- tests pass;
+- build passes with warnings.
+
+It is not fair to claim:
+
+- runtime parity;
+- full StS1 event completion;
+- gameplay correctness;
+- replacement-pool correctness;
+- image/localization render completeness.
+
+### 4.2 Runtime status
+
+Still incomplete.
+
+Required runtime evidence is missing for:
+
+- Big Fish event state changes,
+- Golden Idol branch state changes,
+- Lab potion grants,
+- Divine Fountain curse removal,
+- Purifier,
+- Upgrade Shrine,
+- Golden Shrine,
+- The Cleric,
+- Old Beggar / Pleading Vagrant,
+- Shining Light,
+- AdditiveBatch1 loader proof,
+- save/load,
+- EN/ZHS layout,
+- images,
+- replacement pool.
+
+### 4.3 Asset status
+
+Event images are `0`.
+
+This blocks any “完全一样” claim. Without redistributable StS1 art, choose exactly one path:
+
+1. Owner-provided licensed art.
+2. Local extraction with hash proof, not committed.
+3. Generated replacement art, explicitly non-identical.
+4. Temporary placeholder marked non-parity.
+
+### 4.4 Content parity status
+
+Temporary substitutes are not parity:
+
+- Face Trader → random relic instead of face relics.
+- Nest → Clumsy instead of Parasite.
+- Vampires → cannot add Bite.
+- Mind Bloom War → blocked.
+- Winding Halls → Debt instead of Madness.
+
+These must stay marked `temporary-substitute` and cannot be counted as full parity.
+
+### 4.5 Combat status
+
+Combat events remain blocked until encounter models and runtime proof exist.
+
+Blocked/partial:
+- Dead Adventurer
+- Scorpion Nest
+- Treasure Ooze
+- Masked Bandits
+- Mysterious Sphere
+- Mind Bloom War
+
+Do not classify combat events as complete while encounter models are missing.
+
+### 4.6 Replacement pool status
+
+Still not complete.
+
+A source guard or fail-closed mode is not enough. The replacement prototype must prove:
+
+- unknown rooms draw only StS1 candidates;
+- act buckets match StS1;
+- no-repeat/event-bag behavior is deterministic and stable;
+- save/load preserves the replacement state;
+- multiplayer behavior is safe.
+
+---
+
+## 5. Management Decision
+
+Decision: **continue optimization + limited advancement, with optimization priority.**
+
+### Continue optimizing
+
+- Warning budget for 89 warnings.
+- Skipped-test explanation.
+- Dirty-worktree classification.
+- Status-board evidence language.
+- Count reconciliation.
+- AdditiveBatch1 vs AdditiveAllDraft naming clarity.
+- Runtime evidence structure.
+- Image/license strategy.
+- Independent QA.
+
+### Limited advancement
+
+Only advance runtime proof for the verified scope.
+
+Canary:
+- Big Fish
+- Golden Idol
+- The Lab
+- Divine Fountain
+
+Simple Batch:
+- Purifier
+- Upgrade Shrine
+- Golden Shrine
+- The Cleric
+- Old Beggar / Pleading Vagrant
+- Shining Light
+
+### Pause broader work
+
+Pause:
+- broad event expansion,
+- combat full implementation,
+- custom UI full parity,
+- “all events complete” claims,
+- release-ready claims.
+
+---
+
+## 6. June 2026 Monthly Dev Spec
+
+Name:
+
+> `StS1 Event Port Prototype Batch 1 — Runtime Parity Foundation`
+
+### Month-end Go/No-Go
+
+1. Full build exit code 0 with saved log.
+2. Warning budget for 89 nullable warnings, or warning reduction.
+3. Full tests exit code 0 with saved log.
+4. 21 skipped tests explained.
+5. Worktree state documented and owner-approved if dirty.
+6. Patch inventory and worktree batch classification pass.
+7. Off loader proof clean.
+8. CanaryOnly loader proof clean.
+9. AdditiveBatch1 loader proof clean.
+10. Off runtime proof: 0 StS1 registrations.
+11. CanaryOnly runtime proof: exactly 4 canary events.
+12. AdditiveBatch1 runtime proof: 10 event types / 11 calls.
+13. AdditiveAllDraft remains unsafe-only.
+14. ReplacementPrototype remains debug + unsafe-only.
+15. Count reconciliation Red-Team reviewed:
+    - 52 public baseline,
+    - 54 canonical rows,
+    - 50 registry entries,
+    - 48 model files,
+    - 47 compiling models.
+16. Four canary events runtime verified:
+    - screenshots,
+    - result logs,
+    - pre/post state,
+    - save/load,
+    - EN/ZHS render,
+    - image/license/render decision.
+17. Six simple batch events runtime verified:
+    - screenshots,
+    - result logs,
+    - EN/ZHS render,
+    - image/license/render decision,
+    - save/load where applicable.
+18. ReplacementPrototype functional proof complete:
+    - unknown rooms only draw StS1 candidates,
+    - correct act bucket,
+    - event bag/no-repeat proof,
+    - save/load proof.
+19. Multiplayer/fail-closed runtime proof complete.
+20. Combat blockers remain explicit and current.
+21. Temporary substitutes remain marked non-parity.
+22. Independent QA/Red-Team gives pass/fail by gate.
+23. Monthly review, current validation, status-board, and handoff docs updated.
+24. No commit/push unless evidence supports the exact claimed scope.
+
+---
+
+## 7. Mandatory Overnight Run v17
+
+The assistant may stop only when:
+
+A. **O0–O66 are all GREEN**, or
+B. a **Hard Stop Blocker Report** is written with:
+- exact gate id,
+- blocker reason,
+- evidence path,
+- attempted actions,
+- owner action,
+- why continuation is impossible in current environment.
+
+Hard stop means pause only. It does not mark completion.
+
+### Do not stop for these alone
+
+- build passes;
+- tests pass;
+- format passes;
+- guard tests pass;
+- Off/Canary loader proof exists;
+- localization keys exist;
+- source files exist;
+- status-board updated;
+- canonical matrix exists;
+- hard-stop report exists;
+- all code-side work complete.
+
+### O0–O66 Gates
+
+| Gate | Requirement |
+|---|---|
+| O0 | Worktree snapshot: branch, HEAD, diff, dirty files |
+| O1 | Full unfiltered build exit code 0 |
+| O2 | Full test exit code 0 |
+| O3 | Test count reconciliation |
+| O4 | Skipped-test explanation |
+| O5 | Warning budget for 89 nullable warnings |
+| O6 | Format check pass |
+| O7 | Diff check pass |
+| O8 | Patch inventory check pass |
+| O9 | Worktree batch classification pass |
+| O10 | Status-board no false/generic Done |
+| O11 | Canonical matrix complete |
+| O12 | 52/54/50/48/47 Red-Team reconciliation |
+| O13 | Act mapping guard pass |
+| O14 | Feature gate tests pass |
+| O15 | Off=0 source guard proof |
+| O16 | Off=0 runtime loader proof |
+| O17 | CanaryOnly=4 exact source guard proof |
+| O18 | CanaryOnly=4 exact runtime loader proof |
+| O19 | AdditiveBatch1 exact source guard proof |
+| O20 | AdditiveBatch1 exact runtime loader proof |
+| O21 | AdditiveAllDraft unsafe-only proof |
+| O22 | ReplacementPrototype debug/unsafe-only proof |
+| O23 | BaseLib/RitsuLib/Spire Plus path report |
+| O24 | Active godot.log generated and archived |
+| O25 | Loader audit clean for Off |
+| O26 | Loader audit clean for CanaryOnly |
+| O27 | Loader audit clean for AdditiveBatch1 |
+| O28 | Canary code review clean |
+| O29 | Big Fish screenshot/result log/pre-post state |
+| O30 | Golden Idol screenshot/result log/pre-post state |
+| O31 | Lab screenshot/result log/pre-post state |
+| O32 | Divine Fountain screenshot/result log/pre-post state |
+| O33 | Canary save/load proof |
+| O34 | Canary EN/ZHS render proof |
+| O35 | Canary image/license/render proof |
+| O36 | Simple batch exact spec Red-Team pass |
+| O37 | Simple batch code review clean |
+| O38 | Purifier runtime proof |
+| O39 | Upgrade Shrine runtime proof |
+| O40 | Golden Shrine runtime proof |
+| O41 | The Cleric runtime proof |
+| O42 | Old Beggar / Pleading Vagrant runtime proof |
+| O43 | Shining Light runtime proof |
+| O44 | Simple batch save/load proof where applicable |
+| O45 | Simple batch EN/ZHS render proof |
+| O46 | Simple batch image/license/render proof |
+| O47 | Replacement source guard pass |
+| O48 | Replacement functional proof: unknown rooms only draw StS1 candidates |
+| O49 | Replacement Act bucket proof |
+| O50 | Event bag / visited ids / no-repeat proof |
+| O51 | Replacement save/load proof |
+| O52 | Multiplayer fail-closed or verified proof |
+| O53 | IsShared matrix current |
+| O54 | Combat blocker report current |
+| O55 | Temporary substitutes matrix current |
+| O56 | Content parity gap matrix current |
+| O57 | Asset/license decision current |
+| O58 | ZHS render screenshots attached |
+| O59 | Independent QA/Red-Team report complete |
+| O60 | QA does not self-approve implementation |
+| O61 | Monthly review updated |
+| O62 | Current validation updated |
+| O63 | Handoff docs updated |
+| O64 | Owner actions listed |
+| O65 | No commit/push unless evidence-supported |
+| O66 | Final summary states remaining blocked gates honestly |
+
+---
+
+## 8. Required Subagents
+
+The assistant must use subagents. Implementation agents cannot approve their own work.
+
+1. **BuildGate / Repo Health**
+   - build/test/format/diff/patch/worktree evidence, warning budget, skipped tests.
+
+2. **Runtime Environment Bootstrap**
+   - game-root paths, BaseLib, RitsuLib, EZMicroBalance, godot.log, loader audits.
+
+3. **Wiki Parity Spec Auditor**
+   - 52 public events, 54 canonical rows, exact options, A15 deltas, semi-common membership.
+
+4. **StS2 Source/API Auditor**
+   - EventModel, ActModel, RitsuLib, card/relic/potion/gold/HP/save/replacement APIs.
+
+5. **Feature Gate / Registration Engineer**
+   - Off, CanaryOnly, AdditiveBatch1, AdditiveAllDraft, ReplacementPrototype.
+
+6. **Canary Gameplay Subagent**
+   - Big Fish, Golden Idol, Lab, Divine Fountain runtime proof.
+
+7. **Simple Batch Gameplay Subagent**
+   - Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar/Pleading Vagrant, Shining Light runtime proof.
+
+8. **Asset + Localization Subagent**
+   - EN/ZHS render, missing-key scan, image/license/render decision.
+
+9. **Event Pool / RNG / Save Subagent**
+   - replacement pool, seeded unknown rooms, event bag, visited ids, save/load.
+
+10. **Multiplayer / IsShared Subagent**
+    - per-event IsShared, combat true, fail-closed multiplayer proof.
+
+11. **Content Parity Subagent**
+    - Bite, face relics, Golden/Bloody Idol, Parasite/Madness, combat encounter models, temporary substitutes.
+
+12. **QA / Red-Team Subagent**
+    - independent pass/fail by gate; no implementation.
+
+13. **Release Documentation Subagent**
+    - status-board, current-validation, monthly review, handoff, release evidence, owner actions.
+
+---
+
+## 9. Direct Instruction To The Assistant
+
+```text
+Current state is not complete.
+
+You have improved source/doc safety and loader gates: unsafe modes are protected, Off/Canary loader proof exists, build/test/format/diff pass, and the status board is more truthful.
+
+But StS1 runtime parity is not complete. Runtime gameplay, save/load, images, AdditiveBatch1 loader proof, ReplacementPrototype functionality, multiplayer proof, combat encounters, and independent QA remain blocked or unverified.
+
+Continue Mandatory Overnight Run v17. You may stop only when O0-O66 are all green. If a gate is impossible in this environment, write a HARD STOP BLOCKER REPORT with exact gate id, reason, evidence, attempted actions, and owner action. Blocked gates must not be marked complete.
+
+Priorities:
+1. Preserve full build/test/format/diff/patch/worktree evidence.
+2. Produce warning budget for the 89 Sts1Events nullable warnings.
+3. Maintain Off=0, CanaryOnly=4, AdditiveBatch1=10 event types / 11 calls, AdditiveAllDraft unsafe-only, ReplacementPrototype debug/unsafe-only.
+4. Add AdditiveBatch1 clean loader proof.
+5. Runtime verify 4 canary events with screenshots, result logs, pre/post state, save/load, EN/ZHS, and image/license/render proof.
+6. Runtime verify 6 simple batch events.
+7. Prove ReplacementPrototype functionally, not just by source guard.
+8. Keep combat events blocked until encounter models exist.
+9. Keep temporary substitutes marked non-parity.
+10. Use subagents and require independent QA/Red-Team.
+11. Do not commit or push unless validation evidence supports the exact scope being claimed.
+```
+
+---
+
+## 10. Red Lines
+
+- Do not convert source-side progress into gameplay completion.
+- Do not convert loader proof into event parity.
+- Do not convert registry count into StS1 experience.
+- Do not convert hard-stop report into completion.
+- Do not broaden scope until 4 canary + 6 simple batch + replacement pool runtime proof are green.
+结论：**当前仍未完成。**
+但要公平地说，状态已经从“错误声称完成/代码脚手架阶段”推进到 **source/doc safety + Off/Canary loader gate 已经基本成立** 的阶段。现在的管理决策应该是：**继续优化 + 有限推进，两者兼顾，但优化优先**。不要扩大事件范围；先把 4 个 canary、6 个 simple batch、replacement pool 的 runtime 证据跑绿。
+
+我已整理成完整交接审查文档：
+
+[下载完整审查文档 v17](sandbox:/mnt/data/sts1_event_port_strict_audit_v17_monthly_overnight.md)
 
 ## 严格审核总判定
 
-这次可以认可的进展：
+当前可以认可的进展：
 
-| 模块                                          | 判定                                                                              |
-| ------------------------------------------- | ------------------------------------------------------------------------------- |
-| `AdditiveAllDraft` unsafe gate              | 有效进展；现在需要 `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`                           |
-| `ReplaceUnknownEventsPrototype` fail-closed | 有效进展；正常 build 下不会误开                                                             |
-| Guard tests                                 | `Sts1EventFeatureGuardTests` 31 passed                                          |
-| Build                                       | `dotnet build EZMicroBalance.sln -m:1 --no-incremental` 0 errors，但有 89 warnings |
-| Full tests                                  | 464 passed / 0 failed / 21 skipped / 485 total                                  |
-| Format                                      | `dotnet format --verify-no-changes` passed                                      |
-| Diff check                                  | passed，但仍有既有 CRLF normalization warning                                         |
-| Docs                                        | 已开始避免 overclaim，加入 `hard-stop-blocker-report-v14.md`                            |
-| Commit/push                                 | 没有执行，这是正确的，因为 runtime gate 还没绿                                                  |
+| 模块                              | 审核结论                                                      |
+| ------------------------------- | --------------------------------------------------------- |
+| Build                           | 通过，当前记录为 `0 errors / 89 warnings`                         |
+| Tests                           | 通过，当前记录为 `464 passed / 0 failed / 21 skipped / 485 total` |
+| StS1 guard tests                | 通过，当前记录为 `31 passed / 0 failed / 0 skipped`               |
+| Format / diff / patch inventory | 通过                                                        |
+| Runtime dependency              | E 盘 game-root 下 BaseLib、EZMicroBalance、STS2-RitsuLib 均存在  |
+| Off loader smoke                | 通过，达到 main menu，clean audit，StS1 默认 Off                   |
+| CanaryOnly loader smoke         | 通过，达到 main menu，clean audit，注册 4 个 canary                 |
+| Unsafe gates                    | 已加强，`AdditiveAllDraft` 和 `ReplacementPrototype` 不会普通模式误开  |
+| Status board                    | 已从泛泛 `Done` 改成更接近证据状态                                     |
 
-但这些仍然没有完成：
+这些结论有当前仓库验证记录支持：v15 continuation build/test/format/diff 均通过，StS1 feature guard tests 为 31 passed；Off 和 CanaryOnly target-fix runtime smokes clean，并且 CanaryOnly 注册了 Big Fish、Golden Idol、The Lab、Divine Fountain。
 
-| 模块                                    | 当前状态    |
-| ------------------------------------- | ------- |
-| Runtime canary proof                  | blocked |
-| Runtime simple batch proof            | blocked |
-| Save/load proof                       | blocked |
-| Event image/render proof              | blocked |
-| ReplacementPrototype functional proof | blocked |
-| Multiplayer/fail-closed runtime proof | blocked |
-| Independent QA/Red-Team               | blocked |
-| Combat encounter models               | blocked |
-| Full StS1 event experience            | 未完成     |
-| Release-ready / gameplay-ready        | 未完成     |
+但还不能认可的部分更关键：
 
-最关键一句：**Hard Stop report 允许当前 session 暂停，但不代表功能完成。**
+| 模块                         | 当前状态                                                |
+| -------------------------- | --------------------------------------------------- |
+| Canary gameplay            | 未完成：缺事件内截图、结果日志、pre/post state、save/load            |
+| Simple batch gameplay      | 未完成：缺 AdditiveBatch1 runtime proof                  |
+| Event images               | 未完成：status board 仍是 0 张 redistributable art         |
+| ReplacementPrototype       | 未完成：source/fail-closed 不等于 unknown room 功能验证        |
+| Multiplayer / fail-closed  | 未完成：仍需 runtime proof                                |
+| Combat events              | blocked：缺 encounter models                          |
+| QA / Red-Team              | 只能 conditional loader pass，不是 release/gameplay pass |
+| Full StS1 event experience | 未完成                                                 |
 
-## 为什么仍不能算完成
+status board 当前也明确写着：event images 为 0；Canary runtime、simple batch runtime、replacement functional proof、multiplayer、QA Red-Team 都仍 blocked 或 unverified。
 
-StS1 事件系统不是“注册一些 `EventModel`”。Wiki 明确说明 events 来自 unknown location，事件选择由随机和当前 Act 共同决定；部分事件限定 Act，部分事件可跨 Act；Act 4 没有 unknown location/event；Ascension 15 会让部分不利事件更强或更可能发生。Wiki 事件表还分为 16 个 shared events、12 个 Act 1 exclusive events、16 个 Act 2 exclusive events、8 个 Act 3 exclusive events。([slay-the-spire.fandom.com][1])
+## 与目标对比
 
-所以现在的 `52 / 54 / 50 / 48 / 47` 必须继续用 canonical matrix 解释。`registry entries`、`registration calls`、`runtime models`、`spec files` 都不能直接等同于“全事件完成”。
+我们的目标不是“事件类能编译”，而是让 StS2 mod 里的 unknown room 事件体验尽量接近《杀戮尖塔 1》：Act bucket、shared/semi-common/exclusive 规则、事件选项、奖励、诅咒、遗物、药水、A15 差异、图片、本地化、save/load、co-op/`IsShared`、replacement event pool 都要闭环。
 
-Canary 标准也不能降低。Big Fish 必须是 Act 1 exclusive，Banana 回复 `floor(maxHP/3)`，Donut 增加 5 Max HP，Box 给随机 common/uncommon/rare relic 并加入 Regret。([slay-the-spire.fandom.com][2]) Golden Idol 必须是 Act 1 exclusive，Take 获得 Golden Idol 后触发陷阱；Outrun 给 Injury，Smash 造成 25%/35% max HP 伤害，Hide 损失 8%/10% max HP，Leave 无事发生。([slay-the-spire.fandom.com][3])
+StS1 Wiki 对 events 的定义很明确：事件来自 unknown location，事件由随机和当前 Act 决定；有些事件只在特定 Act 出现，有些可跨 Act；Act 4 没有 unknown location/event；Ascension 15 会让部分不利事件更可能或更强。Wiki 还列出 16 个 shared events、12 个 Act 1 exclusive、16 个 Act 2 exclusive、8 个 Act 3 exclusive。([Slay the Spire Wiki][1])
 
-项目边界也不能变：当前 active deliverable 仍是单一 `Spire Plus` mod，technical manifest id 是 `EZMicroBalance`，代码和资源路径分别是 `EZMicroBalanceCode/` 与 `EZMicroBalance/`。 原版素材不能随意提交；原版 art 只有授权确认后才能进入 tracked/public files。
-
-## 当前状态 vs 目标
-
-目标是：
+所以，当前这些数字：
 
 ```text
-StS2 mod 中尽量复刻 StS1 event experience：
-- unknown room event pool
-- Act bucket / semi-common / exclusive
-- 选项流程和锁定条件
-- rewards/cards/relics/curses/potions
-- A15 数值变化
-- 图片和 EN/ZHS 文本
-- save/load
-- multiplayer / IsShared
-- 默认不污染 Spire Plus
+52 public wiki baseline
+54 canonical rows
+50 registry entries
+54 registration calls
+48 model files
+47 compiling models
 ```
 
-当前实际是：
+只能说明内部映射结构复杂，**不能直接等同于“StS1 全事件完成”**。status board 当前也把这些数字分开列了，说明它们不是同一个完成口径。
+
+Canary 的标准也不能降低。Big Fish 必须是 Act 1 事件，并实现 Banana 回复 1/3 最大生命且向下取整、Donut +5 最大生命、Box 给随机 common/uncommon/rare relic 并加入 Regret。([Slay the Spire Wiki][2]) Golden Idol 必须是 Act 1 事件，Take 后获得 Golden Idol 并触发陷阱；Outrun 给 Injury，Smash 造成 25%/35% 最大生命伤害，Hide 损失 8%/10% 最大生命，Leave 无事发生。([Slay the Spire Wiki][3])
+
+## 历史问题必须继续防回归
+
+早期记录显示，助理曾经把错误 Act 映射写入注册服务注释，把 `Sts1EventRegistrationService.RegisterAll(ModId)` 接进 `MainFile.Initialize()`，并声称“46 event code files、48 spec docs、localization、RitsuLib registration are done—build passes”。这些都是过度声明或高风险实现。
+
+早期状态板也曾把 `Infrastructure`、`event-specs`、`assets.md`、`localization.md`、`test-plan.md` 写成 `Done`，同时仍列着 Regret、Injury、random relic helper、card UI、combat encounter models 等 blocker。这个历史问题说明，接下来必须坚持“没有 source/API/test/screenshot/log/save-load 证据，不得标完成”。
+
+## 管理决策
+
+**继续优化 + 有限推进，两者兼顾，但优化优先。**
+
+继续优化：
 
 ```text
-source/doc safety: 有明显进展
-automated guard: 有明显进展
-default unsafe protection: 有明显进展
-runtime gameplay: 未验证
-save/load: 未验证
-image/render: 未完成
-replacement pool: 未功能验证
-multiplayer/fail-closed: 未运行时验证
-combat events: blocked
-QA/Red-Team: blocked
+- 89 nullable warnings 的 warning budget
+- 21 skipped tests 解释
+- status-board 证据状态
+- 52 / 54 / 50 / 48 / 47 canonical matrix
+- AdditiveBatch1 vs AdditiveAllDraft 命名边界
+- image/license strategy
+- runtime proof
+- independent QA
 ```
 
-因此管理决策是：**继续优化 + 有限推进，两者兼顾，但优化优先。**
-
-不要继续扩大事件范围。只推进 verified scope：
+有限推进：
 
 ```text
+只推进 verified scope：
+
 4 canary:
 - Big Fish
 - Golden Idol
-- Lab
+- The Lab
 - Divine Fountain
 
 6 simple batch:
@@ -100,7 +660,17 @@ QA/Red-Team: blocked
 - Shining Light
 ```
 
-## 下个月开发规范：June 2026
+暂停扩大：
+
+```text
+- broad Phase 2/3/4 扩张
+- combat full implementation
+- custom UI full implementation
+- full parity 宣称
+- release-ready 宣称
+```
+
+## 下个月开发规范
 
 目标名称：
 
@@ -109,34 +679,37 @@ QA/Red-Team: blocked
 月末 Go/No-Go 标准：
 
 1. Full build exit code 0，并保存完整 log。
-2. 89 warnings 要么减少，要么形成 warning budget 文档。
-3. Full test exit code 0。
+2. 89 warnings 要么减少，要么形成 warning budget。
+3. Full tests exit code 0。
 4. 21 skipped tests 逐条解释。
-5. Runtime dependency installed：`STS2-RitsuLib` 必须在 checked game-root mod path 中。
-6. 生成 active `godot.log`。
-7. Default Off 注册 0 个 StS1 events。
-8. CanaryOnly 精确注册 Big Fish、Golden Idol、Lab、Divine Fountain。
-9. AdditiveBatch1 精确为 verified scope：10 event types / 11 calls。
-10. AdditiveAllDraft 必须 unsafe-only。
-11. ReplacementPrototype 必须 debug-only + unsafe-only。
-12. `52 / 54 / 50 / 48 / 47` canonical matrix 经 Red-Team 复核。
-13. 4 个 canary runtime proof：截图、结果日志、pre/post state、save/load、EN/ZHS、image render。
-14. 6 个 simple batch runtime proof：截图、结果日志、EN/ZHS、image render。
-15. ReplacementPrototype functional proof：unknown room 只抽 StS1 candidates，Act bucket 正确，event bag/save-load 正确。
-16. Multiplayer/fail-closed 证明完成。
-17. Combat events 在 encounter models 完成前保持 blocked。
-18. Independent QA/Red-Team 给 pass/fail。
-19. Docs 更新：status-board、current-validation、handoff、monthly review。
-20. 不 commit/push，除非验证证据支持当前 scope 的真实声明。
+5. Worktree 状态明确：clean，或 dirty 但 owner-approved。
+6. Off / CanaryOnly / AdditiveBatch1 都有 clean loader proof。
+7. Default Off runtime proof：0 个 StS1 registration。
+8. CanaryOnly runtime proof：精确 4 个 canary。
+9. AdditiveBatch1 runtime proof：10 event types / 11 calls。
+10. AdditiveAllDraft 只能 unsafe-only。
+11. ReplacementPrototype 只能 debug + unsafe-only。
+12. `52 / 54 / 50 / 48 / 47` matrix 经 Red-Team 复核。
+13. 4 个 canary 完成 runtime proof：截图、结果日志、pre/post state、save/load、EN/ZHS、image/license/render。
+14. 6 个 simple batch 完成 runtime proof：截图、结果日志、EN/ZHS、image/license/render，必要时 save/load。
+15. ReplacementPrototype 完成功能证明：unknown room 只抽 StS1 candidates，Act bucket 正确，event bag/no-repeat 和 save/load 正确。
+16. Multiplayer/fail-closed runtime proof 完成。
+17. Combat events 在 encounter models 存在前继续 blocked。
+18. Temporary substitutes 必须继续标 `temporary-substitute` 和 non-parity。
+19. Independent QA/Red-Team 对每个 gate 给 pass/fail。
+20. Monthly review 和 handoff docs 更新。
+21. 不 commit/push，除非验证证据支持本次 scope 的真实声明。
 
-## Mandatory Overnight Run v15
+项目边界仍然不变：当前 active deliverable 是 `Spire Plus`，技术 id 仍是 `EZMicroBalance`；发布和代码资源路径仍按 `EZMicroBalance` 体系维护。 原版素材和大段反编译代码不能随意提交；项目 README 也明确要求不要复制原版资产或大段反编译代码。
 
-允许停止条件只有两个：
+## Mandatory Overnight Run v17
+
+停止条件只能是：
 
 ```text
-A. O0-O56 全部 GREEN；
+A. O0-O66 全部 GREEN；
 或
-B. 写出 HARD STOP BLOCKER REPORT：
+B. 输出 HARD STOP BLOCKER REPORT：
    - exact gate id
    - blocker reason
    - evidence path
@@ -145,7 +718,7 @@ B. 写出 HARD STOP BLOCKER REPORT：
    - why continuation is impossible in current environment
 ```
 
-Hard Stop 只允许暂停，**不代表完成**。
+Hard stop 只能暂停，**不代表完成**。
 
 不能因为这些就停止：
 
@@ -154,491 +727,75 @@ build passes
 tests pass
 format passes
 guard tests pass
-unsafe gates exist
+loader reaches menu
+Off/Canary loader proof exists
+source files exist
+localization JSON exists
 status-board updated
 canonical matrix exists
-source files exist
-asset scripts exist
-replacement source exists
 hard-stop report exists
 all code-side work complete
 ```
 
-夜跑最关键的新门槛是：
+核心 gates：
 
-```text
-O21 Runtime environment path report
-O22 STS2-RitsuLib installed in checked path
-O23 active godot.log generated
-O24 loader proof: BaseLib/RitsuLib/Spire Plus load state
-O25-O32 canary runtime / save-load / render proof
-O33-O42 simple batch runtime / render proof
-O43-O46 replacement functional / act bucket / save-load proof
-O47 multiplayer fail-closed proof
-O51 independent QA/Red-Team report
-O56 final summary states incomplete gates honestly
-```
+| Gate    | 必须结果                                                                                                                                           |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| O0-O9   | worktree、build、tests、skips、warnings、format、diff、patch inventory、batch classification 全部记录                                                      |
+| O10-O14 | status-board、canonical matrix、Act mapping、feature gate 全部过审                                                                                    |
+| O15-O22 | Off、CanaryOnly、AdditiveBatch1、AdditiveAllDraft、ReplacementPrototype 的 source/runtime gate 证明                                                   |
+| O23-O27 | BaseLib/RitsuLib/Spire Plus 路径、godot.log、Off/Canary/AdditiveBatch1 clean loader audit                                                          |
+| O28-O35 | 4 个 canary 的 code review、runtime screenshot、result log、save/load、EN/ZHS、image/license/render proof                                             |
+| O36-O46 | 6 个 simple batch 的 spec/code/runtime/save-load/localization/image proof                                                                        |
+| O47-O51 | ReplacementPrototype source guard、unknown room proof、Act bucket proof、event bag proof、save/load proof                                          |
+| O52-O56 | multiplayer、IsShared、combat blockers、temporary substitutes、content parity gaps                                                                 |
+| O57-O66 | asset/license、ZHS screenshots、independent QA、monthly review、current-validation、handoff、owner actions、最终 summary 必须诚实列出 remaining blocked gates |
 
 ## 必须使用 subagent
 
-这次需要新增一个专门解决阻塞的 subagent：**Runtime Environment Bootstrap**。完整 subagent 分工如下：
+这次必须明确要求助理使用 subagent，且实现者不能审核自己的实现：
 
-1. **BuildGate / Repo Health**：build/test/format/diff logs、warnings、skipped tests。
-2. **Runtime Environment Bootstrap**：确认 checked game-root paths，安装/验证 `STS2-RitsuLib`，生成 active `godot.log`。
-3. **Wiki Parity Spec Auditor**：复核 52 public target、54 internal entries、exact options、A15、semi-common。
-4. **StS2 Source/API Auditor**：ActModel、EventModel、RitsuLib、card/relic/potion/save/replacement API。
+1. **BuildGate / Repo Health**：build/test/format/diff logs、warning budget、skipped tests、worktree。
+2. **Runtime Environment Bootstrap**：game-root paths、BaseLib、RitsuLib、EZMicroBalance、godot.log、loader audits。
+3. **Wiki Parity Spec Auditor**：52 public target、54 canonical rows、exact options、A15、semi-common membership。
+4. **StS2 Source/API Auditor**：EventModel、ActModel、RitsuLib、card/relic/potion/gold/HP/save/replacement API。
 5. **Feature Gate / Registration Engineer**：Off、CanaryOnly、AdditiveBatch1、AdditiveAllDraft、ReplacementPrototype。
 6. **Canary Gameplay Subagent**：Big Fish、Golden Idol、Lab、Divine Fountain runtime proof。
-7. **Simple Batch Gameplay Subagent**：6 个 simple batch runtime proof。
-8. **Asset + Localization Subagent**：ZHS render、missing-key scan、image/license decision。
-9. **Event Pool / RNG / Save Subagent**：replacement pool、event bag、visited ids、save/load。
-10. **Multiplayer / IsShared Subagent**：per-event `IsShared`、combat true、fail-closed co-op。
-11. **Content Parity Subagent**：Bite、face relics、StS1 curses、Golden/Bloody Idol、combat encounter models。
-12. **QA / Red-Team Subagent**：只验收，不实现，逐 gate pass/fail。
-13. **Release Documentation Subagent**：status-board、current-validation、handoff、monthly review、owner actions。
+7. **Simple Batch Gameplay Subagent**：Purifier、Upgrade Shrine、Golden Shrine、The Cleric、Old Beggar/Pleading Vagrant、Shining Light runtime proof。
+8. **Asset + Localization Subagent**：EN/ZHS render、missing key scan、image/license/render decision。
+9. **Event Pool / RNG / Save Subagent**：replacement pool、seeded unknown rooms、event bag、visited ids、save/load。
+10. **Multiplayer / IsShared Subagent**：per-event IsShared、combat true、fail-closed multiplayer proof。
+11. **Content Parity Subagent**：Bite、face relics、Golden/Bloody Idol、Parasite/Madness、combat encounter models、temporary substitutes。
+12. **QA / Red-Team Subagent**：只验收，不实现；逐 gate pass/fail。
+13. **Release Documentation Subagent**：status-board、current-validation、monthly review、handoff、release evidence、owner actions。
 
-## 可以直接发给他的指令
+## 直接发给他的指令
 
 ```text
 当前状态不能标完成。
 
-你这轮 source/doc hardening 有价值：unsafe modes 现在需要显式 override，replacement prototype 在 normal build 下 fail-closed，guard tests 通过，build 0 errors，full tests 通过，format 和 diff check 通过。
+你已经推进了 source/doc safety 和 loader gates：unsafe modes 有保护，Off/Canary loader proof 已有，build/test/format/diff 通过，status-board 更接近证据状态。
 
-但是 O0-O56 没有全绿。当前 STS2-RitsuLib 已安装，且 v15 已生成 active `godot.log` 并到达 main menu；但 loader audit 仍是红灯，包含 11 个 `Godot ERROR` 命中、`ritsulib-variants.json` manifest parsing，以及 8 个 optional Spire Plus ModPatcher failures。因此 runtime/art/replacement/multiplayer/QA gates 仍 blocked，不能写 runtime parity、release-ready、gameplay-ready 或“和杀戮尖塔1完全一样”。
+但是 StS1 runtime parity 没完成。runtime gameplay、save/load、images、ReplacementPrototype 功能证明、multiplayer proof、combat encounters、independent QA 仍然 blocked 或 unverified。
 
-继续 Mandatory Overnight Run v15。只能在 O0-O56 全绿后停止；如果当前环境确实无法继续，必须写 HARD STOP BLOCKER REPORT。Hard stop 不代表完成。
+继续 Mandatory Overnight Run v17。只能在 O0-O66 全绿后停止。若某 gate 在当前环境无法完成，写 HARD STOP BLOCKER REPORT，但 blocked gate 不得标完成。
 
 优先级：
-1. 保存 full build/test/format/diff evidence，包括 89 warnings budget 和 21 skipped tests explanation。
-2. 先处理 runtime blocker：STS2-RitsuLib install 和 active godot.log 已有证据；现在必须 resolve 或 explicitly disposition loader errors，然后重新跑 clean/accepted loader proof。
-3. 证明 default Off=0、CanaryOnly exact 4、AdditiveBatch1 exact 10 event types / 11 calls、AdditiveAllDraft unsafe-only、ReplacementPrototype debug/unsafe-only。
-4. Red-Team 52 / 54 / 50 / 48 / 47 count reconciliation。
-5. 运行游戏验证 4 canary：screenshots、result logs、save/load、EN/ZHS、image render。
-6. 运行游戏验证 6 simple batch：screenshots、result logs、EN/ZHS、image render。
-7. 完成 ReplacementPrototype functional proof：unknown rooms 只抽 StS1 candidates，Act bucket 正确，event bag/visited ids 持久化。
+1. 保存 full build/test/format/diff/patch/worktree evidence。
+2. 为 89 个 Sts1Events nullable warnings 制定 warning budget。
+3. 保持 Off=0、CanaryOnly=4、AdditiveBatch1=10 event types / 11 calls、AdditiveAllDraft unsafe-only、ReplacementPrototype debug/unsafe-only。
+4. 补 AdditiveBatch1 clean loader proof。
+5. 运行游戏验证 4 canary：screenshots、result logs、save/load、EN/ZHS、image/license/render。
+6. 运行游戏验证 6 simple batch。
+7. 功能性证明 ReplacementPrototype，而不是只证明 source guard。
 8. Combat events 在 encounter models 完成前继续 blocked。
-9. QA/Red-Team 必须独立验收，不能实现者自验。
-10. 不要 commit/push，除非 scope 真实且 validation evidence 支持声明。
+9. Temporary substitutes 必须继续标 non-parity。
+10. 启动 subagents，QA/Red-Team 必须独立验收，不能实现者自验。
+11. 不要 commit/push，除非 validation evidence 支持本次准确 scope。
 ```
 
-管理红线：**不要把 source/doc completion 当 gameplay completion；不要把 automated tests 当 runtime proof；不要把 registry counts 当 StS1 parity；不要把 hard-stop blocker report 当完成；不要继续扩大范围。先把 runtime environment、4 canary、6 simple batch、replacement pool、save/load、image/localization、QA 跑绿。**
+管理红线：**不要把 source-side 进展当 gameplay completion；不要把 loader proof 当 event parity；不要把 registry count 当 StS1 experience；不要把 hard-stop report 当完成；不要继续扩大范围。先把 4 canary + 6 simple batch + replacement pool 的 runtime proof 跑绿。**
 
 [1]: https://slay-the-spire.fandom.com/wiki/Events "Events | Slay the Spire Wiki | Fandom"
 [2]: https://slay-the-spire.fandom.com/wiki/Big_Fish "Big Fish | Slay the Spire Wiki | Fandom"
 [3]: https://slay-the-spire.fandom.com/wiki/Golden_Idol_%28Event%29 "Golden Idol (Event) | Slay the Spire Wiki | Fandom"
-# StS1 Event Port Strict Audit v15 — Monthly Dev Spec + Mandatory Overnight Run
-
-Date: 2026-05-31
-Scope: review the latest assistant/session report, decide completion status, compare current state against the goal of StS1-like event experience in StS2, define next-month development spec, enforce subagent workflow, and set an overnight run that may only stop at green gates or a documented hard blocker.
-
----
-
-## 0. Executive verdict
-
-**Not complete.**
-
-The latest report is a meaningful source/doc hardening pass:
-
-- unsafe StS1 modes are now guarded;
-- `AdditiveAllDraft` requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`;
-- `ReplaceUnknownEventsPrototype` now fails closed in normal builds unless both the compile-time replacement gate and unsafe override are present;
-- guard tests were added for unsafe-mode and replacement fail-closed behavior;
-- active StS1 docs were updated to avoid some overclaims;
-- validation improved: filtered StS1 guard tests passed, full solution build passed with 0 errors, full test suite passed, format passed, diff check passed except an existing CRLF warning.
-
-However, the latest report itself says **O0-O50 are not green** and that runtime/art/replacement/multiplayer/QA gates remain blocked. The v15 continuation has since produced an active loader log, but the audit remains red due 11 `Godot ERROR` hits, including `ritsulib-variants.json` manifest parsing and 8 optional Spire Plus ModPatcher failures. That means the StS1 event port is **not runtime parity complete**, **not release-ready**, and **not gameplay-ready**.
-
-Correct label:
-
-> `StS1 Event Port Prototype Batch 1 — Source/Doc Hardening Pass Completed; Runtime Parity Gates Blocked`
-
-Incorrect labels:
-
-- all tasks complete
-- full parity complete
-- all StS1 events complete
-- release-ready
-- gameplay-ready
-- “和杀戮尖塔 1 完全一样”
-
----
-
-## 1. Current report under audit
-
-Latest user-provided report says:
-
-```text
-Changed:
-- AdditiveAllDraft now requires SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1.
-- ReplaceUnknownEventsPrototype now fails closed in normal builds unless REPLACEMENT_PROTOTYPE_ENABLED and unsafe override are both present.
-- Added guard coverage for unsafe-mode override and replacement fail-closed behavior.
-- Updated active StS1 docs/counts to avoid overclaims and align on 52 / 54 / 50 / 48 / 47, AdditiveBatch1 = 10 event types / 11 calls, and runtime-blocked status.
-- Added hard-stop-blocker-report-v14.md.
-- Updated current-validation.md with exact validation results and known testhost retry behavior.
-
-Validation:
-- dotnet test --filter Sts1EventFeatureGuardTests passed: 31 passed.
-- dotnet test --filter PlayerFacingNameStaysSpirePlusWhileTechnicalIdRemainsStable passed.
-- dotnet build EZMicroBalance.sln -m:1 --no-incremental passed after clearing stale testhost locks: 0 errors / 89 warnings.
-- dotnet test EZMicroBalance.sln --no-build -- RunConfiguration.MaxCpuCount=1 passed: 464 passed / 0 failed / 21 skipped / 485 total.
-- dotnet format EZMicroBalance.sln --verify-no-changes --no-restore passed.
-- git diff --check passed, with only the existing CRLF normalization warning for docs/patch-inventory.md.
-
-Hard Stop:
-- O0-O50 are not green.
-- Runtime/art/replacement/multiplayer/QA gates remain blocked; v15 later captured a loader log, but it is not clean and does not close runtime proof.
-- No runtime parity, release-ready, or gameplay-ready claim was made.
-- No commit or push was performed.
-```
-
-v15 continuation update:
-
-- `STS2-RitsuLib` `v0.3.10` is installed in the checked E-drive game-root path.
-- Active loader evidence now exists at `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/godot.log.after-launch`.
-- The log reaches main menu with BaseLib, RitsuLib, and Spire Plus loaded, and logs StS1Events default Off.
-- `audit-godot-log.after-launch.json` is not clean: 11 `Godot ERROR` hits remain, including `ritsulib-variants.json` manifest parsing and 8 optional Spire Plus ModPatcher failures.
-- The valid v15 hard stop is now `docs/features/sts1-events/hard-stop-blocker-report-v15.md`; this does not mark runtime parity, gameplay readiness, or release readiness complete.
-
----
-
-## 2. Strict completion audit
-
-### 2.1 What is legitimately complete
-
-| Area | Status | Audit result |
-| --- | --- | --- |
-| Unsafe mode guard | Green for source-side guard | This is a strong safety improvement. `AdditiveAllDraft` and replacement mode should not be reachable by normal users. |
-| Replacement fail-closed source behavior | Green for source-side guard | Source-side proof is useful, but it is not yet functional runtime replacement proof. |
-| StS1 guard tests | Green for filtered test lane | 31 guard tests passed. Keep evidence path in docs. |
-| Player-facing name / technical id guard | Green | Important because `Spire Plus` must remain player-facing while `EZMicroBalance` remains the technical id. |
-| Full build | Green for errors, amber for warnings | 0 errors, but 89 warnings are not “clean.” Warnings need a documented budget and triage. |
-| Full tests | Green for automated tests | 464 passed / 0 failed / 21 skipped / 485 total is internally consistent. Skipped tests still need explanation. |
-| Format | Green | `dotnet format --verify-no-changes` passed. |
-| Diff check | Amber/Green | Passed except existing CRLF normalization warning. Existing warning must remain tracked; it should not become invisible debt. |
-| Docs avoiding overclaims | Improved | Current report says docs were updated to avoid overclaims. Must be checked by Red-Team, not only by implementer. |
-| Commit/push | Not done | Acceptable because gates are not fully green. Do not push runtime-incomplete work as release-ready. |
-
-### 2.2 What is not complete
-
-| Area | Status | Why it blocks completion |
-| --- | --- | --- |
-| Runtime canary verification | Blocked | No active game launch, no `godot.log`, no screenshots, no event result logs. |
-| Runtime simple batch verification | Blocked | Source implementation is not gameplay proof. |
-| Save/load proof | Blocked | No in-game event state persistence evidence. |
-| Image/render proof | Blocked | No redistributable StS1 art and no local extraction/render proof. |
-| ReplacementPrototype functional proof | Blocked | Source guard is not proof that unknown rooms only draw StS1 candidates. |
-| Multiplayer/fail-closed proof | Blocked | Needs runtime/co-op or explicit fail-closed evidence. |
-| Independent QA/Red-Team | Blocked | Implementer cannot self-certify parity gates. |
-| Combat events | Blocked | Encounter models remain missing; these events must not be counted as parity-complete. |
-| Release-ready status | Not complete | Runtime/art/QA gates are still blocked. |
-| Full StS1 experience | Not complete | Event feel depends on event pool, act buckets, visuals, text, save/load, and runtime behavior. |
-
----
-
-## 3. Critical historical context that still matters
-
-Earlier work made several overclaims and unsafe assumptions:
-
-1. A prior pass wired `Sts1EventRegistrationService.RegisterAll(ModId)` directly into `MainFile.Initialize()`, which meant StS1 draft events could pollute the normal Spire Plus startup path. It also wrote the wrong act mapping comment: `Underdocks=Act1, Overgrowth=Act2, Hive=Act3`. This was a serious cause of “event feel differs from StS1.”
-2. A prior status-board wrote `Infrastructure`, `event-specs`, `assets.md`, `localization.md`, and `test-plan.md` as `Done` while still listing blockers such as Regret, Injury, random relic helper, card UI, and combat encounter models. That “Done” vocabulary must not return.
-3. A prior overnight summary already established the correct guard philosophy: default Off, correct act mapping, RitsuLib registration is additive only, and nothing may be marked Done without source/API/test/screenshot/log/save-load evidence.
-
-These historical failures justify the strict v15 gate policy.
-
----
-
-## 4. Goal comparison
-
-### 4.1 Actual project goal
-
-The target is not “many files exist.” The target is:
-
-```text
-Port StS1 event experience into the StS2 Spire Plus mod:
-- unknown room event pool behavior
-- Act bucket and semi-common membership
-- page flow and option locks
-- rewards/cards/relics/curses/potions
-- A15 numeric changes
-- images and EN/ZHS text rendering
-- save/load persistence
-- multiplayer / IsShared behavior
-- default Off so normal Spire Plus remains clean
-```
-
-### 4.2 Current state against that goal
-
-| Goal component | Current state | Decision |
-| --- | --- | --- |
-| Default Off | Improved and guarded | Continue protecting it. |
-| Unsafe modes | Improved and guarded | Good optimization; keep it. |
-| Act mapping | Previously corrected; must remain guarded | Continue tests. |
-| Canary implementation | Code-side claimed; runtime not verified | Needs runtime launch. |
-| Simple batch implementation | Code-side claimed; runtime not verified | Needs runtime launch. |
-| ZHS placeholders | Claimed cleared in source | Needs render proof. |
-| Images | Blocked | Must choose extraction/license/generated placeholder path. |
-| Replacement event pool | Source guarded only | Needs functional proof. |
-| Save/load | Not verified | Needs runtime proof. |
-| Combat events | Blocked | Keep blocked until encounter models exist. |
-| QA | Blocked | Must use independent Red-Team. |
-| Release | Not ready | No release-ready claim. |
-
----
-
-## 5. Decision: optimize + limited progress, with optimization first
-
-Decision: **both optimize and progress, but optimization comes first.**
-
-Do not expand to more events. The verified scope remains:
-
-```text
-4 canary:
-- Big Fish
-- Golden Idol
-- Lab
-- Divine Fountain
-
-6 simple batch:
-- Purifier
-- Upgrade Shrine
-- Golden Shrine
-- The Cleric
-- Old Beggar / Pleading Vagrant
-- Shining Light
-```
-
-### Optimization priorities
-
-1. Keep the checked runtime environment stable: `STS2-RitsuLib` is installed in the checked E-drive game-root mod path.
-2. Resolve or explicitly disposition the active loader-log errors, then rerun clean/accepted loader proof.
-3. Preserve full build/test/format/diff evidence.
-4. Red-Team the 52 / 54 / 50 / 48 / 47 count reconciliation.
-5. Enforce mode naming:
-   - `Off`
-   - `CanaryOnly`
-   - `AdditiveBatch1` = verified scope only, 10 event types / 11 calls
-   - `AdditiveAllDraft` = unsafe/dev-only
-   - `ReplaceUnknownEventsPrototype` = debug-only and unsafe-gated
-6. Remove every false “Done” from status docs.
-
-### Limited progress priorities
-
-1. Runtime verify 4 canary.
-2. Runtime verify 6 simple batch.
-3. Functional proof for replacement pool.
-4. Save/load proof.
-5. Image/render proof for verified scope.
-6. Independent QA/Red-Team pass/fail.
-
----
-
-## 6. June 2026 Monthly Dev Spec
-
-Monthly target name:
-
-```text
-StS1 Event Port Prototype Batch 1 — Runtime Parity Foundation
-```
-
-Forbidden claims:
-
-- full parity
-- all StS1 events complete
-- release-ready
-- gameplay-ready
-- “和杀戮尖塔 1 完全一样”
-
-### 6.1 Month-end Go/No-Go criteria
-
-| # | Criterion | Required proof |
-| --- | --- | --- |
-| 1 | Full build passes | Full unfiltered `dotnet build EZMicroBalance.sln -m:1 --no-incremental` log, exit code 0. |
-| 2 | Warning budget documented | 89 warnings either reduced or triaged in docs. |
-| 3 | Full tests pass | Full `dotnet test EZMicroBalance.sln --no-build -- RunConfiguration.MaxCpuCount=1` log, 0 failed. |
-| 4 | Skipped tests explained | 21 skipped tests listed with reason. |
-| 5 | Format/diff checks pass | `dotnet format` and `git diff --check` evidence. |
-| 6 | Runtime dependency installed | `STS2-RitsuLib` present in checked game-root mod path, with log proof. |
-| 7 | Active `godot.log` exists | Launch log showing BaseLib, RitsuLib, and Spire Plus load state. |
-| 8 | Default Off | 0 StS1 registrations and clean normal Spire Plus startup. |
-| 9 | CanaryOnly | Exact identity proof: Big Fish, Golden Idol, Lab, Divine Fountain only. |
-| 10 | AdditiveBatch1 | Exact verified-scope proof: 10 event types / 11 calls only. |
-| 11 | AdditiveAllDraft unsafe | Requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; never default. |
-| 12 | ReplacementPrototype unsafe/debug-only | Requires `REPLACEMENT_PROTOTYPE_ENABLED` and unsafe override. |
-| 13 | Canonical matrix | 52 / 54 / 50 / 48 / 47 reconciliation Red-Team reviewed. |
-| 14 | 4 canary runtime proof | Screenshot, result log, pre/post state, EN/ZHS render, image render. |
-| 15 | 4 canary save/load proof | Save during/after event, reload, state stable. |
-| 16 | 6 simple batch runtime proof | Screenshot, result log, EN/ZHS render, image render. |
-| 17 | Replacement functional proof | Unknown rooms draw only StS1 candidates in debug replacement mode. |
-| 18 | Act bucket proof | Overgrowth + Underdocks = Act 1, Hive = Act 2, Glory = Act 3. |
-| 19 | Event bag proof | No-repeat / visited ids / save-load behavior documented. |
-| 20 | Multiplayer/fail-closed | Co-op verified or StS1 unsafe modes fail closed in multiplayer. |
-| 21 | Images | Local extraction hash proof, owner-licensed art, generated replacement art, or explicit non-parity placeholder. |
-| 22 | Combat blockers | Combat events stay blocked until encounter models exist. |
-| 23 | Independent QA | QA/Red-Team report pass/fail, not written by implementer. |
-| 24 | Docs | status-board, current-validation, handoff, monthly review updated. |
-| 25 | Commit/push policy | No commit/push unless validation and scope are honest. |
-
----
-
-## 7. Mandatory Overnight Run v15
-
-The assistant must continue the overnight run until **all gates are green** or a valid hard blocker report is produced.
-
-### 7.1 Allowed stop conditions
-
-The run may stop only if:
-
-```text
-A. O0-O56 are all GREEN;
-or
-B. HARD STOP BLOCKER REPORT is written with:
-   - exact gate id
-   - blocker reason
-   - evidence path
-   - attempted actions
-   - owner action
-   - why continuation is impossible in the current environment
-```
-
-A hard stop only permits pausing. It does **not** mark the blocked feature complete.
-
-### 7.2 Things that are not stop conditions
-
-Do not stop just because:
-
-```text
-build passes
-tests pass
-format passes
-guard tests pass
-unsafe gates exist
-status-board updated
-canonical matrix exists
-source files exist
-asset scripts exist
-replacement source exists
-hard-stop report exists
-all code-side work complete
-```
-
-### 7.3 Gates O0-O56
-
-| Gate | Required result |
-| --- | --- |
-| O0 | Worktree snapshot: branch, HEAD, diff, unstaged files. |
-| O1 | Full unfiltered build log, exit code 0. |
-| O2 | Warning budget report for 89 warnings. |
-| O3 | Full test log, exit code 0. |
-| O4 | Skipped test explanation. |
-| O5 | `dotnet format` proof. |
-| O6 | `git diff --check` proof and CRLF note. |
-| O7 | status-board contains no false `Done`. |
-| O8 | current-validation includes exact validation commands and outcomes. |
-| O9 | canonical matrix complete. |
-| O10 | 52 / 54 / 50 / 48 / 47 count reconciliation Red-Team reviewed. |
-| O11 | act mapping guard passes. |
-| O12 | feature gate tests pass. |
-| O13 | Off=0 exact registration proof. |
-| O14 | CanaryOnly exact 4 identity proof. |
-| O15 | AdditiveBatch1 exact verified-scope proof: 10 event types / 11 calls. |
-| O16 | AdditiveAllDraft unsafe override proof. |
-| O17 | ReplacementPrototype unsafe + compile-define proof. |
-| O18 | ReplacementPrototype fail-closed proof in normal builds. |
-| O19 | per-event `IsShared` matrix complete. |
-| O20 | combat `IsShared=true` guard passes. |
-| O21 | Runtime environment path report: checked game-root paths. |
-| O22 | `STS2-RitsuLib` installed in checked path. |
-| O23 | Active `godot.log` generated. |
-| O24 | Loader proof: BaseLib/RitsuLib/Spire Plus load state visible in log. |
-| O25 | Canary runtime launch with `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`. |
-| O26 | Big Fish screenshot + result log. |
-| O27 | Golden Idol screenshot + result log. |
-| O28 | Lab screenshot + result log. |
-| O29 | Divine Fountain screenshot + result log. |
-| O30 | Canary save/load proof. |
-| O31 | Canary EN/ZHS render proof. |
-| O32 | Canary image/license/render proof. |
-| O33 | Simple batch launch with `AdditiveBatch1`. |
-| O34 | Purifier runtime proof. |
-| O35 | Upgrade Shrine runtime proof. |
-| O36 | Golden Shrine runtime proof. |
-| O37 | The Cleric runtime proof. |
-| O38 | Old Beggar / Pleading Vagrant runtime proof. |
-| O39 | Shining Light runtime proof. |
-| O40 | Simple batch save/load proof if applicable. |
-| O41 | Simple batch EN/ZHS render proof. |
-| O42 | Simple batch image/license/render proof. |
-| O43 | ReplacementPrototype functional proof: unknown rooms draw only StS1 candidates. |
-| O44 | Replacement act bucket proof. |
-| O45 | Event bag / visited ids / no-repeat proof. |
-| O46 | Replacement save/load proof. |
-| O47 | Multiplayer fail-closed proof or co-op verification. |
-| O48 | Content parity gap matrix updated. |
-| O49 | Temporary substitutes marked non-parity. |
-| O50 | Combat blocker report current and honest. |
-| O51 | Independent QA/Red-Team report. |
-| O52 | QA verifies source/doc claims against runtime evidence. |
-| O53 | Monthly review updated. |
-| O54 | Handoff docs updated. |
-| O55 | Owner actions listed. |
-| O56 | Final summary says incomplete gates honestly; no release-ready claim. |
-
----
-
-## 8. Mandatory subagent plan
-
-The assistant must split work into subagents. The implementer must not self-audit.
-
-| Subagent | Responsibility | Required output |
-| --- | --- | --- |
-| BuildGate / Repo Health | Build/test/format/diff logs, warnings, skipped tests, worktree. | `build-full.log`, `test-full.log`, `warning-budget.md`, `skipped-tests.md`. |
-| Runtime Environment Bootstrap | Fix checked game-root paths, install/verify `STS2-RitsuLib`, produce active `godot.log`. | `runtime-loader-proof.md`, log paths. |
-| Wiki Parity Spec Auditor | Verify 52 public target, 54 internal entries, exact options, A15, semi-common membership. | canonical matrix and count reconciliation. |
-| StS2 Source/API Auditor | Verify ActModel, EventModel, RitsuLib, card/relic/potion/save/replacement APIs. | source/API matrix. |
-| Feature Gate / Registration Engineer | Off, CanaryOnly, AdditiveBatch1, AdditiveAllDraft, ReplacementPrototype. | mode tests and registration-count tests. |
-| Canary Gameplay Subagent | Runtime proof for Big Fish, Golden Idol, Lab, Divine Fountain. | screenshots, result logs, save/load. |
-| Simple Batch Gameplay Subagent | Runtime proof for Purifier, Upgrade Shrine, Golden Shrine, Cleric, Old Beggar/Pleading Vagrant, Shining Light. | screenshots and result logs. |
-| Asset + Localization Subagent | ZHS render, missing-key scan, image extraction/license decision. | render screenshots, asset manifest, license notes. |
-| Event Pool / RNG / Save Subagent | Replacement pool, event bag, visited ids, save/load. | replacement functional proof. |
-| Multiplayer / IsShared Subagent | per-event `IsShared`, combat true, fail-closed co-op. | `is-shared-matrix.csv`, co-op/fail-closed log. |
-| Content Parity Subagent | Bite, face relics, StS1 curses, Golden/Bloody Idol, combat encounter models. | content gap matrix. |
-| QA / Red-Team Subagent | Independent pass/fail only; no implementation. | `qa-redteam-report.md`. |
-| Release Documentation Subagent | status-board, current-validation, handoff, monthly review, owner actions. | updated docs. |
-
----
-
-## 9. Direct instruction to the assistant
-
-```text
-Current status is not complete.
-
-Your latest source/doc hardening pass is useful: unsafe modes now require explicit override, replacement prototype fails closed in normal builds, guard tests pass, full build has 0 errors, full tests pass, format passes, and diff check passes except an existing CRLF note.
-
-However, O0-O56 are not green. The v15 continuation generated an active `godot.log` and reached main menu with BaseLib, RitsuLib, and Spire Plus loaded, but runtime/art/replacement/multiplayer/QA gates remain blocked because the loader audit is not clean: 11 `Godot ERROR` hits, including `ritsulib-variants.json` manifest parsing and 8 optional Spire Plus ModPatcher failures. This means no runtime parity, no release-ready claim, and no gameplay-ready claim.
-
-Continue Mandatory Overnight Run v15. You may stop only when O0-O56 are all green, or when you produce a valid HARD STOP BLOCKER REPORT for the exact gate that cannot continue in the current environment. A hard stop does not mark the feature complete.
-
-Immediate priority order:
-1. Preserve full build/test/format/diff evidence, including the 89-warning budget and 21 skipped test explanations.
-2. Resolve or explicitly disposition the loader errors, then rerun clean/accepted loader proof with STS2-RitsuLib, BaseLib, and Spire Plus enabled.
-3. Prove default Off=0, CanaryOnly exact 4, AdditiveBatch1 exact 10 event types / 11 calls, AdditiveAllDraft unsafe-only, ReplacementPrototype debug/unsafe-only.
-4. Red-Team the 52 / 54 / 50 / 48 / 47 count reconciliation.
-5. Runtime verify 4 canary events with screenshots, result logs, save/load, EN/ZHS render, and image/render proof.
-6. Runtime verify 6 simple batch events with screenshots, result logs, EN/ZHS render, and image/render proof.
-7. Provide ReplacementPrototype functional proof: unknown rooms draw only StS1 candidates, act buckets are correct, event bag and visited ids persist.
-8. Keep combat events blocked until encounter models exist.
-9. Use independent QA/Red-Team; implementer may not self-certify.
-10. Do not commit or push unless the scope is honest and validation evidence supports the claim.
-```
-
----
-
-## 10. Management red lines
-
-- Do not treat source/doc completion as gameplay completion.
-- Do not treat automated tests as runtime proof.
-- Do not treat registry counts as StS1 event parity.
-- Do not treat a hard-stop blocker report as feature completion.
-- Do not continue expanding event scope.
-- Do not claim release-ready or full parity.
-- First make 4 canary + 6 simple batch runtime-real, visible, localized, save/load-safe, and replacement-pool verified.
