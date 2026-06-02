@@ -1,8 +1,40 @@
 # Overnight Run Status — Revision J Runtime Hard-Blocker Closure
 
-Date: 2026-05-31
+Date: 2026-06-02
 
 ## Revision J Current Stop Condition
+
+```text
+Status: RUNTIME HARD-BLOCKER RESOLVED / OWNER-REVIEW PACKET UPDATED
+HEAD: 8f2d79b4 (HEAD -> main, origin/main, origin/HEAD) sprint3
+Validation: clean/build/test/format/diff-check/patch-inventory/batch-classifier replay passes; 464 passed, 0 failed, 21 skipped, 485 total
+Warnings: 89 Sts1Events nullable warnings remain as staging debt
+Dirty state: worktree clean (0 entries)
+Sts1Events: staging-only recommended (Off=0 and CanaryOnly=4 runtime proof achieved)
+Debug: accept-scaffold recommended
+RitsuLib: runtime-validated (clean Off/CanaryOnly logs, 25/25 ModPatcher patches, v0.3.10 [0.106.1])
+Runtime: resolved; clean Off and CanaryOnly diagnostic logs exist with 0 Godot ERROR hits
+Batch 4c: blocked pending gameplay proof and owner decision
+Release-ready: no
+Commit/push: worktree clean; no new changes to commit
+```
+
+## Revision J Required Next Action
+
+Runtime hard blocker is closed. Next steps are owner decisions on:
+1. Sts1Events governance (staging-only vs formal promotion path)
+2. Debug governance (accept-scaffold vs feature completion)
+3. Batch 4c / Batch 5 / PR7 progression
+4. Versioned tester-package handoff
+5. Gameplay verification plan
+
+---
+
+# Historical Overnight Run Status — Revision J Runtime Hard-Blocker Closure (2026-05-31)
+
+Date: 2026-05-31
+
+## Revision J Original Stop Condition
 
 ```text
 Status: OWNER-REVIEW PACKET PREPARED / RUNTIME HARD BLOCKED
@@ -18,10 +50,6 @@ Batch 4c: blocked
 Release-ready: no
 Commit/push: not authorized
 ```
-
-## Revision J Required Next Action
-
-Keep `STS2-RitsuLib` installed under the active E-drive game root, resolve or explicitly disposition the 11 loader error hits, rerun BaseLib + STS2-RitsuLib + Spire Plus loader smoke, capture a clean `godot.log`, then rerun Off and CanaryOnly Sts1Events runtime checks. Do not resume Batch 4c or high-risk migration before that evidence exists.
 
 ---
 
@@ -44,19 +72,6 @@ M3 Week 1 validation: 2026-05-29T16:14:00+02:00
 | Untracked entries | 0 |
 | **Total entries** | **11** |
 
-## Evidence Hardening Pass (Revision F)
-
-Three strict-audit evidence issues fixed:
-
-1. **api-command-matrix.md**: Removed phantom `CardCmd.UpgradeCard` (does not exist). Fixed 6 additional phantom/wrong-signature methods. All signatures verified against `source code/src/Core/Commands/`.
-2. **wiki-event-catalog.md**: Corrected counts to 52/46/52/4. Removed stale `act_bucket_memberships=57`.
-3. **patch-boundaries.md**: Added StS1Events row to High-Risk Owners 5-column table and manual evidence map.
-
-Additional fixes:
-- 6 combat event files now declare `public override bool IsShared => true` (Sts1DeadAdventurer, Sts1ScorpionNest, Sts1TreasureOoze, Sts1MaskedBandits, Sts1MindBloom, Sts1MysteriousSphere)
-- Source manifest updated with `EZMicroBalanceCode/Core/Architecture/` files
-- New `ArchitectureSkeletonGuardTests.cs` covers CardPlayContext and RewardPipeline
-
 ## Terminal Validation Results (M3 Week 1 Replay)
 
 | Command | Exit Code | Result |
@@ -67,34 +82,3 @@ Additional fixes:
 | `dotnet format .\EZMicroBalance.csproj --verify-no-changes` | 0 | Clean |
 | `git diff --check` | 0 | Clean |
 | `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | 11 dirty (script output), 0 unclassified |
-
-## Stop Condition
-
-**GREEN** — All terminal validation commands passed with exit code 0.
-
-## Files Changed During Evidence Hardening (Revision F)
-
-| Category | Files | Change |
-|---|---|---|
-| Doc fixes | `api-command-matrix.md`, `wiki-event-catalog.md`, `patch-boundaries.md` | Phantom APIs removed, counts corrected, StS1Events row added |
-| Combat events | 6 files in `Sts1Events/Models/` | Added `IsShared => true` |
-| Source manifest | `ActiveSourceManifestGuardTests.cs` | Added Core/Architecture files |
-| Tests | `ArchitectureSkeletonGuardTests.cs` (new) | Covers CardPlayContext + RewardPipeline |
-| Docs | `overnight-run-status.md`, `issues.md`, `refactor.md`, `patch-inventory.md` | Updated counts and status |
-
-## Historical M4 Stop Condition
-
-```text
-Status: BLOCKED — historical M4 validation replay was source-green, but runtime smoke was hard-blocked
-M4 replay: Terminal validations replayed at 24d4fe9a; superseded by Revision I at 87820303
-Build: 0 errors, 89 warnings (all Sts1Events nullable: CS8604=54, CS8602=34, CS8625=1)
-Test: historical pass (461 passed, 0 failed, 21 skipped, 482 total); current Revision I project no-build pass is 464/0/21/485
-Dirty: worktree remains dirty with preserved source/docs/harness changes; batch classifier was not rerun in this continuation
-Commit slices: Revision G/M4 plan updated for owner review only; no commit authorized
-Stale docs: primary validation/runtime docs reconciled; remaining revision-report docs are historical unless explicitly promoted
-Sts1Events: Staging-only (warnings/runtime unverified; ZHS sts1_events key parity currently complete)
-RitsuLib: Hard-blocked/runtime-unverified because fresh `godot.log` evidence is missing after local STS2-RitsuLib install
-Debug: Accept-scaffold (default-off, Warn unconditional, LogPreview dead)
-Release-ready: No
-Required next: install STS2-RitsuLib, rerun Off and CanaryOnly runtime smoke, capture `godot.log`, and keep Batch 4c blocked until that passes
-```

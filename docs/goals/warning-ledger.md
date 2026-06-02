@@ -1,7 +1,7 @@
 # Warning Ledger - Revision J Current State
 
-Date: 2026-05-31
-HEAD: `6b149ba0 (HEAD -> main, origin/main, origin/HEAD) sprint 2`
+Date: 2026-06-02
+HEAD: `8f2d79b4 (HEAD -> main, origin/main, origin/HEAD) sprint3`
 
 ## Summary
 
@@ -69,7 +69,8 @@ All warnings are owned by Sts1Events staging model code. They remain accepted on
 ## Governance Decision
 
 - Sts1Events recommendation: staging-only.
-- Formalization blocker: fix or explicitly risk-accept the 89 nullable warnings, then prove Off=0 and CanaryOnly=4 in live `godot.log` evidence.
+- Runtime proof: Off=0 and CanaryOnly=4 achieved (clean diagnostic logs).
+- Formalization blocker: fix or explicitly risk-accept the 89 nullable warnings, then prove gameplay (live run, save-load, co-op).
 - Removal option: would clear warning debt but would discard intentionally staged prototype infrastructure; requires owner decision.
 
 ## History
@@ -79,4 +80,5 @@ All warnings are owned by Sts1Events staging model code. They remain accepted on
 | 2026-05-29 Rev D | 69 | Historical first clean-build count |
 | 2026-05-29 Rev E | 87 | Historical count after early `IsShared` updates |
 | 2026-05-29 M3 Week 1 | 92 | Historical count after UrdaStateCodec/Sts1Events changes |
-| 2026-05-31 Revision I/J | 89 | Current count; all warnings in Sts1Events model staging code |
+| 2026-05-31 Revision I/J | 89 | Count after sprint2; all warnings in Sts1Events model staging code |
+| 2026-06-02 sprint3 | 89 | Current count; unchanged from Revision J |

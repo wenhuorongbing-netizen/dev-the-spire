@@ -1,6 +1,91 @@
 # Current Validation
 
-Date: 2026-05-31
+Date: 2026-06-02
+
+## June 2 Refactor Validation Pass
+
+- HEAD: `8f2d79b4 (HEAD -> main, origin/main, origin/HEAD) sprint3`
+- Branch: `main...origin/main`
+- Worktree: **DIRTY** (17 entries). `report-worktree-batches.ps1 -FailOnUnclassified` reports 17 dirty entries across Batch 1 (5), Batch 2 (2), Batch 3 (1), Batch 8 (9), with 0 unclassified. 3 entries were added by this session (current-validation.md edit, warning-triage-matrix.md, refactor-qa-20260602.md); 14 were pre-existing from prior sessions.
+- Runtime smoke: Off and CanaryOnly loader-gate evidence from Revision J remains valid. No new runtime smoke was captured this pass.
+
+### June 2 Required Commands
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `dotnet build EZMicroBalance.sln -m:1 --no-incremental` | PASS | 0 errors, 89 Sts1Events nullable warnings (CS8602, CS8604, CS8625). |
+| `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build -- RunConfiguration.MaxCpuCount=1` | PASS | 464 passed, 0 failed, 21 skipped, 485 total. |
+| `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` | PASS | No formatting changes required. |
+| `git diff --check` | PASS | No whitespace errors. |
+| `.\scripts\generate-patch-inventory.ps1 -Check` | PASS | Patch inventory is fresh. |
+| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | PASS | 17 dirty entries (Batch 1: 5, Batch 2: 2, Batch 3: 1, Batch 8: 9), 0 unclassified. |
+
+### June 2 Runtime Path Check
+
+| Path | Exists |
+| --- | --- |
+| `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` | True (`v0.3.10`, includes `lib\0.106.1`) |
+| `E:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib` | True |
+| `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` | True |
+
+### June 2 K1 Runtime Smoke (Fresh at HEAD `8f2d79b4`)
+
+| Evidence | Result | Notes |
+| --- | --- | --- |
+| `.tools\runtime-evidence\smoke-k1-off-20260602-145938\godot.log.after-launch` | PASS | Off-mode Steam smoke reached main menu in 40s. Loaded exactly 3 mods (BaseLib v3.1.4, RitsuLib v0.3.10, Spire Plus v0.1.0-private-beta.84). Applied 25/25 Spire Plus ModPatcher patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=disabled, live=Disabled` (default Off). FeatureRegistry diagnostics observed for all 6 features. All features default-on except Sts1Events. |
+| `.tools\runtime-evidence\smoke-k1-off-20260602-145938\godot-log-audit.json` | PASS | Clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. The `[ERROR] ritsulib-variants.json` line is a known RitsuLib internal variant-manifest issue (ignored by audit). |
+| `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot.log.after-launch` | PASS | CanaryOnly direct launch (with `steam_appid.txt` + `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` env var) reached main menu in 22s. Loaded exactly 3 mods. Applied 25/25 patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=enabled, live=Enabled` (CanaryOnly mode). Registered exactly 4 canary events: `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`. No other events registered. |
+| `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot-log-audit.json` | PASS | Clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. |
+
+### June 2 AdditiveBatch1 Runtime Evidence
+
+| Evidence | Result | Notes |
+| --- | --- | --- |
+| `.tools\runtime-evidence\additive-batch1-20260602-150445\godot.log.after-launch` | PASS | AdditiveBatch1 direct launch reached main menu in 42s. Loaded exactly 3 mods (BaseLib v3.1.4, RitsuLib v0.3.10, Spire Plus v0.1.0-private-beta.84). Applied 25/25 Spire Plus ModPatcher patches. Registered exactly 10 event types via 11 calls: Sts1BigFish (Shared), Sts1GoldenIdol (Shared), Sts1TheLab (Shared), Sts1DivineFountain (Shared), Sts1Purifier (Shared), Sts1UpgradeShrine→Glory (Act), Sts1GoldenShrine (Shared), Sts1TheCleric (Shared), Sts1OldBeggar (Shared), Sts1ShiningLight→Overgrowth (Act), Sts1ShiningLight→Underdocks (Act). |
+| `.tools\runtime-evidence\additive-batch1-20260602-150445\godot-log-audit.json` | PASS | Clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. The single `[ERROR] ritsulib-variants.json` line is a RitsuLib internal variant-manifest issue (C# logger), not a Godot engine error. |
+
+### June 2 Warning Triage
+
+- Warning triage matrix written to `docs/reviews/warning-triage-matrix.md`.
+- All 89 warnings trace to single root cause: `EventModel.Owner` typed `Player?` from game base class.
+- Recommended fix: early-exit guard `if (Owner is not { } owner) return;` at top of each handler method.
+- Warnings accepted for now because Sts1Events is gated Off by default and still prototype/dev-only.
+
+### June 2 Diagnostics Architecture Audit
+
+| Component | Required Posture | Actual Posture | Compliant? |
+|---|---|---|---|
+| RewardPipeline | Diagnostics-only | Diagnostics-only | YES |
+| CardPlayContext | Allow-only | Allow-only | YES |
+| DeathProtectionService | No-op / diagnostics-only | No-op (zero production callers) | YES |
+| MultiplayerPolicy (registry) | Taxonomy / diagnostics-only | Taxonomy store | YES |
+| MultiplayerFeaturePolicy (coop gates) | Behavioral safety gate | Active feature suppression in co-op | YES (intentional) |
+
+### June 2 Stop Decision (Updated after K1 Runtime Smoke)
+
+- Status: PARTIAL PASS / RELEASE STILL BLOCKED.
+- No-game validation: **PASS** (build 0 errors / 89 warnings, 464 passed / 0 failed / 21 skipped / 485 total, format clean, diff clean).
+- Runtime dependency path: **PASS** (STS2-RitsuLib v0.3.10 installed, BaseLib v3.1.4 and EZMicroBalance present).
+- Runtime loader gate: **PASS** (Off=0 and CanaryOnly=4 fresh K1 evidence with clean audits at HEAD `8f2d79b4`; AdditiveBatch1=10/11 evidence from June 2 earlier pass).
+- Sts1Events Off runtime proof: **PASS** (fresh K1 `smoke-k1-off-20260602-145938` godot.log: 0 StS1 registrations, clean audit).
+- Sts1Events CanaryOnly runtime proof: **PASS** (fresh K1 `smoke-k1-canary3-20260602-151104` godot.log: exactly 4 canary events registered, clean audit).
+- FeatureRegistry runtime diagnostics: **PASS** (all 6 features with bootstrap/live status in runtime log).
+- RewardPipeline diagnostics: **PASS** (bootstrap events observed for all features in runtime log).
+- AdditiveBatch1 runtime proof: **PASS** (earlier June 2 evidence with clean audit: 0 Godot ERROR, 10 event types / 11 registration calls).
+- Worktree: **DIRTY** (17 entries, all classified; owner decision needed on commit/defer).
+- Warning debt: **ACCEPTED** (89 warnings triaged, single root cause, fix pattern documented).
+- Independent QA: **PENDING** (needs rerun against current state).
+- Gameplay proof: **PENDING** (no manual gameplay, save-load, or Mod Settings UI evidence).
+- Event encounter screenshots: **PENDING** (O26-O29, O34-O39 require in-game event encounters).
+- Save/load proof: **PENDING** (O30, O40 require save during/after event, reload, state stable).
+- Image/render proof: **PENDING** (O32, O42 require art extraction or placeholder decision).
+- Replacement functional proof: **PENDING** (O43-O46 require debug build + unsafe gate).
+- Multiplayer fail-closed: **PENDING** (O47 requires co-op session or fail-closed proof).
+- Versioned tester-package handoff: **PENDING**.
+- Batch 4c: **READY FOR LOW-RISK CANDIDATE PROPOSAL** (runtime smoke passed; propose 5-10 candidates for owner acceptance).
+- Release-ready / live-ready: **NO**.
+
+---
 
 ## Revision J Current Snapshot
 
@@ -125,16 +210,17 @@ Date: 2026-05-31
 
 ## Runtime Smoke
 
-- Status: LOADER/GATE PASS, RELEASE BLOCKED.
-- Local checks: `E:\Steam\steamapps\common\Slay the Spire 2` and `E:\Steam\steamapps\common\Slay the Spire 2\mods` returned `True`; E-drive `BaseLib`, `EZMicroBalance`, and `STS2-RitsuLib` returned `True`; installed `STS2-RitsuLib` manifest version is `0.3.10`, and `lib\0.106.1\STS2-RitsuLib.dll` exists. The Off and CanaryOnly target-fix smoke folders contain clean `godot-log-audit.json` files.
-- Decision: loader/runtime gate proof is now available for Off=0 and CanaryOnly=4. Batch 4c, runtime safety beyond loader gates, live-ready, and release-ready remain blocked pending gameplay/manual proof, clean worktree or owner decision, and versioned tester-package handoff.
+- Status: LOADER/GATE PASS AT HEAD `8f2d79b4`, RELEASE BLOCKED.
+- Fresh K1 evidence (2026-06-02): Off-mode Steam smoke and CanaryOnly direct-launch smoke both reached main menu with clean audits, 25/25 Spire Plus patches, 30 SavedSpireFields, and BaseLib + RitsuLib + Spire Plus loaded. Off mode proves Sts1Events disabled (0 registrations). CanaryOnly proves exactly 4 canary event registrations (`Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`).
+- Runtime dependency path: `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` (`v0.3.10`), `BaseLib` (`v3.1.4`), `EZMicroBalance` (`v0.1.0-private-beta.84`) all present.
+- Decision: loader/runtime gate proof is now available for Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 at HEAD `8f2d79b4`. Runtime safety beyond loader gates (event encounter screenshots, save/load proof, image rendering, replacement functional proof, multiplayer fail-closed, independent QA), live-ready, and release-ready remain blocked pending gameplay/manual proof, clean worktree or owner decision, and versioned tester-package handoff.
 
 ## Independent QA
 
 - Target-fix QA/Red-Team verdict: CONDITIONAL PASS for loader gates, not release-ready.
-- QA-supported proof: Off=0 and CanaryOnly=4 loader-gate evidence is supported by the target-fix smoke logs and clean audits.
+- QA-supported proof: Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 loader-gate evidence is supported by the smoke logs and clean audits.
 - QA fixes applied after review: removed stale hard-block wording that still claimed no CanaryOnly proof or non-clean loader audit in active docs.
-- Stop decision: release/live Green Stop remains disallowed until gameplay/manual proof, clean worktree or owner decision, and versioned tester-package handoff are complete.
+- Stop decision: release/live Green Stop remains disallowed until event encounter screenshots, save/load proof, image rendering, replacement functional proof, multiplayer fail-closed, independent QA rerun, clean worktree or owner decision, and versioned tester-package handoff are complete.
 
 ## Architecture Status
 

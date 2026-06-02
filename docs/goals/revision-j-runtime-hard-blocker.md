@@ -1,52 +1,59 @@
-# Revision J Runtime Hard Blocker
+# Revision J Runtime Hard Blocker — Resolved
 
-Date: 2026-05-31
-HEAD: `6b149ba0 (HEAD -> main, origin/main, origin/HEAD) sprint 2`
+Date: 2026-06-02
+HEAD: `8f2d79b4 (HEAD -> main, origin/main, origin/HEAD) sprint3`
 
-## Blocker
+## Status
 
-Runtime smoke remains blocked because the fresh controlled loader log is not clean enough for current-package runtime proof.
+**Resolved.** Clean Off and CanaryOnly runtime evidence now exists.
 
-This is not the old dependency-path blocker. The E-drive runtime dependency paths now exist, including official `STS2-RitsuLib` `v0.3.10` and its `0.106.1` variant. A fresh controlled loader log at `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/godot.log.after-launch` reaches main menu with BaseLib, RitsuLib, and Spire Plus loaded, but the audit reports 11 `Godot ERROR` hits, including `ritsulib-variants.json` manifest parsing and 8 optional Spire Plus ModPatcher failures.
+## Resolution
 
-## Path Evidence
+The runtime hard blocker from Revision J (2026-05-31) has been closed. Two controlled diagnostic sessions produced clean loader logs with 0 Godot ERROR hits, 0 TypeLoadException, 0 MissingMethodException, and 0 Spire Plus errors.
 
-| Path | Exists | Decision |
-|---|---:|---|
-| `E:\Steam\steamapps\common\Slay the Spire 2` | True | Active game root |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib` | True | Required dependency present |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` | True | Required dependency present |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib\STS2-RitsuLib.dll` | True | Runtime loader present |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib\lib\0.106.1\STS2-RitsuLib.dll` | True | Current target variant present |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` | True | Spire Plus install present |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance\EZMicroBalance.dll` | True | Spire Plus runtime DLL present |
-| `C:\Users\zihao\AppData\Roaming\SlayTheSpire2\logs\godot.log` | True | Fresh loader proof exists, but audit is not clean |
+### Off Mode Evidence
 
-## Why The Worktree Cannot Resolve It
+| Item | Value |
+|---|---|
+| Evidence dir | `.tools/runtime-evidence/ritsulib-off-after-target-fix-20260531-2325/` |
+| Log file | `godot.log.after-launch` |
+| Audit result | Clean |
+| Godot ERROR hits | 0 |
+| BaseLib patches | 217 applied, 0 failed |
+| RitsuLib version | 0.3.10 [compat branch: 0.106.1] |
+| RitsuLib patches | 249+5+111+46+24+3+21 = 459 total, 0 failed |
+| Spire Plus ModPatcher | 25 patches applied (25 registered) |
+| Sts1Events bootstrap | Disabled (default Off) |
+| StS1 registration lines | 0 |
+| SavedSpireFields | 30 |
 
-- A clean `godot.log` is produced by launching the game and resolving loader/runtime errors, not by editing documentation.
-- Source/build/test validation can prove compile and guard behavior, but cannot prove runtime loader order, RitsuLib variant selection, ModPatcher application, or Sts1Events registration counts.
-- Current live proof has loader errors and only 17 of 25 Spire Plus ModPatcher patches applied, so Off=0 closure, CanaryOnly=4, runtime safety, live-ready, and release-ready remain unproven.
+### CanaryOnly Mode Evidence
 
-## Exact Owner Action Required
+| Item | Value |
+|---|---|
+| Evidence dir | `.tools/runtime-evidence/ritsulib-canary-after-target-fix-20260531-2327/` |
+| Log file | `godot.log.after-direct-launch` |
+| Audit result | Clean |
+| Godot ERROR hits | 0 |
+| BaseLib patches | 217 applied, 0 failed |
+| RitsuLib version | 0.3.10 [compat branch: 0.106.1] |
+| RitsuLib patches | 459 total, 0 failed |
+| Spire Plus ModPatcher | 25 patches applied (25 registered) |
+| Sts1Events bootstrap | Enabled (CanaryOnly mode) |
+| Canary registrations | Big Fish, Golden Idol, Lab, Divine Fountain (exactly 4) |
+| SavedSpireFields | 30 |
 
-Resolve or explicitly disposition the 11 loader error hits, then rerun a controlled live loader smoke on the E-drive install with BaseLib, STS2-RitsuLib, and Spire Plus enabled. Preserve a clean `C:\Users\zihao\AppData\Roaming\SlayTheSpire2\logs\godot.log`.
+## Original Blocker (Historical)
 
-Required proof:
+The original Revision J blocker was 11 Godot ERROR hits in a fresh loader log, including `ritsulib-variants.json` manifest parsing and 8 optional Spire Plus ModPatcher failures. This has been resolved by the RitsuLib target fix; the new diagnostic logs show 0 Godot ERROR hits and 25/25 Spire Plus ModPatcher patches applied.
 
-1. Off mode: unset or empty `SPIREPLUS_STS1_EVENT_MODE`; prove 0 StS1 event registrations.
-2. CanaryOnly mode: `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`; prove exactly Big Fish, Golden Idol, The Lab, and Divine Fountain register.
-3. Loader log: prove BaseLib, STS2-RitsuLib, Spire Plus, RitsuLib bootstrap, 25 migrated patches, remaining raw Harmony patches, and 30 SavedSpireFields initialize without release-blocking errors.
+## Remaining Gates
 
-## Owner Decision Options
+Runtime hard-blocker closure does not mean release-ready. The following remain pending:
 
-| Option | Meaning | Risk |
-|---|---|---|
-| Run live smoke now | Close the blocker with fresh `godot.log` evidence | Requires external Steam/game session |
-| Accept owner-review packet | Keep runtime blocked but document current truth precisely | No runtime-ready claim allowed |
-| Reject local runtime-install docs | Revert docs that record local `STS2-RitsuLib` install state | Future agents may chase a solved dependency prerequisite |
-| Reject helper-script change | Do not keep `STS2-RitsuLib` in live-session allowed mod ids | `-MoveOtherMods` can break runtime smoke by moving RitsuLib out |
-
-## Stop Decision
-
-Revision J may be owner-review complete with this blocker documented, but it is not runtime complete. Batch 4c, Batch 5, PR7, Sts1Events formalization, debug expansion, longhaul audit, runtime-ready, live-ready, and release-ready remain blocked.
+- Gameplay verification (live run, Ancient UI, save-load, route traversal)
+- Co-op verification
+- Clicked UI verification
+- Versioned tester-package handoff
+- Clean-worktree commit decision
+- Independent QA rerun

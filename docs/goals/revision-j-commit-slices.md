@@ -1,98 +1,44 @@
 # Revision J Commit Slices
 
-Date: 2026-05-31
-HEAD: `6b149ba0 (HEAD -> main, origin/main, origin/HEAD) sprint 2`
+Date: 2026-06-02
+HEAD: `8f2d79b4 (HEAD -> main, origin/main, origin/HEAD) sprint3`
 
-No commit is authorized. These slices are proposed for owner review only.
+Worktree is clean. The original Revision J dirty state (49 entries) has been reconciled through sprint3 commits. No new commit slices are required.
 
-## Slice A: Runtime Dependency Truth And Smoke Runbook
+## Historical Revision J Commit Slices (2026-05-31)
 
-Files:
+The following slices were proposed for the original 49 dirty entries at HEAD `6b149ba0`. They have been superseded by sprint3 commits.
 
-- `AGENTS.md`
-- `PROJECT_STATE.md`
-- `README.md`
-- `docs/issues.md`
-- `docs/integrations/ritsulib.md`
-- `docs/migration.md`
-- `docs/restructure.md`
-- `docs/features/ritsulib-migration/monthly-dev-spec.md`
-- `docs/features/ritsulib-migration/next-overnight-run.md`
-- `docs/features/ritsulib-migration/runtime-hard-block-report-20260531.md`
-- `docs/features/ritsulib-migration/runtime-smoke-checklist.md`
-- `docs/reviews/current-validation.md`
+### Slice A: Runtime Dependency Truth And Smoke Runbook
 
-Purpose: record that `STS2-RitsuLib v0.3.10` is installed locally while live runtime proof remains blocked by non-clean loader evidence, not by a missing `godot.log`.
+Files: `AGENTS.md`, `PROJECT_STATE.md`, `README.md`, `docs/issues.md`, `docs/integrations/ritsulib.md`, `docs/migration.md`, `docs/restructure.md`, `docs/features/ritsulib-migration/` docs, `docs/reviews/current-validation.md`
 
-Risk: docs could be misread as runtime validation if not paired with the hard-blocker wording.
+Purpose: record that `STS2-RitsuLib v0.3.10` is installed locally and runtime proof now exists.
 
-Rollback: restore dependency-missing wording if owner rejects documenting local install state.
+### Slice B: Runtime Smoke Helper Safety
 
-## Slice B: Runtime Smoke Helper Safety
+Files: `scripts/spire-plus-live-session.ps1`, `scripts/README.md`, `tests/EZMicroBalance.Tests/ReleaseSafetyExpandedGuardTests.cs`
 
-Files:
+Purpose: keep `STS2-RitsuLib` enabled/preserved during controlled live smoke sessions.
 
-- `scripts/spire-plus-live-session.ps1`
-- `scripts/README.md`
-- `tests/EZMicroBalance.Tests/ReleaseSafetyExpandedGuardTests.cs`
+### Slice C: Sts1Events Blocker Truth
 
-Purpose: keep `STS2-RitsuLib` enabled/preserved during controlled live smoke sessions that use `-MoveOtherMods`.
+Files: `docs/features/sts1-events/` docs, `docs/issues/` Sts1Events issue
 
-Risk: local helper behavior changes; owner must approve before relying on it for smoke evidence.
+Purpose: keep Sts1Events staging-only with runtime proof documented.
 
-Rollback: remove `STS2-RitsuLib` from the helper allowed list and avoid `-MoveOtherMods` for RitsuLib runtime smoke.
+### Slice D: Revision J Owner-Review Packet
 
-## Slice C: Sts1Events Blocker Truth
+Files: `docs/goals/revision-j-*.md`, `docs/goals/overnight-run-*.md`, `docs/goals/warning-ledger.md`, `harness/TASK_STATUS.md`, `harness/TASK_FOCUS_PACK.md`
 
-Files:
+Purpose: make Revision J reviewable.
 
-- `docs/features/sts1-events/hard-stop-blocker-report-v14.md`
-- `docs/features/sts1-events/multiplayer-fail-closed-guard.md`
-- `docs/issues/ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md`
+### Slice E: Historical Revision I Artifact Corrections
 
-Purpose: keep Sts1Events staging-only and block formalization until Off/CanaryOnly runtime logs, warning cleanup/acceptance, localization render proof, asset proof, save/load proof, and QA pass exist.
+Files: `docs/goals/revision-i-*.md`, `harness/TASK_RESULT.md`
 
-Risk: none to runtime; docs-only governance risk.
+Purpose: reconcile historical Revision I handoff language.
 
-Rollback: restore previous blocker text.
+## Current Decision
 
-## Slice D: Revision J Owner-Review Packet
-
-Files:
-
-- `docs/goals/revision-j-final-report.md`
-- `docs/goals/revision-j-owner-review-packet.md`
-- `docs/goals/revision-j-runtime-hard-blocker.md`
-- `docs/goals/revision-j-runtime-smoke-plan.md`
-- `docs/goals/revision-j-dirty-ledger.md`
-- `docs/goals/revision-j-commit-slices.md`
-- `docs/goals/overnight-run-status.md`
-- `docs/goals/overnight-run-ledger.md`
-- `docs/goals/overnight-diff-ledger.md`
-- `docs/goals/warning-ledger.md`
-- `harness/TASK_STATUS.md`
-- `harness/TASK_FOCUS_PACK.md`
-
-Purpose: make Revision J reviewable without claiming runtime readiness.
-
-Risk: owner-review docs are high-churn and should not be treated as player-facing release notes.
-
-Rollback: delete/revert Revision J docs if owner rejects this packet.
-
-## Slice E: Historical Revision I Artifact Corrections
-
-Files:
-
-- `docs/goals/revision-i-commit-slices.md`
-- `docs/goals/revision-i-owner-review-packet.md`
-- `harness/TASK_RESULT.md`
-
-Purpose: reconcile historical Revision I handoff language with the later local dependency install state.
-
-Risk: changes historical packet semantics.
-
-Rollback: restore Revision I artifacts if owner wants them immutable.
-
-## Decision
-
-Do not commit any slice until the owner explicitly authorizes it.
+No new commits required. Worktree is clean. All previous dirty entries have been committed in sprint3.

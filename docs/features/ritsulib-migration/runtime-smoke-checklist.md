@@ -6,7 +6,7 @@ Verify that the RitsuLib migration does not change runtime behavior by loading t
 
 ## Status
 
-**OFF + CANARY LOADER SMOKE PASSED / QA AND GAMEPLAY PENDING** - official STS2-RitsuLib `v0.3.10` is installed at `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` and satisfies the installed Spire Plus package dependency (`STS2-RitsuLib >= 0.3.2`). After the RitsuLib target-name fix, diagnostic Off and CanaryOnly smokes reached main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied. This is loader/gate proof only; gameplay, Mod Settings screenshots, save-load, co-op, independent QA rerun, clean-worktree decision, and versioned tester-package handoff remain pending.
+**OFF + CANARY + ADDITIVEBATCH1 LOADER SMOKE PASSED / QA AND GAMEPLAY PENDING** - official STS2-RitsuLib `v0.3.10` is installed at `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` and satisfies the installed Spire Plus package dependency (`STS2-RitsuLib >= 0.3.2`). After the RitsuLib target-name fix, diagnostic Off and CanaryOnly smokes reached main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied. This is loader/gate proof only; gameplay, Mod Settings screenshots, save-load, co-op, independent QA rerun, clean-worktree decision, and versioned tester-package handoff remain pending.
 
 2026-05-31 Runtime Proof + Governance Closure check:
 
@@ -38,6 +38,10 @@ Revision J/v15 failed-smoke evidence and target-fix follow-up:
 | `.tools/runtime-evidence/ritsulib-off-after-target-fix-20260531-2325/godot-log-audit.json` | PASS: clean audit, 0 release-blocking signature hits. |
 | `.tools/runtime-evidence/ritsulib-canary-after-target-fix-20260531-2327/godot.log.after-direct-launch` | PASS: direct CanaryOnly smoke reached main menu, loaded exactly 3 mods, applied 25/25 patches, and registered 4 canary events. |
 | `.tools/runtime-evidence/ritsulib-canary-after-target-fix-20260531-2327/godot-log-audit.json` | PASS: clean audit, 0 release-blocking signature hits. |
+| `.tools\runtime-evidence\smoke-k1-off-20260602-145938\godot.log.after-launch` | PASS: K1 fresh Off-mode Steam smoke at HEAD 8f2d79b4 reached main menu in 40s, loaded exactly 3 mods (BaseLib v3.1.4, RitsuLib v0.3.10, Spire Plus v0.1.0-private-beta.84), applied 25/25 Spire Plus patches, found 30 SavedSpireFields, and logged Sts1Events disabled/default Off. |
+| `.tools\runtime-evidence\smoke-k1-off-20260602-145938\godot-log-audit.json` | PASS: K1 clean audit: 0 Godot ERROR, 0 release-blocking signature hits. |
+| `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot.log.after-launch` | PASS: K1 fresh CanaryOnly direct launch (steam_appid.txt + env var) at HEAD 8f2d79b4 reached main menu in 22s, loaded exactly 3 mods, applied 25/25 patches, found 30 SavedSpireFields, and registered exactly 4 canary events: Sts1BigFish, Sts1GoldenIdol, Sts1TheLab, Sts1DivineFountain. |
+| `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot-log-audit.json` | PASS: K1 clean audit: 0 Godot ERROR, 0 release-blocking signature hits. |
 
 Latest prerequisite evidence: installed manifest `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib\mod_manifest.json` reports version `0.3.10`; `ritsulib-variants.json` includes `compatTarget` `0.106.1`. Older missing-path evidence remains in `.tools/runtime-evidence/refactor-overnight-20260531/runtime-prereq-paths.txt` at HEAD `87820303`.
 
@@ -57,21 +61,21 @@ Latest prerequisite evidence: installed manifest `E:\Steam\steamapps\common\Slay
 | # | Step | Expected | Evidence |
 |---|------|----------|----------|
 | 1 | Install STS2-RitsuLib | `<GameRoot>\mods\STS2-RitsuLib` exists and manifest version satisfies `>= 0.3.2` | PASS: E-drive install is `v0.3.10` with `lib\0.106.1` variant |
-| 2 | Launch game via Steam | Main menu loads without crash | PASS: Off-mode Steam smoke reached main menu in 24,068ms |
-| 3 | Check `godot.log` for EZMicroBalance init | Single Spire Plus initialization line, no errors | PASS: Spire Plus initialized with clean audit after target fix |
-| 4 | Check `godot.log` for BaseLib init | BaseLib initializes before Spire Plus | PASS: BaseLib 3.1.4 initialized before RitsuLib and Spire Plus |
-| 5 | Check `godot.log` for STS2-RitsuLib init | RitsuLib initializes, no errors | PASS: RitsuLib 0.3.10 initializes; official variant-file scanner noise is ignored only after RitsuLib loads and selects `0.106.1` |
-| 6 | Check `godot.log` for RitsuLib bootstrap | Spire Plus RitsuLib bootstrap starts | PASS: `[EZMicroBalance] RitsuLib 0.3.10 bootstrap starting.` |
-| 7 | Check `godot.log` for ModPatcher count | 25 ModPatcher patches applied; remaining raw Harmony patches load without dependency failures | PASS: 25 applied / 0 failed / 25 total |
-| 8 | Check `godot.log` for release-blocking log hits | 0 `MissingMethodException`, `TypeLoadException`, manifest dependency failure, or release-blocking audit hits | PASS: clean audits in Off and CanaryOnly follow-up logs |
-| 9 | Check SavedSpireFields count | 30 SavedSpireFields registered | PASS: `Found 30 SavedSpireFields.` |
+| 2 | Launch game via Steam | Main menu loads without crash | [PASS] K1 smoke-k1-off-20260602-145938: main menu reached in 40s |
+| 3 | Check `godot.log` for EZMicroBalance init | Single Spire Plus initialization line, no errors | [PASS] K1 smoke-k1-off-20260602-145938: Spire Plus initialized, clean audit |
+| 4 | Check `godot.log` for BaseLib init | BaseLib initializes before Spire Plus | [PASS] K1 smoke-k1-off-20260602-145938: BaseLib v3.1.4 initialized before RitsuLib and Spire Plus |
+| 5 | Check `godot.log` for STS2-RitsuLib init | RitsuLib initializes, no errors | [PASS] K1 smoke-k1-off-20260602-145938: RitsuLib v0.3.10 initializes, clean audit |
+| 6 | Check `godot.log` for RitsuLib bootstrap | Spire Plus RitsuLib bootstrap starts | [PASS] K1 smoke-k1-off-20260602-145938: RitsuLib bootstrap starting |
+| 7 | Check `godot.log` for ModPatcher count | 25 ModPatcher patches applied; remaining raw Harmony patches load without dependency failures | [PASS] K1 smoke-k1-off-20260602-145938: 25/25 patches applied |
+| 8 | Check `godot.log` for release-blocking log hits | 0 `MissingMethodException`, `TypeLoadException`, manifest dependency failure, or release-blocking audit hits | [PASS] K1 smoke-k1-off-20260602-145938 and smoke-k1-canary3-20260602-151104: clean audits, 0 release-blocking hits |
+| 9 | Check SavedSpireFields count | 30 SavedSpireFields registered | [PASS] K1 smoke-k1-off-20260602-145938: 30 SavedSpireFields |
 
 ### Sts1Events Runtime Gates
 
 | Mode | Required env | Expected | Evidence |
 | --- | --- | --- | --- |
-| Off | unset / empty / invalid `SPIREPLUS_STS1_EVENT_MODE` | 0 Sts1Events registrations, no `[StS1 Events]` registration lines | PASS: Off smoke logs Sts1Events disabled and grep found no StS1 registration lines |
-| CanaryOnly | `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` | Exactly 4 canary registrations: Big Fish, Golden Idol, The Lab, Divine Fountain | PASS: CanaryOnly smoke logs `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, and `Sts1DivineFountain` only |
+| Off | unset / empty / invalid `SPIREPLUS_STS1_EVENT_MODE` | 0 Sts1Events registrations, no `[StS1 Events]` registration lines | [PASS] K1 smoke-k1-off-20260602-145938: 0 StS1 registrations, clean audit |
+| CanaryOnly | `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` | Exactly 4 canary registrations: Big Fish, Golden Idol, The Lab, Divine Fountain | [PASS] K1 smoke-k1-canary3-20260602-151104: exactly 4 canary registrations (BigFish, GoldenIdol, TheLab, DivineFountain), clean audit |
 | AdditiveBatch1 | `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` | Controlled prototype only: 11 registration calls / 10 event types, no TODO/BLOCKED events | [PENDING] Only after Off + CanaryOnly smoke passes |
 | AdditiveAllDraft | `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | Not release-safe; dev-only all-draft mode includes TODO/BLOCKED content | [DO NOT USE for tester/release paths] |
 | ReplaceUnknownEventsPrototype | `SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype` plus `REPLACEMENT_PROTOTYPE_ENABLED` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | Not release-safe; debug-only replacement prototype; normal builds fail closed | [DO NOT USE for tester/release paths] |

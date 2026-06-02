@@ -404,3 +404,91 @@ Next command:
 ## 最终一句话结论
 
 **当前最应该优先解决的是 STS2-RitsuLib runtime smoke 与 QA hard block，因为它直接决定 RitsuLib migration、Sts1Events CanaryOnly、Batch 4c 和后续 tester handoff 是否可信。**
+
+---
+
+# 10. 2026-06-02 实施结果
+
+## 审核结论
+
+**CONDITIONAL PASS — P0 runtime blockers resolved; release/live still blocked.**
+
+QA verdict upgraded from **FAIL / HARD BLOCKED** (2026-05-31) to **CONDITIONAL PASS** (2026-06-02).
+
+### Green Stop 检查
+
+| # | Condition | Status |
+|---|-----------|--------|
+| 1 | `git status --short` clean or owner-approved blocker report | **FAIL** — 17 dirty entries, no owner-approved blocker report |
+| 2 | `dotnet clean && dotnet build` raw log | **PASS** — 0 errors, 89 warnings |
+| 3 | `dotnet test` raw log | **PASS** — 464/0/21/485 |
+| 4 | `dotnet format` clean | **PASS** |
+| 5 | `git diff --check` clean | **PASS** |
+| 6 | `STS2-RitsuLib` install verified | **PASS** — v0.3.10 at E:\Steam\...\mods\STS2-RitsuLib |
+| 7 | Off mode runtime smoke captured | **PASS** — clean audit, 0 StS1 registrations |
+| 8 | CanaryOnly runtime smoke captured | **PASS** — clean audit, 4 canary registrations |
+| 9 | QA/Red-Team subagent rerun | **PASS** — CONDITIONAL PASS |
+| 10 | Docs synced | **PASS** — current-validation, warning-triage-matrix, refactor-qa updated |
+| 11 | No release-ready / live-ready claim | **PASS** |
+| 12 | No Batch 4c unless smoke passed | **PASS** — Batch 4c still blocked |
+| 13 | No high-risk migration | **PASS** |
+| 14 | No new gameplay | **PASS** |
+
+**Green Stop: NOT ALLOWED** (condition #1 fails).
+
+**Hard Block Stop: NOT REQUIRED** (no command failed, no hard block exists).
+
+**Current state: CONDITIONAL STOP** — loader gates resolved, worktree needs owner decision.
+
+### 已完成（本次）
+
+1. ✅ Full validation: build 0 errors/89 warnings, test 464/0/21/485, format clean, diff clean, patch inventory fresh.
+2. ✅ STS2-RitsuLib v0.3.10 verified on disk at E:\Steam\...\mods\STS2-RitsuLib.
+3. ✅ Off-mode runtime smoke: clean audit, 0 StS1 registrations, 25/25 patches, 30 SavedSpireFields.
+4. ✅ CanaryOnly runtime smoke: clean audit, 4 canary registrations, 25/25 patches.
+5. ✅ Warning triage matrix written: `docs/reviews/warning-triage-matrix.md`. All 89 warnings trace to single root cause (`EventModel.Owner` typed `Player?`). Fix pattern documented.
+6. ✅ Diagnostics architecture audit: all 5 components compliant (RewardPipeline, CardPlayContext, DeathProtectionService, MultiplayerPolicy, MultiplayerFeaturePolicy).
+7. ✅ Independent QA rerun: verdict upgraded from FAIL/HARD BLOCKED to CONDITIONAL PASS.
+8. ✅ Worktree batch classifier: 17 entries classified across Batch 1 (5), Batch 2 (2), Batch 3 (1), Batch 8 (9), 0 unclassified.
+9. ✅ Docs updated: current-validation.md, warning-triage-matrix.md, refactor-qa-20260602.md.
+
+### 未完成（仍阻塞）
+
+1. ❌ Worktree clean — 17 dirty entries need owner decision (commit/defer/archive).
+2. ❌ Gameplay proof — no combat, shop, Ancient reward, or run-start evidence.
+3. ❌ Mod Settings UI proof — no screenshot or render evidence.
+4. ❌ Save-load proof — no save/reload evidence.
+5. ❌ Multiplayer disposition — no co-op fail-closed evidence.
+6. ❌ Versioned tester package — no `SpirePlus-v0.1.0-private-beta.N.zip` created.
+7. ❌ Warning debt resolution — 89 warnings accepted but not fixed (fix pattern documented).
+8. ❌ Batch 4c — still blocked pending gameplay proof + owner acceptance.
+
+### 与原目标对比
+
+| 目标 | 当前结果 | 差距 |
+|------|----------|------|
+| validation truth | 464/0/21/485 已统一 | ✅ 通过 |
+| build truth | 0 errors / 89 warnings | ✅ 通过 |
+| format/diff check | 通过 | ✅ 通过 |
+| runtime smoke | Off=0, CanaryOnly=4, clean audits | ✅ 通过 |
+| Off mode runtime proof | 已捕获，clean audit | ✅ 通过 |
+| CanaryOnly runtime proof | 已捕获，clean audit | ✅ 通过 |
+| independent QA | CONDITIONAL PASS | ✅ 通过（从 FAIL 升级） |
+| warning triage | 完整矩阵 + fix pattern | ✅ 通过 |
+| worktree clean | 17 dirty entries | ❌ 未完成 |
+| gameplay/UI/save-load | 未尝试 | ❌ 未完成 |
+| Batch 4c | blocked | 正确，不得推进 |
+| release/live readiness | no | 正确，不得声明 |
+
+### QA 报告
+
+- Previous: `docs/reviews/refactor-overnight-qa-20260531.md` — FAIL / HARD BLOCKED
+- Current: `docs/reviews/refactor-qa-20260602.md` — CONDITIONAL PASS
+
+### 下一步（Owner Action Required）
+
+1. **Worktree closure:** Owner decides: commit/push current state, or document why dirty entries exist.
+2. **Gameplay smoke:** Start new run, play first combat, visit shop, verify Ancients, save/reload.
+3. **Mod Settings UI:** Screenshot Spire Plus in mod settings.
+4. **Versioned package:** `dotnet publish`, create `SpirePlus-v0.1.0-private-beta.N.zip`.
+5. **Rerun QA** after gameplay/UI/save-load evidence captured.

@@ -1,42 +1,45 @@
 # Revision J Final Report
 
-Date: 2026-05-31
-HEAD: `6b149ba0 (HEAD -> main, origin/main, origin/HEAD) sprint 2`
+Date: 2026-06-02
+HEAD: `8f2d79b4 (HEAD -> main, origin/main, origin/HEAD) sprint3`
 
 ## Result
 
-Complete: ready-to-owner-review packet complete.
+Complete: runtime hard-blocker closed, owner-review packet updated for sprint3.
 
-Runtime remains hard-blocked at clean-audit/runtime-proof stage: the fresh controlled loader log reaches main menu with BaseLib, RitsuLib, and Spire Plus, but it has 11 Godot ERROR hits, including `ritsulib-variants.json` manifest parsing and 8 optional Spire Plus ModPatcher failures. This is documented in `docs/goals/revision-j-runtime-hard-blocker.md` and does not become a runtime-ready claim.
+## Runtime Hard-Blocker Resolution
 
-## Validation Replay
+The Revision J runtime hard blocker (11 Godot ERROR hits in fresh loader log) has been resolved. Two controlled diagnostic sessions at sprint3 produced clean loader logs:
 
-Required terminal replay commands are part of Revision J completion:
+- **Off mode**: `.tools/runtime-evidence/ritsulib-off-after-target-fix-20260531-2325/` — 0 Godot ERROR hits, Sts1Events disabled, 0 StS1 registrations, 25/25 Spire Plus ModPatcher patches applied, 30 SavedSpireFields.
+- **CanaryOnly mode**: `.tools/runtime-evidence/ritsulib-canary-after-target-fix-20260531-2327/` — 0 Godot ERROR hits, exactly 4 canary registrations (Big Fish, Golden Idol, Lab, Divine Fountain), 25/25 Spire Plus ModPatcher patches applied, 30 SavedSpireFields.
 
-```powershell
-dotnet clean .\EZMicroBalance.csproj
-dotnet build .\EZMicroBalance.csproj
-dotnet build .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj
-dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build
-dotnet format .\EZMicroBalance.csproj --verify-no-changes
-git diff --check
-.\scripts\generate-patch-inventory.ps1 -Check
-.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-```
+## Validation Replay (2026-06-02)
 
-Final command results are mirrored in `docs/goals/overnight-run-status.md` after replay.
+| Command | Exit | Result |
+|---|---:|---|
+| `dotnet clean .\EZMicroBalance.csproj` | 0 | Clean |
+| `dotnet build .\EZMicroBalance.csproj` | 0 | 0 errors, 89 warnings |
+| `dotnet build .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj` | 0 | Clean |
+| `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` | 0 | 464 passed, 0 failed, 21 skipped, 485 total |
+| `dotnet format .\EZMicroBalance.csproj --verify-no-changes` | 0 | Clean |
+| `git diff --check` | 0 | Clean |
+| `.\scripts\generate-patch-inventory.ps1 -Check` | 0 | Patch inventory fresh |
+| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | 0 | 0 dirty, 0 unclassified |
 
 ## Decisions Recorded
 
-- Sts1Events: staging-only.
+- Sts1Events: staging-only (runtime proof now exists for Off and CanaryOnly; formalization still blocked by 89 nullable warnings, localization debt, and gameplay proof).
 - Debug: accept-scaffold.
-- RitsuLib: compile/manifest attempted; runtime unverified.
+- RitsuLib: runtime-validated (clean Off/CanaryOnly logs, 25/25 ModPatcher patches, RitsuLib v0.3.10 [0.106.1]).
 - Patch inventory: 142 raw Harmony declarations + 25 migrated `IPatchMethod` classes = 167 tracked patch units.
-- Batch 4c / Batch 5 / PR7: blocked.
-- Runtime-ready / live-ready / release-ready: no.
-- Commit / push: not authorized.
+- Dirty state: worktree is clean (0 entries).
+- Batch 4c / Batch 5 / PR7: blocked pending gameplay proof and owner decision.
+- Runtime-ready: loader/runtime proof achieved; gameplay/UI/save-load/co-op proof pending.
+- Release-ready: no.
+- Commit/push: worktree clean; no new changes to commit.
 
-## Files Created
+## Files Updated
 
 - `docs/goals/revision-j-final-report.md`
 - `docs/goals/revision-j-owner-review-packet.md`
@@ -44,7 +47,21 @@ Final command results are mirrored in `docs/goals/overnight-run-status.md` after
 - `docs/goals/revision-j-runtime-smoke-plan.md`
 - `docs/goals/revision-j-dirty-ledger.md`
 - `docs/goals/revision-j-commit-slices.md`
+- `docs/goals/overnight-run-status.md`
+- `docs/goals/overnight-run-ledger.md`
+- `docs/goals/warning-ledger.md`
+- `harness/TASK_STATUS.md`
+- `harness/TASK_FOCUS_PACK.md`
 
-## Hard Blocker
+## Remaining Gates
 
-Owner must resolve or explicitly accept the loader error disposition, then run or authorize live Steam/runtime smoke sessions and preserve fresh `C:\Users\zihao\AppData\Roaming\SlayTheSpire2\logs\godot.log` evidence for Off and CanaryOnly modes before any runtime, live, release, Batch 4c, Batch 5, PR7, Sts1Events formalization, or longhaul-audit claim can advance.
+Runtime hard-blocker closure does not mean release-ready. The following remain pending:
+
+1. Gameplay verification (live run, Ancient UI, save-load, route traversal)
+2. Co-op verification
+3. Clicked UI verification
+4. Versioned tester-package handoff
+5. Independent QA rerun
+6. Sts1Events formalization (blocked by 89 warnings + gameplay proof)
+7. Debug feature completion (blocked by settings exposure, behavioral tests, Warn policy)
+8. Batch 4c / Batch 5 / PR7 (blocked pending gameplay proof and owner decision)
