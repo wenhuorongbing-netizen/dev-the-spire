@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
@@ -17,8 +18,8 @@ public sealed class Sts1GoldenIdol : EventModel
 {
     private const decimal JumpPctNormal = 0.25m;
     private const decimal JumpPctA15 = 0.35m;
-    private const decimal DestroyPctNormal = 0.10m;
-    private const decimal DestroyPctA15 = 0.15m;
+    private const decimal DestroyPctNormal = 0.08m;
+    private const decimal DestroyPctA15 = 0.10m;
 
     public override bool IsShared => true;
 
@@ -44,12 +45,14 @@ public sealed class Sts1GoldenIdol : EventModel
         };
     }
 
-    private Task TakeIdol()
+    private async Task TakeIdol()
     {
+        if (Owner is not { } owner) return;
+        var relic = RelicFactory.PullNextRelicFromFront(owner).ToMutable();
+        await RelicCmd.Obtain(relic, owner);
         SetEventState(
             L10NLookup("STS1_GOLDEN_IDOL.pages.TRAP.description"),
             GenerateTrapOptions());
-        return Task.CompletedTask;
     }
 
     private Task Leave()
@@ -61,7 +64,7 @@ public sealed class Sts1GoldenIdol : EventModel
     private IReadOnlyList<EventOption> GenerateTrapOptions()
     {
         if (Owner is not { } owner) return System.Array.Empty<EventOption>();
-        var jumpDamage = (int)(owner.Creature.CurrentHp * JumpPct);
+        var jumpDamage = (int)(owner.Creature.MaxHp * JumpPct);
         var destroyMaxHp = (int)(owner.Creature.MaxHp * DestroyPct);
 
         return new EventOption[]

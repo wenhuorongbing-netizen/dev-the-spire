@@ -1,7 +1,8 @@
-# Warning Ledger - Current State
+# M5 Week 1 Warning Ledger
 
 Date: 2026-06-02
-HEAD: `f20dd230 (HEAD -> main, origin/main, origin/HEAD)`
+HEAD: `f20dd230 (HEAD -> main, origin/main, origin/HEAD) fix nullable warnings in 4 canary event files`
+Spec: `docs/goals/debug.md` M5 July 2026
 
 ## Summary
 
@@ -12,11 +13,15 @@ HEAD: `f20dd230 (HEAD -> main, origin/main, origin/HEAD)`
 | CS8602 dereference of possibly null reference | 32 |
 | CS8625 cannot convert null literal | 1 |
 | Warnings outside `EZMicroBalanceCode/Sts1Events/Models/` | 0 |
-| MSBuild locked-file/env artifact warnings | 0 in the current warning classification |
+| MSBuild locked-file/env artifact warnings | 0 |
 
-All warnings are owned by Sts1Events staging model code. They remain accepted only while Sts1Events stays default-Off/prototype-gated and are not acceptable as formal runtime-ready code.
+All warnings are owned by Sts1Events staging model code. They remain accepted only while Sts1Events stays default-Off/prototype-gated.
 
-## Current Per-File Breakdown
+## Warning Reduction
+
+The 4 canary event files (BigFish, DivineFountain, GoldenIdol, TheLab) were hardened with `Owner is not { } owner` pattern matching in commit `f20dd230`, reducing warnings from 89 to 79 (-10).
+
+## Per-File Breakdown
 
 | File | CS8602 | CS8604 | CS8625 | Total | Owner |
 |---|---:|---:|---:|---:|---|
@@ -70,8 +75,8 @@ All warnings are owned by Sts1Events staging model code. They remain accepted on
 
 - Sts1Events recommendation: staging-only.
 - Runtime proof: Off=0 and CanaryOnly=4 achieved (clean diagnostic logs).
-- Formalization blocker: fix or explicitly risk-accept the 79 nullable warnings, then prove gameplay (live run, save-load, co-op).
-- Removal option: would clear warning debt but would discard intentionally staged prototype infrastructure; requires owner decision.
+- Formalization blocker: fix or explicitly risk-accept the 79 remaining nullable warnings, then prove gameplay.
+- No TBD rows.
 
 ## History
 
@@ -80,6 +85,6 @@ All warnings are owned by Sts1Events staging model code. They remain accepted on
 | 2026-05-29 Rev D | 69 | Historical first clean-build count |
 | 2026-05-29 Rev E | 87 | Historical count after early `IsShared` updates |
 | 2026-05-29 M3 Week 1 | 92 | Historical count after UrdaStateCodec/Sts1Events changes |
-| 2026-05-31 Revision I/J | 89 | Count after sprint2; all warnings in Sts1Events model staging code |
-| 2026-06-02 sprint3 | 89 | Count after sprint3; unchanged from Revision J |
+| 2026-05-31 Revision I/J | 89 | Count after sprint2 |
+| 2026-06-02 sprint3 | 89 | Unchanged from Revision J |
 | 2026-06-02 sprint4 | 79 | Reduced by 10 after canary null-safety fixes (`f20dd230`) |

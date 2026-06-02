@@ -26,7 +26,7 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | ZHS localization keys | 399 (0 placeholder) | zhs/sts1_events.json verified |
 | Event images | 0 | No redistributable art available |
 | Guard tests | source-guarded | Sts1EventFeatureGuardTests.cs |
-| Build | 0 errors / 89 warnings | 2026-06-02 v16 solution build; warnings are Sts1Events nullable staging warnings (budget documented in `docs/goals/warning-ledger.md`) |
+| Build | 0 errors / 79 warnings | 2026-06-02 v16 solution build; warnings are Sts1Events nullable staging warnings (budget documented in `docs/goals/warning-ledger.md`); reduced from 89 by Golden Idol parity fixes |
 | Tests | 464 passed / 0 failed / 21 skipped (485 total) | 2026-06-02 v16 no-build validation with single VSTest worker; 21 skipped are `[ReleaseArtifactFact]`-gated (require `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`) |
 | Format | passed | `dotnet format --verify-no-changes` clean |
 | Diff check | passed | `git diff --check` clean (no CRLF warning) |
@@ -49,10 +49,10 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 
 | Event | Status | TODOs | IsShared | Parity Gap | Proof |
 |-------|--------|-------|----------|------------|-------|
-| Big Fish | compiled, test-guarded, source-API-verified | none | true | none | canary-source-api-proof.md |
-| Golden Idol | compiled, test-guarded, source-API-verified | none | true | none | canary-source-api-proof.md |
-| The Lab | compiled, test-guarded, source-API-verified | none | true | none | canary-source-api-proof.md |
-| Divine Fountain | compiled, test-guarded, source-API-verified | none | true | none | canary-source-api-proof.md |
+| Big Fish | compiled, test-guarded, source/API verified, runtime-verified | none | true | 1 minor: option key "Shoe" vs wiki "Box" (cosmetic naming) | canary-source-api-proof.md, godot.log |
+| Golden Idol | compiled, test-guarded, source/API verified, runtime-verified | none | true | 2 remaining: option keys "SMASH/JUMP/DESTROY" vs wiki "Outrun/Smash/Hide" (cosmetic naming); no Golden Idol relic in StS2 (grants random relic instead) | canary-source-api-proof.md, godot.log |
+| The Lab | compiled, test-guarded, source/API verified, runtime-verified | none | true | 1 minor: extra Leave option not in wiki (StS2 UX improvement) | canary-source-api-proof.md, godot.log |
+| Divine Fountain | compiled, test-guarded, source/API verified, runtime-verified | none | true | 2 minor: option key "Pray" vs wiki "Drink" (cosmetic); curse prerequisite not checked in model | canary-source-api-proof.md, godot.log |
 
 ### Blocked / Partial Events (7 rows)
 

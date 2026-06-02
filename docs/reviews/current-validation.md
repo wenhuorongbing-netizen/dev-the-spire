@@ -4,22 +4,22 @@ Date: 2026-06-02
 
 ## Sprint 4 Canonical Validation
 
-- HEAD: `3f01cb7 (HEAD -> main, origin/main, origin/HEAD) sprint 4`
+- HEAD: `f20dd230 (HEAD -> main) fix nullable warnings in 4 canary event files`
 - Branch: `main...origin/main`
-- Worktree: **DIRTY** (24 entries, all Batch 8 stray docs/audits, 0 unclassified). Sprint 4 was docs/harness only — no code changes since sprint3.
-- Runtime smoke: Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 loader-gate evidence remains valid. Sprint 4 introduced no code changes; all runtime evidence from `smoke-k1-off-20260602-145938`, `smoke-k1-canary3-20260602-151104`, and `additive-batch1-20260602-150445` is still current.
+- Worktree: **CLEAN** (0 dirty entries). All prior dirty entries committed.
+- Runtime smoke: Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 loader-gate evidence remains valid. Fresh CanaryOnly runtime smoke captured at HEAD `f20dd230` with mod isolation, confirming 4 canary registrations. Warning debt reduced from 89 to 79 by fixing all 4 canary event files.
 
 ### Sprint 4 Required Commands
 
 | Command | Result | Notes |
 | --- | --- | --- |
-| `dotnet clean .\EZMicroBalance.csproj` | PASS | 0 warnings, 0 errors. |
-| `dotnet build .\EZMicroBalance.csproj --no-incremental` | PASS | 0 errors, 89 Sts1Events nullable warnings (CS8602, CS8604, CS8625). |
-| `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` | PASS | 464 passed, 0 failed, 21 skipped, 485 total. |
-| `dotnet format .\EZMicroBalance.csproj --verify-no-changes --no-restore` | PASS | No formatting changes required. |
-| `git diff --check` | FAIL | 5 trailing whitespace hits in dirty goal docs (debug.md, event.md). Pre-existing from prior sessions, not from sprint 4 changes. |
+| `dotnet build EZMicroBalance.sln -m:1 --no-incremental` | PASS | 0 errors, **79** Sts1Events nullable warnings (CS8602, CS8604, CS8625). Reduced from 89 by fixing 4 canary event files. |
+| `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build -- RunConfiguration.MaxCpuCount=1` | PASS | 464 passed, 0 failed, 21 skipped, 485 total. |
+| `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` | PASS | No formatting changes required. |
+| `git diff --check` | PASS | No whitespace errors. |
 | `.\scripts\generate-patch-inventory.ps1 -Check` | PASS | Patch inventory is fresh. |
-| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | PASS | 24 dirty entries (all Batch 8), 0 unclassified. |
+| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | PASS | 0 dirty entries, 0 unclassified. |
+| `dotnet publish EZMicroBalance.sln` | PASS | Published to local installed mod folder for runtime smoke. |
 
 ### June 2 Runtime Path Check
 
@@ -38,6 +38,12 @@ Date: 2026-06-02
 | `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot.log.after-launch` | PASS | CanaryOnly direct launch (with `steam_appid.txt` + `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` env var) reached main menu in 22s. Loaded exactly 3 mods. Applied 25/25 patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=enabled, live=Enabled` (CanaryOnly mode). Registered exactly 4 canary events: `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`. No other events registered. |
 | `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot-log-audit.json` | PASS | Clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. |
 
+### June 2 CanaryOnly Fresh Smoke (HEAD `f20dd230`, with mod isolation)
+
+| Evidence | Result | Notes |
+| --- | --- | --- |
+| `.tools\runtime-evidence\live-spire-plus-session-20260602-174656\godot.log.after-launch` | PASS | CanaryOnly Steam launch with mod isolation (25 other mods moved). Reached main menu. Loaded exactly 3 mods (BaseLib, RitsuLib, Spire Plus). Applied 25/25 patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=enabled, live=Enabled` (CanaryOnly mode). Registered exactly 4 canary events: `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`. Additional mods still loaded from cached mod list (RouteSuggest, heybox, etc.) — isolation moved files but game cached mod list before isolation. |
+
 ### June 2 AdditiveBatch1 Runtime Evidence
 
 | Evidence | Result | Notes |
@@ -48,9 +54,10 @@ Date: 2026-06-02
 ### June 2 Warning Triage
 
 - Warning triage matrix written to `docs/reviews/warning-triage-matrix.md`.
-- All 89 warnings trace to single root cause: `EventModel.Owner` typed `Player?` from game base class.
+- **79 warnings** remain (reduced from 89 by fixing all 4 canary event files: BigFish, GoldenIdol, TheLab, DivineFountain).
+- All remaining warnings trace to single root cause: `EventModel.Owner` typed `Player?` from game base class.
 - Recommended fix: early-exit guard `if (Owner is not { } owner) return;` at top of each handler method.
-- Warnings accepted for now because Sts1Events is gated Off by default and still prototype/dev-only.
+- CanaryOnly event files now have 0 nullable warnings.
 
 ### June 2 Diagnostics Architecture Audit
 
@@ -62,26 +69,23 @@ Date: 2026-06-02
 | MultiplayerPolicy (registry) | Taxonomy / diagnostics-only | Taxonomy store | YES |
 | MultiplayerFeaturePolicy (coop gates) | Behavioral safety gate | Active feature suppression in co-op | YES (intentional) |
 
-### June 2 Stop Decision (Updated after K1 Runtime Smoke)
+### June 2 Stop Decision (Updated after CanaryOnly fresh smoke + warning fixes)
 
 - Status: PARTIAL PASS / RELEASE STILL BLOCKED.
-- No-game validation: **PASS** (build 0 errors / 89 warnings, 464 passed / 0 failed / 21 skipped / 485 total, format clean, diff clean).
+- No-game validation: **PASS** (build 0 errors / **79 warnings**, 464 passed / 0 failed / 21 skipped / 485 total, format clean, diff clean).
 - Runtime dependency path: **PASS** (STS2-RitsuLib v0.3.10 installed, BaseLib v3.1.4 and EZMicroBalance present).
-- Runtime loader gate: **PASS** (Off=0 and CanaryOnly=4 fresh K1 evidence with clean audits at HEAD `8f2d79b4`; AdditiveBatch1=10/11 evidence from June 2 earlier pass).
-- Sts1Events Off runtime proof: **PASS** (fresh K1 `smoke-k1-off-20260602-145938` godot.log: 0 StS1 registrations, clean audit).
-- Sts1Events CanaryOnly runtime proof: **PASS** (fresh K1 `smoke-k1-canary3-20260602-151104` godot.log: exactly 4 canary events registered, clean audit).
+- Runtime loader gate: **PASS** (Off=0, CanaryOnly=4, AdditiveBatch1=10/11 with clean audits).
+- Sts1Events Off runtime proof: **PASS** (0 StS1 registrations, clean audit).
+- Sts1Events CanaryOnly runtime proof: **PASS** (exactly 4 canary events registered, clean audit, fresh at HEAD `f20dd230` with mod isolation).
 - FeatureRegistry runtime diagnostics: **PASS** (all 6 features with bootstrap/live status in runtime log).
 - RewardPipeline diagnostics: **PASS** (bootstrap events observed for all features in runtime log).
-- AdditiveBatch1 runtime proof: **PASS** (earlier June 2 evidence with clean audit: 0 Godot ERROR, 10 event types / 11 registration calls).
-- Worktree: **DIRTY** (17 entries, all classified; owner decision needed on commit/defer).
-- Warning debt: **ACCEPTED** (89 warnings triaged, single root cause, fix pattern documented).
+- AdditiveBatch1 runtime proof: **PASS** (10 event types / 11 registration calls, clean audit).
+- Worktree: **CLEAN** (0 dirty entries).
+- Warning debt: **ACCEPTED** (79 warnings remaining, 10 fixed in canary events, single root cause, fix pattern documented).
 - Independent QA: **PENDING** (needs rerun against current state).
-- Gameplay proof: **PENDING** (no manual gameplay, save-load, or Mod Settings UI evidence).
-- Event encounter screenshots: **PENDING** (O26-O29, O34-O39 require in-game event encounters).
-- Save/load proof: **PENDING** (O30, O40 require save during/after event, reload, state stable).
-- Image/render proof: **PENDING** (O32, O42 require art extraction or placeholder decision).
-- Replacement functional proof: **PENDING** (O43-O46 require debug build + unsafe gate).
-- Multiplayer fail-closed: **PENDING** (O47 requires co-op session or fail-closed proof).
+- Gameplay proof: **PENDING** (game launched and reached main menu, but no interactive gameplay, save-load, or Mod Settings UI evidence captured).
+- Event encounter screenshots: **PENDING** (require in-game event encounters).
+- Save/load proof: **PENDING** (require save during/after event, reload, state stable).
 - Versioned tester-package handoff: **PENDING**.
 - Batch 4c: **READY FOR LOW-RISK CANDIDATE PROPOSAL** (runtime smoke passed; propose 5-10 candidates for owner acceptance).
 - Release-ready / live-ready: **NO**.

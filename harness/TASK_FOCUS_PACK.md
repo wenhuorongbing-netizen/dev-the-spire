@@ -2,9 +2,9 @@
 
 ## Current Task
 
-- Revision J runtime hard-blocker closure: resolved. Owner-review packet updated for sprint3.
-- Current HEAD: `8f2d79b4 (HEAD -> main, origin/main, origin/HEAD) sprint3`.
-- Runtime proof achieved; gameplay/UI/save-load/co-op proof and owner decisions are the next gates.
+- M5 Week 1: owner-review packet + runtime hard-blocker closure + governance decisions.
+- Current HEAD: `3f01cb7e (HEAD -> main, origin/main, origin/HEAD) sprint 4`.
+- Runtime proof achieved; owner-review packet prepared; owner decisions are the next gates.
 
 ## Acceptance Criteria
 
@@ -17,7 +17,7 @@
 - Sts1Events formal/staging/remove recommendation recorded.
 - Debug accept-scaffold/feature-complete/rollback recommendation recorded.
 - RitsuLib runtime-validated status recorded.
-- Worktree clean; no dirty entries to reconcile.
+- Dirty entries reconciled; commit slices prepared for owner review.
 - Runtime smoke evidence collected for Off and CanaryOnly modes.
 
 ## Blocked Scope
@@ -27,7 +27,7 @@
 - New gameplay behavior.
 - Debug expansion.
 - Sts1Events formalization (blocked by 89 warnings + gameplay proof).
-- Longhaul audit.
+- Longhaul audit (blocked pending owner-review acceptance).
 - Release-ready claims (pending gameplay/UI/save-load/co-op proof).
 
 ## Related Files Or Modules
@@ -37,11 +37,12 @@
 - `scripts/spire-plus-live-session.ps1` (runtime smoke helper)
 - `.tools/runtime-evidence/ritsulib-off-after-target-fix-20260531-2325/` (Off mode evidence)
 - `.tools/runtime-evidence/ritsulib-canary-after-target-fix-20260531-2327/` (CanaryOnly evidence)
-- `docs/goals/revision-j-owner-review-packet.md`
-- `docs/goals/revision-j-runtime-hard-blocker.md`
-- `docs/goals/revision-j-runtime-smoke-plan.md`
-- `docs/goals/revision-j-dirty-ledger.md`
-- `docs/goals/revision-j-commit-slices.md`
+- `docs/goals/m5-week1-owner-review-packet.md`
+- `docs/goals/m5-week1-runtime-hard-blocker.md`
+- `docs/goals/m5-week1-runtime-smoke-plan.md`
+- `docs/goals/m5-week1-dirty-ledger.md`
+- `docs/goals/m5-week1-warning-ledger.md`
+- `docs/goals/m5-week1-commit-slices.md`
 - `docs/goals/warning-ledger.md`
 
 ## Risks
@@ -50,3 +51,4 @@
 - Gameplay verification has not been performed; runtime proof covers loader/startup only.
 - Co-op verification has not been performed.
 - Versioned tester-package handoff has not been performed.
+- 25 dirty entries need owner-approved commit slices.

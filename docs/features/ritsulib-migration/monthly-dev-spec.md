@@ -97,7 +97,7 @@ Define the 4-week plan for completing the RitsuLib migration of Spire Plus from 
 
 **Conditional post-smoke tasks**:
 
-- [ ] Propose 5-10 low-risk Batch 4c candidates after runtime smoke passes.
+- [x] Propose 5-10 low-risk Batch 4c candidates after runtime smoke passes. (10 candidates proposed: EnemyDamagePolish, AscensionLocalizationTable, VakuReward, VelvetChoker, AeonglassIntent, MeatCleaverCook, JewelryBox, PreservedFog, PaelsTooth, ToastyMittens+JeweledMask — 44 patches total.)
 - [ ] Require explicit owner acceptance before migrating any candidate.
 - [ ] Keep high-risk migration as a later planning item only.
 
@@ -125,7 +125,7 @@ Sts1Events source code compiles and is registered in the feature registry with a
 
 - **Off** (default): returns immediately, 0 events registered.
 - **CanaryOnly**: registers 4 safe shared events: Big Fish, Golden Idol, The Lab, Divine Fountain.
-- **AdditiveBatch1**: registers 10 event types through 11 registration calls; controlled prototype, runtime unverified.
+- **AdditiveBatch1**: registers 10 event types through 11 registration calls; controlled prototype, runtime loader-gate proven.
 - **AdditiveAllDraft**: registers all draft calls only with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; includes blocked/TODO and temporary-substitute events; unsafe/dev-only.
 - **ReplaceUnknownEventsPrototype**: debug-only and compile-symbol-gated, with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` also required; unsafe/dev-only.
 
@@ -165,7 +165,7 @@ These log patterns are required evidence for runtime smoke verification.
 | Raw Harmony declarations | 142 | Hold at 142 until runtime smoke passes |
 | Tracked patch units | 167 | Reconcile on every inventory refresh |
 | Total test suite | 464 passed / 0 failed / 21 skipped / 485 total | Keep 0 failed |
-| Runtime smoke | STS2-RitsuLib installed; controlled loader reaches main menu with Spire Plus loaded, but audit has 11 Godot ERROR hits | Complete clean BaseLib + STS2-RitsuLib + Spire Plus loader smoke, then Off + CanaryOnly checks |
+| Runtime smoke | Loader-gate PASS: Off=0, CanaryOnly=4, AdditiveBatch1=10/11 with clean audits at HEAD `3f01cb7` | Gameplay, save-load, Mod Settings UI, event screenshots, independent QA pending |
 | Sts1Events status | Compiled, gated Off, 5-mode matrix source-guarded | Runtime proof required before activation/archive decision |
 | High-risk migration plan | Frozen | Catalog-only until runtime smoke passes |
 | Architecture skeletons | Diagnostics-only canary integration | No gameplay enforcement claim |

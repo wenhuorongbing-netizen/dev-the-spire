@@ -1,13 +1,13 @@
-# Overnight Run Ledger — Revision J Runtime Hard-Blocker Closure
+# Overnight Run Ledger — M5 Week 1
 
 Date: 2026-06-02
 
-## Revision J Sprint3 Summary
+## M5 Week 1 Sprint4 Summary
 
 | Area | Finding |
 | --- | --- |
-| Git forensics | Current HEAD is `8f2d79b4` (sprint3); Revision J `6b149ba0` (sprint2) is historical. |
-| Dirty state | Worktree clean (0 entries). Previous 49 dirty entries reconciled through sprint3 commits. |
+| Git forensics | Current HEAD is `3f01cb7e` (sprint4); sprint3 `8f2d79b4` is historical. |
+| Dirty state | 25 entries (4 modified goal docs, 21 deleted revision docs); 0 unclassified. |
 | Validation replay | All 8 terminal commands pass; 0 errors, 89 warnings, 464/0/21/485 tests. |
 | Warning recount | 89 warnings, all Sts1Events nullable staging debt (CS8604=54, CS8602=34, CS8625=1). |
 | Patch inventory | 142 raw Harmony declarations + 25 migrated `IPatchMethod` classes = 167 tracked runtime patch units. |
@@ -15,9 +15,9 @@ Date: 2026-06-02
 | Debug | accept-scaffold recommended. |
 | RitsuLib | runtime-validated. Clean Off/CanaryOnly logs, 25/25 ModPatcher patches, v0.3.10 [0.106.1]. |
 | Runtime | hard-blocker resolved. Clean Off and CanaryOnly diagnostic logs exist with 0 Godot ERROR hits. |
-| Commit slices | Not required; worktree is clean. |
+| Commit slices | prepared for owner review only; no commit authorized. |
 
-## Revision J Runtime Evidence
+## M5 Week 1 Runtime Evidence
 
 - Off mode: `.tools/runtime-evidence/ritsulib-off-after-target-fix-20260531-2325/` — clean audit, 0 Godot ERROR hits, Sts1Events disabled, 0 StS1 registrations, 25/25 ModPatcher patches, 30 SavedSpireFields.
 - CanaryOnly mode: `.tools/runtime-evidence/ritsulib-canary-after-target-fix-20260531-2327/` — clean audit, 0 Godot ERROR hits, exactly 4 canary registrations (Big Fish, Golden Idol, Lab, Divine Fountain), 25/25 ModPatcher patches, 30 SavedSpireFields.
@@ -32,38 +32,40 @@ Date: 2026-06-02
 - Sts1Events formalization (blocked by 89 warnings + gameplay proof)
 - Debug feature completion (blocked by settings exposure, behavioral tests, Warn policy)
 - Batch 4c / Batch 5 / PR7 (blocked pending gameplay proof and owner decision)
+- Longhaul audit (blocked pending owner-review acceptance and governance decisions)
 
 ---
 
-# Historical Overnight Run Ledger — Revision J (2026-05-31)
-
-Date: 2026-05-31
-
-## Revision J Summary
+# Historical Overnight Run Ledger — Revision J Sprint3 (2026-06-02)
 
 | Area | Finding |
 | --- | --- |
-| Git forensics | Current HEAD is `6b149ba0`; Revision I `87820303` and earlier audit commits are historical. |
-| Dirty state | 49 dirty entries and 0 unclassified in the final Revision J classifier run; no commit, stash, checkout, reset, restore, or broad clean was performed. |
-| Validation replay | Required clean/build/test/format/diff-check/patch-inventory/batch-classifier replay passes; target no-build result remains 464/0/21/485. |
-| Warning recount | 89 warnings, all Sts1Events nullable staging debt. |
-| Patch inventory | 142 raw Harmony declarations + 25 migrated `IPatchMethod` classes = 167 tracked runtime patch units; source-level double-patch guard exists. |
-| Sts1Events | staging-only recommended. |
-| Debug | accept-scaffold recommended. |
-| RitsuLib | compile/manifest dependency attempted; runtime unverified. |
-| Runtime | hard blocked at clean-audit/runtime-proof stage; fresh loader log reaches main menu with BaseLib, RitsuLib, and Spire Plus, but has 11 Godot ERROR hits including `ritsulib-variants.json` parsing and 8 optional Spire Plus ModPatcher failures. |
-| Commit slices | prepared for owner review only; no commit authorized. |
+| Git forensics | HEAD `8f2d79b4` (sprint3). |
+| Dirty state | Worktree clean (0 entries). |
+| Validation replay | All 8 terminal commands pass; 0 errors, 89 warnings, 464/0/21/485 tests. |
+| RitsuLib | runtime-validated. |
+| Runtime | hard-blocker resolved. |
 
 ---
 
-# Historical Overnight Run Ledger — M3 Week 1
+# Historical Overnight Run Ledger — Revision J Sprint2 (2026-05-31)
 
-Date: 2026-05-29
+| Area | Finding |
+| --- | --- |
+| Git forensics | HEAD `6b149ba0` (sprint2). |
+| Dirty state | 49 dirty entries, 0 unclassified. |
+| RitsuLib | compile/manifest attempted; runtime unverified. |
+| Runtime | hard blocked; 11 Godot ERROR hits. |
+
+---
+
+# Historical Overnight Run Ledger — M3 Week 1 (2026-05-29)
+
 Agent: Kilo (mimo-v2.5-pro)
 Spec: `docs/goals/debug.md` M3 Week 1 Commit Readiness Gate
 
 ## Final Verdict
 
 ```text
-NOT COMPLETE — M4 replay on 2026-05-31 reached Hard Block Stop. Clean/build/test/format/diff-check pass with 89 Sts1Events nullable warnings, but runtime smoke was blocked because fresh godot.log evidence was unavailable despite the local STS2-RitsuLib install. Runtime hard blocker resolved at sprint3 (2026-06-02) with clean Off/CanaryOnly diagnostic logs.
+NOT COMPLETE at M3/M4. Runtime hard blocker resolved at sprint3 (2026-06-02). M5 Week 1 owner-review packet prepared at sprint4 (2026-06-02).
 ```
