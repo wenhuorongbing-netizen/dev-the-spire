@@ -2,23 +2,24 @@
 
 Date: 2026-06-02
 
-## June 2 Refactor Validation Pass
+## Sprint 4 Canonical Validation
 
-- HEAD: `8f2d79b4 (HEAD -> main, origin/main, origin/HEAD) sprint3`
+- HEAD: `3f01cb7 (HEAD -> main, origin/main, origin/HEAD) sprint 4`
 - Branch: `main...origin/main`
-- Worktree: **DIRTY** (17 entries). `report-worktree-batches.ps1 -FailOnUnclassified` reports 17 dirty entries across Batch 1 (5), Batch 2 (2), Batch 3 (1), Batch 8 (9), with 0 unclassified. 3 entries were added by this session (current-validation.md edit, warning-triage-matrix.md, refactor-qa-20260602.md); 14 were pre-existing from prior sessions.
-- Runtime smoke: Off and CanaryOnly loader-gate evidence from Revision J remains valid. No new runtime smoke was captured this pass.
+- Worktree: **DIRTY** (24 entries, all Batch 8 stray docs/audits, 0 unclassified). Sprint 4 was docs/harness only — no code changes since sprint3.
+- Runtime smoke: Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 loader-gate evidence remains valid. Sprint 4 introduced no code changes; all runtime evidence from `smoke-k1-off-20260602-145938`, `smoke-k1-canary3-20260602-151104`, and `additive-batch1-20260602-150445` is still current.
 
-### June 2 Required Commands
+### Sprint 4 Required Commands
 
 | Command | Result | Notes |
 | --- | --- | --- |
-| `dotnet build EZMicroBalance.sln -m:1 --no-incremental` | PASS | 0 errors, 89 Sts1Events nullable warnings (CS8602, CS8604, CS8625). |
-| `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build -- RunConfiguration.MaxCpuCount=1` | PASS | 464 passed, 0 failed, 21 skipped, 485 total. |
-| `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` | PASS | No formatting changes required. |
-| `git diff --check` | PASS | No whitespace errors. |
+| `dotnet clean .\EZMicroBalance.csproj` | PASS | 0 warnings, 0 errors. |
+| `dotnet build .\EZMicroBalance.csproj --no-incremental` | PASS | 0 errors, 89 Sts1Events nullable warnings (CS8602, CS8604, CS8625). |
+| `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` | PASS | 464 passed, 0 failed, 21 skipped, 485 total. |
+| `dotnet format .\EZMicroBalance.csproj --verify-no-changes --no-restore` | PASS | No formatting changes required. |
+| `git diff --check` | FAIL | 5 trailing whitespace hits in dirty goal docs (debug.md, event.md). Pre-existing from prior sessions, not from sprint 4 changes. |
 | `.\scripts\generate-patch-inventory.ps1 -Check` | PASS | Patch inventory is fresh. |
-| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | PASS | 17 dirty entries (Batch 1: 5, Batch 2: 2, Batch 3: 1, Batch 8: 9), 0 unclassified. |
+| `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` | PASS | 24 dirty entries (all Batch 8), 0 unclassified. |
 
 ### June 2 Runtime Path Check
 
