@@ -1,29 +1,29 @@
 # Warning Ledger - Current State
 
-Date: 2026-06-02
-HEAD: `f20dd230 (HEAD -> main, origin/main, origin/HEAD)`
+Date: 2026-06-10
+Baseline HEAD: `f32c6767 (HEAD -> main, origin/main, origin/HEAD)`
+Worktree: dirty, owner-review pending.
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total CS warnings | 79 |
-| CS8604 possible null reference argument | 46 |
-| CS8602 dereference of possibly null reference | 32 |
-| CS8625 cannot convert null literal | 1 |
+| Unique CS warnings | 0 |
+| CS8604 possible null reference argument | 0 |
+| CS8602 dereference of possibly null reference | 0 |
+| CS8625 cannot convert null literal | 0 |
 | Warnings outside `EZMicroBalanceCode/Sts1Events/Models/` | 0 |
 | MSBuild locked-file/env artifact warnings | 0 in the current warning classification |
 
-All warnings are owned by Sts1Events staging model code. They remain accepted only while Sts1Events stays default-Off/prototype-gated and are not acceptable as formal runtime-ready code.
+Current build evidence: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` was rerun on 2026-06-10 during migration reconciliation and reported `0 Warning(s)` / `0 Error(s)`. The previous 70-warning snapshot is preserved below as historical burn-down context only; it is not the active warning budget.
 
-## Current Per-File Breakdown
+## Historical 70-Warning Snapshot
 
 | File | CS8602 | CS8604 | CS8625 | Total | Owner |
 |---|---:|---:|---:|---:|---|
 | `Act1/Sts1DeadAdventurer.cs` | 0 | 2 | 0 | 2 | Sts1Events |
 | `Act1/Sts1Joust.cs` | 0 | 2 | 0 | 2 | Sts1Events |
 | `Act1/Sts1Mushrooms.cs` | 2 | 0 | 0 | 2 | Sts1Events |
-| `Act1/Sts1ShiningLight.cs` | 1 | 0 | 0 | 1 | Sts1Events |
 | `Act1/Sts1TheSsssserpent.cs` | 0 | 1 | 0 | 1 | Sts1Events |
 | `Act1/Sts1TreasureOoze.cs` | 0 | 1 | 0 | 1 | Sts1Events |
 | `Act2/Sts1Altar.cs` | 0 | 2 | 0 | 2 | Sts1Events |
@@ -45,32 +45,39 @@ All warnings are owned by Sts1Events staging model code. They remain accepted on
 | `Act3/Sts1SensoryStone.cs` | 1 | 0 | 0 | 1 | Sts1Events |
 | `Act3/Sts1TombOfLordRedMask.cs` | 0 | 3 | 0 | 3 | Sts1Events |
 | `Act3/Sts1Transmogrifier.cs` | 0 | 1 | 0 | 1 | Sts1Events |
-| `Act3/Sts1UpgradeShrine.cs` | 0 | 1 | 0 | 1 | Sts1Events |
 | `Act3/Sts1WindingHalls.cs` | 3 | 1 | 0 | 4 | Sts1Events |
-| `Shared/Sts1BigFish.cs` | 0 | 0 | 0 | 0 | Sts1Events (fixed) |
 | `Shared/Sts1BonfireSpirits.cs` | 1 | 1 | 0 | 2 | Sts1Events |
 | `Shared/Sts1Designer.cs` | 0 | 3 | 0 | 3 | Sts1Events |
-| `Shared/Sts1DivineFountain.cs` | 0 | 0 | 0 | 0 | Sts1Events (fixed) |
 | `Shared/Sts1FaceTrader.cs` | 1 | 1 | 0 | 2 | Sts1Events |
 | `Shared/Sts1FountainOfCleansing.cs` | 2 | 0 | 0 | 2 | Sts1Events |
-| `Shared/Sts1GoldenIdol.cs` | 0 | 0 | 1 | 1 | Sts1Events (reduced) |
-| `Shared/Sts1GoldenShrine.cs` | 1 | 2 | 0 | 3 | Sts1Events |
 | `Shared/Sts1GoldenWing.cs` | 1 | 0 | 0 | 1 | Sts1Events |
 | `Shared/Sts1LivingWall.cs` | 0 | 3 | 0 | 3 | Sts1Events |
-| `Shared/Sts1OldBeggar.cs` | 0 | 1 | 0 | 1 | Sts1Events |
-| `Shared/Sts1Purifier.cs` | 0 | 1 | 0 | 1 | Sts1Events |
-| `Shared/Sts1TheCleric.cs` | 0 | 2 | 0 | 2 | Sts1Events |
-| `Shared/Sts1TheLab.cs` | 0 | 0 | 0 | 0 | Sts1Events (fixed) |
 | `Shared/Sts1TheMausoleum.cs` | 0 | 2 | 0 | 2 | Sts1Events |
 | `Shared/Sts1TheWomanInBlue.cs` | 0 | 3 | 0 | 3 | Sts1Events |
 | `Shared/Sts1WheelOfChange.cs` | 2 | 4 | 0 | 6 | Sts1Events |
-| **Total** | **32** | **46** | **1** | **79** | **Sts1Events** |
+| **Total** | **26** | **44** | **0** | **70** | **Sts1Events** |
+
+## Cleared Rows
+
+The CanaryOnly files and the current AdditiveBatch1 files are warning-clean after explicit `Owner` guards:
+
+- `Shared/Sts1BigFish.cs`
+- `Shared/Sts1GoldenIdol.cs`
+- `Shared/Sts1TheLab.cs`
+- `Shared/Sts1DivineFountain.cs`
+- `Act1/Sts1ShiningLight.cs`
+- `Act3/Sts1UpgradeShrine.cs`
+- `Shared/Sts1GoldenShrine.cs`
+- `Shared/Sts1OldBeggar.cs`
+- `Shared/Sts1Purifier.cs`
+- `Shared/Sts1TheCleric.cs`
 
 ## Governance Decision
 
-- Sts1Events recommendation: staging-only.
-- Runtime proof: Off=0 and CanaryOnly=4 achieved (clean diagnostic logs).
-- Formalization blocker: fix or explicitly risk-accept the 79 nullable warnings, then prove gameplay (live run, save-load, co-op).
+- Sts1Events recommendation: staging-only until current-runtime and gameplay evidence exists.
+- Runtime loader proof: Off=0, CanaryOnly=4, and AdditiveBatch1=10 event types / 11 registration calls exist in historical diagnostic evidence; current source now expects AdditiveBatch1=10 event types / 13 registration calls and needs fresh runtime proof.
+- Nullable warning blocker: closed for the current dirty source build.
+- Remaining formalization blockers: prove clean current `v0.107.0` loader smoke, gameplay, EN/ZHS render, save-load, image/render behavior, replacement behavior, and multiplayer fail-closed behavior.
 - Removal option: would clear warning debt but would discard intentionally staged prototype infrastructure; requires owner decision.
 
 ## History
@@ -81,5 +88,6 @@ All warnings are owned by Sts1Events staging model code. They remain accepted on
 | 2026-05-29 Rev E | 87 | Historical count after early `IsShared` updates |
 | 2026-05-29 M3 Week 1 | 92 | Historical count after UrdaStateCodec/Sts1Events changes |
 | 2026-05-31 Revision I/J | 89 | Count after sprint2; all warnings in Sts1Events model staging code |
-| 2026-06-02 sprint3 | 89 | Count after sprint3; unchanged from Revision J |
-| 2026-06-02 sprint4 | 79 | Reduced by 10 after canary null-safety fixes (`f20dd230`) |
+| 2026-06-02 sprint4 | 79 | Reduced by 10 after CanaryOnly null-safety fixes |
+| 2026-06-10 Revision L | 70 | Reduced by AdditiveBatch1 owner guards; remaining warnings are draft/deferred Sts1Events rows |
+| 2026-06-10 Revision L zero-warning build | 0 | Expanded owner guards cleared the remaining nullable warnings; reverified by `dotnet build EZMicroBalance.sln -m:1 --no-incremental` |

@@ -13,7 +13,7 @@
 
 Implement Big Fish, Golden Idol, The Lab, and Divine Fountain to prove the bounded canary pipeline before broader runtime claims.
 
-### Big Fish (Act 1 Shared)
+### Big Fish (Act 1, IsShared)
 
 **Wiki behavior:**
 - Option 1: Heal 1/3 max HP
@@ -22,11 +22,11 @@ Implement Big Fish, Golden Idol, The Lab, and Divine Fountain to prove the bound
 
 **Implementation:**
 - Extend `ModEventTemplate`
-- Register with `[RegisterSharedEvent]` (shared across acts)
+- Register to the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`); keep `IsShared=true` for co-op voting semantics.
 - Localization: `BIG_FISH.pages.INITIAL.description`, options
 - Dynamic vars: `HealAmount` (1/3 max HP), `MaxHpGain` (5)
 
-### Golden Idol (Act 1 Shared)
+### Golden Idol (Act 1, IsShared)
 
 **Wiki behavior:**
 - Initial: Take Golden Idol (relic) or Leave
@@ -37,7 +37,7 @@ Implement Big Fish, Golden Idol, The Lab, and Divine Fountain to prove the bound
 
 **Implementation:**
 - Extend `ModEventTemplate`
-- Register with `[RegisterSharedEvent]`
+- Register to the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`); keep `IsShared=true` for co-op voting semantics.
 - Multi-page event: INITIAL → TRAP → done
 - Requires Golden Idol relic model (or use existing if StS2 has one)
 
@@ -45,7 +45,7 @@ Implement Big Fish, Golden Idol, The Lab, and Divine Fountain to prove the bound
 
 Current AdditiveBatch1 verified-scope prototype events with straightforward heal/damage/gold/card rewards:
 
-Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar / Pleading Vagrant, and Shining Light. AdditiveBatch1 registers 10 event types total when the 4 canaries are included, through 11 registration calls because Shining Light is registered for both StS2 Act 1 buckets.
+Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar / Pleading Vagrant, and Shining Light. AdditiveBatch1 registers 10 event types total when the 4 canaries are included, through 13 registration calls because Big Fish, Golden Idol, and Shining Light are registered for both StS2 Act 1 buckets.
 
 ## Phase 3: Card Service Batch
 

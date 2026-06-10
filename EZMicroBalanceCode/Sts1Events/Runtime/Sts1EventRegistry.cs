@@ -11,8 +11,8 @@ internal static class Sts1EventRegistry
     private static readonly List<Sts1EventEntry> Events = new()
     {
         // Phase 1: Canary
-        new("sts1_big_fish", "Big Fish", Sts1EventPhase.Canary, Sts1EventAct.Shared),
-        new("sts1_golden_idol", "Golden Idol", Sts1EventPhase.Canary, Sts1EventAct.Shared),
+        new("sts1_big_fish", "Big Fish", Sts1EventPhase.Canary, Sts1EventAct.Act1),
+        new("sts1_golden_idol", "Golden Idol", Sts1EventPhase.Canary, Sts1EventAct.Act1),
         new("sts1_divine_fountain", "Divine Fountain", Sts1EventPhase.Canary, Sts1EventAct.Shared),
         new("sts1_the_lab", "The Lab", Sts1EventPhase.Canary, Sts1EventAct.Shared),
 

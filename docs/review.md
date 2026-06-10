@@ -16,6 +16,7 @@ Live-only blockers remain:
 
 ## Latest Fixed Findings
 
+- 2026-06-10 installed-game API compatibility and Sts1Events null-safety pass: Lotha/Martyr Oath power amount hooks now use `ModifyPowerAmountGivenAdditive`, Ectoplasm initial-gold gating patches `ModifyGoldGained`, and Meat Cleaver rest-site availability patches `CookRestSiteOption.get_IsEnabled` for the currently installed `sts2.dll`. Sts1Events model handlers now early-exit on missing `Owner`. Forced no-game build passes with 0 errors and 0 warnings; solution-level no-build tests pass with 464 passed / 0 failed / 21 skipped / 485 total. No game was opened for current dirty source.
 - 2026-05-27 AscensionFeature rootblight guard split: `AscensionFeatureGuardTests.Rootblight.cs` now owns Root starter, RootBud seeding/gating, and Root family card/localization guard coverage. `AscensionFeatureGuardTests.cs` keeps selection, environment gate, localization bridge, multiplayer diagnostics, map/combat slice, map geometry, Firemark/Fission, Boss Seal, metadata, and Ascension source-surface guards. Test names, assertions, package evidence semantics, and player-visible behavior are unchanged. No game was opened.
 - 2026-05-27 AncientBehavior localization/docs guard split: `AncientBehaviorGuardTests.LocalizationDocs.cs` now owns v4.3/v4.2 doc-current checks, localization placeholder/value parity, Simplified Chinese numeric/mojibake guards, current Ancient docs checks, release-checklist guard coverage, and manual verification matrix row coverage. `AncientBehaviorGuardTests.cs` keeps package-shape, patch-target, Ancient reward behavior, Sere Talon/Tanx Claws, and source/mechanic behavior guards. Test names, assertions, package evidence semantics, and player-visible behavior are unchanged. No game was opened.
 - 2026-05-26 ReleaseEvidence manual handoff test split: `ReleaseEvidenceGateTests.ManualHandoff.cs` now owns prepare-current-manual-test-handoff generator coverage, pending-evidence scaffold contracts, stale-loader preservation, and stale-loader archival tests. `ReleaseEvidenceGateTests.cs` keeps package path derivation, no-launch collector/verifier contracts, Ancient UI helper, co-op/Vakuu templates, and release-ready claim guards. Test names, script behavior, package evidence semantics, and player-visible behavior are unchanged. No game was opened.
@@ -61,7 +62,7 @@ Live-only blockers remain:
 
 Detailed pre-current pass notes remain in the archive files listed above. This active review keeps only context that still guides current manual testing and prevents stale release claims.
 
-- 2026-05-25 loader/startup context: historical beta.19 loader smoke reached the main menu with only BaseLib and Spire Plus enabled, registered `EZMicroBalance`, found 30 SavedSpireFields, and had a clean log audit. It is historical startup context only; beta.80 still needs fresh loader proof.
+- 2026-05-25 loader/startup context: historical beta.19 loader smoke reached the main menu with only BaseLib and Spire Plus enabled, registered `EZMicroBalance`, found 30 SavedSpireFields, and had a clean log audit. It is historical startup context only; beta.84 and the current dirty source still need fresh loader proof.
 - 2026-05-25 co-op fail-closed pass: multiplayer gameplay mutations, combat hooks, Ancient reward/run hooks, Ascension reward/gameplay hooks, and Urda reward alternatives fail closed by default unless explicit opt-in environment variables are set. The two crash logs remain useful co-op evidence, but they do not prove current-package co-op behavior. Preview tools were later narrowed to local UI-only behavior and still need live two-client proof.
 - 2026-05-25 player-facing polish: Seedbed / Planting, Seed Bank hover, A20 selector localization, Ancient direct-gain feedback, Fission Exhaust text, Soul Tide timing, Neow/Act 1 Ancient reroll, Elite Root, and high-pressure elite damage tuning are source/package-fixed and live-pending.
 - 2026-05-24 Sere Talon / Tanx Claws lineage: source, package, art-route, handoff, website, and installed-package checks were hardened across multiple passes. Historical command logs are archive/context evidence, not a substitute for current live UI proof.
@@ -70,7 +71,7 @@ Detailed pre-current pass notes remain in the archive files listed above. This a
 
 - Vakuu's Sere Talon must offer 4 Curses, choose 1, then add the selected Curse, 2 Wish, and 1 Wish+; its event option, relic bar, inspect screen, hover text, and log routes must not appear as Tanx Claws.
 - Tanx Claws must stay on the Tanx route and transform selected cards into upgraded Maul+ / 撕咬+.
-- Current-package Steam-client loader proof for beta.80 is pending; historical beta.19 and beta.17 loader rows are context only.
+- Current-package Steam-client loader proof for beta.84 failed clean audit on `v0.107.0`, and the current dirty source is not packaged; historical beta.19, beta.17, and RitsuLib diagnostic loader rows are context only.
 - Save/load, death/failure, co-op, clicked UI, hover, map traversal, preview tools, and gameplay evidence remain manual rows under `docs/issues.md`, `docs/toreview.md`, and the generated handoff.
 
 ## Still Not Claimed

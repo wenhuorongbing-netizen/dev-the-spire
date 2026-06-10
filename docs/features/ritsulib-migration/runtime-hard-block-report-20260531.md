@@ -2,6 +2,8 @@
 
 ## Decision
 
+2026-06-10 current note: this report is historical `v0.106.1` loader-gate evidence. The current local game install is `v0.107.0`, and official STS2-RitsuLib `v0.4.16` is installed with `lib\0.107.0`. Fresh current-runtime proof is blocked until a new `v0.107.0` loader smoke and installed-package parity are captured.
+
 **Original runtime hard block resolved for loader gates; release remains blocked.** The missing-dependency blocker is cleared locally: official STS2-RitsuLib `v0.3.10` is installed in the active E-drive game root. After fixing RitsuLib target descriptors, Off and CanaryOnly diagnostic smokes reached main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied. Off proves 0 StS1 registration lines; CanaryOnly proves exactly 4 canary content registrations. Batch 4c, high-risk migration, live-ready, and release-ready remain blocked until independent QA reruns and gameplay/UI/save-load/co-op/package handoff gates are addressed.
 
 ## Evidence
@@ -27,7 +29,7 @@
 
 ## Required Runtime Proof
 
-1. Keep STS2-RitsuLib v0.3.10 installed under the active game root at `<GameRoot>\mods\STS2-RitsuLib`.
+1. Keep the current official STS2-RitsuLib install under the active game root at `<GameRoot>\mods\STS2-RitsuLib`; as of 2026-06-10 this is `v0.4.16` with `lib\0.107.0`.
 2. Enable only BaseLib, STS2-RitsuLib, and Spire Plus.
 3. Keep the clean Off and CanaryOnly target-fix evidence attached to any QA rerun.
 4. Rerun independent QA/Red-Team against the new evidence.

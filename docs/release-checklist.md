@@ -13,6 +13,8 @@ Target manifest id: `EZMicroBalance`
 
 ## Build And Publish
 
+Current status note (2026-06-10): the `v0.1.0-private-beta.84` package/hash rows below describe the last packaged tester artifact, not the current dirty refactor source. The current refactor source has build, test-project, exact solution-level no-build, format, diff-check, patch-inventory, and batch-classifier evidence, but publish, package refresh, hash refresh, and handoff docs must be rerun in a clean validation lane before any new tester handoff.
+
 - [x] `dotnet build` succeeds.
 - [x] Latest source/package build check passed with `dotnet build EZMicroBalance.sln` after the beta.84 Urda Seedbed Harmony patch bugfix.
 - [x] Publish/package/hash refresh has been rerun for the latest source/text/resource slices with a rebuilt `SpirePlus` private-beta zip.
@@ -26,7 +28,7 @@ Target manifest id: `EZMicroBalance`
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.84.zip` was rebuilt from the current source and copied to the local game root for manual testing.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.84.zip` was rebuilt from the beta.84 source/package refresh and copied to the local game root for manual testing. It has not been refreshed for the current dirty refactor source.
   - Current package hashes: DLL `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`; manifest `47658D7593FE8DF23C4E5B3413CA53B1C7F1B779109A42A8B65E381C4C0FEDAC`; PCK `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA`; README `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C`; zip `9F0656DEDF57598D3A26743FD1A3061E669EF21354D6E12A6AA4C4AF44796894`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
@@ -39,6 +41,7 @@ Target manifest id: `EZMicroBalance`
 - [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.
 - [x] Historical pre-display-name-refresh Mod Settings evidence exists for the same technical manifest id.
 - [ ] Fresh loader smoke for the current beta.84 ZIP hash is pending. The beta.19 smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` remains historical startup evidence only.
+- [x] Historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes with clean audits and 25/25 Spire Plus ModPatcher patches; this is not a fresh beta.84/current-dirty-source package proof.
 - [x] Historical normal Steam-client startup/log verification under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311` remains beta.17 context for the same 30-field source family; beta.13 loader/startup evidence remains older historical context.
 - [ ] Latest loader smoke for the current beta.84 package hash has not been recaptured yet.
 - [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib and Spire Plus, reported `Found 22 SavedSpireFields`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. This is historical context now superseded for runtime binaries by the 30-field loader smoke.

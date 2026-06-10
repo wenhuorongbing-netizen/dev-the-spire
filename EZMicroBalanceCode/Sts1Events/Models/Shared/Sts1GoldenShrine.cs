@@ -31,12 +31,15 @@ public sealed class Sts1GoldenShrine : EventModel
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
         var hasCurses = false;
-        foreach (var card in Owner.Deck.Cards)
+        if (Owner is { } owner)
         {
-            if (card.Type == MegaCrit.Sts2.Core.Entities.Cards.CardType.Curse)
+            foreach (var card in owner.Deck.Cards)
             {
-                hasCurses = true;
-                break;
+                if (card.Type == MegaCrit.Sts2.Core.Entities.Cards.CardType.Curse)
+                {
+                    hasCurses = true;
+                    break;
+                }
             }
         }
 
@@ -50,13 +53,15 @@ public sealed class Sts1GoldenShrine : EventModel
 
     private async Task TakeGold()
     {
-        await PlayerCmd.GainGold(GoldAmount, Owner);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.GainGold(GoldAmount, owner);
         SetEventFinished(L10NLookup("STS1_GOLDEN_SHRINE.pages.TAKE_GOLD.description"));
     }
 
     private async Task Desecrate()
     {
-        await Sts1EventHelpers.RemoveAllCurses(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.RemoveAllCurses(owner);
         SetEventFinished(L10NLookup("STS1_GOLDEN_SHRINE.pages.DESECRATE.description"));
     }
 }

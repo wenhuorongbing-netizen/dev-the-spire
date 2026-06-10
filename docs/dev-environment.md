@@ -1,5 +1,15 @@
 ﻿# Development Environment
 
+## 2026-06-10 Current Override
+
+- Local `Directory.Build.props` points `Sts2Path` at `E:\Steam\steamapps\common\Slay the Spire 2`.
+- The installed game `release_info.json` currently reports Slay the Spire 2 `v0.107.0`, commit `23d60b98`, date `2026-06-04T18:40:52-04:00`.
+- Installed `STS2-RitsuLib` `v0.4.16` has runtime variants `0.103.2`, `0.106.1`, and `0.107.0`; the prior `v0.3.10` install was backed up to `%TEMP%\codex-ritsulib-backup-20260610-090338`.
+- The recovered local source snapshot and prior clean loader evidence remain `v0.106.1` based. Treat them as historical. Installed beta.84 package parity is restored, but the fresh `v0.107.0` Off smoke is non-clean and cannot be used as current loader proof.
+- Current refactor pass evidence: solution build passed with 0 errors and 0 warnings; the test project and exact solution-level no-build test lane passed 464 / 0 / 21 / 485 after clearing overlapping `testhost` state. Earlier cross-thread aborts are runner-contamination evidence only.
+
+Historical environment rows below are retained for setup history. Prefer this override and `PROJECT_STATE.md` for current status.
+
 ## Machine
 - OS: Windows 11 Pro (`10.0.26200`, `64-bit`)
 - Detected date: `2026-05-02`
@@ -61,7 +71,7 @@
 - BaseLib version consistency: OK. Runtime `v3.1.4` matches project package `3.1.4`.
 
 ## Runtime evidence summary
-- BaseLib `v3.1.4` compatibility with `v0.106.1` is the current target. Historical 22-field loader evidence: `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded only BaseLib plus Spire Plus, registered config, reported `Found 22 SavedSpireFields`, reached main menu, and had no release-blocking signatures. This is historical evidence only.
+- BaseLib `v3.1.4` compatibility with `v0.106.1` is the historical validated target. Historical 22-field loader evidence: `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded only BaseLib plus Spire Plus, registered config, reported `Found 22 SavedSpireFields`, reached main menu, and had no release-blocking signatures. This is historical evidence only.
 - Current source defines 30 SavedSpireFields. Historical 22-field and 16-field startup rows remain useful records only; beta.84 loader parity and gameplay proof still need fresh live evidence.
 - Historical beta.19 loader evidence: `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` loaded only BaseLib plus Spire Plus, registered `EZMicroBalance`, reported `v0.1.0-private-beta.19` and `Found 30 SavedSpireFields`, reached startup completion, matched its beta.19 package hash, audited clean, stopped the game, and restored the isolated mod setup.
 - Current display-name list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus`; older page-level Mod Settings evidence predates the display-name refresh.
@@ -70,20 +80,21 @@
 - Plug-off loader evidence: `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` loaded `Loaded 1 mods (1 total)` with BaseLib only after temporarily isolating `EZMicroBalance`; the earlier settings-only disabled attempt remains invalid. This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.
 - `scripts/spire-plus-live-session.ps1` preserves test-created `current_run*` files before restoring the user's original current-run files; `live-helper-preserve-current-run-smoke-20260513-133431` and `window-preflight-smoke-20260513-135402` cover helper restore and foreground preflight behavior.
 - Detailed 2026-05-05 through 2026-05-14 runtime attempt history was archived to `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`; historical RC1 live notes remain in `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`.
-- Current beta.84 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, preview-tools, and co-op verification remain pending.
+- Historical RitsuLib diagnostic Off, CanaryOnly, and AdditiveBatch1 loader gates have clean `v0.106.1` evidence with BaseLib, RitsuLib, and Spire Plus loaded and 25/25 Spire Plus ModPatcher patches applied. Current `v0.107.0` beta.84 Off smoke with installed RitsuLib `v0.4.16` reached main menu but failed clean audit on stale package API targets; clean loader proof, live gameplay, save-load, failure/death-path, clicked Ancient UI, preview-tools, and co-op verification remain pending.
 
 ## Last known commands
-- Last attempted default build: `dotnet build EZMicroBalance.sln -m:1` on 2026-05-31 during validation/runtime doc reconciliation. Result: succeeded with 89 Sts1Events nullable warnings and 0 errors.
-- Last successful build: `dotnet build EZMicroBalance.sln -m:1` on 2026-05-31 during validation/runtime doc reconciliation. Result: succeeded with 89 Sts1Events nullable warnings and 0 errors.
-- Last successful normal test run: `dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build` on 2026-05-31 during Revision I reconciliation. Result: passed, 464 passed, 21 skipped release artifact/runtime evidence tests, 0 failed, 485 total.
+- Last attempted build: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` on 2026-06-10 during migration validation. Result: succeeded with 0 warnings and 0 errors.
+- Last successful build: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` on 2026-06-10 during migration validation. Result: succeeded with 0 warnings and 0 errors.
+- Last successful test-project run: `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --logger "console;verbosity=minimal" --diag tests\EZMicroBalance.Tests\TestResults\migration-final-testproject-diag.log -- RunConfiguration.MaxCpuCount=1` on 2026-06-10 during migration validation. Result: passed, 464 passed, 21 skipped release artifact/runtime evidence tests, 0 failed, 485 total.
+- Last exact solution-level no-build test run: `dotnet test EZMicroBalance.sln --no-build --logger "console;verbosity=minimal" --diag tests\EZMicroBalance.Tests\TestResults\migration-final-solution-diag.log -- RunConfiguration.MaxCpuCount=1` on 2026-06-10. Result: passed, 464 passed, 21 skipped release artifact/runtime evidence tests, 0 failed, 485 total.
 - Last successful Release test run: `dotnet test EZMicroBalance.sln -c Release` on 2026-05-13 after the BaseLib-only plug-off startup/log refresh. Result: passed, 81 passed, 18 skipped release artifact/runtime evidence tests, 0 failed.
-- Latest opt-in artifact-validation run: `STS2_PATH=E:\Steam\steamapps\common\Slay the Spire 2` and `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln` on 2026-05-31 after the E-drive package refresh. Result: passed, 473 passed, 0 skipped, 0 failed. This is source/package artifact validation; fresh beta.84 loader smoke remains pending. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
+- Latest opt-in artifact-validation run: `STS2_PATH=E:\Steam\steamapps\common\Slay the Spire 2` and `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln` on 2026-05-31 after the E-drive package refresh. Result: passed, 473 passed, 0 skipped, 0 failed. This is source/package artifact validation; the fresh `v0.107.0` beta.84 Off loader smoke was attempted later and failed clean audit. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - Latest full local CI-script run: `scripts\ci-full-validation.ps1` on 2026-05-20 with explicit `STS2_PATH` and `GODOT_PATH`. Result: passed. This is local no-game validation, not live loader or gameplay proof.
-- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-05-31 during validation/runtime doc reconciliation. Result: exit code 0.
-- Last required diff check: `git diff --check` on 2026-05-31 during validation/runtime doc reconciliation. Result: exit code 0 with no warnings.
+- Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-06-10 during Revision L validation. Result: exit code 0.
+- Last required diff check: `git diff --check` on 2026-06-10 during Revision L validation. Result: exit code 0 with no whitespace errors; PowerShell/Git reported an existing CRLF normalization warning for `docs/patch-inventory.md`.
 - Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against the real installed mods root.
 - Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.
-- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.84.zip`, `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `E:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.84.zip` were refreshed and hash-checked on 2026-05-31 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The beta.19 loader row is historical startup/log proof only; beta.84 loader, live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
+- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.84.zip`, `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `E:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.84.zip` were refreshed and hash-checked on 2026-05-31 for local manual testing. The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`. The beta.19 loader row is historical startup/log proof only; the current `v0.107.0` beta.84 Off loader row is non-clean, and live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
 - Last PCK hash check: the 2026-05-31 local package-hash refresh found the staging, versioned, and zip-entry PCK at SHA256 `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA`.
 - Last staging/versioned DLL hash check: SHA256 `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.

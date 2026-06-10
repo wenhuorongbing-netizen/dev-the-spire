@@ -2,33 +2,34 @@
 
 ## Current Goal
 
-- M5 Week 1: owner-review packet + runtime hard-blocker closure + governance decisions.
+- M5 Revision L: owner-review packet + runtime hard-blocker closure + governance decisions.
 
 ## Current Facts
 
-- Current HEAD: `3f01cb7e (HEAD -> main, origin/main, origin/HEAD) sprint 4`.
-- Worktree: 25 dirty entries (4 modified goal docs, 21 deleted revision docs), 0 unclassified.
-- Runtime dependency: E-drive BaseLib, STS2-RitsuLib `v0.3.10`, and EZMicroBalance installed.
-- Runtime proof: clean Off and CanaryOnly diagnostic logs exist with 0 Godot ERROR hits, 25/25 ModPatcher patches, 30 SavedSpireFields.
-- RitsuLib status: runtime-validated.
-- Sts1Events recommendation: staging-only (Off=0 and CanaryOnly=4 runtime proof achieved; formalization blocked by 89 warnings + gameplay proof).
+- Current baseline HEAD: `f32c6767 (HEAD -> main, origin/main, origin/HEAD) update refactor.md with implementation results and Green Stop check`.
+- Worktree: dirty source/docs/test state; no commit, push, package refresh, reset, checkout, or stash is authorized for this pass.
+- Runtime dependency: E-drive BaseLib, STS2-RitsuLib `v0.4.16`, and EZMicroBalance are installed; the current local game is `v0.107.0` and the RitsuLib install includes `lib\0.107.0`.
+- Runtime proof: historical clean Off, CanaryOnly, and AdditiveBatch1 diagnostic logs exist with 0 Godot ERROR hits, 25/25 ModPatcher patches, and 30 SavedSpireFields.
+- RitsuLib status: runtime-loader validated for the historical diagnostic evidence, not live-ready.
+- Sts1Events recommendation: staging-only; formalization is blocked by gameplay/render/save-load/image/replacement/multiplayer proof, not current build warnings.
 - Debug recommendation: accept-scaffold.
-- Patch migration: Batch 4c, Batch 5, and PR7 remain blocked pending gameplay proof and owner decision.
+- Patch migration: Batch 4c remains proposal-only pending gameplay proof and owner decision.
+- Coordination note: the migration validation lane reported shared state. Avoid starting overlapping `dotnet test`, `dotnet build`, publish, or release-evidence validation processes while another same-repo validation lane is active.
 
 ## Verification Result
 
-- Build warning truth: 89 nullable warnings, all in Sts1Events staging models (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1).
-- Tests: latest sprint4 no-build project target passed with 464 passed, 0 failed, 21 skipped, 485 total.
-- Patch inventory: 142 raw HarmonyPatch declarations + 25 migrated `IPatchMethod` classes = 167 tracked patch units.
-- Format/diff-check and batch classifier remain green.
+- Build warning truth: current forced build has 0 warnings.
+- Tests: the no-build project target and exact solution-level `dotnet test EZMicroBalance.sln --no-build` lane passed with 464 passed, 0 failed, 21 skipped, 485 total after overlapping validation processes were absent.
+- Patch inventory: regenerated for the current dirty source; final `-Check` rerun passed.
+- Format/diff-check and batch classifier passed; `git diff --check` only reported the existing CRLF normalization warning for `docs/patch-inventory.md`.
 
 ## Remaining Work
 
-- Owner decisions on Sts1Events governance, Debug governance, and Batch 4c/5/PR7 progression.
-- Owner approval of commit slices for 25 dirty entries.
+- Owner decisions on source API fix, Sts1Events governance, Debug governance, and Batch 4c progression.
+- Owner approval of commit slices.
+- Fresh runtime smoke before any new tester-package handoff.
 - Gameplay verification (live run, Ancient UI, save-load, route traversal).
 - Co-op verification.
 - Clicked UI verification.
 - Versioned tester-package handoff.
 - Independent QA rerun.
-- Longhaul audit recovery (Week 4).

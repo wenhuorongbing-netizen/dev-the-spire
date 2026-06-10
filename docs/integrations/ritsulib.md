@@ -2,128 +2,119 @@
 
 ## Status
 
-**Compile/manifest dependency attempted; runtime loader unverified.** RitsuLib 0.3.2 is a compile dependency
-via NuGet and a declared runtime dependency via manifest. Using the base package because
-no compat package for game v0.106.1 exists on NuGet. The local runtime dependency is now installed from the official
-RitsuLib runtime variant pack at `<GameRoot>/mods/STS2-RitsuLib/`.
+Compile and manifest dependency are active. Runtime loader-gate validation exists only for the historical Slay the Spire 2 `v0.106.1` environment. Current-game RitsuLib is installed, but fresh local `v0.107.0` beta.84 Off smoke is non-clean and cannot be used as current runtime proof.
 
-Runtime verification status: STS2-RitsuLib `v0.3.10` is installed locally with a `0.106.1` variant, but no RitsuLib loader smoke, no fresh `godot.log` evidence,
-and no in-game RitsuLib loading proof exists. The manifest declaration and local dependency install are done,
-but the runtime dependency has not yet been exercised in a live game session.
+- Compile package: `STS2.RitsuLib` `0.3.2` from NuGet.
+- Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.3.2`.
+- Installed runtime: official `STS2-RitsuLib` `v0.4.16` variant pack under the E-drive game root.
+- Historical validated game target: Slay the Spire 2 `v0.106.1`.
+- Current local installed game: Slay the Spire 2 `v0.107.0`.
+- Current BaseLib target: `v3.1.4`.
 
-## What is RitsuLib
+Clean diagnostic loader evidence exists for Off, CanaryOnly, and AdditiveBatch1 modes with BaseLib, RitsuLib, and Spire Plus loaded, 25/25 migrated ModPatcher patches applied, and 30 SavedSpireFields observed. This is historical `v0.106.1` loader-gate proof only. The current `v0.107.0` game install now has matching RitsuLib `lib\0.107.0` runtime files. Installed beta.84 package parity was restored on 2026-06-10 and the package checker passed, but the fresh package-parity Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` failed clean runtime proof: RitsuLib loaded compat branch `0.107.0` and the game reached main menu, but Spire Plus had 8 optional ModPatcher failures and an `EctoplasmGoldGatePatch` initializer exception from stale package API targets. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, clean-worktree decision, current-source package decision, and versioned tester-package handoff remain pending.
 
-RitsuLib is a shared framework library for Slay the Spire 2 mods. It provides
-`CreateContentPack`, `CreatePatcher`, `SubscribeLifecycle<TEvent>`,
-`BeginModDataRegistration/GetDataStore`, and `RegisterModSettings` entry points
-for structured mod registration.
-([docs](https://sts2-ritsulib.ritsukage.com/guide/getting-started),
-[GitHub](https://github.com/BAKAOLC/STS2-RitsuLib))
+Package metadata decision: the current dirty source state does not bump the compile package or manifest minimum. Keep `STS2.RitsuLib` and `STS2-RitsuLib` at `0.3.2` for beta.84 documentation and package parity. A future owner-approved `v0.107.0` tester package should move both values to `0.4.16` in the same package-version increment, then refresh publish/package artifacts and runtime evidence.
 
-## Runtime Installation (Player/Tester)
+## What Is RitsuLib
+
+RitsuLib is a shared framework library for Slay the Spire 2 mods. It provides `CreateContentPack`, `CreatePatcher`, `SubscribeLifecycle<TEvent>`, `BeginModDataRegistration/GetDataStore`, and `RegisterModSettings` entry points for structured mod registration.
+
+References:
+
+- RitsuLib Getting Started: `https://sts2-ritsulib.ritsukage.com/guide/getting-started`
+- RitsuLib GitHub: `https://github.com/BAKAOLC/STS2-RitsuLib`
+- RitsuLib Framework Design: `https://sts2-ritsulib.ritsukage.com/guide/framework-design`
+
+## Runtime Installation
 
 The variant pack should be extracted to the game mods directory, not the repo:
 
 ```text
 <GameRoot>/mods/STS2-RitsuLib/
-  STS2-RitsuLib.dll          (root loader)
+  STS2-RitsuLib.dll
   mod_manifest.json
   ritsulib-variants.json
   lib/
     0.103.2/
-    0.105.1/
     0.106.1/
+    0.107.0/
 ```
 
-Do not commit `STS2-RitsuLib.dll`, `*.pck`, or `*.zip` into this repository.
+Do not commit `STS2-RitsuLib.dll`, `.pck`, `.zip`, or other downloaded runtime binaries into this repository.
 
-## Variant Pack Contents (Installed)
+## Variant Pack Contents
 
-The installed official `STS2-RitsuLib.0.3.10.variant-pack.zip` contains three game-version
-variants plus a root loader:
+The installed official `STS2-RitsuLib.0.4.16.variant-pack.zip` contains three game-version variants plus a root loader:
 
 | File | Size | Purpose |
-| --- | --- | --- |
-| `STS2-RitsuLib.dll` | 22 KB | Root loader (selects variant at runtime) |
-| `STS2-RitsuLib.Loader.pdb` | 15 KB | Debug symbols for loader |
-| `mod_manifest.json` | 413 B | Mod manifest (id: `STS2-RitsuLib`, version `0.3.10`) |
-| `ritsulib-variants.json` | 644 B | Variant selection config (schema 1) |
+| --- | ---: | --- |
+| `STS2-RitsuLib.dll` | 27 KB | Root loader that selects a runtime variant |
+| `STS2-RitsuLib.Loader.pdb` | 16 KB | Debug symbols for the loader |
+| `mod_manifest.json` | 414 B | Mod manifest, id `STS2-RitsuLib`, version `0.4.16` |
+| `ritsulib-variants.json` | 644 B | Variant selection config, schema 1 |
 
 | Variant Directory | Game Version | DLL Size | Compatibility |
-| --- | --- | --- | --- |
-| `lib/0.103.2/` | Slay the Spire 2 v0.103.2 | 3.7 MB | Not applicable to current target |
-| `lib/0.105.1/` | Slay the Spire 2 v0.105.1 | 3.7 MB | Not applicable to current target |
-| `lib/0.106.1/` | Slay the Spire 2 v0.106.1 | 3.7 MB | **Matches current target** |
+| --- | --- | ---: | --- |
+| `lib/0.103.2/` | Slay the Spire 2 `v0.103.2` | 4.9 MB | Does not match current local `v0.107.0` install |
+| `lib/0.106.1/` | Slay the Spire 2 `v0.106.1` | 4.9 MB | Matches historical validated target; does not match current local `v0.107.0` install |
+| `lib/0.107.0/` | Slay the Spire 2 `v0.107.0` | 4.9 MB | Matches current local install; beta.84 Off smoke captured but non-clean |
 
-Each variant directory contains `STS2-RitsuLib.dll`, `.pdb`, `.xml` (XML doc),
-and `compat-target.txt`.
+Each variant directory contains `STS2-RitsuLib.dll`, `.pdb`, `.xml`, and `compat-target.txt`.
 
-## Blocker: NuGet Compat Package Missing
+## NuGet Package Status
 
-| Item | Value |
-| --- | --- |
-| Current repo StS2 target | v0.106.1 |
-| Current repo BaseLib target | v3.1.4 |
-| Available RitsuLib runtime variants | 0.103.2, 0.105.1, **0.106.1** |
-| Runtime variant status | **0.106.1 available** |
-
-The runtime variant pack now matches the game target. The remaining blocker
-is the NuGet compilation package.
-
-### NuGet Package Status (checked 2026-05-28)
+The installed runtime variant pack now matches the current local `v0.107.0` game target. The compile-time package has not been bumped in source: Spire Plus still references `STS2.RitsuLib` `0.3.2`. NuGet now has `STS2.RitsuLib` `0.4.16`, while no separate `STS2.RitsuLib.Compat.0.107.0` package is published; RitsuLib documentation directs current-highest API users to the main `STS2.RitsuLib` package and older API users to `STS2.RitsuLib.Compat.<api-version>`.
 
 | NuGet Package | Version | Status |
 | --- | --- | --- |
-| `STS2.RitsuLib` | 0.3.2 (latest) | Available |
-| `STS2.RitsuLib.Compat.0.103.2` | 0.3.2 | Available |
-| `STS2.RitsuLib.Compat.0.104.0` | 0.2.40 | Available |
-| `STS2.RitsuLib.Compat.0.105.1` | 0.3.2 | Available |
-| `STS2.RitsuLib.Compat.0.106.1` | -- | **Not published** |
+| `STS2.RitsuLib` | `0.4.16` | Available latest; repo currently uses `0.3.2` |
+| `STS2.RitsuLib.Compat.0.103.2` | `0.3.2` | Available |
+| `STS2.RitsuLib.Compat.0.104.0` | `0.2.40` | Available |
+| `STS2.RitsuLib.Compat.0.105.1` | `0.3.2` | Available |
+| `STS2.RitsuLib.Compat.0.106.1` | `0.4.16` | Available for historical `v0.106.1` API |
+| `STS2.RitsuLib.Compat.0.107.0` | none | Not published; use main package for current highest API |
 
-The installed runtime variant pack ships RitsuLib 0.3.10 while the current compile package remains 0.3.2.
-No compat package exists for game version 0.106.1. The variant pack DLLs
-(0.3.10) are runtime-only in this workspace; compilation uses the NuGet base package.
+Current compile dependency:
 
-### Current dependency setup
-
-csproj (compile):
 ```xml
 <PackageReference Include="STS2.RitsuLib" Version="0.3.2" PrivateAssets="All" />
 ```
 
-manifest (runtime):
+Current manifest dependency:
+
 ```json
 { "id": "STS2-RitsuLib", "min_version": "0.3.2" }
 ```
 
-### Upgrade path
+Current-highest API compile-package upgrade path:
 
-When `STS2.RitsuLib.Compat.0.106.1` is published on NuGet, replace the base
-package with the compat package:
 ```xml
-<PackageReference Include="STS2.RitsuLib.Compat.0.106.1" Version="0.3.x" PrivateAssets="All" />
+<PackageReference Include="STS2.RitsuLib" Version="0.4.16" PrivateAssets="All" />
+```
+
+Current-highest runtime manifest upgrade path for a future versioned package:
+
+```json
+{ "id": "STS2-RitsuLib", "min_version": "0.4.16" }
 ```
 
 ## RitsuLib API Adoption Plan
 
-Adopt RitsuLib APIs in batches (PR 6+):
-- **Batch 1: Bootstrap + diagnostics — scaffold complete; runtime unverified.** RitsuLib logger initialized,
-  Harmony patches applied through RitsuLibBootstrap, framework status reported. No live game session has
-  exercised the RitsuLib bootstrap path.
-- Batch 2: Future new content registration (not applicable — Spire Plus doesn't
-  register new cards/relics/potions through RitsuLib)
-- Batch 3: Persistence sidecar experiments (not applicable — existing
-  SavedSpireFields work, no RitsuLib data store needed)
-- **Batch 4a: Low-risk patch migration — Source migrated; runtime unverified.** 9 patch classes migrated to
-  `IPatchMethod` (Fiddle, ChoicesParadox, DistinguishedCape, BlackStar).
-- **Batch 4b: Medium-risk patch migration — Source migrated; runtime unverified.** 16 patch classes migrated
-  to `IPatchMethod` (Crossbow, BrightestFlame, DebtAndCard, SealOfGold,
-  PickupReward). Total migrated: 25.
-- Batch 5: High-risk run/map/reward/save/multiplayer patches (blocked on
-  evidence backlog reduction)
+- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, current `v0.107.0` proof blocked by non-clean beta.84 Off smoke after installing RitsuLib `v0.4.16`.
+- Batch 2: future new content registration is not currently applicable because Spire Plus does not register new cards, relics, or potions through RitsuLib.
+- Batch 3: persistence sidecar experiments are not currently applicable because existing SavedSpireFields work and no RitsuLib data store is needed.
+- Batch 4a: 9 low-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
+- Batch 4b: 16 medium-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
+- Batch 4c: proposal-only candidate list lives in `docs/features/ritsulib-migration/batch-4c-candidates.md`; no migration is approved yet.
+- Batch 5: high-risk run, map, reward, save, and multiplayer patches remain blocked on live/manual evidence and owner approval.
 
-## References
+Current migrated total: 25 patch classes.
 
-- [RitsuLib Getting Started](https://sts2-ritsulib.ritsukage.com/guide/getting-started)
-- [RitsuLib GitHub](https://github.com/BAKAOLC/STS2-RitsuLib)
-- [RitsuLib Framework Design](https://sts2-ritsulib.ritsukage.com/guide/framework-design)
+Current raw Harmony remaining: 142 declarations, tracked in `docs/patch-inventory.md`.
+
+## Current Evidence Pointers
+
+- Loader proof and command status, including current `v0.107.0` runtime dependency status: `docs/reviews/current-validation.md`.
+- Runtime smoke checklist: `docs/features/ritsulib-migration/runtime-smoke-checklist.md`.
+- Batch 4c candidate proposal: `docs/features/ritsulib-migration/batch-4c-candidates.md`.
+- Patch inventory: `docs/patch-inventory.md`.

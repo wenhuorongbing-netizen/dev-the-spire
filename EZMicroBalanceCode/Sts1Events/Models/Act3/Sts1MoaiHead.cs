@@ -28,14 +28,24 @@ public sealed class Sts1MoaiHead : EventModel
 
     private async Task Worship()
     {
-        await CreatureCmd.GainMaxHp(Owner.Creature, WorshipMaxHp);
+        if (Owner is not { } owner)
+        {
+            return;
+        }
+
+        await CreatureCmd.GainMaxHp(owner.Creature, WorshipMaxHp);
         SetEventFinished(L10NLookup("STS1_MOAI_HEAD.pages.WORSHIP.description"));
     }
 
     private async Task Offer()
     {
-        await PlayerCmd.LoseGold(OfferCost, Owner, GoldLossType.Spent);
-        await CreatureCmd.GainMaxHp(Owner.Creature, OfferMaxHp);
+        if (Owner is not { } owner)
+        {
+            return;
+        }
+
+        await PlayerCmd.LoseGold(OfferCost, owner, GoldLossType.Spent);
+        await CreatureCmd.GainMaxHp(owner.Creature, OfferMaxHp);
         SetEventFinished(L10NLookup("STS1_MOAI_HEAD.pages.OFFER.description"));
     }
 }

@@ -26,9 +26,10 @@ public sealed class Sts1DrugDealer : EventModel
 
     private async Task BuyAll()
     {
-        await PlayerCmd.LoseGold(Cost, Owner, GoldLossType.Spent);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(Cost, owner, GoldLossType.Spent);
         for (int i = 0; i < 3; i++)
-            await Sts1EventHelpers.GrantRandomPotion(Owner, Rng);
+            await Sts1EventHelpers.GrantRandomPotion(owner, Rng);
         SetEventFinished(L10NLookup("STS1_DRUG_DEALER.pages.BUY_ALL.description"));
     }
 }

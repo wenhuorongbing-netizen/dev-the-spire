@@ -22,7 +22,8 @@ public sealed class Sts1Transmogrifier : EventModel
 
     private async Task Transform()
     {
-        await Sts1EventHelpers.OpenCardTransform(Owner, Rng);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardTransform(owner, Rng);
         SetEventFinished(L10NLookup("STS1_TRANSMOGRIFIER.pages.TRANSFORM.description"));
     }
 }

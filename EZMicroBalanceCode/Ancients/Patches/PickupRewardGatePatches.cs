@@ -28,7 +28,7 @@ internal static class SozuPotionGatePatch
     }
 }
 
-[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ShouldGainGold))]
+[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ModifyGoldGained))]
 internal static class EctoplasmGoldGatePatch
 {
     private static readonly HashSet<Player> InitialGoldOwners = [];
@@ -44,11 +44,11 @@ internal static class EctoplasmGoldGatePatch
     }
 
     [HarmonyPrefix]
-    private static bool Prefix(Ectoplasm __instance, Player player, ref bool __result)
+    private static bool Prefix(Ectoplasm __instance, Player player, decimal amount, ref decimal __result)
     {
         if (InitialGoldOwners.Contains(player) && player == __instance.Owner)
         {
-            __result = true;
+            __result = amount;
             return false;
         }
 

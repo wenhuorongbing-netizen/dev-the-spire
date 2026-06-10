@@ -27,14 +27,15 @@ public sealed class Sts1TheMausoleum : EventModel
 
     private async Task Open()
     {
+        if (Owner is not { } owner) return;
         if (HasA15 || Rng.NextInt(0, 2) != 0)
         {
-            await Sts1EventHelpers.AddCurses<Wound>(Owner, 1);
+            await Sts1EventHelpers.AddCurses<Wound>(owner, 1);
             SetEventFinished(L10NLookup("STS1_THE_MAUSOLEUM.pages.OPEN_CURSE.description"));
         }
         else
         {
-            await Sts1EventHelpers.GrantRandomRelic(Owner);
+            await Sts1EventHelpers.GrantRandomRelic(owner);
             SetEventFinished(L10NLookup("STS1_THE_MAUSOLEUM.pages.OPEN_RELIC.description"));
         }
     }

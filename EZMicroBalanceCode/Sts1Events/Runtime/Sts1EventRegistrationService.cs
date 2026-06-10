@@ -48,7 +48,7 @@ internal static class Sts1EventRegistrationService
     }
 
     /// <summary>
-    /// Registers exactly 4 canary events (all Shared): Big Fish, Golden Idol, Lab, Divine Fountain.
+    /// Registers exactly 4 canary event types.
     /// </summary>
     public static void RegisterCanaryOnly(string modId)
     {
@@ -63,8 +63,10 @@ internal static class Sts1EventRegistrationService
 
         var content = RitsuLibFramework.CreateContentPack(modId);
 
-        content.SharedEvent<Sts1BigFish>();
-        content.SharedEvent<Sts1GoldenIdol>();
+        content.ActEvent<Overgrowth, Sts1BigFish>();
+        content.ActEvent<Underdocks, Sts1BigFish>();
+        content.ActEvent<Overgrowth, Sts1GoldenIdol>();
+        content.ActEvent<Underdocks, Sts1GoldenIdol>();
         content.SharedEvent<Sts1TheLab>();
         content.SharedEvent<Sts1DivineFountain>();
 
@@ -89,8 +91,10 @@ internal static class Sts1EventRegistrationService
 
         var content = RitsuLibFramework.CreateContentPack(modId);
 
-        content.SharedEvent<Sts1BigFish>();
-        content.SharedEvent<Sts1GoldenIdol>();
+        content.ActEvent<Overgrowth, Sts1BigFish>();
+        content.ActEvent<Underdocks, Sts1BigFish>();
+        content.ActEvent<Overgrowth, Sts1GoldenIdol>();
+        content.ActEvent<Underdocks, Sts1GoldenIdol>();
         content.SharedEvent<Sts1TheLab>();
         content.SharedEvent<Sts1DivineFountain>();
         content.SharedEvent<Sts1Purifier>();
@@ -124,8 +128,6 @@ internal static class Sts1EventRegistrationService
         var content = RitsuLibFramework.CreateContentPack(modId);
 
         // ── Shared events ──────────────────────────────────────────────
-        content.SharedEvent<Sts1BigFish>();
-        content.SharedEvent<Sts1GoldenIdol>();
         content.SharedEvent<Sts1TheCleric>();
         content.SharedEvent<Sts1GoldenWing>();
         content.SharedEvent<Sts1LivingWall>();
@@ -144,6 +146,10 @@ internal static class Sts1EventRegistrationService
         content.SharedEvent<Sts1WheelOfChange>();
 
         // ── StS1 Act 1 → StS2 Overgrowth + Underdocks ─────────────────
+        content.ActEvent<Overgrowth, Sts1BigFish>();
+        content.ActEvent<Underdocks, Sts1BigFish>();
+        content.ActEvent<Overgrowth, Sts1GoldenIdol>();
+        content.ActEvent<Underdocks, Sts1GoldenIdol>();
         content.ActEvent<Overgrowth, Sts1ShiningLight>();
         content.ActEvent<Underdocks, Sts1ShiningLight>();
         content.ActEvent<Overgrowth, Sts1Mushrooms>();

@@ -1,6 +1,10 @@
 # StS1 Events — Multiplayer IsShared Matrix
 
-Created: 2026-05-29 | Status: code-verified
+Created: 2026-05-29 | Status: source/code-verified only; live two-client co-op proof pending
+
+This matrix records source-level `IsShared` intent and expected multiplayer shape. It is not live co-op proof: no Sts1Events two-client session, save/load pass, screenshots, or desync-free traversal evidence is recorded yet. `CanaryOnly` and `AdditiveBatch1` registration remain controlled by `SPIREPLUS_STS1_EVENT_MODE`; there is no separate Sts1Events network-mode gate.
+
+Revision L correction, 2026-06-10: this is an `IsShared`/co-op behavior matrix, not an Act-bucket parity matrix. Big Fish and Golden Idol now source-register to the StS2 Act 1 buckets while retaining `IsShared=true` co-op voting behavior; current runtime bucket and two-client proof remain pending.
 
 ## Legend
 
@@ -13,13 +17,13 @@ Created: 2026-05-29 | Status: code-verified
 
 ## Per-Event Matrix
 
-### Shared-Act Events (18 models — all IsShared = true)
+### IsShared Event Models (18 models — all IsShared = true)
 
 | # | Event ID | Model Class | Act | IsShared | Reason | Co-op Behavior | RNG Owner | Save/Load | Test Evidence |
 |---|----------|-------------|-----|----------|--------|----------------|-----------|-----------|---------------|
-| 1 | `sts1_big_fish` | `Sts1BigFish` | All | `true` | Shared-act event; vote determines option for all | All players vote Banana/Donut/Shoe; each player's heal is computed from own max HP | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 1 | `sts1_big_fish` | `Sts1BigFish` | Act 1 | `true` | Act 1 event with shared vote behavior | All players vote Banana/Donut/Shoe; each player's heal is computed from own max HP | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
 | 2 | `sts1_the_cleric` | `Sts1TheCleric` | All | `true` | Shared-act event; vote determines option for all | All players vote Heal/Purify/Leave; each player spends own gold and selects own card | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 3 | `sts1_golden_idol` | `Sts1GoldenIdol` | All | `true` | Shared-act event; vote determines option for all | All players vote Take/Leave then Smash/Jump/Destroy; damage and max HP loss computed per-player | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
+| 3 | `sts1_golden_idol` | `Sts1GoldenIdol` | Act 1 | `true` | Act 1 event with shared vote behavior | All players vote Take/Leave then Smash/Jump/Destroy; damage and max HP loss computed per-player | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
 | 4 | `sts1_golden_wing` | `Sts1GoldenWing` | All | `true` | Shared-act event; vote determines option for all | All players vote Accept/Decline; each player gets own rare card from own card pool | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
 | 5 | `sts1_living_wall` | `Sts1LivingWall` | All | `true` | Shared-act event; vote determines option for all | All players vote Forget/Change/Trade; each player selects own card for removal/transform/upgrade | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
 | 6 | `sts1_old_beggar` | `Sts1OldBeggar` | All | `true` | Shared-act event; vote determines option for all | All players vote Offer/Leave; each player spends own 75g and removes own card | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
@@ -90,7 +94,7 @@ Created: 2026-05-29 | Status: code-verified
 | Total event models in this matrix | 46 |
 | Compiling event models in this matrix | 45 |
 | Compile-excluded models | 1 (`Sts1Duplicator.cs`) |
-| **IsShared = true** | **24** (18 shared-act + 6 combat) |
+| **IsShared = true** | **24** (18 shared-behavior event models + 6 combat) |
 | **IsShared = false** | **23** (4 Act1 + 12 Act2 + 7 Act3 non-combat) |
 
 ### Combat Events with IsShared = true (6 events)
@@ -106,7 +110,7 @@ All guarded by `CombatEventsDeclareIsSharedTrue` test:
 | Mind Bloom | `EZMicroBalanceCode/Sts1Events/Models/Act3/Sts1MindBloom.cs` | Act 1 boss combat (TODO: encounter model) |
 | Mysterious Sphere | `EZMicroBalanceCode/Sts1Events/Models/Act3/Sts1MysteriousSphere.cs` | 2 Orb Walker combat (TODO: encounter model) |
 
-### Shared-Act Events with IsShared = true (18 models)
+### IsShared Event Models with IsShared = true (18 models)
 
 All guarded by `AllSharedEventModelsDeclareIsSharedTrue` test (verifies every `.cs` in `Models/Shared/`):
 
@@ -126,6 +130,8 @@ Big Fish, The Cleric, Golden Idol, Golden Wing, Living Wall, Old Beggar, Purifie
 ## Co-op Risk List
 
 Events where multiplayer behavior might be surprising, buggy, or require special attention during testing:
+
+The mitigations below are source/design dispositions until a real two-client session proves them.
 
 ### High Risk
 
@@ -161,7 +167,7 @@ The following tests in `tests/EZMicroBalance.Tests/Sts1EventFeatureGuardTests.cs
 |-----------|------------------|
 | `CombatEventsDeclareIsSharedTrue` | All 6 combat event model files contain `public override bool IsShared => true;` |
 | `AllSharedEventModelsDeclareIsSharedTrue` | All `.cs` files in `Models/Shared/` (≥15) contain `public override bool IsShared => true;` |
-| `RegisterAllSharedEventCountIs17` | `RegisterAll` registers exactly 17 `SharedEvent<>` calls (18 shared models minus 1 excluded) |
+| `RegisterAllSharedEventCountIs15` | `RegisterAll` registers exactly 15 `SharedEvent<>` calls after Big Fish and Golden Idol moved to Act 1 bucket registrations |
 | `RegistryEntryCountIs50` | Total registry entries: 47 compiling + 1 excluded + 2 special stubs = 50 |
 | `Sts1DuplicatorExcludedFromCompilation` | `Sts1Duplicator.cs` is in `<Compile Remove>` in `.csproj` |
 

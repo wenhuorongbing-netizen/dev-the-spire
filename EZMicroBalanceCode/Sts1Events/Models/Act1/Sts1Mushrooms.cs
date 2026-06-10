@@ -27,19 +27,20 @@ public sealed class Sts1Mushrooms : EventModel
 
     private async Task Eat()
     {
+        if (Owner is not { } owner) return;
         if (HasA15 || Rng.NextInt(0, 2) == 0)
         {
             // Bad outcome: lose max HP, gain potion
             await CreatureCmd.LoseMaxHp(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                Owner.Creature, MaxHpChange, isFromCard: false);
-            await Sts1EventHelpers.GrantRandomPotion(Owner, Rng);
+                owner.Creature, MaxHpChange, isFromCard: false);
+            await Sts1EventHelpers.GrantRandomPotion(owner, Rng);
             SetEventFinished(L10NLookup("STS1_MUSHROOMS.pages.EAT_BAD.description"));
         }
         else
         {
             // Good outcome: gain max HP
-            await CreatureCmd.GainMaxHp(Owner.Creature, MaxHpChange);
+            await CreatureCmd.GainMaxHp(owner.Creature, MaxHpChange);
             SetEventFinished(L10NLookup("STS1_MUSHROOMS.pages.EAT_GOOD.description"));
         }
     }

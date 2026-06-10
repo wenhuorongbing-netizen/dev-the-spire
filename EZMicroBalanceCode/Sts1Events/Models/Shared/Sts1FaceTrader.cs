@@ -33,15 +33,16 @@ public sealed class Sts1FaceTrader : EventModel
 
     private async Task Trade()
     {
-        var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * MaxHpLossPct);
+        if (Owner is not { } owner) return;
+        var maxHpLoss = (int)(owner.Creature.MaxHp * MaxHpLossPct);
         if (maxHpLoss > 0)
         {
             await CreatureCmd.LoseMaxHp(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                Owner.Creature, maxHpLoss, isFromCard: false);
+                owner.Creature, maxHpLoss, isFromCard: false);
         }
         // temporary-substitute: StS1 face relics don't exist in StS2; use random relic
-        await Sts1EventHelpers.GrantRandomRelic(Owner);
+        await Sts1EventHelpers.GrantRandomRelic(owner);
         SetEventFinished(L10NLookup("STS1_FACE_TRADER.pages.TRADE.description"));
     }
 }

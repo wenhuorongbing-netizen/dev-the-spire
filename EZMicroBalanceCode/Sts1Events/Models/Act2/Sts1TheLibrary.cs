@@ -29,17 +29,18 @@ public sealed class Sts1TheLibrary : EventModel
 
     private async Task Read()
     {
+        if (Owner is not { } owner) return;
         var options = new CardCreationOptions(
-            new[] { Owner.Character.CardPool },
+            new[] { owner.Character.CardPool },
             CardCreationSource.Other,
             CardRarityOddsType.RegularEncounter
         ).WithFlags(CardCreationFlags.NoUpgradeRoll);
 
-        var cards = CardFactory.CreateForReward(Owner, CardCount, options).Select(r => r.Card).ToList();
+        var cards = CardFactory.CreateForReward(owner, CardCount, options).Select(r => r.Card).ToList();
         var prefs = new CardSelectorPrefs(CardSelectorPrefs.RemoveSelectionPrompt, 1);
         var chosen = await CardSelectCmd.FromSimpleGrid(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.BlockingPlayerChoiceContext(),
-            cards, Owner, prefs);
+            cards, owner, prefs);
         if (chosen != null)
         {
             foreach (var card in chosen)
@@ -50,9 +51,10 @@ public sealed class Sts1TheLibrary : EventModel
 
     private async Task Rest()
     {
-        var healAmount = (Owner?.Creature.MaxHp ?? 0m) / 3m;
+        if (Owner is not { } owner) return;
+        var healAmount = owner.Creature.MaxHp / 3m;
         if (healAmount > 0)
-            await CreatureCmd.Heal(Owner.Creature, healAmount);
+            await CreatureCmd.Heal(owner.Creature, healAmount);
         SetEventFinished(L10NLookup("STS1_THE_LIBRARY.pages.REST.description"));
     }
 }

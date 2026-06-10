@@ -29,13 +29,14 @@ public sealed class Sts1ShiningLight : EventModel
 
     private async Task Enter()
     {
-        var damage = (int)((Owner?.Creature.MaxHp ?? 0m) * DamagePct);
+        if (Owner is not { } owner) return;
+        var damage = (int)(owner.Creature.MaxHp * DamagePct);
         await CreatureCmd.Damage(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-            Owner.Creature, (decimal)damage,
+            owner.Creature, (decimal)damage,
             MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered,
             null, null);
-        await Sts1EventHelpers.OpenCardUpgrade(Owner, count: 2);
+        await Sts1EventHelpers.OpenCardUpgrade(owner, count: 2);
         SetEventFinished(L10NLookup("STS1_SHINING_LIGHT.pages.ENTER.description"));
     }
 }

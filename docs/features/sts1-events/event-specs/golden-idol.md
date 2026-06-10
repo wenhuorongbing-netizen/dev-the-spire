@@ -91,7 +91,7 @@ STS1_GOLDEN_IDOL.pages.DESTROY.description
 
 ### Class: `Sts1GoldenIdol`
 - **Base:** `ModEventTemplate` (RitsuLib)
-- **Registration:** `content.SharedEvent<Sts1GoldenIdol>()`
+- **Registration:** `content.ActEvent<Overgrowth, Sts1GoldenIdol>()` and `content.ActEvent<Underdocks, Sts1GoldenIdol>()`
 - **Layout:** Default event layout
 - **LocTable:** "events"
 

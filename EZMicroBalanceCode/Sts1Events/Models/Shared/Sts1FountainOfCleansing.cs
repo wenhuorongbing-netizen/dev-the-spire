@@ -30,8 +30,9 @@ public sealed class Sts1FountainOfCleansing : EventModel
 
     private async Task Drink()
     {
+        if (Owner is not { } owner) return;
         var curses = new List<CardModel>();
-        foreach (var card in Owner.Deck.Cards)
+        foreach (var card in owner.Deck.Cards)
         {
             if (card.Type == MegaCrit.Sts2.Core.Entities.Cards.CardType.Curse)
                 curses.Add(card);
@@ -39,12 +40,12 @@ public sealed class Sts1FountainOfCleansing : EventModel
         if (curses.Count > 0)
             await CardPileCmd.RemoveFromDeck(curses, showPreview: false);
 
-        var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * MaxHpLossPct);
+        var maxHpLoss = (int)(owner.Creature.MaxHp * MaxHpLossPct);
         if (maxHpLoss > 0)
         {
             await CreatureCmd.LoseMaxHp(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                Owner.Creature, maxHpLoss, isFromCard: false);
+                owner.Creature, maxHpLoss, isFromCard: false);
         }
         SetEventFinished(L10NLookup("STS1_FOUNTAIN_OF_CLEANSING.pages.DRINK.description"));
     }

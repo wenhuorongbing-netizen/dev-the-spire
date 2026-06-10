@@ -839,7 +839,7 @@ public sealed class AscensionV2MilestoneGuardTests
             "internal sealed class MartyrOathPower : BossSealPower",
             "internal sealed class MartyrOathStrikePower : BossSealPower",
             "protected override BossSealId? SealId => BossSealId.MartyrOath",
-            "ModifyPowerAmountGiven",
+            "ModifyPowerAmountGivenAdditive",
             "AfterModifyingPowerAmountGiven",
             "ModifyDamageAdditive",
             "AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)");

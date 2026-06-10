@@ -32,22 +32,25 @@ public sealed class Sts1TheWomanInBlue : EventModel
 
     private async Task Buy1()
     {
-        await PlayerCmd.LoseGold(Potion1Cost, Owner, GoldLossType.Spent);
-        await Sts1EventHelpers.GrantRandomPotion(Owner, Rng);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(Potion1Cost, owner, GoldLossType.Spent);
+        await Sts1EventHelpers.GrantRandomPotion(owner, Rng);
         SetEventFinished(L10NLookup("STS1_THE_WOMAN_IN_BLUE.pages.BUY_1.description"));
     }
 
     private async Task Buy2()
     {
-        await PlayerCmd.LoseGold(Potion2Cost, Owner, GoldLossType.Spent);
-        await Sts1EventHelpers.GrantRandomPotion(Owner, Rng);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(Potion2Cost, owner, GoldLossType.Spent);
+        await Sts1EventHelpers.GrantRandomPotion(owner, Rng);
         SetEventFinished(L10NLookup("STS1_THE_WOMAN_IN_BLUE.pages.BUY_2.description"));
     }
 
     private async Task Buy3()
     {
-        await PlayerCmd.LoseGold(Potion3Cost, Owner, GoldLossType.Spent);
-        await Sts1EventHelpers.GrantRandomPotion(Owner, Rng);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(Potion3Cost, owner, GoldLossType.Spent);
+        await Sts1EventHelpers.GrantRandomPotion(owner, Rng);
         SetEventFinished(L10NLookup("STS1_THE_WOMAN_IN_BLUE.pages.BUY_3.description"));
     }
 }

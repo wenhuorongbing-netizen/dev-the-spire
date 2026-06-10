@@ -338,8 +338,7 @@ $summary.Sections['ancient-ui'] = $ancientUiRoot
 
 if (-not $SkipPendingVerifier) {
     $verifyResult = Invoke-RepoScript -ScriptName 'verify-spire-plus-release-evidence.ps1' -ArgumentList @(
-        '-EvidenceRoot', (Join-Path $handoffRoot 'release'),
-        '-ManifestPath', (Join-Path $handoffRoot 'release\release-evidence-manifest.json')
+        '-EvidenceRoot', (Join-Path $handoffRoot 'release')
     )
 
     if ($verifyResult.ExitCode -eq 0) {

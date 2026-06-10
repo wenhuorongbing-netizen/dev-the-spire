@@ -8,7 +8,7 @@ internal sealed class FiddleVarsPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Override Fiddle canonical vars to use 7-card hand limit";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(Fiddle), "CanonicalVars", HarmonyLib.MethodType.Getter)];
+        [new ModPatchTarget(typeof(Fiddle), "get_CanonicalVars")];
 
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)

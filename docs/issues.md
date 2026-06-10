@@ -32,11 +32,11 @@
 - `GOV-CI-FIRST-RUN` P2 pending: self-hosted lane exists, but first run evidence is missing; 2026-05-26 API check found 0 completed `Full Local Validation` runs.
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
-- `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 open: 89 nullable warnings are tracked as Sts1Events-only staging debt (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1); see `docs/issues/ISSUE-2026-05-31-STS1EVENTS-NULL-SAFETY-WARNINGS.md`.
-- `REFACTOR-PHASE0-1-VALIDATION` P1 current at HEAD `6b149ba0`: no-game validation is 0 build errors / 89 warnings and 464 passed / 0 failed / 21 skipped / 485 total. Runtime loader gates now have diagnostic proof.
+- `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
+- `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; test-project and solution no-build lanes passed 464 / 0 / 21 / 485. Current `v0.107.0` live proof remains blocked.
   Phase 2 patch adapter rule started (checklist drafted). StS1Events feature-gated (default Off, guard tests active). Combat events now declare `IsShared`. See `docs/reviews/overnight-run-20260529.md`.
-- `RITSULIB-RUNTIME-SMOKE` P0 runtime-loader fixed / QA-pending: Off and CanaryOnly diagnostic smokes now have clean audits and 25/25 Spire Plus RitsuLib patches.
-  Remaining blockers: independent QA rerun, dirty-worktree decision, gameplay/UI/save-load/co-op proof, and versioned tester-package handoff before release/live-ready claims.
+- `RITSULIB-RUNTIME-SMOKE` P0 historical loader fixed / current package smoke failed: historical `v0.106.1` smokes are clean with 25/25 Spire Plus RitsuLib patches.
+  Current RitsuLib `v0.4.16` / `lib\0.107.0` and beta.84 parity pass; fresh Off smoke failed on stale API targets. Blockers: package decision, clean smoke, QA, dirty-worktree decision, gameplay/UI/save-load/co-op, and handoff.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.

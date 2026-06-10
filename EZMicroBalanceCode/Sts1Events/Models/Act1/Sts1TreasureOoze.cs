@@ -30,8 +30,9 @@ public sealed class Sts1TreasureOoze : EventModel
 
     private async Task Offer()
     {
-        await PlayerCmd.LoseGold(OfferCost, Owner, GoldLossType.Spent);
-        await Sts1EventHelpers.GrantRandomRelic(Owner);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(OfferCost, owner, GoldLossType.Spent);
+        await Sts1EventHelpers.GrantRandomRelic(owner);
         SetEventFinished(L10NLookup("STS1_TREASURE_OOZE.pages.OFFER.description"));
     }
 

@@ -47,15 +47,17 @@ public sealed class Sts1TheCleric : EventModel
 
     private async Task Heal()
     {
-        await PlayerCmd.LoseGold(HealCost, Owner, GoldLossType.Spent);
-        await CreatureCmd.Heal(Owner.Creature, DynamicVars.Heal.IntValue);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(HealCost, owner, GoldLossType.Spent);
+        await CreatureCmd.Heal(owner.Creature, DynamicVars.Heal.IntValue);
         SetEventFinished(L10NLookup("STS1_THE_CLERIC.pages.HEAL.description"));
     }
 
     private async Task Purify()
     {
-        await PlayerCmd.LoseGold(PurifyCost, Owner, GoldLossType.Spent);
-        await Sts1EventHelpers.OpenCardRemoval(Owner);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(PurifyCost, owner, GoldLossType.Spent);
+        await Sts1EventHelpers.OpenCardRemoval(owner);
         SetEventFinished(L10NLookup("STS1_THE_CLERIC.pages.PURIFY.description"));
     }
 }

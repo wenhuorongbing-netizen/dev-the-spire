@@ -1,7 +1,7 @@
 wiki_entry_id,wiki_name,wiki_bucket,st1_acts_allowed,runtime_model,registry_count,sts2_acts_registered,is_shared,status,parity_gap
-sts1_big_fish,Big Fish,Shared,All,Sts1BigFish,1,shared,true,compiled,none
+sts1_big_fish,Big Fish,Act1,Act1,Sts1BigFish,1,Overgrowth+Underdocks,true,implemented,Source now registers Act 1 buckets; current runtime bucket proof pending
 sts1_the_cleric,The Cleric,Shared+Act1,All+Act1,Sts1TheCleric,1,shared,true,compiled,none
-sts1_golden_idol,Golden Idol,Shared,All,Sts1GoldenIdol,1,shared,true,compiled,none
+sts1_golden_idol,Golden Idol,Act1,Act1,Sts1GoldenIdol,1,Overgrowth+Underdocks,true,implemented,Source now registers Act 1 buckets; Golden Idol relic parity and current runtime bucket proof pending
 sts1_golden_wing,Golden Wing,Shared+Act1,All+Act1,Sts1GoldenWing,1,shared,true,compiled,none
 sts1_living_wall,Living Wall,Shared,All,Sts1LivingWall,1,shared,true,compiled,none
 sts1_old_beggar,Old Beggar,Shared,All,Sts1OldBeggar,1,shared,true,compiled,none

@@ -45,8 +45,9 @@ public sealed class Sts1MindBloom : EventModel
 
     private Task Awake()
     {
+        if (Owner is not { } owner) return Task.CompletedTask;
         // Upgrade all cards in deck
-        foreach (var card in Owner.Deck.Cards)
+        foreach (var card in owner.Deck.Cards)
         {
             if (card.IsUpgradable)
                 CardCmd.Upgrade(card);
@@ -57,12 +58,13 @@ public sealed class Sts1MindBloom : EventModel
 
     private async Task Rich()
     {
-        await PlayerCmd.GainGold(GoldAmount, Owner);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.GainGold(GoldAmount, owner);
         var curseCount = HasA15 ? CursesA15 : CursesNormal;
         var curses = new List<CardModel>();
         for (int i = 0; i < curseCount; i++)
             curses.Add(ModelDb.Card<Normality>());
-        await CardPileCmd.AddCursesToDeck(curses, Owner);
+        await CardPileCmd.AddCursesToDeck(curses, owner);
         SetEventFinished(L10NLookup("STS1_MIND_BLOOM.pages.RICH.description"));
     }
 }

@@ -1,127 +1,19 @@
-# Overnight Diff Ledger — Revision J Runtime Hard-Blocker Closure
+# Overnight Diff Ledger
 
-Date: 2026-05-31
+Date: 2026-06-10
 
-## Revision J Current Diff Summary
+## Diff Groups
 
-Current HEAD is `6b149ba0`. The worktree remains dirty and should be reviewed by commit slice instead of committed wholesale.
-
-Final batch classifier result:
-
-| Batch | Count | Meaning |
-| --- | ---: | --- |
-| 1 | 7 | Status and release docs |
-| 2 | 6 | Governance and architecture docs |
-| 3 | 10 | Ancient/Sts1Events source, tests, and docs |
-| 5 | 9 | RitsuLib runtime docs, scripts, and validation tests |
-| 8 | 17 | Goal docs/audits and Revision J artifacts |
-| -1 | 0 | unclassified |
-
-Final Revision J classifier reported 49 dirty entries total. Rerun `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` again before commit planning if any files change.
-
-## Revision J Reconciliation
-
-- Source/test dirty entries are grouped in proposed Slice A.
-- Runtime/RitsuLib docs and generated patch inventory are grouped in proposed Slice B.
-- Goal-doc rewrites are grouped in proposed Slice C.
-- Revision J owner-review artifacts are grouped in proposed Slice D.
-- No untracked runtime binaries, package files, or local evidence files should be committed without owner approval.
-
----
-
-# Historical Overnight Diff Ledger — M3 Week 1
-
-Date: 2026-05-29
-Verified: `git status --short --porcelain` at M3 Week 1 validation (16:14 CEST)
-HEAD: `aed2a498` ("debug")
-
-## Summary
-
-| Category | Count | Description |
-|---|---|---|
-| Modified (tracked) | 11 | Unstaged modifications to existing tracked files |
-| Untracked | 0 | None |
-| **Total dirty** | **11** | All classified (0 unclassified) |
-
-## Batch Classification
-
-`report-worktree-batches.ps1` reports 11 dirty entries. `git status` also shows 11 modified tracked files. No discrepancy.
-
-## Per-file Reconciliation
-
-### Batch 1: Status and release docs (1 file)
-
-| # | File | Change Type | Description |
-|---|---|---|---|
-| 1 | `docs/issues.md` | Doc update | Test count updated 361→387 in REFACTOR-PHASE0-1-VALIDATION |
-
-### Batch 3: Ancient source and tests (1 file)
-
-| # | File | Change Type | Description |
-|---|---|---|---|
-| 2 | `tests/.../UrdaStateCodecGuardTests.cs` | Test update | 15 new behavioral tests added (28-field constructor) |
-
-### Batch 5: Scripts, CI, and validation tests (6 files)
-
-| # | File | Change Type | Description |
-|---|---|---|---|
-| 3 | `docs/features/ritsulib-migration/monthly-dev-spec.md` | Doc update | Test/guard counts updated |
-| 4 | `docs/features/ritsulib-migration/next-overnight-run.md` | Doc update | Pre-run checklist test count updated |
-| 5 | `scripts/report-worktree-batches.ps1` | Script update | .csproj added to ignore list |
-| 6 | `tests/.../ActiveSourceManifestGuardTests.cs` | Test update | Expected string updated |
-| 7 | `tests/.../ArchitectureSkeletonGuardTests.cs` | Test update | Assertion changes |
-| 8 | `tests/.../EZMicroBalance.Tests.csproj` | Test config | Compile links for UrdaStateCodec, UrdaBlessingService.StateSchema, RewardPipeline, CardPlayContext |
-| 9 | `tests/.../EngineeringGovernanceGuardTests.cs` | Test update | Assertion split |
-
-### Batch 8: Stray docs and audits (3 files)
-
-| # | File | Change Type | Description |
-|---|---|---|---|
-| 10 | `docs/goals/debug.md` | Doc rewrite | Major M3 rewrite — still has stale counts |
-| 11 | `docs/goals/event.md` | Doc update | StS1 Event Port audit content |
-| 12 | `docs/goals/migration.md` | Doc update | Review doc with stale counts |
-
-### Untracked entries (3 entries)
-
-| # | File | Type | Description |
-|---|---|---|---|
-| 13 | `EZMicroBalanceCode/Core/Architecture/DeathProtectionService.cs` | Source stub | Death protection service skeleton |
-| 14 | `EZMicroBalanceCode/Core/Architecture/MultiplayerPolicy.cs` | Source stub | Multiplayer policy skeleton |
-| 15 | `tests/EZMicroBalance.Tests/Stubs/DiagnosticsNamespaceStub.cs` | Test stub | Diagnostics namespace test stub |
-
-## Classification Decision
-
-All entries are docs, tests, scripts, test config, or source/test stubs. No production behavior changes. Build safety verified (0 errors, 92 warnings).
-
-## Comparison: Revision E → Revision F → M3 Week 1 → Revision G
-
-| Metric | Revision E | Revision F | M3 Week 1 | Revision G |
-|---|---|---|---|---|
-| Dirty tracked | 16 | 8 | 12→15 | 11 |
-| Untracked | 1 | 1 | 3 | 0 |
-| Total | 17 | 9 | 15 | 11 |
-| Unclassified | 0 | 0 | 0 | 0 |
-| Build errors | 0 | 0 | 0 | 0 |
-| Build warnings | 87 | 87 | 92 | 92 |
-| Tests passed | 361 | 361 | 387→428 | 444 |
-| Tests failed | 0 | 0 | 0 | 0 |
-| Tests skipped | 21 | 21 | 21 | 21 |
-| Tests total | 382 | 382 | 408→449 | 465 |
-
-## Build/Test Impact
-
-| Check | Result |
+| Group | Summary |
 |---|---|
-| Clean build | Historical M4 replay at `24d4fe9a`: 0 errors, 89 warnings (all Sts1Events nullable: CS8604=54, CS8602=34, CS8625=1); current Revision I replay is at `87820303` |
-| Tests | Historical M4/v13 continuation replay passed: 461 passed, 0 failed, 21 skipped, 482 total; current Revision I project no-build replay passed 464/0/21/485 |
-| Format | Clean |
-| Whitespace | Clean after removing trailing whitespace in `docs/goals/debug.md` and `docs/goals/event.md` |
-| Batch classification | Not rerun in the validation/runtime doc reconciliation continuation |
+| Source/test API compatibility | Lotha and Martyr Oath additive power hooks, Ectoplasm gold modifier patch, Meat Cleaver rest-site availability patch, related guard-test string updates. |
+| Sts1Events null guards | Owner guards expanded across the compile-included Sts1Events model set, clearing the current nullable warning debt to 0. |
+| RitsuLib docs | Runtime dependency status changed from missing/blocking to historical `v0.106.1` loader-gate evidence plus installed `STS2-RitsuLib` `v0.4.16` / `lib\0.107.0`; fresh current smoke, package parity, and release blockers remain open. |
+| Batch 4c proposal | New candidate list added as proposal-only, with no migration performed. |
+| Revision L owner-review docs | New `m5-revision-l-*` packet docs and recreated overnight status ledgers. |
+| Harness/current status docs | Harness status/focus and active status docs aligned to Revision L naming and current warning/runtime boundaries. |
+| Generated inventory | `docs/patch-inventory.md` regenerated after patch-target row drift. |
 
-## Revision H Current Snapshot
+## Package Boundary
 
-The older Revision G counts above are historical. Earlier Revision H replay on 2026-05-31 found HEAD `85a38dd1`, dirty worktree, 32 tracked changed paths in `git diff --name-status`, 3 untracked paths in `git status`, and 39 dirty entries in the batch classifier after validation/build outputs. That historical state was blocked, not commit-ready.
-
-## Historical M4 Snapshot
-
-Historical M4/v13 continuation on 2026-05-31 found HEAD `24d4fe9a`. Clean/build/test/format/diff-check passed with 89 tracked Sts1Events nullable warnings and 461 passed / 0 failed / 21 skipped / 482 total. Revision I supersedes this with HEAD `87820303` and current project no-build tests at 464/0/21/485. Current state is still blocked, not commit-ready, because live runtime smoke evidence is unavailable even though STS2-RitsuLib is now installed.
+No package file was refreshed. The diff is source/docs/test state only until the owner requests a versioned tester package.

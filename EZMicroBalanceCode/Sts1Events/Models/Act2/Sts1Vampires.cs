@@ -37,20 +37,21 @@ public sealed class Sts1Vampires : EventModel
 
     private async Task Accept()
     {
+        if (Owner is not { } owner) return;
         // Remove all Strikes from deck
-        await Sts1EventHelpers.RemoveCardsByTag(Owner, CardTag.Strike);
+        await Sts1EventHelpers.RemoveCardsByTag(owner, CardTag.Strike);
 
         // temporary-substitute: Bite card does not exist in StS2.
         // Cannot add 5 Bite cards. This event is partially implemented.
         // TODO: Create custom Bite card model for StS2 parity.
 
         var maxHpLossPct = HasA15 ? MaxHpLossPctA15 : MaxHpLossPctNormal;
-        var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * maxHpLossPct);
+        var maxHpLoss = (int)(owner.Creature.MaxHp * maxHpLossPct);
         if (maxHpLoss > 0)
         {
             await CreatureCmd.LoseMaxHp(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                Owner.Creature, maxHpLoss, isFromCard: false);
+                owner.Creature, maxHpLoss, isFromCard: false);
         }
         SetEventFinished(L10NLookup("STS1_VAMPIRES.pages.ACCEPT.description"));
     }

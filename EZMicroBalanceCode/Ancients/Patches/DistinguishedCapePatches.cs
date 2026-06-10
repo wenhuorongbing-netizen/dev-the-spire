@@ -8,7 +8,7 @@ internal sealed class DistinguishedCapeVarsPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Override DistinguishedCape canonical vars with HP loss and Apparition count";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(DistinguishedCape), "CanonicalVars", HarmonyLib.MethodType.Getter)];
+        [new ModPatchTarget(typeof(DistinguishedCape), "get_CanonicalVars")];
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
     {

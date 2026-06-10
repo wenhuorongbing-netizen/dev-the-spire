@@ -42,7 +42,7 @@ internal sealed class DebtKeywordsPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Override Debt keywords to Exhaust only";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(Debt), nameof(Debt.CanonicalKeywords), HarmonyLib.MethodType.Getter)];
+        [new ModPatchTarget(typeof(Debt), "get_CanonicalKeywords")];
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<CardKeyword> __result)
     {
@@ -57,7 +57,7 @@ internal sealed class DebtVarsPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Override Debt vars to 5 gold";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(Debt), "CanonicalVars", HarmonyLib.MethodType.Getter)];
+        [new ModPatchTarget(typeof(Debt), "get_CanonicalVars")];
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
     {
@@ -72,7 +72,7 @@ internal sealed class DebtTurnEndEffectPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Disable Debt turn-end-in-hand effect";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(Debt), nameof(Debt.HasTurnEndInHandEffect), HarmonyLib.MethodType.Getter)];
+        [new ModPatchTarget(typeof(Debt), "get_HasTurnEndInHandEffect")];
     [HarmonyPrefix]
     private static bool Prefix(ref bool __result)
     {

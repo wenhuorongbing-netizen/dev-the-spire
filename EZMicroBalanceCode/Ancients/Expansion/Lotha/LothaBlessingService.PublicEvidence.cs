@@ -10,7 +10,7 @@ internal static partial class LothaBlessingService
     private const int PublicEvidenceBlockPerEnlightenment = 4;
     private const int PublicEvidenceCardsPerEnlightenment = 1;
 
-    public static decimal ModifyPowerAmountGiven(PowerModel power, Creature giver, decimal amount, Creature? target)
+    public static decimal ModifyPowerAmountGivenAdditive(PowerModel power, Creature giver, decimal amount, Creature? target)
     {
         if (amount == 0m ||
             target is not { IsEnemy: true } ||
@@ -20,11 +20,11 @@ internal static partial class LothaBlessingService
             GetSelectedBlessing(player) != LothaBlessingIds.PublicEvidence ||
             !IsPublicEvidenceDebuffApplication(power, amount))
         {
-            return amount;
+            return 0m;
         }
 
         MainFile.Logger.Info($"[Spire Plus] Lotha Public Evidence doubled player-applied debuff {power.Id.Entry}.");
-        return amount * 2m;
+        return amount;
     }
 
     public static bool TryModifyPowerAmountReceived(

@@ -58,7 +58,7 @@ public sealed class AncientHighRiskSourceGuardTests
             "AfterCardPlayed",
             "TryModifyEnergyCostInCombat",
             "TryModifyStarCost",
-            "ModifyPowerAmountGiven",
+            "ModifyPowerAmountGivenAdditive",
             "TryModifyPowerAmountReceived",
             "AfterPowerAmountChanged"
         })
@@ -75,7 +75,7 @@ public sealed class AncientHighRiskSourceGuardTests
             "AfterCardPlayed",
             "TryModifyEnergyCostInCombat",
             "TryModifyStarCost",
-            "ModifyPowerAmountGiven",
+            "ModifyPowerAmountGivenAdditive",
             "TryModifyPowerAmountReceived",
             "AfterPowerAmountChanged");
 
@@ -586,10 +586,10 @@ public sealed class AncientHighRiskSourceGuardTests
 
         AssertSourceContains(
             source,
-            "ModPatchTarget(typeof(CardModel), nameof(CardModel.CanonicalKeywords)",
+            "ModPatchTarget(typeof(CardModel), \"get_CanonicalKeywords\"",
             "__instance is not BrightestFlame",
             "CardKeyword.Exhaust",
-            "ModPatchTarget(typeof(BrightestFlame), \"CanonicalVars\"",
+            "ModPatchTarget(typeof(BrightestFlame), \"get_CanonicalVars\"",
             "dynamicVar is CardsVar cards",
             "new CardsVar(cards.IntValue + ExtraDraw)",
             "Vanilla: Gain Energy(2), Draw(2), LoseMaxHp(1). Upgrade: Energy+1, Draw+1.",

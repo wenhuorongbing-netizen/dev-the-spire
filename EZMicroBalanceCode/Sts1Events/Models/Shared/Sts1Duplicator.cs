@@ -26,10 +26,11 @@ public sealed class Sts1Duplicator : EventModel
 
     private async Task Duplicate()
     {
+        if (Owner is not { } owner) return;
         var prefs = new CardSelectorPrefs(CardSelectorPrefs.DuplicateSelectionPrompt, 1);
         var cards = (await CardSelectCmd.FromDeckForRewards(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.BlockingPlayerChoiceContext(),
-            Owner.Deck.Cards.ToList(), Owner, prefs)).ToList();
+            owner.Deck.Cards.ToList(), owner, prefs)).ToList();
         if (cards.Count > 0)
         {
             await CardPileCmd.Add(cards[0].ToMutable(), MegaCrit.Sts2.Core.Entities.Cards.PileType.Deck);

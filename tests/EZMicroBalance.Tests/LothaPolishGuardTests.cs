@@ -526,7 +526,7 @@ public sealed class LothaPolishGuardTests
         var helper = SliceBetween(runHook, "private static bool IsPublicEvidenceDebuffApplication", "private static bool IsPublicEvidenceExcludedDamageDebuff");
         var publicEvidenceSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.PublicEvidence.cs");
         var excludedDamageDebuffs = SliceFrom(publicEvidenceSource, "private static bool IsPublicEvidenceExcludedDamageDebuff");
-        var givenHook = SliceBetween(runHook, "public static decimal ModifyPowerAmountGiven", "public static bool TryModifyPowerAmountReceived");
+        var givenHook = SliceBetween(runHook, "public static decimal ModifyPowerAmountGivenAdditive", "public static bool TryModifyPowerAmountReceived");
         var receivedHook = SliceBetween(runHook, "public static bool TryModifyPowerAmountReceived", "public static async Task AfterPowerAmountChanged");
         var changedHook = SliceBetween(runHook, "public static async Task AfterPowerAmountChanged", "private static async Task ConsumePublicEvidenceEnlightenmentAtTurnStart");
 
@@ -536,7 +536,7 @@ public sealed class LothaPolishGuardTests
             "HoverTipFactory.Static(StaticHoverTip.Block)");
         AssertSourceContains(
             runHook,
-            "ModifyPowerAmountGiven",
+            "ModifyPowerAmountGivenAdditive",
             "TryModifyPowerAmountReceived",
             "AfterPowerAmountChanged",
             "PublicEvidenceEnlightenmentGain = 1",

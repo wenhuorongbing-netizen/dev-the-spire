@@ -24,9 +24,9 @@ The StS1 event system is **fail-closed** by default:
 | No env var (default) | Off | 0 | 0 (native StS2 only) |
 | Empty env var | Off | 0 | 0 |
 | Unknown value | Off | 0 | 0 |
-| `canaryonly` | CanaryOnly | 4 | 4 Shared events |
-| `additivebatch1` | AdditiveBatch1 | 11 calls / 10 event types | Controlled prototype batch |
-| `additivealldraft` | AdditiveAllDraft | 0 unless `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; then 54 calls / 47 event types | All compiling draft events (unsafe/dev-only) |
+| `canaryonly` | CanaryOnly | 6 calls / 4 event types | Big Fish and Golden Idol register to both Act 1 buckets; Lab and Divine Fountain are shared |
+| `additivebatch1` | AdditiveBatch1 | 13 calls / 10 event types | Controlled prototype batch |
+| `additivealldraft` | AdditiveAllDraft | 0 unless `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; then 56 calls / 47 event types | All compiling draft events (unsafe/dev-only) |
 | `replaceunknowneventsprototype` | ReplaceUnknownEventsPrototype | 0 unless `REPLACEMENT_PROTOTYPE_ENABLED` and `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` are both present | Debug-only replacement prototype |
 
 ## IsShared / Co-op Behavior
@@ -44,12 +44,14 @@ The StS1 event system is **fail-closed** by default:
 | `UnsafeModesRequireExplicitUnsafeOverride` | Unsafe all-draft/debug modes require `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` |
 | `ReplacementPrototypeGateFailsClosedWithoutCompileSymbol` | Replacement prototype reports disabled in normal builds without `REPLACEMENT_PROTOTYPE_ENABLED` |
 | `OffModeReturnsImmediatelyWithZeroRegistrations` | Off mode returns without registering |
-| `RegisterCanaryOnlyRegistersExactlyFourSharedEvents` | CanaryOnly = exactly 4 |
-| `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` | AdditiveBatch1 = 11 calls / 10 event types |
+| `RegisterCanaryOnlyRegistersExactlyFourCanaryEventTypes` | CanaryOnly = 6 calls / 4 event types |
+| `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` | AdditiveBatch1 = 13 calls / 10 event types |
 | `CombatEventsDeclareIsSharedTrue` | All 6 combat events have IsShared=true |
-| `AllSharedEventModelsDeclareIsSharedTrue` | At least 17 shared models have IsShared=true |
+| `AllSharedEventModelsDeclareIsSharedTrue` | Shared-capable models have IsShared=true |
 
 ## Runtime Verification Status
+
+Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate evidence exists for the recorded `v0.106.1` smokes. Installed beta.84 package parity is restored, but the current `v0.107.0` Off smoke is non-clean; current runtime and multiplayer evidence remain pending until Off is clean and co-op is directly proven or explicitly blocked.
 
 **UNVERIFIED** — requires game launch with:
 1. `SPIREPLUS_STS1_EVENT_MODE=Off` (default) — verify no StS1 events appear
@@ -60,4 +62,5 @@ The StS1 event system is **fail-closed** by default:
 ## Verdict
 
 **Source-level fail-closed: VERIFIED by guard tests.**
-**Runtime-level fail-closed: HARD BLOCKED until Off/CanaryOnly `godot.log` evidence is captured with installed STS2-RitsuLib.**
+**Historical loader-level fail-closed: VERIFIED only for the recorded `v0.106.1` diagnostic smokes.**
+**Current runtime/co-op fail-closed: PENDING until the non-clean `v0.107.0` Off smoke is fixed, a clean current smoke exists, and multiplayer evidence exists.**

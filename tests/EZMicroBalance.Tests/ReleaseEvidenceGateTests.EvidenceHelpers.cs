@@ -131,31 +131,120 @@ public sealed partial class ReleaseEvidenceGateTests
 
     private static (int ExitCode, string Output) RunPowerShell(string scriptPath, params string[] arguments)
     {
+        const int scriptTimeoutMilliseconds = 180_000;
         var executable = OperatingSystem.IsWindows() ? "powershell.exe" : "pwsh";
+        var tempRoot = Path.Combine(Path.GetTempPath(), "SpirePlusTests", Guid.NewGuid().ToString("N"));
+        var invocationPath = Path.Combine(tempRoot, "invocation.json");
+        var stdoutPath = Path.Combine(tempRoot, "stdout.txt");
+        var stderrPath = Path.Combine(tempRoot, "stderr.txt");
+        var wrapperPath = Path.Combine(tempRoot, "invoke-script.ps1");
+        Directory.CreateDirectory(tempRoot);
+        File.WriteAllText(
+            invocationPath,
+            JsonSerializer.Serialize(new { ScriptPath = scriptPath, Arguments = arguments }));
+        File.WriteAllText(
+            wrapperPath,
+            """
+            param(
+                [Parameter(Mandatory = $true)][string]$InvocationPath,
+                [Parameter(Mandatory = $true)][string]$StdoutPath,
+                [Parameter(Mandatory = $true)][string]$StderrPath
+            )
+
+            $ErrorActionPreference = 'Stop'
+            $payload = Get-Content -Raw -LiteralPath $InvocationPath | ConvertFrom-Json
+            $scriptArguments = @()
+            $argumentsValue = $payload.Arguments
+            if ($null -ne $argumentsValue) {
+                if ($argumentsValue -is [System.Array]) {
+                    foreach ($argument in $argumentsValue) {
+                        $scriptArguments += [string]$argument
+                    }
+                } else {
+                    $scriptArguments += [string]$argumentsValue
+                }
+            }
+
+            try {
+                $powerShellExe = (Get-Process -Id $PID).Path
+                if ([string]::IsNullOrWhiteSpace($powerShellExe) -or -not (Test-Path -LiteralPath $powerShellExe)) {
+                    $powerShellExe = 'powershell.exe'
+                }
+
+                $childArgs = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', [string]$payload.ScriptPath) + $scriptArguments
+                $scriptOutput = & $powerShellExe @childArgs 2>&1
+                $scriptOutput | ForEach-Object { $_.ToString() } | Set-Content -LiteralPath $StdoutPath -Encoding UTF8
+                if ($null -eq $LASTEXITCODE) {
+                    exit 0
+                }
+
+                exit ([int]$LASTEXITCODE)
+            } catch {
+                $_ | Out-String | Set-Content -LiteralPath $StderrPath -Encoding UTF8
+                exit 1
+            }
+            """);
+
         var startInfo = new ProcessStartInfo
         {
             FileName = executable,
             WorkingDirectory = Root,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false
+            UseShellExecute = false,
+            CreateNoWindow = true
         };
 
         startInfo.ArgumentList.Add("-NoProfile");
         startInfo.ArgumentList.Add("-ExecutionPolicy");
         startInfo.ArgumentList.Add("Bypass");
         startInfo.ArgumentList.Add("-File");
-        startInfo.ArgumentList.Add(scriptPath);
-        foreach (var argument in arguments)
+        startInfo.ArgumentList.Add(wrapperPath);
+        startInfo.ArgumentList.Add("-InvocationPath");
+        startInfo.ArgumentList.Add(invocationPath);
+        startInfo.ArgumentList.Add("-StdoutPath");
+        startInfo.ArgumentList.Add(stdoutPath);
+        startInfo.ArgumentList.Add("-StderrPath");
+        startInfo.ArgumentList.Add(stderrPath);
+
+        using var process = new Process
         {
-            startInfo.ArgumentList.Add(argument);
+            StartInfo = startInfo
+        };
+
+        Assert.True(process.Start(), $"Failed to start {scriptPath}.");
+        if (!process.WaitForExit(scriptTimeoutMilliseconds))
+        {
+            try
+            {
+                process.Kill(entireProcessTree: true);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            process.WaitForExit();
+            Assert.Fail($"Timed out running {scriptPath}.{Environment.NewLine}{ReadPowerShellOutput(stdoutPath, stderrPath)}");
         }
 
-        using var process = Process.Start(startInfo);
-        Assert.NotNull(process);
-        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
-        Assert.True(process.WaitForExit(30_000), $"Timed out running {scriptPath}.");
-        return (process.ExitCode, output);
+        var capturedOutput = ReadPowerShellOutput(stdoutPath, stderrPath);
+        try
+        {
+            Directory.Delete(tempRoot, recursive: true);
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+
+        return (process.ExitCode, capturedOutput);
+    }
+
+    private static string ReadPowerShellOutput(string stdoutPath, string stderrPath)
+    {
+        return
+            (File.Exists(stdoutPath) ? File.ReadAllText(stdoutPath) : string.Empty) +
+            (File.Exists(stderrPath) ? File.ReadAllText(stderrPath) : string.Empty);
     }
 
     private static void AssertChecklistTemplate(

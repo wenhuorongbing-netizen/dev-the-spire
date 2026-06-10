@@ -1,88 +1,131 @@
-# Next Overnight Run — RitsuLib Migration
+# Next Overnight Run - RitsuLib Migration
 
 ## Run Date
 
-TBD (next available runtime session)
+TBD (next available runtime/manual QA session)
 
 ## Objective
 
-**Runtime Proof + Governance Closure.** Runtime smoke remains the critical path blocker. Batch 4c cannot proceed until installed STS2-RitsuLib has clean runtime smoke evidence with Spire Plus actually loaded. Focus on fixing live-session isolation/settings, Off/CanaryOnly proof, and evidence capture, not patch migration.
+**Loader-Proven Manual QA + Batch 4c Owner Review.**
+
+The old hard blocker was missing or non-clean RitsuLib runtime smoke. That blocker is cleared only for the historical Slay the Spire 2 `v0.106.1` loader-gate level: Off, CanaryOnly, and AdditiveBatch1 have clean diagnostic evidence there. The current local game install is `v0.107.0`; official `STS2-RitsuLib` `v0.4.16` is now installed with `lib\0.107.0`, and installed beta.84 package parity passes after the 2026-06-10 DLL restore. The fresh beta.84 `v0.107.0` Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` reached main menu but failed clean audit because the package still targets stale game APIs. The next run must decide whether to build an owner-approved current-source tester package before trying to upgrade evidence into manual gameplay proof and owner-reviewed Batch 4c planning. It is not approval to migrate more patches.
 
 ## Current State
 
-- HEAD: `6b149ba0` on `main` / `origin/main`.
-- Build: 2026-05-31 clean/build replay passes with 0 errors, 89 Sts1Events nullable warnings (`CS8604` = 54, `CS8602` = 34, `CS8625` = 1).
-- Tests: 2026-05-31 full and no-build solution tests pass with 464 passed, 0 failed, 21 skipped, 485 total. See `docs/reviews/current-validation.md`.
-- Patch state: 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
-- Architecture canary status: RewardPipeline, CardPlayContext, DeathProtectionService, and MultiplayerPolicy are diagnostics-only; no gameplay behavior or enforcement claim.
-- Runtime smoke: **REACHES MENU WITH ERRORS / NOT CLEAN**. Official STS2-RitsuLib `v0.3.10` is installed at `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib`; E-drive BaseLib and Spire Plus package folders exist. Current best evidence `.tools\runtime-evidence\sts1-events-v15-loader-20260531-231135\godot.log.after-launch` reaches main menu with BaseLib, RitsuLib, and Spire Plus loaded, but audit reports 11 Godot ERROR hits. Supplemental retry evidence under `.tools\runtime-evidence\ritsulib-runtime-proof-20260531-2304` is invalid because direct executable launch failed Steam init and Steam `-applaunch` skipped `EZMicroBalance` as disabled.
-- Sts1Events status: Off, CanaryOnly, and AdditiveBatch1 are source-guarded only. Off=0 and CanaryOnly=4 still require live `godot.log` proof.
-- Release gate: no release-ready, live-ready, runtime-safe, Batch 4c, high-risk migration, or new gameplay claim.
+- Current repository HEAD must be checked at run start. The latest observed HEAD in this pass is `f32c6767`.
+- Current worktree is dirty and includes unrelated source/test/doc edits plus an untracked `docs/features/ritsulib-migration/batch-4c-candidates.md`. Classify dirty files before any validation claim.
+- Latest recorded no-game validation is in `docs/reviews/current-validation.md`: the current dirty-worktree pass has 0 build errors and 0 warnings, and both the test-project lane and exact solution-level `dotnet test EZMicroBalance.sln --no-build` lane passed with 464 passed / 0 failed / 21 skipped / 485 total after overlapping validation processes were absent. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
+- Patch state remains 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
+- Historical `v0.106.1` loader-gate runtime proof exists:
+  - Off: `.tools\runtime-evidence\smoke-k1-off-20260602-145938`, 0 Sts1Events registrations, clean audit.
+  - CanaryOnly: `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104`, exactly 4 canary registrations, clean audit.
+  - AdditiveBatch1: `.tools\runtime-evidence\additive-batch1-20260602-150445`, 10 event types through 11 registration calls, clean audit.
+  - Recorded smokes loaded BaseLib, RitsuLib, and Spire Plus, applied 25/25 migrated patches, and observed 30 SavedSpireFields.
+- Current `v0.107.0` package runtime proof is blocked by the non-clean beta.84 smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/`; installed package parity itself now passes after the DLL restore.
+- Dependency decision is recorded: keep the current dirty source and beta.84 package line at compile/manifest `0.3.2`; move both to `0.4.16` only in a future owner-approved versioned package pass for the `v0.107.0` runtime.
+- Batch 4c is proposal-only. The current candidate list is `docs/features/ritsulib-migration/batch-4c-candidates.md`; migration requires explicit owner approval and fresh validation.
+- Gameplay, Mod Settings UI, event screenshots, save-load, image/render, replacement functional proof, multiplayer fail-closed proof, independent QA, clean-worktree decision, and versioned tester-package handoff remain pending.
+- Release-ready and live-ready remain no.
 
 ## Pre-Run Checklist
 
-1. Confirm current branch and dirty state with `git status --short --branch`.
-2. Confirm full test suite passes: `dotnet test EZMicroBalance.sln --no-build` with 0 failed.
-3. Confirm build result: `dotnet build EZMicroBalance.sln` with 0 errors; warning count must be recaptured from current source.
-4. Confirm format is clean: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`.
-5. Confirm `git diff --check` passes.
+1. Confirm branch, HEAD, and dirty state:
+
+```powershell
+git status --short --branch
+git log -1 --oneline --decorate
+```
+
+2. Confirm or refresh no-game validation for the current HEAD:
+
+```powershell
+dotnet clean EZMicroBalance.sln
+dotnet build EZMicroBalance.sln
+dotnet test EZMicroBalance.sln
+dotnet test EZMicroBalance.sln --no-build
+dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+git diff --check
+.\scripts\generate-patch-inventory.ps1 -Check
+.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
+```
+
+3. Confirm current runtime compatibility before any loader smoke:
+
+```powershell
+Get-Content "E:\Steam\steamapps\common\Slay the Spire 2\release_info.json"
+Get-ChildItem "E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib\lib"
+```
+
+4. If validation or runtime compatibility fails, record the exact command, error, and affected dirty files before editing.
+5. If owner approves a new `v0.107.0` tester package, move the repo package reference and manifest minimum from `0.3.2` to `0.4.16` in that same versioned package pass and follow the private-beta package-version and validation rules.
 
 ## Run Steps
 
-### Step 1: Confirm STS2-RitsuLib Install
+### Step 1: Reconcile Loader Evidence
 
-1. Confirm official STS2-RitsuLib v0.3.10 remains installed at `<GameRoot>\mods\STS2-RitsuLib`.
-2. Confirm `ritsulib-variants.json` includes `compatTarget` `0.106.1`.
-3. Verify BaseLib v3.1.4 is installed at `<GameRoot>\mods\BaseLib`.
-4. Verify Spire Plus package is installed at `<GameRoot>\mods\EZMicroBalance`.
-5. Enable only BaseLib, STS2-RitsuLib, and Spire Plus for clean smoke, then verify the generated settings file actually marks `EZMicroBalance` enabled before launching.
-6. If using `scripts\spire-plus-live-session.ps1`, pass the E-drive `-GameRoot`, E-drive `-SteamExe`, a specific `-SteamUserId`, preserve `STS2-RitsuLib` during mod isolation, and verify stale/duplicate mod folders did not reappear before launch.
+1. Verify the evidence folders listed above still exist or record that only documentation references remain.
+2. Verify the current game version still has a matching RitsuLib variant and that the installed package under test matches the intended artifact; if either check fails, record the blocker instead of launching the game. The beta.84 package artifact now matches but fails clean current-runtime smoke under `v0.107.0`.
+3. Re-audit the recorded logs if needed with `scripts\audit-godot-log.ps1`.
+4. Rerun loader smoke only if runtime compatibility is present and HEAD/package drift makes the old logs stale for the claim being made.
+5. Keep AdditiveAllDraft and ReplaceUnknownEventsPrototype out of tester/release paths.
 
-### Step 2: Execute Loader Smoke
+### Step 2: Manual Gameplay Evidence
 
-Run the loader smoke checklist per `runtime-smoke-checklist.md`:
+For CanaryOnly events (`Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`), capture or explicitly block:
 
-1. Launch game via Steam.
-2. Check `godot.log` for RitsuLib bootstrap, ModPatcher, BaseLib, and Spire Plus init.
-3. Verify 25 ModPatcher patches applied.
-4. Verify SavedSpireFields count (30).
-5. Verify no `MissingMethodException`, `TypeLoadException`, or manifest dependency failure.
-6. Audit `godot.log` with `scripts\audit-godot-log.ps1`.
+- spawn/route status;
+- EN and ZHS rendering;
+- options;
+- reward/effect;
+- no-softlock and exit;
+- save/load;
+- screenshot evidence.
 
-### Step 3: Execute Sts1Events Runtime Gates
+### Step 3: UI And Multiplayer Evidence
 
-1. Off mode: unset/empty/invalid `SPIREPLUS_STS1_EVENT_MODE`; verify 0 Sts1Events registrations.
-2. CanaryOnly mode: set `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`; verify exactly 4 canary registrations.
-3. AdditiveBatch1 remains source/prototype-only until Off and CanaryOnly pass.
-4. Do not use AdditiveAllDraft or ReplaceUnknownEventsPrototype for tester/release paths; both require `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`, and replacement also requires `REPLACEMENT_PROTOTYPE_ENABLED`.
+1. Capture current Spire Plus Mod Settings UI evidence.
+2. Capture or block co-op/fail-closed proof.
+3. Confirm loader-gate proof is not being treated as gameplay proof.
 
-### Step 4: If Runtime Smoke Passes
+### Step 4: Batch 4c Candidate Review
 
-1. Update `runtime-smoke-checklist.md` with evidence paths and log excerpts.
-2. Update `docs/dev-environment.md` with runtime evidence.
-3. Update `docs/reviews/current-validation.md` with exact runtime proof.
-4. Propose 5-10 low-risk Batch 4c candidates only as a decision list.
-5. Do not migrate Batch 4c candidates unless explicitly accepted after the decision gate.
+1. Review `docs/features/ritsulib-migration/batch-4c-candidates.md`.
+2. Confirm the list is 5-10 low-risk patch classes only.
+3. Reject any run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, or reward-state candidate.
+4. Record owner decision: accept all, accept subset, request changes, or block.
+5. Do not migrate any candidate without explicit owner acceptance and fresh validation.
 
-### Step 5: If Runtime Smoke Fails Or Remains Blocked
+### Step 5: Blocker Reporting
 
-1. Document exact failure/blocker in `runtime-smoke-checklist.md` and `docs/reviews/current-validation.md`, including whether the current blocker is a non-clean controlled-loader audit or a supplemental live-session setup failure.
-2. Create or update the relevant issue with evidence and next action.
-3. Do not proceed to Batch 4c.
-4. Keep runtime-ready/live-ready/release-ready claims blocked.
+If a gate cannot be completed, record:
+
+- exact gate;
+- blocker reason;
+- evidence path;
+- attempted actions;
+- owner action needed;
+- why continuing would create an unsupported claim.
 
 ## Success Criteria
 
-- [x] STS2-RitsuLib installed locally.
-- [ ] Runtime smoke checklist completed at least through loader smoke.
-- [ ] `godot.log` captured and audited.
-- [ ] Off mode proves 0 Sts1Events registrations.
-- [ ] CanaryOnly proves exactly 4 canary registrations.
-- [ ] Batch 4c decision made as `advance` or `blocked`; no migration without explicit acceptance.
+- [x] Current STS2-RitsuLib installed locally (`v0.4.16`, `lib\0.107.0`).
+- [x] Historical `v0.106.1` Off loader gate proves 0 Sts1Events registrations.
+- [x] Historical `v0.106.1` CanaryOnly loader gate proves exactly 4 canary registrations.
+- [x] Historical `v0.106.1` AdditiveBatch1 loader gate proves 10 event types through 11 registration calls.
+- [x] Current `v0.107.0` game install has matching STS2-RitsuLib `v0.4.16` / `lib\0.107.0` runtime files.
+- [x] Dependency bump decision recorded: defer compile/manifest `0.4.16` bump until an owner-approved versioned package pass.
+- [x] Installed beta.84 package parity restored and verified after the 2026-06-10 DLL restore.
+- [ ] Clean current `v0.107.0` loader smoke captured after the `v0.4.16` install. The beta.84 package-parity smoke was captured but failed clean audit.
+- [ ] Current HEAD validation refreshed or explicitly recorded as stale.
+- [ ] Mod Settings UI evidence captured.
+- [ ] CanaryOnly gameplay matrix completed or blocked with evidence.
+- [ ] Save/load evidence captured or blocked with evidence.
+- [ ] Co-op/fail-closed evidence captured or blocked with evidence.
+- [ ] Batch 4c owner decision recorded.
 
-## Risk Mitigation
+## Hard Stops
 
-- **RitsuLib version mismatch**: Check manifest dependency against installed version.
-- **MissingMethodException**: Check RitsuLib API changes against bootstrap code.
-- **Game crash on startup**: Check `godot.log` for exact error and preserve the blocker report.
-- **False green**: Treat missing `godot.log`, stale beta logs, source-only tests, or skipped release artifact tests as insufficient runtime proof.
+- No release-ready, live-ready, or runtime-safe claim from loader logs alone.
+- No Batch 4c migration without owner acceptance.
+- No high-risk migration in this run.
+- No package handoff while validation, gameplay proof, clean-worktree decision, or owner decision is missing.

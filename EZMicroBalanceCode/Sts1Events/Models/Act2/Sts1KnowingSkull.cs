@@ -33,38 +33,41 @@ public sealed class Sts1KnowingSkull : EventModel
 
     private async Task Question1()
     {
-        await TakeDamage();
+        if (Owner is not { } owner) return;
+        await TakeDamage(owner);
         SetEventFinished(L10NLookup("STS1_KNOWING_SKULL.pages.QUESTION_1.description"));
     }
 
     private async Task Question2()
     {
-        await TakeDamage();
+        if (Owner is not { } owner) return;
+        await TakeDamage(owner);
         SetEventFinished(L10NLookup("STS1_KNOWING_SKULL.pages.QUESTION_2.description"));
     }
 
     private async Task Question3()
     {
-        await TakeDamage();
+        if (Owner is not { } owner) return;
+        await TakeDamage(owner);
         var options = new CardCreationOptions(
-            new[] { Owner.Character.CardPool },
+            new[] { owner.Character.CardPool },
             CardCreationSource.Other,
             CardRarityOddsType.Uniform,
             (CardModel c) => c.Rarity == CardRarity.Rare
         ).WithFlags(CardCreationFlags.NoUpgradeRoll);
 
-        var cards = CardFactory.CreateForReward(Owner, 1, options).Select(r => r.Card).ToList();
+        var cards = CardFactory.CreateForReward(owner, 1, options).Select(r => r.Card).ToList();
         if (cards.Count > 0)
             await CardPileCmd.Add(cards, PileType.Deck);
         SetEventFinished(L10NLookup("STS1_KNOWING_SKULL.pages.QUESTION_3.description"));
     }
 
-    private async Task TakeDamage()
+    private async Task TakeDamage(Player owner)
     {
         var hpCost = HasA15 ? HpCostA15 : HpCostNormal;
         await CreatureCmd.Damage(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-            Owner.Creature, (decimal)hpCost,
+            owner.Creature, (decimal)hpCost,
             MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered,
             null, null);
     }

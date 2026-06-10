@@ -30,17 +30,27 @@ public sealed class Sts1Falling : EventModel
 
     private async Task LetGo()
     {
-        await Sts1EventHelpers.OpenCardRemoval(Owner);
+        if (Owner is not { } owner)
+        {
+            return;
+        }
+
+        await Sts1EventHelpers.OpenCardRemoval(owner);
         SetEventFinished(L10NLookup("STS1_FALLING.pages.LET_GO.description"));
     }
 
     private async Task HoldOn()
     {
+        if (Owner is not { } owner)
+        {
+            return;
+        }
+
         var damagePct = HasA15 ? DamagePctA15 : DamagePctNormal;
-        var damage = (int)((Owner?.Creature.MaxHp ?? 0m) * damagePct);
+        var damage = (int)(owner.Creature.MaxHp * damagePct);
         await CreatureCmd.Damage(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-            Owner.Creature, (decimal)damage,
+            owner.Creature, (decimal)damage,
             MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered,
             null, null);
         SetEventFinished(L10NLookup("STS1_FALLING.pages.HOLD_ON.description"));
@@ -48,7 +58,12 @@ public sealed class Sts1Falling : EventModel
 
     private async Task Fly()
     {
-        await Sts1EventHelpers.OpenCardTransform(Owner, Rng);
+        if (Owner is not { } owner)
+        {
+            return;
+        }
+
+        await Sts1EventHelpers.OpenCardTransform(owner, Rng);
         SetEventFinished(L10NLookup("STS1_FALLING.pages.FLY.description"));
     }
 }

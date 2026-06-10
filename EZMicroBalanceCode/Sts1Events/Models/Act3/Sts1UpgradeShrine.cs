@@ -22,7 +22,8 @@ public sealed class Sts1UpgradeShrine : EventModel
 
     private async Task Pray()
     {
-        await Sts1EventHelpers.OpenCardUpgrade(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardUpgrade(owner);
         SetEventFinished(L10NLookup("STS1_UPGRADE_SHRINE.pages.PRAY.description"));
     }
 }

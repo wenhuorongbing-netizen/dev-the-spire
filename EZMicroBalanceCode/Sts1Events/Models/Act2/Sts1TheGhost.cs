@@ -25,14 +25,15 @@ public sealed class Sts1TheGhost : EventModel
 
     private async Task Accept()
     {
+        if (Owner is not { } owner) return;
         var options = new CardCreationOptions(
-            new[] { Owner.Character.CardPool },
+            new[] { owner.Character.CardPool },
             CardCreationSource.Other,
             CardRarityOddsType.Uniform,
             (CardModel c) => c.Rarity == CardRarity.Rare
         ).WithFlags(CardCreationFlags.NoUpgradeRoll);
 
-        var cards = CardFactory.CreateForReward(Owner, 1, options).Select(r => r.Card).ToList();
+        var cards = CardFactory.CreateForReward(owner, 1, options).Select(r => r.Card).ToList();
         if (cards.Count > 0)
             await CardPileCmd.Add(cards, PileType.Deck);
         SetEventFinished(L10NLookup("STS1_THE_GHOST.pages.ACCEPT.description"));

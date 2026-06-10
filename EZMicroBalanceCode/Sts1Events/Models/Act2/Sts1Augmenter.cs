@@ -23,13 +23,15 @@ public sealed class Sts1Augmenter : EventModel
 
     private async Task Transform()
     {
-        await Sts1EventHelpers.OpenCardTransform(Owner, Rng, count: 2);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardTransform(owner, Rng, count: 2);
         SetEventFinished(L10NLookup("STS1_AUGMENTER.pages.TRANSFORM.description"));
     }
 
     private async Task Mutate()
     {
-        await Sts1EventHelpers.OpenCardUpgrade(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardUpgrade(owner);
         SetEventFinished(L10NLookup("STS1_AUGMENTER.pages.MUTATE.description"));
     }
 }

@@ -16,7 +16,7 @@ Gate: 6 simple events with exact specs
 
 All 6 simple-batch models exist and are in the AdditiveBatch1 source scope. Runtime gameplay, EN/ZHS render, image render/license, and save/load proof remain unverified.
 
-AdditiveBatch1 exact source scope is 10 event types total (4 canary + these 6 simple events) through 11 registration calls because Shining Light registers to both Overgrowth and Underdocks.
+AdditiveBatch1 exact source scope is 10 event types total (4 canary + these 6 simple events) through 13 registration calls because Big Fish, Golden Idol, and Shining Light register to both Overgrowth and Underdocks.
 
 ---
 

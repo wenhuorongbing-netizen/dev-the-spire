@@ -1,7 +1,7 @@
 # StS1 Events Status Board
 
-> Last updated: 2026-06-02 (v16 runtime-verification pass)
-> Audit standard: strict v15 - no generic "Done", only evidence-backed statuses
+> Last updated: 2026-06-10 (Revision L runtime-drift correction)
+> Audit standard: strict v18 - no generic "Done", only evidence-backed statuses
 
 ## Allowed Statuses
 
@@ -10,6 +10,8 @@ planned → spec-drafted → wiki-verified → api-verified → implemented → 
 blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wiki-entry
 ```
 
+`historical-loader-verified` means the row has old loader-gate evidence only. It does not prove current `v0.107.0` compatibility, gameplay, event rendering, save-load, image/license status, replacement-pool behavior, multiplayer disposition, or StS1 parity.
+
 ## Overall Summary
 
 | Metric | Count | Evidence |
@@ -17,17 +19,17 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Public wiki baseline | 52 | `docs/goals/event.md` external unknown-room target |
 | Canonical audit rows | 54 | 52 public baseline + 2 local special stubs in canonical-event-matrix.csv |
 | Runtime registry entries | 50 | registry-reconciliation.md |
-| Registration calls (RegisterAll) | 54 | Sts1EventRegistrationService.cs |
-| Registration calls (AdditiveBatch1) | 11 / 10 event types | Sts1EventRegistrationService.cs; Shining Light registers to Overgrowth and Underdocks |
-| Shared event registrations | 17 | Sts1EventRegistrationService.cs (RegisterGated path) |
+| Registration calls (RegisterAll) | 56 | Sts1EventRegistrationService.cs; Big Fish, Golden Idol, and Shining Light register to Overgrowth and Underdocks |
+| Registration calls (AdditiveBatch1) | 13 / 10 event types | Sts1EventRegistrationService.cs; Big Fish, Golden Idol, and Shining Light register to Overgrowth and Underdocks |
+| Shared event registrations | 15 | Sts1EventRegistrationService.cs (`RegisterAll` shared-event calls; Big Fish and Golden Idol moved to Act 1 registration) |
 | Model files (C#) | 48 | Models/ directory (1 compile-excluded: Duplicator) |
 | Compiling models | 47 | dotnet build (1 compile-excluded) |
 | EN localization keys | 399 | eng/sts1_events.json |
 | ZHS localization keys | 399 (0 placeholder) | zhs/sts1_events.json verified |
 | Event images | 0 | No redistributable art available |
 | Guard tests | source-guarded | Sts1EventFeatureGuardTests.cs |
-| Build | 0 errors / 79 warnings | 2026-06-02 v16 solution build; warnings are Sts1Events nullable staging warnings (budget documented in `docs/goals/warning-ledger.md`); reduced from 89 by Golden Idol parity fixes |
-| Tests | 464 passed / 0 failed / 21 skipped (485 total) | 2026-06-02 v16 no-build validation with single VSTest worker; 21 skipped are `[ReleaseArtifactFact]`-gated (require `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`) |
+| Build | 0 errors / 0 warnings | 2026-06-10 Revision L project build after expanded Sts1Events owner guards; prior 70 nullable warnings are cleared in current dirty source |
+| Tests | 464 passed / 0 failed / 21 skipped (485 total) | Current test-project lane and exact solution-level `dotnet test EZMicroBalance.sln --no-build` passed after the cross-thread validation overlap was cleared; 21 skipped are `[ReleaseArtifactFact]`-gated |
 | Format | passed | `dotnet format --verify-no-changes` clean |
 | Diff check | passed | `git diff --check` clean (no CRLF warning) |
 
@@ -35,8 +37,8 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 
 | Phase | Events | Compiled | Blocked | Status |
 |-------|--------|----------|---------|--------|
-| Canary (4) | Big Fish, Golden Idol, The Lab, Divine Fountain | 4 | 0 | compiled, test-guarded, source/API verified, **runtime-verified** (clean audit: 0 Godot ERROR, exact 4 registrations confirmed in godot.log) |
-| AdditiveBatch1 verified scope (10 event types) | Big Fish, Golden Idol, The Lab, Divine Fountain, Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, Shining Light | 10 | 0 | compiled, source-guarded, **runtime-verified** (clean audit: 0 Godot ERROR, exact 10 event types / 11 registration calls confirmed in godot.log) |
+| Canary (4) | Big Fish, Golden Idol, The Lab, Divine Fountain | 4 | 0 | compiled, test-guarded, source/API verified, historical `v0.106.1` loader-gate proof only; current `v0.107.0` loader reproof, gameplay proof, and Act/parity audit closure are blocked/pending |
+| AdditiveBatch1 verified scope (10 event types) | Big Fish, Golden Idol, The Lab, Divine Fountain, Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, Shining Light | 10 | 0 | compiled, source-guarded, historical `v0.106.1` loader-gate proof only; current `v0.107.0` loader reproof and per-event gameplay/render/save-load proof are blocked/pending |
 | Simple (22 registry entries; 21 compiling) | Shining Light, Mushrooms, Joust, The Ssssserpent, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter, Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine, The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits, Fountain of Cleansing, Purifier, Golden Shrine, Duplicator | 21 | 0 | compiled/source-guarded except Duplicator compile-excluded; Lab and Divine Fountain are canary metadata |
 | CardService (9) | Face Trader, The Mausoleum, Council of Ghosts, Cursed Tome, Knowing Skull, Nest, Vampires, Falling, Mind Bloom | 9 | 0 | compiled (4 temporary-substitute plus Mind Bloom War partial) |
 | Combat (5) | Dead Adventurer, Scorpion Nest, Treasure Ooze, Masked Bandits, Mysterious Sphere | 5 | 5 | blocked pending encounter-model/runtime parity proof |
@@ -49,10 +51,10 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 
 | Event | Status | TODOs | IsShared | Parity Gap | Proof |
 |-------|--------|-------|----------|------------|-------|
-| Big Fish | compiled, test-guarded, source/API verified, runtime-verified | none | true | 1 minor: option key "Shoe" vs wiki "Box" (cosmetic naming) | canary-source-api-proof.md, godot.log |
-| Golden Idol | compiled, test-guarded, source/API verified, runtime-verified | none | true | 2 remaining: option keys "SMASH/JUMP/DESTROY" vs wiki "Outrun/Smash/Hide" (cosmetic naming); no Golden Idol relic in StS2 (grants random relic instead) | canary-source-api-proof.md, godot.log |
-| The Lab | compiled, test-guarded, source/API verified, runtime-verified | none | true | 1 minor: extra Leave option not in wiki (StS2 UX improvement) | canary-source-api-proof.md, godot.log |
-| Divine Fountain | compiled, test-guarded, source/API verified, runtime-verified | none | true | 2 minor: option key "Pray" vs wiki "Drink" (cosmetic); curse prerequisite not checked in model | canary-source-api-proof.md, godot.log |
+| Big Fish | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Current `v0.107.0` loader reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Source registration now targets Act 1 buckets; runtime bucket proof remains pending. Option key "Shoe" vs wiki "Box" remains cosmetic/non-parity text | canary-source-api-proof.md, historical godot.log |
+| Golden Idol | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Golden Idol relic parity decision, current `v0.107.0` loader reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Source registration now targets Act 1 buckets; runtime bucket proof remains pending. Take currently grants a random relic because no Golden Idol relic model is implemented; trap option labels differ from wiki names | canary-source-api-proof.md, historical godot.log |
+| The Lab | compiled, test-guarded, source/API verified, historical-loader-verified | Current `v0.107.0` loader reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Extra Leave option not in wiki; A15/no-drawback parity remains unproven in live event flow | canary-source-api-proof.md, historical godot.log |
+| Divine Fountain | compiled, test-guarded, source/API verified, historical-loader-verified | Curse-prerequisite parity decision, current `v0.107.0` loader reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Option key "Pray" vs wiki "Drink"; curse prerequisite is not checked in the model | canary-source-api-proof.md, historical godot.log |
 
 ### Blocked / Partial Events (7 rows)
 
@@ -96,25 +98,26 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Neow | Start-of-run only; handled by base game Neow class |
 | Combat Start | Tutorial flow; no unknown-room model needed |
 
-## Runtime Gates (v16)
+## Runtime Gates (historical v16 / `v0.106.1`; current `v0.107.0` proof blocked)
 
 | Gate | Status | Blocker |
 |------|--------|---------|
-| Runtime path report (O21) | **pass** | E-drive game root, BaseLib v3.1.4, STS2-RitsuLib v0.3.10, and Spire Plus paths verified. |
-| STS2-RitsuLib installed (O22) | **pass** | `STS2-RitsuLib` `v0.3.10` with `lib\0.106.1\STS2-RitsuLib.dll` installed on E-drive. |
-| Active `godot.log` generated (O23) | **pass** | Clean logs exist for Off, CanaryOnly, and AdditiveBatch1 modes. |
-| Loader proof (O24) | **pass** | 3 clean audits: Off mode (0 Godot ERROR), CanaryOnly mode (0 Godot ERROR, 3 mods loaded, 25/25 patches), AdditiveBatch1 mode (0 Godot ERROR, 3 mods loaded, 25/25 patches). The `[ERROR] ritsulib-variants.json` line is a RitsuLib internal variant-manifest issue, not a Spire Plus or Godot engine error; audit tool counts `^ERROR:` (Godot native) not `[ERROR]` (C# logger). |
-| Default Off runtime state (O13) | **pass** | Clean Off-mode audit: 0 StS1 registration lines, Sts1Events disabled/default Off confirmed in godot.log. |
-| CanaryOnly exact 4 (O14) | **pass** | Clean CanaryOnly audit: exactly Sts1BigFish, Sts1GoldenIdol, Sts1TheLab, Sts1DivineFountain registered. |
-| AdditiveBatch1 exact 10/11 (O15) | **pass** | Clean AdditiveBatch1 audit: exactly 10 event types via 11 registration calls (Shining Light → Overgrowth + Underdocks). |
+| Runtime path report (O21) | **current prerequisite pass** | E-drive game root, BaseLib v3.1.4, STS2-RitsuLib v0.4.16 with `lib\0.107.0`, and Spire Plus beta.84 package-parity install are present. |
+| STS2-RitsuLib installed (O22) | **current prerequisite pass** | `STS2-RitsuLib` `v0.4.16` with `lib\0.107.0\STS2-RitsuLib.dll` is installed on E-drive. |
+| Active `godot.log` generated (O23) | **current fail** | Current Off smoke exists at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/`, but its audit is non-clean. |
+| Loader proof (O24) | **current fail** | Current Off smoke on `v0.107.0` / RitsuLib `v0.4.16` fails audit: 11 Godot ERROR lines, 1 Spire Plus error/exception, and `EctoplasmGoldGatePatch::Prefix(...)` undefined target method in beta.84. |
+| Default Off runtime state (O13) | **historical pass / current fail** | Historical Off-mode audit: 0 StS1 registration lines. Current Off smoke is non-clean before it can count as default-Off proof. |
+| CanaryOnly exact 4 (O14) | **historical pass / current blocked** | Historical CanaryOnly audit: exactly Sts1BigFish, Sts1GoldenIdol, Sts1TheLab, Sts1DivineFountain registered. |
+| AdditiveBatch1 exact 10/13 (O15 historical) | **historical pass / source changed / current blocked** | Historical AdditiveBatch1 audit proved the older 10 event types via 11 registration calls. Current source now has 10 event types via 13 calls after Big Fish and Golden Idol moved to Act 1 buckets; current proof must wait until the non-clean `v0.107.0` Off smoke is fixed and rerun clean. |
+| AdditiveBatch1 exact 10/13 (O15 current) | **current blocked** | Current `v0.107.0` AdditiveBatch1 proof must wait until Off loader proof is clean with a fixed package. |
 | AdditiveAllDraft unsafe (O16) | **pass (source-guarded)** | Requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; test-gated. |
 | ReplacementPrototype fail-closed (O17/O18) | **pass (source-guarded)** | Requires `#if REPLACEMENT_PROTOTYPE_ENABLED` + unsafe override; test-gated. |
-| Canary runtime launch (O25) | **pass** | CanaryOnly launch confirmed in godot.log. |
+| Canary runtime launch (O25) | **historical pass / current blocked** | CanaryOnly launch confirmed in historical godot.log only; current Off smoke is red, so CanaryOnly was not attempted as proof. |
 | Canary event screenshots (O26-O29) | **blocked** | Requires in-game event encounter screenshots (Big Fish, Golden Idol, Lab, Divine Fountain). |
 | Canary save/load proof (O30) | **blocked** | Requires save during/after event, reload, state stable. |
 | Canary EN/ZHS render (O31) | **blocked** | Requires in-game EN/ZHS text render screenshots. |
 | Canary image/license render (O32) | **blocked** | No redistributable art; requires extraction/placeholder decision. |
-| AdditiveBatch1 runtime launch (O33) | **pass** | AdditiveBatch1 launch confirmed in godot.log; exact 10 event types / 11 calls. |
+| AdditiveBatch1 runtime launch (O33) | **historical pass / current blocked** | AdditiveBatch1 launch confirmed in historical godot.log; current Off smoke is red, so AdditiveBatch1 was not attempted as proof. |
 | Simple batch event proofs (O34-O39) | **blocked** | Requires per-event in-game encounter screenshots and result logs. |
 | Simple batch save/load (O40) | **blocked** | Requires save/load proof for simple batch events. |
 | Simple batch EN/ZHS render (O41) | **blocked** | Requires in-game EN/ZHS text render screenshots. |
@@ -127,11 +130,12 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 
 - `CanaryOnly` remains exactly Big Fish, Golden Idol, The Lab, and Divine Fountain.
 - `AdditiveBatch1` is now a separate mode and must not be described as `AdditiveAllDraft`.
-- `AdditiveBatch1` registers 10 event types through 11 registration calls because Shining Light is available in both StS2 Act 1 buckets: Overgrowth and Underdocks.
+- `AdditiveBatch1` now registers 10 event types through 13 registration calls because Big Fish, Golden Idol, and Shining Light are available in both StS2 Act 1 buckets: Overgrowth and Underdocks.
+- Any O13-O25/O33 `pass` language in this file is historical `v0.106.1` loader-gate evidence only. Current `v0.107.0` Off loader proof is red for beta.84 and must be rerun only after a fixed package is installed.
 - `AdditiveAllDraft` remains unsafe/dev-only and now requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` in addition to `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft`.
 - `ReplaceUnknownEventsPrototype` remains debug-only and does not register events unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED` and explicitly allowed with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`.
 - Joust and The Ssssserpent are source-classified as non-combat Act 1 events; encounter-model blockers apply only to actual combat-entry events.
-- **v16 update**: Clean runtime evidence now exists for Off, CanaryOnly, and AdditiveBatch1 modes. The v15 loader audit (11 Godot ERROR hits) is superseded by the v16 clean audits (0 Godot ERROR for all three modes). The `[ERROR] ritsulib-variants.json` line is a RitsuLib internal variant-manifest issue logged by the C# logger, not a Godot engine error; the audit tool correctly counts only `^ERROR:` lines (Godot native format) and reports 0.
+- **Revision L correction**: Clean historical `v0.106.1` loader evidence exists for Off, CanaryOnly, and AdditiveBatch1 modes. Current `v0.107.0` beta.84 package smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` is non-clean because Spire Plus initialization still targets stale game APIs in the packaged DLL.
 - Remaining blocked gates: event encounter screenshots (O26-O29, O34-O39), save/load proof (O30, O40), EN/ZHS render (O31, O41), image/license (O32, O42), replacement functional proof (O43-O46), multiplayer fail-closed (O47), and independent QA (O51/O52).
 
 ## Evidence Files
@@ -157,4 +161,7 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | **v16 CanaryOnly clean audit** | `.tools/runtime-evidence/ritsulib-canary-after-target-fix-20260531-2327/godot-log-audit.json` |
 | **v16 AdditiveBatch1 clean log** | `.tools/runtime-evidence/additive-batch1-20260602-150445/godot.log.after-launch` |
 | **v16 AdditiveBatch1 clean audit** | `.tools/runtime-evidence/additive-batch1-20260602-150445/godot-log-audit.json` |
+| **v18 current Off package-parity log (non-clean)** | `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/godot.log.after-launch` |
+| **v18 current Off package-parity audit (non-clean)** | `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/godot-log-audit.json` |
+| **v18 current loader hard stop** | `docs/features/sts1-events/hard-stop-blocker-report-v18-current-loader-20260610.md` |
 | Warning budget | `docs/goals/warning-ledger.md` |

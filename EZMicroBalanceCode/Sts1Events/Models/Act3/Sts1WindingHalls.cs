@@ -37,31 +37,41 @@ public sealed class Sts1WindingHalls : EventModel
 
     private async Task Embrace()
     {
+        if (Owner is not { } owner)
+        {
+            return;
+        }
+
         // StS1 Madness curse doesn't exist in StS2; using Debt as substitute
         var curseCount = HasA15 ? MadnessA15 : MadnessNormal;
         var curses = new List<CardModel>();
         for (int i = 0; i < curseCount; i++)
             curses.Add(ModelDb.Card<Debt>());
-        await CardPileCmd.AddCursesToDeck(curses, Owner);
+        await CardPileCmd.AddCursesToDeck(curses, owner);
 
         var maxHpLossPct = HasA15 ? EmbraceMaxHpLossPctA15 : EmbraceMaxHpLossPctNormal;
-        var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * maxHpLossPct);
+        var maxHpLoss = (int)(owner.Creature.MaxHp * maxHpLossPct);
         if (maxHpLoss > 0)
         {
             await CreatureCmd.LoseMaxHp(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                Owner.Creature, maxHpLoss, isFromCard: false);
+                owner.Creature, maxHpLoss, isFromCard: false);
         }
         SetEventFinished(L10NLookup("STS1_WINDING_HALLS.pages.EMBRACE.description"));
     }
 
     private async Task Retreat()
     {
+        if (Owner is not { } owner)
+        {
+            return;
+        }
+
         var damagePct = HasA15 ? RetreatDamagePctA15 : RetreatDamagePctNormal;
-        var damage = (int)((Owner?.Creature.MaxHp ?? 0m) * damagePct);
+        var damage = (int)(owner.Creature.MaxHp * damagePct);
         await CreatureCmd.Damage(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-            Owner.Creature, (decimal)damage,
+            owner.Creature, (decimal)damage,
             MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered,
             null, null);
         SetEventFinished(L10NLookup("STS1_WINDING_HALLS.pages.RETREAT.description"));
@@ -69,13 +79,18 @@ public sealed class Sts1WindingHalls : EventModel
 
     private async Task Continue()
     {
+        if (Owner is not { } owner)
+        {
+            return;
+        }
+
         var maxHpLossPct = HasA15 ? ContinueMaxHpLossPctA15 : ContinueMaxHpLossPctNormal;
-        var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * maxHpLossPct);
+        var maxHpLoss = (int)(owner.Creature.MaxHp * maxHpLossPct);
         if (maxHpLoss > 0)
         {
             await CreatureCmd.LoseMaxHp(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                Owner.Creature, maxHpLoss, isFromCard: false);
+                owner.Creature, maxHpLoss, isFromCard: false);
         }
         SetEventFinished(L10NLookup("STS1_WINDING_HALLS.pages.CONTINUE.description"));
     }

@@ -28,13 +28,14 @@ public sealed class Sts1CursedTome : EventModel
 
     private async Task Read()
     {
+        if (Owner is not { } owner) return;
         var damage = HasA15 ? DamageA15 : DamageNormal;
         await CreatureCmd.Damage(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-            Owner.Creature, (decimal)damage,
+            owner.Creature, (decimal)damage,
             MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered,
             null, null);
-        await Sts1EventHelpers.GrantRandomRareRelic(Owner);
+        await Sts1EventHelpers.GrantRandomRareRelic(owner);
         SetEventFinished(L10NLookup("STS1_CURSED_TOME.pages.READ.description"));
     }
 }

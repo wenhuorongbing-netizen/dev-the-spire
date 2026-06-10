@@ -22,9 +22,11 @@ RitsuLib provides two registration methods:
 
 ```csharp
 // Shared event — appears in all acts
-content.SharedEvent<Sts1BigFish>();
+content.SharedEvent<Sts1TheLab>();
 
 // Act-specific event — appears only in the specified act
+content.ActEvent<Overgrowth, Sts1BigFish>();
+content.ActEvent<Underdocks, Sts1BigFish>();
 content.ActEvent<Overgrowth, Sts1ShiningLight>();
 content.ActEvent<Underdocks, Sts1ShiningLight>();
 ```
@@ -43,21 +45,21 @@ content.ActEvent<Underdocks, Sts1ShiningLight>();
 
 | Category | Count | Registration Method |
 | --- | --- | --- |
-| Shared events | 17 registered (+1 compile-excluded model) | `content.SharedEvent<T>()` |
-| Act 1 events (per act) | 7 | `content.ActEvent<Overgrowth, T>()` + `content.ActEvent<Underdocks, T>()` |
+| Shared events | 15 registered (+1 compile-excluded model) | `content.SharedEvent<T>()` |
+| Act 1 events (per act) | 9 | `content.ActEvent<Overgrowth, T>()` + `content.ActEvent<Underdocks, T>()` |
 | Act 2 events | 14 | `content.ActEvent<Hive, T>()` |
 | Act 3 events | 9 | `content.ActEvent<Glory, T>()` |
-| **RegisterAll registration calls** | **54** | (17 shared × 1 + 7 act1 × 2 + 14 act2 × 1 + 9 act3 × 1) |
-| **AdditiveBatch1 registration calls** | **11** | 10 verified-scope event types; Shining Light registers to both Overgrowth and Underdocks |
+| **RegisterAll registration calls** | **56** | (15 shared x 1 + 9 act1 x 2 + 14 act2 x 1 + 9 act3 x 1) |
+| **AdditiveBatch1 registration calls** | **13** | 10 verified-scope event types; Big Fish, Golden Idol, and Shining Light register to both Overgrowth and Underdocks |
 | **Excluded** | 1 | `Sts1Duplicator` — uses `CardSelectCmd`/`CardPileCmd` APIs not yet available |
 
 ### Canary Mode Registration
 
-`CanaryOnly` mode registers exactly 4 shared events:
+`CanaryOnly` mode registers exactly 4 event types through 6 registration calls:
 
-1. `Sts1BigFish` — `sts1_big_fish`
-2. `Sts1GoldenIdol` — `sts1_golden_idol`
+1. `Sts1BigFish` — `sts1_big_fish` in Overgrowth + Underdocks
+2. `Sts1GoldenIdol` — `sts1_golden_idol` in Overgrowth + Underdocks
 3. `Sts1TheLab` — `sts1_the_lab`
 4. `Sts1DivineFountain` — `sts1_divine_fountain`
 
-All 4 are shared events (appear in all acts). Verified in `Sts1EventRegistrationService.RegisterCanaryOnly()`.
+Big Fish and Golden Idol are Act 1 bucket registrations. The Lab and Divine Fountain remain shared registrations. Verified in `Sts1EventRegistrationService.RegisterCanaryOnly()`.

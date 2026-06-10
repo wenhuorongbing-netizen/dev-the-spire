@@ -28,9 +28,10 @@ public sealed class Sts1Nest : EventModel
 
     private async Task Search()
     {
-        await Sts1EventHelpers.GrantRandomRelic(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.GrantRandomRelic(owner);
         var curseCount = HasA15 ? CursesA15 : CursesNormal;
-        await Sts1EventHelpers.AddCurses<Clumsy>(Owner, curseCount);
+        await Sts1EventHelpers.AddCurses<Clumsy>(owner, curseCount);
         SetEventFinished(L10NLookup("STS1_NEST.pages.SEARCH.description"));
     }
 }

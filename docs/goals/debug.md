@@ -1,6 +1,26 @@
-﻿## 严格审核结论
+﻿## Revision L implementation status (2026-06-10)
 
-当前助理的工作**仍未整体完成**。但这次要比前几轮更精确地区分：
+This file contains the uploaded historical audit brief below. Its old references to `87820303`, missing `STS2-RitsuLib`, 54 dirty entries, 89 warnings, and absent Off/Canary runtime proof are historical input, not current project truth.
+
+Current owner-review truth lives in:
+
+- `docs/goals/m5-revision-l-owner-review-packet.md`
+- `docs/goals/m5-revision-l-runtime-hard-blocker.md`
+- `docs/goals/m5-revision-l-runtime-smoke-plan.md`
+- `docs/goals/m5-revision-l-dirty-ledger.md`
+- `docs/goals/m5-revision-l-warning-ledger.md`
+- `docs/goals/m5-revision-l-commit-slices.md`
+- `docs/goals/overnight-run-status.md`
+- `docs/goals/overnight-run-ledger.md`
+- `docs/goals/overnight-diff-ledger.md`
+
+Current summary: baseline HEAD is `f32c6767`, the worktree is dirty, RitsuLib `v0.4.16` is installed locally with `lib\0.107.0`, historical Off/CanaryOnly/AdditiveBatch1 diagnostic loader proof exists for the older `v0.106.1` runtime, current no-game validation passes with 0 build errors, 0 warnings, and 464 passed / 0 failed / 21 skipped / 485 total tests, and no clean current game launch, package refresh, commit, or push was performed.
+
+---
+
+## Historical uploaded audit text
+
+当前助理的工作**仍未整体完成**。但需要把结论拆开说：
 
 ```text
 Revision I hard-blocker stop：可以有条件接受
@@ -13,7 +33,7 @@ Longhaul audit readiness：未通过
 ```
 
 我已把新的下月开发规范和夜间运行任务写成文件：
-[下载 M5 July Owner-Review & Runtime Closure Spec](sandbox:/mnt/data/devspire_m5_july_owner_review_runtime_closure_spec.md)
+[下载 M5 Revision L Owner-Review & Runtime Closure Spec](sandbox:/mnt/data/devspire_m5_revision_l_owner_review_runtime_closure_spec.md)
 
 ---
 
@@ -394,7 +414,7 @@ Owner-review packet + runtime hard-blocker closure + governance decisions + long
 ```
 
 下载文件：
-[devspire_m5_july_owner_review_runtime_closure_spec.md](sandbox:/mnt/data/devspire_m5_july_owner_review_runtime_closure_spec.md)
+[devspire_m5_revision_l_owner_review_runtime_closure_spec.md](sandbox:/mnt/data/devspire_m5_revision_l_owner_review_runtime_closure_spec.md)
 
 ### Week 1：Owner Review + Runtime Hard-Blocker Closure
 
@@ -407,14 +427,16 @@ Owner-review packet + runtime hard-blocker closure + governance decisions + long
 必须产出：
 
 ```text
-docs/goals/m5-week1-owner-review-packet.md
-docs/goals/m5-week1-runtime-hard-blocker.md
-docs/goals/m5-week1-runtime-smoke-plan.md
-docs/goals/m5-week1-dirty-ledger.md
-docs/goals/m5-week1-warning-ledger.md
-docs/goals/m5-week1-commit-slices.md
+docs/goals/m5-revision-l-owner-review-packet.md
+docs/goals/m5-revision-l-runtime-hard-blocker.md
+docs/goals/m5-revision-l-runtime-smoke-plan.md
+docs/goals/m5-revision-l-dirty-ledger.md
+docs/goals/m5-revision-l-warning-ledger.md
+docs/goals/m5-revision-l-commit-slices.md
 updated docs/goals/overnight-run-status.md
 updated docs/goals/overnight-run-ledger.md
+updated docs/goals/overnight-diff-ledger.md
+updated docs/goals/warning-ledger.md
 updated harness/TASK_STATUS.md
 updated harness/TASK_FOCUS_PACK.md
 ```
@@ -587,7 +609,7 @@ CommitSliceAgent 只能准备 commit plan，不允许 commit。
 你可以直接发给他：
 
 ```text
-进入 M5 July Week 1 overnight owner-review and runtime hard-blocker closure run。
+进入 M5 Revision L overnight owner-review and runtime hard-blocker closure run。
 
 当前状态不是 complete。Revision I 正确停止在 runtime hard blocker：STS2-RitsuLib runtime path missing、active godot.log missing、Off=0/CanaryOnly=4 runtime proof absent。不要继续 PR6 Batch4c、PR6 Batch5、PR7、debug expansion、Sts1Events formalization 或 longhaul audit。
 
@@ -674,14 +696,17 @@ git diff --check
 .\scripts\report-worktree-batches.ps1 -FailOnUnclassified
 
 必须创建或更新：
-docs/goals/m5-week1-owner-review-packet.md
-docs/goals/m5-week1-runtime-hard-blocker.md
-docs/goals/m5-week1-runtime-smoke-plan.md
-docs/goals/m5-week1-dirty-ledger.md
-docs/goals/m5-week1-warning-ledger.md
-docs/goals/m5-week1-commit-slices.md
+docs/goals/m5-revision-l-final-report.md
+docs/goals/m5-revision-l-owner-review-packet.md
+docs/goals/m5-revision-l-runtime-hard-blocker.md
+docs/goals/m5-revision-l-runtime-smoke-plan.md
+docs/goals/m5-revision-l-dirty-ledger.md
+docs/goals/m5-revision-l-warning-ledger.md
+docs/goals/m5-revision-l-commit-slices.md
 docs/goals/overnight-run-status.md
 docs/goals/overnight-run-ledger.md
+docs/goals/overnight-diff-ledger.md
+docs/goals/warning-ledger.md
 harness/TASK_STATUS.md
 harness/TASK_FOCUS_PACK.md
 
@@ -700,480 +725,3 @@ Not complete: exact hard blocker encountered.
 ## 一句话总评
 
 他这轮做对了关键动作：**在 runtime hard blocker 处停止，而不是继续乱推进。** 所以这轮可以算“正确停止”，但不能算“整体完成”。现在的正确策略是 **继续优化 + 有限推进**：先用 subagents 把 54 dirty entries、89 warnings、RitsuLib runtime 缺失、godot.log 缺失、Off=0 / CanaryOnly=4 proof 缺失全部收口，然后再由你决定 commit、rollback，或进入下一阶段治理。
-# DevSpire M5 July 2026 — Runtime Closure, Owner Commit Gate, and Longhaul Recovery Spec
-
-Date: 2026-06-02
-Project: `dev-the-spire` / player-facing `Spire Plus` / technical manifest id `EZMicroBalance`
-
-## 0. Strict Audit Verdict
-
-Current assistant work is **not fully complete**.
-
-Accepted as complete only for the narrow stop condition:
-
-```text
-Revision I hard-blocker stop: conditionally accepted.
-```
-
-Not accepted:
-
-```text
-Overall completion.
-Release readiness.
-Runtime readiness / live readiness.
-Commit readiness.
-RitsuLib hard dependency completion.
-Sts1Events formal feature completion.
-Debug feature completion.
-Longhaul audit readiness.
-PR6 Batch4c / Batch5 / PR7 advancement.
-```
-
-Current required wording:
-
-```text
-Terminal validation: reported green.
-Runtime smoke: blocked by missing STS2-RitsuLib runtime and missing active godot.log.
-Project status: not complete.
-Release-ready: no.
-Runtime-ready/live-ready: no.
-Commit-ready: no.
-Next action: owner-review packet + runtime hard-blocker closure.
-```
-
-## 1. Current State to Preserve
-
-Latest reported state:
-
-```text
-HEAD: 87820303 (main, origin/main, origin/HEAD) sprint 1
-Worktree: dirty, 54 entries
-Batch classifier: 0 unclassified
-No commit/push/stash/checkout/reset/restore performed
-Build: passed, 0 errors, 89 Sts1Events nullable warnings
-Tests: 464 passed / 0 failed / 21 skipped / 485 total
-Format: passed
-git diff --check: passed
-generate-patch-inventory.ps1 -Check: passed
-report-worktree-batches.ps1 -FailOnUnclassified: passed
-Runtime smoke: blocked
-```
-
-Runtime blockers:
-
-```text
-E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib is missing.
-active godot.log is missing.
-No Off=0 runtime proof.
-No CanaryOnly=4 runtime proof.
-D-drive game root/mod paths are missing.
-```
-
-Current governance decisions:
-
-```text
-Sts1Events: staging-only
-Debug: accept-scaffold
-RitsuLib: compile/manifest attempted; runtime unverified
-FeatureRegistry: source-level metadata/bootstrap truth guarded; runtime unproven
-RewardPipeline/CardPlayContext: diagnostics/canary only; no gameplay claim
-DeathProtectionService/MultiplayerPolicy: diagnostics/taxonomy only; no gameplay enforcement claim
-Batch 4c: blocked
-Strategy: both optimize and advance, but optimization-first
-```
-
-Patch inventory truth to preserve:
-
-```text
-25 migrated IPatchMethod
-142 raw HarmonyPatch declarations
-167 tracked patch units
-```
-
-## 2. Goals Comparison
-
-Original goals:
-
-1. Recover a truthful green baseline.
-2. Use subagents for non-trivial review work.
-3. Explain all dirty/untracked files.
-4. Keep Sts1Events, Debug, and RitsuLib statuses truthful.
-5. Avoid runtime/release claims without runtime evidence.
-6. Do not commit without owner authorization.
-7. Resume one-file longhaul audit only after owner-review and runtime/governance blockers are closed.
-
-Current comparison:
-
-| Goal | Current status | Result |
-| --- | --- | --- |
-| Terminal validation green | Reported green | Pass, replay after each change |
-| Dirty files explained | 54 dirty, 0 unclassified | Partial; owner-review packet required |
-| Warnings classified | 89 Sts1Events nullable warnings | Partial; warning ledger must remain no-TBD |
-| Runtime proof | Missing STS2-RitsuLib runtime and godot.log | Fail / hard blocker |
-| RitsuLib status truth | compile/manifest attempted, runtime unverified | Truthful, not complete |
-| Sts1Events status truth | staging-only | Truthful, not formal |
-| Debug status truth | accept-scaffold | Truthful, not feature-complete |
-| Commit readiness | dirty worktree | Fail |
-| Longhaul readiness | runtime/owner-review blockers open | Fail |
-
-Strategic decision:
-
-```text
-Proceed with both optimization and limited advancement, but optimization-first.
-```
-
-Allocation:
-
-```text
-70% optimization / closure:
-- runtime hard-blocker packet
-- dirty ledger
-- warning ledger
-- owner-review packet
-- commit slices
-- docs truth
-- validation replay
-
-30% limited advancement:
-- runtime dependency installation plan
-- runtime smoke plan
-- Sts1Events staging governance
-- RitsuLib runtime verification readiness
-```
-
-Forbidden advancement before gates close:
-
-```text
-PR6 Batch4c
-PR6 Batch5
-PR7
-High-risk patch migration
-Debug expansion
-Sts1Events formalization
-Longhaul audit
-Release packaging claim
-Runtime-ready claim
-```
-
-## 3. Subagent Policy
-
-Main agent must not self-certify. Every non-trivial task must use subagents first.
-
-Required subagents:
-
-1. GitForensicsAgent
-2. RuntimeDependencyAgent
-3. RuntimeSmokeAgent
-4. DirtyStateReconciliationAgent
-5. WarningLedgerAgent
-6. RitsuLibRuntimeAgent
-7. Sts1EventsGovernanceAgent
-8. DebugDecisionAgent
-9. PatchInventoryAgent
-10. TestChangeReviewAgent
-11. DocsTruthAgent
-12. CommitSliceAgent
-13. LocalizationBacklogAgent
-
-Each subagent must report:
-
-```text
-scope
-files inspected
-commands run
-findings
-risk
-recommended action
-whether edits are needed
-```
-
-Main agent may edit only after subagent findings are summarized.
-
-## 4. July 2026 Monthly Plan
-
-### Week 1 — Owner Review and Runtime Hard-Blocker Closure
-
-Goal:
-
-```text
-Turn the green static-validation state into an owner-review packet and close or precisely document the runtime blocker.
-```
-
-Required outputs:
-
-```text
-docs/goals/m5-week1-owner-review-packet.md
-docs/goals/m5-week1-runtime-hard-blocker.md
-docs/goals/m5-week1-runtime-smoke-plan.md
-docs/goals/m5-week1-dirty-ledger.md
-docs/goals/m5-week1-warning-ledger.md
-docs/goals/m5-week1-commit-slices.md
-updated docs/goals/overnight-run-status.md
-updated docs/goals/overnight-run-ledger.md
-updated harness/TASK_STATUS.md
-updated harness/TASK_FOCUS_PACK.md
-```
-
-Required validation:
-
-```powershell
-dotnet clean .\EZMicroBalance.csproj
-dotnet build .\EZMicroBalance.csproj
-dotnet build .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj
-dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build
-dotnet format .\EZMicroBalance.csproj --verify-no-changes
-git diff --check
-.\scripts\generate-patch-inventory.ps1 -Check
-.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-```
-
-Week 1 completion requires one of:
-
-```text
-A. STS2-RitsuLib runtime exists, runtime smoke prerequisites pass, and smoke evidence is collected.
-B. STS2-RitsuLib runtime remains missing, and exact hard blocker + owner action are documented.
-```
-
-### Week 2 — Governance Decisions
-
-Goal:
-
-```text
-Finalize Sts1Events, Debug, and RitsuLib governance state.
-```
-
-Default decisions:
-
-```text
-Sts1Events: staging-only
-Debug: accept-scaffold
-RitsuLib: compile/manifest attempted; runtime unverified
-```
-
-Promotion requirements:
-
-Sts1Events can become formal only after:
-
-```text
-89 nullable warnings fixed or explicitly accepted
-ZHS localization backlog resolved
-Off=0 runtime proof collected
-CanaryOnly=4 runtime proof collected
-event images/resources resolved or explicitly deferred
-blocked combat rows resolved
-manual runtime plan exists
-```
-
-Debug can become feature-complete only after:
-
-```text
-settings exposure exists or internal-only policy is explicit
-dedicated behavioral tests exist
-Warn policy is documented
-LogPreview dead-code decision is resolved
-side-effect audit exists
-```
-
-RitsuLib can become runtime-validated only after:
-
-```text
-STS2-RitsuLib runtime installed
-loader smoke passes
-godot.log audit clean
-package/handoff docs align if manifest dependency remains
-runtime fallback or install-enforced hard-dependency decision documented
-```
-
-### Week 3 — Runtime / Packaging Truth
-
-Goal:
-
-```text
-Either validate RitsuLib as a true runtime dependency or keep docs explicitly downgraded.
-```
-
-If runtime validation is possible, run:
-
-```powershell
-dotnet publish .\EZMicroBalance.csproj
-.\scripts\package-spire-plus.ps1
-$env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'
-dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build
-Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS
-```
-
-Also required:
-
-```text
-BaseLib + STS2-RitsuLib + Spire Plus loader smoke
-godot.log audit
-tester handoff dependency instructions
-package/hash/version docs
-runtime fallback or install-enforced hard-dependency decision
-```
-
-### Week 4 — One-file Longhaul Audit Recovery
-
-Resume only after:
-
-```text
-owner-review packet accepted
-commit/rollback decisions made
-terminal validation still green
-runtime blocker closed or explicitly owner-deferred
-Sts1Events/Debug/RitsuLib governance decisions recorded
-no stale truth blockers remain
-```
-
-First ten longhaul files:
-
-```text
-1. EZMicroBalance.csproj
-2. EZMicroBalance.json
-3. EZMicroBalanceCode/MainFile.cs
-4. EZMicroBalanceCode/Core/Integrations/RitsuLib/RitsuLibBootstrap.cs
-5. EZMicroBalanceCode/Sts1Events/Sts1EventFeatureGate.cs
-6. EZMicroBalanceCode/Sts1Events/Sts1EventRegistrationService.cs
-7. tests/EZMicroBalance.Tests/RitsuLibMigrationGuardTests.cs
-8. tests/EZMicroBalance.Tests/Sts1EventFeatureGuardTests.cs
-9. scripts/generate-patch-inventory.ps1
-10. docs/integrations/ritsulib.md
-```
-
-Each round must end with exactly one status:
-
-```text
-fixed
-skipped
-blocked
-```
-
-## 5. Overnight Run Prompt
-
-Use this prompt for the next assistant run.
-
-```text
-Enter M5 July Week 1 overnight owner-review and runtime hard-blocker closure run.
-
-Current status is NOT COMPLETE.
-
-Known latest status:
-- HEAD: 87820303 (main, origin/main) sprint 1
-- Worktree: 54 dirty entries, 0 unclassified
-- Terminal validation passed
-- Build: 0 errors, 89 Sts1Events nullable warnings
-- Tests: 464 passed / 0 failed / 21 skipped
-- Patch inventory check passed
-- Runtime smoke blocked because E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib is missing
-- active godot.log is missing
-- no Off=0 runtime proof
-- no CanaryOnly=4 runtime proof
-- Release-ready: no
-- Runtime-ready/live-ready: no
-
-Do not:
-- commit
-- push
-- stash / stash drop
-- checkout branch
-- reset / restore
-- broad clean
-- continue PR6 Batch4c, PR6 Batch5, or PR7
-- expand debug
-- formalize Sts1Events
-- resume longhaul audit
-- claim runtime verified or release-ready without runtime evidence
-
-You cannot stop until one terminal condition is met:
-
-A. Ready-to-owner-review packet complete:
-- runtime hard blocker either closed or precisely documented
-- current dirty files fully reconciled
-- untracked files have decisions
-- terminal validation commands exit 0
-- warning-ledger has no TBD
-- 89 warnings classified by file/code/owner
-- Sts1Events formal/staging/remove recommendation recorded
-- Debug accept-scaffold/feature-complete/rollback recommendation recorded
-- RitsuLib attempted/runtime-validated/release-ready/rollback status recorded
-- patch inventory raw/migrated/tracked unit relationship explained
-- test changes reviewed
-- localization backlog recorded
-- commit slices complete
-- no unauthorized commit
-
-B. Hard blocker:
-- exact command/file/path
-- why current worktree cannot resolve it
-- rollback/staging/owner-decision options
-- exact owner action required
-
-First read:
-AGENTS.md
-PROJECT_STATE.md
-docs/README.md
-docs/test-ready-development-goal.md
-docs/worktree-cleanup-audit.md
-docs/patch-inventory.md
-docs/goals/overnight-run-status.md
-docs/goals/overnight-run-ledger.md
-docs/goals/overnight-diff-ledger.md
-docs/goals/warning-ledger.md
-docs/integrations/ritsulib.md
-docs/migration.md
-harness/TASK_STATUS.md
-harness/TASK_FOCUS_PACK.md
-
-Use subagents before modifying files:
-1. GitForensicsAgent
-2. RuntimeDependencyAgent
-3. RuntimeSmokeAgent
-4. DirtyStateReconciliationAgent
-5. WarningLedgerAgent
-6. RitsuLibRuntimeAgent
-7. Sts1EventsGovernanceAgent
-8. DebugDecisionAgent
-9. PatchInventoryAgent
-10. TestChangeReviewAgent
-11. DocsTruthAgent
-12. CommitSliceAgent
-13. LocalizationBacklogAgent
-
-RuntimeDependencyAgent must first verify:
-- Game root
-- BaseLib install
-- STS2-RitsuLib install
-- EZMicroBalance install
-- runtime DLL presence
-- active godot.log availability or absence
-
-ValidationReplay must run:
-dotnet clean .\EZMicroBalance.csproj
-dotnet build .\EZMicroBalance.csproj
-dotnet build .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj
-dotnet test .\tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build
-dotnet format .\EZMicroBalance.csproj --verify-no-changes
-git diff --check
-.\scripts\generate-patch-inventory.ps1 -Check
-.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-
-Create or update:
-docs/goals/m5-week1-owner-review-packet.md
-docs/goals/m5-week1-runtime-hard-blocker.md
-docs/goals/m5-week1-runtime-smoke-plan.md
-docs/goals/m5-week1-dirty-ledger.md
-docs/goals/m5-week1-warning-ledger.md
-docs/goals/m5-week1-commit-slices.md
-docs/goals/overnight-run-status.md
-docs/goals/overnight-run-ledger.md
-harness/TASK_STATUS.md
-harness/TASK_FOCUS_PACK.md
-
-Final report must be either:
-Complete: ready-to-owner-review packet complete.
-Not complete: exact hard blocker encountered.
-
-Do not write Complete merely because build/tests pass.
-Do not write runtime-ready without loader evidence.
-Do not write release-ready without publish/package/runtime/handoff evidence.
-```

@@ -3,14 +3,16 @@
 Audited: 2026-05-29
 Scope: 4 canary events registered in `Sts1EventRegistrationMode.CanaryOnly`
 
+Revision L caveat, 2026-06-10: this file is source/API evidence only. It does not prove current `v0.107.0` loader/runtime behavior, encounter gameplay, save/load, EN/ZHS render, image/license status, replacement-pool behavior, multiplayer disposition, or full StS1 wiki parity. Big Fish and Golden Idol now register to the StS2 Act 1 buckets in source, but current runtime bucket proof is still pending. Remaining canary parity gaps include Golden Idol granting a random relic instead of a Golden Idol relic model and Divine Fountain not checking the curse prerequisite.
+
 ## Summary
 
 | Event             | TODOs in Reachable Code | APIs Real | Loc Keys Present (EN) | Loc Keys Present (ZHS) | Dynamic Vars Aligned | Verdict |
 |-------------------|------------------------|-----------|----------------------|------------------------|---------------------|---------|
-| Big Fish          | none                   | yes       | yes                  | yes                    | yes (no placeholders) | **PASS** |
-| Golden Idol       | none                   | yes       | yes                  | yes                    | yes                 | **PASS** |
-| The Lab           | none                   | yes       | yes                  | yes                    | N/A (no vars)       | **PASS** |
-| Divine Fountain   | none                   | yes       | yes                  | yes                    | N/A (no vars)       | **PASS** |
+| Big Fish          | none                   | yes       | yes                  | yes                    | yes (no placeholders) | **SOURCE/API PASS; PARITY PENDING** |
+| Golden Idol       | none                   | yes       | yes                  | yes                    | yes                 | **SOURCE/API PASS; PARITY PENDING** |
+| The Lab           | none                   | yes       | yes                  | yes                    | N/A (no vars)       | **SOURCE/API PASS; GAMEPLAY PENDING** |
+| Divine Fountain   | none                   | yes       | yes                  | yes                    | N/A (no vars)       | **SOURCE/API PASS; PARITY PENDING** |
 
 ---
 
@@ -154,4 +156,4 @@ Scope: 4 canary events registered in `Sts1EventRegistrationMode.CanaryOnly`
 3. **Sts1EventHelpers** helper methods (`GrantRandomPotion`, `RemoveAllCurses`) are fully implemented with real factory/command calls.
 4. **Localization coverage**: all code-referenced L10N keys exist in both `eng/sts1_events.json` and `zhs/sts1_events.json`.
 5. **Dynamic variables**: Golden Idol uses `{DamageAmount}` and `{MaxHpAmount}` placeholders that align with the `DamageVar` and `MaxHpVar` canonical types; actual display values are set via option-level `ThatDoesDamage`/`ThatDecreasesMaxHp` overrides.
-6. **All 4 events are registered** in `Sts1EventRegistrationService.RegisterCanaryOnly()` via `content.SharedEvent<T>()`, confirming the `IsShared => true` pattern.
+6. **All 4 event types are registered** in `Sts1EventRegistrationService.RegisterCanaryOnly()`: Big Fish and Golden Idol use Act 1 bucket registrations, while The Lab and Divine Fountain remain shared registrations. All four models keep `IsShared => true`.

@@ -27,17 +27,19 @@ public sealed class Sts1TombOfLordRedMask : EventModel
 
     private async Task Offer50()
     {
-        await PlayerCmd.LoseGold(Offer50Cost, Owner, GoldLossType.Spent);
-        await Sts1EventHelpers.GrantRandomRelic(Owner);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(Offer50Cost, owner, GoldLossType.Spent);
+        await Sts1EventHelpers.GrantRandomRelic(owner);
         SetEventFinished(L10NLookup("STS1_TOMB_OF_LORD_RED_MASK.pages.OFFER_50.description"));
     }
 
     private async Task OfferAll()
     {
-        var gold = Owner?.Gold ?? 0;
+        if (Owner is not { } owner) return;
+        var gold = owner.Gold;
         if (gold > 0)
-            await PlayerCmd.LoseGold(gold, Owner, GoldLossType.Spent);
-        await Sts1EventHelpers.GrantRandomRelic(Owner);
+            await PlayerCmd.LoseGold(gold, owner, GoldLossType.Spent);
+        await Sts1EventHelpers.GrantRandomRelic(owner);
         SetEventFinished(L10NLookup("STS1_TOMB_OF_LORD_RED_MASK.pages.OFFER_ALL.description"));
     }
 }

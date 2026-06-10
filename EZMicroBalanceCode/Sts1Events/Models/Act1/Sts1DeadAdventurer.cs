@@ -31,6 +31,7 @@ public sealed class Sts1DeadAdventurer : EventModel
 
     private async Task Search()
     {
+        if (Owner is not { } owner) return;
         var eliteChance = HasA15 ? 50 : 25;
         var roll = Rng.NextInt(0, 100);
 
@@ -42,14 +43,14 @@ public sealed class Sts1DeadAdventurer : EventModel
         }
         else if (roll < eliteChance + 25)
         {
-            await Sts1EventHelpers.GrantRandomRelic(Owner);
+            await Sts1EventHelpers.GrantRandomRelic(owner);
             SetEventFinished(L10NLookup("STS1_DEAD_ADVENTURER.pages.RELIC.description"));
         }
         else
         {
             // Find gold
             var gold = Rng.NextInt(GoldMin, GoldMax + 1);
-            await PlayerCmd.GainGold(gold, Owner);
+            await PlayerCmd.GainGold(gold, owner);
             SetEventFinished(L10NLookup("STS1_DEAD_ADVENTURER.pages.GOLD.description"));
         }
     }

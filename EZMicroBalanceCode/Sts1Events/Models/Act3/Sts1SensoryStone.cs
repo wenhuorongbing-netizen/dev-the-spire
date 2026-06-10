@@ -25,17 +25,18 @@ public sealed class Sts1SensoryStone : EventModel
 
     private async Task Touch()
     {
+        if (Owner is not { } owner) return;
         var options = new CardCreationOptions(
-            new[] { Owner.Character.CardPool },
+            new[] { owner.Character.CardPool },
             CardCreationSource.Other,
             CardRarityOddsType.Uniform,
             (CardModel c) => c.Rarity == CardRarity.Rare
         ).WithFlags(CardCreationFlags.NoUpgradeRoll);
 
-        var cards = CardFactory.CreateForReward(Owner, 3, options).Select(r => r.Card).ToList();
+        var cards = CardFactory.CreateForReward(owner, 3, options).Select(r => r.Card).ToList();
         var chosen = await CardSelectCmd.FromChooseACardScreen(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.BlockingPlayerChoiceContext(),
-            cards, Owner, canSkip: false);
+            cards, owner, canSkip: false);
         if (chosen != null)
             await CardPileCmd.Add(chosen, PileType.Deck);
         SetEventFinished(L10NLookup("STS1_SENSORY_STONE.pages.TOUCH.description"));

@@ -31,38 +31,43 @@ public sealed class Sts1WheelOfChange : EventModel
 
     private async Task Spin()
     {
+        if (Owner is not { } owner)
+        {
+            return;
+        }
+
         var outcome = Rng.NextInt(0, 6);
         switch (outcome)
         {
             case 0: // Gold
-                await PlayerCmd.GainGold(100, Owner);
+                await PlayerCmd.GainGold(100, owner);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.GOLD.description"));
                 break;
             case 1: // Damage
-                var damage = (int)((Owner?.Creature.MaxHp ?? 0m) * DamagePct);
+                var damage = (int)(owner.Creature.MaxHp * DamagePct);
                 await CreatureCmd.Damage(
                     new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                    Owner.Creature, (decimal)damage,
+                    owner.Creature, (decimal)damage,
                     MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered,
                     null, null);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.DAMAGE.description"));
                 break;
             case 2: // Relic
-                await Sts1EventHelpers.GrantRandomRelic(Owner);
+                await Sts1EventHelpers.GrantRandomRelic(owner);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.RELIC.description"));
                 break;
             case 3: // Curse
-                await Sts1EventHelpers.AddCurses<Decay>(Owner, 1);
+                await Sts1EventHelpers.AddCurses<Decay>(owner, 1);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.CURSE.description"));
                 break;
             case 4: // Heal
-                var healAmount = (Owner?.Creature.MaxHp ?? 0m) - (Owner?.Creature.CurrentHp ?? 0m);
+                var healAmount = owner.Creature.MaxHp - owner.Creature.CurrentHp;
                 if (healAmount > 0)
-                    await CreatureCmd.Heal(Owner.Creature, healAmount);
+                    await CreatureCmd.Heal(owner.Creature, healAmount);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.HEAL.description"));
                 break;
             case 5: // Card removal
-                await Sts1EventHelpers.OpenCardRemoval(Owner);
+                await Sts1EventHelpers.OpenCardRemoval(owner);
                 SetEventFinished(L10NLookup("STS1_WHEEL_OF_CHANGE.pages.REMOVE.description"));
                 break;
         }

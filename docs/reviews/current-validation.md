@@ -1,5 +1,36 @@
 # Current Validation
 
+Date: 2026-06-10
+
+## June 10 Migration Reconciliation Addendum
+
+- Current pass source fix: `Sts1EventRegistrationService` now registers Big Fish and Golden Idol into the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`) for CanaryOnly, AdditiveBatch1, and RegisterAll, matching the Sts1Event guard-test contract and current status-board counts.
+- Validation commands completed in this pass:
+  - `dotnet build EZMicroBalance.sln -m:1 --no-incremental`: PASS, 0 warnings, 0 errors.
+  - `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~Sts1EventFeatureGuardTests" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1`: PASS, 31 passed / 0 failed / 0 skipped.
+  - `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --logger "console;verbosity=minimal" --diag tests\EZMicroBalance.Tests\TestResults\migration-final-testproject-diag.log -- RunConfiguration.MaxCpuCount=1`: PASS, 464 passed / 0 failed / 21 skipped / 485 total.
+  - `dotnet test EZMicroBalance.sln --no-build --logger "console;verbosity=minimal" --diag tests\EZMicroBalance.Tests\TestResults\migration-final-solution-diag.log -- RunConfiguration.MaxCpuCount=1`: PASS, 464 passed / 0 failed / 21 skipped / 485 total.
+  - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: PASS.
+  - `.\scripts\generate-patch-inventory.ps1 -Check`: PASS.
+  - `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified`: PASS, 130 dirty entries, 0 unclassified.
+  - `git diff --check`: PASS with CRLF normalization warnings only for `AGENTS.md`, `docs/goals/refactor.md`, and `docs/patch-inventory.md`.
+- Runner note: an earlier test-project attempt in this pass reported 55 passed before a testhost abort and left VSTest processes alive; those PIDs were stopped, then the diagnostic reruns above passed cleanly.
+- Runtime status is unchanged: the current `v0.107.0` beta.84 Off smoke remains non-clean, and no game launch, package refresh, or live/manual proof was produced here.
+
+## June 10 Refactor Validation
+
+- HEAD before this pass: `f32c6767 (HEAD -> main, origin/main, origin/HEAD) update refactor.md with implementation results and Green Stop check`.
+- Worktree: dirty before this pass with existing goal/migration doc edits and deleted goal files; those pre-existing edits were preserved.
+- Source compatibility fix: adapted current code to the installed game DLL API by using `AbstractModel.ModifyPowerAmountGivenAdditive(...)`, `Ectoplasm.ModifyGoldGained(...)`, and `CookRestSiteOption.get_IsEnabled`.
+- Warning burn-down: expanded Sts1Events owner guards now cover the compile-included Sts1Events model set.
+- Current forced build validation: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` passes after stale `testhost` locks were cleared, with **0 errors and 0 warnings**. This clears the prior 70-warning Sts1Events nullable staging debt in the current dirty source.
+- Current test-project validation: `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --logger "console;verbosity=normal" -- RunConfiguration.MaxCpuCount=1` passes with **464 passed / 0 failed / 21 skipped / 485 total**. The formerly problematic stale-loader handoff test and the full handoff pair both pass after isolating the PowerShell handoff runner from VSTest host I/O.
+- Current solution-level test status: **PASS**. Exact rerun after clearing overlapping validation processes: `dotnet test EZMicroBalance.sln --no-build --logger "console;verbosity=minimal" --diag tests\EZMicroBalance.Tests\TestResults\solution-after-zero-warning-build-diag.log -- RunConfiguration.MaxCpuCount=1` passed with **464 passed / 0 failed / 21 skipped / 485 total**. Earlier `testhost` crashes during same-repo cross-thread validation overlap remain runner-contamination evidence, not the current source validation truth.
+- Current hygiene validation: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, `git diff --check`, `.\scripts\generate-patch-inventory.ps1 -Check`, and `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` pass. `git diff --check` emitted only the existing CRLF normalization warning for `docs/patch-inventory.md`; dirty goal docs and deleted goal files remain preserved pre-existing/concurrent work.
+- Runtime/live status: no gameplay, event UI, save-load, co-op, release package, or live-ready evidence was produced in this pass. The local installed game is now `v0.107.0`; installed RitsuLib was updated to official `v0.4.16` with `lib\0.107.0`. On 2026-06-10 the installed beta.84 DLL was restored from package staging, changing the installed Spire Plus DLL SHA256 from stale `69DEB870A226FD58EC9AF9D8895EEDC832B5D9A8903A2D79B1D6CEDC2E114EB1` to packaged `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`; `scripts\check-installed-spire-plus-package.ps1` then passed. The fresh `v0.107.0` beta.84 Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` reached main menu but failed clean runtime proof: 11 Godot ERROR hits, 1 Spire Plus error/exception hit, 8 optional ModPatcher failures, and a `TargetInvocationException` rooted in stale `EctoplasmGoldGatePatch` target API drift. Current package runtime proof remains blocked.
+
+Historical sections below are retained as dated evidence records. Do not use their older warning counts, dirty counts, runtime version, or pass/fail status as the current refactor validation truth without comparing them to the June 10 section above.
+
 Date: 2026-06-02
 
 ## Sprint 4 Canonical Validation

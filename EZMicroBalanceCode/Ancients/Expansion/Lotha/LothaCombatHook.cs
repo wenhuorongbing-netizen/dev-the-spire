@@ -52,15 +52,15 @@ internal sealed class LothaCombatHook : AbstractModel
         return LothaBlessingService.TryModifyStarCost(card, originalCost, out modifiedCost);
     }
 
-    public override decimal ModifyPowerAmountGiven(
+    public override decimal ModifyPowerAmountGivenAdditive(
         PowerModel power,
         Creature giver,
         decimal amount,
         Creature? target,
         CardModel? cardSource) =>
         LothaRunHook.ShouldSkipCoopCombat(giver.CombatState?.RunState)
-            ? amount
-            : LothaBlessingService.ModifyPowerAmountGiven(power, giver, amount, target);
+            ? 0m
+            : LothaBlessingService.ModifyPowerAmountGivenAdditive(power, giver, amount, target);
 
     public override bool TryModifyPowerAmountReceived(
         PowerModel canonicalPower,

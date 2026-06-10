@@ -1,6 +1,6 @@
 # Harmony Patch Inventory
 
-Generated: 2026-05-31
+Generated: 2026-06-10
 
 Purpose: keep every Harmony patch visible, owned, and risk-labeled. Regenerate after adding, moving, or deleting patch declarations.
 
@@ -89,15 +89,15 @@ These 142 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 75 | `[HarmonyPatch(typeof(JewelryBox), "get_ExtraHoverTips")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 86 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTips")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 103 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTipsExcludingRelic")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 3 | `[HarmonyPatch(typeof(CookRestSiteOption), MethodType.Constructor, typeof(Player))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 16 | `[HarmonyPatch(typeof(CookRestSiteOption), "get_Description")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 37 | `[HarmonyPatch(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 3 | `[HarmonyPatch(typeof(CookRestSiteOption), "get_IsEnabled")]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 20 | `[HarmonyPatch(typeof(CookRestSiteOption), "get_Description")]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 41 | `[HarmonyPatch(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PaelsHornPhase1Patch.cs` | 11 | `[HarmonyPatch(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PaelsToothPatches.cs` | 3 | `[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PaelsToothPatches.cs` | 13 | `[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterCombatEnd))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PaelsToothPatches.cs` | 24 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.AfterActEntered))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PickupRewardGatePatches.cs` | 3 | `[HarmonyPatch(typeof(Sozu), nameof(Sozu.ShouldProcurePotion))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PickupRewardGatePatches.cs` | 31 | `[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ShouldGainGold))]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PickupRewardGatePatches.cs` | 31 | `[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ModifyGoldGained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PreservedFogPatches.cs` | 3 | `[HarmonyPatch(typeof(PreservedFog), nameof(PreservedFog.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PreservedFogPatches.cs` | 29 | `[HarmonyPatch(typeof(Folly), "get_CanonicalKeywords")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemHoverPatches.cs` | 19 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTips")]` |

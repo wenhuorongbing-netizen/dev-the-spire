@@ -30,18 +30,19 @@ public sealed class Sts1CouncilOfGhosts : EventModel
 
     private async Task Accept()
     {
+        if (Owner is not { } owner) return;
         var count = HasA15 ? ApparitionsA15 : ApparitionsNormal;
         var apparitions = new List<CardModel>();
         for (int i = 0; i < count; i++)
             apparitions.Add(ModelDb.Card<Apparition>());
         await CardPileCmd.Add(apparitions, MegaCrit.Sts2.Core.Entities.Cards.PileType.Deck);
 
-        var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * MaxHpLossPct);
+        var maxHpLoss = (int)(owner.Creature.MaxHp * MaxHpLossPct);
         if (maxHpLoss > 0)
         {
             await CreatureCmd.LoseMaxHp(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                Owner.Creature, maxHpLoss, isFromCard: false);
+                owner.Creature, maxHpLoss, isFromCard: false);
         }
         SetEventFinished(L10NLookup("STS1_COUNCIL_OF_GHOSTS.pages.ACCEPT.description"));
     }

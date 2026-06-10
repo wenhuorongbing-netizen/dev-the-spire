@@ -24,7 +24,8 @@ public sealed class Sts1Purifier : EventModel
 
     private async Task Purify()
     {
-        await Sts1EventHelpers.OpenCardRemoval(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardRemoval(owner);
         SetEventFinished(L10NLookup("STS1_PURIFIER.pages.PURIFY.description"));
     }
 }

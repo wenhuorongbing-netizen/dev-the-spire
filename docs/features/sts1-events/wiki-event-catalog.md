@@ -13,9 +13,9 @@ The counts refer to different dimensions:
 | `registry_entries` | **50** | Unique identities in `Sts1EventRegistry.cs`, including 2 special stubs and excluding 4 duplicate wiki rows. |
 | `runtime_event_models` | **48** | C# model files in `EZMicroBalanceCode/Sts1Events/Models/`. Excludes Neow and Combat Start (start-of-run only), plus 4 entries that share a model with their parent (Golden Wing Act1, The Cleric Act1, The Mausoleum Act2, The Woman in Blue Act2). Includes `Sts1Duplicator.cs` (compile-excluded). Includes Purifier and Golden Shrine (newly added). |
 | `compiling_models` | **47** | Model files minus compile-excluded `Sts1Duplicator.cs`. |
-| `register_all_calls` | **54** | Total RitsuLib registration calls in `RegisterAll` mode: 17 shared × 1 + 7 Act1 × 2 (Overgrowth + Underdocks) + 14 Act2 × 1 + 9 Act3 × 1 = 54. Verified against `Sts1EventRegistrationService.RegisterAll()`. |
-| `canary_only_calls` | **4** | Subset used in `CanaryOnly` mode: Big Fish, Golden Idol, The Lab, Divine Fountain (all shared events). A strict subset of the 17 shared calls in `RegisterAll`. |
-| `additive_batch1_calls` | **11** | 10 verified-scope event types; Shining Light registers to both StS2 Act 1 buckets. |
+| `register_all_calls` | **56** | Total RitsuLib registration calls in `RegisterAll` mode: 15 shared x 1 + 9 Act1 x 2 (Overgrowth + Underdocks) + 14 Act2 x 1 + 9 Act3 x 1 = 56. Verified against `Sts1EventRegistrationService.RegisterAll()`. |
+| `canary_only_calls` | **6** | Subset used in `CanaryOnly` mode: Big Fish and Golden Idol register to both Act 1 buckets, while The Lab and Divine Fountain remain shared events. |
+| `additive_batch1_calls` | **13** | 10 verified-scope event types; Big Fish, Golden Idol, and Shining Light register to both StS2 Act 1 buckets. |
 
 `canary_only_calls` is **not** additive with `register_all_calls`. Canary mode replaces RegisterAll; it does not add to it.
 
@@ -30,24 +30,24 @@ The counts refer to different dimensions:
 
 So: 54 canonical rows - 2 special (Neow, Combat Start) - 4 duplicates (shared/act split) = **48 model files**, of which **47 compile** because `Sts1Duplicator.cs` is excluded.
 
-### Why 54 Registration Calls?
+### Why 56 Registration Calls?
 
 Each Act 1 event registers twice (once for `Overgrowth`, once for `Underdocks`):
-- 17 shared events × 1 call each = 17
-- 7 Act 1 events × 2 acts = 14
+- 15 shared events x 1 call each = 15
+- 9 Act 1 events x 2 acts = 18
 - 14 Act 2 events × 1 act = 14
 - 9 Act 3 events × 1 act = 9
-- Total = 54 (in `RegisterAll` mode)
+- Total = 56 (in `RegisterAll` mode)
 
-Canary mode uses 4 of the 17 shared event registrations (subset, not additive).
+Canary mode uses 6 registration calls for 4 event types: Big Fish and Golden Idol are Act 1 bucket registrations, and The Lab plus Divine Fountain are shared registrations.
 
 ## Canonical Matrix
 
 | # | Wiki Entry | Runtime Model | Shared? | Act Bucket | Phase | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Big Fish | `Sts1BigFish.cs` | Yes | All acts (shared) | Canary | spec-drafted |
+| 1 | Big Fish | `Sts1BigFish.cs` | Yes | Act 1 (Overgrowth + Underdocks) | Canary | implemented; runtime proof pending |
 | 2 | The Cleric | `Sts1TheCleric.cs` | Yes | All acts (shared) | Simple | spec-drafted |
-| 3 | Golden Idol | `Sts1GoldenIdol.cs` | Yes | All acts (shared) | Canary | spec-drafted |
+| 3 | Golden Idol | `Sts1GoldenIdol.cs` | Yes | Act 1 (Overgrowth + Underdocks) | Canary | implemented; Golden Idol relic parity/runtime proof pending |
 | 4 | Golden Wing | `Sts1GoldenWing.cs` | Yes | All acts (shared) | Simple | spec-drafted |
 | 5 | Living Wall | `Sts1LivingWall.cs` | Yes | All acts (shared) | Simple | spec-drafted |
 | 6 | Old Beggar | `Sts1OldBeggar.cs` | Yes | All acts (shared) | Simple | spec-drafted |

@@ -1,15 +1,19 @@
 ﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(CookRestSiteOption), MethodType.Constructor, typeof(Player))]
-internal static class MeatCleaverCookCtorPatch
+[HarmonyPatch(typeof(CookRestSiteOption), "get_IsEnabled")]
+internal static class MeatCleaverCookIsEnabledPatch
 {
-    [HarmonyPostfix]
-    private static void Postfix(CookRestSiteOption __instance, Player owner)
+    [HarmonyPrefix]
+    private static bool Prefix(CookRestSiteOption __instance, ref bool __result)
     {
+        var owner = MeatCleaverCookPatch.GetOwner(__instance);
         if (owner.GetRelic<MeatCleaver>() != null && !MeatCleaverCookPatch.CanCook(owner))
         {
-            __instance.IsEnabled = false;
+            __result = false;
+            return false;
         }
+
+        return true;
     }
 }
 

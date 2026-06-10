@@ -28,8 +28,9 @@ public sealed class Sts1OldBeggar : EventModel
 
     private async Task OfferGold()
     {
-        await PlayerCmd.LoseGold(GoldCost, Owner, GoldLossType.Spent);
-        await Sts1EventHelpers.OpenCardRemoval(Owner);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(GoldCost, owner, GoldLossType.Spent);
+        await Sts1EventHelpers.OpenCardRemoval(owner);
         SetEventFinished(L10NLookup("STS1_OLD_BEGGAR.pages.OFFER_GOLD.description"));
     }
 }

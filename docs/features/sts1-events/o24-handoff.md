@@ -28,7 +28,7 @@ Session: Mandatory Overnight Run v2 → v10 refresh
 | O4 | Canonical matrix | **GREEN** | `canonical-event-matrix.csv` (54 entries), `registry-reconciliation.md` |
 | O5 | Act mapping | **GREEN** | Guard tests: `ActMappingUsesOvergrowthAndUnderdocksForAct1`, `ActMappingUsesHiveForAct2`, `ActMappingUsesGloryForAct3` |
 | O6 | Feature gate | **GREEN** | Guard tests: `FeatureGateDefaultsToOffWhenEnvVarIsUnset`, `FeatureGateEvaluatesAllModes`, `RegistrationModeEnumDefinesFourModes` |
-| O7 | Registration count | **GREEN** | Guard tests: `RegisterAllSharedEventCountIs17`, `RegisterAllTotalRegistrationCallsIs54`, `CanaryEventIdsContainsExactlyFourEvents` |
+| O7 | Registration count | **GREEN** | Guard tests: `RegisterAllSharedEventCountIs15`, `RegisterAllTotalRegistrationCallsIs56`, `CanaryEventIdsContainsExactlyFourEvents` |
 | O8 | IsShared matrix | **GREEN** | `multiplayer-is-shared-matrix.md` (18 shared + 7 Act1 + 14 Act2 + 9 Act3 = 48 events) |
 | O9 | Combat IsShared | **GREEN** | Guard test: `CombatEventsDeclareIsSharedTrue` (6 combat events verified) |
 | O10 | ZHS placeholders | **GREEN** | 0 `待翻译` found (399 keys each in EN/ZHS) |

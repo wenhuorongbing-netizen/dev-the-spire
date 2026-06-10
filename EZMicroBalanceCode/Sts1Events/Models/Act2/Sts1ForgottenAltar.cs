@@ -37,29 +37,32 @@ public sealed class Sts1ForgottenAltar : EventModel
 
     private async Task Pray()
     {
+        if (Owner is not { } owner) return;
         var maxHp = HasA15 ? PrayMaxHpA15 : PrayMaxHpNormal;
-        await CreatureCmd.GainMaxHp(Owner.Creature, maxHp);
-        await Sts1EventHelpers.AddCurses<Doubt>(Owner, 1);
+        await CreatureCmd.GainMaxHp(owner.Creature, maxHp);
+        await Sts1EventHelpers.AddCurses<Doubt>(owner, 1);
         SetEventFinished(L10NLookup("STS1_FORGOTTEN_ALTAR.pages.PRAY.description"));
     }
 
     private async Task Offer()
     {
-        await PlayerCmd.LoseGold(OfferCost, Owner, GoldLossType.Spent);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(OfferCost, owner, GoldLossType.Spent);
         var maxHp = HasA15 ? OfferMaxHpA15 : OfferMaxHpNormal;
-        await CreatureCmd.GainMaxHp(Owner.Creature, maxHp);
+        await CreatureCmd.GainMaxHp(owner.Creature, maxHp);
         SetEventFinished(L10NLookup("STS1_FORGOTTEN_ALTAR.pages.OFFER.description"));
     }
 
     private async Task Desecrate()
     {
-        await Sts1EventHelpers.GrantRandomRelic(Owner);
-        var maxHpLoss = (int)((Owner?.Creature.MaxHp ?? 0m) * DesecrateMaxHpLossPct);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.GrantRandomRelic(owner);
+        var maxHpLoss = (int)(owner.Creature.MaxHp * DesecrateMaxHpLossPct);
         if (maxHpLoss > 0)
         {
             await CreatureCmd.LoseMaxHp(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                Owner.Creature, maxHpLoss, isFromCard: false);
+                owner.Creature, maxHpLoss, isFromCard: false);
         }
         SetEventFinished(L10NLookup("STS1_FORGOTTEN_ALTAR.pages.DESECRATE.description"));
     }

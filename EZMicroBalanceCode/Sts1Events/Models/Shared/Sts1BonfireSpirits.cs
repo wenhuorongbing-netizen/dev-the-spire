@@ -25,12 +25,13 @@ public sealed class Sts1BonfireSpirits : EventModel
 
     private async Task Offer()
     {
-        await Sts1EventHelpers.OpenCardRemoval(Owner);
-        var maxHp = Owner?.Creature.MaxHp ?? 0m;
-        var currentHp = Owner?.Creature.CurrentHp ?? 0m;
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardRemoval(owner);
+        var maxHp = owner.Creature.MaxHp;
+        var currentHp = owner.Creature.CurrentHp;
         var healAmount = maxHp - currentHp;
         if (healAmount > 0)
-            await CreatureCmd.Heal(Owner.Creature, healAmount);
+            await CreatureCmd.Heal(owner.Creature, healAmount);
         SetEventFinished(L10NLookup("STS1_BONFIRE_SPIRITS.pages.OFFER.description"));
     }
 }

@@ -21,14 +21,14 @@ internal sealed class MartyrOathPower : BossSealPower
         "The next [gold]debuff[/gold] applied by Kin Priest lasts [blue]{Amount}[/blue] longer, then this is removed. If the Priest attacks first, the Oath empowers that attack instead.",
         "The next debuff lasts longer.");
 
-    public override decimal ModifyPowerAmountGiven(PowerModel power, Creature giver, decimal amount, Creature? target, CardModel? cardSource)
+    public override decimal ModifyPowerAmountGivenAdditive(PowerModel power, Creature giver, decimal amount, Creature? target, CardModel? cardSource)
     {
         return giver == Owner &&
             target?.IsPlayer == true &&
             amount > 0m &&
             power.GetTypeForAmount(amount) == PowerType.Debuff
-                ? amount + Amount
-                : amount;
+                ? Amount
+                : 0m;
     }
 
     public override async Task AfterModifyingPowerAmountGiven(PowerModel power)

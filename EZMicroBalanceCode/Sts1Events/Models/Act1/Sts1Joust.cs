@@ -31,32 +31,34 @@ public sealed class Sts1Joust : EventModel
 
     private async Task BetSelf()
     {
-        await PlayerCmd.LoseGold(BetCost, Owner, GoldLossType.Spent);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(BetCost, owner, GoldLossType.Spent);
         if (Rng.NextInt(0, 2) == 0)
         {
-            await PlayerCmd.GainGold(WinAmount, Owner);
+            await PlayerCmd.GainGold(WinAmount, owner);
             SetEventFinished(L10NLookup("STS1_JOUST.pages.WIN.description"));
         }
         else
         {
             if (HasA15)
-                await PlayerCmd.LoseGold(A15Loss, Owner);
+                await PlayerCmd.LoseGold(A15Loss, owner);
             SetEventFinished(L10NLookup("STS1_JOUST.pages.LOSE.description"));
         }
     }
 
     private async Task BetOpponent()
     {
-        await PlayerCmd.LoseGold(BetCost, Owner, GoldLossType.Spent);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.LoseGold(BetCost, owner, GoldLossType.Spent);
         if (Rng.NextInt(0, 2) == 0)
         {
-            await PlayerCmd.GainGold(WinAmount, Owner);
+            await PlayerCmd.GainGold(WinAmount, owner);
             SetEventFinished(L10NLookup("STS1_JOUST.pages.WIN.description"));
         }
         else
         {
             if (HasA15)
-                await PlayerCmd.LoseGold(A15Loss, Owner);
+                await PlayerCmd.LoseGold(A15Loss, owner);
             SetEventFinished(L10NLookup("STS1_JOUST.pages.LOSE.description"));
         }
     }

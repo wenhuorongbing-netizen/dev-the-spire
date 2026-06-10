@@ -23,13 +23,15 @@ public sealed class Sts1AncientWriting : EventModel
 
     private async Task Elegance()
     {
-        await Sts1EventHelpers.OpenCardUpgrade(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardUpgrade(owner);
         SetEventFinished(L10NLookup("STS1_ANCIENT_WRITING.pages.ELEGANCE.description"));
     }
 
     private async Task Simplicity()
     {
-        await Sts1EventHelpers.OpenCardRemoval(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardRemoval(owner);
         SetEventFinished(L10NLookup("STS1_ANCIENT_WRITING.pages.SIMPLICITY.description"));
     }
 }

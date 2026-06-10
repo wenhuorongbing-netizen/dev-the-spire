@@ -25,19 +25,22 @@ public sealed class Sts1LivingWall : EventModel
 
     private async Task Forget()
     {
-        await Sts1EventHelpers.OpenCardRemoval(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardRemoval(owner);
         SetEventFinished(L10NLookup("STS1_LIVING_WALL.pages.FORGET.description"));
     }
 
     private async Task Change()
     {
-        await Sts1EventHelpers.OpenCardTransform(Owner, Rng);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardTransform(owner, Rng);
         SetEventFinished(L10NLookup("STS1_LIVING_WALL.pages.CHANGE.description"));
     }
 
     private async Task Trade()
     {
-        await Sts1EventHelpers.OpenCardUpgrade(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardUpgrade(owner);
         SetEventFinished(L10NLookup("STS1_LIVING_WALL.pages.TRADE.description"));
     }
 }

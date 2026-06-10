@@ -72,7 +72,7 @@ STS1_BIG_FISH.pages.SHOE.description
 
 ### Class: `Sts1BigFish`
 - **Base:** `ModEventTemplate` (RitsuLib)
-- **Registration:** `content.SharedEvent<Sts1BigFish>()`
+- **Registration:** `content.ActEvent<Overgrowth, Sts1BigFish>()` and `content.ActEvent<Underdocks, Sts1BigFish>()`
 - **Layout:** Default event layout
 - **LocTable:** "events"
 

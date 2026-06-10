@@ -29,12 +29,13 @@ public sealed class Sts1TheSsssserpent : EventModel
 
     private async Task Accept()
     {
-        await PlayerCmd.GainGold(GoldAmount, Owner);
+        if (Owner is not { } owner) return;
+        await PlayerCmd.GainGold(GoldAmount, owner);
         var curseCount = HasA15 ? CursesA15 : CursesNormal;
         var curses = new List<CardModel>();
         for (int i = 0; i < curseCount; i++)
             curses.Add(ModelDb.Card<Doubt>());
-        await CardPileCmd.AddCursesToDeck(curses, Owner);
+        await CardPileCmd.AddCursesToDeck(curses, owner);
         SetEventFinished(L10NLookup("STS1_THE_SSSSSERPENT.pages.ACCEPT.description"));
     }
 }

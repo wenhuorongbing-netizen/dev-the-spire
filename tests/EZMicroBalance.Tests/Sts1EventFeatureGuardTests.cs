@@ -135,18 +135,21 @@ public sealed class Sts1EventFeatureGuardTests
     }
 
     [Fact]
-    public void RegisterCanaryOnlyRegistersExactlyFourSharedEvents()
+    public void RegisterCanaryOnlyRegistersExactlyFourCanaryEventTypes()
     {
         var source = ReadSts1RuntimeSources();
 
         var canaryMethod = SliceBetween(source, "RegisterCanaryOnly(string modId)", "content.Apply()");
         AssertSourceContains(canaryMethod,
-            "content.SharedEvent<Sts1BigFish>()",
-            "content.SharedEvent<Sts1GoldenIdol>()",
+            "content.ActEvent<Overgrowth, Sts1BigFish>()",
+            "content.ActEvent<Underdocks, Sts1BigFish>()",
+            "content.ActEvent<Overgrowth, Sts1GoldenIdol>()",
+            "content.ActEvent<Underdocks, Sts1GoldenIdol>()",
             "content.SharedEvent<Sts1TheLab>()",
             "content.SharedEvent<Sts1DivineFountain>()");
 
-        Assert.Equal(4, CountOccurrences(canaryMethod, "content.SharedEvent<"));
+        var totalRegistrations = CountOccurrences(canaryMethod, "content.ActEvent<") + CountOccurrences(canaryMethod, "content.SharedEvent<");
+        Assert.Equal(6, totalRegistrations);
     }
 
     [Fact]
@@ -156,8 +159,10 @@ public sealed class Sts1EventFeatureGuardTests
 
         var batchMethod = SliceBetween(source, "RegisterAdditiveBatch1(string modId)", "content.Apply()");
         AssertSourceContains(batchMethod,
-            "content.SharedEvent<Sts1BigFish>()",
-            "content.SharedEvent<Sts1GoldenIdol>()",
+            "content.ActEvent<Overgrowth, Sts1BigFish>()",
+            "content.ActEvent<Underdocks, Sts1BigFish>()",
+            "content.ActEvent<Overgrowth, Sts1GoldenIdol>()",
+            "content.ActEvent<Underdocks, Sts1GoldenIdol>()",
             "content.SharedEvent<Sts1TheLab>()",
             "content.SharedEvent<Sts1DivineFountain>()",
             "content.SharedEvent<Sts1Purifier>()",
@@ -169,7 +174,7 @@ public sealed class Sts1EventFeatureGuardTests
             "content.ActEvent<Underdocks, Sts1ShiningLight>()");
 
         var totalRegistrations = CountOccurrences(batchMethod, "content.ActEvent<") + CountOccurrences(batchMethod, "content.SharedEvent<");
-        Assert.Equal(11, totalRegistrations);
+        Assert.Equal(13, totalRegistrations);
         Assert.DoesNotContain("RegisterAll", batchMethod, StringComparison.Ordinal);
     }
 
@@ -179,6 +184,10 @@ public sealed class Sts1EventFeatureGuardTests
         var source = ReadSts1RuntimeSources();
 
         AssertSourceContains(source,
+            "ActEvent<Overgrowth, Sts1BigFish>()",
+            "ActEvent<Underdocks, Sts1BigFish>()",
+            "ActEvent<Overgrowth, Sts1GoldenIdol>()",
+            "ActEvent<Underdocks, Sts1GoldenIdol>()",
             "ActEvent<Overgrowth, Sts1ShiningLight>()",
             "ActEvent<Underdocks, Sts1ShiningLight>()",
             "ActEvent<Overgrowth, Sts1Mushrooms>()",
@@ -326,8 +335,8 @@ public sealed class Sts1EventFeatureGuardTests
         var entriesBlock = SliceBetween(source, "private static readonly List<Sts1EventEntry> Events = new()", "// Phase 2: Simple batch");
 
         AssertSourceContains(entriesBlock,
-            "new(\"sts1_big_fish\", \"Big Fish\", Sts1EventPhase.Canary, Sts1EventAct.Shared)",
-            "new(\"sts1_golden_idol\", \"Golden Idol\", Sts1EventPhase.Canary, Sts1EventAct.Shared)",
+            "new(\"sts1_big_fish\", \"Big Fish\", Sts1EventPhase.Canary, Sts1EventAct.Act1)",
+            "new(\"sts1_golden_idol\", \"Golden Idol\", Sts1EventPhase.Canary, Sts1EventAct.Act1)",
             "new(\"sts1_the_lab\", \"The Lab\", Sts1EventPhase.Canary, Sts1EventAct.Shared)",
             "new(\"sts1_divine_fountain\", \"Divine Fountain\", Sts1EventPhase.Canary, Sts1EventAct.Shared)");
 
@@ -335,16 +344,16 @@ public sealed class Sts1EventFeatureGuardTests
     }
 
     [Fact]
-    public void RegisterAllSharedEventCountIs17()
+    public void RegisterAllSharedEventCountIs15()
     {
-        // 17 SharedEvent calls in RegisterAll: Big Fish, Golden Idol, The Cleric, Golden Wing,
-        // Living Wall, Old Beggar, Purifier, Golden Shrine, Bonfire Spirits, Divine Fountain,
+        // 15 SharedEvent calls in RegisterAll after Big Fish and Golden Idol moved to Act1:
+        // The Cleric, Golden Wing, Living Wall, Old Beggar, Purifier, Golden Shrine, Bonfire Spirits, Divine Fountain,
         // Fountain of Cleansing, The Lab, Face Trader, The Mausoleum, Designer, The Woman in Blue,
         // Wheel of Change. Sts1Duplicator is excluded from compilation.
         var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
         var registerAllMethod = SliceBetween(source, "public static void RegisterAll(string modId)", "content.Apply();");
         var sharedEventCount = CountOccurrences(registerAllMethod, "content.SharedEvent<");
-        Assert.Equal(17, sharedEventCount);
+        Assert.Equal(15, sharedEventCount);
     }
 
     [Fact]
@@ -376,19 +385,19 @@ public sealed class Sts1EventFeatureGuardTests
     }
 
     [Fact]
-    public void RegisterAllTotalRegistrationCallsIs54()
+    public void RegisterAllTotalRegistrationCallsIs56()
     {
-        // 17 shared × 1 + 7 Act1 × 2 + 14 Act2 × 1 + 9 Act3 × 1 = 54 total registration calls.
+        // 15 shared x 1 + 9 Act1 x 2 + 14 Act2 x 1 + 9 Act3 x 1 = 56 total registration calls.
         var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
         var registerAllMethod = SliceBetween(source, "public static void RegisterAll(string modId)", "content.Apply();");
         var totalRegistrations = CountOccurrences(registerAllMethod, "content.ActEvent<") + CountOccurrences(registerAllMethod, "content.SharedEvent<");
-        Assert.Equal(54, totalRegistrations);
+        Assert.Equal(56, totalRegistrations);
     }
 
     [Fact]
     public void CanaryOnlyEventsAreHardcodedNotDynamic()
     {
-        // CanaryOnly must use hardcoded SharedEvent calls, not a loop or dynamic list.
+        // CanaryOnly must use hardcoded registration calls, not a loop or dynamic list.
         // This prevents TODO/BLOCKED events from accidentally entering safe modes.
         var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
         var canaryMethod = SliceBetween(source, "RegisterCanaryOnly(string modId)", "content.Apply()");

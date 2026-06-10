@@ -23,14 +23,16 @@ public sealed class Sts1Altar : EventModel
 
     private async Task Pray()
     {
-        await Sts1EventHelpers.OpenCardUpgrade(Owner, count: 3);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardUpgrade(owner, count: 3);
         SetEventFinished(L10NLookup("STS1_ALTAR.pages.PRAY.description"));
     }
 
     private async Task Sacrifice()
     {
-        await Sts1EventHelpers.OpenCardRemoval(Owner);
-        await Sts1EventHelpers.GrantRandomRelic(Owner);
+        if (Owner is not { } owner) return;
+        await Sts1EventHelpers.OpenCardRemoval(owner);
+        await Sts1EventHelpers.GrantRandomRelic(owner);
         SetEventFinished(L10NLookup("STS1_ALTAR.pages.SACRIFICE.description"));
     }
 }
