@@ -1,11 +1,11 @@
-﻿# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-05-31:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-11:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `9F0656DEDF57598D3A26743FD1A3061E669EF21354D6E12A6AA4C4AF44796894` |
-| DLL | `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766` |
-| PCK | `EEB90DA21DC66E24B78183374A3064D58F8ACCB346DE200E58BAA283BC7887CA` |
-| Manifest | `47658D7593FE8DF23C4E5B3413CA53B1C7F1B779109A42A8B65E381C4C0FEDAC` |
-| README_INSTALL | `C99C7B4146F4CEE49B661F1839E1E68EB414E2F7805DD4C66853A4D3D0D88D8C` |
+| ZIP | `B182F6DCD8E88D9209C28997901C9EF5E9947F79E1CA93FD47E7F38625140CEE` |
+| DLL | `F35E2706140AC7B0560FDB950AC479529D4DBA3CA08DA5341FBE987B4106E062` |
+| PCK | `9F1595C7401CACE4E7A4345CCC3CA1E256EBD2615B56A32E5908D61682E024B9` |
+| Manifest | `CE446422CA44864E993A45949C923EDAD516DD703687B990E76CC3BD614207D8` |
+| README_INSTALL | `004F7E2086C336F7804336FFC3FCD4061B0694F06C2B9B55459993C6737A498D` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -33,10 +33,10 @@
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
-- `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; test-project and solution no-build lanes passed 464 / 0 / 21 / 485. Current `v0.107.0` live proof remains blocked.
+- `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after the beta.85 runtime-fix pass.
   Phase 2 patch adapter rule started (checklist drafted). StS1Events feature-gated (default Off, guard tests active). Combat events now declare `IsShared`. See `docs/reviews/overnight-run-20260529.md`.
-- `RITSULIB-RUNTIME-SMOKE` P0 historical loader fixed / current package smoke failed: historical `v0.106.1` smokes are clean with 25/25 Spire Plus RitsuLib patches.
-  Current RitsuLib `v0.4.16` / `lib\0.107.0` and beta.84 parity pass; fresh Off smoke failed on stale API targets. Blockers: package decision, clean smoke, QA, dirty-worktree decision, gameplay/UI/save-load/co-op, and handoff.
+- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean with 25/25 Spire Plus RitsuLib patches.
+  Current beta.85 Off smoke with RitsuLib `v0.4.16` / compat `0.107.0` reached main menu, applied 25/25 Spire Plus patches, and audited clean. Remaining blockers: QA, dirty-worktree decision, gameplay/UI/save-load/co-op, and handoff.
 ## Manual Proof Gates
 - `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.

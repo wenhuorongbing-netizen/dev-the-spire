@@ -27,6 +27,8 @@ content.SharedEvent<Sts1TheLab>();
 // Act-specific event — appears only in the specified act
 content.ActEvent<Overgrowth, Sts1BigFish>();
 content.ActEvent<Underdocks, Sts1BigFish>();
+content.ActEvent<Overgrowth, Sts1TheCleric>();
+content.ActEvent<Underdocks, Sts1TheCleric>();
 content.ActEvent<Overgrowth, Sts1ShiningLight>();
 content.ActEvent<Underdocks, Sts1ShiningLight>();
 ```
@@ -45,12 +47,12 @@ content.ActEvent<Underdocks, Sts1ShiningLight>();
 
 | Category | Count | Registration Method |
 | --- | --- | --- |
-| Shared events | 15 registered (+1 compile-excluded model) | `content.SharedEvent<T>()` |
-| Act 1 events (per act) | 9 | `content.ActEvent<Overgrowth, T>()` + `content.ActEvent<Underdocks, T>()` |
+| Shared events | 14 registered (+1 compile-excluded model) | `content.SharedEvent<T>()` |
+| Act 1 events (per act) | 10 | `content.ActEvent<Overgrowth, T>()` + `content.ActEvent<Underdocks, T>()` |
 | Act 2 events | 14 | `content.ActEvent<Hive, T>()` |
 | Act 3 events | 9 | `content.ActEvent<Glory, T>()` |
-| **RegisterAll registration calls** | **56** | (15 shared x 1 + 9 act1 x 2 + 14 act2 x 1 + 9 act3 x 1) |
-| **AdditiveBatch1 registration calls** | **13** | 10 verified-scope event types; Big Fish, Golden Idol, and Shining Light register to both Overgrowth and Underdocks |
+| **RegisterAll registration calls** | **57** | (14 shared x 1 + 10 act1 x 2 + 14 act2 x 1 + 9 act3 x 1) |
+| **AdditiveBatch1 registration calls** | **14** | 10 verified-scope event types; Big Fish, Golden Idol, The Cleric, and Shining Light register to both Overgrowth and Underdocks |
 | **Excluded** | 1 | `Sts1Duplicator` — uses `CardSelectCmd`/`CardPileCmd` APIs not yet available |
 
 ### Canary Mode Registration

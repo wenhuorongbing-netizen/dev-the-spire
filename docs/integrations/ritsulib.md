@@ -2,7 +2,7 @@
 
 ## Status
 
-Compile and manifest dependency are active. Runtime loader-gate validation exists only for the historical Slay the Spire 2 `v0.106.1` environment. Current-game RitsuLib is installed, but fresh local `v0.107.0` beta.84 Off smoke is non-clean and cannot be used as current runtime proof.
+Compile and manifest dependency are active. Runtime loader-gate validation exists for the historical Slay the Spire 2 `v0.106.1` environment and for the current beta.85 Off-mode loader smoke on Slay the Spire 2 `v0.107.0`. Current-game RitsuLib is installed as official `v0.4.16` with `lib\0.107.0`.
 
 - Compile package: `STS2.RitsuLib` `0.3.2` from NuGet.
 - Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.3.2`.
@@ -11,9 +11,11 @@ Compile and manifest dependency are active. Runtime loader-gate validation exist
 - Current local installed game: Slay the Spire 2 `v0.107.0`.
 - Current BaseLib target: `v3.1.4`.
 
-Clean diagnostic loader evidence exists for Off, CanaryOnly, and AdditiveBatch1 modes with BaseLib, RitsuLib, and Spire Plus loaded, 25/25 migrated ModPatcher patches applied, and 30 SavedSpireFields observed. This is historical `v0.106.1` loader-gate proof only. The current `v0.107.0` game install now has matching RitsuLib `lib\0.107.0` runtime files. Installed beta.84 package parity was restored on 2026-06-10 and the package checker passed, but the fresh package-parity Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` failed clean runtime proof: RitsuLib loaded compat branch `0.107.0` and the game reached main menu, but Spire Plus had 8 optional ModPatcher failures and an `EctoplasmGoldGatePatch` initializer exception from stale package API targets. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, clean-worktree decision, current-source package decision, and versioned tester-package handoff remain pending.
+Clean diagnostic loader evidence exists for historical Off, CanaryOnly, and AdditiveBatch1 modes with BaseLib, RitsuLib, and Spire Plus loaded, 25/25 migrated ModPatcher patches applied, and 30 SavedSpireFields observed. This remains historical `v0.106.1` loader-gate proof. The current `v0.107.0` game install has matching RitsuLib `lib\0.107.0` runtime files. Installed beta.85 package parity passed on 2026-06-11, and the beta.85 Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` reached main menu, applied 25/25 Spire Plus ModPatcher patches, and audited clean. The prior beta.84 package-parity Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` is retained as root-cause evidence for stale Spire Plus API targets.
 
-Package metadata decision: the current dirty source state does not bump the compile package or manifest minimum. Keep `STS2.RitsuLib` and `STS2-RitsuLib` at `0.3.2` for beta.84 documentation and package parity. A future owner-approved `v0.107.0` tester package should move both values to `0.4.16` in the same package-version increment, then refresh publish/package artifacts and runtime evidence.
+Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.85 Off proof is `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`: it logs Spire Plus `v0.1.0-private-beta.85`, selects RitsuLib compat branch `0.107.0`, applies 25/25 Spire Plus ModPatcher patches, reaches main menu, and audits clean. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, clean-worktree decision, and versioned tester-package handoff remain pending.
+
+Package metadata decision: the current dirty source state does not bump the compile package or manifest minimum. Keep `STS2.RitsuLib` and `STS2-RitsuLib` at `0.3.2` unless the owner chooses a dependency-version slice. A future owner-approved `v0.107.0` tester package may move both values to `0.4.16` in the same package-version increment, then refresh publish/package artifacts and runtime evidence.
 
 ## What Is RitsuLib
 
@@ -57,7 +59,7 @@ The installed official `STS2-RitsuLib.0.4.16.variant-pack.zip` contains three ga
 | --- | --- | ---: | --- |
 | `lib/0.103.2/` | Slay the Spire 2 `v0.103.2` | 4.9 MB | Does not match current local `v0.107.0` install |
 | `lib/0.106.1/` | Slay the Spire 2 `v0.106.1` | 4.9 MB | Matches historical validated target; does not match current local `v0.107.0` install |
-| `lib/0.107.0/` | Slay the Spire 2 `v0.107.0` | 4.9 MB | Matches current local install; beta.84 Off smoke captured but non-clean |
+| `lib/0.107.0/` | Slay the Spire 2 `v0.107.0` | 4.9 MB | Matches current local install; beta.85 Off smoke is clean |
 
 Each variant directory contains `STS2-RitsuLib.dll`, `.pdb`, `.xml`, and `compat-target.txt`.
 
@@ -100,7 +102,7 @@ Current-highest runtime manifest upgrade path for a future versioned package:
 
 ## RitsuLib API Adoption Plan
 
-- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, current `v0.107.0` proof blocked by non-clean beta.84 Off smoke after installing RitsuLib `v0.4.16`.
+- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, and current beta.85 Off loader proof is clean on `v0.107.0` with RitsuLib `v0.4.16`.
 - Batch 2: future new content registration is not currently applicable because Spire Plus does not register new cards, relics, or potions through RitsuLib.
 - Batch 3: persistence sidecar experiments are not currently applicable because existing SavedSpireFields work and no RitsuLib data store is needed.
 - Batch 4a: 9 low-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.

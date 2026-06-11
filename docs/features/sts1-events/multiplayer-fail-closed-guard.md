@@ -51,7 +51,7 @@ The StS1 event system is **fail-closed** by default:
 
 ## Runtime Verification Status
 
-Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate evidence exists for the recorded `v0.106.1` smokes. Installed beta.84 package parity is restored, but the current `v0.107.0` Off smoke is non-clean; current runtime and multiplayer evidence remain pending until Off is clean and co-op is directly proven or explicitly blocked.
+Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate evidence exists for the recorded `v0.106.1` smokes. Installed beta.85 package parity is restored, and the current `v0.107.0` Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510` is clean for loader proof; current multiplayer evidence remains pending until co-op is directly proven or explicitly blocked.
 
 **UNVERIFIED** — requires game launch with:
 1. `SPIREPLUS_STS1_EVENT_MODE=Off` (default) — verify no StS1 events appear

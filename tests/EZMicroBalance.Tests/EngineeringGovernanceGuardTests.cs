@@ -74,6 +74,70 @@ public sealed class EngineeringGovernanceGuardTests
     }
 
     [Fact]
+    public void DebugDiagnosticsStayScopedAndExplicitlyGated()
+    {
+        var config = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
+        var debug = ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusDebug.cs");
+        var previewLog = ReadRepoText("EZMicroBalanceCode", "Preview", "PreviewLog.cs");
+        var sourceTree = ReadSourceTree("EZMicroBalanceCode");
+        var testReadyGoal = ReadRepoText("docs", "test-ready-development-goal.md");
+        var releaseChecklist = ReadRepoText("docs", "release-checklist.md");
+        var englishSettings = JsonStringMap("EZMicroBalance", "localization", "eng", "settings_ui.json");
+        var simplifiedChineseSettings = JsonStringMap("EZMicroBalance", "localization", "zhs", "settings_ui.json");
+
+        AssertSourceContains(
+            config,
+            "public static bool ShowPreviewDebugLogs { get; set; } = false;");
+        Assert.DoesNotContain("EnableDebugLogs", config, StringComparison.Ordinal);
+        Assert.DoesNotContain("SPIREPLUS_ENABLE_DEBUG_LOGS", config, StringComparison.Ordinal);
+        Assert.DoesNotContain("EZMB_ENABLE_DEBUG_LOGS", config, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            debug,
+            "public const string DebugLogsEnvironmentVariable = \"SPIREPLUS_ENABLE_DEBUG_LOGS\";",
+            "public const string LegacyDebugLogsEnvironmentVariable = \"EZMB_ENABLE_DEBUG_LOGS\";",
+            "if (IsDebugLoggingEnabled)",
+            "IsTruthy(Environment.GetEnvironmentVariable(name))",
+            "var normalized = value?.Trim();",
+            "!string.Equals(normalized, \"0\", StringComparison.OrdinalIgnoreCase)",
+            "!string.Equals(normalized, \"false\", StringComparison.OrdinalIgnoreCase)",
+            "!string.Equals(normalized, \"off\", StringComparison.OrdinalIgnoreCase)",
+            "!string.Equals(normalized, \"no\", StringComparison.OrdinalIgnoreCase)",
+            "MainFile.Logger.Info($\"[Spire Plus] [{category}] {message}\");",
+            "public static void Warn(string category, string message)",
+            "MainFile.Logger.Warn($\"[Spire Plus] [{category}] {message}\");");
+
+        Assert.DoesNotContain("LogPreview(", debug, StringComparison.Ordinal);
+        Assert.DoesNotContain("SpirePlusDebug.LogPreview", sourceTree, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            previewLog,
+            "if (SpirePlusModConfig.ShowPreviewDebugLogs)",
+            "MainFile.Logger.Info(\"[Spire Plus] Preview: \" + message);",
+            "MainFile.Logger.Warn(\"[Spire Plus] Preview: \" + message);");
+
+        Assert.Contains("SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.title", englishSettings.Keys);
+        Assert.Contains("SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.title", simplifiedChineseSettings.Keys);
+        Assert.DoesNotContain("SPIREPLUS-ENABLE_DEBUG_LOGS.title", englishSettings.Keys);
+        Assert.DoesNotContain("SPIREPLUS-ENABLE_DEBUG_LOGS.title", simplifiedChineseSettings.Keys);
+        Assert.DoesNotContain("EZMICROBALANCE-ENABLE_DEBUG_LOGS.title", englishSettings.Keys);
+        Assert.DoesNotContain("EZMICROBALANCE-ENABLE_DEBUG_LOGS.title", simplifiedChineseSettings.Keys);
+
+        AssertSourceContains(
+            testReadyGoal,
+            "Internal broad diagnostics are not a player-facing mod setting.",
+            "`SPIREPLUS_ENABLE_DEBUG_LOGS=1`",
+            "`EZMB_ENABLE_DEBUG_LOGS=1`",
+            "preview-tool diagnostics remain the localized `ShowPreviewDebugLogs` setting");
+        AssertSourceContains(
+            releaseChecklist,
+            "Debug probes are removed from active behavior or gated behind an explicit debug flag",
+            "broad info diagnostics require `SPIREPLUS_ENABLE_DEBUG_LOGS=1`",
+            "legacy `EZMB_ENABLE_DEBUG_LOGS=1`",
+            "preview diagnostics use the localized preview diagnostics setting");
+    }
+
+    [Fact]
     public void RepositoryHygieneWorkflowAndTemplatesExist()
     {
         AssertRepoFileExists(".github", "workflows", "repository-hygiene.yml");
@@ -325,8 +389,8 @@ public sealed class EngineeringGovernanceGuardTests
             "These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`.",
             "| Row ID | Kind | Status | Owner | Evidence Needed |",
             "The beta.19 loader smoke is historical startup evidence only",
-            "gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op rows remain pending",
-            "| fresh-current-package-loader-smoke | loader | Pending |",
+            "gameplay, clicked UI, save-load, preview-tools, Vakuu, co-op, and full release-evidence packaging rows remain pending",
+            "| fresh-current-package-loader-smoke | loader | Partial |",
             "| ancient-ui-urda | clicked-ui | Pending |",
             "| ancient-ui-morvi | clicked-ui | Pending |",
             "| ancient-ui-lotha | clicked-ui | Pending |",
@@ -418,7 +482,7 @@ public sealed class EngineeringGovernanceGuardTests
             "This is not live evidence.",
             "HEAD | `25f99fb",
             "Total patch declarations | 135",
-            "Fresh current-package loader smoke | Pending live run",
+            "Fresh current-package loader smoke | Current beta.85 `v0.107.0` Off loader smoke audited clean; live gameplay/manual runs are still pending",
             "README_INSTALL | `F933C266CBA1A6B1C81A2AC3D4BF1AA30A407BF6676703E95F1EB86724126C04`");
 
         AssertSourceContains(

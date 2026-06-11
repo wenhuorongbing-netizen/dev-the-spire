@@ -19,9 +19,11 @@ public sealed class Sts1OldBeggar : EventModel
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
+        var canOfferGold = (Owner?.Gold ?? 0) >= GoldCost;
+
         return new EventOption[]
         {
-            new EventOption(this, OfferGold, InitialOptionKey("OFFER_GOLD")),
+            new EventOption(this, canOfferGold ? OfferGold : null, InitialOptionKey("OFFER_GOLD")),
             new EventOption(this, null, InitialOptionKey("LEAVE"))
         };
     }

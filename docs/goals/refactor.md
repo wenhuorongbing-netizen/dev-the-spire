@@ -1,390 +1,331 @@
 # 严格审核结论
 
-## 2026-06-10 current status override
+**当前不能判定完成。**
+最新仓库状态已经不是“loader gate 已稳定通过”的状态，而是：
 
-This goal document is historical below this point unless a row is repeated in current validation docs.
-Use `PROJECT_STATE.md`, `docs/reviews/current-validation.md`, and `docs/goals/m5-revision-l-*` as the current source of truth for the refactor pass.
+> **No-game validation 通过；当前 installed game 是 `v0.107.0`，beta.85 Off loader smoke 已经 clean。这个 proof 只关闭 startup/default-Off patch application；CanaryOnly/AdditiveBatch1、gameplay、save-load、co-op、QA、handoff 仍未完成。Batch 4c 仍然 proposal-only，不能当作 tester-ready 或 release-ready。**
 
-- Build evidence: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` passed, with 0 errors and 0 warnings after expanded Sts1Events owner guards.
-- Test evidence: the test-project lane and exact solution-level `dotnet test EZMicroBalance.sln --no-build` lane passed with 464 passed / 0 failed / 21 skipped / 485 total after overlapping validation processes were absent.
-- Hygiene evidence: Revision L `dotnet format`, `git diff --check`, patch inventory `-Check`, and worktree batch classification passed; `git diff --check` only reported the existing CRLF normalization warning for `docs/patch-inventory.md`.
-- Worktree evidence: current dirty entries are classified in `docs/goals/m5-revision-l-dirty-ledger.md`, not the older 17-entry snapshot below.
-- Runtime evidence: historical v0.106.1 loader-gate proof remains useful. Current installed beta.84 package parity is restored for local v0.107.0 with official RitsuLib v0.4.16, but the fresh beta.84 Off smoke failed clean audit on stale package API targets.
-- Coordination rule: avoid starting overlapping build, test, publish, or release-evidence validation processes in this workspace while another same-repo validation lane is active.
+最新 `docs/reviews/current-validation.md` 显示：当前 HEAD 是 `f32c6767` 前的工作状态，本轮源代码修复适配了 installed game DLL API；build/test/format/patch inventory/worktree classifier 都通过，其中 build 是 **0 warnings / 0 errors**，solution test 是 **464 passed / 0 failed / 21 skipped / 485 total**。
 
-**当前不能判定“全部完成”。**
-可以判定为：
+但同一份最新验证也明确写：**当前没有 gameplay、event UI、save-load、co-op、release package 或 live-ready evidence**；本地 installed game 已是 `v0.107.0`，RitsuLib 更新到官方 `v0.4.16` + `lib\0.107.0`。beta.84 Off smoke 的 17/25 patches 和 stale `EctoplasmGoldGatePatch` target API drift 是 root-cause history；beta.85 Off smoke 已经到达 main menu、25/25 patches、clean audit。
 
-> **No-game validation 已通过；RitsuLib / Sts1Events 的 loader-gate runtime proof 已取得；但项目仍未达到 tester-ready、live-ready 或 release-ready。当前正确状态是 `PARTIAL PASS / RELEASE STILL BLOCKED`。**
+所以本轮结论是：
 
-这次最重要的进展是：最新 `current-validation.md` 记录基线 HEAD 为 `f32c6767`，build/test/format/diff-check 都通过；测试为 **464 passed / 0 failed / 21 skipped / 485 total**，build 是 **0 errors / 0 warnings**。
-
-更关键的是 runtime dependency 已经不再缺文件：E 盘的 `STS2-RitsuLib v0.4.16`、BaseLib、EZMicroBalance 均存在，且 RitsuLib 包含 `lib\0.107.0`。Off/CanaryOnly/AdditiveBatch1 loader proof 仍是历史 `v0.106.1` evidence；当前 `v0.107.0` beta.84 Off smoke 已捕获但 clean audit 失败，需要修正后的 versioned package 和 clean rerun。
-
-但 current-validation 也明确列出：worktree 仍 dirty，Independent QA pending，gameplay proof pending，event screenshots pending，save/load proof pending，image/render proof pending，replacement functional proof pending，multiplayer fail-closed pending，versioned tester package handoff pending；release-ready / live-ready 明确是 **NO**。
-
----
-
-## 1. 与原始目标对比
-
-你上传的目标要求是：执行 RitsuLib Runtime Proof + Test Truth Reconciliation + Architecture Foundation Overnight Run；不能 soft stop，不能 false green；runtime smoke 必须捕获 `Off` 和 `CanaryOnly` 的真实 game logs；不能启动 Batch 4c、不能迁 high-risk patches、不能加新 gameplay；QA/Red-Team 必须独立复核。
-
-| 目标                         | 当前结果                                       | 审核结论                                 |
-| -------------------------- | ------------------------------------------ | ------------------------------------ |
-| Validation truth           | 464 / 0 / 21 / 485 已记录                     | **完成**                               |
-| Clean build                | 0 errors / 0 warnings                      | **completed; nullable warning debt cleared** |
-| Format / diff-check        | PASS                                       | **完成**                               |
-| Patch inventory check      | PASS / fresh                               | **完成**                               |
-| Runtime dependency         | STS2-RitsuLib v0.4.16 / `lib\0.107.0` 已安装 | **完成；beta.84 package smoke failed clean audit** |
-| Off runtime smoke          | 0 StS1 registrations，clean audit           | **loader-gate 完成**                   |
-| CanaryOnly runtime smoke   | exactly 4 canary registrations，clean audit | **loader-gate 完成**                   |
-| AdditiveBatch1 smoke       | historical 10 event types / 11 calls，clean audit; current source expects 10 event types / 13 calls | **loader-gate 完成，不是 gameplay proof; current v0.107 proof blocked** |
-| Independent QA             | pending                                    | **未完成**                              |
-| Gameplay proof             | pending                                    | **未完成**                              |
-| Save/load proof            | pending                                    | **未完成**                              |
-| Event UI screenshots       | pending                                    | **未完成**                              |
-| Worktree                   | dirty entries classified in Revision L ledger | **未完成**                              |
-| Versioned tester package   | pending                                    | **未完成**                              |
-| Batch 4c                   | only ready for low-risk candidate proposal | **不能执行迁移**                           |
-| Release-ready / live-ready | NO                                         | **不能声明**                             |
+```text
+No-game validation: PASS
+Current v0.107.0 Off loader proof: PASS for beta.85 startup/default-Off
+Gameplay proof: NOT DONE
+Save/load proof: NOT DONE
+Co-op proof: NOT DONE
+Package handoff: NOT DONE
+Batch 4c: DO NOT EXECUTE
+Release-ready / live-ready: NO
+```
 
 ---
 
-## 2. Step-by-step 严格审核
+## 1. Step-by-step 审核
 
-### Step 1 — No-game validation
-
-**Observation:** 最新记录显示 build、test、format、diff-check、patch inventory check 都通过；test count 为 464 passed / 0 failed / 21 skipped / 485 total。
-**Inference:** no-game validation 可信度已经比前几轮高，旧的 294/9、387/408、428/449 等口径不应再作为当前事实。
-**Verdict:** **PASS。**
-
----
-
-### Step 2 — Warning truth
-
-**Observation:** build 仍有 89 个 Sts1Events nullable warnings，类型为 CS8602 / CS8604 / CS8625。
-**Inference:** warnings 被接受的前提是 Sts1Events 仍为 prototype / dev-only；一旦 CanaryOnly 进入手测路径，warnings 会变成稳定性风险。
-**Verdict:** **PASS with debt。不能写 build clean = 0 warnings。**
-
----
-
-### Step 3 — Runtime dependency path
-
-**Observation:** `E:\Steam\...\mods\STS2-RitsuLib`、BaseLib、EZMicroBalance 均存在；STS2-RitsuLib 是 `v0.4.16`，包含 `lib\0.107.0`。
-**Inference:** 上一轮最大的 STS2-RitsuLib 缺失 blocker 已清除。
-**Verdict:** **PASS。**
+| Step                              | 目标                     | 当前证据                                                                                                                                                                                                 | 严格判定                   |
+| --------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| Source API compatibility          | 适配当前 installed DLL API | 当前 pass 修复为 `AbstractModel.ModifyPowerAmountGivenAdditive(...)`、`Ectoplasm.ModifyGoldGained(...)`、`CookRestSiteOption.get_IsEnabled`。                                                                | **完成本轮源码修复**           |
+| Build                             | 0 errors               | `dotnet build EZMicroBalance.sln -m:1 --no-incremental` PASS，0 warnings / 0 errors。                                                                                                                  | **PASS**               |
+| Focused Sts1Event tests           | Sts1Event guard green  | 31 passed / 0 failed / 0 skipped。                                                                                                                                                                    | **PASS**               |
+| Full test project                 | 0 failed               | 464 passed / 0 failed / 21 skipped / 485 total。                                                                                                                                                      | **PASS**               |
+| Solution-level tests              | 0 failed               | solution-level test also 464 / 0 / 21 / 485。                                                                                                                                                         | **PASS**               |
+| Format / patch inventory          | clean                  | format PASS，generate-patch-inventory PASS。                                                                                                                                                           | **PASS**               |
+| Diff check                        | whitespace clean       | PASS，但有 CRLF normalization warnings only。                                                                                                                                                            | **PASS with note**     |
+| Worktree classifier               | 无 unclassified         | PASS，130 dirty entries / 0 unclassified。                                                                                                                                                             | **分类通过，但 worktree 未清** |
+| Runtime smoke on current v0.107.0 | clean runtime proof    | 最新 v0.107.0 beta.84 Off smoke reached main menu but failed clean runtime proof：11 Godot ERROR、1 Spire Plus error/exception、8 optional ModPatcher failures、`EctoplasmGoldGatePatch` target API drift。 | **FAIL / BLOCKED**     |
+| Gameplay / UI / save-load / co-op | live proof             | 最新 pass 明确没有 gameplay、event UI、save-load、co-op、release package 或 live-ready evidence。                                                                                                                | **NOT DONE**           |
+| Historical June 2 smoke           | prior loader proof     | 历史 Off / CanaryOnly / AdditiveBatch1 smoke 在旧环境可用，但 current-validation 明确历史段落不能不经比较当作当前 refactor truth。                                                                                              | **只能做历史参考**            |
+| Batch 4c                          | 迁移更多 patch             | 当前 runtime blocked，不能推进。                                                                                                                                                                             | **MUST NOT START**     |
+| Release-ready / live-ready        | 可发布                    | no live proof，runtime blocked。                                                                                                                                                                       | **NO**                 |
 
 ---
 
-### Step 4 — Off mode runtime smoke
+## 2. 当前状态与目标对比
 
-**Observation:** Off-mode Steam smoke reached main menu，loaded exactly 3 mods，applied 25/25 patches，found 30 SavedSpireFields，Sts1Events `bootstrap=disabled, live=Disabled`，clean audit。
-**Inference:** Off mode 的 loader-gate safety 已经有证据。
-**Verdict:** **PASS for loader gate。不是 gameplay proof。**
+你的目标是：严格确认是否完成、对比项目目标、决定继续优化还是推进，并设置夜间运行直到完成。当前目标的关键门槛不是“测试是否绿”，而是 **RitsuLib runtime proof + StS1Events runtime gate + gameplay/save-load/co-op evidence**。
 
----
+| 目标                                | 当前状态                                  | 差距                |
+| --------------------------------- | ------------------------------------- | ----------------- |
+| No-game validation                | 通过                                    | 可保留               |
+| 当前 v0.107.0 source API 适配         | 部分修复，build/test 通过                    | 还要验证 runtime      |
+| RitsuLib runtime proof            | 当前 Off smoke 非 clean                  | P0 blocker        |
+| Sts1Events Off / CanaryOnly proof | 历史 v0.106.1 有证据；当前 v0.107.0 未重新 clean | 需要重跑              |
+| ModPatcher patch proof            | 当前有 8 optional failures               | 需要修 / 分类          |
+| EctoplasmGoldGatePatch            | 当前 runtime API drift root             | 需要立即修             |
+| Gameplay proof                    | 无                                     | 未完成               |
+| Save/load proof                   | 无                                     | 未完成               |
+| Co-op proof                       | 无                                     | 未完成               |
+| Worktree                          | 130 dirty entries classified          | 需要 owner decision |
+| Package handoff                   | 无                                     | 未完成               |
+| Release-ready                     | no                                    | 正确，不可 claim       |
 
-### Step 5 — CanaryOnly runtime smoke
-
-**Observation:** CanaryOnly direct launch reached main menu，loaded exactly 3 mods，applied 25/25 patches，found 30 SavedSpireFields，并注册 exactly 4 canary events：`Sts1BigFish`、`Sts1GoldenIdol`、`Sts1TheLab`、`Sts1DivineFountain`，clean audit。
-**Inference:** CanaryOnly registration proof 成立。
-**Verdict:** **PASS for loader gate。不是 event UI / branch / save-load proof。**
-
----
-
-### Step 6 — AdditiveBatch1 runtime smoke
-
-**Observation:** AdditiveBatch1 direct launch reached main menu，registered exactly 10 event types via 11 calls，clean audit。
-**Inference:** AdditiveBatch1 的 loader-level registration proof 已有，但它仍是 dev/test scope，不代表这些事件可玩。
-**Verdict:** **PASS for loader gate；manual proof pending。**
-
----
-
-### Step 7 — FeatureRegistry / RewardPipeline diagnostics
-
-**Observation:** Current validation says all 6 features have bootstrap/live runtime status；RewardPipeline diagnostics observed for all features in runtime log。
-**Inference:** diagnostics wiring 已从 source-only 进展到 runtime-observed。
-**Verdict:** **PASS，仍为 diagnostics-only。**
+**结论：现在不是推进 Batch 4c 的时机。当前必须继续优化 / 修复 runtime blocker。**
 
 ---
 
-### Step 8 — Worktree governance
+# 3. 主要问题
 
-**Observation:** Worktree 仍 dirty，17 entries，0 unclassified；其中 Batch 1: 5、Batch 2: 2、Batch 3: 1、Batch 8: 9。
-**Inference:** 不能安全 package / push / handoff，除非 owner 明确批准 dirty ledger。
-**Verdict:** **NOT COMPLETE。**
+## Issue 1: 当前 v0.107.0 runtime proof 失败
 
----
-
-### Step 9 — QA / Red-Team
-
-**Observation:** Independent QA 仍 pending。
-**Inference:** 当前 runtime pass 仍缺独立复核；你的原始要求明确禁止自审。
-**Verdict:** **NOT COMPLETE。**
+* **Severity:** P0 / Critical
+* **Evidence:** 最新 runtime status 明确：v0.107.0 beta.84 Off smoke 到 main menu 但失败，有 11 Godot ERROR、1 Spire Plus error/exception、8 optional ModPatcher failures，根因之一是 stale `EctoplasmGoldGatePatch` target API drift。
+* **Impact:** 不能说 runtime-safe，不能启动 Batch 4c，不能 tester-ready。
+* **Required fix:** 立刻创建 runtime blocker issue：`V01070-RUNTIME-ECTOPLASM-GOLD-GATE-API-DRIFT`。
+* **Acceptance:** fresh v0.107.0 Off smoke clean audit：0 Godot ERROR、0 Spire Plus error/exception、0 release-blocking hits；25/25 mandatory patches pass；optional failures either fixed or explicitly downgraded with evidence。
 
 ---
 
-### Step 10 — Gameplay / save-load / UI / package
+## Issue 2: 旧 runtime smoke 不能替代当前环境
 
-**Observation:** Gameplay proof、event screenshots、save/load proof、image/render proof、replacement proof、multiplayer fail-closed、versioned tester package 都 pending。
-**Inference:** 当前还不能进入 tester-ready，更不能 release-ready。
-**Verdict:** **NOT COMPLETE。**
+* **Severity:** P0
+* **Evidence:** `current-validation.md` 明确说 historical sections are dated evidence records，不要把旧 warning counts、runtime version 或 pass/fail 当作 current truth。
+* **Impact:** 不能用 6 月 2 日 v0.106.1 的 Off/CanaryOnly 成功证明当前 v0.107.0 可用。
+* **Required fix:** 重跑当前环境：
 
----
-
-# 3. 当前最关键风险
-
-## Issue 1: Loader-gate pass 被误当 gameplay-ready
-
-* **Severity:** 4
-* **Priority:** P0
-* **Observation:** Off / CanaryOnly / AdditiveBatch1 都只有 loader-gate proof；manual gameplay、event UI、save-load 仍 pending。
-* **Inference:** 如果此时 claim tester-ready / live-ready，会把 registration proof 误当可玩性 proof。
-* **Recommendation:** 下一步必须转入 Runtime Gameplay + Canary UI Proof。
-* **Acceptance Criteria:** Mod Settings UI screenshot、run start、first combat、save/load、4 canary event UI proof 至少部分完成。
+  * Off
+  * CanaryOnly
+  * AdditiveBatch1 only if Off / CanaryOnly clean
+* **Acceptance:** 三个 mode 都有 current v0.107.0 evidence，且 Off / CanaryOnly 至少 clean。
 
 ---
 
-## Issue 2: Dirty worktree 阻断交付
+## Issue 3: Worktree dirty 数量变大
 
-* **Severity:** 3
-* **Priority:** P1
-* **Observation:** Worktree dirty entries are classified in the Revision L ledger; current validation reports 0 unclassified.
-* **Inference:** 目前不适合 versioned package 或 owner handoff。
-* **Recommendation:** Worktree Governance Agent 逐项分类：commit / defer / archive / local-only / owner-approved dirty。
-* **Acceptance Criteria:** clean worktree 或 owner-approved dirty ledger。
-
----
-
-## Issue 3: Independent QA 未复核最新 evidence
-
-* **Severity:** 4
-* **Priority:** P0
-* **Observation:** Independent QA pending。
-* **Inference:** 仍不能 Green Stop。
-* **Recommendation:** QA/Red-Team subagent 复核 K1 Off、CanaryOnly、AdditiveBatch1 evidence、dirty worktree、warnings、docs claims。
-* **Acceptance Criteria:** QA 输出 PASS / PARTIAL / BLOCKED，且不是 implementation self-review。
+* **Severity:** P1
+* **Evidence:** 当前 classifier PASS 但有 130 dirty entries / 0 unclassified。
+* **Impact:** 不能安全 handoff / package；也难以判断哪些是本轮修复、哪些是积压。
+* **Required fix:** Worktree Governance Agent 生成 dirty ledger。
+* **Acceptance:** 每个 dirty batch 标注 owner / commit / defer / archive / local-only；Green Stop 前 clean 或 owner-approved dirty state。
 
 ---
 
-## Issue 4: Warning debt 需要 burn-down
+## Issue 4: Optional ModPatcher failures 需要分类
 
-* **Severity:** 3
-* **Priority:** P1
-* **Observation:** prior 70 warnings traced to `EventModel.Owner` typed `Player?`; compile-included Sts1Events handlers now use early owner guards and the current build is 0-warning.
-* **Inference:** CanaryOnly 事件进入手测前，应先清理它们自己的 nullable warnings。
-* **Recommendation:** 先修 BigFish / GoldenIdol / TheLab / DivineFountain 相关 warnings，再处理 AdditiveBatch1。
-* **Acceptance Criteria:** CanaryOnly event files 0 nullable warnings；warning matrix 保持更新。
-
----
-
-## Issue 5: Batch 4c 只能提案，不能执行
-
-* **Severity:** 4
-* **Priority:** P0
-* **Observation:** 当前状态只写 “READY FOR LOW-RISK CANDIDATE PROPOSAL”，不是 “ready for migration”。
-* **Inference:** runtime smoke 通过 loader gate 后，可以规划低风险候选，但不能马上改 patch。
-* **Recommendation:** 只允许输出 5–10 个低风险候选，包含 rollback / tests / manual evidence；执行迁移需 owner + QA 明确批准。
-* **Acceptance Criteria:** 无新的 IPatchMethod migration，除非单独批准。
+* **Severity:** P1
+* **Evidence:** 当前 runtime smoke 有 8 optional ModPatcher failures。
+* **Impact:** “optional” 不等于安全；可能掩盖真实 feature 失效。
+* **Required fix:** 列出 8 个 failure 的 patch id、target method、feature impact、是否可降级、是否测试覆盖。
+* **Acceptance:** 每个 failure 有 `fix / defer / disable / document` 决策。
 
 ---
 
-# 4. 决策：继续优化、推进，还是两者兼顾？
+## Issue 5: Gameplay / save-load / co-op 仍未开始
 
-**结论：两者兼顾，但重心从 loader proof 转向 manual/runtime evidence。**
+* **Severity:** P1
+* **Evidence:** 当前 pass 明确没有 gameplay、event UI、save-load、co-op evidence。
+* **Impact:** 即使 loader clean，也不能 tester-ready。
+* **Required fix:** runtime clean 后再跑 manual smoke。
+* **Acceptance:** Mod Settings UI、run start、first combat、save/load、Canary event UI 至少部分完成。
+
+---
+
+# 4. 是否完成？
+
+## 已完成
+
+* 当前 no-game validation。
+* 当前 build/test 修复。
+* 当前 source API compile compatibility。
+* Patch inventory freshness。
+* Worktree classification 0 unclassified。
+* 旧环境 loader proof 可作为历史参考。
+
+## 未完成
+
+* 当前 v0.107.0 clean runtime proof。
+* `EctoplasmGoldGatePatch` runtime blocker 修复。
+* Optional ModPatcher failure 分类。
+* Off / CanaryOnly 在 v0.107.0 下重新 clean proof。
+* Gameplay proof。
+* Save/load proof。
+* Co-op proof。
+* Clean worktree / owner-approved dirty ledger。
+* Tester package。
+* Batch 4c。
+* Release-ready / live-ready。
+
+---
+
+# 5. 决策：继续优化、推进，还是两者兼顾？
+
+**结论：优化为主，推进暂停。**
 
 建议比例：
 
 ```text
-60% runtime/manual proof + QA
-25% worktree/package/warning governance
-15% limited low-risk planning
+90% runtime blocker 修复 / evidence cleanup / worktree governance
+10% planning only
 ```
 
-可以推进：
+现在不应该继续推进 Sts1Events 或 Batch 4c。当前唯一允许的“推进”是：
 
-* basic gameplay smoke；
-* CanaryOnly event UI proof；
-* save/load attempt；
-* QA rerun；
-* dirty worktree closure；
-* warning cleanup；
-* Batch 4c low-risk candidate proposal。
+```text
+- 低风险 Batch 4c candidate proposal
+- 不改代码的 patch failure inventory
+- runtime blocker triage
+```
 
-不能推进：
+禁止：
 
-* Batch 4c actual migration；
-* high-risk patch migration；
-* new gameplay expansion；
-* release-ready / live-ready claim；
-* versioned tester package without owner decision。
+```text
+- Batch 4c actual migration
+- high-risk patch migration
+- new gameplay
+- versioned tester package
+- release-ready / live-ready claim
+```
 
 ---
 
-# 5. 下个月开发规范
+# 6. 下个月开发规范
 
-## Monthly Dev Spec: 2026-06 — Loader-Proven to Tester-Ready Transition
+## Monthly Dev Spec: 2026-06 — v0.107 Runtime Recovery + Evidence Governance
 
 ## 月度目标
 
-1. 将 RitsuLib 从 loader-gate proof 推进到 basic gameplay proof。
-2. 将 Sts1Events CanaryOnly 从 registration proof 推进到 UI / branch / save-load evidence。
-3. 完成 Independent QA / Red-Team rerun。
-4. 清理或 owner-approve dirty worktree。
-5. 决定 versioned tester package 或 local diagnostic only。
-6. 建立 warnings burn-down。
-7. 只允许 Batch 4c candidate proposal，不允许未经批准实施。
-8. 不 claim release-ready / live-ready / full parity。
+1. 修复 v0.107.0 runtime blocker。
+2. 重建 current runtime smoke proof。
+3. 分类 8 个 optional ModPatcher failures。
+4. 清理或 owner-approve 130 dirty entries。
+5. 在 current runtime clean 后，再做 gameplay / Canary UI / save-load。
+6. 不启动 Batch 4c，除非 runtime smoke clean + owner approval。
+7. 不 claim release-ready / live-ready。
 
 ---
 
-## Week 1 — Manual Gameplay Smoke
+## Week 1 — v0.107 Runtime Recovery
 
 **Required Work**
 
-* 只启用 BaseLib / RitsuLib / Spire Plus。
-* Confirm main menu。
-* Capture Mod Settings UI screenshot。
-* Start one run。
-* Complete first combat。
-* Visit one shop or unknown room。
-* Save/load once。
-* Capture `godot.log` and screenshots。
+1. 建立 blocker issue：
+
+   * `V01070-RUNTIME-ECTOPLASM-GOLD-GATE-API-DRIFT`
+2. 修 `EctoplasmGoldGatePatch` target API drift。
+3. 列出 8 optional ModPatcher failures：
+
+   * patch id
+   * target
+   * feature
+   * required / optional
+   * fix/defer decision
+4. Rebuild / retest。
+5. Fresh Off runtime smoke。
 
 **Acceptance Criteria**
 
-* `godot.log` clean。
-* 0 release-blocking hits。
-* Mod Settings UI evidence exists。
-* Basic gameplay evidence doc exists。
-* Save/load result recorded。
-* 若阻塞，写 Hard Block report。
+* Off runtime smoke clean。
+* 0 Godot ERROR。
+* 0 Spire Plus error/exception。
+* 0 MissingMethodException / TypeLoadException。
+* Ectoplasm blocker closed。
+* Optional failures classified。
 
 ---
 
-## Week 2 — Sts1Events CanaryOnly Manual Proof
+## Week 2 — Current Off / CanaryOnly / AdditiveBatch1 Smoke
 
-Run with:
+**Required Work**
 
-```text
-SPIREPLUS_STS1_EVENT_MODE=CanaryOnly
-```
+1. Off mode:
 
-Verify:
+   * default env
+   * 0 Sts1Events registration
+   * clean audit
+2. CanaryOnly:
 
-* Big Fish
-* Golden Idol
-* The Lab
-* Divine Fountain
+   * 4 canary registrations
+   * clean audit
+3. AdditiveBatch1:
 
-For each event:
-
-* event UI screenshot；
-* option text screenshot；
-* one branch click result；
-* localization render check；
-* no missing key；
-* no crash / no softlock。
-
-Save/load:
-
-* save during or immediately after at least one canary event；
-* reload；
-* verify state stable。
+   * 10 event types / 11 registrations
+   * clean audit
+   * still dev/test scope
 
 **Acceptance Criteria**
 
-* CanaryOnly 从 “registration proof” 进入 “manual partial proof”。
-* 至少 4 个 event UI screenshots。
-* 至少 4 个 branch result notes。
-* 至少 1 个 save/load proof。
-* docs 标为 manual evidence，不标 release proof。
+* Current v0.107.0 evidence exists。
+* Historical v0.106.1 evidence marked historical only。
+* QA can reproduce log review。
 
 ---
 
-## Week 3 — Worktree / Warning / Package Governance
+## Week 3 — Worktree Governance
 
-**Worktree**
+**Required Work**
 
-* Resolve current dirty entries：
+* Resolve 130 dirty entries：
 
-  * commit；
-  * defer；
-  * archive；
-  * owner-approved local。
-* Produce dirty ledger。
-
-**Warnings**
-
-* Fix CanaryOnly event nullable warnings first。
-* Keep AdditiveBatch1 warnings tracked。
-* Update warning matrix。
-
-**Package**
-
-Owner decides:
-
-1. **No package** — local diagnostic only。
-2. **Tester package** — version bump + publish + package + hashes + artifact tests。
+  * commit
+  * defer
+  * archive
+  * local-only
+  * owner-approved dirty
+* Split by batch。
+* No broad reset / clean without owner approval。
 
 **Acceptance Criteria**
 
-* clean worktree 或 approved dirty ledger。
-* warning matrix current。
+* clean worktree or owner-approved dirty ledger。
+* no unclassified dirty files。
+* docs reflect current state。
+
+---
+
+## Week 4 — Manual Gameplay Smoke
+
+Only after runtime smoke clean.
+
+**Required Work**
+
+* Mod Settings UI screenshot。
+* Start run。
+* First combat。
+* Shop or unknown room。
+* Save/load attempt。
+* CanaryOnly event UI proof if possible。
+
+**Acceptance Criteria**
+
+* gameplay smoke doc exists。
+* logs/screenshots attached。
+* no release-ready claim。
+
+---
+
+## Week 5 — QA / Handoff Decision
+
+**Required Work**
+
+* Independent QA/Red-Team rerun。
+* Decide:
+
+  * local diagnostic only
+  * versioned tester package
+* If package:
+
+  * publish
+  * package
+  * hashes
+  * artifact tests
+* If no package:
+
+  * document no tester handoff。
+
+**Acceptance Criteria**
+
+* QA verdict no longer blocked by current runtime issue。
 * package decision explicit。
+* Batch 4c decision explicit。
 
 ---
 
-## Week 4 — QA Rerun + Batch 4c Candidate Proposal
+# 7. Overnight Run 设置
 
-**QA**
-
-Independent QA reviews:
-
-* Off / CanaryOnly / AdditiveBatch1 logs；
-* manual gameplay smoke；
-* canary UI evidence；
-* dirty ledger；
-* package decision；
-* warnings。
-
-**Batch 4c Candidate Proposal**
-
-Only propose; do not implement.
-
-Candidate list must include:
-
-* patch class；
-* current risk；
-* expected seam；
-* rollback plan；
-* tests；
-* required manual evidence；
-* why low-risk。
-
-**Acceptance Criteria**
-
-* QA verdict PASS / PARTIAL / BLOCKED。
-* Batch 4c candidate proposal exists。
-* no migration performed unless owner explicitly approves。
-
----
-
-## Week 5 — Consolidation / Handoff
-
-* Build/test/format/diff-check。
-* Runtime evidence summary。
-* QA summary。
-* Monthly review。
-* Owner handoff。
-* No release-ready wording。
-* No live-ready wording。
-
----
-
-# 6. Overnight Run 设置
-
-## Runtime Gameplay + Canary Proof Overnight Run
+## v0.107 Runtime Recovery Overnight Run
 
 **必须持续运行到 Green Stop 或 Hard Block Stop。不能 soft stop。**
 
@@ -392,20 +333,16 @@ Candidate list must include:
 
 全部满足才允许停止：
 
-1. `git status --short` clean，或 dirty ledger owner-approved。
-2. build/test/format/diff-check green。
-3. Off loader evidence retained。
-4. CanaryOnly loader evidence retained。
-5. Basic gameplay smoke completed。
-6. Mod Settings UI screenshot captured。
-7. CanaryOnly event UI proof captured for 4 events，或每个 missing event 有 blocker。
-8. Save/load attempt captured。
-9. Independent QA rerun。
-10. Package decision recorded。
-11. No release-ready / live-ready / full parity claim。
-12. No Batch 4c execution。
-13. No high-risk migration。
-14. No new gameplay expansion。
+1. `EctoplasmGoldGatePatch` runtime blocker fixed or hard-blocked with exact evidence。
+2. 8 optional ModPatcher failures listed and classified。
+3. build/test/format/diff-check green。
+4. fresh v0.107 Off smoke clean。
+5. fresh v0.107 CanaryOnly smoke clean，或 explicitly blocked after Off clean。
+6. `godot-log-audit.json` clean。
+7. `git status --short` clean，或 dirty ledger owner-approved。
+8. QA/Red-Team subagent rerun。
+9. no Batch 4c execution。
+10. no release-ready / live-ready claim。
 
 ## Hard Block Stop 模板
 
@@ -413,9 +350,10 @@ Candidate list must include:
 Blocker:
 Failed command:
 Exact error:
-Runtime/log/screenshot path:
+Target API / patch id:
+Runtime/log path:
 Current git status:
-Dirty files:
+Dirty count:
 Files touched:
 What remains:
 Owner:
@@ -424,57 +362,51 @@ Next command:
 
 ## 禁止停止
 
-* main menu loads 就 claim gameplay-ready。
-* canary registered 就 claim canary playable。
-* dirty worktree 没 ledger 就停。
-* QA 没 rerun 就说完成。
-* package decision 没记录就 handoff。
+* main menu reached 但 audit 不 clean就停。
+* optional patch failures 不分类就停。
+* 用历史 v0.106 proof 代替当前 v0.107 proof。
+* Dirty 130 entries 不处理就 handoff。
+* QA 不 rerun 就说完成。
 * Batch 4c 偷跑。
 
 ---
 
-# 7. Subagent Plan
+# 8. Subagent Plan
 
-| Subagent                  | Scope                                                         | Output                    | Pass/Fail                |
-| ------------------------- | ------------------------------------------------------------- | ------------------------- | ------------------------ |
-| Runtime Gameplay Agent    | Main menu、Mod Settings、run start、first combat、save/load       | gameplay smoke report     | PASS / BLOCKED           |
-| Sts1 Canary QA Agent      | 4 canary event UI/branch/save-load                            | canary evidence doc       | PASS / PARTIAL / BLOCKED |
-| Worktree Governance Agent | current dirty entries 分类                                      | dirty ledger / clean tree | owner-approved           |
-| Warning Triage Agent      | 0-warning regression guard                                    | warning matrix            | complete; 0-warning build |
-| Package/Handoff Agent     | package / no-package decision                                 | package decision doc      | explicit                 |
-| Batch 4c Planning Agent   | 低风险候选，不执行                                                     | candidate proposal        | owner approval required  |
-| QA / Red-Team Auditor     | 独立复核 runtime/docs/worktree/package                            | QA report                 | cannot self-audit        |
-| Documentation Agent       | current-validation/issues/monthly spec/runtime checklist sync | unified docs              | no stale counts          |
-| Release Safety Agent      | 防止 release/live/full parity claim                             | safety checklist          | runtime rows remain open |
+| Subagent                  | Scope                                                  | Output                      | Pass/Fail                     |
+| ------------------------- | ------------------------------------------------------ | --------------------------- | ----------------------------- |
+| Runtime Blocker Agent     | 修 Ectoplasm/API drift + runtime smoke                  | blocker fix report + logs   | Off smoke clean or hard block |
+| Patch Failure Auditor     | 分类 8 optional ModPatcher failures                      | failure matrix              | every failure has decision    |
+| Runtime Smoke Agent       | Off / CanaryOnly / AdditiveBatch1 current v0.107 smoke | godot logs + audit json     | PASS / BLOCKED                |
+| Worktree Governance Agent | 130 dirty entries 分类                                   | dirty ledger                | owner-approved                |
+| QA / Red-Team Auditor     | 独立复核 runtime/docs/worktree                             | QA verdict                  | cannot self-audit             |
+| Documentation Agent       | current-validation/issues/runtime checklist sync       | unified docs                | no stale v0.106 claim         |
+| Release Safety Agent      | 禁止 release/live/full parity claim                      | safety checklist            | runtime rows remain open      |
+| Batch 4c Planning Agent   | 只做候选，不执行                                               | low-risk candidate proposal | owner approval required       |
 
 ---
 
-## 8. 给助理的直接指令
+## 给助理的直接指令
 
 ```text
-当前不是完成状态。历史 loader-gate runtime proof 已覆盖 Off=0、CanaryOnly=4、AdditiveBatch1=10/11，clean audits，25/25 patches applied；当前 source expects AdditiveBatch1=10/13，且 v0.107 clean runtime proof 仍 blocked。但 release/live/tester-ready 仍 blocked。
+当前不能判定完成。No-game validation 是绿的，但当前 v0.107.0 runtime proof 失败：Off smoke 到了 main menu 但 audit 不干净，有 11 Godot ERROR、1 Spire Plus error/exception、8 optional ModPatcher failures，且 TargetInvocationException 根因是 EctoplasmGoldGatePatch target API drift。
 
-现在进入 Runtime Gameplay + Canary Proof Overnight Run，不能 soft stop：
+现在进入 v0.107 Runtime Recovery Overnight Run：
 
-1. 保留当前 validation truth：464 pass / 0 fail / 21 skip / 485 total；build 0 errors / 0 warnings。
-2. 先处理 current dirty entries：clean 或建立 owner-approved dirty ledger。
-3. 跑 basic gameplay smoke：Mod Settings UI、start run、first combat、shop/unknown room、save/load。
-4. CanaryOnly 下捕获 Big Fish / Golden Idol / The Lab / Divine Fountain 的 event UI proof 和至少一个 branch result。
-5. 至少做一次 canary save/load attempt。
-6. 重新运行 QA/Red-Team subagent；不能自审。
-7. 明确 package decision：versioned tester package 或 local diagnostic only。
-8. 建立 warning burn-down，优先 CanaryOnly event warnings。
-9. 只允许 Batch 4c candidate proposal，不允许执行迁移。
-10. 禁止 high-risk migration、禁止新 gameplay expansion、禁止 release-ready/live-ready/full parity claim。
-11. 只有 Green Stop 或 Hard Block Stop 才能停止。
+1. 先修 EctoplasmGoldGatePatch target API drift，或写 hard-block report。
+2. 列出 8 optional ModPatcher failures，逐个分类 fix/defer/disable/document。
+3. 重新跑 build/test/format/diff-check。
+4. 重新跑 v0.107 Off smoke，必须 clean audit。
+5. Off clean 后再跑 CanaryOnly smoke，验证 exactly 4 canary registrations。
+6. 不允许用 v0.106 历史 smoke 当当前证明。
+7. 处理 130 dirty entries：clean 或 owner-approved dirty ledger。
+8. 启动 QA/Red-Team subagent，不能自审。
+9. 禁止 Batch 4c，禁止 high-risk migration，禁止新 gameplay，禁止 release-ready/live-ready claim。
+10. 只有 Green Stop 或 Hard Block Stop 才能停止。
 ```
 
 ---
 
-# 9. 最终判断
+## 最终一句话结论
 
-**当前应该两者兼顾：推进 runtime/manual proof，同时继续治理 worktree、warnings、package 和 QA。**
-
-最终一句话：
-
-**这个项目当前最应该优先解决的是 CanaryOnly manual proof 与 worktree/package governance，因为 loader proof 已经达成，下一步是否能进入 tester-ready 取决于 event UI、save/load、QA 和交付物是否可信。**
+**当前最应该优先解决的是 v0.107.0 runtime blocker 和 optional ModPatcher failures，因为 no-game validation 已经通过，但当前实际 runtime proof 失败；在 clean runtime proof 之前，不应继续迁 patch、扩功能或交付 tester package。**

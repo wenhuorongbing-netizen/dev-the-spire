@@ -8,7 +8,7 @@
 
 | Option | Effect |
 |--------|--------|
-| Offer Gold (75 gold) | Pay 75 gold. Remove a card from your deck. |
+| Offer Gold (75 gold) | Pay 75 gold. Remove a card from your deck. Disabled when the player has fewer than 75 gold. |
 | Leave | Nothing happens. |
 
 ### Ascension Differences
@@ -19,6 +19,7 @@ None.
 ### Class: `Sts1OldBeggar`
 - **Registration:** `[RegisterSharedEvent]`
 - **Layout:** Default
+- **Source guard:** `GenerateInitialOptions()` sets the Offer Gold handler to `null` unless `(Owner?.Gold ?? 0) >= GoldCost`, preventing underfunded card removal through `PlayerCmd.LoseGold` clamping.
 
 ### Localization Keys
 ```
@@ -33,6 +34,5 @@ STS1_OLD_BEGGAR.pages.OFFER_GOLD.description
 - Card removal UI
 
 ### Dynamic Variables
-| Variable | Type | Value |
-|----------|------|-------|
-| GoldCost | GoldVar | 75 |
+
+None. The current localization uses static `75` text and the source keeps `GoldCost = 75`.

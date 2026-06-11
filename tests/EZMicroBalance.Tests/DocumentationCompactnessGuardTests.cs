@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -192,7 +192,7 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against the real installed mods root.",
+            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-06-11 after the beta.85 runtime-fix package refresh. Result: succeeded against the real installed mods root.",
             "Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.",
             "is not the current package-parity source",
             "`E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance`",
@@ -432,10 +432,10 @@ public sealed class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("beta.84 Urda Seedbed Harmony patch bugfix", projectState, StringComparison.Ordinal);
+        Assert.Contains("runtime blocker is resolved for loader/patch application", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
-        Assert.Contains("beta19-loader-smoke-20260525-213336", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.19 packages have historical loader/startup evidence", projectState, StringComparison.Ordinal);
         Assert.Contains("beta.19 Steam-client loader smoke", projectState, StringComparison.Ordinal);
         Assert.Contains("Current manual-test package is not a release-readiness claim", projectState, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", projectState, StringComparison.Ordinal);
@@ -502,7 +502,7 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-05-31:",
+            "Current package hashes, 2026-06-11:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
@@ -536,11 +536,11 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             docsByPath["PROJECT_STATE.md"],
-            "target-fix",
-            "versioned tester-package proof remain pending");
+            "runtime blocker is resolved",
+            "tester-package handoff decisions remain pending");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
-            "Current beta.84 evidence should be read from the latest validated HEAD");
+            "Current beta.85 evidence should be read from the latest validated HEAD");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
             "current package evidence derived from the manifest/versioned artifacts");
@@ -561,7 +561,7 @@ public sealed class DocumentationCompactnessGuardTests
             "OnlySpirePlusIsAnActiveRootModSurface");
         AssertSourceContains(
             docsByPath["docs/features/ancients-rework-v4/completion-audit.md"],
-            "avoid copying stale historical commit labels into beta.84 handoff notes");
+            "avoid copying stale historical commit labels into beta.85 handoff notes");
 
         foreach (var staleFragment in new[]
                  {
@@ -906,7 +906,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.84 package hash is pending",
+            "Fresh loader smoke for the current beta.85 package hash is clean",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,
@@ -1037,8 +1037,8 @@ public sealed class DocumentationCompactnessGuardTests
         var currentDocs = string.Join(
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
-        Assert.Contains("464 passed / 21 skipped", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("473 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("475 passed / 21 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("67 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]

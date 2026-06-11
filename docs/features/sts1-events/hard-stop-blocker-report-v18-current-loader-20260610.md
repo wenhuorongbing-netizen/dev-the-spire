@@ -3,9 +3,11 @@
 Date: 2026-06-10
 Scope: Mandatory Overnight Run v18, current `v0.107.0` loader reproof after RitsuLib `v0.4.16`.
 
+Superseded note, 2026-06-11: this report remains root-cause history for the failed beta.84 package. Current beta.85 Off loader proof is clean under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`; CanaryOnly/AdditiveBatch1, gameplay, save-load, replacement, multiplayer, and QA proof remain pending.
+
 ## Exact Gate Id
 
-Primary blocker: `O24` current loader proof is red for the package-parity beta.84 install.
+Historical blocker at capture time: `O24` loader proof was red for the package-parity beta.84 install.
 
 Downstream blocked gates: `O25`, `O33`, `O34-O47`, and `O51-O52` remain blocked because the current Slay the Spire 2 `v0.107.0` Off loader smoke is non-clean before CanaryOnly/AdditiveBatch1/gameplay proof can be accepted.
 

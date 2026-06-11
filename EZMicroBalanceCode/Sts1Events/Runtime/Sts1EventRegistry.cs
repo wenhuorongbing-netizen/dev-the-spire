@@ -17,7 +17,7 @@ internal static class Sts1EventRegistry
         new("sts1_the_lab", "The Lab", Sts1EventPhase.Canary, Sts1EventAct.Shared),
 
         // Phase 2: Simple batch
-        new("sts1_the_cleric", "The Cleric", Sts1EventPhase.Simple, Sts1EventAct.Shared),
+        new("sts1_the_cleric", "The Cleric", Sts1EventPhase.Simple, Sts1EventAct.Act1),
         new("sts1_golden_wing", "Golden Wing", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_living_wall", "Living Wall", Sts1EventPhase.Simple, Sts1EventAct.Shared),
         new("sts1_old_beggar", "Old Beggar", Sts1EventPhase.Simple, Sts1EventAct.Shared),

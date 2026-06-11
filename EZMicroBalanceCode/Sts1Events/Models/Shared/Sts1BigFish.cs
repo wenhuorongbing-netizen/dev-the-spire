@@ -11,7 +11,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
 /// <summary>
 /// StS1 Big Fish event: Banana (heal 1/3 max HP), Donut (+5 max HP),
-/// or Shoe (random relic + Regret curse).
+/// or Box (random relic + Regret curse).
 /// </summary>
 public sealed class Sts1BigFish : EventModel
 {
@@ -35,7 +35,7 @@ public sealed class Sts1BigFish : EventModel
         {
             new EventOption(this, Banana, InitialOptionKey("BANANA")),
             new EventOption(this, Donut, InitialOptionKey("DONUT")),
-            new EventOption(this, Shoe, InitialOptionKey("SHOE"))
+            new EventOption(this, Box, InitialOptionKey("BOX"))
         };
     }
 
@@ -54,13 +54,13 @@ public sealed class Sts1BigFish : EventModel
         SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.DONUT.description"));
     }
 
-    private async Task Shoe()
+    private async Task Box()
     {
         if (Owner is not { } owner) return;
         var relic = RelicFactory.PullNextRelicFromFront(owner).ToMutable();
         await RelicCmd.Obtain(relic, owner);
         await CardPileCmd.AddCursesToDeck(
             new[] { ModelDb.Card<Regret>() }, owner);
-        SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.SHOE.description"));
+        SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.BOX.description"));
     }
 }

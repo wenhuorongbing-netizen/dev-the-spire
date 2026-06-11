@@ -1089,7 +1089,9 @@ public sealed partial class ReleaseEvidenceGateTests
 
         var projectState = ReadRepoText("PROJECT_STATE.md");
         Assert.Contains("current source defines 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("beta.84 Urda Seedbed Harmony patch bugfix", projectState, StringComparison.Ordinal);
+        Assert.Contains(ManifestVersion(), projectState, StringComparison.Ordinal);
+        Assert.Contains("v0.107.0` package Off smoke", projectState, StringComparison.Ordinal);
+        Assert.Contains("applied 25/25 Spire Plus ModPatcher patches", projectState, StringComparison.Ordinal);
         Assert.Contains("Found 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Found 22 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
     }

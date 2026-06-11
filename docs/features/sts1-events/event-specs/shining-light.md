@@ -19,6 +19,7 @@
 ### Class: `Sts1ShiningLight`
 - **Registration:** `[RegisterActEvent(typeof(Act1Model))]`
 - **Layout:** Default
+- **Source guard:** `Enter()` calls `Sts1EventHelpers.UpgradeRandomCards(owner, Rng, count: 2)` after damage. The helper filters upgradable deck cards, samples with the event RNG, and upgrades with `CardPreviewStyle.EventLayout`; it does not open the manual deck-upgrade selector.
 
 ### Localization Keys
 ```
@@ -30,5 +31,5 @@ STS1_SHINING_LIGHT.pages.ENTER.description
 ```
 
 ### Dependencies
-- Upgrade random cards command
+- Upgrade random upgradable deck cards
 - Damage (30% normal, 40% A15+)

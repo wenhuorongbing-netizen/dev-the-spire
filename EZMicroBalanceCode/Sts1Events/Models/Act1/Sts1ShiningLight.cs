@@ -36,7 +36,7 @@ public sealed class Sts1ShiningLight : EventModel
             owner.Creature, (decimal)damage,
             MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable | MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered,
             null, null);
-        await Sts1EventHelpers.OpenCardUpgrade(owner, count: 2);
+        await Sts1EventHelpers.UpgradeRandomCards(owner, Rng, count: 2);
         SetEventFinished(L10NLookup("STS1_SHINING_LIGHT.pages.ENTER.description"));
     }
 }

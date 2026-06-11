@@ -1,4 +1,4 @@
-﻿# Spire Plus Ancients Rework v4
+# Spire Plus Ancients Rework v4
 
 This folder is the active feature record for the `Spire Plus` Ancient reward rebalance.
 
@@ -28,7 +28,7 @@ The Ancient v4.3 rebalance has been implemented for Spire Plus under `EZMicroBal
 
 The current v4.3 pass covers Velvet Choker's retained soft limit, Distinguished Cape's `lose 30% of current Max HP, at least 18` trade gate, Prismatic Gem's "Every second standard card reward contains only off-color cards" behavior, and no-space Simplified Chinese number formatting. v4.2 rightmost-slot Prismatic Gem is historical only. v4.2 Distinguished Cape 40% min15 is historical only.
 
-No source-design item is currently documented as blocked for lack of local compile-time API evidence. Historical beta.19 normal Steam-client startup/log verification confirms Spire Plus loaded cleanly under technical id `EZMicroBalance`, registered its config page, reported `v0.1.0-private-beta.19`, and reported `Found 30 SavedSpireFields`. The current beta.84 package has `v0.107.0` smoke evidence, but that smoke failed clean audit on stale package API targets. Current Mod Settings UI list evidence, historical page-level Mod Settings UI evidence, limited A11 map checks plus saved-map boss-reachability graph proof, and targeted A14 Rootblight English/ZHS hover/starter-notice checks have evidence. Private beta is not complete until:
+No source-design item is currently documented as blocked for lack of local compile-time API evidence. Historical beta.19 normal Steam-client startup/log verification confirms Spire Plus loaded cleanly under technical id `EZMicroBalance`, registered its config page, reported `v0.1.0-private-beta.19`, and reported `Found 30 SavedSpireFields`. The current beta.85 package has clean `v0.107.0` Off loader evidence under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`; this proves startup and patch application only. Current Mod Settings UI list evidence, historical page-level Mod Settings UI evidence, limited A11 map checks plus saved-map boss-reachability graph proof, and targeted A14 Rootblight English/ZHS hover/starter-notice checks have evidence. Private beta is not complete until:
 
 - the manual verification matrix has concrete runtime results,
 - save/load-sensitive behavior is verified in-game,

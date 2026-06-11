@@ -100,7 +100,8 @@ internal static class Sts1EventRegistrationService
         content.SharedEvent<Sts1Purifier>();
         content.ActEvent<Glory, Sts1UpgradeShrine>();
         content.SharedEvent<Sts1GoldenShrine>();
-        content.SharedEvent<Sts1TheCleric>();
+        content.ActEvent<Overgrowth, Sts1TheCleric>();
+        content.ActEvent<Underdocks, Sts1TheCleric>();
         content.SharedEvent<Sts1OldBeggar>();
         content.ActEvent<Overgrowth, Sts1ShiningLight>();
         content.ActEvent<Underdocks, Sts1ShiningLight>();
@@ -128,7 +129,6 @@ internal static class Sts1EventRegistrationService
         var content = RitsuLibFramework.CreateContentPack(modId);
 
         // ── Shared events ──────────────────────────────────────────────
-        content.SharedEvent<Sts1TheCleric>();
         content.SharedEvent<Sts1GoldenWing>();
         content.SharedEvent<Sts1LivingWall>();
         content.SharedEvent<Sts1OldBeggar>();
@@ -150,6 +150,8 @@ internal static class Sts1EventRegistrationService
         content.ActEvent<Underdocks, Sts1BigFish>();
         content.ActEvent<Overgrowth, Sts1GoldenIdol>();
         content.ActEvent<Underdocks, Sts1GoldenIdol>();
+        content.ActEvent<Overgrowth, Sts1TheCleric>();
+        content.ActEvent<Underdocks, Sts1TheCleric>();
         content.ActEvent<Overgrowth, Sts1ShiningLight>();
         content.ActEvent<Underdocks, Sts1ShiningLight>();
         content.ActEvent<Overgrowth, Sts1Mushrooms>();

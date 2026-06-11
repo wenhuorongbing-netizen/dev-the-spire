@@ -106,16 +106,16 @@ public sealed partial class AncientBehaviorGuardTests
             "ModPatchTarget(typeof(SealOfGold), nameof(SealOfGold.AfterSideTurnStart))",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.AfterCreated))",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.FromSerializable))",
-            "ModPatchTarget(typeof(Debt), \"get_CanonicalKeywords\"",
-            "ModPatchTarget(typeof(Debt), \"get_CanonicalVars\"",
-            "ModPatchTarget(typeof(Debt), \"get_HasTurnEndInHandEffect\"",
+            "ModPatchTarget(typeof(Debt), nameof(Debt.CanonicalKeywords), MethodType.Getter)",
+            "ModPatchTarget(typeof(Debt), \"CanonicalVars\", MethodType.Getter)",
+            "ModPatchTarget(typeof(Debt), nameof(Debt.HasTurnEndInHandEffect), MethodType.Getter)",
             "ModPatchTarget(typeof(Debt), \"OnTurnEndInHand\")",
             "ModPatchTarget(typeof(CardModel), \"OnPlay\")",
             "ModPatchTarget(typeof(CardCmd), nameof(CardCmd.Exhaust))",
             "[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]",
             "[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]",
             "[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]",
-            "ModPatchTarget(typeof(DistinguishedCape), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(DistinguishedCape), \"CanonicalVars\", MethodType.Getter)",
             "ModPatchTarget(typeof(Vakuu), \"GenerateInitialOptions\")",
             "ModPatchTarget(typeof(DistinguishedCape), nameof(DistinguishedCape.AfterObtained))",
             "[HarmonyPatch(typeof(VelvetChoker), \"get_CanonicalVars\")]",
@@ -137,8 +137,8 @@ public sealed partial class AncientBehaviorGuardTests
             "ModPatchTarget(typeof(Crossbow), nameof(Crossbow.AfterSideTurnStart)",
             "[HarmonyPatch(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))]",
             "[HarmonyPatch(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))]",
-            "ModPatchTarget(typeof(CardModel), \"get_CanonicalKeywords\"",
-            "ModPatchTarget(typeof(BrightestFlame), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(CardModel), nameof(CardModel.CanonicalKeywords), MethodType.Getter)",
+            "ModPatchTarget(typeof(BrightestFlame), \"CanonicalVars\", MethodType.Getter)",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.OnPlayWrapper))",
             "[HarmonyPatch(typeof(CookRestSiteOption), \"get_IsEnabled\")]",
             "[HarmonyPatch(typeof(CookRestSiteOption), \"get_Description\")]",
@@ -152,7 +152,7 @@ public sealed partial class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(Folly), \"get_CanonicalKeywords\")]",
             "ModPatchTarget(typeof(ChoicesParadox), nameof(ChoicesParadox.AfterPlayerTurnStart))",
             "[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]",
-            "ModPatchTarget(typeof(Fiddle), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(Fiddle), \"CanonicalVars\", MethodType.Getter)",
             "ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ModifyHandDrawLate))",
             "ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ShouldDraw))",
             "ModPatchTarget(typeof(CardPileCmd), nameof(CardPileCmd.Draw)",
@@ -164,8 +164,8 @@ public sealed partial class AncientBehaviorGuardTests
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCardPlayed))]",
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.BeforeSideTurnStart))]",
             "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))]",
-            "ModPatchTarget(typeof(CardModel), \"get_CanonicalKeywords\"",
-            "ModPatchTarget(typeof(BrightestFlame), \"get_CanonicalVars\"",
+            "ModPatchTarget(typeof(CardModel), nameof(CardModel.CanonicalKeywords), MethodType.Getter)",
+            "ModPatchTarget(typeof(BrightestFlame), \"CanonicalVars\", MethodType.Getter)",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.OnPlayWrapper))");
     }
 
@@ -376,7 +376,7 @@ public sealed partial class AncientBehaviorGuardTests
             "CreateVakuuSecondPoolReplacement",
             "vakuu.AllPossibleOptions",
             "option.Relic is PreservedFog or SereTalon",
-            "__result = options.ToArray()",
+            "return options.ToArray()",
             "vakuu.Rng.NextItem(candidates)",
             "CreateLockedCapeOption",
             "DISTINGUISHED_CAPE.unpayableOption",
@@ -405,7 +405,7 @@ public sealed partial class AncientBehaviorGuardTests
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
         var replacementBranch = SliceBetween(
             source,
-            "private static void Postfix(",
+            "private static IReadOnlyList<MegaCrit.Sts2.Core.Events.EventOption> Postfix(",
             "private static MegaCrit.Sts2.Core.Events.EventOption? CreateVakuuSecondPoolReplacement");
         var replacementFactory = SliceBetween(
             source,
@@ -426,12 +426,12 @@ public sealed partial class AncientBehaviorGuardTests
             "var capeIndex = options.FindIndex(option => option.Relic is DistinguishedCape);",
             "var replacement = CreateVakuuSecondPoolReplacement(__instance, options);",
             "options[capeIndex] = replacement;",
-            "__result = options.ToArray();",
+            "return options.ToArray();",
             "options[capeIndex] = CreateLockedCapeOption(__instance, options[capeIndex], owner.Creature.MaxHp);",
-            "__result = options.ToArray();");
+            "return options.ToArray();");
 
         Assert.Equal(2, Regex.Matches(replacementBranch, @"options\[capeIndex\]\s*=").Count);
-        Assert.Equal(2, Regex.Matches(replacementBranch, @"__result\s*=\s*options\.ToArray\(\);").Count);
+        Assert.Equal(2, Regex.Matches(replacementBranch, @"return\s+options\.ToArray\(\);").Count);
         foreach (var countChangingApi in new[] { ".Add(", ".AddRange(", ".Insert(", ".InsertRange(", ".Clear(", ".Remove(", ".RemoveAt(", ".RemoveAll(", ".Where(", ".Take(", ".Skip(" })
         {
             Assert.DoesNotContain(countChangingApi, replacementBranch, StringComparison.Ordinal);

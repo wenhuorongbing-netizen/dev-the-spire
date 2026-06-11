@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
@@ -62,6 +63,20 @@ internal static class Sts1EventHelpers
         var cards = (await CardSelectCmd.FromDeckForUpgrade(owner, prefs)).ToList();
         foreach (var card in cards)
             CardCmd.Upgrade(card);
+    }
+
+    /// <summary>
+    /// Upgrade random upgradable deck cards.
+    /// </summary>
+    public static Task UpgradeRandomCards(Player owner, Rng rng, int count = 1)
+    {
+        var cards = owner.Deck.Cards
+            .Where(card => card.IsUpgradable)
+            .TakeRandom(count, rng)
+            .ToList();
+        if (cards.Count > 0)
+            CardCmd.Upgrade(cards, CardPreviewStyle.EventLayout);
+        return Task.CompletedTask;
     }
 
     /// <summary>

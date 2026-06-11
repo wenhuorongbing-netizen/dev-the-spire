@@ -27,6 +27,8 @@ Verify that every event class has all required localization keys:
 4. Use debug console to spawn events:
    - `event sts1_big_fish`
    - `event sts1_golden_idol`
+   - `event sts1_the_lab`
+   - `event sts1_divine_fountain`
 5. Verify all options work correctly
 6. Verify localization displays properly
 
@@ -36,16 +38,56 @@ Verify that every event class has all required localization keys:
 |--------|----------------|-----------|
 | Banana | Heal 1/3 max HP | |
 | Donut | +5 max HP | |
-| Shoe | Random relic + Regret curse | |
+| Box | Random relic + Regret curse | |
 
 ### Golden Idol Test Matrix
 
 | Option | Expected Result | A15+ | Pass/Fail |
 |--------|----------------|------|-----------|
-| Take → Smash | Injury curse | Same | |
-| Take → Jump | Lose 25% HP | Lose 35% HP | |
-| Take → Destroy | Lose 10% max HP | Lose 15% max HP | |
+| Take → Outrun | Injury curse | Same | |
+| Take → Smash | Lose 25% max HP as HP damage | Lose 35% max HP as HP damage | |
+| Take → Hide | Lose 8% max HP | Lose 10% max HP | |
 | Leave | Nothing | Same | |
+
+### Golden Shrine AdditiveBatch1 Check
+
+| Option | Expected Result | A15+ | Pass/Fail |
+|--------|----------------|------|-----------|
+| Pray | Gain 100 gold | Gain 50 gold | |
+| Desecrate | Gain 275 gold and obtain Regret | Same | |
+| Leave | Nothing | Same | |
+
+### The Cleric AdditiveBatch1 Check
+
+| State | Option | Expected Result | A15+ | Pass/Fail |
+|-------|--------|----------------|------|-----------|
+| Player has 35+ gold | Heal | Spend 35 gold, heal 25% max HP | Same | |
+| Player has fewer than 35 gold | Encounter eligibility | Event should not appear from the random pool | Same | |
+| Normal, player has 50+ gold | Purify | Spend 50 gold, then remove 1 card | N/A | |
+| A15+, player has 75+ gold | Purify | N/A | Spend 75 gold, then remove 1 card | |
+| Player has less than Purify cost | Purify | Option is unavailable; no card-removal UI opens | Same | |
+| Any | Leave | Nothing | Same | |
+
+### The Lab Test Matrix
+
+| Option | Expected Result | A15+ | Pass/Fail |
+|--------|----------------|------|-----------|
+| Open | Obtain 3 random potions | Obtain 2 random potions | |
+
+### Old Beggar AdditiveBatch1 Check
+
+| State | Option | Expected Result | Pass/Fail |
+|-------|--------|----------------|-----------|
+| Player has 75+ gold | Offer Gold | Spend 75 gold, then remove 1 card | |
+| Player has fewer than 75 gold | Offer Gold | Option is unavailable; no card-removal UI opens | |
+
+### Shining Light AdditiveBatch1 Check
+
+| State | Option | Expected Result | Pass/Fail |
+|-------|--------|----------------|-----------|
+| Normal | Enter | Lose 30% max HP as unblockable damage, then 2 random upgradable deck cards upgrade without opening the card picker | |
+| Ascension 15+ | Enter | Lose 40% max HP as unblockable damage, then 2 random upgradable deck cards upgrade without opening the card picker | |
+| Fewer than 2 upgradable cards | Enter | Upgrade every available upgradable deck card, up to 2 | |
 
 ### Localization Test
 
@@ -55,7 +97,7 @@ Verify that every event class has all required localization keys:
 
 ## Test File
 
-`tests/EZMicroBalance.Tests/Sts1EventManifestTests.cs`
+`tests/EZMicroBalance.Tests/Sts1EventFeatureGuardTests.cs`
 
 Tests:
 - All manifest events have source files

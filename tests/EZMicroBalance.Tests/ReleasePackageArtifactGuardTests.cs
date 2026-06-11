@@ -100,7 +100,7 @@ public sealed class ReleasePackageArtifactGuardTests
 
         Assert.Contains("manual feature verification", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
         Assert.Contains("still pending", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Fresh loader smoke for the current beta.84 package hash is pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Fresh loader smoke for the current beta.85 package hash is clean", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("This is loader/startup evidence, not gameplay proof", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);

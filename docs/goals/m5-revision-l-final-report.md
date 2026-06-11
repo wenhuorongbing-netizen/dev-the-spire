@@ -38,6 +38,8 @@ Final validation was rerun after clearing stale repo-local `testhost` state and 
 
 No game was launched and no package was published during this validation pass.
 
+The 21 skipped tests are explained in `docs/reviews/current-validation.md`: all are `[ReleaseArtifactFact]` opt-in package/install/runtime artifact checks gated by `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` or legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`.
+
 ## Remaining Blockers
 
 - Owner review of dirty slices.

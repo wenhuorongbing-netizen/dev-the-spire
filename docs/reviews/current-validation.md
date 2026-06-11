@@ -1,6 +1,24 @@
 # Current Validation
 
-Date: 2026-06-10
+Date: 2026-06-11
+
+## June 11 Revision M Runtime Drift Addendum
+
+- M5 Revision M loader/runtime-drift blocker is closed for Off-mode loader proof only. The red root-cause packet remains `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/`: beta.84 reached main menu with RitsuLib `v0.4.16` / compat branch `0.107.0`, but Spire Plus applied only 17/25 ModPatcher patches, logged 8 optional ModPatcher failures, and threw an `EctoplasmGoldGatePatch` initializer exception.
+- Current dirty source contains targeted fixes for that drift: ModPatcher getter targets use property names with `MethodType.Getter`, and `EctoplasmGoldGatePatch` targets `Ectoplasm.ModifyGoldGained(Player, decimal)`.
+- Source-fix context under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/` applied 25/25 patches and audited clean on `v0.107.0`, but that log still reports beta.84.
+- Current beta.85 Off proof is `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`: the log reports `v0.1.0-private-beta.85`, RitsuLib `0.4.16` with compat branch `0.107.0`, 25/25 Spire Plus ModPatcher patches applied, StS1Events default Off, main menu reached, and `godot-log-audit.json` is clean with 0 blocking signature hits.
+- Installed beta.85 package parity is recorded in `PROJECT_STATE.md` as passed via `scripts\check-installed-spire-plus-package.ps1`. The current beta.85 release/package artifact, artifact parity, Ascension milestone, and Ancient behavior subset also passed with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 67 passed / 0 failed / 0 skipped.
+- `PROJECT_STATE.md` now records the latest beta.85 runtime-fix validation as 0 build errors, 0 warnings, the isolated `ReleaseEvidenceGateTests` class passing 9 passed / 0 failed / 0 skipped / 9 total, and the complementary no-build test-project lane excluding `ReleaseEvidenceGateTests` passing 466 passed / 0 failed / 21 skipped / 487 total, for split coverage of 475 passed / 0 failed / 21 skipped / 496 total after stale current-repo `testhost` locks were cleared. The dated June 10 command table below remains historical evidence for that lane.
+- Final post-doc-refresh command evidence on 2026-06-11: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` passed with 0 warnings / 0 errors; `ReleaseEvidenceGateTests` passed 9 / 0 / 0 / 9 with diag `migration-beta85-release-evidence-post-doc-final-diag.log`; the complementary no-build test-project lane passed 466 / 0 / 21 / 487 with diag `migration-beta85-non-release-evidence-post-doc-final-diag.log`; the opt-in installed-artifact lane passed 67 / 0 / 0 / 67 with `STS2_PATH=E:\Steam\steamapps\common\Slay the Spire 2`; `dotnet format`, patch inventory, worktree batch classifier, `git diff --check`, and installed package parity all passed.
+- Runtime-ready/live-ready/release-ready remain blocked: no gameplay, clicked UI, save-load, co-op, event encounter, replacement, independent QA, or release handoff proof was produced by the loader smoke. Active same-repo `dotnet`/`testhost` processes were observed during the continuation, so do not start overlapping validation lanes.
+
+## June 11 Static StS1 Canary Addendum
+
+- Static source/test/doc change after the June 10 validation: `Sts1DivineFountain` now overrides `IsAllowed(IRunState)` and requires every run participant to have at least one curse before the shared event is eligible. `Sts1EventFeatureGuardTests.DivineFountainRequiresEveryPlayerToHaveACurse` was added as a source guard.
+- Static source/resource/test/doc change after the June 10 validation: `Sts1BigFish` now uses the wiki-aligned Box option identity (`InitialOptionKey("BOX")`) with matching EN/ZHS localization keys. `Sts1EventFeatureGuardTests.BigFishUsesBoxOptionName` was added as a source/localization guard.
+- Static source/resource/test/doc change after the June 10 validation: `Sts1TheLab` now exposes only the Open option, removes unused EN/ZHS Leave keys, and keeps the source 3-potion / A15+ 2-potion split. `Sts1EventFeatureGuardTests.TheLabHasOnlyOpenOption` was added as a source/localization guard.
+- The June 10 command results below are not proof of these newer source/resource changes. The later beta.85 Off smoke proves the default-Off loader path only; it does not prove Big Fish Box UI render, The Lab UI render, Divine Fountain natural-pool eligibility, save/load, replacement behavior, or multiplayer disposition.
 
 ## June 10 Migration Reconciliation Addendum
 
@@ -15,7 +33,43 @@ Date: 2026-06-10
   - `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified`: PASS, 130 dirty entries, 0 unclassified.
   - `git diff --check`: PASS with CRLF normalization warnings only for `AGENTS.md`, `docs/goals/refactor.md`, and `docs/patch-inventory.md`.
 - Runner note: an earlier test-project attempt in this pass reported 55 passed before a testhost abort and left VSTest processes alive; those PIDs were stopped, then the diagnostic reruns above passed cleanly.
-- Runtime status is unchanged: the current `v0.107.0` beta.84 Off smoke remains non-clean, and no game launch, package refresh, or live/manual proof was produced here.
+- Runtime status was later superseded by the June 11 beta.85 Off loader smoke above. This June 10 lane itself produced no game launch, package refresh, or live/manual proof.
+
+## Current Normal-Run Skipped Tests
+
+The 21 skipped tests in normal `dotnet test` lanes are source-explained by 21 usages of `[ReleaseArtifactFact]`. `tests/EZMicroBalance.Tests/ReleaseArtifactFactAttribute.cs` skips these tests unless `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` or legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` is set, because they require ignored publish/package outputs, installed DLL/PCK files, or local runtime smoke-log artifacts.
+
+| File | Skipped methods | Why normal runs skip them |
+|---|---:|---|
+| `AncientBehaviorGuardTests.cs` | 1 | Versioned private-beta ZIP contents require refreshed package artifacts. |
+| `AscensionV2MilestoneGuardTests.cs` | 1 | Current Ascension localization must be verified inside the packaged artifact. |
+| `ReleaseArtifactParityGuardTests.cs` | 7 | Cover-art policy, installed/package PCK parity, release hash claims, runtime-log version/API-drift checks, smoke-claim support, and disabled-plug-off evidence require package or smoke evidence. |
+| `ReleaseArtifactTests.cs` | 7 | Audited art, published PCK contents, installed DLL/manifest parity, installed-game Harmony target resolution, installed Urda asset paths, and Prismatic Gem installed API checks require publish/install artifacts. |
+| `ReleasePackageArtifactGuardTests.cs` | 5 | Versioned ZIP/install hash parity, hash docs, handoff artifact claims, and installed/package PCK text checks require refreshed package staging and installed files. |
+
+Exact skipped method list from source:
+
+- `AncientBehaviorGuardTests.PrivateBetaZipContainsOnlyInstallableActiveModFiles`
+- `AscensionV2MilestoneGuardTests.PackageContainsCurrentAscensionLocalization`
+- `ReleaseArtifactParityGuardTests.ActiveCoverArtAndInactiveModRealPolicyMatchExportPckAndPackage`
+- `ReleaseArtifactParityGuardTests.ExportedResourcesInstalledPckAndPackagePckStayInParity`
+- `ReleaseArtifactParityGuardTests.CurrentReleaseHashClaimsMatchInstalledStagingVersionedAndZipArtifacts`
+- `ReleaseArtifactParityGuardTests.CurrentRuntimeLogVersionMustMatchManifest`
+- `ReleaseArtifactParityGuardTests.RecentRuntimeLogMustNotContainV105ApiDriftOrBaseLibDependencyFailures`
+- `ReleaseArtifactParityGuardTests.RecentSmokeLogSupportsControlledSmokeClaims`
+- `ReleaseArtifactParityGuardTests.DisabledSpirePlusPlugOffEvidenceSupportsDocs`
+- `ReleaseArtifactTests.ActiveReleaseArtMatchesAuditedNoTextNoLogoAsset`
+- `ReleaseArtifactTests.PublishedPckContainsOnlyActiveReleaseResources`
+- `ReleaseArtifactTests.InstalledDllMatchesABuildOutput`
+- `ReleaseArtifactTests.InstalledManifestMatchesRepositoryManifest`
+- `ReleaseArtifactTests.HarmonyPatchesResolveAgainstInstalledGameApi`
+- `ReleaseArtifactTests.InstalledUrdaUsesCustomAncientAssetPaths`
+- `ReleaseArtifactTests.PrismaticGemRewardBannerContractMatchesInstalledGameApi`
+- `ReleasePackageArtifactGuardTests.PackageStagingVersionedZipAndInstalledArtifactsHaveMatchingHashes`
+- `ReleasePackageArtifactGuardTests.CurrentDocsMatchReleaseHashesAndAvoidPinnedStaleTestTotals`
+- `ReleasePackageArtifactGuardTests.PrivateBetaVerificationHandoffCarriesCurrentArtifactsAndManualBlockers`
+- `ReleasePackageArtifactGuardTests.InstalledAndPackagedPckCarrySereTalonTanxClawsSplit`
+- `ReleasePackageArtifactGuardTests.InstalledAndPackagedPckCarryTrialBranchShortChoiceText`
 
 ## June 10 Refactor Validation
 
@@ -27,7 +81,7 @@ Date: 2026-06-10
 - Current test-project validation: `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --logger "console;verbosity=normal" -- RunConfiguration.MaxCpuCount=1` passes with **464 passed / 0 failed / 21 skipped / 485 total**. The formerly problematic stale-loader handoff test and the full handoff pair both pass after isolating the PowerShell handoff runner from VSTest host I/O.
 - Current solution-level test status: **PASS**. Exact rerun after clearing overlapping validation processes: `dotnet test EZMicroBalance.sln --no-build --logger "console;verbosity=minimal" --diag tests\EZMicroBalance.Tests\TestResults\solution-after-zero-warning-build-diag.log -- RunConfiguration.MaxCpuCount=1` passed with **464 passed / 0 failed / 21 skipped / 485 total**. Earlier `testhost` crashes during same-repo cross-thread validation overlap remain runner-contamination evidence, not the current source validation truth.
 - Current hygiene validation: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, `git diff --check`, `.\scripts\generate-patch-inventory.ps1 -Check`, and `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` pass. `git diff --check` emitted only the existing CRLF normalization warning for `docs/patch-inventory.md`; dirty goal docs and deleted goal files remain preserved pre-existing/concurrent work.
-- Runtime/live status: no gameplay, event UI, save-load, co-op, release package, or live-ready evidence was produced in this pass. The local installed game is now `v0.107.0`; installed RitsuLib was updated to official `v0.4.16` with `lib\0.107.0`. On 2026-06-10 the installed beta.84 DLL was restored from package staging, changing the installed Spire Plus DLL SHA256 from stale `69DEB870A226FD58EC9AF9D8895EEDC832B5D9A8903A2D79B1D6CEDC2E114EB1` to packaged `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`; `scripts\check-installed-spire-plus-package.ps1` then passed. The fresh `v0.107.0` beta.84 Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` reached main menu but failed clean runtime proof: 11 Godot ERROR hits, 1 Spire Plus error/exception hit, 8 optional ModPatcher failures, and a `TargetInvocationException` rooted in stale `EctoplasmGoldGatePatch` target API drift. Current package runtime proof remains blocked.
+- Runtime/live status for this June 10 lane: no gameplay, event UI, save-load, co-op, release package, or live-ready evidence was produced in this pass. The local installed game is now `v0.107.0`; installed RitsuLib was updated to official `v0.4.16` with `lib\0.107.0`. On 2026-06-10 the installed beta.84 DLL was restored from package staging, changing the installed Spire Plus DLL SHA256 from stale `69DEB870A226FD58EC9AF9D8895EEDC832B5D9A8903A2D79B1D6CEDC2E114EB1` to packaged `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`; `scripts\check-installed-spire-plus-package.ps1` then passed. The fresh `v0.107.0` beta.84 Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` reached main menu but failed clean runtime proof: 11 Godot ERROR hits, 1 Spire Plus error/exception hit, 8 optional ModPatcher failures, and a `TargetInvocationException` rooted in stale `EctoplasmGoldGatePatch` target API drift. This beta.84 result is now root-cause evidence superseded by the clean beta.85 Off loader smoke recorded in the June 11 addendum.
 
 Historical sections below are retained as dated evidence records. Do not use their older warning counts, dirty counts, runtime version, or pass/fail status as the current refactor validation truth without comparing them to the June 10 section above.
 

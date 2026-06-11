@@ -7,7 +7,7 @@ using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 
 /// <summary>
-/// StS1 The Lab event: obtain 3 random potions (2 at A15), or leave.
+/// StS1 The Lab event: obtain 3 random potions (2 at A15).
 /// </summary>
 public sealed class Sts1TheLab : EventModel
 {
@@ -19,8 +19,7 @@ public sealed class Sts1TheLab : EventModel
     {
         return new EventOption[]
         {
-            new EventOption(this, Open, InitialOptionKey("OPEN")),
-            new EventOption(this, null, InitialOptionKey("LEAVE"))
+            new EventOption(this, Open, InitialOptionKey("OPEN"))
         };
     }
 

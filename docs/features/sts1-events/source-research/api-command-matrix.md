@@ -19,8 +19,8 @@ All APIs listed are from `source code/src/Core/` unless otherwise noted. Every s
 
 - **Big Fish Banana**: `CreatureCmd.Heal(Owner.Creature, Owner.Creature.MaxHp / 3m)` — floor division
 - **Big Fish Donut**: `CreatureCmd.GainMaxHp(Owner.Creature, 5m)`
-- **Golden Idol Jump**: `CreatureCmd.Damage(choiceContext, Owner.Creature, CurrentHp * pct, ...)` — 25%/35% current HP
-- **Golden Idol Destroy**: `CreatureCmd.LoseMaxHp(choiceContext, Owner.Creature, MaxHp * pct, isFromCard: false)` — 10%/15% max HP
+- **Golden Idol Smash**: `CreatureCmd.Damage(choiceContext, Owner.Creature, MaxHp * pct, ...)` — 25%/35% max HP as HP damage
+- **Golden Idol Hide**: `CreatureCmd.LoseMaxHp(choiceContext, Owner.Creature, MaxHp * pct, isFromCard: false)` — 8%/10% max HP
 
 ## Cards / Curses
 

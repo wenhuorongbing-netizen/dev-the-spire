@@ -18,30 +18,30 @@ Status: spec-drafted / source-verified
 
 | Option | Effect | A15+ Change |
 |--------|--------|-------------|
-| Smash | Obtain Injury curse | Same |
-| Jump | Lose 25% current HP | Lose 35% current HP |
-| Destroy | Lose 10% max HP | Lose 15% max HP |
+| Outrun | Obtain Injury curse | Same |
+| Smash | Lose 25% max HP as HP damage | Lose 35% max HP as HP damage |
+| Hide | Lose 8% max HP | Lose 10% max HP |
 
 ### Ascension Differences
-- **A15+**: Jump damage increases from 25% to 35% current HP
-- **A15+**: Destroy max HP loss increases from 10% to 15%
+- **A15+**: Smash damage increases from 25% to 35% max HP as HP damage.
+- **A15+**: Hide max HP loss increases from 8% to 10%.
 
 ## Normal Values
 
 | Value | Amount |
 |-------|--------|
-| Jump HP loss | 25% of current HP |
-| Destroy max HP loss | 10% of max HP |
-| Smash curse | 1 Injury added to deck |
+| Smash HP damage | 25% of max HP |
+| Hide max HP loss | 8% of max HP |
+| Outrun curse | 1 Injury added to deck |
 | Take relic | Golden Idol relic obtained |
 
 ## A15 Values
 
 | Value | Amount |
 |-------|--------|
-| Jump HP loss | 35% of current HP |
-| Destroy max HP loss | 15% of max HP |
-| Smash curse | 1 Injury (unchanged) |
+| Smash HP damage | 35% of max HP |
+| Hide max HP loss | 10% of max HP |
+| Outrun curse | 1 Injury (unchanged) |
 
 ## Option Table
 
@@ -49,9 +49,9 @@ Status: spec-drafted / source-verified
 |------|--------|--------|-------------|
 | INITIAL | Take | `RelicCmd.Obtain(Golden Idol, Owner)` → GoToPage("TRAP") | Golden Idol relic model |
 | INITIAL | Leave | `SetEventFinished(...)` | None |
-| TRAP | Smash | `CardPileCmd.AddCursesToDeck([Injury])` | Injury curse model |
-| TRAP | Jump | `CreatureCmd.Damage(null, Owner, CurrentHp * pct, ...)` | None |
-| TRAP | Destroy | `CreatureCmd.LoseMaxHp(Owner, MaxHp * pct)` | None |
+| TRAP | Outrun | `CardPileCmd.AddCursesToDeck([Injury])` | Injury curse model |
+| TRAP | Smash | `CreatureCmd.Damage(null, Owner, MaxHp * pct, ...)` | None |
+| TRAP | Hide | `CreatureCmd.LoseMaxHp(Owner, MaxHp * pct)` | None |
 
 ## Dependencies
 
@@ -69,15 +69,15 @@ STS1_GOLDEN_IDOL.pages.INITIAL.options.TAKE.description
 STS1_GOLDEN_IDOL.pages.INITIAL.options.LEAVE.title
 STS1_GOLDEN_IDOL.pages.INITIAL.options.LEAVE.description
 STS1_GOLDEN_IDOL.pages.TRAP.description
+STS1_GOLDEN_IDOL.pages.TRAP.options.OUTRUN.title
+STS1_GOLDEN_IDOL.pages.TRAP.options.OUTRUN.description
 STS1_GOLDEN_IDOL.pages.TRAP.options.SMASH.title
 STS1_GOLDEN_IDOL.pages.TRAP.options.SMASH.description
-STS1_GOLDEN_IDOL.pages.TRAP.options.JUMP.title
-STS1_GOLDEN_IDOL.pages.TRAP.options.JUMP.description
-STS1_GOLDEN_IDOL.pages.TRAP.options.DESTROY.title
-STS1_GOLDEN_IDOL.pages.TRAP.options.DESTROY.description
+STS1_GOLDEN_IDOL.pages.TRAP.options.HIDE.title
+STS1_GOLDEN_IDOL.pages.TRAP.options.HIDE.description
+STS1_GOLDEN_IDOL.pages.OUTRUN.description
 STS1_GOLDEN_IDOL.pages.SMASH.description
-STS1_GOLDEN_IDOL.pages.JUMP.description
-STS1_GOLDEN_IDOL.pages.DESTROY.description
+STS1_GOLDEN_IDOL.pages.HIDE.description
 ```
 
 ## Asset Path Plan
@@ -99,8 +99,8 @@ STS1_GOLDEN_IDOL.pages.DESTROY.description
 
 | Variable | Type | Base | A15+ |
 |----------|------|------|------|
-| JumpDamagePct | DamageVar | 25% | 35% |
-| DestroyMaxHpPct | MaxHpVar | 10% | 15% |
+| SmashDamagePct | DamageVar | 25% | 35% |
+| HideMaxHpPct | MaxHpVar | 8% | 10% |
 
 ### Code Skeleton
 
@@ -131,37 +131,37 @@ public sealed class Sts1GoldenIdol : ModEventTemplate
 
     private IReadOnlyList<EventOption> GenerateTrapOptions()
     {
-        var jumpPct = HasAscension(15) ? 0.35m : 0.25m;
-        var destroyPct = HasAscension(15) ? 0.15m : 0.10m;
+        var smashDamagePct = HasAscension(15) ? 0.35m : 0.25m;
+        var hideMaxHpPct = HasAscension(15) ? 0.10m : 0.08m;
 
         return
         [
-            new EventOption(this, Smash, "STS1_GOLDEN_IDOL.pages.TRAP.options.SMASH"),
-            new EventOption(this, () => Jump(jumpPct), "STS1_GOLDEN_IDOL.pages.TRAP.options.JUMP")
-                .ThatDoesDamage(Owner.Creature.CurrentHp * jumpPct),
-            new EventOption(this, () => Destroy(destroyPct), "STS1_GOLDEN_IDOL.pages.TRAP.options.DESTROY")
-                .ThatDecreasesMaxHp(Owner.Creature.MaxHp * destroyPct)
+            new EventOption(this, Outrun, "STS1_GOLDEN_IDOL.pages.TRAP.options.OUTRUN"),
+            new EventOption(this, () => Smash(smashDamagePct), "STS1_GOLDEN_IDOL.pages.TRAP.options.SMASH")
+                .ThatDoesDamage(Owner.Creature.MaxHp * smashDamagePct),
+            new EventOption(this, () => Hide(hideMaxHpPct), "STS1_GOLDEN_IDOL.pages.TRAP.options.HIDE")
+                .ThatDecreasesMaxHp(Owner.Creature.MaxHp * hideMaxHpPct)
         ];
     }
 
-    private async Task Smash()
+    private async Task Outrun()
     {
         await CardPileCmd.AddCursesToDeck([ModelDb.Card<Injury>()], Owner);
+        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.OUTRUN.description"));
+    }
+
+    private async Task Smash(decimal pct)
+    {
+        var damage = (int)(Owner.Creature.MaxHp * pct);
+        await CreatureCmd.Damage(null, Owner.Creature, damage, null, null);
         SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.SMASH.description"));
     }
 
-    private async Task Jump(decimal pct)
-    {
-        var damage = (int)(Owner.Creature.CurrentHp * pct);
-        await CreatureCmd.Damage(null, Owner.Creature, damage, null, null);
-        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.JUMP.description"));
-    }
-
-    private async Task Destroy(decimal pct)
+    private async Task Hide(decimal pct)
     {
         var maxHpLoss = (int)(Owner.Creature.MaxHp * pct);
         await CreatureCmd.LoseMaxHp(Owner.Creature, maxHpLoss);
-        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.DESTROY.description"));
+        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.HIDE.description"));
     }
 }
 ```
@@ -171,18 +171,18 @@ public sealed class Sts1GoldenIdol : ModEventTemplate
 - [ ] Debug-spawn Golden Idol in Act 1, Act 2, Act 3
 - [ ] Select "Leave" — verify event ends, no changes
 - [ ] Select "Take" — verify Golden Idol relic obtained, TRAP page appears
-- [ ] TRAP: Select "Smash" — verify Injury curse added to deck
-- [ ] TRAP: Select "Jump" — verify 25% current HP lost (A10+: 35%)
-- [ ] TRAP: Select "Destroy" — verify 10% max HP lost (A15+: 15%)
+- [ ] TRAP: Select "Outrun" — verify Injury curse added to deck
+- [ ] TRAP: Select "Smash" — verify 25% max HP as HP damage (A15+: 35%)
+- [ ] TRAP: Select "Hide" — verify 8% max HP lost (A15+: 10%)
 - [ ] EN text renders correctly
 - [ ] ZHS text renders correctly
 - [ ] Event portrait loads
 - [ ] Dynamic variables show correct % in option tooltips (damage/maxHP markers)
-- [ ] A15 scaling: verify Jump 35% and Destroy 15% at A15+
+- [ ] A15 scaling: verify Smash 35% damage and Hide 10% max HP loss at A15+
 - [ ] Save after Take, reload — Golden Idol relic persists
-- [ ] Save after Smash, reload — Injury curse persists
-- [ ] Save after Jump, reload — HP loss persists
-- [ ] Save after Destroy, reload — max HP loss persists
+- [ ] Save after Outrun, reload — Injury curse persists
+- [ ] Save after Smash, reload — HP loss persists
+- [ ] Save after Hide, reload — max HP loss persists
 - [ ] Golden Idol relic icon displays correctly
 
 ## Save/Load Notes

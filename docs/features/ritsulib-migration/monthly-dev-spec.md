@@ -12,7 +12,7 @@ Complete the RitsuLib migration safely by separating four different claims:
 ## Current State
 
 - STS2-RitsuLib `v0.4.16` is installed locally with the `0.107.0` runtime variant; the prior `v0.3.10` install was backed up under `%TEMP%\codex-ritsulib-backup-20260610-090338`.
-- The current local game install is Slay the Spire 2 `v0.107.0`; installed beta.84 package parity was restored and a fresh Off smoke was captured, but it is non-clean. The game reached main menu with RitsuLib `v0.4.16` / compat `0.107.0`, while Spire Plus applied only 17/25 ModPatcher patches and hit an `EctoplasmGoldGatePatch` initializer exception from packaged API drift.
+- The current local game install is Slay the Spire 2 `v0.107.0`; installed beta.85 package parity passed and a fresh Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` audited clean. The earlier beta.84 Off smoke reached main menu with RitsuLib `v0.4.16` / compat `0.107.0` but applied only 17/25 ModPatcher patches and hit an `EctoplasmGoldGatePatch` initializer exception from packaged API drift; it is root-cause history only.
 - Spire Plus still compiles against NuGet `STS2.RitsuLib` `0.3.2`; NuGet now has `STS2.RitsuLib` `0.4.16`, and no separate `STS2.RitsuLib.Compat.0.107.0` package is published.
 - Dependency decision for this dirty source state: do not bump the compile package or manifest minimum in place. A future owner-approved `v0.107.0` tester package should bump both to `0.4.16` with the required package-version, publish/package, artifact-test, and loader-smoke work.
 - 25 patch classes are migrated to RitsuLib `IPatchMethod`.
@@ -21,7 +21,7 @@ Complete the RitsuLib migration safely by separating four different claims:
 - Hybrid bootstrap is active: migrated patches use RitsuLib `ModPatcher`, remaining raw patches use Harmony.
 - Off, CanaryOnly, and AdditiveBatch1 diagnostic smokes have historical `v0.106.1` loader-gate evidence with 25/25 migrated patches applied and 30 SavedSpireFields observed.
 - Sts1Events defaults Off. CanaryOnly and AdditiveBatch1 are controlled prototype/test modes. AdditiveAllDraft and ReplaceUnknownEventsPrototype remain unsafe/dev-only.
-- Clean current-runtime Off smoke, gameplay, event screenshots, save-load, image/render, replacement functional proof, Mod Settings UI, co-op/fail-closed proof, independent QA, clean-worktree decision, current-source package decision, and versioned tester-package handoff remain pending.
+- Current-runtime Off loader smoke is clean for beta.85. Gameplay, event screenshots, save-load, image/render, replacement functional proof, Mod Settings UI refresh, co-op/fail-closed proof, independent QA, clean-worktree decision, current-source package decision, and versioned tester-package handoff remain pending.
 - Release-ready and live-ready remain no.
 
 ## Workstream 1 - Validation Truth
@@ -50,9 +50,9 @@ If a command fails, record the exact failure and do not advance the migration cl
 Historical `v0.106.1` loader-gate proof is available, but it does not prove current `v0.107.0` compatibility or gameplay. The next runtime work should upgrade evidence in this order:
 
 1. Keep installed-package parity verified after any package/source change.
-2. Resolve the non-clean `v0.107.0` Off smoke by fixing the package/source runtime drift or by cutting an owner-approved current-source tester package.
+2. Preserve the clean beta.85 `v0.107.0` Off loader proof after any package/source change by rerunning package parity and loader smoke when the changed surface requires it.
 3. If owner approves a new `v0.107.0` tester package, bump the repo compile package and manifest minimum from `0.3.2` to `0.4.16` in that versioned package pass.
-4. Refresh loader smoke only after the current runtime and installed package can support the claim being made; do not advance to CanaryOnly, AdditiveBatch1, replacement, or gameplay proof until Off is clean.
+4. Refresh loader smoke only after the current runtime and installed package can support the claim being made; do not advance to CanaryOnly, AdditiveBatch1, replacement, or gameplay proof from the Off smoke alone.
 5. Capture Mod Settings UI for the current package state.
 6. Capture CanaryOnly gameplay evidence for Big Fish, Golden Idol, The Lab, and Divine Fountain.
 7. Capture save/load and EN/ZHS render evidence for the canary events.

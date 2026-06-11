@@ -19,7 +19,7 @@ Status: owner-review packet prepared; not release-ready; not live-ready.
 |---|---|
 | Project build | Superseded by solution build; earlier 70-warning project-build snapshot is historical |
 | Full solution build | PASS: `dotnet build EZMicroBalance.sln -m:1 --no-incremental`, 0 errors, 0 warnings |
-| Tests | PASS: test-project and exact solution-level no-build lanes both report 464 passed / 0 failed / 21 skipped / 485 total |
+| Tests | PASS: test-project and exact solution-level no-build lanes both report 464 passed / 0 failed / 21 skipped / 485 total; the 21 skipped tests are documented in `docs/reviews/current-validation.md` as opt-in `[ReleaseArtifactFact]` package/install/runtime artifact checks |
 | Format | PASS |
 | Diff check | PASS; emitted only the existing CRLF normalization warning for `docs/patch-inventory.md` |
 | Patch inventory | PASS; regenerated and fresh |
@@ -40,7 +40,7 @@ Status: owner-review packet prepared; not release-ready; not live-ready.
 |---|---|---|
 | Source API fix slice | Accept for owner review | It restores build compatibility with installed game APIs but affects combat/reward/rest-site behavior, so it still needs owner-approved commit scope. |
 | Sts1Events | Keep staging-only | Loader gates exist and current warning debt is cleared, but gameplay/render/save-load proof is still open. |
-| Debug | Accept scaffold only | `SpirePlusDebug` is small and used sparingly; broad debug logs and dead `LogPreview` still need governance before promotion. |
+| Debug | Accept scaffold only | Superseded by Revision M: the unused `SpirePlusDebug.LogPreview` helper has been removed. Broad debug logging remains scaffold-level and must stay gated before any promotion. |
 | RitsuLib migration | Treat the historical loader gate as validated, not release-ready | The old missing-runtime-folder blocker and historical `v0.106.1` loader smoke blocker are cleared, but current `v0.107.0` runtime proof and live feature proof are not. |
 | Batch 4c | Proposal-only | Candidate list exists; no migration should start until owner accepts scope and current source/package boundary. |
 | Manual handoff harness | Review as its own slice | It changes no-launch evidence scaffolding and PowerShell test execution, not gameplay behavior. |

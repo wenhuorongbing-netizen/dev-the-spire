@@ -10,7 +10,7 @@ The historical `v0.106.1` RitsuLib loader gate is good enough to propose low-ris
 - STS2-RitsuLib `v0.4.16` is installed on the E-drive game root with the `0.107.0` runtime variant.
 - Historical `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic smokes reached main menu with clean audits.
 - Spire Plus applied 25/25 migrated ModPatcher patches in those historical loader smokes.
-- The current local game install is `v0.107.0`; installed beta.84 package parity passes, but the fresh beta.84 `v0.107.0` Off smoke failed clean audit on stale package API targets.
+- The current local game install is `v0.107.0`; installed beta.85 package parity passes, and the fresh beta.85 `v0.107.0` Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510` audited clean.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
 This list is not a migration approval. It excludes run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss-flow, and reward-state patches. If an owner later approves any candidate for a `v0.107.0` tester package, the approval must be paired with the package-version, dependency-metadata, publish/package, artifact-test, and clean Off-smoke work documented in `docs/migration.md`.
@@ -66,6 +66,6 @@ Before any Batch 4c source migration:
 5. `git diff --check` passes.
 6. `scripts/generate-patch-inventory.ps1 -Check` passes after any migration.
 7. A loader smoke is rerun if the migrated patch registration path changes.
-8. Current `v0.107.0` package proof remains blocked until the non-clean Off smoke is fixed by a versioned package/source pass; do not use this proposal as a substitute for that proof.
+8. Current `v0.107.0` beta.85 Off loader proof is clean, but this proposal is not a substitute for any new loader smoke required by changed patch registration paths or for gameplay proof.
 
 Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.

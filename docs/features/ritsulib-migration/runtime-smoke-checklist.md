@@ -6,7 +6,7 @@ Verify that the RitsuLib migration does not change runtime behavior by loading t
 
 ## Status
 
-**HISTORICAL OFF + CANARY + ADDITIVEBATCH1 LOADER SMOKE PASSED / CURRENT V0.107.0 PACKAGE SMOKE FAILED CLEAN AUDIT** - official STS2-RitsuLib `v0.4.16` is installed at `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` with `lib\0.107.0` and satisfies the installed Spire Plus package dependency (`STS2-RitsuLib >= 0.3.2`). The current dirty source and beta.84 package line stay on compile/manifest `0.3.2`; a future `0.4.16` metadata bump belongs in an owner-approved versioned package pass. After the earlier RitsuLib target-name fix, diagnostic Off, CanaryOnly, and AdditiveBatch1 smokes reached main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied. This is historical `v0.106.1` loader/gate proof only. The current local game install is `v0.107.0`, RitsuLib now has a matching installed variant, and installed beta.84 package parity was restored on 2026-06-10. The fresh package-parity Off smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` reached main menu but is not clean current-runtime proof: 11 Godot ERROR hits, 1 Spire Plus error/exception hit, 8 optional ModPatcher failures, and an `EctoplasmGoldGatePatch` initializer exception from stale package API targets. Gameplay, Mod Settings screenshots, save-load, co-op, independent QA rerun, clean-worktree decision, current-source package decision, and versioned tester-package handoff remain pending.
+**CURRENT V0.107.0 BETA.85 OFF LOADER SMOKE PASSED / GAMEPLAY STILL PENDING** - official STS2-RitsuLib `v0.4.16` is installed at `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` with `lib\0.107.0` and satisfies the installed Spire Plus package dependency (`STS2-RitsuLib >= 0.3.2`). The current dirty source and beta.85 manifest line still use compile/manifest `0.3.2`; a future `0.4.16` metadata bump belongs in an owner-approved versioned package pass. Historical diagnostic Off, CanaryOnly, and AdditiveBatch1 smokes reached main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied for the older `v0.106.1` lane. The beta.84 package-parity Off smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` is red root-cause evidence: 17/25 Spire Plus patches, 8 optional failures, and an `EctoplasmGoldGatePatch` initializer exception. The current beta.85 Off smoke at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus patches, logged StS1Events default Off, and audited clean. Gameplay, Mod Settings screenshots, save-load, co-op, independent QA rerun, clean-worktree decision, current-source package decision, and versioned tester-package handoff remain pending.
 
 2026-05-31 Runtime Proof + Governance Closure check:
 
@@ -21,7 +21,7 @@ Verify that the RitsuLib migration does not change runtime behavior by loading t
 | `E:\Steam\steam.exe` | Present |
 | `C:\Users\zihao\AppData\Roaming\SlayTheSpire2\logs\godot.log` | Present in v15 run; archived as `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/godot.log.after-launch` |
 
-The latest successful diagnostic logs prove the loader and Sts1Events gates for the historical `v0.106.1` setup, but they do not prove current `v0.107.0` runtime behavior or live gameplay behavior. The local RitsuLib install now has a matching `0.107.0` variant, and the current-package beta.84 smoke failed clean audit under `v0.107.0`. No event-encounter gameplay, screenshot, save-load, replacement, multiplayer, or QA runtime smoke was captured.
+The latest successful beta.85 Off log proves loader startup, RitsuLib compat selection, 25/25 Spire Plus ModPatcher application, and StS1Events default-Off state for `v0.107.0`. It does not prove event-encounter gameplay, screenshots, save-load, replacement, multiplayer, or QA runtime behavior.
 
 Revision J/v15 failed-smoke evidence and target-fix follow-up:
 
@@ -48,6 +48,9 @@ Revision J/v15 failed-smoke evidence and target-fix follow-up:
 | `scripts\check-installed-spire-plus-package.ps1 -ModDirectory 'E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance'` | PASS after DLL restore: installed DLL, manifest, PCK, README, game-root ZIP, and Sere Talon/Tanx Claws PCK content match the beta.84 handoff. |
 | `.tools\runtime-evidence\v01070-off-package-parity-20260610-092045\godot.log.after-launch` | FAIL / main menu reached: BaseLib loaded, RitsuLib `v0.4.16` selected compat branch `0.107.0`, and Spire Plus package beta.84 loaded far enough for main menu, but Spire Plus had 8 optional ModPatcher failures and a `TargetInvocationException` rooted in stale `EctoplasmGoldGatePatch` target API drift. |
 | `.tools\runtime-evidence\v01070-off-package-parity-20260610-092045\godot-log-audit.json` | FAIL: 11 Godot ERROR hits and 1 Spire Plus error/exception hit. No `MissingMethodException` or `TypeLoadException` hits. |
+| `.tools\runtime-evidence\v01070-current-source-getter-targets-20260610-1000\godot.log.after-launch` | PASS / source-fix probe: beta84/current-source smoke on `v0.107.0`, 25/25 patches applied, clean audit. Useful as drift-fix direction evidence, not beta.85 package proof. |
+| `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510\godot.log.after-launch` | PASS / current Off loader proof: Spire Plus `v0.1.0-private-beta.85`, RitsuLib `0.4.16` compat branch `0.107.0`, 25/25 Spire Plus patches applied, StS1Events default Off, main menu reached. |
+| `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510\godot-log-audit.json` | PASS: clean audit with 0 Spire Plus error/exception, 0 Godot ERROR line, 0 MissingMethodException, and 0 TypeLoadException hits. |
 
 Latest prerequisite evidence: installed game `release_info.json` reports Slay the Spire 2 `v0.107.0`; installed manifest `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib\mod_manifest.json` reports version `0.4.16`; `ritsulib-variants.json` includes `compatTarget` `0.107.0`. Older missing-path evidence remains in `.tools/runtime-evidence/refactor-overnight-20260531/runtime-prereq-paths.txt` at HEAD `87820303`.
 
@@ -56,7 +59,7 @@ Latest prerequisite evidence: installed game `release_info.json` reports Slay th
 1. Clean Steam client install with a game version that has a matching RitsuLib variant. Historical proof used Slay the Spire 2 `v0.106.1`; current local install is `v0.107.0` with installed RitsuLib `v0.4.16` / `lib\0.107.0`.
 2. BaseLib v3.1.4 installed at `<GameRoot>\mods\BaseLib`
 3. STS2-RitsuLib v0.3.2+ installed at `<GameRoot>\mods\STS2-RitsuLib` (current local install: `v0.4.16` on E-drive)
-4. Spire Plus package from `publish/SpirePlus-v0.1.0-private-beta.84.zip` installed at `<GameRoot>\mods\EZMicroBalance`
+4. Spire Plus package from `publish/SpirePlus-v0.1.0-private-beta.85.zip` installed at `<GameRoot>\mods\EZMicroBalance`; package checker is recorded in `PROJECT_STATE.md` as passed on 2026-06-11.
 5. No other mods enabled
 6. If using `scripts\spire-plus-live-session.ps1`, invoke it with the E-drive `-GameRoot` and `-SteamExe`, pass the chosen `-SteamUserId`, and ensure `STS2-RitsuLib` is not moved out by any mod-isolation step.
 
@@ -67,20 +70,20 @@ Latest prerequisite evidence: installed game `release_info.json` reports Slay th
 | # | Step | Expected | Evidence |
 |---|------|----------|----------|
 | 1 | Install STS2-RitsuLib | `<GameRoot>\mods\STS2-RitsuLib` exists and manifest version satisfies `>= 0.3.2` | PASS: E-drive install is `v0.4.16` with `lib\0.107.0` variant |
-| 2 | Launch game via Steam | Main menu loads without crash | [HISTORICAL PASS] K1 smoke-k1-off-20260602-145938: main menu reached in 40s; [CURRENT PACKAGE FAIL CLEAN AUDIT] v01070-off-package-parity-20260610-092045 reached main menu but had Spire Plus initializer errors |
-| 3 | Check `godot.log` for EZMicroBalance init | Single Spire Plus initialization line, no errors | [HISTORICAL PASS] K1 smoke-k1-off-20260602-145938: Spire Plus initialized, clean audit; [CURRENT PACKAGE FAIL] beta.84 on `v0.107.0` throws during Spire Plus initialization |
+| 2 | Launch game via Steam | Main menu loads without crash | [PASS] beta85 v01070-beta85-current-package-runtime-fix-20260611-0510 reached main menu in 71,172ms |
+| 3 | Check `godot.log` for EZMicroBalance init | Single Spire Plus initialization line, no errors | [PASS] beta85 log initializes Spire Plus and audit has 0 Spire Plus error/exception hits |
 | 4 | Check `godot.log` for BaseLib init | BaseLib initializes before Spire Plus | [PASS] K1 smoke-k1-off-20260602-145938: BaseLib v3.1.4 initialized before RitsuLib and Spire Plus |
-| 5 | Check `godot.log` for STS2-RitsuLib init | RitsuLib initializes, no errors | [PASS] K1 smoke-k1-off-20260602-145938: RitsuLib v0.3.10 initializes, clean audit |
-| 6 | Check `godot.log` for RitsuLib bootstrap | Spire Plus RitsuLib bootstrap starts | [PASS] K1 smoke-k1-off-20260602-145938: RitsuLib bootstrap starting |
-| 7 | Check `godot.log` for ModPatcher count | 25 ModPatcher patches applied; remaining raw Harmony patches load without dependency failures | [PASS] K1 smoke-k1-off-20260602-145938: 25/25 patches applied |
-| 8 | Check `godot.log` for release-blocking log hits | 0 `MissingMethodException`, `TypeLoadException`, manifest dependency failure, or release-blocking audit hits | [PASS] K1 smoke-k1-off-20260602-145938 and smoke-k1-canary3-20260602-151104: clean audits, 0 release-blocking hits |
+| 5 | Check `godot.log` for STS2-RitsuLib init | RitsuLib initializes, no errors | [PASS] beta85 log reports RitsuLib `0.4.16` compat branch `0.107.0`; audit clean |
+| 6 | Check `godot.log` for RitsuLib bootstrap | Spire Plus RitsuLib bootstrap starts | [PASS] beta85 log has `RitsuLib 0.4.16 bootstrap starting` |
+| 7 | Check `godot.log` for ModPatcher count | 25 ModPatcher patches applied; remaining raw Harmony patches load without dependency failures | [PASS] beta85 log has `25 applied, 0 ignored, 0 failed, 25 total` and `ModPatcher applied 25 patches (25 registered)` |
+| 8 | Check `godot.log` for release-blocking log hits | 0 `MissingMethodException`, `TypeLoadException`, manifest dependency failure, or release-blocking audit hits | [PASS] beta85 audit clean: 0 Spire Plus error/exception, 0 Godot ERROR line, 0 MissingMethodException, 0 TypeLoadException |
 | 9 | Check SavedSpireFields count | 30 SavedSpireFields registered | [PASS] K1 smoke-k1-off-20260602-145938: 30 SavedSpireFields |
 
 ### Sts1Events Runtime Gates
 
 | Mode | Required env | Expected | Evidence |
 | --- | --- | --- | --- |
-| Off | unset / empty / invalid `SPIREPLUS_STS1_EVENT_MODE` | 0 Sts1Events registrations, no `[StS1 Events]` registration lines | [PASS] K1 smoke-k1-off-20260602-145938: 0 StS1 registrations, clean audit |
+| Off | unset / empty / invalid `SPIREPLUS_STS1_EVENT_MODE` | 0 Sts1Events registrations, no `[StS1 Events]` registration lines | [PASS] beta85 v01070-beta85-current-package-runtime-fix-20260611-0510: StS1Events `bootstrap=disabled, live=Disabled`; audit clean |
 | CanaryOnly | `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` | Exactly 4 canary registrations: Big Fish, Golden Idol, The Lab, Divine Fountain | [PASS] K1 smoke-k1-canary3-20260602-151104: exactly 4 canary registrations (BigFish, GoldenIdol, TheLab, DivineFountain), clean audit |
 | AdditiveBatch1 | `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` | Controlled prototype only: 11 registration calls / 10 event types, no TODO/BLOCKED events | [PASS] `.tools\runtime-evidence\additive-batch1-20260602-150445`: exactly 10 event types through 11 registration calls, clean audit |
 | AdditiveAllDraft | `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | Not release-safe; dev-only all-draft mode includes TODO/BLOCKED content | [DO NOT USE for tester/release paths] |
@@ -122,7 +125,7 @@ Latest prerequisite evidence: installed game `release_info.json` reports Slay th
 - Multiplayer disposition confirmed fail-closed.
 - `godot.log` contains 0 release-blocking hits.
 
-Current exit status: historical loader-only rows pass for `v0.106.1`; installed beta.84 package parity passes after the 2026-06-10 DLL restore, but fresh `v0.107.0` current-package loader proof failed clean audit because beta.84 still targets stale game APIs. Mod Settings UI, gameplay, save-load, and multiplayer rows remain pending.
+Current exit status: current beta.85 Off loader rows pass for `v0.107.0`; historical CanaryOnly/AdditiveBatch1 rows remain older proof and should be rerun before any StS1 staging claim. Mod Settings UI, gameplay, save-load, and multiplayer rows remain pending.
 
 ## Notes
 

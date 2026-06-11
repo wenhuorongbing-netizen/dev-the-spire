@@ -20,10 +20,10 @@
 | # | Event | Act | Status | Gap Type | Dependency |
 |---|-------|-----|--------|----------|------------|
 | 1 | BigFish | Shared | **OK** | `native-equivalent` | Regret curse, random relic |
-| 2 | GoldenIdol | Shared | **OK** | `native-equivalent` | Injury curse |
+| 2 | GoldenIdol | Shared | **GAP** | `temporary-substitute` | Golden Idol relic model/effect is missing; Take currently grants a random relic. Injury curse is native-equivalent. |
 | 3 | LivingWall | Shared | **OK** | `native-equivalent` | Card removal/transform/upgrade |
 | 4 | Duplicator | Shared | **GAP** | `blocked` | Compile-excluded; card duplication selection APIs not available |
-| 5 | DivineFountain | Shared | **OK** | `native-equivalent` | Curse removal |
+| 5 | DivineFountain | Shared | **OK** | `native-equivalent` | Curse removal; curse prerequisite now source-guarded, runtime selection proof pending |
 | 6 | FountainOfCleansing | Shared | **OK** | `native-equivalent` | Curse removal + max HP loss |
 | 7 | TheCleric | Shared | **OK** | `native-equivalent` | Gold, heal, card removal |
 | 8 | OldBeggar | Shared | **OK** | `native-equivalent` | Gold, card removal |
@@ -66,11 +66,25 @@
 | 45 | MoaiHead | Act3 | **OK** | `native-equivalent` | Gold, max HP |
 | 46 | **WindingHalls** | Act3 | **GAP** | `temporary-substitute` | Madness curse → Debt |
 
-**Historical table totals:** 37 at parity · 3 temporary substitutes · 5 blocked · 1 custom-required. Current blocker handling is authoritative in `status-board.md` and `registry-reconciliation.md`.
+**Historical table totals:** 36 at parity / 4 temporary substitutes / 5 blocked / 1 custom-required after the Golden Idol relic-substitute reclassification. Current blocker handling is authoritative in `status-board.md` and `registry-reconciliation.md`.
 
 ---
 
 ## 2. Per-Event Gap Analysis
+
+### 2.0 GoldenIdol (Act 1) - `temporary-substitute`
+
+**Source:** `EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1GoldenIdol.cs`
+
+**StS1 behavior:** Take obtains the Golden Idol relic, then the trap branch offers Outrun, Smash, and Hide.
+
+**Gap:** The trap branch source/localization now uses Outrun / Smash / Hide, with Smash dealing 25%/35% max HP as HP damage and Hide losing 8%/10% max HP. The Take branch still grants `RelicFactory.PullNextRelicFromFront(owner)` instead of a Golden Idol relic model/effect.
+
+**Impact:** Medium-high. The event grants a generic relic instead of the named Golden Idol reward.
+
+**Resolution path:** Create a source-safe `Sts1GoldenIdolRelic` only after the current StS2 gold-reward hook surface is proven. Do not add a marker-only relic and call it parity.
+
+---
 
 ### 2.1 FaceTrader (Shared) — `temporary-substitute`
 

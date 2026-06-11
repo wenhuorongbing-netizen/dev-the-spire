@@ -1,8 +1,8 @@
 # StS1 Wiki Event Catalog — Canonical Matrix
 
-Created: 2026-05-29 | Status: source-verified
+Created: 2026-05-29 | Updated: 2026-06-11 | Status: source-verified
 
-## 52 / 54 / 50 / 48 / 47 Count Reconciliation
+## 52 / 54 / 50 / 48 / 47 / 57 / 14 Count Reconciliation
 
 The counts refer to different dimensions:
 
@@ -13,9 +13,9 @@ The counts refer to different dimensions:
 | `registry_entries` | **50** | Unique identities in `Sts1EventRegistry.cs`, including 2 special stubs and excluding 4 duplicate wiki rows. |
 | `runtime_event_models` | **48** | C# model files in `EZMicroBalanceCode/Sts1Events/Models/`. Excludes Neow and Combat Start (start-of-run only), plus 4 entries that share a model with their parent (Golden Wing Act1, The Cleric Act1, The Mausoleum Act2, The Woman in Blue Act2). Includes `Sts1Duplicator.cs` (compile-excluded). Includes Purifier and Golden Shrine (newly added). |
 | `compiling_models` | **47** | Model files minus compile-excluded `Sts1Duplicator.cs`. |
-| `register_all_calls` | **56** | Total RitsuLib registration calls in `RegisterAll` mode: 15 shared x 1 + 9 Act1 x 2 (Overgrowth + Underdocks) + 14 Act2 x 1 + 9 Act3 x 1 = 56. Verified against `Sts1EventRegistrationService.RegisterAll()`. |
+| `register_all_calls` | **57** | Total RitsuLib registration calls in `RegisterAll` mode: 14 shared x 1 + 10 Act1 x 2 (Overgrowth + Underdocks) + 14 Act2 x 1 + 9 Act3 x 1 = 57. Verified against `Sts1EventRegistrationService.RegisterAll()`. |
 | `canary_only_calls` | **6** | Subset used in `CanaryOnly` mode: Big Fish and Golden Idol register to both Act 1 buckets, while The Lab and Divine Fountain remain shared events. |
-| `additive_batch1_calls` | **13** | 10 verified-scope event types; Big Fish, Golden Idol, and Shining Light register to both StS2 Act 1 buckets. |
+| `additive_batch1_calls` | **14** | 10 verified-scope event types; Big Fish, Golden Idol, The Cleric, and Shining Light register to both StS2 Act 1 buckets. |
 
 `canary_only_calls` is **not** additive with `register_all_calls`. Canary mode replaces RegisterAll; it does not add to it.
 
@@ -30,23 +30,25 @@ The counts refer to different dimensions:
 
 So: 54 canonical rows - 2 special (Neow, Combat Start) - 4 duplicates (shared/act split) = **48 model files**, of which **47 compile** because `Sts1Duplicator.cs` is excluded.
 
-### Why 56 Registration Calls?
+### Why 57 Registration Calls?
 
 Each Act 1 event registers twice (once for `Overgrowth`, once for `Underdocks`):
-- 15 shared events x 1 call each = 15
-- 9 Act 1 events x 2 acts = 18
+- 14 shared events x 1 call each = 14
+- 10 Act 1 events x 2 acts = 20
 - 14 Act 2 events × 1 act = 14
 - 9 Act 3 events × 1 act = 9
-- Total = 56 (in `RegisterAll` mode)
+- Total = 57 (in `RegisterAll` mode)
 
 Canary mode uses 6 registration calls for 4 event types: Big Fish and Golden Idol are Act 1 bucket registrations, and The Lab plus Divine Fountain are shared registrations.
+
+AdditiveBatch1 uses 14 registration calls for 10 event types because Big Fish, Golden Idol, The Cleric, and Shining Light are each registered into both StS2 Act 1 buckets.
 
 ## Canonical Matrix
 
 | # | Wiki Entry | Runtime Model | Shared? | Act Bucket | Phase | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Big Fish | `Sts1BigFish.cs` | Yes | Act 1 (Overgrowth + Underdocks) | Canary | implemented; runtime proof pending |
-| 2 | The Cleric | `Sts1TheCleric.cs` | Yes | All acts (shared) | Simple | spec-drafted |
+| 2 | The Cleric | `Sts1TheCleric.cs` | Yes | Act 1 (Overgrowth + Underdocks) | Simple | implemented; runtime proof pending |
 | 3 | Golden Idol | `Sts1GoldenIdol.cs` | Yes | Act 1 (Overgrowth + Underdocks) | Canary | implemented; Golden Idol relic parity/runtime proof pending |
 | 4 | Golden Wing | `Sts1GoldenWing.cs` | Yes | All acts (shared) | Simple | spec-drafted |
 | 5 | Living Wall | `Sts1LivingWall.cs` | Yes | All acts (shared) | Simple | spec-drafted |
@@ -72,7 +74,7 @@ Canary mode uses 6 registration calls for 4 event types: Big Fish and Golden Ido
 | 23 | (see #4 Golden Wing) | — | — | — | — | Duplicate wiki entry |
 | 24 | Mushrooms | `Sts1Mushrooms.cs` | No | Overgrowth + Underdocks | Simple | spec-drafted |
 | 25 | Scorpion Nest | `Sts1ScorpionNest.cs` | No | Overgrowth + Underdocks | Combat | spec-drafted |
-| 26 | (see #2 The Cleric) | — | — | — | — | Duplicate wiki entry |
+| 26 | (see #2 The Cleric) | — | — | — | — | Duplicate wiki entry; source uses Act 1 registration |
 | 27 | Treasure Ooze | `Sts1TreasureOoze.cs` | No | Overgrowth + Underdocks | Combat | spec-drafted |
 | 28 | Altar | `Sts1Altar.cs` | No | Hive | Simple | spec-drafted |
 | 29 | Council of Ghosts | `Sts1CouncilOfGhosts.cs` | No | Hive | CardService | spec-drafted |

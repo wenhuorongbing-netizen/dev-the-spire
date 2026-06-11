@@ -1,713 +1,648 @@
-部分早前上传的文件已经过期，我现在无法读取旧附件；如果你要我复核旧截图、旧 godot.log 或旧 Codex 报告，需要重新上传。下面这份审查基于当前 GitHub `main`、最新提交列表、`current-validation.md`、`monthly-dev-spec.md`、runtime evidence 文档和 sprint4 diff。
+下面是基于**当前 GitHub `main` 仓库文件**的严格审查。先说明：部分早前上传的旧文件/日志已经过期，我现在不能读取旧附件；如果你要我复核旧截图、旧 godot.log 或旧 Codex 报告，需要重新上传。以下结论只基于我刚刚读取到的当前仓库状态。
 
-# 严格审核结论
+# 1. 总结结论
 
-## 2026-06-10 current status override
+**任务没有完成。**
 
-This goal document is historical below this override unless a row is repeated in current validation docs.
-Use `PROJECT_STATE.md`, `docs/reviews/current-validation.md`, and `docs/goals/m5-revision-l-*` as the current source of truth.
+当前项目从上一阶段的 “v0.106.1 + RitsuLib 0.3.10 loader-gate 已通过” 进入了新的状态：**本地游戏环境已经变成 v0.107.0，RitsuLib 本地安装也变成 v0.4.16，但当前发布包 / 编译包 / manifest 还没有完整切换到 v0.107.0 目标。**
 
-- Current dirty-source build evidence: solution build passed with 0 errors and 0 warnings.
-- Current Revision L no-game validation passed after clearing overlapping `testhost` state: test-project and exact solution-level no-build lanes both report 464 passed / 0 failed / 21 skipped / 485 total; format, diff-check, patch-inventory, and batch-classifier checks pass.
-- Historical RitsuLib/Sts1Events loader-gate proof remains useful only for the `v0.106.1` setup.
-- Current runtime proof is blocked by local Slay the Spire 2 `v0.107.0`: installed RitsuLib `v0.4.16` / `lib\0.107.0` and beta.84 package parity are in place, but the fresh Off smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` is non-clean.
-- Batch 4c remains proposal-only. Do not claim tester-ready, live-ready, runtime-ready, or release-ready from this document.
+当前最关键的 blocker 已经变化：
 
-这轮工作**不是失败**，而且已经从“runtime smoke blocked”推进到了更好的状态：**RitsuLib loader-gate 证据已经出现，Off / CanaryOnly / AdditiveBatch1 都有 clean runtime evidence**。但它仍然**没有完成最终目标**，因为 live gameplay、save/load、Mod Settings UI、event screenshots、multiplayer fail-closed、independent QA rerun、clean worktree / owner decision、versioned tester package handoff 仍然没有关闭。
-
-当前真实状态应该写成：
+Revision M note, 2026-06-11: the beta.84 red Off-smoke discussion below is historical. Current beta.85 `v0.107.0` Off loader proof is clean under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` with 25/25 Spire Plus patches applied and a clean audit. This does not prove CanaryOnly/AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, or release readiness.
+Revision N implementation note, 2026-06-11: the v0.107.0 runtime/package/API alignment blocker is closed for the default-Off loader surface only. Beta.85 package parity passes, `dotnet build EZMicroBalance.sln -m:1 --no-incremental` passes with 0 warnings / 0 errors, split no-build validation passes with 475 passed / 0 failed / 21 skipped / 496 total, the opt-in installed-artifact lane passes with 67 passed / 0 failed / 0 skipped / 67 total when `STS2_PATH` targets the E-drive install, and hygiene checks pass. Batch 4c implementation, CanaryOnly/AdditiveBatch1 smoke, gameplay, save-load, replacement proof, multiplayer proof, independent QA, and release readiness remain pending.
 
 ```text
-RitsuLib loader-gate proof: 基本完成
-Off=0 runtime loader proof: 完成
-CanaryOnly=4 runtime loader proof: 完成
-AdditiveBatch1 loader proof: historical 10/11 完成; current source expects 10/13 and still needs fresh v0.107 proof
-RitsuLib full gameplay proof: 未完成
-Sts1Events content completion: 未完成
-Batch 4c: 可以进入 low-risk candidate proposal，但不能自动执行
-Release-ready: 否
+旧 blocker：
+- STS2-RitsuLib 没安装，无法 runtime smoke。
+
+新 blocker：
+- STS2-RitsuLib v0.4.16 已安装；
+- 游戏是 v0.107.0；
+- 但当前 beta.84 package 的 v0.107.0 Off smoke 不干净；
+- Spire Plus 只应用 17/25 ModPatcher patches；
+- EctoplasmGoldGatePatch 发生 TargetInvocationException，根因是 packaged API drift；
+- 当前代码虽已做 source fix 并且 no-game validation 通过，但还没有新的 owner-approved v0.107.0 tester package / clean runtime proof。
 ```
 
-最新远程提交是：
+当前 `monthly-dev-spec.md` 明确写：本地安装的 STS2-RitsuLib 是 `v0.4.16`，带 `0.107.0` runtime variant；当前本地游戏是 Slay the Spire 2 `v0.107.0`；beta.84 包 parity 已恢复并做过 fresh Off smoke，但该 smoke 非 clean，只有 17/25 ModPatcher patches 应用，且出现 `EctoplasmGoldGatePatch` initializer exception。仓库仍然编译依赖 `STS2.RitsuLib 0.3.2`，而 NuGet 已有 `0.4.16`，但当前 dirty source 状态下明确决定不要直接原地 bump 编译包或 manifest minimum；未来需要 owner-approved v0.107.0 tester package 才能 bump。
+
+所以当前正确策略是：
 
 ```text
-f32c6767 — update refactor.md with implementation results and Green Stop check
+优化为主，推进为辅。
 ```
 
-它已经在 `8f2d79b sprint3`、`6b149ba sprint 2`、`8782030 sprint 1` 之后。
+现在不能继续 Batch 4c 迁移，也不能 release。下一阶段必须先完成 v0.107.0 兼容、package refresh、clean loader smoke，再谈继续迁移。
 
 ---
 
-# 1. 当前目标完成度总表
+# 2. 当前真实状态
 
-| 项目                                     | 当前状态                                              | 严格判定    |
-| -------------------------------------- | ------------------------------------------------- | ------- |
-| RitsuLib 依赖接入                          | 已完成                                               | PASS    |
-| STS2-RitsuLib 本地安装                     | 已完成，`v0.4.16`，含 `lib\0.107.0`                     | PASS    |
-| Off 模式 loader smoke                    | clean audit，通过主菜单、25/25 patch、30 SavedSpireFields | PASS    |
-| CanaryOnly loader smoke                | clean audit，exactly 4 canary events               | PASS    |
-| AdditiveBatch1 loader smoke            | historical clean audit，10 event types / 11 calls; current source expects 10 / 13 | historical PASS / current proof pending |
-| Batch 4a/4b patch migration            | 25 patches migrated，source-level guard 完成         | PASS    |
-| Full gameplay verification             | 未完成                                               | PENDING |
-| Sts1Events event encounter screenshots | 未完成                                               | PENDING |
-| Save/load proof                        | 未完成                                               | PENDING |
-| Mod Settings UI evidence               | 未完成或历史证据不足                                        | PENDING |
-| Multiplayer fail-closed / co-op proof  | 未完成                                               | PENDING |
-| Independent QA rerun                   | 未完成                                               | PENDING |
-| Versioned tester-package handoff       | 未完成                                               | PENDING |
-| Release-ready                          | 否                                                 | CORRECT |
-
-结论：**loader-gate 层面可以继续向前；release / live-ready 仍然绝对不能 claim。**
-
----
-
-# 2. 每一步严格审查
-
-## 2.1 最新 HEAD 与验证基线
-
-GitHub 最新提交基线是 `f32c6767 update refactor.md with implementation results and Green Stop check`。
-`current-validation.md` 里最新 “June 10 Refactor Validation” 的 HEAD 是：
+当前 `current-validation.md` 是 2026-06-10 的验证文档。它记录：
 
 ```text
-f32c6767 (HEAD -> main, origin/main, origin/HEAD) update refactor.md with implementation results and Green Stop check
-```
-
-并记录 worktree dirty；no-game validation 在没有重叠 test/build 进程后完成，runtime smoke 仍只有历史 `v0.106.1` loader evidence。
-
-`f32c6767` 之后当前本地 worktree 又有 docs/source/test edits。当前 no-game validation 已经覆盖 dirty source；runtime dependency 已更新为 RitsuLib `v0.4.16` / `lib\0.107.0`，installed-package parity 已恢复，但 fresh `v0.107.0` Off loader smoke 是 non-clean；gameplay proof 仍未完成，并且仍然明确不要 claim live-ready / release-ready。
-
-**判定：基本可接受，但仍需注意：**
-
-```text
-latest commit = f32c6767
-fresh runtime proof target = fixed versioned package + clean v0.107.0 loader smoke; beta.84 package-parity smoke failed clean audit
-```
-
-如果要做正式 handoff 或 release package，必须先刷新 package/install parity 并补 fresh runtime smoke。
-
----
-
-## 2.2 Build / test / format / diff
-
-`current-validation.md` 记录 June 10 required commands：
-
-```text
-dotnet build EZMicroBalance.sln -m:1 --no-incremental: PASS, 0 errors, 0 warnings
-dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build: PASS, 464 passed, 0 failed, 21 skipped
-dotnet test EZMicroBalance.sln --no-build: PASS, 464 passed, 0 failed, 21 skipped
+dotnet build EZMicroBalance.sln -m:1 --no-incremental: PASS, 0 warnings, 0 errors
+Sts1EventFeatureGuardTests: PASS, 31 passed
+test project --no-build: PASS, 464 passed / 0 failed / 21 skipped / 485 total
+solution --no-build: PASS, 464 passed / 0 failed / 21 skipped / 485 total
 dotnet format: PASS
-git diff --check: PASS
-generate-patch-inventory.ps1 -Check: PASS
-report-worktree-batches.ps1 -FailOnUnclassified: PASS
+generate-patch-inventory: PASS
+report-worktree-batches: PASS, 130 dirty entries, 0 unclassified
+git diff --check: PASS, only CRLF normalization warnings
 ```
 
 
 
-**判定：自动化验证层基本通过，但不是 release clean。**
+这说明 **no-game source validation 已经恢复到绿色，并且 warning 已清零**。文档还写明当前 source compatibility fix 已经把代码适配到 installed game DLL API，使用了 `AbstractModel.ModifyPowerAmountGivenAdditive(...)`、`Ectoplasm.ModifyGoldGained(...)` 和 `CookRestSiteOption.get_IsEnabled`；Sts1Events owner guards 扩展后覆盖了 compile-included Sts1Events model set，clean build 当前 0 warnings。
 
-原因：
-
-```text
-[✓] Build/test/format/diff 通过。
-[✓] patch inventory fresh。
-[✓] batch classifier 0 unclassified。
-[✓] 当前 dirty source 的 Sts1Events nullable warning debt 已清到 0。
-[!] Worktree dirty，有 62 dirty entries。
-[!] 当前 validation 不包含 fresh runtime smoke、package refresh 或 live gameplay proof。
-```
-
-这意味着：可以说“当前 no-game validation 通过”，不能说“clean release state”。
+但是 runtime/live 状态仍然不达标：当前本地游戏是 v0.107.0，RitsuLib v0.4.16 已安装，beta.84 DLL 已从 package staging 恢复并通过 installed package parity check；但 fresh v0.107.0 beta.84 Off smoke 到达主菜单后 **失败 clean runtime proof**：11 个 Godot ERROR hits、1 个 Spire Plus error/exception、8 个 optional ModPatcher failures，并有 `TargetInvocationException`，根因是 stale `EctoplasmGoldGatePatch` target API drift。
 
 ---
 
-Current correction: the 70-warning item in the preceding historical checklist is superseded by the current build evidence: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` reports `0 Warning(s)` / `0 Error(s)`. Worktree dirt, clean current runtime proof, package refresh, and live gameplay proof remain blockers.
+# 3. 与前一阶段相比的变化
 
-## 2.3 Runtime smoke / loader gate
+## 3.1 好消息
 
-这是这轮的最大进步。
-
-`current-validation.md` 记录 STS2-RitsuLib 已安装：
+已经完成或改善的部分：
 
 ```text
-E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib
-True (v0.4.16, includes lib\0.107.0)
+[✓] STS2-RitsuLib 依赖安装问题已不再是原始 blocker。
+[✓] 当前本地安装有 STS2-RitsuLib v0.4.16 + lib\0.107.0。
+[✓] 当前 source 已做 v0.107.0 API 兼容修复。
+[✓] no-game build 已经 0 errors / 0 warnings。
+[✓] tests 464 passed / 0 failed / 21 skipped。
+[✓] Sts1EventFeatureGuardTests 31 passed。
+[✓] format / patch inventory / worktree batch classifier / diff-check 都通过。
+[✓] Sts1Events warning debt 由之前 89/79 清到了 0。
 ```
 
-同时 BaseLib 和 EZMicroBalance 也存在。
+## 3.2 坏消息 / 当前 blocker
 
-Historical June 2 K1 runtime smoke 结果：
-
-* Off mode Steam smoke 到主菜单，loaded exactly 3 mods：BaseLib v3.1.4、RitsuLib v0.3.10、Spire Plus v0.1.0-private-beta.84；25/25 ModPatcher patches；30 SavedSpireFields；Sts1Events default Off；clean audit。
-* CanaryOnly direct launch 到主菜单，loaded exactly 3 mods，25/25 patches，30 SavedSpireFields，registered exactly 4 canary events：`Sts1BigFish`、`Sts1GoldenIdol`、`Sts1TheLab`、`Sts1DivineFountain`；clean audit。
-* AdditiveBatch1 direct launch 到主菜单，10 event types / 11 registration calls，clean audit。
-
-Stop decision 也明确写：
+现在最重要的问题变成：
 
 ```text
-Runtime loader gate: PASS
-Off runtime proof: PASS
-CanaryOnly runtime proof: PASS
-AdditiveBatch1 runtime proof: PASS
+[ ] 当前发布/安装包仍是 beta.84 line，和 v0.107.0 runtime 有 drift。
+[ ] 当前 beta.84 Off smoke non-clean。
+[ ] Spire Plus 只 applied 17/25 ModPatcher patches。
+[ ] EctoplasmGoldGatePatch 运行时目标 API drift。
+[ ] repo compile package 仍是 STS2.RitsuLib 0.3.2，而本地 runtime 是 0.4.16。
+[ ] manifest minimum 暂时没有 bump。
+[ ] 没有 owner-approved v0.107.0 tester package。
+[ ] 没有 clean current-source loader smoke。
+[ ] 没有 Mod Settings UI / gameplay / save-load / co-op proof。
 ```
 
-但同时：
+所以当前不再是“缺安装”问题，而是：
 
 ```text
-gameplay proof, event screenshots, save/load, image/render proof, replacement functional proof, multiplayer fail-closed, independent QA, versioned tester-package handoff pending
-```
-
-
-
-**判定：loader-gate proof PASS；gameplay proof PENDING。**
-
-这非常关键：以前最大的 “STS2-RitsuLib missing” blocker 已经不再是 blocker。现在 blocker 变成：
-
-```text
-runtime gameplay / manual proof / package handoff / co-op proof
+v0.107.0 runtime/package/API alignment 问题。
 ```
 
 ---
 
-## 2.4 RitsuLib patch migration
+# 4. 每一步严格审查
 
-当前 project state / migration docs 已经同步：
+## 4.1 RitsuLib dependency / runtime dependency
+
+当前状态：**部分过时。**
+
+`monthly-dev-spec.md` 写：
 
 ```text
-25 patches migrated to RitsuLib IPatchMethod
-142 raw Harmony declarations remaining
-tracked patch units total = 167
+当前本地 STS2-RitsuLib 是 v0.4.16，带 0.107.0 runtime variant；
+repo 仍编译 against NuGet STS2.RitsuLib 0.3.2；
+NuGet now has STS2.RitsuLib 0.4.16；
+当前 dirty source state 决策是不要原地 bump compile package 或 manifest minimum；
+未来 owner-approved v0.107.0 tester package 应 bump both to 0.4.16。
+```
+
+
+
+**判定：当前 0.3.2 dependency 已经不适合作为 v0.107.0 长期目标。**
+
+但是 Codex 暂时不 bump 是合理的，因为：
+
+```text
+bump dependency + manifest minimum + package version + publish + artifact tests + loader smoke
+```
+
+这是一个完整发布/测试包任务，不应在 dirty source 状态下随便做。
+
+---
+
+## 4.2 Build / test / format
+
+当前状态：**no-game validation 通过。**
+
+`current-validation.md` 顶部记录：
+
+```text
+dotnet build: PASS, 0 warnings, 0 errors
+test project --no-build: PASS, 464/0/21/485
+solution --no-build: PASS, 464/0/21/485
+format: PASS
+patch inventory: PASS
+worktree batches: PASS, 130 dirty entries, 0 unclassified
+git diff --check: PASS with CRLF normalization warnings only
+```
+
+
+
+**判定：PASS for no-game validation。**
+
+但有两个 caveat：
+
+```text
+1. worktree 仍然 dirty，130 entries；
+2. runtime proof 未通过。
+```
+
+所以不是 release validation。
+
+---
+
+## 4.3 Warning debt
+
+当前状态：**已清零。**
+
+之前 Sts1Events nullable warnings 是 89/79。现在 `current-validation.md` 明确写：
+
+```text
+Current forced build validation passes with 0 errors and 0 warnings.
+This clears the prior 70-warning Sts1Events nullable staging debt in the current dirty source.
+```
+
+
+
+**判定：PASS。**
+
+这是一项重要完成项。
+
+---
+
+## 4.4 Runtime smoke
+
+当前状态：**失败 / blocked。**
+
+`monthly-dev-spec.md` 当前写：
+
+```text
+current local runtime v0.107.0 beta.84 Off smoke is non-clean;
+game reached main menu with RitsuLib v0.4.16 / compat 0.107.0;
+Spire Plus applied only 17/25 ModPatcher patches;
+hit EctoplasmGoldGatePatch initializer exception from packaged API drift.
+```
+
+
+
+`current-validation.md` 也写：
+
+```text
+fresh v0.107.0 beta.84 Off smoke reached main menu but failed clean runtime proof:
+11 Godot ERROR hits,
+1 Spire Plus error/exception hit,
+8 optional ModPatcher failures,
+TargetInvocationException rooted in stale EctoplasmGoldGatePatch target API drift.
+Current package runtime proof remains blocked.
+```
+
+
+
+**判定：FAIL。**
+
+这是当前最高优先级。
+
+---
+
+## 4.5 Batch 4a/4b / patch inventory
+
+当前状态：**source-level 仍成立。**
+
+`monthly-dev-spec.md` 当前记录：
+
+```text
+25 patch classes migrated to RitsuLib IPatchMethod
+142 raw HarmonyPatch declarations remain
+167 patch units tracked
 hybrid bootstrap active
 ```
 
 
 
-Patch inventory 当前也记录：
+但是 runtime under v0.107.0 beta.84 只应用了 17/25 patches，这是 package/API drift 导致的 runtime failure，不是 source inventory 失效。
 
-```text
-Migrated to RitsuLib ModPatcher: 25
-Raw HarmonyPatch remaining: 142
-High risk raw: 22
-Medium risk raw: 35
-Low risk raw: 85
-```
+**判定：source-level PASS；v0.107.0 runtime proof FAIL。**
 
-
-
-**判定：Batch 4a/4b source-level closure PASS。**
-
-而且现在 loader-gate 证明了 25/25 ModPatcher patches 能在 runtime 加载。下一步可以**提出** Batch 4c low-risk candidate list，但不应该自动迁移。因为 gameplay proof 还没补齐。
+这意味着 Batch 4c 不能继续。
 
 ---
 
-## 2.5 Sts1Events governance
+## 4.6 Sts1Events
 
-Sts1Events issue 当前状态是：
+当前状态：**source governance 仍成立，但 runtime proof 只对历史 v0.106.1 成立。**
+
+`monthly-dev-spec.md` 当前写：
 
 ```text
-Open — governance hardened, content incomplete.
-Default Off is safe.
-CanaryOnly and AdditiveBatch1 are controlled source-test modes.
-AdditiveAllDraft and ReplaceUnknownEventsPrototype are dev-only/unsafe.
+Off, CanaryOnly, AdditiveBatch1 have historical v0.106.1 loader-gate evidence with 25/25 migrated patches and 30 SavedSpireFields.
+```
+
+但它也明确指出：
+
+```text
+Historical v0.106.1 loader-gate proof does not prove current v0.107.0 compatibility or gameplay.
 ```
 
 
 
-模式矩阵：
+**判定：Sts1Events governance PASS；current v0.107 runtime proof PENDING/FAILED。**
 
-```text
-Off: 0 registrations, safe
-CanaryOnly: 4 registrations / 4 event types, controlled
-AdditiveBatch1: 11 registrations / 10 event types, controlled prototype testing
-AdditiveAllDraft: 54 calls / 47 unique events, unsafe/dev-only
-ReplaceUnknownEventsPrototype: unsafe/debug-only
-```
-
-
-
-风险表列出 7 个 HIGH 和 1 个 MEDIUM risk event，包括 Dead Adventurer、Scorpion Nest、Treasure Ooze、Masked Bandits、Mind Bloom、Mysterious Sphere、N’loth、Vampires。
-
-**判定：governance PASS；content NOT DONE。**
-
-这轮完成的是：
-
-```text
-Off / CanaryOnly / AdditiveBatch1 loader-gate proof
-```
-
-还没完成：
-
-```text
-event encounter gameplay
-event screenshots
-save/load
-image/render proof
-ZHS placeholder cleanup
-combat/relic-select missing APIs
-```
+在 v0.107.0 package smoke clean 之前，不应继续 Canary gameplay proof 或 AllDraft。
 
 ---
 
-## 2.6 FeatureRegistry / diagnostics architecture
+## 4.7 RewardPipeline / CardPlayContext / DeathProtection / MultiplayerPolicy
 
-`current-validation.md` 记录：
+当前状态：**diagnostics/canary infrastructure，非 gameplay enforcement。**
+
+`monthly-dev-spec.md` 明确写：
 
 ```text
-FeatureRegistry diagnostics observed for all 6 features
-RewardPipeline diagnostics: PASS
-CardPlayContext: Allow-only
-DeathProtectionService: no-op / diagnostics-only
-MultiplayerPolicy: taxonomy / diagnostics-only
-MultiplayerFeaturePolicy: active feature suppression in co-op
+RewardPipeline, CardPlayContext, DeathProtectionService, MultiplayerPolicy work remains diagnostic/canary infrastructure unless separate implementation task explicitly promotes behavior. Do not claim diagnostics-only systems enforce gameplay.
 ```
 
 
 
-Architecture status 也写：
-
-```text
-RewardPipeline diagnostics wired into FeatureRegistry bootstrap events and low-risk AscensionRewardService reward/card-reward surfaces.
-ArchitectureCanaryBootstrap registers FeatureRegistry and Ascension reward diagnostic handlers, no-op DeathProtection provider, and multiplayer policy records.
-Lotha extra-play touches CardPlayContextCanary through allow-only adapter.
-Existing co-op gates still make same allow/disable decisions; evidence payloads include policy metadata.
-```
-
-
-
-**判定：architecture diagnostics/canary PASS；behavior enforcement NOT DONE。**
-
-不能说：
-
-```text
-RewardPipeline fully owns rewards
-CardPlay recursion fully solved
-DeathProtection is implemented in gameplay
-Multiplayer policy enforces co-op safety
-```
-
-只能说：
-
-```text
-Diagnostics and canary infrastructure now exists and is observed.
-```
+**判定：阶段完成，但不能 claim 解决 gameplay bugs。**
 
 ---
 
-# 3. 这项任务是否完成？
+# 5. 当前任务是否完成？
 
-取决于目标定义。
-
-如果目标是：
-
-```text
-解除 STS2-RitsuLib missing blocker，并证明 Off/Canary/AdditiveBatch1 loader-gates。
-```
-
-那么：
+## 如果目标是 no-game source validation
 
 ```text
 基本完成。
 ```
 
-如果目标是：
+因为 build 0 warnings、tests pass、format/diff/inventory/batch classifier 都通过。
+
+## 如果目标是 RitsuLib migration runtime proof
 
 ```text
-完成 RitsuLib migration、可测试包、live-ready 或 release-ready。
+未完成。
 ```
 
-那么：
+因为 v0.107.0 current package Off smoke 不干净，只 17/25 patches，EctoplasmGoldGatePatch runtime API drift。
+
+## 如果目标是 release / live-ready
 
 ```text
-没有完成。
+完全未完成。
 ```
 
-当前正确状态：
+仍缺：
 
 ```text
-Loader-gate 阶段完成；
-manual gameplay / save-load / package handoff / co-op proof 阶段未完成。
+clean v0.107.0 loader smoke
+package refresh
+artifact tests
+Mod Settings UI
+gameplay proof
+Sts1Events canary gameplay
+save/load
+co-op
+versioned tester package
+independent QA
 ```
 
 ---
 
-# 4. 当前与目标对比
+# 6. 当前目标对比
 
-| 目标                               | 当前结果                              | 判定           |
-| -------------------------------- | --------------------------------- | ------------ |
-| STS2-RitsuLib installed          | v0.4.16 installed                 | PASS         |
-| Off loader smoke                 | clean audit, 0 Sts1 registrations | PASS         |
-| CanaryOnly loader smoke          | clean audit, exactly 4 events     | PASS         |
-| AdditiveBatch1 loader smoke      | clean audit, 10/11                | PASS         |
-| 25 ModPatcher patches runtime    | 25/25 applied                     | PASS         |
-| Mod Settings UI screenshot       | pending                           | FAIL/PENDING |
-| Event gameplay screenshots       | pending                           | FAIL/PENDING |
-| Save/load proof                  | pending                           | FAIL/PENDING |
-| Image/render proof               | pending                           | FAIL/PENDING |
-| Replacement functional proof     | pending                           | FAIL/PENDING |
-| Multiplayer fail-closed          | pending                           | FAIL/PENDING |
-| Independent QA rerun             | pending                           | FAIL/PENDING |
-| Versioned tester package handoff | pending                           | FAIL/PENDING |
-| Release-ready                    | no                                | CORRECT      |
+| 目标                                  | 当前状态                                         | 判定                |
+| ----------------------------------- | -------------------------------------------- | ----------------- |
+| Build clean                         | 0 errors / 0 warnings                        | PASS              |
+| Tests                               | 464 passed / 0 failed / 21 skipped           | PASS              |
+| Format / diff / inventory           | pass                                         | PASS              |
+| RitsuLib installed                  | v0.4.16 installed                            | PASS              |
+| Compile dependency matches runtime  | repo 0.3.2 vs runtime 0.4.16                 | FAIL / PENDING    |
+| v0.107.0 Off smoke clean            | non-clean, 17/25 patches                     | FAIL              |
+| EctoplasmGoldGatePatch runtime      | TargetInvocationException in beta.84 package | FAIL              |
+| Current source fixed                | source adapted to v0.107.0 API               | PASS source-level |
+| Current-source package built/smoked | not done                                     | FAIL              |
+| Batch 4c                            | proposal only; do not migrate                | BLOCKED           |
+| Release-ready                       | no                                           | CORRECT           |
 
 ---
 
-# 5. 战略判断：继续优化、推进，还是两者兼顾？
+# 7. 决策：优化、推进，还是兼顾？
 
-现在不再是单纯优化；可以进入**两者兼顾**：
+当前决策必须回到：
 
 ```text
-60% 优化 / 证明 / 手测
-40% 有限推进 / Batch 4c candidate review
+优化为主，推进暂停。
 ```
 
 原因：
 
 ```text
-[✓] loader-gate blocker 已经解除；
-[✓] 25/25 migrated patches runtime proof 已经有；
-[✓] Off/Canary/AdditiveBatch1 loader proof 已经有；
-[ ] gameplay / save-load / co-op / handoff 仍缺。
+v0.107.0 runtime proof 失败。
 ```
 
-所以可以开始：
+虽然 no-game source 已经修好，但还没有新的 clean package/runtime proof。此时继续 Batch 4c 或新增玩法会扩大风险。
+
+建议比例：
 
 ```text
-Batch 4c low-risk candidate proposal
+90% 优化 / runtime repair / package alignment
+10% 只做文档候选准备，不执行
 ```
 
-但不应该直接执行：
+允许做：
 
 ```text
-Batch 4c migration
+- v0.107.0 package alignment
+- bump RitsuLib compile package + manifest minimum 的 owner-approved tester package plan
+- fix EctoplasmGoldGatePatch package/runtime target
+- publish current-source tester package
+- release artifact tests
+- fresh Off smoke
 ```
 
-除非你明确批准候选列表。
+不允许做：
+
+```text
+- Batch 4c execution
+- high-risk migration
+- Sts1Events gameplay proof
+- release-ready claim
+```
 
 ---
 
-# 6. 下个月开发规范 Monthly Dev Spec
+# 8. 下个月开发规范 Monthly Dev Spec
 
 ## 月度主题
 
 ```text
-Loader-Proven Manual QA + Controlled Batch 4c Planning Month
+v0.107.0 Runtime Alignment + Package Proof Month
 ```
 
 ## 月度目标
 
 ```text
-1. 将 loader-gate proof 升级为 manual gameplay proof。
-2. 完成 Mod Settings UI / event screenshots / save-load / image-render / co-op fail-closed proof。
-3. 保持 Sts1Events 0-warning regression guard；不要把已清理的 warning debt 当作当前 blocker。
-4. 提出 Batch 4c low-risk candidate list。
-5. 只有 owner 接受后才执行 Batch 4c。
+1. 将 repo compile dependency / manifest / package / installed runtime 对齐到 v0.107.0 + RitsuLib 0.4.16。
+2. 修复 EctoplasmGoldGatePatch 和所有 25 migrated patches 的 v0.107.0 runtime target。
+3. 生成 owner-approved current-source tester package。
+4. 完成 clean Off loader smoke。
+5. 只有 clean Off smoke 后，再恢复 CanaryOnly/AdditiveBatch1 和 Batch 4c candidate review。
 ```
 
 ---
 
-## Week 1：Canonical Validation + Evidence Reconciliation
+## Week 1：Dependency / API Alignment
 
 任务：
 
 ```text
-[ ] git status --short --branch
-[ ] git log -1 --oneline --decorate
-[ ] dotnet clean
-[ ] dotnet build EZMicroBalance.sln
-[ ] dotnet test EZMicroBalance.sln
-[ ] dotnet test EZMicroBalance.sln --no-build
-[ ] dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-[ ] git diff --check
-[ ] generate-patch-inventory.ps1 -Check
-[ ] report-worktree-batches.ps1 -FailOnUnclassified
-```
-
-文档更新：
-
-```text
-docs/reviews/current-validation.md
-docs/features/ritsulib-migration/monthly-dev-spec.md
-docs/features/ritsulib-migration/runtime-smoke-checklist.md
+[ ] 确认当前游戏版本 v0.107.0
+[ ] 确认 RitsuLib installed v0.4.16 + lib\0.107.0
+[ ] Owner 决定是否 bump repo compile package STS2.RitsuLib 0.3.2 -> 0.4.16
+[ ] Owner 决定是否 bump manifest min_version -> 0.4.16
+[ ] 建立 v0.107.0 tester package version
+[ ] 审查所有 25 migrated IPatchMethod targets
+[ ] 特别修 EctoplasmGoldGatePatch runtime target
 ```
 
 验收：
 
 ```text
-[ ] 最新 HEAD 与 validation 一致
-[ ] dirty worktree 有 owner decision
-[ ] Off/Canary/AdditiveBatch1 evidence paths 明确
+[ ] dotnet build 0 warnings/errors
+[ ] tests 464/0/21 或更新后全绿
+[ ] patch target guard 更新
 ```
 
 ---
 
-## Week 2：Manual Gameplay QA — Off / CanaryOnly
+## Week 2：Publish / Artifact / Installed Package Parity
 
 任务：
 
 ```text
-[ ] Off mode normal game boot
+[ ] dotnet publish EZMicroBalance.sln
+[ ] 刷新 installed mod folder
+[ ] 刷新 package staging
+[ ] 刷新 versioned tester zip
+[ ] 运行 release artifact tests
+[ ] check-installed-spire-plus-package.ps1 pass
+[ ] hashes 更新
+```
+
+验收：
+
+```text
+[ ] installed DLL/PCK/manifest/package hash 一致
+[ ] docs 不再指向 beta.84 stale package proof
+```
+
+---
+
+## Week 3：Clean v0.107 Off Smoke
+
+任务：
+
+```text
+[ ] 只启用 BaseLib + STS2-RitsuLib + Spire Plus
+[ ] Off mode smoke
+[ ] godot.log audit
+[ ] 25/25 patches applied
+[ ] 30 SavedSpireFields
+[ ] no Godot ERROR
+[ ] no Spire Plus error/exception
+[ ] no MissingMethodException / TypeLoadException
+```
+
+验收：
+
+```text
+[ ] current v0.107 package Off smoke clean
+[ ] runtime-smoke-checklist.md 更新
+[ ] current-validation.md 更新
+```
+
+---
+
+## Week 4：Canary / Batch 4c Decision Gate
+
+只有 Week 3 通过后：
+
+```text
+[ ] CanaryOnly smoke
+[ ] AdditiveBatch1 smoke
 [ ] Mod Settings UI screenshot
-[ ] CanaryOnly mode boot
-[ ] Debug-spawn or route to:
-    - Sts1BigFish
-    - Sts1GoldenIdol
-    - Sts1TheLab
-    - Sts1DivineFountain
+[ ] Batch 4c low-risk candidate list review
 ```
 
-每个 canary event 必测：
+如果 Week 3 不通过：
 
 ```text
-[ ] EN/ZHS text renders
-[ ] options clickable
-[ ] reward/effect correct
-[ ] no softlock
-[ ] event exits correctly
-[ ] save/load after event completion
-[ ] screenshot evidence
-```
-
-验收：
-
-```text
-[ ] CanaryOnly 从 loader-proof 变为 gameplay-smoke proof
+[ ] Batch 4c remains blocked
+[ ] 继续修 runtime blocker
 ```
 
 ---
 
-## Week 3：Save/Load + Image/Render + Co-op Fail-Closed
+# 9. 子代理分工
 
-任务：
+必须使用 subagents。
 
-```text
-[ ] save during/after canary event
-[ ] reload stability
-[ ] event image/render check
-[ ] placeholder decision if art missing
-[ ] co-op mode check:
-    - Sts1Events Off default
-    - CanaryOnly fail-closed or explicitly disabled
-    - no desync / no registration mismatch
-```
-
-验收：
-
-```text
-[ ] save-load proof 不再 pending
-[ ] image/render proof 不再 pending
-[ ] multiplayer fail-closed proof 不再 pending，或有 blocker issue
-```
-
----
-
-## Week 4：Batch 4c Candidate Review
-
-任务：只提候选，不自动迁移。
-
-候选要求：
-
-```text
-[ ] 5–10 low-risk patches
-[ ] no run lifecycle
-[ ] no save/load
-[ ] no map generation
-[ ] no multiplayer/lobby
-[ ] no death
-[ ] no A20 boss flow
-[ ] no reward mutation with player state
-```
-
-每个候选必须写：
-
-```text
-file
-class
-target method
-why low-risk
-expected behavior unchanged
-source evidence
-targeted tests
-rollback plan
-```
-
-验收：
-
-```text
-[ ] Batch 4c candidate list ready
-[ ] owner approval required before migration
-```
-
----
-
-# 7. 子代理分工
-
-必须继续使用 subagents。
-
-## Subagent A — Validation Truth Agent
+## Subagent A — Version/API Alignment Agent
 
 负责：
 
 ```text
-完整命令链
-current-validation.md
-dirty worktree 分类
-patch inventory check
+v0.107.0 source/API drift
+RitsuLib 0.4.16 package decision
+EctoplasmGoldGatePatch target
+25 migrated patch target audit
 ```
 
-## Subagent B — Runtime QA Agent
+## Subagent B — Build/Test Agent
 
 负责：
 
 ```text
-Off / CanaryOnly / AdditiveBatch1 logs
-Mod Settings UI
-SavedSpireFields
+dotnet clean/build/test/test --no-build
+format
+diff
+inventory
+worktree batch classification
+```
+
+## Subagent C — Package/Artifact Agent
+
+负责：
+
+```text
+publish
+installed folder parity
+versioned zip
+hashes
+release artifact tests
+```
+
+## Subagent D — Runtime Smoke Agent
+
+负责：
+
+```text
+Off smoke
+godot.log
+audit
 25/25 patches
-audit-godot-log
+30 SavedSpireFields
+error signature scan
 ```
 
-## Subagent C — Sts1Events Gameplay Agent
+## Subagent E — Docs Truth Agent
 
 负责：
 
 ```text
-BigFish
-GoldenIdol
-TheLab
-DivineFountain
-event options
-reward/effect
-save/load
-screenshots
-EN/ZHS
+current-validation
+monthly-dev-spec
+runtime-smoke-checklist
+dev-environment
+release-checklist
+no stale beta.84 proof as current proof
 ```
 
-## Subagent D — Architecture Evidence Agent
-
-负责：
-
-```text
-FeatureRegistry diagnostics
-RewardPipeline diagnostics
-CardPlayContext canary
-DeathProtection no-op provider
-MultiplayerPolicy metadata
-```
-
-## Subagent E — Co-op / Fail-Closed Agent
-
-负责：
-
-```text
-Sts1Events multiplayer policy
-CanaryOnly co-op behavior
-fail-closed evidence
-desync risks
-```
-
-## Subagent F — Batch 4c Candidate Agent
-
-负责：
-
-```text
-low-risk candidate list
-source evidence
-rollback plan
-targeted tests
-no high-risk
-```
-
-## Subagent G — Release Gate Agent
+## Subagent F — Release Gate Agent
 
 负责：
 
 ```text
 阻止 release-ready
-阻止 AllDraft
-阻止 unapproved Batch 4c
-阻止 package refresh 冒充 gameplay proof
+阻止 Batch 4c
+阻止 package hash 当 runtime proof
+阻止 Canary/AllDraft 先于 Off clean
 ```
 
 ---
 
-# 8. Overnight Run Spec：必须跑完才能停止
+# 10. Overnight Run Spec：必须跑完才能停止
 
-下面可以直接发给 Codex。
+下面这段可直接发给 Codex。
 
 ```text
 你现在在 D:\Game\FOTN\dev-the-spire。
 
-目标：Loader-Proven Manual QA + Batch 4c Candidate Review Overnight Run。
+目标：v0.107.0 Runtime Alignment + Clean Off Smoke Overnight Run。
 
-这是 manual QA + candidate review。
-这不是直接 Batch 4c migration。
-不要迁更多 patches，除非 owner 在本轮明确批准 candidate execution。
+这不是 Batch 4c。
+不要迁更多 patches。
 不要新增 gameplay。
 不要 claim release-ready。
 必须使用 subagents。
 必须跑完所有 phase；如果 blocker 存在，必须记录 issue、证据、下一步，不能直接停止。
 
 当前状态：
-- Latest main must be checked at start.
-- STS2-RitsuLib v0.4.16 is installed with `lib\0.107.0`; historical v0.106.1 loader-gate proof for Off, CanaryOnly, and AdditiveBatch1 remains the only loader proof.
-- Current v0.107.0 runtime proof is blocked by the non-clean beta.84 Off smoke; installed-package parity is available, but clean current loader proof is not.
-- Historical Off mode loader proof: 0 Sts1Events registrations.
-- Historical CanaryOnly loader proof: exactly 4 canary registrations.
-- Historical AdditiveBatch1 loader proof: 10 event types / 11 calls.
-- 25/25 migrated ModPatcher patches applied in runtime smoke.
-- Gameplay, screenshots, save-load, image rendering, replacement functional proof, multiplayer fail-closed, independent QA, versioned tester-package handoff remain pending.
-- Release-ready remains no.
+- Local game is v0.107.0.
+- STS2-RitsuLib v0.4.16 is installed with lib\0.107.0.
+- Repo still compiles against STS2.RitsuLib 0.3.2.
+- Historical beta.84 package Off smoke reached main menu but was non-clean.
+- Spire Plus applied only 17/25 ModPatcher patches in that beta.84 Off smoke.
+- EctoplasmGoldGatePatch had a TargetInvocationException from packaged API drift.
+- Current beta.85 Off loader proof is clean for v0.107.0 startup/default-Off patch application.
+- No current CanaryOnly/AdditiveBatch1, gameplay, replacement, multiplayer, or release proof exists.
+- Batch 4c remains blocked.
 
 Subagents:
 
-1. Validation Truth Agent
-   - Run full validation.
-   - Refresh current-validation.md to latest HEAD.
-   - Classify dirty worktree.
-   - Ensure patch inventory is fresh.
+1. Version/API Alignment Agent
+   - Audit v0.107.0 API drift.
+   - Verify EctoplasmGoldGatePatch target fix.
+   - Audit all 25 migrated IPatchMethod targets.
+   - Decide whether STS2.RitsuLib compile package and manifest min_version need owner-approved bump to 0.4.16.
 
-2. Runtime QA Agent
-   - Verify existing Off / CanaryOnly / AdditiveBatch1 evidence.
-   - If evidence stale relative to latest HEAD, rerun loader smoke.
-   - Verify Mod Settings UI if possible.
-   - Confirm 25/25 patches and 30 SavedSpireFields.
+2. Build/Test Agent
+   - Run clean/build/test/test --no-build/format/diff/inventory/batch classifier.
+   - Ensure 0 warnings/errors and 0 test failures.
 
-3. Sts1Events Gameplay Agent
-   - Test or prepare manual matrix for:
-     BigFish
-     GoldenIdol
-     TheLab
-     DivineFountain
-   - Check EN/ZHS, options, reward/effect, no softlock, exit, save/load, screenshots.
+3. Package/Artifact Agent
+   - If owner approves v0.107.0 tester package:
+     - dotnet publish
+     - refresh installed folder
+     - refresh staging/versioned zip
+     - run release artifact tests
+     - update hashes
 
-4. Architecture Evidence Agent
-   - Verify runtime logs contain:
-     FeatureRegistry summary
-     RewardPipeline diagnostics
-     CardPlayContext canary
-     DeathProtection no-op provider
-     MultiplayerPolicy metadata
-   - No behavior changes.
+4. Runtime Smoke Agent
+   - Run clean Off smoke with only BaseLib + STS2-RitsuLib + Spire Plus.
+   - Verify 25/25 patches, 30 SavedSpireFields, clean audit.
+   - Capture godot.log and audit json.
 
-5. Co-op / Fail-Closed Agent
-   - Determine Sts1Events behavior in co-op:
-     default Off
-     CanaryOnly disabled or fail-closed
-     no registration mismatch
-   - If no co-op environment, create blocker.
+5. Docs Truth Agent
+   - Update current-validation.md, monthly-dev-spec.md, runtime-smoke-checklist.md.
+   - Mark beta.84 proof as historical if current-source package differs.
+   - No stale claims.
 
-6. Batch 4c Candidate Agent
-   - Propose 5–10 low-risk candidates only.
-   - No run/save/map/multiplayer/death/lobby/A20/reward-state patches.
-   - Include source evidence, targeted tests, rollback plan.
-   - Do not migrate.
-
-7. Release Gate Agent
+6. Release Gate Agent
    - Block release-ready.
-   - Block AllDraft release path.
-   - Block unapproved Batch 4c migration.
-   - Block package refresh as substitute for gameplay proof.
+   - Block Batch 4c until clean v0.107 Off smoke passes.
+   - Block CanaryOnly/AdditiveBatch1 until Off is clean.
+   - Block package refresh from being treated as runtime proof.
 
-Phase 1 — Canonical validation
+Phase 1 — API alignment
+
+- Confirm v0.107.0 source/API evidence.
+- Confirm RitsuLib v0.4.16 installed.
+- Audit migrated patch targets.
+- Fix EctoplasmGoldGatePatch and any other target drift.
+- Do not bump compile package/manifest unless owner-approved in this task.
+
+Phase 2 — No-game validation
 
 Run:
 - git status --short --branch
@@ -721,111 +656,60 @@ Run:
 - scripts/generate-patch-inventory.ps1 -Check
 - scripts/report-worktree-batches.ps1 -FailOnUnclassified
 
-Update docs/reviews/current-validation.md.
+Phase 3 — Package alignment
 
-Phase 2 — Runtime evidence QA
+If code/package changed:
+- dotnet publish EZMicroBalance.sln
+- refresh installed package
+- run check-installed-spire-plus-package.ps1
+- run release artifact tests if versioned package refreshed
+- update hashes
 
-Verify existing evidence:
-- Off
-- CanaryOnly
-- AdditiveBatch1
-- audit json
-- 25/25 patches
+Phase 4 — Runtime Off smoke
+
+Run clean smoke:
+- BaseLib v3.1.4
+- STS2-RitsuLib v0.4.16
+- Spire Plus current-source tester package
+
+Verify:
+- reaches main menu
+- exactly expected mods loaded
+- 25/25 ModPatcher patches applied
 - 30 SavedSpireFields
-- exact loaded mods
+- 0 Godot ERROR
+- 0 Spire Plus error/exception
+- 0 MissingMethodException
+- 0 TypeLoadException
 
-If stale, rerun smoke.
+If smoke fails:
+- record exact log excerpt
+- create/update runtime blocker issue
+- do not proceed.
 
-Phase 3 — Mod Settings UI
+Phase 5 — Post-Off decision
 
-If environment allows:
-- open Mod Settings
-- capture screenshot
-- verify Spire Plus display name
-- update checklist
+If Off smoke passes:
+- update runtime-smoke-checklist.md
+- propose CanaryOnly smoke as next step
+- propose Batch 4c candidate review only, no migration
 
-If not:
-- mark pending.
+If Off smoke fails:
+- Batch 4c remains blocked
+- CanaryOnly/AdditiveBatch1 remain blocked
 
-Phase 4 — Sts1Events Canary gameplay
-
-For each:
-- Sts1BigFish
-- Sts1GoldenIdol
-- Sts1TheLab
-- Sts1DivineFountain
-
-Record:
-- can spawn or route
-- EN/ZHS renders
-- options clickable
-- reward/effect works
-- no softlock
-- save/load after event
-- screenshot evidence
-
-Phase 5 — Save/load and image/render
-
-- save during/after event if possible
-- reload
-- verify state stable
-- verify event art/placeholder
-
-Phase 6 — Co-op / fail-closed
-
-If co-op environment exists:
-- verify Sts1Events default Off
-- verify unsafe modes do not desync
-- verify CanaryOnly policy
-
-If not:
-- mark pending with blocker.
-
-Phase 7 — Architecture evidence
-
-Verify diagnostics:
-- FeatureRegistry
-- RewardPipeline
-- CardPlayContext
-- DeathProtection
-- MultiplayerPolicy
-
-Phase 8 — Batch 4c candidate review
-
-Produce candidate list only:
-- 5–10 low-risk patches
-- source target
-- risk reason
-- targeted tests
-- rollback plan
-
-Do not migrate without explicit owner approval.
-
-Phase 9 — Docs update
-
-Update:
-- docs/reviews/current-validation.md
-- docs/features/ritsulib-migration/monthly-dev-spec.md
-- docs/features/ritsulib-migration/next-overnight-run.md
-- runtime-smoke-checklist.md
-- Sts1Events issue
-- manual QA matrix if created
-
-Final report must include:
+Final report:
 1. actual HEAD
-2. validation result
-3. runtime evidence status
-4. Mod Settings UI status
-5. Sts1Events canary gameplay status
-6. save/load status
-7. image/render status
-8. co-op/fail-closed status
-9. architecture diagnostics status
-10. Batch 4c candidate list
-11. subagent findings
-12. files changed
-13. decision: optimize / advance / both
-14. release-ready: no
+2. dependency/package decision
+3. build/test results
+4. package/artifact status
+5. Off smoke status
+6. 25/25 patch status
+7. error log summary
+8. docs updated
+9. subagent findings
+10. next decision: optimize / advance / both
+11. release-ready: no
 
 Stop condition:
 Do not stop until every phase is complete or blocked with explicit issue, evidence, and next action.
@@ -833,32 +717,26 @@ Do not stop until every phase is complete or blocked with explicit issue, eviden
 
 ---
 
-# 9. 最终判断
+# 11. 最终判断
 
-这轮工作已经把最关键的 runtime install blocker 推过去了，进步很大：
-
-```text
-Off / CanaryOnly / AdditiveBatch1 loader-gate proof 已经有；
-25/25 migrated patches runtime applied；
-clean audit 已经有；
-```
-
-但还没完成：
+当前状态已经不是“缺 RitsuLib 安装”，而是：
 
 ```text
-gameplay proof
-save-load
-screenshots
-Mod Settings UI
-co-op fail-closed
-independent QA
-versioned package handoff
+v0.107.0 runtime/package/API alignment blocker
 ```
 
-因此下一步应当是：
+因此下一步不能继续 Batch 4c，也不能继续手测 Canary。必须先把当前 v0.107.0 Off smoke 做干净。
+
+最终决策：
 
 ```text
-两者兼顾：继续优化 QA 证据，同时开始 Batch 4c 候选评审。
+优化为主，推进暂停。
 ```
 
-但仍然不能直接执行 Batch 4c，也不能 claim release-ready。
+等 v0.107.0 clean Off smoke 通过后，再恢复：
+
+```text
+CanaryOnly smoke
+AdditiveBatch1 smoke
+Batch 4c candidate review
+```

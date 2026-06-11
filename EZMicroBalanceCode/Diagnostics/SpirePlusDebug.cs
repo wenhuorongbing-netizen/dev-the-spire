@@ -1,12 +1,13 @@
-using EZMicroBalance.EZMicroBalanceCode.Config;
-
 namespace EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 internal static class SpirePlusDebug
 {
+    public const string DebugLogsEnvironmentVariable = "SPIREPLUS_ENABLE_DEBUG_LOGS";
+    public const string LegacyDebugLogsEnvironmentVariable = "EZMB_ENABLE_DEBUG_LOGS";
+
     public static void Log(string category, string message)
     {
-        if (SpirePlusModConfig.EnableDebugLogs)
+        if (IsDebugLoggingEnabled)
         {
             MainFile.Logger.Info($"[Spire Plus] [{category}] {message}");
         }
@@ -22,14 +23,6 @@ internal static class SpirePlusDebug
         Log("Ascension", message);
     }
 
-    public static void LogPreview(string message)
-    {
-        if (SpirePlusModConfig.ShowPreviewDebugLogs)
-        {
-            Log("Preview", message);
-        }
-    }
-
     public static void LogPatch(string patchName, string message)
     {
         Log($"Patch.{patchName}", message);
@@ -43,5 +36,22 @@ internal static class SpirePlusDebug
     public static void Warn(string category, string message)
     {
         MainFile.Logger.Warn($"[Spire Plus] [{category}] {message}");
+    }
+
+    private static bool IsDebugLoggingEnabled =>
+        IsTruthyEnvironmentVariable(DebugLogsEnvironmentVariable) ||
+        IsTruthyEnvironmentVariable(LegacyDebugLogsEnvironmentVariable);
+
+    private static bool IsTruthyEnvironmentVariable(string name) =>
+        IsTruthy(Environment.GetEnvironmentVariable(name));
+
+    private static bool IsTruthy(string? value)
+    {
+        var normalized = value?.Trim();
+        return !string.IsNullOrWhiteSpace(normalized) &&
+            !string.Equals(normalized, "0", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(normalized, "false", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(normalized, "off", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(normalized, "no", StringComparison.OrdinalIgnoreCase);
     }
 }

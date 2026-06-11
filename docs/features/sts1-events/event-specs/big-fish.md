@@ -1,144 +1,136 @@
-# Big Fish — Event Specification
+# Big Fish - Event Specification
 
-Status: spec-drafted / source-verified
+Status: source-verified / runtime-pending
 
 ## StS1 Wiki Behavior
 
-**Acts:** 1, 2, 3 (Unknown room pool — shared event)
+**Wiki acts:** 1, 2, 3 unknown-room pool (shared event)
 **Wiki:** https://slay-the-spire.fandom.com/wiki/Big_Fish
+
+**Current Spire Plus registration:** StS2 Act 1 buckets only (`Overgrowth`, `Underdocks`) through `content.ActEvent<..., Sts1BigFish>()`. Runtime bucket proof is still pending.
 
 ### Options
 
 | Option | Effect |
 |--------|--------|
-| Banana | Heal 1/3 of max HP (floor division) |
+| Banana | Heal 1/3 of max HP |
 | Donut | Gain 5 max HP |
-| Shoe | Obtain 1 random relic + obtain Regret curse |
+| Box | Obtain 1 random relic + obtain Regret curse |
 
 ### Ascension Differences
-None — same at all Ascension levels.
+
+None. Big Fish has the same values at all Ascension levels.
 
 ## Normal Values
 
 | Value | Amount |
 |-------|--------|
-| Banana heal | `floor(MaxHp / 3)` |
+| Banana heal | `floor(MaxHp / 3)` via `DynamicVars.Heal.IntValue` |
 | Donut max HP gain | 5 |
-| Shoe relic | 1 random relic from current pool |
-| Shoe curse | 1 Regret added to deck |
-
-## A15 Values
-
-No A15 differences for Big Fish.
+| Box relic | 1 random relic from current pool |
+| Box curse | 1 Regret added to deck |
 
 ## Option Table
 
 | Page | Option | Effect | Dependencies |
-|------|--------|--------|-------------|
-| INITIAL | Banana | `CreatureCmd.Heal(Owner.Creature, MaxHp / 3)` | None |
-| INITIAL | Donut | `CreatureCmd.GainMaxHp(Owner.Creature, 5)` | None |
-| INITIAL | Shoe | `RelicCmd.ObtainRandom(Owner)` + `CardPileCmd.AddCursesToDeck([Regret])` | Regret curse, random relic helper |
+|------|--------|--------|--------------|
+| INITIAL | Banana | `CreatureCmd.Heal(owner.Creature, healAmount)` | Owner creature |
+| INITIAL | Donut | `CreatureCmd.GainMaxHp(owner.Creature, DynamicVars.MaxHp.BaseValue)` | Owner creature |
+| INITIAL | Box | `RelicFactory.PullNextRelicFromFront(owner)` + `RelicCmd.Obtain(relic, owner)` + `CardPileCmd.AddCursesToDeck([Regret])` | Regret curse, random relic pool |
 
 ## Dependencies
 
-- **Regret curse card**: StS2 has native `Regret` — verify `ModelDb.Card<Regret>()` compiles
-- **Random relic helper**: `RelicCmd.ObtainRandom(Owner)` — available in RitsuLib/StS2 command API
-- No custom models required for this event
+- **Regret curse card**: `ModelDb.Card<Regret>()`.
+- **Random relic helper**: `RelicFactory.PullNextRelicFromFront(owner).ToMutable()` followed by `RelicCmd.Obtain(relic, owner)`.
+- **Registration**: `Sts1EventRegistrationService` registers Big Fish to `Overgrowth` and `Underdocks` in CanaryOnly, AdditiveBatch1, and RegisterAll.
+- No custom models are required for this event.
 
-## Localization Key Plan
+## Localization Keys
 
-```
+```text
 STS1_BIG_FISH.title
 STS1_BIG_FISH.pages.INITIAL.description
 STS1_BIG_FISH.pages.INITIAL.options.BANANA.title
 STS1_BIG_FISH.pages.INITIAL.options.BANANA.description
 STS1_BIG_FISH.pages.INITIAL.options.DONUT.title
 STS1_BIG_FISH.pages.INITIAL.options.DONUT.description
-STS1_BIG_FISH.pages.INITIAL.options.SHOE.title
-STS1_BIG_FISH.pages.INITIAL.options.SHOE.description
+STS1_BIG_FISH.pages.INITIAL.options.BOX.title
+STS1_BIG_FISH.pages.INITIAL.options.BOX.description
 STS1_BIG_FISH.pages.BANANA.description
 STS1_BIG_FISH.pages.DONUT.description
-STS1_BIG_FISH.pages.SHOE.description
+STS1_BIG_FISH.pages.BOX.description
 ```
 
 ## Asset Path Plan
 
 - Portrait: `EZMicroBalance/images/events/sts1_big_fish.png`
-- Source: Extract from local StS1 installation via `extract-sts1-event-assets.ps1`
-- Format: 1024×600 PNG
-- Phobia mode: `sts1_big_fish_phobia_mode.png` (optional)
+- Current tracked event images: none for StS1 events.
+- Source decision: do not copy original StS art into tracked files unless redistribution permission is confirmed and documented; use a redistributable replacement or local-only extraction.
 
 ## StS2 Implementation
 
 ### Class: `Sts1BigFish`
-- **Base:** `ModEventTemplate` (RitsuLib)
+
+- **Base:** `EventModel`
+- **IsShared:** `true`
 - **Registration:** `content.ActEvent<Overgrowth, Sts1BigFish>()` and `content.ActEvent<Underdocks, Sts1BigFish>()`
-- **Layout:** Default event layout
-- **LocTable:** "events"
+- **Availability:** no event-specific `IsAllowed(IRunState)` override
+- **LocTable:** event localization keys under `STS1_BIG_FISH`
 
 ### Dynamic Variables
 
-| Variable | Type | Base | Variance |
-|----------|------|------|----------|
-| HealAmount | HealVar | `floor(MaxHp / 3)` | 0 |
-| MaxHpGain | MaxHpVar | 5 | 0 |
+| Variable | Type | Base | Notes |
+|----------|------|------|-------|
+| Heal | `HealVar` | computed from `Owner?.Creature.MaxHp / 3m` | Display text currently uses static "1/3 max HP" wording |
+| MaxHp | `MaxHpVar` | 5 | Display text currently uses static "5 max HP" wording |
 
-### Code Skeleton
+### Current Source Shape
 
 ```csharp
-[RegisterSharedEvent]
-public sealed class Sts1BigFish : ModEventTemplate
+public sealed class Sts1BigFish : EventModel
 {
+    public override bool IsShared => true;
+
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
-        return
-        [
+        return new EventOption[]
+        {
             new EventOption(this, Banana, InitialOptionKey("BANANA")),
             new EventOption(this, Donut, InitialOptionKey("DONUT")),
-            new EventOption(this, Shoe, InitialOptionKey("SHOE"))
-        ];
+            new EventOption(this, Box, InitialOptionKey("BOX"))
+        };
     }
 
-    private async Task Banana()
+    private async Task Box()
     {
-        var healAmount = Owner.Creature.MaxHp / 3;
-        await CreatureCmd.Heal(Owner.Creature, healAmount);
-        SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.BANANA.description"));
-    }
-
-    private async Task Donut()
-    {
-        await CreatureCmd.GainMaxHp(Owner.Creature, 5);
-        SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.DONUT.description"));
-    }
-
-    private async Task Shoe()
-    {
-        await RelicCmd.ObtainRandom(Owner);
-        await CardPileCmd.AddCursesToDeck([ModelDb.Card<Regret>()], Owner);
-        SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.SHOE.description"));
+        if (Owner is not { } owner) return;
+        var relic = RelicFactory.PullNextRelicFromFront(owner).ToMutable();
+        await RelicCmd.Obtain(relic, owner);
+        await CardPileCmd.AddCursesToDeck(
+            new[] { ModelDb.Card<Regret>() }, owner);
+        SetEventFinished(L10NLookup("STS1_BIG_FISH.pages.BOX.description"));
     }
 }
 ```
 
 ## Manual Evidence Checklist
 
-- [ ] Debug-spawn Big Fish in Act 1, Act 2, Act 3
-- [ ] Select "Banana" — verify HP heals to `MaxHp / 3` (floor)
-- [ ] Select "Donut" — verify max HP increases by 5
-- [ ] Select "Shoe" — verify relic obtained + Regret added to deck
-- [ ] EN text renders correctly
-- [ ] ZHS text renders correctly
-- [ ] Event portrait loads
-- [ ] Dynamic variables show correct values in option tooltips
-- [ ] Save after each option, reload — state persists
-- [ ] Save during event, reload — event state correct
-- [ ] Regret curse appears in deck view after Shoe
+- [ ] Current `v0.107.0` clean loader proof exists before gameplay proof.
+- [ ] Debug-spawn or naturally encounter Big Fish from the current Act 1 buckets.
+- [ ] Select "Banana" and verify HP heals by `MaxHp / 3`.
+- [ ] Select "Donut" and verify max HP increases by 5.
+- [ ] Select "Box" and verify relic obtained + Regret added to deck.
+- [ ] EN text renders correctly.
+- [ ] ZHS text renders correctly.
+- [ ] Event portrait or approved placeholder renders.
+- [ ] Save after each option, reload, and verify state persists.
+- [ ] Save during event, reload, and verify event state is correct.
+- [ ] Regret curse appears in deck view after Box.
 
 ## Save/Load Notes
 
-- HP changes persist after save/load (player state is serialized).
-- Max HP changes persist after save/load.
-- Relic obtained persists after save/load.
-- Regret curse in deck persists after save/load.
-- Event state (current page) persists with room serialization.
+- HP changes persist after save/load through player state.
+- Max HP changes persist after save/load through player state.
+- Relic obtained persists after save/load through relic state.
+- Regret curse in deck persists after save/load through deck state.
+- Event state persistence still requires direct runtime proof.

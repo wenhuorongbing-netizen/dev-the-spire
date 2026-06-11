@@ -1,10 +1,12 @@
-# Registry Reconciliation - 52 / 54 / 48 / 50 / 56 / 399
+# Registry Reconciliation - 52 / 54 / 48 / 50 / 57 / 397
 
-> Updated: 2026-06-10 Revision L Act 1 canary registration correction
+> Updated: 2026-06-11 Revision M Act 1 simple-batch registration correction
 
 This file reconciles the StS1 event-port source counts. These counts are source/doc counts only; they do not prove runtime gameplay, save/load, image rendering, replacement-pool behavior, or parity.
 
 Revision L correction, 2026-06-10: Big Fish and Golden Idol now register to the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`) in CanaryOnly, AdditiveBatch1, and RegisterAll. Their models remain `IsShared=true` for co-op voting semantics; Act bucket parity is source-aligned but runtime bucket proof is still pending.
+
+Revision M correction, 2026-06-11: The Cleric now registers to the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`) in AdditiveBatch1 and RegisterAll. Its model remains `IsShared=true` for co-op voting semantics; Act bucket parity is source-aligned but runtime bucket proof is still pending.
 
 ## Current Counts
 
@@ -15,8 +17,8 @@ Revision L correction, 2026-06-10: Big Fish and Golden Idol now register to the 
 | Runtime registry entries | 50 | Unique identities in `Sts1EventRegistry.cs`, including 2 special stubs and excluding 4 duplicate wiki rows | `RegistryEntryCountIs50` |
 | Model files | 48 | C# event model files under `EZMicroBalanceCode/Sts1Events/Models/` | source tree |
 | Compiling models | 47 | 48 model files minus compile-excluded `Sts1Duplicator.cs` | `Sts1DuplicatorExcludedFromCompilation` |
-| RegisterAll calls | 56 | `content.SharedEvent<T>()` plus `content.ActEvent<TAct,TEvent>()` calls in all-draft mode | `RegisterAllTotalRegistrationCallsIs56` |
-| AdditiveBatch1 calls | 13 | 10 verified-scope event types; Big Fish, Golden Idol, and Shining Light register to both StS2 Act 1 buckets | `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` |
+| RegisterAll calls | 57 | `content.SharedEvent<T>()` plus `content.ActEvent<TAct,TEvent>()` calls in all-draft mode | `RegisterAllTotalRegistrationCallsIs57` |
+| AdditiveBatch1 calls | 14 | 10 verified-scope event types; Big Fish, Golden Idol, The Cleric, and Shining Light register to both StS2 Act 1 buckets | `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` |
 
 ## Why 54 Rows Become 50 Registry Entries
 
@@ -27,7 +29,7 @@ Four canonical matrix rows are duplicate wiki/bucket memberships and intentional
 | Duplicate row | Canonical handling |
 |---------------|--------------------|
 | `golden_wing_act1` | Shares `sts1_golden_wing` |
-| `the_cleric_act1` | Shares `sts1_the_cleric` |
+| `the_cleric_act1` | Duplicate of `sts1_the_cleric` Act 1 registration |
 | `the_mausoleum_act2` | Shares `sts1_the_mausoleum` |
 | `the_woman_in_blue_act2` | Shares `sts1_the_woman_in_blue` |
 
@@ -35,15 +37,15 @@ Math: 54 canonical rows - 4 duplicate rows = 50 registry identities.
 
 `sts1_neow` and `sts1_combat_start` are special registry stubs. They count as registry identities but have no unknown-room model files.
 
-## Why RegisterAll Has 56 Calls
+## Why RegisterAll Has 57 Calls
 
 | Bucket | Event types | Calls per event | Calls |
 |--------|-------------|-----------------|-------|
-| Shared | 15 registered shared event types | 1 | 15 |
-| StS1 Act 1 | 9 event types | 2 (`Overgrowth` + `Underdocks`) | 18 |
+| Shared | 14 registered shared event types | 1 | 14 |
+| StS1 Act 1 | 10 event types | 2 (`Overgrowth` + `Underdocks`) | 20 |
 | StS1 Act 2 | 14 event types | 1 (`Hive`) | 14 |
 | StS1 Act 3 | 9 event types | 1 (`Glory`) | 9 |
-| **Total** | **47 compiling registered event types** | - | **56** |
+| **Total** | **47 compiling registered event types** | - | **57** |
 
 `Sts1Duplicator` is compile-excluded and is not registered by `RegisterAll`.
 
@@ -64,8 +66,8 @@ One Simple entry, Duplicator, is compile-excluded and not registered by `Registe
 ## Guard Tests
 
 - `RegistryEntryCountIs50` guards the registry count.
-- `RegisterAllTotalRegistrationCallsIs56` guards all-draft registration calls.
-- `RegisterAllSharedEventCountIs15` guards shared registration calls.
+- `RegisterAllTotalRegistrationCallsIs57` guards all-draft registration calls.
+- `RegisterAllSharedEventCountIs14` guards shared registration calls.
 - `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` guards Batch1 identity and count.
 - `RegistryCanaryPhaseMatchesCanaryEventIds` guards canary phase metadata.
 

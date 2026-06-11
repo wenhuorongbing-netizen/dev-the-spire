@@ -8,7 +8,7 @@ internal sealed class DistinguishedCapeVarsPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Override DistinguishedCape canonical vars with HP loss and Apparition count";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(DistinguishedCape), "get_CanonicalVars")];
+        [new ModPatchTarget(typeof(DistinguishedCape), "CanonicalVars", MethodType.Getter)];
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
     {
@@ -30,37 +30,36 @@ internal sealed class DistinguishedCapeEventOptionPatch : IPatchMethod
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
         [new ModPatchTarget(typeof(Vakuu), "GenerateInitialOptions")];
     [HarmonyPostfix]
-    private static void Postfix(
-        Vakuu __instance,
-        ref IReadOnlyList<MegaCrit.Sts2.Core.Events.EventOption> __result)
+    private static IReadOnlyList<MegaCrit.Sts2.Core.Events.EventOption> Postfix(
+        IReadOnlyList<MegaCrit.Sts2.Core.Events.EventOption> __result,
+        Vakuu __instance)
     {
         var owner = __instance.Owner;
         if (owner == null || DistinguishedCapePickupPatch.CanPayMaxHpCost(owner.Creature.MaxHp))
         {
-            return;
+            return __result;
         }
 
         var options = __result.ToList();
         var capeIndex = options.FindIndex(option => option.Relic is DistinguishedCape);
         if (capeIndex < 0)
         {
-            return;
+            return __result;
         }
 
         var replacement = CreateVakuuSecondPoolReplacement(__instance, options);
         if (replacement != null)
         {
             options[capeIndex] = replacement;
-            __result = options.ToArray();
             MainFile.Logger.Info(
                 $"[Spire Plus] DistinguishedCape replaced in Vakuu options: current max HP {owner.Creature.MaxHp} cannot pay max HP cost {DistinguishedCapePickupPatch.CalculateMaxHpLoss(owner.Creature.MaxHp)}.");
-            return;
+            return options.ToArray();
         }
 
         options[capeIndex] = CreateLockedCapeOption(__instance, options[capeIndex], owner.Creature.MaxHp);
-        __result = options.ToArray();
         MainFile.Logger.Warn(
             $"[Spire Plus] DistinguishedCape shown locked in Vakuu options: no same-pool replacement was available for current max HP {owner.Creature.MaxHp}.");
+        return options.ToArray();
     }
 
     private static MegaCrit.Sts2.Core.Events.EventOption? CreateVakuuSecondPoolReplacement(

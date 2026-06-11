@@ -1,6 +1,6 @@
 wiki_entry_id,wiki_name,wiki_bucket,st1_acts_allowed,runtime_model,registry_count,sts2_acts_registered,is_shared,status,parity_gap
 sts1_big_fish,Big Fish,Act1,Act1,Sts1BigFish,1,Overgrowth+Underdocks,true,implemented,Source now registers Act 1 buckets; current runtime bucket proof pending
-sts1_the_cleric,The Cleric,Shared+Act1,All+Act1,Sts1TheCleric,1,shared,true,compiled,none
+sts1_the_cleric,The Cleric,Act1,Act1,Sts1TheCleric,1,Overgrowth+Underdocks,true,implemented,Source now registers Act 1 buckets; A15 Purify cost and 35+ gold eligibility source-guarded; current runtime bucket/UI proof pending
 sts1_golden_idol,Golden Idol,Act1,Act1,Sts1GoldenIdol,1,Overgrowth+Underdocks,true,implemented,Source now registers Act 1 buckets; Golden Idol relic parity and current runtime bucket proof pending
 sts1_golden_wing,Golden Wing,Shared+Act1,All+Act1,Sts1GoldenWing,1,shared,true,compiled,none
 sts1_living_wall,Living Wall,Shared,All,Sts1LivingWall,1,shared,true,compiled,none
@@ -9,7 +9,7 @@ sts1_purifier,Purifier,Shared,All,Sts1Purifier,1,shared,true,compiled,none
 sts1_golden_shrine,Golden Shrine,Shared,All,Sts1GoldenShrine,1,shared,true,compiled,none
 sts1_the_woman_in_blue,The Woman in Blue,Shared+Act2,All+Act2,Sts1TheWomanInBlue,1,shared,true,compiled,none
 sts1_bonfire_spirits,Bonfire Spirits,Shared,All,Sts1BonfireSpirits,1,shared,true,compiled,none
-sts1_divine_fountain,Divine Fountain,Shared,All,Sts1DivineFountain,1,shared,true,compiled,none
+sts1_divine_fountain,Divine Fountain,Shared,All,Sts1DivineFountain,1,shared,true,implemented,Curse prerequisite source-guarded through IsAllowed; runtime selection proof pending
 sts1_duplicator,Duplicator,Shared,All,Sts1Duplicator,1,shared,true,compile-excluded,CardSelectCmd.FromDeckForRewards missing in RitsuLib 0.3.2
 sts1_face_trader,Face Trader,Shared,All,Sts1FaceTrader,1,shared,true,temporary-substitute,Face relics → random relic (no face relic models)
 sts1_fountain_of_cleansing,Fountain of Cleansing,Shared,All,Sts1FountainOfCleansing,1,shared,true,compiled,none
@@ -26,7 +26,7 @@ sts1_dead_adventurer,Dead Adventurer,Act1,Act1,Sts1DeadAdventurer,1,Overgrowth+U
 golden_wing_act1,Golden Wing (Act1),Act1,Act1,(see Golden Wing),0,Overgrowth+Underdocks,false,duplicate-wiki-entry,Shares model with Shared Golden Wing
 sts1_mushrooms,Mushrooms,Act1,Act1,Sts1Mushrooms,1,Overgrowth+Underdocks,false,compiled,none
 sts1_scorpion_nest,Scorpion Nest,Act1,Act1,Sts1ScorpionNest,1,Overgrowth+Underdocks,true,blocked,Missing encounter model (3 Louses)
-the_cleric_act1,The Cleric (Act1),Act1,Act1,(see The Cleric),0,Overgrowth+Underdocks,false,duplicate-wiki-entry,Shares model with Shared The Cleric
+the_cleric_act1,The Cleric (Act1),Act1,Act1,(see The Cleric),0,Overgrowth+Underdocks,false,duplicate-wiki-entry,Duplicate wiki row shares sts1_the_cleric Act 1 registration
 sts1_treasure_ooze,Treasure Ooze,Act1,Act1,Sts1TreasureOoze,1,Overgrowth+Underdocks,true,blocked,Missing encounter model (large slime)
 sts1_altar,Altar,Act2,Act2,Sts1Altar,1,Hive,false,compiled,none
 sts1_council_of_ghosts,Council of Ghosts,Act2,Act2,Sts1CouncilOfGhosts,1,Hive,false,compiled,none

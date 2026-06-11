@@ -19,7 +19,7 @@ internal sealed class BrightestFlameCanonicalKeywordsPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Add Exhaust keyword to BrightestFlame";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(CardModel), "get_CanonicalKeywords")];
+        [new ModPatchTarget(typeof(CardModel), nameof(CardModel.CanonicalKeywords), MethodType.Getter)];
     [HarmonyPostfix]
     private static void Postfix(CardModel __instance, ref IEnumerable<CardKeyword> __result)
     {
@@ -41,7 +41,7 @@ internal sealed class BrightestFlameCanonicalVarsPatch : IPatchMethod
     static bool IPatchMethod.IsCritical => false;
     static string IPatchMethod.Description => "Increase BrightestFlame draw by 1";
     static ModPatchTarget[] IPatchMethod.GetTargets() =>
-        [new ModPatchTarget(typeof(BrightestFlame), "get_CanonicalVars")];
+        [new ModPatchTarget(typeof(BrightestFlame), "CanonicalVars", MethodType.Getter)];
     private const int ExtraDraw = 1;
 
     [HarmonyPostfix]

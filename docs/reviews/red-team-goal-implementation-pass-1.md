@@ -9,7 +9,7 @@ This pass is a partial implementation-hardening pass only. It cannot claim relea
 ## Findings
 
 - The previous `goal completed` style claim remains rejected. The current repository still has manual/live gates open, so docs-only or source-only work cannot close `docs/goal.md`.
-- Fresh current-package live loader parity remains unclosed. Historical logs do not prove the current SavedSpireField/package runtime state, and the current beta.84 `v0.107.0` smoke failed clean audit on stale package API targets.
+- Fresh current-package live gameplay parity remains unclosed. Current beta.85 `v0.107.0` Off loader smoke proves startup and patch application only; historical logs and loader smokes do not prove gameplay, save-load, UI, co-op, or release readiness.
 - Clicked Ancient UI proof is still pending for Urda, Morvi, Lotha, and gated Vakuu.
 - Live save-load proof is still pending for Root Eyes, Seed Bank, Morvi state, Lotha Death Reprieve, Vakuu child combat, and Rootblight.
 - Vakuu fight live proof is still pending for victory return, no-black-screen behavior, failure/death path, active/pre-finished save-load, and co-op behavior.

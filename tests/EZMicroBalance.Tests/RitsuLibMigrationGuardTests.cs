@@ -236,4 +236,28 @@ public sealed class RitsuLibMigrationGuardTests
             Assert.Contains($"\"{patchId}\"", allSource, StringComparison.Ordinal);
         }
     }
+
+    [Fact]
+    public void ModPatcherTargetsDoNotUseCompilerGetterNames()
+    {
+        var sourceFiles = Directory.GetFiles(
+            RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories);
+
+        var offenders = sourceFiles
+            .SelectMany(file => File.ReadLines(file)
+                .Select((line, index) => new
+                {
+                    Path = ToRepoRelativePath(file),
+                    LineNumber = index + 1,
+                    Line = line.Trim()
+                }))
+            .Where(entry => entry.Line.Contains("ModPatchTarget(", StringComparison.Ordinal) &&
+                            entry.Line.Contains("\"get_", StringComparison.Ordinal))
+            .Select(entry => $"{entry.Path}:{entry.LineNumber}: {entry.Line}")
+            .ToArray();
+
+        Assert.True(offenders.Length == 0,
+            "ModPatcher property getter targets must use the property name with MethodType.Getter, not compiler get_* names:" +
+            Environment.NewLine + string.Join(Environment.NewLine, offenders));
+    }
 }

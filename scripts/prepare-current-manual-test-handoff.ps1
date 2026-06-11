@@ -551,3 +551,5 @@ if ($loaderRowFilled) {
 } else {
     Write-Output 'No game was launched. All live rows remain pending.'
 }
+
+exit 0

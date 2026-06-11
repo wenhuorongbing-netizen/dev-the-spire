@@ -1,4 +1,4 @@
-﻿# Test Plan
+# Test Plan
 
 ## Automated Checks
 
@@ -118,11 +118,11 @@ The prior legacy `EzDailyContent` setup passed build, publish, and Mod Settings 
 
 v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2 Distinguished Cape 40% min15 are historical only.
 
-Current runtime note: historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes. Installed beta.84 package parity is restored, but the current beta.84 `v0.107.0` smoke failed clean audit on stale package API targets; current dirty source still needs a versioned package decision and fresh loader/gameplay evidence before handoff or release-ready claims.
+Current runtime note: historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes. Installed beta.85 package parity is restored, and the current beta.85 `v0.107.0` Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510` reached main menu, applied 25/25 Spire Plus patches, and audited clean. This is loader proof only; gameplay evidence is still required before handoff or release-ready claims.
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.
 - Historical package smoke/log/resource evidence under `.tools/runtime-evidence/current-package-smoke-20260514-015901` covers the earlier 22-field package, installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a clean normal Steam helper startup with BaseLib plus Spire Plus.
-- Historical Steam-client loader evidence under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` reports `v0.1.0-private-beta.19`, `Found 30 SavedSpireFields`, only BaseLib plus Spire Plus loaded, clean log audit, stopped game, and restored mod isolation for the beta.19 package. The current beta.84 package has `v0.107.0` smoke evidence, but it failed clean audit on stale package API targets. Older beta.17, beta.13, `20260523-current`, 16-field, and 22-field startup/log passes are historical.
+- Historical Steam-client loader evidence under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` reports `v0.1.0-private-beta.19`, `Found 30 SavedSpireFields`, only BaseLib plus Spire Plus loaded, clean log audit, stopped game, and restored mod isolation for the beta.19 package. The current beta.85 package has clean `v0.107.0` smoke evidence under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510`. Older beta.17, beta.13, `20260523-current`, 16-field, and 22-field startup/log passes are historical.
 - BaseLib-only plug-off evidence under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` loaded `1 mods (1 total)` and did not initialize Spire Plus. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
 - Current Mod Settings UI list evidence, historical Mod Settings page evidence, A11 map/save-load spot checks, saved-map boss-reachability proof, Act 2/3 A11 map-surface observation, and targeted A14 Rootblight hover/starter-notice checks have evidence.
 - The A14 Rootblight art-hover probe found pre-fix Urda missing asset paths before combat. Urda now uses custom Ancient icon/background-scene paths and the current package resolves Ancient scene/art resources in headless installed-PCK verification, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.

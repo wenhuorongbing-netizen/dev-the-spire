@@ -16,16 +16,16 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 /// </summary>
 public sealed class Sts1GoldenIdol : EventModel
 {
-    private const decimal JumpPctNormal = 0.25m;
-    private const decimal JumpPctA15 = 0.35m;
-    private const decimal DestroyPctNormal = 0.08m;
-    private const decimal DestroyPctA15 = 0.10m;
+    private const decimal SmashDamagePctNormal = 0.25m;
+    private const decimal SmashDamagePctA15 = 0.35m;
+    private const decimal HideMaxHpPctNormal = 0.08m;
+    private const decimal HideMaxHpPctA15 = 0.10m;
 
     public override bool IsShared => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(JumpPctNormal * 100m, MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable),
+        new DamageVar(SmashDamagePctNormal * 100m, MegaCrit.Sts2.Core.ValueProps.ValueProp.Unblockable),
         new MaxHpVar(0m)
     };
 
@@ -33,8 +33,8 @@ public sealed class Sts1GoldenIdol : EventModel
     // as a proxy for the StS1 A15 harder-event behavior.
     private bool HasA15 => (Owner?.RunState?.AscensionLevel ?? 0) >= 15;
 
-    private decimal JumpPct => HasA15 ? JumpPctA15 : JumpPctNormal;
-    private decimal DestroyPct => HasA15 ? DestroyPctA15 : DestroyPctNormal;
+    private decimal SmashDamagePct => HasA15 ? SmashDamagePctA15 : SmashDamagePctNormal;
+    private decimal HideMaxHpPct => HasA15 ? HideMaxHpPctA15 : HideMaxHpPctNormal;
 
     protected override IReadOnlyList<EventOption> GenerateInitialOptions()
     {
@@ -64,31 +64,31 @@ public sealed class Sts1GoldenIdol : EventModel
     private IReadOnlyList<EventOption> GenerateTrapOptions()
     {
         if (Owner is not { } owner) return System.Array.Empty<EventOption>();
-        var jumpDamage = (int)(owner.Creature.MaxHp * JumpPct);
-        var destroyMaxHp = (int)(owner.Creature.MaxHp * DestroyPct);
+        var smashDamage = (int)(owner.Creature.MaxHp * SmashDamagePct);
+        var hideMaxHpLoss = (int)(owner.Creature.MaxHp * HideMaxHpPct);
 
         return new EventOption[]
         {
-            new EventOption(this, Smash,
-                OptionKey("TRAP", "SMASH")),
-            new EventOption(this, () => Jump(jumpDamage),
-                OptionKey("TRAP", "JUMP"))
-                .ThatDoesDamage(jumpDamage),
-            new EventOption(this, () => Destroy(destroyMaxHp),
-                OptionKey("TRAP", "DESTROY"))
-                .ThatDecreasesMaxHp(destroyMaxHp)
+            new EventOption(this, Outrun,
+                OptionKey("TRAP", "OUTRUN")),
+            new EventOption(this, () => Smash(smashDamage),
+                OptionKey("TRAP", "SMASH"))
+                .ThatDoesDamage(smashDamage),
+            new EventOption(this, () => Hide(hideMaxHpLoss),
+                OptionKey("TRAP", "HIDE"))
+                .ThatDecreasesMaxHp(hideMaxHpLoss)
         };
     }
 
-    private async Task Smash()
+    private async Task Outrun()
     {
         if (Owner is not { } owner) return;
         await CardPileCmd.AddCursesToDeck(
             new[] { ModelDb.Card<Injury>() }, owner);
-        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.SMASH.description"));
+        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.OUTRUN.description"));
     }
 
-    private async Task Jump(int damage)
+    private async Task Smash(int damage)
     {
         if (Owner is not { } owner) return;
         var damageVar = new DamageVar(
@@ -97,16 +97,16 @@ public sealed class Sts1GoldenIdol : EventModel
         await CreatureCmd.Damage(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
             owner.Creature, damageVar, (CardModel?)null!);
-        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.JUMP.description"));
+        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.SMASH.description"));
     }
 
-    private async Task Destroy(int maxHpLoss)
+    private async Task Hide(int maxHpLoss)
     {
         if (Owner is not { } owner) return;
         await CreatureCmd.LoseMaxHp(
             new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
             owner.Creature, maxHpLoss, isFromCard: false);
-        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.DESTROY.description"));
+        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.HIDE.description"));
     }
 
     private string OptionKey(string pageName, string optionName)
