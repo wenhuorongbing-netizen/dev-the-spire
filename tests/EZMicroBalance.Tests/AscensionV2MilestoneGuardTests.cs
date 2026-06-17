@@ -348,7 +348,7 @@ public sealed class AscensionV2MilestoneGuardTests
         AssertSourceContains(forgeRelic, "ShowCounter => true", "DisplayAmount => 1", "Max [blue]1[/blue].");
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void Milestones5To8GuardBannersDeepBranchesBossSealsAndBlockedA20Claims()
     {
         var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
@@ -363,11 +363,11 @@ public sealed class AscensionV2MilestoneGuardTests
         var powers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var bossSealSource = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
-        var attackIntentSource = ReadRepoText("source code", "src", "Core", "MonsterMoves", "Intents", "AttackIntent.cs");
-        var kinBossSource = ReadRepoText("source code", "src", "Core", "Models", "Encounters", "TheKinBoss.cs");
-        var kinPriestSource = ReadRepoText("source code", "src", "Core", "Models", "Monsters", "KinPriest.cs");
-        var slipperyPowerSource = ReadRepoText("source code", "src", "Core", "Models", "Powers", "SlipperyPower.cs");
-        var platingPowerSource = ReadRepoText("source code", "src", "Core", "Models", "Powers", "PlatingPower.cs");
+        var attackIntentSource = ReadLocalCoreText("MonsterMoves", "Intents", "AttackIntent.cs");
+        var kinBossSource = ReadLocalCoreText("Models", "Encounters", "TheKinBoss.cs");
+        var kinPriestSource = ReadLocalCoreText("Models", "Monsters", "KinPriest.cs");
+        var slipperyPowerSource = ReadLocalCoreText("Models", "Powers", "SlipperyPower.cs");
+        var platingPowerSource = ReadLocalCoreText("Models", "Powers", "PlatingPower.cs");
         var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
         var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
         var englishEvents = JsonStringMap("EZMicroBalance", "localization", "eng", "events.json");

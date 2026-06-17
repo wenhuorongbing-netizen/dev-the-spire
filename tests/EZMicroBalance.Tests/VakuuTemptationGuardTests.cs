@@ -119,7 +119,6 @@ public sealed class VakuuTemptationGuardTests
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
         var gate = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightFeatureGate.cs");
         var monster = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTrialMonster.cs");
-        var battlewornDummy = ReadRepoText("source code", "src", "Core", "Models", "Encounters", "BattlewornDummyEventEncounter.cs");
 
         Assert.Contains("VakuuFightFeatureModule", featureRegistry, StringComparison.Ordinal);
         AssertSourceContains(
@@ -189,10 +188,6 @@ public sealed class VakuuTemptationGuardTests
             "public override async Task AfterAddedToRoom()",
             "VakuuFightService.EnsureStolenVaultPower(Creature)");
         AssertSourceContains(
-            battlewornDummy,
-            "public override RoomType RoomType => RoomType.Monster",
-            "public override bool ShouldGiveRewards => false");
-        AssertSourceContains(
             gate,
             "EnableEnvironmentVariable = \"SPIREPLUS_ENABLE_VAKUU_FIGHT\"",
             "LegacyEnableEnvironmentVariable = \"EZMB_ENABLE_VAKUU_FIGHT\"",
@@ -201,18 +196,25 @@ public sealed class VakuuTemptationGuardTests
             "runState.Players.Count == 1");
     }
 
-    [Fact]
-    public void VakuuContractTimingTextMatchesCoreDrawThenAfterPlayerTurnStartOrder()
+    [LocalSourceFact]
+    public void CoreBattlewornDummyEventEncounterStillUsesMonsterNoRewardShape()
     {
-        var combatManager = ReadRepoText("source code", "src", "Core", "Combat", "CombatManager.cs");
+        var battlewornDummy = ReadLocalCoreText("Models", "Encounters", "BattlewornDummyEventEncounter.cs");
+
+        AssertSourceContains(
+            battlewornDummy,
+            "public override RoomType RoomType => RoomType.Monster",
+            "public override bool ShouldGiveRewards => false");
+    }
+
+    [LocalSourceFact]
+    public void CorePlayerTurnDrawStillPrecedesAfterPlayerTurnStart()
+    {
+        var combatManager = ReadLocalCoreText("Combat", "CombatManager.cs");
         var setupPlayerTurn = SliceBetween(
             combatManager,
             "private async Task SetupPlayerTurn",
             "public void SetReadyToEndTurn");
-        var vakuuHookSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
-        var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
-        var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
-        var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
 
         AssertSourceContains(
             setupPlayerTurn,
@@ -223,6 +225,16 @@ public sealed class VakuuTemptationGuardTests
             setupPlayerTurn,
             "await CardPileCmd.Draw(playerChoiceContext, handDraw, player, fromHandDraw: true)",
             "await Hook.AfterPlayerTurnStart(state, playerChoiceContext, player)");
+    }
+
+    [Fact]
+    public void VakuuContractTimingTextMatchesAfterPlayerTurnStartHook()
+    {
+        var vakuuHookSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu");
+        var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
+        var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
+        var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
+
         AssertSourceContains(
             vakuuHookSource,
             "public override Task AfterPlayerTurnStart",

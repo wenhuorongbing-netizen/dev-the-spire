@@ -10,7 +10,6 @@ public sealed class RuntimeCrashRegressionGuardTests
         var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var seedbedCombat = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedCombat.cs");
         var seedbedState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedState.cs");
-        var cardPileCmd = ReadRepoText("source code", "src", "Core", "Commands", "CardPileCmd.cs");
         var seedbedAfterCardDrawnPatch = ReadRepoText(
             "EZMicroBalanceCode",
             "Ancients",
@@ -35,9 +34,6 @@ public sealed class RuntimeCrashRegressionGuardTests
             seedbedCombat,
             "if (IsSeedbedDrawInProgress(player))",
             "return await QueueSeedbedPlantFromHand(card, source)");
-        AssertSourceContains(
-            cardPileCmd,
-            "Hook.AfterCardChangedPiles(cardAdded.Owner.RunState, cardAdded.CombatState, cardAdded, item3.oldPile?.Type ?? PileType.None, clonedBy);");
         var seedbedDrawPatch = ReadRepoText(
             "EZMicroBalanceCode",
             "Ancients",
@@ -59,6 +55,16 @@ public sealed class RuntimeCrashRegressionGuardTests
             "return false;");
         Assert.DoesNotContain("private static bool Prefix(CardModel card)", seedbedAfterCardDrawnPatch, StringComparison.Ordinal);
         Assert.DoesNotContain("await UrdaBlessingService.TryPlantSeedbedCardFromHand(card, \"card entered hand\")", runHook, StringComparison.Ordinal);
+    }
+
+    [LocalSourceFact]
+    public void CardPileDrawCallsAfterCardChangedPilesAfterOwnershipMove()
+    {
+        var cardPileCmd = ReadLocalCoreText("Commands", "CardPileCmd.cs");
+
+        AssertSourceContains(
+            cardPileCmd,
+            "Hook.AfterCardChangedPiles(cardAdded.Owner.RunState, cardAdded.CombatState, cardAdded, item3.oldPile?.Type ?? PileType.None, clonedBy);");
     }
 
     [Fact]

@@ -354,7 +354,7 @@ public sealed class AncientHighRiskSourceGuardTests
         Assert.DoesNotContain("CurrentActIndex == 0", rootSightStatus, StringComparison.Ordinal);
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void PickupRewardCompensationAndLockoutPatchesStayScoped()
     {
         var hornSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsHornPhase1Patch.cs");
@@ -369,14 +369,14 @@ public sealed class AncientHighRiskSourceGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualRouteLog.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"));
         var tanxClawsTuningSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
-        var vakuuEventSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Vakuu.cs");
-        var tanxEventSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Tanx.cs");
-        var sereTalonSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "SereTalon.cs");
-        var clawsSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "Claws.cs");
-        var coreNRelicSource = ReadRepoText("source code", "src", "Core", "Nodes", "Relics", "NRelic.cs");
-        var coreEventOptionButtonSource = ReadRepoText("source code", "src", "Core", "Nodes", "Events", "NEventOptionButton.cs");
-        var coreRelicRewardSource = ReadRepoText("source code", "src", "Core", "Rewards", "RelicReward.cs");
-        var coreInspectRelicScreenSource = ReadRepoText("source code", "src", "Core", "Nodes", "Screens", "InspectScreens", "NInspectRelicScreen.cs");
+        var vakuuEventSource = ReadLocalCoreText("Models", "Events", "Vakuu.cs");
+        var tanxEventSource = ReadLocalCoreText("Models", "Events", "Tanx.cs");
+        var sereTalonSource = ReadLocalCoreText("Models", "Relics", "SereTalon.cs");
+        var clawsSource = ReadLocalCoreText("Models", "Relics", "Claws.cs");
+        var coreNRelicSource = ReadLocalCoreText("Nodes", "Relics", "NRelic.cs");
+        var coreEventOptionButtonSource = ReadLocalCoreText("Nodes", "Events", "NEventOptionButton.cs");
+        var coreRelicRewardSource = ReadLocalCoreText("Rewards", "RelicReward.cs");
+        var coreInspectRelicScreenSource = ReadLocalCoreText("Nodes", "Screens", "InspectScreens", "NInspectRelicScreen.cs");
         var sealSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SealOfGoldPatches.cs");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
 

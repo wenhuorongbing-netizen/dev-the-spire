@@ -103,12 +103,13 @@ function Get-WorktreeBatch {
         $p.StartsWith('.github/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -eq 'tests/EZMicroBalance.Tests/README.md' -or
         $p -eq 'tests/EZMicroBalance.Tests/TestRepo.cs' -or
+        $p -eq 'tests/EZMicroBalance.Tests/LocalSourceFactAttribute.cs' -or
          $p -eq 'tests/EZMicroBalance.Tests/EZMicroBalance.Tests.csproj' -or
          $p.StartsWith('tests/EZMicroBalance.Tests/Stubs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -eq 'docs/patch-inventory.md' -or
         $p -eq 'docs/platform-testing.md' -or
         $p -in @('BUGFIX_NOTES.md', 'BUGFIX_REPORT.md') -or
-        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|CoopCombatSafety|PreviewTools|SaveStateContracts|ModInfoLocalization|GoalCompletion|RuntimeCrash|Audit|RitsuLib|Sts1Event|Architecture).*\.cs(\.uid)?$') {
+        $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|CoopCombatSafety|PreviewTools|SaveStateContracts|ModInfoLocalization|GoalCompletion|RuntimeCrash|Audit|RitsuLib|Sts1Event|Architecture|LocalSource).*\.cs(\.uid)?$') {
         return 5
     }
 

@@ -525,13 +525,13 @@ public sealed partial class AncientBehaviorGuardTests
         Assert.Contains("visible all-off-color cards and relic hover count remain the available confirmation surfaces", manualMatrix, StringComparison.Ordinal);
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void VakuuSereTalonAndTanxClawsStayOnSeparateSourceRoutes()
     {
-        var vakuuSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Vakuu.cs");
-        var tanxSource = ReadRepoText("source code", "src", "Core", "Models", "Events", "Tanx.cs");
-        var sereTalonSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "SereTalon.cs");
-        var clawsSource = ReadRepoText("source code", "src", "Core", "Models", "Relics", "Claws.cs");
+        var vakuuSource = ReadLocalCoreText("Models", "Events", "Vakuu.cs");
+        var tanxSource = ReadLocalCoreText("Models", "Events", "Tanx.cs");
+        var sereTalonSource = ReadLocalCoreText("Models", "Relics", "SereTalon.cs");
+        var clawsSource = ReadLocalCoreText("Models", "Relics", "Claws.cs");
         var sereTalonPickupPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonPickupPatches.cs");
         var sereTalonVisualSource = ReadSereTalonVisualSource();
         var tanxClawsPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");

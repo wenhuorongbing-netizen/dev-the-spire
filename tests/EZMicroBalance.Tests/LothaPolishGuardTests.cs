@@ -509,7 +509,7 @@ public sealed class LothaPolishGuardTests
         }
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void PublicEvidenceUsesNonDamageDebuffPolicyAndVisibleEnlightenment()
     {
         var ancient = ReadLothaSource();
@@ -519,10 +519,10 @@ public sealed class LothaPolishGuardTests
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
         var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
-        var poison = ReadRepoText("source code", "src", "Core", "Models", "Powers", "PoisonPower.cs");
-        var weak = ReadRepoText("source code", "src", "Core", "Models", "Powers", "WeakPower.cs");
-        var vulnerable = ReadRepoText("source code", "src", "Core", "Models", "Powers", "VulnerablePower.cs");
-        var frail = ReadRepoText("source code", "src", "Core", "Models", "Powers", "FrailPower.cs");
+        var poison = ReadLocalCoreText("Models", "Powers", "PoisonPower.cs");
+        var weak = ReadLocalCoreText("Models", "Powers", "WeakPower.cs");
+        var vulnerable = ReadLocalCoreText("Models", "Powers", "VulnerablePower.cs");
+        var frail = ReadLocalCoreText("Models", "Powers", "FrailPower.cs");
         var helper = SliceBetween(runHook, "private static bool IsPublicEvidenceDebuffApplication", "private static bool IsPublicEvidenceExcludedDamageDebuff");
         var publicEvidenceSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.PublicEvidence.cs");
         var excludedDamageDebuffs = SliceFrom(publicEvidenceSource, "private static bool IsPublicEvidenceExcludedDamageDebuff");

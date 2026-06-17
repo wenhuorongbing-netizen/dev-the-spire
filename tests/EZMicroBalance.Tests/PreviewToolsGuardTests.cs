@@ -128,19 +128,25 @@ public sealed class PreviewToolsGuardTests
     }
 
     [Fact]
-    public void TransformPredictionQueueOrderIsGuardedAgainstExplicitReplacementSlots()
+    public void TransformPredictionQueueOrderSkipsExplicitReplacementSlots()
     {
         var patchSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPatch.cs");
-        var vanillaSource = ReadRepoText("source code", "src", "Core", "Nodes", "Cards", "NTransformPreview.cs");
 
         Assert.Contains("if (transformation.Replacement != null)", patchSource, StringComparison.Ordinal);
         Assert.Contains("continue;", SliceFrom(patchSource, "if (transformation.Replacement != null)"), StringComparison.Ordinal);
-        Assert.Contains("cardTransformation.Replacement == null", vanillaSource, StringComparison.Ordinal);
-        Assert.Contains("CycleThroughCards", SliceFrom(vanillaSource, "if (cardTransformation.Replacement == null)"), StringComparison.Ordinal);
         Assert.DoesNotContain(
             "queue.Enqueue(transformation.Replacement",
             patchSource,
             StringComparison.Ordinal);
+    }
+
+    [LocalSourceFact]
+    public void VanillaTransformPreviewQueuesOnlyGeneratedTransformationSlots()
+    {
+        var vanillaSource = ReadLocalCoreText("Nodes", "Cards", "NTransformPreview.cs");
+
+        Assert.Contains("cardTransformation.Replacement == null", vanillaSource, StringComparison.Ordinal);
+        Assert.Contains("CycleThroughCards", SliceFrom(vanillaSource, "if (cardTransformation.Replacement == null)"), StringComparison.Ordinal);
     }
 
     [Fact]

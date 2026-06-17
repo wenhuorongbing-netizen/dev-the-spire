@@ -35,10 +35,9 @@
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after the beta.85 runtime-fix pass.
   Phase 2 patch adapter rule started (checklist drafted). StS1Events feature-gated (default Off, guard tests active). Combat events now declare `IsShared`. See `docs/reviews/overnight-run-20260529.md`.
-- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean with 25/25 Spire Plus RitsuLib patches.
-  Current beta.85 Off smoke with RitsuLib `v0.4.16` / compat `0.107.0` reached main menu, applied 25/25 Spire Plus patches, and audited clean. Current StS1 CanaryOnly/AdditiveBatch1 proof remains pending: CanaryOnly must show 4 event types / 6 registration calls and AdditiveBatch1 must show 10 event types / 14 registration calls before gameplay or handoff claims. Remaining blockers: QA, dirty-worktree decision, gameplay/UI/save-load/co-op, and handoff.
-## Manual Proof Gates
-- `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: capture UI screenshots/logs and test Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu. Use scripts/collect-ancient-ui-evidence.ps1.
+- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean; beta.85 Off smoke reached main menu, applied 25/25 patches, and audited clean.
+  Current StS1 enabled-mode proof remains pending: CanaryOnly 4 types / 6 calls and AdditiveBatch1 10 types / 14 calls are required before gameplay or handoff claims; QA, dirty-worktree, gameplay/UI/save-load/co-op, and handoff remain blocked.
+## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.
 ## Issue detail links: `docs/issues/ancient-expansion-v2.2.md`, `docs/issues/urda.md`, `docs/issues/waiting-tests.md`, `docs/issues/v3.3-design-review.md`; retest rows in `docs/toreview.md`.

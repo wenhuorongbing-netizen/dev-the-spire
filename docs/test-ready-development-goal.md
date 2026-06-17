@@ -92,6 +92,8 @@ dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
 git diff --check
 ```
 
+Current beta.85 validation caveat: `PROJECT_STATE.md` and `docs/reviews/current-validation.md` record the split no-build lane as trustworthy current test evidence because one-shot solution tests can destabilize around `ReleaseEvidenceGateTests`. Use isolated `ReleaseEvidenceGateTests` plus the complementary test-project lane excluding that class, cite split totals, and reserve `.\scripts\ci-full-validation.ps1 -TestStrategy Solution` for an intentional legacy comparison; the default script strategy is `SplitReleaseEvidence`.
+
 Use this after resource, localization, manifest, export, or package changes:
 
 ```powershell
@@ -101,6 +103,8 @@ $env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'
 dotnet test EZMicroBalance.sln --no-build
 Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS
 ```
+
+The same split-lane strategy applies after package/resource changes; the full local CI helper uses it for the opt-in artifact test step as well.
 
 No live-game, save-load, death/failure, or co-op evidence may be claimed from these commands.
 

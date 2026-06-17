@@ -1,6 +1,9 @@
 param(
     [string]$Sts2Path = $env:STS2_PATH,
-    [string]$GodotPath = $env:GODOT_PATH
+    [string]$GodotPath = $env:GODOT_PATH,
+
+    [ValidateSet('SplitReleaseEvidence', 'Solution')]
+    [string]$TestStrategy = 'SplitReleaseEvidence'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -38,6 +41,58 @@ function Invoke-Step {
 
     Write-Host "==> $Name"
     & $Script
+}
+
+function Invoke-NativeCommand {
+    param(
+        [Parameter(Mandatory = $true)] [string]$FilePath,
+        [Parameter(Mandatory = $true)] [string[]]$ArgumentList
+    )
+
+    & $FilePath @ArgumentList
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ne 0) {
+        throw "$FilePath $($ArgumentList -join ' ') failed with exit code $exitCode"
+    }
+}
+
+function Invoke-SpirePlusTestLane {
+    param(
+        [Parameter(Mandatory = $true)] [string]$Strategy,
+        [Parameter(Mandatory = $true)] [string]$RepoRoot
+    )
+
+    if ($Strategy -eq 'Solution') {
+        Invoke-NativeCommand -FilePath 'dotnet' -ArgumentList @('test', 'EZMicroBalance.sln', '--no-build')
+        return
+    }
+
+    $testProjectPath = Join-Path $RepoRoot 'tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj'
+    Assert-ExistingFile $testProjectPath "Test project not found: $testProjectPath"
+
+    Write-Host 'Running isolated ReleaseEvidenceGateTests lane.'
+    Invoke-NativeCommand -FilePath 'dotnet' -ArgumentList @(
+        'test',
+        $testProjectPath,
+        '--no-build',
+        '--filter',
+        'FullyQualifiedName~ReleaseEvidenceGateTests',
+        '--logger',
+        'console;verbosity=minimal',
+        '--',
+        'RunConfiguration.MaxCpuCount=1')
+
+    Write-Host 'Running complementary non-ReleaseEvidenceGateTests lane.'
+    Invoke-NativeCommand -FilePath 'dotnet' -ArgumentList @(
+        'test',
+        $testProjectPath,
+        '--no-build',
+        '--filter',
+        'FullyQualifiedName!~ReleaseEvidenceGateTests',
+        '--logger',
+        'console;verbosity=minimal',
+        '--',
+        'RunConfiguration.MaxCpuCount=1')
 }
 
 if ([string]::IsNullOrWhiteSpace($Sts2Path)) {
@@ -92,15 +147,16 @@ try {
     }
 
     Invoke-Step 'Spire Plus build' {
-        dotnet build EZMicroBalance.sln @msbuildProps
+        Invoke-NativeCommand -FilePath 'dotnet' -ArgumentList (@('build', 'EZMicroBalance.sln') + $msbuildProps)
     }
 
-    Invoke-Step 'Spire Plus tests' {
-        dotnet test EZMicroBalance.sln --no-build
+    $testStepName = if ($TestStrategy -eq 'SplitReleaseEvidence') { 'Spire Plus tests (split no-build)' } else { 'Spire Plus tests' }
+    Invoke-Step $testStepName {
+        Invoke-SpirePlusTestLane -Strategy $TestStrategy -RepoRoot $repoRoot
     }
 
     Invoke-Step 'Spire Plus format check' {
-        dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+        Invoke-NativeCommand -FilePath 'dotnet' -ArgumentList @('format', 'EZMicroBalance.sln', '--verify-no-changes', '--no-restore')
     }
 
     Invoke-Step 'Diff whitespace check' {
@@ -124,17 +180,18 @@ try {
     }
 
     Invoke-Step 'Spire Plus publish' {
-        dotnet publish EZMicroBalance.sln @msbuildProps
+        Invoke-NativeCommand -FilePath 'dotnet' -ArgumentList (@('publish', 'EZMicroBalance.sln') + $msbuildProps)
     }
 
     Invoke-Step 'Spire Plus package' {
         & .\scripts\package-spire-plus.ps1 -GameRoot $sts2FullPath
     }
 
-    Invoke-Step 'Spire Plus artifact tests' {
+    $artifactTestStepName = if ($TestStrategy -eq 'SplitReleaseEvidence') { 'Spire Plus artifact tests (split no-build)' } else { 'Spire Plus artifact tests' }
+    Invoke-Step $artifactTestStepName {
         $env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS = '1'
         try {
-            dotnet test EZMicroBalance.sln --no-build
+            Invoke-SpirePlusTestLane -Strategy $TestStrategy -RepoRoot $repoRoot
         }
         finally {
             Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS -ErrorAction SilentlyContinue

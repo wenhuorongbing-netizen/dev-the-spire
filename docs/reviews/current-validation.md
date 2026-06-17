@@ -1,6 +1,16 @@
 # Current Validation
 
-Date: 2026-06-11; latest addendum: 2026-06-15
+Date: 2026-06-11; latest addendum: 2026-06-17
+
+## June 17 Validation-Lane Script Addendum
+
+- Source/test validation was rerun in a single active lane after stale duplicate `testhost` processes were cleared: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` passed with 0 warnings / 0 errors; isolated `ReleaseEvidenceGateTests` passed 9 / 0 / 0 with `migration-ci-helper-release-evidence-final-tree-diag.log`; focused governance/compactness guards passed 49 / 0 / 0; the complementary no-build test-project lane excluding `ReleaseEvidenceGateTests` passed 448 / 0 / 39 / 487; `dotnet format`, patch inventory, worktree batch classification, and `git diff --check` passed with CRLF normalization warnings only.
+- No publish, package refresh, runtime smoke, staging, release handoff, or release-ready claim was produced by the June 17 source/test lane.
+- `scripts/ci-full-validation.ps1` now defaults to the beta.85 split no-build strategy: isolated `ReleaseEvidenceGateTests`, then the complementary test-project lane excluding that class. The same helper runs that split lane under `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish/package. `-TestStrategy Solution` remains available only for a deliberate legacy one-shot comparison.
+- Local game-source guard tests that read ignored `source code/src/Core/**` now use `LocalSourceFactAttribute` and are opt-in through `SPIREPLUS_RUN_LOCAL_SOURCE_GUARDS=1`. Normal test lanes no longer require that ignored source snapshot; the opt-in lane should be run only after refreshing local game source from the current installed version. This env-var rename is a static wiring change only until post-pause `dotnet test` validation confirms it; older diagnostic logs may mention the abandoned `SPIREPLUS_RUN_LOCAL_SOURCE_TESTS` name and should not be cited as current local-source lane proof.
+- Pause-safe checks for this script repair: PowerShell parser check passed for `scripts/ci-full-validation.ps1`; `docs/test-ready-development-goal.md` remains under the 120-line compactness guard; touched-file `git diff --check` passed; `scripts/report-worktree-batches.ps1 -FailOnUnclassified` reported 0 unclassified entries.
+- StS1 v20 static alignment follow-up stayed inside the same pause boundary: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 878 checks / 0 mismatches; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returned 66 checks / 0 mismatches across 15 roles; `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` returned 531 checks / 0 mismatches; `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` returned 11 checks / 0 mismatches; `scripts/check-sts1-event-static-suite.ps1` returned 14 static steps / 0 suite failures with the known 33-key localization gap. This is no-launch/static evidence only and does not close O25, O33, gameplay, save-load, replacement, multiplayer, QA, release, or handoff gates.
+- The updated full local CI script still needs a real post-pause run before it can be cited as current full validation evidence.
 
 ## June 15 Pause-Safe Static Verification Addendum
 

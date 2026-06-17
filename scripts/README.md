@@ -28,7 +28,7 @@ Repository helper scripts live here. Keep scripts small, idempotent where possib
 | `check-sts1-v19-gate-ledger.ps1` | Static guard for the machine-readable `docs/features/sts1-events/v19-gate-ledger.csv` O0-O76 ledger, including per-gate statuses and blocked/current-pending proof boundaries. |
 | `check-sts1-v19-subagent-coverage.ps1` | Static guard for the 14 `docs/goals/event.md` v19 subagent roles, their current static/runtime-blocked disposition, and the non-claim boundary for read-only explorer audits. |
 | `check-github-workflow-runs.ps1` | Query GitHub Actions through the public API without requiring `gh`. Use it to check whether `Full Local Validation` has a completed successful run before closing `GOV-CI-FIRST-RUN`; pass `-RequireSuccessfulRun` when the absence of a run should fail the command. |
-| `ci-full-validation.ps1` | Self-hosted Windows CI entry point for full no-game validation. Requires `STS2_PATH`/`GODOT_PATH`, writes a temporary ignored `Directory.Build.props` when needed, checks StS2 DLLs and BaseLib, then runs hygiene, build, tests, format, diff-check, publish, package, and opt-in artifact tests for the single Spire Plus mod. |
+| `ci-full-validation.ps1` | Self-hosted Windows CI entry point for full no-game validation. Requires `STS2_PATH`/`GODOT_PATH`, writes a temporary ignored `Directory.Build.props` when needed, checks StS2 DLLs and BaseLib, then runs hygiene, build, split no-build tests by default, format, diff-check, publish, package, and split opt-in artifact tests for the single Spire Plus mod. |
 | `collect-ancient-ui-evidence.ps1` | Prepare or restore a forced Ancient clicked-UI evidence session for Urda, Morvi, Lotha, or Vakuu. Prepare mode writes `ancient-ui-evidence-plan.json`, `manual-instructions.md`, `command.txt`, `environment.json`, `package-hashes.json`, and a pending `manual-rows-template.json`; it runs the preflight unless `-NoPreflight` is used, and launches only when `-Launch` is explicit. |
 | `collect-coop-evidence.ps1` | Prepare pending two-client co-op evidence templates for host/client logs, A11-A20 selection, Ancient sync, Root Eyes, Rootblight, save/reconnect, and preview-tool disposition. It never proves co-op by itself and does not auto-launch a two-client session. |
 | `collect-preview-tools-evidence.ps1` | Prepare live-proof templates for the integrated Spire Plus preview tools: Crystal Sphere peek and deterministic transform preview. Run without `-Launch` to create pending templates only. |
@@ -112,6 +112,12 @@ $env:GODOT_PATH='D:\Game\FOTN\dev-the-spire\.tools\godot-4.5.1-mono\Godot_v4.5.1
 ```
 
 This lane does not launch the game and does not satisfy live/manual rows. It only proves the local source, package, and artifact checks on a runner that has the required game dependencies.
+
+Current beta.85 test strategy: `ci-full-validation.ps1` defaults to
+`-TestStrategy SplitReleaseEvidence`, which runs isolated
+`ReleaseEvidenceGateTests` and then the complementary test-project lane
+excluding that class. Use `-TestStrategy Solution` only when deliberately
+checking the legacy one-shot solution lane.
 
 Check whether the GitHub self-hosted lane has actually run:
 

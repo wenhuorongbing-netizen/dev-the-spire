@@ -170,15 +170,15 @@ public sealed class BossDedicatedAbilityV41GuardTests
         Assert.DoesNotContain("unchosen-curse identity remains unhooked", catalog, StringComparison.Ordinal);
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void DamageChangingDedicatedAbilitiesParticipateInIntentPreview()
     {
-        var attackIntent = ReadRepoText("source code", "src", "Core", "MonsterMoves", "Intents", "AttackIntent.cs");
-        var multiAttackIntent = ReadRepoText("source code", "src", "Core", "MonsterMoves", "Intents", "MultiAttackIntent.cs");
+        var attackIntent = ReadLocalCoreText("MonsterMoves", "Intents", "AttackIntent.cs");
+        var multiAttackIntent = ReadLocalCoreText("MonsterMoves", "Intents", "MultiAttackIntent.cs");
         var martyrOathPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MartyrOathPowers.cs");
         var misalignedShellPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MisalignedShellPowers.cs");
         var aeonglassIntentPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AeonglassIntentPatches.cs");
-        var vigorPower = ReadRepoText("source code", "src", "Core", "Models", "Powers", "VigorPower.cs");
+        var vigorPower = ReadLocalCoreText("Models", "Powers", "VigorPower.cs");
         var heatPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "FiremarkHeatPowers.cs");
         var pressingLinePower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BannerPressingLinePower.cs");
         var intentRefreshHelper = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.Commands.cs");

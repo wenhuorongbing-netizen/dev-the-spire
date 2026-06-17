@@ -450,7 +450,7 @@ public sealed partial class AscensionFeatureGuardTests
         Assert.DoesNotContain("HasPower<GraspPower>", combatService, StringComparison.Ordinal);
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void A11AndA17MapGeometryStayGatedOptionalAndRouteSafe()
     {
         var featureGate = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
@@ -460,8 +460,8 @@ public sealed partial class AscensionFeatureGuardTests
         var rootRunHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
         var mapGenerationPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionMapGenerationPatches.cs");
         var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
-        var coreRunManager = ReadRepoText("source code", "src", "Core", "Runs", "RunManager.cs");
-        var coreMapScreen = ReadRepoText("source code", "src", "Core", "Nodes", "Screens", "Map", "NMapScreen.cs");
+        var coreRunManager = ReadLocalCoreText("Runs", "RunManager.cs");
+        var coreMapScreen = ReadLocalCoreText("Nodes", "Screens", "Map", "NMapScreen.cs");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
@@ -578,14 +578,14 @@ public sealed partial class AscensionFeatureGuardTests
         Assert.DoesNotContain("LONG_ROAD_NODE", mapService, StringComparison.Ordinal);
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void FiremarkTokenAndFissionPlayerFacingSurfacesAreGuarded()
     {
         var mapPatch = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Patches");
         var forgeToken = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var forgeRelic = ReadRepoText("EZMicroBalanceCode", "Ascension", "Relics", "ForgeTokenRelic.cs");
         var firemarkPowers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
-        var corePowerNode = ReadRepoText("source code", "src", "Core", "Nodes", "Combat", "NPower.cs");
+        var corePowerNode = ReadLocalCoreText("Nodes", "Combat", "NPower.cs");
         var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "FissionEnchantment.cs");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
@@ -690,18 +690,18 @@ public sealed partial class AscensionFeatureGuardTests
         Assert.DoesNotContain("Special rest-site actions heal 5 HP", manualChecklist, StringComparison.Ordinal);
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void FissionUsesCanonicalExhaustPipelineAndTriggersExhaustListeners()
     {
         var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "FissionEnchantment.cs");
-        var cardModel = ReadRepoText("source code", "src", "Core", "Models", "CardModel.cs");
-        var cardCmd = ReadRepoText("source code", "src", "Core", "Commands", "CardCmd.cs");
-        var hook = ReadRepoText("source code", "src", "Core", "Hooks", "Hook.cs");
-        var drumOfBattle = ReadRepoText("source code", "src", "Core", "Models", "Cards", "DrumOfBattle.cs");
-        var howlFromBeyond = ReadRepoText("source code", "src", "Core", "Models", "Cards", "HowlFromBeyond.cs");
-        var feelNoPain = ReadRepoText("source code", "src", "Core", "Models", "Powers", "FeelNoPainPower.cs");
-        var darkEmbrace = ReadRepoText("source code", "src", "Core", "Models", "Powers", "DarkEmbracePower.cs");
-        var charonsAshes = ReadRepoText("source code", "src", "Core", "Models", "Relics", "CharonsAshes.cs");
+        var cardModel = ReadLocalCoreText("Models", "CardModel.cs");
+        var cardCmd = ReadLocalCoreText("Commands", "CardCmd.cs");
+        var hook = ReadLocalCoreText("Hooks", "Hook.cs");
+        var drumOfBattle = ReadLocalCoreText("Models", "Cards", "DrumOfBattle.cs");
+        var howlFromBeyond = ReadLocalCoreText("Models", "Cards", "HowlFromBeyond.cs");
+        var feelNoPain = ReadLocalCoreText("Models", "Powers", "FeelNoPainPower.cs");
+        var darkEmbrace = ReadLocalCoreText("Models", "Powers", "DarkEmbracePower.cs");
+        var charonsAshes = ReadLocalCoreText("Models", "Relics", "CharonsAshes.cs");
 
         AssertSourceContains(
             fission,

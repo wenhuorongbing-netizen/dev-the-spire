@@ -46,6 +46,25 @@ internal static class TestRepo
         return reader.ReadToEnd();
     }
 
+    internal static string LocalGameSourceRoot
+    {
+        get
+        {
+            var root = Environment.GetEnvironmentVariable("SPIREPLUS_LOCAL_GAME_SOURCE_ROOT");
+            if (string.IsNullOrWhiteSpace(root))
+            {
+                root = RepoPath("source code");
+            }
+
+            return Path.GetFullPath(root);
+        }
+    }
+
+    internal static string ReadLocalCoreText(params string[] parts)
+    {
+        return File.ReadAllText(Path.Combine(new[] { LocalGameSourceRoot, "src", "Core" }.Concat(parts).ToArray()), Encoding.UTF8);
+    }
+
     internal static string ReadSourceTree(params string[] parts)
     {
         var root = RepoPath(parts);

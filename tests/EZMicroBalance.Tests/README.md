@@ -21,6 +21,7 @@ This test project guards source shape, localization, release documentation, pack
 | `ReleaseArtifactParityGuardTests.cs` | Opt-in installed/package parity, release hash, and runtime-log evidence guards. |
 | `UrdaReleaseCoverageGuardTests.cs` | Urda default-on source slice, option relics, Root Eyes, Seed Bank, and live-pending doc guards. |
 | `ReleaseArtifactFactAttribute.cs` | Opt-in gate for tests that require ignored local release artifacts. |
+| `LocalSourceFactAttribute.cs` | Opt-in gate for tests that require the ignored local `source code/src/Core/**` game-source snapshot. |
 | `TestRepo.cs` | Shared repository path, game path, UTF-8 read, JSON map/value walking, source-slicing, manifest/current-package, PNG dimension, export-preset parsing, active release resource predicates, ZIP/PCK/hash, JSON normalization, exception-unwrapping, and source-evidence helpers for guard tests. |
 | `TestInfrastructureGuardTests.cs` | Prevents guard-test infrastructure duplication and first-read documentation clutter from creeping back in. |
 
@@ -50,13 +51,24 @@ Use the shared export-preset parser instead of redefining `ParseExportFiles`.
 
 Use the shared active release resource predicates instead of redefining `IsActiveExportResource` or `IsActiveReleaseResource`.
 
+Use `ReadLocalCoreText(...)` inside `[LocalSourceFact]` tests for source-shape checks against ignored local Slay the Spire 2 source. Do not call `ReadRepoText("source code", ...)` directly.
+
 ## Normal Test Command
 
 ```powershell
 dotnet test EZMicroBalance.sln --no-build
 ```
 
-Normal runs skip tests that depend on ignored local `publish/`, installed DLL/PCK, package zip, or smoke-log artifacts.
+Normal runs skip tests that depend on ignored local `publish/`, installed DLL/PCK, package zip, smoke-log artifacts, or the ignored local `source code/src/Core/**` snapshot.
+
+Current beta.85 evidence uses a split no-build lane when the one-shot solution
+test run is unstable around `ReleaseEvidenceGateTests`: run the
+`ReleaseEvidenceGateTests` class in isolation, then run the complementary
+test-project lane excluding that class. The latest authoritative totals are in
+`PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
+The full local CI helper uses this split strategy by default through
+`.\scripts\ci-full-validation.ps1 -TestStrategy SplitReleaseEvidence`; pass
+`-TestStrategy Solution` only for a deliberate legacy one-shot check.
 
 ## Release Artifact Test Command
 
@@ -67,3 +79,13 @@ Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS
 ```
 
 Run the opt-in suite only after `dotnet publish`, package refresh, and controlled smoke evidence are current. The legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` alias still works for older local commands.
+
+## Local Source Test Command
+
+```powershell
+$env:SPIREPLUS_RUN_LOCAL_SOURCE_GUARDS='1'
+dotnet test EZMicroBalance.sln --no-build
+Remove-Item Env:\SPIREPLUS_RUN_LOCAL_SOURCE_GUARDS
+```
+
+Run this opt-in lane only on a machine where the ignored `source code/src/Core/**` snapshot or `SPIREPLUS_LOCAL_GAME_SOURCE_ROOT` has been refreshed from the current local game version.

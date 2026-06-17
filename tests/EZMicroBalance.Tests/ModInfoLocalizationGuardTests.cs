@@ -5,12 +5,11 @@ namespace EZMicroBalance.Tests;
 
 public sealed class ModInfoLocalizationGuardTests
 {
-    [Fact]
-    public void GameManifestDescriptionIsStaticAndSpirePlusLocalizesTheModInfoPanel()
+    [LocalSourceFact]
+    public void GameManifestDescriptionIsStaticInCoreModInfoPanel()
     {
-        var gameManifestSource = ReadRepoText("source code", "src", "Core", "Modding", "ModManifest.cs");
-        var gameModInfoSource = ReadRepoText("source code", "src", "Core", "Nodes", "Screens", "ModdingScreen", "NModInfoContainer.cs");
-        var patchSource = ReadRepoText("EZMicroBalanceCode", "Modding", "ModInfoLocalizationPatches.cs");
+        var gameManifestSource = ReadLocalCoreText("Modding", "ModManifest.cs");
+        var gameModInfoSource = ReadLocalCoreText("Nodes", "Screens", "ModdingScreen", "NModInfoContainer.cs");
 
         AssertSourceContains(
             gameManifestSource,
@@ -19,6 +18,13 @@ public sealed class ModInfoLocalizationGuardTests
         AssertSourceContains(
             gameModInfoSource,
             "handler.AppendFormatted(mod.manifest?.description ?? \"No description\");");
+    }
+
+    [Fact]
+    public void SpirePlusLocalizesTheModInfoPanel()
+    {
+        var patchSource = ReadRepoText("EZMicroBalanceCode", "Modding", "ModInfoLocalizationPatches.cs");
+
         AssertSourceContains(
             patchSource,
             "HarmonyPatch(typeof(NModInfoContainer), nameof(NModInfoContainer.Fill))",

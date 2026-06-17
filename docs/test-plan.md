@@ -16,7 +16,7 @@ dotnet test EZMicroBalance.sln --no-build
 
 Normal developer tests cover release identity, active localization JSON/key parity, zhs no-space numeric formatting, Prismatic Gem v4.3 reroll/all-slot documentation, detached-banner rejection, banner fallback diagnostics, fallback evidence, manual-test coverage, Velvet Choker and Distinguished Cape no-shrink/max-HP source guards, Ancient behavior source guards, stale current-doc behavior guards, Ascension selector/source guards, A12 firemark map/token/power source guards, A13 Fission icon/text/eligibility source guards, A20 multiplayer downgrade warning source guards, current setup/compatibility/manual-checklist doc targeting, false release-art claim guards, unsupported-system completion guards, and active project/export isolation from legacy sources.
 
-Release artifact, installed DLL/PCK, package hash, and runtime-smoke evidence tests are skipped in normal developer test runs because `publish/`, `.godot/`, `.zip`, `.dll`, and `.pck` outputs are ignored. Run them only after publish and package staging/zip refresh:
+Release artifact, installed DLL/PCK, package hash, runtime-smoke evidence tests, and local game-source snapshot tests are skipped in normal developer test runs because `publish/`, `.godot/`, `.zip`, `.dll`, `.pck`, and `source code/` outputs are ignored. Run release artifact tests only after publish and package staging/zip refresh:
 
 ```powershell
 $env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'
@@ -25,6 +25,16 @@ Remove-Item Env:\SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS
 ```
 
 CI or shell variants may set `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` before the test command. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` still works. If either variable is set and package artifacts are missing or stale, the release artifact tests should fail with missing-file/hash mismatch details.
+
+Run local game-source API shape guards only when the ignored source snapshot exists and has been refreshed from the current local game version:
+
+```powershell
+$env:SPIREPLUS_RUN_LOCAL_SOURCE_GUARDS='1'
+dotnet test EZMicroBalance.sln --no-build
+Remove-Item Env:\SPIREPLUS_RUN_LOCAL_SOURCE_GUARDS
+```
+
+Set `SPIREPLUS_LOCAL_GAME_SOURCE_ROOT` to a decompiled source root when the snapshot is not under repo-local `source code/`. If local-source guards are enabled and `source code/src/Core/**` or the override root is missing or stale, those tests should fail with missing-file or source-shape details.
 
 Run after resource, localization, manifest, project, or packaging changes:
 

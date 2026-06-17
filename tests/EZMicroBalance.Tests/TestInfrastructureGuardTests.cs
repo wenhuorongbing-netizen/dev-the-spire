@@ -74,6 +74,73 @@ public sealed class TestInfrastructureGuardTests
     }
 
     [Fact]
+    public void LocalGameSourceGuardTestsAreExplicitlyOptIn()
+    {
+        var directLocalSourceReadNeedles = new[]
+        {
+            "ReadRepoText(\"" + "source code\"",
+            "RepoPath(\"" + "source code\"",
+            "AssertRepoFileExists(\"" + "source code\""
+        };
+        var localCoreReadNeedle = "ReadLocalCore" + "Text(";
+        var directLocalSourceReads = new List<string>();
+        var unguardedLocalCoreReads = new List<string>();
+
+        foreach (var path in Directory
+            .GetFiles(RepoPath("tests", "EZMicroBalance.Tests"), "*.cs", SearchOption.TopDirectoryOnly)
+            .Where(path => !Path.GetFileName(path).Equals("TestRepo.cs", StringComparison.Ordinal)))
+        {
+            var lines = File.ReadAllLines(path);
+            for (var i = 0; i < lines.Length; i++)
+            {
+                if (directLocalSourceReadNeedles.Any(needle => lines[i].Contains(needle, StringComparison.Ordinal)))
+                {
+                    directLocalSourceReads.Add($"{ToRepoRelativePath(path)}:{i + 1}");
+                }
+
+                if (!lines[i].Contains(localCoreReadNeedle, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var methodLine = -1;
+                var methodName = "(unknown)";
+                for (var j = i; j >= 0; j--)
+                {
+                    var match = Regex.Match(lines[j], @"\bpublic\s+void\s+(?<name>[A-Za-z0-9_]+)\s*\(", RegexOptions.CultureInvariant);
+                    if (match.Success)
+                    {
+                        methodLine = j;
+                        methodName = match.Groups["name"].Value;
+                        break;
+                    }
+                }
+
+                var attributeStart = Math.Max(0, methodLine - 8);
+                var hasLocalSourceFact = methodLine >= 0 &&
+                    lines[attributeStart..methodLine].Any(line => line.Contains("[LocalSourceFact]", StringComparison.Ordinal));
+
+                if (!hasLocalSourceFact)
+                {
+                    unguardedLocalCoreReads.Add($"{ToRepoRelativePath(path)}:{i + 1}:{methodName}");
+                }
+            }
+        }
+
+        Assert.True(
+            directLocalSourceReads.Count == 0 && unguardedLocalCoreReads.Count == 0,
+            "Tests that read ignored local game source must use LocalSourceFactAttribute and TestRepo.ReadLocalCoreText so normal test runs do not require `source code/**`." +
+            Environment.NewLine +
+            "Direct `source code` reads outside TestRepo.cs:" +
+            Environment.NewLine +
+            string.Join(Environment.NewLine, directLocalSourceReads.OrderBy(offender => offender, StringComparer.Ordinal)) +
+            Environment.NewLine +
+            "ReadLocalCoreText calls missing [LocalSourceFact]:" +
+            Environment.NewLine +
+            string.Join(Environment.NewLine, unguardedLocalCoreReads.OrderBy(offender => offender, StringComparer.Ordinal)));
+    }
+
+    [Fact]
     public void TestReadmeDocumentsSharedRepositoryHelpers()
     {
         var readme = ReadRepoText("tests", "EZMicroBalance.Tests", "README.md");
@@ -92,6 +159,9 @@ public sealed class TestInfrastructureGuardTests
         Assert.Contains("Use the shared `CurrentFacingDocs` list", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared export-preset parser", readme, StringComparison.Ordinal);
         Assert.Contains("Use the shared active release resource predicates", readme, StringComparison.Ordinal);
+        Assert.Contains("LocalSourceFactAttribute.cs", readme, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_RUN_LOCAL_SOURCE_GUARDS", readme, StringComparison.Ordinal);
+        Assert.Contains("SPIREPLUS_LOCAL_GAME_SOURCE_ROOT", readme, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -246,7 +316,7 @@ public sealed class TestInfrastructureGuardTests
             "Future targeted prune only for newly proven generated clutter.",
             "Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted",
             "stale redirected publish-output folders",
-            "| `source code/` | Default keep because current tests/docs require it. |",
+            "| `source code/` | Default keep because current docs and opt-in local-source tests require it. |",
             "| `publish/` | Retained current beta.85 package/staging/cover-source output; stale beta.0-beta.80 ZIPs and expanded folders are removed by the guarded prune after confirming current-package hash/path parity. Future prune should happen only after a new package rebuild/hash refresh. |",
             "| `.tools/` | Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted; remaining `.tools/` subfolders are retained as current evidence, art provenance, local archives, or local tool installations. Wholesale deletion is not recommended. |");
     }
@@ -283,7 +353,7 @@ public sealed class TestInfrastructureGuardTests
             "`website/` and `.github/workflows/spire-plus-site.yml`");
 
         Assert.DoesNotContain("Status: Complete", cleanupAudit, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("| `source code/` | Default keep because current tests/docs require it. |", cleanupAudit, StringComparison.Ordinal);
+        Assert.Contains("| `source code/` | Default keep because current docs and opt-in local-source tests require it. |", cleanupAudit, StringComparison.Ordinal);
         Assert.Contains("Promoted and tracked as current public site source and Pages workflow. Generated `website/forum/` output and `website/**/*.import` metadata remain ignored", cleanupAudit, StringComparison.Ordinal);
     }
 }

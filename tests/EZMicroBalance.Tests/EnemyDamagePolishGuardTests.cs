@@ -8,9 +8,32 @@ public sealed class EnemyDamagePolishGuardTests
     public void HighPressureEliteDamagePolishPatchesSourceDamageGetters()
     {
         var patch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "EnemyDamagePolishPatches.cs");
-        var decimillipede = ReadRepoText("source code", "src", "Core", "Models", "Monsters", "DecimillipedeSegment.cs");
-        var terrorEel = ReadRepoText("source code", "src", "Core", "Models", "Monsters", "TerrorEel.cs");
-        var phantasmalGardener = ReadRepoText("source code", "src", "Core", "Models", "Monsters", "PhantasmalGardener.cs");
+
+        AssertSourceContains(
+            patch,
+            "HarmonyPatch(typeof(DecimillipedeSegment), \"get_WritheDamage\")",
+            "HarmonyPatch(typeof(DecimillipedeSegment), \"get_ConstrictDamage\")",
+            "HarmonyPatch(typeof(DecimillipedeSegment), \"get_BulkDamage\")",
+            "HarmonyPatch(typeof(TerrorEel), \"get_CrashDamage\")",
+            "HarmonyPatch(typeof(TerrorEel), \"get_ThrashDamage\")",
+            "HarmonyPatch(typeof(PhantasmalGardener), \"get_BiteDamage\")",
+            "HarmonyPatch(typeof(PhantasmalGardener), \"get_LashDamage\")",
+            "DecimillipedeWritheReduction = 2",
+            "DecimillipedeConstrictReduction = 1",
+            "DecimillipedeBulkReduction = 2",
+            "TerrorEelCrashReduction = 2",
+            "TerrorEelThrashReduction = 1",
+            "PhantasmalGardenerBiteReduction = 1",
+            "PhantasmalGardenerLashReduction = 1",
+            "Math.Max(1, damage - reduction)");
+    }
+
+    [LocalSourceFact]
+    public void HighPressureEliteDamageSourcesUseGetterIntentAndDamageValues()
+    {
+        var decimillipede = ReadLocalCoreText("Models", "Monsters", "DecimillipedeSegment.cs");
+        var terrorEel = ReadLocalCoreText("Models", "Monsters", "TerrorEel.cs");
+        var phantasmalGardener = ReadLocalCoreText("Models", "Monsters", "PhantasmalGardener.cs");
 
         AssertSourceContains(
             decimillipede,
@@ -41,23 +64,5 @@ public sealed class EnemyDamagePolishGuardTests
             "private int LashDamage",
             "new SingleAttackIntent(LashDamage)",
             "await DamageCmd.Attack(LashDamage)");
-
-        AssertSourceContains(
-            patch,
-            "HarmonyPatch(typeof(DecimillipedeSegment), \"get_WritheDamage\")",
-            "HarmonyPatch(typeof(DecimillipedeSegment), \"get_ConstrictDamage\")",
-            "HarmonyPatch(typeof(DecimillipedeSegment), \"get_BulkDamage\")",
-            "HarmonyPatch(typeof(TerrorEel), \"get_CrashDamage\")",
-            "HarmonyPatch(typeof(TerrorEel), \"get_ThrashDamage\")",
-            "HarmonyPatch(typeof(PhantasmalGardener), \"get_BiteDamage\")",
-            "HarmonyPatch(typeof(PhantasmalGardener), \"get_LashDamage\")",
-            "DecimillipedeWritheReduction = 2",
-            "DecimillipedeConstrictReduction = 1",
-            "DecimillipedeBulkReduction = 2",
-            "TerrorEelCrashReduction = 2",
-            "TerrorEelThrashReduction = 1",
-            "PhantasmalGardenerBiteReduction = 1",
-            "PhantasmalGardenerLashReduction = 1",
-            "Math.Max(1, damage - reduction)");
     }
 }

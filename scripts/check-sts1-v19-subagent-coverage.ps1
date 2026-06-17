@@ -70,13 +70,14 @@ $ledgerRows = @(Import-Csv -LiteralPath (Resolve-RepoPath $LedgerPath))
 $requiredRoles = @(
     'BuildGate / Repo Health',
     'Runtime Environment Bootstrap',
-    'API Drift Fix Subagent',
+    'Enabled-Mode Loader Subagent',
     'Wiki Parity Spec Auditor',
     'StS2 Source/API Auditor',
     'Feature Gate / Registration Engineer',
     'Canary Gameplay Subagent',
     'Simple Batch Gameplay Subagent',
-    'Asset + Localization Subagent',
+    'Localization Gap Closure Subagent',
+    'Asset + Image Subagent',
     'Event Pool / RNG / Save Subagent',
     'Multiplayer / IsShared Subagent',
     'Content Parity Subagent',
@@ -84,11 +85,11 @@ $requiredRoles = @(
     'Release Documentation Subagent'
 )
 
-Add-ContainsCheck -Name 'goal_requires_subagents' -Text $goalText -Needle 'API Drift Fix Subagent'
+Add-ContainsCheck -Name 'goal_requires_subagents' -Text $goalText -Needle 'Enabled-Mode Loader Subagent'
 Add-ContainsCheck -Name 'coverage_non_completion_claim' -Text $coverageText -Needle 'This is a coverage ledger, not a completion claim.'
 Add-ContainsCheck -Name 'coverage_current_thread_static_only' -Text $coverageText -Needle 'read-only explorer subagents for static sidecar audits only'
 Add-ContainsCheck -Name 'coverage_current_20260615_pause_audit' -Text $coverageText -Needle '2026-06-15 current-proof and coordination-pause wording audit'
-Add-ContainsCheck -Name 'coverage_current_20260615_role_audit' -Text $coverageText -Needle '2026-06-15 subagent role coverage audit against `docs/goals/event.md` and `scripts/check-sts1-v19-subagent-coverage.ps1`'
+Add-ContainsCheck -Name 'coverage_current_20260617_role_audit' -Text $coverageText -Needle '2026-06-17 subagent role coverage audit against `docs/goals/event.md` and `scripts/check-sts1-v19-subagent-coverage.ps1`'
 Add-ContainsCheck -Name 'coverage_runtime_pause_boundary' -Text $coverageText -Needle 'The current coordination pause allows only read-only/static work'
 Add-ContainsCheck -Name 'coverage_no_runtime_proof_claim' -Text $coverageText -Needle 'These audits do not create CanaryOnly, AdditiveBatch1, gameplay, replacement, multiplayer, or QA proof.'
 Add-ContainsCheck -Name 'coverage_no_independent_qa_claim' -Text $coverageText -Needle 'Read-only explorer audits are not independent QA/Red-Team acceptance.'
@@ -127,6 +128,7 @@ Add-Check -Name 'ledger_has_open_subagent_related_rows' -Passed ($blockedOrPendi
 
 Add-ContainsCheck -Name 'coverage_buildgate_paused' -Text $coverageText -Needle 'BuildGate / Repo Health | runtime-validation-paused'
 Add-ContainsCheck -Name 'coverage_runtime_bootstrap_paused' -Text $coverageText -Needle 'Runtime Environment Bootstrap | runtime-validation-paused'
+Add-ContainsCheck -Name 'coverage_enabled_loader_blocked' -Text $coverageText -Needle 'Enabled-Mode Loader Subagent | runtime-blocked'
 Add-ContainsCheck -Name 'coverage_canary_runtime_blocked' -Text $coverageText -Needle 'Canary Gameplay Subagent | runtime-blocked'
 Add-ContainsCheck -Name 'coverage_simple_batch_runtime_blocked' -Text $coverageText -Needle 'Simple Batch Gameplay Subagent | runtime-blocked'
 Add-ContainsCheck -Name 'coverage_replacement_runtime_blocked' -Text $coverageText -Needle 'Event Pool / RNG / Save Subagent | runtime-blocked'

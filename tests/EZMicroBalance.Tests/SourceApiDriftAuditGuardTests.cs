@@ -49,20 +49,18 @@ public sealed class SourceApiDriftAuditGuardTests
         Assert.Contains("`audits/v0.106-source-api-drift.md`", docsIndex, StringComparison.Ordinal);
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void LocalCoreSnapshotStillExposesAuditedApiShapes()
     {
-        var cardPileCmd = ReadRepoText("source code", "src", "Core", "Commands", "CardPileCmd.cs");
-        var cardRewardAlternative = ReadRepoText("source code", "src", "Core", "Entities", "CardRewardAlternatives", "CardRewardAlternative.cs");
-        var cardReward = ReadRepoText("source code", "src", "Core", "Rewards", "CardReward.cs");
-        var ancientEventModel = ReadRepoText("source code", "src", "Core", "Models", "AncientEventModel.cs");
-        var attackIntent = ReadRepoText("source code", "src", "Core", "MonsterMoves", "Intents", "AttackIntent.cs");
-        var runManager = ReadRepoText("source code", "src", "Core", "Runs", "RunManager.cs");
-        var creatureCmd = ReadRepoText("source code", "src", "Core", "Commands", "CreatureCmd.cs");
-        var startRunLobby = ReadRepoText("source code", "src", "Core", "Multiplayer", "Game", "Lobby", "StartRunLobby.cs");
-        var joinFlow = ReadRepoText("source code", "src", "Core", "Multiplayer", "Game", "JoinFlow.cs");
-        var project = ReadRepoText("EZMicroBalance.csproj");
-        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var cardPileCmd = ReadLocalCoreText("Commands", "CardPileCmd.cs");
+        var cardRewardAlternative = ReadLocalCoreText("Entities", "CardRewardAlternatives", "CardRewardAlternative.cs");
+        var cardReward = ReadLocalCoreText("Rewards", "CardReward.cs");
+        var ancientEventModel = ReadLocalCoreText("Models", "AncientEventModel.cs");
+        var attackIntent = ReadLocalCoreText("MonsterMoves", "Intents", "AttackIntent.cs");
+        var runManager = ReadLocalCoreText("Runs", "RunManager.cs");
+        var creatureCmd = ReadLocalCoreText("Commands", "CreatureCmd.cs");
+        var startRunLobby = ReadLocalCoreText("Multiplayer", "Game", "Lobby", "StartRunLobby.cs");
+        var joinFlow = ReadLocalCoreText("Multiplayer", "Game", "JoinFlow.cs");
 
         AssertSourceContains(
             cardPileCmd,
@@ -119,6 +117,13 @@ public sealed class SourceApiDriftAuditGuardTests
             "Version mismatch",
             "Mod mismatch",
             "Model ID hash");
+    }
+
+    [Fact]
+    public void ProjectStillUsesAuditedBaseLibPackageAndModConfigRegistration()
+    {
+        var project = ReadRepoText("EZMicroBalance.csproj");
+        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
 
         AssertSourceContains(
             project,

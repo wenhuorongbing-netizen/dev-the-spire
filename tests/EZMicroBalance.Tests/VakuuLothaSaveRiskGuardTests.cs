@@ -5,12 +5,12 @@ namespace EZMicroBalance.Tests;
 
 public sealed class VakuuLothaSaveRiskGuardTests
 {
-    [Fact]
+    [LocalSourceFact]
     public void CoreSourceStillRejectsActiveParentEventIdCombatSerialization()
     {
-        var combatRoom = ReadRepoText("source code", "src", "Core", "Rooms", "CombatRoom.cs");
-        var runManager = ReadRepoText("source code", "src", "Core", "Runs", "RunManager.cs");
-        var ancientEventModel = ReadRepoText("source code", "src", "Core", "Models", "AncientEventModel.cs");
+        var combatRoom = ReadLocalCoreText("Rooms", "CombatRoom.cs");
+        var runManager = ReadLocalCoreText("Runs", "RunManager.cs");
+        var ancientEventModel = ReadLocalCoreText("Models", "AncientEventModel.cs");
         var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
 
         AssertSourceContains(
@@ -116,11 +116,11 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "live");
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void VakuuActiveFightAvoidsCoreRejectedParentEventIdShapeAndDocsStayAccurate()
     {
-        var eventModel = ReadRepoText("source code", "src", "Core", "Models", "EventModel.cs");
-        var combatRoom = ReadRepoText("source code", "src", "Core", "Rooms", "CombatRoom.cs");
+        var eventModel = ReadLocalCoreText("Models", "EventModel.cs");
+        var combatRoom = ReadLocalCoreText("Rooms", "CombatRoom.cs");
         var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
         var entry = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.Entry.cs");
         var parentRestore = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.ParentRestore.cs");
@@ -379,13 +379,13 @@ public sealed class VakuuLothaSaveRiskGuardTests
         AssertBefore(startBlock, "SetProgress(player, activeProgress)", "CardPileCmd.Draw(choiceContext, DeathReprieveCards, player)");
     }
 
-    [Fact]
+    [LocalSourceFact]
     public void LothaDeathReprieveForceDeathAndPersistenceStanceRemainExplicit()
     {
         var runHook = ReadLothaSource();
         var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
         var deathReprieveTurn = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveTurn.cs");
-        var creatureCmd = ReadRepoText("source code", "src", "Core", "Commands", "CreatureCmd.cs");
+        var creatureCmd = ReadLocalCoreText("Commands", "CreatureCmd.cs");
         var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
         var riskRegister = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md");
         var manualChecklist = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md");
