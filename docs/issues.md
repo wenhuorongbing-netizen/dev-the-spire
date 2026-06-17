@@ -28,7 +28,7 @@
 - `FISSION-EXHAUST-TRIGGERS` P1 source/package-fixed / live-pending: canonical Exhaust path guarded through Fission keyword, `CardCmd.Exhaust(...)`, `AfterCardExhausted(...)`, and Drum/Howl/power/relic listeners.
 - Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
 ## Engineering governance blockers
-- `GOV-WIP-SPLIT` P0 source-fixed for the committed baseline; current local Runtime Proof + Governance Closure worktree is dirty with preserved shared edits and new diagnostics/doc/test updates.
+- `GOV-WIP-SPLIT` P0 source-fixed for the committed baseline; the latest pushed migration preflight/governance slice is clean at `f885d64d`, while final handoff must still recapture exact HEAD/worktree status after any later validation or package work.
 - `GOV-CI-FIRST-RUN` P2 pending: self-hosted lane exists, but first run evidence is missing; 2026-05-26 API check found 0 completed `Full Local Validation` runs.
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
@@ -36,7 +36,7 @@
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after the beta.85 runtime-fix pass.
   Phase 2 patch adapter rule started (checklist drafted). StS1Events feature-gated (default Off, guard tests active). Combat events now declare `IsShared`. See `docs/reviews/overnight-run-20260529.md`.
 - `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean; beta.85 Off smoke reached main menu, applied 25/25 patches, and audited clean.
-  Current StS1 enabled-mode proof remains pending: CanaryOnly 4 types / 6 calls and AdditiveBatch1 10 types / 14 calls are required before gameplay or handoff claims; QA, dirty-worktree, gameplay/UI/save-load/co-op, and handoff remain blocked.
+  Current StS1 enabled-mode proof remains pending: CanaryOnly 4 types / 6 calls and AdditiveBatch1 10 types / 14 calls are required before gameplay or handoff claims; QA, final clean-worktree recapture, gameplay/UI/save-load/co-op, and handoff remain blocked.
 ## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.

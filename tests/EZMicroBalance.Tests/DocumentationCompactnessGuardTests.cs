@@ -512,14 +512,15 @@ public sealed class DocumentationCompactnessGuardTests
             "`GOV-WIP-SPLIT` P0 source-fixed",
             "`DOC-CONFLICT-GOVERNANCE` P2 source-fixed",
             "`PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending",
-            "current local Runtime Proof + Governance Closure worktree is dirty",
-            "preserved shared edits and new diagnostics/doc/test updates",
+            "latest pushed migration preflight/governance slice is clean at `f885d64d`",
+            "final handoff must still recapture exact HEAD/worktree status",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source-split/refactor passes", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("SERE-TALON/CLAWS-ROUTING", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("SERE-TALON-VISUAL-IDENTITYT P0 source-fixed / package/live-pending", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("current worktree is clean after intentional batches", issues, StringComparison.Ordinal);
+        Assert.DoesNotContain("current local Runtime Proof + Governance Closure worktree is dirty", issues, StringComparison.Ordinal);
     }
 
     [Fact]

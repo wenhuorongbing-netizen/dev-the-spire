@@ -53,7 +53,7 @@ Per-event spec registration lines have been refreshed to reference the central s
 | `status-board.md` | Current evidence-backed event status |
 | `v19-gate-evidence-map.md` | Current O0-O76 gate range status and remaining proof map |
 | `v19-gate-ledger.csv` | Machine-readable O0-O76 per-gate status ledger |
-| `v19-subagent-coverage.md` | Static coverage ledger for the 14 v19 subagent roles and their current blocked/static disposition |
+| `v19-subagent-coverage.md` | Static coverage ledger for the 15-role v20 subagent coverage shape while retaining the v19 filename |
 | `registry-reconciliation.md` | Current count and registration reconciliation |
 | `wiki-event-catalog.md` | Public 52-event baseline plus internal count reconciliation |
 | `implementation-plan.md` | Phased implementation roadmap |
