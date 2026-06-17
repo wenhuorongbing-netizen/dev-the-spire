@@ -1043,6 +1043,20 @@ public sealed class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void CurrentDocClaimGuardScansProjectStateAndPassedCountWording()
+    {
+        var checker = ReadRepoText("scripts", "check-sts1-event-current-doc-claims.ps1");
+
+        Assert.Contains(
+            "$currentDocClaimSummaryFiles = @('PROJECT_STATE.md'",
+            checker,
+            StringComparison.Ordinal);
+        Assert.Contains("current-doc claims passed", checker, StringComparison.Ordinal);
+        Assert.Contains("current-doc claims (744|745|746", checker, StringComparison.Ordinal);
+        Assert.Contains("|893|896)", checker, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void CurrentChangelogUsesSpirePlusEnvironmentNamesFirst()
     {
         var changelog = ReadRepoText("docs", "mod-changelog.md");
