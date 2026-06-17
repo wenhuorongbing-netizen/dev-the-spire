@@ -3,6 +3,8 @@
 Date: 2026-05-31
 Scope: Mandatory Overnight Run v14 continuation for `docs/goals/event.md`
 
+Superseded note, 2026-06-11: this report is historical hard-stop evidence only. Current beta.85 `v0.107.0` proof covers default-Off loader startup and patch application only; it does not prove CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, image/render, QA, handoff, or release readiness. Current source registration shape is 57 RegisterAll calls and AdditiveBatch1 10 event types / 14 registration calls; older 10/11 and red-loader wording below must stay historical.
+
 ## Evidence Paths
 
 - Current validation ledger: `docs/reviews/current-validation.md`

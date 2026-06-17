@@ -21,7 +21,7 @@ Each question can be asked multiple times. Each successive question costs 6 HP.
 ## StS2 Implementation
 
 ### Class: `Sts1KnowingSkull`
-- **Registration:** `[RegisterActEvent(typeof(Act2Model))]`
+- **Registration:** `Sts1EventRegistrationService` registers this StS1 Act 2 event with `content.ActEvent<Hive, Sts1KnowingSkull>()`.
 - **Layout:** Default
 
 ### Localization Keys

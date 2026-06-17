@@ -18,7 +18,7 @@
 ## StS2 Implementation
 
 ### Class: `Sts1WindingHalls`
-- **Registration:** `[RegisterActEvent(typeof(Act3Model))]`
+- **Registration:** `Sts1EventRegistrationService` registers this StS1 Act 3 event with `content.ActEvent<Glory, Sts1WindingHalls>()`.
 - **Layout:** Default
 
 ### Localization Keys

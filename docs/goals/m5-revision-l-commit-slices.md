@@ -4,6 +4,8 @@ Date: 2026-06-10
 
 No commit, stage, push, package refresh, or rollback is authorized by this file. It is an owner-review plan only.
 
+Revision M supersession note, 2026-06-11: this commit-slice plan is historical owner-review context. Current beta.85 has clean `v0.107.0` default-Off loader proof only; current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, clean-worktree, and release-ready proof remain pending. Use `docs/goals/m5-revision-m-commit-slices.md`, `PROJECT_STATE.md`, and the Revision M docs for current proof claims.
+
 ## Recommended Order
 
 | Order | Slice | Files | Required validation before commit |

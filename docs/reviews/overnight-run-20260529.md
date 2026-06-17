@@ -1,5 +1,9 @@
 # Overnight Run Final Validation — 2026-05-29
 
+## 2026-06-11 Revision M Supersession Note
+
+This 2026-05-29 review is historical no-game/source-governance context only. Do not use its `GREEN STOP`, `DONE`, `PASS`, `CanaryOnly = exactly 4`, warning count, test count, or Pack status as current `event.md` completion or runtime proof. Current StS1 event work routes through `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md`: beta.85 proves current `v0.107.0` default-Off loader behavior only, while CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending.
+
 Date: 2026-05-29
 Agent: Kilo (mimo-v2.5-pro)
 Spec: `docs/goals/refactor.md` Pack 5 — Final Overnight Validation

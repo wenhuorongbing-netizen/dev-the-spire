@@ -19,7 +19,7 @@ Apparition is a 1-cost Skill: Gain 1 Intangible. Ethereal.
 ## StS2 Implementation
 
 ### Class: `Sts1CouncilOfGhosts`
-- **Registration:** `[RegisterActEvent(typeof(Act2Model))]`
+- **Registration:** `Sts1EventRegistrationService` registers this StS1 Act 2 event with `content.ActEvent<Hive, Sts1CouncilOfGhosts>()`.
 - **Layout:** Default
 
 ### Localization Keys

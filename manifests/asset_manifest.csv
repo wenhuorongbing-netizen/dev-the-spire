@@ -15,7 +15,6 @@ theMausoleum,sts1_the_mausoleum,theMausoleum.png,sts1_the_mausoleum.png,true
 wheelOfChange,sts1_wheel_of_change,wheelOfChange.png,sts1_wheel_of_change.png,true
 theLab,sts1_the_lab,theLab.png,sts1_the_lab.png,true
 designer,sts1_designer,designer.png,sts1_designer.png,true
-neow,sts1_neow,neow.png,sts1_neow.png,true
 joust,sts1_joust,joust.png,sts1_joust.png,true
 theSsssserpent,sts1_the_ssssserpent,theSsssserpent.png,sts1_the_ssssserpent.png,true
 shiningLight,sts1_shining_light,shiningLight.png,sts1_shining_light.png,true
@@ -46,3 +45,5 @@ tombOfLordRedMask,sts1_tomb_of_lord_red_mask,tombOfLordRedMask.png,sts1_tomb_of_
 windingHalls,sts1_winding_halls,windingHalls.png,sts1_winding_halls.png,true
 transmogrifier,sts1_transmogrifier,transmogrifier.png,sts1_transmogrifier.png,true
 upgradeShrine,sts1_upgrade_shrine,upgradeShrine.png,sts1_upgrade_shrine.png,true
+purifier,sts1_purifier,purifier.png,sts1_purifier.png,true
+goldenShrine,sts1_golden_shrine,goldenShrine.png,sts1_golden_shrine.png,true

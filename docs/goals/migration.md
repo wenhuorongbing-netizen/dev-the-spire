@@ -10,6 +10,7 @@
 
 Revision M note, 2026-06-11: the beta.84 red Off-smoke discussion below is historical. Current beta.85 `v0.107.0` Off loader proof is clean under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` with 25/25 Spire Plus patches applied and a clean audit. This does not prove CanaryOnly/AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, or release readiness.
 Revision N implementation note, 2026-06-11: the v0.107.0 runtime/package/API alignment blocker is closed for the default-Off loader surface only. Beta.85 package parity passes, `dotnet build EZMicroBalance.sln -m:1 --no-incremental` passes with 0 warnings / 0 errors, split no-build validation passes with 475 passed / 0 failed / 21 skipped / 496 total, the opt-in installed-artifact lane passes with 67 passed / 0 failed / 0 skipped / 67 total when `STS2_PATH` targets the E-drive install, and hygiene checks pass. Batch 4c implementation, CanaryOnly/AdditiveBatch1 smoke, gameplay, save-load, replacement proof, multiplayer proof, independent QA, and release readiness remain pending.
+Revision O static-governance note, 2026-06-11: the beta.84 runtime-failure body below is preserved as historical root-cause context only. Current truth is beta.85 default-Off loader proof clean under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`; current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, and release-ready proof remain pending.
 
 ```text
 旧 blocker：
@@ -323,14 +324,14 @@ independent QA
 | 目标                                  | 当前状态                                         | 判定                |
 | ----------------------------------- | -------------------------------------------- | ----------------- |
 | Build clean                         | 0 errors / 0 warnings                        | PASS              |
-| Tests                               | 464 passed / 0 failed / 21 skipped           | PASS              |
+| Tests                               | split no-build 475 passed / 0 failed / 21 skipped / 496 total | PASS              |
 | Format / diff / inventory           | pass                                         | PASS              |
 | RitsuLib installed                  | v0.4.16 installed                            | PASS              |
 | Compile dependency matches runtime  | repo 0.3.2 vs runtime 0.4.16                 | FAIL / PENDING    |
-| v0.107.0 Off smoke clean            | non-clean, 17/25 patches                     | FAIL              |
-| EctoplasmGoldGatePatch runtime      | TargetInvocationException in beta.84 package | FAIL              |
+| v0.107.0 Off smoke clean            | beta.85 clean, 25/25 patches                 | PASS for default-Off loader only |
+| EctoplasmGoldGatePatch runtime      | fixed for beta.85 Off loader proof           | PASS for default-Off loader only |
 | Current source fixed                | source adapted to v0.107.0 API               | PASS source-level |
-| Current-source package built/smoked | not done                                     | FAIL              |
+| Current-source package built/smoked | beta.85 built/package-smoked for Off only    | PASS for default-Off loader only |
 | Batch 4c                            | proposal only; do not migrate                | BLOCKED           |
 | Release-ready                       | no                                           | CORRECT           |
 

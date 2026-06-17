@@ -18,7 +18,7 @@
 ## StS2 Implementation
 
 ### Class: `Sts1Falling`
-- **Registration:** `[RegisterActEvent(typeof(Act3Model))]`
+- **Registration:** `Sts1EventRegistrationService` registers this StS1 Act 3 event with `content.ActEvent<Glory, Sts1Falling>()`.
 - **Layout:** Default
 
 ### Localization Keys

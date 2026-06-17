@@ -17,7 +17,7 @@ None.
 ## StS2 Implementation
 
 ### Class: `Sts1OldBeggar`
-- **Registration:** `[RegisterSharedEvent]`
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1OldBeggar>()`.
 - **Layout:** Default
 - **Source guard:** `GenerateInitialOptions()` sets the Offer Gold handler to `null` unless `(Owner?.Gold ?? 0) >= GoldCost`, preventing underfunded card removal through `PlayerCmd.LoseGold` clamping.
 

@@ -4,6 +4,12 @@ Created: 2026-05-29 | Status: source/code-verified only; live two-client co-op p
 
 This matrix records source-level `IsShared` intent and expected multiplayer shape. It is not live co-op proof: no Sts1Events two-client session, save/load pass, screenshots, or desync-free traversal evidence is recorded yet. `CanaryOnly` and `AdditiveBatch1` registration remain controlled by `SPIREPLUS_STS1_EVENT_MODE`; there is no separate Sts1Events network-mode gate.
 
+Static reproduction:
+
+```powershell
+.\scripts\check-sts1-event-multiplayer-shape.ps1 -FailOnMismatch
+```
+
 Revision L correction, 2026-06-10: this is an `IsShared`/co-op behavior matrix, not an Act-bucket parity matrix. Big Fish and Golden Idol now source-register to the StS2 Act 1 buckets while retaining `IsShared=true` co-op voting behavior; current runtime bucket and two-client proof remain pending.
 
 ## Legend
@@ -31,7 +37,7 @@ Revision L correction, 2026-06-10: this is an `IsShared`/co-op behavior matrix, 
 | 8 | `sts1_golden_shrine` | `Sts1GoldenShrine` | All | `true` | Shared-act event; vote determines option for all | All players vote Pray/Desecrate/Leave; each player gains own gold; Desecrate also adds Regret to each player's own deck | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue`; `GoldenShrineUsesWikiGoldAndRegretOptions` |
 | 9 | `sts1_the_woman_in_blue` | `Sts1TheWomanInBlue` | All | `true` | Shared-act event; vote determines option for all | All players vote Buy1/Buy2/Buy3/Leave; each player spends own gold and gets own potion | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
 | 10 | `sts1_bonfire_spirits` | `Sts1BonfireSpirits` | All | `true` | Shared-act event; vote determines option for all | All players vote Offer/Leave; each player removes own card and heals to own max HP | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
-| 11 | `sts1_divine_fountain` | `Sts1DivineFountain` | All | `true` | Shared-act event; vote determines option for all | Eligible only when every player has at least one curse; all players vote Pray/Leave; each player's curses removed from own deck | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue`; `DivineFountainRequiresEveryPlayerToHaveACurse` |
+| 11 | `sts1_divine_fountain` | `Sts1DivineFountain` | All | `true` | Shared-act event; vote determines option for all | Eligible only when every player has at least one curse; all players vote Drink/Leave; each player's curses removed from own deck | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue`; `DivineFountainRequiresEveryPlayerToHaveACurseAndUsesDrinkOption` |
 | 12 | `sts1_duplicator` | `Sts1Duplicator` | All | `true` | Shared-act event; vote determines option for all `[EXCLUDED]` | All players vote Duplicate/Leave; each player selects own card to duplicate | Host | Shared state on host | `Sts1DuplicatorExcludedFromCompilation` |
 | 13 | `sts1_face_trader` | `Sts1FaceTrader` | All | `true` | Shared-act event; vote determines option for all | All players vote Trade/Leave; each player loses own max HP and gets own relic | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
 | 14 | `sts1_fountain_of_cleansing` | `Sts1FountainOfCleansing` | All | `true` | Shared-act event; vote determines option for all | All players vote Drink/Leave; each player's curses removed and max HP lost independently | Host | Shared state on host | `AllSharedEventModelsDeclareIsSharedTrue` |
@@ -91,11 +97,11 @@ Revision L correction, 2026-06-10: this is an `IsShared`/co-op behavior matrix, 
 
 | Category | Count |
 |----------|-------|
-| Total event models in this matrix | 46 |
-| Compiling event models in this matrix | 45 |
+| Total event models in this matrix | 48 |
+| Compiling event models in this matrix | 47 |
 | Compile-excluded models | 1 (`Sts1Duplicator.cs`) |
 | **IsShared = true** | **24** (18 shared-behavior event models + 6 combat) |
-| **IsShared = false** | **23** (4 Act1 + 12 Act2 + 7 Act3 non-combat) |
+| **IsShared = false** | **24** (4 Act1 + 13 Act2 + 7 Act3 non-combat) |
 
 ### Combat Events with IsShared = true (6 events)
 
@@ -175,6 +181,8 @@ The following tests in `tests/EZMicroBalance.Tests/Sts1EventFeatureGuardTests.cs
 
 All model files are under `EZMicroBalanceCode/Sts1Events/Models/`:
 
+Current source inventory: 48 model files, 47 compiling after `Sts1Duplicator.cs` is compile-excluded; 18 Shared-directory files all declare `IsShared=true`, Act 1 has 7 files, Act 2 has 14 files, and Act 3 has 9 files.
+
 ```
 Models/Shared/          (16 files — all IsShared=true)
   Sts1BigFish.cs
@@ -185,9 +193,11 @@ Models/Shared/          (16 files — all IsShared=true)
   Sts1FaceTrader.cs
   Sts1FountainOfCleansing.cs
   Sts1GoldenIdol.cs
+  Sts1GoldenShrine.cs
   Sts1GoldenWing.cs
   Sts1LivingWall.cs
   Sts1OldBeggar.cs
+  Sts1Purifier.cs
   Sts1TheCleric.cs
   Sts1TheLab.cs
   Sts1TheMausoleum.cs

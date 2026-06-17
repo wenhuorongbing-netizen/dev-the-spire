@@ -11,7 +11,7 @@ Current package hashes:
 | Manifest | `CE446422CA44864E993A45949C923EDAD516DD703687B990E76CC3BD614207D8` |
 | README_INSTALL | `004F7E2086C336F7804336FFC3FCD4061B0694F06C2B9B55459993C6737A498D` |
 
-Latest validation snapshot: beta.85 build, publish/package refresh, installed-package check, and fresh `v0.107.0` loader smoke passed. The current loader/startup proof is `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510`; beta.19 startup proof is historical. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: beta.85 build, publish/package refresh, installed-package check, and fresh `v0.107.0` loader smoke passed. The current loader/startup proof is `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510`; beta.19 startup proof is historical. Current StS1 enabled-mode proof is also pending: CanaryOnly must show 4 event types / 6 registration calls and AdditiveBatch1 must show 10 event types / 14 registration calls before gameplay or handoff claims. Closing only the direct Golden Idol localization key remains a localization unblocker; it does not close O25/O33 enabled-mode proof or replace verifier reports. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

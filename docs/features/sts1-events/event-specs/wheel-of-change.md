@@ -24,7 +24,7 @@ Random outcomes (equal chance):
 ## StS2 Implementation
 
 ### Class: `Sts1WheelOfChange`
-- **Registration:** `[RegisterSharedEvent]`
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1WheelOfChange>()`.
 - **Layout:** Default (simplified — single spin option, random result)
 
 ### Localization Keys

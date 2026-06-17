@@ -1,5 +1,9 @@
 # QA/Red-Team Audit — 2026-06-02
 
+## 2026-06-11 Revision M Supersession Note
+
+This 2026-06-02 QA report is historical `v0.106.1` loader-gate context only. Do not use its `CONDITIONAL PASS`, Off/CanaryOnly/AdditiveBatch1 `PASS`, RitsuLib `v0.3.10`, beta.84, warning-count, dirty-worktree, or package status as current `event.md` proof. Current StS1 event work routes through `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md`: beta.85 proves current `v0.107.0` default-Off loader behavior only, while CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending.
+
 ## Verdict
 
 **CONDITIONAL PASS** — loader gates resolved, runtime smoke proof verified, previous P0 blockers cleared. Release/live readiness remains blocked on gameplay, UI, save-load, and versioned tester-package evidence.

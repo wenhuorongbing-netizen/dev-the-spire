@@ -11,6 +11,7 @@ The historical `v0.106.1` RitsuLib loader gate is good enough to propose low-ris
 - Historical `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic smokes reached main menu with clean audits.
 - Spire Plus applied 25/25 migrated ModPatcher patches in those historical loader smokes.
 - The current local game install is `v0.107.0`; installed beta.85 package parity passes, and the fresh beta.85 `v0.107.0` Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510` audited clean.
+- No current beta.85 CanaryOnly or AdditiveBatch1 enabled-mode smoke exists yet; current source still requires CanaryOnly 4 event types / 6 registration calls and AdditiveBatch1 10 event types / 14 registration calls before StS1 gameplay or handoff claims.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
 This list is not a migration approval. It excludes run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss-flow, and reward-state patches. If an owner later approves any candidate for a `v0.107.0` tester package, the approval must be paired with the package-version, dependency-metadata, publish/package, artifact-test, and clean Off-smoke work documented in `docs/migration.md`.
@@ -67,5 +68,6 @@ Before any Batch 4c source migration:
 6. `scripts/generate-patch-inventory.ps1 -Check` passes after any migration.
 7. A loader smoke is rerun if the migrated patch registration path changes.
 8. Current `v0.107.0` beta.85 Off loader proof is clean, but this proposal is not a substitute for any new loader smoke required by changed patch registration paths or for gameplay proof.
+9. Before any Batch 4c follow-up is cited as StS1 event runtime readiness, capture fresh current CanaryOnly 4 event types / 6 registration-call and AdditiveBatch1 10 event types / 14 registration-call smokes with retained verifier reports, or state that the Batch 4c claim is unrelated to StS1Events enabled modes.
 
 Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.

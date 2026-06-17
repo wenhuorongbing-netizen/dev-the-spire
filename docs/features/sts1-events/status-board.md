@@ -1,12 +1,12 @@
 # StS1 Events Status Board
 
-> Last updated: 2026-06-11 (canary source/localization corrections, simple-batch source parity guards, AdditiveBatch1 spec inventory guard, and beta.85 Off loader proof)
-> Audit standard: strict v18 - no generic "Done", only evidence-backed statuses
+> Last updated: 2026-06-15 (pause-safe static verification, subagent packet checklist guard, active date-header guard, and retained beta.85 Off packet verifier report; no enabled-mode, gameplay, or release-status change)
+> Audit standard: strict v19 - no generic "Done", only evidence-backed statuses
 
 ## Allowed Statuses
 
 ```
-planned → spec-drafted → wiki-verified → api-verified → implemented → compiled → test-guarded → asset-mapped → loc-render-verified → manual-verified → save-load-verified
+planned -> spec-drafted -> wiki-verified -> api-verified -> implemented -> compiled -> test-guarded -> asset-mapped -> loc-render-verified -> manual-verified -> save-load-verified
 blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wiki-entry
 ```
 
@@ -24,14 +24,16 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Shared event registrations | 14 | Sts1EventRegistrationService.cs (`RegisterAll` shared-event calls; Big Fish, Golden Idol, and The Cleric moved to Act 1 registration) |
 | Model files (C#) | 48 | Models/ directory (1 compile-excluded: Duplicator) |
 | Compiling models | 47 | dotnet build (1 compile-excluded) |
-| EN localization keys | 397 | eng/sts1_events.json; The Lab unused LEAVE keys removed |
-| ZHS localization keys | 397 (0 placeholder) | zhs/sts1_events.json verified; The Lab unused LEAVE keys removed |
+| EN localization keys | 397 | eng/sts1_events.json; file-parity only. Static source scan found 33 source-referenced keys missing in both EN and ZHS. |
+| ZHS localization keys | 397 | zhs/sts1_events.json; file-parity only. Static source scan found 33 source-referenced keys missing in both EN and ZHS. |
 | Event images | 0 | No redistributable art available |
 | Guard tests | source-guarded | Sts1EventFeatureGuardTests.cs |
-| Build | last validated 0 errors / 0 warnings | 2026-06-10 Revision L project build after expanded Sts1Events owner guards; prior 70 nullable warnings are cleared in current dirty source. June 11 StS1 event source/test/resource/doc changes have not been build-validated. |
-| Tests | last validated 464 passed / 0 failed / 21 skipped (485 total) | Current test-project lane and exact solution-level `dotnet test EZMicroBalance.sln --no-build` passed after the cross-thread validation overlap was cleared; 21 skipped are `[ReleaseArtifactFact]`-gated. June 11 Divine Fountain, Big Fish, Golden Idol, The Lab, Old Beggar, Shining Light, Golden Shrine, The Cleric, and simple-batch spec inventory guards are newer than this run and have not been executed. |
-| Format | passed | `dotnet format --verify-no-changes` clean |
-| Diff check | passed | `git diff --check` clean (no CRLF warning) |
+| Build | beta.85 validated 0 errors / 0 warnings | `PROJECT_STATE.md` and `docs/dev-environment.md` record the beta.85 runtime-fix validation build as 0 errors / 0 warnings. This remains no-game build validation, not event gameplay proof. |
+| Tests | beta.85 split no-build lanes passed 475 / 0 / 21 / 496; opt-in artifact subset passed 67 / 0 / 0 / 67 | `PROJECT_STATE.md` and `docs/dev-environment.md` record isolated `ReleaseEvidenceGateTests` at 9 / 0 / 0 / 9, complementary no-build test-project lane at 466 / 0 / 21 / 487, and opt-in package/artifact subset at 67 / 0 / 0 / 67. This proves automated guard/package coverage only, not enabled-mode or gameplay proof. |
+| Format | beta.85 historical pass / current paused | `PROJECT_STATE.md` records format passed for the beta.85 migration lane. Current format revalidation is O5 and should rerun only after the coordination pause is lifted. |
+| Diff check | static-pass | `git diff --check --` exits clean; current pause-safe reruns emit CRLF normalization warnings only for existing tracked files and no whitespace errors. |
+| Pause-safe static v19 guards | 2026-06-15 static pass | `docs/reviews/current-validation.md` records `check-sts1-event-static-suite.ps1` 14 static steps / 0 suite failures with the known 33-key localization gap, latest `check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` 872 / 0, `check-sts1-static-file-hygiene.ps1 -FailOnMismatch` 11 / 0, `check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` 531 / 0, and `git diff --check --` exit 0 with CRLF warnings only. This is no-launch/static evidence only. |
+| Pause-safe subagent packet checklist | 2026-06-15 static pass | `docs/features/sts1-events/v19-subagent-coverage.md` now records future post-pause packet requirements for CanaryOnly, AdditiveBatch1, gameplay, localization/resource, replacement, multiplayer, QA, and release-doc role owners; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returned 63 / 0, the aggregate static suite stayed 14 / 0, current-doc claims returned 872 / 0, static-file hygiene returned 11 / 0, v19 gate ledger returned 531 / 0, and `git diff --check --` exited 0 with CRLF warnings only. This is no-launch/static evidence only. |
 
 ## Phase Status
 
@@ -51,10 +53,10 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 
 | Event | Status | TODOs | IsShared | Parity Gap | Proof |
 |-------|--------|-------|----------|------------|-------|
-| Big Fish | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Current `v0.107.0` CanaryOnly enabled-mode reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Source registration now targets Act 1 buckets; runtime bucket proof remains pending. Source/localization now use wiki-aligned Box option identity; runtime UI proof remains pending | canary-source-api-proof.md, Sts1EventFeatureGuardTests.cs (Box guard added; not run), historical godot.log; beta.85 default-Off log only proves disabled-mode loading |
-| Golden Idol | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Golden Idol relic parity decision, current `v0.107.0` CanaryOnly enabled-mode reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Source registration now targets Act 1 buckets; runtime bucket proof remains pending. Trap source/localization now use Outrun, Smash, and Hide branch identities; runtime UI/result proof remains pending. Take currently grants a random relic because no Golden Idol relic model is implemented | canary-source-api-proof.md, Sts1EventFeatureGuardTests.cs (Golden Idol trap guard added; not run), historical godot.log; beta.85 default-Off log only proves disabled-mode loading |
-| The Lab | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Current `v0.107.0` CanaryOnly enabled-mode reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Source/localization now expose only Open and document 3 potions / 2 at A15+; runtime UI/result proof remains pending | canary-source-api-proof.md, Sts1EventFeatureGuardTests.cs (The Lab guard added; not run), historical godot.log; beta.85 default-Off log only proves disabled-mode loading |
-| Divine Fountain | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Current `v0.107.0` CanaryOnly enabled-mode reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Curse prerequisite is now source-guarded through `IsAllowed(IRunState)` and the option identity is aligned to Drink; runtime selection/UI proof remains pending | canary-source-api-proof.md, Sts1EventFeatureGuardTests.cs, historical godot.log; beta.85 default-Off log only proves disabled-mode loading |
+| Big Fish | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Current `v0.107.0` CanaryOnly enabled-mode reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Source registration now targets Act 1 buckets; runtime bucket proof remains pending. Source/localization now use wiki-aligned Box option identity; runtime UI proof remains pending | canary-source-api-proof.md, Sts1EventFeatureGuardTests.cs, beta.85 split no-build test lanes; historical godot.log; beta.85 default-Off log only proves disabled-mode loading |
+| Golden Idol | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Golden Idol relic parity decision, current `v0.107.0` CanaryOnly enabled-mode reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Source registration now targets Act 1 buckets; runtime bucket proof remains pending. Trap source/localization now use Outrun, Smash, and Hide branch identities; runtime UI/result proof remains pending. Take currently grants a random relic because no Golden Idol relic model is implemented | canary-source-api-proof.md, Sts1EventFeatureGuardTests.cs, beta.85 split no-build test lanes; historical godot.log; beta.85 default-Off log only proves disabled-mode loading |
+| The Lab | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Current `v0.107.0` CanaryOnly enabled-mode reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Source/localization now expose only Open and document 3 potions / 2 at A15+; runtime UI/result proof remains pending | canary-source-api-proof.md, Sts1EventFeatureGuardTests.cs, beta.85 split no-build test lanes; historical godot.log; beta.85 default-Off log only proves disabled-mode loading |
+| Divine Fountain | implemented, compiled, test-guarded, source/API verified, historical-loader-verified | Current `v0.107.0` CanaryOnly enabled-mode reproof, encounter screenshot/result log, save-load, EN/ZHS render, image/license/render | true | Curse prerequisite is now source-guarded through `IsAllowed(IRunState)` and the option identity is aligned to Drink; runtime selection/UI proof remains pending | canary-source-api-proof.md, Sts1EventFeatureGuardTests.cs, beta.85 split no-build test lanes; historical godot.log; beta.85 default-Off log only proves disabled-mode loading |
 
 ### Blocked / Partial Events (7 rows)
 
@@ -90,7 +92,7 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 
 | Event | Reason |
 |-------|--------|
-| Duplicator | CardSelectCmd.FromDeckForRewards and CardSelectorPrefs.DuplicateSelectionPrompt don't exist in RitsuLib 0.3.2 |
+| Duplicator | CardSelectCmd.FromDeckForRewards and CardSelectorPrefs.DuplicateSelectionPrompt are unavailable in the current game/RitsuLib API surface |
 
 ### Special Stubs (2)
 
@@ -108,24 +110,23 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Active `godot.log` generated (O23) | **current pass** | Current beta.85 Off smoke generated `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/godot.log.after-launch`. |
 | Loader proof (O24) | **current Off pass / enabled modes pending** | Current beta.85 Off smoke on `v0.107.0` / RitsuLib `v0.4.16` reached main menu, reported `v0.1.0-private-beta.85`, applied 25/25 Spire Plus ModPatcher patches, and has a clean `godot-log-audit.json` with 0 blocking signature hits. |
 | Default Off runtime state (O13) | **current pass** | Current beta.85 Off smoke logs `Feature Sts1Events ... bootstrap=disabled, live=Disabled`; no enabled StS1 event registrations are claimed from this Off run. |
-| CanaryOnly exact 4 (O14) | **historical pass / current pending** | Historical CanaryOnly audit: exactly Sts1BigFish, Sts1GoldenIdol, Sts1TheLab, Sts1DivineFountain registered. Fresh beta.85 `v0.107.0` CanaryOnly smoke has not been captured in this thread. |
-| AdditiveBatch1 exact 10/14 (O15 historical) | **historical pass / source changed / current pending** | Historical AdditiveBatch1 audit proved the older 10 event types via 11 registration calls. Current source now has 10 event types via 14 calls after Big Fish, Golden Idol, The Cleric, and Shining Light moved to Act 1 buckets. |
-| AdditiveBatch1 exact 10/14 (O15 current) | **current pending** | Current `v0.107.0` AdditiveBatch1 proof still requires a fresh beta.85 enabled-mode smoke. |
+| CanaryOnly source identity (O14) | **static-pass / runtime proof still required** | Static registry-shape/current-doc guards expect 4 canary event types through 6 registration calls: Sts1BigFish and Sts1GoldenIdol in both Act 1 buckets, plus shared Sts1TheLab and Sts1DivineFountain. Fresh beta.85 `v0.107.0` CanaryOnly enabled-mode smoke is O25 and remains current-pending. |
+| AdditiveBatch1 source identity (O15) | **static-pass / runtime proof still required** | Static registry-shape/current-doc guards expect 10 event types through 14 registration calls after Big Fish, Golden Idol, The Cleric, and Shining Light moved to both Act 1 buckets. Historical AdditiveBatch1 10/11 remains historical; fresh beta.85 `v0.107.0` AdditiveBatch1 enabled-mode smoke is O33 and remains current-pending. |
 | AdditiveAllDraft unsafe (O16) | **pass (source-guarded)** | Requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; test-gated. |
 | ReplacementPrototype fail-closed (O17/O18) | **pass (source-guarded)** | Requires `#if REPLACEMENT_PROTOTYPE_ENABLED` + unsafe override; test-gated. |
 | Canary runtime launch (O25) | **historical pass / current pending** | CanaryOnly launch confirmed in historical godot.log only; current beta.85 Off proof is clean, but a fresh beta.85 CanaryOnly enabled-mode smoke has not been captured in this thread. |
 | Canary event screenshots (O26-O29) | **blocked** | Requires in-game event encounter screenshots (Big Fish, Golden Idol, Lab, Divine Fountain). |
-| Canary save/load proof (O30) | **blocked** | Requires save during/after event, reload, state stable. |
-| Canary EN/ZHS render (O31) | **blocked** | Requires in-game EN/ZHS text render screenshots. |
-| Canary image/license render (O32) | **blocked** | No redistributable art; requires extraction/placeholder decision. |
+| Canary save/load proof (O34) | **blocked** | Requires save during/after event, reload, state stable. |
+| Canary EN/ZHS render (O35-O36) | **blocked** | Requires in-game EN/ZHS text render screenshots. |
+| Canary image/license render (O37) | **blocked** | No redistributable art; requires extraction/placeholder decision. |
 | AdditiveBatch1 runtime launch (O33) | **historical pass / current pending** | AdditiveBatch1 launch confirmed in historical godot.log; current beta.85 Off proof is clean, but a fresh beta.85 AdditiveBatch1 enabled-mode smoke has not been captured in this thread. |
-| Simple batch event proofs (O34-O39) | **blocked** | Requires per-event in-game encounter screenshots and result logs. |
-| Simple batch save/load (O40) | **blocked** | Requires save/load proof for simple batch events. |
-| Simple batch EN/ZHS render (O41) | **blocked** | Requires in-game EN/ZHS text render screenshots. |
-| Simple batch image/license render (O42) | **blocked** | No redistributable art; requires extraction/placeholder decision. |
-| Replacement functional proof (O43-O46) | **blocked** | Requires debug symbol, explicit unsafe env gate, game launch, seeded unknown-room replacement proof. |
-| Multiplayer fail-closed (O47) | **blocked** | Requires multiplayer session or runtime fail-closed proof. |
-| QA Red-Team (O51/O52) | **blocked** | Independent QA cannot pass while event encounter, save/load, image, replacement, and multiplayer gates remain blocked. |
+| Simple batch event proofs (O42-O47) | **blocked** | Requires per-event in-game encounter screenshots and result logs. |
+| Simple batch save/load (O48) | **blocked** | Requires save/load proof for simple batch events. |
+| Simple batch EN/ZHS render (O49) | **blocked** | Requires in-game EN/ZHS text render screenshots. |
+| Simple batch image/license render (O50) | **blocked** | No redistributable art; requires extraction/placeholder decision. |
+| Replacement functional proof (O54-O57) | **blocked** | Requires debug symbol, explicit unsafe env gate, game launch, seeded unknown-room replacement proof. |
+| Multiplayer fail-closed (O58) | **blocked** | Requires multiplayer session or runtime fail-closed proof. |
+| QA Red-Team (O65) | **blocked** | Independent QA cannot pass while event encounter, save/load, image, replacement, and multiplayer gates remain blocked. |
 
 ## Current Gate Alignment Notes
 
@@ -137,21 +138,24 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 - Shining Light now source-upgrades random upgradable deck cards with event RNG and no manual upgrade picker. Runtime result proof remains pending with the rest of AdditiveBatch1.
 - Golden Shrine source/localization now use StS1-aligned Pray/Desecrate/Leave options: Pray grants 100 gold, 50 at A15+; Desecrate grants 275 gold and adds Regret. Runtime UI/result proof remains pending with the rest of AdditiveBatch1.
 - The Cleric source/localization now guard the 35+ gold event eligibility, A15+ Purify cost increase from 50 to 75 gold, and Act 1 bucket registration. Runtime UI/result/bucket proof remains pending with the rest of AdditiveBatch1.
+- Static localization source-reference scan found 33 result-page keys referenced by source but missing from both EN and ZHS. One key (`STS1_GOLDEN_IDOL.pages.LEAVE.description`) affects current CanaryOnly/AdditiveBatch1 directly; the other 32 are later RegisterAll/draft or blocked-combat surfaces. See `localization-source-gap-scan-20260611.md` and `localization-gap-closure-plan.md`; this blocks any source-complete localization claim. Closing only `STS1_GOLDEN_IDOL.pages.LEAVE.description` remains a localization unblocker; it does not close O25/O33 enabled-mode proof or replace `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json` verifier reports.
 - Current beta.85 Off loader proof is clean at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`. This proves only the default-Off loader path; it does not prove CanaryOnly/AdditiveBatch1 enabled modes, event encounter gameplay, save-load, rendering, replacement, multiplayer, or QA gates.
 - `AdditiveAllDraft` remains unsafe/dev-only and now requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` in addition to `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft`.
 - `ReplaceUnknownEventsPrototype` remains debug-only and does not register events unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED` and explicitly allowed with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`.
 - Joust and The Ssssserpent are source-classified as non-combat Act 1 events; encounter-model blockers apply only to actual combat-entry events.
 - **Revision M correction**: Clean historical `v0.106.1` loader evidence exists for Off, CanaryOnly, and AdditiveBatch1 modes. The beta.84 `v0.107.0` package smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` remains root-cause evidence for stale Spire Plus API targets; the current beta.85 Off smoke is clean.
-- Remaining blocked gates: event encounter screenshots (O26-O29, O34-O39), save/load proof (O30, O40), EN/ZHS render (O31, O41), image/license (O32, O42), replacement functional proof (O43-O46), multiplayer fail-closed (O47), and independent QA (O51/O52).
+- Remaining blocked/current-pending gates: current CanaryOnly enabled-mode smoke (O25), current AdditiveBatch1 enabled-mode smoke (O33), canary encounter screenshots (O26-O29), canary result/pre-post/save-load/render/image/parity/audit/docs/owner rows (O31-O41), simple-batch event proofs and save/render/image/audit/QA rows (O42-O52), replacement functional proof (O54-O57), multiplayer runtime/ZHS rows (O58 and O64), independent QA (O65), and final owner/handoff rows (O72-O75). Static classification/safety rows (O59-O63), documentation-in-progress rows (O66-O71), and O76 do not close runtime or completion gates.
 
 ## Evidence Files
 
 | Evidence | Path |
 |----------|------|
-| Build log | .tools/runtime-evidence/sts1-events-v13/o1-build-full.log |
-| Test log | .tools/runtime-evidence/sts1-events-v13/o2-test-full.log |
-| Test count/skips | .tools/runtime-evidence/sts1-events-v13/o3-o4-test-count-and-skips.md |
-| Git snapshot | .tools/runtime-evidence/sts1-events-v13/o0-*.txt |
+| Current validation summary | `PROJECT_STATE.md`, `docs/dev-environment.md`, `docs/reviews/current-validation.md` |
+| Current package/checksum summary | `docs/issues.md`, `docs/toreview.md`, `docs/private-beta-verification-handoff.md`, `docs/release-checklist.md` |
+| Historical v13 build log | `.tools/runtime-evidence/sts1-events-v13/o1-build-full.log` |
+| Historical v13 test log | `.tools/runtime-evidence/sts1-events-v13/o2-test-full.log` |
+| Historical v13 test count/skips | `.tools/runtime-evidence/sts1-events-v13/o3-o4-test-count-and-skips.md` |
+| Historical v13 git snapshot | `.tools/runtime-evidence/sts1-events-v13/o0-*.txt` |
 | Canonical matrix | docs/features/sts1-events/canonical-event-matrix.csv |
 | Registry reconciliation | docs/features/sts1-events/registry-reconciliation.md |
 | IsShared matrix | docs/features/sts1-events/multiplayer-is-shared-matrix.md |
@@ -172,4 +176,24 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | **v18 current loader hard stop** | `docs/features/sts1-events/hard-stop-blocker-report-v18-current-loader-20260610.md` |
 | **v19 beta.85 Off mode clean log** | `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/godot.log.after-launch` |
 | **v19 beta.85 Off mode clean audit** | `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/godot-log-audit.json` |
+| **v19 beta.85 Off packet verifier report** | `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/runtime-evidence-packet-check.json` (no-launch rerun with explicit package/Ritsu/game targets: Off packet checks=34 / mismatches=0; nested log verifier checks=10 / mismatches=0; default-Off evidence only) |
+| **v19 validation coordination hard stop** | `docs/features/sts1-events/hard-stop-blocker-report-v19-validation-coordination-20260611.md` |
+| **v19 O0-O76 gate evidence map** | `docs/features/sts1-events/v19-gate-evidence-map.md` |
+| **v19 O0-O76 per-gate ledger** | `docs/features/sts1-events/v19-gate-ledger.csv` |
+| **v19 2026-06-15 pause-safe static verification** | `docs/reviews/current-validation.md` records static suite 14 / 0, latest current-doc claims 872 / 0, static-file hygiene 11 / 0, v19 gate ledger 531 / 0, and `git diff --check --` exit 0 with CRLF warnings only; this is static evidence only. |
+| **v19 2026-06-15 subagent packet checklist guard** | `docs/features/sts1-events/v19-subagent-coverage.md` records future evidence-packet requirements plus owner/final-handoff and no-authorization boundaries; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returns 63 / 0 and remains static/non-runtime evidence only. |
+| Static aggregate event suite | `scripts/check-sts1-event-static-suite.ps1` |
+| Static current-doc-claims checker | `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` |
+| Static feature-gate checker | `scripts/check-sts1-event-feature-gates.ps1 -FailOnMismatch` |
+| Static registry-shape checker | `scripts/check-sts1-event-registry-shape.ps1 -FailOnMismatch` |
+| Static event-spec registration-note checker | `scripts/check-sts1-event-spec-registration-notes.ps1 -FailOnMismatch` |
+| Static parity-blocker checker | `scripts/check-sts1-event-parity-blockers.ps1 -FailOnMismatch` |
+| Static asset-safety checker | `scripts/check-sts1-event-asset-safety.ps1 -FailOnMismatch` |
+| Static multiplayer-shape checker | `scripts/check-sts1-event-multiplayer-shape.ps1 -FailOnMismatch` |
+| Static localization source-key checker | `scripts/check-sts1-localization-source-keys.ps1` |
+| Static localization gap-baseline checker | `scripts/check-sts1-localization-gap-baseline.ps1 -FailOnMismatch` |
+| Static localization closure plan | `docs/features/sts1-events/localization-gap-closure-plan.md` |
+| Static v19 gate-ledger checker | `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` |
+| No-launch enabled-mode log verifier | Use `scripts/check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath <future-log> -AuditPath <future-audit> -ExpectedPackageVersion <package-version> -ExpectedRitsuCompatBranch <branch> -ExpectedRitsuLibVersion <ritsulib-version> -ExpectedGameVersion <game-version> -OutFile <future-evidence-dir>\enabled-mode-log-check.json -FailOnMismatch` or the same command with `-Mode AdditiveBatch1`; enabled-mode copied logs must prove the expected Spire Plus package version, Ritsu compat branch, RitsuLib package version, and game version text in the log, and the verifier report must stay in the evidence folder. It verifies registration-call count and event class set; current RitsuLib logs are class-only, so Act-bucket tuple proof remains source-derived until future logs or gameplay evidence prove those targets directly. |
+| No-launch runtime evidence packet verifier | Use `scripts/check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir <future-evidence-dir> -ExpectedPackageVersion <package-version> -ExpectedRitsuCompatBranch <branch> -ExpectedRitsuLibVersion <ritsulib-version> -ExpectedGameVersion <game-version> -OutFile <future-evidence-dir>\runtime-evidence-packet-check.json -FailOnMismatch` or the same command with `-Mode AdditiveBatch1`; helper-created enabled-mode packets must record matching `Sts1EventModeEnvironment` metadata, matching `game-release-info.json`, no unsafe-mode env leakage, no `-AllowMissingSessionState` / `-AllowMissingRestoreState` bypass, retained `enabled-mode-log-check.json`, and explicit package/version target checks, and the packet verifier report must stay in the evidence folder. |
 | Warning budget | `docs/goals/warning-ledger.md` |

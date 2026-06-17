@@ -4,9 +4,9 @@ param(
 
     [string]$EvidenceDir,
 
-    [string]$GameRoot = 'D:\Steam\steamapps\common\Slay the Spire 2',
+    [string]$GameRoot = 'E:\Steam\steamapps\common\Slay the Spire 2',
 
-    [string]$SteamExe = 'D:\Steam\steam.exe',
+    [string]$SteamExe = 'E:\Steam\steam.exe',
 
     [string]$SteamUserId,
 
@@ -363,6 +363,7 @@ if ($Mode -eq 'Prepare') {
     $steamSaves = Join-Path $steamUserRoot 'modded\profile1\saves'
     $defaultSaves = Join-Path $env:APPDATA 'SlayTheSpire2\default\1\modded\profile1\saves'
     $logPath = Join-Path $env:APPDATA 'SlayTheSpire2\logs\godot.log'
+    $gameReleaseInfoPath = Join-Path $gameRootFull 'release_info.json'
 
     Copy-Item -LiteralPath $settingsPath -Destination (Join-Path $evidenceFull 'settings.save.before') -Force
     if (Test-Path -LiteralPath $settingsBackupPath) {
@@ -370,6 +371,9 @@ if ($Mode -eq 'Prepare') {
     }
     if (Test-Path -LiteralPath $logPath) {
         Copy-Item -LiteralPath $logPath -Destination (Join-Path $evidenceFull 'godot.log.before') -Force
+    }
+    if (Test-Path -LiteralPath $gameReleaseInfoPath) {
+        Copy-Item -LiteralPath $gameReleaseInfoPath -Destination (Join-Path $evidenceFull 'game-release-info.json') -Force
     }
 
     $movedMods = @()
@@ -397,8 +401,11 @@ if ($Mode -eq 'Prepare') {
         SteamSaves = $steamSaves
         DefaultSaves = $defaultSaves
         LogPath = $logPath
+        GameReleaseInfoPath = $gameReleaseInfoPath
         Language = $Language
         DisableSpirePlus = [bool]$DisableSpirePlus
+        Sts1EventModeEnvironment = [string]$env:SPIREPLUS_STS1_EVENT_MODE
+        Sts1UnsafeModeEnvironment = [string]$env:SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES
         AllowedModIds = @($allowedModIds)
         MoveOtherMods = [bool]$MoveOtherMods
         MoveCurrentRuns = [bool]$MoveCurrentRuns

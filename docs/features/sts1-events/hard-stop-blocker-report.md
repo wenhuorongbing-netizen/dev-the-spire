@@ -3,11 +3,11 @@
 Date: 2026-05-29
 Session: Mandatory Overnight Run v2
 
-> Superseded for current governance: this file is historical O0-O24 context only. Current status is tracked by `status-board.md`, `registry-reconciliation.md`, and the latest hard-stop report. Do not treat any old GREEN, code-complete, or handoff wording below as current runtime, QA, or release proof.
+> Superseded for current governance: this file is historical O0-O24 context only. Current status is tracked by `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `docs/features/sts1-events/status-board.md`, and `docs/features/sts1-events/hard-stop-blocker-report-v19-validation-coordination-20260611.md`. Do not treat any old GREEN, code-complete, or handoff wording below as current runtime, QA, or release proof.
 
 ## Summary
 
-Historical v2 snapshot claimed 20 of 25 code/source gates green. That claim is superseded; current O0-O50 gates remain blocked by missing runtime, image/render, replacement-pool, multiplayer, and independent QA evidence.
+Historical v2 snapshot claimed 20 of 25 code/source gates green. That claim is superseded; current v19 O0-O76 gates include default-Off-only proof, static source/doc guards, and many current-pending or blocked runtime rows. Enabled-mode, gameplay, image/render, replacement-pool, multiplayer, independent QA, and handoff evidence remain missing.
 
 ---
 

@@ -1,5 +1,7 @@
 # StS1 Events Implementation Plan
 
+Current boundary, Revision M / beta.85: this roadmap is source planning, not current runtime proof. The only current `v0.107.0` loader evidence is beta.85 default-Off startup/patch application; CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, image/render, QA, and handoff proof remain pending. Historical `v0.106.1` enabled-mode loader logs remain history only, and the current source expectation is CanaryOnly 4 event types / 6 registration calls and AdditiveBatch1 10 event types / 14 registration calls.
+
 ## Phase 0: Infrastructure (Current)
 
 - [x] Create documentation structure under `docs/features/sts1-events/`
@@ -21,7 +23,7 @@ Implement Big Fish, Golden Idol, The Lab, and Divine Fountain to prove the bound
 - Option 3: Obtain a random relic + Regret curse
 
 **Implementation:**
-- Extend `ModEventTemplate`
+- Extend `EventModel`
 - Register to the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`); keep `IsShared=true` for co-op voting semantics.
 - Localization: `BIG_FISH.pages.INITIAL.description`, options
 - Dynamic vars: `HealAmount` (1/3 max HP), `MaxHpGain` (5)
@@ -30,22 +32,22 @@ Implement Big Fish, Golden Idol, The Lab, and Divine Fountain to prove the bound
 
 **Wiki behavior:**
 - Initial: Take Golden Idol (relic) or Leave
-- If take: trap triggers →
-  - Option A: Obtain Injury curse
-  - Option B: Lose 25% current HP (A15: 35%)
-  - Option C: Lose 10% max HP (A15: 15%)
+- If take: trap triggers:
+  - Outrun: Obtain Injury curse
+  - Smash: Take damage equal to 25% max HP (A15: 35%)
+  - Hide: Lose 8% max HP (A15: 10%)
 
 **Implementation:**
-- Extend `ModEventTemplate`
+- Extend `EventModel`
 - Register to the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`); keep `IsShared=true` for co-op voting semantics.
-- Multi-page event: INITIAL → TRAP → done
-- Requires Golden Idol relic model (or use existing if StS2 has one)
+- Multi-page event: INITIAL -> TRAP -> done
+- Golden Idol relic model remains pending; current source uses a random relic substitute and must stay marked non-parity until the relic exists.
 
 ## Phase 2: Simple Batch
 
 Current AdditiveBatch1 verified-scope prototype events with straightforward heal/damage/gold/card rewards:
 
-Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar / Pleading Vagrant, and Shining Light. AdditiveBatch1 registers 10 event types total when the 4 canaries are included, through 13 registration calls because Big Fish, Golden Idol, and Shining Light are registered for both StS2 Act 1 buckets.
+Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar / Pleading Vagrant, and Shining Light. AdditiveBatch1 registers 10 event types total when the 4 canaries are included, through 14 registration calls because Big Fish, Golden Idol, The Cleric, and Shining Light are registered for both StS2 Act 1 buckets.
 
 ## Phase 3: Card Service Batch
 
@@ -62,7 +64,7 @@ Dead Adventurer, Masked Bandits, Mysterious Sphere, Scorpion Nest, and Treasure 
 
 ## Phase 5: Custom UI Batch
 
-Events requiring minigame layouts — use simplified option-based fallbacks:
+Events requiring minigame layouts - use simplified option-based fallbacks:
 
 Wheel of Change, Designer, The Woman in Blue, The Ghost, Nloth,
 Tomb of Lord Red Mask, Winding Halls, Forgotten Altar

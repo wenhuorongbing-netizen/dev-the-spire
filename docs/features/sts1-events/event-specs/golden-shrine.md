@@ -20,7 +20,7 @@
 
 ### Class: `Sts1GoldenShrine`
 
-- **Registration:** shared event; included in `RegisterAll()` and `RegisterAdditiveBatch1()`.
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1GoldenShrine>()`; included in `RegisterAll()` and `RegisterAdditiveBatch1()`.
 - **Layout:** Default
 - **Source behavior:** `Pray()` grants `PrayGoldAmount`, which is 100 normally and 50 at A15+. `Desecrate()` grants 275 gold and adds `Regret` with `CardPileCmd.AddCursesToDeck(new[] { ModelDb.Card<Regret>() }, owner)`.
 - **Runtime proof:** Pending. AdditiveBatch1 encounter UI, result log, EN/ZHS render, and save-load proof still need live evidence.

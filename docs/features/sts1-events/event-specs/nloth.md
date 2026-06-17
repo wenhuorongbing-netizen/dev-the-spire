@@ -17,7 +17,7 @@ None.
 ## StS2 Implementation
 
 ### Class: `Sts1Nloth`
-- **Registration:** `[RegisterActEvent(typeof(Act2Model))]`
+- **Registration:** `Sts1EventRegistrationService` registers this StS1 Act 2 event with `content.ActEvent<Hive, Sts1Nloth>()`.
 - **Layout:** Default
 
 ### Localization Keys

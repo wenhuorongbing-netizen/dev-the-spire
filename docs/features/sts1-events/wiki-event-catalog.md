@@ -21,7 +21,7 @@ The counts refer to different dimensions:
 
 ### Why 54 Canonical Rows but Only 48 Models?
 
-- **Neow** and **Combat Start** are start-of-run special events. They have no unknown-room pool entry and no `ModEventTemplate` model. Neow is handled by the base game's `Neow` class; Combat Start is a tutorial flow.
+- **Neow** and **Combat Start** are start-of-run special events. They have no unknown-room pool entry and no `EventModel` model. Neow is handled by the base game's `Neow` class; Combat Start is a tutorial flow.
 - **Golden Wing** appears in both Shared and Act 1 on the wiki. The wiki lists it twice (#4 Shared, #23 Act1 exclusive), but it's one model (`Sts1GoldenWing.cs`).
 - **The Cleric** appears in both Shared and Act 1 on the wiki (#2 Shared, #26 Act1 exclusive). One model (`Sts1TheCleric.cs`).
 - **The Mausoleum** appears in both Shared and Act 2 (#13 Shared, #38 Act2 exclusive). One model (`Sts1TheMausoleum.cs`).
@@ -56,7 +56,7 @@ AdditiveBatch1 uses 14 registration calls for 10 event types because Big Fish, G
 | 7 | The Woman in Blue | `Sts1TheWomanInBlue.cs` | Yes | All acts (shared) | CustomUI | spec-drafted |
 | 8 | Bonfire Spirits | `Sts1BonfireSpirits.cs` | Yes | All acts (shared) | Simple | spec-drafted |
 | 9 | Divine Fountain | `Sts1DivineFountain.cs` | Yes | All acts (shared) | Canary | spec-drafted |
-| 10 | Duplicator | `Sts1Duplicator.cs` | Yes | All acts (shared) | CardService | **excluded** — needs `CardSelectCmd`/`CardPileCmd` |
+| 10 | Duplicator | `Sts1Duplicator.cs` | Yes | All acts (shared) | CardService | **excluded** — missing current duplicate-selection API support |
 | 11 | Face Trader | `Sts1FaceTrader.cs` | Yes | All acts (shared) | CardService | spec-drafted |
 | 12 | Fountain of Cleansing | `Sts1FountainOfCleansing.cs` | Yes | All acts (shared) | Simple | spec-drafted |
 | 13 | The Mausoleum | `Sts1TheMausoleum.cs` | Yes | All acts (shared) | CardService | spec-drafted |

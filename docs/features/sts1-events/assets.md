@@ -4,7 +4,7 @@
 
 Original StS1 art is **not committed** to the repository. Instead, a PowerShell
 script extracts event portraits from a local StS1 installation into
-`EZMicroBalance/images/events/sts1/` (gitignored).
+`EZMicroBalance/images/events/` as `sts1_*.png` files (gitignored).
 
 ## Extraction Script
 
@@ -51,7 +51,8 @@ goldenIdol,sts1_golden_idol,resources/images/events/goldenIdol.png,sts1_golden_i
 
 Add to `.gitignore`:
 ```
-EZMicroBalance/images/events/sts1_*.png
+/EZMicroBalance/images/events/sts1_*.png
+/EZMicroBalance/images/events/sts1/
 ```
 
 This prevents extracted StS1 assets from being committed.

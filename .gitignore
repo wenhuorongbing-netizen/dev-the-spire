@@ -22,6 +22,10 @@ node_modules/
 /tests/**/*.cs.uid
 /tests/**/TestResults/
 
+# Local-only extracted StS1 event portraits. Do not commit original StS1 art.
+/EZMicroBalance/images/events/sts1_*.png
+/EZMicroBalance/images/events/sts1/
+
 # Local/generated art and calibration material. Not part of the active release package.
 /art_pipeline/
 /asset/

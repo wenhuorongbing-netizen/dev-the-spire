@@ -17,7 +17,7 @@ None.
 ## StS2 Implementation
 
 ### Class: `Sts1UpgradeShrine`
-- **Registration:** `[RegisterActEvent(typeof(Act3Model))]`
+- **Registration:** `Sts1EventRegistrationService` registers this StS1 Act 3 event with `content.ActEvent<Glory, Sts1UpgradeShrine>()`.
 - **Layout:** Default
 
 ### Localization Keys

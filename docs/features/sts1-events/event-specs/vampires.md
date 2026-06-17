@@ -19,7 +19,7 @@ Bite is a 1-cost Attack: Deal 7 damage. Heal 2 HP.
 ## StS2 Implementation
 
 ### Class: `Sts1Vampires`
-- **Registration:** `[RegisterActEvent(typeof(Act2Model))]`
+- **Registration:** `Sts1EventRegistrationService` registers this StS1 Act 2 event with `content.ActEvent<Hive, Sts1Vampires>()`.
 - **Layout:** Default
 
 ### Localization Keys

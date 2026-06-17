@@ -17,7 +17,7 @@ None.
 ## StS2 Implementation
 
 ### Class: `Sts1GoldenWing`
-- **Registration:** `[RegisterSharedEvent]`
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1GoldenWing>()`.
 - **Layout:** Default
 
 ### Localization Keys

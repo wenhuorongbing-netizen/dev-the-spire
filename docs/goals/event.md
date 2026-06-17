@@ -1,9 +1,15 @@
 ﻿结论：**当前仍未完成，而且 Revision M 让审核口径必须更新。**
-此前部分上传文件已经过期；这次审查基于当前 GitHub 仓库里的 `status-board.md` 和 `current-validation.md`，不是基于过期上传文件。
+此前部分上传文件已经过期；当前审查基于本地工作区里的 `PROJECT_STATE.md`、`docs/dev-environment.md`、`docs/features/sts1-events/status-board.md`、`docs/features/sts1-events/v19-gate-evidence-map.md` 和 `docs/features/sts1-events/v19-gate-ledger.csv`，不是基于过期上传文件或 sandbox-only 导出物。
 
-我已整理成新版完整审查文档：
+本文件保留 v19 严格审查结论作为 active goal；不要依赖外部下载链接作为当前证据。最新逐 gate 证据以 v19 gate map/ledger、current-validation、status-board 和 hard-stop report 为准。
 
-[下载完整审查文档 v19](sandbox:/mnt/data/sts1_event_port_strict_audit_v19_revision_l_monthly_overnight.md)
+## 2026-06-15 coordination addendum
+
+While the same-repository migration validation lane is active, this event goal must not start new `dotnet build`, `dotnet test`, `dotnet publish`, package/release-evidence validation, game/runtime smoke, staging, commit, or push processes from this thread.
+
+Allowed work during the pause is read-only/static checking, documentation/guard alignment, and no-resource/no-code governance cleanup that does not require build, publish, package, or version-bump validation. After the pause is lifted, the next runtime order remains current `v0.107.0` CanaryOnly proof for 4 event types / 6 registration calls, then AdditiveBatch1 proof for 10 event types / 14 registration calls, before gameplay or handoff claims.
+
+Latest pause-safe static checkpoint: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 872 checks / 0 mismatches after the RitsuLib monthly spec and Batch 4c proposal were directly guarded in static-file hygiene scope; `scripts/check-sts1-event-static-suite.ps1` returned 14 static steps / 0 suite failures with the known 33-key localization gap; `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` returned 11 checks / 0 mismatches; `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` returned 531 checks / 0 mismatches; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returned 63 checks / 0 mismatches; focused `git diff --check --` exited 0. This is static-only evidence and does not close O25, O33, gameplay, save/load, replacement, multiplayer, QA, release, or handoff gates.
 
 ## 1. 当前严格审核结论
 
@@ -13,17 +19,21 @@
 
 | 模块                                        | 审核结论                                                                      |
 | ----------------------------------------- | ------------------------------------------------------------------------- |
-| Source build                              | Revision L 记录为 `0 warnings / 0 errors`；June 11 Divine Fountain、Big Fish、Golden Idol、The Lab、Old Beggar、Shining Light、Golden Shrine、The Cleric、simple-batch spec inventory changes 尚未 build 验证 |
-| Tests                                     | Revision L 记录为 `464 passed / 0 failed / 21 skipped / 485 total`；June 11 guards 尚未执行 |
-| Feature guard tests                       | Revision L 记录为 `31 passed / 0 failed / 0 skipped`；June 11 新增 Divine Fountain、Big Fish、Golden Idol、The Lab、Old Beggar、Shining Light、Golden Shrine、The Cleric、simple-batch spec inventory guards 后尚未重跑 |
+| Source build                              | beta.85 runtime-fix validation 记录为 `0 warnings / 0 errors`；这是 no-game build validation，不是 enabled-mode/gameplay proof |
+| Tests                                     | beta.85 split no-build lanes 记录为 `475 passed / 0 failed / 21 skipped / 496 total`；opt-in artifact subset 为 `67 passed / 0 failed / 0 skipped / 67 total` |
+| Feature guard tests                       | June 11 StS1 event source guards 已包含在 beta.85 split no-build lanes；仍未提供 CanaryOnly/AdditiveBatch1 enabled-mode runtime proof |
 | Format / patch inventory / worktree batch | 通过                                                                        |
 | Registration source fix                   | Big Fish、Golden Idol 已改成 Act 1 buckets：`Overgrowth` + `Underdocks`        |
 | Current Off loader                         | beta.85 `v0.107.0` Off smoke clean：main menu、RitsuLib compat `0.107.0`、25/25 patches、0 blocking audit hits |
-| ZHS placeholder                           | 文件层面 397 keys / 0 placeholder                                             |
+| ZHS placeholder                           | 文件层面 397 keys / 0 placeholder；但 2026-06-11 静态 source-reference scan 发现 EN/ZHS 各缺 33 个 source-referenced result-page keys |
 | Unsafe gates                              | `AdditiveAllDraft` unsafe-only；`ReplacementPrototype` debug + unsafe-only |
-| Status-board                              | 已经不再用泛泛 `Done`，并明确区分 historical loader proof 与 current proof              |
+| Status-board / gate ledger                | 已经不再用泛泛 `Done`，并明确区分 historical loader proof、current beta.85 default-Off proof、current enabled-mode proof 和 blocked/pending runtime gates |
 
-这些有当前 validation 支持：June 10 记录里 build、test、format、patch inventory、worktree batch 都通过；Big Fish 和 Golden Idol 已改为注册到 StS2 Act 1 buckets；Revision L tests 是 `464 / 0 / 21 / 485`；June 11 beta.85 Off smoke 是 clean loader proof。June 11 的 Divine Fountain curse-prerequisite / Drink option source/test/doc change、Big Fish Box source/localization/test/doc change、Golden Idol trap Outrun/Smash/Hide source/localization/test/doc change、The Lab Open-only source/localization/test/doc change、Old Beggar Offer Gold affordability source/test/doc change、Shining Light random-upgrade source/test/doc change、Golden Shrine Pray/Desecrate source/localization/test/doc change、The Cleric A15 Purify/gold eligibility source/localization/test/doc change、simple-batch spec inventory source/test/doc change 比 June 10 test validation 更新，目前只有 static inspection 和 default-Off loader proof，未做 enabled-mode/gameplay proof。
+这些有当前 validation 支持：beta.85 runtime-fix validation 记录 build `0 warnings / 0 errors`，split no-build lanes `475 / 0 / 21 / 496`，opt-in artifact subset `67 / 0 / 0 / 67`，publish/package/checker 和 beta.85 Off smoke clean loader proof 均已记录。June 11 的 Divine Fountain curse-prerequisite / Drink option source/test/doc change、Big Fish Box source/localization/test/doc change、Golden Idol trap Outrun/Smash/Hide source/localization/test/doc change、The Lab Open-only source/localization/test/doc change、Old Beggar Offer Gold affordability source/test/doc change、Shining Light random-upgrade source/test/doc change、Golden Shrine Pray/Desecrate source/localization/test/doc change、The Cleric A15 Purify/gold eligibility source/localization/test/doc change、simple-batch spec inventory source/test/doc change 已有 no-game automated validation 和 default-Off loader proof；仍未做 current CanaryOnly/AdditiveBatch1 enabled-mode 或 gameplay proof。
+
+补充，2026-06-11：`docs/features/sts1-events/localization-source-gap-scan-20260611.md` 记录了新的静态资源缺口。当前 EN/ZHS 文件彼此 key-parity 成立，但不是 source-reference complete：33 个 source-referenced result-page keys 在两种语言中都缺失。修复这些 key 属于 player-visible localization/resource change，需要版本递增、build/publish/package validation 和 handoff docs 更新后才能交付。
+
+Fixing `STS1_GOLDEN_IDOL.pages.LEAVE.description` only removes the direct localization missing-key blocker; it does not close O25/O33 or replace the enabled-mode log verifier/runtime evidence packet.
 
 但关键阻塞更严重：
 
@@ -45,7 +55,7 @@
 
 ## 2. 当前 status-board 的关键变化
 
-status-board 已在 Revision M 口径下更新到 2026-06-11，明确要求“no generic Done”，并区分 historical enabled-mode proof、current beta.85 default-Off proof、current enabled-mode proof。当前指标是：
+status-board 已在 Revision M / v19 口径下更新到 2026-06-15，明确要求“no generic Done”，并区分 historical enabled-mode proof、current beta.85 default-Off proof、current enabled-mode proof、pause-safe static evidence 和仍然 blocked/pending 的 runtime gates。当前指标是：
 
 ```text
 Public wiki baseline: 52
@@ -57,8 +67,8 @@ Shared event registrations: 14
 Model files: 48
 Compiling models: 47
 Event images: 0
-Build: last validated 0 errors / 0 warnings before June 11 Divine Fountain, Big Fish, Golden Idol, The Lab, Old Beggar, Shining Light, and simple-batch spec inventory changes
-Tests: last validated 464 passed / 0 failed / 21 skipped / 485 total before June 11 Divine Fountain, Big Fish, Golden Idol, The Lab, Old Beggar, Shining Light, and simple-batch spec inventory guards
+Build: beta.85 validated 0 errors / 0 warnings
+Tests: beta.85 split no-build lanes passed 475 / 0 / 21 / 496; opt-in artifact subset passed 67 / 0 / 0 / 67
 Current Off loader: beta.85 v0.107.0 default-Off pass only
 ```
 
@@ -80,6 +90,8 @@ StS1 的事件目标不是“注册 EventModel”。StS1 Wiki 明确说明：事
 
 更直接地说：当前 `v0.107.0` beta.85 Off loader 已经 clean，但这不是 event runtime parity。不能拿 default-Off loader proof 宣称 CanaryOnly/AdditiveBatch1 可玩，更不能宣称 event gameplay parity。status-board 也明确写了：CanaryOnly、AdditiveBatch1、事件截图、save/load、EN/ZHS render、image/license、replacement、multiplayer、QA 全部仍 blocked 或 pending。
 
+暂停边界：本节以下所有 runtime、gameplay、QA、build/test/publish、package/release-evidence、staging、commit、push 指令均只适用于 coordination pause 解除之后。Pause 期间不得从本 thread 启动这些流程；只允许 read-only/static checking、documentation/guard alignment，以及不需要 build/publish/package/version-bump 的 no-resource/no-code governance cleanup。
+
 ## 4. 管理决策
 
 **继续优化 + 有限推进，两者兼顾，但优化优先。**
@@ -88,7 +100,7 @@ StS1 的事件目标不是“注册 EventModel”。StS1 Wiki 明确说明：事
 
 ```text
 1. 保留 beta.85 default-Off clean loader proof，不把它扩张成 gameplay parity。
-2. 重跑 current `v0.107.0` CanaryOnly smoke，证明 exact 4。
+2. 重跑 current `v0.107.0` CanaryOnly smoke，证明 4 event types / 6 registration calls。
 3. 重跑 current `v0.107.0` AdditiveBatch1 smoke，证明 10 event types / 14 calls。
 4. 之后才做 4 canary + 6 simple batch 的 gameplay proof。
 5. 最后做 ReplacementPrototype functional proof。
@@ -121,14 +133,14 @@ StS1 的事件目标不是“注册 EventModel”。StS1 Wiki 明确说明：事
 月末 Go/No-Go 标准：
 
 1. Build：`0 errors / 0 warnings`，保存完整 log。
-2. Tests：`464 / 0 / 21 / 485` 或更新后的准确总数，保存完整 log。
+2. Tests：`475 / 0 / 21 / 496` 或更新后的准确总数，保存完整 log。
 3. 21 skipped tests 逐条解释。
 4. Format、diff、patch inventory、worktree batch classification 全部通过。
 5. Dirty worktree 需要 clean，或 owner-approved exact scope。
 6. 修复 stale `EctoplasmGoldGatePatch` target API drift。
 7. 重新 publish / reinstall fixed package，并记录 package SHA。
 8. Current `v0.107.0` Off smoke clean：0 Godot ERROR、0 Spire Plus error/exception、0 MissingMethodException、0 TypeLoadException、无 stale target API drift。（beta.85 default-Off proof exists; preserve as evidence, rerun only when package/source changes require it。）
-9. Current `v0.107.0` CanaryOnly smoke clean：exact 4。
+9. Current `v0.107.0` CanaryOnly smoke clean：4 event types / 6 registration calls。
 10. Current `v0.107.0` AdditiveBatch1 smoke clean：10 event types / 14 calls。
 11. `AdditiveAllDraft` 继续 unsafe-only。
 12. `ReplacementPrototype` 继续 debug + unsafe-only。
@@ -219,15 +231,15 @@ all code-side work complete
 ```text
 当前状态不能标完成。
 
-Revision L 显示 pre-June-11 source/test 已明显改善：build 0 warnings/0 errors，tests 464/0/21/485，feature guards 31/0/0，Big Fish 和 Golden Idol 已改为 Act 1 bucket 注册。Revision M 又关闭了 default-Off loader blocker，并让 status-board 明确区分 default-Off proof 与 enabled-mode/gameplay proof。
+Revision M / beta.85 已将当前 no-game validation 推进到 build 0 warnings/0 errors、split no-build tests 475/0/21/496、opt-in artifact subset 67/0/0/67，并关闭 default-Off loader blocker。Big Fish、Golden Idol、The Cleric、Shining Light 的 Act 1 bucket 注册口径已纳入 57/14 count matrix。status-board、v19 gate map 和 current-validation 仍明确区分 default-Off proof、pause-safe static evidence 与 enabled-mode/gameplay proof。
 
 beta.84 Off smoke 曾经是红的：11 Godot ERROR、1 Spire Plus error/exception、8 optional ModPatcher failures、EctoplasmGoldGatePatch target API drift。Revision M / beta.85 已关闭 default-Off loader blocker：current v0.107.0 Off smoke clean，25/25 patches，0 blocking audit hits。历史 v0.106.1 Canary/AdditiveBatch1 clean loader proof 只能保留为 historical-loader-verified，不能当 current enabled-mode proof。
 
-继续 Mandatory Overnight Run v19。只能在 O0-O76 全绿后停止。若某 gate 当前环境无法完成，写 HARD STOP BLOCKER REPORT，但 blocked gate 不得标完成。
+coordination pause 解除后，继续 Mandatory Overnight Run v19。只能在 O0-O76 全绿后停止。若某 gate 当前环境无法完成，写 HARD STOP BLOCKER REPORT，但 blocked gate 不得标完成。
 
 优先级：
 1. 保留 beta.85 Off loader proof as default-Off only，不扩张成 event gameplay proof。
-2. 跑 current v0.107 CanaryOnly smoke 到 clean，证明 exact 4。
+2. 跑 current v0.107 CanaryOnly smoke 到 clean，证明 4 event types / 6 registration calls。
 3. 跑 current v0.107 AdditiveBatch1 smoke 到 clean，证明 10 event types / 14 calls。
 4. 再做 4 canary gameplay：screenshots、result logs、pre/post state、save/load、EN/ZHS、image/license/render。
 5. 再做 6 simple batch gameplay。

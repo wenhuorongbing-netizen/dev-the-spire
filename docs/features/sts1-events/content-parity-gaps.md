@@ -19,13 +19,13 @@
 
 | # | Event | Act | Status | Gap Type | Dependency |
 |---|-------|-----|--------|----------|------------|
-| 1 | BigFish | Shared | **OK** | `native-equivalent` | Regret curse, random relic |
-| 2 | GoldenIdol | Shared | **GAP** | `temporary-substitute` | Golden Idol relic model/effect is missing; Take currently grants a random relic. Injury curse is native-equivalent. |
+| 1 | BigFish | Act1 | **OK** | `native-equivalent` | Regret curse, random relic |
+| 2 | GoldenIdol | Act1 | **GAP** | `temporary-substitute` | Golden Idol relic model/effect is missing; Take currently grants a random relic. Injury curse is native-equivalent. |
 | 3 | LivingWall | Shared | **OK** | `native-equivalent` | Card removal/transform/upgrade |
 | 4 | Duplicator | Shared | **GAP** | `blocked` | Compile-excluded; card duplication selection APIs not available |
 | 5 | DivineFountain | Shared | **OK** | `native-equivalent` | Curse removal; curse prerequisite now source-guarded, runtime selection proof pending |
 | 6 | FountainOfCleansing | Shared | **OK** | `native-equivalent` | Curse removal + max HP loss |
-| 7 | TheCleric | Shared | **OK** | `native-equivalent` | Gold, heal, card removal |
+| 7 | TheCleric | Act1 | **OK** | `native-equivalent` | Gold, heal, card removal |
 | 8 | OldBeggar | Shared | **OK** | `native-equivalent` | Gold, card removal |
 | 9 | Designer | Shared | **OK** | `native-equivalent` | Card upgrade/remove/transform |
 | 10 | TheMausoleum | Shared | **OK** | `native-equivalent` | Wound curse, random relic |
@@ -65,8 +65,18 @@
 | 44 | Falling | Act3 | **OK** | `native-equivalent` | Card removal/damage/transform |
 | 45 | MoaiHead | Act3 | **OK** | `native-equivalent` | Gold, max HP |
 | 46 | **WindingHalls** | Act3 | **GAP** | `temporary-substitute` | Madness curse → Debt |
+| 47 | Purifier | Shared | **OK** | `native-equivalent` | Free card removal |
+| 48 | GoldenShrine | Shared | **OK** | `native-equivalent` | Gold, Regret curse |
 
-**Historical table totals:** 36 at parity / 4 temporary substitutes / 5 blocked / 1 custom-required after the Golden Idol relic-substitute reclassification. Current blocker handling is authoritative in `status-board.md` and `registry-reconciliation.md`.
+**Dependency table totals:** 35 native-equivalent / 4 direct game-object substitutes / 7 blocked / 1 custom-required, plus Mind Bloom as a partial blocked row. Current release-gate blocker handling is authoritative in `status-board.md`, `registry-reconciliation.md`, and the static parity checker.
+
+**Current release-gate non-parity rows:** `status-board.md` intentionally groups six non-parity rows under Temporary Substitutes: Golden Idol, Face Trader, Nest, Vampires, Mind Bloom, and Winding Halls. Vampires still needs a Bite card for parity; Mind Bloom still needs War combat proof. Do not call any of these parity-complete until their missing model or encounter proof is closed.
+
+Static reproduction:
+
+```powershell
+.\scripts\check-sts1-event-parity-blockers.ps1 -FailOnMismatch
+```
 
 ---
 

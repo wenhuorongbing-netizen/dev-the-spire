@@ -21,8 +21,10 @@ Complete the RitsuLib migration safely by separating four different claims:
 - Hybrid bootstrap is active: migrated patches use RitsuLib `ModPatcher`, remaining raw patches use Harmony.
 - Off, CanaryOnly, and AdditiveBatch1 diagnostic smokes have historical `v0.106.1` loader-gate evidence with 25/25 migrated patches applied and 30 SavedSpireFields observed.
 - Sts1Events defaults Off. CanaryOnly and AdditiveBatch1 are controlled prototype/test modes. AdditiveAllDraft and ReplaceUnknownEventsPrototype remain unsafe/dev-only.
-- Current-runtime Off loader smoke is clean for beta.85. Gameplay, event screenshots, save-load, image/render, replacement functional proof, Mod Settings UI refresh, co-op/fail-closed proof, independent QA, clean-worktree decision, current-source package decision, and versioned tester-package handoff remain pending.
+- Current-runtime Off loader smoke is clean for beta.85. Current CanaryOnly and AdditiveBatch1 enabled-mode smokes are still missing; current source expects CanaryOnly 4 event types / 6 registration calls and AdditiveBatch1 10 event types / 14 registration calls before gameplay evidence. Gameplay, event screenshots, save-load, image/render, replacement functional proof, Mod Settings UI refresh, co-op/fail-closed proof, independent QA, clean-worktree decision, current-source package decision, and versioned tester-package handoff remain pending.
 - Release-ready and live-ready remain no.
+
+Coordination boundary: while the same-repository validation pause remains active, do not run the no-game validation commands, package/release-evidence work, runtime/game smoke, staging, commit, or push from this thread. During the pause, this spec is only for read-only/static planning, source-only expected-shape output, and review of already-captured evidence.
 
 ## Workstream 1 - Validation Truth
 
@@ -53,11 +55,13 @@ Historical `v0.106.1` loader-gate proof is available, but it does not prove curr
 2. Preserve the clean beta.85 `v0.107.0` Off loader proof after any package/source change by rerunning package parity and loader smoke when the changed surface requires it.
 3. If owner approves a new `v0.107.0` tester package, bump the repo compile package and manifest minimum from `0.3.2` to `0.4.16` in that versioned package pass.
 4. Refresh loader smoke only after the current runtime and installed package can support the claim being made; do not advance to CanaryOnly, AdditiveBatch1, replacement, or gameplay proof from the Off smoke alone.
-5. Capture Mod Settings UI for the current package state.
-6. Capture CanaryOnly gameplay evidence for Big Fish, Golden Idol, The Lab, and Divine Fountain.
-7. Capture save/load and EN/ZHS render evidence for the canary events.
-8. Capture co-op/fail-closed evidence or document the blocker.
-9. Keep ReplacementPrototype behind explicit unsafe/debug gates.
+5. Capture current CanaryOnly enabled-mode smoke first: prove 4 event types / 6 registration calls on beta.85 / `v0.107.0` and retain `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`.
+6. Capture current AdditiveBatch1 enabled-mode smoke next: prove 10 event types / 14 registration calls on beta.85 / `v0.107.0` and retain `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`.
+7. Capture Mod Settings UI for the current package state.
+8. Only after those enabled-mode smokes match current source shape, capture CanaryOnly gameplay evidence for Big Fish, Golden Idol, The Lab, and Divine Fountain.
+9. Capture save/load and EN/ZHS render evidence for the canary events.
+10. Capture co-op/fail-closed evidence or document the blocker.
+11. Keep ReplacementPrototype behind explicit unsafe/debug gates.
 
 ## Workstream 3 - Batch 4c Candidate Review
 

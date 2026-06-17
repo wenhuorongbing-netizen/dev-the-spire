@@ -17,7 +17,7 @@
 ## StS2 Implementation
 
 ### Class: `Sts1DeadAdventurer`
-- **Registration:** `[RegisterActEvent(typeof(Act1Model))]`
+- **Registration:** `Sts1EventRegistrationService` registers this StS1 Act 1 event into both StS2 Act 1 buckets with `content.ActEvent<Overgrowth, Sts1DeadAdventurer>()` and `content.ActEvent<Underdocks, Sts1DeadAdventurer>()`.
 - **Layout:** Default
 
 ### Localization Keys

@@ -3,6 +3,8 @@
 Date: 2026-05-31
 Scope: Mandatory Overnight Run v15 continuation for `docs/goals/event.md`
 
+Superseded note, 2026-06-11: this report is historical root-cause evidence only. Current beta.85 `v0.107.0` proof covers default-Off loader startup and patch application only; it supersedes the red v15 loader blocker but does not prove CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, image/render, QA, handoff, or release readiness. Keep the v15 `v0.3.10` dependency and red-loader details below as history, not current runtime truth.
+
 ## Exact Gate Id
 
 Primary hard blocker: `O24` loader proof is not clean enough to continue to runtime gameplay proof.

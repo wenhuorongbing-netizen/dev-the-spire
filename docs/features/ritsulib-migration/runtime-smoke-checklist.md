@@ -8,6 +8,8 @@ Verify that the RitsuLib migration does not change runtime behavior by loading t
 
 **CURRENT V0.107.0 BETA.85 OFF LOADER SMOKE PASSED / GAMEPLAY STILL PENDING** - official STS2-RitsuLib `v0.4.16` is installed at `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` with `lib\0.107.0` and satisfies the installed Spire Plus package dependency (`STS2-RitsuLib >= 0.3.2`). The current dirty source and beta.85 manifest line still use compile/manifest `0.3.2`; a future `0.4.16` metadata bump belongs in an owner-approved versioned package pass. Historical diagnostic Off, CanaryOnly, and AdditiveBatch1 smokes reached main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied for the older `v0.106.1` lane. The beta.84 package-parity Off smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` is red root-cause evidence: 17/25 Spire Plus patches, 8 optional failures, and an `EctoplasmGoldGatePatch` initializer exception. The current beta.85 Off smoke at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus patches, logged StS1Events default Off, and audited clean. Gameplay, Mod Settings screenshots, save-load, co-op, independent QA rerun, clean-worktree decision, current-source package decision, and versioned tester-package handoff remain pending.
 
+Coordination boundary: while the same-repository validation pause is active, do not run this checklist's launch, gameplay, build, publish, package, or release-evidence steps. During the pause, use this checklist only for read-only/static planning, source-only `-PrintExpected` output, or verification of already-captured logs. Run CanaryOnly, AdditiveBatch1, gameplay, and multiplayer sections only after the pause is lifted and one controlled validation lane is assigned.
+
 2026-05-31 Runtime Proof + Governance Closure check:
 
 | Path | Result |
@@ -42,7 +44,7 @@ Revision J/v15 failed-smoke evidence and target-fix follow-up:
 | `.tools\runtime-evidence\smoke-k1-off-20260602-145938\godot-log-audit.json` | PASS: K1 clean audit: 0 Godot ERROR, 0 release-blocking signature hits. |
 | `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot.log.after-launch` | PASS: K1 fresh CanaryOnly direct launch (steam_appid.txt + env var) at HEAD 8f2d79b4 reached main menu in 22s, loaded exactly 3 mods, applied 25/25 patches, found 30 SavedSpireFields, and registered exactly 4 canary events: Sts1BigFish, Sts1GoldenIdol, Sts1TheLab, Sts1DivineFountain. |
 | `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot-log-audit.json` | PASS: K1 clean audit: 0 Godot ERROR, 0 release-blocking signature hits. |
-| `.tools\runtime-evidence\additive-batch1-20260602-150445\godot.log.after-launch` | PASS: AdditiveBatch1 direct launch reached main menu, loaded exactly 3 mods, applied 25/25 patches, and registered exactly 10 event types through 11 registration calls. |
+| `.tools\runtime-evidence\additive-batch1-20260602-150445\godot.log.after-launch` | PASS / historical only: AdditiveBatch1 direct launch reached main menu, loaded exactly 3 mods, applied 25/25 patches, and registered exactly 10 event types through the old 11 registration calls. Current source expects 10 event types through 14 registration calls and still needs fresh `v0.107.0` proof. |
 | `.tools\runtime-evidence\additive-batch1-20260602-150445\godot-log-audit.json` | PASS: clean audit, 0 release-blocking signature hits. |
 | `.tools\runtime-evidence\package-parity-restore-20260610-091943\package-parity-restore.json` | PASS: installed beta.84 DLL restored from package staging; stale installed DLL `69DEB870A226FD58EC9AF9D8895EEDC832B5D9A8903A2D79B1D6CEDC2E114EB1` was backed up and replaced with packaged DLL `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`. |
 | `scripts\check-installed-spire-plus-package.ps1 -ModDirectory 'E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance'` | PASS after DLL restore: installed DLL, manifest, PCK, README, game-root ZIP, and Sere Talon/Tanx Claws PCK content match the beta.84 handoff. |
@@ -61,7 +63,7 @@ Latest prerequisite evidence: installed game `release_info.json` reports Slay th
 3. STS2-RitsuLib v0.3.2+ installed at `<GameRoot>\mods\STS2-RitsuLib` (current local install: `v0.4.16` on E-drive)
 4. Spire Plus package from `publish/SpirePlus-v0.1.0-private-beta.85.zip` installed at `<GameRoot>\mods\EZMicroBalance`; package checker is recorded in `PROJECT_STATE.md` as passed on 2026-06-11.
 5. No other mods enabled
-6. If using `scripts\spire-plus-live-session.ps1`, invoke it with the E-drive `-GameRoot` and `-SteamExe`, pass the chosen `-SteamUserId`, and ensure `STS2-RitsuLib` is not moved out by any mod-isolation step.
+6. If using `scripts\spire-plus-live-session.ps1`, prepare with explicit E-drive `-GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2'`, `-SteamExe 'E:\Steam\steam.exe'`, the chosen `-SteamUserId`, and `-Mode Prepare -MoveOtherMods -MoveCurrentRuns -Launch`; restore after evidence capture with `-Mode Restore -StopGameOnRestore -PreserveNewCurrentRunsOnRestore`; ensure `STS2-RitsuLib` is not moved out by any mod-isolation step.
 
 ## Checklist
 
@@ -84,10 +86,28 @@ Latest prerequisite evidence: installed game `release_info.json` reports Slay th
 | Mode | Required env | Expected | Evidence |
 | --- | --- | --- | --- |
 | Off | unset / empty / invalid `SPIREPLUS_STS1_EVENT_MODE` | 0 Sts1Events registrations, no `[StS1 Events]` registration lines | [PASS] beta85 v01070-beta85-current-package-runtime-fix-20260611-0510: StS1Events `bootstrap=disabled, live=Disabled`; audit clean |
-| CanaryOnly | `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` | Exactly 4 canary registrations: Big Fish, Golden Idol, The Lab, Divine Fountain | [PASS] K1 smoke-k1-canary3-20260602-151104: exactly 4 canary registrations (BigFish, GoldenIdol, TheLab, DivineFountain), clean audit |
-| AdditiveBatch1 | `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` | Controlled prototype only: 11 registration calls / 10 event types, no TODO/BLOCKED events | [PASS] `.tools\runtime-evidence\additive-batch1-20260602-150445`: exactly 10 event types through 11 registration calls, clean audit |
+| CanaryOnly | `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` | 4 canary event types / 6 registration calls: Big Fish and Golden Idol in both Act 1 buckets, plus The Lab and Divine Fountain as shared events | [CURRENT PENDING] Historical K1 smoke-k1-canary3-20260602-151104 proved the older 4 canary registrations; rerun on beta.85 / `v0.107.0` for current proof |
+| AdditiveBatch1 | `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` | Controlled prototype only: 14 registration calls / 10 event types, no TODO/BLOCKED events | [CURRENT PENDING] Historical `.tools\runtime-evidence\additive-batch1-20260602-150445` proved the older 10 event types through 11 registration calls; rerun on beta.85 / `v0.107.0` for current proof |
 | AdditiveAllDraft | `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | Not release-safe; dev-only all-draft mode includes TODO/BLOCKED content | [DO NOT USE for tester/release paths] |
 | ReplaceUnknownEventsPrototype | `SPIREPLUS_STS1_EVENT_MODE=ReplaceUnknownEventsPrototype` plus `REPLACEMENT_PROTOTYPE_ENABLED` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | Not release-safe; debug-only replacement prototype; normal builds fail closed | [DO NOT USE for tester/release paths] |
+
+After any future enabled-mode smoke copies `godot.log` and writes `godot-log-audit.json`, verify the copied files without launching anything:
+
+```powershell
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "<evidence>\godot.log.after-launch" -AuditPath "<evidence>\godot-log-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.85 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "<evidence>\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "<evidence>\godot.log.after-launch" -AuditPath "<evidence>\godot-log-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.85 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "<evidence>\enabled-mode-log-check.json" -FailOnMismatch
+```
+
+For helper-created evidence folders, also verify the packet has the expected copied files, session state, restore state, isolated-mod list, and clean nested log/audit result:
+
+```powershell
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.85 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.85 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
+```
+
+For enabled-mode copied logs, the log verifier requires explicit expected package-version, Ritsu compat-branch, RitsuLib package-version, and game-version checks, and the observed registered event-line count matches the source-derived registration-call count. It verifies registration-call count and event class set; current RitsuLib logs are class-only, so Act-bucket tuple proof remains source-derived until future logs or gameplay evidence prove those targets directly. For enabled-mode packets, the helper-created `session-state.json` must record `Sts1EventModeEnvironment` equal to the requested mode, `AllowedModIds` exactly equal to BaseLib, STS2-RitsuLib, and EZMicroBalance, moved-mod source/destination paths stay under the recorded mods root and evidence `isolated-mods` folder, restore counts match the session moved-mod and moved-current-run lists, and the helper-copied `game-release-info.json` must match the expected game version. The packet verifier rejects missing or mismatched enabled-mode setup metadata, rejects unsafe-mode environment leakage for CanaryOnly/AdditiveBatch1 evidence, rejects `-AllowMissingSessionState` / `-AllowMissingRestoreState` for enabled-mode packets, and requires explicit expected package-version, Ritsu compat-branch, RitsuLib package-version, and game-version checks. Keep `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json` in the same evidence folder as the copied log and audit so the verifier decisions remain reviewable.
+
+Source-only expected shapes can be printed during the coordination pause with `-PrintExpected`. That output is not enabled-mode proof; it only preserves the current expected class set and source-derived registration-call count.
 
 ### Mod Settings UI
 
@@ -118,8 +138,8 @@ Latest prerequisite evidence: installed game `release_info.json` reports Slay th
 
 - All loader smoke items pass.
 - Off mode proves 0 Sts1Events registrations in `godot.log`.
-- CanaryOnly proves exactly 4 canary registrations in `godot.log`.
-- AdditiveBatch1 proves 10 event types through 11 registration calls.
+- CanaryOnly proves 4 canary event types through 6 registration calls in `godot.log`.
+- AdditiveBatch1 proves 10 event types through 14 registration calls.
 - Mod Settings UI verified.
 - At least 3 of 5 basic gameplay items pass, with shop and save/load mandatory.
 - Multiplayer disposition confirmed fail-closed.

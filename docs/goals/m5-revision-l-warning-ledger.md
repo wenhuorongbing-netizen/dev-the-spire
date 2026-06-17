@@ -2,6 +2,8 @@
 
 Date: 2026-06-10
 
+Revision M supersession note, 2026-06-11: this warning ledger is historical owner-review context for the Revision L burn-down. The nullable warning blocker remains closed in beta.85 validation, but warning-clean source is not enabled-mode, gameplay, save-load, replacement, multiplayer, QA, or release-ready proof. Use `PROJECT_STATE.md`, `docs/goals/warning-ledger.md`, and the Revision M docs for current proof claims.
+
 ## Current Count
 
 The current unique warning count is 0 after owner guards across Sts1Events model handlers.

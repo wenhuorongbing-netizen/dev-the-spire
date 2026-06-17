@@ -4,7 +4,7 @@
 
 **Open — governance hardened, content incomplete, runtime proof blocked.** Default Off is source-safe; CanaryOnly and AdditiveBatch1 are controlled source-test modes; AdditiveAllDraft and ReplaceUnknownEventsPrototype are disabled unless an explicit unsafe/debug override is set, and remain dev-only/unsafe.
 
-2026-06-10 correction: loader proof is now captured for Off, CanaryOnly, and AdditiveBatch1; event gameplay, save/load, screenshot, replacement functional proof, and two-client co-op/fail-closed proof remain pending.
+2026-06-11 correction: historical loader proof exists for Off, CanaryOnly, and AdditiveBatch1, and current beta.85 `v0.107.0` proof exists for default-Off only. Current CanaryOnly/AdditiveBatch1 enabled-mode launch, event gameplay, save/load, screenshot, replacement functional proof, and two-client co-op/fail-closed proof remain pending.
 
 ## Summary
 
@@ -30,21 +30,21 @@ StS1 event port model files (`Sts1Events/Models/`) are compiled into the Spire P
 
 | Mode | Env var value | Additional gate | Registration count | Risk level | Use case |
 |------|--------------|-----------------|-------------------|------------|----------|
-| Off | unset / empty / invalid | none | 0 | **Safe** | Default — production |
+| Off | unset / empty / invalid | none | 0 | **Safe** | Default - production |
 | CanaryOnly | `CanaryOnly` | none | 4 registrations / 4 event types (Big Fish, Golden Idol, Lab, Divine Fountain) | **Controlled** | Canary test harness |
-| AdditiveBatch1 | `AdditiveBatch1` | none | 11 registrations / 10 event types (4 canary + 6 simple; Shining Light registers to two Act 1 buckets) | **Controlled** | Verified-scope prototype testing only |
-| AdditiveAllDraft | `AdditiveAllDraft` | `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | 54 registration calls (47 unique event types) | **Unsafe / dev-only** | Includes TODO/BLOCKED events |
-| ReplaceUnknownEventsPrototype | `ReplaceUnknownEventsPrototype` | `REPLACEMENT_PROTOTYPE_ENABLED` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | 0 in normal builds; 54 registration calls (47 unique event types) only in explicit debug builds | **Unsafe / debug-only** | Debug-only replacement prototype |
+| AdditiveBatch1 | `AdditiveBatch1` | none | 14 registrations / 10 event types (4 canary + 6 simple; Big Fish, Golden Idol, The Cleric, and Shining Light register to two Act 1 buckets) | **Controlled** | Verified-scope prototype testing only |
+| AdditiveAllDraft | `AdditiveAllDraft` | `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | 57 registration calls (47 compiling event types) | **Unsafe / dev-only** | Includes TODO/BLOCKED events |
+| ReplaceUnknownEventsPrototype | `ReplaceUnknownEventsPrototype` | `REPLACEMENT_PROTOTYPE_ENABLED` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | 0 in normal builds; 57 registration calls (47 compiling event types) only in explicit debug builds | **Unsafe / debug-only** | Debug-only replacement prototype |
 
 ### AdditiveBatch1 Risk Table
 
-AdditiveBatch1 is source-guarded and loader-verified for exact registration scope, but gameplay/co-op-unverified. It may be used only for prototype runtime smoke after RitsuLib is installed; it is not a tester-facing gameplay claim.
+AdditiveBatch1 is source-guarded for exact registration scope. Historical loader proof covered the older 11-call source shape; current beta.85 proof is default-Off only, so current `v0.107.0` AdditiveBatch1 enabled-mode and gameplay/co-op evidence remain pending. It may be used only for prototype runtime smoke after RitsuLib is installed; it is not a tester-facing gameplay claim.
 
 | Scope | Event IDs | Risk |
 |----------|-------------|------|
-| Canary shared events | `sts1_big_fish`, `sts1_golden_idol`, `sts1_the_lab`, `sts1_divine_fountain` | Controlled; loader smoke captured, but still needs event encounter gameplay and save/load proof |
+| Canary events | `sts1_big_fish`, `sts1_golden_idol`, `sts1_the_lab`, `sts1_divine_fountain` | Controlled; current source registers Big Fish and Golden Idol to both Act 1 buckets while The Lab and Divine Fountain remain shared; still needs current enabled-mode launch, event encounter gameplay, and save/load proof |
 | Simple batch events | `sts1_purifier`, `sts1_upgrade_shrine`, `sts1_golden_shrine`, `sts1_the_cleric`, `sts1_old_beggar`, `sts1_shining_light` | Controlled source-test scope; still needs live event flow, EN/ZHS render, image, and save/load proof |
-| Act duplicate | `sts1_shining_light` registers to both Overgrowth and Underdocks | Count drift risk if registration calls are treated as unique events |
+| Act duplicate registrations | `sts1_big_fish`, `sts1_golden_idol`, `sts1_the_cleric`, and `sts1_shining_light` each register to both Overgrowth and Underdocks | Count drift risk if registration calls are treated as unique event types |
 
 ### AdditiveAllDraft Risk Table
 
@@ -76,7 +76,7 @@ Events with TODO/BLOCKED/partial status in AdditiveAllDraft mode:
 
 - Dedicated tests in `Sts1EventFeatureGuardTests.cs` cover the current focused guard set
 - Tests verify gate defaults, canary events, AdditiveBatch1 verified scope, act mapping, registry presence, registration counts, patch-boundaries row, mode safety
-- Safe/controlled modes (Off, CanaryOnly, AdditiveBatch1) are source-verified by guard tests; loader proof is captured with installed STS2-RitsuLib, while event gameplay and co-op proof remain pending
+- Safe/controlled modes (Off, CanaryOnly, AdditiveBatch1) are source-verified by guard tests; current loader proof is captured only for default-Off with installed STS2-RitsuLib, while current CanaryOnly/AdditiveBatch1 enabled-mode launch, event gameplay, and co-op proof remain pending
 - CanaryOnly events are hardcoded — no TODO/BLOCKED events can enter safe modes
 
 ### Why this is safe
@@ -85,7 +85,7 @@ Events with TODO/BLOCKED/partial status in AdditiveAllDraft mode:
 2. CanaryOnly registers exactly 4 hardcoded shared events — all in `spec-drafted` status, none TODO/BLOCKED.
 3. AdditiveBatch1 registers only the current verified prototype scope and is separate from AdditiveAllDraft.
 4. AdditiveAllDraft and ReplaceUnknownEventsPrototype require `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` in addition to the mode selector and are documented as dev-only; the replacement prototype also fails closed unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED`.
-5. Guard tests verify Off=0, CanaryOnly=4, AdditiveBatch1 exact scope, and that the registration service is compiled; live `godot.log` loader proof now exists, but event encounter, save/load, screenshot, and co-op proof are still required.
+5. Guard tests verify Off=0, CanaryOnly=4, AdditiveBatch1 exact scope, and that the registration service is compiled; current `godot.log` loader proof exists only for default-Off, so current CanaryOnly/AdditiveBatch1 enabled-mode launch, event encounter, save/load, screenshot, and co-op proof are still required.
 6. `Sts1Duplicator` is compile-excluded (needs `CardSelectCmd`/`CardPileCmd` APIs not yet available).
 
 ### What remains incomplete

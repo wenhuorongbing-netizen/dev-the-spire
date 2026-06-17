@@ -1,8 +1,16 @@
-# Registry Reconciliation - 52 / 54 / 48 / 50 / 57 / 397
+# Registry Reconciliation - 52 / 54 / 50 / 48 / 47 / 57 / 14
 
 > Updated: 2026-06-11 Revision M Act 1 simple-batch registration correction
 
-This file reconciles the StS1 event-port source counts. These counts are source/doc counts only; they do not prove runtime gameplay, save/load, image rendering, replacement-pool behavior, or parity.
+This file reconciles the StS1 event-port source counts. These counts are source/doc counts only; they do not prove runtime gameplay, save/load, image rendering, replacement-pool behavior, or parity. Current localization coverage is tracked separately at 397 EN keys and 397 ZHS keys.
+
+Static count reproduction:
+
+```powershell
+.\scripts\check-sts1-event-registry-shape.ps1 -FailOnMismatch
+```
+
+The checker parses `Sts1EventRegistrationService.cs`, `Sts1EventFeatureGate.cs`, `Sts1EventRegistry.cs`, the model source tree, `EZMicroBalance.csproj`, and `canonical-event-matrix.csv`. It is a source-shape guard only and does not replace `dotnet test` or runtime enabled-mode proof.
 
 Revision L correction, 2026-06-10: Big Fish and Golden Idol now register to the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`) in CanaryOnly, AdditiveBatch1, and RegisterAll. Their models remain `IsShared=true` for co-op voting semantics; Act bucket parity is source-aligned but runtime bucket proof is still pending.
 
@@ -70,6 +78,7 @@ One Simple entry, Duplicator, is compile-excluded and not registered by `Registe
 - `RegisterAllSharedEventCountIs14` guards shared registration calls.
 - `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` guards Batch1 identity and count.
 - `RegistryCanaryPhaseMatchesCanaryEventIds` guards canary phase metadata.
+- `scripts/check-sts1-event-registry-shape.ps1` reproduces the current count matrix without starting the .NET test runner.
 
 ## Non-Claims
 

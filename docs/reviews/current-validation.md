@@ -1,28 +1,43 @@
 # Current Validation
 
-Date: 2026-06-11
+Date: 2026-06-11; latest addendum: 2026-06-15
+
+## June 15 Pause-Safe Static Verification Addendum
+
+- No build, test, publish, package/release-evidence validation, runtime smoke, staging, commit, or push was started from this thread while the same-repo migration validation lane remains paused.
+- Pause-safe static verification was rerun after adding active summary direct localization non-proof guards: `scripts/check-sts1-event-static-suite.ps1` completed 14 static steps with 0 suite failures, keeping the 33-key localization gap as known/non-failing; `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 715 checks / 0 mismatches in that pass, later superseded by the 872-check follow-up below; `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` returned 531 checks / 0 mismatches.
+- Pause-safe subagent evidence-packet checklist hardening, replacement gate-range split hardening, O14/O15 source-identity classification, format-pause wording, direct-key localization non-proof mirroring, status-board remaining-gate split hardening, post-pause QA/release/owner row splitting, evidence-map runtime/static range splitting, active event-goal checkpoint guarding, active-goal stale-count scope guarding, subagent owner/final-handoff non-authorization guarding, direct enabled-mode copied-log `-AuditPath` hardening, verifier `-FailOnMismatch` command guards, verifier expected-target command guards, enabled-mode packet missing-state bypass guards, aggregate static-suite composition/fail-closed wrapper guards, retained `audit-godot-log.ps1` command guards, live-session prepare/restore command guards, runtime-smoke checklist live-session prerequisite guard, runtime-smoke checklist broad stale-scan inclusion guard, runtime-smoke checklist static-file hygiene scope guard, next-overnight runtime-plan stale-scan/static-hygiene scope guards, and RitsuLib monthly/Batch 4c static-file hygiene scope guards were added to `docs/goals/event.md`, `docs/features/sts1-events/v19-subagent-coverage.md`, `docs/features/sts1-events/test-plan.md`, `docs/features/sts1-events/status-board.md`, `docs/features/sts1-events/localization.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/ritsulib-migration/runtime-smoke-checklist.md`, `docs/features/ritsulib-migration/next-overnight-run.md`, `docs/features/ritsulib-migration/monthly-dev-spec.md`, `docs/features/ritsulib-migration/batch-4c-candidates.md`, `scripts/README.md`, and the v19 hard-stop report, then guarded by `scripts/check-sts1-v19-subagent-coverage.ps1`, `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch`, and `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch`. The follow-up static rerun returned `scripts/check-sts1-event-static-suite.ps1` 14 static steps / 0 suite failures, `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` 872 checks / 0 mismatches, `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` 11 checks / 0 mismatches, `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` 531 checks / 0 mismatches, `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` 63 checks / 0 mismatches, and `git diff --check --` exit 0 with CRLF warnings only.
+- `git diff --check --` exited 0 and emitted only CRLF normalization warnings for `AGENTS.md` and `docs/goals/refactor.md`; no whitespace errors were reported.
+- This static verification does not close O25, O33, enabled-mode, gameplay, save/load, replacement, multiplayer, image/render, QA, release, or handoff gates.
 
 ## June 11 Revision M Runtime Drift Addendum
 
 - M5 Revision M loader/runtime-drift blocker is closed for Off-mode loader proof only. The red root-cause packet remains `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/`: beta.84 reached main menu with RitsuLib `v0.4.16` / compat branch `0.107.0`, but Spire Plus applied only 17/25 ModPatcher patches, logged 8 optional ModPatcher failures, and threw an `EctoplasmGoldGatePatch` initializer exception.
-- Current dirty source contains targeted fixes for that drift: ModPatcher getter targets use property names with `MethodType.Getter`, and `EctoplasmGoldGatePatch` targets `Ectoplasm.ModifyGoldGained(Player, decimal)`.
+- The beta.85 source/package contains targeted fixes for that drift: ModPatcher getter targets use property names with `MethodType.Getter`, and `EctoplasmGoldGatePatch` targets `Ectoplasm.ModifyGoldGained(Player, decimal)`.
 - Source-fix context under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/` applied 25/25 patches and audited clean on `v0.107.0`, but that log still reports beta.84.
 - Current beta.85 Off proof is `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`: the log reports `v0.1.0-private-beta.85`, RitsuLib `0.4.16` with compat branch `0.107.0`, 25/25 Spire Plus ModPatcher patches applied, StS1Events default Off, main menu reached, and `godot-log-audit.json` is clean with 0 blocking signature hits.
+- The same already-captured beta.85 Off packet has a retained no-launch verifier report at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/runtime-evidence-packet-check.json`: Off packet checks=34 / mismatches=0 after adding the explicit RitsuLib package-version target, nested log verifier checks=10 / mismatches=0. This is evidence bookkeeping for default-Off proof only, not CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, image/render, or QA proof.
 - Installed beta.85 package parity is recorded in `PROJECT_STATE.md` as passed via `scripts\check-installed-spire-plus-package.ps1`. The current beta.85 release/package artifact, artifact parity, Ascension milestone, and Ancient behavior subset also passed with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`: 67 passed / 0 failed / 0 skipped.
 - `PROJECT_STATE.md` now records the latest beta.85 runtime-fix validation as 0 build errors, 0 warnings, the isolated `ReleaseEvidenceGateTests` class passing 9 passed / 0 failed / 0 skipped / 9 total, and the complementary no-build test-project lane excluding `ReleaseEvidenceGateTests` passing 466 passed / 0 failed / 21 skipped / 487 total, for split coverage of 475 passed / 0 failed / 21 skipped / 496 total after stale current-repo `testhost` locks were cleared. The dated June 10 command table below remains historical evidence for that lane.
 - Final post-doc-refresh command evidence on 2026-06-11: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` passed with 0 warnings / 0 errors; `ReleaseEvidenceGateTests` passed 9 / 0 / 0 / 9 with diag `migration-beta85-release-evidence-post-doc-final-diag.log`; the complementary no-build test-project lane passed 466 / 0 / 21 / 487 with diag `migration-beta85-non-release-evidence-post-doc-final-diag.log`; the opt-in installed-artifact lane passed 67 / 0 / 0 / 67 with `STS2_PATH=E:\Steam\steamapps\common\Slay the Spire 2`; `dotnet format`, patch inventory, worktree batch classifier, `git diff --check`, and installed package parity all passed.
 - Runtime-ready/live-ready/release-ready remain blocked: no gameplay, clicked UI, save-load, co-op, event encounter, replacement, independent QA, or release handoff proof was produced by the loader smoke. Active same-repo `dotnet`/`testhost` processes were observed during the continuation, so do not start overlapping validation lanes.
+- StS1 v19 validation coordination hard stop is recorded at `docs/features/sts1-events/hard-stop-blocker-report-v19-validation-coordination-20260611.md`. The current O0-O76 gate map is `docs/features/sts1-events/v19-gate-evidence-map.md`, and the per-gate ledger is `docs/features/sts1-events/v19-gate-ledger.csv` guarded by `scripts/check-sts1-v19-gate-ledger.ps1`: `O11-O20` has static source/doc coverage, `O21-O24` has beta.85 default-Off loader proof, and `O25-O76` remain current-pending or blocked except for source-guarded replacement/classification surfaces. Beta.85 Off proof must not be extended to CanaryOnly, AdditiveBatch1, gameplay, replacement, multiplayer, or QA gates.
 
-## June 11 Static StS1 Canary Addendum
+## June 11 StS1 Event Source/Guard Addendum
 
-- Static source/test/doc change after the June 10 validation: `Sts1DivineFountain` now overrides `IsAllowed(IRunState)` and requires every run participant to have at least one curse before the shared event is eligible. `Sts1EventFeatureGuardTests.DivineFountainRequiresEveryPlayerToHaveACurse` was added as a source guard.
-- Static source/resource/test/doc change after the June 10 validation: `Sts1BigFish` now uses the wiki-aligned Box option identity (`InitialOptionKey("BOX")`) with matching EN/ZHS localization keys. `Sts1EventFeatureGuardTests.BigFishUsesBoxOptionName` was added as a source/localization guard.
-- Static source/resource/test/doc change after the June 10 validation: `Sts1TheLab` now exposes only the Open option, removes unused EN/ZHS Leave keys, and keeps the source 3-potion / A15+ 2-potion split. `Sts1EventFeatureGuardTests.TheLabHasOnlyOpenOption` was added as a source/localization guard.
-- The June 10 command results below are not proof of these newer source/resource changes. The later beta.85 Off smoke proves the default-Off loader path only; it does not prove Big Fish Box UI render, The Lab UI render, Divine Fountain natural-pool eligibility, save/load, replacement behavior, or multiplayer disposition.
+- The StS1 event source/resource/test/doc changes listed here are covered by the beta.85 split no-build validation recorded above. That validation is still no-game evidence; it does not prove enabled-mode loader registration, event encounter gameplay, UI render, save/load, replacement behavior, or multiplayer disposition.
+- `Sts1DivineFountain` now overrides `IsAllowed(IRunState)` and requires every run participant to have at least one curse before the shared event is eligible. `Sts1EventFeatureGuardTests.DivineFountainRequiresEveryPlayerToHaveACurse` guards the source behavior.
+- `Sts1BigFish` now uses the wiki-aligned Box option identity (`InitialOptionKey("BOX")`) with matching EN/ZHS localization keys. `Sts1EventFeatureGuardTests.BigFishUsesBoxOptionName` guards the source/localization shape.
+- `Sts1GoldenIdol` now uses the Outrun / Smash / Hide trap branch identities and values in source/localization, while still marking the random-relic Take reward as a non-parity substitute for the missing Golden Idol relic model. Guard coverage is included in the beta.85 StS1 event source lanes.
+- `Sts1TheLab` now exposes only the Open option, removes unused EN/ZHS Leave keys, and keeps the source 3-potion / A15+ 2-potion split. `Sts1EventFeatureGuardTests.TheLabHasOnlyOpenOption` guards the source/localization shape.
+- `Sts1OldBeggar`, `Sts1ShiningLight`, `Sts1GoldenShrine`, and `Sts1TheCleric` have source/localization/doc guard coverage for the current AdditiveBatch1 source contracts: paid-removal affordability, random upgrades, Pray/Desecrate values, Act 1 bucket registration, and A15 Purify cost/eligibility behavior.
+- Static resource parity is not source-complete localization coverage: `docs/features/sts1-events/localization-source-gap-scan-20260611.md` records 33 source-referenced StS1 result-page keys missing from both EN and ZHS. The static closure order is `docs/features/sts1-events/localization-gap-closure-plan.md`; it changes no shipped resources by itself.
+- Static-only event evidence now includes `scripts/check-sts1-event-static-suite.ps1`, which wraps registry, enabled-log expected-shape, current-doc-claims, static-file hygiene, v19 gate-ledger, v19 subagent coverage, spec, feature-gate, parity, asset, multiplayer, localization source-key, and localization gap-baseline checks. The current expected summary is 14 static steps, 0 suite failures, and the 33-key localization gap reported as known/non-failing until those keys are intentionally closed in a versioned resource pass.
+- The current beta.85 Off smoke proves only the default-Off loader path. It does not prove Big Fish Box UI render, Golden Idol trap result render, The Lab result render, Divine Fountain natural-pool eligibility, AdditiveBatch1 enabled-mode registration, save/load, replacement behavior, multiplayer disposition, or gameplay parity.
 
-## June 10 Migration Reconciliation Addendum
+## June 10 Migration Reconciliation Addendum (Historical)
 
-- Current pass source fix: `Sts1EventRegistrationService` now registers Big Fish and Golden Idol into the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`) for CanaryOnly, AdditiveBatch1, and RegisterAll, matching the Sts1Event guard-test contract and current status-board counts.
+- June 10 source fix: `Sts1EventRegistrationService` registered Big Fish and Golden Idol into the StS2 Act 1 buckets (`Overgrowth` and `Underdocks`) for CanaryOnly, AdditiveBatch1, and RegisterAll, matching the Sts1Event guard-test contract and then-current status-board counts. Later beta.85/v19 docs add The Cleric and Shining Light Act 1 bucket count reconciliation.
 - Validation commands completed in this pass:
   - `dotnet build EZMicroBalance.sln -m:1 --no-incremental`: PASS, 0 warnings, 0 errors.
   - `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~Sts1EventFeatureGuardTests" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1`: PASS, 31 passed / 0 failed / 0 skipped.
@@ -71,19 +86,19 @@ Exact skipped method list from source:
 - `ReleasePackageArtifactGuardTests.InstalledAndPackagedPckCarrySereTalonTanxClawsSplit`
 - `ReleasePackageArtifactGuardTests.InstalledAndPackagedPckCarryTrialBranchShortChoiceText`
 
-## June 10 Refactor Validation
+## June 10 Refactor Validation (Historical)
 
 - HEAD before this pass: `f32c6767 (HEAD -> main, origin/main, origin/HEAD) update refactor.md with implementation results and Green Stop check`.
 - Worktree: dirty before this pass with existing goal/migration doc edits and deleted goal files; those pre-existing edits were preserved.
-- Source compatibility fix: adapted current code to the installed game DLL API by using `AbstractModel.ModifyPowerAmountGivenAdditive(...)`, `Ectoplasm.ModifyGoldGained(...)`, and `CookRestSiteOption.get_IsEnabled`.
+- Source compatibility fix: adapted the then-current code to the installed game DLL API by using `AbstractModel.ModifyPowerAmountGivenAdditive(...)`, `Ectoplasm.ModifyGoldGained(...)`, and `CookRestSiteOption.get_IsEnabled`.
 - Warning burn-down: expanded Sts1Events owner guards now cover the compile-included Sts1Events model set.
-- Current forced build validation: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` passes after stale `testhost` locks were cleared, with **0 errors and 0 warnings**. This clears the prior 70-warning Sts1Events nullable staging debt in the current dirty source.
-- Current test-project validation: `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --logger "console;verbosity=normal" -- RunConfiguration.MaxCpuCount=1` passes with **464 passed / 0 failed / 21 skipped / 485 total**. The formerly problematic stale-loader handoff test and the full handoff pair both pass after isolating the PowerShell handoff runner from VSTest host I/O.
-- Current solution-level test status: **PASS**. Exact rerun after clearing overlapping validation processes: `dotnet test EZMicroBalance.sln --no-build --logger "console;verbosity=minimal" --diag tests\EZMicroBalance.Tests\TestResults\solution-after-zero-warning-build-diag.log -- RunConfiguration.MaxCpuCount=1` passed with **464 passed / 0 failed / 21 skipped / 485 total**. Earlier `testhost` crashes during same-repo cross-thread validation overlap remain runner-contamination evidence, not the current source validation truth.
-- Current hygiene validation: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, `git diff --check`, `.\scripts\generate-patch-inventory.ps1 -Check`, and `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` pass. `git diff --check` emitted only the existing CRLF normalization warning for `docs/patch-inventory.md`; dirty goal docs and deleted goal files remain preserved pre-existing/concurrent work.
+- June 10 forced build validation: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` passed after stale `testhost` locks were cleared, with **0 errors and 0 warnings**. This cleared the prior 70-warning Sts1Events nullable staging debt in that source snapshot.
+- June 10 test-project validation: `dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --logger "console;verbosity=normal" -- RunConfiguration.MaxCpuCount=1` passed with **464 passed / 0 failed / 21 skipped / 485 total**. The formerly problematic stale-loader handoff test and the full handoff pair passed after isolating the PowerShell handoff runner from VSTest host I/O.
+- June 10 solution-level test status: **PASS**. Exact rerun after clearing overlapping validation processes: `dotnet test EZMicroBalance.sln --no-build --logger "console;verbosity=minimal" --diag tests\EZMicroBalance.Tests\TestResults\solution-after-zero-warning-build-diag.log -- RunConfiguration.MaxCpuCount=1` passed with **464 passed / 0 failed / 21 skipped / 485 total**. Earlier `testhost` crashes during same-repo cross-thread validation overlap remain runner-contamination evidence, not current beta.85 validation truth.
+- June 10 hygiene validation: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, `git diff --check`, `.\scripts\generate-patch-inventory.ps1 -Check`, and `.\scripts\report-worktree-batches.ps1 -FailOnUnclassified` passed. `git diff --check` emitted only the existing CRLF normalization warning for `docs/patch-inventory.md`; dirty goal docs and deleted goal files were preserved pre-existing/concurrent work.
 - Runtime/live status for this June 10 lane: no gameplay, event UI, save-load, co-op, release package, or live-ready evidence was produced in this pass. The local installed game is now `v0.107.0`; installed RitsuLib was updated to official `v0.4.16` with `lib\0.107.0`. On 2026-06-10 the installed beta.84 DLL was restored from package staging, changing the installed Spire Plus DLL SHA256 from stale `69DEB870A226FD58EC9AF9D8895EEDC832B5D9A8903A2D79B1D6CEDC2E114EB1` to packaged `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766`; `scripts\check-installed-spire-plus-package.ps1` then passed. The fresh `v0.107.0` beta.84 Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` reached main menu but failed clean runtime proof: 11 Godot ERROR hits, 1 Spire Plus error/exception hit, 8 optional ModPatcher failures, and a `TargetInvocationException` rooted in stale `EctoplasmGoldGatePatch` target API drift. This beta.84 result is now root-cause evidence superseded by the clean beta.85 Off loader smoke recorded in the June 11 addendum.
 
-Historical sections below are retained as dated evidence records. Do not use their older warning counts, dirty counts, runtime version, or pass/fail status as the current refactor validation truth without comparing them to the June 10 section above.
+Historical sections below are retained as dated evidence records. Do not use their older warning counts, dirty counts, runtime version, or pass/fail status as current validation truth without comparing them to the June 11 beta.85 addendum above.
 
 Date: 2026-06-02
 
@@ -92,7 +107,7 @@ Date: 2026-06-02
 - HEAD: `f20dd230 (HEAD -> main) fix nullable warnings in 4 canary event files`
 - Branch: `main...origin/main`
 - Worktree: **CLEAN** (0 dirty entries). All prior dirty entries committed.
-- Runtime smoke: Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 loader-gate evidence remains valid. Fresh CanaryOnly runtime smoke captured at HEAD `f20dd230` with mod isolation, confirming 4 canary registrations. Warning debt reduced from 89 to 79 by fixing all 4 canary event files.
+- Historical runtime smoke: Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 loader-gate evidence was valid for the June 2 source/runtime state. Current beta.85 keeps only default-Off `v0.107.0` loader proof clean; current CanaryOnly/AdditiveBatch1 enabled-mode proof remains pending.
 
 ### Sprint 4 Required Commands
 
@@ -114,27 +129,27 @@ Date: 2026-06-02
 | `E:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib` | True |
 | `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` | True |
 
-### June 2 K1 Runtime Smoke (Fresh at HEAD `8f2d79b4`)
+### Historical June 2 K1 Runtime Smoke (HEAD `8f2d79b4`)
 
 | Evidence | Result | Notes |
 | --- | --- | --- |
-| `.tools\runtime-evidence\smoke-k1-off-20260602-145938\godot.log.after-launch` | PASS | Off-mode Steam smoke reached main menu in 40s. Loaded exactly 3 mods (BaseLib v3.1.4, RitsuLib v0.3.10, Spire Plus v0.1.0-private-beta.84). Applied 25/25 Spire Plus ModPatcher patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=disabled, live=Disabled` (default Off). FeatureRegistry diagnostics observed for all 6 features. All features default-on except Sts1Events. |
-| `.tools\runtime-evidence\smoke-k1-off-20260602-145938\godot-log-audit.json` | PASS | Clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. The `[ERROR] ritsulib-variants.json` line is a known RitsuLib internal variant-manifest issue (ignored by audit). |
-| `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot.log.after-launch` | PASS | CanaryOnly direct launch (with `steam_appid.txt` + `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` env var) reached main menu in 22s. Loaded exactly 3 mods. Applied 25/25 patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=enabled, live=Enabled` (CanaryOnly mode). Registered exactly 4 canary events: `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`. No other events registered. |
-| `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot-log-audit.json` | PASS | Clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. |
+| `.tools\runtime-evidence\smoke-k1-off-20260602-145938\godot.log.after-launch` | HISTORICAL PASS | Historical Off-mode Steam smoke reached main menu in 40s. Loaded exactly 3 mods (BaseLib v3.1.4, RitsuLib v0.3.10, Spire Plus v0.1.0-private-beta.84). Applied 25/25 Spire Plus ModPatcher patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=disabled, live=Disabled` (default Off). FeatureRegistry diagnostics observed for all 6 features. All features default-on except Sts1Events. |
+| `.tools\runtime-evidence\smoke-k1-off-20260602-145938\godot-log-audit.json` | HISTORICAL PASS | Historical clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. The `[ERROR] ritsulib-variants.json` line is a known RitsuLib internal variant-manifest issue (ignored by audit). |
+| `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot.log.after-launch` | HISTORICAL PASS | Historical CanaryOnly direct launch (with `steam_appid.txt` + `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` env var) reached main menu in 22s. Loaded exactly 3 mods. Applied 25/25 patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=enabled, live=Enabled` (CanaryOnly mode). Registered exactly 4 canary events: `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`. No other events registered. This is not current beta.85 enabled-mode proof. |
+| `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104\godot-log-audit.json` | HISTORICAL PASS | Historical clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. |
 
-### June 2 CanaryOnly Fresh Smoke (HEAD `f20dd230`, with mod isolation)
-
-| Evidence | Result | Notes |
-| --- | --- | --- |
-| `.tools\runtime-evidence\live-spire-plus-session-20260602-174656\godot.log.after-launch` | PASS | CanaryOnly Steam launch with mod isolation (25 other mods moved). Reached main menu. Loaded exactly 3 mods (BaseLib, RitsuLib, Spire Plus). Applied 25/25 patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=enabled, live=Enabled` (CanaryOnly mode). Registered exactly 4 canary events: `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`. Additional mods still loaded from cached mod list (RouteSuggest, heybox, etc.) — isolation moved files but game cached mod list before isolation. |
-
-### June 2 AdditiveBatch1 Runtime Evidence
+### Historical June 2 CanaryOnly Fresh Smoke (HEAD `f20dd230`, with mod isolation)
 
 | Evidence | Result | Notes |
 | --- | --- | --- |
-| `.tools\runtime-evidence\additive-batch1-20260602-150445\godot.log.after-launch` | PASS | AdditiveBatch1 direct launch reached main menu in 42s. Loaded exactly 3 mods (BaseLib v3.1.4, RitsuLib v0.3.10, Spire Plus v0.1.0-private-beta.84). Applied 25/25 Spire Plus ModPatcher patches. Registered exactly 10 event types via 11 calls: Sts1BigFish (Shared), Sts1GoldenIdol (Shared), Sts1TheLab (Shared), Sts1DivineFountain (Shared), Sts1Purifier (Shared), Sts1UpgradeShrine→Glory (Act), Sts1GoldenShrine (Shared), Sts1TheCleric (Shared), Sts1OldBeggar (Shared), Sts1ShiningLight→Overgrowth (Act), Sts1ShiningLight→Underdocks (Act). |
-| `.tools\runtime-evidence\additive-batch1-20260602-150445\godot-log-audit.json` | PASS | Clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. The single `[ERROR] ritsulib-variants.json` line is a RitsuLib internal variant-manifest issue (C# logger), not a Godot engine error. |
+| `.tools\runtime-evidence\live-spire-plus-session-20260602-174656\godot.log.after-launch` | HISTORICAL PASS | Historical CanaryOnly Steam launch with mod isolation (25 other mods moved). Reached main menu. Loaded exactly 3 mods (BaseLib, RitsuLib, Spire Plus). Applied 25/25 patches. Found 30 SavedSpireFields. Sts1Events: `bootstrap=enabled, live=Enabled` (CanaryOnly mode). Registered exactly 4 canary events: `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`. Additional mods still loaded from cached mod list (RouteSuggest, heybox, etc.); isolation moved files but game cached mod list before isolation. This is not current beta.85 enabled-mode proof. |
+
+### Historical June 2 AdditiveBatch1 Runtime Evidence
+
+| Evidence | Result | Notes |
+| --- | --- | --- |
+| `.tools\runtime-evidence\additive-batch1-20260602-150445\godot.log.after-launch` | HISTORICAL PASS | Historical AdditiveBatch1 direct launch reached main menu in 42s. Loaded exactly 3 mods (BaseLib v3.1.4, RitsuLib v0.3.10, Spire Plus v0.1.0-private-beta.84). Applied 25/25 Spire Plus ModPatcher patches. Registered exactly 10 event types via 11 calls: Sts1BigFish (Shared), Sts1GoldenIdol (Shared), Sts1TheLab (Shared), Sts1DivineFountain (Shared), Sts1Purifier (Shared), Sts1UpgradeShrine->Glory (Act), Sts1GoldenShrine (Shared), Sts1TheCleric (Shared), Sts1OldBeggar (Shared), Sts1ShiningLight->Overgrowth (Act), Sts1ShiningLight->Underdocks (Act). This is not current beta.85 AdditiveBatch1 proof. |
+| `.tools\runtime-evidence\additive-batch1-20260602-150445\godot-log-audit.json` | HISTORICAL PASS | Historical clean audit: 0 Godot ERROR, 0 MissingMethodException, 0 TypeLoadException, 0 Spire Plus error/exception. The single `[ERROR] ritsulib-variants.json` line is a RitsuLib internal variant-manifest issue (C# logger), not a Godot engine error. |
 
 ### June 2 Warning Triage
 
@@ -154,17 +169,17 @@ Date: 2026-06-02
 | MultiplayerPolicy (registry) | Taxonomy / diagnostics-only | Taxonomy store | YES |
 | MultiplayerFeaturePolicy (coop gates) | Behavioral safety gate | Active feature suppression in co-op | YES (intentional) |
 
-### June 2 Stop Decision (Updated after CanaryOnly fresh smoke + warning fixes)
+### Historical June 2 Stop Decision (Superseded by June 11 beta.85 addendum)
 
-- Status: PARTIAL PASS / RELEASE STILL BLOCKED.
-- No-game validation: **PASS** (build 0 errors / **79 warnings**, 464 passed / 0 failed / 21 skipped / 485 total, format clean, diff clean).
-- Runtime dependency path: **PASS** (STS2-RitsuLib v0.3.10 installed, BaseLib v3.1.4 and EZMicroBalance present).
-- Runtime loader gate: **PASS** (Off=0, CanaryOnly=4, AdditiveBatch1=10/11 with clean audits).
-- Sts1Events Off runtime proof: **PASS** (0 StS1 registrations, clean audit).
-- Sts1Events CanaryOnly runtime proof: **PASS** (exactly 4 canary events registered, clean audit, fresh at HEAD `f20dd230` with mod isolation).
-- FeatureRegistry runtime diagnostics: **PASS** (all 6 features with bootstrap/live status in runtime log).
-- RewardPipeline diagnostics: **PASS** (bootstrap events observed for all features in runtime log).
-- AdditiveBatch1 runtime proof: **PASS** (10 event types / 11 registration calls, clean audit).
+- Status then: PARTIAL PASS / RELEASE STILL BLOCKED.
+- No-game validation then: **HISTORICAL PASS** (build 0 errors / **79 warnings**, 464 passed / 0 failed / 21 skipped / 485 total, format clean, diff clean).
+- Runtime dependency path then: **HISTORICAL PASS** (STS2-RitsuLib v0.3.10 installed, BaseLib v3.1.4 and EZMicroBalance present).
+- Historical runtime loader gate then: **HISTORICAL PASS** (Off=0, CanaryOnly=4, AdditiveBatch1=10/11 with clean audits).
+- Historical Sts1Events Off runtime proof then: **HISTORICAL PASS** (0 StS1 registrations, clean audit).
+- Historical Sts1Events CanaryOnly runtime proof then: **HISTORICAL PASS** (exactly 4 canary events registered, clean audit, fresh at HEAD `f20dd230` with mod isolation).
+- FeatureRegistry runtime diagnostics then: **HISTORICAL PASS** (all 6 features with bootstrap/live status in runtime log).
+- RewardPipeline diagnostics then: **HISTORICAL PASS** (bootstrap events observed for all features in runtime log).
+- AdditiveBatch1 runtime proof then: **HISTORICAL PASS** for the historical 10 event types / 11 registration calls source shape, clean audit. Current source now expects 10 event types / 14 registration calls and needs fresh `v0.107.0` enabled-mode proof.
 - Worktree: **CLEAN** (0 dirty entries).
 - Warning debt: **ACCEPTED** (79 warnings remaining, 10 fixed in canary events, single root cause, fix pattern documented).
 - Independent QA: **PENDING** (needs rerun against current state).
@@ -172,17 +187,17 @@ Date: 2026-06-02
 - Event encounter screenshots: **PENDING** (require in-game event encounters).
 - Save/load proof: **PENDING** (require save during/after event, reload, state stable).
 - Versioned tester-package handoff: **PENDING**.
-- Batch 4c: **READY FOR LOW-RISK CANDIDATE PROPOSAL** (runtime smoke passed; propose 5-10 candidates for owner acceptance).
+- Batch 4c status then: **READY FOR LOW-RISK CANDIDATE PROPOSAL** (historical runtime smoke passed; current beta.85 enabled-mode proof remains pending).
 - Release-ready / live-ready: **NO**.
 
 ---
 
-## Revision J Current Snapshot
+## Historical Revision J Snapshot (superseded by June 11 beta.85 Off-only addendum)
 
 - HEAD: `6b149ba0 (HEAD -> main, origin/main, origin/HEAD) sprint 2`
 - Branch: `main...origin/main`
 - Worktree: dirty before this pass and still dirty. Existing source/docs/harness edits were preserved; no commit, push, stash, checkout, reset, restore, or broad clean was performed.
-- Runtime smoke: target-fix follow-up evidence under `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\` and `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\` reaches main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied. Off mode proves 0 StS1 registration lines; CanaryOnly proves exactly 4 canary content registrations. Live gameplay, UI, save-load, co-op, independent QA rerun, clean worktree, versioned tester-package handoff, live-ready, and release-ready claims remain blocked.
+- Historical target-fix follow-up smoke evidence under `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\` and `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\` reached main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied. Historical Off mode proved 0 StS1 registration lines; historical CanaryOnly proved exactly 4 canary content registrations for that source/runtime state. Current beta.85 keeps only default-Off `v0.107.0` proof clean; current CanaryOnly/AdditiveBatch1 enabled-mode proof, live gameplay, UI, save-load, co-op, independent QA rerun, clean worktree, versioned tester-package handoff, live-ready, and release-ready claims remain blocked.
 
 ## Revision J Required Commands
 
@@ -214,10 +229,10 @@ Date: 2026-06-02
 | --- | --- | --- |
 | `.tools\runtime-evidence\sts1-events-v15-loader-20260531-231135\godot.log.after-launch` | FAIL / reaches menu with errors | BaseLib, RitsuLib, and Spire Plus loaded and reached main menu, but audit is not clean: 11 Godot ERROR hits, including `ritsulib-variants.json` manifest parsing and 8 optional Spire Plus ModPatcher failures. |
 | `.tools\runtime-evidence\sts1-events-v15-loader-20260531-231135\audit-godot-log.after-launch.json` | FAIL | Not clean; 11 Godot ERROR lines. No `MissingMethodException` or `TypeLoadException` hits. |
-| `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\godot.log.after-launch` | PASS | Off-mode Steam smoke reached main menu, loaded exactly BaseLib/RitsuLib/Spire Plus, applied 25/25 Spire Plus patches, found 30 SavedSpireFields, and logged Sts1Events disabled/default Off. |
-| `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\godot-log-audit.json` | PASS | Clean audit with 0 release-blocking signature hits. |
-| `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\godot.log.after-direct-launch` | PASS | CanaryOnly direct smoke reached main menu, loaded exactly 3 mods, applied 25/25 patches, found 30 SavedSpireFields, and registered `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, and `Sts1DivineFountain`. |
-| `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\godot-log-audit.json` | PASS | Clean audit with 0 release-blocking signature hits. |
+| `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\godot.log.after-launch` | HISTORICAL PASS | Historical Off-mode Steam smoke reached main menu, loaded exactly BaseLib/RitsuLib/Spire Plus, applied 25/25 Spire Plus patches, found 30 SavedSpireFields, and logged Sts1Events disabled/default Off. |
+| `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\godot-log-audit.json` | HISTORICAL PASS | Historical clean audit with 0 release-blocking signature hits. |
+| `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\godot.log.after-direct-launch` | HISTORICAL PASS | Historical CanaryOnly direct smoke reached main menu, loaded exactly 3 mods, applied 25/25 patches, found 30 SavedSpireFields, and registered `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, and `Sts1DivineFountain`. This is not current beta.85 enabled-mode proof. |
+| `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\godot-log-audit.json` | HISTORICAL PASS | Historical clean audit with 0 release-blocking signature hits. |
 | `.tools\runtime-evidence\ritsulib-runtime-proof-20260531-2304\godot-direct-exe-steam-init-fail.log` | FAIL | Direct executable launch failed Steam initialization before mod loading. |
 | `.tools\runtime-evidence\ritsulib-runtime-proof-20260531-2304\godot-steam-applaunch.log` | FAIL / invalid Spire Plus proof | RitsuLib `0.3.10` loaded with compat branch `0.106.1`; RitsuLib framework patches reported 0 failed; BaseLib `3.1.4` loaded. `EZMicroBalance` was skipped as disabled in settings, so Spire Plus initialization, 30 SavedSpireFields, and Spire Plus ModPatcher proof were not established. |
 | `.tools\runtime-evidence\ritsulib-runtime-proof-20260531-2304\godot-steam-applaunch-audit.json` | FAIL | Audit was not clean: 3 Godot ERROR lines. No `MissingMethodException` or `TypeLoadException` hits were found. |
@@ -228,7 +243,7 @@ Date: 2026-06-02
 | Command | Result | Notes |
 | --- | --- | --- |
 | `dotnet test --filter Sts1EventFeatureGuardTests` | PASS | 31 passed, 0 failed, 0 skipped after adding unsafe-mode and replacement fail-closed guards. |
-| `dotnet test --filter PlayerFacingNameStaysSpirePlusWhileTechnicalIdRemainsStable` | PASS | 1 passed; active player-facing markdown naming guard is green. |
+| `dotnet test --filter PlayerFacingNameStaysSpirePlusWhileTechnicalIdRemainsStable` | PASS | 1 passed; active player-facing markdown naming guard passed. |
 | `dotnet build EZMicroBalance.sln -m:1 --no-incremental` | PASS after clearing stale testhost locks | Final rerun passed with 0 errors and 89 Sts1Events nullable warnings. Earlier attempts failed only because stale `testhost` processes locked `EZMicroBalance.Tests.dll`. |
 | `dotnet test EZMicroBalance.sln --no-build` | PASS after retry | Latest default no-build rerun passed with 464 passed, 0 failed, 21 skipped, 485 total after stale testhost locks were absent. Earlier normal reruns intermittently aborted with the known testhost crash and no assertion failures; `RunConfiguration.MaxCpuCount=1` remains the documented fallback if needed. |
 | `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` | PASS | No formatting changes required. |
@@ -251,7 +266,7 @@ Date: 2026-06-02
 
 - Status: PARTIAL PASS / RELEASE STILL BLOCKED.
 - Runtime dependency path blocker: cleared locally by installed STS2-RitsuLib `v0.3.10`.
-- Runtime loader gate: Off and CanaryOnly diagnostic smokes now pass with clean audits and 25/25 Spire Plus patches.
+- Historical Revision J loader gate then: Off and CanaryOnly diagnostic smokes passed for that source/runtime state. Current beta.85 `v0.107.0` proof remains default-Off only; CanaryOnly/AdditiveBatch1 enabled-mode proof is still pending.
 - Commit readiness: not complete because the worktree is dirty and no commit/push was requested.
 - Batch 4c: remains blocked until independent QA reruns against the new evidence and the owner accepts the dirty-worktree/package state.
 - Release-ready: no.
@@ -282,7 +297,7 @@ Date: 2026-06-02
 - Fixed the current `docs/issues.md` compactness guard regression and updated its guard to assert the active dirty-worktree truth instead of the obsolete beta.84 clean-worktree phrase.
 - Kept the test assembly serialized by default to reduce prior default test-host instability; the latest default `dotnet test EZMicroBalance.sln --no-build` rerun passes, while earlier crash logs remain historical/intermittent evidence rather than assertion failures.
 - Earlier full and `--no-build` test runs both passed with 462/0/21/483; the final current project no-build rerun passed with 464/0/21/485.
-- Ran independent QA/Red-Team review. Verdict: FAIL / HARD BLOCKED because runtime proof is absent; Green Stop is not allowed.
+- Ran independent QA/Red-Team review. Verdict: FAIL / HARD BLOCKED because runtime proof is absent; completion stop is not allowed.
 - Fixed QA-flagged stale wording in `docs/goals/refactor.md` and `docs/goals/event.md` without changing the runtime hard-block decision.
 - Reconciled active RitsuLib/Sts1Events validation docs and doc guard tests to the 464/0/21/485 project no-build test count and current runtime dependency blocker.
 - Fixed `Sts1EventsFeatureModule` so `SPIREPLUS_STS1_EVENT_MODE` is no longer treated as a generic FeatureRegistry disable override; CanaryOnly/AdditiveBatch1 can now reach `Sts1EventFeatureGate` in the source-level bootstrap path.
@@ -298,19 +313,19 @@ Date: 2026-06-02
 - Scope: all warnings are in `EZMicroBalanceCode/Sts1Events/Models/` staging code.
 - Decision: warnings are issue-worthy and remain accepted only because Sts1Events is gated Off by default and still prototype/dev-only outside Canary/Batch1 test modes.
 
-## Runtime Smoke
+## Historical Runtime Smoke
 
-- Status: LOADER/GATE PASS AT HEAD `8f2d79b4`, RELEASE BLOCKED.
-- Fresh K1 evidence (2026-06-02): Off-mode Steam smoke and CanaryOnly direct-launch smoke both reached main menu with clean audits, 25/25 Spire Plus patches, 30 SavedSpireFields, and BaseLib + RitsuLib + Spire Plus loaded. Off mode proves Sts1Events disabled (0 registrations). CanaryOnly proves exactly 4 canary event registrations (`Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`).
-- Runtime dependency path: `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` (`v0.3.10`), `BaseLib` (`v3.1.4`), `EZMicroBalance` (`v0.1.0-private-beta.84`) all present.
-- Decision: loader/runtime gate proof is now available for Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 at HEAD `8f2d79b4`. Runtime safety beyond loader gates (event encounter screenshots, save/load proof, image rendering, replacement functional proof, multiplayer fail-closed, independent QA), live-ready, and release-ready remain blocked pending gameplay/manual proof, clean worktree or owner decision, and versioned tester-package handoff.
+- Status then: LOADER/GATE PASS AT HEAD `8f2d79b4`, RELEASE BLOCKED. Current beta.85 truth is in the June 11 addendum at the top of this file.
+- Historical K1 evidence (2026-06-02): Off-mode Steam smoke and CanaryOnly direct-launch smoke both reached main menu with clean audits, 25/25 Spire Plus patches, 30 SavedSpireFields, and BaseLib + RitsuLib + Spire Plus loaded. Off mode proved Sts1Events disabled (0 registrations). CanaryOnly proved exactly 4 canary event registrations (`Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`) for that source/runtime state.
+- Historical runtime dependency path: `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` (`v0.3.10`), `BaseLib` (`v3.1.4`), `EZMicroBalance` (`v0.1.0-private-beta.84`) all present.
+- Historical decision: loader/runtime gate proof was available for Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 at HEAD `8f2d79b4`. Current beta.85 keeps only default-Off `v0.107.0` proof clean; current CanaryOnly/AdditiveBatch1 enabled-mode, gameplay, save-load, rendering, replacement, multiplayer, independent QA, live-ready, and release-ready proof remain pending.
 
-## Independent QA
+## Historical Independent QA
 
 - Target-fix QA/Red-Team verdict: CONDITIONAL PASS for loader gates, not release-ready.
-- QA-supported proof: Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 loader-gate evidence is supported by the smoke logs and clean audits.
+- QA-supported historical proof: Off=0, CanaryOnly=4, and AdditiveBatch1=10/11 loader-gate evidence is supported by the June 2 smoke logs and clean audits for that source/runtime state. Current beta.85 enabled-mode proof remains pending.
 - QA fixes applied after review: removed stale hard-block wording that still claimed no CanaryOnly proof or non-clean loader audit in active docs.
-- Stop decision: release/live Green Stop remains disallowed until event encounter screenshots, save/load proof, image rendering, replacement functional proof, multiplayer fail-closed, independent QA rerun, clean worktree or owner decision, and versioned tester-package handoff are complete.
+- Stop decision: release/live completion stop remains disallowed until event encounter screenshots, save/load proof, image rendering, replacement functional proof, multiplayer fail-closed, independent QA rerun, clean worktree or owner decision, and versioned tester-package handoff are complete.
 
 ## Architecture Status
 

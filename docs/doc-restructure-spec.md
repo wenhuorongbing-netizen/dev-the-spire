@@ -1,5 +1,9 @@
 # Documentation Restructure Spec
 
+## 2026-06-11 Current Override
+
+This file is historical restructure planning only. Do not use the delete/consolidation tables below as current guidance for `docs/goals/event.md`, `docs/goals/debug.md`, `docs/goals/refactor.md`, or the StS1 event audit docs. Current StS1 event work routes through `docs/goals/event.md`, `docs/features/sts1-events/`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md`; beta.85 proves default-Off loader behavior only, while enabled-mode, gameplay, save-load, replacement, multiplayer, QA, and handoff proof remain pending.
+
 ## Problem
 
 207 docs files. 113 active (non-archive). Too many to scan, too many root-level

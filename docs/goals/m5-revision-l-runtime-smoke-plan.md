@@ -12,7 +12,7 @@ Define the next runtime smoke needed before any current dirty source or future t
 |---|---|---|
 | Off | `.tools/runtime-evidence/ritsulib-off-after-target-fix-20260531-2325/` and `.tools/runtime-evidence/smoke-k1-off-20260602-145938/` | Main menu, clean audit, 0 Sts1Events registrations |
 | CanaryOnly | `.tools/runtime-evidence/ritsulib-canary-after-target-fix-20260531-2327/` and `.tools/runtime-evidence/smoke-k1-canary3-20260602-151104/` | Main menu, clean audit, exactly 4 canary events |
-| AdditiveBatch1 | `.tools/runtime-evidence/additive-batch1-20260602-150445/` | Main menu, clean audit, historical 10 event types / 11 registration calls; current source expects 10 event types / 13 calls |
+| AdditiveBatch1 | `.tools/runtime-evidence/additive-batch1-20260602-150445/` | Main menu, clean audit, historical 10 event types / 11 registration calls; current source expects 10 event types / 14 calls |
 
 These rows are useful loader-gate evidence, but they are not fresh proof for the current dirty source or for a new tester package.
 
@@ -63,7 +63,7 @@ Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE
 - Spire Plus reports 25/25 ModPatcher patches applied.
 - Off mode logs Sts1Events disabled and 0 StS1 registrations.
 - CanaryOnly logs exactly the 4 canary events.
-- AdditiveBatch1 logs exactly 10 event types through 13 calls.
+- AdditiveBatch1 logs exactly 10 event types through 14 calls.
 - `godot-log-audit.json` reports no Godot engine errors, no `MissingMethodException`, no `TypeLoadException`, and no Spire Plus error/exception hits.
 
 ## Non-Smoke Proof Still Needed

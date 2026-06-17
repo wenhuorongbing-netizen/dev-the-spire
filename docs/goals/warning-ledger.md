@@ -4,6 +4,8 @@ Date: 2026-06-10
 Baseline HEAD: `f32c6767 (HEAD -> main, origin/main, origin/HEAD)`
 Worktree: dirty, owner-review pending.
 
+Revision M note, 2026-06-11: beta.85 validation keeps the nullable warning blocker closed, but this ledger remains a no-game warning ledger only. Do not use 0 warnings as current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, or release-ready proof.
+
 ## Summary
 
 | Metric | Value |
@@ -75,9 +77,9 @@ The CanaryOnly files and the current AdditiveBatch1 files are warning-clean afte
 ## Governance Decision
 
 - Sts1Events recommendation: staging-only until current-runtime and gameplay evidence exists.
-- Runtime loader proof: Off=0, CanaryOnly=4, and AdditiveBatch1=10 event types / 11 registration calls exist in historical diagnostic evidence; current source now expects AdditiveBatch1=10 event types / 13 registration calls and needs fresh runtime proof.
-- Nullable warning blocker: closed for the current dirty source build.
-- Remaining formalization blockers: prove clean current `v0.107.0` loader smoke, gameplay, EN/ZHS render, save-load, image/render behavior, replacement behavior, and multiplayer fail-closed behavior.
+- Runtime loader proof: Off=0, CanaryOnly=4, and AdditiveBatch1=10 event types / 11 registration calls exist in historical diagnostic evidence only. Current source now expects AdditiveBatch1=10 event types / 14 registration calls and needs fresh current `v0.107.0` enabled-mode proof.
+- Nullable warning blocker: closed for the beta.85 runtime-fix validation lane recorded in `PROJECT_STATE.md`.
+- Remaining formalization blockers: prove current `v0.107.0` CanaryOnly and AdditiveBatch1 enabled-mode loader smoke, gameplay, EN/ZHS render, save-load, image/render behavior, replacement behavior, and multiplayer fail-closed behavior.
 - Removal option: would clear warning debt but would discard intentionally staged prototype infrastructure; requires owner decision.
 
 ## History

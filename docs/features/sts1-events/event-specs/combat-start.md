@@ -12,6 +12,7 @@ None (tutorial).
 ## StS2 Implementation
 
 ### Notes
+- **Registration:** special stub only; no unknown-room event model and no `Sts1EventRegistrationService` registration.
 - This is not a port candidate — StS2 has its own tutorial/start flow
 - Documented for completeness only
 - Skip in implementation

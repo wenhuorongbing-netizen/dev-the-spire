@@ -17,7 +17,7 @@ None.
 ## StS2 Implementation
 
 ### Class: `Sts1BonfireSpirits`
-- **Registration:** `[RegisterSharedEvent]`
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1BonfireSpirits>()`.
 - **Layout:** Default
 
 ### Localization Keys

@@ -35,9 +35,9 @@ None.
 
 ## StS2 Implementation
 
-### Class: `Sts1Neow`
-- **Registration:** Act 1 special (start of run)
-- **Layout:** Ancient-style or Default
+### Registry Stub: `sts1_neow`
+- **Registration:** special stub only; no unknown-room event model and no `Sts1EventRegistrationService` registration.
+- **Layout:** none in the current prototype.
 
 ### Notes
 - This is the most complex event — it's the run starter

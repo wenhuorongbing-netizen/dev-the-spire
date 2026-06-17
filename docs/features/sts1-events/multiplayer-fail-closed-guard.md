@@ -25,8 +25,8 @@ The StS1 event system is **fail-closed** by default:
 | Empty env var | Off | 0 | 0 |
 | Unknown value | Off | 0 | 0 |
 | `canaryonly` | CanaryOnly | 6 calls / 4 event types | Big Fish and Golden Idol register to both Act 1 buckets; Lab and Divine Fountain are shared |
-| `additivebatch1` | AdditiveBatch1 | 13 calls / 10 event types | Controlled prototype batch |
-| `additivealldraft` | AdditiveAllDraft | 0 unless `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; then 56 calls / 47 event types | All compiling draft events (unsafe/dev-only) |
+| `additivebatch1` | AdditiveBatch1 | 14 calls / 10 event types | Controlled prototype batch |
+| `additivealldraft` | AdditiveAllDraft | 0 unless `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; then 57 calls / 47 event types | All compiling draft events (unsafe/dev-only) |
 | `replaceunknowneventsprototype` | ReplaceUnknownEventsPrototype | 0 unless `REPLACEMENT_PROTOTYPE_ENABLED` and `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` are both present | Debug-only replacement prototype |
 
 ## IsShared / Co-op Behavior
@@ -37,6 +37,13 @@ The StS1 event system is **fail-closed** by default:
 
 ## Guard Tests
 
+Static reproduction:
+
+```powershell
+.\scripts\check-sts1-event-feature-gates.ps1 -FailOnMismatch
+.\scripts\check-sts1-event-multiplayer-shape.ps1 -FailOnMismatch
+```
+
 | Test | What It Verifies |
 |------|------------------|
 | `FeatureGateDefaultsToOffWhenEnvVarIsUnset` | Default is Off when env var missing |
@@ -45,7 +52,7 @@ The StS1 event system is **fail-closed** by default:
 | `ReplacementPrototypeGateFailsClosedWithoutCompileSymbol` | Replacement prototype reports disabled in normal builds without `REPLACEMENT_PROTOTYPE_ENABLED` |
 | `OffModeReturnsImmediatelyWithZeroRegistrations` | Off mode returns without registering |
 | `RegisterCanaryOnlyRegistersExactlyFourCanaryEventTypes` | CanaryOnly = 6 calls / 4 event types |
-| `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` | AdditiveBatch1 = 13 calls / 10 event types |
+| `RegisterAdditiveBatch1RegistersOnlyVerifiedScope` | AdditiveBatch1 = 14 calls / 10 event types |
 | `CombatEventsDeclareIsSharedTrue` | All 6 combat events have IsShared=true |
 | `AllSharedEventModelsDeclareIsSharedTrue` | Shared-capable models have IsShared=true |
 
@@ -55,7 +62,7 @@ Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate
 
 **UNVERIFIED** — requires game launch with:
 1. `SPIREPLUS_STS1_EVENT_MODE=Off` (default) — verify no StS1 events appear
-2. `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` — verify exactly 4 events appear
+2. `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` - verify 4 event types / 6 registration calls before any multiplayer claim
 3. `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` — verify the bounded prototype batch only in a controlled runtime smoke
 4. Multiplayer session — capture fail-closed proof or two-client behavior proof before making co-op claims
 
@@ -63,4 +70,4 @@ Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate
 
 **Source-level fail-closed: VERIFIED by guard tests.**
 **Historical loader-level fail-closed: VERIFIED only for the recorded `v0.106.1` diagnostic smokes.**
-**Current runtime/co-op fail-closed: PENDING until the non-clean `v0.107.0` Off smoke is fixed, a clean current smoke exists, and multiplayer evidence exists.**
+**Current runtime/co-op fail-closed: PENDING for multiplayer and enabled-mode proof; current `v0.107.0` beta.85 Off loader proof is clean, but it is not co-op or gameplay evidence.**

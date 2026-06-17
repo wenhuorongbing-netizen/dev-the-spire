@@ -1,7 +1,7 @@
 # StS1 Event Port 严格审核 v5 — Monthly Dev Spec + Overnight Run + Subagent 工作单
 结论：**没有完成。**这次最多只能认定为 **registration/infrastructure 有进展，但 StS1 事件体验迁移没有完成**。我已经把新版严格审核、monthly dev spec、subagent 工作单，以及“必须跑完才能停止”的 overnight run 写成文档：
 
-[下载：StS1 Event Port 严格审核 v5 + Monthly Dev Spec + Overnight Run + Subagent 工作单](sandbox:/mnt/data/sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md)
+Legacy sandbox export link removed. Use `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md` for current StS1 event guidance.
 
 ## 核心审核结论
 
@@ -59,7 +59,7 @@ Big Fish 必须严格实现 Banana 回复 `floor(maxHP / 3)`、Donut `Max HP +5`
 8. 所有状态禁止泛泛写 `Done`，必须改成证据状态。
 9. QA subagent 独立验收；实现者不能自验。
 
-项目规则也要求代码/资源改动后跑相应验证，资源、本地化、打包改动后要 publish，并更新文档/版本/package metadata；同时不能随意复制原版素材或大段反编译代码，原版 art 只有授权确认后才能进入 tracked/public files。 
+项目规则也要求代码/资源改动后跑相应验证，资源、本地化、打包改动后要 publish，并更新文档/版本/package metadata；同时不能随意复制原版素材或大段反编译代码，原版 art 只有授权确认后才能进入 tracked/public files。
 
 ## Overnight Run：让他跑完才能停止
 
@@ -91,6 +91,10 @@ Overnight gates 摘要：
 | O12  | status-board、monthly review、README/PROJECT_MAP 更新                        |
 
 ## 给他的直接指令
+
+## 2026-06-11 Revision M Current Override
+
+This v5 audit/spec is historical planning context only. Do not use its O0-O12 overnight gates, old registration assumptions, or old task scope as current `event.md` guidance. Current StS1 event work routes through `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md`: beta.85 proves current `v0.107.0` default-Off loader behavior only, while CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending.
 
 ```text
 当前工作没有完成。不要再用“46 event models Done / 48 specs Done / build passes”推进 Phase 2。
@@ -127,7 +131,7 @@ Overnight Exit Gates O0-O12 必须全绿才能停止。Hard stop 只能用于不
 [1]: https://slay-the-spire.fandom.com/wiki/Events "Events | Slay the Spire Wiki | Fandom"
 [2]: https://slay-the-spire.fandom.com/wiki/Big_Fish "Big Fish | Slay the Spire Wiki | Fandom"
 
-日期：2026-05-28  
+日期：2026-05-28
 对象：Devspire / `dev-the-spire` / Spire Plus (`EZMicroBalance`) 中的 StS1 events migration 工作
 
 ---

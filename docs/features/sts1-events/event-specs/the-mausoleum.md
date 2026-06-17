@@ -17,7 +17,7 @@
 ## StS2 Implementation
 
 ### Class: `Sts1TheMausoleum`
-- **Registration:** `[RegisterSharedEvent]`
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1TheMausoleum>()`.
 - **Layout:** Default
 
 ### Localization Keys

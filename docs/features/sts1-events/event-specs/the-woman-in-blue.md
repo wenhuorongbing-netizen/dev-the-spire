@@ -21,7 +21,7 @@ None.
 ## StS2 Implementation
 
 ### Class: `Sts1TheWomanInBlue`
-- **Registration:** `[RegisterSharedEvent]`
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1TheWomanInBlue>()`.
 - **Layout:** Default (simplified — no custom UI needed)
 
 ### Localization Keys

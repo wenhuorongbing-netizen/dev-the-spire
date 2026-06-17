@@ -1,5 +1,9 @@
 # Beta Compatibility
 
+## 2026-06-11 Revision M Current Compatibility Boundary
+
+The `v0.106.1` baseline below is historical tested-baseline context. Current local installed game is Slay the Spire 2 `v0.107.0` with BaseLib `v3.1.4` and RitsuLib `v0.4.16`; beta.85 has fresh default-Off loader proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` with 25/25 Spire Plus patches and a clean audit. Treat that as startup/default-Off proof only: CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, independent QA, clean-worktree, package handoff, and release-ready compatibility proof remain pending.
+
 ## Tested Baseline
 
 - Game: Slay the Spire 2
@@ -18,7 +22,7 @@
 
 ## Compatibility Policy
 
-- Compatibility is only confirmed for the tested public beta version above.
+- Full compatibility is only confirmed for the tested public beta version above. Current `v0.107.0` compatibility evidence is limited to the beta.85 default-Off loader proof noted here.
 - Do not claim compatibility with future public beta versions until retested.
 - Re-run build, publish, and manual game verification after game, BaseLib, template, or SDK changes.
 - Keep runtime BaseLib and NuGet BaseLib package versions aligned.

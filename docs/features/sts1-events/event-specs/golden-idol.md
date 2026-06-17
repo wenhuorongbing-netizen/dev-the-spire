@@ -1,11 +1,11 @@
-# Golden Idol — Event Specification
+# Golden Idol - Event Specification
 
-Status: spec-drafted / source-verified
+Status: source-verified / temporary-substitute / runtime-pending
 
 ## StS1 Wiki Behavior
 
-**Acts:** 1, 2, 3 (Unknown room pool — shared event)
-**Wiki:** https://slay-the-spire.fandom.com/wiki/Golden_Idol_(Event)
+**Acts:** 1 (Unknown room pool)
+**Wiki:** https://slay-the-spire.fandom.com/wiki/Golden_Idol_%28Event%29
 
 ### Initial Page Options
 
@@ -14,54 +14,49 @@ Status: spec-drafted / source-verified
 | Take | Obtain Golden Idol relic. Go to TRAP page. |
 | Leave | Nothing happens. Event ends. |
 
-### Trap Page (after taking)
+### Trap Page
 
 | Option | Effect | A15+ Change |
 |--------|--------|-------------|
 | Outrun | Obtain Injury curse | Same |
-| Smash | Lose 25% max HP as HP damage | Lose 35% max HP as HP damage |
+| Smash | Take damage equal to 25% max HP | Take damage equal to 35% max HP |
 | Hide | Lose 8% max HP | Lose 10% max HP |
 
-### Ascension Differences
-- **A15+**: Smash damage increases from 25% to 35% max HP as HP damage.
-- **A15+**: Hide max HP loss increases from 8% to 10%.
+Current Spire Plus source does not implement the Golden Idol relic model yet. The Take branch grants a random relic as a temporary substitute, then opens the TRAP page. Treat this as non-parity until a Golden Idol relic model/effect exists.
 
-## Normal Values
+## Current StS2 Implementation
 
-| Value | Amount |
-|-------|--------|
-| Smash HP damage | 25% of max HP |
-| Hide max HP loss | 8% of max HP |
-| Outrun curse | 1 Injury added to deck |
-| Take relic | Golden Idol relic obtained |
+### Class: `Sts1GoldenIdol`
 
-## A15 Values
+- **Base:** `EventModel`
+- **Registration:** `content.ActEvent<Overgrowth, Sts1GoldenIdol>()` and `content.ActEvent<Underdocks, Sts1GoldenIdol>()`
+- **Layout:** Default event layout
+- **LocTable:** `events`
+- **IsShared:** `true` for shared co-op vote semantics
+- **Temporary substitute:** `TakeIdol()` grants a random relic with `RelicFactory.PullNextRelicFromFront(owner).ToMutable()` and `RelicCmd.Obtain(...)`, then moves to the TRAP page.
 
-| Value | Amount |
-|-------|--------|
-| Smash HP damage | 35% of max HP |
-| Hide max HP loss | 10% of max HP |
-| Outrun curse | 1 Injury (unchanged) |
+## Source Values
+
+| Value | Normal | A15+ |
+|-------|--------|------|
+| Smash HP damage | 25% of max HP | 35% of max HP |
+| Hide max HP loss | 8% of max HP | 10% of max HP |
+| Outrun curse | 1 Injury added to deck | Same |
+| Take relic | Random relic temporary substitute | Same |
 
 ## Option Table
 
-| Page | Option | Effect | Dependencies |
-|------|--------|--------|-------------|
-| INITIAL | Take | `RelicCmd.Obtain(Golden Idol, Owner)` → GoToPage("TRAP") | Golden Idol relic model |
-| INITIAL | Leave | `SetEventFinished(...)` | None |
-| TRAP | Outrun | `CardPileCmd.AddCursesToDeck([Injury])` | Injury curse model |
-| TRAP | Smash | `CreatureCmd.Damage(null, Owner, MaxHp * pct, ...)` | None |
-| TRAP | Hide | `CreatureCmd.LoseMaxHp(Owner, MaxHp * pct)` | None |
+| Page | Option | Current Source Effect | Dependencies |
+|------|--------|-----------------------|--------------|
+| INITIAL | Take | Pull and obtain a random relic, then show TRAP page | Random relic pool; Golden Idol relic model pending |
+| INITIAL | Leave | Finish event with LEAVE text | None |
+| TRAP | Outrun | Add `Injury` curse to deck | Native `Injury` curse model |
+| TRAP | Smash | Deal unblockable/unpowered HP damage based on max HP percent | Damage command |
+| TRAP | Hide | Lose max HP based on max HP percent | Max HP loss command |
 
-## Dependencies
+## Localization Keys
 
-- **Golden Idol relic model**: Check if StS2 has a Golden Idol relic. If not, create custom `Sts1GoldenIdolRelic : RelicModel`.
-- **Injury curse card**: Check if StS2 has `Injury`. If not, create custom `Sts1Injury : CardModel`.
-- **A15 check**: `HasAscension(15)` — available in `EventModel` base class.
-
-## Localization Key Plan
-
-```
+```text
 STS1_GOLDEN_IDOL.title
 STS1_GOLDEN_IDOL.pages.INITIAL.description
 STS1_GOLDEN_IDOL.pages.INITIAL.options.TAKE.title
@@ -80,115 +75,33 @@ STS1_GOLDEN_IDOL.pages.SMASH.description
 STS1_GOLDEN_IDOL.pages.HIDE.description
 ```
 
-## Asset Path Plan
+## Runtime Evidence Checklist
 
-- Portrait: `EZMicroBalance/images/events/sts1_golden_idol.png`
-- Source: Extract from local StS1 installation via `extract-sts1-event-assets.ps1`
-- Format: 1024×600 PNG
-- Phobia mode: `sts1_golden_idol_phobia_mode.png` (optional)
-
-## StS2 Implementation
-
-### Class: `Sts1GoldenIdol`
-- **Base:** `ModEventTemplate` (RitsuLib)
-- **Registration:** `content.ActEvent<Overgrowth, Sts1GoldenIdol>()` and `content.ActEvent<Underdocks, Sts1GoldenIdol>()`
-- **Layout:** Default event layout
-- **LocTable:** "events"
-
-### Dynamic Variables
-
-| Variable | Type | Base | A15+ |
-|----------|------|------|------|
-| SmashDamagePct | DamageVar | 25% | 35% |
-| HideMaxHpPct | MaxHpVar | 8% | 10% |
-
-### Code Skeleton
-
-```csharp
-[RegisterSharedEvent]
-public sealed class Sts1GoldenIdol : ModEventTemplate
-{
-    protected override IReadOnlyList<EventOption> GenerateInitialOptions()
-    {
-        return
-        [
-            new EventOption(this, TakeIdol, InitialOptionKey("TAKE")),
-            new EventOption(this, Leave, InitialOptionKey("LEAVE"))
-        ];
-    }
-
-    private Task TakeIdol()
-    {
-        // Grant Golden Idol relic
-        return GoToPage("TRAP");
-    }
-
-    private Task Leave()
-    {
-        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.LEAVE.description"));
-        return Task.CompletedTask;
-    }
-
-    private IReadOnlyList<EventOption> GenerateTrapOptions()
-    {
-        var smashDamagePct = HasAscension(15) ? 0.35m : 0.25m;
-        var hideMaxHpPct = HasAscension(15) ? 0.10m : 0.08m;
-
-        return
-        [
-            new EventOption(this, Outrun, "STS1_GOLDEN_IDOL.pages.TRAP.options.OUTRUN"),
-            new EventOption(this, () => Smash(smashDamagePct), "STS1_GOLDEN_IDOL.pages.TRAP.options.SMASH")
-                .ThatDoesDamage(Owner.Creature.MaxHp * smashDamagePct),
-            new EventOption(this, () => Hide(hideMaxHpPct), "STS1_GOLDEN_IDOL.pages.TRAP.options.HIDE")
-                .ThatDecreasesMaxHp(Owner.Creature.MaxHp * hideMaxHpPct)
-        ];
-    }
-
-    private async Task Outrun()
-    {
-        await CardPileCmd.AddCursesToDeck([ModelDb.Card<Injury>()], Owner);
-        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.OUTRUN.description"));
-    }
-
-    private async Task Smash(decimal pct)
-    {
-        var damage = (int)(Owner.Creature.MaxHp * pct);
-        await CreatureCmd.Damage(null, Owner.Creature, damage, null, null);
-        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.SMASH.description"));
-    }
-
-    private async Task Hide(decimal pct)
-    {
-        var maxHpLoss = (int)(Owner.Creature.MaxHp * pct);
-        await CreatureCmd.LoseMaxHp(Owner.Creature, maxHpLoss);
-        SetEventFinished(L10NLookup("STS1_GOLDEN_IDOL.pages.HIDE.description"));
-    }
-}
-```
-
-## Manual Evidence Checklist
-
-- [ ] Debug-spawn Golden Idol in Act 1, Act 2, Act 3
-- [ ] Select "Leave" — verify event ends, no changes
-- [ ] Select "Take" — verify Golden Idol relic obtained, TRAP page appears
-- [ ] TRAP: Select "Outrun" — verify Injury curse added to deck
-- [ ] TRAP: Select "Smash" — verify 25% max HP as HP damage (A15+: 35%)
-- [ ] TRAP: Select "Hide" — verify 8% max HP lost (A15+: 10%)
-- [ ] EN text renders correctly
-- [ ] ZHS text renders correctly
-- [ ] Event portrait loads
-- [ ] Dynamic variables show correct % in option tooltips (damage/maxHP markers)
-- [ ] A15 scaling: verify Smash 35% damage and Hide 10% max HP loss at A15+
-- [ ] Save after Take, reload — Golden Idol relic persists
-- [ ] Save after Outrun, reload — Injury curse persists
-- [ ] Save after Smash, reload — HP loss persists
-- [ ] Save after Hide, reload — max HP loss persists
-- [ ] Golden Idol relic icon displays correctly
+- [ ] Debug-spawn or encounter Golden Idol in an Act 1 bucket.
+- [ ] Select "Leave" and verify the event ends with no reward or penalty.
+- [ ] Select "Take" and verify the current random relic substitute is obtained and the TRAP page appears.
+- [ ] Keep Golden Idol relic parity gap open until a Golden Idol relic model/effect is implemented.
+- [ ] Select "Outrun" and verify an Injury curse is added to the deck.
+- [ ] Select "Smash" and verify 25% max HP as HP damage, or 35% at A15+.
+- [ ] Select "Hide" and verify 8% max HP loss, or 10% at A15+.
+- [ ] Verify EN text renders correctly.
+- [ ] Verify ZHS text renders correctly.
+- [ ] Verify option dynamic variables show correct damage/max HP values.
+- [ ] Save after Take and reload; verify the current random relic substitute persists.
+- [ ] Save after Outrun and reload; verify Injury persists.
+- [ ] Save after Smash and reload; verify HP loss persists.
+- [ ] Save after Hide and reload; verify max HP loss persists.
+- [ ] Future parity check: Golden Idol relic icon displays correctly after a Golden Idol relic model/effect is implemented.
 
 ## Save/Load Notes
 
-- Relic obtained persists after save/load.
-- Curse added to deck persists after save/load.
-- HP/max HP changes persist after save/load.
-- Event state (current page) persists with room serialization.
-- Multi-page event: if player saves on TRAP page, reload should restore to TRAP page.
+- Current random relic substitute persists after save/load.
+- Curse additions persist after save/load.
+- HP and max HP changes persist after save/load.
+- Event state should persist with room serialization if saved on the TRAP page; runtime proof remains pending.
+
+## Non-Claims
+
+- This spec does not claim current Golden Idol relic parity.
+- This spec does not prove current `v0.107.0` CanaryOnly enabled-mode spawn behavior.
+- This spec does not prove gameplay, save/load, EN/ZHS render, image/license, or multiplayer behavior.

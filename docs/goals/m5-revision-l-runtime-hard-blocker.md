@@ -19,7 +19,7 @@ Fresh runtime proof is still blocked. The installed game root is now Slay the Sp
 | Packaged beta.84 DLL | Present, SHA256 `D65E7AE135A1D49F1403F96B29FE800A840E55D496480E380558AD2EE1211766` |
 | Historical Off diagnostic smoke | PASS: main menu, clean audit, Sts1Events disabled with 0 registrations |
 | Historical CanaryOnly diagnostic smoke | PASS: main menu, clean audit, exactly 4 canary registrations |
-| Historical AdditiveBatch1 diagnostic smoke | PASS: main menu, clean audit, 10 event types through 11 registration calls |
+| Historical AdditiveBatch1 diagnostic smoke | PASS at the time: main menu, clean audit; historical log used the then-current 10 event types / 11 registration-call shape; current source expects 10 event types / 14 calls |
 | Current `v0.107.0` package-parity Off launch | FAIL: `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/`; audit `Clean=false`, 11 Godot ERROR lines, 1 Spire Plus error/exception |
 | Current dirty-source gameplay proof | Not run |
 

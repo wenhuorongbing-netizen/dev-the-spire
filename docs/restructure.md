@@ -1,15 +1,15 @@
 我已经把 `dev-the-spire` 当前 repo、两个上传包和 RitsuLib 官方文档都过了一遍。我的判断是：**不要做“一次性大爆炸重构”**，应该拆成 5 个可验证阶段；尤其不要直接把两个 zip 解压进项目根目录，否则会覆盖现有 `AGENTS.md`、引入 DLL/ZIP、打乱当前 release evidence 体系。
 
 我也整理了一份可交给 Codex 执行的详细计划文件：
-[下载 DevSpire integration/refactor plan](sandbox:/mnt/data/devspire_integration_refactor_plan.md)
+Legacy sandbox export link removed. Use `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md` for current StS1 event guidance; beta.85 proves only current `v0.107.0` default-Off loader behavior while CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending.
 
 ## 核心结论
 
-当前 repo 的活跃交付目标是 **一个 mod：`Spire Plus`**，但技术 manifest id、项目名、资源目录、代码目录、DLL/PCK/install folder 仍然是 `EZMicroBalance`，这是兼容性边界，不应该在这轮重构里改名。repo 自己也明确要求不要原地改 manifest id，并把 `Spire Plus` 作为玩家可见名、`EZMicroBalance` 作为技术 id 保留。 
+当前 repo 的活跃交付目标是 **一个 mod：`Spire Plus`**，但技术 manifest id、项目名、资源目录、代码目录、DLL/PCK/install folder 仍然是 `EZMicroBalance`，这是兼容性边界，不应该在这轮重构里改名。repo 自己也明确要求不要原地改 manifest id，并把 `Spire Plus` 作为玩家可见名、`EZMicroBalance` 作为技术 id 保留。
 
-现在 repo 的活跃结构其实已经被划分过：`EZMicroBalance.sln/.csproj/.json`、`EZMicroBalance/` 资源、`EZMicroBalanceCode/` 源码、`tests/EZMicroBalance.Tests/`、`docs/`、`scripts/`、`website/` 都是当前面；`source code/`、`.tools/`、`publish/` 是 ignored/local-only，但不是随便能删的垃圾。 
+现在 repo 的活跃结构其实已经被划分过：`EZMicroBalance.sln/.csproj/.json`、`EZMicroBalance/` 资源、`EZMicroBalanceCode/` 源码、`tests/EZMicroBalance.Tests/`、`docs/`、`scripts/`、`website/` 都是当前面；`source code/`、`.tools/`、`publish/` 是 ignored/local-only，但不是随便能删的垃圾。
 
-`codex-app-better-token-main.zip` 是一套 Codex 工作流/状态模板，不是代码依赖。它里面有自己的 `AGENTS.md`、`PROMPTS.md` 和 `harness/` 模板。**不能直接覆盖 root `AGENTS.md`**，因为当前 repo 的 `AGENTS.md` 已经包含 StS2、BaseLib、manifest、source evidence、release validation 的硬规则。正确做法是“薄接入”：把它变成 `docs/codex-harness/` 模板或很薄的 `harness/` 状态文件，长期事实仍然回指 `PROJECT_STATE.md`、`docs/PROJECT_MAP.md`、`docs/issues.md`、`docs/codex-workflow.md`。 
+`codex-app-better-token-main.zip` 是一套 Codex 工作流/状态模板，不是代码依赖。它里面有自己的 `AGENTS.md`、`PROMPTS.md` 和 `harness/` 模板。**不能直接覆盖 root `AGENTS.md`**，因为当前 repo 的 `AGENTS.md` 已经包含 StS2、BaseLib、manifest、source evidence、release validation 的硬规则。正确做法是“薄接入”：把它变成 `docs/codex-harness/` 模板或很薄的 `harness/` 状态文件，长期事实仍然回指 `PROJECT_STATE.md`、`docs/PROJECT_MAP.md`、`docs/issues.md`、`docs/codex-workflow.md`。
 
 `STS2-RitsuLib.0.3.10.variant-pack.zip` 是当前本机安装的运行时库包。RitsuLib 官方 README/文档建议 mod 项目通过 `PackageReference Include="STS2.RitsuLib"` 编译引用，并在 manifest 里声明运行时依赖 `{ "id": "STS2-RitsuLib" }`；variant-pack 是给玩家安装到 `mods/STS2-RitsuLib/` 的运行时包，root DLL 是 loader，真实 API build 在 `lib/<api-version>/` 下。([RitsuLib][1]) ([GitHub][2])
 
@@ -32,7 +32,7 @@ git diff --check
 .\scripts\report-worktree-batches.ps1 -FailOnUnclassified
 ```
 
-repo 当前可用命令包括 `dotnet build`、`dotnet publish`、`dotnet test`、`dotnet format ... --verify-no-changes` 和 `git diff --check`；测试 README 也明确普通测试会跳过依赖 ignored package/smoke artifacts 的测试，release artifact 测试要单独开环境变量。 
+repo 当前可用命令包括 `dotnet build`、`dotnet publish`、`dotnet test`、`dotnet format ... --verify-no-changes` 和 `git diff --check`；测试 README 也明确普通测试会跳过依赖 ignored package/smoke artifacts 的测试，release artifact 测试要单独开环境变量。
 
 ### 2. Codex harness：只做“薄接入”
 
@@ -159,7 +159,7 @@ EZMicroBalanceCode/
 
 当前源码已经有较清楚的模块图：`MainFile.cs` 是入口，`Core/Features/` 管启动顺序，`Ancients/`、`Ascension/`、`Preview/` 分别负责 Ancient、A11-A20 和预览工具。这个结构可以继续沿用，只是把 shared/integration/UI/save 等边界再明确一点。
 
-尤其注意：当前项目有 **137 个 Harmony patch 声明，其中 22 个高风险 patch**，patch 边界文档明确说 patch 不是 live UI/save-load/co-op 证明；涉及 run、room、save、lobby、multiplayer、lifecycle 的 patch 都是 release-sensitive。也就是说，RitsuLib patcher 迁移不能和大规模文件夹移动混在同一个 PR 里。 
+尤其注意：当前项目有 **137 个 Harmony patch 声明，其中 22 个高风险 patch**，patch 边界文档明确说 patch 不是 live UI/save-load/co-op 证明；涉及 run、room、save、lobby、multiplayer、lifecycle 的 patch 都是 release-sensitive。也就是说，RitsuLib patcher 迁移不能和大规模文件夹移动混在同一个 PR 里。
 
 ### 5. RitsuLib 真迁移：从低风险入口开始
 

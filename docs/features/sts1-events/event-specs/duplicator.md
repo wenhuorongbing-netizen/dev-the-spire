@@ -17,7 +17,7 @@ None.
 ## StS2 Implementation
 
 ### Class: `Sts1Duplicator`
-- **Registration:** `[RegisterSharedEvent]`
+- **Registration:** Compile-excluded and not registered by `Sts1EventRegistrationService` until duplicate-card selection API support is available.
 - **Layout:** Default
 
 ### Localization Keys

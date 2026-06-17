@@ -19,7 +19,7 @@ None.
 
 ### Class: `Sts1Purifier`
 
-- **Registration:** shared event; included in `RegisterAll()` and `RegisterAdditiveBatch1()`.
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1Purifier>()`; included in `RegisterAll()` and `RegisterAdditiveBatch1()`.
 - **Layout:** Default
 - **Source behavior:** `Purify()` calls `Sts1EventHelpers.OpenCardRemoval(owner)` and then finishes the event.
 - **Runtime proof:** Pending. AdditiveBatch1 encounter UI, result log, EN/ZHS render, and save-load proof still need live evidence.

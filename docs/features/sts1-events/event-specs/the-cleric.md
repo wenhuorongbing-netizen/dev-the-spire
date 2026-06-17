@@ -24,7 +24,7 @@
 
 ### Class: `Sts1TheCleric`
 
-- **Registration:** Act 1 event; included in `RegisterAll()` and `RegisterAdditiveBatch1()` through `Overgrowth` and `Underdocks`.
+- **Registration:** `Sts1EventRegistrationService` registers this StS1 Act 1 event into both StS2 Act 1 buckets with `content.ActEvent<Overgrowth, Sts1TheCleric>()` and `content.ActEvent<Underdocks, Sts1TheCleric>()`; included in `RegisterAll()` and `RegisterAdditiveBatch1()`.
 - **Layout:** Default
 - **Source behavior:** `IsShared=true` preserves co-op vote semantics while Act registration restricts the event to StS2 Act 1 buckets. `IsAllowed(IRunState)` requires every player to have at least 35 gold. `Heal()` spends 35 gold and heals 25% max HP. `Purify()` spends `PurifyCost`, which is 50 normally and 75 at A15+, then opens card removal.
 - **Runtime proof:** Pending. AdditiveBatch1 encounter UI, option lock behavior, result log, EN/ZHS render, and save-load proof still need live evidence.

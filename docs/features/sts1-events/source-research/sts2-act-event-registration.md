@@ -2,6 +2,10 @@
 
 Created: 2026-05-29 | Status: source-verified
 
+## 2026-06-11 Revision M Current Boundary
+
+This source-research note documents current intended StS1 registration shape and static source evidence. It is not current `v0.107.0` runtime proof. Beta.85 proves default-Off loader behavior only; CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof still require fresh current evidence.
+
 ## Act Mapping (Verified)
 
 StS1 act mapping to StS2 act models, verified from Ancient service Harmony patches:
@@ -53,7 +57,7 @@ content.ActEvent<Underdocks, Sts1ShiningLight>();
 | Act 3 events | 9 | `content.ActEvent<Glory, T>()` |
 | **RegisterAll registration calls** | **57** | (14 shared x 1 + 10 act1 x 2 + 14 act2 x 1 + 9 act3 x 1) |
 | **AdditiveBatch1 registration calls** | **14** | 10 verified-scope event types; Big Fish, Golden Idol, The Cleric, and Shining Light register to both Overgrowth and Underdocks |
-| **Excluded** | 1 | `Sts1Duplicator` — uses `CardSelectCmd`/`CardPileCmd` APIs not yet available |
+| **Excluded** | 1 | `Sts1Duplicator` uses duplicate-selection APIs unavailable in the current game/RitsuLib API surface |
 
 ### Canary Mode Registration
 

@@ -36,6 +36,7 @@ Use `features/README.md` as the compact feature index.
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current Urda, Morvi, Lotha, and Vakuu roadmap/status. |
 | Ancient reward rebalance v4 | `features/ancients-rework-v4/README.md` | Active Spire Plus core feature. v4.3 is current. |
 | Ascension 11-20 | `features/ascension-11-20/README.md` | Active development track, default-on for single-player testing; co-op gameplay fails closed by default after crash logs and is not release-verified. |
+| StS1 event prototype | `features/sts1-events/README.md` | Default-Off event prototype. Use `features/sts1-events/v19-gate-evidence-map.md`, `features/sts1-events/v19-gate-ledger.csv`, and `features/sts1-events/v19-subagent-coverage.md` for current O0-O76 and subagent status; beta.85 proof covers default-Off only, while current CanaryOnly 4 event types / 6 registration calls and AdditiveBatch1 10 event types / 14 registration calls remain unproven. |
 | Urda ancient expansion support | `features/ancient-expansion-urda/README.md` | Support evidence for the current default-on Urda slice with eleven source-backed blessings; active goal/issues/v2.2/v3.3 docs override older behavior if they conflict. |
 | Preview tools | `features/preview-tools/README.md` | Crystal Sphere peek and transform preview now ship inside the single Spire Plus mod. |
 | Public forum | `features/forum/technical-spec.md` | GitHub Pages + Supabase anonymous text forum; go-live steps are in `features/forum/go-live-checklist.md`. |

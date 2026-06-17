@@ -17,7 +17,7 @@
 ## StS2 Implementation
 
 ### Class: `Sts1FountainOfCleansing`
-- **Registration:** `[RegisterSharedEvent]`
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1FountainOfCleansing>()`.
 - **Layout:** Default
 
 ### Localization Keys

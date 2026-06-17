@@ -22,6 +22,10 @@ Batch 4c: DO NOT EXECUTE
 Release-ready / live-ready: NO
 ```
 
+## 2026-06-11 Revision M current override
+
+The older audit body below is preserved as historical root-cause context only. Current beta.85 has clean `v0.107.0` default-Off loader proof only; current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending. Do not treat the beta.84 failure table below as current status, and do not treat beta.85 default-Off proof as tester-ready proof.
+
 ---
 
 ## 1. Step-by-step 审核
@@ -237,11 +241,11 @@ Release-ready / live-ready: NO
    * clean audit
 2. CanaryOnly:
 
-   * 4 canary registrations
+   * 4 canary event types / 6 registration calls
    * clean audit
 3. AdditiveBatch1:
 
-   * 10 event types / 11 registrations
+   * 10 event types / 14 registration calls
    * clean audit
    * still dev/test scope
 
@@ -389,24 +393,21 @@ Next command:
 ## 给助理的直接指令
 
 ```text
-当前不能判定完成。No-game validation 是绿的，但当前 v0.107.0 runtime proof 失败：Off smoke 到了 main menu 但 audit 不干净，有 11 Godot ERROR、1 Spire Plus error/exception、8 optional ModPatcher failures，且 TargetInvocationException 根因是 EctoplasmGoldGatePatch target API drift。
+Current state is not complete. No-game validation is green and beta.85 has clean v0.107.0 Off loader proof, but that proof is default-Off startup/patch-application proof only. It does not prove CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, or release-ready status.
 
-现在进入 v0.107 Runtime Recovery Overnight Run：
+Continue the v19 event.md lane without expanding scope:
 
-1. 先修 EctoplasmGoldGatePatch target API drift，或写 hard-block report。
-2. 列出 8 optional ModPatcher failures，逐个分类 fix/defer/disable/document。
-3. 重新跑 build/test/format/diff-check。
-4. 重新跑 v0.107 Off smoke，必须 clean audit。
-5. Off clean 后再跑 CanaryOnly smoke，验证 exactly 4 canary registrations。
-6. 不允许用 v0.106 历史 smoke 当当前证明。
-7. 处理 130 dirty entries：clean 或 owner-approved dirty ledger。
-8. 启动 QA/Red-Team subagent，不能自审。
-9. 禁止 Batch 4c，禁止 high-risk migration，禁止新 gameplay，禁止 release-ready/live-ready claim。
-10. 只有 Green Stop 或 Hard Block Stop 才能停止。
+1. Preserve beta.85 Off proof as default-Off only.
+2. After validation coordination is clear, run current v0.107.0 CanaryOnly smoke and verify 4 event types / 6 registration calls.
+3. After CanaryOnly is clean, run current v0.107.0 AdditiveBatch1 smoke and verify 10 event types / 14 registration calls.
+4. Do not use historical v0.106.1 Off/CanaryOnly/AdditiveBatch1 proof as current v0.107.0 proof.
+5. Only after enabled-mode proof is clean, capture canary and simple-batch gameplay screenshots, result logs, pre/post state, save-load, EN/ZHS render, image/license, replacement, multiplayer, and QA proof.
+6. Keep Batch 4c, high-risk migration, new gameplay expansion, and release/live-ready claims blocked until evidence supports them.
+7. Do not commit or push unless validation evidence supports the exact scope and owner policy allows it.
 ```
 
 ---
 
 ## 最终一句话结论
 
-**当前最应该优先解决的是 v0.107.0 runtime blocker 和 optional ModPatcher failures，因为 no-game validation 已经通过，但当前实际 runtime proof 失败；在 clean runtime proof 之前，不应继续迁 patch、扩功能或交付 tester package。**
+**Current priority is preserving beta.85 default-Off proof without extending it, then capturing fresh v0.107.0 CanaryOnly and AdditiveBatch1 enabled-mode proof before gameplay, replacement, multiplayer, QA, Batch 4c, or handoff claims.**

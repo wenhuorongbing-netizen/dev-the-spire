@@ -3,6 +3,8 @@
 Date: 2026-06-10
 Status: implementation/docs pass complete; final no-game validation complete; release/live proof still blocked.
 
+Revision M supersession note, 2026-06-11: this report's beta.84 package/runtime boundary is historical. Current beta.85 has clean `v0.107.0` default-Off loader proof only; current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, and release-ready proof remain pending. Use `PROJECT_STATE.md` and the Revision M docs for current proof claims.
+
 ## Implemented For This Debug Pass
 
 - Reconciled the old missing-RitsuLib hard-blocker with current local dependency reality.

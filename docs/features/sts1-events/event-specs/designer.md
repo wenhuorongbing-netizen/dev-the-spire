@@ -19,7 +19,7 @@ None.
 ## StS2 Implementation
 
 ### Class: `Sts1Designer`
-- **Registration:** `[RegisterActEvent(typeof(Act2Model))]`, `[RegisterActEvent(typeof(Act3Model))]`
+- **Registration:** Current source registers Designer as shared with `content.SharedEvent<Sts1Designer>()`; wiki bucket parity and runtime proof remain pending.
 - **Layout:** Default
 
 ### Localization Keys

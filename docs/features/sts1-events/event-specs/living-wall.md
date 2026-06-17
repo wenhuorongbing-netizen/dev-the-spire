@@ -18,7 +18,7 @@ None.
 ## StS2 Implementation
 
 ### Class: `Sts1LivingWall`
-- **Registration:** `[RegisterSharedEvent]`
+- **Registration:** `Sts1EventRegistrationService` registers this shared event with `content.SharedEvent<Sts1LivingWall>()`.
 - **Layout:** Default
 
 ### Localization Keys
