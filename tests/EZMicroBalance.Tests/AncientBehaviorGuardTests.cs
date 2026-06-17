@@ -525,38 +525,15 @@ public sealed partial class AncientBehaviorGuardTests
         Assert.Contains("visible all-off-color cards and relic hover count remain the available confirmation surfaces", manualMatrix, StringComparison.Ordinal);
     }
 
-    [LocalSourceFact]
+    [Fact]
     public void VakuuSereTalonAndTanxClawsStayOnSeparateSourceRoutes()
     {
-        var vakuuSource = ReadLocalCoreText("Models", "Events", "Vakuu.cs");
-        var tanxSource = ReadLocalCoreText("Models", "Events", "Tanx.cs");
-        var sereTalonSource = ReadLocalCoreText("Models", "Relics", "SereTalon.cs");
-        var clawsSource = ReadLocalCoreText("Models", "Relics", "Claws.cs");
         var sereTalonPickupPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonPickupPatches.cs");
         var sereTalonVisualSource = ReadSereTalonVisualSource();
         var tanxClawsPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
         var ancientPatchSource = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
-
-        AssertSourceContains(
-            vakuuSource,
-            "RelicOption<SereTalon>()");
-        Assert.DoesNotContain("RelicOption<Claws>()", vakuuSource, StringComparison.Ordinal);
-
-        AssertSourceContains(
-            tanxSource,
-            "RelicOption<Claws>()");
-        Assert.DoesNotContain("RelicOption<SereTalon>()", tanxSource, StringComparison.Ordinal);
-
-        AssertSourceContains(
-            sereTalonSource,
-            "new DynamicVar(\"Curses\", 2m)",
-            "new DynamicVar(\"Wishes\", 3m)",
-            "HoverTipFactory.FromCardWithCardHoverTips<Wish>()",
-            "CardPileCmd.Add(card, PileType.Deck)",
-            "CardPileCmd.Add(card2, PileType.Deck)");
-        Assert.DoesNotContain("Maul", sereTalonSource, StringComparison.Ordinal);
 
         AssertSourceContains(
             sereTalonPickupPatch,
@@ -579,15 +556,6 @@ public sealed partial class AncientBehaviorGuardTests
             "SpirePlusFeedback.PreviewDeckAdds(successfulAdds, sereTalon, 2f)");
         Assert.DoesNotContain("Claws", sereTalonPickupPatch, StringComparison.Ordinal);
         Assert.DoesNotContain("Maul", sereTalonPickupPatch, StringComparison.Ordinal);
-
-        AssertSourceContains(
-            clawsSource,
-            "new CardsVar(6)",
-            "HoverTipFactory.FromCardWithCardHoverTips<Maul>()",
-            "CreateMaulFromOriginal",
-            "CardCmd.Transform(transformations, base.Owner.PlayerRng.Transformations)");
-        Assert.DoesNotContain("Wish", clawsSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("CurseCardPool", clawsSource, StringComparison.Ordinal);
 
         AssertSourceContains(
             sereTalonVisualSource,
@@ -631,6 +599,43 @@ public sealed partial class AncientBehaviorGuardTests
         Assert.Equal("On pickup, transform up to [blue]{Cards}[/blue] cards into upgraded Maul.", engRelics["CLAWS.description"]);
         Assert.Equal("\u5766\u514b\u65af\u5229\u722a", zhsRelics["CLAWS.title"]);
         Assert.Equal("\u62fe\u53d6\u65f6\uff0c\u5c06\u81f3\u591a[blue]{Cards}[/blue]\u5f20\u724c\u53d8\u5316\u4e3a\u6495\u54ac+\u3002", zhsRelics["CLAWS.description"]);
+    }
+
+    [LocalSourceFact]
+    public void CoreVakuuSereTalonAndTanxClawsStayOnSeparateRoutes()
+    {
+        var vakuuSource = ReadLocalCoreText("Models", "Events", "Vakuu.cs");
+        var tanxSource = ReadLocalCoreText("Models", "Events", "Tanx.cs");
+        var sereTalonSource = ReadLocalCoreText("Models", "Relics", "SereTalon.cs");
+        var clawsSource = ReadLocalCoreText("Models", "Relics", "Claws.cs");
+
+        AssertSourceContains(
+            vakuuSource,
+            "RelicOption<SereTalon>()");
+        Assert.DoesNotContain("RelicOption<Claws>()", vakuuSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            tanxSource,
+            "RelicOption<Claws>()");
+        Assert.DoesNotContain("RelicOption<SereTalon>()", tanxSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            sereTalonSource,
+            "new DynamicVar(\"Curses\", 2m)",
+            "new DynamicVar(\"Wishes\", 3m)",
+            "HoverTipFactory.FromCardWithCardHoverTips<Wish>()",
+            "CardPileCmd.Add(card, PileType.Deck)",
+            "CardPileCmd.Add(card2, PileType.Deck)");
+        Assert.DoesNotContain("Maul", sereTalonSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            clawsSource,
+            "new CardsVar(6)",
+            "HoverTipFactory.FromCardWithCardHoverTips<Maul>()",
+            "CreateMaulFromOriginal",
+            "CardCmd.Transform(transformations, base.Owner.PlayerRng.Transformations)");
+        Assert.DoesNotContain("Wish", clawsSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CurseCardPool", clawsSource, StringComparison.Ordinal);
     }
 
     private static string ReadSereTalonVisualSource() =>

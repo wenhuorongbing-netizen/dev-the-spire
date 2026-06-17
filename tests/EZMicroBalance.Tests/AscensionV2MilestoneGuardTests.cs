@@ -348,7 +348,7 @@ public sealed class AscensionV2MilestoneGuardTests
         AssertSourceContains(forgeRelic, "ShowCounter => true", "DisplayAmount => 1", "Max [blue]1[/blue].");
     }
 
-    [LocalSourceFact]
+    [Fact]
     public void Milestones5To8GuardBannersDeepBranchesBossSealsAndBlockedA20Claims()
     {
         var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
@@ -363,11 +363,6 @@ public sealed class AscensionV2MilestoneGuardTests
         var powers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var bossSealSource = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
-        var attackIntentSource = ReadLocalCoreText("MonsterMoves", "Intents", "AttackIntent.cs");
-        var kinBossSource = ReadLocalCoreText("Models", "Encounters", "TheKinBoss.cs");
-        var kinPriestSource = ReadLocalCoreText("Models", "Monsters", "KinPriest.cs");
-        var slipperyPowerSource = ReadLocalCoreText("Models", "Powers", "SlipperyPower.cs");
-        var platingPowerSource = ReadLocalCoreText("Models", "Powers", "PlatingPower.cs");
         var englishAscension = JsonStringMap("EZMicroBalance", "localization", "eng", "ascension.json");
         var zhsAscension = JsonStringMap("EZMicroBalance", "localization", "zhs", "ascension.json");
         var englishEvents = JsonStringMap("EZMicroBalance", "localization", "eng", "events.json");
@@ -518,22 +513,6 @@ public sealed class AscensionV2MilestoneGuardTests
             "TrackAeonglassEnemyMove",
             "SettleAeonglassTimeSand",
             "ApplyAeonglassTimeSandAfterEbb");
-        AssertSourceContains(
-            kinBossSource,
-            "new string[3] { \"slot1\", \"slot2\", \"leaderSlot\" }",
-            "(kinFollower, \"slot1\")",
-            "(ModelDb.Monster<KinFollower>().ToMutable(), \"slot2\")",
-            "(ModelDb.Monster<KinPriest>().ToMutable(), \"leaderSlot\")");
-        Assert.DoesNotContain("Summon", kinBossSource + kinPriestSource, StringComparison.OrdinalIgnoreCase);
-        AssertSourceContains(
-            slipperyPowerSource,
-            "public override bool ShouldScaleInMultiplayer => true",
-            "return amount * (decimal)combatState.Players.Count");
-        AssertSourceContains(
-            platingPowerSource,
-            "public override bool ShouldScaleInMultiplayer => true",
-            "base.DynamicVars[\"Decrement\"].BaseValue = base.Owner.CombatState.RunState.Players.Count",
-            "return (decimal)((combatState.Players.Count - 1) * 2 + 1) * amount");
         Assert.DoesNotContain("triggerCap = metadata.IsBossBrand ? 3 : 2", combatService, StringComparison.Ordinal);
         Assert.DoesNotContain("triggers up to [blue]3[/blue] times", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("SettleSoulTideBeckons(combatState, tracker, metadata)", combatService, StringComparison.Ordinal);
@@ -578,11 +557,6 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("equal [gold]Block[/gold]", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("等量[gold]格挡[/gold]", powers, StringComparison.Ordinal);
         Assert.DoesNotContain("PowerCmd.Apply<StrengthPower>(choiceContext, Owner, -Amount", powers, StringComparison.Ordinal);
-        AssertSourceContains(
-            attackIntentSource,
-            "Hook.ModifyDamage(",
-            "ValueProp.Move",
-            "ModifyDamageHookType.All");
         AssertSourceContains(
             aeonglassIntentPatch,
             "HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))",
@@ -683,6 +657,38 @@ public sealed class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("King Brand / 王烙印", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotMatch(@"(?i)\bA20\b[^\r\n.]*\b(?:release-ready|fully verified|complete)\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bA11-A20\b[^\r\n.]*\b(?:release-ready|fully verified)\b", currentDocs);
+    }
+
+    [LocalSourceFact]
+    public void CoreBossSealIntentAndMultiplayerPowerSourcesKeepExpectedShapes()
+    {
+        var attackIntentSource = ReadLocalCoreText("MonsterMoves", "Intents", "AttackIntent.cs");
+        var kinBossSource = ReadLocalCoreText("Models", "Encounters", "TheKinBoss.cs");
+        var kinPriestSource = ReadLocalCoreText("Models", "Monsters", "KinPriest.cs");
+        var slipperyPowerSource = ReadLocalCoreText("Models", "Powers", "SlipperyPower.cs");
+        var platingPowerSource = ReadLocalCoreText("Models", "Powers", "PlatingPower.cs");
+
+        AssertSourceContains(
+            attackIntentSource,
+            "Hook.ModifyDamage(",
+            "ValueProp.Move",
+            "ModifyDamageHookType.All");
+        AssertSourceContains(
+            kinBossSource,
+            "new string[3] { \"slot1\", \"slot2\", \"leaderSlot\" }",
+            "(kinFollower, \"slot1\")",
+            "(ModelDb.Monster<KinFollower>().ToMutable(), \"slot2\")",
+            "(ModelDb.Monster<KinPriest>().ToMutable(), \"leaderSlot\")");
+        Assert.DoesNotContain("Summon", kinBossSource + kinPriestSource, StringComparison.OrdinalIgnoreCase);
+        AssertSourceContains(
+            slipperyPowerSource,
+            "public override bool ShouldScaleInMultiplayer => true",
+            "return amount * (decimal)combatState.Players.Count");
+        AssertSourceContains(
+            platingPowerSource,
+            "public override bool ShouldScaleInMultiplayer => true",
+            "base.DynamicVars[\"Decrement\"].BaseValue = base.Owner.CombatState.RunState.Players.Count",
+            "return (decimal)((combatState.Players.Count - 1) * 2 + 1) * amount");
     }
 
     [Fact]

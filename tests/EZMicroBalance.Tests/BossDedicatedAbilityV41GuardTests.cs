@@ -170,15 +170,12 @@ public sealed class BossDedicatedAbilityV41GuardTests
         Assert.DoesNotContain("unchosen-curse identity remains unhooked", catalog, StringComparison.Ordinal);
     }
 
-    [LocalSourceFact]
+    [Fact]
     public void DamageChangingDedicatedAbilitiesParticipateInIntentPreview()
     {
-        var attackIntent = ReadLocalCoreText("MonsterMoves", "Intents", "AttackIntent.cs");
-        var multiAttackIntent = ReadLocalCoreText("MonsterMoves", "Intents", "MultiAttackIntent.cs");
         var martyrOathPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MartyrOathPowers.cs");
         var misalignedShellPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "MisalignedShellPowers.cs");
         var aeonglassIntentPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AeonglassIntentPatches.cs");
-        var vigorPower = ReadLocalCoreText("Models", "Powers", "VigorPower.cs");
         var heatPowers = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "FiremarkHeatPowers.cs");
         var pressingLinePower = ReadRepoText("EZMicroBalanceCode", "Ascension", "Powers", "BannerPressingLinePower.cs");
         var intentRefreshHelper = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.Commands.cs");
@@ -187,14 +184,6 @@ public sealed class BossDedicatedAbilityV41GuardTests
         var mightFiremark = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.Firemarks.Might.cs");
         var pressingLine = ReadRepoText("EZMicroBalanceCode", "Ascension", "Combat", "AscensionCombatModifierService.Banners.PressingLine.cs");
         var aeonglassReflow = ReadAeonglassHourglassCombatSources();
-
-        AssertSourceContains(
-            attackIntent,
-            "Hook.ModifyDamage(",
-            "ValueProp.Move",
-            "ModifyDamageHookType.All",
-            "CardPreviewMode.None");
-        AssertSourceContains(multiAttackIntent, "return GetSingleDamage(targets, owner) * Repeats;");
 
         var martyrStrike = SliceFrom(
             martyrOathPowers,
@@ -232,12 +221,6 @@ public sealed class BossDedicatedAbilityV41GuardTests
         Assert.DoesNotContain("AfterDamageGiven", kaiserStrike, StringComparison.Ordinal);
 
         AssertSourceContains(
-            vigorPower,
-            "ModifyDamageAdditive",
-            "base.Owner != dealer",
-            "!props.IsPoweredAttack()",
-            "return base.Amount;");
-        AssertSourceContains(
             aeonglassIntentPatch,
             "HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))",
             "__instance.Repeats + 1",
@@ -264,6 +247,28 @@ public sealed class BossDedicatedAbilityV41GuardTests
             aeonglassReflow,
             "await RefreshEnemyIntent(aeonglass);",
             "PowerCmd.Remove(aeonglass.GetPower<AeonglassLaserEchoPower>())");
+    }
+
+    [LocalSourceFact]
+    public void CoreDamageIntentAndVigorPowerStillSupportPreviewHooks()
+    {
+        var attackIntent = ReadLocalCoreText("MonsterMoves", "Intents", "AttackIntent.cs");
+        var multiAttackIntent = ReadLocalCoreText("MonsterMoves", "Intents", "MultiAttackIntent.cs");
+        var vigorPower = ReadLocalCoreText("Models", "Powers", "VigorPower.cs");
+
+        AssertSourceContains(
+            attackIntent,
+            "Hook.ModifyDamage(",
+            "ValueProp.Move",
+            "ModifyDamageHookType.All",
+            "CardPreviewMode.None");
+        AssertSourceContains(multiAttackIntent, "return GetSingleDamage(targets, owner) * Repeats;");
+        AssertSourceContains(
+            vigorPower,
+            "ModifyDamageAdditive",
+            "base.Owner != dealer",
+            "!props.IsPoweredAttack()",
+            "return base.Amount;");
     }
 
     [Fact]

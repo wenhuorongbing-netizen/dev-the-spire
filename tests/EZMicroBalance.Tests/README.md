@@ -53,6 +53,8 @@ Use the shared active release resource predicates instead of redefining `IsActiv
 
 Use `ReadLocalCoreText(...)` inside `[LocalSourceFact]` tests for source-shape checks against ignored local Slay the Spire 2 source. Do not call `ReadRepoText("source code", ...)` directly.
 
+Keep repo, docs, localization, manifest, asset, and package assertions in normal `[Fact]` methods instead of `[LocalSourceFact]` methods so normal test lanes keep that coverage.
+
 ## Normal Test Command
 
 ```powershell

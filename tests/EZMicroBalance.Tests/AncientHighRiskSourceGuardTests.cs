@@ -354,7 +354,7 @@ public sealed class AncientHighRiskSourceGuardTests
         Assert.DoesNotContain("CurrentActIndex == 0", rootSightStatus, StringComparison.Ordinal);
     }
 
-    [LocalSourceFact]
+    [Fact]
     public void PickupRewardCompensationAndLockoutPatchesStayScoped()
     {
         var hornSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PaelsHornPhase1Patch.cs");
@@ -369,14 +369,6 @@ public sealed class AncientHighRiskSourceGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualRouteLog.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"));
         var tanxClawsTuningSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
-        var vakuuEventSource = ReadLocalCoreText("Models", "Events", "Vakuu.cs");
-        var tanxEventSource = ReadLocalCoreText("Models", "Events", "Tanx.cs");
-        var sereTalonSource = ReadLocalCoreText("Models", "Relics", "SereTalon.cs");
-        var clawsSource = ReadLocalCoreText("Models", "Relics", "Claws.cs");
-        var coreNRelicSource = ReadLocalCoreText("Nodes", "Relics", "NRelic.cs");
-        var coreEventOptionButtonSource = ReadLocalCoreText("Nodes", "Events", "NEventOptionButton.cs");
-        var coreRelicRewardSource = ReadLocalCoreText("Rewards", "RelicReward.cs");
-        var coreInspectRelicScreenSource = ReadLocalCoreText("Nodes", "Screens", "InspectScreens", "NInspectRelicScreen.cs");
         var sealSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SealOfGoldPatches.cs");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
 
@@ -424,25 +416,6 @@ public sealed class AncientHighRiskSourceGuardTests
             "RequireManualConfirmation = true",
             "AncientCardHelpers.RemoveUnpiledRunCard(curse)",
             "CardCmd.Upgrade(wish, CardPreviewStyle.None)");
-        AssertSourceContains(vakuuEventSource, "RelicOption<SereTalon>()");
-        Assert.DoesNotContain("RelicOption<Claws>()", vakuuEventSource, StringComparison.Ordinal);
-        AssertSourceContains(tanxEventSource, "RelicOption<Claws>()");
-        Assert.DoesNotContain("RelicOption<SereTalon>()", tanxEventSource, StringComparison.Ordinal);
-        AssertSourceContains(
-            sereTalonSource,
-            "public sealed class SereTalon : RelicModel",
-            "new DynamicVar(\"Curses\", 2m)",
-            "new DynamicVar(\"Wishes\", 3m)",
-            "base.Owner.RunState.Rng.Niche.NextItem(availableCurses)",
-            "base.Owner.RunState.CreateCard(ModelDb.Card<Wish>(), base.Owner)");
-        AssertSourceContains(
-            clawsSource,
-            "public sealed class Claws : RelicModel",
-            "new CardsVar(6)",
-            "HoverTipFactory.FromCardWithCardHoverTips<Maul>()",
-            "new CardTransformation(c, CreateMaulFromOriginal(c, forPreview: true))",
-            "base.Owner.RunState.CreateCard<Maul>(base.Owner)",
-            "CardCmd.Transform(transformations, base.Owner.PlayerRng.Transformations)");
         AssertSourceContains(
             tanxClawsTuningSource,
             "[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]",
@@ -495,6 +468,55 @@ public sealed class AncientHighRiskSourceGuardTests
             "Ancient event option button",
             "Vakuu Sere Talon icon route active");
         Assert.DoesNotContain("__instance is Claws", sereTalonVisualSource, StringComparison.Ordinal);
+        Assert.True(
+            File.Exists(RepoPath("EZMicroBalance", "images", "relics", "sere_talon_spire_plus.png")),
+            "Sere Talon needs a Spire Plus-owned in-game icon so it is not visually confused with Tanx Claws.");
+        Assert.True(
+            File.Exists(RepoPath("EZMicroBalance", "images", "relics", "big", "sere_talon_spire_plus.png")),
+            "Sere Talon needs a separate big relic icon for inspect/hover surfaces.");
+
+        AssertSourceContains(
+            sealSource,
+            "__result += sealOfGold.DynamicVars.Energy.BaseValue",
+            "__result = Task.CompletedTask");
+
+        Assert.Contains("immediately obtain 1 random Relic", relics["BLACK_STAR.description"], StringComparison.Ordinal);
+        Assert.Contains("fill all empty Potion slots", relics["SOZU.description"], StringComparison.Ordinal);
+        Assert.Contains("gain 250 Gold", relics["ECTOPLASM.description"], StringComparison.Ordinal);
+        Assert.Contains("Add 2 playable Debt", relics["SEAL_OF_GOLD.description"], StringComparison.Ordinal);
+    }
+
+    [LocalSourceFact]
+    public void CoreAncientRelicRoutesAndIconSurfacesStayCompatible()
+    {
+        var vakuuEventSource = ReadLocalCoreText("Models", "Events", "Vakuu.cs");
+        var tanxEventSource = ReadLocalCoreText("Models", "Events", "Tanx.cs");
+        var sereTalonSource = ReadLocalCoreText("Models", "Relics", "SereTalon.cs");
+        var clawsSource = ReadLocalCoreText("Models", "Relics", "Claws.cs");
+        var coreNRelicSource = ReadLocalCoreText("Nodes", "Relics", "NRelic.cs");
+        var coreEventOptionButtonSource = ReadLocalCoreText("Nodes", "Events", "NEventOptionButton.cs");
+        var coreRelicRewardSource = ReadLocalCoreText("Rewards", "RelicReward.cs");
+        var coreInspectRelicScreenSource = ReadLocalCoreText("Nodes", "Screens", "InspectScreens", "NInspectRelicScreen.cs");
+
+        AssertSourceContains(vakuuEventSource, "RelicOption<SereTalon>()");
+        Assert.DoesNotContain("RelicOption<Claws>()", vakuuEventSource, StringComparison.Ordinal);
+        AssertSourceContains(tanxEventSource, "RelicOption<Claws>()");
+        Assert.DoesNotContain("RelicOption<SereTalon>()", tanxEventSource, StringComparison.Ordinal);
+        AssertSourceContains(
+            sereTalonSource,
+            "public sealed class SereTalon : RelicModel",
+            "new DynamicVar(\"Curses\", 2m)",
+            "new DynamicVar(\"Wishes\", 3m)",
+            "base.Owner.RunState.Rng.Niche.NextItem(availableCurses)",
+            "base.Owner.RunState.CreateCard(ModelDb.Card<Wish>(), base.Owner)");
+        AssertSourceContains(
+            clawsSource,
+            "public sealed class Claws : RelicModel",
+            "new CardsVar(6)",
+            "HoverTipFactory.FromCardWithCardHoverTips<Maul>()",
+            "new CardTransformation(c, CreateMaulFromOriginal(c, forPreview: true))",
+            "base.Owner.RunState.CreateCard<Maul>(base.Owner)",
+            "CardCmd.Transform(transformations, base.Owner.PlayerRng.Transformations)");
         AssertSourceContains(
             coreEventOptionButtonSource,
             "Option.Relic.Icon",
@@ -516,22 +538,6 @@ public sealed class AncientHighRiskSourceGuardTests
         AssertSourceContains(
             coreInspectRelicScreenSource,
             "_relicImage.Texture = relicModel.BigIcon");
-        Assert.True(
-            File.Exists(RepoPath("EZMicroBalance", "images", "relics", "sere_talon_spire_plus.png")),
-            "Sere Talon needs a Spire Plus-owned in-game icon so it is not visually confused with Tanx Claws.");
-        Assert.True(
-            File.Exists(RepoPath("EZMicroBalance", "images", "relics", "big", "sere_talon_spire_plus.png")),
-            "Sere Talon needs a separate big relic icon for inspect/hover surfaces.");
-
-        AssertSourceContains(
-            sealSource,
-            "__result += sealOfGold.DynamicVars.Energy.BaseValue",
-            "__result = Task.CompletedTask");
-
-        Assert.Contains("immediately obtain 1 random Relic", relics["BLACK_STAR.description"], StringComparison.Ordinal);
-        Assert.Contains("fill all empty Potion slots", relics["SOZU.description"], StringComparison.Ordinal);
-        Assert.Contains("gain 250 Gold", relics["ECTOPLASM.description"], StringComparison.Ordinal);
-        Assert.Contains("Add 2 playable Debt", relics["SEAL_OF_GOLD.description"], StringComparison.Ordinal);
     }
 
     [Fact]

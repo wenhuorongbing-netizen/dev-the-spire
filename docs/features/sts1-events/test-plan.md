@@ -70,7 +70,7 @@ Reproduce v19 subagent role coverage with:
 .\scripts\check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch
 ```
 
-The coverage file is `docs/features/sts1-events/v19-subagent-coverage.md`. This verifies all 14 `docs/goals/event.md` subagent roles are represented without treating read-only/static subagent work as runtime, gameplay, or QA proof.
+The coverage file is `docs/features/sts1-events/v19-subagent-coverage.md`. This verifies all 15 `docs/goals/event.md` subagent roles are represented without treating read-only/static subagent work as runtime, gameplay, or QA proof.
 
 Reproduce the source count matrix with the static registry-shape checker:
 
@@ -127,6 +127,14 @@ Print the source-derived expected enabled-mode log shapes without launching the 
 
 This prints the current expected CanaryOnly 4 event types / 6 source registration calls and AdditiveBatch1 10 event types / 14 source registration calls. It is not runtime proof.
 
+Check installed runtime prerequisites without launching the game:
+
+```powershell
+.\scripts\check-sts1-runtime-preflight.ps1 -FailOnMismatch
+```
+
+This reads the game `release_info.json`, installed `STS2-RitsuLib` manifest and compat target, installed Spire Plus manifest, and source-only CanaryOnly/AdditiveBatch1 expected shapes. It is a prerequisite check only; it does not launch the game, audit a runtime log, or prove enabled-mode runtime/gameplay.
+
 Verify an already-captured helper evidence packet without launching the game:
 
 ```powershell
@@ -153,9 +161,10 @@ Automated tests and package checks are not gameplay evidence.
 Before event screenshots or gameplay proof can count as current evidence:
 
 1. Preserve beta.85 Off proof as default-Off proof only.
-2. Run a fresh current `v0.107.0` CanaryOnly smoke and verify 4 event types / 6 registration calls: Big Fish and Golden Idol in both Act 1 buckets, plus The Lab and Divine Fountain as shared events.
-3. Run a fresh current `v0.107.0` AdditiveBatch1 smoke and verify 10 event types / 14 registration calls: Big Fish, Golden Idol, The Cleric, and Shining Light in both Act 1 buckets; shared Divine Fountain, The Lab, Purifier, Golden Shrine, and Old Beggar; plus Upgrade Shrine in Glory.
-4. Only after enabled-mode smoke is clean, capture event encounters, result logs, pre/post state, save/load, EN/ZHS render, and image/license disposition.
+2. Run `.\scripts\check-sts1-runtime-preflight.ps1 -FailOnMismatch` and stop before launching if the installed game, RitsuLib, Spire Plus package, or source-only expected shapes do not match the current beta.85 target.
+3. Run a fresh current `v0.107.0` CanaryOnly smoke and verify 4 event types / 6 registration calls: Big Fish and Golden Idol in both Act 1 buckets, plus The Lab and Divine Fountain as shared events.
+4. Run a fresh current `v0.107.0` AdditiveBatch1 smoke and verify 10 event types / 14 registration calls: Big Fish, Golden Idol, The Cleric, and Shining Light in both Act 1 buckets; shared Divine Fountain, The Lab, Purifier, Golden Shrine, and Old Beggar; plus Upgrade Shrine in Glory.
+5. Only after enabled-mode smoke is clean, capture event encounters, result logs, pre/post state, save/load, EN/ZHS render, and image/license disposition.
 
 Use a fresh evidence folder for each mode. Replace `REPLACE_WITH_STEAM_USER_ID` and timestamp placeholders before running:
 

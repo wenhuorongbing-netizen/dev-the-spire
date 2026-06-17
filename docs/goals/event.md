@@ -59,7 +59,7 @@ Allowed work during the pause is read-only/static checking, documentation/guard 
 
 Runtime, gameplay, QA, build/test/publish, package/release-evidence, staging, commit, and push instructions below apply only after the coordination pause is explicitly lifted. During the coordination pause, do not treat static or source-only work as closing runtime gates.
 
-Latest pause-safe static checkpoint: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 878 checks / 0 mismatches after the v20 subagent coverage, status board, and current-doc claim guards were aligned; `scripts/check-sts1-event-static-suite.ps1` returned 14 static steps / 0 suite failures with the known 33-key localization gap; `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` returned 11 checks / 0 mismatches; `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` returned 531 checks / 0 mismatches; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returned 66 checks / 0 mismatches; focused `git diff --check --` exited 0. This is static-only evidence and does not close O25, O33, gameplay, save/load, replacement, multiplayer, QA, release, or handoff gates.
+Latest pause-safe static checkpoint: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 896 checks / 0 mismatches after the v20 subagent coverage, status-board header, current-doc summary, optional no-launch preflight script, test-plan preflight prerequisite, and read-only preflight guards were aligned; `scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch` returned 23 checks / 0 mismatches; `scripts/check-sts1-event-static-suite.ps1` returned 14 static steps / 0 suite failures with the known 33-key localization gap; `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` returned 11 checks / 0 mismatches; `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` returned 531 checks / 0 mismatches; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returned 66 checks / 0 mismatches; focused `git diff --check --` exited 0. This is static-only evidence and does not close O25, O33, gameplay, save/load, replacement, multiplayer, QA, release, or handoff gates.
 
 ---
 
@@ -105,7 +105,8 @@ Complementary no-build test-project lane: 466 passed / 0 failed / 21 skipped / 4
 Split coverage after stale testhost locks cleared: 475 passed / 0 failed / 21 skipped / 496 total
 Opt-in installed-artifact lane: 67 passed / 0 failed / 0 skipped
 Static suite: 14 static steps / 0 suite failures
-current-doc-claims: 878 checks / 0 mismatches
+current-doc-claims: 896 checks / 0 mismatches
+runtime-preflight: 23 checks / 0 mismatches
 static-file-hygiene: 11 checks / 0 mismatches
 v19 gate ledger: 531 checks / 0 mismatches
 v19 subagent coverage: 66 checks / 0 mismatches
@@ -700,7 +701,7 @@ coordination pause 解除后，继续 Mandatory Overnight Run v20。只能在 O0
 | Test matrix             | beta.85 后 split coverage 记录为 `475 passed / 0 failed / 21 skipped / 496 total`                                                           |
 | Installed artifact lane | `67 passed / 0 failed / 0 skipped`                                                                                                      |
 | Static suite            | `14 static steps / 0 suite failures`                                                                                                    |
-| Current doc claims      | 后续静态检查最高记录为 `872 checks / 0 mismatches`                                                                                                 |
+| Current doc claims      | 后续静态检查最高记录为 `896 checks / 0 mismatches`                                                                                                 |
 | beta.85 Off loader      | **clean**：v0.107.0 + RitsuLib 0.4.16，25/25 patches，StS1Events default Off                                                               |
 | Source parity fixes     | Big Fish Box identity、Divine Fountain curse prerequisite、Golden Idol trap branch identities、The Lab Open-only 都有 source/static guard 改进 |
 | Default Off             | 当前可认可为 loader proof 层面通过                                                                                                                |

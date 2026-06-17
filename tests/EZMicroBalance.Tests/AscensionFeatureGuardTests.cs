@@ -450,7 +450,7 @@ public sealed partial class AscensionFeatureGuardTests
         Assert.DoesNotContain("HasPower<GraspPower>", combatService, StringComparison.Ordinal);
     }
 
-    [LocalSourceFact]
+    [Fact]
     public void A11AndA17MapGeometryStayGatedOptionalAndRouteSafe()
     {
         var featureGate = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Core");
@@ -460,8 +460,6 @@ public sealed partial class AscensionFeatureGuardTests
         var rootRunHook = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "RootRunHook.cs");
         var mapGenerationPatch = ReadRepoText("EZMicroBalanceCode", "Ascension", "Patches", "AscensionMapGenerationPatches.cs");
         var metadata = ReadRepoText("EZMicroBalanceCode", "Ascension", "Map", "AscensionNodeMetadata.cs");
-        var coreRunManager = ReadLocalCoreText("Runs", "RunManager.cs");
-        var coreMapScreen = ReadLocalCoreText("Nodes", "Screens", "Map", "NMapScreen.cs");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
 
@@ -541,21 +539,6 @@ public sealed partial class AscensionFeatureGuardTests
             "runState.CurrentActIndex");
 
         AssertSourceContains(
-            coreRunManager,
-            "ActMap map2 = State.Act.CreateMap(State, replaceTreasureWithElites: false)",
-            "map = Hook.ModifyGeneratedMap(State, map2, State.CurrentActIndex)",
-            "State.Map = map",
-            "NMapScreen.Instance?.SetMap(map, State.Rng.Seed, clearDrawings: true)");
-
-        AssertSourceContains(
-            coreMapScreen,
-            "int rowCount = map.GetRowCount()",
-            "int columnCount = map.GetColumnCount()",
-            "_distY = 2325f / (float)(rowCount - 1)",
-            "_distX = 1050f / (float)columnCount",
-            "foreach (MapPoint allMapPoint in map.GetAllMapPoints())");
-
-        AssertSourceContains(
             metadata,
             "DeepBranchNodeKind",
             "EnhancedReward",
@@ -579,13 +562,34 @@ public sealed partial class AscensionFeatureGuardTests
     }
 
     [LocalSourceFact]
+    public void CoreMapGenerationAndMapScreenStillUseExpectedMapGeometryHooks()
+    {
+        var coreRunManager = ReadLocalCoreText("Runs", "RunManager.cs");
+        var coreMapScreen = ReadLocalCoreText("Nodes", "Screens", "Map", "NMapScreen.cs");
+
+        AssertSourceContains(
+            coreRunManager,
+            "ActMap map2 = State.Act.CreateMap(State, replaceTreasureWithElites: false)",
+            "map = Hook.ModifyGeneratedMap(State, map2, State.CurrentActIndex)",
+            "State.Map = map",
+            "NMapScreen.Instance?.SetMap(map, State.Rng.Seed, clearDrawings: true)");
+
+        AssertSourceContains(
+            coreMapScreen,
+            "int rowCount = map.GetRowCount()",
+            "int columnCount = map.GetColumnCount()",
+            "_distY = 2325f / (float)(rowCount - 1)",
+            "_distX = 1050f / (float)columnCount",
+            "foreach (MapPoint allMapPoint in map.GetAllMapPoints())");
+    }
+
+    [Fact]
     public void FiremarkTokenAndFissionPlayerFacingSurfacesAreGuarded()
     {
         var mapPatch = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Patches");
         var forgeToken = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var forgeRelic = ReadRepoText("EZMicroBalanceCode", "Ascension", "Relics", "ForgeTokenRelic.cs");
         var firemarkPowers = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Powers");
-        var corePowerNode = ReadLocalCoreText("Nodes", "Combat", "NPower.cs");
         var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "FissionEnchantment.cs");
         var rewardService = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
         var manualChecklist = ReadRepoText("docs", "features", "ascension-11-20", "manual-test-checklist.md");
@@ -641,7 +645,6 @@ public sealed partial class AscensionFeatureGuardTests
             "public override int DisplayAmount => Amount",
             "Firemark: Might",
             "Firemark: Constant Heal");
-        Assert.Contains("Model.StackType == PowerStackType.Counter", corePowerNode, StringComparison.Ordinal);
 
         AssertSourceContains(
             fission,
@@ -691,9 +694,29 @@ public sealed partial class AscensionFeatureGuardTests
     }
 
     [LocalSourceFact]
+    public void CorePowerNodeStillDisplaysCounterStackAmounts()
+    {
+        var corePowerNode = ReadLocalCoreText("Nodes", "Combat", "NPower.cs");
+
+        Assert.Contains("Model.StackType == PowerStackType.Counter", corePowerNode, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void FissionUsesCanonicalExhaustPipelineAndTriggersExhaustListeners()
     {
         var fission = ReadRepoText("EZMicroBalanceCode", "Ascension", "Enchantments", "FissionEnchantment.cs");
+
+        AssertSourceContains(
+            fission,
+            "Card.AddKeyword(CardKeyword.Exhaust)",
+            "triggers [gold]Exhaust[/gold] effects normally",
+            "正常触发[gold]消耗[/gold]效果");
+
+    }
+
+    [LocalSourceFact]
+    public void CoreExhaustPipelineStillMovesExhaustCardsAndNotifiesListeners()
+    {
         var cardModel = ReadLocalCoreText("Models", "CardModel.cs");
         var cardCmd = ReadLocalCoreText("Commands", "CardCmd.cs");
         var hook = ReadLocalCoreText("Hooks", "Hook.cs");
@@ -702,12 +725,6 @@ public sealed partial class AscensionFeatureGuardTests
         var feelNoPain = ReadLocalCoreText("Models", "Powers", "FeelNoPainPower.cs");
         var darkEmbrace = ReadLocalCoreText("Models", "Powers", "DarkEmbracePower.cs");
         var charonsAshes = ReadLocalCoreText("Models", "Relics", "CharonsAshes.cs");
-
-        AssertSourceContains(
-            fission,
-            "Card.AddKeyword(CardKeyword.Exhaust)",
-            "triggers [gold]Exhaust[/gold] effects normally",
-            "正常触发[gold]消耗[/gold]效果");
 
         var resultPile = SliceBetween(cardModel, "protected virtual PileType GetResultPileTypeForCardPlay()", "public async Task MoveToResultPileWithoutPlaying");
         AssertSourceContains(

@@ -141,6 +141,87 @@ public sealed class TestInfrastructureGuardTests
     }
 
     [Fact]
+    public void LocalGameSourceGuardTestsDoNotHideRepositoryCoverage()
+    {
+        var repositoryReadNeedles = new[]
+        {
+            "ReadRepo" + "Text(",
+            "ReadSource" + "Tree(",
+            "JsonString" + "Map(",
+            "JsonString" + "Values(",
+            "Json" + "Keys(",
+            "ReadCurrentFacing" + "Docs(",
+            "ReadShared" + "Text(",
+            "AssertRepo",
+            "Repo" + "Path(",
+            "Game" + "Path(",
+            "File.",
+            "Directory.",
+            "Sha" + "256(",
+            "Manifest" + "Version(",
+            "CurrentPackage",
+            "ParseExport" + "Files(",
+            "IsActiveExport" + "Resource(",
+            "IsActiveRelease" + "Resource("
+        };
+        var offenders = new List<string>();
+
+        foreach (var path in Directory
+            .GetFiles(RepoPath("tests", "EZMicroBalance.Tests"), "*.cs", SearchOption.TopDirectoryOnly)
+            .Where(path =>
+            {
+                var fileName = Path.GetFileName(path);
+                return !fileName.Equals("TestRepo.cs", StringComparison.Ordinal) &&
+                       !fileName.Equals("TestInfrastructureGuardTests.cs", StringComparison.Ordinal);
+            }))
+        {
+            var lines = File.ReadAllLines(path);
+            for (var i = 0; i < lines.Length; i++)
+            {
+                if (!Regex.IsMatch(lines[i], @"^\s*\[LocalSourceFact\]\s*$", RegexOptions.CultureInvariant))
+                {
+                    continue;
+                }
+
+                var methodLine = FindNextPublicVoidMethod(lines, i);
+                if (methodLine < 0)
+                {
+                    continue;
+                }
+
+                var methodName = Regex.Match(lines[methodLine], @"\bpublic\s+void\s+(?<name>[A-Za-z0-9_]+)\s*\(", RegexOptions.CultureInvariant)
+                    .Groups["name"]
+                    .Value;
+                var bodyLines = MethodBodyLines(lines, methodLine);
+                var codeLines = bodyLines.Select(StripStringLiteralsAndLineComment).ToArray();
+                var hasLocalCoreRead = codeLines.Any(line => line.Contains("ReadLocalCoreText(", StringComparison.Ordinal));
+                var hits = bodyLines
+                    .SelectMany((_, offset) => repositoryReadNeedles
+                        .Where(needle => codeLines[offset].Contains(needle, StringComparison.Ordinal))
+                        .Select(needle => $"{ToRepoRelativePath(path)}:{methodLine + offset + 1}:{methodName}:{needle}"))
+                    .Concat(codeLines.SelectMany((line, offset) => Regex
+                        .Matches(line, @"\bRead[A-Za-z0-9_]*\s*\(", RegexOptions.CultureInvariant)
+                        .Where(match => !match.Value.StartsWith("ReadLocalCoreText", StringComparison.Ordinal))
+                        .Select(match => $"{ToRepoRelativePath(path)}:{methodLine + offset + 1}:{methodName}:{match.Value}")))
+                    .ToArray();
+                if (!hasLocalCoreRead)
+                {
+                    offenders.Add($"{ToRepoRelativePath(path)}:{methodLine + 1}:{methodName}:missing ReadLocalCoreText");
+                }
+
+                offenders.AddRange(hits);
+            }
+        }
+
+        Assert.True(
+            offenders.Count == 0,
+            "[LocalSourceFact] methods should only guard ignored local Core snapshot assumptions. " +
+            "Keep repo, docs, localization, manifest, asset, and package assertions in normal [Fact] methods so normal test lanes retain that coverage:" +
+            Environment.NewLine +
+            string.Join(Environment.NewLine, offenders.OrderBy(offender => offender, StringComparer.Ordinal)));
+    }
+
+    [Fact]
     public void TestReadmeDocumentsSharedRepositoryHelpers()
     {
         var readme = ReadRepoText("tests", "EZMicroBalance.Tests", "README.md");
@@ -162,6 +243,7 @@ public sealed class TestInfrastructureGuardTests
         Assert.Contains("LocalSourceFactAttribute.cs", readme, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_RUN_LOCAL_SOURCE_GUARDS", readme, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_LOCAL_GAME_SOURCE_ROOT", readme, StringComparison.Ordinal);
+        Assert.Contains("Keep repo, docs, localization, manifest, asset, and package assertions in normal `[Fact]` methods", readme, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -316,7 +398,7 @@ public sealed class TestInfrastructureGuardTests
             "Future targeted prune only for newly proven generated clutter.",
             "Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted",
             "stale redirected publish-output folders",
-            "| `source code/` | Default keep because current docs and opt-in local-source tests require it. |",
+            "| `source code/` | Default keep because current tests/docs require it. |",
             "| `publish/` | Retained current beta.85 package/staging/cover-source output; stale beta.0-beta.80 ZIPs and expanded folders are removed by the guarded prune after confirming current-package hash/path parity. Future prune should happen only after a new package rebuild/hash refresh. |",
             "| `.tools/` | Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted; remaining `.tools/` subfolders are retained as current evidence, art provenance, local archives, or local tool installations. Wholesale deletion is not recommended. |");
     }
@@ -353,7 +435,110 @@ public sealed class TestInfrastructureGuardTests
             "`website/` and `.github/workflows/spire-plus-site.yml`");
 
         Assert.DoesNotContain("Status: Complete", cleanupAudit, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("| `source code/` | Default keep because current docs and opt-in local-source tests require it. |", cleanupAudit, StringComparison.Ordinal);
+        Assert.Contains("| `source code/` | Default keep because current tests/docs require it. |", cleanupAudit, StringComparison.Ordinal);
         Assert.Contains("Promoted and tracked as current public site source and Pages workflow. Generated `website/forum/` output and `website/**/*.import` metadata remain ignored", cleanupAudit, StringComparison.Ordinal);
+    }
+
+    private static int FindNextPublicVoidMethod(string[] lines, int start)
+    {
+        for (var i = start + 1; i < lines.Length; i++)
+        {
+            if (Regex.IsMatch(lines[i], @"\bpublic\s+void\s+[A-Za-z0-9_]+\s*\(", RegexOptions.CultureInvariant))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private static string[] MethodBodyLines(string[] lines, int methodLine)
+    {
+        var bodyStart = -1;
+        for (var i = methodLine; i < lines.Length; i++)
+        {
+            if (StripStringLiteralsAndLineComment(lines[i]).IndexOf('{') >= 0)
+            {
+                bodyStart = i;
+                break;
+            }
+        }
+
+        if (bodyStart < 0)
+        {
+            return [];
+        }
+
+        var depth = 0;
+        for (var i = bodyStart; i < lines.Length; i++)
+        {
+            var code = StripStringLiteralsAndLineComment(lines[i]);
+            depth += code.Count(character => character == '{');
+            depth -= code.Count(character => character == '}');
+            if (i > bodyStart && depth == 0)
+            {
+                return lines[bodyStart..(i + 1)];
+            }
+        }
+
+        return lines[bodyStart..];
+    }
+
+    private static string StripStringLiteralsAndLineComment(string line)
+    {
+        var result = new char[line.Length];
+        var inString = false;
+        var inVerbatimString = false;
+        for (var i = 0; i < line.Length; i++)
+        {
+            var current = line[i];
+            var next = i + 1 < line.Length ? line[i + 1] : '\0';
+
+            if (!inString && current == '/' && next == '/')
+            {
+                break;
+            }
+
+            if (!inString && current == '@' && next == '"')
+            {
+                result[i] = ' ';
+                result[i + 1] = ' ';
+                inString = true;
+                inVerbatimString = true;
+                i++;
+                continue;
+            }
+
+            if (!inString && current == '"')
+            {
+                inString = true;
+                result[i] = ' ';
+                continue;
+            }
+
+            if (inString)
+            {
+                if (inVerbatimString && current == '"' && next == '"')
+                {
+                    result[i] = ' ';
+                    result[i + 1] = ' ';
+                    i++;
+                    continue;
+                }
+
+                if (current == '"' && (inVerbatimString || i == 0 || line[i - 1] != '\\'))
+                {
+                    inString = false;
+                    inVerbatimString = false;
+                }
+
+                result[i] = ' ';
+                continue;
+            }
+
+            result[i] = current;
+        }
+
+        return new string(result);
     }
 }

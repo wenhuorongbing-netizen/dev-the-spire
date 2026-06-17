@@ -509,7 +509,7 @@ public sealed class LothaPolishGuardTests
         }
     }
 
-    [LocalSourceFact]
+    [Fact]
     public void PublicEvidenceUsesNonDamageDebuffPolicyAndVisibleEnlightenment()
     {
         var ancient = ReadLothaSource();
@@ -519,10 +519,6 @@ public sealed class LothaPolishGuardTests
         var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
         var engRelics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
         var zhsRelics = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
-        var poison = ReadLocalCoreText("Models", "Powers", "PoisonPower.cs");
-        var weak = ReadLocalCoreText("Models", "Powers", "WeakPower.cs");
-        var vulnerable = ReadLocalCoreText("Models", "Powers", "VulnerablePower.cs");
-        var frail = ReadLocalCoreText("Models", "Powers", "FrailPower.cs");
         var helper = SliceBetween(runHook, "private static bool IsPublicEvidenceDebuffApplication", "private static bool IsPublicEvidenceExcludedDamageDebuff");
         var publicEvidenceSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.PublicEvidence.cs");
         var excludedDamageDebuffs = SliceFrom(publicEvidenceSource, "private static bool IsPublicEvidenceExcludedDamageDebuff");
@@ -590,6 +586,37 @@ public sealed class LothaPolishGuardTests
             "applier is { IsEnemy: true }",
             "power.Owner is { IsPlayer: true, Player: { } targetPlayer }");
         AssertSourceContains(
+            engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
+            "Your non-damaging [gold]negative status[/gold] stacks apply twice",
+            "grant [blue]1[/blue] [gold]Enlightenment[/gold]",
+            "Enemy non-damaging [gold]negative status[/gold] stacks on you also apply twice",
+            "remove [blue]1[/blue] [gold]Enlightenment[/gold]",
+            "spend up to [blue]3[/blue] [gold]Enlightenment[/gold]",
+            "each spent stack draws [blue]1[/blue] and gives [blue]4[/blue] [gold]Block[/gold]");
+        AssertSourceContains(
+            zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
+            "[gold]",
+            "[/gold]",
+            "[blue]3[/blue]",
+            "[blue]1[/blue]",
+            "[blue]4[/blue]");
+        Assert.Equal(
+            engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
+            engRelics["EZMICROBALANCE-LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC.description"]);
+        Assert.Equal(
+            zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
+            zhsRelics["EZMICROBALANCE-LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC.description"]);
+    }
+
+    [LocalSourceFact]
+    public void CoreDebuffPowersKeepPublicEvidenceDamageAndNonDamageShapes()
+    {
+        var poison = ReadLocalCoreText("Models", "Powers", "PoisonPower.cs");
+        var weak = ReadLocalCoreText("Models", "Powers", "WeakPower.cs");
+        var vulnerable = ReadLocalCoreText("Models", "Powers", "VulnerablePower.cs");
+        var frail = ReadLocalCoreText("Models", "Powers", "FrailPower.cs");
+
+        AssertSourceContains(
             poison,
             "public override PowerType Type => PowerType.Debuff",
             "AfterSideTurnStart",
@@ -613,28 +640,6 @@ public sealed class LothaPolishGuardTests
         Assert.DoesNotContain("CreatureCmd.Damage", weak, StringComparison.Ordinal);
         Assert.DoesNotContain("CreatureCmd.Damage", vulnerable, StringComparison.Ordinal);
         Assert.DoesNotContain("CreatureCmd.Damage", frail, StringComparison.Ordinal);
-
-        AssertSourceContains(
-            engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
-            "Your non-damaging [gold]negative status[/gold] stacks apply twice",
-            "grant [blue]1[/blue] [gold]Enlightenment[/gold]",
-            "Enemy non-damaging [gold]negative status[/gold] stacks on you also apply twice",
-            "remove [blue]1[/blue] [gold]Enlightenment[/gold]",
-            "spend up to [blue]3[/blue] [gold]Enlightenment[/gold]",
-            "each spent stack draws [blue]1[/blue] and gives [blue]4[/blue] [gold]Block[/gold]");
-        AssertSourceContains(
-            zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
-            "[gold]",
-            "[/gold]",
-            "[blue]3[/blue]",
-            "[blue]1[/blue]",
-            "[blue]4[/blue]");
-        Assert.Equal(
-            engAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
-            engRelics["EZMICROBALANCE-LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC.description"]);
-        Assert.Equal(
-            zhsAncients["EZMB_LOTHA.pages.INITIAL.options.lotha_public_evidence.description"],
-            zhsRelics["EZMICROBALANCE-LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC.description"]);
     }
 
     [Fact]

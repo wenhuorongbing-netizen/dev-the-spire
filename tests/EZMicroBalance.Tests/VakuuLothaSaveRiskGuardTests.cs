@@ -11,7 +11,6 @@ public sealed class VakuuLothaSaveRiskGuardTests
         var combatRoom = ReadLocalCoreText("Rooms", "CombatRoom.cs");
         var runManager = ReadLocalCoreText("Runs", "RunManager.cs");
         var ancientEventModel = ReadLocalCoreText("Models", "AncientEventModel.cs");
-        var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
 
         AssertSourceContains(
             combatRoom,
@@ -31,6 +30,13 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "protected override async Task BeforeEventStarted(bool isPreFinished)",
             "if (!isPreFinished)",
             "await CreatureCmd.Heal(base.Owner.Creature, amount, playAnim: false)");
+    }
+
+    [Fact]
+    public void ApiResearchDocumentsActiveParentEventIdSerializationBlocker()
+    {
+        var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
+
         AssertSourceContains(
             apiResearch,
             "source code/src/Core/Rooms/CombatRoom.cs",
@@ -116,11 +122,9 @@ public sealed class VakuuLothaSaveRiskGuardTests
             "live");
     }
 
-    [LocalSourceFact]
+    [Fact]
     public void VakuuActiveFightAvoidsCoreRejectedParentEventIdShapeAndDocsStayAccurate()
     {
-        var eventModel = ReadLocalCoreText("Models", "EventModel.cs");
-        var combatRoom = ReadLocalCoreText("Rooms", "CombatRoom.cs");
         var patch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPatch.cs");
         var entry = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.Entry.cs");
         var parentRestore = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightService.ParentRestore.cs");
@@ -131,17 +135,6 @@ public sealed class VakuuLothaSaveRiskGuardTests
             ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md"),
             ReadRepoText("docs", "issues.md"));
 
-        AssertSourceContains(
-            eventModel,
-            "protected void EnterCombatWithoutExitingEvent(EncounterModel mutableEncounter, IReadOnlyList<Reward> extraRewards, bool shouldResumeAfterCombat)",
-            "if (!IsShared)",
-            "Node = null",
-            "ShouldResumeParentEventAfterCombat = shouldResumeAfterCombat",
-            "ParentEventId = base.Id");
-        AssertSourceContains(
-            combatRoom,
-            "if (ParentEventId != null && !IsPreFinished)",
-            "Cannot serialize a CombatRoom with a ParentEventId that is not pre-finished.");
         AssertSourceContains(
             string.Join(Environment.NewLine, entry, parentRestore),
             "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)",
@@ -164,6 +157,25 @@ public sealed class VakuuLothaSaveRiskGuardTests
         Assert.DoesNotContain("still creates an active parent-linked combat room", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("still uses an active parent-linked combat shape", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("active parent-linked shape remains a source-level blocker", currentDocs, StringComparison.Ordinal);
+    }
+
+    [LocalSourceFact]
+    public void CoreEventCombatRoomParentEventIdShapeStillRequiresPrefinishedSerialization()
+    {
+        var eventModel = ReadLocalCoreText("Models", "EventModel.cs");
+        var combatRoom = ReadLocalCoreText("Rooms", "CombatRoom.cs");
+
+        AssertSourceContains(
+            eventModel,
+            "protected void EnterCombatWithoutExitingEvent(EncounterModel mutableEncounter, IReadOnlyList<Reward> extraRewards, bool shouldResumeAfterCombat)",
+            "if (!IsShared)",
+            "Node = null",
+            "ShouldResumeParentEventAfterCombat = shouldResumeAfterCombat",
+            "ParentEventId = base.Id");
+        AssertSourceContains(
+            combatRoom,
+            "if (ParentEventId != null && !IsPreFinished)",
+            "Cannot serialize a CombatRoom with a ParentEventId that is not pre-finished.");
     }
 
     [Fact]
@@ -379,23 +391,18 @@ public sealed class VakuuLothaSaveRiskGuardTests
         AssertBefore(startBlock, "SetProgress(player, activeProgress)", "CardPileCmd.Draw(choiceContext, DeathReprieveCards, player)");
     }
 
-    [LocalSourceFact]
+    [Fact]
     public void LothaDeathReprieveForceDeathAndPersistenceStanceRemainExplicit()
     {
         var runHook = ReadLothaSource();
         var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
         var deathReprieveTurn = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveTurn.cs");
-        var creatureCmd = ReadLocalCoreText("Commands", "CreatureCmd.cs");
         var apiResearch = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
         var riskRegister = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md");
         var manualChecklist = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md");
         var deathBlock = SliceBetween(deathReprieve, "public static bool ShouldDieLate(Creature creature)", "private static Dictionary<string, object?> DeathReprieveDiagnostics");
         var resolveBlock = SliceBetween(deathReprieveTurn, "private static async Task ResolveDeathReprieveTurnEnd", "private static bool IsDeathReprieveCostFree");
 
-        AssertSourceContains(
-            creatureCmd,
-            "public static async Task Kill(Creature creature, bool force = false)",
-            "if (force || creature.MaxHp <= 0 || Hook.ShouldDie(runState, combatState, creature, out preventer))");
         AssertSourceContains(
             resolveBlock,
             "ResolveDeathReprieveProgress(player)",
@@ -427,6 +434,17 @@ public sealed class VakuuLothaSaveRiskGuardTests
             hasSourceRecovery || docsExplicitlyLimitPendingActiveSaveLoad,
             "Death Reprieve must either recover active/pending reprieve state from a source-supported persistent carrier " +
             "or keep active docs/manual tests explicit that pending/active reprieve save/load is not proven safe.");
+    }
+
+    [LocalSourceFact]
+    public void CoreCreatureKillForceFlagStillBypassesShouldDie()
+    {
+        var creatureCmd = ReadLocalCoreText("Commands", "CreatureCmd.cs");
+
+        AssertSourceContains(
+            creatureCmd,
+            "public static async Task Kill(Creature creature, bool force = false)",
+            "if (force || creature.MaxHp <= 0 || Hook.ShouldDie(runState, combatState, creature, out preventer))");
     }
 
     private static string ReadLothaSource() =>
