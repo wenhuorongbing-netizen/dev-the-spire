@@ -131,9 +131,12 @@ public sealed class PreviewToolsGuardTests
     public void TransformPredictionQueueOrderSkipsExplicitReplacementSlots()
     {
         var patchSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPreviewPatch.cs");
+        var predictionSource = ReadRepoText("EZMicroBalanceCode", "Preview", "TransformPredictionService.cs");
 
-        Assert.Contains("if (transformation.Replacement != null)", patchSource, StringComparison.Ordinal);
-        Assert.Contains("continue;", SliceFrom(patchSource, "if (transformation.Replacement != null)"), StringComparison.Ordinal);
+        Assert.Contains("PreviewTransformPolicy.ShouldPredictGeneratedReplacement(transformation)", patchSource, StringComparison.Ordinal);
+        Assert.Contains("continue;", SliceFrom(patchSource, "if (!PreviewTransformPolicy.ShouldPredictGeneratedReplacement(transformation))"), StringComparison.Ordinal);
+        Assert.Contains("internal static class PreviewTransformPolicy", predictionSource, StringComparison.Ordinal);
+        Assert.Contains("transformation.Replacement == null", predictionSource, StringComparison.Ordinal);
         Assert.DoesNotContain(
             "queue.Enqueue(transformation.Replacement",
             patchSource,

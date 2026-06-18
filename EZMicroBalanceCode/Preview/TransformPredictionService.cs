@@ -78,3 +78,9 @@ internal static class TransformPredictionService
             : source.Where(card => card.MultiplayerConstraint != CardMultiplayerConstraint.MultiplayerOnly);
     }
 }
+
+internal static class PreviewTransformPolicy
+{
+    public static bool ShouldPredictGeneratedReplacement(CardTransformation transformation) =>
+        transformation.Replacement == null;
+}

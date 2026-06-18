@@ -80,7 +80,7 @@ internal static partial class TransformPreviewCyclePatch
 
             foreach (var transformation in transformations)
             {
-                if (transformation.Replacement != null)
+                if (!PreviewTransformPolicy.ShouldPredictGeneratedReplacement(transformation))
                 {
                     continue;
                 }
