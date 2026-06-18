@@ -427,45 +427,59 @@ function Analyze-Iteration {
     $evidenceFiles = @($candidateEvidenceFiles | Where-Object {
         Test-Path -LiteralPath $_ -PathType Leaf
     })
-    $logText = ''
     $currentIterationLogExists = Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf
     $fullLogExists = Test-Path -LiteralPath $fullLogCandidate -PathType Leaf
-    if (Test-Path -LiteralPath $logCandidate -PathType Leaf) {
-        $logText = Get-Content -LiteralPath $logCandidate -Raw -Encoding UTF8
-    }
-
-    if ($result -and $currentIterationLogExists -and $fullLogExists -and (Test-JsonProperty -Object $result -Name 'LogScanOffsetBytes')) {
-        $logScanOffset = [long](Get-JsonValue -Object $result -Name 'LogScanOffsetBytes' -DefaultValue -1)
-        $fullLogLength = [long](Get-Item -LiteralPath $fullLogCandidate).Length
-        if ($logScanOffset -lt 0 -or $logScanOffset -gt $fullLogLength) {
-            $logText = ''
+    $logText = ''
+    if ($result -and $currentIterationLogExists) {
+        $hasOffsetBinding = $fullLogExists -and (Test-JsonProperty -Object $result -Name 'LogScanOffsetBytes')
+        if (-not $hasOffsetBinding) {
             Add-Finding `
                 -Findings $findings `
-                -Signal 'current_iteration_log_scan_offset_invalid' `
+                -Signal 'current_iteration_log_offset_binding_missing' `
                 -Severity 'blocking' `
                 -OwnerArea 'RuntimeHarness' `
-                -Rationale "LogScanOffsetBytes is outside godot.log.after-launch; offset=$logScanOffset, length=$fullLogLength." `
-                -NextStep 'Fix current-iteration log slicing or evidence retention before routing this runtime failure to gameplay source.' `
+                -Rationale 'godot.log.current-iteration exists without both godot.log.after-launch and LogScanOffsetBytes, so the retained current slice may be stale or hand-assembled.' `
+                -NextStep 'Fix current-iteration log offset binding or rerun the packet after validation lanes are unpaused; do not route ownership from an unbound current-iteration slice.' `
                 -Confidence 'high' `
                 -EvidenceFiles $evidenceFiles
         } else {
-            $expectedCurrentIterationLogText = Read-TextAfterByteOffset -Path $fullLogCandidate -Offset $logScanOffset
-            $actualCurrentIterationLogText = [System.IO.File]::ReadAllText($currentIterationLogCandidate)
-            $normalizedExpectedSlice = Normalize-LogSliceForComparison -Text $expectedCurrentIterationLogText
-            $normalizedActualSlice = Normalize-LogSliceForComparison -Text $actualCurrentIterationLogText
-            $logText = $expectedCurrentIterationLogText
-            if (-not [string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) {
+            $logScanOffset = [long](Get-JsonValue -Object $result -Name 'LogScanOffsetBytes' -DefaultValue -1)
+            $fullLogLength = [long](Get-Item -LiteralPath $fullLogCandidate).Length
+            if ($logScanOffset -lt 0 -or $logScanOffset -gt $fullLogLength) {
                 Add-Finding `
                     -Findings $findings `
-                    -Signal 'current_iteration_log_slice_mismatch' `
+                    -Signal 'current_iteration_log_scan_offset_invalid' `
                     -Severity 'blocking' `
                     -OwnerArea 'RuntimeHarness' `
-                    -Rationale 'godot.log.current-iteration does not match godot.log.after-launch from LogScanOffsetBytes, so the retained slice may be stale or hand-assembled.' `
-                    -NextStep 'Use the derived full-log slice from LogScanOffsetBytes for source routing, then fix current-iteration log retention before trusting packet evidence.' `
+                    -Rationale "LogScanOffsetBytes is outside godot.log.after-launch; offset=$logScanOffset, length=$fullLogLength." `
+                    -NextStep 'Fix current-iteration log slicing or evidence retention before routing this runtime failure to gameplay source.' `
                     -Confidence 'high' `
                     -EvidenceFiles $evidenceFiles
+            } else {
+                $expectedCurrentIterationLogText = Read-TextAfterByteOffset -Path $fullLogCandidate -Offset $logScanOffset
+                $actualCurrentIterationLogText = [System.IO.File]::ReadAllText($currentIterationLogCandidate)
+                $normalizedExpectedSlice = Normalize-LogSliceForComparison -Text $expectedCurrentIterationLogText
+                $normalizedActualSlice = Normalize-LogSliceForComparison -Text $actualCurrentIterationLogText
+                $logText = $expectedCurrentIterationLogText
+                if (-not [string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) {
+                    Add-Finding `
+                        -Findings $findings `
+                        -Signal 'current_iteration_log_slice_mismatch' `
+                        -Severity 'blocking' `
+                        -OwnerArea 'RuntimeHarness' `
+                        -Rationale 'godot.log.current-iteration does not match godot.log.after-launch from LogScanOffsetBytes, so the retained slice may be stale or hand-assembled.' `
+                        -NextStep 'Use the derived full-log slice from LogScanOffsetBytes for source routing, then fix current-iteration log retention before trusting packet evidence.' `
+                        -Confidence 'high' `
+                        -EvidenceFiles $evidenceFiles
+                }
             }
         }
+    } elseif (Test-Path -LiteralPath $logCandidate -PathType Leaf) {
+        $logText = Get-Content -LiteralPath $logCandidate -Raw -Encoding UTF8
+    }
+
+    if ($result -and -not $currentIterationLogExists -and $fullLogExists) {
+        $logText = Get-Content -LiteralPath $fullLogCandidate -Raw -Encoding UTF8
     }
 
     $logOwnerArea = Get-OwnerAreaFromText -Text $logText -Command ''
@@ -530,6 +544,9 @@ function Analyze-Iteration {
                 $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The window was reported hung or not responding during observation.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal $signal) -Confidence 'medium' -EvidenceFiles $evidenceFiles
             }
+            'stale_process_observed' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The retained probe observed a SlayTheSpire2 process that started before this iteration; shared godot.log evidence may be contaminated.' -NextStep 'Close pre-existing game clients, rerun the packet after validation lanes are unpaused, and do not route ownership from this iteration log.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
             'command_ack_missing' {
                 $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The command was sent but the expected source-backed acknowledgement line was absent.' -NextStep 'Verify foreground/DevConsole input delivery first; if input landed, inspect the target command handler and its preconditions.' -Confidence 'medium' -EvidenceFiles $evidenceFiles
@@ -563,6 +580,24 @@ function Analyze-Iteration {
                 Add-Finding -Findings $findings -Signal ([string]$signal) -Severity 'blocking' -OwnerArea $owner -Rationale 'Unclassified retained failure code from iteration-result.json.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal ([string]$signal)) -Confidence 'low' -EvidenceFiles $evidenceFiles
             }
         }
+    }
+
+    $blockingFindingsSoFar = @($findings | Where-Object { [string]$_.Severity -eq 'blocking' }).Count
+    if ($result -and
+        -not [bool](Get-JsonValue -Object $result -Name 'Passed' -DefaultValue $false) -and
+        $failureCodes.Count -eq 0 -and
+        $hangSignals.Count -eq 0 -and
+        $auditHits.Count -eq 0 -and
+        $blockingFindingsSoFar -eq 0) {
+        Add-Finding `
+            -Findings $findings `
+            -Signal 'iteration_failed_without_failure_signal' `
+            -Severity 'blocking' `
+            -OwnerArea 'RuntimeHarness' `
+            -Rationale 'iteration-result.json says the iteration failed, but it retained no FailureReasonCodes, HangSignals, or audit hits to explain the failure.' `
+            -NextStep 'Fix runner evidence retention or derive the missing failure code from failed booleans before classifying gameplay source.' `
+            -Confidence 'high' `
+            -EvidenceFiles $evidenceFiles
     }
 
     foreach ($hit in $auditHits) {

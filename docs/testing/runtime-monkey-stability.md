@@ -78,11 +78,12 @@ The first implementation layer is deliberately conservative:
 5. During startup, sample the `SlayTheSpire2` process, main-window
    responsiveness, and `godot.log` length/write time. The runner records the
    pre-launch log length and only accepts a main-menu marker from appended or
-   reset log content. It also ignores `SlayTheSpire2` processes that started
-   before the iteration. Startup fails if the current process disappears, the
-   window reports hung/not responding for `-UnresponsiveSampleThreshold`
-   consecutive samples, or the log stops growing before main menu for
-   `-NoLogGrowthTimeoutSeconds`.
+   reset log content. Startup fails if any `SlayTheSpire2` process started
+   before the iteration, because the shared `godot.log` can no longer be
+   attributed to the launched process. Startup also fails if the current process
+   disappears, the window reports hung/not responding for
+   `-UnresponsiveSampleThreshold` consecutive samples, or the log stops growing
+   before main menu for `-NoLogGrowthTimeoutSeconds`.
 6. Optionally send one short DevConsole command from the corpus.
 7. During the post-command window, sample process/window/log health again.
    Process disappearance or a hung/not-responding window fails the iteration;
@@ -105,6 +106,8 @@ The lane fails an iteration on:
 
 - main-menu timeout;
 - `SlayTheSpire2` disappearing during startup or post-command observation;
+- any pre-existing `SlayTheSpire2` process observed during startup or
+  post-command observation;
 - the game window reporting hung or not responding for the configured
   consecutive-sample threshold;
 - `godot.log` not growing before main menu for the configured no-growth
@@ -227,15 +230,16 @@ and `child_combat_room_entered`.
 
 The launched packet checker requires `MainMenuObservation` and
 `RuntimeObservation` in each `iteration-result.json`. These records include
-process-observed, process-exited, hung-window, log-observed, log-length, and
-max-no-growth counters. It also requires the retained
+process-observed, process-exited, stale-process, hung-window, log-observed,
+log-length, and max-no-growth counters. It also requires the retained
 `sts1-mode-log-check.json`, exact Spire Plus patch-count lines from
 `godot.log.current-iteration`, probe sample paths and sliced-log paths that
 point to the retained standard files inside the current iteration folder,
 `LogScanOffsetBytes` within the copied full log, a `godot.log.current-iteration`
 slice that matches `godot.log.after-launch` from that offset, command
 acknowledgement patterns that match known built-in command regexes and that
-retained slice when required, and no raw probe sample with `Responding=false`.
+retained slice when required, no raw probe sample with `Responding=false`, and
+no probe sample or observation with `StaleProcessCount > 0`.
 A clean packet means those signals stayed healthy for the sampled windows; it
 still does not prove deeper gameplay behavior.
 
@@ -251,7 +255,8 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   `CurrentIterationLogPath`, `CurrentIterationLogCopied`, `ScenarioTag`, `OwnerArea`,
   `CommandSelectionMode`, `LogInitialLengthBytes`,
   `LogFinalLengthBytes`, `LastLogGrowthAt`, `MaxSecondsWithoutLogGrowth`,
-  `MaxConsecutiveUnresponsiveSamples`, `StartupLogProbePassed`,
+  `MaxConsecutiveUnresponsiveSamples`, `StaleProcessObserved`,
+  `StaleProcessCount`, `StartupLogProbePassed`,
   `PostCommandLogProbePassed`, `CommandAckRequired`, `CommandAckPattern`,
   `CommandAckObserved`,
   `ResponsivenessProbePassed`, current-slice offset binding, `HangSignals`, and
@@ -260,7 +265,8 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   process/window/log records.
 - `monkey-summary.json` records `FailedIterationIds`, `FailureReasonCounts`,
   `ProcessExitCount`, `UnresponsiveIterationCount`, `LogStallIterationCount`,
-  `CommandAckMissingCount`, `CommandCounts`, `ScenarioTagCounts`,
+  `StaleProcessObservedCount`, `CommandAckMissingCount`, `CommandCounts`,
+  `ScenarioTagCounts`,
   `OwnerAreaCounts`, `VakuuFightIterationCount`, `MaxMainMenuElapsedSeconds`,
   and `MaxSecondsWithoutLogGrowth`.
 
@@ -273,20 +279,25 @@ forced fight-option setup only with the `VakuuFightService.Entry.cs` release
 evidence line `[SPIREPLUS-EVIDENCE] VakuuFight fight_option_shown`, not with the
 generic unsaved live-test setup line.
 
-The triage analyzer maps retained signals to owner areas. It reads
-`godot.log.current-iteration` first when present, falls back to the full copied
-`godot.log.after-launch`, and records the planned `OwnerAreaHint` separately
-from `OwnerAreaFromLog` and `OwnerAreaFromCommand`. When `LogScanOffsetBytes` is
-available, the analyzer validates the retained current-iteration slice against
-the full copied log and reports a `RuntimeHarness` blocker if they disagree; for
-owner routing, a valid offset-derived slice is preferred over a stale retained
-slice. If `iteration-result.json` is missing or invalid, `monkey-summary.json`
-may still provide a fallback row for routing, but the analyzer reports a
-`RuntimeHarness` blocker because summary data does not replace the canonical
-per-iteration artifact. Empty retained JSON arrays such as `Mismatches`,
-`FailureReasonCodes`, `HangSignals`, and `SignatureHits` are treated as empty
-signal sets before owner routing, but invalid or empty `godot-log-audit.json`
-files are `RuntimeHarness` blockers because audit evidence cannot be trusted.
+The triage analyzer maps retained signals to owner areas. It records the planned
+`OwnerAreaHint` separately from `OwnerAreaFromLog` and `OwnerAreaFromCommand`.
+When `godot.log.current-iteration` exists, the analyzer requires both the full
+copied `godot.log.after-launch` and `LogScanOffsetBytes`; otherwise it reports a
+`RuntimeHarness` blocker and does not route ownership from the unbound current
+slice. When the offset binding is present, the analyzer validates the retained
+current-iteration slice against the full copied log and reports a
+`RuntimeHarness` blocker if they disagree; for owner routing, a valid
+offset-derived slice is preferred over a stale retained slice. If
+`iteration-result.json` is missing or invalid, `monkey-summary.json` may still
+provide a fallback row for routing, but the analyzer reports a `RuntimeHarness`
+blocker because summary data does not replace the canonical per-iteration
+artifact. Empty retained JSON arrays such as `Mismatches`, `FailureReasonCodes`,
+`HangSignals`, and `SignatureHits` are treated as empty signal sets before owner
+routing. If `Passed=false` has no retained failure code, hang signal, audit hit,
+or other blocking harness finding, the analyzer emits
+`iteration_failed_without_failure_signal`. Invalid or empty
+`godot-log-audit.json` files are `RuntimeHarness` blockers because audit
+evidence cannot be trusted.
 For hung processes, unclassified retained failures, audit hits, Spire
 Plus error/exception hits, and co-op override failures, explicit log-derived
 package/runtime drift, StS1, preview-tool, or multiplayer-policy signatures take

@@ -375,6 +375,8 @@ function Wait-ForMainMenuLog {
     $hungWindowDetected = $false
     $consecutiveUnresponsiveSamples = 0
     $maxConsecutiveUnresponsiveSamples = 0
+    $staleProcessObserved = $false
+    $maxStaleProcessCount = 0
     $noLogGrowthTimeoutExceeded = $false
     $lastProcess = $null
     $failureReason = ''
@@ -394,6 +396,14 @@ function Wait-ForMainMenuLog {
 
         $lastProcess = Get-SpireProcessSnapshot -MinimumStartTimeUtc $MinimumProcessStartTimeUtc
         Add-ProbeSample -Samples $ProbeSamples -Phase 'StartupMainMenu' -LogSnapshot $lastLog -ProcessSnapshot $lastProcess
+        $sampleStaleProcessCount = [int]$lastProcess.StaleProcessCount
+        if ($sampleStaleProcessCount -gt 0) {
+            $staleProcessObserved = $true
+            $maxStaleProcessCount = [Math]::Max($maxStaleProcessCount, $sampleStaleProcessCount)
+            $failureReason = "Observed $sampleStaleProcessCount pre-existing SlayTheSpire2 process(es); shared godot.log cannot be trusted for this iteration."
+            break
+        }
+
         if ($lastProcess.Observed) {
             $processObserved = $true
         } elseif ($processObserved) {
@@ -451,6 +461,8 @@ function Wait-ForMainMenuLog {
                 LogResetObserved = $logResetObserved
                 MaxNoLogGrowthSeconds = $maxNoGrowthSeconds
                 MaxConsecutiveUnresponsiveSamples = $maxConsecutiveUnresponsiveSamples
+                StaleProcessObserved = $staleProcessObserved
+                MaxStaleProcessCount = $maxStaleProcessCount
                 LastProcess = $lastProcess
                 MinimumProcessStartTimeUtc = $MinimumProcessStartTimeUtc.ToString('o')
             }
@@ -489,6 +501,8 @@ function Wait-ForMainMenuLog {
         LogResetObserved = $logResetObserved
         MaxNoLogGrowthSeconds = $maxNoGrowthSeconds
         MaxConsecutiveUnresponsiveSamples = $maxConsecutiveUnresponsiveSamples
+        StaleProcessObserved = $staleProcessObserved
+        MaxStaleProcessCount = $maxStaleProcessCount
         LastProcess = $lastProcess
         MinimumProcessStartTimeUtc = $MinimumProcessStartTimeUtc.ToString('o')
     }
@@ -518,6 +532,8 @@ function Watch-RuntimeHealth {
     $hungWindowDetected = $false
     $consecutiveUnresponsiveSamples = 0
     $maxConsecutiveUnresponsiveSamples = 0
+    $staleProcessObserved = $false
+    $maxStaleProcessCount = 0
     $lastProcess = $null
     $failureReason = ''
 
@@ -526,6 +542,14 @@ function Watch-RuntimeHealth {
         $lastProcess = Get-SpireProcessSnapshot -MinimumStartTimeUtc $MinimumProcessStartTimeUtc
         $lastLog = Get-LogSnapshot -Path $Path
         Add-ProbeSample -Samples $ProbeSamples -Phase 'PostCommandRuntime' -LogSnapshot $lastLog -ProcessSnapshot $lastProcess
+        $sampleStaleProcessCount = [int]$lastProcess.StaleProcessCount
+        if ($sampleStaleProcessCount -gt 0) {
+            $staleProcessObserved = $true
+            $maxStaleProcessCount = [Math]::Max($maxStaleProcessCount, $sampleStaleProcessCount)
+            $failureReason = "Observed $sampleStaleProcessCount pre-existing SlayTheSpire2 process(es) during runtime observation."
+            break
+        }
+
         if ($lastProcess.Observed) {
             $processObserved = $true
         } elseif ($processObserved) {
@@ -566,7 +590,7 @@ function Watch-RuntimeHealth {
     } while ((Get-Date) -lt $deadline)
 
     $logGrew = $lastLog.Exists -and [long]$lastLog.Length -gt [long]$initialLog.Length
-    $passed = $processObserved -and -not $processExitedAfterObservation -and -not $hungWindowDetected
+    $passed = $processObserved -and -not $processExitedAfterObservation -and -not $hungWindowDetected -and -not $staleProcessObserved
     if (-not $failureReason -and -not $processObserved) {
         $failureReason = 'SlayTheSpire2 process was not observed during runtime observation.'
     }
@@ -591,6 +615,8 @@ function Watch-RuntimeHealth {
         LogResetObserved = $logResetObserved
         MaxNoLogGrowthSeconds = $maxNoGrowthSeconds
         MaxConsecutiveUnresponsiveSamples = $maxConsecutiveUnresponsiveSamples
+        StaleProcessObserved = $staleProcessObserved
+        MaxStaleProcessCount = $maxStaleProcessCount
         LastProcess = $lastProcess
         MinimumProcessStartTimeUtc = $MinimumProcessStartTimeUtc.ToString('o')
     }
@@ -756,6 +782,13 @@ function Get-FailureReasonCodes {
         if (-not [bool]$runtime.ProcessObserved) { Add-FailureCode -Codes $codes -Code 'game_process_missing' }
         if ([bool]$runtime.ProcessExitedAfterObservation) { Add-FailureCode -Codes $codes -Code 'game_process_exited' }
         if ([bool]$runtime.HungWindowDetected) { Add-FailureCode -Codes $codes -Code 'process_unresponsive' }
+    }
+
+    if (($main -and [bool]$main.StaleProcessObserved) -or
+        ($runtime -and [bool]$runtime.StaleProcessObserved) -or
+        [bool]$Result.StaleProcessObserved -or
+        [int]$Result.StaleProcessCount -gt 0) {
+        Add-FailureCode -Codes $codes -Code 'stale_process_observed'
     }
 
     if ($Result.MainMenuReached -and -not [bool]$Result.MainWindowObserved) {
@@ -1242,6 +1275,8 @@ try {
             LastLogGrowthAt = $null
             MaxSecondsWithoutLogGrowth = 0
             MaxConsecutiveUnresponsiveSamples = 0
+            StaleProcessObserved = $false
+            StaleProcessCount = 0
             StartupLogProbePassed = $false
             PostCommandLogProbePassed = $false
             ResponsivenessProbePassed = $false
@@ -1314,6 +1349,8 @@ try {
             $result.LastLogGrowthAt = $mainMenuObservation.LastLogGrowthAt
             $result.MaxSecondsWithoutLogGrowth = [int]$mainMenuObservation.MaxNoLogGrowthSeconds
             $result.MaxConsecutiveUnresponsiveSamples = [int]$mainMenuObservation.MaxConsecutiveUnresponsiveSamples
+            $result.StaleProcessObserved = [bool]$mainMenuObservation.StaleProcessObserved
+            $result.StaleProcessCount = [Math]::Max([int]$result.StaleProcessCount, [int]$mainMenuObservation.MaxStaleProcessCount)
             if ($mainMenuObservation.LastProcess -and $mainMenuObservation.LastProcess.Observed) {
                 $result.GameProcessId = [int]$mainMenuObservation.LastProcess.Id
                 $result.GameProcessStartTimeUtc = $mainMenuObservation.LastProcess.StartTimeUtc
@@ -1336,6 +1373,8 @@ try {
                 $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved
                 $result.MaxSecondsWithoutLogGrowth = [Math]::Max([int]$result.MaxSecondsWithoutLogGrowth, [int]$runtimeObservation.MaxNoLogGrowthSeconds)
                 $result.MaxConsecutiveUnresponsiveSamples = [Math]::Max([int]$result.MaxConsecutiveUnresponsiveSamples, [int]$runtimeObservation.MaxConsecutiveUnresponsiveSamples)
+                $result.StaleProcessObserved = [bool]$result.StaleProcessObserved -or [bool]$runtimeObservation.StaleProcessObserved
+                $result.StaleProcessCount = [Math]::Max([int]$result.StaleProcessCount, [int]$runtimeObservation.MaxStaleProcessCount)
                 if ($runtimeObservation.LastLogGrowthAt) {
                     $result.LastLogGrowthAt = $runtimeObservation.LastLogGrowthAt
                 }
@@ -1352,6 +1391,8 @@ try {
                 $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved
                 $result.MaxSecondsWithoutLogGrowth = [Math]::Max([int]$result.MaxSecondsWithoutLogGrowth, [int]$runtimeObservation.MaxNoLogGrowthSeconds)
                 $result.MaxConsecutiveUnresponsiveSamples = [Math]::Max([int]$result.MaxConsecutiveUnresponsiveSamples, [int]$runtimeObservation.MaxConsecutiveUnresponsiveSamples)
+                $result.StaleProcessObserved = [bool]$result.StaleProcessObserved -or [bool]$runtimeObservation.StaleProcessObserved
+                $result.StaleProcessCount = [Math]::Max([int]$result.StaleProcessCount, [int]$runtimeObservation.MaxStaleProcessCount)
                 if ($runtimeObservation.LastLogGrowthAt) {
                     $result.LastLogGrowthAt = $runtimeObservation.LastLogGrowthAt
                 }
@@ -1418,7 +1459,7 @@ try {
 
         Save-Json -InputObject @($probeSamples) -Path $result.RuntimeProbeSamplesPath
 
-        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and $result.CommandAckObserved -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and
+        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and -not [bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -eq 0 -and $result.CommandAckObserved -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and
             ($devConsoleCommandsDisabled -or [string]::IsNullOrWhiteSpace([string]$planned.Command) -or $result.ConsoleCommandSent)
 
         Save-Json -InputObject $result -Path (Join-Path $iterationDir 'iteration-result.json')
@@ -1458,6 +1499,7 @@ try {
         MainWindowMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'main_window_missing' }).Count
         CurrentIterationLogMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'current_iteration_log_missing' }).Count
         UnresponsiveIterationCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'process_unresponsive' }).Count
+        StaleProcessObservedCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'stale_process_observed' }).Count
         LogStallIterationCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'startup_log_stalled' }).Count
         CommandAckMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'command_ack_missing' }).Count
         CommandCounts = $commandCounts

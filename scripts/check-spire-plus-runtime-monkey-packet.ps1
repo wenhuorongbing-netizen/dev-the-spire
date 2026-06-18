@@ -512,6 +512,7 @@ if ($null -ne $summary) {
     Add-Check -Name 'summary_main_window_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'MainWindowMissingCount' -DefaultValue -1) -eq 0) -Detail 'MainWindowMissingCount must be 0'
     Add-Check -Name 'summary_current_iteration_log_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'CurrentIterationLogMissingCount' -DefaultValue -1) -eq 0) -Detail 'CurrentIterationLogMissingCount must be 0'
     Add-Check -Name 'summary_unresponsive_iteration_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'UnresponsiveIterationCount' -DefaultValue -1) -eq 0) -Detail 'UnresponsiveIterationCount must be 0'
+    Add-Check -Name 'summary_stale_process_observed_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'StaleProcessObservedCount' -DefaultValue -1) -eq 0) -Detail 'StaleProcessObservedCount must be 0 because pre-existing SlayTheSpire2 processes can contaminate the shared godot.log'
     Add-Check -Name 'summary_log_stall_iteration_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'LogStallIterationCount' -DefaultValue -1) -eq 0) -Detail 'LogStallIterationCount must be 0'
     Add-Check -Name 'summary_command_ack_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'CommandAckMissingCount' -DefaultValue -1) -eq 0) -Detail 'CommandAckMissingCount must be 0'
     Add-Check -Name 'summary_max_consecutive_unresponsive_recorded' -Passed ([int](Get-JsonValue -Object $summary -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1) -ge 0) -Detail 'MaxConsecutiveUnresponsiveSamples must be recorded'
@@ -636,6 +637,9 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             if ($planUnresponsiveSampleThreshold -gt 0) {
                 Add-Check -Name "${iterationName}_max_consecutive_unresponsive_below_threshold" -Passed ($iterationMaxUnresponsive -lt $planUnresponsiveSampleThreshold) -Detail "MaxConsecutiveUnresponsiveSamples must stay below threshold $planUnresponsiveSampleThreshold; found $iterationMaxUnresponsive"
             }
+            $iterationStaleProcessCount = [int](Get-JsonValue -Object $iterationResult -Name 'StaleProcessCount' -DefaultValue -1)
+            Add-Check -Name "${iterationName}_stale_process_observed_false" -Passed (-not [bool](Get-JsonValue -Object $iterationResult -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'StaleProcessObserved must be false; stale pre-existing processes can contaminate shared godot.log evidence'
+            Add-Check -Name "${iterationName}_stale_process_count_zero" -Passed ($iterationStaleProcessCount -eq 0) -Detail "StaleProcessCount must be recorded as 0; found $iterationStaleProcessCount"
             Add-Check -Name "${iterationName}_result_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LogCopied' -DefaultValue $false)) -Detail 'LogCopied must be true'
             Add-Check -Name "${iterationName}_result_current_iteration_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'CurrentIterationLogCopied' -DefaultValue $false)) -Detail 'CurrentIterationLogCopied must be true'
             $resultCurrentIterationLogPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'CurrentIterationLogPath' -DefaultValue ''))
@@ -777,6 +781,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'ProcessObserved') -Detail 'at least one probe sample must observe SlayTheSpire2'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_hung_window" -Passed (Test-NoJsonPropertyTrue -Items $probeSamples -Name 'HungWindow') -Detail 'probe samples must not report hung windows'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding') -Detail 'probe samples must not report Responding=false'
+                    $staleProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_no_stale_processes" -Passed ($staleProcessSamples.Count -eq 0) -Detail 'probe samples must record StaleProcessCount=0 so shared godot.log evidence cannot come from a pre-existing process'
                 } catch {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_json_valid" -Passed $false -Detail "invalid probe samples JSON in $probeSamplesPath`: $($_.Exception.Message)"
                 }
@@ -789,6 +795,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_main_menu_observation_process_observed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.ProcessObserved must be true'
                 Add-Check -Name "${iterationName}_main_menu_observation_no_process_exit" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear before main menu'
                 Add-Check -Name "${iterationName}_main_menu_observation_no_hung_window" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung before main menu'
+                Add-Check -Name "${iterationName}_main_menu_observation_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'main-menu observation must not see stale pre-existing SlayTheSpire2 processes'
+                Add-Check -Name "${iterationName}_main_menu_observation_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $mainMenuObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'main-menu observation MaxStaleProcessCount must be 0'
                 Add-Check -Name "${iterationName}_main_menu_observation_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'godot.log must not stall before main menu'
                 Add-Check -Name "${iterationName}_main_menu_observation_log_observed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.LogObserved must be true'
             }
@@ -800,6 +808,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_runtime_observation_process_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.ProcessObserved must be true'
                 Add-Check -Name "${iterationName}_runtime_observation_no_process_exit" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear during runtime observation'
                 Add-Check -Name "${iterationName}_runtime_observation_no_hung_window" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung during runtime observation'
+                Add-Check -Name "${iterationName}_runtime_observation_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'runtime observation must not see stale pre-existing SlayTheSpire2 processes'
+                Add-Check -Name "${iterationName}_runtime_observation_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runtimeObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'runtime observation MaxStaleProcessCount must be 0'
                 Add-Check -Name "${iterationName}_runtime_observation_log_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.LogObserved must be true'
             }
         }

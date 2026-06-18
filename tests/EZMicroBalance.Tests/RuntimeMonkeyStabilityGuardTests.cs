@@ -94,6 +94,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "PreLaunchLogLengthBytes",
             "BaselineLogLengthBytes",
             "MinimumProcessStartTimeUtc",
+            "StaleProcessObserved",
             "StaleProcessCount",
             "MaxConsecutiveUnresponsiveSamples",
             "CommandAckPatterns",
@@ -121,6 +122,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "main_menu_timeout",
             "startup_log_stalled",
             "process_unresponsive",
+            "stale_process_observed",
             "current_iteration_log_missing",
             "command_ack_missing",
             "FailedIterationIds",
@@ -129,6 +131,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "MainWindowMissingCount",
             "CurrentIterationLogMissingCount",
             "UnresponsiveIterationCount",
+            "StaleProcessObservedCount",
             "LogStallIterationCount",
             "CommandAckMissingCount");
     }
@@ -236,6 +239,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "current_iteration_log_non_empty",
             "runtime_probe_samples_no_hung_window",
             "runtime_probe_samples_no_not_responding",
+            "runtime_probe_samples_no_stale_processes",
             "plan_launch_true",
             "plan_scenario_present",
             "plan_command_selection_mode_present",
@@ -247,6 +251,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "summary_main_window_missing_count_zero",
             "summary_current_iteration_log_missing_count_zero",
             "summary_unresponsive_iteration_count_zero",
+            "summary_stale_process_observed_count_zero",
             "summary_log_stall_iteration_count_zero",
             "summary_command_ack_missing_count_zero",
             "summary_max_consecutive_unresponsive_recorded",
@@ -669,6 +674,57 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsStalePreExistingProcesses()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            foreach (var jsonPath in new[]
+                     {
+                         Path.Combine(workdir, "monkey-summary.json"),
+                         Path.Combine(workdir, "iteration-0001", "iteration-result.json"),
+                         Path.Combine(workdir, "iteration-0001", "runtime-probe-samples.json")
+                     })
+            {
+                var json = File.ReadAllText(jsonPath)
+                    .Replace("\"StaleProcessObservedCount\": 0", "\"StaleProcessObservedCount\": 1", StringComparison.Ordinal)
+                    .Replace("\"StaleProcessObserved\": false", "\"StaleProcessObserved\": true", StringComparison.Ordinal)
+                    .Replace("\"StaleProcessCount\": 0", "\"StaleProcessCount\": 1", StringComparison.Ordinal)
+                    .Replace("\"StaleProcessCount\":0", "\"StaleProcessCount\":1", StringComparison.Ordinal)
+                    .Replace("\"MaxStaleProcessCount\": 0", "\"MaxStaleProcessCount\": 1", StringComparison.Ordinal);
+                File.WriteAllText(jsonPath, json);
+            }
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("summary_stale_process_observed_count_zero status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_stale_process_observed_false status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_stale_process_count_zero status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_no_stale_processes status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_main_menu_observation_no_stale_process status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_observation_no_stale_process status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerIsNoLaunchAndMapsOwnerAreas()
     {
         var analyzer = ReadRepoText("scripts", "analyze-spire-plus-runtime-failure.ps1");
@@ -724,10 +780,13 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "startup_log_stalled",
             "current_iteration_log_missing",
             "current_iteration_log_slice_mismatch",
+            "current_iteration_log_offset_binding_missing",
             "current_iteration_log_scan_offset_invalid",
             "iteration_result_missing_or_invalid",
+            "iteration_failed_without_failure_signal",
             "godot_log_audit_json_invalid",
             "process_unresponsive",
+            "stale_process_observed",
             "command_ack_missing",
             "Read-TextAfterByteOffset",
             "Normalize-LogSliceForComparison",
@@ -935,6 +994,60 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerReportsUnboundCurrentIterationSlice()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            Directory.CreateDirectory(iterationDir);
+            File.WriteAllText(
+                Path.Combine(iterationDir, "iteration-result.json"),
+                """
+                {
+                  "Iteration": 1,
+                  "Passed": false,
+                  "Command": "spireplus_test_ancient VAKUU confirm fight",
+                  "ScenarioTag": "vakuu-fight",
+                  "OwnerArea": "Ancients.Vakuu.FightOptionSetup",
+                  "FailureReasonCodes": ["process_unresponsive"],
+                  "HangSignals": ["process_unresponsive"]
+                }
+                """);
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[ERROR] TypeLoadException stale full log should not route owner\r\n");
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol\r\n");
+            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var iteration = FindIteration(document.RootElement, 1);
+            var bindingFinding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "current_iteration_log_offset_binding_missing");
+
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", bindingFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("blocking", bindingFinding.GetProperty("Severity").GetString());
+            Assert.Equal("Ancients.Vakuu.FightOptionSetup", FindFindingOwner(iteration, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerReportsMissingIterationResultEvenWithSummaryFallback()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
@@ -982,6 +1095,59 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             Assert.Equal("RuntimeHarness", missingResultFinding.GetProperty("OwnerArea").GetString());
             Assert.Equal("blocking", missingResultFinding.GetProperty("Severity").GetString());
             Assert.Equal("Ancients.Urda.MapSaveState", FindFindingOwner(iteration, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerReportsFailedIterationWithoutRetainedSignals()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            Directory.CreateDirectory(iterationDir);
+            File.WriteAllText(
+                Path.Combine(iterationDir, "iteration-result.json"),
+                """
+                {
+                  "Iteration": 1,
+                  "Passed": false,
+                  "Command": "spireplus_test_ancient URDA confirm",
+                  "ScenarioTag": "ancient-ui-urda",
+                  "OwnerArea": "Ancients.Urda.MapSaveState",
+                  "LogScanOffsetBytes": 0,
+                  "FailureReasonCodes": [],
+                  "HangSignals": []
+                }
+                """);
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[Startup] Time to main menu\r\n");
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), "[Startup] Time to main menu\r\n");
+            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var iteration = FindIteration(document.RootElement, 1);
+            var failedWithoutSignalFinding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "iteration_failed_without_failure_signal");
+
+            Assert.Equal("RuntimeHarness", failedWithoutSignalFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("blocking", failedWithoutSignalFinding.GetProperty("Severity").GetString());
         }
         finally
         {
@@ -1117,6 +1283,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     {
         var iterationDir = Path.Combine(evidenceRoot, $"iteration-{iteration:D4}");
         Directory.CreateDirectory(iterationDir);
+        var offset = System.Text.Encoding.UTF8.GetByteCount(fullLog);
         File.WriteAllText(
             Path.Combine(iterationDir, "iteration-result.json"),
             $$"""
@@ -1126,11 +1293,12 @@ public sealed class RuntimeMonkeyStabilityGuardTests
               "Command": {{JsonSerializer.Serialize(command)}},
               "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}},
               "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}},
+              "LogScanOffsetBytes": {{offset}},
               "FailureReasonCodes": {{failureReasonCodesJson}},
               "HangSignals": {{hangSignalsJson}}
             }
             """);
-        File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), fullLog);
+        File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), fullLog + currentLog);
         File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), currentLog);
         File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), auditJson);
     }
@@ -1170,7 +1338,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             v0.1.0-private-beta.86
             [SPIREPLUS-EVIDENCE] VakuuFight fight_option_shown
             """;
-        var probeSamples = """[{"ProcessObserved":true,"HungWindow":false,"Responding":true}]""";
+        var probeSamples = """[{"ProcessObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0}]""";
 
         File.WriteAllText(retainedCurrentLogPath, currentLog);
         File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), currentLog);
@@ -1227,6 +1395,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
               "MainWindowMissingCount": 0,
               "CurrentIterationLogMissingCount": 0,
               "UnresponsiveIterationCount": 0,
+              "StaleProcessObservedCount": 0,
               "LogStallIterationCount": 0,
               "CommandAckMissingCount": 0,
               "CommandCounts": { {{JsonSerializer.Serialize(command)}}: 1 },
@@ -1269,6 +1438,8 @@ public sealed class RuntimeMonkeyStabilityGuardTests
               "MainMenuElapsedSeconds": 12.3,
               "MaxSecondsWithoutLogGrowth": 1,
               "MaxConsecutiveUnresponsiveSamples": 0,
+              "StaleProcessObserved": false,
+              "StaleProcessCount": 0,
               "LogCopied": true,
               "CurrentIterationLogCopied": true,
               "AuditClean": true,
@@ -1283,6 +1454,8 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 "ProcessObserved": true,
                 "ProcessExitedAfterObservation": false,
                 "HungWindowDetected": false,
+                "StaleProcessObserved": false,
+                "MaxStaleProcessCount": 0,
                 "NoLogGrowthTimeoutExceeded": false,
                 "LogObserved": true,
                 "Passed": true,
@@ -1293,6 +1466,8 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 "ProcessObserved": true,
                 "ProcessExitedAfterObservation": false,
                 "HungWindowDetected": false,
+                "StaleProcessObserved": false,
+                "MaxStaleProcessCount": 0,
                 "NoLogGrowthTimeoutExceeded": false,
                 "LogObserved": true,
                 "Passed": true,
