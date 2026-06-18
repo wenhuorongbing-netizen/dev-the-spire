@@ -43,9 +43,9 @@ before any later handoff.
 | beta.85 AdditiveBatch1 proof | Historical fail | Previous-package mismatch: 13/14 registration calls because the installed package/source shape was stale. |
 | beta.86 build/publish/package | Pass | `dotnet build`, `dotnet publish`, package creation, and installed package parity passed for `v0.1.0-private-beta.86`. |
 | beta.86 AdditiveBatch1 proof | Current loader/registration pass | `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` reached main menu with BaseLib, RitsuLib, and Spire Plus loaded; 25/25 patches; 30 SavedSpireFields; 10 event types / 14 registration calls; clean audit; retained log verifier 21/0 and packet verifier 45/0. |
-| Tests | Current no-game pass | Isolated `ReleaseEvidenceGateTests` passed 9/0/0; complementary no-build lane passed 480/0/39/519; split coverage is 489 passed / 0 failed / 39 skipped / 528 total. |
+| Tests | Current no-game pass | Latest current-HEAD recapture: build 0 warnings / 0 errors; focused `RuntimeMonkeyStabilityGuardTests` plus `ReleaseEvidenceGateTests` 21/0/0/21; focused `DocumentationCompactnessGuardTests` 25/0/0/25; focused `EngineeringGovernanceGuardTests` 25/0/0/25. The broader beta.86 split lane remains 489 passed / 0 failed / 39 skipped / 528 total. |
 | Opt-in artifact subset | Current pass | 67 passed / 0 failed / 2 skipped / 69 total with release/package artifact tests enabled. |
-| StS1 static/governance lanes | Current pass | Current-doc claims 961/0 after post-baseline governance follow-up; v19 gate ledger 534/0; runtime preflight 27/0; static suite 15/0. |
+| StS1 static/governance lanes | Current pass | Current-doc claims 962/0 after post-baseline governance follow-up; v19 gate ledger 534/0; v20 final-gate overlay 29/0; runtime preflight 27/0; static suite 15/0; static-file hygiene 11/0. |
 | Batch 4a/4b migration | Source-level complete | Current patch inventory records 25 migrated `IPatchMethod` patch classes and 142 remaining raw `HarmonyPatch` declarations. |
 | Batch 4c migration | Proposal only | Requires owner approval before any migration work. |
 | Manual proof | Pending | Gameplay, clicked UI, save-load, image rendering, replacement behavior, co-op/fail-closed behavior, independent QA, and tester handoff are still open. |
@@ -85,6 +85,9 @@ scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch
 scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 scripts/check-sts1-event-static-suite.ps1
+dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~RuntimeMonkeyStabilityGuardTests|FullyQualifiedName~ReleaseEvidenceGateTests" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1
+dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~DocumentationCompactnessGuardTests" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1
+dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~EngineeringGovernanceGuardTests" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1
 dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
 git diff --check
 scripts/generate-patch-inventory.ps1 -Check

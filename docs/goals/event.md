@@ -62,6 +62,8 @@ Latest pause-safe static checkpoint after this beta.86 doc-alignment pass: `scri
 
 Shared validation update from the migration lane, 2026-06-18: fresh beta.85 CanaryOnly proof under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` reached main menu, audited clean, and passed retained log/packet verifiers with 4 event types / 6 registration calls. The beta.85 AdditiveBatch1 evidence under `.tools/runtime-evidence/v01070-beta85-additive-batch1-20260617-233759/` remains root-cause history for the 13/14 package/source-shape drift. The beta.86 direct AdditiveBatch1 proof under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` reached main menu, audited clean, reported Spire Plus `v0.1.0-private-beta.86`, RitsuLib `0.4.16`, compat branch `0.107.0`, 25/25 Spire Plus patches, 30 SavedSpireFields, 10 event types / 14 registration calls, exact act/shared tuple parity including The Cleric in Overgrowth and Underdocks, retained log verifier 21 / 0, and packet verifier 45 / 0. Treat O25 and O33 as loader/registration proof only, and do not treat either as gameplay, save-load, render, replacement, multiplayer, QA, release, or handoff evidence.
 
+Additional shared validation update from the `d2ff20f5` test-split follow-up, 2026-06-18: `ReleaseEvidenceGateTests` manual evidence template tests were extracted into a partial test file, `RuntimeMonkeyStabilityGuardTests` added coverage for log-derived owner routing, and the shared validation lane reported `dotnet build EZMicroBalance.sln -m:1 --no-incremental` at 0 warnings / 0 errors plus focused `RuntimeMonkeyStabilityGuardTests` and `ReleaseEvidenceGateTests` at 19 passed / 0 failed / 0 skipped / 19 total. This event thread did not run that validation. It does not close publish, package/release-evidence validation, runtime smoke, gameplay, save-load, replacement, multiplayer, QA, release, or handoff gates.
+
 ---
 
 ## 1. 当前证据重建
@@ -113,6 +115,7 @@ v19 gate ledger: 534 checks / 0 mismatches
 v20 final-gate overlay: 29 checks / 0 mismatches
 v19 subagent coverage: 70 checks / 0 mismatches
 git diff --check: exit 0 with CRLF normalization warnings only; no whitespace errors
+d2ff20f5 focused shared follow-up: build 0 warnings / 0 errors; RuntimeMonkeyStabilityGuardTests plus ReleaseEvidenceGateTests 19 passed / 0 failed / 0 skipped / 19 total; no publish/package/runtime/gameplay/QA/handoff closure
 ```
 
 严格解释：

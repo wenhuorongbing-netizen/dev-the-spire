@@ -14,9 +14,9 @@ Coordination boundary: do not run overlapping validation, package/release, runti
 
 ## Current State
 
-- Current repository HEAD must be checked at run start. The latest observed pushed beta.86 package/runtime validation baseline remains `eaaeb5a1`; later pushed governance/test follow-ups exist through at least `f686e2f6`.
+- Current repository HEAD must be checked at run start. The latest observed pushed beta.86 package/runtime validation baseline remains `eaaeb5a1`; later pushed governance/test follow-ups exist through at least `d2ff20f5`.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
-- Latest beta.86 no-game validation is summarized in `PROJECT_STATE.md`: 0 build errors and 0 warnings; split no-build lanes covered 489 passed / 0 failed / 39 skipped / 528 total; the opt-in package/artifact subset passed 67 passed / 0 failed / 2 skipped / 69 total; current-doc claims later advanced to 961 / 0 in the governance follow-up. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
+- Latest beta.86 no-game validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: 0 build errors and 0 warnings; split no-build lanes covered 489 passed / 0 failed / 39 skipped / 528 total; the opt-in package/artifact subset passed 67 passed / 0 failed / 2 skipped / 69 total; the latest focused current-HEAD recapture covered RuntimeMonkey/ReleaseEvidence 21 / 0 / 0 / 21, DocumentationCompactness 25 / 0 / 0 / 25, EngineeringGovernance 25 / 0 / 0 / 25, current-doc claims 962 / 0, v19 534 / 0, v20 overlay 29 / 0, static suite 15 / 0, and static-file hygiene 11 / 0. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
 - Patch state remains 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
 - Historical `v0.106.1` loader-gate runtime proof exists:
   - Off: `.tools\runtime-evidence\smoke-k1-off-20260602-145938`, 0 Sts1Events registrations, clean audit.
@@ -124,7 +124,7 @@ If a gate cannot be completed, record:
 - [x] Installed beta.85 package parity verified after the 2026-06-11 package refresh.
 - [x] Installed beta.86 package parity verified after the 2026-06-18 package/source alignment pass.
 - [x] Clean current `v0.107.0` beta.85 Off loader smoke captured after the `v0.4.16` install.
-- [ ] Current HEAD validation refreshed after the beta.86 post-doc/test reconciliation and any later follow-up scope, or any remaining dirty follow-up scope explicitly recorded as stale under the validation coordination pause.
+- [x] Current HEAD validation refreshed after the beta.86 post-doc/test reconciliation and any later follow-up scope, or any remaining dirty follow-up scope explicitly recorded as stale under the validation coordination pause.
 - [x] Current `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Current `v0.107.0` beta.86 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
 - [ ] Mod Settings UI evidence captured.

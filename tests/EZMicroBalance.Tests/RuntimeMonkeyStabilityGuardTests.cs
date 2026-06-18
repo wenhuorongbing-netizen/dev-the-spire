@@ -194,6 +194,26 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "current_iteration_log_under_iteration_dir",
             "runtime_probe_samples_leaf_expected",
             "current_iteration_log_leaf_expected",
+            "runtime_probe_samples_path_matches_retained_file",
+            "current_iteration_log_path_matches_retained_file",
+            "iteration_number_matches_directory",
+            "scenario_present",
+            "plan_entry_exists",
+            "summary_result_exists",
+            "scenario_matches_plan",
+            "command_matches_plan",
+            "command_index_matches_plan",
+            "command_selection_mode_matches_plan",
+            "scenario_tag_matches_plan",
+            "owner_area_matches_plan",
+            "command_ack_pattern_matches_plan",
+            "summary_result_scenario_matches_iteration",
+            "summary_result_command_matches_iteration",
+            "summary_result_command_selection_mode_matches_iteration",
+            "summary_result_scenario_tag_matches_iteration",
+            "summary_result_owner_area_matches_iteration",
+            "summary_result_passed_matches_iteration",
+            "summary_result_command_ack_observed_matches_iteration",
             "runtime_probe_samples_exist",
             "current_iteration_log_exists",
             "current_iteration_log_non_empty",
@@ -245,6 +265,90 @@ public sealed class RuntimeMonkeyStabilityGuardTests
         Assert.DoesNotContain("Start-Process", checker, StringComparison.Ordinal);
         Assert.DoesNotContain("spire-plus-live-session.ps1", checker, StringComparison.Ordinal);
         Assert.DoesNotContain("dotnet", checker, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsResultPathsThatDoNotPointToRetainedFiles()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: true);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_current_iteration_log_path_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_path_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("mismatches=2", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsIterationResultsThatDoNotMatchPlanOrSummary()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var resultPath = Path.Combine(workdir, "iteration-0001", "iteration-result.json");
+            var resultJson = File.ReadAllText(resultPath)
+                .Replace("VAKUU", "URDA", StringComparison.Ordinal)
+                .Replace("\"Scenario\": \"VakuuFightSmoke\"", "\"Scenario\": \"AncientUiPlusVakuuFight\"", StringComparison.Ordinal)
+                .Replace("\"CommandSelectionMode\": \"RoundRobin\"", "\"CommandSelectionMode\": \"Random\"", StringComparison.Ordinal)
+                .Replace("\"CommandIndex\": 0", "\"CommandIndex\": 99", StringComparison.Ordinal)
+                .Replace("\"ScenarioTag\": \"vakuu-fight\"", "\"ScenarioTag\": \"ancient-ui\"", StringComparison.Ordinal)
+                .Replace("\"OwnerArea\": \"Ancients.Vakuu.ChildCombatResume\"", "\"OwnerArea\": \"Ancients.Urda.MapSaveState\"", StringComparison.Ordinal);
+            File.WriteAllText(resultPath, resultJson);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_scenario_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_command_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_command_index_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_command_selection_mode_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_scenario_tag_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_owner_area_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_command_ack_pattern_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_summary_result_scenario_matches_iteration status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_summary_result_command_matches_iteration status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_summary_result_command_selection_mode_matches_iteration status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_summary_result_scenario_tag_matches_iteration status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_summary_result_owner_area_matches_iteration status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
     }
 
     [Fact]
@@ -307,6 +411,11 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "TypeLoadException",
             "runtime expectation",
             "Registered act event",
+            "PreviewTransform",
+            "PreviewCrystalSphere",
+            "Spire Plus\\] Preview",
+            "Transform prediction",
+            "Crystal Sphere peek",
             "Spire Plus error/exception",
             "coop_gameplay_disabled",
             "coop_local_ui_preview_enabled",
@@ -361,7 +470,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 """["process_unresponsive"]""",
                 """["process_unresponsive"]""",
                 "[ERROR] TypeLoadException stale full log should not own current iteration",
-                "[SPIREPLUS-EVIDENCE] Crystal Sphere preview prediction_prepared_multiplayer_ui_only",
+                "[SPIREPLUS-EVIDENCE] PreviewTransform [Spire Plus] Preview: Transform prediction prediction_prepared_multiplayer_ui_only PreviewCrystalSphere Crystal Sphere peek",
                 """{"SignatureHits":[]}""");
             WriteIteration(
                 workdir,
@@ -385,7 +494,18 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 "[ERROR] TypeLoadException stale full log should not own current iteration",
                 "[SPIREPLUS-EVIDENCE] Root Sight Unknown map preview hover",
                 """{"SignatureHits":[]}""");
-            WriteMonkeySummary(workdir, 1, 2, 3, 4, 5);
+            WriteIteration(
+                workdir,
+                6,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Runtime.Unknown",
+                """["command_ack_missing"]""",
+                """[]""",
+                "[ERROR] TypeLoadException stale full log should not own current iteration",
+                "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1, 2, 3, 4, 5, 6);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
             var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
@@ -398,6 +518,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             var iteration3 = FindIteration(root, 3);
             var iteration4 = FindIteration(root, 4);
             var iteration5 = FindIteration(root, 5);
+            var iteration6 = FindIteration(root, 6);
 
             Assert.Equal("Sts1Events", iteration1.GetProperty("OwnerAreaFromLog").GetString());
             Assert.Equal("Ancients.Vakuu.FightOptionSetup", iteration1.GetProperty("OwnerAreaFromCommand").GetString());
@@ -413,6 +534,10 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             Assert.Equal("MultiplayerPolicy", FindFindingOwner(iteration4, "coop_override_enabled_runtime_failure"));
             Assert.Equal("Ancients.Urda.MapSaveState", iteration5.GetProperty("OwnerAreaFromLog").GetString());
             Assert.Equal("Ancients.Urda.MapSaveState", FindFindingOwner(iteration5, "process_unresponsive"));
+            Assert.Equal("Sts1Events", iteration6.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("Ancients.Vakuu.FightOptionSetup", iteration6.GetProperty("OwnerAreaFromCommand").GetString());
+            Assert.Equal("Ancients.Vakuu.FightOptionSetup", FindFindingOwner(iteration6, "command_ack_missing"));
+            Assert.Equal("Ancients.Vakuu.FightOptionSetup", FindFindingOwner(iteration6, "vakuu_command_failed_or_hung"));
         }
         finally
         {
@@ -529,6 +654,160 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             {
               "FailedIterationIds": [{{string.Join(", ", failedIterations)}}],
               "Results": []
+            }
+            """);
+    }
+
+    private static void WriteCleanRuntimeMonkeyPacket(string evidenceRoot, bool useShadowResultPaths)
+    {
+        const string command = "spireplus_test_ancient VAKUU confirm fight";
+        const string scenarioTag = "vakuu-fight";
+        const string ownerArea = "Ancients.Vakuu.ChildCombatResume";
+        const string ackPattern = "\\[Spire Plus\\] Starting unsaved live-test run for VAKUU Ancient UI evidence\\.";
+
+        var iterationDir = Path.Combine(evidenceRoot, "iteration-0001");
+        var shadowDir = Path.Combine(iterationDir, "shadow");
+        Directory.CreateDirectory(iterationDir);
+        Directory.CreateDirectory(shadowDir);
+
+        var retainedCurrentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+        var retainedProbeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+        var resultCurrentLogPath = useShadowResultPaths ? Path.Combine(shadowDir, "godot.log.current-iteration") : retainedCurrentLogPath;
+        var resultProbeSamplesPath = useShadowResultPaths ? Path.Combine(shadowDir, "runtime-probe-samples.json") : retainedProbeSamplesPath;
+        var currentLog = """
+            [Startup] Time to main menu
+            [INFO] [EZMicroBalance] [Patcher - SpirePlus] Patch application complete: 25 applied, 0 ignored, 0 failed, 25 total
+            [INFO] [EZMicroBalance] ModPatcher applied 25 patches (25 registered).
+            v0.1.0-private-beta.86
+            [Spire Plus] Starting unsaved live-test run for VAKUU Ancient UI evidence.
+            """;
+        var probeSamples = """[{"ProcessObserved":true,"HungWindow":false,"Responding":true}]""";
+
+        File.WriteAllText(retainedCurrentLogPath, currentLog);
+        File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), currentLog);
+        File.WriteAllText(retainedProbeSamplesPath, probeSamples);
+        File.WriteAllText(Path.Combine(shadowDir, "godot.log.current-iteration"), currentLog);
+        File.WriteAllText(Path.Combine(shadowDir, "runtime-probe-samples.json"), probeSamples);
+        File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), """{"Clean":true,"SignatureHits":[]}""");
+        File.WriteAllText(Path.Combine(iterationDir, "sts1-mode-log-check.json"), """{"Mismatches":[],"Checks":[{"Passed":true}]}""");
+
+        File.WriteAllText(
+            Path.Combine(evidenceRoot, "monkey-plan.json"),
+            $$"""
+            {
+              "HangProbeSchemaVersion": 1,
+              "Launch": true,
+              "Iterations": 1,
+              "Scenario": "VakuuFightSmoke",
+              "CommandSelectionMode": "RoundRobin",
+              "CommandCorpusSource": "scenario:VakuuFightSmoke",
+              "ObservationIntervalSeconds": 2,
+              "UnresponsiveSampleThreshold": 3,
+              "NoLogGrowthTimeoutSeconds": 90,
+              "ProcessProbe": { "ProcessName": "SlayTheSpire2", "FailsOnlyAfterConsecutiveUnresponsiveSamples": true },
+              "LogGrowthProbe": { "StartupFailsOnNoGrowth": true },
+              "CommandCorpus": [{{JsonSerializer.Serialize(command)}}],
+              "PlannedCommandCounts": { {{JsonSerializer.Serialize(command)}}: 1 },
+              "PlannedScenarioTagCounts": { {{JsonSerializer.Serialize(scenarioTag)}}: 1 },
+              "PlannedOwnerAreaCounts": { {{JsonSerializer.Serialize(ownerArea)}}: 1 },
+              "PlannedVakuuFightIterationCount": 1,
+              "CommandScenarioMatrix": [
+                { "Command": {{JsonSerializer.Serialize(command)}}, "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}}, "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}}, "CommandAckPattern": {{JsonSerializer.Serialize(ackPattern)}} }
+              ],
+              "CommandAckPatterns": [
+                { "Command": {{JsonSerializer.Serialize(command)}}, "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}}, "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}}, "Pattern": {{JsonSerializer.Serialize(ackPattern)}} }
+              ],
+              "PlannedCommands": [
+                { "Iteration": 1, "Command": {{JsonSerializer.Serialize(command)}}, "CommandIndex": 0, "CommandSelectionMode": "RoundRobin", "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}}, "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}}, "CommandAckPattern": {{JsonSerializer.Serialize(ackPattern)}} }
+              ]
+            }
+            """);
+
+        File.WriteAllText(
+            Path.Combine(evidenceRoot, "monkey-summary.json"),
+            $$"""
+            {
+              "HangProbeSchemaVersion": 1,
+              "Passed": true,
+              "RequestedIterations": 1,
+              "CompletedIterations": 1,
+              "FailedIterations": 0,
+              "FailedIterationIds": [],
+              "FailureReasonCounts": {},
+              "ProcessExitCount": 0,
+              "MainWindowMissingCount": 0,
+              "CurrentIterationLogMissingCount": 0,
+              "UnresponsiveIterationCount": 0,
+              "LogStallIterationCount": 0,
+              "CommandAckMissingCount": 0,
+              "CommandCounts": { {{JsonSerializer.Serialize(command)}}: 1 },
+              "ScenarioTagCounts": { {{JsonSerializer.Serialize(scenarioTag)}}: 1 },
+              "OwnerAreaCounts": { {{JsonSerializer.Serialize(ownerArea)}}: 1 },
+              "VakuuFightIterationCount": 1,
+              "MaxConsecutiveUnresponsiveSamples": 0,
+              "Results": [
+                { "Iteration": 1, "Passed": true, "Scenario": "VakuuFightSmoke", "CommandSelectionMode": "RoundRobin", "Command": {{JsonSerializer.Serialize(command)}}, "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}}, "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}}, "CommandAckObserved": true }
+              ]
+            }
+            """);
+
+        File.WriteAllText(
+            Path.Combine(iterationDir, "iteration-result.json"),
+            $$"""
+            {
+              "HangProbeSchemaVersion": 1,
+              "Iteration": 1,
+              "Scenario": "VakuuFightSmoke",
+              "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}},
+              "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}},
+              "CommandSelectionMode": "RoundRobin",
+              "Command": {{JsonSerializer.Serialize(command)}},
+              "CommandIndex": 0,
+              "CommandAckPattern": {{JsonSerializer.Serialize(ackPattern)}},
+              "CommandAckRequired": true,
+              "Passed": true,
+              "MainMenuReached": true,
+              "MainMenuObservationPassed": true,
+              "RuntimeObservationPassed": true,
+              "StartupLogProbePassed": true,
+              "PostCommandLogProbePassed": true,
+              "ResponsivenessProbePassed": true,
+              "CommandAckObserved": true,
+              "FailureReasonCodes": [],
+              "HangSignals": [],
+              "GameProcessId": 1234,
+              "MainWindowObserved": true,
+              "MainMenuElapsedSeconds": 12.3,
+              "MaxSecondsWithoutLogGrowth": 1,
+              "MaxConsecutiveUnresponsiveSamples": 0,
+              "LogCopied": true,
+              "CurrentIterationLogCopied": true,
+              "AuditClean": true,
+              "ExpectationPassed": true,
+              "Sts1ModeVerifierPassed": true,
+              "RestoreSucceeded": true,
+              "RuntimeProbeSamplesPath": {{JsonSerializer.Serialize(resultProbeSamplesPath)}},
+              "CurrentIterationLogPath": {{JsonSerializer.Serialize(resultCurrentLogPath)}},
+              "MainMenuObservation": {
+                "MainMenuReached": true,
+                "ProcessObserved": true,
+                "ProcessExitedAfterObservation": false,
+                "HungWindowDetected": false,
+                "NoLogGrowthTimeoutExceeded": false,
+                "LogObserved": true,
+                "Passed": true,
+                "MaxConsecutiveUnresponsiveSamples": 0
+              },
+              "RuntimeObservation": {
+                "MainMenuReached": true,
+                "ProcessObserved": true,
+                "ProcessExitedAfterObservation": false,
+                "HungWindowDetected": false,
+                "NoLogGrowthTimeoutExceeded": false,
+                "LogObserved": true,
+                "Passed": true,
+                "MaxConsecutiveUnresponsiveSamples": 0
+              }
             }
             """);
     }

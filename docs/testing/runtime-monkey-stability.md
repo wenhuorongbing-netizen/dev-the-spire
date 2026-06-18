@@ -202,9 +202,15 @@ folders. Dry-run folders intentionally contain `monkey-plan.json` but no
 `monkey-summary.json`, iteration logs, or runtime audit files.
 
 The packet checker recomputes command, scenario-tag, and owner-area counts from
-the retained plan and summary. `VakuuFightSmoke` packets must contain only
-`vakuu-fight` planned iterations. A 1000-iteration `AncientUiPlusVakuuFight`
-round-robin packet must contain exactly 200 `vakuu-fight` planned iterations.
+the retained plan and summary, then binds each retained
+`iteration-result.json` back to the matching `monkey-plan.json`
+`PlannedCommands` row and `monkey-summary.json` `Results` row by iteration
+number. The binding includes the root `Scenario`, `CommandSelectionMode`,
+command, command index, scenario tag, owner area, command acknowledgement
+pattern, pass state, and acknowledgement result. `VakuuFightSmoke` packets must
+contain only `vakuu-fight` planned iterations. A 1000-iteration
+`AncientUiPlusVakuuFight` round-robin packet must contain exactly 200
+`vakuu-fight` planned iterations.
 The current `vakuu-fight` command proves only the forced fight option is shown
 when the copied log contains `[SPIREPLUS-EVIDENCE] VakuuFight
 fight_option_shown`. It is not child-combat proof unless later evidence also
@@ -215,8 +221,9 @@ The launched packet checker requires `MainMenuObservation` and
 process-observed, process-exited, hung-window, log-observed, log-length, and
 max-no-growth counters. It also requires the retained
 `sts1-mode-log-check.json`, exact Spire Plus patch-count lines from
-`godot.log.current-iteration`, probe sample paths and sliced-log paths inside
-the current iteration folder, and no raw probe sample with `Responding=false`.
+`godot.log.current-iteration`, probe sample paths and sliced-log paths that
+point to the retained standard files inside the current iteration folder, and no
+raw probe sample with `Responding=false`.
 A clean packet means those signals stayed healthy for the sampled windows; it
 still does not prove deeper gameplay behavior.
 
@@ -257,9 +264,12 @@ co-op override failures, explicit log-derived package/runtime drift, StS1,
 preview-tool, or multiplayer-policy signatures take precedence over the planned
 command owner. Package/runtime drift classification is reserved for actual
 mismatch/error signals such as type-load, missing-method, or expectation-drift
-lines, not normal startup package markers. Command-ack failures and Vakuu command
-failures still preserve the planned/command owner unless the log is the only
-useful source.
+lines, not normal startup package markers. `PreviewTools` is reserved for
+specific Crystal Sphere, Transform Preview, Future Peek, `PreviewTransform`,
+`PreviewCrystalSphere`, `[Spire Plus] Preview`, or local-UI-only preview-tool
+evidence; generic map preview text such as Root Sight remains under its feature
+owner. Command-ack failures and Vakuu command failures still preserve the
+planned/command owner unless the log is the only useful source.
 
 Current owner areas
 include `RuntimeStartup`, `RuntimeCrash`, `RuntimeHarness`,

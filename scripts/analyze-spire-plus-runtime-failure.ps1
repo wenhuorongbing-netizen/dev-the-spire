@@ -108,7 +108,7 @@ function Get-OwnerAreaFromText {
         return 'Sts1Events'
     }
 
-    if ($Text -match '(?i)\b(Crystal Sphere|Transform Preview|Future Peek|prediction_prepared_multiplayer_ui_only|coop_local_ui_preview_enabled)\b') {
+    if ($Text -match '(?i)\b(Crystal Sphere|Transform Preview|Future Peek|PreviewTransform|PreviewCrystalSphere|Spire Plus\] Preview|prediction_prepared_multiplayer_ui_only|coop_local_ui_preview_enabled|Transform prediction|Crystal Sphere peek)\b') {
         return 'PreviewTools'
     }
 
@@ -170,7 +170,7 @@ function Get-OwnerAreaFromText {
         return 'Ascension11To20'
     }
 
-    if ($combined -match '(?i)\b(Crystal Sphere|Transform Preview|Future Peek|prediction_prepared_multiplayer_ui_only|coop_local_ui_preview_enabled)\b') {
+    if ($combined -match '(?i)\b(Crystal Sphere|Transform Preview|Future Peek|PreviewTransform|PreviewCrystalSphere|Spire Plus\] Preview|prediction_prepared_multiplayer_ui_only|coop_local_ui_preview_enabled|Transform prediction|Crystal Sphere peek)\b') {
         return 'PreviewTools'
     }
 
@@ -192,7 +192,7 @@ function Get-AuditOwnerText {
     }
 
     $ownerRelevantLines = @($LogText -split "`r?`n" | Where-Object {
-        $_ -match '(?i)(ERROR|exception|TypeLoadException|MissingMethodException|MissingFieldException|BaseLib patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift|StS1|Sts1|Golden Idol|Big Fish|The Cleric|AdditiveBatch1|CanaryOnly|registered-event|Registered act event|Registered shared event|Crystal Sphere|Transform Preview|Future Peek|prediction_prepared_multiplayer_ui_only|coop_local_ui_preview_enabled|coop|co-op|multiplayer|ALLOW_UNVERIFIED_COOP)'
+        $_ -match '(?i)(ERROR|exception|TypeLoadException|MissingMethodException|MissingFieldException|BaseLib patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift|StS1|Sts1|Golden Idol|Big Fish|The Cleric|AdditiveBatch1|CanaryOnly|registered-event|Registered act event|Registered shared event|Crystal Sphere|Transform Preview|Future Peek|PreviewTransform|PreviewCrystalSphere|Spire Plus\] Preview|prediction_prepared_multiplayer_ui_only|coop_local_ui_preview_enabled|Transform prediction|Crystal Sphere peek|coop|co-op|multiplayer|ALLOW_UNVERIFIED_COOP)'
     } | Select-Object -First 200)
 
     if ($ownerRelevantLines.Count -eq 0) {

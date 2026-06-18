@@ -348,6 +348,7 @@ $planPlannedCommands = @(
         $plan.PlannedCommands
     }
 )
+$summaryResults = @()
 if ($expectedIterationCount -le 0 -and $planIterations -gt 0) {
     $expectedIterationCount = $planIterations
 }
@@ -396,7 +397,6 @@ if ($null -ne $plan) {
 }
 
 if ($null -ne $summary) {
-    $summaryResults = @()
     if (Test-JsonProperty -Object $summary -Name 'Results') {
         $summaryResults = @($summary.Results)
     }
@@ -439,6 +439,22 @@ if ($null -ne $summary) {
     Add-Check -Name 'summary_results_all_passed' -Passed ($failedSummaryResults.Count -eq 0) -Detail "summary Results contains $($failedSummaryResults.Count) failed entries"
 }
 
+$plannedByIteration = @{}
+foreach ($plannedCommand in $planPlannedCommands) {
+    $plannedIteration = [int](Get-JsonValue -Object $plannedCommand -Name 'Iteration' -DefaultValue 0)
+    if ($plannedIteration -gt 0 -and -not $plannedByIteration.ContainsKey($plannedIteration)) {
+        $plannedByIteration[$plannedIteration] = $plannedCommand
+    }
+}
+
+$summaryResultByIteration = @{}
+foreach ($summaryResult in $summaryResults) {
+    $summaryIteration = [int](Get-JsonValue -Object $summaryResult -Name 'Iteration' -DefaultValue 0)
+    if ($summaryIteration -gt 0 -and -not $summaryResultByIteration.ContainsKey($summaryIteration)) {
+        $summaryResultByIteration[$summaryIteration] = $summaryResult
+    }
+}
+
 $iterationDirectories = @(Get-ChildItem -LiteralPath $resolvedEvidenceDir -Directory -Filter 'iteration-*' | Sort-Object -Property Name)
 if ($expectedIterationCount -gt 0) {
     Add-Check -Name 'iteration_directory_count_matches_expected' -Passed ($iterationDirectories.Count -eq $expectedIterationCount) -Detail "expected $expectedIterationCount iteration-* directories, found $($iterationDirectories.Count)"
@@ -456,10 +472,21 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
         continue
     }
 
+    $plannedForIteration = $null
+    if ($plannedByIteration.ContainsKey($iteration)) {
+        $plannedForIteration = $plannedByIteration[$iteration]
+    }
+
+    $summaryForIteration = $null
+    if ($summaryResultByIteration.ContainsKey($iteration)) {
+        $summaryForIteration = $summaryResultByIteration[$iteration]
+    }
+
     $resultPath = Join-Path $iterationDir 'iteration-result.json'
     $logPath = Join-Path $iterationDir 'godot.log.after-launch'
     $currentIterationLogPath = Join-Path $iterationDir 'godot.log.current-iteration'
     $auditPath = Join-Path $iterationDir 'godot-log-audit.json'
+    $probeSamplesCandidate = Join-Path $iterationDir 'runtime-probe-samples.json'
     $sts1ModeCheckPath = Join-Path $iterationDir 'sts1-mode-log-check.json'
     $resultExists = Test-Path -LiteralPath $resultPath -PathType Leaf
     $logExists = Test-Path -LiteralPath $logPath -PathType Leaf
@@ -472,13 +499,18 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
     Add-Check -Name "${iterationName}_current_iteration_log_exists" -Passed $currentIterationLogExists -Detail 'requires godot.log.current-iteration sliced from the accepted scan offset'
     Add-Check -Name "${iterationName}_audit_json_exists" -Passed $auditExists -Detail 'requires godot-log-audit.json'
     Add-Check -Name "${iterationName}_sts1_mode_log_check_exists" -Passed $sts1ModeCheckExists -Detail 'requires retained sts1-mode-log-check.json'
+    Add-Check -Name "${iterationName}_plan_entry_exists" -Passed ($null -ne $plannedForIteration) -Detail 'monkey-plan.json must include a PlannedCommands row for this iteration'
+    Add-Check -Name "${iterationName}_summary_result_exists" -Passed ($null -ne $summaryForIteration) -Detail 'monkey-summary.json Results must include a row for this iteration'
 
     $iterationResult = $null
     if ($resultExists) {
         $iterationResult = Read-JsonOrNull -Path $resultPath -CheckName "${iterationName}_iteration_result_json_valid"
         if ($null -ne $iterationResult) {
             Add-Check -Name "${iterationName}_iteration_result_json_valid" -Passed $true -Detail 'iteration-result.json parsed'
+            $resultIterationNumber = [int](Get-JsonValue -Object $iterationResult -Name 'Iteration' -DefaultValue 0)
+            Add-Check -Name "${iterationName}_iteration_number_matches_directory" -Passed ($resultIterationNumber -eq $iteration) -Detail "iteration-result.json Iteration must match directory $iterationName; found $resultIterationNumber"
             Add-Check -Name "${iterationName}_hang_probe_schema_version" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'iteration HangProbeSchemaVersion must be 1'
+            Add-Check -Name "${iterationName}_scenario_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'Scenario' -DefaultValue ''))) -Detail 'Scenario must be retained for packet binding'
             Add-Check -Name "${iterationName}_scenario_tag_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'ScenarioTag' -DefaultValue ''))) -Detail 'ScenarioTag must be retained for triage'
             Add-Check -Name "${iterationName}_owner_area_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'OwnerArea' -DefaultValue ''))) -Detail 'OwnerArea must be retained for triage'
             Add-Check -Name "${iterationName}_command_selection_mode_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'CommandSelectionMode' -DefaultValue ''))) -Detail 'CommandSelectionMode must be retained for triage'
@@ -507,11 +539,59 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $resultCurrentIterationLogPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'CurrentIterationLogPath' -DefaultValue ''))
             Add-Check -Name "${iterationName}_current_iteration_log_under_iteration_dir" -Passed ($resultCurrentIterationLogPath -and (Test-PathUnderDirectory -Path $resultCurrentIterationLogPath -Directory $iterationDir)) -Detail 'CurrentIterationLogPath must stay inside the current iteration directory'
             Add-Check -Name "${iterationName}_current_iteration_log_leaf_expected" -Passed ($resultCurrentIterationLogPath -and ([System.IO.Path]::GetFileName($resultCurrentIterationLogPath) -eq 'godot.log.current-iteration')) -Detail 'CurrentIterationLogPath must end with godot.log.current-iteration'
+            Add-Check -Name "${iterationName}_current_iteration_log_path_matches_retained_file" -Passed ($resultCurrentIterationLogPath -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultCurrentIterationLogPath, [System.IO.Path]::GetFullPath($currentIterationLogPath)))) -Detail 'CurrentIterationLogPath must point to the retained godot.log.current-iteration file'
             Add-Check -Name "${iterationName}_result_audit_clean" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'AuditClean' -DefaultValue $false)) -Detail 'AuditClean must be true'
             Add-Check -Name "${iterationName}_result_expectation_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'ExpectationPassed' -DefaultValue $false)) -Detail 'ExpectationPassed must be true'
             Add-Check -Name "${iterationName}_result_sts1_mode_verifier_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'Sts1ModeVerifierPassed' -DefaultValue $false)) -Detail 'Sts1ModeVerifierPassed must be true'
             Add-Check -Name "${iterationName}_restore_succeeded" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'RestoreSucceeded' -DefaultValue $false)) -Detail 'RestoreSucceeded must be true'
             Add-Check -Name "${iterationName}_iteration_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'Passed' -DefaultValue $false)) -Detail 'Passed must be true'
+
+            if ($null -ne $plannedForIteration) {
+                $resultScenario = [string](Get-JsonValue -Object $iterationResult -Name 'Scenario' -DefaultValue '')
+                $resultCommand = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
+                $plannedCommand = [string](Get-JsonValue -Object $plannedForIteration -Name 'Command' -DefaultValue '')
+                $resultCommandIndex = [int](Get-JsonValue -Object $iterationResult -Name 'CommandIndex' -DefaultValue -1)
+                $plannedCommandIndex = [int](Get-JsonValue -Object $plannedForIteration -Name 'CommandIndex' -DefaultValue -2)
+                $resultCommandSelectionMode = [string](Get-JsonValue -Object $iterationResult -Name 'CommandSelectionMode' -DefaultValue '')
+                $plannedCommandSelectionMode = [string](Get-JsonValue -Object $plannedForIteration -Name 'CommandSelectionMode' -DefaultValue '')
+                $resultScenarioTag = [string](Get-JsonValue -Object $iterationResult -Name 'ScenarioTag' -DefaultValue '')
+                $plannedScenarioTag = [string](Get-JsonValue -Object $plannedForIteration -Name 'ScenarioTag' -DefaultValue '')
+                $resultOwnerArea = [string](Get-JsonValue -Object $iterationResult -Name 'OwnerArea' -DefaultValue '')
+                $plannedOwnerArea = [string](Get-JsonValue -Object $plannedForIteration -Name 'OwnerArea' -DefaultValue '')
+                $resultCommandAckPattern = [string](Get-JsonValue -Object $iterationResult -Name 'CommandAckPattern' -DefaultValue '')
+                $plannedCommandAckPattern = [string](Get-JsonValue -Object $plannedForIteration -Name 'CommandAckPattern' -DefaultValue '')
+                Add-Check -Name "${iterationName}_scenario_matches_plan" -Passed ([string]::Equals($resultScenario, $planScenario, [System.StringComparison]::Ordinal)) -Detail 'iteration-result.json Scenario must match monkey-plan.json Scenario'
+                Add-Check -Name "${iterationName}_command_matches_plan" -Passed ([string]::Equals($resultCommand, $plannedCommand, [System.StringComparison]::Ordinal)) -Detail 'iteration-result.json Command must match monkey-plan.json PlannedCommands'
+                Add-Check -Name "${iterationName}_command_index_matches_plan" -Passed ($resultCommandIndex -eq $plannedCommandIndex) -Detail 'iteration-result.json CommandIndex must match monkey-plan.json PlannedCommands'
+                Add-Check -Name "${iterationName}_command_selection_mode_matches_plan" -Passed ([string]::Equals($resultCommandSelectionMode, $plannedCommandSelectionMode, [System.StringComparison]::Ordinal)) -Detail 'iteration-result.json CommandSelectionMode must match monkey-plan.json PlannedCommands'
+                Add-Check -Name "${iterationName}_scenario_tag_matches_plan" -Passed ([string]::Equals($resultScenarioTag, $plannedScenarioTag, [System.StringComparison]::Ordinal)) -Detail 'iteration-result.json ScenarioTag must match monkey-plan.json PlannedCommands'
+                Add-Check -Name "${iterationName}_owner_area_matches_plan" -Passed ([string]::Equals($resultOwnerArea, $plannedOwnerArea, [System.StringComparison]::Ordinal)) -Detail 'iteration-result.json OwnerArea must match monkey-plan.json PlannedCommands'
+                Add-Check -Name "${iterationName}_command_ack_pattern_matches_plan" -Passed ([string]::Equals($resultCommandAckPattern, $plannedCommandAckPattern, [System.StringComparison]::Ordinal)) -Detail 'iteration-result.json CommandAckPattern must match monkey-plan.json PlannedCommands'
+            }
+
+            if ($null -ne $summaryForIteration) {
+                $resultScenario = [string](Get-JsonValue -Object $iterationResult -Name 'Scenario' -DefaultValue '')
+                $summaryScenario = [string](Get-JsonValue -Object $summaryForIteration -Name 'Scenario' -DefaultValue '')
+                $resultCommand = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
+                $summaryCommand = [string](Get-JsonValue -Object $summaryForIteration -Name 'Command' -DefaultValue '')
+                $resultCommandSelectionMode = [string](Get-JsonValue -Object $iterationResult -Name 'CommandSelectionMode' -DefaultValue '')
+                $summaryCommandSelectionMode = [string](Get-JsonValue -Object $summaryForIteration -Name 'CommandSelectionMode' -DefaultValue '')
+                $resultScenarioTag = [string](Get-JsonValue -Object $iterationResult -Name 'ScenarioTag' -DefaultValue '')
+                $summaryScenarioTag = [string](Get-JsonValue -Object $summaryForIteration -Name 'ScenarioTag' -DefaultValue '')
+                $resultOwnerArea = [string](Get-JsonValue -Object $iterationResult -Name 'OwnerArea' -DefaultValue '')
+                $summaryOwnerArea = [string](Get-JsonValue -Object $summaryForIteration -Name 'OwnerArea' -DefaultValue '')
+                $resultPassed = [bool](Get-JsonValue -Object $iterationResult -Name 'Passed' -DefaultValue $false)
+                $summaryPassed = [bool](Get-JsonValue -Object $summaryForIteration -Name 'Passed' -DefaultValue $false)
+                $resultCommandAckObserved = [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckObserved' -DefaultValue $false)
+                $summaryCommandAckObserved = [bool](Get-JsonValue -Object $summaryForIteration -Name 'CommandAckObserved' -DefaultValue $false)
+                Add-Check -Name "${iterationName}_summary_result_scenario_matches_iteration" -Passed ([string]::Equals($summaryScenario, $resultScenario, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results Scenario must match iteration-result.json'
+                Add-Check -Name "${iterationName}_summary_result_command_matches_iteration" -Passed ([string]::Equals($summaryCommand, $resultCommand, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results Command must match iteration-result.json'
+                Add-Check -Name "${iterationName}_summary_result_command_selection_mode_matches_iteration" -Passed ([string]::Equals($summaryCommandSelectionMode, $resultCommandSelectionMode, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results CommandSelectionMode must match iteration-result.json'
+                Add-Check -Name "${iterationName}_summary_result_scenario_tag_matches_iteration" -Passed ([string]::Equals($summaryScenarioTag, $resultScenarioTag, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results ScenarioTag must match iteration-result.json'
+                Add-Check -Name "${iterationName}_summary_result_owner_area_matches_iteration" -Passed ([string]::Equals($summaryOwnerArea, $resultOwnerArea, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results OwnerArea must match iteration-result.json'
+                Add-Check -Name "${iterationName}_summary_result_passed_matches_iteration" -Passed ($summaryPassed -eq $resultPassed) -Detail 'monkey-summary.json Results Passed must match iteration-result.json'
+                Add-Check -Name "${iterationName}_summary_result_command_ack_observed_matches_iteration" -Passed ($summaryCommandAckObserved -eq $resultCommandAckObserved) -Detail 'monkey-summary.json Results CommandAckObserved must match iteration-result.json'
+            }
 
             $probeSamplesPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'RuntimeProbeSamplesPath' -DefaultValue ''))
             $probeSamplesExist = $probeSamplesPath -and (Test-Path -LiteralPath $probeSamplesPath -PathType Leaf)
@@ -519,6 +599,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $probeSamplesLeafExpected = $probeSamplesPath -and ([System.IO.Path]::GetFileName($probeSamplesPath) -eq 'runtime-probe-samples.json')
             Add-Check -Name "${iterationName}_runtime_probe_samples_under_iteration_dir" -Passed $probeSamplesUnderIteration -Detail 'RuntimeProbeSamplesPath must stay inside the current iteration directory'
             Add-Check -Name "${iterationName}_runtime_probe_samples_leaf_expected" -Passed $probeSamplesLeafExpected -Detail 'RuntimeProbeSamplesPath must end with runtime-probe-samples.json'
+            Add-Check -Name "${iterationName}_runtime_probe_samples_path_matches_retained_file" -Passed ($probeSamplesPath -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($probeSamplesPath, [System.IO.Path]::GetFullPath($probeSamplesCandidate)))) -Detail 'RuntimeProbeSamplesPath must point to the retained runtime-probe-samples.json file'
             Add-Check -Name "${iterationName}_runtime_probe_samples_exist" -Passed $probeSamplesExist -Detail 'requires retained runtime-probe-samples.json'
             if ($probeSamplesExist) {
                 try {
