@@ -2440,10 +2440,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_run_result_launch_true status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_launcher_sha256_matches_plan status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_passed_true status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_process_id_matches_runtime_probe_samples status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_runtime_probe_samples_exists status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_runtime_probe_samples_single_positive_process_id status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_runtime_probe_samples_path_matches_summary status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_main_menu_observation_passed status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_main_menu_no_log_growth_timeout status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_runtime_observation_passed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_autoslay_log_hash_present status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_current_iteration_log_under_evidence_dir status=pass", passResult.Output, StringComparison.Ordinal);
@@ -2478,6 +2480,49 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("plan_seed_count_meets_minimum status=fail", underSizedBatchResult.Output, StringComparison.Ordinal);
             Assert.Contains("summary_total_runs_meets_minimum status=fail", underSizedBatchResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_event_room_traversal_observed status=pass", underSizedBatchResult.Output, StringComparison.Ordinal);
+
+            var originalRunResultJson = File.ReadAllText(runResultPath);
+            File.WriteAllText(
+                runResultPath,
+                originalRunResultJson.Replace("\"NoLogGrowthTimeoutExceeded\": false", "\"NoLogGrowthTimeoutExceeded\": true", StringComparison.Ordinal));
+            var logGrowthTimeoutResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.86",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.16",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(logGrowthTimeoutResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{logGrowthTimeoutResult.Output}{logGrowthTimeoutResult.Error}");
+            Assert.Contains("run_0001_run_result_main_menu_no_log_growth_timeout status=fail", logGrowthTimeoutResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runResultPath, originalRunResultJson);
+
+            File.WriteAllText(
+                runResultPath,
+                originalRunResultJson.Replace("\"ProcessId\": 4242", "\"ProcessId\": 5151", StringComparison.Ordinal));
+            var processIdMismatchResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.86",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.16",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(processIdMismatchResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{processIdMismatchResult.Output}{processIdMismatchResult.Error}");
+            Assert.Contains("run_0001_run_result_process_id_matches_runtime_probe_samples status=fail", processIdMismatchResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runResultPath, originalRunResultJson);
 
             var planPath = Path.Combine(workdir, "autoslay-plan.json");
             var originalPlanJson = File.ReadAllText(planPath);

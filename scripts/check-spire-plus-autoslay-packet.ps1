@@ -617,6 +617,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $currentLogExists = -not [string]::IsNullOrWhiteSpace($currentLogPath) -and (Test-Path -LiteralPath $currentLogPath -PathType Leaf)
     $auditExists = -not [string]::IsNullOrWhiteSpace($auditPath) -and (Test-Path -LiteralPath $auditPath -PathType Leaf)
     $sts1ModeCheckExists = -not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath) -and (Test-Path -LiteralPath $sts1ModeCheckPath -PathType Leaf)
+    $observedRuntimeProbeProcessIds = @()
 
     Add-Check -Name "${runName}_seed_present" -Passed (-not [string]::IsNullOrWhiteSpace($seed)) -Detail 'each AutoSlay run must retain its seed'
     Add-Check -Name "${runName}_seed_listed_in_plan" -Passed ($planSeeds -contains $seed) -Detail "seed '$seed' must be listed in autoslay-plan.json Seeds"
@@ -690,12 +691,12 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding') -Detail 'probe samples must not report Responding=false'
             $staleProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
             Add-Check -Name "${runName}_runtime_probe_samples_no_stale_processes" -Passed ($staleProcessSamples.Count -eq 0) -Detail 'probe samples must record StaleProcessCount=0 so shared godot.log evidence cannot come from a pre-existing process'
-            $observedProcessIds = @($probeSamples |
+            $observedRuntimeProbeProcessIds = @($probeSamples |
                 Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                 ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ProcessId' -DefaultValue 0) } |
                 Where-Object { $_ -gt 0 } |
                 Sort-Object -Unique)
-            Add-Check -Name "${runName}_runtime_probe_samples_single_positive_process_id" -Passed ($observedProcessIds.Count -eq 1) -Detail "observed probe samples must bind to one positive process id; count=$($observedProcessIds.Count)"
+            Add-Check -Name "${runName}_runtime_probe_samples_single_positive_process_id" -Passed ($observedRuntimeProbeProcessIds.Count -eq 1) -Detail "observed probe samples must bind to one positive process id; count=$($observedRuntimeProbeProcessIds.Count)"
         } catch {
             Add-Check -Name "${runName}_runtime_probe_samples_json_valid" -Passed $false -Detail "invalid probe samples JSON in $runtimeProbeSamplesPath`: $($_.Exception.Message)"
         }
@@ -848,7 +849,9 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_run_result_hang_signals_empty" -Passed ($resultHangSignals.Count -eq 0) -Detail "run-result.json HangSignals must be empty; found $($resultHangSignals.Count)"
             Add-Check -Name "${runName}_run_result_failure_reason_codes_match_summary" -Passed ([string]::Equals([string]::Join("`n", @($summaryFailureReasonCodes | ForEach-Object { [string]$_ })), [string]::Join("`n", @($resultFailureReasonCodes | ForEach-Object { [string]$_ })), [System.StringComparison]::Ordinal)) -Detail 'run-result.json FailureReasonCodes must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_hang_signals_match_summary" -Passed ([string]::Equals([string]::Join("`n", @($summaryHangSignals | ForEach-Object { [string]$_ })), [string]::Join("`n", @($resultHangSignals | ForEach-Object { [string]$_ })), [System.StringComparison]::Ordinal)) -Detail 'run-result.json HangSignals must match autoslay-summary.json'
-            Add-Check -Name "${runName}_run_result_process_id_positive" -Passed ([int](Get-JsonValue -Object $runResult -Name 'ProcessId' -DefaultValue 0) -gt 0) -Detail 'run-result.json must retain a positive launched process id'
+            $resultProcessId = [int](Get-JsonValue -Object $runResult -Name 'ProcessId' -DefaultValue 0)
+            Add-Check -Name "${runName}_run_result_process_id_positive" -Passed ($resultProcessId -gt 0) -Detail 'run-result.json must retain a positive launched process id'
+            Add-Check -Name "${runName}_run_result_process_id_matches_runtime_probe_samples" -Passed ($observedRuntimeProbeProcessIds.Count -eq 1 -and $observedRuntimeProbeProcessIds[0] -eq $resultProcessId) -Detail "run-result.json ProcessId must match the single observed probe ProcessId; result=$resultProcessId observed=$($observedRuntimeProbeProcessIds -join ',')"
             Add-Check -Name "${runName}_run_result_start_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $runResult -Name 'StartTimestamp' -DefaultValue ''))) -Detail 'run-result.json must retain StartTimestamp'
             Add-Check -Name "${runName}_run_result_end_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $runResult -Name 'EndTimestamp' -DefaultValue ''))) -Detail 'run-result.json must retain EndTimestamp'
             Add-Check -Name "${runName}_run_result_exit_code_zero" -Passed ([int](Get-JsonValue -Object $runResult -Name 'ExitCode' -DefaultValue -999) -eq 0) -Detail 'run-result.json ExitCode must be 0'
@@ -873,6 +876,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                 Add-Check -Name "${runName}_run_result_main_menu_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'main-menu observation must not see stale pre-existing SlayTheSpire2 processes'
                 Add-Check -Name "${runName}_run_result_main_menu_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $mainMenuObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'MainMenuObservation.MaxStaleProcessCount must be 0'
                 Add-Check -Name "${runName}_run_result_main_menu_log_observed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.LogObserved must be true'
+                Add-Check -Name "${runName}_run_result_main_menu_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'MainMenuObservation.NoLogGrowthTimeoutExceeded must be false'
             }
 
             $runtimeObservation = Get-JsonValue -Object $runResult -Name 'RuntimeObservation' -DefaultValue $null

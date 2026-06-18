@@ -172,9 +172,10 @@ can close a game-native monkey proof row:
   `RuntimeObservation`, and the retained per-run paths/hashes;
 - one retained `runtime-probe-samples.json` per seed with `Phase`, `ProcessId`,
   `ProcessObserved`, `MainWindowObserved`, `HungWindow`, `Responding`, and
-  `StaleProcessCount` fields, stable positive process id binding, process and
-  main-window observations, no hung-window samples, no `Responding=false`
-  samples, and `StaleProcessCount: 0` on every sample;
+  `StaleProcessCount` fields, stable positive process id binding that matches
+  the per-seed `run-result.json` `ProcessId`, process and main-window
+  observations, no hung-window samples, no `Responding=false` samples, and
+  `StaleProcessCount: 0` on every sample;
 - the seed, AutoSlay log path, exit code, Ancient id, ordered
   start/event/Ancient-dialogue/event-option/completion markers, with
   `AutoSlayLogSha256` bound to the retained log file;
@@ -360,7 +361,9 @@ and `child_combat_room_entered`.
 The launched packet checker requires `MainMenuObservation` and
 `RuntimeObservation` in each `iteration-result.json`. These records include
 process-observed, process-exited, stale-process, hung-window, log-observed,
-log-length, and max-no-growth counters. It also requires the retained
+log-length, and main-menu `NoLogGrowthTimeoutExceeded=false` state. It also requires the retained
+`run-result.json` `ProcessId` to match the single positive process id observed
+by `runtime-probe-samples.json`.
 `sts1-mode-log-check.json` to match the plan's `Sts1EventMode` and bind its
 `LogPath`, `LogLength`, and `LogSha256` to `godot.log.current-iteration`, exact Spire Plus patch-count lines from
 `godot.log.current-iteration`, probe sample paths and sliced-log paths that

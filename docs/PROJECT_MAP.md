@@ -128,7 +128,7 @@ The private beta zip should contain only those three installable files plus `REA
 | Path | Status | Notes |
 | --- | --- | --- |
 | `docs/archive/legacy-planning/legacy-project-files/` | Archive | Preserved legacy project metadata from earlier migration work; top-level `legacy/` was removed during cleanup. |
-| `source code/` | Ignored local scratch | Current decompiled game source reference. Do not commit or package. |
+| `source code/` | Ignored local scratch | Local recovered source reference; it may be historical. Require `scripts/check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot -FailOnMismatch` before current-source API claims. Do not commit or package. |
 | `.tools/` | Ignored local tools | Downloaded GDRETools, Godot, ILSpy, and local helper binaries. |
 | `.godot/` | Ignored generated output | Godot import/build cache. |
 | `publish/` | Ignored release output | Package staging, versioned package, and private beta zip. |
@@ -161,6 +161,7 @@ Start at `docs/README.md`.
 | Chinese feature summary | `docs/intro.zh.md` |
 | Test-ready development goal | `docs/test-ready-development-goal.md` |
 | Manual evidence queue | `docs/issues/waiting-tests.md` (compact support queue only; full historical rows are archived, and next development starts from `docs/test-ready-development-goal.md`) |
+| Runtime monkey / AutoSlay stability methodology | `docs/testing/runtime-monkey-stability.md` |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |
 | Ancient expansion v2.2 | `docs/features/ancient-expansion-v2.2/README.md` |
 | RitsuLib migration | `docs/features/ritsulib-migration/monthly-dev-spec.md` |
