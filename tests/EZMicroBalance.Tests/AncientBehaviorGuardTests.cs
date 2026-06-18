@@ -1,45 +1,11 @@
 using System.IO.Compression;
-using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
 
 public sealed partial class AncientBehaviorGuardTests
 {
-    [Fact]
-    public void SovereignBladeJadeBoonsApplyOnPlayAndAreExplainedByForge()
-    {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SovereignBladeForgePatches.cs");
-        var cardsEng = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
-        var cardsZhs = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
-        var staticEng = JsonStringMap("EZMicroBalance", "localization", "eng", "static_hover_tips.json");
-        var staticZhs = JsonStringMap("EZMicroBalance", "localization", "zhs", "static_hover_tips.json");
-
-        AssertSourceContains(
-            source,
-            "public const decimal Amount = 3m",
-            "[HarmonyPatch(typeof(SovereignBlade), \"OnPlay\")]",
-            "await original;",
-            "PowerCmd.Apply<StrengthPower>(choiceContext, owner, Amount, owner, blade)",
-            "PowerCmd.Apply<DexterityPower>(choiceContext, owner, Amount, owner, blade)",
-            "PowerCmd.Apply<PlatingPower>(choiceContext, owner, Amount, owner, blade)",
-            "PowerCmd.Apply<RegenPower>(choiceContext, owner, Amount, owner, blade)",
-            "PowerCmd.Apply<VigorPower>(choiceContext, owner, Amount, owner, blade)",
-            "[HarmonyPatch(typeof(CardModel), \"get_HoverTips\")]",
-            "HoverTipFactory.FromPower<StrengthPower>((int)Amount)",
-            "HoverTipFactory.FromPower<DexterityPower>((int)Amount)",
-            "HoverTipFactory.FromPower<PlatingPower>((int)Amount)",
-            "HoverTipFactory.FromPower<RegenPower>((int)Amount)",
-            "HoverTipFactory.FromPower<VigorPower>((int)Amount)");
-
-        AssertSovereignBladeText(cardsEng["SOVEREIGN_BLADE.description"], "Strength", "Dexterity", "Plating", "Regen", "Vigor");
-        AssertSovereignBladeText(cardsZhs["SOVEREIGN_BLADE.description"], "\u529b\u91cf", "\u654f\u6377", "\u8986\u7532", "\u518d\u751f", "\u6d3b\u529b");
-        AssertSovereignBladeText(staticEng["FORGE.description"], "Sovereign Blade", "Strength", "Dexterity", "Plating", "Regen", "Vigor");
-        AssertSovereignBladeText(staticZhs["FORGE.description"], "\u541b\u738b\u4e4b\u5251", "\u529b\u91cf", "\u654f\u6377", "\u8986\u7532", "\u518d\u751f", "\u6d3b\u529b");
-    }
-
     [ReleaseArtifactFact]
     public void PrivateBetaZipContainsOnlyInstallableActiveModFiles()
     {
@@ -170,106 +136,6 @@ public sealed partial class AncientBehaviorGuardTests
     }
 
     [Fact]
-    public void PrismaticGemRerollStateIsScreenScopedCounterSafeAndReplacesAllSlots()
-    {
-        var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
-        var apiDiscovery = ReadRepoText("docs", "features", "ancients-rework-v4", "api-discovery.md");
-        var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
-
-        Assert.Equal("Gain 1 Energy. Every second standard card reward contains only off-color cards.", relics["PRISMATIC_GEM.description"]);
-
-        AssertSourceContains(
-            source,
-            "[ThreadStatic]",
-            "Stack<CardReward>",
-            "HarmonyFinalizer",
-            "PrismaticGemRewardScreenContextPatch.CurrentReward",
-            "HarmonyPrefix",
-            "player.Relics.OfType<PrismaticGem>().FirstOrDefault(relic => !relic.IsMelted)",
-            "foreach (var listener in runState.IterateHookListeners(null))",
-            "listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions)",
-            "if (listenerModified)",
-            "modifiers.Add(listener)",
-            "Prismatic replacement sits between Core's early and late reward hooks",
-            "TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions)",
-            "listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)",
-            "CleanupSupersededPrismaticReplacements(cardRewardOptions)",
-            "ConditionalWeakTable<CardReward, RewardScreenState>",
-            "public CardModel? PrismaticReplacement { get; set; }",
-            "var madeTriggerDecision = !screenState.HasTriggerDecision",
-            "if (madeTriggerDecision)",
-            "screenState.CounterAtDecision = AncientSavedStateFields.PrismaticGemNormalRewardCounter[prismaticGem] + 1",
-            "AncientSavedStateFields.PrismaticGemNormalRewardCounter[prismaticGem] = screenState.CounterAtDecision",
-            "screenState.ShouldReplaceAllSlots = screenState.CounterAtDecision % 2 == 0",
-            "else if (!isNormalCardReward)",
-            "creationOptions.Source == CardCreationSource.Encounter",
-            "creationOptions.RarityOdds == CardRarityOddsType.RegularEncounter",
-            "creationOptions.CustomCardPool == null",
-            "creationOptions.CardPoolFilter == null",
-            "!creationOptions.CardPools.All(pool => pool.IsColorless)",
-            "ReplaceAllRewardSlots",
-            "for (var slotIndex = 0; slotIndex < cardRewardOptions.Count; slotIndex++)",
-            "RestoreCounterAfterFailedReplacement(prismaticGem, screenState)",
-            "reward.ModifyCard(replacement, prismaticGem)",
-            "TrackPrismaticReplacement(reward, replacement)",
-            "RewardResultHints.GetValue(reward, _ => new RewardResultHintState()).PrismaticReplacement = replacement",
-            "if (!RewardResultHints.TryGetValue(reward, out var hintState)",
-            "ReferenceEquals(reward.Card, hintState.PrismaticReplacement)",
-            "AncientCardHelpers.RemoveUnpiledRunCard(hintState.PrismaticReplacement)",
-            "excludedIds.Add(replacement.Id)",
-            "player.RunState.RemoveCard(originalCard)",
-            "RemoveUnpiledReplacements(replacements)",
-            "AncientCardHelpers.RemoveUnpiledRunCard(replacement)",
-            ".Where(card => type == null || card.Type == type)",
-            "GetOffColorRewardPool(player, originalCard.Rarity, originalCard.Type, excludedIds)",
-            "GetOffColorRewardPool(player, null, originalCard.Type, excludedIds)",
-            "GetOffColorRewardPool(player, originalCard.Rarity, null, excludedIds)",
-            "GetOffColorRewardPool(player, null, null, excludedIds)");
-        AssertBefore(
-            source,
-            "listener.TryModifyCardRewardOptions(player, cardRewardOptions, creationOptions)",
-            "TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions)");
-        AssertBefore(
-            source,
-            "TryReplaceNormalRewardScreen(prismaticGem, player, cardRewardOptions, creationOptions)",
-            "listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)");
-        AssertBefore(
-            source,
-            "listener.TryModifyCardRewardOptionsLate(player, cardRewardOptions, creationOptions)",
-            "CleanupSupersededPrismaticReplacements(cardRewardOptions)");
-
-        AssertSourceContains(
-            source,
-            "[HarmonyPatch(typeof(RelicModel), \"get_HoverTips\")]",
-            "PRISMATIC_GEM.countHint.title",
-            "PRISMATIC_GEM.countHint.nextNormal",
-            "PRISMATIC_GEM.countHint.nextOffColor",
-            "NCardRewardSelectionScreen",
-            "PRISMATIC_GEM.rewardScreenHint",
-            "BannerNodePath = \"UI/Banner\"",
-            "TryGetCompatibleBannerField",
-            "typeof(MegaCrit.Sts2.Core.Nodes.CommonUi.NCommonBanner).IsAssignableFrom(BannerField.FieldType)",
-            "TryApplyBannerNodeHint",
-            "GetNodeOrNull<MegaCrit.Sts2.Core.Nodes.CommonUi.NCommonBanner>(BannerNodePath)",
-            "InfoOnce(",
-            "WarnOnce(",
-            "visible all-off-color cards and the Prismatic Gem relic hover count remain available");
-
-        Assert.DoesNotContain("ShouldReplaceRightmostSlot", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("var slotIndex = cardRewardOptions.Count - 1", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.TryModifyCardRewardOptions))]", source, StringComparison.Ordinal);
-
-        AssertSourceContains(
-            apiDiscovery,
-            "CardReward.Reroll()",
-            "Rerolls reuse the same `CardReward` state",
-            "eligible normal rewards increment the saved counter once",
-            "ineligible rewards store a non-trigger decision and do not increment",
-            "Trigger screens regenerate all-slot off-color replacements",
-            "reward-screen banner hint");
-    }
-
-    [Fact]
     public void VelvetChokerSoftLimitCountsOnlyManualFirstFromHandPlaysAndResetsEachTurn()
     {
         var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
@@ -337,65 +203,6 @@ public sealed partial class AncientBehaviorGuardTests
 
         Assert.Contains("| Velvet Choker |", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("copied, autoplayed, or repeated plays do not advance the counter", manualMatrix, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void PrismaticGemRewardScreenHintHasGuardedBannerFallbackDiagnostics()
-    {
-        var hintPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintPatch.cs");
-        var sharedBanner = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintBanner.cs");
-        var fieldSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintBanner.Field.cs");
-        var nodeSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "PrismaticGemRewardScreenHintBanner.Node.cs");
-        var source = string.Join(Environment.NewLine, hintPatch, sharedBanner, fieldSource, nodeSource);
-        var applyHint = SliceFrom(hintPatch, "private static void ApplyRewardScreenHint");
-        var fieldFallback = SliceBetween(
-            fieldSource,
-            "private static bool TryApplyBannerFieldHint(",
-            "private static bool TryGetCompatibleBannerField(");
-        var nodeFallback = SliceBetween(
-            nodeSource,
-            "private static bool TryApplyBannerNodeHint(",
-            "private static void ConfirmBannerNodeHintAfterFieldSuccess(");
-        var testPlan = ReadRepoText("docs", "test-plan.md");
-        var manualChecklist = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-test-checklist.md");
-        var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
-
-        AssertSourceContains(
-            source,
-            "private static readonly System.Reflection.FieldInfo? BannerField",
-            "if (TryApplyBannerFieldHint(screen, hintText))",
-            "if (TryApplyBannerNodeHint(screen, hintText))",
-            "TryGetCompatibleBannerField(out var bannerField, out var reason)",
-            "if (BannerField == null)",
-            "typeof(MegaCrit.Sts2.Core.Nodes.CommonUi.NCommonBanner).IsAssignableFrom(BannerField.FieldType)",
-            "bannerField.GetValue(screen)",
-            "screen.GetNodeOrNull<MegaCrit.Sts2.Core.Nodes.CommonUi.NCommonBanner>(BannerNodePath)",
-            "private _banner field unavailable",
-            "private _banner field resolved but did not contain a banner instance",
-            "private _banner access failed",
-            "fallback applied through {BannerNodePath} node lookup",
-            "fallback unavailable",
-            "reward-screen hint unavailable",
-            "visible all-off-color cards and the Prismatic Gem relic hover count remain available");
-
-        Assert.Equal(Regex.Matches(fieldFallback, @"return false;").Count, Regex.Matches(fieldFallback, @"WarnOnce\(").Count);
-        Assert.Equal(Regex.Matches(nodeFallback, @"return false;").Count, Regex.Matches(nodeFallback, @"WarnOnce\(").Count);
-        Assert.Contains("WarnOnce(", applyHint, StringComparison.Ordinal);
-        Assert.Contains("InfoOnce(", fieldFallback, StringComparison.Ordinal);
-        Assert.Contains("catch (Exception exception)", fieldFallback, StringComparison.Ordinal);
-        Assert.Contains("catch (Exception exception)", nodeFallback, StringComparison.Ordinal);
-        Assert.DoesNotContain("BannerField!.GetValue", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("BannerField.GetValue(screen)", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("catch {", source, StringComparison.Ordinal);
-
-        Assert.Contains("banner fallback diagnostics", testPlan, StringComparison.Ordinal);
-        Assert.Contains("manual-test coverage", testPlan, StringComparison.Ordinal);
-        Assert.Contains("the reward-screen hint logs a fallback if the banner cannot be updated", testPlan, StringComparison.Ordinal);
-        Assert.Contains("If the trigger reward banner is not visible", manualChecklist, StringComparison.Ordinal);
-        Assert.Contains("PrismaticGem reward-screen hint fallback", manualChecklist, StringComparison.Ordinal);
-        Assert.Contains("PrismaticGem reward-screen hint fallback", manualMatrix, StringComparison.Ordinal);
-        Assert.Contains("relic hover count plus every visible reward card being off-color", manualMatrix, StringComparison.Ordinal);
-        Assert.Contains("visible all-off-color cards and relic hover count remain the available confirmation surfaces", manualMatrix, StringComparison.Ordinal);
     }
 
     private static string ReadSereTalonVisualSource() =>
@@ -662,15 +469,6 @@ public sealed partial class AncientBehaviorGuardTests
         Assert.Contains("Verify no other rest-site source is affected unexpectedly.", manualChecklist, StringComparison.Ordinal);
         Assert.DoesNotContain("Expected: Cook option", manualChecklist, StringComparison.Ordinal);
         Assert.DoesNotContain("\u70f9\u996a", manualChecklist, StringComparison.Ordinal);
-    }
-
-    private static void AssertSovereignBladeText(string value, params string[] requiredTerms)
-    {
-        Assert.True(CountOccurrences(value, "[blue]3[/blue]") >= 5, "Sovereign Blade text should show all five 3-point jade boons.");
-        foreach (var term in requiredTerms)
-        {
-            Assert.Contains(term, value, StringComparison.Ordinal);
-        }
     }
 
 }

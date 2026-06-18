@@ -14,7 +14,7 @@ Coordination boundary: do not run overlapping validation, package/release, runti
 
 ## Current State
 
-- Current repository HEAD must be checked at run start. The latest observed pushed beta.86 package/runtime validation baseline remains `eaaeb5a1`; later governance/test follow-up commits exist after that package baseline and must be recaptured exactly before handoff.
+- Current repository HEAD must be checked at run start. The latest observed pushed beta.86 package/runtime validation baseline remains `eaaeb5a1`; post-baseline no-game/doc-governance recaptures include `bdc002d6`. Any later edits must still be recaptured exactly before handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
 - Latest beta.86 no-game validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: 0 build errors and 0 warnings; split no-build lanes covered 489 passed / 0 failed / 39 skipped / 528 total; the opt-in package/artifact subset passed 67 passed / 0 failed / 2 skipped / 69 total; the latest focused current-HEAD recapture covered RuntimeMonkey/ReleaseEvidence 21 / 0 / 0 / 21, DocumentationCompactness 25 / 0 / 0 / 25, EngineeringGovernance 25 / 0 / 0 / 25, current-doc claims 962 / 0, v19 534 / 0, v20 overlay 29 / 0, static suite 15 / 0, and static-file hygiene 11 / 0. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
 - Patch state remains 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
