@@ -201,6 +201,97 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                       "Name": "OtherMod",
                       "From": "\u0000bad-from",
                       "To": "\u0000bad-to"
+                    },
+                    {
+                      "Name": "MissingPaths"
+                    }
+                  ],
+                  "MovedCurrentRuns": [],
+                  "GameRoot": {{JsonSerializer.Serialize(workdir)}},
+                  "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(workdir, "mods"))}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "godot.log.after-launch"))}},
+                  "Sts1EventModeEnvironment": "AdditiveBatch1",
+                  "Sts1UnsafeModeEnvironment": ""
+                }
+                """);
+            File.WriteAllText(
+                Path.Combine(workdir, "restore-state.json"),
+                """
+                {
+                  "RestoredAt": "2026-06-18T00:00:00.0000000Z",
+                  "RestoredModCount": 2,
+                  "RestoredCurrentRunCount": 0,
+                  "SettingsHashAfterRestore": "same",
+                  "SettingsBackupHashAfterRestore": "same"
+                }
+                """);
+
+            var outFile = Path.Combine(workdir, "runtime-evidence-packet-check.json");
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "AdditiveBatch1",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-OutFile",
+                outFile);
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("session_moved_mod_sources_under_mods_root status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_moved_mod_destinations_under_isolated_mods status=fail", result.Output, StringComparison.Ordinal);
+            Assert.True(File.Exists(outFile), $"Packet verifier did not retain report:{Environment.NewLine}{result.Output}{result.Error}");
+            using var report = JsonDocument.Parse(File.ReadAllText(outFile));
+            var checks = report.RootElement.GetProperty("Checks").EnumerateArray().ToArray();
+            Assert.Contains(checks, check => check.GetProperty("Name").GetString() == "session_moved_mod_sources_under_mods_root" && !check.GetProperty("Passed").GetBoolean());
+            Assert.Contains(checks, check => check.GetProperty("Name").GetString() == "session_moved_mod_destinations_under_isolated_mods" && !check.GetProperty("Passed").GetBoolean());
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierRejectsAllowedMovedModSourceSpoof()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "AdditiveBatch1");
+            const string preLaunchPrefix = "[Startup] clean pre-launch log prefix\r\n";
+            var currentSlice = BuildSts1ModeRuntimeLog("AdditiveBatch1");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.before"), preLaunchPrefix);
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), preLaunchPrefix + currentSlice);
+
+            var sourcePath = Path.Combine(workdir, "mods", "BaseLib");
+            var destinationPath = Path.Combine(workdir, "isolated-mods", "OtherMod");
+            File.WriteAllText(
+                Path.Combine(workdir, "session-state.json"),
+                $$"""
+                {
+                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "DisableSpirePlus": false,
+                  "MoveOtherMods": true,
+                  "MoveCurrentRuns": true,
+                  "MovedMods": [
+                    {
+                      "Name": "OtherMod",
+                      "From": {{JsonSerializer.Serialize(sourcePath)}},
+                      "To": {{JsonSerializer.Serialize(destinationPath)}}
                     }
                   ],
                   "MovedCurrentRuns": [],
@@ -242,13 +333,76 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 outFile);
 
             Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
-            Assert.Contains("session_moved_mod_sources_under_mods_root status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("session_moved_mod_destinations_under_isolated_mods status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_moved_mods_do_not_include_allowed_mods status=fail", result.Output, StringComparison.Ordinal);
             Assert.True(File.Exists(outFile), $"Packet verifier did not retain report:{Environment.NewLine}{result.Output}{result.Error}");
             using var report = JsonDocument.Parse(File.ReadAllText(outFile));
             var checks = report.RootElement.GetProperty("Checks").EnumerateArray().ToArray();
-            Assert.Contains(checks, check => check.GetProperty("Name").GetString() == "session_moved_mod_sources_under_mods_root" && !check.GetProperty("Passed").GetBoolean());
-            Assert.Contains(checks, check => check.GetProperty("Name").GetString() == "session_moved_mod_destinations_under_isolated_mods" && !check.GetProperty("Passed").GetBoolean());
+            Assert.Contains(checks, check => check.GetProperty("Name").GetString() == "session_moved_mods_do_not_include_allowed_mods" && !check.GetProperty("Passed").GetBoolean());
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierReportsMissingMovedModsAndEmptyLogAsFailedRows()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "Off");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), string.Empty);
+            File.WriteAllText(
+                Path.Combine(workdir, "session-state.json"),
+                $$"""
+                {
+                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "DisableSpirePlus": false,
+                  "MoveOtherMods": true,
+                  "MoveCurrentRuns": true,
+                  "GameRoot": {{JsonSerializer.Serialize(workdir)}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "godot.log.after-launch"))}},
+                  "Sts1EventModeEnvironment": "Off",
+                  "Sts1UnsafeModeEnvironment": ""
+                }
+                """);
+            File.WriteAllText(
+                Path.Combine(workdir, "restore-state.json"),
+                """
+                {
+                  "RestoredAt": "2026-06-18T00:00:00.0000000Z",
+                  "RestoredModCount": 0,
+                  "RestoredCurrentRunCount": 0
+                }
+                """);
+
+            var outFile = Path.Combine(workdir, "runtime-evidence-packet-check.json");
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "Off",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-OutFile",
+                outFile);
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("godot_log_non_empty status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("expected_package_version_in_log status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_moved_mods_field_recorded status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_moved_current_runs_field_recorded status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_has_mods_root status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("restore_hashes_recorded status=fail", result.Output, StringComparison.Ordinal);
+            Assert.True(File.Exists(outFile), $"Packet verifier did not retain report:{Environment.NewLine}{result.Output}{result.Error}");
         }
         finally
         {

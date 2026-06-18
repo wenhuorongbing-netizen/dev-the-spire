@@ -71,9 +71,75 @@ function Read-JsonFile {
     return $json | ConvertFrom-Json
 }
 
+function Test-JsonProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if ($null -eq $Object) {
+        return $false
+    }
+
+    foreach ($property in @($Object.PSObject.Properties)) {
+        if ([string]::Equals($property.Name, $Name, [System.StringComparison]::Ordinal)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Get-JsonValueOrNull {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if ($null -eq $Object) {
+        return $null
+    }
+
+    foreach ($property in @($Object.PSObject.Properties)) {
+        if ([string]::Equals($property.Name, $Name, [System.StringComparison]::Ordinal)) {
+            return $property.Value
+        }
+    }
+
+    return $null
+}
+
+function Get-JsonStringOrEmpty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    $value = Get-JsonValueOrNull -Object $Object -Name $Name
+    if ($null -eq $value) {
+        return ''
+    }
+
+    return [string]$value
+}
+
+function Get-JsonArrayOrEmpty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    $value = Get-JsonValueOrNull -Object $Object -Name $Name
+    if ($null -eq $value) {
+        return @()
+    }
+
+    return @($value)
+}
+
 function Contains-Text {
     param(
-        [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Text,
         [Parameter(Mandatory = $true)][string]$Needle
     )
 
@@ -83,7 +149,7 @@ function Contains-Text {
 function Format-SortedSet {
     param([AllowEmptyCollection()][AllowNull()][string[]]$Items)
 
-    if ($null -eq $Items -or $Items.Count -eq 0) {
+    if ($null -eq $Items -or @($Items).Count -eq 0) {
         return ''
     }
 
@@ -109,6 +175,21 @@ function Test-PathInsideString {
 
     $comparison = [System.StringComparison]::OrdinalIgnoreCase
     return $childFull.Equals($parentFull, $comparison) -or $childFull.StartsWith($parentFull + '\', $comparison)
+}
+
+function Get-PathLeafOrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return ''
+    }
+
+    try {
+        $pathFull = [System.IO.Path]::GetFullPath($Path).TrimEnd('\', '/')
+        return [System.IO.Path]::GetFileName($pathFull)
+    } catch {
+        return ''
+    }
 }
 
 function Test-BytePrefix {
@@ -455,51 +536,88 @@ if ($ExpectedGameVersion) {
 }
 
 $sessionState = $null
+$movedMods = @()
+$movedCurrentRuns = @()
 if ($sessionExists) {
     $sessionState = Read-JsonFile $sessionStatePath
-    $allowedModIds = @($sessionState.AllowedModIds)
+    $allowedModIds = @(Get-JsonArrayOrEmpty -Object $sessionState -Name 'AllowedModIds' | ForEach-Object { [string]$_ })
     $expectedAllowedModIds = @('BaseLib', 'STS2-RitsuLib', 'EZMicroBalance')
     $allowedModSet = Format-SortedSet -Items $allowedModIds
     $expectedAllowedModSet = Format-SortedSet -Items $expectedAllowedModIds
-    $recordedSts1EventMode = if ($sessionState.PSObject.Properties.Name -contains 'Sts1EventModeEnvironment') {
-        [string]$sessionState.Sts1EventModeEnvironment
-    } else {
-        ''
-    }
-    $recordedUnsafeMode = if ($sessionState.PSObject.Properties.Name -contains 'Sts1UnsafeModeEnvironment') {
-        [string]$sessionState.Sts1UnsafeModeEnvironment
-    } else {
-        ''
-    }
+    $recordedSts1EventMode = Get-JsonStringOrEmpty -Object $sessionState -Name 'Sts1EventModeEnvironment'
+    $recordedUnsafeMode = Get-JsonStringOrEmpty -Object $sessionState -Name 'Sts1UnsafeModeEnvironment'
+    $disableSpirePlus = if (Test-JsonProperty -Object $sessionState -Name 'DisableSpirePlus') { [bool](Get-JsonValueOrNull -Object $sessionState -Name 'DisableSpirePlus') } else { $true }
+    $moveOtherMods = if (Test-JsonProperty -Object $sessionState -Name 'MoveOtherMods') { [bool](Get-JsonValueOrNull -Object $sessionState -Name 'MoveOtherMods') } else { $false }
+    $moveCurrentRuns = if (Test-JsonProperty -Object $sessionState -Name 'MoveCurrentRuns') { [bool](Get-JsonValueOrNull -Object $sessionState -Name 'MoveCurrentRuns') } else { $false }
+    $hasMovedMods = Test-JsonProperty -Object $sessionState -Name 'MovedMods'
+    $hasMovedCurrentRuns = Test-JsonProperty -Object $sessionState -Name 'MovedCurrentRuns'
+    $movedMods = if ($hasMovedMods) { @(Get-JsonArrayOrEmpty -Object $sessionState -Name 'MovedMods') } else { @() }
+    $movedCurrentRuns = if ($hasMovedCurrentRuns) { @(Get-JsonArrayOrEmpty -Object $sessionState -Name 'MovedCurrentRuns') } else { @() }
+    $modsRoot = Get-JsonStringOrEmpty -Object $sessionState -Name 'ModsRoot'
+    $gameRoot = Get-JsonStringOrEmpty -Object $sessionState -Name 'GameRoot'
+    $logPath = Get-JsonStringOrEmpty -Object $sessionState -Name 'LogPath'
 
     Add-Check -Name 'session_allows_baselib' -Passed ($allowedModIds -contains 'BaseLib') -Detail 'session-state AllowedModIds must include BaseLib'
     Add-Check -Name 'session_allows_ritsulib' -Passed ($allowedModIds -contains 'STS2-RitsuLib') -Detail 'session-state AllowedModIds must include STS2-RitsuLib'
     Add-Check -Name 'session_allows_spire_plus' -Passed ($allowedModIds -contains 'EZMicroBalance') -Detail 'session-state AllowedModIds must include EZMicroBalance'
     Add-Check -Name 'session_allowed_mod_ids_exact' -Passed ($allowedModSet -eq $expectedAllowedModSet) -Detail "session-state AllowedModIds expected exactly '$expectedAllowedModSet' but found '$allowedModSet'"
-    Add-Check -Name 'session_does_not_disable_spire_plus' -Passed (-not [bool]$sessionState.DisableSpirePlus) -Detail 'DisableSpirePlus must be false for StS1 runtime smoke'
-    Add-Check -Name 'session_move_other_mods' -Passed ([bool]$sessionState.MoveOtherMods) -Detail 'MoveOtherMods should be true for isolated StS1 runtime smoke'
-    Add-Check -Name 'session_move_current_runs' -Passed ([bool]$sessionState.MoveCurrentRuns) -Detail 'MoveCurrentRuns should be true for StS1 runtime smoke'
-    Add-Check -Name 'session_moved_mods_field_recorded' -Passed ($sessionState.PSObject.Properties.Name -contains 'MovedMods') -Detail 'session-state must record MovedMods, even if the list is empty'
-    Add-Check -Name 'session_has_game_root' -Passed (-not [string]::IsNullOrWhiteSpace([string]$sessionState.GameRoot)) -Detail 'session-state GameRoot must be recorded'
-    Add-Check -Name 'session_has_log_path' -Passed (-not [string]::IsNullOrWhiteSpace([string]$sessionState.LogPath)) -Detail 'session-state LogPath must be recorded'
+    Add-Check -Name 'session_does_not_disable_spire_plus' -Passed (-not $disableSpirePlus) -Detail 'DisableSpirePlus must be false for StS1 runtime smoke'
+    Add-Check -Name 'session_move_other_mods' -Passed $moveOtherMods -Detail 'MoveOtherMods should be true for isolated StS1 runtime smoke'
+    Add-Check -Name 'session_move_current_runs' -Passed $moveCurrentRuns -Detail 'MoveCurrentRuns should be true for StS1 runtime smoke'
+    Add-Check -Name 'session_moved_mods_field_recorded' -Passed $hasMovedMods -Detail 'session-state must record MovedMods, even if the list is empty'
+    Add-Check -Name 'session_moved_current_runs_field_recorded' -Passed $hasMovedCurrentRuns -Detail 'session-state must record MovedCurrentRuns, even if the list is empty'
+    Add-Check -Name 'session_has_game_root' -Passed (-not [string]::IsNullOrWhiteSpace($gameRoot)) -Detail 'session-state GameRoot must be recorded'
+    Add-Check -Name 'session_has_mods_root' -Passed (-not [string]::IsNullOrWhiteSpace($modsRoot)) -Detail 'session-state ModsRoot must be recorded'
+    Add-Check -Name 'session_has_log_path' -Passed (-not [string]::IsNullOrWhiteSpace($logPath)) -Detail 'session-state LogPath must be recorded'
 
-    $movedMods = @($sessionState.MovedMods)
     $isolatedModsRoot = [System.IO.Path]::GetFullPath((Join-Path $resolvedEvidenceDir 'isolated-mods'))
-    $allowedMovedMods = @($movedMods | Where-Object { $allowedModIds -contains [string]$_.Name } | ForEach-Object { [string]$_.Name })
-    $missingMovedModNames = @($movedMods | Where-Object { [string]::IsNullOrWhiteSpace([string]$_.Name) })
-    $movedModSourcesOutsideRoot = @($movedMods | Where-Object { -not (Test-PathInsideString -Child ([string]$_.From) -Parent ([string]$sessionState.ModsRoot)) } | ForEach-Object { [string]$_.From })
-    $movedModDestinationsOutsideIsolation = @($movedMods | Where-Object { -not (Test-PathInsideString -Child ([string]$_.To) -Parent $isolatedModsRoot) } | ForEach-Object { [string]$_.To })
+    $allowedMovedModsBuilder = [System.Collections.Generic.List[string]]::new()
+    $missingMovedModNamesBuilder = [System.Collections.Generic.List[string]]::new()
+    $movedModSourcesOutsideRootBuilder = [System.Collections.Generic.List[string]]::new()
+    $movedModDestinationsOutsideIsolationBuilder = [System.Collections.Generic.List[string]]::new()
 
-    Add-Check -Name 'session_moved_mod_names_present' -Passed ($missingMovedModNames.Count -eq 0) -Detail 'every moved-mod entry must record Name'
-    Add-Check -Name 'session_moved_mods_do_not_include_allowed_mods' -Passed ($allowedMovedMods.Count -eq 0) -Detail "allowed mods must not be moved out; moved allowed mods: $($allowedMovedMods -join ',')"
-    Add-Check -Name 'session_moved_mod_sources_under_mods_root' -Passed ($movedModSourcesOutsideRoot.Count -eq 0) -Detail "moved-mod From paths must be under session ModsRoot; outside: $($movedModSourcesOutsideRoot -join ',')"
-    Add-Check -Name 'session_moved_mod_destinations_under_isolated_mods' -Passed ($movedModDestinationsOutsideIsolation.Count -eq 0) -Detail "moved-mod To paths must be under evidence isolated-mods; outside: $($movedModDestinationsOutsideIsolation -join ',')"
+    foreach ($movedMod in $movedMods) {
+        $movedModName = Get-JsonStringOrEmpty -Object $movedMod -Name 'Name'
+        $movedModFrom = Get-JsonStringOrEmpty -Object $movedMod -Name 'From'
+        $movedModTo = Get-JsonStringOrEmpty -Object $movedMod -Name 'To'
+        $movedModFromLeaf = Get-PathLeafOrEmpty -Path $movedModFrom
+
+        if ([string]::IsNullOrWhiteSpace($movedModName)) {
+            $missingMovedModNamesBuilder.Add($movedModFrom) | Out-Null
+        }
+
+        if ($allowedModIds -contains $movedModName) {
+            $allowedMovedModsBuilder.Add("name:$movedModName") | Out-Null
+        }
+
+        if ($allowedModIds -contains $movedModFromLeaf) {
+            $allowedMovedModsBuilder.Add("source:$movedModFromLeaf") | Out-Null
+        }
+
+        if (-not (Test-PathInsideString -Child $movedModFrom -Parent $modsRoot)) {
+            $movedModSourcesOutsideRootBuilder.Add($movedModFrom) | Out-Null
+        }
+
+        if (-not (Test-PathInsideString -Child $movedModTo -Parent $isolatedModsRoot)) {
+            $movedModDestinationsOutsideIsolationBuilder.Add($movedModTo) | Out-Null
+        }
+    }
+
+    $allowedMovedMods = @($allowedMovedModsBuilder | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique)
+    $missingMovedModNames = @($missingMovedModNamesBuilder)
+    $movedModSourcesOutsideRoot = @($movedModSourcesOutsideRootBuilder)
+    $movedModDestinationsOutsideIsolation = @($movedModDestinationsOutsideIsolationBuilder)
+
+    Add-Check -Name 'session_moved_mod_names_present' -Passed (@($missingMovedModNames).Count -eq 0) -Detail 'every moved-mod entry must record Name'
+    Add-Check -Name 'session_moved_mods_do_not_include_allowed_mods' -Passed (@($allowedMovedMods).Count -eq 0) -Detail "allowed mods must not be moved out; moved allowed mods: $($allowedMovedMods -join ',')"
+    Add-Check -Name 'session_moved_mod_sources_under_mods_root' -Passed (@($movedModSourcesOutsideRoot).Count -eq 0) -Detail "moved-mod From paths must be under session ModsRoot; outside: $($movedModSourcesOutsideRoot -join ',')"
+    Add-Check -Name 'session_moved_mod_destinations_under_isolated_mods' -Passed (@($movedModDestinationsOutsideIsolation).Count -eq 0) -Detail "moved-mod To paths must be under evidence isolated-mods; outside: $($movedModDestinationsOutsideIsolation -join ',')"
 
     if ($Mode -eq 'Off') {
         $offModeClean = [string]::IsNullOrWhiteSpace($recordedSts1EventMode) -or $recordedSts1EventMode -eq 'Off'
         Add-Check -Name 'session_sts1_mode_env_off_or_empty' -Passed $offModeClean -Detail "Off packet must record empty or Off SPIREPLUS_STS1_EVENT_MODE; found '$recordedSts1EventMode'"
     } else {
-        Add-Check -Name 'session_sts1_mode_env_recorded' -Passed ($sessionState.PSObject.Properties.Name -contains 'Sts1EventModeEnvironment') -Detail 'session-state must record Sts1EventModeEnvironment for enabled-mode evidence'
+        Add-Check -Name 'session_sts1_mode_env_recorded' -Passed (Test-JsonProperty -Object $sessionState -Name 'Sts1EventModeEnvironment') -Detail 'session-state must record Sts1EventModeEnvironment for enabled-mode evidence'
         Add-Check -Name 'session_sts1_mode_env_matches_mode' -Passed ($recordedSts1EventMode -eq $Mode) -Detail "expected SPIREPLUS_STS1_EVENT_MODE '$Mode' but session recorded '$recordedSts1EventMode'"
         Add-Check -Name 'session_no_unsafe_sts1_mode_env' -Passed ([string]::IsNullOrWhiteSpace($recordedUnsafeMode)) -Detail 'CanaryOnly/AdditiveBatch1 evidence must not set SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES'
     }
@@ -510,24 +628,24 @@ if ($restoreExists) {
     $hasRestoredModCountField = $restoreState.PSObject.Properties.Name -contains 'RestoredModCount'
     $hasRestoredCurrentRunCountField = $restoreState.PSObject.Properties.Name -contains 'RestoredCurrentRunCount'
 
-    Add-Check -Name 'restore_has_timestamp' -Passed (-not [string]::IsNullOrWhiteSpace([string]$restoreState.RestoredAt)) -Detail 'restore-state RestoredAt must be recorded'
+    Add-Check -Name 'restore_has_timestamp' -Passed (-not [string]::IsNullOrWhiteSpace((Get-JsonStringOrEmpty -Object $restoreState -Name 'RestoredAt'))) -Detail 'restore-state RestoredAt must be recorded'
     Add-Check -Name 'restore_mod_count_recorded' -Passed $hasRestoredModCountField -Detail 'restore-state must record RestoredModCount'
     Add-Check -Name 'restore_current_run_count_recorded' -Passed $hasRestoredCurrentRunCountField -Detail 'restore-state must record RestoredCurrentRunCount'
 
     if ($sessionExists -and $hasRestoredModCountField) {
-        $expectedRestoredModCount = @($sessionState.MovedMods).Count
+        $expectedRestoredModCount = @($movedMods).Count
         $actualRestoredModCount = [int]$restoreState.RestoredModCount
         Add-Check -Name 'restore_mod_count_matches_session_moved_mods' -Passed ($actualRestoredModCount -eq $expectedRestoredModCount) -Detail "RestoredModCount expected $expectedRestoredModCount from session MovedMods but found $actualRestoredModCount"
     }
 
     if ($sessionExists -and $hasRestoredCurrentRunCountField) {
-        $expectedRestoredCurrentRunCount = @($sessionState.MovedCurrentRuns).Count
+        $expectedRestoredCurrentRunCount = @($movedCurrentRuns).Count
         $actualRestoredCurrentRunCount = [int]$restoreState.RestoredCurrentRunCount
         Add-Check -Name 'restore_current_run_count_matches_session_moved_runs' -Passed ($actualRestoredCurrentRunCount -eq $expectedRestoredCurrentRunCount) -Detail "RestoredCurrentRunCount expected $expectedRestoredCurrentRunCount from session MovedCurrentRuns but found $actualRestoredCurrentRunCount"
     }
 
-    $settingsHash = [string]$restoreState.SettingsHashAfterRestore
-    $settingsBackupHash = [string]$restoreState.SettingsBackupHashAfterRestore
+    $settingsHash = Get-JsonStringOrEmpty -Object $restoreState -Name 'SettingsHashAfterRestore'
+    $settingsBackupHash = Get-JsonStringOrEmpty -Object $restoreState -Name 'SettingsBackupHashAfterRestore'
     $hasRestoreHashes = -not [string]::IsNullOrWhiteSpace($settingsHash) -and -not [string]::IsNullOrWhiteSpace($settingsBackupHash)
     Add-Check -Name 'restore_hashes_recorded' -Passed $hasRestoreHashes -Detail 'restore-state settings hashes must be recorded'
 
@@ -566,7 +684,8 @@ if ((Test-Path -LiteralPath $canonicalLogPath -PathType Leaf) -and (Test-Path -L
     $verifierOutput = @(& $verifierPath @verifierParams 2>&1)
     $verifierMismatchLine = @($verifierOutput | Where-Object { "$_" -match '^mismatches=(\d+)$' } | Select-Object -Last 1)
     $verifierMismatchCount = $null
-    if ($verifierMismatchLine.Count -gt 0 -and "$($verifierMismatchLine[0])" -match '^mismatches=(\d+)$') {
+    $verifierMismatchLines = @($verifierMismatchLine)
+    if ($verifierMismatchLines.Count -gt 0 -and "$($verifierMismatchLines[0])" -match '^mismatches=(\d+)$') {
         $verifierMismatchCount = [int]$Matches[1]
     }
 
