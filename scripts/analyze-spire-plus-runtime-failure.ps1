@@ -189,6 +189,29 @@ function Resolve-AnalysisPath {
     return $underBase
 }
 
+function Test-PathInsideDirectory {
+    param(
+        [AllowEmptyString()][string]$Path,
+        [AllowEmptyString()][string]$Directory
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or [string]::IsNullOrWhiteSpace($Directory)) {
+        return $false
+    }
+
+    try {
+        $fullPath = [System.IO.Path]::GetFullPath($Path)
+        $fullDirectory = [System.IO.Path]::GetFullPath($Directory)
+        if (-not $fullDirectory.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+            $fullDirectory += [System.IO.Path]::DirectorySeparatorChar
+        }
+
+        return $fullPath.StartsWith($fullDirectory, [System.StringComparison]::OrdinalIgnoreCase)
+    } catch {
+        return $false
+    }
+}
+
 function Test-BytePrefix {
     param(
         [AllowEmptyCollection()]
@@ -820,6 +843,28 @@ function Analyze-Iteration {
     $fullLogExists = Test-Path -LiteralPath $fullLogCandidate -PathType Leaf
     $autoSlayLogExists = Test-Path -LiteralPath $autoSlayLogCandidate -PathType Leaf
     $autoSlayLogText = if ($autoSlayLogExists) { Get-Content -LiteralPath $autoSlayLogCandidate -Raw -Encoding UTF8 } else { '' }
+    $autoSlaySidecarTrustedForOwner = -not $isGameNativeAutoSlay
+    if ($isGameNativeAutoSlay) {
+        $autoSlaySidecarTrustedForOwner = $autoSlayLogExists
+        if ($autoSlayLogExists) {
+            if (-not (Test-PathInsideDirectory -Path $autoSlayLogCandidate -Directory $Directory)) {
+                $autoSlaySidecarTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'autoslay_sidecar_log_outside_run_dir' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay sidecar log is not retained inside the per-seed run evidence directory.' -NextStep 'Regenerate the packet with autoslay.log retained beside run-result.json before using sidecar lines for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+
+            $recordedAutoSlayLogSha256 = if ($result) { [string](Get-JsonValue -Object $result -Name 'AutoSlayLogSha256' -DefaultValue '') } else { '' }
+            if ([string]::IsNullOrWhiteSpace($recordedAutoSlayLogSha256)) {
+                $autoSlaySidecarTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'autoslay_sidecar_log_hash_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay run-result.json did not retain AutoSlayLogSha256 for the sidecar log.' -NextStep 'Record AutoSlayLogSha256 in run-result.json before using sidecar lines for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            } else {
+                $actualAutoSlayLogSha256 = Get-FileSha256OrEmpty -Path $autoSlayLogCandidate
+                if (-not [System.StringComparer]::OrdinalIgnoreCase.Equals($recordedAutoSlayLogSha256, $actualAutoSlayLogSha256)) {
+                    $autoSlaySidecarTrustedForOwner = $false
+                    Add-Finding -Findings $findings -Signal 'autoslay_sidecar_log_hash_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay AutoSlayLogSha256 does not match the retained sidecar log; recorded=$recordedAutoSlayLogSha256 actual=$actualAutoSlayLogSha256." -NextStep 'Regenerate or reject the packet; do not route ownership from sidecar log text whose retained hash has drifted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                }
+            }
+        }
+    }
     $logText = ''
     $logTextTrustedForOwner = $false
     if ($result -and $currentIterationLogExists) {
@@ -1428,8 +1473,10 @@ function Analyze-Iteration {
         }
     }
 
-    $ownerLogText = if ($logTextTrustedForOwner -and $isGameNativeAutoSlay) {
+    $ownerLogText = if ($logTextTrustedForOwner -and $isGameNativeAutoSlay -and $autoSlaySidecarTrustedForOwner) {
         "$logText`n$autoSlayLogText"
+    } elseif ($logTextTrustedForOwner -and $isGameNativeAutoSlay) {
+        $logText
     } elseif ($logTextTrustedForOwner) {
         $logText
     } else {
@@ -1785,6 +1832,7 @@ function Analyze-Iteration {
         OwnerAreaHint = $resultOwnerArea
         OwnerAreaFromLog = $logOwnerArea
         LogTextTrustedForOwner = $logTextTrustedForOwner
+        AutoSlaySidecarTrustedForOwner = $autoSlaySidecarTrustedForOwner
         OwnerAreaFromCommand = $commandOwnerArea
         Signals = @($signals)
         EvidenceFiles = @($evidenceFiles)

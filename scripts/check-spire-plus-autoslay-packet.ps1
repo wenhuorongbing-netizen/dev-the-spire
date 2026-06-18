@@ -86,6 +86,35 @@ function Get-ArrayValues {
     return @($Value)
 }
 
+function Get-DelimitedStringTokens {
+    param([AllowNull()]$Value)
+
+    return @(Get-ArrayValues -Value $Value |
+        ForEach-Object { [string]$_ } |
+        ForEach-Object { $_ -split ',' })
+}
+
+function Get-NormalizedNonEmptyStringTokens {
+    param([AllowNull()]$Value)
+
+    return @(Get-DelimitedStringTokens -Value $Value |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        ForEach-Object { $_.Trim() })
+}
+
+function New-OrdinalStringSet {
+    param([AllowNull()]$Values)
+
+    $set = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    foreach ($value in @(Get-ArrayValues -Value $Values)) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$value)) {
+            $set.Add([string]$value) | Out-Null
+        }
+    }
+
+    return ,$set
+}
+
 function Read-JsonOrNull {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
@@ -648,18 +677,32 @@ if ($null -ne $plan) {
 }
 
 $summaryRuns = @()
-$expectedAncientIdTokens = @($ExpectedAncientIds |
-    ForEach-Object { [string]$_ } |
-    ForEach-Object { $_ -split ',' })
-$expectedAncientIdsForCoverage = @($expectedAncientIdTokens |
-    Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
-    ForEach-Object { $_.Trim() })
+$expectedAncientIdTokens = @(Get-DelimitedStringTokens -Value $ExpectedAncientIds)
+$expectedAncientIdsForCoverage = @(Get-NormalizedNonEmptyStringTokens -Value $ExpectedAncientIds)
 $duplicateExpectedAncientIds = @($expectedAncientIdsForCoverage | Group-Object | Where-Object { $_.Count -gt 1 })
+$planExpectedAncientIdsForCoverage = @()
+$missingPlanExpectedAncientIds = @()
+$unexpectedPlanExpectedAncientIds = @()
 $observedAncientIds = @()
 $missingExpectedAncientIds = @()
 if ($expectedAncientIdTokens.Count -gt 0) {
     Add-Check -Name 'expected_ancient_ids_all_non_empty' -Passed ($expectedAncientIdsForCoverage.Count -eq $expectedAncientIdTokens.Count) -Detail 'ExpectedAncientIds entries must be non-empty when supplied'
     Add-Check -Name 'expected_ancient_ids_unique' -Passed ($duplicateExpectedAncientIds.Count -eq 0) -Detail "ExpectedAncientIds must be unique; duplicate groups=$($duplicateExpectedAncientIds.Count)"
+
+    if ($null -ne $plan) {
+        $planExpectedAncientIdTokens = @(Get-DelimitedStringTokens -Value (Get-JsonValue -Object $plan -Name 'ExpectedAncientIds' -DefaultValue @()))
+        $planExpectedAncientIdsForCoverage = @(Get-NormalizedNonEmptyStringTokens -Value (Get-JsonValue -Object $plan -Name 'ExpectedAncientIds' -DefaultValue @()))
+        $duplicatePlanExpectedAncientIds = @($planExpectedAncientIdsForCoverage | Group-Object | Where-Object { $_.Count -gt 1 })
+        $planExpectedAncientIdSet = New-OrdinalStringSet -Values $planExpectedAncientIdsForCoverage
+        $expectedAncientIdSet = New-OrdinalStringSet -Values $expectedAncientIdsForCoverage
+        $missingPlanExpectedAncientIds = @($expectedAncientIdsForCoverage | Where-Object { -not $planExpectedAncientIdSet.Contains($_) })
+        $unexpectedPlanExpectedAncientIds = @($planExpectedAncientIdsForCoverage | Where-Object { -not $expectedAncientIdSet.Contains($_) })
+
+        Add-Check -Name 'plan_expected_ancient_ids_present' -Passed ($planExpectedAncientIdTokens.Count -gt 0) -Detail 'autoslay-plan.json must retain ExpectedAncientIds when target coverage is requested'
+        Add-Check -Name 'plan_expected_ancient_ids_all_non_empty' -Passed ($planExpectedAncientIdsForCoverage.Count -eq $planExpectedAncientIdTokens.Count) -Detail 'autoslay-plan.json ExpectedAncientIds entries must be non-empty when supplied'
+        Add-Check -Name 'plan_expected_ancient_ids_unique' -Passed ($duplicatePlanExpectedAncientIds.Count -eq 0) -Detail "autoslay-plan.json ExpectedAncientIds must be unique; duplicate groups=$($duplicatePlanExpectedAncientIds.Count)"
+        Add-Check -Name 'plan_expected_ancient_ids_match_parameter' -Passed ($missingPlanExpectedAncientIds.Count -eq 0 -and $unexpectedPlanExpectedAncientIds.Count -eq 0) -Detail "autoslay-plan.json ExpectedAncientIds must match -ExpectedAncientIds; missing=$($missingPlanExpectedAncientIds -join ',') unexpected=$($unexpectedPlanExpectedAncientIds -join ',')"
+    }
 }
 if ($null -ne $summary) {
     $runnerKind = [string](Get-JsonValue -Object $summary -Name 'RunnerKind' -DefaultValue '')
@@ -700,6 +743,7 @@ $eventTraversalObserved = $false
 for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $run = $summaryRuns[$i]
     $runName = "run_{0:D4}" -f ($i + 1)
+    $expectedRunEvidenceDirName = "run-{0:D4}" -f ($i + 1)
     $seed = [string](Get-JsonValue -Object $run -Name 'Seed' -DefaultValue '')
     $summaryRunPassed = [bool](Get-JsonValue -Object $run -Name 'Passed' -DefaultValue $false)
     $exitCode = [int](Get-JsonValue -Object $run -Name 'ExitCode' -DefaultValue -999)
@@ -745,9 +789,12 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_ancient_id_present" -Passed (-not [string]::IsNullOrWhiteSpace($ancientId)) -Detail 'AncientId must identify the Ancient dialogue/options traversed by this run'
     Add-Check -Name "${runName}_run_result_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($runResultPath)) -Detail 'RunResultPath must retain launch provenance for each run'
     Add-Check -Name "${runName}_run_result_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $runResultPath -Directory $resolvedEvidenceDir) -Detail 'RunResultPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_run_result_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($runResultPath)) -and [System.IO.Path]::GetFileName($runResultPath) -eq 'run-result.json') -Detail 'RunResultPath must end with run-result.json'
+    Add-Check -Name "${runName}_run_result_parent_expected" -Passed ($runEvidenceDirValid -and [System.IO.Path]::GetFileName($runEvidenceDir) -eq $expectedRunEvidenceDirName) -Detail "RunResultPath must live under the expected per-seed directory '$expectedRunEvidenceDirName'"
     Add-Check -Name "${runName}_run_result_exists" -Passed $runResultExists -Detail 'RunResultPath must point at retained run-result.json'
     Add-Check -Name "${runName}_runtime_probe_samples_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($runtimeProbeSamplesPath)) -Detail 'RuntimeProbeSamplesPath must retain process/window/log timeline samples for hang triage'
     Add-Check -Name "${runName}_runtime_probe_samples_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $runtimeProbeSamplesPath -Directory $resolvedEvidenceDir) -Detail 'RuntimeProbeSamplesPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_runtime_probe_samples_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $runtimeProbeSamplesPath -Directory $runEvidenceDir)) -Detail 'RuntimeProbeSamplesPath must stay inside the per-seed run evidence directory'
     Add-Check -Name "${runName}_runtime_probe_samples_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($runtimeProbeSamplesPath)) -and [System.IO.Path]::GetFileName($runtimeProbeSamplesPath) -eq 'runtime-probe-samples.json') -Detail 'RuntimeProbeSamplesPath must end with runtime-probe-samples.json'
     Add-Check -Name "${runName}_runtime_probe_samples_exists" -Passed $runtimeProbeSamplesExists -Detail 'RuntimeProbeSamplesPath must point at retained runtime-probe-samples.json'
     Add-Check -Name "${runName}_autoslay_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogPath)) -Detail 'AutoSlayLogPath must be retained'
@@ -758,24 +805,34 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_autoslay_log_hash_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogSha256)) -Detail 'AutoSlayLogSha256 must be retained for each run'
     Add-Check -Name "${runName}_before_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($beforeLogPath)) -Detail 'GodotLogBeforePath must retain the pre-launch shared godot.log snapshot'
     Add-Check -Name "${runName}_before_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $beforeLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogBeforePath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_before_log_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $beforeLogPath -Directory $runEvidenceDir)) -Detail 'GodotLogBeforePath must stay inside the per-seed run evidence directory'
+    Add-Check -Name "${runName}_before_log_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($beforeLogPath)) -and [System.IO.Path]::GetFileName($beforeLogPath) -eq 'godot.log.before') -Detail 'GodotLogBeforePath must end with godot.log.before'
     Add-Check -Name "${runName}_before_log_exists" -Passed $beforeLogExists -Detail 'GodotLogBeforePath must point at a retained pre-launch log'
     Add-Check -Name "${runName}_before_log_length_recorded" -Passed ($beforeLogLengthBytes -ge 0) -Detail 'GodotLogBeforeLengthBytes must be retained and non-negative'
     Add-Check -Name "${runName}_before_log_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($beforeLogSha256)) -Detail 'GodotLogBeforeSha256 must be retained'
     Add-Check -Name "${runName}_after_launch_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($afterLogPath)) -Detail 'GodotLogAfterLaunchPath must retain the post-launch shared godot.log snapshot'
     Add-Check -Name "${runName}_after_launch_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $afterLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogAfterLaunchPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_after_launch_log_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $afterLogPath -Directory $runEvidenceDir)) -Detail 'GodotLogAfterLaunchPath must stay inside the per-seed run evidence directory'
+    Add-Check -Name "${runName}_after_launch_log_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($afterLogPath)) -and [System.IO.Path]::GetFileName($afterLogPath) -eq 'godot.log.after-launch') -Detail 'GodotLogAfterLaunchPath must end with godot.log.after-launch'
     Add-Check -Name "${runName}_after_launch_log_exists" -Passed $afterLogExists -Detail 'GodotLogAfterLaunchPath must point at a retained post-launch log'
     Add-Check -Name "${runName}_after_launch_log_length_recorded" -Passed ($afterLogLengthBytes -ge 0) -Detail 'GodotLogAfterLaunchLengthBytes must be retained and non-negative'
     Add-Check -Name "${runName}_after_launch_log_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($afterLogSha256)) -Detail 'GodotLogAfterLaunchSha256 must be retained'
     Add-Check -Name "${runName}_current_iteration_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($currentLogPath)) -Detail 'GodotLogCurrentIterationPath must be retained'
     Add-Check -Name "${runName}_current_iteration_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $currentLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogCurrentIterationPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_current_iteration_log_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $currentLogPath -Directory $runEvidenceDir)) -Detail 'GodotLogCurrentIterationPath must stay inside the per-seed run evidence directory'
+    Add-Check -Name "${runName}_current_iteration_log_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($currentLogPath)) -and [System.IO.Path]::GetFileName($currentLogPath) -eq 'godot.log.current-iteration') -Detail 'GodotLogCurrentIterationPath must end with godot.log.current-iteration'
     Add-Check -Name "${runName}_current_iteration_log_exists" -Passed $currentLogExists -Detail 'GodotLogCurrentIterationPath must point at a retained current-iteration log'
     Add-Check -Name "${runName}_current_iteration_log_length_recorded" -Passed ($currentLogLengthBytes -ge 0) -Detail 'GodotLogCurrentIterationLengthBytes must be retained and non-negative'
     Add-Check -Name "${runName}_current_iteration_log_hash_present" -Passed (-not [string]::IsNullOrWhiteSpace($currentLogSha256)) -Detail 'GodotLogCurrentIterationSha256 must be retained for each run'
     Add-Check -Name "${runName}_audit_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($auditPath)) -Detail 'GodotLogAuditPath must retain the audit of godot.log.current-iteration'
     Add-Check -Name "${runName}_audit_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $auditPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogAuditPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_audit_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $auditPath -Directory $runEvidenceDir)) -Detail 'GodotLogAuditPath must stay inside the per-seed run evidence directory'
+    Add-Check -Name "${runName}_audit_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($auditPath)) -and [System.IO.Path]::GetFileName($auditPath) -eq 'godot-log-audit.json') -Detail 'GodotLogAuditPath must end with godot-log-audit.json'
     Add-Check -Name "${runName}_audit_exists" -Passed $auditExists -Detail 'GodotLogAuditPath must point at retained godot-log-audit.json'
     Add-Check -Name "${runName}_sts1_mode_check_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath)) -Detail 'Sts1ModeLogCheckPath must retain the StS1 mode verifier report'
     Add-Check -Name "${runName}_sts1_mode_check_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $sts1ModeCheckPath -Directory $resolvedEvidenceDir) -Detail 'Sts1ModeLogCheckPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_sts1_mode_check_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $sts1ModeCheckPath -Directory $runEvidenceDir)) -Detail 'Sts1ModeLogCheckPath must stay inside the per-seed run evidence directory'
+    Add-Check -Name "${runName}_sts1_mode_check_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath)) -and [System.IO.Path]::GetFileName($sts1ModeCheckPath) -eq 'sts1-mode-log-check.json') -Detail 'Sts1ModeLogCheckPath must end with sts1-mode-log-check.json'
     Add-Check -Name "${runName}_sts1_mode_check_exists" -Passed $sts1ModeCheckExists -Detail 'Sts1ModeLogCheckPath must point at retained sts1-mode-log-check.json'
 
     $autoSlayLog = ''
@@ -1102,6 +1159,9 @@ if (-not [string]::IsNullOrWhiteSpace($OutFile)) {
         EvidenceDir = $resolvedEvidenceDir
         MinRuns = $MinRuns
         ExpectedAncientIds = $expectedAncientIdsForCoverage
+        PlanExpectedAncientIds = $planExpectedAncientIdsForCoverage
+        MissingPlanExpectedAncientIds = $missingPlanExpectedAncientIds
+        UnexpectedPlanExpectedAncientIds = $unexpectedPlanExpectedAncientIds
         ObservedAncientIds = $observedAncientIds
         MissingExpectedAncientIds = $missingExpectedAncientIds
         EventTraversalRequired = -not [bool]$AllowMissingEventTraversal

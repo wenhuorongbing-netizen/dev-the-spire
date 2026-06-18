@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using Xunit;
@@ -1362,6 +1363,14 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "LogLengthBytes",
             "LogGrew",
             "NoLogGrowthTimeoutExceeded",
+            "AutoSlayLogSha256",
+            "AutoSlaySidecarTrustedForOwner",
+            "GodotLogBeforeLengthBytes",
+            "GodotLogBeforeSha256",
+            "GodotLogAfterLaunchLengthBytes",
+            "GodotLogAfterLaunchSha256",
+            "GodotLogCurrentIterationLengthBytes",
+            "GodotLogCurrentIterationSha256",
             "godot.log.after-launch",
             "godot.log.current-iteration",
             "godot-log-audit.json",
@@ -1382,6 +1391,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "autoslay_event_kind_not_ancient",
             "autoslay_ancient_id_missing",
             "autoslay_sidecar_event_sequence_missing",
+            "autoslay_sidecar_log_outside_run_dir",
+            "autoslay_sidecar_log_hash_missing",
+            "autoslay_sidecar_log_hash_mismatch",
             "autoslay_current_log_event_sequence_missing",
             "autoslay_sidecar_ancient_id_missing",
             "autoslay_current_log_ancient_id_missing",
@@ -1391,6 +1403,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "autoslay_runtime_probe_runtime_phase_missing",
             "autoslay_runtime_probe_process_identity_unstable",
             "autoslay_runtime_probe_log_growth_mismatch",
+            "autoslay_godot_log_metadata_missing",
+            "autoslay_godot_log_metadata_mismatch",
             "autoslay_run_result_start_timestamp_invalid",
             "autoslay_run_result_end_timestamp_invalid",
             "autoslay_run_result_timestamp_order_invalid",
@@ -2077,7 +2091,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             File.WriteAllText(beforeLogPath, beforeLog);
             File.WriteAllText(currentLogPath, currentLog);
             File.WriteAllText(afterLaunchLogPath, beforeLog + currentLog);
-            File.WriteAllText(Path.Combine(runDir, "autoslay.log"), autoSlayLog);
+            var autoSlayLogPath = Path.Combine(runDir, "autoslay.log");
+            File.WriteAllText(autoSlayLogPath, autoSlayLog);
+            var autoSlayLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(autoSlayLogPath))).ToLowerInvariant();
             var beforeLogLength = new FileInfo(beforeLogPath).Length;
             var beforeLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(beforeLogPath))).ToLowerInvariant();
             var afterLaunchLogLength = new FileInfo(afterLaunchLogPath).Length;
@@ -2105,6 +2121,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "StartTimestamp": "2026-06-18T10:00:00Z",
                   "EndTimestamp": "2026-06-18T10:00:30Z",
                   "AutoSlayLogPath": "autoslay.log",
+                  "AutoSlayLogSha256": {{JsonSerializer.Serialize(autoSlayLogHash)}},
                   "RuntimeProbeSamplesPath": "runtime-probe-samples.json",
                   "MainMenuObservation": {
                     "Passed": true,
@@ -2179,6 +2196,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Equal("VAKUU", iteration.GetProperty("AncientId").GetString());
             Assert.Equal("game-native-autoslay", iteration.GetProperty("ScenarioTag").GetString());
             Assert.True(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.True(iteration.GetProperty("AutoSlaySidecarTrustedForOwner").GetBoolean());
             Assert.Equal("Ancients.Vakuu", iteration.GetProperty("OwnerAreaFromLog").GetString());
             Assert.Equal("Ancients.Vakuu", FindFindingOwner(iteration, "process_unresponsive"));
             Assert.Contains(
@@ -2208,6 +2226,55 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.DoesNotContain(
                 iteration.GetProperty("Findings").EnumerateArray(),
                 item => item.GetProperty("Signal").GetString() == "autoslay_runtime_observation_unhealthy");
+
+            var originalRunResultJson = File.ReadAllText(Path.Combine(runDir, "run-result.json"));
+            File.WriteAllText(
+                Path.Combine(runDir, "run-result.json"),
+                originalRunResultJson.Replace(
+                    JsonSerializer.Serialize(autoSlayLogHash),
+                    JsonSerializer.Serialize(new string('f', 64)),
+                    StringComparison.Ordinal));
+            var sidecarHashOutputPath = Path.Combine(workdir, "runtime-failure-analysis-sidecar-hash-mismatch.json");
+            var sidecarHashResult = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", sidecarHashOutputPath);
+            Assert.True(sidecarHashResult.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{sidecarHashResult.Output}{sidecarHashResult.Error}");
+
+            using var sidecarHashDocument = JsonDocument.Parse(File.ReadAllText(sidecarHashOutputPath));
+            var sidecarHashRoot = sidecarHashDocument.RootElement;
+            var sidecarHashIteration = FindIteration(sidecarHashRoot, 1);
+            var sidecarHashFinding = sidecarHashIteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "autoslay_sidecar_log_hash_mismatch");
+
+            Assert.Equal("HarnessEvidenceInvalid", sidecarHashRoot.GetProperty("TriageDisposition").GetString());
+            Assert.True(sidecarHashIteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(sidecarHashIteration.GetProperty("AutoSlaySidecarTrustedForOwner").GetBoolean());
+            Assert.Equal("RuntimeHarness", sidecarHashFinding.GetProperty("OwnerArea").GetString());
+            File.WriteAllText(Path.Combine(runDir, "run-result.json"), originalRunResultJson);
+
+            File.WriteAllText(
+                Path.Combine(runDir, "run-result.json"),
+                originalRunResultJson.Replace(
+                    JsonSerializer.Serialize(currentLogHash),
+                    JsonSerializer.Serialize(new string('0', 64)),
+                    StringComparison.Ordinal));
+            var mismatchOutputPath = Path.Combine(workdir, "runtime-failure-analysis-metadata-mismatch.json");
+            var mismatchResult = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", mismatchOutputPath);
+            Assert.True(mismatchResult.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{mismatchResult.Output}{mismatchResult.Error}");
+
+            using var mismatchDocument = JsonDocument.Parse(File.ReadAllText(mismatchOutputPath));
+            var mismatchRoot = mismatchDocument.RootElement;
+            var mismatchIteration = FindIteration(mismatchRoot, 1);
+            var metadataFinding = mismatchIteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "autoslay_godot_log_metadata_mismatch");
+
+            Assert.Equal("HarnessEvidenceInvalid", mismatchRoot.GetProperty("TriageDisposition").GetString());
+            Assert.False(mismatchIteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", mismatchIteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", metadataFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("blocking", metadataFinding.GetProperty("Severity").GetString());
         }
         finally
         {
@@ -2707,8 +2774,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "`RuntimeObservation.LogInitialLengthBytes`",
             "`ProcessId`",
             "`MainWindowObserved`",
+            "same per-seed `run-####`",
             "Ancient id, ordered",
             "start/event/Ancient-dialogue/event-option/completion markers",
+            "every per-seed artifact retained in",
+            "sidecar text to",
             "observed ordered event-room lines in both",
             "check-spire-plus-autoslay-packet.ps1",
             "GameNativeAutoSlay",
@@ -2981,6 +3051,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "HookAssembly": "EZMicroBalanceCode",
                   "InvocationCommand": "SpirePlus.AutoSlayHarness.Start -> AutoSlayer.Start(seed, logFile)",
                   "Seeds": [{{JsonSerializer.Serialize(seed)}}],
+                  "ExpectedAncientIds": ["VAKUU"],
                   "PackageVersion": "v0.1.0-private-beta.87",
                   "GameVersion": "0.107.0",
                   "RitsuLibVersion": "0.4.24",
@@ -3022,8 +3093,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   }
                 }
                 """);
+            var summaryPath = Path.Combine(workdir, "autoslay-summary.json");
             File.WriteAllText(
-                Path.Combine(workdir, "autoslay-summary.json"),
+                summaryPath,
                 $$"""
                 {
                   "RunnerKind": "GameNativeAutoSlay",
@@ -3090,16 +3162,25 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("plan_source_workspace_report_matches_installed_game status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("summary_run_seeds_match_plan_seeds status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("expected_ancient_ids_unique status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("summary_expected_ancient_ids_observed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_summary_run_passed_true status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_event_kind_is_ancient status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_leaf_expected status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_parent_expected status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_launch_true status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_launcher_sha256_matches_plan status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_passed_true status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_process_id_matches_runtime_probe_samples status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_under_run_dir status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_runtime_probe_samples_exists status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_autoslay_log_under_run_dir status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_autoslay_log_leaf_expected status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_before_log_under_run_dir status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_after_launch_log_under_run_dir status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_current_iteration_log_under_run_dir status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_audit_under_run_dir status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_sts1_mode_check_under_run_dir status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_before_log_length_matches status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_before_log_sha256_matches status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_after_launch_log_length_matches status=pass", passResult.Output, StringComparison.Ordinal);
@@ -3146,6 +3227,14 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_event_room_traversal_observed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("mismatches=0", passResult.Output, StringComparison.Ordinal);
 
+            var planPath = Path.Combine(workdir, "autoslay-plan.json");
+            File.WriteAllText(
+                planPath,
+                File.ReadAllText(planPath).Replace(
+                    "\"ExpectedAncientIds\": [\"VAKUU\"]",
+                    "\"ExpectedAncientIds\": [\"VAKUU\", \"URDA\"]",
+                    StringComparison.Ordinal));
+
             var missingExpectedAncientResult = RunPowerShell(
                 verifier,
                 "-EvidenceDir",
@@ -3164,6 +3253,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "25");
             Assert.True(missingExpectedAncientResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{missingExpectedAncientResult.Output}{missingExpectedAncientResult.Error}");
             Assert.Contains("expected_ancient_ids_unique status=pass", missingExpectedAncientResult.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", missingExpectedAncientResult.Output, StringComparison.Ordinal);
             Assert.Contains("summary_expected_ancient_ids_observed status=fail", missingExpectedAncientResult.Output, StringComparison.Ordinal);
             Assert.Contains("ExpectedAncientIds missing=URDA", missingExpectedAncientResult.Output, StringComparison.Ordinal);
 
@@ -3190,6 +3280,91 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_event_room_traversal_observed status=pass", underSizedBatchResult.Output, StringComparison.Ordinal);
 
             var originalRunResultJson = File.ReadAllText(runResultPath);
+            var originalSummaryJson = File.ReadAllText(summaryPath);
+            var rootAutoSlayLogPath = Path.Combine(workdir, "autoslay.log");
+            File.Copy(autoSlayLogPath, rootAutoSlayLogPath, overwrite: true);
+            File.WriteAllText(
+                runResultPath,
+                originalRunResultJson.Replace("\"AutoSlayLogPath\": \"run-0001/autoslay.log\"", "\"AutoSlayLogPath\": \"autoslay.log\"", StringComparison.Ordinal));
+            File.WriteAllText(
+                summaryPath,
+                originalSummaryJson.Replace("\"AutoSlayLogPath\": \"run-0001/autoslay.log\"", "\"AutoSlayLogPath\": \"autoslay.log\"", StringComparison.Ordinal));
+            var sharedSidecarResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(sharedSidecarResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{sharedSidecarResult.Output}{sharedSidecarResult.Error}");
+            Assert.Contains("run_0001_autoslay_log_under_evidence_dir status=pass", sharedSidecarResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_autoslay_log_under_run_dir status=fail", sharedSidecarResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_autoslay_log_leaf_expected status=pass", sharedSidecarResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runResultPath, originalRunResultJson);
+            File.WriteAllText(summaryPath, originalSummaryJson);
+
+            var rootRuntimeProbeSamplesPath = Path.Combine(workdir, "runtime-probe-samples.json");
+            File.Copy(runtimeProbeSamplesPath, rootRuntimeProbeSamplesPath, overwrite: true);
+            File.WriteAllText(
+                runResultPath,
+                originalRunResultJson.Replace("\"RuntimeProbeSamplesPath\": \"run-0001/runtime-probe-samples.json\"", "\"RuntimeProbeSamplesPath\": \"runtime-probe-samples.json\"", StringComparison.Ordinal));
+            File.WriteAllText(
+                summaryPath,
+                originalSummaryJson.Replace("\"RuntimeProbeSamplesPath\": \"run-0001/runtime-probe-samples.json\"", "\"RuntimeProbeSamplesPath\": \"runtime-probe-samples.json\"", StringComparison.Ordinal));
+            var sharedRuntimeProbeResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(sharedRuntimeProbeResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{sharedRuntimeProbeResult.Output}{sharedRuntimeProbeResult.Error}");
+            Assert.Contains("run_0001_runtime_probe_samples_under_evidence_dir status=pass", sharedRuntimeProbeResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_under_run_dir status=fail", sharedRuntimeProbeResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_leaf_expected status=pass", sharedRuntimeProbeResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_runtime_probe_samples_path_matches_summary status=pass", sharedRuntimeProbeResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runResultPath, originalRunResultJson);
+            File.WriteAllText(summaryPath, originalSummaryJson);
+
+            File.WriteAllText(
+                summaryPath,
+                originalSummaryJson.Replace(
+                    JsonSerializer.Serialize(afterLaunchLogHash),
+                    JsonSerializer.Serialize(new string('0', 64)),
+                    StringComparison.Ordinal));
+            var logMetadataMismatchResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(logMetadataMismatchResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{logMetadataMismatchResult.Output}{logMetadataMismatchResult.Error}");
+            Assert.Contains("run_0001_after_launch_log_sha256_matches status=fail", logMetadataMismatchResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_after_launch_log_sha256_matches_summary status=fail", logMetadataMismatchResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(summaryPath, originalSummaryJson);
+
             File.WriteAllText(
                 runResultPath,
                 originalRunResultJson.Replace("\"NoLogGrowthTimeoutExceeded\": false", "\"NoLogGrowthTimeoutExceeded\": true", StringComparison.Ordinal));
@@ -3348,7 +3523,6 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_run_result_timestamp_order_valid status=fail", reversedTimestampResult.Output, StringComparison.Ordinal);
             File.WriteAllText(runResultPath, originalRunResultJson);
 
-            var planPath = Path.Combine(workdir, "autoslay-plan.json");
             var originalPlanJson = File.ReadAllText(planPath);
             File.WriteAllText(
                 planPath,
@@ -3412,7 +3586,6 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                     "12:00:02.000 [INFO] [AutoSlay] Action: Selecting event option: VAKUU (option: contract)",
                     $"12:00:03.000 [INFO] [AutoSlay] Run completed successfully with seed={seed}"));
             var updatedAutoSlayLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(autoSlayLogPath))).ToLowerInvariant();
-            var summaryPath = Path.Combine(workdir, "autoslay-summary.json");
             File.WriteAllText(
                 summaryPath,
                 File.ReadAllText(summaryPath).Replace(autoSlayLogHash, updatedAutoSlayLogHash, StringComparison.Ordinal));
@@ -4079,9 +4252,38 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
         using var process = Process.Start(startInfo);
         Assert.NotNull(process);
-        var output = process.StandardOutput.ReadToEnd();
-        var error = process.StandardError.ReadToEnd();
-        Assert.True(process.WaitForExit(30_000), $"Timed out running {scriptPath}.");
-        return (process.ExitCode, output, error);
+        var output = new StringBuilder();
+        var error = new StringBuilder();
+        process.OutputDataReceived += (_, e) =>
+        {
+            if (e.Data is not null)
+            {
+                output.AppendLine(e.Data);
+            }
+        };
+        process.ErrorDataReceived += (_, e) =>
+        {
+            if (e.Data is not null)
+            {
+                error.AppendLine(e.Data);
+            }
+        };
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        if (!process.WaitForExit(30_000))
+        {
+            try
+            {
+                process.Kill(entireProcessTree: true);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            Assert.Fail($"Timed out running {scriptPath}.");
+        }
+
+        process.WaitForExit();
+        return (process.ExitCode, output.ToString(), error.ToString());
     }
 }

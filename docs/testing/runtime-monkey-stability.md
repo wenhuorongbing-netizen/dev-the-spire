@@ -195,7 +195,9 @@ can close a game-native monkey proof row:
   `HangSignals`, exit code, stale-process count, `EventKind: Ancient`,
   `AncientId`, `RuntimeProbeSamplesPath`, clean `MainMenuObservation`,
   clean `RuntimeObservation` with `LogGrew: true` and
-  `NoLogGrowthTimeoutExceeded: false`, and the retained per-run paths/hashes;
+  `NoLogGrowthTimeoutExceeded: false`, and the retained per-run before,
+  after-launch, and current-iteration Godot log paths, byte lengths, and
+  SHA256 hashes;
 - one retained `runtime-probe-samples.json` per seed with `Phase`, `SampledAt`,
   `LogExists`, `LogLengthBytes`, retained `LogLastWriteTimeUtc`, `ProcessId`,
   `ProcessObserved`, `MainWindowObserved`, `HungWindow`, `Responding`, and
@@ -206,10 +208,13 @@ can close a game-native monkey proof row:
   `ProcessId`, process and main-window observations, no hung-window samples, no
   `Responding=false` samples, `StaleProcessCount: 0`,
   `UnknownStartTimeProcessCount: 0`, and `AmbiguousCurrentProcessCount: 0` on
-  every sample;
+  every sample; the file must be retained inside the same per-seed `run-####`
+  directory as that seed's `run-result.json`;
 - the seed, AutoSlay log path, exit code, Ancient id, ordered
   start/event/Ancient-dialogue/event-option/completion markers, with
-  `AutoSlayLogSha256` bound to the retained log file;
+  `AutoSlayLogSha256` bound to the retained log file; the sidecar log path must
+  stay inside the same per-seed `run-####` evidence directory as that seed's
+  `run-result.json`;
 - a retained `check-local-godot-source-workspace.ps1 -OutFile` report with
   schema version, creation time, repo/source/game roots, no-launch policy flags,
   passing AutoSlay source-contract checks, and
@@ -219,7 +224,8 @@ can close a game-native monkey proof row:
 - the same package, game version, RitsuLib version, compat branch, patch-count,
   `godot.log.before`, `godot.log.after-launch`, `godot.log.current-iteration`,
   `godot-log-audit.json`, and `sts1-mode-log-check.json` bindings required by
-  the current runtime packet checker;
+  the current runtime packet checker, with every per-seed artifact retained in
+  that seed's `run-####` directory;
 - observed ordered event-room lines in both the AutoSlay sidecar log and the
   current Godot log slice proving Ancient dialogue/options were traversed, not
   only main-menu startup;
@@ -244,16 +250,19 @@ After the packet is captured, verify it with:
 
 Pass multiple expected Ancient ids as a comma-separated `-ExpectedAncientIds`
 value; the verifier splits those tokens so process-launched test wrappers can
-exercise the same target-coverage checks as an interactive PowerShell run.
+exercise the same target-coverage checks as an interactive PowerShell run. A
+proof packet must also retain the same target set in `autoslay-plan.json`
+`ExpectedAncientIds`; summary-only target coverage is not sufficient.
 
 This verifier is no-launch only. It rejects packets that do not identify
 `GameNativeAutoSlay`, do not record structured launcher/mod-hook provenance for
 `AutoSlayer.Start(seed, logFile)`, do not bind the retained
 `check-local-godot-source-workspace.ps1` report, schema fields, policy flags,
 and source-version summary, omit the explicit package/game/Ritsu/patch target
-switches, duplicate or drop planned seeds, place per-run logs outside the
-evidence folder, lack per-seed run-result JSON, clean pass/failure state, log
-hashes, `RuntimeProbeSamplesPath`, clean `MainMenuObservation` and
+switches, duplicate or drop planned seeds, place any per-seed artifact outside
+that seed's `run-####` folder, lack per-seed run-result JSON, clean
+pass/failure state, before/after/current Godot log length/SHA256 metadata,
+`RuntimeProbeSamplesPath`, clean `MainMenuObservation` and
 `RuntimeObservation` records including runtime `LogGrew: true`, parseable
 ordered run-result timestamps, `main-menu` and `runtime` probe phases, probe
 sample `SampledAt`, `LogExists`, `LogLengthBytes`, and retained
@@ -261,7 +270,7 @@ sample `SampledAt`, `LogExists`, `LogLengthBytes`, and retained
 `RuntimeObservation.LogInitialLengthBytes`, unknown process start-time counts,
 ambiguous current-process counts, before/after/current Godot log-slice proof,
 clean audit recomputation, StS1 mode binding, `EventKind: Ancient` /
-`AncientId`, requested `-ExpectedAncientIds` coverage, or ordered event-room
+`AncientId`, requested `-ExpectedAncientIds` plan and summary coverage, or ordered event-room
 traversal markers such as `Entering Event room`, `Detected Ancient event,
 clicking through dialogue`, and `Selecting event option:`. Use a smaller
 `-MinRuns` only for temporary parser or fixture tests; a real game-native
@@ -283,15 +292,18 @@ For `GameNativeAutoSlay`, the analyzer reads `autoslay-summary.json`, each
 per-seed `run-result.json`, `runtime-probe-samples.json`, and sidecar log. It
 refuses to route source ownership from `godot.log.current-iteration` unless
 `godot.log.before` and `godot.log.after-launch` prove the current slice by exact
-bytes. It also reports missing launcher invocation, missing or unhealthy
-runtime probe samples, missing `main-menu` / `runtime` probe phases, invalid or
-reversed run-result timestamps, missing or unhealthy `MainMenuObservation` /
-`RuntimeObservation`, runtime probe `LogLengthBytes` drift from
-`RuntimeObservation.LogGrew`, `EventKind: Ancient` / `AncientId`, sidecar log,
-completion/failure marker, or ordered Ancient event traversal as
-`RuntimeHarness` evidence defects first. This makes failed AutoSlay packets
-useful for diagnosis, but it still does not turn a failed or source-only packet
-into gameplay proof.
+bytes and the run-result before/after/current Godot log byte-length/SHA256
+metadata matches the retained files. It appends AutoSlay sidecar text to
+log-derived owner routing only when `autoslay.log` is retained in the per-seed
+run directory and `AutoSlayLogSha256` matches. It also reports missing launcher
+invocation, missing or unhealthy runtime probe samples, missing `main-menu` /
+`runtime` probe phases, invalid or reversed run-result timestamps, missing or
+unhealthy `MainMenuObservation` / `RuntimeObservation`, runtime probe
+`LogLengthBytes` drift from `RuntimeObservation.LogGrew`, `EventKind: Ancient`
+/ `AncientId`, sidecar log, completion/failure marker, or ordered Ancient event
+traversal as `RuntimeHarness` evidence defects first. This makes failed
+AutoSlay packets useful for diagnosis, but it still does not turn a failed or
+source-only packet into gameplay proof.
 
 ## Commands
 
