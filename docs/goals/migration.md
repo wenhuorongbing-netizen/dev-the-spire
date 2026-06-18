@@ -48,6 +48,7 @@ before any later handoff.
 | StS1 static/governance lanes | Current pass | Current-doc claims 962/0 after post-baseline governance follow-up; v19 gate ledger 534/0; v20 final-gate overlay 29/0; runtime preflight 27/0; static suite 15/0; static-file hygiene 11/0. |
 | Batch 4a/4b migration | Source-level complete | Current patch inventory records 25 migrated `IPatchMethod` patch classes and 142 remaining raw `HarmonyPatch` declarations. |
 | Batch 4c migration | Proposal only | Requires owner approval before any migration work. |
+| Mod Settings UI scaffold | Prepared / live pending | No-launch scaffold prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-143758/` against HEAD `6be72076` and package `v0.1.0-private-beta.86`; preflight recorded that Slay the Spire 2 was not running. This is not screenshot, log/audit, or gameplay proof. |
 | Manual proof | Pending | Gameplay, clicked UI, save-load, image rendering, replacement behavior, co-op/fail-closed behavior, independent QA, and tester handoff are still open. |
 
 Current beta.85 Off and CanaryOnly loader proof exists, and current beta.86 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`.
@@ -64,7 +65,7 @@ Current beta.85 Off and CanaryOnly loader proof exists, and current beta.86 Addi
 
 ## Next Actions
 
-1. Refresh Mod Settings UI proof for the current Spire Plus display-name package; use `scripts/collect-mod-settings-evidence.ps1 -NoLaunch` to prepare the focused row and rerun it with `-Capture List` / `-Capture Page` only after manually opening the relevant UI.
+1. Refresh Mod Settings UI proof for the current Spire Plus display-name package; the no-launch scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-143758/`, and it must be rerun with `-Capture List` / `-Capture Page` only after manually opening the relevant UI.
 2. Capture Canary gameplay proof for Big Fish, Golden Idol, The Lab, and Divine Fountain.
 3. Capture AdditiveBatch1 gameplay proof only after loader/registration evidence remains clean.
 4. Capture save-load and image/render proof for event and replacement surfaces.
