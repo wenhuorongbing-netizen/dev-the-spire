@@ -646,6 +646,44 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeMonkeyPacketCheckerReportsMalformedSts1ModeLogPathAsFailedRow()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var sts1ModeLogCheckPath = Path.Combine(workdir, "iteration-0001", "sts1-mode-log-check.json");
+            var sts1ModeLogCheckJson = Regex.Replace(
+                File.ReadAllText(sts1ModeLogCheckPath),
+                "\"LogPath\"\\s*:\\s*\"(?:\\\\.|[^\"])*\"",
+                "\"LogPath\": \"\\u0000bad-sts1-log\"",
+                RegexOptions.CultureInvariant);
+            File.WriteAllText(sts1ModeLogCheckPath, sts1ModeLogCheckJson);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_sts1_mode_log_check_log_path_matches_current_iteration_log status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeMonkeyPacketCheckerRejectsIterationResultsThatDoNotMatchPlanOrSummary()
     {
         var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
@@ -4130,6 +4168,32 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.True(malformedRunResultPathResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{malformedRunResultPathResult.Output}{malformedRunResultPathResult.Error}");
             Assert.Contains("run_0001_run_result_runtime_probe_samples_path_matches_summary status=fail", malformedRunResultPathResult.Output, StringComparison.Ordinal);
             File.WriteAllText(runResultPath, originalRunResultJson);
+
+            File.WriteAllText(
+                summaryPath,
+                originalSummaryJson.Replace("\"RuntimeProbeSamplesPath\": \"run-0001/runtime-probe-samples.json\"", "\"RuntimeProbeSamplesPath\": \"\\u0000bad-runtime-probe-samples\"", StringComparison.Ordinal));
+            File.WriteAllText(
+                runResultPath,
+                originalRunResultJson.Replace("\"RuntimeProbeSamplesPath\": \"run-0001/runtime-probe-samples.json\"", "\"RuntimeProbeSamplesPath\": \"\\u0000bad-runtime-probe-samples\"", StringComparison.Ordinal));
+            var bothMalformedPathResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(bothMalformedPathResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{bothMalformedPathResult.Output}{bothMalformedPathResult.Error}");
+            Assert.Contains("run_0001_runtime_probe_samples_path_present status=fail", bothMalformedPathResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_runtime_probe_samples_path_matches_summary status=fail", bothMalformedPathResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runResultPath, originalRunResultJson);
+            File.WriteAllText(summaryPath, originalSummaryJson);
 
             File.WriteAllText(
                 summaryPath,

@@ -199,6 +199,17 @@ function Test-PathLeafSafe {
     }
 }
 
+function Test-NonEmptyOrdinalIgnoreCaseEquals {
+    param(
+        [AllowEmptyString()][string]$Left,
+        [AllowEmptyString()][string]$Right
+    )
+
+    return -not [string]::IsNullOrWhiteSpace($Left) -and
+        -not [string]::IsNullOrWhiteSpace($Right) -and
+        [System.StringComparer]::OrdinalIgnoreCase.Equals($Left, $Right)
+}
+
 function Get-FileSha256OrEmpty {
     param([AllowEmptyString()][string]$Path)
 
@@ -1205,20 +1216,20 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_run_result_timestamp_order_valid" -Passed ([bool]$startTimestampParse.Parsed -and [bool]$endTimestampParse.Parsed -and $startTimestampParse.Value -le $endTimestampParse.Value) -Detail "run-result.json StartTimestamp must be earlier than or equal to EndTimestamp; start='$startTimestampText' end='$endTimestampText'"
             Add-Check -Name "${runName}_run_result_exit_code_zero" -Passed ([int](Get-JsonValue -Object $runResult -Name 'ExitCode' -DefaultValue -999) -eq 0) -Detail 'run-result.json ExitCode must be 0'
             Add-Check -Name "${runName}_run_result_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runResult -Name 'StaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'run-result.json StaleProcessCount must be 0 so shared godot.log evidence is attributable'
-            Add-Check -Name "${runName}_run_result_autoslay_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAutoSlayLogPath, $autoSlayLogPath)) -Detail 'run-result.json AutoSlayLogPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_autoslay_log_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultAutoSlayLogPath -Right $autoSlayLogPath) -Detail 'run-result.json AutoSlayLogPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_autoslay_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $runResult -Name 'AutoSlayLogSha256' -DefaultValue ''), $autoSlayLogSha256)) -Detail 'run-result.json AutoSlayLogSha256 must match autoslay-summary.json'
-            Add-Check -Name "${runName}_run_result_runtime_probe_samples_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultRuntimeProbeSamplesPath, $runtimeProbeSamplesPath)) -Detail 'run-result.json RuntimeProbeSamplesPath must match autoslay-summary.json'
-            Add-Check -Name "${runName}_run_result_before_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultBeforeLogPath, $beforeLogPath)) -Detail 'run-result.json GodotLogBeforePath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_runtime_probe_samples_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultRuntimeProbeSamplesPath -Right $runtimeProbeSamplesPath) -Detail 'run-result.json RuntimeProbeSamplesPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_before_log_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultBeforeLogPath -Right $beforeLogPath) -Detail 'run-result.json GodotLogBeforePath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_before_log_length_matches_summary" -Passed ($resultBeforeLogLengthBytes -eq $beforeLogLengthBytes) -Detail 'run-result.json GodotLogBeforeLengthBytes must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_before_log_sha256_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultBeforeLogSha256, $beforeLogSha256)) -Detail 'run-result.json GodotLogBeforeSha256 must match autoslay-summary.json'
-            Add-Check -Name "${runName}_run_result_after_launch_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAfterLogPath, $afterLogPath)) -Detail 'run-result.json GodotLogAfterLaunchPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_after_launch_log_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultAfterLogPath -Right $afterLogPath) -Detail 'run-result.json GodotLogAfterLaunchPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_after_launch_log_length_matches_summary" -Passed ($resultAfterLogLengthBytes -eq $afterLogLengthBytes) -Detail 'run-result.json GodotLogAfterLaunchLengthBytes must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_after_launch_log_sha256_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAfterLogSha256, $afterLogSha256)) -Detail 'run-result.json GodotLogAfterLaunchSha256 must match autoslay-summary.json'
-            Add-Check -Name "${runName}_run_result_current_iteration_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultCurrentLogPath, $currentLogPath)) -Detail 'run-result.json GodotLogCurrentIterationPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_current_iteration_log_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultCurrentLogPath -Right $currentLogPath) -Detail 'run-result.json GodotLogCurrentIterationPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_current_iteration_log_length_matches_summary" -Passed ($resultCurrentLogLengthBytes -eq $currentLogLengthBytes) -Detail 'run-result.json GodotLogCurrentIterationLengthBytes must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_current_iteration_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultCurrentLogSha256, $currentLogSha256)) -Detail 'run-result.json GodotLogCurrentIterationSha256 must match autoslay-summary.json'
-            Add-Check -Name "${runName}_run_result_audit_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAuditPath, $auditPath)) -Detail 'run-result.json GodotLogAuditPath must match autoslay-summary.json'
-            Add-Check -Name "${runName}_run_result_sts1_mode_check_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultSts1ModeCheckPath, $sts1ModeCheckPath)) -Detail 'run-result.json Sts1ModeLogCheckPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_audit_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultAuditPath -Right $auditPath) -Detail 'run-result.json GodotLogAuditPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_sts1_mode_check_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultSts1ModeCheckPath -Right $sts1ModeCheckPath) -Detail 'run-result.json Sts1ModeLogCheckPath must match autoslay-summary.json'
             $mainMenuObservation = Get-JsonValue -Object $runResult -Name 'MainMenuObservation' -DefaultValue $null
             Add-Check -Name "${runName}_run_result_main_menu_observation_exists" -Passed ($null -ne $mainMenuObservation) -Detail 'run-result.json must retain MainMenuObservation telemetry'
             if ($null -ne $mainMenuObservation) {
