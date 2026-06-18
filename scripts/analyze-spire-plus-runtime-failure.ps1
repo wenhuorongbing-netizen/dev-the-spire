@@ -18,6 +18,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+$logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
 
 function Resolve-RepoPath {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -146,6 +147,16 @@ function Normalize-LogSliceForComparison {
     }
 
     return $normalized -replace "[`r`n]+$", ''
+}
+
+function Get-FileSha256OrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return ''
+    }
+
+    return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
 }
 
 function Add-Finding {
@@ -367,15 +378,10 @@ function Get-NextStepForOwner {
 }
 
 function Get-AuditHits {
-    param([string]$Path)
+    param([AllowEmptyCollection()][object[]]$AuditItems)
 
     $hits = [System.Collections.Generic.List[object]]::new()
-    $audit = Read-JsonOrNull -Path $Path
-    if ($null -eq $audit) {
-        return ,$hits
-    }
-
-    foreach ($item in @($audit)) {
+    foreach ($item in @($AuditItems)) {
         foreach ($hit in (Get-JsonArrayValues -Object $item -Name 'SignatureHits')) {
             if ([int](Get-JsonValue -Object $hit -Name 'Count' -DefaultValue 0) -gt 0) {
                 $hits.Add([pscustomobject]@{
@@ -387,6 +393,62 @@ function Get-AuditHits {
     }
 
     return ,$hits
+}
+
+function ConvertTo-AuditSummary {
+    param([AllowNull()]$Audit)
+
+    $items = @($Audit)
+    $dirtyItems = 0
+    $hitCount = 0
+    $itemPaths = [System.Collections.Generic.List[string]]::new()
+    $itemLengths = [System.Collections.Generic.List[long]]::new()
+    $itemSha256s = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($item in $items) {
+        if (-not (Test-JsonProperty -Object $item -Name 'Clean') -or -not [bool]$item.Clean) {
+            $dirtyItems++
+        }
+
+        if ((Test-JsonProperty -Object $item -Name 'Path') -and -not [string]::IsNullOrWhiteSpace([string]$item.Path)) {
+            $itemPaths.Add([System.IO.Path]::GetFullPath([string]$item.Path)) | Out-Null
+        }
+
+        if (Test-JsonProperty -Object $item -Name 'Length') {
+            $itemLengths.Add([long]$item.Length) | Out-Null
+        }
+
+        if ((Test-JsonProperty -Object $item -Name 'Sha256') -and -not [string]::IsNullOrWhiteSpace([string]$item.Sha256)) {
+            $itemSha256s.Add(([string]$item.Sha256).ToLowerInvariant()) | Out-Null
+        }
+
+        foreach ($hit in (Get-JsonArrayValues -Object $item -Name 'SignatureHits')) {
+            if (Test-JsonProperty -Object $hit -Name 'Count') {
+                $hitCount += [int]$hit.Count
+            }
+        }
+    }
+
+    return [pscustomobject]@{
+        Items = $items.Count
+        ItemPaths = @($itemPaths)
+        ItemLengths = @($itemLengths)
+        ItemSha256s = @($itemSha256s)
+        DirtyItems = $dirtyItems
+        SignatureHitCount = $hitCount
+        Clean = ($items.Count -gt 0 -and $dirtyItems -eq 0 -and $hitCount -eq 0)
+    }
+}
+
+function Invoke-RecomputedAudit {
+    param([Parameter(Mandatory = $true)][string]$LogPath)
+
+    $auditJson = (& $logAuditScript -Path $LogPath | Out-String)
+    if ([string]::IsNullOrWhiteSpace($auditJson)) {
+        throw "audit-godot-log.ps1 returned empty output for $LogPath"
+    }
+
+    return $auditJson | ConvertFrom-Json
 }
 
 function Analyze-Iteration {
@@ -490,7 +552,10 @@ function Analyze-Iteration {
 
     $auditExists = Test-Path -LiteralPath $auditCandidate -PathType Leaf
     $auditJsonValid = (-not $auditExists) -or (Test-JsonFileParses -Path $auditCandidate)
-    $auditHits = if ($auditExists) { Get-AuditHits -Path $auditCandidate } else { [System.Collections.Generic.List[object]]::new() }
+    $auditData = if ($auditExists -and $auditJsonValid) { Read-JsonOrNull -Path $auditCandidate } else { $null }
+    $auditSummary = if ($null -ne $auditData) { ConvertTo-AuditSummary -Audit $auditData } else { $null }
+    $auditTrustedForOwner = $false
+    $auditHits = [System.Collections.Generic.List[object]]::new()
     $failureCodes = if ($result) { Get-JsonArrayValues -Object $result -Name 'FailureReasonCodes' } else { [System.Collections.Generic.List[object]]::new() }
     $hangSignals = if ($result) { Get-JsonArrayValues -Object $result -Name 'HangSignals' } else { [System.Collections.Generic.List[object]]::new() }
 
@@ -534,6 +599,103 @@ function Analyze-Iteration {
             -NextStep 'Fix audit evidence retention or rerun the packet after validation lanes are unpaused; do not treat an invalid audit artifact as a clean runtime log.' `
             -Confidence 'high' `
             -EvidenceFiles $evidenceFiles
+    }
+
+    if ($auditExists -and $auditJsonValid) {
+        if (-not $currentIterationLogExists) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'godot_log_audit_current_iteration_log_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'godot-log-audit.json exists without a retained godot.log.current-iteration slice, so audit hits may belong to stale or unrelated log content.' `
+                -NextStep 'Regenerate the packet with current-iteration slicing before using audit signatures for owner routing.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        } elseif ($null -eq $auditSummary) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'godot_log_audit_json_invalid' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'godot-log-audit.json parsed once but could not be converted to audit items, so audit signature evidence cannot be trusted.' `
+                -NextStep 'Fix audit evidence retention or rerun the packet after validation lanes are unpaused.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        } else {
+            $expectedAuditPath = [System.IO.Path]::GetFullPath($currentIterationLogCandidate)
+            $expectedAuditLength = [long](Get-Item -LiteralPath $currentIterationLogCandidate).Length
+            $expectedAuditSha256 = Get-FileSha256OrEmpty -Path $currentIterationLogCandidate
+            $auditItemPaths = @($auditSummary.ItemPaths)
+            $auditItemLengths = @($auditSummary.ItemLengths)
+            $auditItemSha256s = @($auditSummary.ItemSha256s)
+            $auditMetadataMatches =
+                $auditItemPaths.Count -eq 1 -and
+                [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemPaths[0], $expectedAuditPath) -and
+                $auditItemLengths.Count -eq 1 -and
+                $auditItemLengths[0] -eq $expectedAuditLength -and
+                $auditItemSha256s.Count -eq 1 -and
+                [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], $expectedAuditSha256)
+
+            if (-not $auditMetadataMatches) {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'godot_log_audit_current_iteration_binding_mismatch' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale 'godot-log-audit.json Path, Length, or Sha256 does not bind to the retained godot.log.current-iteration slice.' `
+                    -NextStep 'Use only the packet checker recomputed audit or rerun the packet; do not route ownership from stale audit JSON.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            } elseif (-not (Test-Path -LiteralPath $logAuditScript -PathType Leaf)) {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'godot_log_audit_recompute_script_missing' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale "The analyzer could not find audit-godot-log.ps1 at $logAuditScript, so retained audit signatures cannot be recomputed." `
+                    -NextStep 'Restore the canonical audit script before classifying runtime evidence.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            } else {
+                try {
+                    $recomputedAudit = Invoke-RecomputedAudit -LogPath $currentIterationLogCandidate
+                    $recomputedAuditSummary = ConvertTo-AuditSummary -Audit $recomputedAudit
+                    $recomputedAuditSha256s = @($recomputedAuditSummary.ItemSha256s)
+                    $auditMatchesRecomputed =
+                        $auditSummary.DirtyItems -eq $recomputedAuditSummary.DirtyItems -and
+                        $auditSummary.SignatureHitCount -eq $recomputedAuditSummary.SignatureHitCount -and
+                        $auditItemSha256s.Count -eq 1 -and
+                        $recomputedAuditSha256s.Count -eq 1 -and
+                        [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], [string]$recomputedAuditSha256s[0])
+
+                    if ($auditMatchesRecomputed) {
+                        $auditTrustedForOwner = $true
+                        $auditHits = Get-AuditHits -AuditItems @($recomputedAudit)
+                    } else {
+                        Add-Finding `
+                            -Findings $findings `
+                            -Signal 'godot_log_audit_recomputed_mismatch' `
+                            -Severity 'blocking' `
+                            -OwnerArea 'RuntimeHarness' `
+                            -Rationale "Retained audit signature counts do not match a fresh audit of godot.log.current-iteration; retained dirty=$($auditSummary.DirtyItems), retained hits=$($auditSummary.SignatureHitCount), recomputed dirty=$($recomputedAuditSummary.DirtyItems), recomputed hits=$($recomputedAuditSummary.SignatureHitCount)." `
+                            -NextStep 'Treat the retained audit JSON as stale or hand-edited; rerun the packet or regenerate the audit from the current-iteration log before owner routing.' `
+                            -Confidence 'high' `
+                            -EvidenceFiles $evidenceFiles
+                    }
+                } catch {
+                    Add-Finding `
+                        -Findings $findings `
+                        -Signal 'godot_log_audit_recompute_failed' `
+                        -Severity 'blocking' `
+                        -OwnerArea 'RuntimeHarness' `
+                        -Rationale "The analyzer could not recompute godot-log audit from the retained current-iteration slice: $($_.Exception.Message)" `
+                        -NextStep 'Fix the current-iteration log or audit script before using audit signatures for source routing.' `
+                        -Confidence 'high' `
+                        -EvidenceFiles $evidenceFiles
+                }
+            }
+        }
     }
 
     $retainedSignals = @(($hangSignals.ToArray() + $failureCodes.ToArray()) | Select-Object -Unique)
@@ -698,6 +860,7 @@ function Analyze-Iteration {
         EvidenceFiles = @($evidenceFiles)
         FailureReasonCodes = @($failureCodes.ToArray())
         HangSignals = @($hangSignals.ToArray())
+        AuditTrustedForOwner = $auditTrustedForOwner
         AuditHits = @($auditHits.ToArray())
         Findings = @($findings)
     }

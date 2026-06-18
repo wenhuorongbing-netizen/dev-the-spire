@@ -45,7 +45,13 @@ When `-OutFile` is used, the checker emits a machine-readable
 `OpenProjectCommand` and `EvidenceUsePolicy` in its JSON report. Treat that
 command as local operator guidance only: it does not launch Godot, does not
 prove runtime behavior, and does not permit tracked copies of original game
-source or extracted resources.
+source or extracted resources. The same report also includes an `AutoSlay`
+summary and no-launch checks for the recovered game-native simulator signatures:
+`AutoSlayer.Start(seed, logFile)`, `NonInteractiveMode.AutoSlayerCheck`,
+`NGame.Instance.DebugSeedOverride`, `AutoSlayCardSelector`, Ancient dialogue
+handling, event-option selection logging, and event-combat logging. These are
+source-contract checks only; game-native monkey proof still requires a launched
+AutoSlay-backed packet.
 
 Use `-RequireCurrentSourceSnapshot -FailOnMismatch` only when a task requires
 current-source parity. The current local state is expected to report
@@ -125,6 +131,47 @@ The lane fails an iteration on:
 This catches hangs and bad startup/runtime logs without depending on a fragile
 uncontrolled click bot. Later layers can add true random UI input after the
 main-menu/start-run path is stable and after window-focus safeguards are proven.
+
+## Game-Native AutoSlay Batch Lane
+
+The recovered game source contains a separate built-in simulator under
+`source code\src\Core\AutoSlay\AutoSlayer.cs`. Use only short signatures from
+that ignored local source tree as planning evidence; do not copy original game
+source or resources into tracked files. The relevant static signatures are:
+
+- `AutoSlayer.Start(seed, logFile)` opens an optional AutoSlay log, marks the
+  run active, and starts the async simulator.
+- `NonInteractiveMode.AutoSlayerCheck = () => IsActive` marks the simulator as
+  the game's non-interactive mode.
+- `NGame.Instance.DebugSeedOverride = seed` and
+  `CardSelectCmd.UseSelector(new AutoSlayCardSelector(_random))` make the run
+  deterministic for a retained seed.
+- `source code\src\Core\AutoSlay\Handlers\Rooms\EventRoomHandler.cs` includes
+  event-room handling signatures such as `Detected Ancient event, clicking
+  through dialogue`, `Selecting event option:`, `Event triggered combat`, and
+  `Event combat started`.
+
+Current `scripts\run-spire-plus-monkey-stability.ps1` lane is not
+AutoSlay-backed. It launches through `scripts\spire-plus-live-session.ps1`,
+waits for main menu, samples process/window/log health, and optionally sends
+DevConsole commands. Do not count a packet from that lane as game-native
+AutoSlay proof.
+
+A future AutoSlay-backed batch packet must retain all of the following before it
+can close a game-native monkey proof row:
+
+- the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`;
+- the seed, AutoSlay log path, exit code, and per-run start/completion/failure
+  markers;
+- a retained `check-local-godot-source-workspace.ps1 -OutFile` report with
+  passing AutoSlay source-contract checks;
+- the same package, game version, RitsuLib version, compat branch, patch-count,
+  current-iteration log-slice, audit, and StS1 mode bindings required by the
+  current runtime packet checker;
+- observed event-room lines proving Ancient dialogue/options were traversed,
+  not only main-menu startup;
+- a clear statement that the local recovered source snapshot matched the
+  installed game version when the AutoSlay invocation path was derived.
 
 ## Commands
 
@@ -307,7 +354,12 @@ routing. If `Passed=false` has no retained failure code, hang signal, audit hit,
 or other blocking harness finding, the analyzer emits
 `iteration_failed_without_failure_signal`. Invalid or empty
 `godot-log-audit.json` files are `RuntimeHarness` blockers because audit
-evidence cannot be trusted.
+evidence cannot be trusted. Valid audit JSON is still not owner-routing
+evidence until its scanned `Path`, `Length`, and `Sha256` bind to
+`godot.log.current-iteration` and a fresh analyzer-side
+`audit-godot-log.ps1` recomputation agrees with the retained signature counts.
+Stale or hand-assembled audit JSON is reported as a `RuntimeHarness` blocker,
+and its signature hits are ignored for feature ownership.
 For hung processes, unclassified retained failures, audit hits, Spire
 Plus error/exception hits, and co-op override failures, explicit log-derived
 package/runtime drift, StS1, preview-tool, or multiplayer-policy signatures take

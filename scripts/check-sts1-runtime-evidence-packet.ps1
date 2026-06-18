@@ -27,6 +27,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+$logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
 $checks = [System.Collections.Generic.List[object]]::new()
 $mismatches = [System.Collections.Generic.List[string]]::new()
 
@@ -104,6 +105,101 @@ function Test-PathInsideString {
     $comparison = [System.StringComparison]::OrdinalIgnoreCase
 
     return $childFull.Equals($parentFull, $comparison) -or $childFull.StartsWith($parentFull + '\', $comparison)
+}
+
+function Test-BytePrefix {
+    param(
+        [Parameter(Mandatory = $true)][byte[]]$Prefix,
+        [Parameter(Mandatory = $true)][byte[]]$Content
+    )
+
+    if ($Content.Length -lt $Prefix.Length) {
+        return $false
+    }
+
+    for ($i = 0; $i -lt $Prefix.Length; $i++) {
+        if ($Content[$i] -ne $Prefix[$i]) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Write-CurrentSliceFromBeforeAfter {
+    param(
+        [Parameter(Mandatory = $true)][string]$BeforePath,
+        [Parameter(Mandatory = $true)][string]$AfterPath,
+        [Parameter(Mandatory = $true)][string]$CurrentPath
+    )
+
+    $beforeBytes = [System.IO.File]::ReadAllBytes($BeforePath)
+    $afterBytes = [System.IO.File]::ReadAllBytes($AfterPath)
+    if (-not (Test-BytePrefix -Prefix $beforeBytes -Content $afterBytes)) {
+        return $false
+    }
+
+    $sliceLength = $afterBytes.Length - $beforeBytes.Length
+    $sliceBytes = [byte[]]::new($sliceLength)
+    if ($sliceLength -gt 0) {
+        [System.Array]::Copy($afterBytes, $beforeBytes.Length, $sliceBytes, 0, $sliceLength)
+    }
+
+    [System.IO.File]::WriteAllBytes($CurrentPath, $sliceBytes)
+    return $true
+}
+
+function Test-CurrentSliceBinding {
+    param(
+        [Parameter(Mandatory = $true)][string]$BeforePath,
+        [Parameter(Mandatory = $true)][string]$AfterPath,
+        [Parameter(Mandatory = $true)][string]$CurrentPath
+    )
+
+    $result = [ordered]@{
+        BeforeExists = Test-Path -LiteralPath $BeforePath -PathType Leaf
+        AfterExists = Test-Path -LiteralPath $AfterPath -PathType Leaf
+        CurrentExists = Test-Path -LiteralPath $CurrentPath -PathType Leaf
+        PrefixMatches = $false
+        SliceMatches = $false
+        Detail = ''
+    }
+
+    if (-not $result.BeforeExists -or -not $result.AfterExists -or -not $result.CurrentExists) {
+        $result.Detail = 'requires godot.log.before, godot.log.after-launch, and godot.log.current-iteration'
+        return [pscustomobject]$result
+    }
+
+    try {
+        $beforeBytes = [System.IO.File]::ReadAllBytes($BeforePath)
+        $afterBytes = [System.IO.File]::ReadAllBytes($AfterPath)
+        $currentBytes = [System.IO.File]::ReadAllBytes($CurrentPath)
+        $result.PrefixMatches = Test-BytePrefix -Prefix $beforeBytes -Content $afterBytes
+        if (-not $result.PrefixMatches) {
+            $result.Detail = 'godot.log.after-launch does not have godot.log.before as a byte prefix'
+            return [pscustomobject]$result
+        }
+
+        $sliceLength = $afterBytes.Length - $beforeBytes.Length
+        if ($currentBytes.Length -ne $sliceLength) {
+            $result.Detail = "current slice length $($currentBytes.Length) does not match after-before length $sliceLength"
+            return [pscustomobject]$result
+        }
+
+        for ($i = 0; $i -lt $sliceLength; $i++) {
+            if ($currentBytes[$i] -ne $afterBytes[$beforeBytes.Length + $i]) {
+                $result.Detail = "current slice differs from after-launch at byte $i after the before-log prefix"
+                return [pscustomobject]$result
+            }
+        }
+
+        $result.SliceMatches = $true
+        $result.Detail = 'godot.log.current-iteration matches godot.log.after-launch after the godot.log.before byte prefix'
+        return [pscustomobject]$result
+    } catch {
+        $result.Detail = $_.Exception.Message
+        return [pscustomobject]$result
+    }
 }
 
 function Get-GameVersionLineHits {
@@ -209,17 +305,64 @@ if (-not (Test-Path -LiteralPath $verifierPath -PathType Leaf)) {
 
 $logPath = Resolve-EvidenceFile $LogFileName
 $auditPath = Resolve-EvidenceFile $AuditFileName
+$beforeLogPath = Resolve-EvidenceFile 'godot.log.before'
+$currentLogPath = Resolve-EvidenceFile 'godot.log.current-iteration'
+$currentAuditPath = Resolve-EvidenceFile 'godot-log-current-iteration-audit.json'
 $sessionStatePath = Resolve-EvidenceFile $SessionStateFileName
 $restoreStatePath = Resolve-EvidenceFile $RestoreStateFileName
 $settingsBeforePath = Resolve-EvidenceFile $SettingsBeforeFileName
 $gameReleaseInfoPath = Resolve-EvidenceFile $GameReleaseInfoFileName
 $enabledModeLogCheckPath = Resolve-EvidenceFile 'enabled-mode-log-check.json'
+$canonicalLogPath = $logPath
+$canonicalAuditPath = $auditPath
+$canonicalLogName = $LogFileName
+$canonicalAuditName = $AuditFileName
+$currentSliceDerived = $false
+$currentSliceDerivationError = ''
+
+if ($Mode -ne 'Off') {
+    $canonicalLogPath = $currentLogPath
+    $canonicalLogName = 'godot.log.current-iteration'
+
+    if (-not (Test-Path -LiteralPath $currentLogPath -PathType Leaf)) {
+        if ((Test-Path -LiteralPath $beforeLogPath -PathType Leaf) -and (Test-Path -LiteralPath $logPath -PathType Leaf)) {
+            try {
+                $currentSliceDerived = Write-CurrentSliceFromBeforeAfter -BeforePath $beforeLogPath -AfterPath $logPath -CurrentPath $currentLogPath
+                if (-not $currentSliceDerived) {
+                    $currentSliceDerivationError = 'godot.log.after-launch does not have godot.log.before as a byte prefix'
+                }
+            } catch {
+                $currentSliceDerivationError = $_.Exception.Message
+            }
+        } else {
+            $currentSliceDerivationError = 'requires godot.log.current-iteration or both godot.log.before and godot.log.after-launch'
+        }
+    }
+
+    if (Test-Path -LiteralPath $currentLogPath -PathType Leaf) {
+        if ($currentSliceDerived) {
+            $canonicalAuditPath = $currentAuditPath
+            $canonicalAuditName = 'godot-log-current-iteration-audit.json'
+            if (Test-Path -LiteralPath $logAuditScript -PathType Leaf) {
+                & $logAuditScript -Path $currentLogPath -OutFile $currentAuditPath | Out-Null
+            }
+        } elseif (Test-Path -LiteralPath $currentAuditPath -PathType Leaf) {
+            $canonicalAuditPath = $currentAuditPath
+            $canonicalAuditName = 'godot-log-current-iteration-audit.json'
+        } else {
+            $canonicalAuditPath = $auditPath
+            $canonicalAuditName = $AuditFileName
+        }
+    }
+}
 
 Write-Output "mode=$Mode"
 Write-Output "evidence_dir=$resolvedEvidenceDir"
+Write-Output "canonical_log_path=$canonicalLogPath"
+Write-Output "canonical_audit_path=$canonicalAuditPath"
 
-Add-Check -Name 'godot_log_exists' -Passed (Test-Path -LiteralPath $logPath -PathType Leaf) -Detail "requires $LogFileName"
-Add-Check -Name 'audit_json_exists' -Passed (Test-Path -LiteralPath $auditPath -PathType Leaf) -Detail "requires $AuditFileName"
+Add-Check -Name 'godot_log_exists' -Passed (Test-Path -LiteralPath $canonicalLogPath -PathType Leaf) -Detail "requires $canonicalLogName"
+Add-Check -Name 'audit_json_exists' -Passed (Test-Path -LiteralPath $canonicalAuditPath -PathType Leaf) -Detail "requires $canonicalAuditName"
 Add-Check -Name 'settings_before_exists' -Passed (Test-Path -LiteralPath $settingsBeforePath -PathType Leaf) -Detail "requires $SettingsBeforeFileName"
 
 $gameReleaseInfoExists = Test-Path -LiteralPath $gameReleaseInfoPath -PathType Leaf
@@ -236,12 +379,22 @@ Add-Check -Name 'session_state_exists' -Passed ((-not $sessionRequired) -or $ses
 Add-Check -Name 'restore_state_exists' -Passed ((-not $restoreRequired) -or $restoreExists) -Detail "requires $RestoreStateFileName unless -AllowMissingRestoreState is set"
 
 $logText = ''
-if (Test-Path -LiteralPath $logPath -PathType Leaf) {
-    $logText = [System.IO.File]::ReadAllText($logPath)
-    Add-Check -Name 'godot_log_non_empty' -Passed ($logText.Length -gt 0) -Detail "$LogFileName must be non-empty"
+if (Test-Path -LiteralPath $canonicalLogPath -PathType Leaf) {
+    $logText = [System.IO.File]::ReadAllText($canonicalLogPath)
+    Add-Check -Name 'godot_log_non_empty' -Passed ($logText.Length -gt 0) -Detail "$canonicalLogName must be non-empty"
 }
 
 if ($Mode -ne 'Off') {
+    $currentLogExists = Test-Path -LiteralPath $currentLogPath -PathType Leaf
+    $canonicalUsesCurrentSlice = [System.StringComparer]::OrdinalIgnoreCase.Equals([System.IO.Path]::GetFullPath($canonicalLogPath), [System.IO.Path]::GetFullPath($currentLogPath))
+    Add-Check -Name 'enabled_current_iteration_log_exists_or_derived' -Passed $currentLogExists -Detail "requires godot.log.current-iteration or a derivable slice from godot.log.before + $LogFileName; $currentSliceDerivationError"
+    Add-Check -Name 'current_slice_derived_from_before_after' -Passed ($currentLogExists -and ((-not $currentSliceDerived) -or [string]::IsNullOrWhiteSpace($currentSliceDerivationError))) -Detail 'retained current slice exists, or was derived only when godot.log.before is a byte prefix of godot.log.after-launch'
+    Add-Check -Name 'enabled_mode_log_verifier_uses_current_slice' -Passed $canonicalUsesCurrentSlice -Detail 'enabled-mode nested verifier must receive godot.log.current-iteration, not the full copied log'
+    Add-Check -Name 'full_log_not_used_as_canonical_verifier_input' -Passed $canonicalUsesCurrentSlice -Detail 'godot.log.after-launch is forensic context only for enabled-mode packets'
+    if ($currentSliceDerived) {
+        Add-Check -Name 'derived_current_slice_audit_generated' -Passed (Test-Path -LiteralPath $currentAuditPath -PathType Leaf) -Detail 'derived current slices require a fresh audit generated from godot.log.current-iteration'
+    }
+
     Add-Check -Name 'enabled_expected_package_version_parameter_provided' -Passed (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) -Detail 'Enabled-mode packets must be checked with -ExpectedPackageVersion'
     Add-Check -Name 'enabled_expected_ritsu_compat_branch_parameter_provided' -Passed (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuCompatBranch)) -Detail 'Enabled-mode packets must be checked with -ExpectedRitsuCompatBranch'
     Add-Check -Name 'enabled_expected_ritsu_lib_version_parameter_provided' -Passed (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuLibVersion)) -Detail 'Enabled-mode packets must be checked with -ExpectedRitsuLibVersion'
@@ -363,11 +516,11 @@ if ($restoreExists) {
     }
 }
 
-if ((Test-Path -LiteralPath $logPath -PathType Leaf) -and (Test-Path -LiteralPath $auditPath -PathType Leaf)) {
+if ((Test-Path -LiteralPath $canonicalLogPath -PathType Leaf) -and (Test-Path -LiteralPath $canonicalAuditPath -PathType Leaf)) {
     $verifierParams = @{
         Mode = $Mode
-        LogPath = $logPath
-        AuditPath = $auditPath
+        LogPath = $canonicalLogPath
+        AuditPath = $canonicalAuditPath
     }
 
     if (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) {
@@ -414,6 +567,9 @@ if ((Test-Path -LiteralPath $logPath -PathType Leaf) -and (Test-Path -LiteralPat
 $report = [pscustomobject]@{
     Mode = $Mode
     EvidenceDir = $resolvedEvidenceDir
+    CanonicalLogPath = $canonicalLogPath
+    CanonicalAuditPath = $canonicalAuditPath
+    CurrentSliceDerivedFromBeforeAfter = $currentSliceDerived
     ExpectedPackageVersion = $ExpectedPackageVersion
     ExpectedRitsuCompatBranch = $ExpectedRitsuCompatBranch
     ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion

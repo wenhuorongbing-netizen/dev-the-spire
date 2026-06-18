@@ -159,6 +159,8 @@ $sourceReleaseInfoPath = Join-Path $sourceRootFull 'release_info.json'
 $gameReleaseInfoPath = Join-Path $gameRootFull 'release_info.json'
 $sourceProjectPath = Join-Path $sourceRootFull 'project.godot'
 $gdreExportLogPath = Join-Path $sourceRootFull 'gdre_export.log'
+$autoSlayerPath = Join-Path $sourceRootFull 'src\Core\AutoSlay\AutoSlayer.cs'
+$autoSlayEventRoomHandlerPath = Join-Path $sourceRootFull 'src\Core\AutoSlay\Handlers\Rooms\EventRoomHandler.cs'
 $ritsuManifestPath = Join-Path $ritsuLibRootFull 'mod_manifest.json'
 $ritsuVariantsPath = Join-Path $ritsuLibRootFull 'ritsulib-variants.json'
 $ritsuViewerPath = Join-Path $ritsuLibRootFull 'viewer\index.html'
@@ -166,6 +168,8 @@ $ritsuViewerPath = Join-Path $ritsuLibRootFull 'viewer\index.html'
 Add-Check -Name 'source_root_exists' -Passed (Test-Path -LiteralPath $sourceRootFull -PathType Container) -Detail "expected recovered source folder at $sourceRootFull"
 Add-Check -Name 'source_project_exists' -Passed (Test-Path -LiteralPath $sourceProjectPath -PathType Leaf) -Detail "expected Godot project file at $sourceProjectPath"
 Add-Check -Name 'source_release_info_exists' -Passed (Test-Path -LiteralPath $sourceReleaseInfoPath -PathType Leaf) -Detail "expected source release_info.json at $sourceReleaseInfoPath"
+Add-Check -Name 'autoslay_autoslayer_source_exists' -Passed (Test-Path -LiteralPath $autoSlayerPath -PathType Leaf) -Detail "expected AutoSlay runner source at $autoSlayerPath"
+Add-Check -Name 'autoslay_event_room_handler_exists' -Passed (Test-Path -LiteralPath $autoSlayEventRoomHandlerPath -PathType Leaf) -Detail "expected AutoSlay event-room handler at $autoSlayEventRoomHandlerPath"
 Add-Check -Name 'installed_game_release_info_exists' -Passed (Test-Path -LiteralPath $gameReleaseInfoPath -PathType Leaf) -Detail "expected installed game release_info.json at $gameReleaseInfoPath"
 Add-Check -Name 'godot_editor_exists' -Passed (Test-Path -LiteralPath $godotExeFull -PathType Leaf) -Detail "expected Godot editor executable at $godotExeFull"
 Add-Check -Name 'godot_console_exists' -Passed (Test-Path -LiteralPath $godotConsoleExeFull -PathType Leaf) -Detail "expected Godot console executable at $godotConsoleExeFull"
@@ -249,6 +253,45 @@ if (Test-Path -LiteralPath $sourceProjectPath -PathType Leaf) {
     Add-Check -Name 'godot_project_has_csharp_feature' -Passed ($projectText.IndexOf('"C#"', [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or $projectText.IndexOf('_custom_features="dotnet"', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -Detail 'project.godot should declare C#/dotnet support'
     Add-Check -Name 'godot_project_has_45_feature' -Passed ($projectText.IndexOf('"4.5"', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -Detail 'project.godot should declare Godot 4.5 feature'
     Add-Check -Name 'godot_project_main_scene_exists' -Passed ($projectText.IndexOf('run/main_scene="res://scenes/game.tscn"', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -Detail 'project.godot should point at res://scenes/game.tscn'
+}
+
+$autoSlaySummary = [ordered]@{
+    AutoSlayerPath = $autoSlayerPath
+    EventRoomHandlerPath = $autoSlayEventRoomHandlerPath
+    StartSeedLogFileSignature = $false
+    NonInteractiveCheck = $false
+    DebugSeedOverride = $false
+    AutoCardSelector = $false
+    AncientDialogueHandler = $false
+    EventOptionSelectionLog = $false
+    EventTriggeredCombatLog = $false
+    EventCombatStartedLog = $false
+}
+
+if (Test-Path -LiteralPath $autoSlayerPath -PathType Leaf) {
+    $autoSlayerText = Get-Content -LiteralPath $autoSlayerPath -Raw -Encoding UTF8
+    $autoSlaySummary.StartSeedLogFileSignature = $autoSlayerText.IndexOf('public void Start(string seed, string? logFile = null)', [System.StringComparison]::Ordinal) -ge 0
+    $autoSlaySummary.NonInteractiveCheck = $autoSlayerText.IndexOf('NonInteractiveMode.AutoSlayerCheck = () => IsActive', [System.StringComparison]::Ordinal) -ge 0
+    $autoSlaySummary.DebugSeedOverride = $autoSlayerText.IndexOf('NGame.Instance.DebugSeedOverride = seed', [System.StringComparison]::Ordinal) -ge 0
+    $autoSlaySummary.AutoCardSelector = $autoSlayerText.IndexOf('CardSelectCmd.UseSelector(new AutoSlayCardSelector(_random))', [System.StringComparison]::Ordinal) -ge 0
+
+    Add-Check -Name 'autoslay_start_seed_logfile_signature_present' -Passed ([bool]$autoSlaySummary.StartSeedLogFileSignature) -Detail 'AutoSlayer.Start(seed, logFile) signature should be present'
+    Add-Check -Name 'autoslay_noninteractive_mode_check_present' -Passed ([bool]$autoSlaySummary.NonInteractiveCheck) -Detail 'AutoSlayer should set NonInteractiveMode.AutoSlayerCheck'
+    Add-Check -Name 'autoslay_debug_seed_override_present' -Passed ([bool]$autoSlaySummary.DebugSeedOverride) -Detail 'AutoSlayer should set NGame.Instance.DebugSeedOverride from the retained seed'
+    Add-Check -Name 'autoslay_card_selector_present' -Passed ([bool]$autoSlaySummary.AutoCardSelector) -Detail 'AutoSlayer should use AutoSlayCardSelector for deterministic card choices'
+}
+
+if (Test-Path -LiteralPath $autoSlayEventRoomHandlerPath -PathType Leaf) {
+    $autoSlayEventRoomText = Get-Content -LiteralPath $autoSlayEventRoomHandlerPath -Raw -Encoding UTF8
+    $autoSlaySummary.AncientDialogueHandler = $autoSlayEventRoomText.IndexOf('Detected Ancient event, clicking through dialogue', [System.StringComparison]::Ordinal) -ge 0
+    $autoSlaySummary.EventOptionSelectionLog = $autoSlayEventRoomText.IndexOf('Selecting event option:', [System.StringComparison]::Ordinal) -ge 0
+    $autoSlaySummary.EventTriggeredCombatLog = $autoSlayEventRoomText.IndexOf('Event triggered combat, handling combat first', [System.StringComparison]::Ordinal) -ge 0
+    $autoSlaySummary.EventCombatStartedLog = $autoSlayEventRoomText.IndexOf('Event combat started, applying buffs and killing enemies', [System.StringComparison]::Ordinal) -ge 0
+
+    Add-Check -Name 'autoslay_ancient_dialogue_handler_present' -Passed ([bool]$autoSlaySummary.AncientDialogueHandler) -Detail 'AutoSlay event handler should recognize and click Ancient dialogue'
+    Add-Check -Name 'autoslay_event_option_selection_logged' -Passed ([bool]$autoSlaySummary.EventOptionSelectionLog) -Detail 'AutoSlay event handler should log selected event options'
+    Add-Check -Name 'autoslay_event_triggered_combat_logged' -Passed ([bool]$autoSlaySummary.EventTriggeredCombatLog) -Detail 'AutoSlay event handler should log event-triggered combat handling'
+    Add-Check -Name 'autoslay_event_combat_started_logged' -Passed ([bool]$autoSlaySummary.EventCombatStartedLog) -Detail 'AutoSlay event handler should log event-combat start'
 }
 
 $gdreSummary = [ordered]@{
@@ -388,6 +431,7 @@ $report = [pscustomobject]@{
         FailedScripts = $gdreSummary.FailedScripts
         ParseErrors = $gdreSummary.ParseErrorCount
     }
+    AutoSlay = [pscustomobject]$autoSlaySummary
     GitProtection = [pscustomobject]@{
         SourceCodeIgnored = $sourceRootIgnored
         ToolsIgnored = $toolsRootIgnored
@@ -405,6 +449,7 @@ $report = [pscustomobject]@{
         RitsuLibViewerIsLogViewerOnly = $true
         RefreshSourceSnapshotBeforeCurrentApiClaims = $sourceSnapshotDisposition -ne 'current-source-match'
         RuntimeProofStillRequiresLaunchEvidence = $true
+        GameNativeAutoSlayStillRequiresRuntimeLaunchEvidence = $true
         AllowedRecordedEvidence = @(
             'short signatures',
             'local paths',

@@ -135,14 +135,4 @@ public sealed partial class AncientBehaviorGuardTests
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.OnPlayWrapper))");
     }
 
-    private static string ReadSereTalonVisualSource() =>
-        string.Join(
-            Environment.NewLine,
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualAssetPaths.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualRelicModelRoutes.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualNodeRoutes.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualTextures.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualRouteLog.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"));
-
 }

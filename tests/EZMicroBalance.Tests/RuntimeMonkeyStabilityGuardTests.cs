@@ -1050,6 +1050,11 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "iteration_result_missing_or_invalid",
             "iteration_failed_without_failure_signal",
             "godot_log_audit_json_invalid",
+            "godot_log_audit_current_iteration_binding_mismatch",
+            "godot_log_audit_recomputed_mismatch",
+            "AuditTrustedForOwner",
+            "Get-FileSha256OrEmpty",
+            "Invoke-RecomputedAudit",
             "process_unresponsive",
             "stale_process_observed",
             "command_ack_missing",
@@ -1099,7 +1104,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 """["process_unresponsive"]""",
                 "[INFO] [Patcher - SpirePlus] Patch application complete:\r\n[ERROR] TypeLoadException stale full log should not own current iteration",
                 "[ERROR] Spire Plus error in StS1 AdditiveBatch1 Registered act event Golden Idol",
-                """{"SignatureHits":[{"Name":"Spire Plus error/exception","Count":1}]}""");
+                """{"SignatureHits":[{"Name":"Spire Plus error/exception","Count":1},{"Name":"Godot ERROR line","Count":1}]}""");
             WriteIteration(
                 workdir,
                 2,
@@ -1229,8 +1234,9 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 }
                 """);
             File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), prefix + actualSlice);
-            File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), staleCurrentSlice);
-            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), """{"SignatureHits":[]}""");
+            var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+            File.WriteAllText(currentLogPath, staleCurrentSlice);
+            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
             WriteMonkeySummary(workdir, 1);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
@@ -1283,8 +1289,9 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 }
                 """);
             File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[ERROR] TypeLoadException stale full log should not route owner\r\n");
-            File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol\r\n");
-            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), """{"SignatureHits":[]}""");
+            var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+            File.WriteAllText(currentLogPath, "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol\r\n");
+            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
             WriteMonkeySummary(workdir, 1);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
@@ -1378,8 +1385,9 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             var iterationDir = Path.Combine(workdir, "iteration-0001");
             Directory.CreateDirectory(iterationDir);
             File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[Startup] Time to main menu\r\n");
-            File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), "[Startup] Time to main menu\r\n");
-            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), """{"SignatureHits":[]}""");
+            var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+            File.WriteAllText(currentLogPath, "[Startup] Time to main menu\r\n");
+            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
             File.WriteAllText(
                 Path.Combine(workdir, "monkey-summary.json"),
                 """
@@ -1450,8 +1458,9 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 }
                 """);
             File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[Startup] Time to main menu\r\n");
-            File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), "[Startup] Time to main menu\r\n");
-            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), """{"SignatureHits":[]}""");
+            var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+            File.WriteAllText(currentLogPath, "[Startup] Time to main menu\r\n");
+            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
             WriteMonkeySummary(workdir, 1);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
@@ -1512,6 +1521,181 @@ public sealed class RuntimeMonkeyStabilityGuardTests
 
             Assert.Equal("RuntimeHarness", auditFinding.GetProperty("OwnerArea").GetString());
             Assert.Equal("blocking", auditFinding.GetProperty("Severity").GetString());
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsAuditJsonNotBoundToCurrentIterationLog()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            Directory.CreateDirectory(iterationDir);
+            var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+            var staleLogPath = Path.Combine(iterationDir, "stale-source.log");
+            File.WriteAllText(
+                Path.Combine(iterationDir, "iteration-result.json"),
+                """
+                {
+                  "Iteration": 1,
+                  "Passed": false,
+                  "Command": "spireplus_test_ancient VAKUU confirm fight",
+                  "ScenarioTag": "vakuu-fight",
+                  "OwnerArea": "Ancients.Vakuu.FightOptionSetup",
+                  "LogScanOffsetBytes": 0,
+                  "FailureReasonCodes": [],
+                  "HangSignals": []
+                }
+                """);
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[Startup] Time to main menu\r\n");
+            File.WriteAllText(currentLogPath, "[Startup] Time to main menu\r\n");
+            File.WriteAllText(staleLogPath, "[ERROR] Spire Plus error from stale audit source\r\n");
+            var staleHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(staleLogPath))).ToLowerInvariant();
+            File.WriteAllText(
+                Path.Combine(iterationDir, "godot-log-audit.json"),
+                $$"""
+                {
+                  "Path": {{JsonSerializer.Serialize(staleLogPath)}},
+                  "Length": {{new FileInfo(staleLogPath).Length}},
+                  "Sha256": "{{staleHash}}",
+                  "Clean": false,
+                  "SignatureHits": [{ "Name": "Spire Plus error/exception", "Count": 1 }]
+                }
+                """);
+            WriteMonkeySummary(workdir, 1);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var iteration = FindIteration(document.RootElement, 1);
+            var auditBindingFinding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_current_iteration_binding_mismatch");
+
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.Equal("RuntimeHarness", auditBindingFinding.GetProperty("OwnerArea").GetString());
+            Assert.DoesNotContain(
+                iteration.GetProperty("Findings").EnumerateArray(),
+                item => item.GetProperty("Signal").GetString() == "audit:Spire Plus error/exception");
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierRejectsStaleFullLogPrefixForEnabledMode()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "AdditiveBatch1");
+            var stalePrefix = BuildSts1ModeRuntimeLog("AdditiveBatch1");
+            var currentOffSlice = """
+                v0.1.0-private-beta.86
+                release = v0.107.0
+                RitsuLib Version: 0.4.16 [compat branch: 0.107.0]
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """;
+            File.WriteAllText(Path.Combine(workdir, "godot.log.before"), stalePrefix);
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), stalePrefix + currentOffSlice);
+
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "AdditiveBatch1",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.86",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.16",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-OutFile",
+                Path.Combine(workdir, "runtime-evidence-packet-check.json"));
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("enabled_mode_log_verifier_uses_current_slice status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("full_log_not_used_as_canonical_verifier_input status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("current_slice_derived_from_before_after status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("enabled_mode_log_verifier_clean status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("log_verifier log_path=", result.Output, StringComparison.Ordinal);
+            Assert.Contains("godot.log.current-iteration", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierDerivesAndAuditsCurrentSlice()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "AdditiveBatch1");
+            const string stalePrefix = "[Startup] stale pre-launch log prefix without StS1 registrations\r\n";
+            var currentSlice = BuildSts1ModeRuntimeLog("AdditiveBatch1");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.before"), stalePrefix);
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), stalePrefix + currentSlice);
+
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "AdditiveBatch1",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.86",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.16",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-OutFile",
+                Path.Combine(workdir, "runtime-evidence-packet-check.json"),
+                "-FailOnMismatch");
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier failed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("derived_current_slice_audit_generated status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("enabled_mode_log_verifier_clean status=pass", result.Output, StringComparison.Ordinal);
+
+            using var report = JsonDocument.Parse(File.ReadAllText(Path.Combine(workdir, "runtime-evidence-packet-check.json")));
+            Assert.True(report.RootElement.GetProperty("CurrentSliceDerivedFromBeforeAfter").GetBoolean());
+            Assert.EndsWith("godot.log.current-iteration", report.RootElement.GetProperty("CanonicalLogPath").GetString(), StringComparison.OrdinalIgnoreCase);
+            Assert.EndsWith("godot-log-current-iteration-audit.json", report.RootElement.GetProperty("CanonicalAuditPath").GetString(), StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
@@ -1591,6 +1775,26 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "source_version_matches_installed_game",
             "Severity",
             "Warnings",
+            "autoslay_autoslayer_source_exists",
+            "autoslay_event_room_handler_exists",
+            "autoslay_start_seed_logfile_signature_present",
+            "public void Start(string seed, string? logFile = null)",
+            "autoslay_noninteractive_mode_check_present",
+            "NonInteractiveMode.AutoSlayerCheck = () => IsActive",
+            "autoslay_debug_seed_override_present",
+            "NGame.Instance.DebugSeedOverride = seed",
+            "autoslay_card_selector_present",
+            "CardSelectCmd.UseSelector(new AutoSlayCardSelector(_random))",
+            "autoslay_ancient_dialogue_handler_present",
+            "Detected Ancient event, clicking through dialogue",
+            "autoslay_event_option_selection_logged",
+            "Selecting event option:",
+            "autoslay_event_triggered_combat_logged",
+            "Event triggered combat, handling combat first",
+            "autoslay_event_combat_started_logged",
+            "Event combat started, applying buffs and killing enemies",
+            "AutoSlay = [pscustomobject]$autoSlaySummary",
+            "GameNativeAutoSlayStillRequiresRuntimeLaunchEvidence",
             "source_root_is_git_ignored",
             "source_root_has_no_tracked_files",
             "godot_open_command_prepared",
@@ -1616,6 +1820,36 @@ public sealed class RuntimeMonkeyStabilityGuardTests
         Assert.DoesNotContain("dotnet build", checker, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("dotnet test", checker, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("dotnet publish", checker, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void RuntimeMonkeyDocsKeepGameNativeAutoSlayProofSeparateFromDevConsoleHarness()
+    {
+        var docs = ReadRepoText("docs", "testing", "runtime-monkey-stability.md");
+        var runner = ReadRepoText("scripts", "run-spire-plus-monkey-stability.ps1");
+
+        AssertSourceContains(
+            docs,
+            "## Game-Native AutoSlay Batch Lane",
+            "`source code\\src\\Core\\AutoSlay\\AutoSlayer.cs`",
+            "`AutoSlayer.Start(seed, logFile)`",
+            "`NonInteractiveMode.AutoSlayerCheck = () => IsActive`",
+            "`NGame.Instance.DebugSeedOverride = seed`",
+            "`CardSelectCmd.UseSelector(new AutoSlayCardSelector(_random))`",
+            "`source code\\src\\Core\\AutoSlay\\Handlers\\Rooms\\EventRoomHandler.cs`",
+            "Detected Ancient event, clicking",
+            "Selecting event option:",
+            "Event triggered combat",
+            "Event combat started",
+            "Current `scripts\\run-spire-plus-monkey-stability.ps1` lane is not",
+            "AutoSlay-backed",
+            "Do not count a packet from that lane as game-native",
+            "the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`",
+            "observed event-room lines proving Ancient dialogue/options were traversed");
+
+        Assert.DoesNotContain("AutoSlayer", runner, StringComparison.Ordinal);
+        Assert.DoesNotContain("AutoSlayLog", runner, StringComparison.Ordinal);
+        Assert.Contains("DevConsole", runner, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1673,8 +1907,119 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             }
             """);
         File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), fullLog + currentLog);
-        File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), currentLog);
-        File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), auditJson);
+        var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+        File.WriteAllText(currentLogPath, currentLog);
+        File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, auditJson));
+    }
+
+    private static string BuildSts1ModeRuntimeLog(string mode)
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var expectedPath = Path.Combine(Path.GetTempPath(), "sts1-runtime-expected-" + Guid.NewGuid().ToString("N") + ".json");
+
+        try
+        {
+            var result = RunPowerShell(verifier, "-Mode", mode, "-PrintExpected", "-OutFile", expectedPath);
+            Assert.True(result.ExitCode == 0, $"Expected-shape command failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(expectedPath));
+            var tuples = document.RootElement.GetProperty("ExpectedRegistrationTuples").EnumerateArray().Select(item => item.GetString()!).ToArray();
+            var lines = new List<string>
+            {
+                "v0.1.0-private-beta.86",
+                "release = v0.107.0",
+                "RitsuLib Version: 0.4.16 [compat branch: 0.107.0]",
+                "Feature Sts1Events bootstrap=enabled, live=Enabled",
+                mode == "CanaryOnly"
+                    ? "StS1 events CanaryOnly mode: registering 4 canary events."
+                    : "StS1 events AdditiveBatch1 mode: registering 10 verified-scope events.",
+                mode == "CanaryOnly"
+                    ? "[StS1 Events] Registering canary events"
+                    : "[StS1 Events] Registering AdditiveBatch1 events"
+            };
+
+            foreach (var tuple in tuples)
+            {
+                var parts = tuple.Split(':');
+                Assert.True(parts.Length == 3, $"Unexpected registration tuple: {tuple}");
+                lines.Add(parts[0] == "ActEvent"
+                    ? $"[StS1 Events] Registered act event: {parts[2]} -> {parts[1]}"
+                    : $"[StS1 Events] Registered shared event: {parts[2]}");
+            }
+
+            lines.Add(mode == "CanaryOnly"
+                ? "[StS1 Events] Canary events registered successfully."
+                : "[StS1 Events] AdditiveBatch1 events registered successfully.");
+
+            return string.Join("\r\n", lines) + "\r\n";
+        }
+        finally
+        {
+            if (File.Exists(expectedPath))
+            {
+                File.Delete(expectedPath);
+            }
+        }
+    }
+
+    private static void WriteSts1RuntimePacketState(string evidenceRoot, string mode)
+    {
+        File.WriteAllText(Path.Combine(evidenceRoot, "settings.save.before"), "{}");
+        File.WriteAllText(Path.Combine(evidenceRoot, "game-release-info.json"), """{"version":"0.107.0"}""");
+        Directory.CreateDirectory(Path.Combine(evidenceRoot, "mods"));
+        File.WriteAllText(
+            Path.Combine(evidenceRoot, "session-state.json"),
+            $$"""
+            {
+              "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+              "DisableSpirePlus": false,
+              "MoveOtherMods": true,
+              "MoveCurrentRuns": true,
+              "MovedMods": [],
+              "MovedCurrentRuns": [],
+              "GameRoot": {{JsonSerializer.Serialize(evidenceRoot)}},
+              "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(evidenceRoot, "mods"))}},
+              "LogPath": {{JsonSerializer.Serialize(Path.Combine(evidenceRoot, "godot.log.after-launch"))}},
+              "Sts1EventModeEnvironment": {{JsonSerializer.Serialize(mode)}},
+              "Sts1UnsafeModeEnvironment": ""
+            }
+            """);
+        File.WriteAllText(
+            Path.Combine(evidenceRoot, "restore-state.json"),
+            """
+            {
+              "RestoredAt": "2026-06-18T00:00:00.0000000Z",
+              "RestoredModCount": 0,
+              "RestoredCurrentRunCount": 0,
+              "SettingsHashAfterRestore": "same",
+              "SettingsBackupHashAfterRestore": "same"
+            }
+            """);
+    }
+
+    private static string ToBoundAuditJson(string currentLogPath, string auditJson)
+    {
+        JsonDocument auditDocument;
+        try
+        {
+            auditDocument = JsonDocument.Parse(auditJson);
+        }
+        catch (JsonException)
+        {
+            return auditJson;
+        }
+
+        using (auditDocument)
+        {
+            var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+            var result = RunPowerShell(auditScript, "-Path", currentLogPath);
+            if (result.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"Audit fixture generation failed:{Environment.NewLine}{result.Output}{result.Error}");
+            }
+
+            return result.Output;
+        }
     }
 
     private static void WriteMonkeySummary(string evidenceRoot, params int[] failedIterations)
