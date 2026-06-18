@@ -16,7 +16,7 @@ Coordination boundary: do not run overlapping validation, package/release, runti
 
 - Current repository HEAD must be checked at run start. Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
-- Latest beta.87 no-game validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: 0 build errors and 0 warnings; split no-build lanes covered 139 passed / 0 failed / 15 skipped / 154 total for the migration-focused surface; opt-in artifact/package coverage passed; the latest focused follow-up recapture covered analyzer coverage 23 / 0 / 0 / 23, packet/docs/Urda coverage 66 / 0 / 0 / 66, and Ancient art hygiene split coverage 11 / 0 / 0 / 11, with current-doc claims 1070 / 0, runtime preflight 27 / 0, v19 ledger 534 / 0, v20 overlay 29 / 0, static suite 15 / 0, and static-file hygiene 12 / 0. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
+- Latest beta.87 no-game validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: 0 build errors and 0 warnings; split no-build lanes covered 139 passed / 0 failed / 15 skipped / 154 total for the migration-focused surface; opt-in artifact/package coverage passed; the latest follow-up migration validation passed build 0 warnings / 0 errors plus split focused no-build runtime/analyzer/packet/docs coverage 49 / 0 / 0 / 49 for `RuntimeFailureAnalyzer|RuntimeMonkeyPacketChecker|GameNativeAutoSlayPacketVerifier|RuntimeMonkeyDocs`, with current-doc claims 1090 / 0, runtime preflight 27 / 0, v19 ledger 534 / 0, v20 overlay 29 / 0, static suite 15 / 0, and static-file hygiene 12 / 0. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
 - Patch state remains 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
 - Historical `v0.106.1` loader-gate runtime proof exists:
   - Off: `.tools\runtime-evidence\smoke-k1-off-20260602-145938`, 0 Sts1Events registrations, clean audit.
@@ -28,6 +28,7 @@ Coordination boundary: do not run overlapping validation, package/release, runti
 - Current AdditiveBatch1 enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`: 10 event types / 14 registration lines, retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`, both 0 mismatches. The beta.85 AdditiveBatch1 13/14 verifier mismatch remains root-cause history only.
 - Dependency decision is recorded: beta.87 intentionally aligns the compile package and manifest minimum on `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.24`, with BaseLib `v3.2.1` and package version `v0.1.0-private-beta.87`.
 - Batch 4c is proposal-only. The current candidate list is `docs/features/ritsulib-migration/batch-4c-candidates.md`; migration requires explicit owner approval and fresh validation.
+- A current no-launch Mod Settings UI scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-211923/` with `GitHead` `629680dd276046c785d30dd5448987040f9671a0`, package `v0.1.0-private-beta.87`, `Capture=None`, and `NoLaunch=true`. It is pending scaffold evidence only, not screenshot, log/audit, gameplay, or handoff proof.
 - Gameplay, Mod Settings UI page refresh, event screenshots, save-load, image/render, replacement functional proof, multiplayer fail-closed proof, independent QA, and tester-package handoff remain pending. Future handoff must recapture HEAD and worktree status after any later edits.
 - Release-ready and live-ready remain no.
 
@@ -90,7 +91,7 @@ For CanaryOnly events (`Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1Divin
 
 ### Step 3: UI And Multiplayer Evidence
 
-1. Capture current Spire Plus Mod Settings UI evidence. Start with `scripts\collect-mod-settings-evidence.ps1 -NoLaunch`, then rerun the same evidence dir with `-Capture List -RequireSpireForeground` and `-Capture Page -RequireSpireForeground` after manually opening the Mods list and Spire Plus page.
+1. Capture current Spire Plus Mod Settings UI evidence. Continue from `.tools/runtime-evidence/mod-settings-current-display-20260618-211923/`, rerunning that same evidence dir with `-Capture List -RequireSpireForeground` and `-Capture Page -RequireSpireForeground` after manually opening the Mods list and Spire Plus page.
 2. Capture or block co-op/fail-closed proof.
 3. Confirm loader-gate proof is not being treated as gameplay proof.
 
