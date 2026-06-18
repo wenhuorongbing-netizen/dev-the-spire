@@ -52,6 +52,33 @@ function Get-JsonValue {
     return $DefaultValue
 }
 
+function Get-JsonArrayValues {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    $items = [System.Collections.Generic.List[object]]::new()
+    if (-not (Test-JsonProperty -Object $Object -Name $Name)) {
+        return ,$items
+    }
+
+    $value = $Object.$Name
+    if ($null -eq $value) {
+        return ,$items
+    }
+
+    if ($value -is [System.Array]) {
+        foreach ($item in $value) {
+            $items.Add($item) | Out-Null
+        }
+    } else {
+        $items.Add($value) | Out-Null
+    }
+
+    return ,$items
+}
+
 function Read-JsonOrNull {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -327,17 +354,19 @@ function Get-AuditHits {
         return @()
     }
 
-    $items = @($audit)
-    return @($items | ForEach-Object {
-        foreach ($hit in @($_.SignatureHits)) {
+    $hits = [System.Collections.Generic.List[object]]::new()
+    foreach ($item in @($audit)) {
+        foreach ($hit in (Get-JsonArrayValues -Object $item -Name 'SignatureHits')) {
             if ([int](Get-JsonValue -Object $hit -Name 'Count' -DefaultValue 0) -gt 0) {
-                [pscustomobject]@{
+                $hits.Add([pscustomobject]@{
                     Name = [string](Get-JsonValue -Object $hit -Name 'Name' -DefaultValue '')
                     Count = [int](Get-JsonValue -Object $hit -Name 'Count' -DefaultValue 0)
-                }
+                }) | Out-Null
             }
         }
-    })
+    }
+
+    return ,$hits
 }
 
 function Analyze-Iteration {
@@ -422,9 +451,9 @@ function Analyze-Iteration {
     $logOwnerArea = Get-OwnerAreaFromText -Text $logText -Command ''
     $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
 
-    $auditHits = if (Test-Path -LiteralPath $auditCandidate -PathType Leaf) { Get-AuditHits -Path $auditCandidate } else { @() }
-    $failureCodes = if ($result) { @((Get-JsonValue -Object $result -Name 'FailureReasonCodes' -DefaultValue @())) } else { @() }
-    $hangSignals = if ($result) { @((Get-JsonValue -Object $result -Name 'HangSignals' -DefaultValue @())) } else { @() }
+    $auditHits = if (Test-Path -LiteralPath $auditCandidate -PathType Leaf) { Get-AuditHits -Path $auditCandidate } else { [System.Collections.Generic.List[object]]::new() }
+    $failureCodes = if ($result) { Get-JsonArrayValues -Object $result -Name 'FailureReasonCodes' } else { [System.Collections.Generic.List[object]]::new() }
+    $hangSignals = if ($result) { Get-JsonArrayValues -Object $result -Name 'HangSignals' } else { [System.Collections.Generic.List[object]]::new() }
 
     if ($iterationResultMissing) {
         $missingResultRationale = if ($null -ne $SummaryResult) {
@@ -444,7 +473,7 @@ function Analyze-Iteration {
             -EvidenceFiles @($resultPath, $logCandidate, $auditCandidate, $probeSamplesCandidate, $sts1ModeCandidate)
     }
 
-    $retainedSignals = @((@($hangSignals) + @($failureCodes)) | Select-Object -Unique)
+    $retainedSignals = @(($hangSignals.ToArray() + $failureCodes.ToArray()) | Select-Object -Unique)
     foreach ($signal in $retainedSignals) {
         if ([string]::IsNullOrWhiteSpace([string]$signal)) {
             continue
@@ -532,7 +561,7 @@ function Analyze-Iteration {
 
     if (Test-Path -LiteralPath $sts1ModeCandidate -PathType Leaf) {
         $sts1Report = Read-JsonOrNull -Path $sts1ModeCandidate
-        $sts1Mismatches = if ($sts1Report) { @((Get-JsonValue -Object $sts1Report -Name 'Mismatches' -DefaultValue @())) } else { @() }
+        $sts1Mismatches = if ($sts1Report) { Get-JsonArrayValues -Object $sts1Report -Name 'Mismatches' } else { [System.Collections.Generic.List[object]]::new() }
         if ($sts1Mismatches.Count -gt 0) {
             Add-Finding `
                 -Findings $findings `
@@ -565,9 +594,9 @@ function Analyze-Iteration {
     }
 
     $signals = @(
-        @($failureCodes) +
-        @($hangSignals) +
-        @($auditHits | ForEach-Object { "audit:$($_.Name)" }) +
+        $failureCodes.ToArray() +
+        $hangSignals.ToArray() +
+        @($auditHits.ToArray() | ForEach-Object { "audit:$($_.Name)" }) +
         @($findings | ForEach-Object { $_.Signal })
     ) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -Unique
 
@@ -582,9 +611,9 @@ function Analyze-Iteration {
         OwnerAreaFromCommand = $commandOwnerArea
         Signals = @($signals)
         EvidenceFiles = @($evidenceFiles)
-        FailureReasonCodes = @($failureCodes)
-        HangSignals = @($hangSignals)
-        AuditHits = @($auditHits)
+        FailureReasonCodes = @($failureCodes.ToArray())
+        HangSignals = @($hangSignals.ToArray())
+        AuditHits = @($auditHits.ToArray())
         Findings = @($findings)
     }
 }

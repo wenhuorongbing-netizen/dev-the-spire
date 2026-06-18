@@ -592,6 +592,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "LogScanOffsetBytes",
             "FailureReasonCodes",
             "HangSignals",
+            "Get-JsonArrayValues",
             "EvidenceFiles",
             "Confidence",
             "ScenarioTag",
@@ -649,6 +650,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "ALLOW_UNVERIFIED_COOP",
             "blocking_findings=");
 
+        Assert.DoesNotContain("@((Get-JsonValue", analyzer, StringComparison.Ordinal);
         Assert.DoesNotContain("Start-Process", analyzer, StringComparison.Ordinal);
         Assert.DoesNotContain("dotnet", analyzer, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Patch application complete:", analyzer, StringComparison.Ordinal);

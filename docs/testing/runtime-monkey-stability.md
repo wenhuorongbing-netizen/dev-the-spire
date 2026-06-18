@@ -281,7 +281,9 @@ owner routing, a valid offset-derived slice is preferred over a stale retained
 slice. If `iteration-result.json` is missing or invalid, `monkey-summary.json`
 may still provide a fallback row for routing, but the analyzer reports a
 `RuntimeHarness` blocker because summary data does not replace the canonical
-per-iteration artifact. For hung processes, unclassified retained failures, audit hits, Spire
+per-iteration artifact. Empty retained JSON arrays such as `Mismatches`,
+`FailureReasonCodes`, `HangSignals`, and `SignatureHits` are treated as empty
+signal sets before owner routing. For hung processes, unclassified retained failures, audit hits, Spire
 Plus error/exception hits, and co-op override failures, explicit log-derived
 package/runtime drift, StS1, preview-tool, or multiplayer-policy signatures take
 precedence over the planned command owner. Package/runtime drift classification
