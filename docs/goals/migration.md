@@ -48,7 +48,7 @@ before any later handoff.
 | StS1 static/governance lanes | Current pass | Current-doc claims 1090/0 after AutoSlay proof-mode `-ExpectedAncientIds` target coverage, runtime-monkey escaped-path and malformed-path hardening, analyzer noncanonical-path checks, probe process identity checks, and malformed AutoSlay retained-path rejection; v19 gate ledger 534/0; v20 final-gate overlay 29/0; runtime preflight 27/0; static suite 15/0; static-file hygiene 12/0. |
 | Batch 4a/4b migration | Source-level complete | Current patch inventory records 25 migrated `IPatchMethod` patch classes and 142 remaining raw `HarmonyPatch` declarations. |
 | Batch 4c migration | Proposal only / static review recaptured | 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration work. |
-| Mod Settings UI scaffold | Prepared / live pending | No-launch scaffold refreshed at `.tools/runtime-evidence/mod-settings-current-display-20260618-211923/` with `GitHead` `629680dd276046c785d30dd5448987040f9671a0`, package `v0.1.0-private-beta.87`, `Capture=None`, and `NoLaunch=true`; the scaffold recorded the current dirty documentation follow-up state. This is not screenshot, log/audit, or gameplay proof. |
+| Mod Settings UI scaffold | Prepared / live pending | No-launch scaffold refreshed at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/` with `GitHead` `1cb58dbcbfcdb08defe50a4687023aa59d4a229d`, clean `GitStatusShort`, package `v0.1.0-private-beta.87`, `Capture=None`, and `NoLaunch=true`; the preflight recorded Slay the Spire 2 not running. This is not screenshot, log/audit, or gameplay proof. |
 | Manual proof | Pending | Gameplay, clicked UI, save-load, image rendering, replacement behavior, co-op/fail-closed behavior, independent QA, and tester handoff are still open. |
 
 Current beta.85/beta.86 loader proof remains previous-package context, and current beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`.
@@ -65,7 +65,7 @@ Current beta.85/beta.86 loader proof remains previous-package context, and curre
 
 ## Next Actions
 
-1. Refresh Mod Settings UI proof for the current Spire Plus display-name package; the no-launch scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-211923/`, and it must be rerun with `-Capture List` / `-Capture Page` only after manually opening the relevant UI.
+1. Refresh Mod Settings UI proof for the current Spire Plus display-name package; the current no-launch scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/`, and it must be rerun with `-Capture List` / `-Capture Page` only after manually opening the relevant UI.
 2. Capture Canary gameplay proof for Big Fish, Golden Idol, The Lab, and Divine Fountain.
 3. Capture AdditiveBatch1 gameplay proof only after loader/registration evidence remains clean.
 4. Capture save-load and image/render proof for event and replacement surfaces.

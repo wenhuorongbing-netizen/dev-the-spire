@@ -28,7 +28,7 @@ Coordination boundary: do not run overlapping validation, package/release, runti
 - Current AdditiveBatch1 enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`: 10 event types / 14 registration lines, retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`, both 0 mismatches. The beta.85 AdditiveBatch1 13/14 verifier mismatch remains root-cause history only.
 - Dependency decision is recorded: beta.87 intentionally aligns the compile package and manifest minimum on `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.24`, with BaseLib `v3.2.1` and package version `v0.1.0-private-beta.87`.
 - Batch 4c is proposal-only. The current candidate list is `docs/features/ritsulib-migration/batch-4c-candidates.md`; the 2026-06-18 static recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Migration requires explicit owner approval and fresh validation.
-- A current no-launch Mod Settings UI scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-211923/` with `GitHead` `629680dd276046c785d30dd5448987040f9671a0`, package `v0.1.0-private-beta.87`, `Capture=None`, and `NoLaunch=true`. It is pending scaffold evidence only, not screenshot, log/audit, gameplay, or handoff proof.
+- A current no-launch Mod Settings UI scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/` with `GitHead` `1cb58dbcbfcdb08defe50a4687023aa59d4a229d`, clean `GitStatusShort`, package `v0.1.0-private-beta.87`, `Capture=None`, and `NoLaunch=true`. Its preflight recorded Slay the Spire 2 not running. It is pending scaffold evidence only, not screenshot, log/audit, gameplay, or handoff proof.
 - Gameplay, Mod Settings UI page refresh, event screenshots, save-load, image/render, replacement functional proof, multiplayer fail-closed proof, independent QA, and tester-package handoff remain pending. Future handoff must recapture HEAD and worktree status after any later edits.
 - Release-ready and live-ready remain no.
 
@@ -91,7 +91,7 @@ For CanaryOnly events (`Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1Divin
 
 ### Step 3: UI And Multiplayer Evidence
 
-1. Capture current Spire Plus Mod Settings UI evidence. Continue from `.tools/runtime-evidence/mod-settings-current-display-20260618-211923/`, rerunning that same evidence dir with `-Capture List -RequireSpireForeground` and `-Capture Page -RequireSpireForeground` after manually opening the Mods list and Spire Plus page.
+1. Capture current Spire Plus Mod Settings UI evidence. Continue from `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/`, rerunning that same evidence dir with `-Capture List -RequireSpireForeground` and `-Capture Page -RequireSpireForeground` after manually opening the Mods list and Spire Plus page.
 2. Capture or block co-op/fail-closed proof.
 3. Confirm loader-gate proof is not being treated as gameplay proof.
 
