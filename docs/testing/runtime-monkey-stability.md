@@ -219,9 +219,9 @@ contain only `vakuu-fight` planned iterations. A 1000-iteration
 `AncientUiPlusVakuuFight` round-robin packet must contain exactly 200
 `vakuu-fight` planned iterations.
 The current `vakuu-fight` command proves only the forced fight option is shown
-when the copied log contains `[SPIREPLUS-EVIDENCE] VakuuFight
-fight_option_shown`. It is not child-combat proof unless later evidence also
-contains `fight_started` and `child_combat_room_entered`.
+when the copied log contains `[SPIREPLUS-EVIDENCE] VakuuFight fight_option_shown`.
+It is not child-combat proof unless later evidence also contains `fight_started`
+and `child_combat_room_entered`.
 
 The launched packet checker requires `MainMenuObservation` and
 `RuntimeObservation` in each `iteration-result.json`. These records include
