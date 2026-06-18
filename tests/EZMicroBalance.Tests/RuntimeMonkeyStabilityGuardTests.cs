@@ -1976,10 +1976,13 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "AutoSlay-backed",
             "Do not count a packet from that lane as game-native",
             "the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`",
-            "observed event-room lines proving Ancient dialogue/options were traversed",
+            "one `run-result.json` per seed",
+            "`RecoveredSource.MatchesInstalledGame`",
+            "ordered start/event-option/completion",
+            "observed ordered event-room lines in both",
             "check-spire-plus-autoslay-packet.ps1",
             "GameNativeAutoSlay",
-            "per-seed AutoSlay start/completion markers");
+            "-ExpectedPatchCount 25");
 
         Assert.DoesNotContain("AutoSlayer", runner, StringComparison.Ordinal);
         Assert.DoesNotContain("AutoSlayLog", runner, StringComparison.Ordinal);
@@ -2003,6 +2006,15 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 {
                   "Passed": true,
                   "Mismatches": [],
+                  "Game": {
+                    "Version": "v0.107.0"
+                  },
+                  "RecoveredSource": {
+                    "Version": "v0.107.0",
+                    "Commit": "fixture",
+                    "Disposition": "current",
+                    "MatchesInstalledGame": true
+                  },
                   "AutoSlay": {
                     "StartSeedLogFileSignature": true,
                     "NonInteractiveCheck": true,
@@ -2015,6 +2027,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                   },
                   "EvidenceUsePolicy": {
                     "NotRuntimeProof": true,
+                    "RefreshSourceSnapshotBeforeCurrentApiClaims": false,
                     "LocalSourceReferenceOnly": true,
                     "AuthorizedLocalInstallOnly": true,
                     "ThirdPartyDumpsProhibited": true,
@@ -2026,17 +2039,72 @@ public sealed class RuntimeMonkeyStabilityGuardTests
 
             var runDir = Path.Combine(workdir, "run-0001");
             Directory.CreateDirectory(runDir);
+            var runResultPath = Path.Combine(runDir, "run-result.json");
             var autoSlayLogPath = Path.Combine(runDir, "autoslay.log");
+            var beforeLogPath = Path.Combine(runDir, "godot.log.before");
+            var afterLogPath = Path.Combine(runDir, "godot.log.after-launch");
             var currentLogPath = Path.Combine(runDir, "godot.log.current-iteration");
+            var auditPath = Path.Combine(runDir, "godot-log-audit.json");
+            var sts1ModeCheckPath = Path.Combine(runDir, "sts1-mode-log-check.json");
             var autoSlayLog = string.Join(
                 Environment.NewLine,
                 $"12:00:00.000 [INFO] [AutoSlay] Starting run with seed={seed}",
                 "12:00:01.000 [INFO] [AutoSlay] Entering Event room (Act 1, Floor 2)",
                 "12:00:02.000 [INFO] [AutoSlay] Action: Selecting event option: Sts1BigFish (option: Box)",
-                $"12:00:03.000 [INFO] [AutoSlay] Run completed successfully with seed={seed}");
+                $"12:00:03.000 [INFO] [AutoSlay] Run completed successfully with seed={seed}") + Environment.NewLine;
+            var currentLog = string.Join(
+                Environment.NewLine,
+                "v0.1.0-private-beta.86",
+                "release = v0.107.0",
+                "RitsuLib Version: 0.4.16 [compat branch: 0.107.0]",
+                "[INFO] [EZMicroBalance] [Patcher - SpirePlus] Patch application complete: 25 applied, 0 ignored, 0 failed, 25 total",
+                "[INFO] [EZMicroBalance] ModPatcher applied 25 patches (25 registered).",
+                autoSlayLog.TrimEnd()) + Environment.NewLine;
+            var beforeLog = "11:59:59.000 [INFO] [Previous] old shared log line" + Environment.NewLine;
             File.WriteAllText(autoSlayLogPath, autoSlayLog);
-            File.WriteAllText(currentLogPath, autoSlayLog);
+            File.WriteAllText(beforeLogPath, beforeLog);
+            File.WriteAllText(currentLogPath, currentLog);
+            File.WriteAllText(afterLogPath, beforeLog + currentLog);
             var autoSlayLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(autoSlayLogPath))).ToLowerInvariant();
+            var currentLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(currentLogPath))).ToLowerInvariant();
+            var currentLogLength = new FileInfo(currentLogPath).Length;
+            File.WriteAllText(auditPath, ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
+            File.WriteAllText(
+                sts1ModeCheckPath,
+                $$"""
+                {
+                  "Mode": "Off",
+                  "LogPath": {{JsonSerializer.Serialize(currentLogPath)}},
+                  "LogLength": {{currentLogLength}},
+                  "LogSha256": {{JsonSerializer.Serialize(currentLogHash)}},
+                  "Mismatches": [],
+                  "Checks": [{ "Passed": true }]
+                }
+                """);
+            File.WriteAllText(
+                runResultPath,
+                $$"""
+                {
+                  "SchemaVersion": 1,
+                  "Launch": true,
+                  "RunnerKind": "GameNativeAutoSlay",
+                  "Invocation": "Spire Plus test hook calls AutoSlayer.Start(seed, logFile)",
+                  "Seed": {{JsonSerializer.Serialize(seed)}},
+                  "ProcessId": 4242,
+                  "StartTimestamp": "2026-06-18T10:00:00Z",
+                  "EndTimestamp": "2026-06-18T10:00:30Z",
+                  "ExitCode": 0,
+                  "StaleProcessCount": 0,
+                  "AutoSlayLogPath": "run-0001/autoslay.log",
+                  "AutoSlayLogSha256": {{JsonSerializer.Serialize(autoSlayLogHash)}},
+                  "GodotLogBeforePath": "run-0001/godot.log.before",
+                  "GodotLogAfterLaunchPath": "run-0001/godot.log.after-launch",
+                  "GodotLogCurrentIterationPath": "run-0001/godot.log.current-iteration",
+                  "GodotLogCurrentIterationSha256": {{JsonSerializer.Serialize(currentLogHash)}},
+                  "GodotLogAuditPath": "run-0001/godot-log-audit.json",
+                  "Sts1ModeLogCheckPath": "run-0001/sts1-mode-log-check.json"
+                }
+                """);
 
             File.WriteAllText(
                 Path.Combine(workdir, "autoslay-plan.json"),
@@ -2049,8 +2117,22 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                   "GameVersion": "0.107.0",
                   "RitsuLibVersion": "0.4.16",
                   "RitsuCompatBranch": "0.107.0",
+                  "Sts1EventMode": "Off",
                   "SourceWorkspaceCheckPath": "local-godot-source-workspace-check.json",
-                  "SourceWorkspaceCheckSha256": {{JsonSerializer.Serialize(sourceWorkspaceReportHash)}}
+                  "SourceWorkspaceCheckSha256": {{JsonSerializer.Serialize(sourceWorkspaceReportHash)}},
+                  "SourceWorkspace": {
+                    "Checked": true,
+                    "ReportPath": "local-godot-source-workspace-check.json",
+                    "ReportSha256": {{JsonSerializer.Serialize(sourceWorkspaceReportHash)}},
+                    "Passed": true,
+                    "SourceVersion": "v0.107.0",
+                    "SourceCommit": "fixture",
+                    "InstalledGameVersion": "v0.107.0",
+                    "Disposition": "current",
+                    "MatchesInstalledGame": true,
+                    "RefreshSourceSnapshotBeforeCurrentApiClaims": false,
+                    "NotRuntimeProof": true
+                  }
                 }
                 """);
             File.WriteAllText(
@@ -2065,9 +2147,15 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                     {
                       "Seed": {{JsonSerializer.Serialize(seed)}},
                       "ExitCode": 0,
+                      "RunResultPath": "run-0001/run-result.json",
                       "AutoSlayLogPath": "run-0001/autoslay.log",
                       "AutoSlayLogSha256": {{JsonSerializer.Serialize(autoSlayLogHash)}},
-                      "GodotLogCurrentIterationPath": "run-0001/godot.log.current-iteration"
+                      "GodotLogBeforePath": "run-0001/godot.log.before",
+                      "GodotLogAfterLaunchPath": "run-0001/godot.log.after-launch",
+                      "GodotLogCurrentIterationPath": "run-0001/godot.log.current-iteration",
+                      "GodotLogCurrentIterationSha256": {{JsonSerializer.Serialize(currentLogHash)}},
+                      "GodotLogAuditPath": "run-0001/godot-log-audit.json",
+                      "Sts1ModeLogCheckPath": "run-0001/sts1-mode-log-check.json"
                     }
                   ]
                 }
@@ -2085,6 +2173,8 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 "0.4.16",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
+                "-ExpectedPatchCount",
+                "25",
                 "-OutFile",
                 Path.Combine(workdir, "autoslay-packet-check.json"),
                 "-FailOnMismatch");
@@ -2092,8 +2182,17 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             Assert.True(passResult.ExitCode == 0, $"AutoSlay packet verifier failed:{Environment.NewLine}{passResult.Output}{passResult.Error}");
             Assert.Contains("plan_runner_kind_is_game_native_autoslay status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("plan_invocation_calls_autoslayer_start status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_report_matches_installed_game status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_run_seeds_match_plan_seeds status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_launch_true status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_autoslay_log_hash_present status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_current_iteration_log_under_evidence_dir status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_current_iteration_log_matches_after_launch_slice status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_expected_patch_count_in_current_log status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_audit_recomputed_clean status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_sts1_mode_log_check_mode_matches_plan status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_autoslay_log_event_sequence_observed status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_current_log_event_sequence_observed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_event_room_traversal_observed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("mismatches=0", passResult.Output, StringComparison.Ordinal);
 
@@ -2108,10 +2207,28 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             File.WriteAllText(
                 summaryPath,
                 File.ReadAllText(summaryPath).Replace(autoSlayLogHash, updatedAutoSlayLogHash, StringComparison.Ordinal));
-            var failResult = RunPowerShell(verifier, "-EvidenceDir", workdir);
+            File.WriteAllText(
+                runResultPath,
+                File.ReadAllText(runResultPath).Replace(autoSlayLogHash, updatedAutoSlayLogHash, StringComparison.Ordinal));
+            var failResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.86",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.16",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
 
             Assert.True(failResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{failResult.Output}{failResult.Error}");
             Assert.Contains("run_0001_autoslay_log_hash_matches status=pass", failResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_current_log_event_sequence_observed status=pass", failResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_autoslay_log_event_sequence_observed status=fail", failResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_event_room_traversal_observed status=fail", failResult.Output, StringComparison.Ordinal);
             Assert.Contains("batch_event_room_traversal_observed status=fail", failResult.Output, StringComparison.Ordinal);
         }

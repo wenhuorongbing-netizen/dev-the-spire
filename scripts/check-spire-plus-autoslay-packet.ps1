@@ -504,22 +504,49 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $runName = "run_{0:D4}" -f ($i + 1)
     $seed = [string](Get-JsonValue -Object $run -Name 'Seed' -DefaultValue '')
     $exitCode = [int](Get-JsonValue -Object $run -Name 'ExitCode' -DefaultValue -999)
+    $runResultPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'RunResultPath' -DefaultValue ''))
     $autoSlayLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'AutoSlayLogPath' -DefaultValue ''))
+    $beforeLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogBeforePath' -DefaultValue ''))
+    $afterLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogAfterLaunchPath' -DefaultValue ''))
     $currentLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogCurrentIterationPath' -DefaultValue ''))
+    $auditPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogAuditPath' -DefaultValue ''))
+    $sts1ModeCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'Sts1ModeLogCheckPath' -DefaultValue ''))
     $autoSlayLogSha256 = [string](Get-JsonValue -Object $run -Name 'AutoSlayLogSha256' -DefaultValue '')
+    $currentLogSha256 = [string](Get-JsonValue -Object $run -Name 'GodotLogCurrentIterationSha256' -DefaultValue '')
+    $runResultExists = -not [string]::IsNullOrWhiteSpace($runResultPath) -and (Test-Path -LiteralPath $runResultPath -PathType Leaf)
     $autoSlayLogExists = -not [string]::IsNullOrWhiteSpace($autoSlayLogPath) -and (Test-Path -LiteralPath $autoSlayLogPath -PathType Leaf)
+    $beforeLogExists = -not [string]::IsNullOrWhiteSpace($beforeLogPath) -and (Test-Path -LiteralPath $beforeLogPath -PathType Leaf)
+    $afterLogExists = -not [string]::IsNullOrWhiteSpace($afterLogPath) -and (Test-Path -LiteralPath $afterLogPath -PathType Leaf)
     $currentLogExists = -not [string]::IsNullOrWhiteSpace($currentLogPath) -and (Test-Path -LiteralPath $currentLogPath -PathType Leaf)
+    $auditExists = -not [string]::IsNullOrWhiteSpace($auditPath) -and (Test-Path -LiteralPath $auditPath -PathType Leaf)
+    $sts1ModeCheckExists = -not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath) -and (Test-Path -LiteralPath $sts1ModeCheckPath -PathType Leaf)
 
     Add-Check -Name "${runName}_seed_present" -Passed (-not [string]::IsNullOrWhiteSpace($seed)) -Detail 'each AutoSlay run must retain its seed'
     Add-Check -Name "${runName}_seed_listed_in_plan" -Passed ($planSeeds -contains $seed) -Detail "seed '$seed' must be listed in autoslay-plan.json Seeds"
     Add-Check -Name "${runName}_exit_code_zero" -Passed ($exitCode -eq 0) -Detail "ExitCode must be 0 for proof packets; found $exitCode"
+    Add-Check -Name "${runName}_run_result_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($runResultPath)) -Detail 'RunResultPath must retain launch provenance for each run'
+    Add-Check -Name "${runName}_run_result_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $runResultPath -Directory $resolvedEvidenceDir) -Detail 'RunResultPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_run_result_exists" -Passed $runResultExists -Detail 'RunResultPath must point at retained run-result.json'
     Add-Check -Name "${runName}_autoslay_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogPath)) -Detail 'AutoSlayLogPath must be retained'
     Add-Check -Name "${runName}_autoslay_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $autoSlayLogPath -Directory $resolvedEvidenceDir) -Detail 'AutoSlayLogPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_autoslay_log_exists" -Passed $autoSlayLogExists -Detail 'AutoSlay log file must exist'
     Add-Check -Name "${runName}_autoslay_log_hash_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogSha256)) -Detail 'AutoSlayLogSha256 must be retained for each run'
+    Add-Check -Name "${runName}_before_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($beforeLogPath)) -Detail 'GodotLogBeforePath must retain the pre-launch shared godot.log snapshot'
+    Add-Check -Name "${runName}_before_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $beforeLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogBeforePath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_before_log_exists" -Passed $beforeLogExists -Detail 'GodotLogBeforePath must point at a retained pre-launch log'
+    Add-Check -Name "${runName}_after_launch_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($afterLogPath)) -Detail 'GodotLogAfterLaunchPath must retain the post-launch shared godot.log snapshot'
+    Add-Check -Name "${runName}_after_launch_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $afterLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogAfterLaunchPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_after_launch_log_exists" -Passed $afterLogExists -Detail 'GodotLogAfterLaunchPath must point at a retained post-launch log'
     Add-Check -Name "${runName}_current_iteration_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($currentLogPath)) -Detail 'GodotLogCurrentIterationPath must be retained'
     Add-Check -Name "${runName}_current_iteration_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $currentLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogCurrentIterationPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_current_iteration_log_exists" -Passed $currentLogExists -Detail 'GodotLogCurrentIterationPath must point at a retained current-iteration log'
+    Add-Check -Name "${runName}_current_iteration_log_hash_present" -Passed (-not [string]::IsNullOrWhiteSpace($currentLogSha256)) -Detail 'GodotLogCurrentIterationSha256 must be retained for each run'
+    Add-Check -Name "${runName}_audit_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($auditPath)) -Detail 'GodotLogAuditPath must retain the audit of godot.log.current-iteration'
+    Add-Check -Name "${runName}_audit_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $auditPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogAuditPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_audit_exists" -Passed $auditExists -Detail 'GodotLogAuditPath must point at retained godot-log-audit.json'
+    Add-Check -Name "${runName}_sts1_mode_check_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath)) -Detail 'Sts1ModeLogCheckPath must retain the StS1 mode verifier report'
+    Add-Check -Name "${runName}_sts1_mode_check_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $sts1ModeCheckPath -Directory $resolvedEvidenceDir) -Detail 'Sts1ModeLogCheckPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_sts1_mode_check_exists" -Passed $sts1ModeCheckExists -Detail 'Sts1ModeLogCheckPath must point at retained sts1-mode-log-check.json'
 
     $autoSlayLog = ''
     $currentLog = ''
@@ -533,17 +560,143 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     if (-not [string]::IsNullOrWhiteSpace($autoSlayLogSha256) -and $autoSlayLogExists) {
         Add-Check -Name "${runName}_autoslay_log_hash_matches" -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $autoSlayLogPath), $autoSlayLogSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'AutoSlayLogSha256 must match AutoSlayLogPath'
     }
+    if (-not [string]::IsNullOrWhiteSpace($currentLogSha256) -and $currentLogExists) {
+        Add-Check -Name "${runName}_current_iteration_log_hash_matches" -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $currentLogPath), $currentLogSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'GodotLogCurrentIterationSha256 must match GodotLogCurrentIterationPath'
+    }
+
+    if ($beforeLogExists -and $afterLogExists -and $currentLogExists) {
+        $sliceBinding = Test-CurrentSliceBinding -BeforePath $beforeLogPath -AfterPath $afterLogPath -CurrentPath $currentLogPath
+        Add-Check -Name "${runName}_current_iteration_log_matches_after_launch_prefix" -Passed ([bool]$sliceBinding.PrefixMatches) -Detail $sliceBinding.Detail
+        Add-Check -Name "${runName}_current_iteration_log_matches_after_launch_slice" -Passed ([bool]$sliceBinding.SliceMatches) -Detail $sliceBinding.Detail
+    } else {
+        Add-Check -Name "${runName}_current_iteration_log_matches_after_launch_prefix" -Passed $false -Detail 'requires retained before, after-launch, and current-iteration logs'
+        Add-Check -Name "${runName}_current_iteration_log_matches_after_launch_slice" -Passed $false -Detail 'requires retained before, after-launch, and current-iteration logs'
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) {
+        Add-Check -Name "${runName}_expected_package_version_in_current_log" -Passed (Contains-Text -Text $currentLog -Needle $ExpectedPackageVersion) -Detail "current-iteration log must contain package version $ExpectedPackageVersion"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedGameVersion)) {
+        $expectedGameMarker = if ($ExpectedGameVersion.StartsWith('v', [System.StringComparison]::OrdinalIgnoreCase)) { "release = $ExpectedGameVersion" } else { "release = v$ExpectedGameVersion" }
+        Add-Check -Name "${runName}_expected_game_version_in_current_log" -Passed (Contains-Text -Text $currentLog -Needle $expectedGameMarker) -Detail "current-iteration log must contain game marker '$expectedGameMarker'"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuLibVersion) -and -not [string]::IsNullOrWhiteSpace($ExpectedRitsuCompatBranch)) {
+        $expectedRitsuMarker = "RitsuLib Version: $ExpectedRitsuLibVersion [compat branch: $ExpectedRitsuCompatBranch]"
+        Add-Check -Name "${runName}_expected_ritsulib_marker_in_current_log" -Passed (Contains-Text -Text $currentLog -Needle $expectedRitsuMarker) -Detail "current-iteration log must contain RitsuLib marker '$expectedRitsuMarker'"
+    }
+    if ($ExpectedPatchCount -gt 0) {
+        Add-Check -Name "${runName}_expected_patch_count_in_current_log" -Passed ((Get-PatchCountLineHits -Text $currentLog -ExpectedCount $ExpectedPatchCount) -gt 0) -Detail "current-iteration log must contain exact Spire Plus patch-count markers for $ExpectedPatchCount patches"
+    }
 
     Add-Check -Name "${runName}_autoslay_log_started_seed" -Passed ((-not [string]::IsNullOrWhiteSpace($seed)) -and (Contains-Text -Text $autoSlayLog -Needle "Starting run with seed=$seed")) -Detail 'AutoSlay log must contain the start marker for this seed'
     Add-Check -Name "${runName}_autoslay_log_completed_seed" -Passed ((-not [string]::IsNullOrWhiteSpace($seed)) -and (Contains-Text -Text $autoSlayLog -Needle "Run completed successfully with seed=$seed")) -Detail 'AutoSlay log must contain the completion marker for this seed'
     Add-Check -Name "${runName}_autoslay_log_no_failed_seed" -Passed (-not ((-not [string]::IsNullOrWhiteSpace($seed)) -and (Contains-Text -Text $autoSlayLog -Needle "Run failed with seed=$seed"))) -Detail 'proof packets must not contain a RunFailed marker for this seed'
     Add-Check -Name "${runName}_current_log_contains_autoslay_start" -Passed ((-not [string]::IsNullOrWhiteSpace($seed)) -and (Contains-Text -Text $currentLog -Needle "Starting run with seed=$seed")) -Detail 'current-iteration godot log must contain the AutoSlay start marker'
 
-    $runEventTraversal =
-        (Contains-Text -Text $autoSlayLog -Needle 'Entering Event room') -and
-        (Contains-Text -Text $autoSlayLog -Needle 'Selecting event option:')
+    $eventSequence = @(
+        "Starting run with seed=$seed",
+        'Entering Event room',
+        'Selecting event option:',
+        "Run completed successfully with seed=$seed"
+    )
+    $autoSlayEventSequenceObserved = (-not [string]::IsNullOrWhiteSpace($seed)) -and (Test-OrderedTextSequence -Text $autoSlayLog -Needles $eventSequence)
+    $currentLogEventSequenceObserved = (-not [string]::IsNullOrWhiteSpace($seed)) -and (Test-OrderedTextSequence -Text $currentLog -Needles $eventSequence)
+    $runEventTraversal = $autoSlayEventSequenceObserved -and $currentLogEventSequenceObserved
     $eventTraversalObserved = $eventTraversalObserved -or $runEventTraversal
-    Add-Check -Name "${runName}_event_room_traversal_observed" -Passed ($AllowMissingEventTraversal -or $runEventTraversal) -Detail 'AutoSlay event proof requires Entering Event room and Selecting event option markers'
+    Add-Check -Name "${runName}_autoslay_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $autoSlayEventSequenceObserved) -Detail 'AutoSlay sidecar log must contain ordered start, Entering Event room, Selecting event option, and completion markers'
+    Add-Check -Name "${runName}_current_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $currentLogEventSequenceObserved) -Detail 'current-iteration godot log must contain ordered start, Entering Event room, Selecting event option, and completion markers'
+    Add-Check -Name "${runName}_event_room_traversal_observed" -Passed ($AllowMissingEventTraversal -or $runEventTraversal) -Detail 'AutoSlay event proof requires ordered event traversal in both sidecar and current-iteration godot logs'
+
+    if ($auditExists) {
+        try {
+            $auditSummary = Read-AuditSummary -Path $auditPath
+            $auditItemPaths = @($auditSummary.ItemPaths)
+            $auditItemLengths = @($auditSummary.ItemLengths)
+            $auditItemSha256s = @($auditSummary.ItemSha256s)
+            $expectedAuditPath = [System.IO.Path]::GetFullPath($currentLogPath)
+            $expectedAuditLength = if ($currentLogExists) { [long](Get-Item -LiteralPath $currentLogPath).Length } else { -1L }
+            $expectedAuditSha256 = Get-FileSha256OrEmpty -Path $currentLogPath
+            Add-Check -Name "${runName}_audit_clean" -Passed ([bool]$auditSummary.Clean) -Detail "audit must have zero dirty items and zero signature hits; dirty=$($auditSummary.DirtyItems), hits=$($auditSummary.SignatureHitCount)"
+            Add-Check -Name "${runName}_audit_has_single_scanned_path" -Passed ($auditItemPaths.Count -eq 1) -Detail "audit JSON must retain exactly one scanned Path; found $($auditItemPaths.Count)"
+            Add-Check -Name "${runName}_audit_path_matches_current_iteration_log" -Passed ($auditItemPaths.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemPaths[0], $expectedAuditPath)) -Detail 'godot-log-audit.json must be produced from the retained godot.log.current-iteration slice'
+            Add-Check -Name "${runName}_audit_has_single_length" -Passed ($auditItemLengths.Count -eq 1) -Detail "audit JSON must retain exactly one Length; found $($auditItemLengths.Count)"
+            Add-Check -Name "${runName}_audit_length_matches_current_iteration_log" -Passed ($auditItemLengths.Count -eq 1 -and $auditItemLengths[0] -eq $expectedAuditLength) -Detail 'godot-log-audit.json Length must match the retained godot.log.current-iteration bytes'
+            Add-Check -Name "${runName}_audit_has_single_sha256" -Passed ($auditItemSha256s.Count -eq 1) -Detail "audit JSON must retain exactly one Sha256; found $($auditItemSha256s.Count)"
+            Add-Check -Name "${runName}_audit_sha256_matches_current_iteration_log" -Passed ($auditItemSha256s.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], $expectedAuditSha256)) -Detail 'godot-log-audit.json Sha256 must match the retained godot.log.current-iteration bytes'
+
+            if (-not $currentLogExists) {
+                Add-Check -Name "${runName}_audit_recomputed_from_current_iteration_log" -Passed $false -Detail 'cannot recompute audit because godot.log.current-iteration is missing'
+            } elseif (-not (Test-Path -LiteralPath $logAuditScript -PathType Leaf)) {
+                Add-Check -Name "${runName}_audit_recompute_script_exists" -Passed $false -Detail "missing audit script: $logAuditScript"
+            } else {
+                $recomputedAuditSummary = Invoke-RecomputedAuditSummary -LogPath $currentLogPath
+                $recomputedPaths = @($recomputedAuditSummary.ItemPaths)
+                $recomputedSha256s = @($recomputedAuditSummary.ItemSha256s)
+                Add-Check -Name "${runName}_audit_recomputed_from_current_iteration_log" -Passed ($recomputedPaths.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$recomputedPaths[0], $expectedAuditPath)) -Detail 'packet checker must recompute the audit from the retained current-iteration log'
+                Add-Check -Name "${runName}_audit_recomputed_clean" -Passed ([bool]$recomputedAuditSummary.Clean) -Detail "recomputed audit must have zero dirty items and zero signature hits; dirty=$($recomputedAuditSummary.DirtyItems), hits=$($recomputedAuditSummary.SignatureHitCount)"
+                Add-Check -Name "${runName}_audit_signature_counts_match_recomputed" -Passed ($auditSummary.DirtyItems -eq $recomputedAuditSummary.DirtyItems -and $auditSummary.SignatureHitCount -eq $recomputedAuditSummary.SignatureHitCount) -Detail "retained audit signature counts must match recomputed counts; retained dirty=$($auditSummary.DirtyItems), retained hits=$($auditSummary.SignatureHitCount), recomputed dirty=$($recomputedAuditSummary.DirtyItems), recomputed hits=$($recomputedAuditSummary.SignatureHitCount)"
+                Add-Check -Name "${runName}_audit_sha256_matches_recomputed" -Passed ($auditItemSha256s.Count -eq 1 -and $recomputedSha256s.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], [string]$recomputedSha256s[0])) -Detail 'retained audit Sha256 must match the recomputed audit Sha256'
+            }
+        } catch {
+            Add-Check -Name "${runName}_audit_json_valid" -Passed $false -Detail "invalid audit JSON in $auditPath`: $($_.Exception.Message)"
+        }
+    }
+
+    if ($sts1ModeCheckExists) {
+        $sts1ModeCheck = Read-JsonOrNull -Path $sts1ModeCheckPath -CheckName "${runName}_sts1_mode_log_check_json_valid"
+        if ($null -ne $sts1ModeCheck) {
+            Add-Check -Name "${runName}_sts1_mode_log_check_json_valid" -Passed $true -Detail 'sts1-mode-log-check.json parsed'
+            $sts1Mode = [string](Get-JsonValue -Object $sts1ModeCheck -Name 'Mode' -DefaultValue '')
+            $sts1LogPath = [string](Get-JsonValue -Object $sts1ModeCheck -Name 'LogPath' -DefaultValue '')
+            $sts1LogLength = Get-JsonValue -Object $sts1ModeCheck -Name 'LogLength' -DefaultValue $null
+            $sts1LogSha256 = [string](Get-JsonValue -Object $sts1ModeCheck -Name 'LogSha256' -DefaultValue '')
+            $sts1Mismatches = @(Get-ArrayValues -Value (Get-JsonValue -Object $sts1ModeCheck -Name 'Mismatches' -DefaultValue @()))
+            $sts1FailedChecks = @(Get-ArrayValues -Value (Get-JsonValue -Object $sts1ModeCheck -Name 'Checks' -DefaultValue @()) | Where-Object {
+                -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+            })
+            $expectedSts1LogPath = [System.IO.Path]::GetFullPath($currentLogPath)
+            $expectedSts1LogLength = if ($currentLogExists) { [long](Get-Item -LiteralPath $currentLogPath).Length } else { -1L }
+            $expectedSts1LogSha256 = Get-FileSha256OrEmpty -Path $currentLogPath
+            Add-Check -Name "${runName}_sts1_mode_log_check_mismatches_empty" -Passed ($sts1Mismatches.Count -eq 0) -Detail "sts1-mode-log-check.json must have zero mismatches; found $($sts1Mismatches.Count)"
+            Add-Check -Name "${runName}_sts1_mode_log_check_all_checks_passed" -Passed ($sts1FailedChecks.Count -eq 0) -Detail "sts1-mode-log-check.json contains $($sts1FailedChecks.Count) failed checks"
+            Add-Check -Name "${runName}_sts1_mode_log_check_mode_matches_plan" -Passed (-not [string]::IsNullOrWhiteSpace($expectedSts1Mode) -and $sts1Mode -eq $expectedSts1Mode) -Detail "sts1-mode-log-check.json Mode must match autoslay-plan Sts1EventMode '$expectedSts1Mode'; found '$sts1Mode'"
+            Add-Check -Name "${runName}_sts1_mode_log_check_log_path_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($sts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals([System.IO.Path]::GetFullPath($sts1LogPath), $expectedSts1LogPath)) -Detail 'sts1-mode-log-check.json LogPath must match the retained godot.log.current-iteration slice'
+            Add-Check -Name "${runName}_sts1_mode_log_check_log_length_matches_current_iteration_log" -Passed ($null -ne $sts1LogLength -and [long]$sts1LogLength -eq $expectedSts1LogLength) -Detail 'sts1-mode-log-check.json LogLength must match the retained godot.log.current-iteration bytes'
+            Add-Check -Name "${runName}_sts1_mode_log_check_log_sha256_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($sts1LogSha256) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($sts1LogSha256, $expectedSts1LogSha256)) -Detail 'sts1-mode-log-check.json LogSha256 must match the retained godot.log.current-iteration bytes'
+        }
+    }
+
+    if ($runResultExists) {
+        $runResult = Read-JsonOrNull -Path $runResultPath -CheckName "${runName}_run_result_json_valid"
+        if ($null -ne $runResult) {
+            Add-Check -Name "${runName}_run_result_json_valid" -Passed $true -Detail 'run-result.json parsed'
+            $resultAutoSlayLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'AutoSlayLogPath' -DefaultValue ''))
+            $resultBeforeLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogBeforePath' -DefaultValue ''))
+            $resultAfterLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogAfterLaunchPath' -DefaultValue ''))
+            $resultCurrentLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogCurrentIterationPath' -DefaultValue ''))
+            $resultAuditPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogAuditPath' -DefaultValue ''))
+            $resultSts1ModeCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'Sts1ModeLogCheckPath' -DefaultValue ''))
+            $resultInvocation = [string](Get-JsonValue -Object $runResult -Name 'Invocation' -DefaultValue '')
+            Add-Check -Name "${runName}_run_result_schema_version_one" -Passed ([int](Get-JsonValue -Object $runResult -Name 'SchemaVersion' -DefaultValue 0) -eq 1) -Detail 'run-result.json SchemaVersion must be 1'
+            Add-Check -Name "${runName}_run_result_launch_true" -Passed ([bool](Get-JsonValue -Object $runResult -Name 'Launch' -DefaultValue $false)) -Detail 'run-result.json must record Launch=true'
+            Add-Check -Name "${runName}_run_result_runner_kind_game_native_autoslay" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'RunnerKind' -DefaultValue ''), 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)) -Detail 'run-result.json RunnerKind must be GameNativeAutoSlay'
+            Add-Check -Name "${runName}_run_result_invocation_calls_autoslayer_start" -Passed (Contains-Text -Text $resultInvocation -Needle 'AutoSlayer.Start(seed, logFile)') -Detail 'run-result.json Invocation must record the launcher/mod hook that calls AutoSlayer.Start(seed, logFile)'
+            Add-Check -Name "${runName}_run_result_seed_matches_summary" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'Seed' -DefaultValue ''), $seed, [System.StringComparison]::Ordinal)) -Detail 'run-result.json Seed must match autoslay-summary.json run Seed'
+            Add-Check -Name "${runName}_run_result_process_id_positive" -Passed ([int](Get-JsonValue -Object $runResult -Name 'ProcessId' -DefaultValue 0) -gt 0) -Detail 'run-result.json must retain a positive launched process id'
+            Add-Check -Name "${runName}_run_result_start_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $runResult -Name 'StartTimestamp' -DefaultValue ''))) -Detail 'run-result.json must retain StartTimestamp'
+            Add-Check -Name "${runName}_run_result_end_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $runResult -Name 'EndTimestamp' -DefaultValue ''))) -Detail 'run-result.json must retain EndTimestamp'
+            Add-Check -Name "${runName}_run_result_exit_code_zero" -Passed ([int](Get-JsonValue -Object $runResult -Name 'ExitCode' -DefaultValue -999) -eq 0) -Detail 'run-result.json ExitCode must be 0'
+            Add-Check -Name "${runName}_run_result_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runResult -Name 'StaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'run-result.json StaleProcessCount must be 0 so shared godot.log evidence is attributable'
+            Add-Check -Name "${runName}_run_result_autoslay_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAutoSlayLogPath, $autoSlayLogPath)) -Detail 'run-result.json AutoSlayLogPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_autoslay_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $runResult -Name 'AutoSlayLogSha256' -DefaultValue ''), $autoSlayLogSha256)) -Detail 'run-result.json AutoSlayLogSha256 must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_before_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultBeforeLogPath, $beforeLogPath)) -Detail 'run-result.json GodotLogBeforePath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_after_launch_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAfterLogPath, $afterLogPath)) -Detail 'run-result.json GodotLogAfterLaunchPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_current_iteration_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultCurrentLogPath, $currentLogPath)) -Detail 'run-result.json GodotLogCurrentIterationPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_current_iteration_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $runResult -Name 'GodotLogCurrentIterationSha256' -DefaultValue ''), $currentLogSha256)) -Detail 'run-result.json GodotLogCurrentIterationSha256 must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_audit_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAuditPath, $auditPath)) -Detail 'run-result.json GodotLogAuditPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_sts1_mode_check_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultSts1ModeCheckPath, $sts1ModeCheckPath)) -Detail 'run-result.json Sts1ModeLogCheckPath must match autoslay-summary.json'
+        }
+    }
 }
 
 Add-Check -Name 'batch_event_room_traversal_observed' -Passed ($AllowMissingEventTraversal -or $eventTraversalObserved) -Detail 'at least one run must prove event-room traversal for event.md monkey proof'

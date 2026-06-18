@@ -161,15 +161,22 @@ A future AutoSlay-backed batch packet must retain all of the following before it
 can close a game-native monkey proof row:
 
 - the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`;
-- the seed, AutoSlay log path, exit code, and per-run start/completion/failure
+- one `run-result.json` per seed with `SchemaVersion: 1`, `Launch: true`,
+  `RunnerKind: GameNativeAutoSlay`, invocation text, process id,
+  start/end timestamps, exit code, stale-process count, and the retained
+  per-run paths/hashes;
+- the seed, AutoSlay log path, exit code, ordered start/event-option/completion
   markers, with `AutoSlayLogSha256` bound to the retained log file;
 - a retained `check-local-godot-source-workspace.ps1 -OutFile` report with
-  passing AutoSlay source-contract checks;
+  passing AutoSlay source-contract checks and `RecoveredSource.MatchesInstalledGame`
+  true for the installed game under test;
 - the same package, game version, RitsuLib version, compat branch, patch-count,
-  current-iteration log-slice, audit, and StS1 mode bindings required by the
-  current runtime packet checker;
-- observed event-room lines proving Ancient dialogue/options were traversed,
-  not only main-menu startup;
+  `godot.log.before`, `godot.log.after-launch`, `godot.log.current-iteration`,
+  `godot-log-audit.json`, and `sts1-mode-log-check.json` bindings required by
+  the current runtime packet checker;
+- observed ordered event-room lines in both the AutoSlay sidecar log and the
+  current Godot log slice proving Ancient dialogue/options were traversed, not
+  only main-menu startup;
 - a clear statement that the local recovered source snapshot matched the
   installed game version when the AutoSlay invocation path was derived.
 
@@ -178,21 +185,27 @@ After the packet is captured, verify it with:
 ```powershell
 .\scripts\check-spire-plus-autoslay-packet.ps1 `
   -EvidenceDir "<evidence>" `
+  -MinRuns 1000 `
   -ExpectedPackageVersion v0.1.0-private-beta.86 `
   -ExpectedGameVersion 0.107.0 `
   -ExpectedRitsuLibVersion 0.4.16 `
   -ExpectedRitsuCompatBranch 0.107.0 `
+  -ExpectedPatchCount 25 `
   -OutFile "<evidence>\autoslay-packet-check.json" `
   -FailOnMismatch
 ```
 
 This verifier is no-launch only. It rejects packets that do not identify
 `GameNativeAutoSlay`, do not record `AutoSlayer.Start(seed, logFile)`, do not
-bind the retained `check-local-godot-source-workspace.ps1` report and policy
-flags, omit the explicit package/game/Ritsu target switches, place per-run logs
-outside the evidence folder, lack per-seed AutoSlay log hashes or
-per-seed AutoSlay start/completion markers, or lack event-room traversal markers such as
-`Entering Event room` and `Selecting event option:`.
+bind the retained `check-local-godot-source-workspace.ps1` report, policy
+flags, and source-version summary, omit the explicit package/game/Ritsu/patch
+target switches, duplicate or drop planned seeds, place per-run logs outside the
+evidence folder, lack per-seed run-result JSON, log hashes, before/after/current
+Godot log-slice proof, clean audit recomputation, StS1 mode binding, or ordered
+event-room traversal markers such as `Entering Event room` and
+`Selecting event option:`. Use a smaller `-MinRuns` only for temporary parser or
+fixture tests; a real game-native monkey proof should use the intended proof
+count.
 
 ## Commands
 
