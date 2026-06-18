@@ -112,20 +112,6 @@ function Format-DisplayCommand {
     return (($Tokens | ForEach-Object { Format-DisplayToken -Value $_ }) -join ' ')
 }
 
-function Get-GitValue {
-    param([Parameter(Mandatory = $true)][string[]]$Arguments)
-
-    try {
-        $value = & git -C $repoRoot @Arguments 2>$null
-        if ($LASTEXITCODE -eq 0) {
-            return ($value -join "`n").Trim()
-        }
-    } catch {
-    }
-
-    return $null
-}
-
 function Get-PowerShellExecutable {
     $processPath = (Get-Process -Id $PID).Path
     if ($processPath -and (Test-Path -LiteralPath $processPath)) {
@@ -219,12 +205,19 @@ $packageHashes = [ordered]@{
 }
 Save-Json -InputObject $packageHashes -Path (Join-Path $evidenceFull 'package-hashes.json')
 
+$gitEvidence = Get-SpirePlusGitEvidence -RepoRoot $repoRoot
 $environment = [ordered]@{
     CreatedAt = (Get-Date).ToString('o')
     EvidenceKind = 'mod-settings-current-display'
     RepositoryRoot = $repoRoot
-    GitHead = Get-GitValue -Arguments @('rev-parse', 'HEAD')
-    GitStatusShort = Get-GitValue -Arguments @('status', '--short')
+    GitHead = $gitEvidence.Head
+    GitStatusShort = $gitEvidence.StatusShort
+    GitBranchStatus = $gitEvidence.BranchStatus
+    GitUpstream = $gitEvidence.Upstream
+    GitUpstreamHead = $gitEvidence.UpstreamHead
+    GitPushedHead = $gitEvidence.PushedHead
+    GitHeadMatchesUpstream = $gitEvidence.HeadMatchesUpstream
+    Git = $gitEvidence
     PackagePath = Get-SpirePlusPackageRelativePath -RepoRoot $repoRoot
     PackageVersion = Get-SpirePlusManifestVersion -RepoRoot $repoRoot
     Capture = $Capture

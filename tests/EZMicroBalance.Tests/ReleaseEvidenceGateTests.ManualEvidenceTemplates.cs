@@ -55,6 +55,7 @@ public sealed partial class ReleaseEvidenceGateTests
                 Assert.True(File.Exists(instructionsPath), "Ancient UI helper did not write manual-instructions.md.");
                 Assert.True(File.Exists(commandPath), "Ancient UI helper did not write command.txt.");
                 Assert.True(File.Exists(environmentPath), "Ancient UI helper did not write environment.json.");
+                AssertEnvironmentIncludesGitHandoffEvidence(environmentPath);
                 Assert.True(File.Exists(packageHashesPath), "Ancient UI helper did not write package-hashes.json.");
                 AssertPackageHashesUseVersionedArtifacts(packageHashesPath);
                 Assert.True(File.Exists(manualRowsPath), "Ancient UI helper did not write manual-rows-template.json.");

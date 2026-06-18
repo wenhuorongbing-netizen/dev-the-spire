@@ -1,5 +1,51 @@
 Set-StrictMode -Version 3.0
 
+function Get-SpirePlusGitValue {
+    param(
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string[]]$Arguments
+    )
+
+    try {
+        $value = & git -C $RepoRoot @Arguments 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            return ($value -join "`n").Trim()
+        }
+    } catch {
+    }
+
+    return $null
+}
+
+function Get-SpirePlusGitEvidence {
+    param([Parameter(Mandatory = $true)][string]$RepoRoot)
+
+    $head = Get-SpirePlusGitValue -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')
+    $upstream = Get-SpirePlusGitValue -RepoRoot $RepoRoot -Arguments @('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}')
+    $upstreamHead = if ([string]::IsNullOrWhiteSpace($upstream)) {
+        $null
+    } else {
+        Get-SpirePlusGitValue -RepoRoot $RepoRoot -Arguments @('rev-parse', $upstream)
+    }
+
+    $headMatchesUpstream = -not [string]::IsNullOrWhiteSpace($head) -and
+        -not [string]::IsNullOrWhiteSpace($upstreamHead) -and
+        [System.StringComparer]::OrdinalIgnoreCase.Equals($head, $upstreamHead)
+
+    return [ordered]@{
+        Head = $head
+        HeadShort = Get-SpirePlusGitValue -RepoRoot $RepoRoot -Arguments @('rev-parse', '--short', 'HEAD')
+        LatestCommit = Get-SpirePlusGitValue -RepoRoot $RepoRoot -Arguments @('log', '-1', '--oneline', '--decorate')
+        Branch = Get-SpirePlusGitValue -RepoRoot $RepoRoot -Arguments @('branch', '--show-current')
+        StatusShort = Get-SpirePlusGitValue -RepoRoot $RepoRoot -Arguments @('status', '--short')
+        BranchStatus = Get-SpirePlusGitValue -RepoRoot $RepoRoot -Arguments @('status', '--short', '--branch')
+        Upstream = $upstream
+        UpstreamHead = $upstreamHead
+        PushedHead = $upstreamHead
+        HeadMatchesUpstream = $headMatchesUpstream
+    }
+}
+
 function Get-SpirePlusManifestVersion {
     param([Parameter(Mandatory = $true)][string]$RepoRoot)
 

@@ -177,6 +177,35 @@ function Test-PathInsideString {
     return $childFull.Equals($parentFull, $comparison) -or $childFull.StartsWith($parentFull + '\', $comparison)
 }
 
+function Test-PathInsideAnyString {
+    param(
+        [AllowEmptyString()][string]$Child,
+        [AllowEmptyCollection()][AllowNull()][string[]]$Parents
+    )
+
+    foreach ($parent in @($Parents)) {
+        if (Test-PathInsideString -Child $Child -Parent $parent) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function ConvertTo-NormalizedPathOrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return ''
+    }
+
+    try {
+        return [System.IO.Path]::GetFullPath($Path)
+    } catch {
+        return ''
+    }
+}
+
 function Get-PathLeafOrEmpty {
     param([AllowEmptyString()][string]$Path)
 
@@ -556,6 +585,11 @@ if ($sessionExists) {
     $modsRoot = Get-JsonStringOrEmpty -Object $sessionState -Name 'ModsRoot'
     $gameRoot = Get-JsonStringOrEmpty -Object $sessionState -Name 'GameRoot'
     $logPath = Get-JsonStringOrEmpty -Object $sessionState -Name 'LogPath'
+    $steamSaves = @(Get-JsonArrayOrEmpty -Object $sessionState -Name 'SteamSaves' | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    $defaultSaves = @(Get-JsonArrayOrEmpty -Object $sessionState -Name 'DefaultSaves' | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    $currentRunSourceRoots = @($steamSaves + $defaultSaves)
+    $expectedModsRoot = if ([string]::IsNullOrWhiteSpace($gameRoot)) { '' } else { ConvertTo-NormalizedPathOrEmpty -Path (Join-Path $gameRoot 'mods') }
+    $normalizedModsRoot = ConvertTo-NormalizedPathOrEmpty -Path $modsRoot
 
     Add-Check -Name 'session_allows_baselib' -Passed ($allowedModIds -contains 'BaseLib') -Detail 'session-state AllowedModIds must include BaseLib'
     Add-Check -Name 'session_allows_ritsulib' -Passed ($allowedModIds -contains 'STS2-RitsuLib') -Detail 'session-state AllowedModIds must include STS2-RitsuLib'
@@ -568,6 +602,7 @@ if ($sessionExists) {
     Add-Check -Name 'session_moved_current_runs_field_recorded' -Passed $hasMovedCurrentRuns -Detail 'session-state must record MovedCurrentRuns, even if the list is empty'
     Add-Check -Name 'session_has_game_root' -Passed (-not [string]::IsNullOrWhiteSpace($gameRoot)) -Detail 'session-state GameRoot must be recorded'
     Add-Check -Name 'session_has_mods_root' -Passed (-not [string]::IsNullOrWhiteSpace($modsRoot)) -Detail 'session-state ModsRoot must be recorded'
+    Add-Check -Name 'session_mods_root_matches_game_root' -Passed (-not [string]::IsNullOrWhiteSpace($normalizedModsRoot) -and -not [string]::IsNullOrWhiteSpace($expectedModsRoot) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($normalizedModsRoot, $expectedModsRoot)) -Detail "session-state ModsRoot must equal GameRoot\\mods; expected '$expectedModsRoot', found '$normalizedModsRoot'"
     Add-Check -Name 'session_has_log_path' -Passed (-not [string]::IsNullOrWhiteSpace($logPath)) -Detail 'session-state LogPath must be recorded'
 
     $isolatedModsRoot = [System.IO.Path]::GetFullPath((Join-Path $resolvedEvidenceDir 'isolated-mods'))
@@ -575,6 +610,12 @@ if ($sessionExists) {
     $missingMovedModNamesBuilder = [System.Collections.Generic.List[string]]::new()
     $movedModSourcesOutsideRootBuilder = [System.Collections.Generic.List[string]]::new()
     $movedModDestinationsOutsideIsolationBuilder = [System.Collections.Generic.List[string]]::new()
+    $currentRunNames = @('current_run.save', 'current_run.save.backup', 'current_run_mp.save', 'current_run_mp.save.backup')
+    $currentRunDestinationRoot = [System.IO.Path]::GetFullPath((Join-Path $resolvedEvidenceDir 'temporarily-removed-current-runs'))
+    $missingMovedCurrentRunNamesBuilder = [System.Collections.Generic.List[string]]::new()
+    $unexpectedMovedCurrentRunNamesBuilder = [System.Collections.Generic.List[string]]::new()
+    $movedCurrentRunSourcesOutsideRootsBuilder = [System.Collections.Generic.List[string]]::new()
+    $movedCurrentRunDestinationsOutsideRootBuilder = [System.Collections.Generic.List[string]]::new()
 
     foreach ($movedMod in $movedMods) {
         $movedModName = Get-JsonStringOrEmpty -Object $movedMod -Name 'Name'
@@ -603,15 +644,43 @@ if ($sessionExists) {
         }
     }
 
+    foreach ($movedCurrentRun in $movedCurrentRuns) {
+        $movedCurrentRunName = Get-JsonStringOrEmpty -Object $movedCurrentRun -Name 'Name'
+        $movedCurrentRunFrom = Get-JsonStringOrEmpty -Object $movedCurrentRun -Name 'From'
+        $movedCurrentRunTo = Get-JsonStringOrEmpty -Object $movedCurrentRun -Name 'To'
+
+        if ([string]::IsNullOrWhiteSpace($movedCurrentRunName)) {
+            $missingMovedCurrentRunNamesBuilder.Add($movedCurrentRunFrom) | Out-Null
+        } elseif ($currentRunNames -notcontains $movedCurrentRunName) {
+            $unexpectedMovedCurrentRunNamesBuilder.Add($movedCurrentRunName) | Out-Null
+        }
+
+        if (-not (Test-PathInsideAnyString -Child $movedCurrentRunFrom -Parents $currentRunSourceRoots)) {
+            $movedCurrentRunSourcesOutsideRootsBuilder.Add($movedCurrentRunFrom) | Out-Null
+        }
+
+        if (-not (Test-PathInsideString -Child $movedCurrentRunTo -Parent $currentRunDestinationRoot)) {
+            $movedCurrentRunDestinationsOutsideRootBuilder.Add($movedCurrentRunTo) | Out-Null
+        }
+    }
+
     $allowedMovedMods = @($allowedMovedModsBuilder | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique)
     $missingMovedModNames = @($missingMovedModNamesBuilder)
     $movedModSourcesOutsideRoot = @($movedModSourcesOutsideRootBuilder)
     $movedModDestinationsOutsideIsolation = @($movedModDestinationsOutsideIsolationBuilder)
+    $missingMovedCurrentRunNames = @($missingMovedCurrentRunNamesBuilder)
+    $unexpectedMovedCurrentRunNames = @($unexpectedMovedCurrentRunNamesBuilder | Sort-Object -Unique)
+    $movedCurrentRunSourcesOutsideRoots = @($movedCurrentRunSourcesOutsideRootsBuilder)
+    $movedCurrentRunDestinationsOutsideRoot = @($movedCurrentRunDestinationsOutsideRootBuilder)
 
     Add-Check -Name 'session_moved_mod_names_present' -Passed (@($missingMovedModNames).Count -eq 0) -Detail 'every moved-mod entry must record Name'
     Add-Check -Name 'session_moved_mods_do_not_include_allowed_mods' -Passed (@($allowedMovedMods).Count -eq 0) -Detail "allowed mods must not be moved out; moved allowed mods: $($allowedMovedMods -join ',')"
     Add-Check -Name 'session_moved_mod_sources_under_mods_root' -Passed (@($movedModSourcesOutsideRoot).Count -eq 0) -Detail "moved-mod From paths must be under session ModsRoot; outside: $($movedModSourcesOutsideRoot -join ',')"
     Add-Check -Name 'session_moved_mod_destinations_under_isolated_mods' -Passed (@($movedModDestinationsOutsideIsolation).Count -eq 0) -Detail "moved-mod To paths must be under evidence isolated-mods; outside: $($movedModDestinationsOutsideIsolation -join ',')"
+    Add-Check -Name 'session_moved_current_run_names_present' -Passed (@($missingMovedCurrentRunNames).Count -eq 0) -Detail 'every moved-current-run entry must record Name'
+    Add-Check -Name 'session_moved_current_run_names_allowed' -Passed (@($unexpectedMovedCurrentRunNames).Count -eq 0) -Detail "moved-current-run Name values must be known current-run files; unexpected: $($unexpectedMovedCurrentRunNames -join ',')"
+    Add-Check -Name 'session_moved_current_run_sources_under_save_roots' -Passed (@($movedCurrentRunSourcesOutsideRoots).Count -eq 0) -Detail "moved-current-run From paths must be under recorded SteamSaves/DefaultSaves; outside: $($movedCurrentRunSourcesOutsideRoots -join ',')"
+    Add-Check -Name 'session_moved_current_run_destinations_under_removed_runs' -Passed (@($movedCurrentRunDestinationsOutsideRoot).Count -eq 0) -Detail "moved-current-run To paths must be under evidence temporarily-removed-current-runs; outside: $($movedCurrentRunDestinationsOutsideRoot -join ',')"
 
     if ($Mode -eq 'Off') {
         $offModeClean = [string]::IsNullOrWhiteSpace($recordedSts1EventMode) -or $recordedSts1EventMode -eq 'Off'

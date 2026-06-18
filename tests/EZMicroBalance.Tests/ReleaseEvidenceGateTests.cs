@@ -24,6 +24,9 @@ public sealed partial class ReleaseEvidenceGateTests
             "Resolve-SpirePlusPackagePath",
             "Get-SpirePlusPackageSha256",
             "Get-SpirePlusPackageArtifactRelativePaths",
+            "Get-SpirePlusGitEvidence",
+            "PushedHead",
+            "HeadMatchesUpstream",
             "SpirePlus-$(Get-SpirePlusManifestVersion -RepoRoot $RepoRoot)");
 
         foreach (var scriptName in new[]
@@ -46,6 +49,24 @@ public sealed partial class ReleaseEvidenceGateTests
             Assert.DoesNotContain(CurrentPackageArtifactRelativePath("EZMicroBalance.pck"), script, StringComparison.Ordinal);
             Assert.DoesNotContain(CurrentPackageArtifactRelativePath("EZMicroBalance.json"), script, StringComparison.Ordinal);
             Assert.DoesNotContain(CurrentPackageArtifactRelativePath("README_INSTALL.txt"), script, StringComparison.Ordinal);
+        }
+
+        foreach (var scriptName in new[]
+                 {
+                     "collect-ancient-ui-evidence.ps1",
+                     "collect-coop-evidence.ps1",
+                     "collect-mod-settings-evidence.ps1",
+                     "collect-preview-tools-evidence.ps1",
+                     "collect-release-evidence.ps1",
+                     "collect-vakuu-fight-evidence.ps1"
+                 })
+        {
+            var script = ReadRepoText("scripts", scriptName);
+            AssertSourceContains(
+                script,
+                "Get-SpirePlusGitEvidence -RepoRoot $repoRoot",
+                "GitPushedHead",
+                "GitHeadMatchesUpstream");
         }
 
         foreach (var scriptName in new[] { "collect-release-evidence.ps1", "verify-spire-plus-release-evidence.ps1" })

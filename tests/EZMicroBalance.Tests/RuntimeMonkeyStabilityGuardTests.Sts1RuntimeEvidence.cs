@@ -349,6 +349,146 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierRejectsSpoofedModsRoot()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "Off");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), "v0.1.0-private-beta.87\r\n");
+
+            var spoofedModsRoot = Path.GetPathRoot(workdir) ?? workdir;
+            File.WriteAllText(
+                Path.Combine(workdir, "session-state.json"),
+                $$"""
+                {
+                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "DisableSpirePlus": false,
+                  "MoveOtherMods": true,
+                  "MoveCurrentRuns": true,
+                  "MovedMods": [],
+                  "MovedCurrentRuns": [],
+                  "GameRoot": {{JsonSerializer.Serialize(workdir)}},
+                  "ModsRoot": {{JsonSerializer.Serialize(spoofedModsRoot)}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "godot.log.after-launch"))}},
+                  "Sts1EventModeEnvironment": "Off",
+                  "Sts1UnsafeModeEnvironment": ""
+                }
+                """);
+
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "Off",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-OutFile",
+                Path.Combine(workdir, "runtime-evidence-packet-check.json"));
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("session_has_mods_root status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_mods_root_matches_game_root status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierReportsInvalidMovedCurrentRunRows()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "AdditiveBatch1");
+            const string preLaunchPrefix = "[Startup] clean pre-launch log prefix\r\n";
+            var currentSlice = BuildSts1ModeRuntimeLog("AdditiveBatch1");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.before"), preLaunchPrefix);
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), preLaunchPrefix + currentSlice);
+
+            var steamSaves = Path.Combine(workdir, "steam-saves");
+            var defaultSaves = Path.Combine(workdir, "default-saves");
+            File.WriteAllText(
+                Path.Combine(workdir, "session-state.json"),
+                $$"""
+                {
+                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "DisableSpirePlus": false,
+                  "MoveOtherMods": true,
+                  "MoveCurrentRuns": true,
+                  "MovedMods": [],
+                  "MovedCurrentRuns": [
+                    {
+                      "Name": "unexpected.save",
+                      "From": "\u0000bad-run-from",
+                      "To": "\u0000bad-run-to"
+                    }
+                  ],
+                  "SteamSaves": [{{JsonSerializer.Serialize(steamSaves)}}],
+                  "DefaultSaves": [{{JsonSerializer.Serialize(defaultSaves)}}],
+                  "GameRoot": {{JsonSerializer.Serialize(workdir)}},
+                  "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(workdir, "mods"))}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "godot.log.after-launch"))}},
+                  "Sts1EventModeEnvironment": "AdditiveBatch1",
+                  "Sts1UnsafeModeEnvironment": ""
+                }
+                """);
+            File.WriteAllText(
+                Path.Combine(workdir, "restore-state.json"),
+                """
+                {
+                  "RestoredAt": "2026-06-18T00:00:00.0000000Z",
+                  "RestoredModCount": 0,
+                  "RestoredCurrentRunCount": 1,
+                  "SettingsHashAfterRestore": "same",
+                  "SettingsBackupHashAfterRestore": "same"
+                }
+                """);
+
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "AdditiveBatch1",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-OutFile",
+                Path.Combine(workdir, "runtime-evidence-packet-check.json"));
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("session_moved_current_run_names_allowed status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_moved_current_run_sources_under_save_roots status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_moved_current_run_destinations_under_removed_runs status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void Sts1RuntimeEvidencePacketVerifierReportsMissingMovedModsAndEmptyLogAsFailedRows()
     {
         var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
@@ -401,6 +541,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("session_moved_mods_field_recorded status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("session_moved_current_runs_field_recorded status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("session_has_mods_root status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_mods_root_matches_game_root status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("restore_hashes_recorded status=fail", result.Output, StringComparison.Ordinal);
             Assert.True(File.Exists(outFile), $"Packet verifier did not retain report:{Environment.NewLine}{result.Output}{result.Error}");
         }
@@ -458,6 +599,76 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.True(dirtyResult.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{dirtyResult.Output}{dirtyResult.Error}");
             Assert.Contains("audit_recomputed_clean status=fail", dirtyResult.Output, StringComparison.Ordinal);
             Assert.Contains("audit_signature_counts_match_recomputed status=fail", dirtyResult.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierComparesRegistrationTupleMultiplicity()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var registrationServicePath = Path.Combine(workdir, "Sts1EventRegistrationService.cs");
+            var logPath = Path.Combine(workdir, "godot.log.after-launch");
+            File.WriteAllText(
+                registrationServicePath,
+                """
+                public static void RegisterAdditiveBatch1()
+                {
+                    content.ActEvent<Overgrowth, Sts1Foo>();
+                    content.ActEvent<Overgrowth, Sts1Foo>();
+                    content.ActEvent<Overgrowth, Sts1Bar>();
+                    content.Apply();
+                }
+                """);
+            File.WriteAllText(
+                logPath,
+                """
+                v0.1.0-private-beta.87
+                release = v0.107.0
+                RitsuLib Version: 0.4.24 [compat branch: 0.107.0]
+                Feature Sts1Events bootstrap=enabled, live=Enabled
+                StS1 events AdditiveBatch1 mode: registering 10 verified-scope events.
+                [StS1 Events] Registering AdditiveBatch1 events
+                [StS1 Events] Registered act event: Sts1Foo -> Overgrowth
+                [StS1 Events] Registered act event: Sts1Bar -> Overgrowth
+                [StS1 Events] Registered act event: Sts1Bar -> Overgrowth
+                [StS1 Events] AdditiveBatch1 events registered successfully.
+                """);
+
+            var result = RunPowerShell(
+                verifier,
+                "-Mode",
+                "AdditiveBatch1",
+                "-LogPath",
+                logPath,
+                "-RegistrationServicePath",
+                registrationServicePath,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedGameVersion",
+                "0.107.0");
+
+            Assert.True(result.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("observed_registration_call_count status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("observed_event_classes_match_expected status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("observed_registration_tuples_match_expected status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("ActEvent:Overgrowth:Sts1Foo expected=2 observed=1", result.Output, StringComparison.Ordinal);
+            Assert.Contains("ActEvent:Overgrowth:Sts1Bar expected=1 observed=2", result.Output, StringComparison.Ordinal);
         }
         finally
         {

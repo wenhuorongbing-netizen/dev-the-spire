@@ -108,20 +108,6 @@ function Get-HashRow {
     }
 }
 
-function Get-GitValue {
-    param([Parameter(Mandatory = $true)][string[]]$Arguments)
-
-    try {
-        $value = & git -C $repoRoot @Arguments 2>$null
-        if ($LASTEXITCODE -eq 0) {
-            return ($value -join "`n").Trim()
-        }
-    } catch {
-    }
-
-    return $null
-}
-
 if ($Launch -and $NoLaunch) {
     throw 'Pass only one of -Launch or -NoLaunch.'
 }
@@ -195,12 +181,19 @@ $manualRows = @(
     }
 )
 
+$gitEvidence = Get-SpirePlusGitEvidence -RepoRoot $repoRoot
 $environment = [ordered]@{
     CreatedAt = (Get-Date).ToString('o')
     EvidenceKind = 'preview-tools-evidence'
     RepositoryRoot = $repoRoot
-    GitHead = Get-GitValue -Arguments @('rev-parse', 'HEAD')
-    GitStatusShort = Get-GitValue -Arguments @('status', '--short')
+    GitHead = $gitEvidence.Head
+    GitStatusShort = $gitEvidence.StatusShort
+    GitBranchStatus = $gitEvidence.BranchStatus
+    GitUpstream = $gitEvidence.Upstream
+    GitUpstreamHead = $gitEvidence.UpstreamHead
+    GitPushedHead = $gitEvidence.PushedHead
+    GitHeadMatchesUpstream = $gitEvidence.HeadMatchesUpstream
+    Git = $gitEvidence
     Naming = 'Preview tools are integrated into Spire Plus.'
     LaunchRequested = [bool]$Launch
     NoLaunch = -not [bool]$Launch

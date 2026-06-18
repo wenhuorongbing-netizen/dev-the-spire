@@ -494,8 +494,47 @@ $missingClasses = @($expectedClasses | Where-Object { $observedClasses -notconta
 $unexpectedClasses = @($observedClasses | Where-Object { $expectedClasses -notcontains $_ })
 $observedTuples = @($registeredEventMatches | Select-Object -ExpandProperty Tuple | Sort-Object)
 $expectedTuples = @($expected.ExpectedRegistrationTuples | Sort-Object)
-$missingTuples = @($expectedTuples | Where-Object { $observedTuples -notcontains $_ })
-$unexpectedTuples = @($observedTuples | Where-Object { $expectedTuples -notcontains $_ })
+$observedTupleCounts = [System.Collections.Generic.Dictionary[string, int]]::new([System.StringComparer]::Ordinal)
+foreach ($tuple in $observedTuples) {
+    if ($observedTupleCounts.ContainsKey($tuple)) {
+        $observedTupleCounts[$tuple]++
+    } else {
+        $observedTupleCounts[$tuple] = 1
+    }
+}
+
+$expectedTupleCounts = [System.Collections.Generic.Dictionary[string, int]]::new([System.StringComparer]::Ordinal)
+foreach ($tuple in $expectedTuples) {
+    if ($expectedTupleCounts.ContainsKey($tuple)) {
+        $expectedTupleCounts[$tuple]++
+    } else {
+        $expectedTupleCounts[$tuple] = 1
+    }
+}
+
+$tupleKeys = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+foreach ($tuple in $observedTuples) {
+    $tupleKeys.Add($tuple) | Out-Null
+}
+foreach ($tuple in $expectedTuples) {
+    $tupleKeys.Add($tuple) | Out-Null
+}
+
+$missingTupleDetails = [System.Collections.Generic.List[string]]::new()
+$unexpectedTupleDetails = [System.Collections.Generic.List[string]]::new()
+foreach ($tuple in @($tupleKeys | Sort-Object)) {
+    $expectedTupleCount = if ($expectedTupleCounts.ContainsKey($tuple)) { $expectedTupleCounts[$tuple] } else { 0 }
+    $observedTupleCount = if ($observedTupleCounts.ContainsKey($tuple)) { $observedTupleCounts[$tuple] } else { 0 }
+
+    if ($observedTupleCount -lt $expectedTupleCount) {
+        $missingTupleDetails.Add("${tuple} expected=$expectedTupleCount observed=$observedTupleCount") | Out-Null
+    } elseif ($observedTupleCount -gt $expectedTupleCount) {
+        $unexpectedTupleDetails.Add("${tuple} expected=$expectedTupleCount observed=$observedTupleCount") | Out-Null
+    }
+}
+
+$missingTuples = @($missingTupleDetails)
+$unexpectedTuples = @($unexpectedTupleDetails)
 
 $reasonHits = [regex]::Matches($logText, [regex]::Escape($expected.ReasonNeedle)).Count
 $enabledFeatureLineHits = [regex]::Matches($logText, 'Feature Sts1Events .*bootstrap=enabled, live=Enabled').Count
