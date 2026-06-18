@@ -174,6 +174,20 @@ function Test-JsonProperty {
     return $null -ne $Object -and $Object.PSObject.Properties.Name -contains $Name
 }
 
+function ConvertTo-NormalizedPathOrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return ''
+    }
+
+    try {
+        return [System.IO.Path]::GetFullPath($Path)
+    } catch {
+        return ''
+    }
+}
+
 function Get-FileSha256OrEmpty {
     param([AllowEmptyString()][string]$Path)
 
@@ -363,7 +377,10 @@ function ConvertTo-AuditSummary {
         }
 
         if ((Test-JsonProperty -Object $item -Name 'Path') -and -not [string]::IsNullOrWhiteSpace([string]$item.Path)) {
-            $itemPaths.Add([System.IO.Path]::GetFullPath([string]$item.Path)) | Out-Null
+            $normalizedItemPath = ConvertTo-NormalizedPathOrEmpty -Path ([string]$item.Path)
+            if (-not [string]::IsNullOrWhiteSpace($normalizedItemPath)) {
+                $itemPaths.Add($normalizedItemPath) | Out-Null
+            }
         }
 
         if (Test-JsonProperty -Object $item -Name 'Length') {

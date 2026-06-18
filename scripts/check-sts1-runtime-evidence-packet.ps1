@@ -100,10 +100,14 @@ function Test-PathInsideString {
         return $false
     }
 
-    $childFull = [System.IO.Path]::GetFullPath($Child).TrimEnd('\', '/')
-    $parentFull = [System.IO.Path]::GetFullPath($Parent).TrimEnd('\', '/')
-    $comparison = [System.StringComparison]::OrdinalIgnoreCase
+    try {
+        $childFull = [System.IO.Path]::GetFullPath($Child).TrimEnd('\', '/')
+        $parentFull = [System.IO.Path]::GetFullPath($Parent).TrimEnd('\', '/')
+    } catch {
+        return $false
+    }
 
+    $comparison = [System.StringComparison]::OrdinalIgnoreCase
     return $childFull.Equals($parentFull, $comparison) -or $childFull.StartsWith($parentFull + '\', $comparison)
 }
 
