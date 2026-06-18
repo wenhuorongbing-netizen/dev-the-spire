@@ -30,6 +30,7 @@ public sealed partial class ReleaseEvidenceGateTests
                  {
                      "collect-ancient-ui-evidence.ps1",
                      "collect-coop-evidence.ps1",
+                     "collect-mod-settings-evidence.ps1",
                      "collect-preview-tools-evidence.ps1",
                      "collect-release-evidence.ps1",
                      "collect-vakuu-fight-evidence.ps1",
@@ -99,6 +100,7 @@ public sealed partial class ReleaseEvidenceGateTests
         foreach (var scriptName in new[]
         {
             "collect-release-evidence.ps1",
+            "collect-mod-settings-evidence.ps1",
             "collect-preview-tools-evidence.ps1",
             "collect-vakuu-fight-evidence.ps1",
             "collect-coop-evidence.ps1"
@@ -146,6 +148,34 @@ public sealed partial class ReleaseEvidenceGateTests
                     Assert.NotEqual("passed", status, StringComparer.OrdinalIgnoreCase);
                     Assert.NotEqual("pass", status, StringComparer.OrdinalIgnoreCase);
                 });
+
+                if (scriptName == "collect-mod-settings-evidence.ps1")
+                {
+                    var row = Assert.Single(rows);
+                    Assert.Equal("mod-settings-current-display", row.GetProperty("Id").GetString());
+                    Assert.Equal("clicked-ui", row.GetProperty("Kind").GetString());
+                    Assert.True(File.Exists(Path.Combine(evidenceDir, "README.md")), "Mod Settings helper did not write README.md.");
+                    Assert.True(File.Exists(Path.Combine(evidenceDir, "window-preflight.json")), "Mod Settings helper did not write window-preflight.json.");
+                    Assert.True(File.Exists(Path.Combine(evidenceDir, "window-preflight-output.txt")), "Mod Settings helper did not retain preflight output.");
+                    Assert.True(File.Exists(Path.Combine(evidenceDir, "mod-settings-checklist-template.md")), "Mod Settings helper did not write checklist template.");
+                    Assert.True(File.Exists(Path.Combine(evidenceDir, "mod-settings-checklist.md")), "Mod Settings helper did not write working checklist.");
+                    Assert.True(File.Exists(Path.Combine(evidenceDir, "route-note.md")), "Mod Settings helper did not write route-note.md.");
+                    Assert.True(File.Exists(Path.Combine(evidenceDir, "result-note.md")), "Mod Settings helper did not write result-note.md.");
+                    Assert.True(Directory.Exists(Path.Combine(evidenceDir, "screenshots")), "Mod Settings helper did not create screenshots directory.");
+
+                    var readme = File.ReadAllText(Path.Combine(evidenceDir, "README.md"));
+                    var checklist = File.ReadAllText(Path.Combine(evidenceDir, "mod-settings-checklist.md"));
+                    Assert.Contains("collect-mod-settings-evidence.ps1 -NoLaunch", readme, StringComparison.Ordinal);
+                    Assert.Contains("-Capture List -RequireSpireForeground", readme, StringComparison.Ordinal);
+                    Assert.Contains("-Capture Page -RequireSpireForeground", readme, StringComparison.Ordinal);
+                    Assert.Contains("Pending scaffold only", result.Output, StringComparison.Ordinal);
+                    Assert.Contains("base-lib-visible-enabled", checklist, StringComparison.Ordinal);
+                    Assert.Contains("spire-plus-list-display-name", checklist, StringComparison.Ordinal);
+                    Assert.Contains("spire-plus-config-page-current-name", checklist, StringComparison.Ordinal);
+                    Assert.Contains("legacy-mod-surfaces-absent", checklist, StringComparison.Ordinal);
+                    Assert.Contains("clean-log-config-registration", checklist, StringComparison.Ordinal);
+                    Assert.Contains("Fill this checklist with live results before marking this row pass.", checklist, StringComparison.Ordinal);
+                }
 
                 if (scriptName == "collect-release-evidence.ps1")
                 {

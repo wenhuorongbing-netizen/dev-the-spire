@@ -1490,18 +1490,25 @@ try {
                     $result.CommandAckPattern = [string]$commandAck.Pattern
 
                     $auditPath = Join-Path $iterationDir 'godot-log-audit.json'
-                    $result.AuditClean = Invoke-LogAudit -LogPath $logForChecks -OutFile $auditPath
+                    if ($result.CurrentIterationLogCopied) {
+                        $result.AuditClean = Invoke-LogAudit -LogPath $currentIterationLog -OutFile $auditPath
+                    } else {
+                        $result.AuditClean = $false
+                        Invoke-LogAudit -LogPath $launchLog -OutFile (Join-Path $iterationDir 'godot-log-after-launch-audit.json') | Out-Null
+                    }
                     $expectations = Test-LogExpectations -LogPath $logForChecks
                     $result.ExpectationPassed = [bool]$expectations.Passed
                     $result.ExpectationChecks = @($expectations.Checks)
-                    $modeCheck = Invoke-Sts1ModeVerifier `
-                        -LogPath $logForChecks `
-                        -AuditPath $auditPath `
-                        -OutFile (Join-Path $iterationDir 'sts1-mode-log-check.json') `
-                        -TextOutFile (Join-Path $iterationDir 'sts1-mode-log-check.txt')
-                    $result.Sts1ModeVerifierPassed = [bool]$modeCheck.Passed
-                    $result.Sts1ModeVerifierChecks = @($modeCheck.Checks)
-                    $result.Sts1ModeVerifierMismatches = @($modeCheck.Mismatches)
+                    if ($result.CurrentIterationLogCopied) {
+                        $modeCheck = Invoke-Sts1ModeVerifier `
+                            -LogPath $currentIterationLog `
+                            -AuditPath $auditPath `
+                            -OutFile (Join-Path $iterationDir 'sts1-mode-log-check.json') `
+                            -TextOutFile (Join-Path $iterationDir 'sts1-mode-log-check.txt')
+                        $result.Sts1ModeVerifierPassed = [bool]$modeCheck.Passed
+                        $result.Sts1ModeVerifierChecks = @($modeCheck.Checks)
+                        $result.Sts1ModeVerifierMismatches = @($modeCheck.Mismatches)
+                    }
                     $copiedLog = Get-LogSnapshot -Path $launchLog
                     $result.LogFinalLengthBytes = [long]$copiedLog.Length
                 }

@@ -62,6 +62,7 @@ $results = foreach ($inputPath in $Path) {
         Path = $file.FullName
         LastWriteTime = $file.LastWriteTime
         Length = $file.Length
+        Sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $file.FullName).Hash.ToLowerInvariant()
         Clean = -not ($hits | Where-Object { $_.Count -gt 0 })
         SignatureHits = $hits
     }

@@ -34,10 +34,10 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after beta.85. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 loader partly fixed / gameplay pending: historical `v0.106.1` smokes are clean; beta.85 Off and CanaryOnly remain previous-package loader context.
-  Fresh beta.86 AdditiveBatch1 direct proof under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` reached main menu; applied 25/25 patches, audited clean, and passed retained verifiers with 10 types / 14 calls.
-  The earlier beta.85 AdditiveBatch1 packet remains diagnostic only: it reached main menu and audited clean, but retained verifiers saw 13 registered-event lines versus the current-source 14 expected.
-  Gameplay/UI/save-load/co-op, QA, final clean-worktree recapture, and handoff remain blocked.
+- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean, and current beta.86 direct Off/CanaryOnly/AdditiveBatch1 proof is clean on `v0.107.0` with RitsuLib `0.4.16`.
+  Fresh beta.86 direct proof: Off, CanaryOnly, and AdditiveBatch1 reached main menu, audited clean, and passed retained mode/packet verifiers with 0 mismatches; counts are 0 StS1 registrations, 4 types / 6 calls, and 10 types / 14 calls respectively.
+  Direct-smoke false failure was helper drift: `--force-steam off` reads default settings; live-session now writes `mod_settings.mods_enabled` and has `-PrepareDefaultSettings`.
+  Earlier beta.85 AdditiveBatch1 stays diagnostic (13/14 current-source registrations); gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
 ## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.

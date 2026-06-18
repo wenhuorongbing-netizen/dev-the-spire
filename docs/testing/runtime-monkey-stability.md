@@ -94,7 +94,9 @@ The first implementation layer is deliberately conservative:
    write `godot.log.current-iteration` from the accepted pre-launch scan offset
    so stale appended log content cannot satisfy or fail the current iteration.
 9. Run `scripts\audit-godot-log.ps1` on `godot.log.current-iteration` and
-   retain `godot-log-audit.json`.
+   retain `godot-log-audit.json`. If the current-iteration slice cannot be
+   written, do not write the canonical audit from the full log; any full-log
+   diagnostic audit must use `godot-log-after-launch-audit.json`.
 10. Run `scripts\check-sts1-enabled-mode-runtime-log.ps1` for the requested
    Off/CanaryOnly/AdditiveBatch1 mode and retain `sts1-mode-log-check.json`.
    This uses `godot.log.current-iteration` as truth, not the evidence folder
@@ -233,14 +235,16 @@ The launched packet checker requires `MainMenuObservation` and
 `RuntimeObservation` in each `iteration-result.json`. These records include
 process-observed, process-exited, stale-process, hung-window, log-observed,
 log-length, and max-no-growth counters. It also requires the retained
-`sts1-mode-log-check.json`, exact Spire Plus patch-count lines from
+`sts1-mode-log-check.json` to match the plan's `Sts1EventMode` and bind its
+`LogPath`, `LogLength`, and `LogSha256` to `godot.log.current-iteration`, exact Spire Plus patch-count lines from
 `godot.log.current-iteration`, probe sample paths and sliced-log paths that
 point to the retained standard files inside the current iteration folder,
 `LogScanOffsetBytes` within the copied full log, a `godot.log.current-iteration`
 slice that matches `godot.log.after-launch` from that offset, command
 acknowledgement patterns that match known built-in command regexes and that
-retained slice when required, a `godot-log-audit.json` whose scanned `Path`
-is the retained current-iteration slice, no raw probe sample with
+retained slice when required, a `godot-log-audit.json` whose scanned `Path`,
+`Length`, and `Sha256` bind to the retained current-iteration slice and whose
+signature counts match a packet-checker recomputation from that slice, no raw probe sample with
 `Responding=false`, and no probe sample or observation with
 `StaleProcessCount > 0`.
 A clean packet means those signals stayed healthy for the sampled windows; it

@@ -17,6 +17,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+$logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
 $checks = [System.Collections.Generic.List[object]]::new()
 $mismatches = [System.Collections.Generic.List[string]]::new()
 
@@ -185,22 +186,34 @@ function Get-PatchCountLineHits {
     return 0
 }
 
-function Read-AuditSummary {
-    param([Parameter(Mandatory = $true)][string]$Path)
+function ConvertTo-AuditSummary {
+    param(
+        [Parameter(Mandatory = $true)][string]$Json,
+        [Parameter(Mandatory = $true)][string]$Path
+    )
 
-    $json = [System.IO.File]::ReadAllText($Path)
-    $items = @($json | ConvertFrom-Json)
+    $items = @($Json | ConvertFrom-Json)
     $dirtyItems = 0
     $hitCount = 0
     $itemPaths = [System.Collections.Generic.List[string]]::new()
+    $itemLengths = [System.Collections.Generic.List[long]]::new()
+    $itemSha256s = [System.Collections.Generic.List[string]]::new()
 
     foreach ($item in $items) {
         if (-not (Test-JsonProperty -Object $item -Name 'Clean') -or -not [bool]$item.Clean) {
             $dirtyItems++
         }
 
-        if (Test-JsonProperty -Object $item -Name 'Path' -and -not [string]::IsNullOrWhiteSpace([string]$item.Path)) {
+        if ((Test-JsonProperty -Object $item -Name 'Path') -and -not [string]::IsNullOrWhiteSpace([string]$item.Path)) {
             $itemPaths.Add([System.IO.Path]::GetFullPath([string]$item.Path)) | Out-Null
+        }
+
+        if (Test-JsonProperty -Object $item -Name 'Length') {
+            $itemLengths.Add([long]$item.Length) | Out-Null
+        }
+
+        if ((Test-JsonProperty -Object $item -Name 'Sha256') -and -not [string]::IsNullOrWhiteSpace([string]$item.Sha256)) {
+            $itemSha256s.Add(([string]$item.Sha256).ToLowerInvariant()) | Out-Null
         }
 
         if (-not (Test-JsonProperty -Object $item -Name 'SignatureHits')) {
@@ -218,10 +231,30 @@ function Read-AuditSummary {
         Path = $Path
         Items = $items.Count
         ItemPaths = @($itemPaths)
+        ItemLengths = @($itemLengths)
+        ItemSha256s = @($itemSha256s)
         DirtyItems = $dirtyItems
         SignatureHitCount = $hitCount
         Clean = ($items.Count -gt 0 -and $dirtyItems -eq 0 -and $hitCount -eq 0)
     }
+}
+
+function Read-AuditSummary {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $json = [System.IO.File]::ReadAllText($Path)
+    return ConvertTo-AuditSummary -Json $json -Path $Path
+}
+
+function Invoke-RecomputedAuditSummary {
+    param([Parameter(Mandatory = $true)][string]$LogPath)
+
+    $auditJson = (& $logAuditScript -Path $LogPath | Out-String)
+    if ([string]::IsNullOrWhiteSpace($auditJson)) {
+        throw "audit-godot-log.ps1 returned empty output for $LogPath"
+    }
+
+    return ConvertTo-AuditSummary -Json $auditJson -Path '<recomputed>'
 }
 
 function Resolve-EvidenceFile {
@@ -896,9 +929,31 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $auditSummary = Read-AuditSummary -Path $auditPath
             Add-Check -Name "${iterationName}_audit_clean" -Passed ([bool]$auditSummary.Clean) -Detail "audit must have zero dirty items and zero signature hits; dirty=$($auditSummary.DirtyItems), hits=$($auditSummary.SignatureHitCount)"
             $auditItemPaths = @($auditSummary.ItemPaths)
+            $auditItemLengths = @($auditSummary.ItemLengths)
+            $auditItemSha256s = @($auditSummary.ItemSha256s)
             $expectedAuditPath = [System.IO.Path]::GetFullPath($currentIterationLogPath)
+            $expectedAuditLength = if ($currentIterationLogExists) { [long](Get-Item -LiteralPath $currentIterationLogPath).Length } else { -1L }
+            $expectedAuditSha256 = Get-FileSha256OrEmpty -Path $currentIterationLogPath
             Add-Check -Name "${iterationName}_audit_has_single_scanned_path" -Passed ($auditItemPaths.Count -eq 1) -Detail "audit JSON must retain exactly one scanned Path; found $($auditItemPaths.Count)"
             Add-Check -Name "${iterationName}_audit_path_matches_current_iteration_log" -Passed ($auditItemPaths.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemPaths[0], $expectedAuditPath)) -Detail 'godot-log-audit.json must be produced from the retained godot.log.current-iteration slice'
+            Add-Check -Name "${iterationName}_audit_has_single_length" -Passed ($auditItemLengths.Count -eq 1) -Detail "audit JSON must retain exactly one Length; found $($auditItemLengths.Count)"
+            Add-Check -Name "${iterationName}_audit_length_matches_current_iteration_log" -Passed ($auditItemLengths.Count -eq 1 -and $auditItemLengths[0] -eq $expectedAuditLength) -Detail 'godot-log-audit.json Length must match the retained godot.log.current-iteration bytes'
+            Add-Check -Name "${iterationName}_audit_has_single_sha256" -Passed ($auditItemSha256s.Count -eq 1) -Detail "audit JSON must retain exactly one Sha256; found $($auditItemSha256s.Count)"
+            Add-Check -Name "${iterationName}_audit_sha256_matches_current_iteration_log" -Passed ($auditItemSha256s.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], $expectedAuditSha256)) -Detail 'godot-log-audit.json Sha256 must match the retained godot.log.current-iteration bytes'
+
+            if (-not $currentIterationLogExists) {
+                Add-Check -Name "${iterationName}_audit_recomputed_from_current_iteration_log" -Passed $false -Detail 'cannot recompute audit because godot.log.current-iteration is missing'
+            } elseif (-not (Test-Path -LiteralPath $logAuditScript -PathType Leaf)) {
+                Add-Check -Name "${iterationName}_audit_recompute_script_exists" -Passed $false -Detail "missing audit script: $logAuditScript"
+            } else {
+                $recomputedAuditSummary = Invoke-RecomputedAuditSummary -LogPath $currentIterationLogPath
+                $recomputedPaths = @($recomputedAuditSummary.ItemPaths)
+                $recomputedSha256s = @($recomputedAuditSummary.ItemSha256s)
+                Add-Check -Name "${iterationName}_audit_recomputed_from_current_iteration_log" -Passed ($recomputedPaths.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$recomputedPaths[0], $expectedAuditPath)) -Detail 'packet checker must recompute the audit from the retained current-iteration log'
+                Add-Check -Name "${iterationName}_audit_recomputed_clean" -Passed ([bool]$recomputedAuditSummary.Clean) -Detail "recomputed audit must have zero dirty items and zero signature hits; dirty=$($recomputedAuditSummary.DirtyItems), hits=$($recomputedAuditSummary.SignatureHitCount)"
+                Add-Check -Name "${iterationName}_audit_signature_counts_match_recomputed" -Passed ($auditSummary.DirtyItems -eq $recomputedAuditSummary.DirtyItems -and $auditSummary.SignatureHitCount -eq $recomputedAuditSummary.SignatureHitCount) -Detail "retained audit signature counts must match recomputed counts; retained dirty=$($auditSummary.DirtyItems), retained hits=$($auditSummary.SignatureHitCount), recomputed dirty=$($recomputedAuditSummary.DirtyItems), recomputed hits=$($recomputedAuditSummary.SignatureHitCount)"
+                Add-Check -Name "${iterationName}_audit_sha256_matches_recomputed" -Passed ($auditItemSha256s.Count -eq 1 -and $recomputedSha256s.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], [string]$recomputedSha256s[0])) -Detail 'retained audit Sha256 must match the recomputed audit Sha256'
+            }
         } catch {
             Add-Check -Name "${iterationName}_audit_json_valid" -Passed $false -Detail "invalid audit JSON in $auditPath`: $($_.Exception.Message)"
         }
@@ -912,8 +967,20 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $sts1FailedChecks = @((Get-JsonValue -Object $sts1ModeCheck -Name 'Checks' -DefaultValue @()) | Where-Object {
                 -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
             })
+            $expectedSts1Mode = [string](Get-JsonValue -Object $plan -Name 'Sts1EventMode' -DefaultValue '')
+            $sts1Mode = [string](Get-JsonValue -Object $sts1ModeCheck -Name 'Mode' -DefaultValue '')
+            $sts1LogPath = [string](Get-JsonValue -Object $sts1ModeCheck -Name 'LogPath' -DefaultValue '')
+            $sts1LogLength = Get-JsonValue -Object $sts1ModeCheck -Name 'LogLength' -DefaultValue $null
+            $sts1LogSha256 = [string](Get-JsonValue -Object $sts1ModeCheck -Name 'LogSha256' -DefaultValue '')
+            $expectedSts1LogPath = [System.IO.Path]::GetFullPath($currentIterationLogPath)
+            $expectedSts1LogLength = if ($currentIterationLogExists) { [long](Get-Item -LiteralPath $currentIterationLogPath).Length } else { -1L }
+            $expectedSts1LogSha256 = Get-FileSha256OrEmpty -Path $currentIterationLogPath
             Add-Check -Name "${iterationName}_sts1_mode_log_check_mismatches_empty" -Passed ($sts1Mismatches.Count -eq 0) -Detail "sts1-mode-log-check.json must have zero mismatches; found $($sts1Mismatches.Count)"
             Add-Check -Name "${iterationName}_sts1_mode_log_check_all_checks_passed" -Passed ($sts1FailedChecks.Count -eq 0) -Detail "sts1-mode-log-check.json contains $($sts1FailedChecks.Count) failed checks"
+            Add-Check -Name "${iterationName}_sts1_mode_log_check_mode_matches_plan" -Passed (-not [string]::IsNullOrWhiteSpace($expectedSts1Mode) -and $sts1Mode -eq $expectedSts1Mode) -Detail "sts1-mode-log-check.json Mode must match monkey-plan Sts1EventMode '$expectedSts1Mode'; found '$sts1Mode'"
+            Add-Check -Name "${iterationName}_sts1_mode_log_check_log_path_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($sts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals([System.IO.Path]::GetFullPath($sts1LogPath), $expectedSts1LogPath)) -Detail 'sts1-mode-log-check.json LogPath must match the retained godot.log.current-iteration slice'
+            Add-Check -Name "${iterationName}_sts1_mode_log_check_log_length_matches_current_iteration_log" -Passed ($null -ne $sts1LogLength -and [long]$sts1LogLength -eq $expectedSts1LogLength) -Detail 'sts1-mode-log-check.json LogLength must match the retained godot.log.current-iteration bytes'
+            Add-Check -Name "${iterationName}_sts1_mode_log_check_log_sha256_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($sts1LogSha256) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($sts1LogSha256, $expectedSts1LogSha256)) -Detail 'sts1-mode-log-check.json LogSha256 must match the retained godot.log.current-iteration bytes'
         }
     }
 }

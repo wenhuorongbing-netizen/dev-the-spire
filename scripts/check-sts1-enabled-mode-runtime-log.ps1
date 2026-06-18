@@ -18,6 +18,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+$logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
 $checks = [System.Collections.Generic.List[object]]::new()
 $mismatches = [System.Collections.Generic.List[string]]::new()
 
@@ -162,6 +163,25 @@ function Add-Check {
     if (-not $Passed) {
         $mismatches.Add("${Name}: $Detail") | Out-Null
     }
+}
+
+function Test-JsonProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    return $null -ne $Object -and $Object.PSObject.Properties.Name -contains $Name
+}
+
+function Get-FileSha256OrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return ''
+    }
+
+    return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
 }
 
 function Contains-Text {
@@ -324,6 +344,57 @@ function Get-RegisteredEventClassesFromLog {
     return @($registeredMatches)
 }
 
+function ConvertTo-AuditSummary {
+    param(
+        [Parameter(Mandatory = $true)][string]$Json,
+        [Parameter(Mandatory = $true)][string]$Path
+    )
+
+    $items = @($Json | ConvertFrom-Json)
+    $hitCount = 0
+    $dirtyItems = 0
+    $itemPaths = [System.Collections.Generic.List[string]]::new()
+    $itemLengths = [System.Collections.Generic.List[long]]::new()
+    $itemSha256s = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($item in $items) {
+        if (-not (Test-JsonProperty -Object $item -Name 'Clean') -or -not [bool]$item.Clean) {
+            $dirtyItems++
+        }
+
+        if ((Test-JsonProperty -Object $item -Name 'Path') -and -not [string]::IsNullOrWhiteSpace([string]$item.Path)) {
+            $itemPaths.Add([System.IO.Path]::GetFullPath([string]$item.Path)) | Out-Null
+        }
+
+        if (Test-JsonProperty -Object $item -Name 'Length') {
+            $itemLengths.Add([long]$item.Length) | Out-Null
+        }
+
+        if ((Test-JsonProperty -Object $item -Name 'Sha256') -and -not [string]::IsNullOrWhiteSpace([string]$item.Sha256)) {
+            $itemSha256s.Add(([string]$item.Sha256).ToLowerInvariant()) | Out-Null
+        }
+
+        if (Test-JsonProperty -Object $item -Name 'SignatureHits') {
+            foreach ($hit in @($item.SignatureHits)) {
+                if (Test-JsonProperty -Object $hit -Name 'Count') {
+                    $hitCount += [int]$hit.Count
+                }
+            }
+        }
+    }
+
+    return [pscustomobject]@{
+        Path = $Path
+        Items = $items.Count
+        ItemPaths = @($itemPaths)
+        ItemLengths = @($itemLengths)
+        ItemSha256s = @($itemSha256s)
+        DirtyItems = $dirtyItems
+        SignatureHitCount = $hitCount
+        Clean = ($items.Count -gt 0 -and $dirtyItems -eq 0 -and $hitCount -eq 0)
+    }
+}
+
 function Read-AuditSummary {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -334,31 +405,18 @@ function Read-AuditSummary {
     }
 
     $json = [System.IO.File]::ReadAllText($resolved)
-    $items = @($json | ConvertFrom-Json)
-    $hitCount = 0
-    $dirtyItems = 0
+    return ConvertTo-AuditSummary -Json $json -Path $resolved
+}
 
-    foreach ($item in $items) {
-        if ($item.PSObject.Properties.Name -contains 'Clean' -and -not [bool]$item.Clean) {
-            $dirtyItems++
-        }
+function Invoke-RecomputedAuditSummary {
+    param([Parameter(Mandatory = $true)][string]$LogPath)
 
-        if ($item.PSObject.Properties.Name -contains 'SignatureHits') {
-            foreach ($hit in @($item.SignatureHits)) {
-                if ($hit.PSObject.Properties.Name -contains 'Count') {
-                    $hitCount += [int]$hit.Count
-                }
-            }
-        }
+    $auditJson = (& $logAuditScript -Path $LogPath | Out-String)
+    if ([string]::IsNullOrWhiteSpace($auditJson)) {
+        throw "audit-godot-log.ps1 returned empty output for $LogPath"
     }
 
-    return [pscustomobject]@{
-        Path = $resolved
-        Items = $items.Count
-        DirtyItems = $dirtyItems
-        SignatureHitCount = $hitCount
-        Clean = ($dirtyItems -eq 0 -and $hitCount -eq 0)
-    }
+    return ConvertTo-AuditSummary -Json $auditJson -Path '<recomputed>'
 }
 
 $registrationService = Read-RepoText $RegistrationServicePath
@@ -518,12 +576,39 @@ if ($AuditPath) {
     Write-Output "audit_signature_hits=$($auditSummary.SignatureHitCount)"
     Write-Output "audit_dirty_items=$($auditSummary.DirtyItems)"
     Add-Check -Name 'audit_clean' -Passed ([bool]$auditSummary.Clean) -Detail 'expected audit JSON to have zero dirty items and zero signature hits'
+
+    $auditItemPaths = @($auditSummary.ItemPaths)
+    $auditItemLengths = @($auditSummary.ItemLengths)
+    $auditItemSha256s = @($auditSummary.ItemSha256s)
+    $expectedAuditPath = [System.IO.Path]::GetFullPath($resolvedLogPath)
+    $expectedAuditLength = [long](Get-Item -LiteralPath $resolvedLogPath).Length
+    $expectedAuditSha256 = Get-FileSha256OrEmpty -Path $resolvedLogPath
+    Add-Check -Name 'audit_has_single_scanned_path' -Passed ($auditItemPaths.Count -eq 1) -Detail "audit JSON must retain exactly one scanned Path; found $($auditItemPaths.Count)"
+    Add-Check -Name 'audit_path_matches_log_path' -Passed ($auditItemPaths.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemPaths[0], $expectedAuditPath)) -Detail 'godot-log-audit.json must be produced from the copied log passed as -LogPath'
+    Add-Check -Name 'audit_has_single_length' -Passed ($auditItemLengths.Count -eq 1) -Detail "audit JSON must retain exactly one Length; found $($auditItemLengths.Count)"
+    Add-Check -Name 'audit_length_matches_log_path' -Passed ($auditItemLengths.Count -eq 1 -and $auditItemLengths[0] -eq $expectedAuditLength) -Detail 'godot-log-audit.json Length must match the copied log bytes'
+    Add-Check -Name 'audit_has_single_sha256' -Passed ($auditItemSha256s.Count -eq 1) -Detail "audit JSON must retain exactly one Sha256; found $($auditItemSha256s.Count)"
+    Add-Check -Name 'audit_sha256_matches_log_path' -Passed ($auditItemSha256s.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], $expectedAuditSha256)) -Detail 'godot-log-audit.json Sha256 must match the copied log bytes'
+
+    if (-not (Test-Path -LiteralPath $logAuditScript -PathType Leaf)) {
+        Add-Check -Name 'audit_recompute_script_exists' -Passed $false -Detail "missing audit script: $logAuditScript"
+    } else {
+        $recomputedAuditSummary = Invoke-RecomputedAuditSummary -LogPath $resolvedLogPath
+        $recomputedPaths = @($recomputedAuditSummary.ItemPaths)
+        $recomputedSha256s = @($recomputedAuditSummary.ItemSha256s)
+        Add-Check -Name 'audit_recomputed_from_log_path' -Passed ($recomputedPaths.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$recomputedPaths[0], $expectedAuditPath)) -Detail 'verifier must recompute the audit from the copied log passed as -LogPath'
+        Add-Check -Name 'audit_recomputed_clean' -Passed ([bool]$recomputedAuditSummary.Clean) -Detail "recomputed audit must have zero dirty items and zero signature hits; dirty=$($recomputedAuditSummary.DirtyItems), hits=$($recomputedAuditSummary.SignatureHitCount)"
+        Add-Check -Name 'audit_signature_counts_match_recomputed' -Passed ($auditSummary.DirtyItems -eq $recomputedAuditSummary.DirtyItems -and $auditSummary.SignatureHitCount -eq $recomputedAuditSummary.SignatureHitCount) -Detail "retained audit signature counts must match recomputed counts; retained dirty=$($auditSummary.DirtyItems), retained hits=$($auditSummary.SignatureHitCount), recomputed dirty=$($recomputedAuditSummary.DirtyItems), recomputed hits=$($recomputedAuditSummary.SignatureHitCount)"
+        Add-Check -Name 'audit_sha256_matches_recomputed' -Passed ($auditItemSha256s.Count -eq 1 -and $recomputedSha256s.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], [string]$recomputedSha256s[0])) -Detail 'retained audit Sha256 must match the recomputed audit Sha256'
+    }
 } else {
     Write-Output 'audit_status=not-provided'
 }
 
 $report.RuntimeLogStatus = 'validated'
 $report['LogPath'] = $resolvedLogPath
+$report['LogLength'] = [long](Get-Item -LiteralPath $resolvedLogPath).Length
+$report['LogSha256'] = Get-FileSha256OrEmpty -Path $resolvedLogPath
 $report['ObservedRegisteredEventLines'] = $registeredEventMatches.Count
 $report['ObservedEventTypes'] = $observedClasses.Count
 $report['ObservedEventClasses'] = $observedClasses
