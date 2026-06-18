@@ -410,8 +410,9 @@ process-observed, process-exited, stale-process, hung-window, log-observed,
 `NoLogGrowthTimeoutExceeded=false` state, and command-bearing runtime
 `LogGrew=true`. Startup-only or no-command observations do not require idle
 main-menu log growth. The checker also requires the retained
-`run-result.json` `ProcessId` to match the single positive process id observed
-by `runtime-probe-samples.json`.
+`iteration-result.json` `GameProcessId`, `GameProcessStartTimeUtc`, and
+`GameProcessPath` to match the single positive process identity observed by
+`runtime-probe-samples.json` and the live-session-selected game process.
 `sts1-mode-log-check.json` to match the plan's `Sts1EventMode` and bind its
 `LogPath`, `LogLength`, and `LogSha256` to `godot.log.current-iteration`, exact Spire Plus patch-count lines from
 `godot.log.current-iteration`, probe sample paths and sliced-log paths that
@@ -441,9 +442,16 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   flags, and compares the report to the plan summary. The source-workspace
   check is no-launch evidence binding for API/source triage; it is not gameplay
   or runtime proof.
+- Each iteration retains `prepare-output.json` from
+  `scripts\spire-plus-live-session.ps1 -Mode Prepare -Launch`. The packet
+  checker binds it to `LiveSessionPrepareOutputPath` /
+  `LiveSessionPrepareOutputSha256`, requires Steam `-applaunch 2868840`
+  metadata, requires PID attribution to pass, and compares the selected game
+  process id, start timestamp, executable path, and empty pre-launch
+  `SlayTheSpire2` process set back to `iteration-result.json`.
 - Each `iteration-result.json` records `GameProcessId`,
-  `GameProcessStartTimeUtc`, `MainWindowObserved`, `MainMenuDetectedAt`,
-  `MainMenuElapsedSeconds`, `PreLaunchLogLengthBytes`,
+  `GameProcessStartTimeUtc`, `GameProcessPath`, `MainWindowObserved`,
+  `MainMenuDetectedAt`, `MainMenuElapsedSeconds`, `PreLaunchLogLengthBytes`,
   `MinimumProcessStartTimeUtc`, `LogScanOffsetBytes`,
   `CurrentIterationLogPath`, `CurrentIterationLogCopied`, `ScenarioTag`, `OwnerArea`,
   `CommandSelectionMode`, `LogInitialLengthBytes`,
@@ -451,13 +459,24 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   `MaxConsecutiveUnresponsiveSamples`, `StaleProcessObserved`,
   `StaleProcessCount`, `StartupLogProbePassed`,
   `PostCommandLogProbePassed`, `CommandAckRequired`, `CommandAckPattern`,
-  `CommandAckObserved`,
+  `CommandAckObserved`, `LiveSessionPrepareOutputPath`,
+  `LiveSessionPrepareOutputSha256`, `LiveSessionLaunchedAt`,
+  `LiveSessionPidAttributionPassed`, `LiveSessionSelectedGameProcessId`,
+  `LiveSessionSelectedGameProcessStartTimeUtc`,
+  `LiveSessionSelectedGameProcessPath`,
+  `GameProcessStartTimeAfterLiveSessionLaunch`,
+  `GameProcessIdMatchesLiveSession`,
+  `GameProcessStartTimeMatchesLiveSession`, `GameProcessPathMatchesLiveSession`,
   `ResponsivenessProbePassed`, current-slice offset binding, `HangSignals`, and
   `FailureReasonCodes`.
 - Each iteration retains `runtime-probe-samples.json` with the sampled
-  process/window/log records.
+  process/window/log records, including `Phase`, `ProcessId`,
+  `ProcessStartTimeUtc`, `ProcessPath`, expected game process identity,
+  process-id/start/path match booleans, stale/unknown/ambiguous process counts,
+  window state, and responsiveness state.
 - `monkey-summary.json` records `FailedIterationIds`, `FailureReasonCounts`,
-  `ProcessExitCount`, `UnresponsiveIterationCount`, `LogStallIterationCount`,
+  `ProcessExitCount`, `LiveSessionBindingMissingCount`,
+  `UnresponsiveIterationCount`, `LogStallIterationCount`,
   `StaleProcessObservedCount`, `CommandAckMissingCount`, `CommandCounts`,
   `ScenarioTagCounts`,
   `OwnerAreaCounts`, `VakuuFightIterationCount`, `MaxMainMenuElapsedSeconds`,
