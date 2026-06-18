@@ -156,8 +156,8 @@ Use the same packet checker with `-Mode CanaryOnly` or `-Mode AdditiveBatch1` af
 Current validation target after the coordination pause is lifted:
 
 - Build: 0 errors / 0 warnings.
-- Tests: split no-build lanes at the current accurate count, last recorded as 475 passed / 0 failed / 21 skipped / 496 total.
-- Opt-in artifact subset: last recorded as 67 passed / 0 failed / 0 skipped / 67 total.
+- Tests: split no-build lanes at the current accurate count, last recorded as 489 passed / 0 failed / 39 skipped / 528 total.
+- Opt-in artifact subset: last recorded as 67 passed / 0 failed / 2 skipped / 69 total.
 - `git diff --check` clean.
 
 Automated tests and package checks are not gameplay evidence.

@@ -407,6 +407,7 @@ if ($null -ne $summary) {
     $failedIterationIdsCount = Get-ArrayCount -Value (Get-JsonValue -Object $summary -Name 'FailedIterationIds' -DefaultValue @())
     Add-Check -Name 'summary_failed_iteration_ids_empty' -Passed ($failedIterationIdsCount -eq 0) -Detail 'FailedIterationIds must be empty for a clean packet'
     Add-Check -Name 'summary_process_exit_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'ProcessExitCount' -DefaultValue -1) -eq 0) -Detail 'ProcessExitCount must be 0'
+    Add-Check -Name 'summary_main_window_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'MainWindowMissingCount' -DefaultValue -1) -eq 0) -Detail 'MainWindowMissingCount must be 0'
     Add-Check -Name 'summary_unresponsive_iteration_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'UnresponsiveIterationCount' -DefaultValue -1) -eq 0) -Detail 'UnresponsiveIterationCount must be 0'
     Add-Check -Name 'summary_log_stall_iteration_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'LogStallIterationCount' -DefaultValue -1) -eq 0) -Detail 'LogStallIterationCount must be 0'
     Add-Check -Name 'summary_command_ack_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'CommandAckMissingCount' -DefaultValue -1) -eq 0) -Detail 'CommandAckMissingCount must be 0'

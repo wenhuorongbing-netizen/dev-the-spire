@@ -14,7 +14,7 @@ Blocked or current-pending in this thread:
 - `O33`: current `v0.107.0` AdditiveBatch1 enabled-mode smoke has since been captured by the shared validation lane and is loader/registration proof only; this thread did not create it.
 - `O26-O29`, `O31-O41`, and `O42-O52`: canary and simple-batch screenshots, result logs, pre/post state, save-load, EN/ZHS render, image/license, parity disposition, and QA rows remain blocked until gameplay evidence exists.
 - `O54-O58`, `O64`, and `O65`: replacement functional proof, multiplayer runtime proof, ZHS screenshots, and independent QA remain blocked until current runtime/gameplay evidence exists.
-- `O72-O81`: owner decisions, no unsupported commit/push, final handoff, and exact scope decisions remain current-pending while validation evidence is incomplete and the worktree is dirty.
+- `O72-O81`: owner decisions, no unsupported commit/push, final handoff, and exact scope decisions remain current-pending while validation evidence is incomplete; the latest pushed beta.86 baseline is `eaaeb5a1`, and any pause-safe follow-up edits still need exact-scope recapture before commit or handoff.
 - `O82`: release-ready claim absence is static-pass only; it does not make the feature release-ready.
 - `O83-O84`: this report lists blocked gates and the next-run start point, but those rows are a pause summary, not completion.
 
@@ -40,7 +40,7 @@ The reason is shared-runner contamination: multiple same-repo threads were overl
 ## Attempted Actions
 
 1. Re-read `PROJECT_STATE.md`, `docs/goals/event.md`, `docs/features/sts1-events/status-board.md`, `docs/features/sts1-events/test-plan.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-subagent-coverage.md`, and the existing v19 coordination hard-stop report.
-2. Confirmed the current worktree is dirty and includes unrelated concurrent source, docs, and test changes from other lanes.
+2. The earlier v20 pause began with concurrent dirty source, docs, and test changes from other lanes; after the beta.86 validation commit, later pause-safe follow-up edits must be treated as a fresh exact-scope recapture problem before commit or handoff.
 3. Avoided starting `dotnet build`, `dotnet test`, `dotnet publish`, package/release-evidence validation, game/runtime smoke, staging, commit, or push.
 4. Continued only static documentation/guard alignment work for the v20 final-gate overlay and current-route references.
 5. Preserved the beta.85 Off proof as default-Off-only evidence, beta.85 CanaryOnly as previous-package loader evidence, and beta.86 AdditiveBatch1 as loader/registration evidence without extending any of them to gameplay, replacement, multiplayer, or QA gates.
@@ -68,7 +68,7 @@ O42-O52 simple-batch runtime/save/render/image/QA rows
 O54-O58 replacement and multiplayer runtime rows
 O64 ZHS runtime screenshots
 O65 independent QA
-O72-O81 owner, handoff, no unsupported commit/push, and dirty-scope decisions
+O72-O81 owner, handoff, no unsupported commit/push, and exact-scope recapture decisions
 ```
 
 `O82` remains static-pass only because current docs do not claim release readiness. `O83-O84` are satisfied only as this hard-stop summary and next-run pointer; they are not evidence that the feature is complete.

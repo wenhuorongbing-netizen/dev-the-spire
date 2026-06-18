@@ -281,10 +281,24 @@ if (Test-Path -LiteralPath $gdreExportLogPath -PathType Leaf) {
     Add-Check -Name 'gdre_log_parse_errors_zero' -Passed ([int]$gdreSummary.ParseErrorCount -eq 0) -Detail "GDRE parse errors=$($gdreSummary.ParseErrorCount)" -Severity $gdreCleanSeverity
 }
 
-Add-Check -Name 'source_root_is_git_ignored' -Passed (Test-GitIgnored -Path 'source code') -Detail 'source code/ must stay ignored local scratch'
-Add-Check -Name 'tools_root_is_git_ignored' -Passed (Test-GitIgnored -Path '.tools') -Detail '.tools/ must stay ignored local tooling'
-Add-Check -Name 'godot_cache_is_git_ignored' -Passed (Test-GitIgnored -Path '.godot') -Detail '.godot/ must stay ignored editor cache'
-Add-Check -Name 'source_root_has_no_tracked_files' -Passed ((Get-GitTrackedPathCount -Path 'source code') -eq 0) -Detail 'source code/ must not contain tracked original game files'
+$sourceRootIgnored = Test-GitIgnored -Path 'source code'
+$toolsRootIgnored = Test-GitIgnored -Path '.tools'
+$godotCacheIgnored = Test-GitIgnored -Path '.godot'
+$sourceRootTrackedFileCount = Get-GitTrackedPathCount -Path 'source code'
+$godotOpenProjectCommand = "Godot project reference: executable=$godotExeFull project=$sourceProjectPath"
+$sourceSnapshotDisposition = if ($normalizedSourceVersion -and $normalizedGameVersion -and $normalizedSourceVersion -eq $normalizedGameVersion) {
+    'current-source-match'
+} elseif ($normalizedSourceVersion -and $normalizedGameVersion) {
+    'historical-source-version-mismatch'
+} else {
+    'unknown-source-version'
+}
+
+Add-Check -Name 'source_root_is_git_ignored' -Passed $sourceRootIgnored -Detail 'source code/ must stay ignored local scratch'
+Add-Check -Name 'tools_root_is_git_ignored' -Passed $toolsRootIgnored -Detail '.tools/ must stay ignored local tooling'
+Add-Check -Name 'godot_cache_is_git_ignored' -Passed $godotCacheIgnored -Detail '.godot/ must stay ignored editor cache'
+Add-Check -Name 'source_root_has_no_tracked_files' -Passed ($sourceRootTrackedFileCount -eq 0) -Detail 'source code/ must not contain tracked original game files'
+Add-Check -Name 'godot_open_command_prepared' -Passed ((Test-Path -LiteralPath $godotExeFull -PathType Leaf) -and (Test-Path -LiteralPath $sourceProjectPath -PathType Leaf)) -Detail "open project reference: $godotOpenProjectCommand"
 
 Add-Check -Name 'ritsulib_manifest_exists' -Passed (Test-Path -LiteralPath $ritsuManifestPath -PathType Leaf) -Detail "expected RitsuLib manifest at $ritsuManifestPath"
 Add-Check -Name 'ritsulib_variants_exists' -Passed (Test-Path -LiteralPath $ritsuVariantsPath -PathType Leaf) -Detail "expected RitsuLib variants at $ritsuVariantsPath"
@@ -364,17 +378,46 @@ $report = [pscustomobject]@{
         ConsoleExeExists = Test-Path -LiteralPath $godotConsoleExeFull -PathType Leaf
         ExpectedVersion = '4.5.1'
         DetectedFromGdreLog = [string]$gdreSummary.EngineVersion
+        OpenProjectCommand = $godotOpenProjectCommand
     }
     RecoveredSource = [pscustomobject]@{
         Version = $sourceVersion
         Commit = if ($sourceReleaseInfo -and $sourceReleaseInfo.commit) { [string]$sourceReleaseInfo.commit } else { '' }
         MatchesInstalledGame = $normalizedSourceVersion -and $normalizedGameVersion -and $normalizedSourceVersion -eq $normalizedGameVersion
+        Disposition = $sourceSnapshotDisposition
         FailedScripts = $gdreSummary.FailedScripts
         ParseErrors = $gdreSummary.ParseErrorCount
     }
     GitProtection = [pscustomobject]@{
-        SourceCodeIgnored = Test-GitIgnored -Path 'source code'
-        SourceCodeTrackedFileCount = Get-GitTrackedPathCount -Path 'source code'
+        SourceCodeIgnored = $sourceRootIgnored
+        ToolsIgnored = $toolsRootIgnored
+        GodotCacheIgnored = $godotCacheIgnored
+        SourceCodeTrackedFileCount = $sourceRootTrackedFileCount
+    }
+    EvidenceUsePolicy = [pscustomobject]@{
+        NoLaunch = $true
+        NotRuntimeProof = $true
+        LocalSourceReferenceOnly = $true
+        AuthorizedLocalInstallOnly = $true
+        ThirdPartyDumpsProhibited = $true
+        SourceRootMustStayIgnored = $true
+        OriginalGameSourceMustNotBeTracked = $true
+        RitsuLibViewerIsLogViewerOnly = $true
+        RefreshSourceSnapshotBeforeCurrentApiClaims = $sourceSnapshotDisposition -ne 'current-source-match'
+        RuntimeProofStillRequiresLaunchEvidence = $true
+        AllowedRecordedEvidence = @(
+            'short signatures',
+            'local paths',
+            'observed version metadata',
+            'hashes',
+            'conclusions'
+        )
+        ProhibitedTrackedEvidence = @(
+            'original game source files',
+            'extracted serialized game resources',
+            'large decompiled code chunks',
+            'unlicensed original game art'
+        )
     }
     SourceVersion = $sourceVersion
     InstalledGameVersion = $gameVersion

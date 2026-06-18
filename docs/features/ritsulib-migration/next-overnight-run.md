@@ -10,13 +10,13 @@ TBD (next available runtime/manual QA session)
 
 The old hard blocker was missing or non-clean RitsuLib runtime smoke. That blocker is now closed for loader/registration proof: historical Slay the Spire 2 `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic evidence is clean, current `v0.107.0` beta.85 Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` reached main menu and audited clean after the Spire Plus API-target drift fix, current beta.85 CanaryOnly smoke under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` passed retained log/packet verifiers with 4 event types / 6 registration lines, and current beta.86 AdditiveBatch1 direct smoke under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` passed retained log/packet verifiers with 10 event types / 14 registration lines. The beta.85 AdditiveBatch1 13/14 mismatch is root-cause history only. The next run should move to gameplay, render, save-load, replacement, multiplayer, QA, and handoff proof after the validation coordination pause clears. It is not approval to migrate more patches.
 
-Coordination boundary: while the same-repository validation pause remains active, do not run this plan's `dotnet` validation, package/release, runtime/game smoke, staging, commit, or push steps. During the pause, use this plan only for read-only/static planning, source-only expected-shape output, and already-captured evidence review; run the pre-run checklist only after the pause is lifted and one controlled validation lane is assigned.
+Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps. Assign one controlled lane, verify `git status --short --branch` first, and record the resulting HEAD/worktree status before using evidence for handoff.
 
 ## Current State
 
-- Current repository HEAD must be checked at run start. The latest observed pushed HEAD before this runtime-fix pass is `bdb51c39`.
-- Current worktree is dirty and includes tracked and untracked source, script, and doc edits, including StS1 event governance files and the tracked `docs/features/ritsulib-migration/batch-4c-candidates.md`. Classify dirty files before any validation claim.
-- Latest beta.85 no-game validation is summarized in `PROJECT_STATE.md`: 0 build errors and 0 warnings; split no-build lanes covered 475 passed / 0 failed / 21 skipped / 496 total; the opt-in package/artifact subset passed 67 / 0 failed / 0 skipped / 67 total. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
+- Current repository HEAD must be checked at run start. The latest observed pushed beta.86 validation baseline is `eaaeb5a1`.
+- Any dirty files after `eaaeb5a1` are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
+- Latest beta.86 no-game validation is summarized in `PROJECT_STATE.md`: 0 build errors and 0 warnings; split no-build lanes covered 489 passed / 0 failed / 39 skipped / 528 total; the opt-in package/artifact subset passed 67 passed / 0 failed / 2 skipped / 69 total. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
 - Patch state remains 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
 - Historical `v0.106.1` loader-gate runtime proof exists:
   - Off: `.tools\runtime-evidence\smoke-k1-off-20260602-145938`, 0 Sts1Events registrations, clean audit.
@@ -26,9 +26,9 @@ Coordination boundary: while the same-repository validation pause remains active
 - Current `v0.107.0` beta.85 package runtime proof is clean for loader/patch application under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`; installed package parity passed for that package line.
 - Current CanaryOnly enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`: 4 event types / 6 registration lines, retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`, both 0 mismatches.
 - Current AdditiveBatch1 enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`: 10 event types / 14 registration lines, retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`, both 0 mismatches. The beta.85 AdditiveBatch1 13/14 verifier mismatch remains root-cause history only.
-- Dependency decision is recorded: keep the current dirty source and beta.85 package line at compile/manifest `0.3.2`; move both to `0.4.16` only in a future owner-approved versioned package pass for the `v0.107.0` runtime.
+- Dependency decision is recorded: keep the current source and beta.86 package line at compile/manifest `0.3.2`; move both to `0.4.16` only in a future owner-approved versioned package pass for the `v0.107.0` runtime.
 - Batch 4c is proposal-only. The current candidate list is `docs/features/ritsulib-migration/batch-4c-candidates.md`; migration requires explicit owner approval and fresh validation.
-- Gameplay, Mod Settings UI page refresh, event screenshots, save-load, image/render, replacement functional proof, multiplayer fail-closed proof, independent QA, clean-worktree decision, and tester-package handoff remain pending.
+- Gameplay, Mod Settings UI page refresh, event screenshots, save-load, image/render, replacement functional proof, multiplayer fail-closed proof, independent QA, and tester-package handoff remain pending. Future handoff must recapture HEAD and worktree status after any later edits.
 - Release-ready and live-ready remain no.
 
 ## Pre-Run Checklist
@@ -124,7 +124,7 @@ If a gate cannot be completed, record:
 - [x] Installed beta.85 package parity verified after the 2026-06-11 package refresh.
 - [x] Installed beta.86 package parity verified after the 2026-06-18 package/source alignment pass.
 - [x] Clean current `v0.107.0` beta.85 Off loader smoke captured after the `v0.4.16` install.
-- [ ] Current HEAD validation refreshed after the latest dirty worktree changes, or explicitly recorded as stale under the validation coordination pause.
+- [ ] Current HEAD validation refreshed after the beta.86 post-doc/test reconciliation, or any later dirty follow-up scope explicitly recorded as stale under the validation coordination pause.
 - [x] Current `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Current `v0.107.0` beta.86 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
 - [ ] Mod Settings UI evidence captured.
@@ -138,4 +138,4 @@ If a gate cannot be completed, record:
 - No release-ready, live-ready, or runtime-safe claim from loader logs alone.
 - No Batch 4c migration without owner acceptance.
 - No high-risk migration in this run.
-- No package handoff while validation, gameplay proof, clean-worktree decision, or owner decision is missing.
+- No package handoff while validation recapture, gameplay proof, handoff status recapture, or owner decision is missing.

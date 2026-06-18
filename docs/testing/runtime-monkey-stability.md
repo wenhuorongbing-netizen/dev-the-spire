@@ -25,6 +25,8 @@ The recovered `source code/` tree is local scratch/reference material. It must
 stay ignored, and original Slay the Spire 2 non-art source/resources must not be
 copied into tracked files. Record only short signatures, paths, observed
 version metadata, and conclusions in docs/tests.
+Use only the owner-authorized local install as the recovery source; third-party
+dumps or redistributed source/resource bundles are not valid evidence.
 
 Current caution: `source code\release_info.json` currently reports `v0.106.0`
 on this machine, while the installed game is `v0.107.0`. Check that file before
@@ -35,8 +37,15 @@ historical.
 Audit the local source workspace without launching Godot or the game:
 
 ```powershell
-.\scripts\check-local-godot-source-workspace.ps1
+.\scripts\check-local-godot-source-workspace.ps1 `
+  -OutFile .tools\runtime-evidence\local-godot-source-workspace-current\workspace-check.json
 ```
+
+When `-OutFile` is used, the checker emits a machine-readable
+`OpenProjectCommand` and `EvidenceUsePolicy` in its JSON report. Treat that
+command as local operator guidance only: it does not launch Godot, does not
+prove runtime behavior, and does not permit tracked copies of original game
+source or extracted resources.
 
 Use `-RequireCurrentSourceSnapshot -FailOnMismatch` only when a task requires
 current-source parity. The current local state is expected to report
@@ -118,7 +127,7 @@ Dry-run broad Ancient plan, no game launch:
   -CommandSelectionMode RoundRobin
 ```
 
-Dry-run focused Vakuu child-combat freeze plan, no game launch:
+Dry-run focused Vakuu forced fight-option plan, no game launch:
 
 ```powershell
 .\scripts\run-spire-plus-monkey-stability.ps1 `
@@ -148,7 +157,7 @@ lines:
 - `AncientUiSmoke`: round-robin Urda, Morvi, Lotha, and normal Vakuu Ancient
   UI setup commands.
 - `VakuuFightSmoke`: focused `spireplus_test_ancient VAKUU confirm fight`
-  coverage for the hidden child-combat transition.
+  coverage for force-fight gate arming and hidden fight-option UI setup.
 - `AncientUiPlusVakuuFight`: Urda, Morvi, Lotha, normal Vakuu, and gated Vakuu
   fight in one balanced corpus.
 - `StartupOnly`: no DevConsole commands; startup/watchdog/log audit only.
@@ -192,6 +201,10 @@ The packet checker recomputes command, scenario-tag, and owner-area counts from
 the retained plan and summary. `VakuuFightSmoke` packets must contain only
 `vakuu-fight` planned iterations. A 1000-iteration `AncientUiPlusVakuuFight`
 round-robin packet must contain exactly 200 `vakuu-fight` planned iterations.
+The current `vakuu-fight` command proves only the forced fight option is shown
+when the copied log contains `[SPIREPLUS-EVIDENCE] VakuuFight
+fight_option_shown`. It is not child-combat proof unless later evidence also
+contains `fight_started` and `child_combat_room_entered`.
 
 The launched packet checker requires `MainMenuObservation` and
 `RuntimeObservation` in each `iteration-result.json`. These records include
@@ -236,7 +249,8 @@ include `RuntimeStartup`, `RuntimeCrash`, `RuntimeHarness`,
 `DevConsoleHarness`, `Ancients.Vakuu`, `Ancients.Morvi`, `Ancients.Lotha`,
 `Ancients.Urda`, `Ascension11To20`, `PreviewTools`, `MultiplayerPolicy`, and
 `Runtime.Unknown`.
-More specific rows such as `Ancients.Vakuu.ChildCombatResume`,
+More specific rows such as `Ancients.Vakuu.FightOptionSetup`,
+`Ancients.Vakuu.ChildCombatResume`,
 `Ancients.Morvi.CardPlayState`, `Ancients.Lotha.CardPlayState`,
 `Ancients.Urda.MapSaveState`, and `Ascension11To20.Rootblight` are used when
 command/log text is specific enough. Each finding records severity, confidence,

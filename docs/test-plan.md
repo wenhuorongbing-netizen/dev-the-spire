@@ -34,7 +34,7 @@ dotnet test EZMicroBalance.sln --no-build
 Remove-Item Env:\SPIREPLUS_RUN_LOCAL_SOURCE_GUARDS
 ```
 
-Set `SPIREPLUS_LOCAL_GAME_SOURCE_ROOT` to a decompiled source root when the snapshot is not under repo-local `source code/`. If local-source guards are enabled and `source code/src/Core/**` or the override root is missing or stale, those tests should fail with missing-file or source-shape details.
+Set `SPIREPLUS_LOCAL_GAME_SOURCE_ROOT` to a decompiled source root when the snapshot is not under repo-local `source code/`. The opt-in tests enforce source-shape expectations after the snapshot is selected. Use `scripts\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot -FailOnMismatch` before enabling them when version freshness must be enforced; stale source metadata is reported by that checker, not by every source-shape test.
 
 Run after resource, localization, manifest, project, or packaging changes:
 
@@ -81,7 +81,8 @@ and controlled launch loops.
 Dry-run plan, no game launch:
 
 ```powershell
-.\scripts\check-local-godot-source-workspace.ps1
+.\scripts\check-local-godot-source-workspace.ps1 `
+  -OutFile .tools\runtime-evidence\local-godot-source-workspace-current\workspace-check.json
 .\scripts\run-spire-plus-monkey-stability.ps1 `
   -Iterations 1000 `
   -Scenario AncientUiPlusVakuuFight `
@@ -90,8 +91,12 @@ Dry-run plan, no game launch:
 
 The source-workspace checker is expected to warn when local `source code/`
 metadata does not match the installed game. Use
-`-RequireCurrentSourceSnapshot -FailOnMismatch` only when a fresh recovered
-source snapshot is required for the task.
+`-RequireCurrentSourceSnapshot -FailOnMismatch` immediately before the
+`SPIREPLUS_RUN_LOCAL_SOURCE_GUARDS=1` test lane, or any task where a fresh
+recovered source snapshot is required. When `-OutFile` is used, its JSON report
+records `OpenProjectCommand` and `EvidenceUsePolicy`; these are local
+inspection guidance and source-safety boundaries, not gameplay or runtime
+proof.
 
 Small controlled smoke, only when a live validation lane is assigned:
 
@@ -108,12 +113,14 @@ Small controlled smoke, only when a live validation lane is assigned:
   -PostCommandSeconds 20
 ```
 
-Use `-Scenario VakuuFightSmoke` for the focused hidden Vakuu child-combat
-freeze lane, and `-Scenario AncientUiPlusVakuuFight` when a long run should
-balance normal Ancient UI setup with gated Vakuu fight setup. The default
-command selection mode is round-robin so retained plans record balanced command
-coverage; use `-CommandSelectionMode Random -RandomSeed <seed>` only when
-random distribution is intentional.
+Use `-Scenario VakuuFightSmoke` for focused hidden Vakuu force-fight option
+setup. This is not child-combat proof unless retained logs also contain
+`fight_started` and `child_combat_room_entered`. Use
+`-Scenario AncientUiPlusVakuuFight` when a long run should balance normal
+Ancient UI setup with gated Vakuu fight-option setup. The default command
+selection mode is round-robin so retained plans record balanced command
+coverage; use `-CommandSelectionMode Random -RandomSeed <seed>` only when random
+distribution is intentional.
 
 The lane fails on main-menu timeout, current `SlayTheSpire2` process
 disappearance, sustained hung/not-responding window samples, pre-main-menu

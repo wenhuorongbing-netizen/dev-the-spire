@@ -32,7 +32,16 @@ Historical environment rows below are retained for setup history. Prefer this ov
 - Observed installed game metadata: commit `cb2fbf47`, branch `v0.106.1`, build date `2026-05-21T16:17:40-07:00`, and `main_assembly_hash` `1001788235`.
 - Steam appmanifest evidence: public-beta `BetaKey`, build id `23353684`, installed locally on 2026-05-22.
 - Local source snapshot: `source code/` was cleaned and recovered from the installed `SlayTheSpire2.pck` plus `data_sts2_windows_x86_64\sts2.dll` on 2026-05-22 using GDRE Tools `v2.5.0-beta.5`.
-- Source recovery evidence: `source code\release_info.json` matches `v0.106.1`; `source code/src/Core` contains 3,393 C# files; `source code/sts2.sln` builds with 0 warnings and 0 errors.
+- Source recovery evidence: the retained `source code/` recovery is historical
+  `v0.106.x` reference material. The current no-launch workspace checker reports
+  `source code\release_info.json` as `v0.106.0` while the installed game reports
+  `v0.107.0`; run
+  `scripts\check-local-godot-source-workspace.ps1` with
+  `-RequireCurrentSourceSnapshot -FailOnMismatch` before relying on the
+  recovered tree for current-source claims. Historical notes from the May 2026
+  recovery recorded `source code/src/Core` with 3,393 C# files and
+  `source code/sts2.sln` building with 0 warnings and 0 errors for that older
+  snapshot.
 - Source recovery log: `source code/gdre_export.log` decompiled 3,463 scripts, reported 18 failed scripts, converted 3,937 resources, and logged one debug-scene parse warning for `scenes/debug/back_confirm_example.tscn`.
 - API-diff artifacts live under `.tools\source-refresh-v0.106.1-20260522\`; the canonical Core signature diff found 1,712 removed signatures and 1,835 added signatures compared with the previous snapshot.
 - Do not use pre-2026-05-22 `v0.105.x` source notes as the sole basis for current `v0.106.1` conclusions. Reinspect the refreshed source and confirm runtime behavior before making release claims.

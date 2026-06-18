@@ -603,6 +603,10 @@ function Get-CommandAckPattern {
         return ''
     }
 
+    if ($Command -match '(?i)^\s*spireplus_test_ancient\s+VAKUU\s+confirm\s+fight\b') {
+        return '\[SPIREPLUS-EVIDENCE\]\s+VakuuFight\s+fight_option_shown\b'
+    }
+
     if ($Command -match '(?i)^\s*spireplus_test_ancient\s+([A-Z0-9_]+)\s+confirm\b') {
         $target = $Matches[1].ToUpperInvariant()
         if ($target.StartsWith('EZMB_', [System.StringComparison]::OrdinalIgnoreCase)) {
@@ -660,7 +664,7 @@ function Get-CommandOwnerArea {
 
         $tail = $Matches[2]
         if ($target -eq 'VAKUU' -and $tail -match '(?i)\bfight\b') {
-            return 'Ancients.Vakuu.ChildCombatResume'
+            return 'Ancients.Vakuu.FightOptionSetup'
         }
 
         switch ($target) {
@@ -754,11 +758,16 @@ function Get-FailureReasonCodes {
         if ([bool]$runtime.HungWindowDetected) { Add-FailureCode -Codes $codes -Code 'process_unresponsive' }
     }
 
+    if ($Result.MainMenuReached -and -not [bool]$Result.MainWindowObserved) {
+        Add-FailureCode -Codes $codes -Code 'main_window_missing'
+    }
+
     if ($Result.CommandAckRequired -and -not $Result.CommandAckObserved) {
         Add-FailureCode -Codes $codes -Code 'command_ack_missing'
     }
 
     if (-not [bool]$Result.LogCopied) { Add-FailureCode -Codes $codes -Code 'godot_log_missing' }
+    if (-not [bool]$Result.CurrentIterationLogCopied) { Add-FailureCode -Codes $codes -Code 'current_iteration_log_missing' }
     if (-not [bool]$Result.AuditClean) { Add-FailureCode -Codes $codes -Code 'log_audit_failed' }
     if (-not [bool]$Result.ExpectationPassed) { Add-FailureCode -Codes $codes -Code 'runtime_expectation_mismatch' }
     if (-not [bool]$Result.Sts1ModeVerifierPassed) { Add-FailureCode -Codes $codes -Code 'sts1_mode_mismatch' }
@@ -779,6 +788,7 @@ function Get-HangSignals {
         'main_menu_timeout',
         'startup_log_stalled',
         'process_unresponsive',
+        'current_iteration_log_missing',
         'command_ack_missing'
     )
 
@@ -823,6 +833,22 @@ function Copy-CurrentGodotLog {
 
     Copy-Item -LiteralPath $godotLogPath -Destination $Destination -Force
     return $true
+}
+
+function Write-CurrentIterationLogSlice {
+    param(
+        [Parameter(Mandatory = $true)][string]$Source,
+        [Parameter(Mandatory = $true)][string]$Destination,
+        [Parameter(Mandatory = $true)][long]$Offset
+    )
+
+    if (-not (Test-Path -LiteralPath $Source -PathType Leaf)) {
+        return $false
+    }
+
+    $text = Get-LogTextAfterOffset -Path $Source -Offset $Offset
+    $text | Set-Content -LiteralPath $Destination -Encoding UTF8
+    return (Test-Path -LiteralPath $Destination -PathType Leaf) -and (Get-Item -LiteralPath $Destination).Length -gt 0
 }
 
 function Invoke-LogAudit {
@@ -1077,6 +1103,7 @@ $plan = [ordered]@{
     SteamUserId = $SteamUserId
     Language = $Language
     Sts1EventMode = $Sts1EventMode
+    ReleaseEvidenceLogEnabled = $true
     Scenario = $Scenario
     CommandSelectionMode = $CommandSelectionMode
     CommandCorpusSource = $commandCorpusSource
@@ -1104,6 +1131,7 @@ $plan = [ordered]@{
         StartupFailsOnProcessExit = $true
         RuntimeFailsOnProcessExit = $true
         RuntimeFailsOnHungWindow = $true
+        RequiresMainWindowAfterMainMenu = $true
     }
     LogGrowthProbe = [ordered]@{
         StartupFailsOnNoGrowth = $true
@@ -1136,6 +1164,7 @@ $plan = [ordered]@{
     FailureCriteria = @(
         'main menu log line missing before timeout',
         'SlayTheSpire2 process disappears before or after main menu',
+        'SlayTheSpire2 main window is not observed after main menu',
         'SlayTheSpire2 window reports not responding or hung for the configured consecutive-sample threshold',
         'godot.log stops growing before main menu for the configured no-growth timeout',
         'required DevConsole command acknowledgement line is absent from godot.log',
@@ -1166,12 +1195,14 @@ if (-not $Launch) {
 }
 
 $previousSts1Mode = [string]$env:SPIREPLUS_STS1_EVENT_MODE
+$previousReleaseEvidenceLog = [string]$env:SPIREPLUS_RELEASE_EVIDENCE_LOG
 try {
     if ($Sts1EventMode -eq 'Off') {
         Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
     } else {
         $env:SPIREPLUS_STS1_EVENT_MODE = $Sts1EventMode
     }
+    $env:SPIREPLUS_RELEASE_EVIDENCE_LOG = '1'
 
     $results = [System.Collections.Generic.List[object]]::new()
     foreach ($planned in $plannedCommands) {
@@ -1196,6 +1227,7 @@ try {
             CommandAckRequired = -not [string]::IsNullOrWhiteSpace([string]$planned.CommandAckPattern)
             CommandAckObserved = [string]::IsNullOrWhiteSpace([string]$planned.CommandAckPattern)
             RuntimeProbeSamplesPath = Join-Path $iterationDir 'runtime-probe-samples.json'
+            CurrentIterationLogPath = Join-Path $iterationDir 'godot.log.current-iteration'
             GameProcessId = 0
             GameProcessStartTimeUtc = $null
             MainWindowObserved = $false
@@ -1205,6 +1237,7 @@ try {
             PreLaunchLogLastWriteTimeUtc = $null
             MinimumProcessStartTimeUtc = $null
             LogInitialLengthBytes = 0L
+            LogScanOffsetBytes = 0L
             LogFinalLengthBytes = 0L
             LastLogGrowthAt = $null
             MaxSecondsWithoutLogGrowth = 0
@@ -1220,6 +1253,7 @@ try {
             RuntimeObservationPassed = $false
             RuntimeObservation = $null
             LogCopied = $false
+            CurrentIterationLogCopied = $false
             AuditClean = $false
             ExpectationPassed = $false
             ExpectationChecks = @()
@@ -1331,18 +1365,26 @@ try {
             $launchLog = Join-Path $iterationDir 'godot.log.after-launch'
             $result.LogCopied = Copy-CurrentGodotLog -Destination $launchLog
             if ($result.LogCopied) {
-                $commandAck = Test-CommandAck -LogPath $launchLog -Command ([string]$planned.Command)
+                $currentIterationLog = [string]$result.CurrentIterationLogPath
+                $result.LogScanOffsetBytes = [long]$mainMenuObservation.LogScanOffsetBytes
+                $result.CurrentIterationLogCopied = Write-CurrentIterationLogSlice `
+                    -Source $launchLog `
+                    -Destination $currentIterationLog `
+                    -Offset ([long]$result.LogScanOffsetBytes)
+
+                $logForChecks = if ($result.CurrentIterationLogCopied) { $currentIterationLog } else { $launchLog }
+                $commandAck = Test-CommandAck -LogPath $logForChecks -Command ([string]$planned.Command)
                 $result.CommandAckRequired = [bool]$commandAck.Required
                 $result.CommandAckObserved = [bool]$commandAck.Observed
                 $result.CommandAckPattern = [string]$commandAck.Pattern
 
                 $auditPath = Join-Path $iterationDir 'godot-log-audit.json'
-                $result.AuditClean = Invoke-LogAudit -LogPath $launchLog -OutFile $auditPath
-                $expectations = Test-LogExpectations -LogPath $launchLog
+                $result.AuditClean = Invoke-LogAudit -LogPath $logForChecks -OutFile $auditPath
+                $expectations = Test-LogExpectations -LogPath $logForChecks
                 $result.ExpectationPassed = [bool]$expectations.Passed
                 $result.ExpectationChecks = @($expectations.Checks)
                 $modeCheck = Invoke-Sts1ModeVerifier `
-                    -LogPath $launchLog `
+                    -LogPath $logForChecks `
                     -AuditPath $auditPath `
                     -OutFile (Join-Path $iterationDir 'sts1-mode-log-check.json') `
                     -TextOutFile (Join-Path $iterationDir 'sts1-mode-log-check.txt')
@@ -1376,7 +1418,7 @@ try {
 
         Save-Json -InputObject @($probeSamples) -Path $result.RuntimeProbeSamplesPath
 
-        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.CommandAckObserved -and $result.LogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and
+        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and $result.CommandAckObserved -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and
             ($devConsoleCommandsDisabled -or [string]::IsNullOrWhiteSpace([string]$planned.Command) -or $result.ConsoleCommandSent)
 
         Save-Json -InputObject $result -Path (Join-Path $iterationDir 'iteration-result.json')
@@ -1413,6 +1455,8 @@ try {
         FailedIterationIds = @($failed | ForEach-Object { [int]$_.Iteration })
         FailureReasonCounts = $failureReasonCounts
         ProcessExitCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'game_process_exited' }).Count
+        MainWindowMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'main_window_missing' }).Count
+        CurrentIterationLogMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'current_iteration_log_missing' }).Count
         UnresponsiveIterationCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'process_unresponsive' }).Count
         LogStallIterationCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'startup_log_stalled' }).Count
         CommandAckMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'command_ack_missing' }).Count
@@ -1437,5 +1481,10 @@ try {
         Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
     } else {
         $env:SPIREPLUS_STS1_EVENT_MODE = $previousSts1Mode
+    }
+    if ([string]::IsNullOrEmpty($previousReleaseEvidenceLog)) {
+        Remove-Item Env:\SPIREPLUS_RELEASE_EVIDENCE_LOG -ErrorAction SilentlyContinue
+    } else {
+        $env:SPIREPLUS_RELEASE_EVIDENCE_LOG = $previousReleaseEvidenceLog
     }
 }

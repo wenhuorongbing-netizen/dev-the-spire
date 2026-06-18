@@ -105,6 +105,11 @@ function Get-OwnerAreaFromText {
         return 'Ancients.Vakuu.ChildCombatResume'
     }
 
+    if ($combined -match '(?i)\b(Vakuu|Sere Talon)\b' -and
+        $combined -match '(?i)\b(fight_option_shown|force.?fight|confirm fight|fight.?option)\b') {
+        return 'Ancients.Vakuu.FightOptionSetup'
+    }
+
     if ($combined -match '(?i)\b(Morvi|Forbidden Loan|Red Ink|Open Book|Overdue Library|Blueprint Proof|Misprint)\b' -and
         $combined -match '(?i)\b(card.?play|borrowed|sealed.?card|freeze|hang|combat.?state|weak.?table)\b') {
         return 'Ancients.Morvi.CardPlayState'
@@ -167,6 +172,9 @@ function Get-NextStepForOwner {
     )
 
     switch ($OwnerArea) {
+        'Ancients.Vakuu.FightOptionSetup' {
+            return 'Inspect Vakuu force-fight gate arming, fight-option visibility, evidence logging, and event UI setup before treating the packet as child-combat proof.'
+        }
         'Ancients.Vakuu.ChildCombatResume' {
             return 'Inspect Vakuu parent event node cleanup, direct room stack transition, no-normal-reward resume, ParentEventId restore, fallback map exit, and prefinished heal-skip logs.'
         }

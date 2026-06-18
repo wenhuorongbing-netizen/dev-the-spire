@@ -185,9 +185,9 @@ $unknownStatuses = @($rows | Where-Object { $allowedStatuses -notcontains $_.cur
 Add-Check -Name 'all_statuses_allowed' -Passed ($unknownStatuses.Count -eq 0) -Detail "unknown statuses: $((@($unknownStatuses | Select-Object -ExpandProperty current_status -Unique)) -join ',')"
 
 $rowContentNeedles = @(
-    [pscustomobject]@{ GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 package/runtime baseline; current dirty worktree exists' },
+    [pscustomobject]@{ GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 package/runtime baseline at eaaeb5a1' },
     [pscustomobject]@{ GateId = 'O1'; Field = 'next_action'; Needle = 'Rerun build after coordination pause' },
-    [pscustomobject]@{ GateId = 'O2'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records split lanes 475 / 0 / 21 / 496' },
+    [pscustomobject]@{ GateId = 'O2'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records split lanes 489 / 0 / 39 / 528' },
     [pscustomobject]@{ GateId = 'O3'; Field = 'next_action'; Needle = 'Refresh skipped-test explanation with current test output' },
     [pscustomobject]@{ GateId = 'O4'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 zero-warning validation' },
     [pscustomobject]@{ GateId = 'O5'; Field = 'next_action'; Needle = 'Rerun dotnet format after coordination pause' },

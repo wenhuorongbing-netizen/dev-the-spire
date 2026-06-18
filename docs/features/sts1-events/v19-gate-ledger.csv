@@ -1,15 +1,15 @@
 gate_id,gate_group,requirement,current_status,evidence,next_action
-O0,O0-O10,Current HEAD and worktree snapshot,historical-pass-current-paused,PROJECT_STATE.md records beta.86 package/runtime baseline; current dirty worktree exists,Refresh git status/log/diff in one controlled validation lane
+O0,O0-O10,Current HEAD and worktree snapshot,historical-pass-current-paused,PROJECT_STATE.md records beta.86 package/runtime baseline at eaaeb5a1 and this pause-safe doc continuation has no validation authority,Refresh git status/log/diff in one controlled validation lane before handoff
 O1,O0-O10,Full build has 0 errors and 0 warnings,historical-pass-current-paused,PROJECT_STATE.md records beta.86 0 errors / 0 warnings,Rerun build after coordination pause
-O2,O0-O10,Automated tests pass at current expected count,historical-pass-current-paused,PROJECT_STATE.md records split lanes 475 / 0 / 21 / 496,Rerun non-overlapping test lanes after coordination pause
-O3,O0-O10,Skipped tests explained,historical-pass-current-paused,PROJECT_STATE.md records 21 skipped tests context,Refresh skipped-test explanation with current test output
+O2,O0-O10,Automated tests pass at current expected count,historical-pass-current-paused,PROJECT_STATE.md records split lanes 489 / 0 / 39 / 528,Rerun non-overlapping test lanes after coordination pause or after code/resource changes
+O3,O0-O10,Skipped tests explained,historical-pass-current-paused,PROJECT_STATE.md records beta.86 skipped tests as release-artifact/runtime/local-source gating,Refresh skipped-test explanation with current test output
 O4,O0-O10,Zero-warning proof preserved,historical-pass-current-paused,PROJECT_STATE.md records beta.86 zero-warning validation,Rerun build after coordination pause
-O5,O0-O10,Format validation clean,historical-pass-current-paused,PROJECT_STATE.md records format passed for migration lane,Rerun dotnet format after coordination pause
+O5,O0-O10,Format validation clean,historical-pass-current-paused,PROJECT_STATE.md records beta.86 post-doc format passed,Rerun dotnet format after coordination pause
 O6,O0-O10,Diff whitespace check clean,static-pass,git diff --check is static and rerun during coordination pause,Keep rerunning after edits
 O7,O0-O10,Patch inventory current,historical-pass-current-paused,PROJECT_STATE.md records patch inventory passed for migration lane,Refresh patch inventory after coordination pause
 O8,O0-O10,Worktree batch classification current,historical-pass-current-paused,PROJECT_STATE.md records batch classifier passed for migration lane,Refresh classifier after coordination pause
 O9,O0-O10,Package and release-artifact validation current,historical-pass-current-paused,PROJECT_STATE.md records beta.86 package refresh and ZIP SHA 3EDA50CCF8E2ECD49DCF1F6B4CEE7B7E3DE604793E8059253179914834781FFE,Refresh package/artifact lane only after pause
-O10,O0-O10,Dirty worktree owner decision before commit or handoff,current-pending,Current git status has dirty tracked and untracked files,Owner/agent must classify exact scope before commit or handoff
+O10,O0-O10,Dirty worktree owner decision before commit or handoff,current-pending,Pause-safe doc/guard edits require exact-scope recapture before commit or handoff,Owner/agent must classify exact scope before commit or handoff
 O11,O11-O20,Status board current and no generic Done,static-pass,docs/features/sts1-events/status-board.md plus current-doc checker,Keep current-doc checker passing
 O12,O11-O20,Canonical matrix and Act mapping current at 52 / 54 baseline,static-pass,canonical-event-matrix.csv plus registry-shape checker; Act 1 maps to Overgrowth + Underdocks and AdditiveBatch1 remains 10 types / 14 calls,Keep registry-shape and act-mapping evidence passing
 O13,O11-O20,Default Off gate source and retained Off runtime state guarded,previous-package-pass,beta.85 Off log plus feature-gate checker,Do not extend Off proof to enabled modes
