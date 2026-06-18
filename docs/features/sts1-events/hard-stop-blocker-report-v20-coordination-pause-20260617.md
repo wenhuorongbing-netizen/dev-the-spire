@@ -28,8 +28,8 @@ The reason is shared-runner contamination: multiple same-repo threads were overl
 
 | Evidence | Current fact |
 |---|---|
-| Current HEAD observed in this thread | `b0f6d1fa (HEAD -> main, origin/main, origin/HEAD) Split Ancient interaction text guards` |
-| Current worktree observed in this thread | `git status --short` after the `b0f6d1fa` recapture reported only this hard-stop recapture alignment slice: modified `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md` and modified `scripts/check-sts1-event-current-doc-claims.ps1`; treat any later dirty files as separate scope requiring exact recapture before commit or handoff. |
+| Current HEAD observed in this thread | `7f81861e (HEAD -> main, origin/main, origin/HEAD) Recapture v20 hard-stop baseline` |
+| Current worktree observed in this thread | `git status --short` after the `7f81861e` recapture reported dirty hard-stop snapshot files plus separate Ancient polish test extraction scope: modified `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, modified `scripts/check-sts1-event-current-doc-claims.ps1`, modified `docs/review.md`, modified `tests/EZMicroBalance.Tests/AncientPlayerFacingPolishGuardTests.cs`, modified `tests/EZMicroBalance.Tests/README.md`, and untracked `tests/EZMicroBalance.Tests/AncientPlayerFacingPolishGuardTests.AscensionText.cs`; treat dirty files as separate scope requiring exact recapture before commit or handoff. |
 | Active goal | `docs/goals/event.md` says the target is incomplete and requires O0-O84 all green or a hard-stop blocker report. |
 | Current project state | `PROJECT_STATE.md` records beta.85 default-Off and CanaryOnly loader proof plus beta.86 AdditiveBatch1 loader/registration proof only and keeps gameplay, save-load, replacement, multiplayer, QA, and handoff gates open. |
 | Current gate split | `docs/features/sts1-events/v19-gate-evidence-map.md` and `docs/features/sts1-events/v19-gate-ledger.csv` keep runtime/gameplay gates blocked or current-pending. |
