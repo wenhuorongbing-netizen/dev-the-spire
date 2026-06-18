@@ -250,16 +250,15 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "ConvertTo-NormalizedPathOrEmpty",
             "live_session_prepare_output_path_matches_retained_file",
             "live_session_prepare_output_sha256_matches_retained_file",
-            "live_session_pid_attribution_passed",
             "prepare_output_selected_game_process_id_matches_result",
-            "game_process_id_matches_live_session",
-            "game_process_start_time_matches_live_session",
-            "game_process_path_matches_live_session",
             "result_live_session_launcher_kind_steam_app_launch",
             "result_live_session_launch_argument_list_matches_sts2",
             "result_live_session_pid_attribution_passed",
             "result_live_session_prelaunch_slay_process_count_zero",
             "result_live_session_selected_game_process_id_matches_result",
+            "result_game_process_id_matches_live_session",
+            "result_game_process_start_time_matches_live_session",
+            "result_game_process_path_matches_live_session",
             "result_game_process_start_time_after_live_session_launch",
             "prepare_output_launch_kind_steam_app_launch",
             "prepare_output_launch_argument_list_matches_sts2",
@@ -271,12 +270,21 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "runtime_probe_samples_path_matches_retained_file",
             "current_iteration_log_path_matches_retained_file",
             "runtime_probe_samples_phase_field_present",
+            "runtime_probe_samples_allowed_phase_values",
+            "runtime_probe_samples_startup_main_menu_phase_observed",
+            "runtime_probe_samples_post_command_runtime_phase_observed",
+            "runtime_probe_samples_startup_count_matches_main_menu_observation",
+            "runtime_probe_samples_runtime_count_matches_runtime_observation",
             "runtime_probe_samples_process_id_field_present",
             "runtime_probe_samples_process_start_time_field_present",
             "runtime_probe_samples_process_path_field_present",
             "runtime_probe_samples_expected_process_id_field_present",
             "runtime_probe_samples_expected_process_start_time_field_present",
             "runtime_probe_samples_expected_process_path_field_present",
+            "runtime_probe_samples_process_id_match_field_present",
+            "runtime_probe_samples_process_start_time_match_field_present",
+            "runtime_probe_samples_process_path_match_field_present",
+            "runtime_probe_samples_process_identity_match_field_present",
             "runtime_probe_samples_all_match_live_session_identity",
             "runtime_probe_samples_process_observed_field_present",
             "runtime_probe_samples_main_window_observed_field_present",
@@ -293,6 +301,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "runtime_probe_samples_single_process_start_time",
             "runtime_probe_samples_single_process_path",
             "runtime_probe_samples_process_id_matches_result",
+            "runtime_probe_samples_process_start_time_matches_result",
+            "runtime_probe_samples_process_path_matches_result",
+            "runtime_probe_samples_expected_process_id_matches_live_session",
             "plan_expected_game_version_matches",
             "plan_expected_ritsulib_version_matches",
             "plan_expected_ritsu_compat_branch_matches",
@@ -443,6 +454,14 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "'game_process_id_mismatch'",
             "'game_process_start_time_mismatch'",
             "'game_process_path_mismatch'",
+            "'runtime_monkey_probe_samples_missing'",
+            "'runtime_monkey_probe_samples_empty'",
+            "'runtime_monkey_probe_samples_incomplete'",
+            "'runtime_monkey_probe_startup_phase_missing'",
+            "'runtime_monkey_probe_runtime_phase_missing'",
+            "'runtime_monkey_probe_unknown_phase'",
+            "'runtime_monkey_probe_startup_sample_count_mismatch'",
+            "'runtime_monkey_probe_runtime_sample_count_mismatch'",
             "OwnerArea 'RuntimeHarness'");
     }
 
@@ -970,6 +989,43 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
             Assert.Contains("iteration-0001_runtime_probe_samples_hung_window_field_present status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_runtime_probe_samples_responding_field_present status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsProbeSamplesMissingRuntimePhaseCoverage()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var probeSamplesPath = Path.Combine(workdir, "iteration-0001", "runtime-probe-samples.json");
+            var probeSamplesJson = File.ReadAllText(probeSamplesPath)
+                .Replace("\"Phase\":\"PostCommandRuntime\"", "\"Phase\":\"StartupMainMenu\"", StringComparison.Ordinal);
+            File.WriteAllText(probeSamplesPath, probeSamplesJson);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_runtime_probe_samples_post_command_runtime_phase_observed status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_startup_count_matches_main_menu_observation status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_runtime_count_matches_runtime_observation status=fail", result.Output, StringComparison.Ordinal);
         }
         finally
         {
@@ -1631,6 +1687,45 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_timestamp_order_invalid");
             Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_start_timestamp_invalid");
             Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_end_timestamp_invalid");
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerReportsRuntimeMonkeyProbePhaseCoverageDefects()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+            var probeSamplesJson = File.ReadAllText(probeSamplesPath)
+                .Replace("\"Phase\":\"PostCommandRuntime\"", "\"Phase\":\"StartupMainMenu\"", StringComparison.Ordinal);
+            File.WriteAllText(probeSamplesPath, probeSamplesJson);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-IterationDir", iterationDir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_runtime_phase_missing");
+            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_startup_sample_count_mismatch");
+            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_runtime_sample_count_mismatch");
+            Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_startup_phase_missing");
         }
         finally
         {
@@ -3329,7 +3424,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             [SPIREPLUS-EVIDENCE] VakuuFight fight_option_shown
             """;
         var afterLaunchLog = beforeLog + currentLog;
-        var probeSamples = $$"""[{"Phase":"main-menu","ProcessId":{{gameProcessId}},"ProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ExpectedGameProcessId":{{gameProcessId}},"ExpectedGameProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ExpectedGameProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ProcessIdMatchesExpected":true,"ProcessStartTimeMatchesExpected":true,"ProcessPathMatchesExpected":true,"ProcessIdentityMatchesExpected":true,"ProcessObserved":true,"MainWindowObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0,"CurrentProcessCount":1,"UnknownStartTimeProcessCount":0,"AmbiguousCurrentProcessCount":0},{"Phase":"runtime","ProcessId":{{gameProcessId}},"ProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ExpectedGameProcessId":{{gameProcessId}},"ExpectedGameProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ExpectedGameProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ProcessIdMatchesExpected":true,"ProcessStartTimeMatchesExpected":true,"ProcessPathMatchesExpected":true,"ProcessIdentityMatchesExpected":true,"ProcessObserved":true,"MainWindowObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0,"CurrentProcessCount":1,"UnknownStartTimeProcessCount":0,"AmbiguousCurrentProcessCount":0}]""";
+        var probeSamples = $$"""[{"Phase":"StartupMainMenu","ProcessId":{{gameProcessId}},"ProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ExpectedGameProcessId":{{gameProcessId}},"ExpectedGameProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ExpectedGameProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ProcessIdMatchesExpected":true,"ProcessStartTimeMatchesExpected":true,"ProcessPathMatchesExpected":true,"ProcessIdentityMatchesExpected":true,"ProcessObserved":true,"MainWindowObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0,"CurrentProcessCount":1,"UnknownStartTimeProcessCount":0,"AmbiguousCurrentProcessCount":0},{"Phase":"PostCommandRuntime","ProcessId":{{gameProcessId}},"ProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ExpectedGameProcessId":{{gameProcessId}},"ExpectedGameProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ExpectedGameProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ProcessIdMatchesExpected":true,"ProcessStartTimeMatchesExpected":true,"ProcessPathMatchesExpected":true,"ProcessIdentityMatchesExpected":true,"ProcessObserved":true,"MainWindowObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0,"CurrentProcessCount":1,"UnknownStartTimeProcessCount":0,"AmbiguousCurrentProcessCount":0}]""";
 
         File.WriteAllText(retainedBeforeLogPath, beforeLog);
         File.WriteAllText(retainedAfterLaunchLogPath, afterLaunchLog);
@@ -3651,6 +3746,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "LogGrew": true,
                 "LogObserved": true,
                 "Passed": true,
+                "Samples": 1,
                 "MaxConsecutiveUnresponsiveSamples": 0
               },
               "RuntimeObservation": {
@@ -3665,6 +3761,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "LogGrew": true,
                 "LogObserved": true,
                 "Passed": true,
+                "Samples": 1,
                 "MaxConsecutiveUnresponsiveSamples": 0
               }
             }

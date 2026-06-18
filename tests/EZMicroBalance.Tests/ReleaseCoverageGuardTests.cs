@@ -540,7 +540,7 @@ public sealed partial class ReleaseCoverageGuardTests
         var readme = ReadRepoText("docs", "README.md");
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
-        Assert.Contains("Latest pushed migration validation baseline", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest package/runtime migration validation baseline", projectState, StringComparison.Ordinal);
         Assert.Contains("runtime blocker is resolved for loader/patch application", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);

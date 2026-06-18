@@ -1270,6 +1270,26 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     $probeSamples = @($probeSamplesParsed)
                     Add-Check -Name "${iterationName}_runtime_probe_samples_non_empty" -Passed ($probeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must contain samples'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_phase_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -Detail 'every probe sample must retain Phase'
+                    $startupMainMenuProbeSamples = @($probeSamples | Where-Object {
+                        [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'StartupMainMenu', [System.StringComparison]::Ordinal)
+                    })
+                    $postCommandRuntimeProbeSamples = @($probeSamples | Where-Object {
+                        [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'PostCommandRuntime', [System.StringComparison]::Ordinal)
+                    })
+                    $unknownRuntimeProbePhaseSamples = @($probeSamples | Where-Object {
+                        $phase = [string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue '')
+                        -not ([string]::Equals($phase, 'StartupMainMenu', [System.StringComparison]::Ordinal) -or
+                            [string]::Equals($phase, 'PostCommandRuntime', [System.StringComparison]::Ordinal))
+                    })
+                    $mainMenuObservationForProbeSamples = Get-JsonValue -Object $iterationResult -Name 'MainMenuObservation' -DefaultValue $null
+                    $runtimeObservationForProbeSamples = Get-JsonValue -Object $iterationResult -Name 'RuntimeObservation' -DefaultValue $null
+                    $mainMenuObservationSampleCount = if ($null -ne $mainMenuObservationForProbeSamples) { [int](Get-JsonValue -Object $mainMenuObservationForProbeSamples -Name 'Samples' -DefaultValue -1) } else { -1 }
+                    $runtimeObservationSampleCount = if ($null -ne $runtimeObservationForProbeSamples) { [int](Get-JsonValue -Object $runtimeObservationForProbeSamples -Name 'Samples' -DefaultValue -1) } else { -1 }
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_allowed_phase_values" -Passed ($unknownRuntimeProbePhaseSamples.Count -eq 0) -Detail "runtime-probe-samples.json phases must be StartupMainMenu or PostCommandRuntime; unknownCount=$($unknownRuntimeProbePhaseSamples.Count)"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_startup_main_menu_phase_observed" -Passed ($startupMainMenuProbeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must retain at least one StartupMainMenu sample'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_post_command_runtime_phase_observed" -Passed ($postCommandRuntimeProbeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must retain at least one PostCommandRuntime sample'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_startup_count_matches_main_menu_observation" -Passed ($mainMenuObservationSampleCount -ge 0 -and $startupMainMenuProbeSamples.Count -eq $mainMenuObservationSampleCount) -Detail "StartupMainMenu sample count must match MainMenuObservation.Samples; expected=$mainMenuObservationSampleCount actual=$($startupMainMenuProbeSamples.Count)"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_runtime_count_matches_runtime_observation" -Passed ($runtimeObservationSampleCount -ge 0 -and $postCommandRuntimeProbeSamples.Count -eq $runtimeObservationSampleCount) -Detail "PostCommandRuntime sample count must match RuntimeObservation.Samples; expected=$runtimeObservationSampleCount actual=$($postCommandRuntimeProbeSamples.Count)"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_id_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -Detail 'every probe sample must retain ProcessId'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_start_time_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessStartTimeUtc') -Detail 'every probe sample must retain ProcessStartTimeUtc'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_path_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessPath') -Detail 'every probe sample must retain ProcessPath'

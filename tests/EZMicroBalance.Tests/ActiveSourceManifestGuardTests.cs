@@ -568,7 +568,7 @@ public sealed class ActiveSourceManifestGuardTests
     private static readonly SourceCoverageRoot[] IndependentCoverageRoots =
     [
         new("EZMicroBalanceCode/Ancients/Common/", "ReleaseCoverageGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\")"),
-        new("EZMicroBalanceCode/Ancients/Patches/", "AncientBehaviorGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Patches\")"),
+        new("EZMicroBalanceCode/Ancients/Patches/", "AncientHighRiskSourceGuardTests.RewardRelicSafety.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Patches\")"),
         new("EZMicroBalanceCode/Ancients/Expansion/Urda/", "UrdaReleaseCoverageGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Urda\")"),
         new("EZMicroBalanceCode/Ancients/Expansion/Morvi/", "MorviV22GuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Morvi\")"),
         new("EZMicroBalanceCode/Ancients/Expansion/Lotha/", "LothaPolishGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\", \"Ancients\", \"Expansion\", \"Lotha\")"),
@@ -579,7 +579,7 @@ public sealed class ActiveSourceManifestGuardTests
         new("EZMicroBalanceCode/Core/Integrations/RitsuLib/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
         new("EZMicroBalanceCode/Config/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
         new("EZMicroBalanceCode/Diagnostics/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),
-        new("EZMicroBalanceCode/Map/", "AncientHighRiskSourceGuardTests.cs", "ReadRepoText(\"EZMicroBalanceCode\", \"Map\", \"SpirePlusMapPointHoverComposer.cs\")"),
+        new("EZMicroBalanceCode/Map/", "AncientHighRiskSourceGuardTests.RootSight.cs", "ReadRepoText(\"EZMicroBalanceCode\", \"Map\", \"SpirePlusMapPointHoverComposer.cs\")"),
         new("EZMicroBalanceCode/Modding/", "ModInfoLocalizationGuardTests.cs", "ReadRepoText(\"EZMicroBalanceCode\", \"Modding\", \"ModInfoLocalizationPatches.cs\")"),
         new("EZMicroBalanceCode/Preview/", "PreviewToolsGuardTests.cs", "CrystalSpherePatchOnlyTouchesTheMaskAndButton"),
         new("EZMicroBalanceCode/Sts1Events/", "ReleaseSafetyExpandedGuardTests.cs", "ReadSourceTree(\"EZMicroBalanceCode\")"),

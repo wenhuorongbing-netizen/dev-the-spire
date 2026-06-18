@@ -43,9 +43,9 @@ before any later handoff.
 | beta.85 AdditiveBatch1 proof | Historical fail | Previous-package mismatch: 13/14 registration calls because the installed package/source shape was stale. |
 | beta.87 build/publish/package | Pass | `dotnet build`, `dotnet publish`, package creation, and installed package parity passed for `v0.1.0-private-beta.87`. |
 | beta.87 AdditiveBatch1 proof | Current loader/registration pass | `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` reached main menu with BaseLib, RitsuLib, and Spire Plus loaded; 25/25 patches; 30 SavedSpireFields; 10 event types / 14 registration calls; clean audit; retained log verifier 31/0 and packet verifier 52/0. |
-| Tests | Current no-game pass | Post-baseline no-game/doc-governance recaptures include `bdc002d6`, `d0932097`, and `8aca2701`: build 0 warnings / 0 errors; touched focused RuntimeMonkey, AncientBehavior, ReleaseSafetyExpanded, compactness/governance, StS1 static, format, diff-check, patch-inventory, and batch-classifier lanes passed. The broader beta.86 split lane remains 489 passed / 0 failed / 39 skipped / 528 total and the package/runtime baseline remains `eaaeb5a1`. |
+| Tests | Current no-game pass | Current pushed HEAD is `ae169299` after the beta.87 migration validation commits. The beta.87 pass recorded build 0 warnings / 0 errors, split no-build guards 139 passed / 0 failed / 15 skipped / 154 total, opt-in artifact/package coverage 46 passed / 0 failed / 1 skipped / 47 total, and the latest focused runtime packet-checker recapture passed 18 / 0 / 0 / 18 after rebuilding. The package/runtime baseline is now beta.87 loader/registration proof, not the older beta.86 package baseline. |
 | Opt-in artifact subset | Current pass | 67 passed / 0 failed / 2 skipped / 69 total with release/package artifact tests enabled. |
-| StS1 static/governance lanes | Current pass | Current-doc claims 962/0 after post-baseline governance follow-up; v19 gate ledger 534/0; v20 final-gate overlay 29/0; runtime preflight 27/0; static suite 15/0; static-file hygiene 11/0. |
+| StS1 static/governance lanes | Current pass | Current-doc claims 1025/0 after runtime-monkey AutoSlay and packet-hardening doc alignment; v19 gate ledger 534/0; v20 final-gate overlay 29/0; runtime preflight 27/0; static suite 15/0; static-file hygiene 12/0. |
 | Batch 4a/4b migration | Source-level complete | Current patch inventory records 25 migrated `IPatchMethod` patch classes and 142 remaining raw `HarmonyPatch` declarations. |
 | Batch 4c migration | Proposal only | Requires owner approval before any migration work. |
 | Mod Settings UI scaffold | Prepared / live pending | No-launch scaffold prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-143758/` against HEAD `6be72076` and package `v0.1.0-private-beta.87`; preflight recorded that Slay the Spire 2 was not running. This is not screenshot, log/audit, or gameplay proof. |
@@ -75,7 +75,7 @@ Current beta.85/beta.86 loader proof remains previous-package context, and curre
 
 ## Validation Snapshot
 
-Current validated commands for the beta.86 migration pass:
+Current validated commands for the beta.87 migration pass and follow-up no-game recapture:
 
 ```text
 dotnet build EZMicroBalance.sln -m:1 --no-incremental
@@ -95,5 +95,5 @@ scripts/generate-patch-inventory.ps1 -Check
 scripts/report-worktree-batches.ps1 -FailOnUnclassified
 ```
 
-The direct beta.86 AdditiveBatch1 smoke is loader/registration proof only. It does not close
+The direct beta.87 AdditiveBatch1 smoke is loader/registration proof only. It does not close
 gameplay, UI, save-load, co-op, QA, release, or handoff gates.

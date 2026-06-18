@@ -14,9 +14,9 @@ Coordination boundary: do not run overlapping validation, package/release, runti
 
 ## Current State
 
-- Current repository HEAD must be checked at run start. The latest observed pushed beta.86 package/runtime validation baseline remains `eaaeb5a1`; post-baseline no-game/doc-governance recaptures include `bdc002d6`, `d0932097`, and `8aca2701`, and the beta.87 dependency-floor pass must be committed/pushed before tester handoff. Any later edits must still be recaptured exactly before handoff.
+- Current repository HEAD must be checked at run start. The latest observed pushed HEAD is `ae169299`, after the beta.87 dependency-floor pass was committed and pushed. Any later edits must still be recaptured exactly before handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
-- Latest beta.86 no-game validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: 0 build errors and 0 warnings; split no-build lanes covered 489 passed / 0 failed / 39 skipped / 528 total; the opt-in package/artifact subset passed 67 passed / 0 failed / 2 skipped / 69 total; the latest focused current-HEAD recapture covered RuntimeMonkey/ReleaseEvidence 21 / 0 / 0 / 21, DocumentationCompactness 25 / 0 / 0 / 25, EngineeringGovernance 25 / 0 / 0 / 25, current-doc claims 962 / 0, v19 534 / 0, v20 overlay 29 / 0, static suite 15 / 0, and static-file hygiene 11 / 0. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
+- Latest beta.87 no-game validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: 0 build errors and 0 warnings; split no-build lanes covered 139 passed / 0 failed / 15 skipped / 154 total for the migration-focused surface; opt-in artifact/package coverage passed; the latest focused current-HEAD recapture covered the runtime packet checker at 18 / 0 / 0 / 18 after rebuilding, with current-doc claims 1025 / 0, runtime preflight 27 / 0, v19 ledger 534 / 0, v20 overlay 29 / 0, static suite 15 / 0, and static-file hygiene 12 / 0. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
 - Patch state remains 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
 - Historical `v0.106.1` loader-gate runtime proof exists:
   - Off: `.tools\runtime-evidence\smoke-k1-off-20260602-145938`, 0 Sts1Events registrations, clean audit.
@@ -123,8 +123,9 @@ If a gate cannot be completed, record:
 - [x] Dependency bump decision recorded: beta.87 compile/manifest floor is `0.4.24`.
 - [x] Installed beta.85 package parity verified after the 2026-06-11 package refresh.
 - [x] Installed beta.86 package parity verified after the 2026-06-18 package/source alignment pass.
+- [x] Installed beta.87 package parity verified after the 2026-06-18 dependency-floor package refresh.
 - [x] Clean current `v0.107.0` beta.85 Off loader smoke captured after the prior `v0.4.16` install; retain as previous-package context.
-- [x] Current HEAD validation refreshed after the beta.86 post-doc/test reconciliation and any later follow-up scope, or any remaining dirty follow-up scope explicitly recorded as stale under the validation coordination pause.
+- [x] Current HEAD validation refreshed after the beta.87 dependency-floor pass and runtime packet-checker hardening; recheck again before handoff if any later edits appear.
 - [x] Current `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Current `v0.107.0` beta.87 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
 - [ ] Mod Settings UI evidence captured.

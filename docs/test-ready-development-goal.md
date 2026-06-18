@@ -92,7 +92,7 @@ dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
 git diff --check
 ```
 
-Current beta.86 validation caveat: `PROJECT_STATE.md` and `docs/reviews/current-validation.md` record split no-build lanes as trustworthy current test evidence because one-shot solution tests can destabilize around `ReleaseEvidenceGateTests`. Use isolated `ReleaseEvidenceGateTests` plus the complementary test-project lane excluding that class, cite split totals, and reserve `.\scripts\ci-full-validation.ps1 -TestStrategy Solution` for an intentional legacy comparison; the default script strategy is `SplitReleaseEvidence`.
+Current beta.87 validation caveat: `PROJECT_STATE.md` and `docs/reviews/current-validation.md` record split no-build lanes as trustworthy current test evidence because one-shot solution tests can destabilize around `ReleaseEvidenceGateTests`. Use isolated `ReleaseEvidenceGateTests` plus the complementary test-project lane excluding that class, cite split totals, and reserve `.\scripts\ci-full-validation.ps1 -TestStrategy Solution` for an intentional legacy comparison; the default script strategy is `SplitReleaseEvidence`.
 
 Use this after resource, localization, manifest, export, or package changes:
 

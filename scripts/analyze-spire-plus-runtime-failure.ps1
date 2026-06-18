@@ -768,10 +768,10 @@ function Analyze-Iteration {
         $beforeLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogBeforePath' -DefaultValue 'godot.log.before'))
         $fullLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAfterLaunchPath' -DefaultValue 'godot.log.after-launch'))
         $currentIterationLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogCurrentIterationPath' -DefaultValue 'godot.log.current-iteration'))
+        $probeSamplesCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'RuntimeProbeSamplesPath' -DefaultValue 'runtime-probe-samples.json'))
     }
     if ($isGameNativeAutoSlay -and $result) {
         $auditCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAuditPath' -DefaultValue 'godot-log-audit.json'))
-        $probeSamplesCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'RuntimeProbeSamplesPath' -DefaultValue 'runtime-probe-samples.json'))
         $sts1ModeCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'Sts1ModeLogCheckPath' -DefaultValue 'sts1-mode-log-check.json'))
     }
 
@@ -1194,6 +1194,112 @@ function Analyze-Iteration {
                 -NextStep 'Fix current-slice capture or AutoSlay event-room logging before treating the run as game-native Ancient traversal proof.' `
                 -Confidence 'high' `
                 -EvidenceFiles $evidenceFiles
+        }
+    }
+
+    $isRuntimeMonkeyResult = -not $isGameNativeAutoSlay -and
+        $result -and
+        (Test-JsonProperty -Object $result -Name 'HangProbeSchemaVersion') -and
+        (Test-JsonProperty -Object $result -Name 'RuntimeProbeSamplesPath')
+    if ($isRuntimeMonkeyResult) {
+        if (-not (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf)) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'runtime_monkey_probe_samples_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'Runtime monkey evidence did not retain runtime-probe-samples.json, so process/window sampling cannot be tied to the observation windows.' `
+                -NextStep 'Fix runtime-probe-samples.json retention and rerun the packet after validation lanes are unpaused.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        } else {
+            try {
+                $probeSamplesParsed = Get-Content -LiteralPath $probeSamplesCandidate -Raw -Encoding UTF8 | ConvertFrom-Json
+                $probeSamples = @($probeSamplesParsed)
+                $requiredProbeFields = @(
+                    'Phase',
+                    'ProcessId',
+                    'ProcessObserved',
+                    'MainWindowObserved',
+                    'HungWindow',
+                    'Responding',
+                    'StaleProcessCount',
+                    'CurrentProcessCount',
+                    'UnknownStartTimeProcessCount',
+                    'AmbiguousCurrentProcessCount')
+
+                if ($probeSamples.Count -eq 0) {
+                    Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_samples_empty' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey runtime-probe-samples.json has no process/window/log samples.' -NextStep 'Retain the sampled process/window/log timeline before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                } elseif (-not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Responding') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'CurrentProcessCount') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'UnknownStartTimeProcessCount') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'AmbiguousCurrentProcessCount')) {
+                    $missingProbeFields = @($requiredProbeFields | Where-Object {
+                        -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name $_)
+                    })
+                    Add-Finding `
+                        -Findings $findings `
+                        -Signal 'runtime_monkey_probe_samples_incomplete' `
+                        -Severity 'blocking' `
+                        -OwnerArea 'RuntimeHarness' `
+                        -Rationale "Runtime monkey runtime-probe-samples.json is missing required fields: $($missingProbeFields -join ', ')." `
+                        -NextStep 'Record Phase, process identity, window state, responsiveness, and process-count fields for every runtime monkey probe sample.' `
+                        -Confidence 'high' `
+                        -EvidenceFiles $evidenceFiles
+                } else {
+                    $startupMainMenuProbeSamples = @($probeSamples | Where-Object {
+                        [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'StartupMainMenu', [System.StringComparison]::Ordinal)
+                    })
+                    $postCommandRuntimeProbeSamples = @($probeSamples | Where-Object {
+                        [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'PostCommandRuntime', [System.StringComparison]::Ordinal)
+                    })
+                    $unknownRuntimeProbePhaseSamples = @($probeSamples | Where-Object {
+                        $phase = [string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue '')
+                        -not ([string]::Equals($phase, 'StartupMainMenu', [System.StringComparison]::Ordinal) -or
+                            [string]::Equals($phase, 'PostCommandRuntime', [System.StringComparison]::Ordinal))
+                    })
+                    $mainMenuObservation = Get-JsonValue -Object $result -Name 'MainMenuObservation' -DefaultValue $null
+                    $runtimeObservation = Get-JsonValue -Object $result -Name 'RuntimeObservation' -DefaultValue $null
+                    $mainMenuObservationSampleCount = if ($null -ne $mainMenuObservation) { [int](Get-JsonValue -Object $mainMenuObservation -Name 'Samples' -DefaultValue -1) } else { -1 }
+                    $runtimeObservationSampleCount = if ($null -ne $runtimeObservation) { [int](Get-JsonValue -Object $runtimeObservation -Name 'Samples' -DefaultValue -1) } else { -1 }
+
+                    if ($unknownRuntimeProbePhaseSamples.Count -gt 0) {
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_unknown_phase' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey probe samples include phase values outside StartupMainMenu/PostCommandRuntime; unknownCount=$($unknownRuntimeProbePhaseSamples.Count)." -NextStep 'Fix runtime probe phase labeling before using the packet for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($startupMainMenuProbeSamples.Count -eq 0) {
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_startup_phase_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey probe samples never retained a StartupMainMenu sample.' -NextStep 'Fix main-menu probe sampling so startup and runtime windows are both represented before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($postCommandRuntimeProbeSamples.Count -eq 0) {
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_phase_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey probe samples never retained a PostCommandRuntime sample.' -NextStep 'Fix runtime probe sampling so post-command or idle runtime health is represented before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($mainMenuObservationSampleCount -lt 0 -or $startupMainMenuProbeSamples.Count -ne $mainMenuObservationSampleCount) {
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_startup_sample_count_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "StartupMainMenu probe count does not match MainMenuObservation.Samples; expected=$mainMenuObservationSampleCount actual=$($startupMainMenuProbeSamples.Count)." -NextStep 'Regenerate the packet with retained startup probe samples that bind to MainMenuObservation.Samples.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($runtimeObservationSampleCount -lt 0 -or $postCommandRuntimeProbeSamples.Count -ne $runtimeObservationSampleCount) {
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_sample_count_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "PostCommandRuntime probe count does not match RuntimeObservation.Samples; expected=$runtimeObservationSampleCount actual=$($postCommandRuntimeProbeSamples.Count)." -NextStep 'Regenerate the packet with retained runtime probe samples that bind to RuntimeObservation.Samples.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+                }
+            } catch {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'runtime_monkey_probe_samples_invalid' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale "Runtime monkey runtime-probe-samples.json could not be parsed or classified: $($_.Exception.Message)" `
+                    -NextStep 'Regenerate runtime-probe-samples.json from structured probe telemetry before classifying gameplay source.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
         }
     }
 

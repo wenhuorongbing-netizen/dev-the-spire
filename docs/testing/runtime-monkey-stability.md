@@ -172,9 +172,8 @@ source or resources into tracked files. The relevant static signatures are:
   `CardSelectCmd.UseSelector(new AutoSlayCardSelector(_random))` make the run
   deterministic for a retained seed.
 - `source code\src\Core\AutoSlay\Handlers\Rooms\EventRoomHandler.cs` includes
-  event-room handling signatures such as `Detected Ancient event, clicking
-  through dialogue`, `Selecting event option:`, `Event triggered combat`, and
-  `Event combat started`.
+  event-room handling signatures such as `Detected Ancient event, clicking through dialogue`,
+  `Selecting event option:`, `Event triggered combat`, and `Event combat started`.
 
 Current `scripts\run-spire-plus-monkey-stability.ps1` lane is not
 AutoSlay-backed. It launches through `scripts\spire-plus-live-session.ps1`,
@@ -428,8 +427,11 @@ retained slice when required, a `godot-log-audit.json` whose scanned `Path`,
 signature counts match a packet-checker recomputation from that slice, no raw probe sample with
 `Responding=false`, and no probe sample or observation with
 `StaleProcessCount > 0`.
-A clean packet means those signals stayed healthy for the sampled windows; it
-still does not prove deeper gameplay behavior.
+A clean packet means those signals stayed healthy for both sampled windows;
+the retained `runtime-probe-samples.json` must include `StartupMainMenu` and
+`PostCommandRuntime` samples, and those phase counts must match
+`MainMenuObservation.Samples` and `RuntimeObservation.Samples`. It still does
+not prove deeper gameplay behavior.
 
 Current packet schema is `HangProbeSchemaVersion = 1`.
 
@@ -473,7 +475,10 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   process/window/log records, including `Phase`, `ProcessId`,
   `ProcessStartTimeUtc`, `ProcessPath`, expected game process identity,
   process-id/start/path match booleans, stale/unknown/ambiguous process counts,
-  window state, and responsiveness state.
+  window state, and responsiveness state. Runtime monkey phases are
+  `StartupMainMenu` and `PostCommandRuntime`; the packet checker rejects
+  unknown phase values, missing phase coverage, and phase-count drift versus
+  the retained observation sample counts.
 - `monkey-summary.json` records `FailedIterationIds`, `FailureReasonCounts`,
   `ProcessExitCount`, `LiveSessionBindingMissingCount`,
   `UnresponsiveIterationCount`, `LogStallIterationCount`,
