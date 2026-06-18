@@ -867,6 +867,7 @@ function Analyze-Iteration {
     $autoSlayProbeArtifactTrustedForOwner = -not $isGameNativeAutoSlay
     $autoSlayAuditArtifactTrustedForOwner = -not $isGameNativeAutoSlay
     $autoSlaySts1ModeArtifactTrustedForOwner = -not $isGameNativeAutoSlay
+    $autoSlaySidecarPathTrustedForOwner = -not $isGameNativeAutoSlay
     if ($result -and -not $isGameNativeAutoSlay) {
         $runtimeMonkeyRequiredArtifacts = @(
             [pscustomobject]@{ Label = 'godot.log.before'; OutsideSignal = 'runtime_monkey_before_log_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_before_log_not_retained_file'; Path = $beforeLogCandidate; CanonicalPath = $canonicalBeforeLogCandidate; NextStep = 'Retain godot.log.before as the standard file in the iteration directory before using runtime-monkey log slices for owner routing.' },
@@ -911,28 +912,25 @@ function Analyze-Iteration {
         $autoSlayProbeArtifactTrustedForOwner = $true
         $autoSlayAuditArtifactTrustedForOwner = $true
         $autoSlaySts1ModeArtifactTrustedForOwner = $true
+        $autoSlaySidecarPathTrustedForOwner = $true
         if (-not $RunResultPathInsideEvidenceDir) {
             Add-Finding -Findings $findings -Signal 'autoslay_run_result_path_outside_evidence_dir' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay autoslay-summary.json RunResultPath resolved outside the retained evidence directory.' -NextStep 'Retain each run-result.json under the AutoSlay evidence root before analyzing per-seed artifacts or routing source ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
         $autoSlayRequiredArtifacts = @(
-            [pscustomobject]@{ Label = 'godot.log.before'; FieldName = 'GodotLogBeforePath'; Signal = 'autoslay_before_log_outside_run_dir'; Path = $beforeLogCandidate; NextStep = 'Retain godot.log.before beside run-result.json before using AutoSlay log slices for owner routing.' },
-            [pscustomobject]@{ Label = 'godot.log.after-launch'; FieldName = 'GodotLogAfterLaunchPath'; Signal = 'autoslay_after_launch_log_outside_run_dir'; Path = $fullLogCandidate; NextStep = 'Retain godot.log.after-launch beside run-result.json before using AutoSlay log slices for owner routing.' },
-            [pscustomobject]@{ Label = 'godot.log.current-iteration'; FieldName = 'GodotLogCurrentIterationPath'; Signal = 'autoslay_current_iteration_log_outside_run_dir'; Path = $currentIterationLogCandidate; NextStep = 'Retain godot.log.current-iteration beside run-result.json before using AutoSlay log lines for owner routing.' },
-            [pscustomobject]@{ Label = 'runtime-probe-samples.json'; FieldName = 'RuntimeProbeSamplesPath'; Signal = 'autoslay_runtime_probe_samples_outside_run_dir'; Path = $probeSamplesCandidate; NextStep = 'Retain runtime-probe-samples.json beside run-result.json before using AutoSlay probe telemetry for triage.' },
-            [pscustomobject]@{ Label = 'godot-log-audit.json'; FieldName = 'GodotLogAuditPath'; Signal = 'autoslay_godot_log_audit_outside_run_dir'; Path = $auditCandidate; NextStep = 'Retain godot-log-audit.json beside run-result.json before using audit signatures for owner routing.' },
-            [pscustomobject]@{ Label = 'sts1-mode-log-check.json'; FieldName = 'Sts1ModeLogCheckPath'; Signal = 'autoslay_sts1_mode_log_check_outside_run_dir'; Path = $sts1ModeCandidate; NextStep = 'Retain sts1-mode-log-check.json beside run-result.json before using StS1 mode evidence for owner routing.' },
-            [pscustomobject]@{ Label = 'autoslay.log'; FieldName = 'AutoSlayLogPath'; Signal = 'autoslay_sidecar_log_outside_run_dir'; Path = $autoSlayLogCandidate; NextStep = 'Retain autoslay.log beside run-result.json before using sidecar log lines for owner routing.' }
+            [pscustomobject]@{ Label = 'godot.log.before'; FieldName = 'GodotLogBeforePath'; Signal = 'autoslay_before_log_outside_run_dir'; MissingSignal = 'autoslay_before_log_path_missing'; NonCanonicalSignal = 'autoslay_before_log_not_retained_file'; Path = $beforeLogCandidate; CanonicalPath = $canonicalBeforeLogCandidate; NextStep = 'Retain godot.log.before beside run-result.json before using AutoSlay log slices for owner routing.' },
+            [pscustomobject]@{ Label = 'godot.log.after-launch'; FieldName = 'GodotLogAfterLaunchPath'; Signal = 'autoslay_after_launch_log_outside_run_dir'; MissingSignal = 'autoslay_after_launch_log_path_missing'; NonCanonicalSignal = 'autoslay_after_launch_log_not_retained_file'; Path = $fullLogCandidate; CanonicalPath = $canonicalFullLogCandidate; NextStep = 'Retain godot.log.after-launch beside run-result.json before using AutoSlay log slices for owner routing.' },
+            [pscustomobject]@{ Label = 'godot.log.current-iteration'; FieldName = 'GodotLogCurrentIterationPath'; Signal = 'autoslay_current_iteration_log_outside_run_dir'; MissingSignal = 'autoslay_current_iteration_log_path_missing'; NonCanonicalSignal = 'autoslay_current_iteration_log_not_retained_file'; Path = $currentIterationLogCandidate; CanonicalPath = $canonicalCurrentIterationLogCandidate; NextStep = 'Retain godot.log.current-iteration beside run-result.json before using AutoSlay log lines for owner routing.' },
+            [pscustomobject]@{ Label = 'runtime-probe-samples.json'; FieldName = 'RuntimeProbeSamplesPath'; Signal = 'autoslay_runtime_probe_samples_outside_run_dir'; MissingSignal = 'autoslay_runtime_probe_samples_path_missing'; NonCanonicalSignal = 'autoslay_runtime_probe_samples_not_retained_file'; Path = $probeSamplesCandidate; CanonicalPath = $canonicalProbeSamplesCandidate; NextStep = 'Retain runtime-probe-samples.json beside run-result.json before using AutoSlay probe telemetry for triage.' },
+            [pscustomobject]@{ Label = 'godot-log-audit.json'; FieldName = 'GodotLogAuditPath'; Signal = 'autoslay_godot_log_audit_outside_run_dir'; MissingSignal = 'autoslay_godot_log_audit_path_missing'; NonCanonicalSignal = 'autoslay_godot_log_audit_not_retained_file'; Path = $auditCandidate; CanonicalPath = Join-Path $Directory 'godot-log-audit.json'; NextStep = 'Retain godot-log-audit.json beside run-result.json before using audit signatures for owner routing.' },
+            [pscustomobject]@{ Label = 'sts1-mode-log-check.json'; FieldName = 'Sts1ModeLogCheckPath'; Signal = 'autoslay_sts1_mode_log_check_outside_run_dir'; MissingSignal = 'autoslay_sts1_mode_log_check_path_missing'; NonCanonicalSignal = 'autoslay_sts1_mode_log_check_not_retained_file'; Path = $sts1ModeCandidate; CanonicalPath = Join-Path $Directory 'sts1-mode-log-check.json'; NextStep = 'Retain sts1-mode-log-check.json beside run-result.json before using StS1 mode evidence for owner routing.' },
+            [pscustomobject]@{ Label = 'autoslay.log'; FieldName = 'AutoSlayLogPath'; Signal = 'autoslay_sidecar_log_outside_run_dir'; MissingSignal = 'autoslay_sidecar_log_path_missing'; NonCanonicalSignal = 'autoslay_sidecar_log_not_retained_file'; Path = $autoSlayLogCandidate; CanonicalPath = Join-Path $Directory 'autoslay.log'; NextStep = 'Retain autoslay.log beside run-result.json before using sidecar log lines for owner routing.' }
         )
 
         foreach ($artifact in $autoSlayRequiredArtifacts) {
             $artifactPath = [string]$artifact.Path
             $artifactFieldRetained = Test-JsonProperty -Object $result -Name ([string]$artifact.FieldName)
-            if ([string]::IsNullOrWhiteSpace($artifactPath)) {
-                if (-not $artifactFieldRetained) {
-                    continue
-                }
-
+            if (-not $artifactFieldRetained) {
                 $autoSlayRunArtifactsTrustedForOwner = $false
                 if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
                     $autoSlayProbeArtifactTrustedForOwner = $false
@@ -943,7 +941,30 @@ function Analyze-Iteration {
                 if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
                     $autoSlaySts1ModeArtifactTrustedForOwner = $false
                 }
+                if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySidecarPathTrustedForOwner = $false
+                }
 
+                Add-Finding -Findings $findings -Signal ([string]$artifact.MissingSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json did not retain $($artifact.FieldName) for $($artifact.Label)." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
+                continue
+            }
+
+            if ([string]::IsNullOrWhiteSpace($artifactPath)) {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayProbeArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'godot-log-audit.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySidecarPathTrustedForOwner = $false
+                }
+
+                Add-Finding -Findings $findings -Signal ([string]$artifact.MissingSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay $($artifact.FieldName) was empty, blank, or malformed for $($artifact.Label)." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
                 continue
             }
 
@@ -955,10 +976,6 @@ function Analyze-Iteration {
             }
 
             if (-not $artifactExists) {
-                if (-not $artifactFieldRetained) {
-                    continue
-                }
-
                 $autoSlayRunArtifactsTrustedForOwner = $false
                 if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
                     $autoSlayProbeArtifactTrustedForOwner = $false
@@ -969,7 +986,11 @@ function Analyze-Iteration {
                 if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
                     $autoSlaySts1ModeArtifactTrustedForOwner = $false
                 }
+                if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySidecarPathTrustedForOwner = $false
+                }
 
+                Add-Finding -Findings $findings -Signal ([string]$artifact.MissingSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay $($artifact.FieldName) did not point to a retained $($artifact.Label) file on disk." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
                 continue
             }
 
@@ -984,8 +1005,35 @@ function Analyze-Iteration {
                 if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
                     $autoSlaySts1ModeArtifactTrustedForOwner = $false
                 }
+                if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySidecarPathTrustedForOwner = $false
+                }
 
                 Add-Finding -Findings $findings -Signal ([string]$artifact.Signal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay $($artifact.Label) resolved outside the per-seed run evidence directory." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
+                continue
+            }
+
+            $artifactFullPath = ConvertTo-NormalizedPathOrEmpty -Path $artifactPath
+            $canonicalFullPath = ConvertTo-NormalizedPathOrEmpty -Path ([string]$artifact.CanonicalPath)
+            $artifactMatchesCanonical = -not [string]::IsNullOrWhiteSpace($artifactFullPath) -and
+                -not [string]::IsNullOrWhiteSpace($canonicalFullPath) -and
+                [System.StringComparer]::OrdinalIgnoreCase.Equals($artifactFullPath, $canonicalFullPath)
+            if (-not $artifactMatchesCanonical) {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayProbeArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'godot-log-audit.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySidecarPathTrustedForOwner = $false
+                }
+
+                Add-Finding -Findings $findings -Signal ([string]$artifact.NonCanonicalSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay $($artifact.Label) did not resolve to the retained standard per-seed file." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
         }
     }
@@ -996,13 +1044,8 @@ function Analyze-Iteration {
     $autoSlayLogText = if ($autoSlayLogExists) { Get-Content -LiteralPath $autoSlayLogCandidate -Raw -Encoding UTF8 } else { '' }
     $autoSlaySidecarTrustedForOwner = -not $isGameNativeAutoSlay
     if ($isGameNativeAutoSlay) {
-        $autoSlaySidecarTrustedForOwner = $autoSlayLogExists
-        if ($autoSlayLogExists) {
-            if (-not (Test-PathInsideDirectory -Path $autoSlayLogCandidate -Directory $Directory)) {
-                $autoSlaySidecarTrustedForOwner = $false
-                Add-Finding -Findings $findings -Signal 'autoslay_sidecar_log_outside_run_dir' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay sidecar log is not retained inside the per-seed run evidence directory.' -NextStep 'Regenerate the packet with autoslay.log retained beside run-result.json before using sidecar lines for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
-            }
-
+        $autoSlaySidecarTrustedForOwner = $autoSlayLogExists -and $autoSlaySidecarPathTrustedForOwner
+        if ($autoSlayLogExists -and $autoSlaySidecarPathTrustedForOwner) {
             $recordedAutoSlayLogSha256 = if ($result) { [string](Get-JsonValue -Object $result -Name 'AutoSlayLogSha256' -DefaultValue '') } else { '' }
             if ([string]::IsNullOrWhiteSpace($recordedAutoSlayLogSha256)) {
                 $autoSlaySidecarTrustedForOwner = $false
@@ -2130,6 +2173,9 @@ function Analyze-Iteration {
         RuntimeMonkeyRunArtifactsTrustedForOwner = $runtimeMonkeyRunArtifactsTrustedForOwner
         AutoSlaySidecarTrustedForOwner = $autoSlaySidecarTrustedForOwner
         AutoSlayRunArtifactsTrustedForOwner = $autoSlayRunArtifactsTrustedForOwner
+        AutoSlayProbeArtifactTrustedForOwner = $autoSlayProbeArtifactTrustedForOwner
+        AutoSlayAuditArtifactTrustedForOwner = $autoSlayAuditArtifactTrustedForOwner
+        AutoSlaySts1ModeArtifactTrustedForOwner = $autoSlaySts1ModeArtifactTrustedForOwner
         OwnerAreaFromCommand = $commandOwnerArea
         Signals = @($signals)
         EvidenceFiles = @($evidenceFiles)

@@ -1469,6 +1469,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "RuntimeMonkeyRunArtifactsTrustedForOwner",
             "AutoSlaySidecarTrustedForOwner",
             "AutoSlayRunArtifactsTrustedForOwner",
+            "AutoSlayProbeArtifactTrustedForOwner",
+            "AutoSlayAuditArtifactTrustedForOwner",
+            "AutoSlaySts1ModeArtifactTrustedForOwner",
             "GodotLogBeforeLengthBytes",
             "GodotLogBeforeSha256",
             "GodotLogAfterLaunchLengthBytes",
@@ -2506,6 +2509,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             File.WriteAllText(beforeLogPath, beforeLog);
             File.WriteAllText(currentLogPath, currentLog);
             File.WriteAllText(afterLaunchLogPath, beforeLog + currentLog);
+            File.WriteAllText(Path.Combine(runDir, "sts1-mode-log-check.json"), """{"Mismatches":[]}""");
             var autoSlayLogPath = Path.Combine(runDir, "autoslay.log");
             File.WriteAllText(autoSlayLogPath, autoSlayLog);
             var autoSlayLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(autoSlayLogPath))).ToLowerInvariant();
@@ -2629,7 +2633,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "GodotLogCurrentIterationPath": "godot.log.current-iteration",
                   "GodotLogCurrentIterationLengthBytes": {{currentLogLength}},
                   "GodotLogCurrentIterationSha256": {{JsonSerializer.Serialize(currentLogHash)}},
-                  "GodotLogAuditPath": "godot-log-audit.json"
+                  "GodotLogAuditPath": "godot-log-audit.json",
+                  "Sts1ModeLogCheckPath": "sts1-mode-log-check.json"
                 }
                 """);
             var summaryPath = Path.Combine(workdir, "autoslay-summary.json");
@@ -2862,6 +2867,31 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains(
                 malformedPathIteration.GetProperty("Findings").EnumerateArray(),
                 item => item.GetProperty("Signal").GetString() == "autoslay_sidecar_log_missing");
+            File.WriteAllText(Path.Combine(runDir, "run-result.json"), originalRunResultJson);
+
+            File.WriteAllText(
+                Path.Combine(runDir, "run-result.json"),
+                Regex.Replace(
+                    originalRunResultJson,
+                    "\\s+\"RuntimeProbeSamplesPath\": \"runtime-probe-samples\\.json\",\\r?\\n",
+                    Environment.NewLine,
+                    RegexOptions.CultureInvariant));
+            var missingPathOutputPath = Path.Combine(workdir, "runtime-failure-analysis-missing-autoslay-path.json");
+            var missingPathResult = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", missingPathOutputPath);
+            Assert.True(missingPathResult.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{missingPathResult.Output}{missingPathResult.Error}");
+
+            using var missingPathDocument = JsonDocument.Parse(File.ReadAllText(missingPathOutputPath));
+            var missingPathRoot = missingPathDocument.RootElement;
+            var missingPathIteration = FindIteration(missingPathRoot, 1);
+
+            Assert.Equal("HarnessEvidenceInvalid", missingPathRoot.GetProperty("TriageDisposition").GetString());
+            Assert.False(missingPathIteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(missingPathIteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.False(missingPathIteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", missingPathIteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Contains(
+                missingPathIteration.GetProperty("Findings").EnumerateArray(),
+                item => item.GetProperty("Signal").GetString() == "autoslay_runtime_probe_samples_path_missing");
             File.WriteAllText(Path.Combine(runDir, "run-result.json"), originalRunResultJson);
         }
         finally
