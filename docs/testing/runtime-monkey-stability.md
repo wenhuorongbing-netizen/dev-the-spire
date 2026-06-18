@@ -239,8 +239,10 @@ point to the retained standard files inside the current iteration folder,
 `LogScanOffsetBytes` within the copied full log, a `godot.log.current-iteration`
 slice that matches `godot.log.after-launch` from that offset, command
 acknowledgement patterns that match known built-in command regexes and that
-retained slice when required, no raw probe sample with `Responding=false`, and
-no probe sample or observation with `StaleProcessCount > 0`.
+retained slice when required, a `godot-log-audit.json` whose scanned `Path`
+is the retained current-iteration slice, no raw probe sample with
+`Responding=false`, and no probe sample or observation with
+`StaleProcessCount > 0`.
 A clean packet means those signals stayed healthy for the sampled windows; it
 still does not prove deeper gameplay behavior.
 
@@ -248,7 +250,10 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
 
 - `monkey-plan.json` records `Scenario`, `CommandSelectionMode`,
   `CommandCorpusSource`, `CommandScenarioMatrix`, `ProcessProbe`,
-  `LogGrowthProbe`, and `CommandAckPatterns`.
+  `LogGrowthProbe`, `CommandAckPatterns`, `SourceWorkspaceCheckPath`,
+  `SourceWorkspaceCheckSha256`, and `SourceWorkspace` source-snapshot
+  disposition. The source-workspace check is no-launch evidence binding for
+  API/source triage; it is not gameplay or runtime proof.
 - Each `iteration-result.json` records `GameProcessId`,
   `GameProcessStartTimeUtc`, `MainWindowObserved`, `MainMenuDetectedAt`,
   `MainMenuElapsedSeconds`, `PreLaunchLogLengthBytes`,

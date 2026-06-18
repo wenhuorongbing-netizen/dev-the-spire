@@ -134,8 +134,8 @@ retained full logs, `godot.log.current-iteration`, audits,
 `sts1-mode-log-check.json`, and a `monkey-summary.json` under
 `.tools/runtime-evidence/`. The runner records a pre-launch log baseline,
 checks the current-iteration log slice for acknowledgements and runtime
-expectations, and ignores pre-existing game processes so stale sessions or stale
-appended log content cannot prove a new iteration.
+expectations, and fails closed on pre-existing game processes so stale sessions
+or stale appended log content cannot prove a new iteration.
 
 After a launched run, check the retained packet without launching the game:
 

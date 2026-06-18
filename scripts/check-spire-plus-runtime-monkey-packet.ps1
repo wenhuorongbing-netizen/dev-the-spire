@@ -192,10 +192,15 @@ function Read-AuditSummary {
     $items = @($json | ConvertFrom-Json)
     $dirtyItems = 0
     $hitCount = 0
+    $itemPaths = [System.Collections.Generic.List[string]]::new()
 
     foreach ($item in $items) {
         if (-not (Test-JsonProperty -Object $item -Name 'Clean') -or -not [bool]$item.Clean) {
             $dirtyItems++
+        }
+
+        if (Test-JsonProperty -Object $item -Name 'Path' -and -not [string]::IsNullOrWhiteSpace([string]$item.Path)) {
+            $itemPaths.Add([System.IO.Path]::GetFullPath([string]$item.Path)) | Out-Null
         }
 
         if (-not (Test-JsonProperty -Object $item -Name 'SignatureHits')) {
@@ -212,6 +217,7 @@ function Read-AuditSummary {
     return [pscustomobject]@{
         Path = $Path
         Items = $items.Count
+        ItemPaths = @($itemPaths)
         DirtyItems = $dirtyItems
         SignatureHitCount = $hitCount
         Clean = ($items.Count -gt 0 -and $dirtyItems -eq 0 -and $hitCount -eq 0)
@@ -295,6 +301,31 @@ function Get-ArrayCount {
     }
 
     return @($Value).Count
+}
+
+function Get-FileSha256OrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return ''
+    }
+
+    return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+}
+
+function Test-AllJsonPropertiesPresent {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if (-not (Test-JsonProperty -Object $item -Name $Name) -or $null -eq $item.$Name) {
+            return $false
+        }
+    }
+
+    return @($Items).Count -gt 0
 }
 
 function Test-AnyJsonPropertyTrue {
@@ -466,6 +497,23 @@ if ($null -ne $plan) {
     Add-Check -Name 'plan_scenario_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $plan -Name 'Scenario' -DefaultValue ''))) -Detail 'Scenario must identify the planned risk lane'
     Add-Check -Name 'plan_command_selection_mode_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $plan -Name 'CommandSelectionMode' -DefaultValue ''))) -Detail 'CommandSelectionMode must be retained'
     Add-Check -Name 'plan_command_corpus_source_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $plan -Name 'CommandCorpusSource' -DefaultValue ''))) -Detail 'CommandCorpusSource must be retained'
+    $sourceWorkspaceCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $plan -Name 'SourceWorkspaceCheckPath' -DefaultValue ''))
+    $sourceWorkspaceCheckSha256 = [string](Get-JsonValue -Object $plan -Name 'SourceWorkspaceCheckSha256' -DefaultValue '')
+    $sourceWorkspace = Get-JsonValue -Object $plan -Name 'SourceWorkspace' -DefaultValue $null
+    $sourceWorkspaceCheckExists = $sourceWorkspaceCheckPath -and (Test-Path -LiteralPath $sourceWorkspaceCheckPath -PathType Leaf)
+    Add-Check -Name 'plan_source_workspace_check_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckPath)) -Detail 'SourceWorkspaceCheckPath must bind the packet to the local recovered-source workspace check'
+    Add-Check -Name 'plan_source_workspace_check_under_evidence_dir' -Passed ($sourceWorkspaceCheckPath -and (Test-PathUnderDirectory -Path $sourceWorkspaceCheckPath -Directory $resolvedEvidenceDir)) -Detail 'SourceWorkspaceCheckPath must stay inside the evidence directory'
+    Add-Check -Name 'plan_source_workspace_check_exists' -Passed $sourceWorkspaceCheckExists -Detail 'requires retained local-godot-source-workspace-check.json'
+    Add-Check -Name 'plan_source_workspace_check_hash_present' -Passed (-not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckSha256)) -Detail 'SourceWorkspaceCheckSha256 must be retained for packet/source snapshot binding'
+    if ($sourceWorkspaceCheckExists -and -not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckSha256)) {
+        Add-Check -Name 'plan_source_workspace_check_hash_matches' -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $sourceWorkspaceCheckPath), $sourceWorkspaceCheckSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'SourceWorkspaceCheckSha256 must match the retained source-workspace JSON report'
+    }
+    Add-Check -Name 'plan_source_workspace_summary_present' -Passed ($null -ne $sourceWorkspace) -Detail 'SourceWorkspace summary must retain source version/disposition and evidence-use policy'
+    if ($null -ne $sourceWorkspace) {
+        Add-Check -Name 'plan_source_workspace_checked' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'Checked' -DefaultValue $false)) -Detail 'SourceWorkspace.Checked must be true'
+        Add-Check -Name 'plan_source_workspace_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'SourceWorkspace must record that source inspection is not runtime proof'
+        Add-Check -Name 'plan_source_workspace_disposition_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceWorkspace -Name 'Disposition' -DefaultValue ''))) -Detail 'SourceWorkspace must retain the recovered-source disposition'
+    }
     Add-Check -Name 'plan_observation_interval_positive' -Passed ([int](Get-JsonValue -Object $plan -Name 'ObservationIntervalSeconds' -DefaultValue 0) -gt 0) -Detail 'ObservationIntervalSeconds must be present and positive'
     Add-Check -Name 'plan_unresponsive_sample_threshold_positive' -Passed ($planUnresponsiveSampleThreshold -gt 0) -Detail 'UnresponsiveSampleThreshold must be present and positive'
     Add-Check -Name 'plan_no_log_growth_timeout_positive' -Passed ([int](Get-JsonValue -Object $plan -Name 'NoLogGrowthTimeoutSeconds' -DefaultValue 0) -gt 0) -Detail 'NoLogGrowthTimeoutSeconds must be present and positive'
@@ -778,6 +826,10 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     $probeSamplesParsed = $probeSamplesJson | ConvertFrom-Json
                     $probeSamples = @($probeSamplesParsed)
                     Add-Check -Name "${iterationName}_runtime_probe_samples_non_empty" -Passed ($probeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must contain samples'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_process_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -Detail 'every probe sample must retain ProcessObserved'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_hung_window_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -Detail 'every probe sample must retain HungWindow'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_responding_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Responding') -Detail 'every probe sample must retain Responding'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_stale_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount') -Detail 'every probe sample must retain StaleProcessCount'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'ProcessObserved') -Detail 'at least one probe sample must observe SlayTheSpire2'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_hung_window" -Passed (Test-NoJsonPropertyTrue -Items $probeSamples -Name 'HungWindow') -Detail 'probe samples must not report hung windows'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding') -Detail 'probe samples must not report Responding=false'
@@ -843,6 +895,10 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
         try {
             $auditSummary = Read-AuditSummary -Path $auditPath
             Add-Check -Name "${iterationName}_audit_clean" -Passed ([bool]$auditSummary.Clean) -Detail "audit must have zero dirty items and zero signature hits; dirty=$($auditSummary.DirtyItems), hits=$($auditSummary.SignatureHitCount)"
+            $auditItemPaths = @($auditSummary.ItemPaths)
+            $expectedAuditPath = [System.IO.Path]::GetFullPath($currentIterationLogPath)
+            Add-Check -Name "${iterationName}_audit_has_single_scanned_path" -Passed ($auditItemPaths.Count -eq 1) -Detail "audit JSON must retain exactly one scanned Path; found $($auditItemPaths.Count)"
+            Add-Check -Name "${iterationName}_audit_path_matches_current_iteration_log" -Passed ($auditItemPaths.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemPaths[0], $expectedAuditPath)) -Detail 'godot-log-audit.json must be produced from the retained godot.log.current-iteration slice'
         } catch {
             Add-Check -Name "${iterationName}_audit_json_valid" -Passed $false -Detail "invalid audit JSON in $auditPath`: $($_.Exception.Message)"
         }

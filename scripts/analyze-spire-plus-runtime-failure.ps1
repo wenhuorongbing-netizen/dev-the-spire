@@ -430,6 +430,7 @@ function Analyze-Iteration {
     $currentIterationLogExists = Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf
     $fullLogExists = Test-Path -LiteralPath $fullLogCandidate -PathType Leaf
     $logText = ''
+    $logTextTrustedForOwner = $false
     if ($result -and $currentIterationLogExists) {
         $hasOffsetBinding = $fullLogExists -and (Test-JsonProperty -Object $result -Name 'LogScanOffsetBytes')
         if (-not $hasOffsetBinding) {
@@ -461,6 +462,7 @@ function Analyze-Iteration {
                 $normalizedExpectedSlice = Normalize-LogSliceForComparison -Text $expectedCurrentIterationLogText
                 $normalizedActualSlice = Normalize-LogSliceForComparison -Text $actualCurrentIterationLogText
                 $logText = $expectedCurrentIterationLogText
+                $logTextTrustedForOwner = $true
                 if (-not [string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) {
                     Add-Finding `
                         -Findings $findings `
@@ -482,7 +484,8 @@ function Analyze-Iteration {
         $logText = Get-Content -LiteralPath $fullLogCandidate -Raw -Encoding UTF8
     }
 
-    $logOwnerArea = Get-OwnerAreaFromText -Text $logText -Command ''
+    $ownerLogText = if ($logTextTrustedForOwner) { $logText } else { '' }
+    $logOwnerArea = Get-OwnerAreaFromText -Text $ownerLogText -Command ''
     $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
 
     $auditExists = Test-Path -LiteralPath $auditCandidate -PathType Leaf
@@ -490,6 +493,18 @@ function Analyze-Iteration {
     $auditHits = if ($auditExists) { Get-AuditHits -Path $auditCandidate } else { [System.Collections.Generic.List[object]]::new() }
     $failureCodes = if ($result) { Get-JsonArrayValues -Object $result -Name 'FailureReasonCodes' } else { [System.Collections.Generic.List[object]]::new() }
     $hangSignals = if ($result) { Get-JsonArrayValues -Object $result -Name 'HangSignals' } else { [System.Collections.Generic.List[object]]::new() }
+
+    if ($result -and -not $currentIterationLogExists -and -not ($failureCodes.ToArray() -contains 'current_iteration_log_missing')) {
+        Add-Finding `
+            -Findings $findings `
+            -Signal 'current_iteration_log_missing' `
+            -Severity 'blocking' `
+            -OwnerArea 'RuntimeHarness' `
+            -Rationale 'The launched run did not retain a current-iteration log slice, so full godot.log content cannot be trusted for owner routing.' `
+            -NextStep 'Fix current-iteration log slicing or rerun the packet after validation lanes are unpaused; do not route ownership from the full log.' `
+            -Confidence 'high' `
+            -EvidenceFiles $evidenceFiles
+    }
 
     if ($iterationResultMissing) {
         $missingResultRationale = if ($null -ne $SummaryResult) {
@@ -602,7 +617,7 @@ function Analyze-Iteration {
 
     foreach ($hit in $auditHits) {
         $name = [string]$hit.Name
-        $auditOwnerText = Get-AuditOwnerText -LogText $logText -AuditName $name
+        $auditOwnerText = Get-AuditOwnerText -LogText $ownerLogText -AuditName $name
         $auditLogOwnerArea = Get-OwnerAreaFromText -Text $auditOwnerText -Command ''
         $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $auditLogOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
         $next = Get-NextStepForOwner -OwnerArea $owner -Signal $name
@@ -644,16 +659,16 @@ function Analyze-Iteration {
         }
     }
 
-    if ($logText -match '(?i)coop_gameplay_disabled|coop_combat_hook_disabled') {
+    if ($logTextTrustedForOwner -and $logText -match '(?i)coop_gameplay_disabled|coop_combat_hook_disabled') {
         Add-Finding -Findings $findings -Signal 'coop_fail_closed_observed' -Severity 'info' -OwnerArea 'MultiplayerPolicy' -Rationale 'The log shows co-op gameplay/combat hooks failing closed.' -NextStep 'Treat as expected only when no explicit SPIREPLUS_ALLOW_UNVERIFIED_COOP_* debug gate was intended.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
 
-    if ($logText -match '(?i)coop_.*override_enabled|ALLOW_UNVERIFIED_COOP') {
+    if ($logTextTrustedForOwner -and $logText -match '(?i)coop_.*override_enabled|ALLOW_UNVERIFIED_COOP') {
         $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
         Add-Finding -Findings $findings -Signal 'coop_override_enabled_runtime_failure' -Severity 'blocking' -OwnerArea $owner -Rationale 'A co-op unsafe/debug override appears near a runtime failure.' -NextStep 'Treat this as deliberate unsafe two-client debugging; route by feature text and preserve both host/client logs.' -Confidence 'medium' -EvidenceFiles $evidenceFiles
     }
 
-    if ($logText -match '(?i)coop_local_ui_preview_enabled|prediction_prepared_multiplayer_ui_only') {
+    if ($logTextTrustedForOwner -and $logText -match '(?i)coop_local_ui_preview_enabled|prediction_prepared_multiplayer_ui_only') {
         Add-Finding -Findings $findings -Signal 'coop_preview_ui_only_observed' -Severity 'info' -OwnerArea 'PreviewTools' -Rationale 'The log shows preview tools running as local UI only in multiplayer.' -NextStep 'This supports preview-tool co-op policy, but still does not prove two-client behavior without live evidence.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
 
@@ -677,6 +692,7 @@ function Analyze-Iteration {
         ScenarioTag = $scenarioTag
         OwnerAreaHint = $resultOwnerArea
         OwnerAreaFromLog = $logOwnerArea
+        LogTextTrustedForOwner = $logTextTrustedForOwner
         OwnerAreaFromCommand = $commandOwnerArea
         Signals = @($signals)
         EvidenceFiles = @($evidenceFiles)

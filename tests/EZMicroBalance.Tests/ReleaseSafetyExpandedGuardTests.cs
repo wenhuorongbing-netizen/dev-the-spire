@@ -167,6 +167,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "[ValidateSet('Prepare', 'Restore')]",
             "[switch]$MoveOtherMods",
             "[switch]$MoveCurrentRuns",
+            "[switch]$PrepareDefaultSettings",
             "[switch]$DisableSpirePlus",
             "[switch]$StopGameOnRestore",
             "[switch]$PreserveNewCurrentRunsOnRestore",
@@ -177,6 +178,11 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "Move-CurrentRuns",
             "Move-NewCurrentRunsBeforeRestore",
             "Restore-MovedItems",
+            "$settings.mod_settings.mods_enabled = $true",
+            "default.settings.save.before",
+            "DefaultSettingsPath = $defaultSettingsPath",
+            "PrepareDefaultSettings = [bool]$PrepareDefaultSettings",
+            "Set-SpirePlusSettings -SettingsPath $defaultSettingsPath",
             "live-spire-plus-disabled-session",
             "$defaultAllowedModIds = @('BaseLib', 'STS2-RitsuLib', 'EZMicroBalance')",
             "id = 'STS2-RitsuLib'",
@@ -204,6 +210,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("spire-plus-live-session.ps1", scriptsReadme, StringComparison.Ordinal);
         Assert.Contains("check-spire-window-preflight.ps1", scriptsReadme, StringComparison.Ordinal);
         Assert.Contains("-DisableSpirePlus", scriptsReadme, StringComparison.Ordinal);
+        Assert.Contains("-PrepareDefaultSettings", scriptsReadme, StringComparison.Ordinal);
         Assert.Contains("-RequireSpireForeground", scriptsReadme, StringComparison.Ordinal);
         Assert.Contains("-PreserveNewCurrentRunsOnRestore", scriptsReadme, StringComparison.Ordinal);
         Assert.Contains("test-created `current_run*` files are preserved", currentDocs, StringComparison.Ordinal);

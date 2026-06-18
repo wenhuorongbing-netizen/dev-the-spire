@@ -19,6 +19,8 @@ param(
 
     [switch]$MoveCurrentRuns,
 
+    [switch]$PrepareDefaultSettings,
+
     [switch]$Launch,
 
     [switch]$StopGameOnRestore,
@@ -128,16 +130,20 @@ function Set-SpirePlusSettings {
 
     if (-not $settings.PSObject.Properties['mod_settings']) {
         $settings | Add-Member -MemberType NoteProperty -Name mod_settings -Value ([pscustomobject]@{})
+    } elseif ($null -eq $settings.mod_settings) {
+        $settings.mod_settings = [pscustomobject]@{}
     }
 
     if (-not $settings.mod_settings.PSObject.Properties['mod_list']) {
         $settings.mod_settings | Add-Member -MemberType NoteProperty -Name mod_list -Value @()
+    } elseif ($null -eq $settings.mod_settings.mod_list) {
+        $settings.mod_settings.mod_list = @()
     }
 
-    if (-not $settings.PSObject.Properties['mods_enabled']) {
-        $settings | Add-Member -MemberType NoteProperty -Name mods_enabled -Value $true
+    if (-not $settings.mod_settings.PSObject.Properties['mods_enabled']) {
+        $settings.mod_settings | Add-Member -MemberType NoteProperty -Name mods_enabled -Value $true
     } else {
-        $settings.mods_enabled = $true
+        $settings.mod_settings.mods_enabled = $true
     }
 
     $enabledMods = @(
@@ -361,6 +367,8 @@ if ($Mode -eq 'Prepare') {
     $settingsPath = Join-Path $steamUserRoot 'settings.save'
     $settingsBackupPath = Join-Path $steamUserRoot 'settings.save.backup'
     $steamSaves = Join-Path $steamUserRoot 'modded\profile1\saves'
+    $defaultSettingsPath = Join-Path $env:APPDATA 'SlayTheSpire2\default\1\settings.save'
+    $defaultSettingsBackupPath = Join-Path $env:APPDATA 'SlayTheSpire2\default\1\settings.save.backup'
     $defaultSaves = Join-Path $env:APPDATA 'SlayTheSpire2\default\1\modded\profile1\saves'
     $logPath = Join-Path $env:APPDATA 'SlayTheSpire2\logs\godot.log'
     $gameReleaseInfoPath = Join-Path $gameRootFull 'release_info.json'
@@ -368,6 +376,15 @@ if ($Mode -eq 'Prepare') {
     Copy-Item -LiteralPath $settingsPath -Destination (Join-Path $evidenceFull 'settings.save.before') -Force
     if (Test-Path -LiteralPath $settingsBackupPath) {
         Copy-Item -LiteralPath $settingsBackupPath -Destination (Join-Path $evidenceFull 'settings.save.backup.before') -Force
+    }
+    if ($PrepareDefaultSettings -and -not (Test-Path -LiteralPath $defaultSettingsPath)) {
+        throw "Default settings file not found: $defaultSettingsPath"
+    }
+    if ($PrepareDefaultSettings -and (Test-Path -LiteralPath $defaultSettingsPath)) {
+        Copy-Item -LiteralPath $defaultSettingsPath -Destination (Join-Path $evidenceFull 'default.settings.save.before') -Force
+    }
+    if ($PrepareDefaultSettings -and (Test-Path -LiteralPath $defaultSettingsBackupPath)) {
+        Copy-Item -LiteralPath $defaultSettingsBackupPath -Destination (Join-Path $evidenceFull 'default.settings.save.backup.before') -Force
     }
     if (Test-Path -LiteralPath $logPath) {
         Copy-Item -LiteralPath $logPath -Destination (Join-Path $evidenceFull 'godot.log.before') -Force
@@ -388,6 +405,9 @@ if ($Mode -eq 'Prepare') {
     }
 
     Set-SpirePlusSettings -SettingsPath $settingsPath -RequestedLanguage $Language -DisableSpirePlus:$DisableSpirePlus
+    if ($PrepareDefaultSettings) {
+        Set-SpirePlusSettings -SettingsPath $defaultSettingsPath -RequestedLanguage $Language -DisableSpirePlus:$DisableSpirePlus
+    }
 
     $state = [ordered]@{
         EvidenceDir = $evidenceFull
@@ -398,12 +418,15 @@ if ($Mode -eq 'Prepare') {
         SteamUserRoot = $steamUserRoot
         SettingsPath = $settingsPath
         SettingsBackupPath = $settingsBackupPath
+        DefaultSettingsPath = $defaultSettingsPath
+        DefaultSettingsBackupPath = $defaultSettingsBackupPath
         SteamSaves = $steamSaves
         DefaultSaves = $defaultSaves
         LogPath = $logPath
         GameReleaseInfoPath = $gameReleaseInfoPath
         Language = $Language
         DisableSpirePlus = [bool]$DisableSpirePlus
+        PrepareDefaultSettings = [bool]$PrepareDefaultSettings
         Sts1EventModeEnvironment = [string]$env:SPIREPLUS_STS1_EVENT_MODE
         Sts1UnsafeModeEnvironment = [string]$env:SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES
         AllowedModIds = @($allowedModIds)
@@ -413,6 +436,8 @@ if ($Mode -eq 'Prepare') {
         MovedCurrentRuns = @($movedRuns)
         SettingsHashBefore = Get-HashOrNull -Path (Join-Path $evidenceFull 'settings.save.before')
         SettingsHashAfterPrepare = Get-HashOrNull -Path $settingsPath
+        DefaultSettingsHashBefore = Get-HashOrNull -Path (Join-Path $evidenceFull 'default.settings.save.before')
+        DefaultSettingsHashAfterPrepare = Get-HashOrNull -Path $defaultSettingsPath
     }
 
     if ($Launch) {
@@ -487,6 +512,18 @@ if (Test-Path -LiteralPath $settingsBackupBefore) {
     Copy-Item -LiteralPath $settingsBackupBefore -Destination $session.SettingsBackupPath -Force
 }
 
+if ($session.PSObject.Properties.Name -contains 'PrepareDefaultSettings' -and [bool]$session.PrepareDefaultSettings) {
+    $defaultSettingsBefore = Join-Path $evidenceRestoreFull 'default.settings.save.before'
+    if ((Test-Path -LiteralPath $defaultSettingsBefore) -and $session.DefaultSettingsPath) {
+        Copy-Item -LiteralPath $defaultSettingsBefore -Destination $session.DefaultSettingsPath -Force
+    }
+
+    $defaultSettingsBackupBefore = Join-Path $evidenceRestoreFull 'default.settings.save.backup.before'
+    if ((Test-Path -LiteralPath $defaultSettingsBackupBefore) -and $session.DefaultSettingsBackupPath) {
+        Copy-Item -LiteralPath $defaultSettingsBackupBefore -Destination $session.DefaultSettingsBackupPath -Force
+    }
+}
+
 if (Test-Path -LiteralPath $session.LogPath) {
     Copy-Item -LiteralPath $session.LogPath -Destination (Join-Path $evidenceRestoreFull 'godot.log.after-restore') -Force
 }
@@ -499,6 +536,8 @@ $restoreState = [ordered]@{
     RestoredCurrentRunCount = @($restoredRuns).Count
     SettingsHashAfterRestore = Get-HashOrNull -Path $session.SettingsPath
     SettingsBackupHashAfterRestore = Get-HashOrNull -Path $session.SettingsBackupPath
+    DefaultSettingsHashAfterRestore = if ($session.PSObject.Properties.Name -contains 'DefaultSettingsPath') { Get-HashOrNull -Path $session.DefaultSettingsPath } else { $null }
+    DefaultSettingsBackupHashAfterRestore = if ($session.PSObject.Properties.Name -contains 'DefaultSettingsBackupPath') { Get-HashOrNull -Path $session.DefaultSettingsBackupPath } else { $null }
 }
 
 Save-Json -InputObject $restoreState -Path (Join-Path $evidenceRestoreFull 'restore-state.json')

@@ -52,6 +52,10 @@ param(
     [ValidateRange(1, 1000)]
     [int]$ExpectedPatchCount = 25,
 
+    [switch]$RequireCurrentSourceSnapshot,
+
+    [switch]$RequireCleanGdreExport,
+
     [int]$RandomSeed = 1729,
 
     [switch]$Launch,
@@ -74,6 +78,7 @@ $liveSessionScript = Join-Path $PSScriptRoot 'spire-plus-live-session.ps1'
 $logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
 $consoleCommandScript = Join-Path $PSScriptRoot 'send-spire-dev-console-command.ps1'
 $sts1ModeVerifierScript = Join-Path $PSScriptRoot 'check-sts1-enabled-mode-runtime-log.ps1'
+$sourceWorkspaceCheckerScript = Join-Path $PSScriptRoot 'check-local-godot-source-workspace.ps1'
 $godotLogPath = Join-Path $env:APPDATA 'SlayTheSpire2\logs\godot.log'
 $hangProbeSchemaVersion = 1
 
@@ -1051,6 +1056,10 @@ if (-not (Test-Path -LiteralPath $sts1ModeVerifierScript -PathType Leaf)) {
     throw "Missing StS1 mode verifier helper: $sts1ModeVerifierScript"
 }
 
+if (-not (Test-Path -LiteralPath $sourceWorkspaceCheckerScript -PathType Leaf)) {
+    throw "Missing source workspace checker helper: $sourceWorkspaceCheckerScript"
+}
+
 if (-not $EvidenceRoot) {
     New-DirectoryIfMissing -Path $runtimeRoot
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
@@ -1092,6 +1101,54 @@ if (-not $ExpectedRitsuCompatBranch) {
             $ExpectedRitsuCompatBranch = [string]$variant[0].compatTarget
         }
     }
+}
+
+$sourceWorkspaceCheckPath = Join-Path $evidenceFull 'local-godot-source-workspace-check.json'
+$sourceWorkspaceCheckOutputPath = Join-Path $evidenceFull 'local-godot-source-workspace-check.txt'
+$sourceWorkspaceArgs = @{
+    SourceRoot = (Join-Path $repoRoot 'source code')
+    GameRoot = $GameRoot
+    ExpectedPackageVersion = $ExpectedPackageVersion
+    ExpectedGameVersion = $ExpectedGameVersion
+    ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion
+    ExpectedRitsuCompatBranch = $ExpectedRitsuCompatBranch
+    OutFile = $sourceWorkspaceCheckPath
+}
+if ($RequireCurrentSourceSnapshot) {
+    $sourceWorkspaceArgs.RequireCurrentSourceSnapshot = $true
+}
+if ($RequireCleanGdreExport) {
+    $sourceWorkspaceArgs.RequireCleanGdreExport = $true
+}
+if ($RequireCurrentSourceSnapshot -or $RequireCleanGdreExport) {
+    $sourceWorkspaceArgs.FailOnMismatch = $true
+}
+
+& $sourceWorkspaceCheckerScript @sourceWorkspaceArgs |
+    Out-File -LiteralPath $sourceWorkspaceCheckOutputPath -Encoding UTF8
+
+$sourceWorkspaceReport = Read-JsonOrNull -Path $sourceWorkspaceCheckPath
+$sourceWorkspaceCheckHash = if (Test-Path -LiteralPath $sourceWorkspaceCheckPath -PathType Leaf) {
+    (Get-FileHash -Algorithm SHA256 -LiteralPath $sourceWorkspaceCheckPath).Hash.ToLowerInvariant()
+} else {
+    ''
+}
+$sourceWorkspaceSummary = [ordered]@{
+    Checked = $null -ne $sourceWorkspaceReport
+    ReportPath = $sourceWorkspaceCheckPath
+    OutputPath = $sourceWorkspaceCheckOutputPath
+    ReportSha256 = $sourceWorkspaceCheckHash
+    Passed = if ($sourceWorkspaceReport) { [bool]$sourceWorkspaceReport.Passed } else { $false }
+    SourceRoot = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.SourceRoot } else { '' }
+    SourceVersion = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RecoveredSource.Version } else { '' }
+    SourceCommit = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RecoveredSource.Commit } else { '' }
+    InstalledGameVersion = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.Game.Version } else { '' }
+    Disposition = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RecoveredSource.Disposition } else { '' }
+    MatchesInstalledGame = if ($sourceWorkspaceReport) { [bool]$sourceWorkspaceReport.RecoveredSource.MatchesInstalledGame } else { $false }
+    RefreshSourceSnapshotBeforeCurrentApiClaims = if ($sourceWorkspaceReport) { [bool]$sourceWorkspaceReport.EvidenceUsePolicy.RefreshSourceSnapshotBeforeCurrentApiClaims } else { $true }
+    NotRuntimeProof = if ($sourceWorkspaceReport) { [bool]$sourceWorkspaceReport.EvidenceUsePolicy.NotRuntimeProof } else { $true }
+    RequireCurrentSourceSnapshot = [bool]$RequireCurrentSourceSnapshot
+    RequireCleanGdreExport = [bool]$RequireCleanGdreExport
 }
 
 $random = [System.Random]::new($RandomSeed)
@@ -1150,6 +1207,10 @@ $plan = [ordered]@{
     ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion
     ExpectedRitsuCompatBranch = $ExpectedRitsuCompatBranch
     ExpectedPatchCount = $ExpectedPatchCount
+    SourceWorkspaceCheckPath = $sourceWorkspaceCheckPath
+    SourceWorkspaceCheckOutputPath = $sourceWorkspaceCheckOutputPath
+    SourceWorkspaceCheckSha256 = $sourceWorkspaceCheckHash
+    SourceWorkspace = [pscustomobject]$sourceWorkspaceSummary
     RandomSeed = $RandomSeed
     MoveOtherMods = [bool]$MoveOtherMods
     MoveCurrentRuns = [bool]$MoveCurrentRuns
@@ -1197,6 +1258,7 @@ $plan = [ordered]@{
     FailureCriteria = @(
         'main menu log line missing before timeout',
         'SlayTheSpire2 process disappears before or after main menu',
+        'pre-existing SlayTheSpire2 process is observed before launch or during observation',
         'SlayTheSpire2 main window is not observed after main menu',
         'SlayTheSpire2 window reports not responding or hung for the configured consecutive-sample threshold',
         'godot.log stops growing before main menu for the configured no-growth timeout',
