@@ -509,6 +509,21 @@ function Test-AllJsonPropertiesPresent {
     return @($Items).Count -gt 0
 }
 
+function Test-AllJsonPropertiesRetained {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if (-not (Test-JsonProperty -Object $item -Name $Name)) {
+            return $false
+        }
+    }
+
+    return @($Items).Count -gt 0
+}
+
 function Test-AnyJsonPropertyTrue {
     param(
         [AllowNull()]$Items,
@@ -1290,6 +1305,24 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_post_command_runtime_phase_observed" -Passed ($postCommandRuntimeProbeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must retain at least one PostCommandRuntime sample'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_startup_count_matches_main_menu_observation" -Passed ($mainMenuObservationSampleCount -ge 0 -and $startupMainMenuProbeSamples.Count -eq $mainMenuObservationSampleCount) -Detail "StartupMainMenu sample count must match MainMenuObservation.Samples; expected=$mainMenuObservationSampleCount actual=$($startupMainMenuProbeSamples.Count)"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_runtime_count_matches_runtime_observation" -Passed ($runtimeObservationSampleCount -ge 0 -and $postCommandRuntimeProbeSamples.Count -eq $runtimeObservationSampleCount) -Detail "PostCommandRuntime sample count must match RuntimeObservation.Samples; expected=$runtimeObservationSampleCount actual=$($postCommandRuntimeProbeSamples.Count)"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_sampled_at_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'SampledAt') -Detail 'every probe sample must retain SampledAt'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_exists_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogExists') -Detail 'every probe sample must retain LogExists'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_length_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogLengthBytes') -Detail 'every probe sample must retain LogLengthBytes'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_last_write_field_present" -Passed (Test-AllJsonPropertiesRetained -Items $probeSamples -Name 'LogLastWriteTimeUtc') -Detail 'every probe sample must retain LogLastWriteTimeUtc, even when the value is null before log creation'
+                    $runtimeObservationInitialLogLengthForProbeSamples = if ($null -ne $runtimeObservationForProbeSamples) { [long](Get-JsonValue -Object $runtimeObservationForProbeSamples -Name 'LogInitialLengthBytes' -DefaultValue -1) } else { -1L }
+                    $runtimeObservationLogGrewForProbeSamples = if ($null -ne $runtimeObservationForProbeSamples) { [bool](Get-JsonValue -Object $runtimeObservationForProbeSamples -Name 'LogGrew' -DefaultValue $false) } else { $false }
+                    $postCommandRuntimeProbeLogLengths = @($postCommandRuntimeProbeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
+                        ForEach-Object { [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) } |
+                        Where-Object { $_ -ge 0 })
+                    $postCommandRuntimeProbeMaxLogLength = if ($postCommandRuntimeProbeLogLengths.Count -gt 0) {
+                        [long](@($postCommandRuntimeProbeLogLengths | Sort-Object -Descending)[0])
+                    } else {
+                        -1L
+                    }
+                    $runtimeProbeLogGrowthMatchesObservation = -not ($runtimeLogGrowthRequiredForIteration -and $runtimeObservationLogGrewForProbeSamples) -or
+                        ($runtimeObservationInitialLogLengthForProbeSamples -ge 0 -and $postCommandRuntimeProbeMaxLogLength -gt $runtimeObservationInitialLogLengthForProbeSamples)
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_growth_matches_runtime_observation" -Passed $runtimeProbeLogGrowthMatchesObservation -Detail "PostCommandRuntime probe LogLengthBytes must prove RuntimeObservation.LogGrew; initial=$runtimeObservationInitialLogLengthForProbeSamples maxRuntimeSample=$postCommandRuntimeProbeMaxLogLength"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_id_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -Detail 'every probe sample must retain ProcessId'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_start_time_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessStartTimeUtc') -Detail 'every probe sample must retain ProcessStartTimeUtc'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_path_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessPath') -Detail 'every probe sample must retain ProcessPath'
@@ -1381,9 +1414,14 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_runtime_observation_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runtimeObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'runtime observation MaxStaleProcessCount must be 0'
                 Add-Check -Name "${iterationName}_runtime_observation_log_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.LogObserved must be true'
                 $runtimeObservationLogGrowthRequired = [bool](Get-JsonValue -Object $runtimeObservation -Name 'RuntimeLogGrowthRequired' -DefaultValue $runtimeLogGrowthRequiredForIteration)
+                $runtimeObservationInitialLogLength = [long](Get-JsonValue -Object $runtimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1)
+                $runtimeObservationFinalLogLength = [long](Get-JsonValue -Object $runtimeObservation -Name 'LogFinalLengthBytes' -DefaultValue -1)
                 Add-Check -Name "${iterationName}_runtime_observation_log_growth_requirement_matches_command" -Passed ($runtimeObservationLogGrowthRequired -eq $runtimeLogGrowthRequiredForIteration) -Detail 'RuntimeObservation.RuntimeLogGrowthRequired must match whether the iteration sent a runtime command'
+                Add-Check -Name "${iterationName}_runtime_observation_log_initial_length_present" -Passed (Test-JsonProperty -Object $runtimeObservation -Name 'LogInitialLengthBytes') -Detail 'RuntimeObservation must retain LogInitialLengthBytes'
+                Add-Check -Name "${iterationName}_runtime_observation_log_final_length_present" -Passed (Test-JsonProperty -Object $runtimeObservation -Name 'LogFinalLengthBytes') -Detail 'RuntimeObservation must retain LogFinalLengthBytes'
                 if ($runtimeLogGrowthRequiredForIteration) {
                     Add-Check -Name "${iterationName}_runtime_observation_log_grew" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false)) -Detail 'command-bearing RuntimeObservation.LogGrew must be true so a retained static godot.log cannot satisfy runtime health'
+                    Add-Check -Name "${iterationName}_runtime_observation_log_length_growth_matches_log_grew" -Passed ($runtimeObservationInitialLogLength -ge 0 -and $runtimeObservationFinalLogLength -gt $runtimeObservationInitialLogLength) -Detail "RuntimeObservation LogFinalLengthBytes must exceed LogInitialLengthBytes when LogGrew is required; initial=$runtimeObservationInitialLogLength final=$runtimeObservationFinalLogLength"
                     Add-Check -Name "${iterationName}_runtime_observation_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'godot.log must keep growing during command-bearing runtime observation'
                 } else {
                     Add-Check -Name "${iterationName}_runtime_observation_log_growth_not_required" -Passed (-not $runtimeObservationLogGrowthRequired) -Detail 'StartupOnly/no-command observations do not require idle main-menu log growth'

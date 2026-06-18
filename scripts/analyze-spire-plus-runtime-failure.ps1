@@ -306,6 +306,21 @@ function Test-AllJsonPropertiesPresent {
     return @($Items).Count -gt 0
 }
 
+function Test-AllJsonPropertiesRetained {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if (-not (Test-JsonProperty -Object $item -Name $Name)) {
+            return $false
+        }
+    }
+
+    return @($Items).Count -gt 0
+}
+
 function Test-AnyJsonPropertyTrue {
     param(
         [AllowNull()]$Items,
@@ -798,7 +813,7 @@ function Analyze-Iteration {
         $autoSlayLogCandidate
     )
     $evidenceFiles = @($candidateEvidenceFiles | Where-Object {
-        Test-Path -LiteralPath $_ -PathType Leaf
+        -not [string]::IsNullOrWhiteSpace([string]$_) -and (Test-Path -LiteralPath $_ -PathType Leaf)
     })
     $currentIterationLogExists = Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf
     $beforeLogExists = Test-Path -LiteralPath $beforeLogCandidate -PathType Leaf
@@ -1215,7 +1230,7 @@ function Analyze-Iteration {
                 -EvidenceFiles $evidenceFiles
         }
 
-        if (-not (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf)) {
+        if ([string]::IsNullOrWhiteSpace($probeSamplesCandidate) -or -not (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf)) {
             $runtimeMonkeyProbeEvidenceInvalid = $true
             Add-Finding `
                 -Findings $findings `
@@ -1232,6 +1247,9 @@ function Analyze-Iteration {
                 $probeSamples = @($probeSamplesParsed)
                 $requiredProbeFields = @(
                     'Phase',
+                    'SampledAt',
+                    'LogExists',
+                    'LogLengthBytes',
                     'ProcessId',
                     'ProcessObserved',
                     'MainWindowObserved',
@@ -1241,23 +1259,21 @@ function Analyze-Iteration {
                     'CurrentProcessCount',
                     'UnknownStartTimeProcessCount',
                     'AmbiguousCurrentProcessCount')
+                $requiredRetainedProbeFields = @('LogLastWriteTimeUtc')
 
                 if ($probeSamples.Count -eq 0) {
                     $runtimeMonkeyProbeEvidenceInvalid = $true
                     Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_samples_empty' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey runtime-probe-samples.json has no process/window/log samples.' -NextStep 'Retain the sampled process/window/log timeline before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
-                } elseif (-not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Responding') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'CurrentProcessCount') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'UnknownStartTimeProcessCount') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'AmbiguousCurrentProcessCount')) {
-                    $missingProbeFields = @($requiredProbeFields | Where-Object {
-                        -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name $_)
-                    })
+                } else {
+                    $missingProbeFields = @(
+                        @($requiredProbeFields | Where-Object {
+                            -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name $_)
+                        })
+                        @($requiredRetainedProbeFields | Where-Object {
+                            -not (Test-AllJsonPropertiesRetained -Items $probeSamples -Name $_)
+                        })
+                    )
+                    if ($missingProbeFields.Count -gt 0) {
                     $runtimeMonkeyProbeEvidenceInvalid = $true
                     Add-Finding `
                         -Findings $findings `
@@ -1265,10 +1281,10 @@ function Analyze-Iteration {
                         -Severity 'blocking' `
                         -OwnerArea 'RuntimeHarness' `
                         -Rationale "Runtime monkey runtime-probe-samples.json is missing required fields: $($missingProbeFields -join ', ')." `
-                        -NextStep 'Record Phase, process identity, window state, responsiveness, and process-count fields for every runtime monkey probe sample.' `
+                        -NextStep 'Record Phase, timestamp, log telemetry, process identity, window state, responsiveness, and process-count fields for every runtime monkey probe sample.' `
                         -Confidence 'high' `
                         -EvidenceFiles $evidenceFiles
-                } else {
+                    } else {
                     $startupMainMenuProbeSamples = @($probeSamples | Where-Object {
                         [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'StartupMainMenu', [System.StringComparison]::Ordinal)
                     })
@@ -1308,6 +1324,25 @@ function Analyze-Iteration {
                     if ($runtimeObservationSampleCount -lt 0 -or $postCommandRuntimeProbeSamples.Count -ne $runtimeObservationSampleCount) {
                         $runtimeMonkeyProbeEvidenceInvalid = $true
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_sample_count_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "PostCommandRuntime probe count does not match RuntimeObservation.Samples; expected=$runtimeObservationSampleCount actual=$($postCommandRuntimeProbeSamples.Count)." -NextStep 'Regenerate the packet with retained runtime probe samples that bind to RuntimeObservation.Samples.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    $runtimeObservationLogGrowthRequired = if ($null -ne $runtimeObservation) { [bool](Get-JsonValue -Object $runtimeObservation -Name 'RuntimeLogGrowthRequired' -DefaultValue $false) } else { $false }
+                    $runtimeObservationLogGrew = if ($null -ne $runtimeObservation) { [bool](Get-JsonValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false) } else { $false }
+                    $runtimeObservationInitialLogLength = if ($null -ne $runtimeObservation) { [long](Get-JsonValue -Object $runtimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1) } else { -1L }
+                    $postCommandRuntimeProbeLogLengths = @($postCommandRuntimeProbeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
+                        ForEach-Object { [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) } |
+                        Where-Object { $_ -ge 0 })
+                    $postCommandRuntimeProbeMaxLogLength = if ($postCommandRuntimeProbeLogLengths.Count -gt 0) {
+                        [long](@($postCommandRuntimeProbeLogLengths | Sort-Object -Descending)[0])
+                    } else {
+                        -1L
+                    }
+                    if ($runtimeObservationLogGrowthRequired -and $runtimeObservationLogGrew -and
+                        ($runtimeObservationInitialLogLength -lt 0 -or $postCommandRuntimeProbeMaxLogLength -le $runtimeObservationInitialLogLength)) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_log_growth_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "RuntimeObservation.LogGrew=true is not backed by retained PostCommandRuntime sample LogLengthBytes; initial=$runtimeObservationInitialLogLength maxRuntimeSample=$postCommandRuntimeProbeMaxLogLength." -NextStep 'Regenerate the packet with runtime probe samples whose log-length timeline proves the post-command log growth claim.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
                     }
                 }
             } catch {
@@ -1654,8 +1689,12 @@ function Analyze-Iteration {
     }
 
     if ($command -match '(?i)spireplus_test_ancient\s+VAKUU' -and (@($hangSignals).Count -gt 0 -or @($failureCodes).Count -gt 0)) {
-        $vakuuOwner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea
-        Add-Finding -Findings $findings -Signal 'vakuu_command_failed_or_hung' -Severity 'blocking' -OwnerArea $vakuuOwner -Rationale 'The failing iteration targeted Vakuu through the live-test command.' -NextStep (Get-NextStepForOwner -OwnerArea $vakuuOwner -Signal 'vakuu_command_failed_or_hung') -Confidence 'medium' -EvidenceFiles $evidenceFiles
+        if ($runtimeMonkeyProbeEvidenceInvalid) {
+            Add-Finding -Findings $findings -Signal 'vakuu_command_failed_or_hung' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The failing iteration targeted Vakuu through the live-test command, but runtime monkey probe evidence is missing or invalid.' -NextStep 'Fix runtime-probe-samples.json retention and phase/sample binding before assigning Vakuu source ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        } else {
+            $vakuuOwner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea
+            Add-Finding -Findings $findings -Signal 'vakuu_command_failed_or_hung' -Severity 'blocking' -OwnerArea $vakuuOwner -Rationale 'The failing iteration targeted Vakuu through the live-test command.' -NextStep (Get-NextStepForOwner -OwnerArea $vakuuOwner -Signal 'vakuu_command_failed_or_hung') -Confidence 'medium' -EvidenceFiles $evidenceFiles
+        }
     }
 
     $signals = @(

@@ -196,7 +196,8 @@ can close a game-native monkey proof row:
   `AncientId`, `RuntimeProbeSamplesPath`, clean `MainMenuObservation`,
   clean `RuntimeObservation` with `LogGrew: true` and
   `NoLogGrowthTimeoutExceeded: false`, and the retained per-run paths/hashes;
-- one retained `runtime-probe-samples.json` per seed with `Phase`, `ProcessId`,
+- one retained `runtime-probe-samples.json` per seed with `Phase`, `SampledAt`,
+  `LogExists`, `LogLengthBytes`, retained `LogLastWriteTimeUtc`, `ProcessId`,
   `ProcessObserved`, `MainWindowObserved`, `HungWindow`, `Responding`, and
   `StaleProcessCount`, `CurrentProcessCount`,
   `UnknownStartTimeProcessCount`, and `AmbiguousCurrentProcessCount` fields, at
@@ -430,8 +431,11 @@ signature counts match a packet-checker recomputation from that slice, no raw pr
 A clean packet means those signals stayed healthy for both sampled windows;
 the retained `runtime-probe-samples.json` must include `StartupMainMenu` and
 `PostCommandRuntime` samples, and those phase counts must match
-`MainMenuObservation.Samples` and `RuntimeObservation.Samples`. It still does
-not prove deeper gameplay behavior.
+`MainMenuObservation.Samples` and `RuntimeObservation.Samples`. For
+command-bearing iterations, the `PostCommandRuntime` samples' `LogLengthBytes`
+must also prove the `RuntimeObservation.LogGrew` claim by exceeding
+`RuntimeObservation.LogInitialLengthBytes`. It still does not prove deeper
+gameplay behavior.
 
 Current packet schema is `HangProbeSchemaVersion = 1`.
 
@@ -500,7 +504,8 @@ The triage analyzer maps retained signals to owner areas. It records the planned
 `OwnerAreaHint` separately from `OwnerAreaFromLog` and `OwnerAreaFromCommand`.
 For runtime monkey packets, it treats missing `RuntimeProbeSamplesPath`,
 missing/invalid `runtime-probe-samples.json`, missing phase coverage, and
-phase-count drift as `RuntimeHarness` blockers before source ownership routing.
+phase-count or runtime log-growth timeline drift as `RuntimeHarness` blockers
+before source ownership routing.
 When `godot.log.current-iteration` exists, the analyzer requires
 `godot.log.before`, `godot.log.after-launch`, and `LogScanOffsetBytes`;
 otherwise it reports a `RuntimeHarness` blocker and does not route ownership
