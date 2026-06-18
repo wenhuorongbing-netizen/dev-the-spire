@@ -187,6 +187,52 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerReportsRuntimeMonkeyProbeProcessIdentityMismatch()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var resultPath = Path.Combine(iterationDir, "iteration-result.json");
+            var resultJson = File.ReadAllText(resultPath)
+                .Replace("\"Passed\": true,", "\"Passed\": false,", StringComparison.Ordinal)
+                .Replace("\"FailureReasonCodes\": [],", "\"FailureReasonCodes\": [\"process_unresponsive\"],", StringComparison.Ordinal)
+                .Replace("\"HangSignals\": [],", "\"HangSignals\": [\"process_unresponsive\"],", StringComparison.Ordinal);
+            File.WriteAllText(resultPath, resultJson);
+
+            var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+            var probeSamplesJson = File.ReadAllText(probeSamplesPath)
+                .Replace("\"ProcessId\":1234", "\"ProcessId\":9999", StringComparison.Ordinal);
+            File.WriteAllText(probeSamplesPath, probeSamplesJson);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-IterationDir", iterationDir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+            var iteration = FindIteration(root, 1);
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_process_identity_mismatch");
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerReportsRuntimeMonkeyProbeSamplesInvalidJson()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");

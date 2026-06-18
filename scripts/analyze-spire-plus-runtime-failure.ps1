@@ -169,24 +169,42 @@ function Resolve-AnalysisPath {
         return ''
     }
 
-    if ([System.IO.Path]::IsPathRooted($Path)) {
-        return [System.IO.Path]::GetFullPath($Path)
-    }
-
-    $underBase = [System.IO.Path]::GetFullPath((Join-Path $BaseDir $Path))
-    if (Test-Path -LiteralPath $underBase -PathType Leaf) {
-        return $underBase
-    }
-
-    $parent = [System.IO.Directory]::GetParent($BaseDir)
-    if ($null -ne $parent) {
-        $underParent = [System.IO.Path]::GetFullPath((Join-Path $parent.FullName $Path))
-        if (Test-Path -LiteralPath $underParent -PathType Leaf) {
-            return $underParent
+    try {
+        if ([System.IO.Path]::IsPathRooted($Path)) {
+            return [System.IO.Path]::GetFullPath($Path)
         }
+
+        $underBase = [System.IO.Path]::GetFullPath((Join-Path $BaseDir $Path))
+        if (Test-Path -LiteralPath $underBase -PathType Leaf) {
+            return $underBase
+        }
+
+        $parent = [System.IO.Directory]::GetParent($BaseDir)
+        if ($null -ne $parent) {
+            $underParent = [System.IO.Path]::GetFullPath((Join-Path $parent.FullName $Path))
+            if (Test-Path -LiteralPath $underParent -PathType Leaf) {
+                return $underParent
+            }
+        }
+
+        return $underBase
+    } catch {
+        return ''
+    }
+}
+
+function ConvertTo-NormalizedPathOrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return ''
     }
 
-    return $underBase
+    try {
+        return [System.IO.Path]::GetFullPath($Path)
+    } catch {
+        return ''
+    }
 }
 
 function Test-PathInsideDirectory {
@@ -764,7 +782,8 @@ function Analyze-Iteration {
         [Parameter(Mandatory = $true)][string]$Directory,
         [AllowNull()]$SummaryResult,
         [string]$ResultFileName = 'iteration-result.json',
-        [int]$DefaultIteration = 0
+        [int]$DefaultIteration = 0,
+        [bool]$RunResultPathInsideEvidenceDir = $true
     )
 
     $resultPath = Join-Path $Directory $ResultFileName
@@ -796,11 +815,15 @@ function Analyze-Iteration {
         $scenarioTag = 'game-native-autoslay'
     }
 
-    $beforeLogCandidate = Join-Path $Directory 'godot.log.before'
-    $fullLogCandidate = Join-Path $Directory 'godot.log.after-launch'
-    $currentIterationLogCandidate = Join-Path $Directory 'godot.log.current-iteration'
+    $canonicalBeforeLogCandidate = Join-Path $Directory 'godot.log.before'
+    $canonicalFullLogCandidate = Join-Path $Directory 'godot.log.after-launch'
+    $canonicalCurrentIterationLogCandidate = Join-Path $Directory 'godot.log.current-iteration'
+    $canonicalProbeSamplesCandidate = Join-Path $Directory 'runtime-probe-samples.json'
+    $beforeLogCandidate = $canonicalBeforeLogCandidate
+    $fullLogCandidate = $canonicalFullLogCandidate
+    $currentIterationLogCandidate = $canonicalCurrentIterationLogCandidate
     $auditCandidate = Join-Path $Directory 'godot-log-audit.json'
-    $probeSamplesCandidate = Join-Path $Directory 'runtime-probe-samples.json'
+    $probeSamplesCandidate = $canonicalProbeSamplesCandidate
     $sts1ModeCandidate = Join-Path $Directory 'sts1-mode-log-check.json'
     if ($result) {
         $beforeLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogBeforePath' -DefaultValue 'godot.log.before'))
@@ -813,7 +836,7 @@ function Analyze-Iteration {
         $sts1ModeCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'Sts1ModeLogCheckPath' -DefaultValue 'sts1-mode-log-check.json'))
     }
 
-    $logCandidate = if (Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf) {
+    $logCandidate = if (-not [string]::IsNullOrWhiteSpace($currentIterationLogCandidate) -and (Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf)) {
         $currentIterationLogCandidate
     } else {
         $fullLogCandidate
@@ -838,10 +861,138 @@ function Analyze-Iteration {
     $evidenceFiles = @($candidateEvidenceFiles | Where-Object {
         -not [string]::IsNullOrWhiteSpace([string]$_) -and (Test-Path -LiteralPath $_ -PathType Leaf)
     })
-    $currentIterationLogExists = Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf
-    $beforeLogExists = Test-Path -LiteralPath $beforeLogCandidate -PathType Leaf
-    $fullLogExists = Test-Path -LiteralPath $fullLogCandidate -PathType Leaf
-    $autoSlayLogExists = Test-Path -LiteralPath $autoSlayLogCandidate -PathType Leaf
+    $runtimeMonkeyRunArtifactsTrustedForOwner = $true
+    $runtimeMonkeyProbeArtifactTrustedForOwner = $true
+    $autoSlayRunArtifactsTrustedForOwner = -not $isGameNativeAutoSlay
+    $autoSlayProbeArtifactTrustedForOwner = -not $isGameNativeAutoSlay
+    $autoSlayAuditArtifactTrustedForOwner = -not $isGameNativeAutoSlay
+    $autoSlaySts1ModeArtifactTrustedForOwner = -not $isGameNativeAutoSlay
+    if ($result -and -not $isGameNativeAutoSlay) {
+        $runtimeMonkeyRequiredArtifacts = @(
+            [pscustomobject]@{ Label = 'godot.log.before'; OutsideSignal = 'runtime_monkey_before_log_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_before_log_not_retained_file'; Path = $beforeLogCandidate; CanonicalPath = $canonicalBeforeLogCandidate; NextStep = 'Retain godot.log.before as the standard file in the iteration directory before using runtime-monkey log slices for owner routing.' },
+            [pscustomobject]@{ Label = 'godot.log.after-launch'; OutsideSignal = 'runtime_monkey_after_launch_log_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_after_launch_log_not_retained_file'; Path = $fullLogCandidate; CanonicalPath = $canonicalFullLogCandidate; NextStep = 'Retain godot.log.after-launch as the standard file in the iteration directory before using runtime-monkey log slices for owner routing.' },
+            [pscustomobject]@{ Label = 'godot.log.current-iteration'; OutsideSignal = 'runtime_monkey_current_iteration_log_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_current_iteration_log_not_retained_file'; Path = $currentIterationLogCandidate; CanonicalPath = $canonicalCurrentIterationLogCandidate; NextStep = 'Retain godot.log.current-iteration as the standard file in the iteration directory before using runtime-monkey log lines for owner routing.' },
+            [pscustomobject]@{ Label = 'runtime-probe-samples.json'; OutsideSignal = 'runtime_monkey_runtime_probe_samples_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_runtime_probe_samples_not_retained_file'; Path = $probeSamplesCandidate; CanonicalPath = $canonicalProbeSamplesCandidate; NextStep = 'Retain runtime-probe-samples.json as the standard file in the iteration directory before using runtime-monkey probe telemetry for triage.' }
+        )
+
+        foreach ($artifact in $runtimeMonkeyRequiredArtifacts) {
+            $artifactPath = [string]$artifact.Path
+            if ([string]::IsNullOrWhiteSpace($artifactPath)) {
+                $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
+                    $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                }
+
+                continue
+            }
+
+            $artifactInsideIteration = Test-PathInsideDirectory -Path $artifactPath -Directory $Directory
+            $artifactFullPath = ConvertTo-NormalizedPathOrEmpty -Path $artifactPath
+            $canonicalFullPath = ConvertTo-NormalizedPathOrEmpty -Path ([string]$artifact.CanonicalPath)
+            $artifactMatchesCanonical = -not [string]::IsNullOrWhiteSpace($artifactFullPath) -and
+                -not [string]::IsNullOrWhiteSpace($canonicalFullPath) -and
+                [System.StringComparer]::OrdinalIgnoreCase.Equals($artifactFullPath, $canonicalFullPath)
+            if (-not $artifactInsideIteration -or -not $artifactMatchesCanonical) {
+                $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
+                    $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                }
+
+                if (-not $artifactInsideIteration) {
+                    Add-Finding -Findings $findings -Signal ([string]$artifact.OutsideSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey $($artifact.Label) resolved outside the per-iteration evidence directory." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
+                } else {
+                    Add-Finding -Findings $findings -Signal ([string]$artifact.NonCanonicalSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey $($artifact.Label) did not resolve to the retained standard iteration file." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
+                }
+            }
+        }
+    }
+    if ($isGameNativeAutoSlay -and $result) {
+        $autoSlayRunArtifactsTrustedForOwner = $RunResultPathInsideEvidenceDir
+        $autoSlayProbeArtifactTrustedForOwner = $true
+        $autoSlayAuditArtifactTrustedForOwner = $true
+        $autoSlaySts1ModeArtifactTrustedForOwner = $true
+        if (-not $RunResultPathInsideEvidenceDir) {
+            Add-Finding -Findings $findings -Signal 'autoslay_run_result_path_outside_evidence_dir' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay autoslay-summary.json RunResultPath resolved outside the retained evidence directory.' -NextStep 'Retain each run-result.json under the AutoSlay evidence root before analyzing per-seed artifacts or routing source ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+
+        $autoSlayRequiredArtifacts = @(
+            [pscustomobject]@{ Label = 'godot.log.before'; FieldName = 'GodotLogBeforePath'; Signal = 'autoslay_before_log_outside_run_dir'; Path = $beforeLogCandidate; NextStep = 'Retain godot.log.before beside run-result.json before using AutoSlay log slices for owner routing.' },
+            [pscustomobject]@{ Label = 'godot.log.after-launch'; FieldName = 'GodotLogAfterLaunchPath'; Signal = 'autoslay_after_launch_log_outside_run_dir'; Path = $fullLogCandidate; NextStep = 'Retain godot.log.after-launch beside run-result.json before using AutoSlay log slices for owner routing.' },
+            [pscustomobject]@{ Label = 'godot.log.current-iteration'; FieldName = 'GodotLogCurrentIterationPath'; Signal = 'autoslay_current_iteration_log_outside_run_dir'; Path = $currentIterationLogCandidate; NextStep = 'Retain godot.log.current-iteration beside run-result.json before using AutoSlay log lines for owner routing.' },
+            [pscustomobject]@{ Label = 'runtime-probe-samples.json'; FieldName = 'RuntimeProbeSamplesPath'; Signal = 'autoslay_runtime_probe_samples_outside_run_dir'; Path = $probeSamplesCandidate; NextStep = 'Retain runtime-probe-samples.json beside run-result.json before using AutoSlay probe telemetry for triage.' },
+            [pscustomobject]@{ Label = 'godot-log-audit.json'; FieldName = 'GodotLogAuditPath'; Signal = 'autoslay_godot_log_audit_outside_run_dir'; Path = $auditCandidate; NextStep = 'Retain godot-log-audit.json beside run-result.json before using audit signatures for owner routing.' },
+            [pscustomobject]@{ Label = 'sts1-mode-log-check.json'; FieldName = 'Sts1ModeLogCheckPath'; Signal = 'autoslay_sts1_mode_log_check_outside_run_dir'; Path = $sts1ModeCandidate; NextStep = 'Retain sts1-mode-log-check.json beside run-result.json before using StS1 mode evidence for owner routing.' },
+            [pscustomobject]@{ Label = 'autoslay.log'; FieldName = 'AutoSlayLogPath'; Signal = 'autoslay_sidecar_log_outside_run_dir'; Path = $autoSlayLogCandidate; NextStep = 'Retain autoslay.log beside run-result.json before using sidecar log lines for owner routing.' }
+        )
+
+        foreach ($artifact in $autoSlayRequiredArtifacts) {
+            $artifactPath = [string]$artifact.Path
+            $artifactFieldRetained = Test-JsonProperty -Object $result -Name ([string]$artifact.FieldName)
+            if ([string]::IsNullOrWhiteSpace($artifactPath)) {
+                if (-not $artifactFieldRetained) {
+                    continue
+                }
+
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayProbeArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'godot-log-audit.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                }
+
+                continue
+            }
+
+            $artifactExists = $false
+            try {
+                $artifactExists = Test-Path -LiteralPath $artifactPath -PathType Leaf
+            } catch {
+                $artifactExists = $false
+            }
+
+            if (-not $artifactExists) {
+                if (-not $artifactFieldRetained) {
+                    continue
+                }
+
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayProbeArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'godot-log-audit.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                }
+
+                continue
+            }
+
+            if (-not (Test-PathInsideDirectory -Path $artifactPath -Directory $Directory)) {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayProbeArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'godot-log-audit.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                }
+                if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
+                    $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                }
+
+                Add-Finding -Findings $findings -Signal ([string]$artifact.Signal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay $($artifact.Label) resolved outside the per-seed run evidence directory." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+        }
+    }
+    $currentIterationLogExists = -not [string]::IsNullOrWhiteSpace($currentIterationLogCandidate) -and (Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf)
+    $beforeLogExists = -not [string]::IsNullOrWhiteSpace($beforeLogCandidate) -and (Test-Path -LiteralPath $beforeLogCandidate -PathType Leaf)
+    $fullLogExists = -not [string]::IsNullOrWhiteSpace($fullLogCandidate) -and (Test-Path -LiteralPath $fullLogCandidate -PathType Leaf)
+    $autoSlayLogExists = -not [string]::IsNullOrWhiteSpace($autoSlayLogCandidate) -and (Test-Path -LiteralPath $autoSlayLogCandidate -PathType Leaf)
     $autoSlayLogText = if ($autoSlayLogExists) { Get-Content -LiteralPath $autoSlayLogCandidate -Raw -Encoding UTF8 } else { '' }
     $autoSlaySidecarTrustedForOwner = -not $isGameNativeAutoSlay
     if ($isGameNativeAutoSlay) {
@@ -933,10 +1084,14 @@ function Analyze-Iteration {
                 foreach ($metadataCheck in $logMetadataChecks) {
                     $recordedLength = [long](Get-JsonValue -Object $result -Name $metadataCheck.LengthField -DefaultValue -1)
                     $recordedSha256 = [string](Get-JsonValue -Object $result -Name $metadataCheck.ShaField -DefaultValue '')
+                    $metadataPath = [string]$metadataCheck.Path
+                    $metadataPathExists = -not [string]::IsNullOrWhiteSpace($metadataPath) -and (Test-Path -LiteralPath $metadataPath -PathType Leaf)
                     if (-not (Test-JsonProperty -Object $result -Name $metadataCheck.LengthField) -or $recordedLength -lt 0) {
                         $missingLogMetadata.Add($metadataCheck.LengthField) | Out-Null
+                    } elseif (-not $metadataPathExists) {
+                        $mismatchedLogMetadata.Add("$($metadataCheck.LengthField): retained file missing") | Out-Null
                     } else {
-                        $actualLength = [long](Get-Item -LiteralPath $metadataCheck.Path).Length
+                        $actualLength = [long](Get-Item -LiteralPath $metadataPath).Length
                         if ($recordedLength -ne $actualLength) {
                             $mismatchedLogMetadata.Add("$($metadataCheck.LengthField): recorded=$recordedLength actual=$actualLength") | Out-Null
                         }
@@ -945,7 +1100,7 @@ function Analyze-Iteration {
                     if ([string]::IsNullOrWhiteSpace($recordedSha256)) {
                         $missingLogMetadata.Add($metadataCheck.ShaField) | Out-Null
                     } else {
-                        $actualSha256 = Get-FileSha256OrEmpty -Path $metadataCheck.Path
+                        $actualSha256 = if ($metadataPathExists) { Get-FileSha256OrEmpty -Path $metadataPath } else { '' }
                         if (-not [System.StringComparer]::OrdinalIgnoreCase.Equals($recordedSha256, $actualSha256)) {
                             $mismatchedLogMetadata.Add("$($metadataCheck.ShaField): recorded=$recordedSha256 actual=$actualSha256") | Out-Null
                         }
@@ -963,7 +1118,7 @@ function Analyze-Iteration {
                 }
             }
 
-            $logTextTrustedForOwner = [bool]$sliceBinding.SliceMatches -and $offsetMatchesBeforeLength -and $autoSlayLogMetadataMatches
+            $logTextTrustedForOwner = [bool]$sliceBinding.SliceMatches -and $offsetMatchesBeforeLength -and $autoSlayLogMetadataMatches -and $autoSlayRunArtifactsTrustedForOwner -and $runtimeMonkeyRunArtifactsTrustedForOwner
             if (-not [bool]$sliceBinding.SliceMatches) {
                 $nextStep = if ($isGameNativeAutoSlay) {
                     'Use only byte-bound current-iteration slices for AutoSlay source routing, then fix evidence retention before trusting packet evidence.'
@@ -981,7 +1136,7 @@ function Analyze-Iteration {
                     -EvidenceFiles $evidenceFiles
             }
         }
-    } elseif (Test-Path -LiteralPath $logCandidate -PathType Leaf) {
+    } elseif (-not [string]::IsNullOrWhiteSpace($logCandidate) -and (Test-Path -LiteralPath $logCandidate -PathType Leaf)) {
         $logText = Get-Content -LiteralPath $logCandidate -Raw -Encoding UTF8
     }
 
@@ -1064,6 +1219,8 @@ function Analyze-Iteration {
                 -NextStep 'Fix AutoSlay process/window/log sampling retention before routing this packet to gameplay source.' `
                 -Confidence 'high' `
                 -EvidenceFiles $evidenceFiles
+        } elseif ($isGameNativeAutoSlay -and -not $autoSlayProbeArtifactTrustedForOwner) {
+            # The containment finding above is enough; do not classify probe health from a shared/root artifact.
         } else {
             try {
                 $probeSamplesParsed = Get-Content -LiteralPath $probeSamplesCandidate -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -1078,6 +1235,15 @@ function Analyze-Iteration {
                     'MainWindowObserved',
                     'HungWindow',
                     'Responding',
+                    'ProcessStartTimeUtc',
+                    'ProcessPath',
+                    'ExpectedGameProcessId',
+                    'ExpectedGameProcessStartTimeUtc',
+                    'ExpectedGameProcessPath',
+                    'ProcessIdMatchesExpected',
+                    'ProcessStartTimeMatchesExpected',
+                    'ProcessPathMatchesExpected',
+                    'ProcessIdentityMatchesExpected',
                     'StaleProcessCount',
                     'CurrentProcessCount',
                     'UnknownStartTimeProcessCount',
@@ -1164,12 +1330,67 @@ function Analyze-Iteration {
                         ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ProcessId' -DefaultValue 0) } |
                         Where-Object { $_ -gt 0 } |
                         Sort-Object -Unique)
+                    $observedProcessStartTimes = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object {
+                            $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ProcessStartTimeUtc' -DefaultValue ''))
+                            if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
+                        } |
+                        Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                        Sort-Object -Unique)
+                    $observedProcessPaths = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ProcessPath' -DefaultValue '')) } |
+                        Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                        Sort-Object -Unique)
+                    $observedExpectedProcessIds = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessId' -DefaultValue 0) } |
+                        Where-Object { $_ -gt 0 } |
+                        Sort-Object -Unique)
+                    $observedExpectedProcessStartTimes = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object {
+                            $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessStartTimeUtc' -DefaultValue ''))
+                            if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
+                        } |
+                        Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                        Sort-Object -Unique)
+                    $observedExpectedProcessPaths = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessPath' -DefaultValue '')) } |
+                        Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                        Sort-Object -Unique)
+                    $identityMismatchProbeSamples = @($probeSamples | Where-Object {
+                        [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
+                        (-not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
+                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
+                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
+                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
+                    })
                     if ($observedProcessIds.Count -ne 1) {
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_identity_unstable' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime probe samples must bind to exactly one positive process id; observed count=$($observedProcessIds.Count)." -NextStep 'Fix AutoSlay process selection and stale-process rejection before trusting this packet.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     } elseif ($result) {
                         $resultProcessId = [int](Get-JsonValue -Object $result -Name 'ProcessId' -DefaultValue 0)
-                        if ($resultProcessId -le 0 -or $observedProcessIds[0] -ne $resultProcessId) {
-                            Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_id_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime probe samples bind to process id $($observedProcessIds[0]), but run-result.json records ProcessId=$resultProcessId." -NextStep 'Fix AutoSlay process/result PID binding before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        $resultProcessStartTimeParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $result -Name 'ProcessStartTimeUtc' -DefaultValue ''))
+                        $resultProcessStartTime = if ([bool]$resultProcessStartTimeParse.Parsed) { $resultProcessStartTimeParse.Value.ToString('o') } else { '' }
+                        $resultProcessPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $result -Name 'ProcessPath' -DefaultValue ''))
+                        $identityDefects = [System.Collections.Generic.List[string]]::new()
+                        if ($resultProcessId -le 0) { $identityDefects.Add('run-result ProcessId missing') | Out-Null }
+                        if (-not [bool]$resultProcessStartTimeParse.Parsed) { $identityDefects.Add('run-result ProcessStartTimeUtc missing or invalid') | Out-Null }
+                        if ([string]::IsNullOrWhiteSpace($resultProcessPath)) { $identityDefects.Add('run-result ProcessPath missing') | Out-Null }
+                        if ($observedProcessIds.Count -ne 1 -or $observedProcessIds[0] -ne $resultProcessId) { $identityDefects.Add("probe ProcessId values=$($observedProcessIds -join ',') result=$resultProcessId") | Out-Null }
+                        if ($observedProcessStartTimes.Count -ne 1 -or -not [string]::Equals([string]$observedProcessStartTimes[0], $resultProcessStartTime, [System.StringComparison]::Ordinal)) { $identityDefects.Add("probe ProcessStartTimeUtc values=$($observedProcessStartTimes -join ',') result=$resultProcessStartTime") | Out-Null }
+                        if ($observedProcessPaths.Count -ne 1 -or -not [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$observedProcessPaths[0], $resultProcessPath)) { $identityDefects.Add("probe ProcessPath values=$($observedProcessPaths -join ',') result=$resultProcessPath") | Out-Null }
+                        if ($observedExpectedProcessIds.Count -ne 1 -or $observedExpectedProcessIds[0] -ne $resultProcessId) { $identityDefects.Add("probe ExpectedGameProcessId values=$($observedExpectedProcessIds -join ',') result=$resultProcessId") | Out-Null }
+                        if ($observedExpectedProcessStartTimes.Count -ne 1 -or -not [string]::Equals([string]$observedExpectedProcessStartTimes[0], $resultProcessStartTime, [System.StringComparison]::Ordinal)) { $identityDefects.Add("probe ExpectedGameProcessStartTimeUtc values=$($observedExpectedProcessStartTimes -join ',') result=$resultProcessStartTime") | Out-Null }
+                        if ($observedExpectedProcessPaths.Count -ne 1 -or -not [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$observedExpectedProcessPaths[0], $resultProcessPath)) { $identityDefects.Add("probe ExpectedGameProcessPath values=$($observedExpectedProcessPaths -join ',') result=$resultProcessPath") | Out-Null }
+                        if ($identityMismatchProbeSamples.Count -gt 0) { $identityDefects.Add("ProcessIdentityMatchesExpected false count=$($identityMismatchProbeSamples.Count)") | Out-Null }
+                        if ($identityDefects.Count -gt 0) {
+                            $autoSlayRunArtifactsTrustedForOwner = $false
+                            $autoSlayProbeArtifactTrustedForOwner = $false
+                            $logTextTrustedForOwner = $false
+                            Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_identity_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay runtime-probe-samples.json does not bind to run-result.json process identity: $($identityDefects -join '; ')." -NextStep 'Regenerate the AutoSlay packet with probe samples from the launched game process before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                         }
                     }
 
@@ -1354,6 +1575,9 @@ function Analyze-Iteration {
                 -NextStep 'Fix runtime-probe-samples.json retention and rerun the packet after validation lanes are unpaused.' `
                 -Confidence 'high' `
                 -EvidenceFiles $evidenceFiles
+        } elseif (-not $runtimeMonkeyProbeArtifactTrustedForOwner) {
+            $runtimeMonkeyProbeEvidenceInvalid = $true
+            # The containment finding above is enough; do not classify probe health from a shared/root artifact.
         } else {
             try {
                 $probeSamplesParsed = Get-Content -LiteralPath $probeSamplesCandidate -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -1439,6 +1663,73 @@ function Analyze-Iteration {
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_sample_count_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "PostCommandRuntime probe count does not match RuntimeObservation.Samples; expected=$runtimeObservationSampleCount actual=$($postCommandRuntimeProbeSamples.Count)." -NextStep 'Regenerate the packet with retained runtime probe samples that bind to RuntimeObservation.Samples.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
+                    $resultGameProcessId = [int](Get-JsonValue -Object $result -Name 'GameProcessId' -DefaultValue 0)
+                    $resultGameProcessStartParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $result -Name 'GameProcessStartTimeUtc' -DefaultValue ''))
+                    $resultGameProcessStartTime = if ([bool]$resultGameProcessStartParse.Parsed) { $resultGameProcessStartParse.Value.ToString('o') } else { '' }
+                    $resultGameProcessPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $result -Name 'GameProcessPath' -DefaultValue ''))
+                    $resultLiveSessionSelectedGameProcessId = [int](Get-JsonValue -Object $result -Name 'LiveSessionSelectedGameProcessId' -DefaultValue 0)
+                    $resultLiveSessionStartParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $result -Name 'LiveSessionSelectedGameProcessStartTimeUtc' -DefaultValue ''))
+                    $resultLiveSessionStartTime = if ([bool]$resultLiveSessionStartParse.Parsed) { $resultLiveSessionStartParse.Value.ToString('o') } else { '' }
+                    $resultLiveSessionPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $result -Name 'LiveSessionSelectedGameProcessPath' -DefaultValue ''))
+                    $observedProbeProcessIds = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ProcessId' -DefaultValue 0) } |
+                        Where-Object { $_ -gt 0 } |
+                        Sort-Object -Unique)
+                    $observedProbeStartTimes = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object {
+                            $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ProcessStartTimeUtc' -DefaultValue ''))
+                            if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
+                        } |
+                        Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                        Sort-Object -Unique)
+                    $observedProbePaths = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ProcessPath' -DefaultValue '')) } |
+                        Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                        Sort-Object -Unique)
+                    $observedProbeExpectedProcessIds = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessId' -DefaultValue 0) } |
+                        Where-Object { $_ -gt 0 } |
+                        Sort-Object -Unique)
+                    $observedProbeExpectedStartTimes = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object {
+                            $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessStartTimeUtc' -DefaultValue ''))
+                            if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
+                        } |
+                        Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                        Sort-Object -Unique)
+                    $observedProbeExpectedPaths = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessPath' -DefaultValue '')) } |
+                        Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                        Sort-Object -Unique)
+                    $identityMismatchProbeSamples = @($probeSamples | Where-Object {
+                        [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
+                        (-not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
+                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
+                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
+                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
+                    })
+                    $identityDefects = [System.Collections.Generic.List[string]]::new()
+                    if ($resultGameProcessId -le 0) { $identityDefects.Add('result GameProcessId missing') | Out-Null }
+                    if ([string]::IsNullOrWhiteSpace($resultGameProcessStartTime)) { $identityDefects.Add('result GameProcessStartTimeUtc missing') | Out-Null }
+                    if ([string]::IsNullOrWhiteSpace($resultGameProcessPath)) { $identityDefects.Add('result GameProcessPath missing') | Out-Null }
+                    if ($observedProbeProcessIds.Count -ne 1 -or $observedProbeProcessIds[0] -ne $resultGameProcessId) { $identityDefects.Add("probe ProcessId values=$($observedProbeProcessIds -join ',') result=$resultGameProcessId") | Out-Null }
+                    if ($observedProbeStartTimes.Count -ne 1 -or -not [string]::Equals([string]$observedProbeStartTimes[0], $resultGameProcessStartTime, [System.StringComparison]::Ordinal)) { $identityDefects.Add("probe ProcessStartTimeUtc values=$($observedProbeStartTimes -join ',') result=$resultGameProcessStartTime") | Out-Null }
+                    if ($observedProbePaths.Count -ne 1 -or -not [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$observedProbePaths[0], $resultGameProcessPath)) { $identityDefects.Add("probe ProcessPath values=$($observedProbePaths -join ',') result=$resultGameProcessPath") | Out-Null }
+                    if ($resultLiveSessionSelectedGameProcessId -gt 0 -and ($observedProbeExpectedProcessIds.Count -ne 1 -or $observedProbeExpectedProcessIds[0] -ne $resultLiveSessionSelectedGameProcessId)) { $identityDefects.Add("probe ExpectedGameProcessId values=$($observedProbeExpectedProcessIds -join ',') liveSession=$resultLiveSessionSelectedGameProcessId") | Out-Null }
+                    if (-not [string]::IsNullOrWhiteSpace($resultLiveSessionStartTime) -and ($observedProbeExpectedStartTimes.Count -ne 1 -or -not [string]::Equals([string]$observedProbeExpectedStartTimes[0], $resultLiveSessionStartTime, [System.StringComparison]::Ordinal))) { $identityDefects.Add("probe ExpectedGameProcessStartTimeUtc values=$($observedProbeExpectedStartTimes -join ',') liveSession=$resultLiveSessionStartTime") | Out-Null }
+                    if (-not [string]::IsNullOrWhiteSpace($resultLiveSessionPath) -and ($observedProbeExpectedPaths.Count -ne 1 -or -not [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$observedProbeExpectedPaths[0], $resultLiveSessionPath))) { $identityDefects.Add("probe ExpectedGameProcessPath values=$($observedProbeExpectedPaths -join ',') liveSession=$resultLiveSessionPath") | Out-Null }
+                    if ($identityMismatchProbeSamples.Count -gt 0) { $identityDefects.Add("ProcessIdentityMatchesExpected false count=$($identityMismatchProbeSamples.Count)") | Out-Null }
+                    if ($identityDefects.Count -gt 0) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_process_identity_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey runtime-probe-samples.json does not bind to iteration-result.json/live-session process identity: $($identityDefects -join '; ')." -NextStep 'Regenerate the packet with probe samples from the live-session-selected game process before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
                     $runtimeObservationLogGrowthRequired = if ($null -ne $runtimeObservation) { [bool](Get-JsonValue -Object $runtimeObservation -Name 'RuntimeLogGrowthRequired' -DefaultValue $false) } else { $false }
                     $runtimeObservationLogGrew = if ($null -ne $runtimeObservation) { [bool](Get-JsonValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false) } else { $false }
                     $runtimeObservationInitialLogLength = if ($null -ne $runtimeObservation) { [long](Get-JsonValue -Object $runtimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1) } else { -1L }
@@ -1485,7 +1776,7 @@ function Analyze-Iteration {
     $logOwnerArea = Get-OwnerAreaFromText -Text $ownerLogText -Command ''
     $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
 
-    $auditExists = Test-Path -LiteralPath $auditCandidate -PathType Leaf
+    $auditExists = -not [string]::IsNullOrWhiteSpace($auditCandidate) -and (Test-Path -LiteralPath $auditCandidate -PathType Leaf)
     $auditJsonValid = (-not $auditExists) -or (Test-JsonFileParses -Path $auditCandidate)
     $auditData = if ($auditExists -and $auditJsonValid) { Read-JsonOrNull -Path $auditCandidate } else { $null }
     $auditSummary = if ($null -ne $auditData) { ConvertTo-AuditSummary -Audit $auditData } else { $null }
@@ -1605,8 +1896,10 @@ function Analyze-Iteration {
                         [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], [string]$recomputedAuditSha256s[0])
 
                     if ($auditMatchesRecomputed) {
-                        $auditTrustedForOwner = $true
-                        $auditHits = Get-AuditHits -AuditItems @($recomputedAudit)
+                        if ($autoSlayRunArtifactsTrustedForOwner -and $autoSlayAuditArtifactTrustedForOwner -and $runtimeMonkeyRunArtifactsTrustedForOwner) {
+                            $auditTrustedForOwner = $true
+                            $auditHits = Get-AuditHits -AuditItems @($recomputedAudit)
+                        }
                     } else {
                         Add-Finding `
                             -Findings $findings `
@@ -1774,7 +2067,9 @@ function Analyze-Iteration {
             -EvidenceFiles $evidenceFiles
     }
 
-    if (Test-Path -LiteralPath $sts1ModeCandidate -PathType Leaf) {
+            if ((-not $isGameNativeAutoSlay -or $autoSlaySts1ModeArtifactTrustedForOwner) -and
+                -not [string]::IsNullOrWhiteSpace($sts1ModeCandidate) -and
+                (Test-Path -LiteralPath $sts1ModeCandidate -PathType Leaf)) {
         $sts1Report = Read-JsonOrNull -Path $sts1ModeCandidate
         $sts1Mismatches = if ($sts1Report) { Get-JsonArrayValues -Object $sts1Report -Name 'Mismatches' } else { [System.Collections.Generic.List[object]]::new() }
         if ($sts1Mismatches.Count -gt 0) {
@@ -1832,7 +2127,9 @@ function Analyze-Iteration {
         OwnerAreaHint = $resultOwnerArea
         OwnerAreaFromLog = $logOwnerArea
         LogTextTrustedForOwner = $logTextTrustedForOwner
+        RuntimeMonkeyRunArtifactsTrustedForOwner = $runtimeMonkeyRunArtifactsTrustedForOwner
         AutoSlaySidecarTrustedForOwner = $autoSlaySidecarTrustedForOwner
+        AutoSlayRunArtifactsTrustedForOwner = $autoSlayRunArtifactsTrustedForOwner
         OwnerAreaFromCommand = $commandOwnerArea
         Signals = @($signals)
         EvidenceFiles = @($evidenceFiles)
@@ -1881,16 +2178,19 @@ if ($IterationDir) {
             }
 
             $runResultPath = Resolve-AnalysisPath -BaseDir $evidenceFull -Path ([string](Get-JsonValue -Object $run -Name 'RunResultPath' -DefaultValue ('run-{0:D4}/run-result.json' -f $runIndex)))
-            $runDirectory = [System.IO.Path]::GetDirectoryName($runResultPath)
+            $runResultPathInsideEvidenceDir = Test-PathInsideDirectory -Path $runResultPath -Directory $evidenceFull
+            $runDirectory = if ($runResultPathInsideEvidenceDir) { [System.IO.Path]::GetDirectoryName($runResultPath) } else { Join-Path $evidenceFull ('run-{0:D4}' -f $runIndex) }
             if ([string]::IsNullOrWhiteSpace($runDirectory)) {
                 $runDirectory = Join-Path $evidenceFull ('run-{0:D4}' -f $runIndex)
             }
+            $runResultFileName = if ($runResultPathInsideEvidenceDir) { [System.IO.Path]::GetFileName($runResultPath) } else { 'run-result.json' }
 
             $analysisTargets += [pscustomobject]@{
                 Directory = $runDirectory
                 SummaryResult = $run
-                ResultFileName = [System.IO.Path]::GetFileName($runResultPath)
+                ResultFileName = $runResultFileName
                 DefaultIteration = $runIndex
+                RunResultPathInsideEvidenceDir = $runResultPathInsideEvidenceDir
             }
         }
     } else {
@@ -1943,7 +2243,8 @@ if ($IterationDir) {
 }
 
 $iterationReports = foreach ($target in $analysisTargets) {
-    Analyze-Iteration -Directory $target.Directory -SummaryResult $target.SummaryResult -ResultFileName $target.ResultFileName -DefaultIteration $target.DefaultIteration
+    $runResultPathInsideEvidenceDir = if ($null -ne $target.PSObject.Properties['RunResultPathInsideEvidenceDir']) { [bool]$target.RunResultPathInsideEvidenceDir } else { $true }
+    Analyze-Iteration -Directory $target.Directory -SummaryResult $target.SummaryResult -ResultFileName $target.ResultFileName -DefaultIteration $target.DefaultIteration -RunResultPathInsideEvidenceDir $runResultPathInsideEvidenceDir
 }
 
 $allFindings = @($iterationReports | ForEach-Object { @($_.Findings) })

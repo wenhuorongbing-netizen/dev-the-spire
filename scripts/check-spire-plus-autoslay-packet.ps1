@@ -146,6 +146,16 @@ function Resolve-ChildOrAbsolutePath {
     return [System.IO.Path]::GetFullPath((Join-Path $BaseDir $Path))
 }
 
+function ConvertTo-NormalizedPathOrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return ''
+    }
+
+    return [System.IO.Path]::GetFullPath($Path)
+}
+
 function Test-PathInsideDirectory {
     param(
         [AllowEmptyString()][string]$Path,
@@ -685,6 +695,7 @@ $missingPlanExpectedAncientIds = @()
 $unexpectedPlanExpectedAncientIds = @()
 $observedAncientIds = @()
 $missingExpectedAncientIds = @()
+Add-Check -Name 'expected_ancient_ids_required_for_proof_mode' -Passed (-not $FailOnMismatch -or $expectedAncientIdsForCoverage.Count -gt 0) -Detail 'AutoSlay proof packets must be checked with -ExpectedAncientIds when -FailOnMismatch is used'
 if ($expectedAncientIdTokens.Count -gt 0) {
     Add-Check -Name 'expected_ancient_ids_all_non_empty' -Passed ($expectedAncientIdsForCoverage.Count -eq $expectedAncientIdTokens.Count) -Detail 'ExpectedAncientIds entries must be non-empty when supplied'
     Add-Check -Name 'expected_ancient_ids_unique' -Passed ($duplicateExpectedAncientIds.Count -eq 0) -Detail "ExpectedAncientIds must be unique; duplicate groups=$($duplicateExpectedAncientIds.Count)"
@@ -777,6 +788,12 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $auditExists = -not [string]::IsNullOrWhiteSpace($auditPath) -and (Test-Path -LiteralPath $auditPath -PathType Leaf)
     $sts1ModeCheckExists = -not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath) -and (Test-Path -LiteralPath $sts1ModeCheckPath -PathType Leaf)
     $observedRuntimeProbeProcessIds = @()
+    $observedRuntimeProbeStartTimes = @()
+    $observedRuntimeProbePaths = @()
+    $observedRuntimeProbeExpectedProcessIds = @()
+    $observedRuntimeProbeExpectedStartTimes = @()
+    $observedRuntimeProbeExpectedPaths = @()
+    $identityMismatchRuntimeProbeSamples = @()
     $runtimeProbeRuntimeMaxLogLength = -1L
 
     Add-Check -Name "${runName}_seed_present" -Passed (-not [string]::IsNullOrWhiteSpace($seed)) -Detail 'each AutoSlay run must retain its seed'
@@ -877,6 +894,15 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_runtime_probe_samples_main_menu_phase_observed" -Passed (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'main-menu') -Detail 'runtime-probe-samples.json must include at least one main-menu phase sample'
             Add-Check -Name "${runName}_runtime_probe_samples_runtime_phase_observed" -Passed (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'runtime') -Detail 'runtime-probe-samples.json must include at least one runtime phase sample'
             Add-Check -Name "${runName}_runtime_probe_samples_process_id_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -Detail 'every probe sample must retain ProcessId'
+            Add-Check -Name "${runName}_runtime_probe_samples_process_start_time_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessStartTimeUtc') -Detail 'every probe sample must retain ProcessStartTimeUtc'
+            Add-Check -Name "${runName}_runtime_probe_samples_process_path_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessPath') -Detail 'every probe sample must retain ProcessPath'
+            Add-Check -Name "${runName}_runtime_probe_samples_expected_process_id_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ExpectedGameProcessId') -Detail 'every probe sample must retain ExpectedGameProcessId'
+            Add-Check -Name "${runName}_runtime_probe_samples_expected_process_start_time_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ExpectedGameProcessStartTimeUtc') -Detail 'every probe sample must retain ExpectedGameProcessStartTimeUtc'
+            Add-Check -Name "${runName}_runtime_probe_samples_expected_process_path_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ExpectedGameProcessPath') -Detail 'every probe sample must retain ExpectedGameProcessPath'
+            Add-Check -Name "${runName}_runtime_probe_samples_process_id_match_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessIdMatchesExpected') -Detail 'every probe sample must retain ProcessIdMatchesExpected'
+            Add-Check -Name "${runName}_runtime_probe_samples_process_start_time_match_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessStartTimeMatchesExpected') -Detail 'every probe sample must retain ProcessStartTimeMatchesExpected'
+            Add-Check -Name "${runName}_runtime_probe_samples_process_path_match_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessPathMatchesExpected') -Detail 'every probe sample must retain ProcessPathMatchesExpected'
+            Add-Check -Name "${runName}_runtime_probe_samples_process_identity_match_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessIdentityMatchesExpected') -Detail 'every probe sample must retain ProcessIdentityMatchesExpected'
             Add-Check -Name "${runName}_runtime_probe_samples_process_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -Detail 'every probe sample must retain ProcessObserved'
             Add-Check -Name "${runName}_runtime_probe_samples_main_window_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -Detail 'every probe sample must retain MainWindowObserved'
             Add-Check -Name "${runName}_runtime_probe_samples_hung_window_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -Detail 'every probe sample must retain HungWindow'
@@ -903,6 +929,50 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                 Where-Object { $_ -gt 0 } |
                 Sort-Object -Unique)
             Add-Check -Name "${runName}_runtime_probe_samples_single_positive_process_id" -Passed ($observedRuntimeProbeProcessIds.Count -eq 1) -Detail "observed probe samples must bind to one positive process id; count=$($observedRuntimeProbeProcessIds.Count)"
+            $observedRuntimeProbeStartTimes = @($probeSamples |
+                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                ForEach-Object {
+                    $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ProcessStartTimeUtc' -DefaultValue ''))
+                    if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
+                } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                Sort-Object -Unique)
+            $observedRuntimeProbePaths = @($probeSamples |
+                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ProcessPath' -DefaultValue '')) } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                Sort-Object -Unique)
+            $observedRuntimeProbeExpectedProcessIds = @($probeSamples |
+                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessId' -DefaultValue 0) } |
+                Where-Object { $_ -gt 0 } |
+                Sort-Object -Unique)
+            $observedRuntimeProbeExpectedStartTimes = @($probeSamples |
+                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                ForEach-Object {
+                    $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessStartTimeUtc' -DefaultValue ''))
+                    if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
+                } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                Sort-Object -Unique)
+            $observedRuntimeProbeExpectedPaths = @($probeSamples |
+                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessPath' -DefaultValue '')) } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                Sort-Object -Unique)
+            $identityMismatchRuntimeProbeSamples = @($probeSamples | Where-Object {
+                [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
+                (-not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
+                    -not [bool](Get-JsonValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
+                    -not [bool](Get-JsonValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
+                    -not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
+            })
+            Add-Check -Name "${runName}_runtime_probe_samples_single_process_start_time" -Passed ($observedRuntimeProbeStartTimes.Count -eq 1) -Detail "observed probe samples must bind to one process start time; count=$($observedRuntimeProbeStartTimes.Count) values=$($observedRuntimeProbeStartTimes -join ',')"
+            Add-Check -Name "${runName}_runtime_probe_samples_single_process_path" -Passed ($observedRuntimeProbePaths.Count -eq 1) -Detail "observed probe samples must bind to one process path; count=$($observedRuntimeProbePaths.Count) values=$($observedRuntimeProbePaths -join ',')"
+            Add-Check -Name "${runName}_runtime_probe_samples_single_expected_process_id" -Passed ($observedRuntimeProbeExpectedProcessIds.Count -eq 1) -Detail "observed probe samples must bind to one expected process id; count=$($observedRuntimeProbeExpectedProcessIds.Count) values=$($observedRuntimeProbeExpectedProcessIds -join ',')"
+            Add-Check -Name "${runName}_runtime_probe_samples_single_expected_process_start_time" -Passed ($observedRuntimeProbeExpectedStartTimes.Count -eq 1) -Detail "observed probe samples must bind to one expected process start time; count=$($observedRuntimeProbeExpectedStartTimes.Count) values=$($observedRuntimeProbeExpectedStartTimes -join ',')"
+            Add-Check -Name "${runName}_runtime_probe_samples_single_expected_process_path" -Passed ($observedRuntimeProbeExpectedPaths.Count -eq 1) -Detail "observed probe samples must bind to one expected process path; count=$($observedRuntimeProbeExpectedPaths.Count) values=$($observedRuntimeProbeExpectedPaths -join ',')"
+            Add-Check -Name "${runName}_runtime_probe_samples_all_match_expected_identity" -Passed ($identityMismatchRuntimeProbeSamples.Count -eq 0) -Detail 'observed probe samples must report ProcessIdMatchesExpected, ProcessStartTimeMatchesExpected, ProcessPathMatchesExpected, and ProcessIdentityMatchesExpected as true'
             $runtimeProbeLogLengths = @($probeSamples |
                 Where-Object {
                     [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'runtime', [System.StringComparison]::Ordinal) -and
@@ -1074,8 +1144,18 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_run_result_failure_reason_codes_match_summary" -Passed ([string]::Equals([string]::Join("`n", @($summaryFailureReasonCodes | ForEach-Object { [string]$_ })), [string]::Join("`n", @($resultFailureReasonCodes | ForEach-Object { [string]$_ })), [System.StringComparison]::Ordinal)) -Detail 'run-result.json FailureReasonCodes must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_hang_signals_match_summary" -Passed ([string]::Equals([string]::Join("`n", @($summaryHangSignals | ForEach-Object { [string]$_ })), [string]::Join("`n", @($resultHangSignals | ForEach-Object { [string]$_ })), [System.StringComparison]::Ordinal)) -Detail 'run-result.json HangSignals must match autoslay-summary.json'
             $resultProcessId = [int](Get-JsonValue -Object $runResult -Name 'ProcessId' -DefaultValue 0)
+            $resultProcessStartTimeParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $runResult -Name 'ProcessStartTimeUtc' -DefaultValue ''))
+            $resultProcessStartTimeText = if ([bool]$resultProcessStartTimeParse.Parsed) { $resultProcessStartTimeParse.Value.ToString('o') } else { '' }
+            $resultProcessPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $runResult -Name 'ProcessPath' -DefaultValue ''))
             Add-Check -Name "${runName}_run_result_process_id_positive" -Passed ($resultProcessId -gt 0) -Detail 'run-result.json must retain a positive launched process id'
+            Add-Check -Name "${runName}_run_result_process_start_time_parseable" -Passed ([bool]$resultProcessStartTimeParse.Parsed) -Detail 'run-result.json must retain parseable ProcessStartTimeUtc for the launched game process'
+            Add-Check -Name "${runName}_run_result_process_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($resultProcessPath)) -Detail 'run-result.json must retain ProcessPath for the launched game process'
             Add-Check -Name "${runName}_run_result_process_id_matches_runtime_probe_samples" -Passed ($observedRuntimeProbeProcessIds.Count -eq 1 -and $observedRuntimeProbeProcessIds[0] -eq $resultProcessId) -Detail "run-result.json ProcessId must match the single observed probe ProcessId; result=$resultProcessId observed=$($observedRuntimeProbeProcessIds -join ',')"
+            Add-Check -Name "${runName}_run_result_process_start_time_matches_runtime_probe_samples" -Passed ($observedRuntimeProbeStartTimes.Count -eq 1 -and -not [string]::IsNullOrWhiteSpace($resultProcessStartTimeText) -and [string]::Equals($observedRuntimeProbeStartTimes[0], $resultProcessStartTimeText, [System.StringComparison]::Ordinal)) -Detail "run-result.json ProcessStartTimeUtc must match the single observed probe ProcessStartTimeUtc; result=$resultProcessStartTimeText observed=$($observedRuntimeProbeStartTimes -join ',')"
+            Add-Check -Name "${runName}_run_result_process_path_matches_runtime_probe_samples" -Passed ($observedRuntimeProbePaths.Count -eq 1 -and -not [string]::IsNullOrWhiteSpace($resultProcessPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($observedRuntimeProbePaths[0], $resultProcessPath)) -Detail "run-result.json ProcessPath must match the single observed probe ProcessPath; result=$resultProcessPath observed=$($observedRuntimeProbePaths -join ',')"
+            Add-Check -Name "${runName}_runtime_probe_samples_expected_process_id_matches_run_result" -Passed ($observedRuntimeProbeExpectedProcessIds.Count -eq 1 -and $observedRuntimeProbeExpectedProcessIds[0] -eq $resultProcessId) -Detail "runtime-probe-samples.json ExpectedGameProcessId must match run-result.json ProcessId; result=$resultProcessId observed=$($observedRuntimeProbeExpectedProcessIds -join ',')"
+            Add-Check -Name "${runName}_runtime_probe_samples_expected_process_start_time_matches_run_result" -Passed ($observedRuntimeProbeExpectedStartTimes.Count -eq 1 -and -not [string]::IsNullOrWhiteSpace($resultProcessStartTimeText) -and [string]::Equals($observedRuntimeProbeExpectedStartTimes[0], $resultProcessStartTimeText, [System.StringComparison]::Ordinal)) -Detail "runtime-probe-samples.json ExpectedGameProcessStartTimeUtc must match run-result.json ProcessStartTimeUtc; result=$resultProcessStartTimeText observed=$($observedRuntimeProbeExpectedStartTimes -join ',')"
+            Add-Check -Name "${runName}_runtime_probe_samples_expected_process_path_matches_run_result" -Passed ($observedRuntimeProbeExpectedPaths.Count -eq 1 -and -not [string]::IsNullOrWhiteSpace($resultProcessPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($observedRuntimeProbeExpectedPaths[0], $resultProcessPath)) -Detail "runtime-probe-samples.json ExpectedGameProcessPath must match run-result.json ProcessPath; result=$resultProcessPath observed=$($observedRuntimeProbeExpectedPaths -join ',')"
             $startTimestampText = [string](Get-JsonValue -Object $runResult -Name 'StartTimestamp' -DefaultValue '')
             $endTimestampText = [string](Get-JsonValue -Object $runResult -Name 'EndTimestamp' -DefaultValue '')
             $startTimestampParse = ConvertTo-DateTimeOffsetParseResult -Text $startTimestampText

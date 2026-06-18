@@ -115,6 +115,72 @@ function Add-NoRegexCheck {
     Add-Check -Name $Name -Passed ($hits.Count -eq 0) -Detail $detail
 }
 
+function Add-AutoSlayProofCommandTargetCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string[]]$Paths
+    )
+
+    $hits = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($path in $Paths) {
+        $resolved = Resolve-RepoPath $path
+        if (-not (Test-Path -LiteralPath $resolved)) {
+            $hits.Add("${path}: missing file") | Out-Null
+            continue
+        }
+
+        $lines = [System.IO.File]::ReadAllLines($resolved)
+        $logicalLine = ''
+        $logicalStart = 1
+
+        for ($i = 0; $i -lt $lines.Length; $i++) {
+            $line = $lines[$i]
+            if ($logicalLine.Length -eq 0) {
+                $logicalStart = $i + 1
+            }
+
+            $trimmedRight = $line.TrimEnd()
+            $continues = $trimmedRight.EndsWith('`')
+            $segment = if ($continues) {
+                $trimmedRight.Substring(0, $trimmedRight.Length - 1)
+            } else {
+                $line
+            }
+
+            $logicalLine = if ($logicalLine.Length -eq 0) {
+                $segment
+            } else {
+                "$logicalLine $segment"
+            }
+
+            if ($continues) {
+                continue
+            }
+
+            $normalized = $logicalLine -replace '\s+', ' '
+            $isAutoSlayProofCommand =
+                [regex]::IsMatch($normalized, '^\s*\.\\scripts\\check-spire-plus-autoslay-packet\.ps1\b') -and
+                [regex]::IsMatch($normalized, '(?i)(^|\s)-FailOnMismatch(\s|$)')
+            $hasExpectedAncientIds = [regex]::IsMatch($normalized, '(?i)(^|\s)-ExpectedAncientIds(\s|$)')
+
+            if ($isAutoSlayProofCommand -and -not $hasExpectedAncientIds) {
+                $hits.Add("${path}:${logicalStart}: $normalized") | Out-Null
+            }
+
+            $logicalLine = ''
+        }
+    }
+
+    $detail = if ($hits.Count -eq 0) {
+        'AutoSlay proof commands in active docs include -ExpectedAncientIds'
+    } else {
+        "AutoSlay proof commands missing -ExpectedAncientIds: $($hits -join ' | ')"
+    }
+
+    Add-Check -Name $Name -Passed ($hits.Count -eq 0) -Detail $detail
+}
+
 $agents = Read-RepoText 'AGENTS.md'
 $projectState = Read-RepoText 'PROJECT_STATE.md'
 $rootReadme = Read-RepoText 'README.md'
@@ -353,8 +419,8 @@ Add-ContainsCheck -Name 'agents_current_beta87_additive_path' -Text $agents -Nee
 Add-ContainsCheck -Name 'agents_current_off_not_live_ready' -Text $agents -Needle 'Do not claim live-ready or release-ready because event encounter screenshots, save-load, image rendering, replacement functional proof, multiplayer fail-closed, independent QA rerun, and versioned tester-package handoff remain pending; recapture current HEAD/worktree before any later tester handoff.'
 Add-ContainsCheck -Name 'project_state_current_off_non_claim' -Text $projectState -Needle 'This is loader/registration proof only, not live gameplay or release readiness.'
 Add-ContainsCheck -Name 'project_state_sts1_enabled_modes_boundary' -Text $projectState -Needle 'Current `v0.107.0` beta.85/beta.86 loader proof remains previous-package context; current beta.87 AdditiveBatch1 loader proof is clean.'
-Add-ContainsCheck -Name 'project_state_autoslay_expected_ancient_ids_plan_summary' -Text $projectState -Needle 'requires `-ExpectedAncientIds` to match retained `autoslay-plan.json` `ExpectedAncientIds` and observed `autoslay-summary.json` Ancient ids'
-Add-ContainsCheck -Name 'project_state_pause_safe_current_doc_claims_1052' -Text $projectState -Needle 'current-doc claims 1052 / 0'
+Add-ContainsCheck -Name 'project_state_autoslay_expected_ancient_ids_plan_summary' -Text $projectState -Needle 'requires proof-mode `-ExpectedAncientIds` to be provided and to match retained `autoslay-plan.json` `ExpectedAncientIds` and observed `autoslay-summary.json` Ancient ids'
+Add-ContainsCheck -Name 'project_state_pause_safe_current_doc_claims_1090' -Text $projectState -Needle 'current-doc claims 1090 / 0'
 Add-ContainsCheck -Name 'project_state_v20_overlay_static_alignment' -Text $projectState -Needle 'StS1 no-launch current-doc claims passed 897 / 0, later superseded by the 941 / 0 no-launch current-doc guard after the v20 final-gate overlay, v20 hard-stop report, PROJECT_STATE static-summary alignment, and active current-guidance route alignment; runtime preflight passed 23 / 0, static suite passed 14 / 0, static-file hygiene passed 11 / 0, v19 gate ledger passed 531 / 0, and v19 subagent coverage passed 66 / 0 in the pushed slice. Later pause-safe static alignment passed static suite 15 / 0, current-doc claims 956 / 0 after tuple-aware enabled-mode log verifier, CanaryOnly current-pass, repo-manifest runtime-preflight drift guard alignment, beta.86 AdditiveBatch1 doc alignment, and retained-loader subagent split, static-file hygiene 11 / 0, v19 gate ledger 534 / 0, v20 final-gate overlay 29 / 0, and subagent coverage 70 / 0 without closing runtime, gameplay, QA, release, or handoff gates.'
 Add-ContainsCheck -Name 'root_readme_beta86_additive_path' -Text $rootReadme -Needle '.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/'
 Add-ContainsCheck -Name 'root_readme_historical_enabled_modes_only' -Text $rootReadme -Needle 'diagnostic Off, CanaryOnly, and AdditiveBatch1 loader smokes remain clean historical `v0.106.1` evidence only'
@@ -427,7 +493,7 @@ Add-ContainsCheck -Name 'goal_event_pause_static_work_boundary' -Text $goalEvent
 Add-RegexCheck -Name 'goal_event_downstream_pause_boundary' -Text $goalEventDoc -Pattern 'Runtime, gameplay, QA, build/test/publish'
 Add-RegexCheck -Name 'goal_event_direct_instruction_after_pause' -Text $goalEventDoc -Pattern 'coordination pause.{0,40}Mandatory Overnight Run v20'
 Add-ContainsCheck -Name 'goal_event_latest_pause_safe_static_checkpoint_20260618_autoslay' -Text $goalEventDoc -Needle 'Latest pause-safe static checkpoint after the runtime-monkey AutoSlay boundary/source-contract, packet-verifier, and analyzer hardening pass: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 1025 checks / 0 mismatches after the v20 subagent coverage'
-Add-ContainsCheck -Name 'goal_event_validation_matrix_current_doc_claims_1052' -Text $goalEventDoc -Needle 'current-doc-claims: 1052 checks / 0 mismatches'
+Add-ContainsCheck -Name 'goal_event_validation_matrix_current_doc_claims_1090' -Text $goalEventDoc -Needle 'current-doc-claims: 1090 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_v20_overlay_29' -Text $goalEventDoc -Needle 'v20 final-gate overlay: 29 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_runtime_preflight_27' -Text $goalEventDoc -Needle 'runtime-preflight: 27 checks / 0 mismatches (repo and installed package versions beta.86)'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_subagent_70' -Text $goalEventDoc -Needle 'v19 subagent coverage: 70 checks / 0 mismatches'
@@ -437,7 +503,8 @@ Add-ContainsCheck -Name 'goal_event_autoslay_batch_still_open' -Text $goalEventD
 Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_followup' -Text $goalEventDoc -Needle 'Latest pause-safe AutoSlay target-coverage follow-up'
 Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_nonclaim' -Text $goalEventDoc -Needle 'This improves future game-native monkey proof quality but remains static/verifier evidence only'
 Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_plan_match' -Text $goalEventDoc -Needle 'plan_expected_ancient_ids_match_parameter'
-Add-RegexCheck -Name 'goal_event_lower_audit_current_doc_claims_1052' -Text $goalEventDoc -Pattern '\| Current doc claims\s+\|[^\r\n]*1052 checks / 0 mismatches'
+Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_required_for_proof_mode' -Text $goalEventDoc -Needle 'expected_ancient_ids_required_for_proof_mode'
+Add-RegexCheck -Name 'goal_event_lower_audit_current_doc_claims_1090' -Text $goalEventDoc -Pattern '\| Current doc claims\s+\|[^\r\n]*1090 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_direct_localization_nonproof' -Text $goalEventDoc -Needle 'Fixing `STS1_GOLDEN_IDOL.pages.LEAVE.description` only removes the direct localization missing-key blocker'
 Add-ContainsCheck -Name 'goal_event_canary_loader_current_pass_section' -Text $goalEventDoc -Needle 'Current CanaryOnly loader registration proof can be treated as current-pass for `O25` and loader-packet `O39`.'
 Add-ContainsCheck -Name 'goal_event_off_canary_loader_nonextension_boundary' -Text $goalEventDoc -Needle 'Beta.85 Off, beta.85 CanaryOnly, and beta.87 AdditiveBatch1 loader proof must not be extended to:'
@@ -536,9 +603,12 @@ Add-ContainsCheck -Name 'scripts_readme_autoslay_packet_requires_passed_ancient_
 Add-ContainsCheck -Name 'scripts_readme_autoslay_packet_requires_timestamp_order' -Text $scriptsReadme -Needle 'parseable ordered start/end timestamps'
 Add-ContainsCheck -Name 'scripts_readme_autoslay_packet_requires_runtime_log_growth' -Text $scriptsReadme -Needle 'runtime `LogGrew=true`, runtime log initial/final length growth, and main-menu/runtime no-log-growth timeout rejection'
 Add-ContainsCheck -Name 'scripts_readme_autoslay_packet_requires_probe_phases' -Text $scriptsReadme -Needle 'both `main-menu` and `runtime` phases, runtime sample log-length growth beyond `RuntimeObservation.LogInitialLengthBytes`, plus `run-result.json` ProcessId binding'
-Add-ContainsCheck -Name 'scripts_readme_autoslay_packet_requires_expected_ancient_ids' -Text $scriptsReadme -Needle 'optional `-ExpectedAncientIds` plan/summary target coverage'
+Add-ContainsCheck -Name 'scripts_readme_autoslay_packet_requires_expected_ancient_ids' -Text $scriptsReadme -Needle 'required proof-mode `-ExpectedAncientIds` plan/summary target coverage'
 Add-ContainsCheck -Name 'scripts_readme_runtime_packet_requires_runtime_log_growth' -Text $scriptsReadme -Needle 'no main-menu/runtime log-growth timeout, command-bearing runtime `LogGrew=true` with `RuntimeLogGrowthRequired`'
+Add-ContainsCheck -Name 'scripts_readme_runtime_packet_rejects_iteration_escape_paths' -Text $scriptsReadme -Needle 'result log/probe paths resolve inside the current `iteration-####` directory and match the retained files'
 Add-ContainsCheck -Name 'scripts_readme_analyzer_reports_runtime_probe_log_growth_mismatch' -Text $scriptsReadme -Needle 'runtime `LogGrew` versus retained sample `LogLengthBytes` drift'
+Add-ContainsCheck -Name 'scripts_readme_analyzer_requires_runtime_monkey_iteration_local_paths' -Text $scriptsReadme -Needle 'runtime monkey result log/probe paths must resolve inside the per-iteration directory'
+Add-ContainsCheck -Name 'scripts_readme_analyzer_requires_runtime_monkey_retained_standard_files' -Text $scriptsReadme -Needle 'runtime monkey result log/probe paths must resolve inside the per-iteration directory and match the retained standard files'
 Add-ContainsCheck -Name 'scripts_readme_autoslay_packet_requires_current_slice_binding' -Text $scriptsReadme -Needle '`godot.log.before`, `godot.log.after-launch`, byte-sliced `godot.log.current-iteration`'
 Add-ContainsCheck -Name 'scripts_readme_autoslay_packet_requires_audit_recomputation' -Text $scriptsReadme -Needle '`godot-log-audit.json` binding/recomputation'
 Add-ContainsCheck -Name 'scripts_readme_autoslay_packet_requires_sts1_mode_binding' -Text $scriptsReadme -Needle '`sts1-mode-log-check.json` path/length/hash binding'
@@ -555,19 +625,34 @@ Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_requires_probe_phases' -Te
 Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_analyzer_reports_probe_phases' -Text $runtimeMonkeyDocs -Needle '`runtime` probe phases'
 Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_analyzer_reports_timestamps' -Text $runtimeMonkeyDocs -Needle 'reversed run-result timestamps'
 Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_expected_ancient_ids_command' -Text $runtimeMonkeyDocs -Needle '-ExpectedAncientIds VAKUU,URDA,MORVI,LOTHA'
+Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_expected_ancient_ids_required_for_proof_mode' -Text $runtimeMonkeyDocs -Needle 'In `-FailOnMismatch` proof mode, `-ExpectedAncientIds` is required'
 Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_expected_ancient_ids_failure' -Text $runtimeMonkeyDocs -Needle 'any requested `-ExpectedAncientIds` value is'
-Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_expected_ancient_ids_plan_summary' -Text $runtimeMonkeyDocs -Needle 'requested `-ExpectedAncientIds` plan and summary coverage'
+Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_expected_ancient_ids_required_failure' -Text $runtimeMonkeyDocs -Needle 'Omitting the target set fails `expected_ancient_ids_required_for_proof_mode`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_expected_ancient_ids_plan_summary' -Text $runtimeMonkeyDocs -Needle 'required proof-mode `-ExpectedAncientIds` plan and summary coverage'
 Add-ContainsCheck -Name 'current_validation_autoslay_expected_ancient_ids_plan_summary' -Text $currentValidation -Needle 'match retained `autoslay-plan.json` `ExpectedAncientIds` and observed `autoslay-summary.json` Ancient ids'
-Add-ContainsCheck -Name 'review_autoslay_expected_ancient_ids_plan_summary' -Text $activeReview -Needle 'requires requested `-ExpectedAncientIds` to match retained `autoslay-plan.json` `ExpectedAncientIds` and observed `autoslay-summary.json` Ancient ids'
+Add-ContainsCheck -Name 'review_autoslay_expected_ancient_ids_plan_summary' -Text $activeReview -Needle 'requires proof-mode `-ExpectedAncientIds` to be provided and to match retained `autoslay-plan.json` `ExpectedAncientIds` and observed `autoslay-summary.json` Ancient ids'
 Add-ContainsCheck -Name 'runtime_monkey_docs_runtime_requires_runtime_log_growth' -Text $runtimeMonkeyDocs -Needle '`RuntimeLogGrowthRequired`, log-length, main-menu/runtime'
 Add-ContainsCheck -Name 'runtime_monkey_docs_runtime_startup_only_log_growth_boundary' -Text $runtimeMonkeyDocs -Needle 'Startup-only or no-command observations do not require idle'
 Add-ContainsCheck -Name 'runtime_monkey_docs_runtime_probe_log_growth_binding' -Text $runtimeMonkeyDocs -Needle 'the `PostCommandRuntime` samples'' `LogLengthBytes`'
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_reports_probe_log_growth_mismatch' -Text $runtimeMonkeyDocs -Needle 'runtime log-growth timeline drift as `RuntimeHarness` blockers'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_rejects_iteration_escape_paths' -Text $runtimeMonkeyDocs -Needle '`iteration-result.json` log or probe paths that resolve outside the current'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_rejects_noncanonical_paths' -Text $runtimeMonkeyDocs -Needle 'shadow/nonstandard files under that directory'
+Add-ContainsCheck -Name 'runtime_monkey_docs_packet_rejects_iteration_escape_paths' -Text $runtimeMonkeyDocs -Needle 'The packet checker rejects `iteration-result.json` log/probe'
 Add-ContainsCheck -Name 'runtime_runner_runtime_log_growth_blocks_clean_pass' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\run-spire-plus-monkey-stability.ps1') -Raw -Encoding UTF8) -Needle 'runtime_log_stalled'
 Add-ContainsCheck -Name 'runtime_packet_script_requires_runtime_log_growth' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_observation_log_grew'
 Add-ContainsCheck -Name 'runtime_packet_script_tracks_command_log_growth_requirement' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_observation_log_growth_requirement_matches_command'
 Add-ContainsCheck -Name 'runtime_packet_script_binds_probe_log_growth_to_runtime_observation' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_log_growth_matches_runtime_observation'
 Add-ContainsCheck -Name 'runtime_packet_script_allows_startup_only_idle_log' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'StartupOnly/no-command observations do not require idle main-menu log growth'
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_before_log_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'godot_log_before_under_iteration_dir'
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_after_launch_log_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'godot_log_after_launch_under_iteration_dir'
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_godot_current_log_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'godot_current_iteration_log_under_iteration_dir'
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_current_log_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'current_iteration_log_under_iteration_dir'
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_probe_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_under_iteration_dir'
+Add-ContainsCheck -Name 'runtime_packet_script_binds_probe_expected_start_time_to_live_session' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_expected_process_start_time_matches_live_session'
+Add-ContainsCheck -Name 'runtime_packet_script_binds_probe_expected_path_to_live_session' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_expected_process_path_matches_live_session'
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_probe_identity_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_all_match_live_session_identity'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_packet_result_path_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsResultPathsOutsideIterationDirectory'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_probe_expected_identity_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsProbeExpectedIdentityDrift'
 Add-ContainsCheck -Name 'autoslay_packet_script_rejects_missing_event_traversal' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'batch_event_room_traversal_observed'
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_autoslayer_start' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'AutoSlayer.Start(seed, logFile)'
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_current_slice_match' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'current_iteration_log_matches_after_launch_slice'
@@ -579,22 +664,40 @@ Add-ContainsCheck -Name 'autoslay_packet_script_requires_run_result_passed' -Tex
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_probe_phases' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_main_menu_phase_observed'
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_timestamp_order' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'run_result_timestamp_order_valid'
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_runtime_log_growth' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'run_result_runtime_log_grew'
+Add-ContainsCheck -Name 'autoslay_packet_script_binds_probe_expected_start_time_to_run_result' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_expected_process_start_time_matches_run_result'
+Add-ContainsCheck -Name 'autoslay_packet_script_binds_probe_expected_path_to_run_result' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_expected_process_path_matches_run_result'
+Add-ContainsCheck -Name 'autoslay_packet_script_rejects_probe_identity_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_all_match_expected_identity'
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_ancient_identity' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'event_kind_is_ancient'
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_ancient_dialogue_marker' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'Detected Ancient event, clicking through dialogue'
 Add-ContainsCheck -Name 'autoslay_packet_script_expected_ancient_ids_parameter' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle '[string[]]$ExpectedAncientIds = @()'
+Add-ContainsCheck -Name 'autoslay_packet_script_expected_ancient_ids_required_for_proof_mode' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'expected_ancient_ids_required_for_proof_mode'
 Add-ContainsCheck -Name 'autoslay_packet_script_expected_ancient_ids_comma_split' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle "-split ','"
 Add-ContainsCheck -Name 'autoslay_packet_script_expected_ancient_ids_plan_match' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'plan_expected_ancient_ids_match_parameter'
 Add-ContainsCheck -Name 'autoslay_packet_script_expected_ancient_ids_summary_check' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'summary_expected_ancient_ids_observed'
 Add-ContainsCheck -Name 'autoslay_packet_script_expected_ancient_ids_plan_report_field' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'PlanExpectedAncientIds'
 Add-ContainsCheck -Name 'autoslay_packet_script_expected_ancient_ids_report_field' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'MissingExpectedAncientIds'
+Add-ContainsCheck -Name 'autoslay_tests_cover_probe_expected_identity_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'runtimeProbeExpectedIdentityDriftResult'
 Add-ContainsCheck -Name 'runtime_failure_analyzer_reads_autoslay_summary' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay-summary.json'
 Add-ContainsCheck -Name 'runtime_failure_analyzer_reads_run_result' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'run-result.json'
+Add-ContainsCheck -Name 'runtime_failure_analyzer_tracks_autoslay_artifact_field_names' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'FieldName = ''AutoSlayLogPath'''
+Add-ContainsCheck -Name 'runtime_failure_analyzer_checks_retained_autoslay_path_fields' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle '$artifactFieldRetained = Test-JsonProperty -Object $result -Name ([string]$artifact.FieldName)'
+Add-ContainsCheck -Name 'runtime_failure_analyzer_checks_autoslay_artifact_exists_safely' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'Test-Path -LiteralPath $artifactPath -PathType Leaf'
+Add-ContainsCheck -Name 'runtime_failure_analyzer_marks_autoslay_artifact_trust_false' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle '$autoSlayRunArtifactsTrustedForOwner = $false'
 Add-ContainsCheck -Name 'runtime_failure_analyzer_requires_autoslay_before_after_binding' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'current_iteration_log_before_after_binding_missing'
 Add-ContainsCheck -Name 'runtime_failure_analyzer_requires_autoslay_probe_phases' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_runtime_probe_main_menu_phase_missing'
 Add-ContainsCheck -Name 'runtime_failure_analyzer_requires_autoslay_timestamp_order' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_run_result_timestamp_order_invalid'
 Add-ContainsCheck -Name 'runtime_failure_analyzer_requires_runtime_log_growth' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle "'LogGrew'"
 Add-ContainsCheck -Name 'runtime_failure_analyzer_reports_runtime_log_stalled' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_log_stalled'
 Add-ContainsCheck -Name 'runtime_failure_analyzer_reports_probe_log_growth_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_probe_runtime_log_growth_mismatch'
+Add-ContainsCheck -Name 'runtime_failure_analyzer_reports_runtime_monkey_probe_identity_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_probe_process_identity_mismatch'
+Add-ContainsCheck -Name 'runtime_failure_analyzer_reports_runtime_monkey_current_slice_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_current_iteration_log_outside_iteration_dir'
+Add-ContainsCheck -Name 'runtime_failure_analyzer_reports_runtime_monkey_probe_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_runtime_probe_samples_outside_iteration_dir'
+Add-ContainsCheck -Name 'runtime_failure_analyzer_reports_runtime_monkey_current_slice_noncanonical' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_current_iteration_log_not_retained_file'
+Add-ContainsCheck -Name 'runtime_failure_analyzer_reports_runtime_monkey_probe_noncanonical' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_runtime_probe_samples_not_retained_file'
+Add-ContainsCheck -Name 'runtime_failure_analyzer_reports_runtime_monkey_artifact_trust' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyRunArtifactsTrustedForOwner'
+Add-ContainsCheck -Name 'runtime_monkey_tests_pin_probe_identity_signal' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle '"runtime_monkey_probe_process_identity_mismatch"'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_analyzer_noncanonical_path_rejection' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeyArtifactsThatDoNotMatchRetainedFiles'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_malformed_autoslay_path' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'runtime-failure-analysis-malformed-autoslay-path.json'
 Add-ContainsCheck -Name 'static_suite_invokes_registry_shape_fail_closed' -Text $staticSuiteScript -Needle 'Invoke-StaticStep -Name ''registry-shape'' -ScriptName ''check-sts1-event-registry-shape.ps1'' -Parameters @{ FailOnMismatch = $true }'
 Add-ContainsCheck -Name 'static_suite_invokes_canary_expected_shape' -Text $staticSuiteScript -Needle 'Invoke-StaticStep -Name ''enabled-log-canary-expected-shape'' -ScriptName ''check-sts1-enabled-mode-runtime-log.ps1'' -Parameters @{ Mode = ''CanaryOnly''; PrintExpected = $true }'
 Add-ContainsCheck -Name 'static_suite_invokes_additive_expected_shape' -Text $staticSuiteScript -Needle 'Invoke-StaticStep -Name ''enabled-log-additive-batch1-expected-shape'' -ScriptName ''check-sts1-enabled-mode-runtime-log.ps1'' -Parameters @{ Mode = ''AdditiveBatch1''; PrintExpected = $true }'
@@ -864,7 +967,7 @@ Add-ContainsCheck -Name 'status_board_v20_final_gate_overlay_20260617' -Text $st
 Add-ContainsCheck -Name 'status_board_v20_hard_stop_report_20260617' -Text $statusBoard -Needle '| **v20 coordination-pause hard stop** | `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md` records the current O0-O84 pause reason, exact blocked/current-pending gates, owner actions, no unsupported commit/push, and next-run start point. It is not completion or runtime proof. |'
 Add-ContainsCheck -Name 'status_board_pause_safe_static_v20_alignment_20260617' -Text $statusBoard -Needle '| **v20 2026-06-17/18 pause-safe static alignment** | The retained v20 static alignment remains static-only: static suite 15 / 0, beta.86 runtime preflight 27 / 0, static-file hygiene 11 / 0, v19 gate ledger 534 / 0, v20 final-gate overlay 29 / 0, and subagent coverage 70 / 0. Later active summary cleanup aligned current-doc claims to 962 / 0'
 Add-ContainsCheck -Name 'status_board_pause_safe_static_v20_autoslay_1025' -Text $statusBoard -Needle 'runtime-monkey AutoSlay boundary/source-contract, packet-verifier, analyzer, and runtime `RuntimeLogGrowthRequired` / command-bearing `LogGrew` / no-log-growth-timeout hardening later raised the active current-doc guard to 1025 / 0 and static-file hygiene to 12 / 0 while preserving the same static-only boundary'
-Add-ContainsCheck -Name 'status_board_pause_safe_static_v20_autoslay_expected_ids_1052' -Text $statusBoard -Needle 'The later pause-safe `ExpectedAncientIds` plan/summary target-coverage hardening raised the current-doc guard to 1052 / 0 with static-file hygiene still 12 / 0'
+Add-ContainsCheck -Name 'status_board_pause_safe_static_v20_runtime_monkey_containment_1090' -Text $statusBoard -Needle 'the follow-up runtime monkey iteration-local artifact containment, packet escape-path, analyzer noncanonical-path, probe process identity, and AutoSlay malformed-path guards raised the current-doc guard to 1090 / 0'
 Add-ContainsCheck -Name 'status_board_pause_safe_static_v20_autoslay_nonclaim' -Text $statusBoard -Needle 'does not close gameplay or game-native AutoSlay batch gates'
 Add-ContainsCheck -Name 'status_board_v20_subagent_role_guard_20260617' -Text $statusBoard -Needle '| **v20 2026-06-17 subagent role guard** | `docs/features/sts1-events/v19-subagent-coverage.md` records the 15-role v20 subagent coverage shape while retaining the v19 filename; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returns 70 / 0 and remains static/non-runtime evidence only. |'
 Add-ContainsCheck -Name 'status_board_format_paused_boundary' -Text $statusBoard -Needle '| Format | beta.87 post-doc format passed | `PROJECT_STATE.md` and `docs/reviews/current-validation.md` record format/diff-check/patch-inventory/batch-classifier checks passing after the beta.87 migration validation and runtime packet docs alignment. This remains no-game validation and should be recaptured after future code, resource, package, or handoff changes. |'
@@ -968,7 +1071,7 @@ Add-ContainsCheck -Name 'gate_map_runtime_smoke_checklist_static_file_hygiene_sc
 Add-ContainsCheck -Name 'gate_map_next_overnight_scope_guard_20260615' -Text $gateMap -Needle '2026-06-15 pause-safe next-overnight runtime-plan scope guard: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` now directly asserts that `docs/features/ritsulib-migration/next-overnight-run.md` is in broad current-claim stale-scan scope, and `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` now directly asserts that it is in static-file hygiene scope. The follow-up static rerun returned static suite 14 / 0, current-doc claims 868 / 0, static-file hygiene 9 / 0, v19 gate ledger 531 / 0, subagent coverage 63 / 0, and focused `git diff --check --` exit 0; this was later superseded by the RitsuLib planning-doc hygiene guard below. This is no-launch/static evidence only and does not close any runtime gate.'
 Add-ContainsCheck -Name 'gate_map_ritsu_planning_doc_static_file_hygiene_guard_20260615' -Text $gateMap -Needle '2026-06-15 pause-safe RitsuLib planning-doc static-file hygiene guard: `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` now directly asserts that `docs/features/ritsulib-migration/monthly-dev-spec.md` and `docs/features/ritsulib-migration/batch-4c-candidates.md` are in static-file hygiene scope. The follow-up static rerun returned static suite 14 / 0, current-doc claims 872 / 0, static-file hygiene 11 / 0, v19 gate ledger 531 / 0, subagent coverage 63 / 0, and focused `git diff --check --` exit 0. This is no-launch/static evidence only and does not close any runtime gate.'
 Add-ContainsCheck -Name 'gate_map_v20_subagent_alignment_20260617' -Text $gateMap -Needle 'Later active summary cleanup after `eaaeb5a1` updated current-doc summary counts to 962 / 0 in `PROJECT_STATE.md`, `docs/goals/event.md`, `docs/reviews/current-validation.md`, the status board, this gate map, and the current-doc guard; runtime-monkey AutoSlay boundary/source-contract, packet-verifier, analyzer, and runtime `RuntimeLogGrowthRequired` / command-bearing `LogGrew` / no-log-growth-timeout hardening later raised the active current-doc guard to 1025 / 0 and static-file hygiene to 12 / 0 while preserving the same static-only boundary.'
-Add-ContainsCheck -Name 'gate_map_v20_autoslay_expected_ids_1052' -Text $gateMap -Needle 'The later pause-safe `ExpectedAncientIds` plan/summary target-coverage hardening raised the current-doc guard to 1052 / 0 with static-file hygiene still 12 / 0'
+Add-ContainsCheck -Name 'gate_map_v20_runtime_monkey_containment_1090' -Text $gateMap -Needle 'the follow-up runtime monkey iteration-local artifact containment, packet escape-path, analyzer noncanonical-path, probe process identity, and AutoSlay malformed-path guards raised the current-doc guard to 1090 / 0'
 Add-ContainsCheck -Name 'gate_map_v20_autoslay_nonclaim' -Text $gateMap -Needle 'does not close gameplay or game-native AutoSlay batch gates'
 Add-ContainsCheck -Name 'gate_map_v20_final_overlay_note' -Text $gateMap -Needle 'v20 O76-O84 final-gate overlay'
 Add-ContainsCheck -Name 'gate_map_v20_hard_stop_report_note' -Text $gateMap -Needle '2026-06-17 v20 coordination-pause hard stop: `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md` records the current O0-O84 blocked/current-pending gates'
@@ -1333,6 +1436,7 @@ Add-NoRegexCheck -Name 'no_runtime_packet_command_without_expected_game_target' 
 Add-NoRegexCheck -Name 'no_runtime_packet_command_without_outfile' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-runtime-evidence-packet\.ps1(?=.*-Mode)(?!.*-OutFile)'
 Add-NoRegexCheck -Name 'no_runtime_packet_command_without_fail_on_mismatch' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-runtime-evidence-packet\.ps1(?=.*-Mode)(?!.*-FailOnMismatch)'
 Add-NoRegexCheck -Name 'no_enabled_runtime_packet_command_with_missing_state_bypass' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-runtime-evidence-packet\.ps1(?=.*-Mode\s+(CanaryOnly|AdditiveBatch1))(?=.*-(AllowMissingSessionState|AllowMissingRestoreState))'
+Add-AutoSlayProofCommandTargetCheck -Name 'autoslay_packet_proof_commands_include_expected_ancient_ids' -Paths $currentClaimFiles
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_game_root' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-GameRoot)'
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_steam_exe' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-SteamExe)'
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_steam_user_id' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-SteamUserId)'
