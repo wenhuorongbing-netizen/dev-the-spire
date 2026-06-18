@@ -322,6 +322,108 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerRoutesLogDerivedOwnersBeforePlannedOwners()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.ChildCombatResume",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[INFO] [Patcher - SpirePlus] Patch application complete:\r\n[ERROR] TypeLoadException stale full log should not own current iteration",
+                "[ERROR] Spire Plus error in StS1 AdditiveBatch1 Registered act event Golden Idol",
+                """{"SignatureHits":[{"Name":"Spire Plus error/exception","Count":1}]}""");
+            WriteIteration(
+                workdir,
+                2,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["command_ack_missing"]""",
+                """[]""",
+                "[ERROR] TypeLoadException stale full log should not own current iteration",
+                "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol",
+                """{"SignatureHits":[]}""");
+            WriteIteration(
+                workdir,
+                3,
+                "spireplus_test_ancient URDA confirm",
+                "ancient-ui",
+                "Ancients.Urda.MapSaveState",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[ERROR] TypeLoadException stale full log should not own current iteration",
+                "[SPIREPLUS-EVIDENCE] Crystal Sphere preview prediction_prepared_multiplayer_ui_only",
+                """{"SignatureHits":[]}""");
+            WriteIteration(
+                workdir,
+                4,
+                "spireplus_test_ancient MORVI confirm",
+                "ancient-ui",
+                "Ancients.Morvi.CardPlayState",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[ERROR] TypeLoadException stale full log should not own current iteration",
+                "[SPIREPLUS-EVIDENCE] ALLOW_UNVERIFIED_COOP coop_override_enabled multiplayer",
+                """{"SignatureHits":[]}""");
+            WriteIteration(
+                workdir,
+                5,
+                "spireplus_test_ancient URDA confirm",
+                "ancient-ui",
+                "Runtime.Unknown",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[ERROR] TypeLoadException stale full log should not own current iteration",
+                "[SPIREPLUS-EVIDENCE] Root Sight Unknown map preview hover",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1, 2, 3, 4, 5);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration1 = FindIteration(root, 1);
+            var iteration2 = FindIteration(root, 2);
+            var iteration3 = FindIteration(root, 3);
+            var iteration4 = FindIteration(root, 4);
+            var iteration5 = FindIteration(root, 5);
+
+            Assert.Equal("Sts1Events", iteration1.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("Ancients.Vakuu.FightOptionSetup", iteration1.GetProperty("OwnerAreaFromCommand").GetString());
+            Assert.Equal("Sts1Events", FindFindingOwner(iteration1, "process_unresponsive"));
+            Assert.Equal("Sts1Events", FindFindingOwner(iteration1, "audit:Spire Plus error/exception"));
+            Assert.Equal("Ancients.Vakuu.ChildCombatResume", FindFindingOwner(iteration1, "vakuu_command_failed_or_hung"));
+            Assert.Equal("Ancients.Vakuu.FightOptionSetup", FindFindingOwner(iteration2, "command_ack_missing"));
+            Assert.Equal("Ancients.Vakuu.FightOptionSetup", FindFindingOwner(iteration2, "vakuu_command_failed_or_hung"));
+            Assert.Equal("PreviewTools", iteration3.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("PreviewTools", FindFindingOwner(iteration3, "process_unresponsive"));
+            Assert.Equal("MultiplayerPolicy", iteration4.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("MultiplayerPolicy", FindFindingOwner(iteration4, "process_unresponsive"));
+            Assert.Equal("MultiplayerPolicy", FindFindingOwner(iteration4, "coop_override_enabled_runtime_failure"));
+            Assert.Equal("Ancients.Urda.MapSaveState", iteration5.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("Ancients.Urda.MapSaveState", FindFindingOwner(iteration5, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void LocalGodotSourceWorkspaceCheckerIsNoLaunchAndGuardsFreshness()
     {
         var checker = ReadRepoText("scripts", "check-local-godot-source-workspace.ps1");
@@ -385,5 +487,97 @@ public sealed class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("$p -eq 'docs/testing'", batch5Classifier, StringComparison.Ordinal);
         Assert.Contains("$p.StartsWith('docs/testing/'", batch5Classifier, StringComparison.Ordinal);
         Assert.DoesNotContain("$p.StartsWith('docs/', [System.StringComparison]", classifier, StringComparison.Ordinal);
+    }
+
+    private static void WriteIteration(
+        string evidenceRoot,
+        int iteration,
+        string command,
+        string scenarioTag,
+        string ownerArea,
+        string failureReasonCodesJson,
+        string hangSignalsJson,
+        string fullLog,
+        string currentLog,
+        string auditJson)
+    {
+        var iterationDir = Path.Combine(evidenceRoot, $"iteration-{iteration:D4}");
+        Directory.CreateDirectory(iterationDir);
+        File.WriteAllText(
+            Path.Combine(iterationDir, "iteration-result.json"),
+            $$"""
+            {
+              "Iteration": {{iteration}},
+              "Passed": false,
+              "Command": {{JsonSerializer.Serialize(command)}},
+              "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}},
+              "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}},
+              "FailureReasonCodes": {{failureReasonCodesJson}},
+              "HangSignals": {{hangSignalsJson}}
+            }
+            """);
+        File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), fullLog);
+        File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), currentLog);
+        File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), auditJson);
+    }
+
+    private static void WriteMonkeySummary(string evidenceRoot, params int[] failedIterations)
+    {
+        File.WriteAllText(
+            Path.Combine(evidenceRoot, "monkey-summary.json"),
+            $$"""
+            {
+              "FailedIterationIds": [{{string.Join(", ", failedIterations)}}],
+              "Results": []
+            }
+            """);
+    }
+
+    private static JsonElement FindIteration(JsonElement report, int iteration)
+    {
+        return report
+            .GetProperty("Iterations")
+            .EnumerateArray()
+            .Single(item => item.GetProperty("Iteration").GetInt32() == iteration);
+    }
+
+    private static string FindFindingOwner(JsonElement iteration, string signal)
+    {
+        return iteration
+            .GetProperty("Findings")
+            .EnumerateArray()
+            .Single(item => item.GetProperty("Signal").GetString() == signal)
+            .GetProperty("OwnerArea")
+            .GetString()!;
+    }
+
+    private static (int ExitCode, string Output, string Error) RunPowerShell(string scriptPath, params string[] arguments)
+    {
+        var executable = OperatingSystem.IsWindows() ? "powershell.exe" : "pwsh";
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = executable,
+            WorkingDirectory = Root,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false
+        };
+
+        startInfo.ArgumentList.Add("-NoProfile");
+        startInfo.ArgumentList.Add("-ExecutionPolicy");
+        startInfo.ArgumentList.Add("Bypass");
+        startInfo.ArgumentList.Add("-File");
+        startInfo.ArgumentList.Add(scriptPath);
+        foreach (var argument in arguments)
+        {
+            startInfo.ArgumentList.Add(argument);
+        }
+
+        using var process = Process.Start(startInfo);
+        Assert.NotNull(process);
+        var output = process.StandardOutput.ReadToEnd();
+        var error = process.StandardError.ReadToEnd();
+        Assert.True(process.WaitForExit(30_000), $"Timed out running {scriptPath}.");
+        return (process.ExitCode, output, error);
     }
 }
