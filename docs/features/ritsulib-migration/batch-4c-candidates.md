@@ -1,6 +1,7 @@
 # Batch 4c Low-Risk Candidate Proposal
 
 Date: 2026-06-10
+Static review recaptured: 2026-06-18
 Status: proposal only. Do not migrate these patches without explicit owner approval.
 
 ## Gate
@@ -10,7 +11,7 @@ The historical `v0.106.1` RitsuLib loader gate is good enough to propose low-ris
 - STS2-RitsuLib `v0.4.24` is installed on the E-drive game root with the `0.107.0` runtime variant.
 - Historical `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic smokes reached main menu with clean audits.
 - Spire Plus applied 25/25 migrated ModPatcher patches in those historical loader smokes.
-- The current local game install is `v0.107.0`; installed beta.86 package parity passes. Retained beta.85 Off and CanaryOnly loader smokes remain previous-package context under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510` and `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`.
+- The current local game install is `v0.107.0`; installed beta.87 package parity passes. Retained beta.85 Off and CanaryOnly loader smokes remain previous-package context under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510` and `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`.
 - Current beta.87 AdditiveBatch1 enabled-mode smoke exists at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`; retained log and packet verifiers passed with 10 event types / 14 registration lines and exact tuple parity. This is loader/registration proof only and is not Batch 4c approval, gameplay proof, or handoff proof.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
@@ -18,12 +19,13 @@ This list is not a migration approval. It excludes run lifecycle, save/load, map
 
 ## Proposal Self-Check
 
-Checked: 2026-06-10.
+Checked: 2026-06-18.
 
 - Candidate count is 10, within the required 5-10 range.
 - All candidates are currently classified as low risk in `docs/patch-inventory.md`.
 - No candidate touches run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss flow, or reward-state mutation.
 - Source inspection confirms the candidates are scoped to localization fallback, Sere Talon UI icon refresh, stale-hand input crash suppression, and Crystal Sphere local preview cleanup.
+- This recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.
 - Owner decision remains pending; this self-check is not approval to migrate.
 
 ## Candidates
@@ -62,7 +64,7 @@ Before any Batch 4c source migration:
 
 1. Owner accepts this exact candidate list or a smaller subset.
 2. `dotnet build EZMicroBalance.sln` passes with 0 errors.
-3. `dotnet test EZMicroBalance.sln --no-build` passes with 0 failures.
+3. Current accepted no-build test lanes pass with 0 failures. If the solution-level lane destabilizes around `ReleaseEvidenceGateTests`, use the documented split lanes instead of treating runner instability as a source failure.
 4. `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passes.
 5. `git diff --check` passes.
 6. `scripts/generate-patch-inventory.ps1 -Check` passes after any migration.

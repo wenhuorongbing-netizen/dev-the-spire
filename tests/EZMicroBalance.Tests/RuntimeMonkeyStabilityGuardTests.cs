@@ -4029,6 +4029,50 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
             File.WriteAllText(
                 summaryPath,
+                originalSummaryJson.Replace("\"RuntimeProbeSamplesPath\": \"run-0001/runtime-probe-samples.json\"", "\"RuntimeProbeSamplesPath\": \"\\u0000bad-runtime-probe-samples\"", StringComparison.Ordinal));
+            var malformedSummaryPathResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(malformedSummaryPathResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{malformedSummaryPathResult.Output}{malformedSummaryPathResult.Error}");
+            Assert.Contains("run_0001_runtime_probe_samples_path_present status=fail", malformedSummaryPathResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_under_evidence_dir status=fail", malformedSummaryPathResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_exists status=fail", malformedSummaryPathResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(summaryPath, originalSummaryJson);
+
+            File.WriteAllText(
+                runResultPath,
+                originalRunResultJson.Replace("\"RuntimeProbeSamplesPath\": \"run-0001/runtime-probe-samples.json\"", "\"RuntimeProbeSamplesPath\": \"\\u0000bad-runtime-probe-samples\"", StringComparison.Ordinal));
+            var malformedRunResultPathResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(malformedRunResultPathResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{malformedRunResultPathResult.Output}{malformedRunResultPathResult.Error}");
+            Assert.Contains("run_0001_run_result_runtime_probe_samples_path_matches_summary status=fail", malformedRunResultPathResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runResultPath, originalRunResultJson);
+
+            File.WriteAllText(
+                summaryPath,
                 originalSummaryJson.Replace(
                     JsonSerializer.Serialize(afterLaunchLogHash),
                     JsonSerializer.Serialize(new string('0', 64)),

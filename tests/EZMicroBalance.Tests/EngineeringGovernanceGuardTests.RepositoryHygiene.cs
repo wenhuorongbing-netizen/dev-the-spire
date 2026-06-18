@@ -105,6 +105,7 @@ public sealed partial class EngineeringGovernanceGuardTests
             "git add --pathspec-from-file=",
             "docs/intro.zh.md",
             "docs/archive/implementation-records/",
+            "docs/archive/legacy-planning/",
             "Local output hygiene",
             "Status and release docs",
             @"^tests/EZMicroBalance\.Tests/[^/]+\.cs\.uid$",

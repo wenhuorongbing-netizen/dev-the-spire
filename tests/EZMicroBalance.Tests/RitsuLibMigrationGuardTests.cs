@@ -85,6 +85,17 @@ public sealed class RitsuLibMigrationGuardTests
         "| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 98 | `[HarmonyPatch]` |"
     ];
 
+    private static readonly string[] ForbiddenBatch4cMigrationCategories =
+    [
+        "run lifecycle",
+        "save/load",
+        "map generation",
+        "multiplayer/lobby",
+        "death",
+        "A20 boss-flow",
+        "reward-state"
+    ];
+
     /// <summary>
     /// All PatchId values registered in RegisterMigratedPatches must be unique.
     /// </summary>
@@ -295,6 +306,49 @@ public sealed class RitsuLibMigrationGuardTests
         foreach (var inventoryRow in ExpectedBatch4cInventoryRows)
         {
             Assert.Contains(inventoryRow, inventory, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void Batch4cStaticReviewKeepsOwnerDecisionOpen()
+    {
+        var proposal = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
+        var nextRun = ReadRepoText("docs", "features", "ritsulib-migration", "next-overnight-run.md");
+        var goal = ReadRepoText("docs", "goals", "migration.md");
+
+        Assert.Contains("Static review recaptured: 2026-06-18", proposal, StringComparison.Ordinal);
+        Assert.Contains("Checked: 2026-06-18.", proposal, StringComparison.Ordinal);
+        Assert.Contains(
+            "This recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
+            proposal,
+            StringComparison.Ordinal);
+        Assert.Contains("installed beta.87 package parity passes", proposal, StringComparison.Ordinal);
+        Assert.DoesNotContain("installed beta.86 package parity passes", proposal, StringComparison.Ordinal);
+        Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", proposal, StringComparison.Ordinal);
+        Assert.Contains("use the documented split lanes instead of treating runner instability as a source failure", proposal, StringComparison.Ordinal);
+
+        Assert.Contains(
+            "the 2026-06-18 static recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed.",
+            nextRun,
+            StringComparison.Ordinal);
+        Assert.Contains("The current static recapture is not that decision.", nextRun, StringComparison.Ordinal);
+        Assert.Contains("- [x] Batch 4c candidate list static review recaptured: 10 low-risk candidates, no forbidden high-risk categories, and no migration performed.", nextRun, StringComparison.Ordinal);
+        Assert.Contains("- [ ] Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
+        Assert.DoesNotContain("- [x] Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
+
+        Assert.Contains(
+            "| Batch 4c migration | Proposal only / static review recaptured | 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration work. |",
+            goal,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "Record an owner decision for Batch 4c. The candidate list has static-review coverage; do not migrate unless the owner approves the scope.",
+            goal,
+            StringComparison.Ordinal);
+
+        foreach (var forbiddenCategory in ForbiddenBatch4cMigrationCategories)
+        {
+            Assert.Contains(forbiddenCategory, proposal, StringComparison.Ordinal);
+            Assert.Contains(forbiddenCategory, nextRun, StringComparison.Ordinal);
         }
     }
 

@@ -144,7 +144,7 @@ function Get-WorktreeBatch {
 
     if ($p -eq 'EZMicroBalanceCode/README.md' -or
         $p -eq 'docs/implement.md' -or
-        $p -eq 'docs/archive/legacy-planning/migration-goal-mojibake-20260618.md' -or
+        $p.StartsWith('docs/archive/legacy-planning/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/audits/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/goals/', [System.StringComparison]::OrdinalIgnoreCase)) {
         return 8

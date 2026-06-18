@@ -139,11 +139,15 @@ function Resolve-ChildOrAbsolutePath {
         return ''
     }
 
-    if ([System.IO.Path]::IsPathRooted($Path)) {
-        return [System.IO.Path]::GetFullPath($Path)
-    }
+    try {
+        if ([System.IO.Path]::IsPathRooted($Path)) {
+            return [System.IO.Path]::GetFullPath($Path)
+        }
 
-    return [System.IO.Path]::GetFullPath((Join-Path $BaseDir $Path))
+        return [System.IO.Path]::GetFullPath((Join-Path $BaseDir $Path))
+    } catch {
+        return ''
+    }
 }
 
 function ConvertTo-NormalizedPathOrEmpty {
@@ -153,43 +157,73 @@ function ConvertTo-NormalizedPathOrEmpty {
         return ''
     }
 
-    return [System.IO.Path]::GetFullPath($Path)
+    try {
+        return [System.IO.Path]::GetFullPath($Path)
+    } catch {
+        return ''
+    }
 }
 
 function Test-PathInsideDirectory {
     param(
         [AllowEmptyString()][string]$Path,
-        [Parameter(Mandatory = $true)][string]$Directory
+        [AllowEmptyString()][string]$Directory
     )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or [string]::IsNullOrWhiteSpace($Directory)) {
+        return $false
+    }
+
+    try {
+        $pathFull = [System.IO.Path]::GetFullPath($Path).TrimEnd('\', '/')
+        $dirFull = [System.IO.Path]::GetFullPath($Directory).TrimEnd('\', '/')
+        $comparison = [System.StringComparison]::OrdinalIgnoreCase
+
+        return $pathFull.Equals($dirFull, $comparison) -or $pathFull.StartsWith($dirFull + [System.IO.Path]::DirectorySeparatorChar, $comparison)
+    } catch {
+        return $false
+    }
+}
+
+function Test-PathLeafSafe {
+    param([AllowEmptyString()][string]$Path)
 
     if ([string]::IsNullOrWhiteSpace($Path)) {
         return $false
     }
 
-    $pathFull = [System.IO.Path]::GetFullPath($Path).TrimEnd('\', '/')
-    $dirFull = [System.IO.Path]::GetFullPath($Directory).TrimEnd('\', '/')
-    $comparison = [System.StringComparison]::OrdinalIgnoreCase
-
-    return $pathFull.Equals($dirFull, $comparison) -or $pathFull.StartsWith($dirFull + [System.IO.Path]::DirectorySeparatorChar, $comparison)
+    try {
+        return Test-Path -LiteralPath $Path -PathType Leaf
+    } catch {
+        return $false
+    }
 }
 
 function Get-FileSha256OrEmpty {
     param([AllowEmptyString()][string]$Path)
 
-    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+    if ([string]::IsNullOrWhiteSpace($Path)) {
         return ''
     }
 
-    $sha = [System.Security.Cryptography.SHA256]::Create()
     try {
-        $stream = [System.IO.File]::OpenRead($Path)
-        try {
-            return ([System.BitConverter]::ToString($sha.ComputeHash($stream)) -replace '-', '').ToLowerInvariant()
-        } finally {
-            $stream.Dispose()
+        if (-not (Test-PathLeafSafe -Path $Path)) {
+            return ''
         }
-    } finally {
-        $sha.Dispose()
+
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            $stream = [System.IO.File]::OpenRead($Path)
+            try {
+                return ([System.BitConverter]::ToString($sha.ComputeHash($stream)) -replace '-', '').ToLowerInvariant()
+            } finally {
+                $stream.Dispose()
+            }
+        } finally {
+            $sha.Dispose()
+        }
+    } catch {
+        return ''
     }
 }
 
@@ -350,15 +384,15 @@ function Test-BytePrefix {
 
 function Test-CurrentSliceBinding {
     param(
-        [Parameter(Mandatory = $true)][string]$BeforePath,
-        [Parameter(Mandatory = $true)][string]$AfterPath,
-        [Parameter(Mandatory = $true)][string]$CurrentPath
+        [AllowEmptyString()][string]$BeforePath,
+        [AllowEmptyString()][string]$AfterPath,
+        [AllowEmptyString()][string]$CurrentPath
     )
 
     $result = [ordered]@{
-        BeforeExists = Test-Path -LiteralPath $BeforePath -PathType Leaf
-        AfterExists = Test-Path -LiteralPath $AfterPath -PathType Leaf
-        CurrentExists = Test-Path -LiteralPath $CurrentPath -PathType Leaf
+        BeforeExists = Test-PathLeafSafe -Path $BeforePath
+        AfterExists = Test-PathLeafSafe -Path $AfterPath
+        CurrentExists = Test-PathLeafSafe -Path $CurrentPath
         PrefixMatches = $false
         SliceMatches = $false
         Detail = ''
@@ -440,7 +474,10 @@ function ConvertTo-AuditSummary {
         }
 
         if ((Test-JsonProperty -Object $item -Name 'Path') -and -not [string]::IsNullOrWhiteSpace([string]$item.Path)) {
-            $itemPaths.Add([System.IO.Path]::GetFullPath([string]$item.Path)) | Out-Null
+            $normalizedItemPath = ConvertTo-NormalizedPathOrEmpty -Path ([string]$item.Path)
+            if (-not [string]::IsNullOrWhiteSpace($normalizedItemPath)) {
+                $itemPaths.Add($normalizedItemPath) | Out-Null
+            }
         }
 
         if (Test-JsonProperty -Object $item -Name 'Length') {
@@ -539,7 +576,7 @@ if ($null -ne $plan) {
     $hookId = [string](Get-JsonValue -Object $plan -Name 'HookId' -DefaultValue '')
     $hookAssembly = [string](Get-JsonValue -Object $plan -Name 'HookAssembly' -DefaultValue '')
     $invocationCommand = [string](Get-JsonValue -Object $plan -Name 'InvocationCommand' -DefaultValue '')
-    $launcherExists = -not [string]::IsNullOrWhiteSpace($launcherPath) -and (Test-Path -LiteralPath $launcherPath -PathType Leaf)
+    $launcherExists = Test-PathLeafSafe -Path $launcherPath
     $expectedSts1Mode = [string](Get-JsonValue -Object $plan -Name 'Sts1EventMode' -DefaultValue '')
     $sourceWorkspace = Get-JsonValue -Object $plan -Name 'SourceWorkspace' -DefaultValue $null
     $planSeeds = @(Get-ArrayValues -Value (Get-JsonValue -Object $plan -Name 'Seeds' -DefaultValue @()) | ForEach-Object { [string]$_ })
@@ -589,7 +626,7 @@ if ($null -ne $plan) {
 
     $sourceWorkspaceCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $plan -Name 'SourceWorkspaceCheckPath' -DefaultValue ''))
     $sourceWorkspaceCheckSha256 = [string](Get-JsonValue -Object $plan -Name 'SourceWorkspaceCheckSha256' -DefaultValue '')
-    $sourceWorkspaceExists = -not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckPath) -and (Test-Path -LiteralPath $sourceWorkspaceCheckPath -PathType Leaf)
+    $sourceWorkspaceExists = Test-PathLeafSafe -Path $sourceWorkspaceCheckPath
     Add-Check -Name 'plan_source_workspace_summary_present' -Passed ($null -ne $sourceWorkspace) -Detail 'SourceWorkspace summary must retain source version/disposition and evidence-use policy'
     if ($null -ne $sourceWorkspace) {
         Add-Check -Name 'plan_source_workspace_checked' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'Checked' -DefaultValue $false)) -Detail 'SourceWorkspace.Checked must be true'
@@ -779,14 +816,14 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $afterLogSha256 = [string](Get-JsonValue -Object $run -Name 'GodotLogAfterLaunchSha256' -DefaultValue '')
     $currentLogLengthBytes = [long](Get-JsonValue -Object $run -Name 'GodotLogCurrentIterationLengthBytes' -DefaultValue -1)
     $currentLogSha256 = [string](Get-JsonValue -Object $run -Name 'GodotLogCurrentIterationSha256' -DefaultValue '')
-    $runResultExists = -not [string]::IsNullOrWhiteSpace($runResultPath) -and (Test-Path -LiteralPath $runResultPath -PathType Leaf)
-    $runtimeProbeSamplesExists = -not [string]::IsNullOrWhiteSpace($runtimeProbeSamplesPath) -and (Test-Path -LiteralPath $runtimeProbeSamplesPath -PathType Leaf)
-    $autoSlayLogExists = -not [string]::IsNullOrWhiteSpace($autoSlayLogPath) -and (Test-Path -LiteralPath $autoSlayLogPath -PathType Leaf)
-    $beforeLogExists = -not [string]::IsNullOrWhiteSpace($beforeLogPath) -and (Test-Path -LiteralPath $beforeLogPath -PathType Leaf)
-    $afterLogExists = -not [string]::IsNullOrWhiteSpace($afterLogPath) -and (Test-Path -LiteralPath $afterLogPath -PathType Leaf)
-    $currentLogExists = -not [string]::IsNullOrWhiteSpace($currentLogPath) -and (Test-Path -LiteralPath $currentLogPath -PathType Leaf)
-    $auditExists = -not [string]::IsNullOrWhiteSpace($auditPath) -and (Test-Path -LiteralPath $auditPath -PathType Leaf)
-    $sts1ModeCheckExists = -not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath) -and (Test-Path -LiteralPath $sts1ModeCheckPath -PathType Leaf)
+    $runResultExists = Test-PathLeafSafe -Path $runResultPath
+    $runtimeProbeSamplesExists = Test-PathLeafSafe -Path $runtimeProbeSamplesPath
+    $autoSlayLogExists = Test-PathLeafSafe -Path $autoSlayLogPath
+    $beforeLogExists = Test-PathLeafSafe -Path $beforeLogPath
+    $afterLogExists = Test-PathLeafSafe -Path $afterLogPath
+    $currentLogExists = Test-PathLeafSafe -Path $currentLogPath
+    $auditExists = Test-PathLeafSafe -Path $auditPath
+    $sts1ModeCheckExists = Test-PathLeafSafe -Path $sts1ModeCheckPath
     $observedRuntimeProbeProcessIds = @()
     $observedRuntimeProbeStartTimes = @()
     $observedRuntimeProbePaths = @()
@@ -1044,7 +1081,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $auditItemPaths = @($auditSummary.ItemPaths)
             $auditItemLengths = @($auditSummary.ItemLengths)
             $auditItemSha256s = @($auditSummary.ItemSha256s)
-            $expectedAuditPath = [System.IO.Path]::GetFullPath($currentLogPath)
+            $expectedAuditPath = ConvertTo-NormalizedPathOrEmpty -Path $currentLogPath
             $expectedAuditLength = if ($currentLogExists) { [long](Get-Item -LiteralPath $currentLogPath).Length } else { -1L }
             $expectedAuditSha256 = Get-FileSha256OrEmpty -Path $currentLogPath
             Add-Check -Name "${runName}_audit_clean" -Passed ([bool]$auditSummary.Clean) -Detail "audit must have zero dirty items and zero signature hits; dirty=$($auditSummary.DirtyItems), hits=$($auditSummary.SignatureHitCount)"
@@ -1085,13 +1122,14 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $sts1FailedChecks = @(Get-ArrayValues -Value (Get-JsonValue -Object $sts1ModeCheck -Name 'Checks' -DefaultValue @()) | Where-Object {
                 -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
             })
-            $expectedSts1LogPath = [System.IO.Path]::GetFullPath($currentLogPath)
+            $expectedSts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path $currentLogPath
             $expectedSts1LogLength = if ($currentLogExists) { [long](Get-Item -LiteralPath $currentLogPath).Length } else { -1L }
             $expectedSts1LogSha256 = Get-FileSha256OrEmpty -Path $currentLogPath
             Add-Check -Name "${runName}_sts1_mode_log_check_mismatches_empty" -Passed ($sts1Mismatches.Count -eq 0) -Detail "sts1-mode-log-check.json must have zero mismatches; found $($sts1Mismatches.Count)"
             Add-Check -Name "${runName}_sts1_mode_log_check_all_checks_passed" -Passed ($sts1FailedChecks.Count -eq 0) -Detail "sts1-mode-log-check.json contains $($sts1FailedChecks.Count) failed checks"
             Add-Check -Name "${runName}_sts1_mode_log_check_mode_matches_plan" -Passed (-not [string]::IsNullOrWhiteSpace($expectedSts1Mode) -and $sts1Mode -eq $expectedSts1Mode) -Detail "sts1-mode-log-check.json Mode must match autoslay-plan Sts1EventMode '$expectedSts1Mode'; found '$sts1Mode'"
-            Add-Check -Name "${runName}_sts1_mode_log_check_log_path_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($sts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals([System.IO.Path]::GetFullPath($sts1LogPath), $expectedSts1LogPath)) -Detail 'sts1-mode-log-check.json LogPath must match the retained godot.log.current-iteration slice'
+            $normalizedSts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path $sts1LogPath
+            Add-Check -Name "${runName}_sts1_mode_log_check_log_path_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($normalizedSts1LogPath) -and -not [string]::IsNullOrWhiteSpace($expectedSts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($normalizedSts1LogPath, $expectedSts1LogPath)) -Detail 'sts1-mode-log-check.json LogPath must match the retained godot.log.current-iteration slice'
             Add-Check -Name "${runName}_sts1_mode_log_check_log_length_matches_current_iteration_log" -Passed ($null -ne $sts1LogLength -and [long]$sts1LogLength -eq $expectedSts1LogLength) -Detail 'sts1-mode-log-check.json LogLength must match the retained godot.log.current-iteration bytes'
             Add-Check -Name "${runName}_sts1_mode_log_check_log_sha256_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($sts1LogSha256) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($sts1LogSha256, $expectedSts1LogSha256)) -Detail 'sts1-mode-log-check.json LogSha256 must match the retained godot.log.current-iteration bytes'
         }

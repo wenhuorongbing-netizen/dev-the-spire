@@ -27,7 +27,7 @@ Coordination boundary: do not run overlapping validation, package/release, runti
 - Current CanaryOnly enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`: 4 event types / 6 registration lines, retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`, both 0 mismatches.
 - Current AdditiveBatch1 enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`: 10 event types / 14 registration lines, retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`, both 0 mismatches. The beta.85 AdditiveBatch1 13/14 verifier mismatch remains root-cause history only.
 - Dependency decision is recorded: beta.87 intentionally aligns the compile package and manifest minimum on `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.24`, with BaseLib `v3.2.1` and package version `v0.1.0-private-beta.87`.
-- Batch 4c is proposal-only. The current candidate list is `docs/features/ritsulib-migration/batch-4c-candidates.md`; migration requires explicit owner approval and fresh validation.
+- Batch 4c is proposal-only. The current candidate list is `docs/features/ritsulib-migration/batch-4c-candidates.md`; the 2026-06-18 static recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Migration requires explicit owner approval and fresh validation.
 - A current no-launch Mod Settings UI scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-211923/` with `GitHead` `629680dd276046c785d30dd5448987040f9671a0`, package `v0.1.0-private-beta.87`, `Capture=None`, and `NoLaunch=true`. It is pending scaffold evidence only, not screenshot, log/audit, gameplay, or handoff proof.
 - Gameplay, Mod Settings UI page refresh, event screenshots, save-load, image/render, replacement functional proof, multiplayer fail-closed proof, independent QA, and tester-package handoff remain pending. Future handoff must recapture HEAD and worktree status after any later edits.
 - Release-ready and live-ready remain no.
@@ -100,7 +100,7 @@ For CanaryOnly events (`Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1Divin
 1. Review `docs/features/ritsulib-migration/batch-4c-candidates.md`.
 2. Confirm the list is 5-10 low-risk patch classes only.
 3. Reject any run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, or reward-state candidate.
-4. Record owner decision: accept all, accept subset, request changes, or block.
+4. Record owner decision: accept all, accept subset, request changes, or block. The current static recapture is not that decision.
 5. Do not migrate any candidate without explicit owner acceptance and fresh validation.
 
 ### Step 5: Blocker Reporting
@@ -129,6 +129,7 @@ If a gate cannot be completed, record:
 - [x] Current HEAD validation refreshed after the beta.87 dependency-floor pass and runtime packet-checker hardening; recheck again before handoff if any later edits appear.
 - [x] Current `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Current `v0.107.0` beta.87 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
+- [x] Batch 4c candidate list static review recaptured: 10 low-risk candidates, no forbidden high-risk categories, and no migration performed.
 - [ ] Mod Settings UI evidence captured.
 - [ ] CanaryOnly gameplay matrix completed or blocked with evidence.
 - [ ] Save/load evidence captured or blocked with evidence.
