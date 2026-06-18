@@ -10,7 +10,7 @@ This test project guards source shape, localization, release documentation, pack
 | `AncientBehaviorGuardTests.cs` / `AncientBehaviorGuardTests.LocalizationDocs.cs` | Ancient reward behavior, package shape, patch targets, Sere Talon/Tanx Claws, localization parity, documentation currency, release-checklist, and manual matrix guards. |
 | `AncientExpansionReleaseCoverageGuardTests.cs` | Morvi, Lotha, and gated Vakuu source/localization/resource release-coverage guards. |
 | `AncientHighRiskSourceGuardTests.cs` | High-risk source patterns for Ancient patches. |
-| `AncientPlayerFacingPolishGuardTests.cs` / `AncientPlayerFacingPolishGuardTests.Docs.cs` / `AncientPlayerFacingPolishGuardTests.Localization.cs` / `AncientPlayerFacingPolishGuardTests.RichText.cs` | Player-facing Ancient text, docs, localization, mojibake, rich-text, and readability guards. |
+| `AncientPlayerFacingPolishGuardTests.cs` / `AncientPlayerFacingPolishGuardTests.Docs.cs` / `AncientPlayerFacingPolishGuardTests.InteractionText.cs` / `AncientPlayerFacingPolishGuardTests.Localization.cs` / `AncientPlayerFacingPolishGuardTests.RichText.cs` | Player-facing Ancient text, docs, localization, mojibake, rich-text, and readability guards. |
 | `AscensionFeatureGuardTests.cs` / `AscensionFeatureGuardTests.Rootblight.cs` | Ascension selector, gate, Rootblight/RootBud, docs, and source constraints. |
 | `AscensionV2MilestoneGuardTests.cs` | Ascension milestone-level source/localization expectations. |
 | `ReleaseArtifactTests.cs` | Installed/package artifacts and Harmony target resolution. |
