@@ -4,6 +4,9 @@ param(
 
     [int]$MinRuns = 1,
 
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$ExpectedAncientIds = @(),
+
     [string]$ExpectedPackageVersion,
 
     [string]$ExpectedGameVersion,
@@ -191,6 +194,21 @@ function Test-AllJsonPropertiesPresent {
 
     foreach ($item in @($Items)) {
         if (-not (Test-JsonProperty -Object $item -Name $Name) -or $null -eq $item.$Name) {
+            return $false
+        }
+    }
+
+    return @($Items).Count -gt 0
+}
+
+function Test-AllJsonPropertiesRetained {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if (-not (Test-JsonProperty -Object $item -Name $Name)) {
             return $false
         }
     }
@@ -630,6 +648,19 @@ if ($null -ne $plan) {
 }
 
 $summaryRuns = @()
+$expectedAncientIdTokens = @($ExpectedAncientIds |
+    ForEach-Object { [string]$_ } |
+    ForEach-Object { $_ -split ',' })
+$expectedAncientIdsForCoverage = @($expectedAncientIdTokens |
+    Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+    ForEach-Object { $_.Trim() })
+$duplicateExpectedAncientIds = @($expectedAncientIdsForCoverage | Group-Object | Where-Object { $_.Count -gt 1 })
+$observedAncientIds = @()
+$missingExpectedAncientIds = @()
+if ($expectedAncientIdTokens.Count -gt 0) {
+    Add-Check -Name 'expected_ancient_ids_all_non_empty' -Passed ($expectedAncientIdsForCoverage.Count -eq $expectedAncientIdTokens.Count) -Detail 'ExpectedAncientIds entries must be non-empty when supplied'
+    Add-Check -Name 'expected_ancient_ids_unique' -Passed ($duplicateExpectedAncientIds.Count -eq 0) -Detail "ExpectedAncientIds must be unique; duplicate groups=$($duplicateExpectedAncientIds.Count)"
+}
 if ($null -ne $summary) {
     $runnerKind = [string](Get-JsonValue -Object $summary -Name 'RunnerKind' -DefaultValue '')
     $summaryRuns = @(Get-ArrayValues -Value (Get-JsonValue -Object $summary -Name 'Runs' -DefaultValue @()))
@@ -650,6 +681,19 @@ if ($null -ne $summary) {
     Add-Check -Name 'summary_run_seeds_present_for_all_runs' -Passed ($nonEmptySummaryRunSeeds.Count -eq $summaryRuns.Count) -Detail 'every summary run must retain a non-empty Seed'
     Add-Check -Name 'summary_run_seeds_unique' -Passed ($duplicateSummaryRunSeeds.Count -eq 0) -Detail "summary run Seeds must be unique; duplicate seed groups=$($duplicateSummaryRunSeeds.Count)"
     Add-Check -Name 'summary_run_seeds_match_plan_seeds' -Passed ([string]::Equals([string]::Join("`n", $sortedPlanSeeds), [string]::Join("`n", $sortedRunSeeds), [System.StringComparison]::Ordinal)) -Detail 'summary run Seeds must exactly match autoslay-plan.json Seeds'
+
+    $observedAncientIdSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    foreach ($run in $summaryRuns) {
+        $runAncientId = [string](Get-JsonValue -Object $run -Name 'AncientId' -DefaultValue '')
+        if (-not [string]::IsNullOrWhiteSpace($runAncientId)) {
+            $observedAncientIdSet.Add($runAncientId) | Out-Null
+        }
+    }
+    $observedAncientIds = @($observedAncientIdSet | Sort-Object)
+    if ($expectedAncientIdsForCoverage.Count -gt 0) {
+        $missingExpectedAncientIds = @($expectedAncientIdsForCoverage | Where-Object { -not $observedAncientIdSet.Contains($_) })
+        Add-Check -Name 'summary_expected_ancient_ids_observed' -Passed ($missingExpectedAncientIds.Count -eq 0) -Detail "ExpectedAncientIds missing=$($missingExpectedAncientIds -join ',') observed=$($observedAncientIds -join ',')"
+    }
 }
 
 $eventTraversalObserved = $false
@@ -664,6 +708,8 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $eventKind = [string](Get-JsonValue -Object $run -Name 'EventKind' -DefaultValue '')
     $ancientId = [string](Get-JsonValue -Object $run -Name 'AncientId' -DefaultValue '')
     $runResultPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'RunResultPath' -DefaultValue ''))
+    $runEvidenceDir = if (-not [string]::IsNullOrWhiteSpace($runResultPath)) { [System.IO.Path]::GetDirectoryName($runResultPath) } else { '' }
+    $runEvidenceDirValid = -not [string]::IsNullOrWhiteSpace($runEvidenceDir) -and (Test-PathInsideDirectory -Path $runEvidenceDir -Directory $resolvedEvidenceDir)
     $runtimeProbeSamplesPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'RuntimeProbeSamplesPath' -DefaultValue ''))
     $autoSlayLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'AutoSlayLogPath' -DefaultValue ''))
     $beforeLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogBeforePath' -DefaultValue ''))
@@ -672,6 +718,11 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $auditPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogAuditPath' -DefaultValue ''))
     $sts1ModeCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'Sts1ModeLogCheckPath' -DefaultValue ''))
     $autoSlayLogSha256 = [string](Get-JsonValue -Object $run -Name 'AutoSlayLogSha256' -DefaultValue '')
+    $beforeLogLengthBytes = [long](Get-JsonValue -Object $run -Name 'GodotLogBeforeLengthBytes' -DefaultValue -1)
+    $beforeLogSha256 = [string](Get-JsonValue -Object $run -Name 'GodotLogBeforeSha256' -DefaultValue '')
+    $afterLogLengthBytes = [long](Get-JsonValue -Object $run -Name 'GodotLogAfterLaunchLengthBytes' -DefaultValue -1)
+    $afterLogSha256 = [string](Get-JsonValue -Object $run -Name 'GodotLogAfterLaunchSha256' -DefaultValue '')
+    $currentLogLengthBytes = [long](Get-JsonValue -Object $run -Name 'GodotLogCurrentIterationLengthBytes' -DefaultValue -1)
     $currentLogSha256 = [string](Get-JsonValue -Object $run -Name 'GodotLogCurrentIterationSha256' -DefaultValue '')
     $runResultExists = -not [string]::IsNullOrWhiteSpace($runResultPath) -and (Test-Path -LiteralPath $runResultPath -PathType Leaf)
     $runtimeProbeSamplesExists = -not [string]::IsNullOrWhiteSpace($runtimeProbeSamplesPath) -and (Test-Path -LiteralPath $runtimeProbeSamplesPath -PathType Leaf)
@@ -682,6 +733,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $auditExists = -not [string]::IsNullOrWhiteSpace($auditPath) -and (Test-Path -LiteralPath $auditPath -PathType Leaf)
     $sts1ModeCheckExists = -not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath) -and (Test-Path -LiteralPath $sts1ModeCheckPath -PathType Leaf)
     $observedRuntimeProbeProcessIds = @()
+    $runtimeProbeRuntimeMaxLogLength = -1L
 
     Add-Check -Name "${runName}_seed_present" -Passed (-not [string]::IsNullOrWhiteSpace($seed)) -Detail 'each AutoSlay run must retain its seed'
     Add-Check -Name "${runName}_seed_listed_in_plan" -Passed ($planSeeds -contains $seed) -Detail "seed '$seed' must be listed in autoslay-plan.json Seeds"
@@ -700,17 +752,24 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_runtime_probe_samples_exists" -Passed $runtimeProbeSamplesExists -Detail 'RuntimeProbeSamplesPath must point at retained runtime-probe-samples.json'
     Add-Check -Name "${runName}_autoslay_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogPath)) -Detail 'AutoSlayLogPath must be retained'
     Add-Check -Name "${runName}_autoslay_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $autoSlayLogPath -Directory $resolvedEvidenceDir) -Detail 'AutoSlayLogPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_autoslay_log_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $autoSlayLogPath -Directory $runEvidenceDir)) -Detail 'AutoSlayLogPath must stay inside the per-seed run evidence directory'
+    Add-Check -Name "${runName}_autoslay_log_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($autoSlayLogPath)) -and [System.IO.Path]::GetFileName($autoSlayLogPath) -eq 'autoslay.log') -Detail 'AutoSlayLogPath must end with autoslay.log'
     Add-Check -Name "${runName}_autoslay_log_exists" -Passed $autoSlayLogExists -Detail 'AutoSlay log file must exist'
     Add-Check -Name "${runName}_autoslay_log_hash_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogSha256)) -Detail 'AutoSlayLogSha256 must be retained for each run'
     Add-Check -Name "${runName}_before_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($beforeLogPath)) -Detail 'GodotLogBeforePath must retain the pre-launch shared godot.log snapshot'
     Add-Check -Name "${runName}_before_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $beforeLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogBeforePath must stay inside the evidence directory'
     Add-Check -Name "${runName}_before_log_exists" -Passed $beforeLogExists -Detail 'GodotLogBeforePath must point at a retained pre-launch log'
+    Add-Check -Name "${runName}_before_log_length_recorded" -Passed ($beforeLogLengthBytes -ge 0) -Detail 'GodotLogBeforeLengthBytes must be retained and non-negative'
+    Add-Check -Name "${runName}_before_log_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($beforeLogSha256)) -Detail 'GodotLogBeforeSha256 must be retained'
     Add-Check -Name "${runName}_after_launch_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($afterLogPath)) -Detail 'GodotLogAfterLaunchPath must retain the post-launch shared godot.log snapshot'
     Add-Check -Name "${runName}_after_launch_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $afterLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogAfterLaunchPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_after_launch_log_exists" -Passed $afterLogExists -Detail 'GodotLogAfterLaunchPath must point at a retained post-launch log'
+    Add-Check -Name "${runName}_after_launch_log_length_recorded" -Passed ($afterLogLengthBytes -ge 0) -Detail 'GodotLogAfterLaunchLengthBytes must be retained and non-negative'
+    Add-Check -Name "${runName}_after_launch_log_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($afterLogSha256)) -Detail 'GodotLogAfterLaunchSha256 must be retained'
     Add-Check -Name "${runName}_current_iteration_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($currentLogPath)) -Detail 'GodotLogCurrentIterationPath must be retained'
     Add-Check -Name "${runName}_current_iteration_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $currentLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogCurrentIterationPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_current_iteration_log_exists" -Passed $currentLogExists -Detail 'GodotLogCurrentIterationPath must point at a retained current-iteration log'
+    Add-Check -Name "${runName}_current_iteration_log_length_recorded" -Passed ($currentLogLengthBytes -ge 0) -Detail 'GodotLogCurrentIterationLengthBytes must be retained and non-negative'
     Add-Check -Name "${runName}_current_iteration_log_hash_present" -Passed (-not [string]::IsNullOrWhiteSpace($currentLogSha256)) -Detail 'GodotLogCurrentIterationSha256 must be retained for each run'
     Add-Check -Name "${runName}_audit_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($auditPath)) -Detail 'GodotLogAuditPath must retain the audit of godot.log.current-iteration'
     Add-Check -Name "${runName}_audit_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $auditPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogAuditPath must stay inside the evidence directory'
@@ -731,6 +790,17 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     if (-not [string]::IsNullOrWhiteSpace($autoSlayLogSha256) -and $autoSlayLogExists) {
         Add-Check -Name "${runName}_autoslay_log_hash_matches" -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $autoSlayLogPath), $autoSlayLogSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'AutoSlayLogSha256 must match AutoSlayLogPath'
     }
+    if ($beforeLogExists) {
+        Add-Check -Name "${runName}_before_log_length_matches" -Passed ($beforeLogLengthBytes -eq [long](Get-Item -LiteralPath $beforeLogPath).Length) -Detail 'GodotLogBeforeLengthBytes must match retained godot.log.before bytes'
+        Add-Check -Name "${runName}_before_log_sha256_matches" -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $beforeLogPath), $beforeLogSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'GodotLogBeforeSha256 must match GodotLogBeforePath'
+    }
+    if ($afterLogExists) {
+        Add-Check -Name "${runName}_after_launch_log_length_matches" -Passed ($afterLogLengthBytes -eq [long](Get-Item -LiteralPath $afterLogPath).Length) -Detail 'GodotLogAfterLaunchLengthBytes must match retained godot.log.after-launch bytes'
+        Add-Check -Name "${runName}_after_launch_log_sha256_matches" -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $afterLogPath), $afterLogSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'GodotLogAfterLaunchSha256 must match GodotLogAfterLaunchPath'
+    }
+    if ($currentLogExists) {
+        Add-Check -Name "${runName}_current_iteration_log_length_matches" -Passed ($currentLogLengthBytes -eq [long](Get-Item -LiteralPath $currentLogPath).Length) -Detail 'GodotLogCurrentIterationLengthBytes must match retained godot.log.current-iteration bytes'
+    }
     if (-not [string]::IsNullOrWhiteSpace($currentLogSha256) -and $currentLogExists) {
         Add-Check -Name "${runName}_current_iteration_log_hash_matches" -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $currentLogPath), $currentLogSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'GodotLogCurrentIterationSha256 must match GodotLogCurrentIterationPath'
     }
@@ -743,6 +813,10 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_runtime_probe_samples_json_valid" -Passed $true -Detail 'runtime-probe-samples.json parsed'
             Add-Check -Name "${runName}_runtime_probe_samples_non_empty" -Passed ($probeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must contain process/window/log samples'
             Add-Check -Name "${runName}_runtime_probe_samples_phase_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -Detail 'every probe sample must retain Phase'
+            Add-Check -Name "${runName}_runtime_probe_samples_sampled_at_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'SampledAt') -Detail 'every probe sample must retain SampledAt'
+            Add-Check -Name "${runName}_runtime_probe_samples_log_exists_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogExists') -Detail 'every probe sample must retain LogExists'
+            Add-Check -Name "${runName}_runtime_probe_samples_log_length_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogLengthBytes') -Detail 'every probe sample must retain LogLengthBytes'
+            Add-Check -Name "${runName}_runtime_probe_samples_log_last_write_time_field_retained" -Passed (Test-AllJsonPropertiesRetained -Items $probeSamples -Name 'LogLastWriteTimeUtc') -Detail 'every probe sample must retain LogLastWriteTimeUtc, even when the log is absent'
             Add-Check -Name "${runName}_runtime_probe_samples_main_menu_phase_observed" -Passed (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'main-menu') -Detail 'runtime-probe-samples.json must include at least one main-menu phase sample'
             Add-Check -Name "${runName}_runtime_probe_samples_runtime_phase_observed" -Passed (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'runtime') -Detail 'runtime-probe-samples.json must include at least one runtime phase sample'
             Add-Check -Name "${runName}_runtime_probe_samples_process_id_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -Detail 'every probe sample must retain ProcessId'
@@ -772,6 +846,18 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                 Where-Object { $_ -gt 0 } |
                 Sort-Object -Unique)
             Add-Check -Name "${runName}_runtime_probe_samples_single_positive_process_id" -Passed ($observedRuntimeProbeProcessIds.Count -eq 1) -Detail "observed probe samples must bind to one positive process id; count=$($observedRuntimeProbeProcessIds.Count)"
+            $runtimeProbeLogLengths = @($probeSamples |
+                Where-Object {
+                    [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'runtime', [System.StringComparison]::Ordinal) -and
+                    [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                } |
+                ForEach-Object { [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) } |
+                Where-Object { $_ -ge 0 })
+            $runtimeProbeRuntimeMaxLogLength = if ($runtimeProbeLogLengths.Count -gt 0) {
+                [long](@($runtimeProbeLogLengths | Sort-Object -Descending)[0])
+            } else {
+                -1L
+            }
         } catch {
             Add-Check -Name "${runName}_runtime_probe_samples_json_valid" -Passed $false -Detail "invalid probe samples JSON in $runtimeProbeSamplesPath`: $($_.Exception.Message)"
         }
@@ -893,6 +979,12 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $resultBeforeLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogBeforePath' -DefaultValue ''))
             $resultAfterLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogAfterLaunchPath' -DefaultValue ''))
             $resultCurrentLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogCurrentIterationPath' -DefaultValue ''))
+            $resultBeforeLogLengthBytes = [long](Get-JsonValue -Object $runResult -Name 'GodotLogBeforeLengthBytes' -DefaultValue -1)
+            $resultBeforeLogSha256 = [string](Get-JsonValue -Object $runResult -Name 'GodotLogBeforeSha256' -DefaultValue '')
+            $resultAfterLogLengthBytes = [long](Get-JsonValue -Object $runResult -Name 'GodotLogAfterLaunchLengthBytes' -DefaultValue -1)
+            $resultAfterLogSha256 = [string](Get-JsonValue -Object $runResult -Name 'GodotLogAfterLaunchSha256' -DefaultValue '')
+            $resultCurrentLogLengthBytes = [long](Get-JsonValue -Object $runResult -Name 'GodotLogCurrentIterationLengthBytes' -DefaultValue -1)
+            $resultCurrentLogSha256 = [string](Get-JsonValue -Object $runResult -Name 'GodotLogCurrentIterationSha256' -DefaultValue '')
             $resultAuditPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogAuditPath' -DefaultValue ''))
             $resultSts1ModeCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'Sts1ModeLogCheckPath' -DefaultValue ''))
             $resultInvocation = [string](Get-JsonValue -Object $runResult -Name 'Invocation' -DefaultValue '')
@@ -942,9 +1034,14 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_run_result_autoslay_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $runResult -Name 'AutoSlayLogSha256' -DefaultValue ''), $autoSlayLogSha256)) -Detail 'run-result.json AutoSlayLogSha256 must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_runtime_probe_samples_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultRuntimeProbeSamplesPath, $runtimeProbeSamplesPath)) -Detail 'run-result.json RuntimeProbeSamplesPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_before_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultBeforeLogPath, $beforeLogPath)) -Detail 'run-result.json GodotLogBeforePath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_before_log_length_matches_summary" -Passed ($resultBeforeLogLengthBytes -eq $beforeLogLengthBytes) -Detail 'run-result.json GodotLogBeforeLengthBytes must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_before_log_sha256_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultBeforeLogSha256, $beforeLogSha256)) -Detail 'run-result.json GodotLogBeforeSha256 must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_after_launch_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAfterLogPath, $afterLogPath)) -Detail 'run-result.json GodotLogAfterLaunchPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_after_launch_log_length_matches_summary" -Passed ($resultAfterLogLengthBytes -eq $afterLogLengthBytes) -Detail 'run-result.json GodotLogAfterLaunchLengthBytes must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_after_launch_log_sha256_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAfterLogSha256, $afterLogSha256)) -Detail 'run-result.json GodotLogAfterLaunchSha256 must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_current_iteration_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultCurrentLogPath, $currentLogPath)) -Detail 'run-result.json GodotLogCurrentIterationPath must match autoslay-summary.json'
-            Add-Check -Name "${runName}_run_result_current_iteration_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $runResult -Name 'GodotLogCurrentIterationSha256' -DefaultValue ''), $currentLogSha256)) -Detail 'run-result.json GodotLogCurrentIterationSha256 must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_current_iteration_log_length_matches_summary" -Passed ($resultCurrentLogLengthBytes -eq $currentLogLengthBytes) -Detail 'run-result.json GodotLogCurrentIterationLengthBytes must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_current_iteration_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultCurrentLogSha256, $currentLogSha256)) -Detail 'run-result.json GodotLogCurrentIterationSha256 must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_audit_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAuditPath, $auditPath)) -Detail 'run-result.json GodotLogAuditPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_sts1_mode_check_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultSts1ModeCheckPath, $sts1ModeCheckPath)) -Detail 'run-result.json Sts1ModeLogCheckPath must match autoslay-summary.json'
             $mainMenuObservation = Get-JsonValue -Object $runResult -Name 'MainMenuObservation' -DefaultValue $null
@@ -971,7 +1068,14 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                 Add-Check -Name "${runName}_run_result_runtime_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'runtime observation must not see stale pre-existing SlayTheSpire2 processes'
                 Add-Check -Name "${runName}_run_result_runtime_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runtimeObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'RuntimeObservation.MaxStaleProcessCount must be 0'
                 Add-Check -Name "${runName}_run_result_runtime_log_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.LogObserved must be true'
-                Add-Check -Name "${runName}_run_result_runtime_log_grew" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false)) -Detail 'RuntimeObservation.LogGrew must be true so a retained static godot.log cannot satisfy runtime health'
+                $runtimeObservationLogGrew = [bool](Get-JsonValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false)
+                $runtimeObservationInitialLogLength = [long](Get-JsonValue -Object $runtimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1)
+                $runtimeObservationFinalLogLength = [long](Get-JsonValue -Object $runtimeObservation -Name 'LogFinalLengthBytes' -DefaultValue -1)
+                Add-Check -Name "${runName}_run_result_runtime_log_grew" -Passed $runtimeObservationLogGrew -Detail 'RuntimeObservation.LogGrew must be true so a retained static godot.log cannot satisfy runtime health'
+                Add-Check -Name "${runName}_run_result_runtime_log_initial_length_present" -Passed ((Test-JsonProperty -Object $runtimeObservation -Name 'LogInitialLengthBytes') -and $runtimeObservationInitialLogLength -ge 0) -Detail 'RuntimeObservation.LogInitialLengthBytes must retain the pre-runtime log length'
+                Add-Check -Name "${runName}_run_result_runtime_log_final_length_present" -Passed ((Test-JsonProperty -Object $runtimeObservation -Name 'LogFinalLengthBytes') -and $runtimeObservationFinalLogLength -ge 0) -Detail 'RuntimeObservation.LogFinalLengthBytes must retain the post-runtime log length'
+                Add-Check -Name "${runName}_run_result_runtime_log_length_growth_matches_log_grew" -Passed ($runtimeObservationLogGrew -and $runtimeObservationInitialLogLength -ge 0 -and $runtimeObservationFinalLogLength -gt $runtimeObservationInitialLogLength) -Detail "RuntimeObservation.LogGrew=true must be backed by final log length growth; initial=$runtimeObservationInitialLogLength final=$runtimeObservationFinalLogLength"
+                Add-Check -Name "${runName}_runtime_probe_samples_log_growth_matches_runtime_observation" -Passed ($runtimeObservationLogGrew -and $runtimeObservationInitialLogLength -ge 0 -and $runtimeProbeRuntimeMaxLogLength -gt $runtimeObservationInitialLogLength) -Detail "runtime-phase probe sample LogLengthBytes must exceed RuntimeObservation.LogInitialLengthBytes; initial=$runtimeObservationInitialLogLength maxRuntimeSample=$runtimeProbeRuntimeMaxLogLength"
                 Add-Check -Name "${runName}_run_result_runtime_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'RuntimeObservation.NoLogGrowthTimeoutExceeded must be false'
             }
         }
@@ -997,6 +1101,9 @@ if (-not [string]::IsNullOrWhiteSpace($OutFile)) {
         Passed = $passed
         EvidenceDir = $resolvedEvidenceDir
         MinRuns = $MinRuns
+        ExpectedAncientIds = $expectedAncientIdsForCoverage
+        ObservedAncientIds = $observedAncientIds
+        MissingExpectedAncientIds = $missingExpectedAncientIds
         EventTraversalRequired = -not [bool]$AllowMissingEventTraversal
         EventTraversalObserved = $eventTraversalObserved
         Checks = $checks

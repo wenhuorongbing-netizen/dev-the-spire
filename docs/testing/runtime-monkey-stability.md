@@ -232,6 +232,7 @@ After the packet is captured, verify it with:
 .\scripts\check-spire-plus-autoslay-packet.ps1 `
   -EvidenceDir "<evidence>" `
   -MinRuns 1000 `
+  -ExpectedAncientIds VAKUU,URDA,MORVI,LOTHA `
   -ExpectedPackageVersion v0.1.0-private-beta.87 `
   -ExpectedGameVersion 0.107.0 `
   -ExpectedRitsuLibVersion 0.4.24 `
@@ -241,6 +242,10 @@ After the packet is captured, verify it with:
   -FailOnMismatch
 ```
 
+Pass multiple expected Ancient ids as a comma-separated `-ExpectedAncientIds`
+value; the verifier splits those tokens so process-launched test wrappers can
+exercise the same target-coverage checks as an interactive PowerShell run.
+
 This verifier is no-launch only. It rejects packets that do not identify
 `GameNativeAutoSlay`, do not record structured launcher/mod-hook provenance for
 `AutoSlayer.Start(seed, logFile)`, do not bind the retained
@@ -249,16 +254,21 @@ and source-version summary, omit the explicit package/game/Ritsu/patch target
 switches, duplicate or drop planned seeds, place per-run logs outside the
 evidence folder, lack per-seed run-result JSON, clean pass/failure state, log
 hashes, `RuntimeProbeSamplesPath`, clean `MainMenuObservation` and
-`RuntimeObservation` records including runtime `LogGrew: true`, parseable ordered run-result timestamps,
-`main-menu` and `runtime` probe phases, unknown process start-time counts,
+`RuntimeObservation` records including runtime `LogGrew: true`, parseable
+ordered run-result timestamps, `main-menu` and `runtime` probe phases, probe
+sample `SampledAt`, `LogExists`, `LogLengthBytes`, and retained
+`LogLastWriteTimeUtc` fields, runtime sample `LogLengthBytes` growth beyond
+`RuntimeObservation.LogInitialLengthBytes`, unknown process start-time counts,
 ambiguous current-process counts, before/after/current Godot log-slice proof,
 clean audit recomputation, StS1 mode binding, `EventKind: Ancient` /
-`AncientId`, or ordered event-room traversal markers such as `Entering Event room`,
-`Detected Ancient event, clicking through dialogue`, and
-`Selecting event option:`. Use a smaller `-MinRuns` only for temporary parser or
-fixture tests; a real game-native monkey proof should use the intended proof
-count. A single-seed fixture packet is not batch proof; the verifier must fail
-when `-MinRuns` is higher than the retained plan and summary run count.
+`AncientId`, requested `-ExpectedAncientIds` coverage, or ordered event-room
+traversal markers such as `Entering Event room`, `Detected Ancient event,
+clicking through dialogue`, and `Selecting event option:`. Use a smaller
+`-MinRuns` only for temporary parser or fixture tests; a real game-native
+monkey proof should use the intended proof count plus the intended target
+Ancient id coverage. A single-seed fixture packet is not batch proof; the verifier must fail when `-MinRuns` is higher than the retained plan and summary
+run count, and it must fail when any requested `-ExpectedAncientIds` value is
+missing from the retained summary runs.
 
 If a launched AutoSlay batch fails, triage the retained packet without launching
 anything:
@@ -276,7 +286,8 @@ refuses to route source ownership from `godot.log.current-iteration` unless
 bytes. It also reports missing launcher invocation, missing or unhealthy
 runtime probe samples, missing `main-menu` / `runtime` probe phases, invalid or
 reversed run-result timestamps, missing or unhealthy `MainMenuObservation` /
-`RuntimeObservation`, `EventKind: Ancient` / `AncientId`, sidecar log,
+`RuntimeObservation`, runtime probe `LogLengthBytes` drift from
+`RuntimeObservation.LogGrew`, `EventKind: Ancient` / `AncientId`, sidecar log,
 completion/failure marker, or ordered Ancient event traversal as
 `RuntimeHarness` evidence defects first. This makes failed AutoSlay packets
 useful for diagnosis, but it still does not turn a failed or source-only packet

@@ -875,7 +875,50 @@ function Analyze-Iteration {
                 }
             }
 
-            $logTextTrustedForOwner = [bool]$sliceBinding.SliceMatches -and $offsetMatchesBeforeLength
+            $autoSlayLogMetadataMatches = $true
+            if ($isGameNativeAutoSlay) {
+                $missingLogMetadata = [System.Collections.Generic.List[string]]::new()
+                $mismatchedLogMetadata = [System.Collections.Generic.List[string]]::new()
+                $logMetadataChecks = @(
+                    [pscustomobject]@{ Label = 'GodotLogBefore'; Path = $beforeLogCandidate; LengthField = 'GodotLogBeforeLengthBytes'; ShaField = 'GodotLogBeforeSha256' },
+                    [pscustomobject]@{ Label = 'GodotLogAfterLaunch'; Path = $fullLogCandidate; LengthField = 'GodotLogAfterLaunchLengthBytes'; ShaField = 'GodotLogAfterLaunchSha256' },
+                    [pscustomobject]@{ Label = 'GodotLogCurrentIteration'; Path = $currentIterationLogCandidate; LengthField = 'GodotLogCurrentIterationLengthBytes'; ShaField = 'GodotLogCurrentIterationSha256' }
+                )
+
+                foreach ($metadataCheck in $logMetadataChecks) {
+                    $recordedLength = [long](Get-JsonValue -Object $result -Name $metadataCheck.LengthField -DefaultValue -1)
+                    $recordedSha256 = [string](Get-JsonValue -Object $result -Name $metadataCheck.ShaField -DefaultValue '')
+                    if (-not (Test-JsonProperty -Object $result -Name $metadataCheck.LengthField) -or $recordedLength -lt 0) {
+                        $missingLogMetadata.Add($metadataCheck.LengthField) | Out-Null
+                    } else {
+                        $actualLength = [long](Get-Item -LiteralPath $metadataCheck.Path).Length
+                        if ($recordedLength -ne $actualLength) {
+                            $mismatchedLogMetadata.Add("$($metadataCheck.LengthField): recorded=$recordedLength actual=$actualLength") | Out-Null
+                        }
+                    }
+
+                    if ([string]::IsNullOrWhiteSpace($recordedSha256)) {
+                        $missingLogMetadata.Add($metadataCheck.ShaField) | Out-Null
+                    } else {
+                        $actualSha256 = Get-FileSha256OrEmpty -Path $metadataCheck.Path
+                        if (-not [System.StringComparer]::OrdinalIgnoreCase.Equals($recordedSha256, $actualSha256)) {
+                            $mismatchedLogMetadata.Add("$($metadataCheck.ShaField): recorded=$recordedSha256 actual=$actualSha256") | Out-Null
+                        }
+                    }
+                }
+
+                if ($missingLogMetadata.Count -gt 0) {
+                    $autoSlayLogMetadataMatches = $false
+                    Add-Finding -Findings $findings -Signal 'autoslay_godot_log_metadata_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json is missing retained log metadata: $($missingLogMetadata -join ', ')." -NextStep 'Record before/after/current Godot log length and SHA256 fields before routing AutoSlay evidence to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                }
+
+                if ($mismatchedLogMetadata.Count -gt 0) {
+                    $autoSlayLogMetadataMatches = $false
+                    Add-Finding -Findings $findings -Signal 'autoslay_godot_log_metadata_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json log metadata does not match retained files: $($mismatchedLogMetadata -join '; ')." -NextStep 'Regenerate or reject the packet; do not route ownership from log files whose retained byte metadata has drifted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                }
+            }
+
+            $logTextTrustedForOwner = [bool]$sliceBinding.SliceMatches -and $offsetMatchesBeforeLength -and $autoSlayLogMetadataMatches
             if (-not [bool]$sliceBinding.SliceMatches) {
                 $nextStep = if ($isGameNativeAutoSlay) {
                     'Use only byte-bound current-iteration slices for AutoSlay source routing, then fix evidence retention before trusting packet evidence.'
@@ -966,7 +1009,7 @@ function Analyze-Iteration {
             Add-Finding -Findings $findings -Signal 'autoslay_run_result_timestamp_order_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json has StartTimestamp later than EndTimestamp; start='$startTimestampText' end='$endTimestampText'." -NextStep 'Fix AutoSlay run-result timestamp capture before using duration or ownership routing from this packet.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
-        if (-not (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf)) {
+        if ([string]::IsNullOrWhiteSpace($probeSamplesCandidate) -or -not (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf)) {
             Add-Finding `
                 -Findings $findings `
                 -Signal 'autoslay_runtime_probe_samples_missing' `
@@ -982,6 +1025,9 @@ function Analyze-Iteration {
                 $probeSamples = @($probeSamplesParsed)
                 $requiredProbeFields = @(
                     'Phase',
+                    'SampledAt',
+                    'LogExists',
+                    'LogLengthBytes',
                     'ProcessId',
                     'ProcessObserved',
                     'MainWindowObserved',
@@ -991,6 +1037,8 @@ function Analyze-Iteration {
                     'CurrentProcessCount',
                     'UnknownStartTimeProcessCount',
                     'AmbiguousCurrentProcessCount')
+                $requiredRetainedProbeFields = @(
+                    'LogLastWriteTimeUtc')
 
                 if ($probeSamples.Count -eq 0) {
                     Add-Finding `
@@ -1002,26 +1050,23 @@ function Analyze-Iteration {
                         -NextStep 'Retain the sampled process/window/log timeline before classifying gameplay source.' `
                         -Confidence 'high' `
                         -EvidenceFiles $evidenceFiles
-                } elseif (-not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Responding') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'CurrentProcessCount') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'UnknownStartTimeProcessCount') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'AmbiguousCurrentProcessCount')) {
-                    $missingProbeFields = @($requiredProbeFields | Where-Object {
-                        -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name $_)
-                    })
+                } elseif (@($requiredProbeFields | Where-Object { -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name $_) }).Count -gt 0 -or
+                    @($requiredRetainedProbeFields | Where-Object { -not (Test-AllJsonPropertiesRetained -Items $probeSamples -Name $_) }).Count -gt 0) {
+                    $missingProbeFields = @(
+                        @($requiredProbeFields | Where-Object {
+                            -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name $_)
+                        })
+                        @($requiredRetainedProbeFields | Where-Object {
+                            -not (Test-AllJsonPropertiesRetained -Items $probeSamples -Name $_)
+                        })
+                    )
                     Add-Finding `
                         -Findings $findings `
                         -Signal 'autoslay_runtime_probe_samples_incomplete' `
                         -Severity 'blocking' `
                         -OwnerArea 'RuntimeHarness' `
                         -Rationale "GameNativeAutoSlay runtime-probe-samples.json is missing required fields: $($missingProbeFields -join ', ')." `
-                        -NextStep 'Record Phase, ProcessId, ProcessObserved, MainWindowObserved, HungWindow, Responding, StaleProcessCount, CurrentProcessCount, UnknownStartTimeProcessCount, and AmbiguousCurrentProcessCount for every probe sample.' `
+                        -NextStep 'Record Phase, SampledAt, LogExists, LogLengthBytes, LogLastWriteTimeUtc, ProcessId, ProcessObserved, MainWindowObserved, HungWindow, Responding, StaleProcessCount, CurrentProcessCount, UnknownStartTimeProcessCount, and AmbiguousCurrentProcessCount for every probe sample.' `
                         -Confidence 'high' `
                         -EvidenceFiles $evidenceFiles
                 } else {
@@ -1081,6 +1126,29 @@ function Analyze-Iteration {
                         if ($resultProcessId -le 0 -or $observedProcessIds[0] -ne $resultProcessId) {
                             Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_id_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime probe samples bind to process id $($observedProcessIds[0]), but run-result.json records ProcessId=$resultProcessId." -NextStep 'Fix AutoSlay process/result PID binding before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                         }
+                    }
+
+                    $probeRuntimeObservation = if ($result) { Get-JsonValue -Object $result -Name 'RuntimeObservation' -DefaultValue $null } else { $null }
+                    $runtimeObservationLogGrew = $null -ne $probeRuntimeObservation -and [bool](Get-JsonValue -Object $probeRuntimeObservation -Name 'LogGrew' -DefaultValue $false)
+                    $runtimeObservationInitialLogLength = if ($null -ne $probeRuntimeObservation) { [long](Get-JsonValue -Object $probeRuntimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1) } else { -1L }
+                    $runtimeObservationFinalLogLength = if ($null -ne $probeRuntimeObservation) { [long](Get-JsonValue -Object $probeRuntimeObservation -Name 'LogFinalLengthBytes' -DefaultValue -1) } else { -1L }
+                    $runtimeProbeLogLengths = @($probeSamples |
+                        Where-Object {
+                            [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'runtime', [System.StringComparison]::Ordinal) -and
+                            [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                        } |
+                        ForEach-Object { [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) } |
+                        Where-Object { $_ -ge 0 })
+                    $runtimeProbeMaxLogLength = if ($runtimeProbeLogLengths.Count -gt 0) {
+                        [long](@($runtimeProbeLogLengths | Sort-Object -Descending)[0])
+                    } else {
+                        -1L
+                    }
+                    if ($runtimeObservationLogGrew -and
+                        ($runtimeObservationInitialLogLength -lt 0 -or
+                            $runtimeObservationFinalLogLength -le $runtimeObservationInitialLogLength -or
+                            $runtimeProbeMaxLogLength -le $runtimeObservationInitialLogLength)) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_log_growth_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "RuntimeObservation.LogGrew=true is not backed by retained runtime sample LogLengthBytes; initial=$runtimeObservationInitialLogLength final=$runtimeObservationFinalLogLength maxRuntimeSample=$runtimeProbeMaxLogLength." -NextStep 'Regenerate the AutoSlay packet with runtime probe samples whose log-length timeline proves the runtime log growth claim.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
                 }
             } catch {
