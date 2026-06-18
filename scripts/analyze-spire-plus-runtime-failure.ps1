@@ -426,13 +426,19 @@ function Analyze-Iteration {
     $failureCodes = if ($result) { @((Get-JsonValue -Object $result -Name 'FailureReasonCodes' -DefaultValue @())) } else { @() }
     $hangSignals = if ($result) { @((Get-JsonValue -Object $result -Name 'HangSignals' -DefaultValue @())) } else { @() }
 
-    if ($iterationResultMissing -and $null -eq $SummaryResult) {
+    if ($iterationResultMissing) {
+        $missingResultRationale = if ($null -ne $SummaryResult) {
+            'iteration-result.json is missing or could not be parsed. monkey-summary.json provided a fallback row for routing, but it is not the canonical per-iteration evidence artifact.'
+        } else {
+            'iteration-result.json is missing or could not be parsed, and monkey-summary.json did not provide a usable iteration result.'
+        }
+
         Add-Finding `
             -Findings $findings `
             -Signal 'iteration_result_missing_or_invalid' `
             -Severity 'blocking' `
             -OwnerArea 'RuntimeHarness' `
-            -Rationale 'iteration-result.json is missing or could not be parsed, and monkey-summary.json did not provide a usable iteration result.' `
+            -Rationale $missingResultRationale `
             -NextStep 'Fix evidence retention or rerun the packet after validation lanes are unpaused; do not classify gameplay behavior from an incomplete iteration packet.' `
             -Confidence 'high' `
             -EvidenceFiles @($resultPath, $logCandidate, $auditCandidate, $probeSamplesCandidate, $sts1ModeCandidate)

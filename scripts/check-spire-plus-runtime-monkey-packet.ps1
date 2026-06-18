@@ -98,6 +98,29 @@ function Contains-Text {
     return $Text.IndexOf($Needle, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 }
 
+function Get-CanonicalCommandAckPattern {
+    param([AllowEmptyString()][string]$Command)
+
+    if ([string]::IsNullOrWhiteSpace($Command)) {
+        return ''
+    }
+
+    if ($Command -match '(?i)^\s*spireplus_test_ancient\s+VAKUU\s+confirm\s+fight\b') {
+        return '\[SPIREPLUS-EVIDENCE\]\s+VakuuFight\s+fight_option_shown\b'
+    }
+
+    if ($Command -match '(?i)^\s*spireplus_test_ancient\s+([A-Z0-9_]+)\s+confirm\b') {
+        $target = $Matches[1].ToUpperInvariant()
+        if ($target.StartsWith('EZMB_', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $target = $target.Substring(5)
+        }
+
+        return "\[Spire Plus\] Starting unsaved live-test run for $([regex]::Escape($target)) Ancient UI evidence\."
+    }
+
+    return ''
+}
+
 function Get-PatchCountLineHits {
     param(
         [AllowEmptyString()][string]$Text,
@@ -593,6 +616,30 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_current_iteration_log_matches_scan_offset" -Passed ([string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) -Detail 'godot.log.current-iteration must match godot.log.after-launch from LogScanOffsetBytes, ignoring only trailing newline differences'
             }
 
+            $resultCommandAckRequiredForLog = [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
+            $resultCommandAckPatternForLog = [string](Get-JsonValue -Object $iterationResult -Name 'CommandAckPattern' -DefaultValue '')
+            $resultCommandAckPatternRetainedForLog = -not [string]::IsNullOrWhiteSpace($resultCommandAckPatternForLog)
+            Add-Check -Name "${iterationName}_command_ack_required_matches_pattern" -Passed ($resultCommandAckRequiredForLog -eq $resultCommandAckPatternRetainedForLog) -Detail 'CommandAckRequired must equal whether CommandAckPattern is retained'
+            if ($resultCommandAckRequiredForLog -or -not [string]::IsNullOrWhiteSpace($resultCommandAckPatternForLog)) {
+                $commandAckPatternPresent = $resultCommandAckPatternRetainedForLog
+                Add-Check -Name "${iterationName}_command_ack_pattern_present_when_required" -Passed $commandAckPatternPresent -Detail 'CommandAckRequired packets must retain the regex used to prove the command acknowledgement'
+
+                $resultCommandForAck = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
+                $canonicalCommandAckPattern = Get-CanonicalCommandAckPattern -Command $resultCommandForAck
+                if (-not [string]::IsNullOrWhiteSpace($canonicalCommandAckPattern)) {
+                    Add-Check -Name "${iterationName}_command_ack_pattern_matches_canonical_command" -Passed ([string]::Equals($resultCommandAckPatternForLog, $canonicalCommandAckPattern, [System.StringComparison]::Ordinal)) -Detail 'CommandAckPattern must match the canonical pattern for known built-in commands'
+                }
+
+                if ($currentIterationLogExists -and $commandAckPatternPresent) {
+                    try {
+                        $commandAckObservedInCurrentLog = [regex]::IsMatch([System.IO.File]::ReadAllText($currentIterationLogPath), $resultCommandAckPatternForLog)
+                        Add-Check -Name "${iterationName}_command_ack_pattern_matches_current_iteration_log" -Passed $commandAckObservedInCurrentLog -Detail 'CommandAckPattern must match the retained current-iteration log slice'
+                    } catch {
+                        Add-Check -Name "${iterationName}_command_ack_pattern_regex_valid" -Passed $false -Detail "invalid CommandAckPattern regex: $($_.Exception.Message)"
+                    }
+                }
+            }
+
             Add-Check -Name "${iterationName}_result_audit_clean" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'AuditClean' -DefaultValue $false)) -Detail 'AuditClean must be true'
             Add-Check -Name "${iterationName}_result_expectation_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'ExpectationPassed' -DefaultValue $false)) -Detail 'ExpectationPassed must be true'
             Add-Check -Name "${iterationName}_result_sts1_mode_verifier_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'Sts1ModeVerifierPassed' -DefaultValue $false)) -Detail 'Sts1ModeVerifierPassed must be true'
@@ -633,6 +680,10 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 $summaryScenarioTag = [string](Get-JsonValue -Object $summaryForIteration -Name 'ScenarioTag' -DefaultValue '')
                 $resultOwnerArea = [string](Get-JsonValue -Object $iterationResult -Name 'OwnerArea' -DefaultValue '')
                 $summaryOwnerArea = [string](Get-JsonValue -Object $summaryForIteration -Name 'OwnerArea' -DefaultValue '')
+                $resultCommandAckPattern = [string](Get-JsonValue -Object $iterationResult -Name 'CommandAckPattern' -DefaultValue '')
+                $summaryCommandAckPattern = [string](Get-JsonValue -Object $summaryForIteration -Name 'CommandAckPattern' -DefaultValue '')
+                $resultCommandAckRequired = [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
+                $summaryCommandAckRequired = [bool](Get-JsonValue -Object $summaryForIteration -Name 'CommandAckRequired' -DefaultValue $false)
                 $resultPassed = [bool](Get-JsonValue -Object $iterationResult -Name 'Passed' -DefaultValue $false)
                 $summaryPassed = [bool](Get-JsonValue -Object $summaryForIteration -Name 'Passed' -DefaultValue $false)
                 $resultCommandAckObserved = [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckObserved' -DefaultValue $false)
@@ -642,6 +693,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_summary_result_command_selection_mode_matches_iteration" -Passed ([string]::Equals($summaryCommandSelectionMode, $resultCommandSelectionMode, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results CommandSelectionMode must match iteration-result.json'
                 Add-Check -Name "${iterationName}_summary_result_scenario_tag_matches_iteration" -Passed ([string]::Equals($summaryScenarioTag, $resultScenarioTag, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results ScenarioTag must match iteration-result.json'
                 Add-Check -Name "${iterationName}_summary_result_owner_area_matches_iteration" -Passed ([string]::Equals($summaryOwnerArea, $resultOwnerArea, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results OwnerArea must match iteration-result.json'
+                Add-Check -Name "${iterationName}_summary_result_command_ack_pattern_matches_iteration" -Passed ([string]::Equals($summaryCommandAckPattern, $resultCommandAckPattern, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results CommandAckPattern must match iteration-result.json'
+                Add-Check -Name "${iterationName}_summary_result_command_ack_required_matches_iteration" -Passed ($summaryCommandAckRequired -eq $resultCommandAckRequired) -Detail 'monkey-summary.json Results CommandAckRequired must match iteration-result.json'
                 Add-Check -Name "${iterationName}_summary_result_passed_matches_iteration" -Passed ($summaryPassed -eq $resultPassed) -Detail 'monkey-summary.json Results Passed must match iteration-result.json'
                 Add-Check -Name "${iterationName}_summary_result_command_ack_observed_matches_iteration" -Passed ($summaryCommandAckObserved -eq $resultCommandAckObserved) -Detail 'monkey-summary.json Results CommandAckObserved must match iteration-result.json'
             }

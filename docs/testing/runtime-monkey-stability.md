@@ -207,7 +207,14 @@ the retained plan and summary, then binds each retained
 `PlannedCommands` row and `monkey-summary.json` `Results` row by iteration
 number. The binding includes the root `Scenario`, `CommandSelectionMode`,
 command, command index, scenario tag, owner area, command acknowledgement
-pattern, pass state, and acknowledgement result. `VakuuFightSmoke` packets must
+pattern, required flag, pass state, and acknowledgement result. Summary
+`Results` rows must retain the same command acknowledgement pattern and required
+flag as `iteration-result.json`, and `CommandAckRequired` must equal whether a
+`CommandAckPattern` is retained. For known built-in commands, the retained
+`CommandAckPattern` must also match the runner's canonical command pattern.
+When a command acknowledgement is required, the checker replays the retained
+pattern against `godot.log.current-iteration`; `CommandAckObserved=true` in JSON
+is not enough without the source-backed log line. `VakuuFightSmoke` packets must
 contain only `vakuu-fight` planned iterations. A 1000-iteration
 `AncientUiPlusVakuuFight` round-robin packet must contain exactly 200
 `vakuu-fight` planned iterations.
@@ -224,8 +231,9 @@ max-no-growth counters. It also requires the retained
 `godot.log.current-iteration`, probe sample paths and sliced-log paths that
 point to the retained standard files inside the current iteration folder,
 `LogScanOffsetBytes` within the copied full log, a `godot.log.current-iteration`
-slice that matches `godot.log.after-launch` from that offset, and no raw probe
-sample with `Responding=false`.
+slice that matches `godot.log.after-launch` from that offset, command
+acknowledgement patterns that match known built-in command regexes and that
+retained slice when required, and no raw probe sample with `Responding=false`.
 A clean packet means those signals stayed healthy for the sampled windows; it
 still does not prove deeper gameplay behavior.
 
@@ -242,7 +250,8 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   `CommandSelectionMode`, `LogInitialLengthBytes`,
   `LogFinalLengthBytes`, `LastLogGrowthAt`, `MaxSecondsWithoutLogGrowth`,
   `MaxConsecutiveUnresponsiveSamples`, `StartupLogProbePassed`,
-  `PostCommandLogProbePassed`, `CommandAckObserved`,
+  `PostCommandLogProbePassed`, `CommandAckRequired`, `CommandAckPattern`,
+  `CommandAckObserved`,
   `ResponsivenessProbePassed`, current-slice offset binding, `HangSignals`, and
   `FailureReasonCodes`.
 - Each iteration retains `runtime-probe-samples.json` with the sampled
@@ -255,8 +264,12 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
 
 The built-in `spireplus_test_ancient ... confirm` commands require the
 source-backed acknowledgement line from
-`SpirePlusAncientLiveTestConsoleCmd.RunSetup.cs`: the copied log must show the
-unsaved live-test run starting for the requested Ancient.
+`SpirePlusAncientLiveTestConsoleCmd.RunSetup.cs`: normal Ancient setup commands
+must show the unsaved live-test run starting for the requested Ancient. The
+`spireplus_test_ancient VAKUU confirm fight` command is stricter: it proves the
+forced fight-option setup only with the `VakuuFightService.Entry.cs` release
+evidence line `[SPIREPLUS-EVIDENCE] VakuuFight fight_option_shown`, not with the
+generic unsaved live-test setup line.
 
 The triage analyzer maps retained signals to owner areas. It reads
 `godot.log.current-iteration` first when present, falls back to the full copied
@@ -265,7 +278,10 @@ from `OwnerAreaFromLog` and `OwnerAreaFromCommand`. When `LogScanOffsetBytes` is
 available, the analyzer validates the retained current-iteration slice against
 the full copied log and reports a `RuntimeHarness` blocker if they disagree; for
 owner routing, a valid offset-derived slice is preferred over a stale retained
-slice. For hung processes, unclassified retained failures, audit hits, Spire
+slice. If `iteration-result.json` is missing or invalid, `monkey-summary.json`
+may still provide a fallback row for routing, but the analyzer reports a
+`RuntimeHarness` blocker because summary data does not replace the canonical
+per-iteration artifact. For hung processes, unclassified retained failures, audit hits, Spire
 Plus error/exception hits, and co-op override failures, explicit log-derived
 package/runtime drift, StS1, preview-tool, or multiplayer-policy signatures take
 precedence over the planned command owner. Package/runtime drift classification
