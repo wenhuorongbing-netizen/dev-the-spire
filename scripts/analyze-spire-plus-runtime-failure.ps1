@@ -1199,10 +1199,24 @@ function Analyze-Iteration {
 
     $isRuntimeMonkeyResult = -not $isGameNativeAutoSlay -and
         $result -and
-        (Test-JsonProperty -Object $result -Name 'HangProbeSchemaVersion') -and
-        (Test-JsonProperty -Object $result -Name 'RuntimeProbeSamplesPath')
+        (Test-JsonProperty -Object $result -Name 'HangProbeSchemaVersion')
+    $runtimeMonkeyProbeEvidenceInvalid = $false
     if ($isRuntimeMonkeyResult) {
+        if ([string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $result -Name 'RuntimeProbeSamplesPath' -DefaultValue ''))) {
+            $runtimeMonkeyProbeEvidenceInvalid = $true
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'runtime_monkey_probe_samples_path_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'Runtime monkey iteration-result.json did not retain RuntimeProbeSamplesPath, so process/window samples are not bound to the result artifact.' `
+                -NextStep 'Fix RuntimeProbeSamplesPath retention and rerun the packet after validation lanes are unpaused.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        }
+
         if (-not (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf)) {
+            $runtimeMonkeyProbeEvidenceInvalid = $true
             Add-Finding `
                 -Findings $findings `
                 -Signal 'runtime_monkey_probe_samples_missing' `
@@ -1229,6 +1243,7 @@ function Analyze-Iteration {
                     'AmbiguousCurrentProcessCount')
 
                 if ($probeSamples.Count -eq 0) {
+                    $runtimeMonkeyProbeEvidenceInvalid = $true
                     Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_samples_empty' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey runtime-probe-samples.json has no process/window/log samples.' -NextStep 'Retain the sampled process/window/log timeline before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                 } elseif (-not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -or
                     -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -or
@@ -1243,6 +1258,7 @@ function Analyze-Iteration {
                     $missingProbeFields = @($requiredProbeFields | Where-Object {
                         -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name $_)
                     })
+                    $runtimeMonkeyProbeEvidenceInvalid = $true
                     Add-Finding `
                         -Findings $findings `
                         -Signal 'runtime_monkey_probe_samples_incomplete' `
@@ -1270,26 +1286,32 @@ function Analyze-Iteration {
                     $runtimeObservationSampleCount = if ($null -ne $runtimeObservation) { [int](Get-JsonValue -Object $runtimeObservation -Name 'Samples' -DefaultValue -1) } else { -1 }
 
                     if ($unknownRuntimeProbePhaseSamples.Count -gt 0) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_unknown_phase' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey probe samples include phase values outside StartupMainMenu/PostCommandRuntime; unknownCount=$($unknownRuntimeProbePhaseSamples.Count)." -NextStep 'Fix runtime probe phase labeling before using the packet for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if ($startupMainMenuProbeSamples.Count -eq 0) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_startup_phase_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey probe samples never retained a StartupMainMenu sample.' -NextStep 'Fix main-menu probe sampling so startup and runtime windows are both represented before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if ($postCommandRuntimeProbeSamples.Count -eq 0) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_phase_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey probe samples never retained a PostCommandRuntime sample.' -NextStep 'Fix runtime probe sampling so post-command or idle runtime health is represented before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if ($mainMenuObservationSampleCount -lt 0 -or $startupMainMenuProbeSamples.Count -ne $mainMenuObservationSampleCount) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_startup_sample_count_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "StartupMainMenu probe count does not match MainMenuObservation.Samples; expected=$mainMenuObservationSampleCount actual=$($startupMainMenuProbeSamples.Count)." -NextStep 'Regenerate the packet with retained startup probe samples that bind to MainMenuObservation.Samples.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if ($runtimeObservationSampleCount -lt 0 -or $postCommandRuntimeProbeSamples.Count -ne $runtimeObservationSampleCount) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_sample_count_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "PostCommandRuntime probe count does not match RuntimeObservation.Samples; expected=$runtimeObservationSampleCount actual=$($postCommandRuntimeProbeSamples.Count)." -NextStep 'Regenerate the packet with retained runtime probe samples that bind to RuntimeObservation.Samples.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
                 }
             } catch {
+                $runtimeMonkeyProbeEvidenceInvalid = $true
                 Add-Finding `
                     -Findings $findings `
                     -Signal 'runtime_monkey_probe_samples_invalid' `
@@ -1484,8 +1506,12 @@ function Analyze-Iteration {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'godot.log stopped growing during runtime observation.' -NextStep 'Inspect RuntimeObservation, runtime-probe-samples.json, and the current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
             'process_unresponsive' {
-                $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
-                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The window was reported hung or not responding during observation.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal $signal) -Confidence 'medium' -EvidenceFiles $evidenceFiles
+                if ($runtimeMonkeyProbeEvidenceInvalid) {
+                    Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The window was reported hung or not responding, but runtime monkey process/window probe evidence is missing or invalid.' -NextStep 'Fix runtime-probe-samples.json retention and phase/sample binding before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                } else {
+                    $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
+                    Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The window was reported hung or not responding during observation.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal $signal) -Confidence 'medium' -EvidenceFiles $evidenceFiles
+                }
             }
             'stale_process_observed' {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The retained probe observed a SlayTheSpire2 process that started before this iteration; shared godot.log evidence may be contaminated.' -NextStep 'Close pre-existing game clients, rerun the packet after validation lanes are unpaused, and do not route ownership from this iteration log.' -Confidence 'high' -EvidenceFiles $evidenceFiles

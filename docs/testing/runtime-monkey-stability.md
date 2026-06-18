@@ -498,6 +498,9 @@ generic unsaved live-test setup line.
 
 The triage analyzer maps retained signals to owner areas. It records the planned
 `OwnerAreaHint` separately from `OwnerAreaFromLog` and `OwnerAreaFromCommand`.
+For runtime monkey packets, it treats missing `RuntimeProbeSamplesPath`,
+missing/invalid `runtime-probe-samples.json`, missing phase coverage, and
+phase-count drift as `RuntimeHarness` blockers before source ownership routing.
 When `godot.log.current-iteration` exists, the analyzer requires
 `godot.log.before`, `godot.log.after-launch`, and `LogScanOffsetBytes`;
 otherwise it reports a `RuntimeHarness` blocker and does not route ownership
