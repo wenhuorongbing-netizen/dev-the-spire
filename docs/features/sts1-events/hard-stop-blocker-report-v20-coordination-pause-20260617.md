@@ -14,7 +14,7 @@ Blocked or current-pending in this thread:
 - `O33`: current `v0.107.0` AdditiveBatch1 enabled-mode smoke has since been captured by the shared validation lane and is loader/registration proof only; this thread did not create it.
 - `O26-O29`, `O31-O41`, and `O42-O52`: canary and simple-batch screenshots, result logs, pre/post state, save-load, EN/ZHS render, image/license, parity disposition, and QA rows remain blocked until gameplay evidence exists.
 - `O54-O58`, `O64`, and `O65`: replacement functional proof, multiplayer runtime proof, ZHS screenshots, and independent QA remain blocked until current runtime/gameplay evidence exists.
-- `O72-O81`: owner decisions, no unsupported commit/push, final handoff, and exact scope decisions remain current-pending while validation evidence is incomplete; the latest pushed beta.86 baseline is `eaaeb5a1`, and any pause-safe follow-up edits still need exact-scope recapture before commit or handoff.
+- `O72-O81`: owner decisions, no unsupported commit/push, final handoff, and exact scope decisions remain current-pending while validation evidence is incomplete; the package/runtime beta.86 baseline remains `eaaeb5a1`, newer pushed governance/test follow-up exists through `f686e2f6`, and any dirty files still need exact-scope recapture before commit or handoff.
 - `O82`: release-ready claim absence is static-pass only; it does not make the feature release-ready.
 - `O83-O84`: this report lists blocked gates and the next-run start point, but those rows are a pause summary, not completion.
 
@@ -28,7 +28,8 @@ The reason is shared-runner contamination: multiple same-repo threads were overl
 
 | Evidence | Current fact |
 |---|---|
-| Current HEAD observed in this thread | `c066613e (HEAD -> main, origin/main, origin/HEAD) Guard StS1 current-doc claim summaries` |
+| Current HEAD observed in this thread | `f686e2f6 (HEAD -> main, origin/main, origin/HEAD) Harden runtime monkey packet log slices` |
+| Current worktree observed in this thread | `git status -sb` reports `M tests/EZMicroBalance.Tests/ArchitectureSkeletonGuardTests.cs` and `?? tests/EZMicroBalance.Tests/ArchitectureSkeletonGuardTests.CardPlayContext.cs`; these are treated as unrelated CardPlayContext test-split scope and this event thread did not edit them. |
 | Active goal | `docs/goals/event.md` says the target is incomplete and requires O0-O84 all green or a hard-stop blocker report. |
 | Current project state | `PROJECT_STATE.md` records beta.85 default-Off and CanaryOnly loader proof plus beta.86 AdditiveBatch1 loader/registration proof only and keeps gameplay, save-load, replacement, multiplayer, QA, and handoff gates open. |
 | Current gate split | `docs/features/sts1-events/v19-gate-evidence-map.md` and `docs/features/sts1-events/v19-gate-ledger.csv` keep runtime/gameplay gates blocked or current-pending. |

@@ -100,6 +100,22 @@ function Get-OwnerAreaFromText {
 
     $combined = "$Command`n$Text"
 
+    if ($Text -match '(?i)\b(TypeLoadException|MissingMethodException|MissingFieldException|BaseLib patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift)\b') {
+        return 'PackageRuntimeDrift'
+    }
+
+    if ($Text -match '(?i)\b(StS1|Sts1|Golden Idol|Big Fish|The Cleric|AdditiveBatch1|CanaryOnly|registered-event|Registered act event|Registered shared event|sts1-mode-log-check)\b') {
+        return 'Sts1Events'
+    }
+
+    if ($Text -match '(?i)\b(Crystal Sphere|Transform Preview|Future Peek|preview|prediction_prepared_multiplayer_ui_only|coop_local_ui_preview_enabled)\b') {
+        return 'PreviewTools'
+    }
+
+    if ($Text -match '(?i)\b(coop|co-op|multiplayer|net=multi|coop_gameplay_disabled|coop_combat_hook_disabled|ALLOW_UNVERIFIED_COOP)\b') {
+        return 'MultiplayerPolicy'
+    }
+
     if ($combined -match '(?i)\b(Vakuu|Sere Talon)\b' -and
         $combined -match '(?i)\b(fight_started|child_combat_room_entered|parent_event_resume_success|fallback_map_exit|ParentEventId|prefinished|black.?screen|fade)\b') {
         return 'Ancients.Vakuu.ChildCombatResume'
@@ -160,6 +176,50 @@ function Get-OwnerAreaFromText {
 
     if ($combined -match '(?i)\b(coop|co-op|multiplayer|net=multi|coop_gameplay_disabled|coop_combat_hook_disabled)\b') {
         return 'MultiplayerPolicy'
+    }
+
+    return 'Runtime.Unknown'
+}
+
+function Get-AuditOwnerText {
+    param(
+        [AllowEmptyString()][string]$LogText,
+        [AllowEmptyString()][string]$AuditName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($LogText)) {
+        return $AuditName
+    }
+
+    $ownerRelevantLines = @($LogText -split "`r?`n" | Where-Object {
+        $_ -match '(?i)(ERROR|exception|TypeLoadException|MissingMethodException|MissingFieldException|BaseLib patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift|StS1|Sts1|Golden Idol|Big Fish|The Cleric|AdditiveBatch1|CanaryOnly|registered-event|Registered act event|Registered shared event|Crystal Sphere|Transform Preview|Future Peek|preview|coop|co-op|multiplayer|ALLOW_UNVERIFIED_COOP)'
+    } | Select-Object -First 200)
+
+    if ($ownerRelevantLines.Count -eq 0) {
+        return $AuditName
+    }
+
+    return "$AuditName`n$($ownerRelevantLines -join "`n")"
+}
+
+function Resolve-OwnerArea {
+    param(
+        [AllowEmptyString()][string]$PlannedOwnerArea,
+        [AllowEmptyString()][string]$LogOwnerArea,
+        [AllowEmptyString()][string]$CommandOwnerArea,
+        [switch]$PreferLog
+    )
+
+    $ownerCandidates = if ($PreferLog) {
+        @($LogOwnerArea, $PlannedOwnerArea, $CommandOwnerArea)
+    } else {
+        @($PlannedOwnerArea, $CommandOwnerArea, $LogOwnerArea)
+    }
+
+    foreach ($owner in $ownerCandidates) {
+        if (-not [string]::IsNullOrWhiteSpace($owner) -and $owner -ne 'Runtime.Unknown') {
+            return $owner
+        }
     }
 
     return 'Runtime.Unknown'
@@ -252,7 +312,13 @@ function Analyze-Iteration {
     )
 
     $resultPath = Join-Path $Directory 'iteration-result.json'
-    $logCandidate = Join-Path $Directory 'godot.log.after-launch'
+    $fullLogCandidate = Join-Path $Directory 'godot.log.after-launch'
+    $currentIterationLogCandidate = Join-Path $Directory 'godot.log.current-iteration'
+    $logCandidate = if (Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf) {
+        $currentIterationLogCandidate
+    } else {
+        $fullLogCandidate
+    }
     $auditCandidate = Join-Path $Directory 'godot-log-audit.json'
     $probeSamplesCandidate = Join-Path $Directory 'runtime-probe-samples.json'
     $sts1ModeCandidate = Join-Path $Directory 'sts1-mode-log-check.json'
@@ -269,12 +335,22 @@ function Analyze-Iteration {
     if (Test-Path -LiteralPath $logCandidate -PathType Leaf) {
         $logText = Get-Content -LiteralPath $logCandidate -Raw -Encoding UTF8
     }
+    $logOwnerArea = Get-OwnerAreaFromText -Text $logText -Command ''
+    $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
 
     $auditHits = if (Test-Path -LiteralPath $auditCandidate -PathType Leaf) { Get-AuditHits -Path $auditCandidate } else { @() }
     $failureCodes = if ($result) { @((Get-JsonValue -Object $result -Name 'FailureReasonCodes' -DefaultValue @())) } else { @() }
     $hangSignals = if ($result) { @((Get-JsonValue -Object $result -Name 'HangSignals' -DefaultValue @())) } else { @() }
     $findings = [System.Collections.Generic.List[object]]::new()
-    $evidenceFiles = @($resultPath, $logCandidate, $auditCandidate, $probeSamplesCandidate, $sts1ModeCandidate | Where-Object {
+    $candidateEvidenceFiles = @(
+        $resultPath,
+        $currentIterationLogCandidate,
+        $fullLogCandidate,
+        $auditCandidate,
+        $probeSamplesCandidate,
+        $sts1ModeCandidate
+    )
+    $evidenceFiles = @($candidateEvidenceFiles | Where-Object {
         Test-Path -LiteralPath $_ -PathType Leaf
     })
 
@@ -310,11 +386,11 @@ function Analyze-Iteration {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeStartup' -Rationale 'godot.log stopped growing before main menu.' -NextStep 'Inspect the last retained log lines and probe timestamps; check package/API drift before touching gameplay code.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
             'process_unresponsive' {
-                $owner = if ($resultOwnerArea) { $resultOwnerArea } else { Get-OwnerAreaFromText -Text $logText -Command $command }
+                $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The window was reported hung or not responding during observation.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal $signal) -Confidence 'medium' -EvidenceFiles $evidenceFiles
             }
             'command_ack_missing' {
-                $owner = if ($resultOwnerArea) { $resultOwnerArea } else { Get-OwnerAreaFromText -Text $logText -Command $command }
+                $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The command was sent but the expected source-backed acknowledgement line was absent.' -NextStep 'Verify foreground/DevConsole input delivery first; if input landed, inspect the target command handler and its preconditions.' -Confidence 'medium' -EvidenceFiles $evidenceFiles
             }
             'command_send_failed' {
@@ -342,7 +418,7 @@ function Analyze-Iteration {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'LiveSessionRestore' -Rationale 'The live-session helper failed to restore settings/mods/current runs.' -NextStep 'Inspect restore-state/session-state and fix restore safety before another live run.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
             default {
-                $owner = if ($resultOwnerArea) { $resultOwnerArea } else { Get-OwnerAreaFromText -Text $logText -Command $command }
+                $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
                 Add-Finding -Findings $findings -Signal ([string]$signal) -Severity 'blocking' -OwnerArea $owner -Rationale 'Unclassified retained failure code from iteration-result.json.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal ([string]$signal)) -Confidence 'low' -EvidenceFiles $evidenceFiles
             }
         }
@@ -350,14 +426,16 @@ function Analyze-Iteration {
 
     foreach ($hit in $auditHits) {
         $name = [string]$hit.Name
-        $owner = if ($resultOwnerArea) { $resultOwnerArea } else { Get-OwnerAreaFromText -Text $logText -Command $command }
+        $auditOwnerText = Get-AuditOwnerText -LogText $logText -AuditName $name
+        $auditLogOwnerArea = Get-OwnerAreaFromText -Text $auditOwnerText -Command ''
+        $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $auditLogOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
         $next = Get-NextStepForOwner -OwnerArea $owner -Signal $name
 
         if ($name -match 'TypeLoadException|MissingMethodException|BaseLib patch failure|Creature\.get_ShowsInfiniteHp|BaseLib\.Patches') {
             $owner = 'PackageRuntimeDrift'
             $next = 'Treat this as installed-game/BaseLib/RitsuLib API drift first; compare current game source/API targets and package build before gameplay fixes.'
         } elseif ($name -match 'Spire Plus error/exception') {
-            $owner = if ($resultOwnerArea) { $resultOwnerArea } else { Get-OwnerAreaFromText -Text $logText -Command $command }
+            $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $auditLogOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
             $next = Get-NextStepForOwner -OwnerArea $owner -Signal $name
         } elseif ($name -match 'Godot ERROR line') {
             $next = 'Inspect nearby ERROR lines in godot.log.after-launch; ignore only documented third-party manifest noise already filtered by audit-godot-log.'
@@ -395,7 +473,7 @@ function Analyze-Iteration {
     }
 
     if ($logText -match '(?i)coop_.*override_enabled|ALLOW_UNVERIFIED_COOP') {
-        $owner = if ($resultOwnerArea) { $resultOwnerArea } else { Get-OwnerAreaFromText -Text $logText -Command $command }
+        $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
         Add-Finding -Findings $findings -Signal 'coop_override_enabled_runtime_failure' -Severity 'blocking' -OwnerArea $owner -Rationale 'A co-op unsafe/debug override appears near a runtime failure.' -NextStep 'Treat this as deliberate unsafe two-client debugging; route by feature text and preserve both host/client logs.' -Confidence 'medium' -EvidenceFiles $evidenceFiles
     }
 
@@ -404,7 +482,7 @@ function Analyze-Iteration {
     }
 
     if ($command -match '(?i)spireplus_test_ancient\s+VAKUU' -and (@($hangSignals).Count -gt 0 -or @($failureCodes).Count -gt 0)) {
-        $vakuuOwner = if ($resultOwnerArea) { $resultOwnerArea } else { Get-OwnerAreaFromText -Text $logText -Command $command }
+        $vakuuOwner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea
         Add-Finding -Findings $findings -Signal 'vakuu_command_failed_or_hung' -Severity 'blocking' -OwnerArea $vakuuOwner -Rationale 'The failing iteration targeted Vakuu through the live-test command.' -NextStep (Get-NextStepForOwner -OwnerArea $vakuuOwner -Signal 'vakuu_command_failed_or_hung') -Confidence 'medium' -EvidenceFiles $evidenceFiles
     }
 
@@ -422,6 +500,8 @@ function Analyze-Iteration {
         Command = $command
         ScenarioTag = $scenarioTag
         OwnerAreaHint = $resultOwnerArea
+        OwnerAreaFromLog = $logOwnerArea
+        OwnerAreaFromCommand = $commandOwnerArea
         Signals = @($signals)
         EvidenceFiles = @($evidenceFiles)
         FailureReasonCodes = @($failureCodes)
@@ -493,7 +573,7 @@ $report = [pscustomobject]@{
 }
 
 foreach ($iterationReport in @($iterationReports)) {
-    Write-Output "iteration=$($iterationReport.Iteration) scenario=$($iterationReport.ScenarioTag) owner_hint=$($iterationReport.OwnerAreaHint) passed=$($iterationReport.Passed) findings=$(@($iterationReport.Findings).Count) command='$($iterationReport.Command)'"
+    Write-Output "iteration=$($iterationReport.Iteration) scenario=$($iterationReport.ScenarioTag) owner_hint=$($iterationReport.OwnerAreaHint) owner_log=$($iterationReport.OwnerAreaFromLog) owner_command=$($iterationReport.OwnerAreaFromCommand) passed=$($iterationReport.Passed) findings=$(@($iterationReport.Findings).Count) command='$($iterationReport.Command)'"
     foreach ($finding in @($iterationReport.Findings)) {
         Write-Output "finding severity=$($finding.Severity) confidence=$($finding.Confidence) owner=$($finding.OwnerArea) signal=$($finding.Signal) next='$($finding.NextStep)'"
     }

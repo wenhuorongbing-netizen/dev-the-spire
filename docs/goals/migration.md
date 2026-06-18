@@ -45,7 +45,7 @@ before any later handoff.
 | beta.86 AdditiveBatch1 proof | Current loader/registration pass | `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` reached main menu with BaseLib, RitsuLib, and Spire Plus loaded; 25/25 patches; 30 SavedSpireFields; 10 event types / 14 registration calls; clean audit; retained log verifier 21/0 and packet verifier 45/0. |
 | Tests | Current no-game pass | Isolated `ReleaseEvidenceGateTests` passed 9/0/0; complementary no-build lane passed 480/0/39/519; split coverage is 489 passed / 0 failed / 39 skipped / 528 total. |
 | Opt-in artifact subset | Current pass | 67 passed / 0 failed / 2 skipped / 69 total with release/package artifact tests enabled. |
-| StS1 static/governance lanes | Current pass | Current-doc claims 956/0; v19 gate ledger 534/0; runtime preflight 27/0; static suite 15/0. |
+| StS1 static/governance lanes | Current pass | Current-doc claims 961/0 after post-baseline governance follow-up; v19 gate ledger 534/0; runtime preflight 27/0; static suite 15/0. |
 | Batch 4a/4b migration | Source-level complete | Current patch inventory records 25 migrated `IPatchMethod` patch classes and 142 remaining raw `HarmonyPatch` declarations. |
 | Batch 4c migration | Proposal only | Requires owner approval before any migration work. |
 | Manual proof | Pending | Gameplay, clicked UI, save-load, image rendering, replacement behavior, co-op/fail-closed behavior, independent QA, and tester handoff are still open. |

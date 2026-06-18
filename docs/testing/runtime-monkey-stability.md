@@ -248,7 +248,20 @@ source-backed acknowledgement line from
 `SpirePlusAncientLiveTestConsoleCmd.RunSetup.cs`: the copied log must show the
 unsaved live-test run starting for the requested Ancient.
 
-The triage analyzer maps retained signals to owner areas. Current owner areas
+The triage analyzer maps retained signals to owner areas. It reads
+`godot.log.current-iteration` first when present, falls back to the full copied
+`godot.log.after-launch`, and records the planned `OwnerAreaHint` separately
+from `OwnerAreaFromLog` and `OwnerAreaFromCommand`. For hung processes,
+unclassified retained failures, audit hits, Spire Plus error/exception hits, and
+co-op override failures, explicit log-derived package/runtime drift, StS1,
+preview-tool, or multiplayer-policy signatures take precedence over the planned
+command owner. Package/runtime drift classification is reserved for actual
+mismatch/error signals such as type-load, missing-method, or expectation-drift
+lines, not normal startup package markers. Command-ack failures and Vakuu command
+failures still preserve the planned/command owner unless the log is the only
+useful source.
+
+Current owner areas
 include `RuntimeStartup`, `RuntimeCrash`, `RuntimeHarness`,
 `RuntimeLogAudit`, `PackageRuntimeDrift`, `Sts1Events`, `LiveSessionRestore`,
 `DevConsoleHarness`, `Ancients.Vakuu`, `Ancients.Morvi`, `Ancients.Lotha`,
@@ -268,7 +281,8 @@ When an iteration fails:
 1. Open that iteration's `iteration-result.json`.
 2. Check whether failure is timeout, no log growth before main menu, missing
    process, hung window, command failure, audit hit, or restore failure.
-3. Inspect `godot.log.after-launch` and `godot-log-audit.json`.
+3. Inspect `godot.log.current-iteration`, `godot.log.after-launch`, and
+   `godot-log-audit.json`.
 4. If the log points at Spire Plus source, add or tighten a source guard before
    changing behavior.
 5. If the log points at package/source drift, refresh package evidence before

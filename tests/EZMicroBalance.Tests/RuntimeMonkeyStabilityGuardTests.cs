@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Text.Json;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -259,6 +261,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "monkey-summary.json",
             "iteration-result.json",
             "godot.log.after-launch",
+            "godot.log.current-iteration",
             "godot-log-audit.json",
             "FailureReasonCodes",
             "HangSignals",
@@ -266,7 +269,12 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "Confidence",
             "ScenarioTag",
             "OwnerAreaHint",
+            "OwnerAreaFromLog",
+            "OwnerAreaFromCommand",
             "Get-OwnerAreaFromText",
+            "Get-AuditOwnerText",
+            "Resolve-OwnerArea",
+            "-PreferLog",
             "PackageRuntimeDrift",
             "Sts1Events",
             "LiveSessionRestore",
@@ -294,14 +302,23 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "iteration_result_missing_or_invalid",
             "process_unresponsive",
             "command_ack_missing",
+            "MissingFieldException",
             "MissingMethodException",
             "TypeLoadException",
+            "runtime expectation",
+            "Registered act event",
             "Spire Plus error/exception",
             "coop_gameplay_disabled",
+            "coop_local_ui_preview_enabled",
+            "ALLOW_UNVERIFIED_COOP",
             "blocking_findings=");
 
         Assert.DoesNotContain("Start-Process", analyzer, StringComparison.Ordinal);
         Assert.DoesNotContain("dotnet", analyzer, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Patch application complete:", analyzer, StringComparison.Ordinal);
+        Assert.DoesNotContain("ModPatcher applied", analyzer, StringComparison.Ordinal);
+        Assert.DoesNotContain("package version", analyzer, StringComparison.Ordinal);
+        Assert.DoesNotContain("compat branch", analyzer, StringComparison.Ordinal);
     }
 
     [Fact]
