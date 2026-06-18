@@ -121,6 +121,50 @@ function Get-CanonicalCommandAckPattern {
     return ''
 }
 
+function Get-CanonicalCommandOwnerArea {
+    param([AllowEmptyString()][string]$Command)
+
+    if ($Command -match '(?i)^\s*spireplus_test_ancient\s+([A-Z0-9_]+)\s+confirm\b(.*)$') {
+        $target = $Matches[1].ToUpperInvariant()
+        if ($target.StartsWith('EZMB_', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $target = $target.Substring(5)
+        }
+
+        $tail = $Matches[2]
+        if ($target -eq 'VAKUU' -and $tail -match '(?i)\bfight\b') {
+            return 'Ancients.Vakuu.FightOptionSetup'
+        }
+
+        switch ($target) {
+            'URDA' { return 'Ancients.Urda.MapSaveState' }
+            'MORVI' { return 'Ancients.Morvi.CardPlayState' }
+            'LOTHA' { return 'Ancients.Lotha.CardPlayState' }
+            'VAKUU' { return 'Ancients.Vakuu' }
+        }
+    }
+
+    return ''
+}
+
+function Get-CanonicalCommandScenarioTag {
+    param([AllowEmptyString()][string]$Command)
+
+    if ($Command -match '(?i)^\s*spireplus_test_ancient\s+([A-Z0-9_]+)\s+confirm\b(.*)$') {
+        $target = $Matches[1].ToUpperInvariant()
+        if ($target.StartsWith('EZMB_', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $target = $target.Substring(5)
+        }
+
+        if ($target -eq 'VAKUU' -and $Matches[2] -match '(?i)\bfight\b') {
+            return 'vakuu-fight'
+        }
+
+        return "ancient-ui-$($target.ToLowerInvariant())"
+    }
+
+    return ''
+}
+
 function Get-PatchCountLineHits {
     param(
         [AllowEmptyString()][string]$Text,
@@ -619,14 +663,31 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $resultCommandAckRequiredForLog = [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
             $resultCommandAckPatternForLog = [string](Get-JsonValue -Object $iterationResult -Name 'CommandAckPattern' -DefaultValue '')
             $resultCommandAckPatternRetainedForLog = -not [string]::IsNullOrWhiteSpace($resultCommandAckPatternForLog)
+            $resultCommandForAck = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
+            $canonicalCommandAckPattern = Get-CanonicalCommandAckPattern -Command $resultCommandForAck
+            $canonicalCommandRequiresAck = -not [string]::IsNullOrWhiteSpace($canonicalCommandAckPattern)
+            $canonicalCommandOwnerArea = Get-CanonicalCommandOwnerArea -Command $resultCommandForAck
+            $canonicalCommandScenarioTag = Get-CanonicalCommandScenarioTag -Command $resultCommandForAck
+            if (-not [string]::IsNullOrWhiteSpace($canonicalCommandScenarioTag)) {
+                $resultScenarioTagForCanonical = [string](Get-JsonValue -Object $iterationResult -Name 'ScenarioTag' -DefaultValue '')
+                Add-Check -Name "${iterationName}_scenario_tag_matches_canonical_command" -Passed ([string]::Equals($resultScenarioTagForCanonical, $canonicalCommandScenarioTag, [System.StringComparison]::Ordinal)) -Detail 'ScenarioTag must match the canonical runner classification for known built-in commands'
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($canonicalCommandOwnerArea)) {
+                $resultOwnerAreaForCanonical = [string](Get-JsonValue -Object $iterationResult -Name 'OwnerArea' -DefaultValue '')
+                Add-Check -Name "${iterationName}_owner_area_matches_canonical_command" -Passed ([string]::Equals($resultOwnerAreaForCanonical, $canonicalCommandOwnerArea, [System.StringComparison]::Ordinal)) -Detail 'OwnerArea must match the canonical runner classification for known built-in commands'
+            }
+
             Add-Check -Name "${iterationName}_command_ack_required_matches_pattern" -Passed ($resultCommandAckRequiredForLog -eq $resultCommandAckPatternRetainedForLog) -Detail 'CommandAckRequired must equal whether CommandAckPattern is retained'
-            if ($resultCommandAckRequiredForLog -or -not [string]::IsNullOrWhiteSpace($resultCommandAckPatternForLog)) {
+            if ($canonicalCommandRequiresAck) {
+                Add-Check -Name "${iterationName}_command_ack_required_for_canonical_command" -Passed $resultCommandAckRequiredForLog -Detail 'Known built-in commands with canonical acknowledgement patterns must require command acknowledgement'
+            }
+
+            if ($resultCommandAckRequiredForLog -or $resultCommandAckPatternRetainedForLog -or $canonicalCommandRequiresAck) {
                 $commandAckPatternPresent = $resultCommandAckPatternRetainedForLog
                 Add-Check -Name "${iterationName}_command_ack_pattern_present_when_required" -Passed $commandAckPatternPresent -Detail 'CommandAckRequired packets must retain the regex used to prove the command acknowledgement'
 
-                $resultCommandForAck = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
-                $canonicalCommandAckPattern = Get-CanonicalCommandAckPattern -Command $resultCommandForAck
-                if (-not [string]::IsNullOrWhiteSpace($canonicalCommandAckPattern)) {
+                if ($canonicalCommandRequiresAck) {
                     Add-Check -Name "${iterationName}_command_ack_pattern_matches_canonical_command" -Passed ([string]::Equals($resultCommandAckPatternForLog, $canonicalCommandAckPattern, [System.StringComparison]::Ordinal)) -Detail 'CommandAckPattern must match the canonical pattern for known built-in commands'
                 }
 

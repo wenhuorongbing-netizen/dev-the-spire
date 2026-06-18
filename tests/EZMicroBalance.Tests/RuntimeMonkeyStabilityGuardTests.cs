@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Text.Json;
 using Xunit;
 
@@ -188,6 +189,8 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "LogGrowthProbe",
             "CommandAckPatterns",
             "Get-CanonicalCommandAckPattern",
+            "Get-CanonicalCommandOwnerArea",
+            "Get-CanonicalCommandScenarioTag",
             "plan_unresponsive_sample_threshold_positive",
             "RuntimeProbeSamplesPath",
             "CurrentIterationLogPath",
@@ -202,9 +205,12 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "log_scan_offset_within_full_log",
             "current_iteration_log_matches_scan_offset",
             "command_ack_required_matches_pattern",
+            "command_ack_required_for_canonical_command",
             "command_ack_pattern_present_when_required",
             "command_ack_pattern_matches_canonical_command",
             "command_ack_pattern_matches_current_iteration_log",
+            "scenario_tag_matches_canonical_command",
+            "owner_area_matches_canonical_command",
             "iteration_number_matches_directory",
             "scenario_present",
             "plan_entry_exists",
@@ -327,7 +333,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 .Replace("\"CommandSelectionMode\": \"RoundRobin\"", "\"CommandSelectionMode\": \"Random\"", StringComparison.Ordinal)
                 .Replace("\"CommandIndex\": 0", "\"CommandIndex\": 99", StringComparison.Ordinal)
                 .Replace("\"ScenarioTag\": \"vakuu-fight\"", "\"ScenarioTag\": \"ancient-ui\"", StringComparison.Ordinal)
-                .Replace("\"OwnerArea\": \"Ancients.Vakuu.ChildCombatResume\"", "\"OwnerArea\": \"Ancients.Urda.MapSaveState\"", StringComparison.Ordinal)
+                .Replace("\"OwnerArea\": \"Ancients.Vakuu.FightOptionSetup\"", "\"OwnerArea\": \"Runtime.Unknown\"", StringComparison.Ordinal)
                 .Replace("fight_option_shown", "other_ack", StringComparison.Ordinal);
             File.WriteAllText(resultPath, resultJson);
 
@@ -344,6 +350,8 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("iteration-0001_command_matches_plan status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_command_index_matches_plan status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_command_selection_mode_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_scenario_tag_matches_canonical_command status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_owner_area_matches_canonical_command status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_scenario_tag_matches_plan status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_owner_area_matches_plan status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_command_ack_pattern_matches_plan status=fail", result.Output, StringComparison.Ordinal);
@@ -522,6 +530,93 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 "25");
             Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
             Assert.Contains("iteration-0001_command_ack_pattern_matches_canonical_command status=fail", result.Output, StringComparison.Ordinal);
+            Assert.DoesNotContain("mismatches=0", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsKnownCommandsWithoutCanonicalAckMetadata()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            foreach (var jsonPath in new[]
+                     {
+                         Path.Combine(workdir, "monkey-plan.json"),
+                         Path.Combine(workdir, "monkey-summary.json"),
+                         Path.Combine(workdir, "iteration-0001", "iteration-result.json")
+                     })
+            {
+                var json = ClearCommandAckPatternJsonValues(File.ReadAllText(jsonPath))
+                    .Replace("\"CommandAckRequired\": true", "\"CommandAckRequired\": false", StringComparison.Ordinal);
+                File.WriteAllText(jsonPath, json);
+            }
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_command_ack_required_for_canonical_command status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_command_ack_pattern_present_when_required status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_command_ack_pattern_matches_canonical_command status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsKnownCommandsWithSelfConsistentWrongOwner()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            foreach (var jsonPath in new[]
+                     {
+                         Path.Combine(workdir, "monkey-plan.json"),
+                         Path.Combine(workdir, "monkey-summary.json"),
+                         Path.Combine(workdir, "iteration-0001", "iteration-result.json")
+                     })
+            {
+                var json = File.ReadAllText(jsonPath)
+                    .Replace("Ancients.Vakuu.FightOptionSetup", "Ancients.Vakuu.ChildCombatResume", StringComparison.Ordinal);
+                File.WriteAllText(jsonPath, json);
+            }
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_owner_area_matches_canonical_command status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("mismatches=1", result.Output, StringComparison.Ordinal);
         }
         finally
@@ -593,6 +688,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "FailureReasonCodes",
             "HangSignals",
             "Get-JsonArrayValues",
+            "Test-JsonFileParses",
             "EvidenceFiles",
             "Confidence",
             "ScenarioTag",
@@ -630,6 +726,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "current_iteration_log_slice_mismatch",
             "current_iteration_log_scan_offset_invalid",
             "iteration_result_missing_or_invalid",
+            "godot_log_audit_json_invalid",
             "process_unresponsive",
             "command_ack_missing",
             "Read-TextAfterByteOffset",
@@ -896,6 +993,51 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerReportsInvalidAuditJsonAsHarnessBlocker()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """[]""",
+                """[]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu",
+                "{ invalid audit json");
+            WriteMonkeySummary(workdir, 1);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var iteration = FindIteration(document.RootElement, 1);
+            var auditFinding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_json_invalid");
+
+            Assert.Equal("RuntimeHarness", auditFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("blocking", auditFinding.GetProperty("Severity").GetString());
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void LocalGodotSourceWorkspaceCheckerIsNoLaunchAndGuardsFreshness()
     {
         var checker = ReadRepoText("scripts", "check-local-godot-source-workspace.ps1");
@@ -1009,7 +1151,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     {
         const string command = "spireplus_test_ancient VAKUU confirm fight";
         const string scenarioTag = "vakuu-fight";
-        const string ownerArea = "Ancients.Vakuu.ChildCombatResume";
+        const string ownerArea = "Ancients.Vakuu.FightOptionSetup";
         const string ackPattern = "\\[SPIREPLUS-EVIDENCE\\]\\s+VakuuFight\\s+fight_option_shown\\b";
 
         var iterationDir = Path.Combine(evidenceRoot, "iteration-0001");
@@ -1177,6 +1319,12 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             .GetProperty("OwnerArea")
             .GetString()!;
     }
+
+    private static string ClearCommandAckPatternJsonValues(string json) =>
+        Regex.Replace(
+            json,
+            "\"(?<name>CommandAckPattern|Pattern)\"\\s*:\\s*\"(?:\\\\.|[^\"])*\"",
+            match => $"\"{match.Groups["name"].Value}\": \"\"");
 
     private static (int ExitCode, string Output, string Error) RunPowerShell(string scriptPath, params string[] arguments)
     {

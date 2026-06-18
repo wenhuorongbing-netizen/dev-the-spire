@@ -93,6 +93,26 @@ function Read-JsonOrNull {
     }
 }
 
+function Test-JsonFileParses {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return $false
+    }
+
+    $json = Get-Content -LiteralPath $Path -Raw -Encoding UTF8
+    if ([string]::IsNullOrWhiteSpace($json)) {
+        return $false
+    }
+
+    try {
+        [void]($json | ConvertFrom-Json)
+        return $true
+    } catch {
+        return $false
+    }
+}
+
 function Read-TextAfterByteOffset {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
@@ -349,12 +369,12 @@ function Get-NextStepForOwner {
 function Get-AuditHits {
     param([string]$Path)
 
+    $hits = [System.Collections.Generic.List[object]]::new()
     $audit = Read-JsonOrNull -Path $Path
     if ($null -eq $audit) {
-        return @()
+        return ,$hits
     }
 
-    $hits = [System.Collections.Generic.List[object]]::new()
     foreach ($item in @($audit)) {
         foreach ($hit in (Get-JsonArrayValues -Object $item -Name 'SignatureHits')) {
             if ([int](Get-JsonValue -Object $hit -Name 'Count' -DefaultValue 0) -gt 0) {
@@ -451,7 +471,9 @@ function Analyze-Iteration {
     $logOwnerArea = Get-OwnerAreaFromText -Text $logText -Command ''
     $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
 
-    $auditHits = if (Test-Path -LiteralPath $auditCandidate -PathType Leaf) { Get-AuditHits -Path $auditCandidate } else { [System.Collections.Generic.List[object]]::new() }
+    $auditExists = Test-Path -LiteralPath $auditCandidate -PathType Leaf
+    $auditJsonValid = (-not $auditExists) -or (Test-JsonFileParses -Path $auditCandidate)
+    $auditHits = if ($auditExists) { Get-AuditHits -Path $auditCandidate } else { [System.Collections.Generic.List[object]]::new() }
     $failureCodes = if ($result) { Get-JsonArrayValues -Object $result -Name 'FailureReasonCodes' } else { [System.Collections.Generic.List[object]]::new() }
     $hangSignals = if ($result) { Get-JsonArrayValues -Object $result -Name 'HangSignals' } else { [System.Collections.Generic.List[object]]::new() }
 
@@ -471,6 +493,18 @@ function Analyze-Iteration {
             -NextStep 'Fix evidence retention or rerun the packet after validation lanes are unpaused; do not classify gameplay behavior from an incomplete iteration packet.' `
             -Confidence 'high' `
             -EvidenceFiles @($resultPath, $logCandidate, $auditCandidate, $probeSamplesCandidate, $sts1ModeCandidate)
+    }
+
+    if ($auditExists -and -not $auditJsonValid) {
+        Add-Finding `
+            -Findings $findings `
+            -Signal 'godot_log_audit_json_invalid' `
+            -Severity 'blocking' `
+            -OwnerArea 'RuntimeHarness' `
+            -Rationale 'godot-log-audit.json is missing valid JSON, so audit signature evidence cannot be trusted.' `
+            -NextStep 'Fix audit evidence retention or rerun the packet after validation lanes are unpaused; do not treat an invalid audit artifact as a clean runtime log.' `
+            -Confidence 'high' `
+            -EvidenceFiles $evidenceFiles
     }
 
     $retainedSignals = @(($hangSignals.ToArray() + $failureCodes.ToArray()) | Select-Object -Unique)

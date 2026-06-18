@@ -211,11 +211,13 @@ pattern, required flag, pass state, and acknowledgement result. Summary
 `Results` rows must retain the same command acknowledgement pattern and required
 flag as `iteration-result.json`, and `CommandAckRequired` must equal whether a
 `CommandAckPattern` is retained. For known built-in commands, the retained
-`CommandAckPattern` must also match the runner's canonical command pattern.
-When a command acknowledgement is required, the checker replays the retained
-pattern against `godot.log.current-iteration`; `CommandAckObserved=true` in JSON
-is not enough without the source-backed log line. `VakuuFightSmoke` packets must
-contain only `vakuu-fight` planned iterations. A 1000-iteration
+`ScenarioTag`, `OwnerArea`, and `CommandAckPattern` must also match the runner's
+canonical command classification. Known commands with canonical acknowledgement
+patterns must keep `CommandAckRequired=true` and a non-empty pattern. When a
+command acknowledgement is required, the checker replays the retained pattern
+against `godot.log.current-iteration`; `CommandAckObserved=true` in JSON is not
+enough without the source-backed log line. `VakuuFightSmoke` packets must contain
+only `vakuu-fight` planned iterations. A 1000-iteration
 `AncientUiPlusVakuuFight` round-robin packet must contain exactly 200
 `vakuu-fight` planned iterations.
 The current `vakuu-fight` command proves only the forced fight option is shown
@@ -283,7 +285,9 @@ may still provide a fallback row for routing, but the analyzer reports a
 `RuntimeHarness` blocker because summary data does not replace the canonical
 per-iteration artifact. Empty retained JSON arrays such as `Mismatches`,
 `FailureReasonCodes`, `HangSignals`, and `SignatureHits` are treated as empty
-signal sets before owner routing. For hung processes, unclassified retained failures, audit hits, Spire
+signal sets before owner routing, but invalid or empty `godot-log-audit.json`
+files are `RuntimeHarness` blockers because audit evidence cannot be trusted.
+For hung processes, unclassified retained failures, audit hits, Spire
 Plus error/exception hits, and co-op override failures, explicit log-derived
 package/runtime drift, StS1, preview-tool, or multiplayer-policy signatures take
 precedence over the planned command owner. Package/runtime drift classification
