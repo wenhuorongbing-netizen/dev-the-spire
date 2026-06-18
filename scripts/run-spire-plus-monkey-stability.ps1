@@ -1300,153 +1300,170 @@ try {
             Passed = $false
             Error = ''
         }
+        $prepareStarted = $false
 
         try {
             $minimumProcessStartTimeUtc = (Get-Date).ToUniversalTime()
-            $preLaunchLog = Get-LogSnapshot -Path $godotLogPath
-            $result.PreLaunchLogLengthBytes = [long]$preLaunchLog.Length
-            $result.PreLaunchLogLastWriteTimeUtc = $preLaunchLog.LastWriteTimeUtc
-            $result.MinimumProcessStartTimeUtc = $minimumProcessStartTimeUtc.ToString('o')
-
-            $prepareArgs = @(
-                '-Mode', 'Prepare',
-                '-EvidenceDir', $iterationDir,
-                '-GameRoot', $GameRoot,
-                '-SteamExe', $SteamExe,
-                '-Launch'
-            )
-            if ($SteamUserId) {
-                $prepareArgs += @('-SteamUserId', $SteamUserId)
-            }
-            if ($Language) {
-                $prepareArgs += @('-Language', $Language)
-            }
-            if ($MoveOtherMods) {
-                $prepareArgs += '-MoveOtherMods'
-            }
-            if ($MoveCurrentRuns) {
-                $prepareArgs += '-MoveCurrentRuns'
-            }
-
-            & $liveSessionScript @prepareArgs | Out-File -LiteralPath (Join-Path $iterationDir 'prepare-output.json') -Encoding UTF8
-            $mainMenuObservation = Wait-ForMainMenuLog `
-                -Path $godotLogPath `
-                -TimeoutSeconds $MainMenuTimeoutSeconds `
-                -NoGrowthTimeoutSeconds $NoLogGrowthTimeoutSeconds `
-                -IntervalSeconds $ObservationIntervalSeconds `
-                -UnresponsiveSampleThreshold $UnresponsiveSampleThreshold `
-                -BaselineLogLengthBytes ([long]$result.PreLaunchLogLengthBytes) `
-                -MinimumProcessStartTimeUtc $minimumProcessStartTimeUtc `
-                -ProbeSamples $probeSamples
-            $result.MainMenuObservation = $mainMenuObservation
-            $result.MainMenuReached = [bool]$mainMenuObservation.MainMenuReached
-            $result.MainMenuObservationPassed = [bool]$mainMenuObservation.Passed
-            $result.StartupLogProbePassed = -not [bool]$mainMenuObservation.NoLogGrowthTimeoutExceeded
-            $result.MainMenuDetectedAt = $mainMenuObservation.MainMenuDetectedAt
-            $result.MainMenuElapsedSeconds = [double]$mainMenuObservation.ElapsedSeconds
-            $result.LogInitialLengthBytes = [long]$mainMenuObservation.LogInitialLengthBytes
-            $result.LogFinalLengthBytes = [long]$mainMenuObservation.LogFinalLength
-            $result.LastLogGrowthAt = $mainMenuObservation.LastLogGrowthAt
-            $result.MaxSecondsWithoutLogGrowth = [int]$mainMenuObservation.MaxNoLogGrowthSeconds
-            $result.MaxConsecutiveUnresponsiveSamples = [int]$mainMenuObservation.MaxConsecutiveUnresponsiveSamples
-            $result.StaleProcessObserved = [bool]$mainMenuObservation.StaleProcessObserved
-            $result.StaleProcessCount = [Math]::Max([int]$result.StaleProcessCount, [int]$mainMenuObservation.MaxStaleProcessCount)
-            if ($mainMenuObservation.LastProcess -and $mainMenuObservation.LastProcess.Observed) {
-                $result.GameProcessId = [int]$mainMenuObservation.LastProcess.Id
-                $result.GameProcessStartTimeUtc = $mainMenuObservation.LastProcess.StartTimeUtc
-                $result.MainWindowObserved = [int64]$mainMenuObservation.LastProcess.MainWindowHandle -ne 0
-            }
-
-            if ($result.MainMenuReached -and -not $devConsoleCommandsDisabled -and -not [string]::IsNullOrWhiteSpace([string]$planned.Command)) {
-                & $consoleCommandScript -Command ([string]$planned.Command) |
-                    Out-File -LiteralPath (Join-Path $iterationDir 'console-command-output.json') -Encoding UTF8
-                $result.ConsoleCommandSent = $true
-                $runtimeObservation = Watch-RuntimeHealth `
-                    -Path $godotLogPath `
-                    -DurationSeconds $PostCommandSeconds `
-                    -IntervalSeconds $ObservationIntervalSeconds `
-                    -UnresponsiveSampleThreshold $UnresponsiveSampleThreshold `
-                    -MinimumProcessStartTimeUtc $minimumProcessStartTimeUtc `
-                    -ProbeSamples $probeSamples
-                $result.RuntimeObservation = $runtimeObservation
-                $result.RuntimeObservationPassed = [bool]$runtimeObservation.Passed
-                $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved
-                $result.MaxSecondsWithoutLogGrowth = [Math]::Max([int]$result.MaxSecondsWithoutLogGrowth, [int]$runtimeObservation.MaxNoLogGrowthSeconds)
-                $result.MaxConsecutiveUnresponsiveSamples = [Math]::Max([int]$result.MaxConsecutiveUnresponsiveSamples, [int]$runtimeObservation.MaxConsecutiveUnresponsiveSamples)
-                $result.StaleProcessObserved = [bool]$result.StaleProcessObserved -or [bool]$runtimeObservation.StaleProcessObserved
-                $result.StaleProcessCount = [Math]::Max([int]$result.StaleProcessCount, [int]$runtimeObservation.MaxStaleProcessCount)
-                if ($runtimeObservation.LastLogGrowthAt) {
-                    $result.LastLogGrowthAt = $runtimeObservation.LastLogGrowthAt
-                }
-            } elseif ($PostCommandSeconds -gt 0) {
-                $runtimeObservation = Watch-RuntimeHealth `
-                    -Path $godotLogPath `
-                    -DurationSeconds ([Math]::Min($PostCommandSeconds, 10)) `
-                    -IntervalSeconds $ObservationIntervalSeconds `
-                    -UnresponsiveSampleThreshold $UnresponsiveSampleThreshold `
-                    -MinimumProcessStartTimeUtc $minimumProcessStartTimeUtc `
-                    -ProbeSamples $probeSamples
-                $result.RuntimeObservation = $runtimeObservation
-                $result.RuntimeObservationPassed = [bool]$runtimeObservation.Passed
-                $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved
-                $result.MaxSecondsWithoutLogGrowth = [Math]::Max([int]$result.MaxSecondsWithoutLogGrowth, [int]$runtimeObservation.MaxNoLogGrowthSeconds)
-                $result.MaxConsecutiveUnresponsiveSamples = [Math]::Max([int]$result.MaxConsecutiveUnresponsiveSamples, [int]$runtimeObservation.MaxConsecutiveUnresponsiveSamples)
-                $result.StaleProcessObserved = [bool]$result.StaleProcessObserved -or [bool]$runtimeObservation.StaleProcessObserved
-                $result.StaleProcessCount = [Math]::Max([int]$result.StaleProcessCount, [int]$runtimeObservation.MaxStaleProcessCount)
-                if ($runtimeObservation.LastLogGrowthAt) {
-                    $result.LastLogGrowthAt = $runtimeObservation.LastLogGrowthAt
-                }
+            $preExistingProcesses = @(Get-Process -Name SlayTheSpire2 -ErrorAction SilentlyContinue)
+            if ($preExistingProcesses.Count -gt 0) {
+                $result.StaleProcessObserved = $true
+                $result.StaleProcessCount = $preExistingProcesses.Count
+                $result.Error = "Observed $($preExistingProcesses.Count) pre-existing SlayTheSpire2 process(es) before launch; shared godot.log cannot be trusted for this iteration."
             } else {
-                $result.RuntimeObservationPassed = $true
-                $result.PostCommandLogProbePassed = $true
-            }
+                $preLaunchLog = Get-LogSnapshot -Path $godotLogPath
+                $result.PreLaunchLogLengthBytes = [long]$preLaunchLog.Length
+                $result.PreLaunchLogLastWriteTimeUtc = $preLaunchLog.LastWriteTimeUtc
+                $result.MinimumProcessStartTimeUtc = $minimumProcessStartTimeUtc.ToString('o')
 
-            $result.ResponsivenessProbePassed = $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed
+                $prepareArgs = @(
+                    '-Mode', 'Prepare',
+                    '-EvidenceDir', $iterationDir,
+                    '-GameRoot', $GameRoot,
+                    '-SteamExe', $SteamExe,
+                    '-Launch'
+                )
+                if ($SteamUserId) {
+                    $prepareArgs += @('-SteamUserId', $SteamUserId)
+                }
+                if ($Language) {
+                    $prepareArgs += @('-Language', $Language)
+                }
+                if ($MoveOtherMods) {
+                    $prepareArgs += '-MoveOtherMods'
+                }
+                if ($MoveCurrentRuns) {
+                    $prepareArgs += '-MoveCurrentRuns'
+                }
 
-            $launchLog = Join-Path $iterationDir 'godot.log.after-launch'
-            $result.LogCopied = Copy-CurrentGodotLog -Destination $launchLog
-            if ($result.LogCopied) {
-                $currentIterationLog = [string]$result.CurrentIterationLogPath
-                $result.LogScanOffsetBytes = [long]$mainMenuObservation.LogScanOffsetBytes
-                $result.CurrentIterationLogCopied = Write-CurrentIterationLogSlice `
-                    -Source $launchLog `
-                    -Destination $currentIterationLog `
-                    -Offset ([long]$result.LogScanOffsetBytes)
+                $prepareStarted = $true
+                & $liveSessionScript @prepareArgs | Out-File -LiteralPath (Join-Path $iterationDir 'prepare-output.json') -Encoding UTF8
+                $mainMenuObservation = Wait-ForMainMenuLog `
+                    -Path $godotLogPath `
+                    -TimeoutSeconds $MainMenuTimeoutSeconds `
+                    -NoGrowthTimeoutSeconds $NoLogGrowthTimeoutSeconds `
+                    -IntervalSeconds $ObservationIntervalSeconds `
+                    -UnresponsiveSampleThreshold $UnresponsiveSampleThreshold `
+                    -BaselineLogLengthBytes ([long]$result.PreLaunchLogLengthBytes) `
+                    -MinimumProcessStartTimeUtc $minimumProcessStartTimeUtc `
+                    -ProbeSamples $probeSamples
+                $result.MainMenuObservation = $mainMenuObservation
+                $result.MainMenuReached = [bool]$mainMenuObservation.MainMenuReached
+                $result.MainMenuObservationPassed = [bool]$mainMenuObservation.Passed
+                $result.StartupLogProbePassed = -not [bool]$mainMenuObservation.NoLogGrowthTimeoutExceeded
+                $result.MainMenuDetectedAt = $mainMenuObservation.MainMenuDetectedAt
+                $result.MainMenuElapsedSeconds = [double]$mainMenuObservation.ElapsedSeconds
+                $result.LogInitialLengthBytes = [long]$mainMenuObservation.LogInitialLengthBytes
+                $result.LogFinalLengthBytes = [long]$mainMenuObservation.LogFinalLength
+                $result.LastLogGrowthAt = $mainMenuObservation.LastLogGrowthAt
+                $result.MaxSecondsWithoutLogGrowth = [int]$mainMenuObservation.MaxNoLogGrowthSeconds
+                $result.MaxConsecutiveUnresponsiveSamples = [int]$mainMenuObservation.MaxConsecutiveUnresponsiveSamples
+                $result.StaleProcessObserved = [bool]$mainMenuObservation.StaleProcessObserved
+                $result.StaleProcessCount = [Math]::Max([int]$result.StaleProcessCount, [int]$mainMenuObservation.MaxStaleProcessCount)
+                if ($mainMenuObservation.LastProcess -and $mainMenuObservation.LastProcess.Observed) {
+                    $result.GameProcessId = [int]$mainMenuObservation.LastProcess.Id
+                    $result.GameProcessStartTimeUtc = $mainMenuObservation.LastProcess.StartTimeUtc
+                    $result.MainWindowObserved = [int64]$mainMenuObservation.LastProcess.MainWindowHandle -ne 0
+                }
 
-                $logForChecks = if ($result.CurrentIterationLogCopied) { $currentIterationLog } else { $launchLog }
-                $commandAck = Test-CommandAck -LogPath $logForChecks -Command ([string]$planned.Command)
-                $result.CommandAckRequired = [bool]$commandAck.Required
-                $result.CommandAckObserved = [bool]$commandAck.Observed
-                $result.CommandAckPattern = [string]$commandAck.Pattern
+                if ($result.MainMenuReached -and -not $devConsoleCommandsDisabled -and -not [string]::IsNullOrWhiteSpace([string]$planned.Command)) {
+                    & $consoleCommandScript -Command ([string]$planned.Command) |
+                        Out-File -LiteralPath (Join-Path $iterationDir 'console-command-output.json') -Encoding UTF8
+                    $result.ConsoleCommandSent = $true
+                    $runtimeObservation = Watch-RuntimeHealth `
+                        -Path $godotLogPath `
+                        -DurationSeconds $PostCommandSeconds `
+                        -IntervalSeconds $ObservationIntervalSeconds `
+                        -UnresponsiveSampleThreshold $UnresponsiveSampleThreshold `
+                        -MinimumProcessStartTimeUtc $minimumProcessStartTimeUtc `
+                        -ProbeSamples $probeSamples
+                    $result.RuntimeObservation = $runtimeObservation
+                    $result.RuntimeObservationPassed = [bool]$runtimeObservation.Passed
+                    $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved
+                    $result.MaxSecondsWithoutLogGrowth = [Math]::Max([int]$result.MaxSecondsWithoutLogGrowth, [int]$runtimeObservation.MaxNoLogGrowthSeconds)
+                    $result.MaxConsecutiveUnresponsiveSamples = [Math]::Max([int]$result.MaxConsecutiveUnresponsiveSamples, [int]$runtimeObservation.MaxConsecutiveUnresponsiveSamples)
+                    $result.StaleProcessObserved = [bool]$result.StaleProcessObserved -or [bool]$runtimeObservation.StaleProcessObserved
+                    $result.StaleProcessCount = [Math]::Max([int]$result.StaleProcessCount, [int]$runtimeObservation.MaxStaleProcessCount)
+                    if ($runtimeObservation.LastLogGrowthAt) {
+                        $result.LastLogGrowthAt = $runtimeObservation.LastLogGrowthAt
+                    }
+                } elseif ($PostCommandSeconds -gt 0) {
+                    $runtimeObservation = Watch-RuntimeHealth `
+                        -Path $godotLogPath `
+                        -DurationSeconds ([Math]::Min($PostCommandSeconds, 10)) `
+                        -IntervalSeconds $ObservationIntervalSeconds `
+                        -UnresponsiveSampleThreshold $UnresponsiveSampleThreshold `
+                        -MinimumProcessStartTimeUtc $minimumProcessStartTimeUtc `
+                        -ProbeSamples $probeSamples
+                    $result.RuntimeObservation = $runtimeObservation
+                    $result.RuntimeObservationPassed = [bool]$runtimeObservation.Passed
+                    $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved
+                    $result.MaxSecondsWithoutLogGrowth = [Math]::Max([int]$result.MaxSecondsWithoutLogGrowth, [int]$runtimeObservation.MaxNoLogGrowthSeconds)
+                    $result.MaxConsecutiveUnresponsiveSamples = [Math]::Max([int]$result.MaxConsecutiveUnresponsiveSamples, [int]$runtimeObservation.MaxConsecutiveUnresponsiveSamples)
+                    $result.StaleProcessObserved = [bool]$result.StaleProcessObserved -or [bool]$runtimeObservation.StaleProcessObserved
+                    $result.StaleProcessCount = [Math]::Max([int]$result.StaleProcessCount, [int]$runtimeObservation.MaxStaleProcessCount)
+                    if ($runtimeObservation.LastLogGrowthAt) {
+                        $result.LastLogGrowthAt = $runtimeObservation.LastLogGrowthAt
+                    }
+                } else {
+                    $result.RuntimeObservationPassed = $true
+                    $result.PostCommandLogProbePassed = $true
+                }
 
-                $auditPath = Join-Path $iterationDir 'godot-log-audit.json'
-                $result.AuditClean = Invoke-LogAudit -LogPath $logForChecks -OutFile $auditPath
-                $expectations = Test-LogExpectations -LogPath $logForChecks
-                $result.ExpectationPassed = [bool]$expectations.Passed
-                $result.ExpectationChecks = @($expectations.Checks)
-                $modeCheck = Invoke-Sts1ModeVerifier `
-                    -LogPath $logForChecks `
-                    -AuditPath $auditPath `
-                    -OutFile (Join-Path $iterationDir 'sts1-mode-log-check.json') `
-                    -TextOutFile (Join-Path $iterationDir 'sts1-mode-log-check.txt')
-                $result.Sts1ModeVerifierPassed = [bool]$modeCheck.Passed
-                $result.Sts1ModeVerifierChecks = @($modeCheck.Checks)
-                $result.Sts1ModeVerifierMismatches = @($modeCheck.Mismatches)
-                $copiedLog = Get-LogSnapshot -Path $launchLog
-                $result.LogFinalLengthBytes = [long]$copiedLog.Length
+                $result.ResponsivenessProbePassed = $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed
+
+                $launchLog = Join-Path $iterationDir 'godot.log.after-launch'
+                $result.LogCopied = Copy-CurrentGodotLog -Destination $launchLog
+                if ($result.LogCopied) {
+                    $currentIterationLog = [string]$result.CurrentIterationLogPath
+                    $result.LogScanOffsetBytes = [long]$mainMenuObservation.LogScanOffsetBytes
+                    $result.CurrentIterationLogCopied = Write-CurrentIterationLogSlice `
+                        -Source $launchLog `
+                        -Destination $currentIterationLog `
+                        -Offset ([long]$result.LogScanOffsetBytes)
+
+                    $logForChecks = if ($result.CurrentIterationLogCopied) { $currentIterationLog } else { $launchLog }
+                    $commandAck = Test-CommandAck -LogPath $logForChecks -Command ([string]$planned.Command)
+                    $result.CommandAckRequired = [bool]$commandAck.Required
+                    $result.CommandAckObserved = [bool]$commandAck.Observed
+                    $result.CommandAckPattern = [string]$commandAck.Pattern
+
+                    $auditPath = Join-Path $iterationDir 'godot-log-audit.json'
+                    $result.AuditClean = Invoke-LogAudit -LogPath $logForChecks -OutFile $auditPath
+                    $expectations = Test-LogExpectations -LogPath $logForChecks
+                    $result.ExpectationPassed = [bool]$expectations.Passed
+                    $result.ExpectationChecks = @($expectations.Checks)
+                    $modeCheck = Invoke-Sts1ModeVerifier `
+                        -LogPath $logForChecks `
+                        -AuditPath $auditPath `
+                        -OutFile (Join-Path $iterationDir 'sts1-mode-log-check.json') `
+                        -TextOutFile (Join-Path $iterationDir 'sts1-mode-log-check.txt')
+                    $result.Sts1ModeVerifierPassed = [bool]$modeCheck.Passed
+                    $result.Sts1ModeVerifierChecks = @($modeCheck.Checks)
+                    $result.Sts1ModeVerifierMismatches = @($modeCheck.Mismatches)
+                    $copiedLog = Get-LogSnapshot -Path $launchLog
+                    $result.LogFinalLengthBytes = [long]$copiedLog.Length
+                }
             }
         } catch {
             $result.Error = $_.Exception.Message
         } finally {
-            try {
-                Invoke-LiveSessionRestore -EvidenceDir $iterationDir
-                $result.RestoreSucceeded = $true
-            } catch {
-                $restoreError = $_.Exception.Message
-                if ($result.Error) {
-                    $result.Error = "$($result.Error); restore failed: $restoreError"
+            if ($prepareStarted) {
+                try {
+                    Invoke-LiveSessionRestore -EvidenceDir $iterationDir
+                    $result.RestoreSucceeded = $true
+                } catch {
+                    $restoreError = $_.Exception.Message
+                    if ($result.Error) {
+                        $result.Error = "$($result.Error); restore failed: $restoreError"
+                    } else {
+                        $result.Error = "restore failed: $restoreError"
+                    }
+                }
+            } else {
+                if ([bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -gt 0) {
+                    $result.RestoreSucceeded = $true
                 } else {
-                    $result.Error = "restore failed: $restoreError"
+                    $result.RestoreSucceeded = $false
                 }
             }
         }

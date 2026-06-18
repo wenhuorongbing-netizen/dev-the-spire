@@ -94,9 +94,14 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "PreLaunchLogLengthBytes",
             "BaselineLogLengthBytes",
             "MinimumProcessStartTimeUtc",
+            "Get-Process -Name SlayTheSpire2",
+            "$preExistingProcesses.Count",
+            "pre-existing SlayTheSpire2 process(es) before launch",
+            "} else {",
             "StaleProcessObserved",
             "StaleProcessCount",
             "MaxConsecutiveUnresponsiveSamples",
+            "shared godot.log cannot be trusted for this iteration",
             "CommandAckPatterns",
             "CommandSelectionMode",
             "RoundRobin",
@@ -287,6 +292,22 @@ public sealed class RuntimeMonkeyStabilityGuardTests
         Assert.DoesNotContain("Start-Process", checker, StringComparison.Ordinal);
         Assert.DoesNotContain("spire-plus-live-session.ps1", checker, StringComparison.Ordinal);
         Assert.DoesNotContain("dotnet", checker, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void RuntimeMonkeyRunnerChecksForPreExistingProcessesBeforeBaselineLog()
+    {
+        var runner = ReadRepoText("scripts", "run-spire-plus-monkey-stability.ps1");
+
+        AssertSourceContains(
+            runner,
+            "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2",
+            "$preExistingProcesses.Count -gt 0",
+            "pre-existing SlayTheSpire2 process(es) before launch",
+            "$preLaunchLog = Get-LogSnapshot -Path $godotLogPath",
+            "& $liveSessionScript @prepareArgs");
+        AssertBefore(runner, "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2", "$preLaunchLog = Get-LogSnapshot -Path $godotLogPath");
+        AssertBefore(runner, "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2", "& $liveSessionScript @prepareArgs");
     }
 
     [Fact]

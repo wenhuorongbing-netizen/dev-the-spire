@@ -7,7 +7,7 @@ This test project guards source shape, localization, release documentation, pack
 | File | Coverage |
 | --- | --- |
 | `ActiveSourceManifestGuardTests.cs` | Active `EZMicroBalanceCode` source manifest and source-to-test coverage guard. |
-| `AncientBehaviorGuardTests.cs` / `AncientBehaviorGuardTests.LocalizationDocs.cs` / `AncientBehaviorGuardTests.SereTalonRoutes.cs` | Ancient reward behavior, package shape, patch targets, Sere Talon/Tanx Claws, localization parity, documentation currency, release-checklist, and manual matrix guards. |
+| `AncientBehaviorGuardTests.cs` / `AncientBehaviorGuardTests.LocalizationDocs.cs` / `AncientBehaviorGuardTests.SereTalonRoutes.cs` / `AncientBehaviorGuardTests.DistinguishedCape.cs` | Ancient reward behavior, package shape, patch targets, Sere Talon/Tanx Claws, Distinguished Cape, localization parity, documentation currency, release-checklist, and manual matrix guards. |
 | `AncientExpansionReleaseCoverageGuardTests.cs` | Morvi, Lotha, and gated Vakuu source/localization/resource release-coverage guards. |
 | `AncientHighRiskSourceGuardTests.cs` | High-risk source patterns for Ancient patches. |
 | `AncientPlayerFacingPolishGuardTests.cs` / `AncientPlayerFacingPolishGuardTests.AscensionText.cs` / `AncientPlayerFacingPolishGuardTests.Docs.cs` / `AncientPlayerFacingPolishGuardTests.InteractionText.cs` / `AncientPlayerFacingPolishGuardTests.Localization.cs` / `AncientPlayerFacingPolishGuardTests.RichText.cs` | Player-facing Ancient text, docs, localization, mojibake, rich-text, and readability guards. |

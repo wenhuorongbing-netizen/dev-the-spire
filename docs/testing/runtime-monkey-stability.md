@@ -78,10 +78,11 @@ The first implementation layer is deliberately conservative:
 5. During startup, sample the `SlayTheSpire2` process, main-window
    responsiveness, and `godot.log` length/write time. The runner records the
    pre-launch log length and only accepts a main-menu marker from appended or
-   reset log content. Startup fails if any `SlayTheSpire2` process started
-   before the iteration, because the shared `godot.log` can no longer be
-   attributed to the launched process. Startup also fails if the current process
-   disappears, the window reports hung/not responding for
+   reset log content. Before that baseline is captured or the game is launched,
+   startup fails if any `SlayTheSpire2` process is already running, because the
+   shared `godot.log` can no longer be attributed to the launched process.
+   Startup also fails if the current process disappears, the window reports
+   hung/not responding for
    `-UnresponsiveSampleThreshold` consecutive samples, or the log stops growing
    before main menu for `-NoLogGrowthTimeoutSeconds`.
 6. Optionally send one short DevConsole command from the corpus.
