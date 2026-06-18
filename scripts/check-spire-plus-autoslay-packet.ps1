@@ -243,10 +243,39 @@ function Test-NoJsonPropertyFalse {
     return $true
 }
 
+function Test-AnyJsonPropertyStringEquals {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$Value
+    )
+
+    foreach ($item in @($Items)) {
+        if ([string]::Equals([string](Get-JsonValue -Object $item -Name $Name -DefaultValue ''), $Value, [System.StringComparison]::Ordinal)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function ConvertTo-DateTimeOffsetParseResult {
+    param([AllowEmptyString()][string]$Text)
+
+    [System.DateTimeOffset]$value = [System.DateTimeOffset]::MinValue
+    $styles = [System.Globalization.DateTimeStyles]::AssumeUniversal -bor [System.Globalization.DateTimeStyles]::AdjustToUniversal
+    $parsed = (-not [string]::IsNullOrWhiteSpace($Text)) -and [System.DateTimeOffset]::TryParse($Text, [System.Globalization.CultureInfo]::InvariantCulture, $styles, [ref]$value)
+
+    [pscustomobject]@{
+        Parsed = $parsed
+        Value = $value
+    }
+}
+
 function Test-BytePrefix {
     param(
-        [Parameter(Mandatory = $true)][byte[]]$Prefix,
-        [Parameter(Mandatory = $true)][byte[]]$Content
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][byte[]]$Prefix,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][byte[]]$Content
     )
 
     if ($Prefix.Length -gt $Content.Length) {
@@ -510,6 +539,10 @@ if ($null -ne $plan) {
         Add-Check -Name 'plan_source_workspace_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'SourceWorkspace must record that source inspection is not runtime proof'
         Add-Check -Name 'plan_source_workspace_disposition_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceWorkspace -Name 'Disposition' -DefaultValue ''))) -Detail 'SourceWorkspace must retain the recovered-source disposition'
         Add-Check -Name 'plan_source_workspace_matches_installed_game' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'MatchesInstalledGame' -DefaultValue $false)) -Detail 'game-native AutoSlay proof requires a source snapshot that matches the installed game'
+        Add-Check -Name 'plan_source_workspace_authorized_source_origin_verified' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -Detail 'SourceWorkspace summary must retain authorized source-origin verification'
+        Add-Check -Name 'plan_source_workspace_origin_matches_installed_game_pck' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -Detail 'game-native AutoSlay proof requires GDRE Opening file to installed PCK binding'
+        Add-Check -Name 'plan_source_workspace_ritsulib_version_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVersion' -DefaultValue ''))) -Detail 'SourceWorkspace summary must retain RitsuLib manifest version'
+        Add-Check -Name 'plan_source_workspace_ritsulib_variant_dll_hash_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVariantDllSha256' -DefaultValue ''))) -Detail 'SourceWorkspace summary must retain selected RitsuLib variant DLL hash'
     }
     Add-Check -Name 'plan_source_workspace_check_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckPath)) -Detail 'SourceWorkspaceCheckPath must bind the packet to check-local-godot-source-workspace.ps1 output'
     Add-Check -Name 'plan_source_workspace_check_under_evidence_dir' -Passed (Test-PathInsideDirectory -Path $sourceWorkspaceCheckPath -Directory $resolvedEvidenceDir) -Detail 'SourceWorkspaceCheckPath must stay inside the evidence directory'
@@ -536,6 +569,7 @@ if ($null -ne $plan) {
             Add-Check -Name 'plan_source_workspace_policy_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $policy -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'source-workspace report must record that source inspection alone is not runtime proof'
             Add-Check -Name 'plan_source_workspace_policy_local_source_reference_only' -Passed ([bool](Get-JsonValue -Object $policy -Name 'LocalSourceReferenceOnly' -DefaultValue $false)) -Detail 'source-workspace report must record local-source-reference-only policy'
             Add-Check -Name 'plan_source_workspace_policy_authorized_local_install_only' -Passed ([bool](Get-JsonValue -Object $policy -Name 'AuthorizedLocalInstallOnly' -DefaultValue $false)) -Detail 'source-workspace report must record authorized-local-install-only policy'
+            Add-Check -Name 'plan_source_workspace_policy_authorized_source_origin_verified' -Passed ([bool](Get-JsonValue -Object $policy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -Detail 'source-workspace report must verify the GDRE Opening file against the installed game PCK'
             Add-Check -Name 'plan_source_workspace_policy_third_party_dumps_prohibited' -Passed ([bool](Get-JsonValue -Object $policy -Name 'ThirdPartyDumpsProhibited' -DefaultValue $false)) -Detail 'source-workspace report must record that third-party dumps are prohibited'
             Add-Check -Name 'plan_source_workspace_policy_runtime_proof_still_requires_launch' -Passed ([bool](Get-JsonValue -Object $policy -Name 'RuntimeProofStillRequiresLaunchEvidence' -DefaultValue $false)) -Detail 'source-workspace report must record that runtime proof still requires launch evidence'
             Add-Check -Name 'plan_source_workspace_policy_autoslay_still_requires_launch' -Passed ([bool](Get-JsonValue -Object $policy -Name 'GameNativeAutoSlayStillRequiresRuntimeLaunchEvidence' -DefaultValue $false)) -Detail 'source-workspace report must keep AutoSlay source checks separate from runtime proof'
@@ -545,17 +579,47 @@ if ($null -ne $plan) {
 
             $reportRecoveredSource = Get-JsonValue -Object $sourceReport -Name 'RecoveredSource' -DefaultValue $null
             $reportGame = Get-JsonValue -Object $sourceReport -Name 'Game' -DefaultValue $null
+            $reportRitsuLib = Get-JsonValue -Object $sourceReport -Name 'RitsuLib' -DefaultValue $null
             Add-Check -Name 'plan_source_workspace_report_matches_installed_game' -Passed ([bool](Get-JsonValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -Detail 'RecoveredSource.MatchesInstalledGame must be true for game-native AutoSlay proof'
+            Add-Check -Name 'plan_source_workspace_report_origin_matches_installed_game_pck' -Passed ([bool](Get-JsonValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -Detail 'RecoveredSource.OriginMatchesInstalledGamePck must be true for game-native AutoSlay proof'
+            Add-Check -Name 'plan_source_workspace_report_ritsulib_present' -Passed ($null -ne $reportRitsuLib) -Detail 'source-workspace report must retain RitsuLib provenance'
+            if ($null -ne $reportRitsuLib) {
+                foreach ($name in @('Version', 'CompatBranch', 'ManifestPath', 'ManifestSha256', 'VariantsPath', 'VariantsSha256', 'VariantDllPath', 'VariantDllSha256', 'ExpectedVariantDllSha256', 'CompatTargetPath', 'CompatTargetText')) {
+                    Add-Check -Name "plan_source_workspace_report_ritsulib_$($name.ToLowerInvariant())_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $reportRitsuLib -Name $name -DefaultValue ''))) -Detail "source-workspace report must include RitsuLib.$name"
+                }
+                Add-Check -Name 'plan_source_workspace_report_ritsulib_version_matches_expected' -Passed ([string]::Equals([string](Get-JsonValue -Object $reportRitsuLib -Name 'Version' -DefaultValue ''), $ExpectedRitsuLibVersion, [System.StringComparison]::Ordinal)) -Detail "source-workspace report RitsuLib.Version must match expected '$ExpectedRitsuLibVersion'"
+                Add-Check -Name 'plan_source_workspace_report_ritsulib_compat_matches_expected' -Passed ([string]::Equals([string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatBranch' -DefaultValue ''), $ExpectedRitsuCompatBranch, [System.StringComparison]::Ordinal)) -Detail "source-workspace report RitsuLib.CompatBranch must match expected '$ExpectedRitsuCompatBranch'"
+                Add-Check -Name 'plan_source_workspace_report_ritsulib_variant_hash_matches_expected' -Passed ([string]::Equals([string](Get-JsonValue -Object $reportRitsuLib -Name 'VariantDllSha256' -DefaultValue ''), [string](Get-JsonValue -Object $reportRitsuLib -Name 'ExpectedVariantDllSha256' -DefaultValue ''), [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'source-workspace report selected RitsuLib variant DLL hash must match variants metadata'
+            }
             if ($null -ne $sourceWorkspace) {
                 $summaryMatchesReport =
                     ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'Passed' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $sourceReport -Name 'Passed' -DefaultValue $false)) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceVersion' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Version' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceCommit' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Commit' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceBranch' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Branch' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceMainAssemblyHash' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'MainAssemblyHash' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'InstalledGameVersion' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportGame -Name 'Version' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'InstalledGameCommit' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportGame -Name 'Commit' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'InstalledGameBranch' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportGame -Name 'Branch' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'InstalledGameMainAssemblyHash' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportGame -Name 'MainAssemblyHash' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'Disposition' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Disposition' -DefaultValue '')) -and
                     ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'MatchesInstalledGame' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'OriginPckPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'OriginPckPath' -DefaultValue '')) -and
+                    ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVersion' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'Version' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibCompatBranch' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatBranch' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibManifestPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'ManifestPath' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibManifestSha256' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'ManifestSha256' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVariantsPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'VariantsPath' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVariantsSha256' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'VariantsSha256' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVariantDllPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'VariantDllPath' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVariantDllSha256' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'VariantDllSha256' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibExpectedVariantDllSha256' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'ExpectedVariantDllSha256' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibCompatTargetPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatTargetPath' -DefaultValue '')) -and
+                    ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibCompatTargetText' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatTargetText' -DefaultValue '')) -and
                     ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true) -eq [bool](Get-JsonValue -Object $policy -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true)) -and
                     ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $policy -Name 'NotRuntimeProof' -DefaultValue $false)) -and
+                    ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $policy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'ReportSha256' -DefaultValue '') -eq $sourceWorkspaceCheckSha256)
                 Add-Check -Name 'plan_source_workspace_report_matches_summary' -Passed $summaryMatchesReport -Detail 'SourceWorkspace summary must match the retained source-workspace report and ReportSha256'
             }
@@ -679,18 +743,29 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_runtime_probe_samples_json_valid" -Passed $true -Detail 'runtime-probe-samples.json parsed'
             Add-Check -Name "${runName}_runtime_probe_samples_non_empty" -Passed ($probeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must contain process/window/log samples'
             Add-Check -Name "${runName}_runtime_probe_samples_phase_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -Detail 'every probe sample must retain Phase'
+            Add-Check -Name "${runName}_runtime_probe_samples_main_menu_phase_observed" -Passed (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'main-menu') -Detail 'runtime-probe-samples.json must include at least one main-menu phase sample'
+            Add-Check -Name "${runName}_runtime_probe_samples_runtime_phase_observed" -Passed (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'runtime') -Detail 'runtime-probe-samples.json must include at least one runtime phase sample'
             Add-Check -Name "${runName}_runtime_probe_samples_process_id_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -Detail 'every probe sample must retain ProcessId'
             Add-Check -Name "${runName}_runtime_probe_samples_process_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -Detail 'every probe sample must retain ProcessObserved'
             Add-Check -Name "${runName}_runtime_probe_samples_main_window_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -Detail 'every probe sample must retain MainWindowObserved'
             Add-Check -Name "${runName}_runtime_probe_samples_hung_window_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -Detail 'every probe sample must retain HungWindow'
             Add-Check -Name "${runName}_runtime_probe_samples_responding_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Responding') -Detail 'every probe sample must retain Responding'
             Add-Check -Name "${runName}_runtime_probe_samples_stale_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount') -Detail 'every probe sample must retain StaleProcessCount'
+            Add-Check -Name "${runName}_runtime_probe_samples_current_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'CurrentProcessCount') -Detail 'every probe sample must retain CurrentProcessCount'
+            Add-Check -Name "${runName}_runtime_probe_samples_unknown_start_time_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'UnknownStartTimeProcessCount') -Detail 'every probe sample must retain UnknownStartTimeProcessCount'
+            Add-Check -Name "${runName}_runtime_probe_samples_ambiguous_current_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'AmbiguousCurrentProcessCount') -Detail 'every probe sample must retain AmbiguousCurrentProcessCount'
             Add-Check -Name "${runName}_runtime_probe_samples_process_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'ProcessObserved') -Detail 'at least one probe sample must observe SlayTheSpire2'
             Add-Check -Name "${runName}_runtime_probe_samples_main_window_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'MainWindowObserved') -Detail 'at least one probe sample must observe the main game window'
             Add-Check -Name "${runName}_runtime_probe_samples_no_hung_window" -Passed (Test-NoJsonPropertyTrue -Items $probeSamples -Name 'HungWindow') -Detail 'probe samples must not report hung windows'
             Add-Check -Name "${runName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding') -Detail 'probe samples must not report Responding=false'
             $staleProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
             Add-Check -Name "${runName}_runtime_probe_samples_no_stale_processes" -Passed ($staleProcessSamples.Count -eq 0) -Detail 'probe samples must record StaleProcessCount=0 so shared godot.log evidence cannot come from a pre-existing process'
+            $unknownStartTimeSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'UnknownStartTimeProcessCount' -DefaultValue -1) -ne 0 })
+            Add-Check -Name "${runName}_runtime_probe_samples_no_unknown_start_times" -Passed ($unknownStartTimeSamples.Count -eq 0) -Detail 'probe samples must record UnknownStartTimeProcessCount=0 so unreadable process StartTime cannot be treated as current evidence'
+            $ambiguousCurrentProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'AmbiguousCurrentProcessCount' -DefaultValue -1) -ne 0 })
+            Add-Check -Name "${runName}_runtime_probe_samples_no_ambiguous_current_processes" -Passed ($ambiguousCurrentProcessSamples.Count -eq 0) -Detail 'probe samples must record AmbiguousCurrentProcessCount=0 so evidence is bound to one launched process'
+            $currentProcessCountSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'CurrentProcessCount' -DefaultValue -1) -ne 1 })
+            Add-Check -Name "${runName}_runtime_probe_samples_single_current_process" -Passed ($currentProcessCountSamples.Count -eq 0) -Detail 'probe samples must record CurrentProcessCount=1 for the launched SlayTheSpire2 process'
             $observedRuntimeProbeProcessIds = @($probeSamples |
                 Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                 ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ProcessId' -DefaultValue 0) } |
@@ -852,8 +927,15 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $resultProcessId = [int](Get-JsonValue -Object $runResult -Name 'ProcessId' -DefaultValue 0)
             Add-Check -Name "${runName}_run_result_process_id_positive" -Passed ($resultProcessId -gt 0) -Detail 'run-result.json must retain a positive launched process id'
             Add-Check -Name "${runName}_run_result_process_id_matches_runtime_probe_samples" -Passed ($observedRuntimeProbeProcessIds.Count -eq 1 -and $observedRuntimeProbeProcessIds[0] -eq $resultProcessId) -Detail "run-result.json ProcessId must match the single observed probe ProcessId; result=$resultProcessId observed=$($observedRuntimeProbeProcessIds -join ',')"
-            Add-Check -Name "${runName}_run_result_start_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $runResult -Name 'StartTimestamp' -DefaultValue ''))) -Detail 'run-result.json must retain StartTimestamp'
-            Add-Check -Name "${runName}_run_result_end_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $runResult -Name 'EndTimestamp' -DefaultValue ''))) -Detail 'run-result.json must retain EndTimestamp'
+            $startTimestampText = [string](Get-JsonValue -Object $runResult -Name 'StartTimestamp' -DefaultValue '')
+            $endTimestampText = [string](Get-JsonValue -Object $runResult -Name 'EndTimestamp' -DefaultValue '')
+            $startTimestampParse = ConvertTo-DateTimeOffsetParseResult -Text $startTimestampText
+            $endTimestampParse = ConvertTo-DateTimeOffsetParseResult -Text $endTimestampText
+            Add-Check -Name "${runName}_run_result_start_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace($startTimestampText)) -Detail 'run-result.json must retain StartTimestamp'
+            Add-Check -Name "${runName}_run_result_end_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace($endTimestampText)) -Detail 'run-result.json must retain EndTimestamp'
+            Add-Check -Name "${runName}_run_result_start_timestamp_parseable" -Passed ([bool]$startTimestampParse.Parsed) -Detail "run-result.json StartTimestamp must parse as a timestamp; found '$startTimestampText'"
+            Add-Check -Name "${runName}_run_result_end_timestamp_parseable" -Passed ([bool]$endTimestampParse.Parsed) -Detail "run-result.json EndTimestamp must parse as a timestamp; found '$endTimestampText'"
+            Add-Check -Name "${runName}_run_result_timestamp_order_valid" -Passed ([bool]$startTimestampParse.Parsed -and [bool]$endTimestampParse.Parsed -and $startTimestampParse.Value -le $endTimestampParse.Value) -Detail "run-result.json StartTimestamp must be earlier than or equal to EndTimestamp; start='$startTimestampText' end='$endTimestampText'"
             Add-Check -Name "${runName}_run_result_exit_code_zero" -Passed ([int](Get-JsonValue -Object $runResult -Name 'ExitCode' -DefaultValue -999) -eq 0) -Detail 'run-result.json ExitCode must be 0'
             Add-Check -Name "${runName}_run_result_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runResult -Name 'StaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'run-result.json StaleProcessCount must be 0 so shared godot.log evidence is attributable'
             Add-Check -Name "${runName}_run_result_autoslay_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAutoSlayLogPath, $autoSlayLogPath)) -Detail 'run-result.json AutoSlayLogPath must match autoslay-summary.json'
@@ -889,6 +971,8 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                 Add-Check -Name "${runName}_run_result_runtime_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'runtime observation must not see stale pre-existing SlayTheSpire2 processes'
                 Add-Check -Name "${runName}_run_result_runtime_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runtimeObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'RuntimeObservation.MaxStaleProcessCount must be 0'
                 Add-Check -Name "${runName}_run_result_runtime_log_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.LogObserved must be true'
+                Add-Check -Name "${runName}_run_result_runtime_log_grew" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false)) -Detail 'RuntimeObservation.LogGrew must be true so a retained static godot.log cannot satisfy runtime health'
+                Add-Check -Name "${runName}_run_result_runtime_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'RuntimeObservation.NoLogGrowthTimeoutExceeded must be false'
             }
         }
     }

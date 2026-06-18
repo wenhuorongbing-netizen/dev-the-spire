@@ -100,6 +100,43 @@ function Normalize-Version {
     return $normalized
 }
 
+function Normalize-ComparablePath {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return ''
+    }
+
+    $normalized = $Path.Trim().Trim('"') -replace '/', '\'
+    try {
+        if ([System.IO.Path]::IsPathRooted($normalized)) {
+            return [System.IO.Path]::GetFullPath($normalized).TrimEnd('\')
+        }
+    } catch {
+        return $normalized.TrimEnd('\')
+    }
+
+    return $normalized.TrimEnd('\')
+}
+
+function Get-ObjectPropertyString {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if ($null -eq $Object) {
+        return ''
+    }
+
+    $property = $Object.PSObject.Properties[$Name]
+    if ($null -eq $property -or $null -eq $property.Value) {
+        return ''
+    }
+
+    return [string]$property.Value
+}
+
 function Test-GitIgnored {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -157,6 +194,7 @@ $repoManifestPath = Join-Path $repoRoot 'EZMicroBalance.json'
 $installedManifestPath = Join-Path $gameRootFull 'mods\EZMicroBalance\EZMicroBalance.json'
 $sourceReleaseInfoPath = Join-Path $sourceRootFull 'release_info.json'
 $gameReleaseInfoPath = Join-Path $gameRootFull 'release_info.json'
+$installedGamePckPath = Join-Path $gameRootFull 'SlayTheSpire2.pck'
 $sourceProjectPath = Join-Path $sourceRootFull 'project.godot'
 $gdreExportLogPath = Join-Path $sourceRootFull 'gdre_export.log'
 $autoSlayerPath = Join-Path $sourceRootFull 'src\Core\AutoSlay\AutoSlayer.cs'
@@ -176,6 +214,7 @@ Add-Check -Name 'godot_console_exists' -Passed (Test-Path -LiteralPath $godotCon
 Add-Check -Name 'gdre_export_log_exists' -Passed (Test-Path -LiteralPath $gdreExportLogPath -PathType Leaf) -Detail "expected GDRE export log at $gdreExportLogPath"
 Add-Check -Name 'repo_manifest_exists' -Passed (Test-Path -LiteralPath $repoManifestPath -PathType Leaf) -Detail "expected repo manifest at $repoManifestPath"
 Add-Check -Name 'installed_manifest_exists' -Passed (Test-Path -LiteralPath $installedManifestPath -PathType Leaf) -Detail "expected installed Spire Plus manifest at $installedManifestPath"
+Add-Check -Name 'installed_game_pck_exists' -Passed (Test-Path -LiteralPath $installedGamePckPath -PathType Leaf) -Detail "expected installed game PCK at $installedGamePckPath"
 
 $sourceReleaseInfo = $null
 $gameReleaseInfo = $null
@@ -197,18 +236,29 @@ if (Test-Path -LiteralPath $installedManifestPath -PathType Leaf) {
     $installedManifest = Read-JsonOrNull -Path $installedManifestPath -CheckName 'installed_manifest_json_valid'
 }
 
-$sourceVersion = if ($sourceReleaseInfo -and $sourceReleaseInfo.version) { [string]$sourceReleaseInfo.version } else { '' }
-$gameVersion = if ($gameReleaseInfo -and $gameReleaseInfo.version) { [string]$gameReleaseInfo.version } else { '' }
+$sourceVersion = Get-ObjectPropertyString -Object $sourceReleaseInfo -Name 'version'
+$gameVersion = Get-ObjectPropertyString -Object $gameReleaseInfo -Name 'version'
+$sourceCommit = Get-ObjectPropertyString -Object $sourceReleaseInfo -Name 'commit'
+$gameCommit = Get-ObjectPropertyString -Object $gameReleaseInfo -Name 'commit'
+$sourceBranch = Get-ObjectPropertyString -Object $sourceReleaseInfo -Name 'branch'
+$gameBranch = Get-ObjectPropertyString -Object $gameReleaseInfo -Name 'branch'
+$sourceMainAssemblyHash = Get-ObjectPropertyString -Object $sourceReleaseInfo -Name 'main_assembly_hash'
+$gameMainAssemblyHash = Get-ObjectPropertyString -Object $gameReleaseInfo -Name 'main_assembly_hash'
 $normalizedSourceVersion = Normalize-Version -Version $sourceVersion
 $normalizedGameVersion = Normalize-Version -Version $gameVersion
 $expectedGameNormalized = Normalize-Version -Version $ExpectedGameVersion
+$sourceVersionMatchesInstalledGame = $normalizedSourceVersion -and $normalizedGameVersion -and $normalizedSourceVersion -eq $normalizedGameVersion
+$sourceCommitMatchesInstalledGame = -not [string]::IsNullOrWhiteSpace($sourceCommit) -and -not [string]::IsNullOrWhiteSpace($gameCommit) -and [string]::Equals($sourceCommit, $gameCommit, [System.StringComparison]::OrdinalIgnoreCase)
+$sourceBranchMatchesInstalledGame = -not [string]::IsNullOrWhiteSpace($sourceBranch) -and -not [string]::IsNullOrWhiteSpace($gameBranch) -and [string]::Equals($sourceBranch, $gameBranch, [System.StringComparison]::OrdinalIgnoreCase)
+$sourceMainAssemblyHashMatchesInstalledGame = -not [string]::IsNullOrWhiteSpace($sourceMainAssemblyHash) -and -not [string]::IsNullOrWhiteSpace($gameMainAssemblyHash) -and [string]::Equals($sourceMainAssemblyHash, $gameMainAssemblyHash, [System.StringComparison]::Ordinal)
+$sourceReleaseIdentityMatchesInstalledGame = [bool]$sourceVersionMatchesInstalledGame -and [bool]$sourceCommitMatchesInstalledGame -and [bool]$sourceBranchMatchesInstalledGame -and [bool]$sourceMainAssemblyHashMatchesInstalledGame
 
 if ($sourceReleaseInfo) {
-    Add-Check -Name 'source_release_info_json_valid' -Passed $true -Detail "source version=$sourceVersion commit=$($sourceReleaseInfo.commit)"
+    Add-Check -Name 'source_release_info_json_valid' -Passed $true -Detail "source version=$sourceVersion commit=$sourceCommit branch=$sourceBranch main_assembly_hash=$sourceMainAssemblyHash"
 }
 
 if ($gameReleaseInfo) {
-    Add-Check -Name 'installed_game_release_info_json_valid' -Passed $true -Detail "installed game version=$gameVersion commit=$($gameReleaseInfo.commit)"
+    Add-Check -Name 'installed_game_release_info_json_valid' -Passed $true -Detail "installed game version=$gameVersion commit=$gameCommit branch=$gameBranch main_assembly_hash=$gameMainAssemblyHash"
 }
 
 if ($repoManifest) {
@@ -243,9 +293,17 @@ if ($normalizedSourceVersion -and $normalizedGameVersion) {
     $sourceVersionSeverity = if ($RequireCurrentSourceSnapshot) { 'fail' } else { 'warn' }
     Add-Check `
         -Name 'source_version_matches_installed_game' `
-        -Passed ($normalizedSourceVersion -eq $normalizedGameVersion) `
+        -Passed ([bool]$sourceVersionMatchesInstalledGame) `
         -Detail "source version=$sourceVersion installed version=$gameVersion" `
         -Severity $sourceVersionSeverity
+}
+
+if ($sourceReleaseInfo -and $gameReleaseInfo) {
+    $sourceIdentitySeverity = if ($RequireCurrentSourceSnapshot) { 'fail' } else { 'warn' }
+    Add-Check -Name 'source_commit_matches_installed_game' -Passed ([bool]$sourceCommitMatchesInstalledGame) -Detail "source commit=$sourceCommit installed commit=$gameCommit" -Severity $sourceIdentitySeverity
+    Add-Check -Name 'source_branch_matches_installed_game' -Passed ([bool]$sourceBranchMatchesInstalledGame) -Detail "source branch=$sourceBranch installed branch=$gameBranch" -Severity $sourceIdentitySeverity
+    Add-Check -Name 'source_main_assembly_hash_matches_installed_game' -Passed ([bool]$sourceMainAssemblyHashMatchesInstalledGame) -Detail "source main_assembly_hash=$sourceMainAssemblyHash installed main_assembly_hash=$gameMainAssemblyHash" -Severity $sourceIdentitySeverity
+    Add-Check -Name 'source_release_identity_matches_installed_game' -Passed ([bool]$sourceReleaseIdentityMatchesInstalledGame) -Detail 'source release_info identity requires version, commit, branch, and main_assembly_hash to match the installed game' -Severity $sourceIdentitySeverity
 }
 
 if (Test-Path -LiteralPath $sourceProjectPath -PathType Leaf) {
@@ -299,6 +357,11 @@ $gdreSummary = [ordered]@{
     ToolVersion = ''
     EngineVersion = ''
     OpeningFile = ''
+    OpeningFileNormalized = ''
+    ExpectedOpeningFile = $installedGamePckPath
+    ExpectedOpeningFileNormalized = Normalize-ComparablePath -Path $installedGamePckPath
+    OpeningFileMatchesInstalledGame = $false
+    InstalledGamePckSha256 = Get-HashOrNull -Path $installedGamePckPath
     ExtractedFiles = ''
     FailedScripts = ''
     ParseErrorCount = 0
@@ -311,6 +374,13 @@ if (Test-Path -LiteralPath $gdreExportLogPath -PathType Leaf) {
     $gdreSummary.ToolVersion = Get-FirstRegexGroup -Text $gdreLog -Pattern 'GDRE Tools ([^\r\n]+)'
     $gdreSummary.EngineVersion = Get-FirstRegexGroup -Text $gdreLog -Pattern 'Detected Engine Version:\s*([^\r\n]+)'
     $gdreSummary.OpeningFile = Get-FirstRegexGroup -Text $gdreLog -Pattern 'Opening file:\s*([^\r\n]+)'
+    $gdreSummary.OpeningFileNormalized = Normalize-ComparablePath -Path ([string]$gdreSummary.OpeningFile)
+    $gdreSummary.OpeningFileMatchesInstalledGame =
+        (-not [string]::IsNullOrWhiteSpace([string]$gdreSummary.OpeningFileNormalized)) -and
+        [string]::Equals(
+            [string]$gdreSummary.OpeningFileNormalized,
+            [string]$gdreSummary.ExpectedOpeningFileNormalized,
+            [System.StringComparison]::OrdinalIgnoreCase)
     $gdreSummary.ExtractedFiles = Get-FirstRegexGroup -Text $gdreLog -Pattern 'Extracted\s+([0-9]+)\s+files'
     $gdreSummary.FailedScripts = Get-FirstRegexGroup -Text $gdreLog -Pattern 'Failed scripts:\s*([0-9]+)'
     $gdreSummary.ParseErrorCount = [regex]::Matches($gdreLog, '(?im)^\s*ERROR:\s+Parse Error:').Count
@@ -318,6 +388,8 @@ if (Test-Path -LiteralPath $gdreExportLogPath -PathType Leaf) {
 
     Add-Check -Name 'gdre_log_recovery_finished' -Passed ([bool]$gdreSummary.RecoveryFinished) -Detail 'GDRE export log should contain Recovery finished'
     Add-Check -Name 'gdre_log_engine_version_godot_451' -Passed ([string]$gdreSummary.EngineVersion -eq '4.5.1') -Detail "GDRE detected engine version '$($gdreSummary.EngineVersion)'"
+    $gdreSourceOriginSeverity = if ($RequireCurrentSourceSnapshot) { 'fail' } else { 'warn' }
+    Add-Check -Name 'gdre_opening_file_matches_installed_game_pck' -Passed ([bool]$gdreSummary.OpeningFileMatchesInstalledGame) -Detail "GDRE Opening file must match installed game PCK; opening=$($gdreSummary.OpeningFile) expected=$installedGamePckPath" -Severity $gdreSourceOriginSeverity
     $gdreCleanSeverity = if ($RequireCleanGdreExport) { 'fail' } else { 'warn' }
     $failedScriptsCount = if ($gdreSummary.FailedScripts) { [int]$gdreSummary.FailedScripts } else { -1 }
     Add-Check -Name 'gdre_log_failed_scripts_zero' -Passed ($failedScriptsCount -eq 0) -Detail "GDRE failed scripts=$failedScriptsCount" -Severity $gdreCleanSeverity
@@ -329,10 +401,10 @@ $toolsRootIgnored = Test-GitIgnored -Path '.tools'
 $godotCacheIgnored = Test-GitIgnored -Path '.godot'
 $sourceRootTrackedFileCount = Get-GitTrackedPathCount -Path 'source code'
 $godotOpenProjectCommand = "Godot project reference: executable=$godotExeFull project=$sourceProjectPath"
-$sourceSnapshotDisposition = if ($normalizedSourceVersion -and $normalizedGameVersion -and $normalizedSourceVersion -eq $normalizedGameVersion) {
+$sourceSnapshotDisposition = if ($sourceReleaseIdentityMatchesInstalledGame) {
     'current-source-match'
 } elseif ($normalizedSourceVersion -and $normalizedGameVersion) {
-    'historical-source-version-mismatch'
+    'historical-source-identity-mismatch'
 } else {
     'unknown-source-version'
 }
@@ -362,6 +434,16 @@ if ($ritsuManifest) {
     Add-Check -Name 'ritsulib_manifest_json_valid' -Passed $true -Detail "RitsuLib version=$ritsuVersion"
 }
 
+$ritsuManifestSha256 = Get-HashOrNull -Path $ritsuManifestPath
+$ritsuVariantsSha256 = Get-HashOrNull -Path $ritsuVariantsPath
+$ritsuVariantDirectory = ''
+$ritsuVariantAssembly = ''
+$ritsuVariantDllPath = ''
+$ritsuVariantDllSha256 = ''
+$ritsuVariantExpectedSha256 = ''
+$ritsuCompatTargetPath = ''
+$ritsuCompatTargetText = ''
+
 $expectedRitsuVersionNormalized = Normalize-Version -Version $ExpectedRitsuLibVersion
 if ($ExpectedRitsuLibVersion -and $ritsuVersion) {
     Add-Check -Name 'ritsulib_version_matches_expected' -Passed ((Normalize-Version -Version $ritsuVersion) -eq $expectedRitsuVersionNormalized) -Detail "RitsuLib version=$ritsuVersion expected=$ExpectedRitsuLibVersion"
@@ -376,20 +458,25 @@ if ($ritsuVariants -and $ritsuVariants.variants -and $normalizedGameVersion) {
 
     Add-Check -Name 'ritsulib_variant_matches_installed_game' -Passed ($matchedVariant.Count -gt 0) -Detail "expected compat target $expectedCompat"
     if ($matchedVariant.Count -gt 0) {
-        $variantDll = Join-Path $ritsuLibRootFull ([string]$matchedVariant[0].directory)
-        $variantDll = Join-Path $variantDll ([string]$matchedVariant[0].assembly)
-        Add-Check -Name 'ritsulib_variant_dll_exists' -Passed (Test-Path -LiteralPath $variantDll -PathType Leaf) -Detail "expected RitsuLib variant DLL at $variantDll"
+        $ritsuVariantDirectory = [string]$matchedVariant[0].directory
+        $ritsuVariantAssembly = [string]$matchedVariant[0].assembly
+        $ritsuVariantExpectedSha256 = [string]$matchedVariant[0].sha256
+        $ritsuVariantDllPath = Join-Path $ritsuLibRootFull $ritsuVariantDirectory
+        $ritsuVariantDllPath = Join-Path $ritsuVariantDllPath $ritsuVariantAssembly
+        Add-Check -Name 'ritsulib_variant_dll_exists' -Passed (Test-Path -LiteralPath $ritsuVariantDllPath -PathType Leaf) -Detail "expected RitsuLib variant DLL at $ritsuVariantDllPath"
 
-        $compatTargetPath = Join-Path (Split-Path -Parent $variantDll) 'compat-target.txt'
-        Add-Check -Name 'ritsulib_compat_target_file_exists' -Passed (Test-Path -LiteralPath $compatTargetPath -PathType Leaf) -Detail "expected compat-target.txt at $compatTargetPath"
-        if (Test-Path -LiteralPath $compatTargetPath -PathType Leaf) {
-            $compatTargetText = (Get-Content -LiteralPath $compatTargetPath -Raw -Encoding UTF8).Trim()
-            Add-Check -Name 'ritsulib_compat_target_file_matches_variant' -Passed ($compatTargetText -eq [string]$matchedVariant[0].compatTarget) -Detail "compat-target.txt=$compatTargetText variant=$($matchedVariant[0].compatTarget)"
+        $ritsuCompatTargetPath = Join-Path (Split-Path -Parent $ritsuVariantDllPath) 'compat-target.txt'
+        Add-Check -Name 'ritsulib_compat_target_file_exists' -Passed (Test-Path -LiteralPath $ritsuCompatTargetPath -PathType Leaf) -Detail "expected compat-target.txt at $ritsuCompatTargetPath"
+        if (Test-Path -LiteralPath $ritsuCompatTargetPath -PathType Leaf) {
+            $ritsuCompatTargetText = (Get-Content -LiteralPath $ritsuCompatTargetPath -Raw -Encoding UTF8).Trim()
+            Add-Check -Name 'ritsulib_compat_target_file_matches_variant' -Passed ($ritsuCompatTargetText -eq [string]$matchedVariant[0].compatTarget) -Detail "compat-target.txt=$ritsuCompatTargetText variant=$($matchedVariant[0].compatTarget)"
         }
 
         if ($matchedVariant[0].sha256) {
-            $dllHash = Get-HashOrNull -Path $variantDll
-            Add-Check -Name 'ritsulib_variant_dll_hash_matches' -Passed ($dllHash -eq [string]$matchedVariant[0].sha256) -Detail "variant hash=$dllHash expected=$($matchedVariant[0].sha256)"
+            $ritsuVariantDllSha256 = Get-HashOrNull -Path $ritsuVariantDllPath
+            Add-Check -Name 'ritsulib_variant_dll_hash_matches' -Passed ($ritsuVariantDllSha256 -eq $ritsuVariantExpectedSha256) -Detail "variant hash=$ritsuVariantDllSha256 expected=$ritsuVariantExpectedSha256"
+        } else {
+            $ritsuVariantDllSha256 = Get-HashOrNull -Path $ritsuVariantDllPath
         }
     }
 }
@@ -406,7 +493,11 @@ $report = [pscustomobject]@{
     RitsuLibRoot = $ritsuLibRootFull
     Game = [pscustomobject]@{
         Version = $gameVersion
-        Commit = if ($gameReleaseInfo -and $gameReleaseInfo.commit) { [string]$gameReleaseInfo.commit } else { '' }
+        Commit = $gameCommit
+        Branch = $gameBranch
+        MainAssemblyHash = $gameMainAssemblyHash
+        PckPath = $installedGamePckPath
+        PckSha256 = [string]$gdreSummary.InstalledGamePckSha256
     }
     SpirePlus = [pscustomobject]@{
         RepoVersion = if ($repoManifest -and $repoManifest.version) { [string]$repoManifest.version } else { '' }
@@ -415,6 +506,19 @@ $report = [pscustomobject]@{
     RitsuLib = [pscustomobject]@{
         Version = $ritsuVersion
         CompatBranch = if ($matchedVariant -and $matchedVariant.Count -gt 0) { [string]$matchedVariant[0].compatTarget } else { '' }
+        RootPath = $ritsuLibRootFull
+        ManifestPath = $ritsuManifestPath
+        ManifestSha256 = $ritsuManifestSha256
+        VariantsPath = $ritsuVariantsPath
+        VariantsSha256 = $ritsuVariantsSha256
+        ViewerPath = $ritsuViewerPath
+        VariantDirectory = $ritsuVariantDirectory
+        VariantAssembly = $ritsuVariantAssembly
+        VariantDllPath = $ritsuVariantDllPath
+        VariantDllSha256 = $ritsuVariantDllSha256
+        ExpectedVariantDllSha256 = $ritsuVariantExpectedSha256
+        CompatTargetPath = $ritsuCompatTargetPath
+        CompatTargetText = $ritsuCompatTargetText
     }
     Godot = [pscustomobject]@{
         ExeExists = Test-Path -LiteralPath $godotExeFull -PathType Leaf
@@ -425,11 +529,15 @@ $report = [pscustomobject]@{
     }
     RecoveredSource = [pscustomobject]@{
         Version = $sourceVersion
-        Commit = if ($sourceReleaseInfo -and $sourceReleaseInfo.commit) { [string]$sourceReleaseInfo.commit } else { '' }
-        MatchesInstalledGame = $normalizedSourceVersion -and $normalizedGameVersion -and $normalizedSourceVersion -eq $normalizedGameVersion
+        Commit = $sourceCommit
+        Branch = $sourceBranch
+        MainAssemblyHash = $sourceMainAssemblyHash
+        MatchesInstalledGame = [bool]$sourceReleaseIdentityMatchesInstalledGame
         Disposition = $sourceSnapshotDisposition
         FailedScripts = $gdreSummary.FailedScripts
         ParseErrors = $gdreSummary.ParseErrorCount
+        OriginPckPath = [string]$gdreSummary.OpeningFile
+        OriginMatchesInstalledGamePck = [bool]$gdreSummary.OpeningFileMatchesInstalledGame
     }
     AutoSlay = [pscustomobject]$autoSlaySummary
     GitProtection = [pscustomobject]@{
@@ -443,6 +551,7 @@ $report = [pscustomobject]@{
         NotRuntimeProof = $true
         LocalSourceReferenceOnly = $true
         AuthorizedLocalInstallOnly = $true
+        AuthorizedSourceOriginVerified = [bool]$gdreSummary.OpeningFileMatchesInstalledGame
         ThirdPartyDumpsProhibited = $true
         SourceRootMustStayIgnored = $true
         OriginalGameSourceMustNotBeTracked = $true

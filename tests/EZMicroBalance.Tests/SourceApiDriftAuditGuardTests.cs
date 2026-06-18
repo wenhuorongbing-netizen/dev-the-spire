@@ -120,14 +120,14 @@ public sealed class SourceApiDriftAuditGuardTests
     }
 
     [Fact]
-    public void ProjectStillUsesAuditedBaseLibPackageAndModConfigRegistration()
+    public void ProjectUsesCurrentBaseLibPackageAndModConfigRegistration()
     {
         var project = ReadRepoText("EZMicroBalance.csproj");
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
 
         AssertSourceContains(
             project,
-            "Alchyr.Sts2.BaseLib\" Version=\"3.1.4",
+            "Alchyr.Sts2.BaseLib\" Version=\"3.2.1",
             "Include=\"0Harmony\"",
             "Include=\"sts2\"");
 

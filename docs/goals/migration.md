@@ -6,11 +6,11 @@ Date: 2026-06-18
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.86`
+Current package target: Spire Plus `v0.1.0-private-beta.87`
 
 Installed game target: Slay the Spire 2 `v0.107.0`
 
-Runtime dependency target: official `STS2-RitsuLib` `v0.4.16` with `lib/0.107.0`
+Runtime dependency target: official `STS2-RitsuLib` `v0.4.24` with `lib/0.107.0`
 
 Use these files as the current source of truth before acting on this goal:
 
@@ -36,22 +36,22 @@ before any later handoff.
 
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
-| RitsuLib install | Pass | `STS2-RitsuLib` `v0.4.16` is installed with `lib/0.107.0`. |
+| RitsuLib install | Pass | `STS2-RitsuLib` `v0.4.24` is installed with `lib/0.107.0`. |
 | Root cause history | Resolved for loader | The beta.84 Off failure was Spire Plus API drift, including `EctoplasmGoldGatePatch` and getter-target drift, not missing BaseLib/RitsuLib. |
 | beta.85 Off loader proof | Historical pass | `v0.107.0` beta.85 package runtime proof reached main menu with 25/25 Spire Plus patches and clean audit. Treat it as previous-package loader context. |
 | beta.85 CanaryOnly proof | Historical pass | Previous-package loader proof only: 4 event types / 6 registration calls. |
 | beta.85 AdditiveBatch1 proof | Historical fail | Previous-package mismatch: 13/14 registration calls because the installed package/source shape was stale. |
-| beta.86 build/publish/package | Pass | `dotnet build`, `dotnet publish`, package creation, and installed package parity passed for `v0.1.0-private-beta.86`. |
-| beta.86 AdditiveBatch1 proof | Current loader/registration pass | `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` reached main menu with BaseLib, RitsuLib, and Spire Plus loaded; 25/25 patches; 30 SavedSpireFields; 10 event types / 14 registration calls; clean audit; retained log verifier 21/0 and packet verifier 45/0. |
+| beta.87 build/publish/package | Pass | `dotnet build`, `dotnet publish`, package creation, and installed package parity passed for `v0.1.0-private-beta.87`. |
+| beta.87 AdditiveBatch1 proof | Current loader/registration pass | `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` reached main menu with BaseLib, RitsuLib, and Spire Plus loaded; 25/25 patches; 30 SavedSpireFields; 10 event types / 14 registration calls; clean audit; retained log verifier 31/0 and packet verifier 52/0. |
 | Tests | Current no-game pass | Post-baseline no-game/doc-governance recaptures include `bdc002d6`, `d0932097`, and `8aca2701`: build 0 warnings / 0 errors; touched focused RuntimeMonkey, AncientBehavior, ReleaseSafetyExpanded, compactness/governance, StS1 static, format, diff-check, patch-inventory, and batch-classifier lanes passed. The broader beta.86 split lane remains 489 passed / 0 failed / 39 skipped / 528 total and the package/runtime baseline remains `eaaeb5a1`. |
 | Opt-in artifact subset | Current pass | 67 passed / 0 failed / 2 skipped / 69 total with release/package artifact tests enabled. |
 | StS1 static/governance lanes | Current pass | Current-doc claims 962/0 after post-baseline governance follow-up; v19 gate ledger 534/0; v20 final-gate overlay 29/0; runtime preflight 27/0; static suite 15/0; static-file hygiene 11/0. |
 | Batch 4a/4b migration | Source-level complete | Current patch inventory records 25 migrated `IPatchMethod` patch classes and 142 remaining raw `HarmonyPatch` declarations. |
 | Batch 4c migration | Proposal only | Requires owner approval before any migration work. |
-| Mod Settings UI scaffold | Prepared / live pending | No-launch scaffold prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-143758/` against HEAD `6be72076` and package `v0.1.0-private-beta.86`; preflight recorded that Slay the Spire 2 was not running. This is not screenshot, log/audit, or gameplay proof. |
+| Mod Settings UI scaffold | Prepared / live pending | No-launch scaffold prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-143758/` against HEAD `6be72076` and package `v0.1.0-private-beta.87`; preflight recorded that Slay the Spire 2 was not running. This is not screenshot, log/audit, or gameplay proof. |
 | Manual proof | Pending | Gameplay, clicked UI, save-load, image rendering, replacement behavior, co-op/fail-closed behavior, independent QA, and tester handoff are still open. |
 
-Current beta.85 Off and CanaryOnly loader proof exists, and current beta.86 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`.
+Current beta.85/beta.86 loader proof remains previous-package context, and current beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`.
 
 ## Boundaries
 

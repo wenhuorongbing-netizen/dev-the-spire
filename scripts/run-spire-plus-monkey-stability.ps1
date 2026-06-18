@@ -194,6 +194,40 @@ function Get-LogTextAfterOffset {
     }
 }
 
+function Get-FileSha256OrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return ''
+    }
+
+    return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+}
+
+function Get-FileBytesAfterOffset {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][long]$Offset
+    )
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return [byte[]]::new(0)
+    }
+
+    $bytes = [System.IO.File]::ReadAllBytes($Path)
+    if ($Offset -lt 0 -or $Offset -gt $bytes.Length) {
+        return [byte[]]::new(0)
+    }
+
+    $sliceLength = $bytes.Length - [int]$Offset
+    $slice = [byte[]]::new($sliceLength)
+    if ($sliceLength -gt 0) {
+        [System.Array]::Copy($bytes, [int]$Offset, $slice, 0, $sliceLength)
+    }
+
+    return $slice
+}
+
 function Test-LogContainsAfterOffset {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
@@ -229,12 +263,27 @@ function Get-LogSnapshot {
 }
 
 function Get-SpireProcessSnapshot {
-    param([datetime]$MinimumStartTimeUtc = [datetime]::MinValue)
+    param(
+        [datetime]$MinimumStartTimeUtc = [datetime]::MinValue,
+        [int]$ExpectedProcessId = 0,
+        [AllowEmptyString()][string]$ExpectedProcessStartTimeUtc = '',
+        [AllowEmptyString()][string]$ExpectedProcessPath = ''
+    )
 
     $processes = @(Get-Process -Name SlayTheSpire2 -ErrorAction SilentlyContinue)
     $currentProcesses = [System.Collections.Generic.List[object]]::new()
     $staleProcessCount = 0
+    $unknownStartTimeProcessCount = 0
     $earliestStaleProcessStartTimeUtc = $null
+    $hasExpectedProcessId = $ExpectedProcessId -gt 0
+    $expectedProcessPathFull = ''
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedProcessPath)) {
+        try {
+            $expectedProcessPathFull = [System.IO.Path]::GetFullPath($ExpectedProcessPath)
+        } catch {
+            $expectedProcessPathFull = $ExpectedProcessPath
+        }
+    }
 
     foreach ($candidate in $processes) {
         $candidateStartTimeUtc = $null
@@ -244,7 +293,13 @@ function Get-SpireProcessSnapshot {
             $candidateStartTimeUtc = $null
         }
 
-        if ($candidateStartTimeUtc -and $candidateStartTimeUtc -lt $MinimumStartTimeUtc) {
+        if ($null -eq $candidateStartTimeUtc) {
+            $staleProcessCount++
+            $unknownStartTimeProcessCount++
+            continue
+        }
+
+        if ($candidateStartTimeUtc -lt $MinimumStartTimeUtc) {
             $staleProcessCount++
             if ($null -eq $earliestStaleProcessStartTimeUtc -or $candidateStartTimeUtc -lt $earliestStaleProcessStartTimeUtc) {
                 $earliestStaleProcessStartTimeUtc = $candidateStartTimeUtc
@@ -254,6 +309,35 @@ function Get-SpireProcessSnapshot {
         }
 
         $currentProcesses.Add($candidate) | Out-Null
+    }
+
+    $currentProcessCount = $currentProcesses.Count
+    if ($currentProcessCount -gt 1) {
+        return [pscustomobject]@{
+            Observed = $false
+            ProcessName = ''
+            Id = 0
+            StartTimeUtc = $null
+            ProcessPath = ''
+            ExpectedProcessId = $ExpectedProcessId
+            ExpectedProcessStartTimeUtc = $ExpectedProcessStartTimeUtc
+            ExpectedProcessPath = $ExpectedProcessPath
+            ProcessIdMatchesExpected = -not $hasExpectedProcessId
+            ProcessStartTimeMatchesExpected = [string]::IsNullOrWhiteSpace($ExpectedProcessStartTimeUtc)
+            ProcessPathMatchesExpected = [string]::IsNullOrWhiteSpace($ExpectedProcessPath)
+            ProcessIdentityMatchesExpected = $false
+            MainWindowHandle = 0
+            MainWindowTitle = ''
+            Responding = $false
+            HungWindow = $false
+            Error = "Observed $currentProcessCount current SlayTheSpire2 process(es); shared godot.log cannot be attributed to one launched process."
+            MinimumStartTimeUtc = $MinimumStartTimeUtc.ToString('o')
+            StaleProcessCount = $staleProcessCount + $currentProcessCount
+            CurrentProcessCount = $currentProcessCount
+            UnknownStartTimeProcessCount = $unknownStartTimeProcessCount
+            AmbiguousCurrentProcessCount = $currentProcessCount
+            EarliestStaleProcessStartTimeUtc = if ($earliestStaleProcessStartTimeUtc) { $earliestStaleProcessStartTimeUtc.ToString('o') } else { $null }
+        }
     }
 
     $process = @($currentProcesses | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1)
@@ -266,6 +350,15 @@ function Get-SpireProcessSnapshot {
             Observed = $false
             ProcessName = ''
             Id = 0
+            StartTimeUtc = $null
+            ProcessPath = ''
+            ExpectedProcessId = $ExpectedProcessId
+            ExpectedProcessStartTimeUtc = $ExpectedProcessStartTimeUtc
+            ExpectedProcessPath = $ExpectedProcessPath
+            ProcessIdMatchesExpected = -not $hasExpectedProcessId
+            ProcessStartTimeMatchesExpected = [string]::IsNullOrWhiteSpace($ExpectedProcessStartTimeUtc)
+            ProcessPathMatchesExpected = [string]::IsNullOrWhiteSpace($ExpectedProcessPath)
+            ProcessIdentityMatchesExpected = -not $hasExpectedProcessId -and [string]::IsNullOrWhiteSpace($ExpectedProcessStartTimeUtc) -and [string]::IsNullOrWhiteSpace($ExpectedProcessPath)
             MainWindowHandle = 0
             MainWindowTitle = ''
             Responding = $null
@@ -273,6 +366,9 @@ function Get-SpireProcessSnapshot {
             Error = ''
             MinimumStartTimeUtc = $MinimumStartTimeUtc.ToString('o')
             StaleProcessCount = $staleProcessCount
+            CurrentProcessCount = $currentProcessCount
+            UnknownStartTimeProcessCount = $unknownStartTimeProcessCount
+            AmbiguousCurrentProcessCount = 0
             EarliestStaleProcessStartTimeUtc = if ($earliestStaleProcessStartTimeUtc) { $earliestStaleProcessStartTimeUtc.ToString('o') } else { $null }
         }
     }
@@ -283,12 +379,39 @@ function Get-SpireProcessSnapshot {
     $hungWindow = $false
     $error = ''
     $startTimeUtc = $null
+    $processPath = ''
 
     try {
         $startTimeUtc = $selected.StartTime.ToUniversalTime().ToString('o')
     } catch {
         $startTimeUtc = $null
     }
+
+    try {
+        $processPath = [string]$selected.Path
+    } catch {
+        $processPath = ''
+    }
+
+    $processIdMatchesExpected = -not $hasExpectedProcessId -or [int]$selected.Id -eq $ExpectedProcessId
+    $processStartTimeMatchesExpected = $true
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedProcessStartTimeUtc)) {
+        $processStartTimeMatchesExpected = [string]::Equals($startTimeUtc, $ExpectedProcessStartTimeUtc, [System.StringComparison]::OrdinalIgnoreCase)
+    }
+
+    $processPathMatchesExpected = $true
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedProcessPath)) {
+        $processPathFull = ''
+        try {
+            $processPathFull = [System.IO.Path]::GetFullPath($processPath)
+        } catch {
+            $processPathFull = $processPath
+        }
+
+        $processPathMatchesExpected = -not [string]::IsNullOrWhiteSpace($processPathFull) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($processPathFull, $expectedProcessPathFull)
+    }
+
+    $processIdentityMatchesExpected = $processIdMatchesExpected -and $processStartTimeMatchesExpected -and $processPathMatchesExpected
 
     if ($handle -ne [IntPtr]::Zero) {
         try {
@@ -313,6 +436,14 @@ function Get-SpireProcessSnapshot {
         ProcessName = $selected.ProcessName
         Id = $selected.Id
         StartTimeUtc = $startTimeUtc
+        ProcessPath = $processPath
+        ExpectedProcessId = $ExpectedProcessId
+        ExpectedProcessStartTimeUtc = $ExpectedProcessStartTimeUtc
+        ExpectedProcessPath = $ExpectedProcessPath
+        ProcessIdMatchesExpected = $processIdMatchesExpected
+        ProcessStartTimeMatchesExpected = $processStartTimeMatchesExpected
+        ProcessPathMatchesExpected = $processPathMatchesExpected
+        ProcessIdentityMatchesExpected = $processIdentityMatchesExpected
         MainWindowHandle = [int64]$selected.MainWindowHandle
         MainWindowTitle = $selected.MainWindowTitle
         Responding = $responding
@@ -320,6 +451,9 @@ function Get-SpireProcessSnapshot {
         Error = $error
         MinimumStartTimeUtc = $MinimumStartTimeUtc.ToString('o')
         StaleProcessCount = $staleProcessCount
+        CurrentProcessCount = $currentProcessCount
+        UnknownStartTimeProcessCount = $unknownStartTimeProcessCount
+        AmbiguousCurrentProcessCount = 0
         EarliestStaleProcessStartTimeUtc = if ($earliestStaleProcessStartTimeUtc) { $earliestStaleProcessStartTimeUtc.ToString('o') } else { $null }
     }
 }
@@ -341,8 +475,20 @@ function Add-ProbeSample {
         ProcessObserved = [bool]$ProcessSnapshot.Observed
         ProcessName = $ProcessSnapshot.ProcessName
         ProcessId = [int]$ProcessSnapshot.Id
+        ProcessStartTimeUtc = $ProcessSnapshot.StartTimeUtc
+        ProcessPath = $ProcessSnapshot.ProcessPath
+        ExpectedGameProcessId = [int]$ProcessSnapshot.ExpectedProcessId
+        ExpectedGameProcessStartTimeUtc = $ProcessSnapshot.ExpectedProcessStartTimeUtc
+        ExpectedGameProcessPath = $ProcessSnapshot.ExpectedProcessPath
+        ProcessIdMatchesExpected = [bool]$ProcessSnapshot.ProcessIdMatchesExpected
+        ProcessStartTimeMatchesExpected = [bool]$ProcessSnapshot.ProcessStartTimeMatchesExpected
+        ProcessPathMatchesExpected = [bool]$ProcessSnapshot.ProcessPathMatchesExpected
+        ProcessIdentityMatchesExpected = [bool]$ProcessSnapshot.ProcessIdentityMatchesExpected
         MinimumProcessStartTimeUtc = $ProcessSnapshot.MinimumStartTimeUtc
         StaleProcessCount = [int]$ProcessSnapshot.StaleProcessCount
+        CurrentProcessCount = [int]$ProcessSnapshot.CurrentProcessCount
+        UnknownStartTimeProcessCount = [int]$ProcessSnapshot.UnknownStartTimeProcessCount
+        AmbiguousCurrentProcessCount = [int]$ProcessSnapshot.AmbiguousCurrentProcessCount
         EarliestStaleProcessStartTimeUtc = $ProcessSnapshot.EarliestStaleProcessStartTimeUtc
         MainWindowObserved = [int64]$ProcessSnapshot.MainWindowHandle -ne 0
         MainWindowTitle = $ProcessSnapshot.MainWindowTitle
@@ -360,7 +506,10 @@ function Wait-ForMainMenuLog {
         [Parameter(Mandatory = $true)][int]$UnresponsiveSampleThreshold,
         [Parameter(Mandatory = $true)][long]$BaselineLogLengthBytes,
         [Parameter(Mandatory = $true)][datetime]$MinimumProcessStartTimeUtc,
-        [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$ProbeSamples
+        [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$ProbeSamples,
+        [int]$ExpectedProcessId = 0,
+        [AllowEmptyString()][string]$ExpectedProcessStartTimeUtc = '',
+        [AllowEmptyString()][string]$ExpectedProcessPath = ''
     )
 
     $startedAt = Get-Date
@@ -399,7 +548,11 @@ function Wait-ForMainMenuLog {
             $lastGrowthAt = Get-Date
         }
 
-        $lastProcess = Get-SpireProcessSnapshot -MinimumStartTimeUtc $MinimumProcessStartTimeUtc
+        $lastProcess = Get-SpireProcessSnapshot `
+            -MinimumStartTimeUtc $MinimumProcessStartTimeUtc `
+            -ExpectedProcessId $ExpectedProcessId `
+            -ExpectedProcessStartTimeUtc $ExpectedProcessStartTimeUtc `
+            -ExpectedProcessPath $ExpectedProcessPath
         Add-ProbeSample -Samples $ProbeSamples -Phase 'StartupMainMenu' -LogSnapshot $lastLog -ProcessSnapshot $lastProcess
         $sampleStaleProcessCount = [int]$lastProcess.StaleProcessCount
         if ($sampleStaleProcessCount -gt 0) {
@@ -411,6 +564,10 @@ function Wait-ForMainMenuLog {
 
         if ($lastProcess.Observed) {
             $processObserved = $true
+            if (-not [bool]$lastProcess.ProcessIdentityMatchesExpected) {
+                $failureReason = 'Observed SlayTheSpire2 process identity did not match the live-session selected game process.'
+                break
+            }
         } elseif ($processObserved) {
             $processExitedAfterObservation = $true
             $failureReason = 'SlayTheSpire2 process disappeared before main menu.'
@@ -520,7 +677,11 @@ function Watch-RuntimeHealth {
         [Parameter(Mandatory = $true)][int]$IntervalSeconds,
         [Parameter(Mandatory = $true)][int]$UnresponsiveSampleThreshold,
         [Parameter(Mandatory = $true)][datetime]$MinimumProcessStartTimeUtc,
-        [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$ProbeSamples
+        [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$ProbeSamples,
+        [Parameter(Mandatory = $true)][bool]$RequireLogGrowth,
+        [int]$ExpectedProcessId = 0,
+        [AllowEmptyString()][string]$ExpectedProcessStartTimeUtc = '',
+        [AllowEmptyString()][string]$ExpectedProcessPath = ''
     )
 
     $startedAt = Get-Date
@@ -544,7 +705,11 @@ function Watch-RuntimeHealth {
 
     do {
         $sampleCount++
-        $lastProcess = Get-SpireProcessSnapshot -MinimumStartTimeUtc $MinimumProcessStartTimeUtc
+        $lastProcess = Get-SpireProcessSnapshot `
+            -MinimumStartTimeUtc $MinimumProcessStartTimeUtc `
+            -ExpectedProcessId $ExpectedProcessId `
+            -ExpectedProcessStartTimeUtc $ExpectedProcessStartTimeUtc `
+            -ExpectedProcessPath $ExpectedProcessPath
         $lastLog = Get-LogSnapshot -Path $Path
         Add-ProbeSample -Samples $ProbeSamples -Phase 'PostCommandRuntime' -LogSnapshot $lastLog -ProcessSnapshot $lastProcess
         $sampleStaleProcessCount = [int]$lastProcess.StaleProcessCount
@@ -557,6 +722,10 @@ function Watch-RuntimeHealth {
 
         if ($lastProcess.Observed) {
             $processObserved = $true
+            if (-not [bool]$lastProcess.ProcessIdentityMatchesExpected) {
+                $failureReason = 'Observed SlayTheSpire2 process identity did not match the live-session selected game process during runtime observation.'
+                break
+            }
         } elseif ($processObserved) {
             $processExitedAfterObservation = $true
             $failureReason = 'SlayTheSpire2 process disappeared during runtime observation.'
@@ -595,9 +764,13 @@ function Watch-RuntimeHealth {
     } while ((Get-Date) -lt $deadline)
 
     $logGrew = $lastLog.Exists -and [long]$lastLog.Length -gt [long]$initialLog.Length
-    $passed = $processObserved -and -not $processExitedAfterObservation -and -not $hungWindowDetected -and -not $staleProcessObserved
+    $noLogGrowthTimeoutExceeded = $RequireLogGrowth -and -not $logGrew
+    $logGrowthSatisfied = -not $RequireLogGrowth -or $logGrew
+    $passed = $processObserved -and -not $processExitedAfterObservation -and -not $hungWindowDetected -and -not $staleProcessObserved -and $logGrowthSatisfied
     if (-not $failureReason -and -not $processObserved) {
         $failureReason = 'SlayTheSpire2 process was not observed during runtime observation.'
+    } elseif (-not $failureReason -and $RequireLogGrowth -and -not $logGrew) {
+        $failureReason = 'godot.log did not grow during runtime observation.'
     }
 
     return [pscustomobject]@{
@@ -612,6 +785,8 @@ function Watch-RuntimeHealth {
         ProcessObserved = $processObserved
         ProcessExitedAfterObservation = $processExitedAfterObservation
         HungWindowDetected = $hungWindowDetected
+        RuntimeLogGrowthRequired = $RequireLogGrowth
+        NoLogGrowthTimeoutExceeded = $noLogGrowthTimeoutExceeded
         LogObserved = [bool]$lastLog.Exists
         LogInitialLengthBytes = [long]$initialLog.Length
         LogFinalLengthBytes = [long]$lastLog.Length
@@ -787,6 +962,11 @@ function Get-FailureReasonCodes {
         if (-not [bool]$runtime.ProcessObserved) { Add-FailureCode -Codes $codes -Code 'game_process_missing' }
         if ([bool]$runtime.ProcessExitedAfterObservation) { Add-FailureCode -Codes $codes -Code 'game_process_exited' }
         if ([bool]$runtime.HungWindowDetected) { Add-FailureCode -Codes $codes -Code 'process_unresponsive' }
+        $runtimeLogGrowthRequired = -not [string]::IsNullOrWhiteSpace([string]$Result.Command) -or [bool]$Result.CommandAckRequired
+        if ($runtime.PSObject.Properties.Name -contains 'RuntimeLogGrowthRequired') {
+            $runtimeLogGrowthRequired = [bool]$runtime.RuntimeLogGrowthRequired
+        }
+        if ([bool]$runtime.NoLogGrowthTimeoutExceeded -or ($runtimeLogGrowthRequired -and -not [bool]$runtime.LogGrew)) { Add-FailureCode -Codes $codes -Code 'runtime_log_stalled' }
     }
 
     if (($main -and [bool]$main.StaleProcessObserved) -or
@@ -800,10 +980,53 @@ function Get-FailureReasonCodes {
         Add-FailureCode -Codes $codes -Code 'main_window_missing'
     }
 
+    if ([string]::IsNullOrWhiteSpace([string]$Result.LiveSessionPrepareOutputSha256) -or
+        -not (Test-Path -LiteralPath ([string]$Result.LiveSessionPrepareOutputPath) -PathType Leaf)) {
+        Add-FailureCode -Codes $codes -Code 'live_session_prepare_output_missing'
+    }
+
+    if ([int]$Result.LiveSessionLaunchedProcessId -le 0 -or
+        [string]::IsNullOrWhiteSpace([string]$Result.LiveSessionLaunchedAt) -or
+        [string]::IsNullOrWhiteSpace([string]$Result.LiveSessionLauncherKind)) {
+        Add-FailureCode -Codes $codes -Code 'live_session_launch_metadata_missing'
+    }
+
+    if ([int]$Result.LiveSessionPidAttributionSchemaVersion -le 0) {
+        Add-FailureCode -Codes $codes -Code 'live_session_pid_attribution_missing'
+    }
+
+    if (-not [bool]$Result.LiveSessionPidAttributionPassed -or
+        [int]$Result.LiveSessionSelectedGameProcessId -le 0 -or
+        [string]::IsNullOrWhiteSpace([string]$Result.LiveSessionSelectedGameProcessStartTimeUtc) -or
+        [string]::IsNullOrWhiteSpace([string]$Result.LiveSessionSelectedGameProcessPath)) {
+        Add-FailureCode -Codes $codes -Code 'live_session_pid_attribution_failed'
+    }
+
+    if ($Result.MainMenuReached -and -not [bool]$Result.GameProcessStartTimeAfterLiveSessionLaunch) {
+        Add-FailureCode -Codes $codes -Code 'game_process_start_time_unbound'
+    }
+
+    if ($Result.MainMenuReached -and [string]::IsNullOrWhiteSpace([string]$Result.GameProcessPath)) {
+        Add-FailureCode -Codes $codes -Code 'game_process_path_missing'
+    }
+
+    if ($Result.MainMenuReached -and -not [bool]$Result.GameProcessIdMatchesLiveSession) {
+        Add-FailureCode -Codes $codes -Code 'game_process_id_mismatch'
+    }
+
+    if ($Result.MainMenuReached -and -not [bool]$Result.GameProcessStartTimeMatchesLiveSession) {
+        Add-FailureCode -Codes $codes -Code 'game_process_start_time_mismatch'
+    }
+
+    if ($Result.MainMenuReached -and -not [bool]$Result.GameProcessPathMatchesLiveSession) {
+        Add-FailureCode -Codes $codes -Code 'game_process_path_mismatch'
+    }
+
     if ($Result.CommandAckRequired -and -not $Result.CommandAckObserved) {
         Add-FailureCode -Codes $codes -Code 'command_ack_missing'
     }
 
+    if (-not [bool]$Result.GodotLogBeforeCopied) { Add-FailureCode -Codes $codes -Code 'godot_log_before_missing' }
     if (-not [bool]$Result.LogCopied) { Add-FailureCode -Codes $codes -Code 'godot_log_missing' }
     if (-not [bool]$Result.CurrentIterationLogCopied) { Add-FailureCode -Codes $codes -Code 'current_iteration_log_missing' }
     if (-not [bool]$Result.AuditClean) { Add-FailureCode -Codes $codes -Code 'log_audit_failed' }
@@ -825,7 +1048,18 @@ function Get-HangSignals {
         'game_process_exited',
         'main_menu_timeout',
         'startup_log_stalled',
+        'runtime_log_stalled',
         'process_unresponsive',
+        'live_session_prepare_output_missing',
+        'live_session_launch_metadata_missing',
+        'live_session_pid_attribution_missing',
+        'live_session_pid_attribution_failed',
+        'game_process_start_time_unbound',
+        'game_process_path_missing',
+        'game_process_id_mismatch',
+        'game_process_start_time_mismatch',
+        'game_process_path_mismatch',
+        'godot_log_before_missing',
         'current_iteration_log_missing',
         'command_ack_missing'
     )
@@ -873,6 +1107,20 @@ function Copy-CurrentGodotLog {
     return $true
 }
 
+function Copy-BaselineGodotLog {
+    param(
+        [Parameter(Mandatory = $true)][string]$Destination
+    )
+
+    if (Test-Path -LiteralPath $godotLogPath -PathType Leaf) {
+        Copy-Item -LiteralPath $godotLogPath -Destination $Destination -Force
+    } else {
+        [System.IO.File]::WriteAllBytes($Destination, [byte[]]::new(0))
+    }
+
+    return Test-Path -LiteralPath $Destination -PathType Leaf
+}
+
 function Write-CurrentIterationLogSlice {
     param(
         [Parameter(Mandatory = $true)][string]$Source,
@@ -884,8 +1132,8 @@ function Write-CurrentIterationLogSlice {
         return $false
     }
 
-    $text = Get-LogTextAfterOffset -Path $Source -Offset $Offset
-    $text | Set-Content -LiteralPath $Destination -Encoding UTF8
+    $bytes = Get-FileBytesAfterOffset -Path $Source -Offset $Offset
+    [System.IO.File]::WriteAllBytes($Destination, $bytes)
     return (Test-Path -LiteralPath $Destination -PathType Leaf) -and (Get-Item -LiteralPath $Destination).Length -gt 0
 }
 
@@ -1142,11 +1390,30 @@ $sourceWorkspaceSummary = [ordered]@{
     SourceRoot = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.SourceRoot } else { '' }
     SourceVersion = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RecoveredSource.Version } else { '' }
     SourceCommit = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RecoveredSource.Commit } else { '' }
+    SourceBranch = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RecoveredSource.Branch } else { '' }
+    SourceMainAssemblyHash = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RecoveredSource.MainAssemblyHash } else { '' }
     InstalledGameVersion = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.Game.Version } else { '' }
+    InstalledGameCommit = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.Game.Commit } else { '' }
+    InstalledGameBranch = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.Game.Branch } else { '' }
+    InstalledGameMainAssemblyHash = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.Game.MainAssemblyHash } else { '' }
     Disposition = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RecoveredSource.Disposition } else { '' }
     MatchesInstalledGame = if ($sourceWorkspaceReport) { [bool]$sourceWorkspaceReport.RecoveredSource.MatchesInstalledGame } else { $false }
+    OriginPckPath = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RecoveredSource.OriginPckPath } else { '' }
+    OriginMatchesInstalledGamePck = if ($sourceWorkspaceReport) { [bool]$sourceWorkspaceReport.RecoveredSource.OriginMatchesInstalledGamePck } else { $false }
+    RitsuLibVersion = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.Version } else { '' }
+    RitsuLibCompatBranch = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.CompatBranch } else { '' }
+    RitsuLibManifestPath = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.ManifestPath } else { '' }
+    RitsuLibManifestSha256 = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.ManifestSha256 } else { '' }
+    RitsuLibVariantsPath = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.VariantsPath } else { '' }
+    RitsuLibVariantsSha256 = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.VariantsSha256 } else { '' }
+    RitsuLibVariantDllPath = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.VariantDllPath } else { '' }
+    RitsuLibVariantDllSha256 = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.VariantDllSha256 } else { '' }
+    RitsuLibExpectedVariantDllSha256 = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.ExpectedVariantDllSha256 } else { '' }
+    RitsuLibCompatTargetPath = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.CompatTargetPath } else { '' }
+    RitsuLibCompatTargetText = if ($sourceWorkspaceReport) { [string]$sourceWorkspaceReport.RitsuLib.CompatTargetText } else { '' }
     RefreshSourceSnapshotBeforeCurrentApiClaims = if ($sourceWorkspaceReport) { [bool]$sourceWorkspaceReport.EvidenceUsePolicy.RefreshSourceSnapshotBeforeCurrentApiClaims } else { $true }
     NotRuntimeProof = if ($sourceWorkspaceReport) { [bool]$sourceWorkspaceReport.EvidenceUsePolicy.NotRuntimeProof } else { $true }
+    AuthorizedSourceOriginVerified = if ($sourceWorkspaceReport) { [bool]$sourceWorkspaceReport.EvidenceUsePolicy.AuthorizedSourceOriginVerified } else { $false }
     RequireCurrentSourceSnapshot = [bool]$RequireCurrentSourceSnapshot
     RequireCleanGdreExport = [bool]$RequireCleanGdreExport
 }
@@ -1230,7 +1497,7 @@ $plan = [ordered]@{
     LogGrowthProbe = [ordered]@{
         StartupFailsOnNoGrowth = $true
         StartupNoGrowthTimeoutSeconds = $NoLogGrowthTimeoutSeconds
-        RuntimeLogGrowthIsTelemetryOnly = $true
+        RuntimeLogGrowthIsTelemetryOnly = $false
         DetectsLogResetOrTruncation = $true
     }
     CommandCorpus = @($CommandCorpus)
@@ -1259,6 +1526,7 @@ $plan = [ordered]@{
         'main menu log line missing before timeout',
         'SlayTheSpire2 process disappears before or after main menu',
         'pre-existing SlayTheSpire2 process is observed before launch or during observation',
+        'live-session selected game process PID/start/path attribution is missing or does not match runtime probes',
         'SlayTheSpire2 main window is not observed after main menu',
         'SlayTheSpire2 window reports not responding or hung for the configured consecutive-sample threshold',
         'godot.log stops growing before main menu for the configured no-growth timeout',
@@ -1321,13 +1589,50 @@ try {
             CommandAckPattern = [string]$planned.CommandAckPattern
             CommandAckRequired = -not [string]::IsNullOrWhiteSpace([string]$planned.CommandAckPattern)
             CommandAckObserved = [string]::IsNullOrWhiteSpace([string]$planned.CommandAckPattern)
+            LiveSessionPrepareOutputPath = Join-Path $iterationDir 'prepare-output.json'
+            LiveSessionPrepareOutputSha256 = ''
+            LiveSessionEvidenceDir = ''
+            LiveSessionLauncherKind = ''
+            LiveSessionSteamAppId = ''
+            LiveSessionLaunchFilePath = ''
+            LiveSessionLaunchArgumentList = @()
+            LiveSessionLaunchedProcessId = 0
+            LiveSessionLaunchedAt = $null
+            LiveSessionLaunchReturnedAt = $null
+            LiveSessionPidAttributionSchemaVersion = 0
+            LiveSessionPidAttributionPassed = $false
+            LiveSessionPidAttributionMethod = ''
+            LiveSessionPidProbeStartedAtUtc = $null
+            LiveSessionPidProbeFinishedAtUtc = $null
+            LiveSessionPreLaunchSlayProcessCount = 0
+            LiveSessionPreLaunchSlayProcessIds = @()
+            LiveSessionSelectedGameProcessId = 0
+            LiveSessionSelectedGameProcessStartTimeUtc = $null
+            LiveSessionSelectedGameProcessPath = ''
+            LiveSessionSelectedGameProcessParentProcessId = 0
+            LiveSessionAttributionFailureReason = ''
+            GameProcessStartTimeAfterLiveSessionLaunch = $false
+            GameProcessIdMatchesLiveSession = $false
+            GameProcessStartTimeMatchesLiveSession = $false
+            GameProcessPathMatchesLiveSession = $false
             RuntimeProbeSamplesPath = Join-Path $iterationDir 'runtime-probe-samples.json'
+            GodotLogBeforePath = Join-Path $iterationDir 'godot.log.before'
+            GodotLogAfterLaunchPath = Join-Path $iterationDir 'godot.log.after-launch'
+            GodotLogCurrentIterationPath = Join-Path $iterationDir 'godot.log.current-iteration'
             CurrentIterationLogPath = Join-Path $iterationDir 'godot.log.current-iteration'
             GameProcessId = 0
             GameProcessStartTimeUtc = $null
+            GameProcessPath = ''
             MainWindowObserved = $false
             MainMenuDetectedAt = $null
             MainMenuElapsedSeconds = 0
+            GodotLogBeforeCopied = $false
+            GodotLogBeforeLengthBytes = 0L
+            GodotLogBeforeSha256 = ''
+            GodotLogAfterLaunchLengthBytes = 0L
+            GodotLogAfterLaunchSha256 = ''
+            GodotLogCurrentIterationLengthBytes = 0L
+            GodotLogCurrentIterationSha256 = ''
             PreLaunchLogLengthBytes = 0L
             PreLaunchLogLastWriteTimeUtc = $null
             MinimumProcessStartTimeUtc = $null
@@ -1372,9 +1677,12 @@ try {
                 $result.StaleProcessCount = $preExistingProcesses.Count
                 $result.Error = "Observed $($preExistingProcesses.Count) pre-existing SlayTheSpire2 process(es) before launch; shared godot.log cannot be trusted for this iteration."
             } else {
-                $preLaunchLog = Get-LogSnapshot -Path $godotLogPath
+                $result.GodotLogBeforeCopied = Copy-BaselineGodotLog -Destination ([string]$result.GodotLogBeforePath)
+                $preLaunchLog = Get-LogSnapshot -Path ([string]$result.GodotLogBeforePath)
                 $result.PreLaunchLogLengthBytes = [long]$preLaunchLog.Length
                 $result.PreLaunchLogLastWriteTimeUtc = $preLaunchLog.LastWriteTimeUtc
+                $result.GodotLogBeforeLengthBytes = [long]$preLaunchLog.Length
+                $result.GodotLogBeforeSha256 = Get-FileSha256OrEmpty -Path ([string]$result.GodotLogBeforePath)
                 $result.MinimumProcessStartTimeUtc = $minimumProcessStartTimeUtc.ToString('o')
 
                 $prepareArgs = @(
@@ -1398,7 +1706,63 @@ try {
                 }
 
                 $prepareStarted = $true
-                & $liveSessionScript @prepareArgs | Out-File -LiteralPath (Join-Path $iterationDir 'prepare-output.json') -Encoding UTF8
+                $prepareOutputPath = [string]$result.LiveSessionPrepareOutputPath
+                & $liveSessionScript @prepareArgs | Out-File -LiteralPath $prepareOutputPath -Encoding UTF8
+                $result.LiveSessionPrepareOutputSha256 = Get-FileSha256OrEmpty -Path $prepareOutputPath
+                $prepareOutput = Read-JsonOrNull -Path $prepareOutputPath
+                if ($prepareOutput) {
+                    $result.LiveSessionEvidenceDir = [string]$prepareOutput.EvidenceDir
+                    $result.LiveSessionLauncherKind = [string]$prepareOutput.LaunchKind
+                    $result.LiveSessionSteamAppId = [string]$prepareOutput.SteamAppId
+                    $result.LiveSessionLaunchFilePath = [string]$prepareOutput.LaunchFilePath
+                    $result.LiveSessionLaunchArgumentList = @($prepareOutput.LaunchArgumentList)
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'LaunchedProcessId' -and $null -ne $prepareOutput.LaunchedProcessId) {
+                        $result.LiveSessionLaunchedProcessId = [int]$prepareOutput.LaunchedProcessId
+                    }
+
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'LaunchedAt') {
+                        $result.LiveSessionLaunchedAt = $prepareOutput.LaunchedAt
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'LaunchReturnedAt') {
+                        $result.LiveSessionLaunchReturnedAt = $prepareOutput.LaunchReturnedAt
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'PidAttributionSchemaVersion' -and $null -ne $prepareOutput.PidAttributionSchemaVersion) {
+                        $result.LiveSessionPidAttributionSchemaVersion = [int]$prepareOutput.PidAttributionSchemaVersion
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'PidAttributionPassed') {
+                        $result.LiveSessionPidAttributionPassed = [bool]$prepareOutput.PidAttributionPassed
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'PidAttributionMethod') {
+                        $result.LiveSessionPidAttributionMethod = [string]$prepareOutput.PidAttributionMethod
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'PidProbeStartedAtUtc') {
+                        $result.LiveSessionPidProbeStartedAtUtc = $prepareOutput.PidProbeStartedAtUtc
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'PidProbeFinishedAtUtc') {
+                        $result.LiveSessionPidProbeFinishedAtUtc = $prepareOutput.PidProbeFinishedAtUtc
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'PreLaunchSlayProcessCount' -and $null -ne $prepareOutput.PreLaunchSlayProcessCount) {
+                        $result.LiveSessionPreLaunchSlayProcessCount = [int]$prepareOutput.PreLaunchSlayProcessCount
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'PreLaunchSlayProcessIds') {
+                        $result.LiveSessionPreLaunchSlayProcessIds = @($prepareOutput.PreLaunchSlayProcessIds)
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'SelectedGameProcessId' -and $null -ne $prepareOutput.SelectedGameProcessId) {
+                        $result.LiveSessionSelectedGameProcessId = [int]$prepareOutput.SelectedGameProcessId
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'SelectedGameProcessStartTimeUtc') {
+                        $result.LiveSessionSelectedGameProcessStartTimeUtc = $prepareOutput.SelectedGameProcessStartTimeUtc
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'SelectedGameProcessPath') {
+                        $result.LiveSessionSelectedGameProcessPath = [string]$prepareOutput.SelectedGameProcessPath
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'SelectedGameProcessParentProcessId' -and $null -ne $prepareOutput.SelectedGameProcessParentProcessId) {
+                        $result.LiveSessionSelectedGameProcessParentProcessId = [int]$prepareOutput.SelectedGameProcessParentProcessId
+                    }
+                    if ($prepareOutput.PSObject.Properties.Name -contains 'AttributionFailureReason') {
+                        $result.LiveSessionAttributionFailureReason = [string]$prepareOutput.AttributionFailureReason
+                    }
+                }
                 $mainMenuObservation = Wait-ForMainMenuLog `
                     -Path $godotLogPath `
                     -TimeoutSeconds $MainMenuTimeoutSeconds `
@@ -1407,7 +1771,10 @@ try {
                     -UnresponsiveSampleThreshold $UnresponsiveSampleThreshold `
                     -BaselineLogLengthBytes ([long]$result.PreLaunchLogLengthBytes) `
                     -MinimumProcessStartTimeUtc $minimumProcessStartTimeUtc `
-                    -ProbeSamples $probeSamples
+                    -ProbeSamples $probeSamples `
+                    -ExpectedProcessId ([int]$result.LiveSessionSelectedGameProcessId) `
+                    -ExpectedProcessStartTimeUtc ([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) `
+                    -ExpectedProcessPath ([string]$result.LiveSessionSelectedGameProcessPath)
                 $result.MainMenuObservation = $mainMenuObservation
                 $result.MainMenuReached = [bool]$mainMenuObservation.MainMenuReached
                 $result.MainMenuObservationPassed = [bool]$mainMenuObservation.Passed
@@ -1424,7 +1791,20 @@ try {
                 if ($mainMenuObservation.LastProcess -and $mainMenuObservation.LastProcess.Observed) {
                     $result.GameProcessId = [int]$mainMenuObservation.LastProcess.Id
                     $result.GameProcessStartTimeUtc = $mainMenuObservation.LastProcess.StartTimeUtc
+                    $result.GameProcessPath = [string]$mainMenuObservation.LastProcess.ProcessPath
+                    $result.GameProcessIdMatchesLiveSession = [bool]$mainMenuObservation.LastProcess.ProcessIdMatchesExpected
+                    $result.GameProcessStartTimeMatchesLiveSession = [bool]$mainMenuObservation.LastProcess.ProcessStartTimeMatchesExpected
+                    $result.GameProcessPathMatchesLiveSession = [bool]$mainMenuObservation.LastProcess.ProcessPathMatchesExpected
                     $result.MainWindowObserved = [int64]$mainMenuObservation.LastProcess.MainWindowHandle -ne 0
+                    if ($result.LiveSessionLaunchedAt -and $result.GameProcessStartTimeUtc) {
+                        try {
+                            $gameProcessStart = [datetime]::Parse([string]$result.GameProcessStartTimeUtc).ToUniversalTime()
+                            $liveSessionLaunch = [datetime]::Parse([string]$result.LiveSessionLaunchedAt).ToUniversalTime()
+                            $result.GameProcessStartTimeAfterLiveSessionLaunch = $gameProcessStart -ge $liveSessionLaunch
+                        } catch {
+                            $result.GameProcessStartTimeAfterLiveSessionLaunch = $false
+                        }
+                    }
                 }
 
                 if ($result.MainMenuReached -and -not $devConsoleCommandsDisabled -and -not [string]::IsNullOrWhiteSpace([string]$planned.Command)) {
@@ -1437,10 +1817,14 @@ try {
                         -IntervalSeconds $ObservationIntervalSeconds `
                         -UnresponsiveSampleThreshold $UnresponsiveSampleThreshold `
                         -MinimumProcessStartTimeUtc $minimumProcessStartTimeUtc `
-                        -ProbeSamples $probeSamples
+                        -ProbeSamples $probeSamples `
+                        -RequireLogGrowth $true `
+                        -ExpectedProcessId ([int]$result.LiveSessionSelectedGameProcessId) `
+                        -ExpectedProcessStartTimeUtc ([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) `
+                        -ExpectedProcessPath ([string]$result.LiveSessionSelectedGameProcessPath)
                     $result.RuntimeObservation = $runtimeObservation
                     $result.RuntimeObservationPassed = [bool]$runtimeObservation.Passed
-                    $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved
+                    $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved -and (-not [bool]$runtimeObservation.RuntimeLogGrowthRequired -or ([bool]$runtimeObservation.LogGrew -and -not [bool]$runtimeObservation.NoLogGrowthTimeoutExceeded))
                     $result.MaxSecondsWithoutLogGrowth = [Math]::Max([int]$result.MaxSecondsWithoutLogGrowth, [int]$runtimeObservation.MaxNoLogGrowthSeconds)
                     $result.MaxConsecutiveUnresponsiveSamples = [Math]::Max([int]$result.MaxConsecutiveUnresponsiveSamples, [int]$runtimeObservation.MaxConsecutiveUnresponsiveSamples)
                     $result.StaleProcessObserved = [bool]$result.StaleProcessObserved -or [bool]$runtimeObservation.StaleProcessObserved
@@ -1455,10 +1839,14 @@ try {
                         -IntervalSeconds $ObservationIntervalSeconds `
                         -UnresponsiveSampleThreshold $UnresponsiveSampleThreshold `
                         -MinimumProcessStartTimeUtc $minimumProcessStartTimeUtc `
-                        -ProbeSamples $probeSamples
+                        -ProbeSamples $probeSamples `
+                        -RequireLogGrowth $false `
+                        -ExpectedProcessId ([int]$result.LiveSessionSelectedGameProcessId) `
+                        -ExpectedProcessStartTimeUtc ([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) `
+                        -ExpectedProcessPath ([string]$result.LiveSessionSelectedGameProcessPath)
                     $result.RuntimeObservation = $runtimeObservation
                     $result.RuntimeObservationPassed = [bool]$runtimeObservation.Passed
-                    $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved
+                    $result.PostCommandLogProbePassed = [bool]$runtimeObservation.LogObserved -and (-not [bool]$runtimeObservation.RuntimeLogGrowthRequired -or ([bool]$runtimeObservation.LogGrew -and -not [bool]$runtimeObservation.NoLogGrowthTimeoutExceeded))
                     $result.MaxSecondsWithoutLogGrowth = [Math]::Max([int]$result.MaxSecondsWithoutLogGrowth, [int]$runtimeObservation.MaxNoLogGrowthSeconds)
                     $result.MaxConsecutiveUnresponsiveSamples = [Math]::Max([int]$result.MaxConsecutiveUnresponsiveSamples, [int]$runtimeObservation.MaxConsecutiveUnresponsiveSamples)
                     $result.StaleProcessObserved = [bool]$result.StaleProcessObserved -or [bool]$runtimeObservation.StaleProcessObserved
@@ -1473,15 +1861,25 @@ try {
 
                 $result.ResponsivenessProbePassed = $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed
 
-                $launchLog = Join-Path $iterationDir 'godot.log.after-launch'
+                $launchLog = [string]$result.GodotLogAfterLaunchPath
                 $result.LogCopied = Copy-CurrentGodotLog -Destination $launchLog
                 if ($result.LogCopied) {
-                    $currentIterationLog = [string]$result.CurrentIterationLogPath
-                    $result.LogScanOffsetBytes = [long]$mainMenuObservation.LogScanOffsetBytes
+                    $copiedLog = Get-LogSnapshot -Path $launchLog
+                    $result.LogFinalLengthBytes = [long]$copiedLog.Length
+                    $result.GodotLogAfterLaunchLengthBytes = [long]$copiedLog.Length
+                    $result.GodotLogAfterLaunchSha256 = Get-FileSha256OrEmpty -Path $launchLog
+                    $currentIterationLog = [string]$result.GodotLogCurrentIterationPath
+                    $result.CurrentIterationLogPath = $currentIterationLog
+                    $result.LogScanOffsetBytes = [long]$result.GodotLogBeforeLengthBytes
                     $result.CurrentIterationLogCopied = Write-CurrentIterationLogSlice `
                         -Source $launchLog `
                         -Destination $currentIterationLog `
                         -Offset ([long]$result.LogScanOffsetBytes)
+                    if ($result.CurrentIterationLogCopied) {
+                        $currentLogSnapshot = Get-LogSnapshot -Path $currentIterationLog
+                        $result.GodotLogCurrentIterationLengthBytes = [long]$currentLogSnapshot.Length
+                        $result.GodotLogCurrentIterationSha256 = Get-FileSha256OrEmpty -Path $currentIterationLog
+                    }
 
                     $logForChecks = if ($result.CurrentIterationLogCopied) { $currentIterationLog } else { $launchLog }
                     $commandAck = Test-CommandAck -LogPath $logForChecks -Command ([string]$planned.Command)
@@ -1509,8 +1907,6 @@ try {
                         $result.Sts1ModeVerifierChecks = @($modeCheck.Checks)
                         $result.Sts1ModeVerifierMismatches = @($modeCheck.Mismatches)
                     }
-                    $copiedLog = Get-LogSnapshot -Path $launchLog
-                    $result.LogFinalLengthBytes = [long]$copiedLog.Length
                 }
             }
         } catch {
@@ -1545,7 +1941,7 @@ try {
 
         Save-Json -InputObject @($probeSamples) -Path $result.RuntimeProbeSamplesPath
 
-        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and -not [bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -eq 0 -and $result.CommandAckObserved -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and
+        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and -not [bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -eq 0 -and $result.CommandAckObserved -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionPrepareOutputSha256) -and [int]$result.LiveSessionLaunchedProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionLaunchedAt) -and [bool]$result.LiveSessionPidAttributionPassed -and [int]$result.LiveSessionSelectedGameProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessPath) -and [bool]$result.GameProcessStartTimeAfterLiveSessionLaunch -and [bool]$result.GameProcessIdMatchesLiveSession -and [bool]$result.GameProcessStartTimeMatchesLiveSession -and [bool]$result.GameProcessPathMatchesLiveSession -and -not [string]::IsNullOrWhiteSpace([string]$result.GameProcessPath) -and $result.GodotLogBeforeCopied -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and
             ($devConsoleCommandsDisabled -or [string]::IsNullOrWhiteSpace([string]$planned.Command) -or $result.ConsoleCommandSent)
 
         Save-Json -InputObject $result -Path (Join-Path $iterationDir 'iteration-result.json')
@@ -1583,10 +1979,26 @@ try {
         FailureReasonCounts = $failureReasonCounts
         ProcessExitCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'game_process_exited' }).Count
         MainWindowMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'main_window_missing' }).Count
+        LiveSessionBindingMissingCount = @($results | Where-Object {
+                $codes = @($_.FailureReasonCodes)
+                $codes -contains 'live_session_prepare_output_missing' -or
+                $codes -contains 'live_session_launch_metadata_missing' -or
+                $codes -contains 'live_session_pid_attribution_missing' -or
+                $codes -contains 'live_session_pid_attribution_failed' -or
+                $codes -contains 'game_process_start_time_unbound' -or
+                $codes -contains 'game_process_path_missing' -or
+                $codes -contains 'game_process_id_mismatch' -or
+                $codes -contains 'game_process_start_time_mismatch' -or
+                $codes -contains 'game_process_path_mismatch'
+            }).Count
+        GodotLogBeforeMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'godot_log_before_missing' }).Count
         CurrentIterationLogMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'current_iteration_log_missing' }).Count
         UnresponsiveIterationCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'process_unresponsive' }).Count
         StaleProcessObservedCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'stale_process_observed' }).Count
-        LogStallIterationCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'startup_log_stalled' }).Count
+        LogStallIterationCount = @($results | Where-Object {
+                $codes = @($_.FailureReasonCodes)
+                $codes -contains 'startup_log_stalled' -or $codes -contains 'runtime_log_stalled'
+            }).Count
         CommandAckMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'command_ack_missing' }).Count
         CommandCounts = $commandCounts
         ScenarioTagCounts = $scenarioTagCounts

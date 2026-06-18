@@ -56,6 +56,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "MainMenuTimeoutSeconds",
             "'\\[Startup\\] Time to main menu'",
             "godot.log.after-launch",
+            "godot.log.before",
             "godot.log.current-iteration",
             "godot-log-audit.json",
             "iteration-result.json",
@@ -79,6 +80,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "HangProbeSchemaVersion",
             "ObservationIntervalSeconds",
             "NoLogGrowthTimeoutSeconds",
+            "RuntimeLogGrowthRequired",
+            "-RequireLogGrowth $true",
+            "-RequireLogGrowth $false",
             "UnresponsiveSampleThreshold",
             "SpirePlusRuntimeMonkeyNative",
             "IsHungAppWindow",
@@ -101,12 +105,22 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "} else {",
             "StaleProcessObserved",
             "StaleProcessCount",
+            "UnknownStartTimeProcessCount",
+            "AmbiguousCurrentProcessCount",
+            "CurrentProcessCount",
             "MaxConsecutiveUnresponsiveSamples",
             "shared godot.log cannot be trusted for this iteration",
             "CommandAckPatterns",
             "check-local-godot-source-workspace.ps1",
             "SourceWorkspaceCheckPath",
             "SourceWorkspaceCheckSha256",
+            "SourceBranch",
+            "SourceMainAssemblyHash",
+            "InstalledGameCommit",
+            "InstalledGameBranch",
+            "InstalledGameMainAssemblyHash",
+            "OriginMatchesInstalledGamePck",
+            "AuthorizedSourceOriginVerified",
             "RefreshSourceSnapshotBeforeCurrentApiClaims",
             "RequireCurrentSourceSnapshot",
             "CommandSelectionMode",
@@ -191,7 +205,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "[string]$EvidenceDir",
             "[int]$ExpectedIterations",
             "[string]$ExpectedPackageVersion",
+            "[string]$ExpectedGameVersion",
+            "[string]$ExpectedRitsuLibVersion",
+            "[string]$ExpectedRitsuCompatBranch",
             "[int]$ExpectedPatchCount",
+            "[switch]$RequireCurrentSourceSnapshot",
             "[switch]$FailOnMismatch",
             "monkey-plan.json",
             "monkey-summary.json",
@@ -205,22 +223,94 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Get-CanonicalCommandAckPattern",
             "Get-CanonicalCommandOwnerArea",
             "Get-CanonicalCommandScenarioTag",
+            "Test-BytePrefix",
+            "Test-CurrentSliceBinding",
             "plan_unresponsive_sample_threshold_positive",
             "RuntimeProbeSamplesPath",
+            "GodotLogBeforePath",
+            "GodotLogBeforeLengthBytes",
+            "GodotLogBeforeSha256",
+            "GodotLogAfterLaunchPath",
+            "GodotLogAfterLaunchLengthBytes",
+            "GodotLogAfterLaunchSha256",
+            "GodotLogCurrentIterationPath",
+            "GodotLogCurrentIterationLengthBytes",
+            "GodotLogCurrentIterationSha256",
             "CurrentIterationLogPath",
             "LogScanOffsetBytes",
+            "prepare-output.json",
+            "LiveSessionPrepareOutputPath",
+            "LiveSessionPrepareOutputSha256",
+            "LiveSessionSelectedGameProcessId",
+            "LiveSessionSelectedGameProcessStartTimeUtc",
+            "LiveSessionSelectedGameProcessPath",
+            "GameProcessIdMatchesLiveSession",
+            "GameProcessStartTimeMatchesLiveSession",
+            "GameProcessPathMatchesLiveSession",
+            "ConvertTo-NormalizedPathOrEmpty",
+            "live_session_prepare_output_path_matches_retained_file",
+            "live_session_prepare_output_sha256_matches_retained_file",
+            "live_session_pid_attribution_passed",
+            "live_session_selected_game_process_id_matches_prepare_output",
+            "game_process_id_matches_live_session",
+            "game_process_start_time_matches_live_session",
+            "game_process_path_matches_live_session",
+            "result_live_session_launcher_kind_steam_app_launch",
+            "result_live_session_launch_argument_list_matches_sts2",
+            "result_live_session_pid_attribution_passed",
+            "result_live_session_prelaunch_slay_process_count_zero",
+            "result_live_session_selected_game_process_id_matches_result",
+            "result_game_process_start_time_after_live_session_launch",
+            "prepare_output_launch_kind_steam_app_launch",
+            "prepare_output_launch_argument_list_matches_sts2",
+            "prepare_output_selected_game_process_start_time_matches_result",
             "runtime_probe_samples_under_iteration_dir",
             "current_iteration_log_under_iteration_dir",
             "runtime_probe_samples_leaf_expected",
             "current_iteration_log_leaf_expected",
             "runtime_probe_samples_path_matches_retained_file",
             "current_iteration_log_path_matches_retained_file",
+            "runtime_probe_samples_phase_field_present",
+            "runtime_probe_samples_process_id_field_present",
+            "runtime_probe_samples_process_start_time_field_present",
+            "runtime_probe_samples_process_path_field_present",
+            "runtime_probe_samples_expected_process_id_field_present",
+            "runtime_probe_samples_expected_process_start_time_field_present",
+            "runtime_probe_samples_expected_process_path_field_present",
+            "runtime_probe_samples_all_match_live_session_identity",
             "runtime_probe_samples_process_observed_field_present",
+            "runtime_probe_samples_main_window_observed_field_present",
             "runtime_probe_samples_hung_window_field_present",
             "runtime_probe_samples_responding_field_present",
             "runtime_probe_samples_stale_process_count_field_present",
+            "runtime_probe_samples_current_process_count_field_present",
+            "runtime_probe_samples_unknown_start_time_count_field_present",
+            "runtime_probe_samples_ambiguous_current_process_count_field_present",
+            "runtime_probe_samples_no_unknown_start_times",
+            "runtime_probe_samples_no_ambiguous_current_processes",
+            "runtime_probe_samples_single_current_process",
+            "runtime_probe_samples_single_positive_process_id",
+            "runtime_probe_samples_single_process_start_time",
+            "runtime_probe_samples_single_process_path",
+            "runtime_probe_samples_process_id_matches_result",
+            "plan_expected_game_version_matches",
+            "plan_expected_ritsulib_version_matches",
+            "plan_expected_ritsu_compat_branch_matches",
+            "expected_game_version_in_log",
+            "expected_ritsulib_marker_in_log",
+            "plan_source_workspace_required_authorized_source_origin_verified",
+            "godot_log_before_exists",
+            "godot_log_before_under_iteration_dir",
+            "godot_log_before_leaf_expected",
+            "godot_log_before_path_matches_retained_file",
+            "godot_log_before_length_matches_retained_file",
+            "godot_log_before_sha256_matches_retained_file",
+            "result_before_log_copied",
             "log_scan_offset_recorded",
             "log_scan_offset_within_full_log",
+            "log_scan_offset_matches_before_length",
+            "current_iteration_log_matches_after_launch_prefix",
+            "current_iteration_log_matches_after_launch_slice",
             "current_iteration_log_matches_scan_offset",
             "command_ack_required_matches_pattern",
             "command_ack_required_for_canonical_command",
@@ -255,6 +345,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "runtime_probe_samples_no_hung_window",
             "runtime_probe_samples_no_not_responding",
             "runtime_probe_samples_no_stale_processes",
+            "runtime_probe_samples_no_unknown_start_times",
+            "runtime_probe_samples_no_ambiguous_current_processes",
             "plan_launch_true",
             "plan_scenario_present",
             "plan_command_selection_mode_present",
@@ -265,11 +357,17 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "plan_source_workspace_check_hash_present",
             "plan_source_workspace_check_hash_matches",
             "plan_source_workspace_summary_present",
+            "plan_source_workspace_authorized_source_origin_field_present",
+            "plan_source_workspace_origin_matches_installed_game_pck_field_present",
+            "plan_source_workspace_report_authorized_source_origin_field_present",
+            "plan_source_workspace_report_origin_matches_installed_game_pck_field_present",
+            "plan_source_workspace_required_current_snapshot_origin_verified",
             "plan_command_scenario_matrix_present",
             "summary_passed",
             "summary_failed_iterations_zero",
             "summary_process_exit_count_zero",
             "summary_main_window_missing_count_zero",
+            "summary_godot_log_before_missing_count_zero",
             "summary_current_iteration_log_missing_count_zero",
             "summary_unresponsive_iteration_count_zero",
             "summary_stale_process_observed_count_zero",
@@ -284,10 +382,15 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "runtime_observation_passed",
             "startup_log_probe_passed",
             "post_command_log_probe_passed",
+            "runtime_observation_log_growth_requirement_matches_command",
+            "runtime_observation_log_growth_not_required",
+            "runtime_observation_log_grew",
+            "runtime_observation_no_log_growth_timeout",
             "responsiveness_probe_passed",
             "command_ack_observed",
             "failure_reason_codes_empty",
             "hang_signals_empty",
+            "godot_log_before_exists",
             "godot_log_exists",
             "godot_log_non_empty",
             "main_menu_log_line_present",
@@ -325,6 +428,25 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerRoutesLiveSessionBindingFailuresToHarness()
+    {
+        var analyzer = ReadRepoText("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        AssertSourceContains(
+            analyzer,
+            "'live_session_prepare_output_missing'",
+            "'live_session_launch_metadata_missing'",
+            "'live_session_pid_attribution_missing'",
+            "'live_session_pid_attribution_failed'",
+            "'game_process_start_time_unbound'",
+            "'game_process_path_missing'",
+            "'game_process_id_mismatch'",
+            "'game_process_start_time_mismatch'",
+            "'game_process_path_mismatch'",
+            "OwnerArea 'RuntimeHarness'");
+    }
+
+    [Fact]
     public void RuntimeMonkeyRunnerChecksForPreExistingProcessesBeforeBaselineLog()
     {
         var runner = ReadRepoText("scripts", "run-spire-plus-monkey-stability.ps1");
@@ -334,9 +456,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2",
             "$preExistingProcesses.Count -gt 0",
             "pre-existing SlayTheSpire2 process(es) before launch",
-            "$preLaunchLog = Get-LogSnapshot -Path $godotLogPath",
+            "Copy-BaselineGodotLog",
+            "GodotLogBeforePath",
+            "$preLaunchLog = Get-LogSnapshot -Path ([string]$result.GodotLogBeforePath)",
             "& $liveSessionScript @prepareArgs");
-        AssertBefore(runner, "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2", "$preLaunchLog = Get-LogSnapshot -Path $godotLogPath");
+        AssertBefore(runner, "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2", "$preLaunchLog = Get-LogSnapshot -Path ([string]$result.GodotLogBeforePath)");
         AssertBefore(runner, "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2", "& $liveSessionScript @prepareArgs");
     }
 
@@ -360,6 +484,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-ExpectedPatchCount",
                 "25");
             Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_godot_log_before_path_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_godot_log_after_launch_path_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_godot_current_iteration_log_path_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_current_iteration_log_path_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_runtime_probe_samples_path_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
         }
@@ -448,6 +575,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-ExpectedPatchCount",
                 "25");
             Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_current_iteration_log_matches_after_launch_slice status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_current_iteration_log_matches_scan_offset status=fail", result.Output, StringComparison.Ordinal);
         }
         finally
@@ -470,8 +598,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         {
             WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
             var resultPath = Path.Combine(workdir, "iteration-0001", "iteration-result.json");
-            var resultJson = File.ReadAllText(resultPath)
-                .Replace("\"LogScanOffsetBytes\": 0", "\"LogScanOffsetBytes\": 999999", StringComparison.Ordinal);
+            var resultJson = Regex.Replace(
+                File.ReadAllText(resultPath),
+                "\"LogScanOffsetBytes\": \\d+",
+                "\"LogScanOffsetBytes\": 999999");
             File.WriteAllText(resultPath, resultJson);
 
             var result = RunPowerShell(
@@ -484,6 +614,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "25");
             Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
             Assert.Contains("iteration-0001_log_scan_offset_within_full_log status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_log_scan_offset_matches_before_length status=fail", result.Output, StringComparison.Ordinal);
         }
         finally
         {
@@ -776,6 +907,45 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsRuntimeObservationWithoutLogGrowth()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var resultPath = Path.Combine(workdir, "iteration-0001", "iteration-result.json");
+            var resultJson = File.ReadAllText(resultPath)
+                .Replace("\"PostCommandLogProbePassed\": true", "\"PostCommandLogProbePassed\": false", StringComparison.Ordinal)
+                .Replace("\"NoLogGrowthTimeoutExceeded\": false", "\"NoLogGrowthTimeoutExceeded\": true", StringComparison.Ordinal)
+                .Replace("\"LogGrew\": true", "\"LogGrew\": false", StringComparison.Ordinal);
+            File.WriteAllText(resultPath, resultJson);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_post_command_log_probe_passed status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_observation_log_grew status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_observation_no_log_growth_timeout status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeMonkeyPacketCheckerRejectsProbeSamplesMissingFreezeDetectionFields()
     {
         var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
@@ -969,10 +1139,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
             var iterationDir = Path.Combine(workdir, "iteration-0001");
             var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+            var beforeLogPath = Path.Combine(iterationDir, "godot.log.before");
             var fullLogPath = Path.Combine(iterationDir, "godot.log.after-launch");
             var dirtyLog = File.ReadAllText(currentLogPath) + "[ERROR] TypeLoadException\r\n";
             File.WriteAllText(currentLogPath, dirtyLog);
-            File.WriteAllText(fullLogPath, dirtyLog);
+            File.WriteAllText(fullLogPath, File.ReadAllText(beforeLogPath) + dirtyLog);
             var dirtyLogLength = new FileInfo(currentLogPath).Length;
             var dirtyLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(currentLogPath))).ToLowerInvariant();
 
@@ -1077,6 +1248,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "RuntimeProbeSamplesPath",
             "MainMenuObservation",
             "RuntimeObservation",
+            "LogGrew",
+            "NoLogGrowthTimeoutExceeded",
             "godot.log.after-launch",
             "godot.log.current-iteration",
             "godot-log-audit.json",
@@ -1090,6 +1263,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "GodotLogAfterLaunchPath",
             "GodotLogCurrentIterationPath",
             "current_iteration_log_before_after_binding_missing",
+            "current_iteration_log_scan_offset_before_length_mismatch",
             "AutoSlayLogPath",
             "EventKind",
             "AncientId",
@@ -1101,7 +1275,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "autoslay_current_log_ancient_id_missing",
             "autoslay_runtime_probe_samples_missing",
             "autoslay_runtime_probe_samples_incomplete",
+            "autoslay_runtime_probe_main_menu_phase_missing",
+            "autoslay_runtime_probe_runtime_phase_missing",
             "autoslay_runtime_probe_process_identity_unstable",
+            "autoslay_run_result_start_timestamp_invalid",
+            "autoslay_run_result_end_timestamp_invalid",
+            "autoslay_run_result_timestamp_order_invalid",
             "autoslay_main_menu_observation_unhealthy",
             "autoslay_runtime_observation_unhealthy",
             "FailureReasonCodes",
@@ -1151,6 +1330,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "main_window_missing",
             "main_menu_timeout",
             "startup_log_stalled",
+            "runtime_log_stalled",
             "current_iteration_log_missing",
             "current_iteration_log_slice_mismatch",
             "current_iteration_log_before_after_binding_missing",
@@ -1368,6 +1548,100 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerReportsGameNativeAutoSlayProbePhaseAndTimestampDefects()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        var runDir = Path.Combine(workdir, "run-0001");
+        Directory.CreateDirectory(runDir);
+
+        try
+        {
+            File.WriteAllText(
+                Path.Combine(runDir, "runtime-probe-samples.json"),
+                """
+                [
+                  {
+                    "Phase": "runtime",
+                    "ProcessId": 4242,
+                    "ProcessObserved": true,
+                    "MainWindowObserved": true,
+                    "HungWindow": false,
+                    "Responding": true,
+                    "StaleProcessCount": 0,
+                    "CurrentProcessCount": 1,
+                    "UnknownStartTimeProcessCount": 0,
+                    "AmbiguousCurrentProcessCount": 0
+                  }
+                ]
+                """);
+            File.WriteAllText(
+                Path.Combine(runDir, "run-result.json"),
+                """
+                {
+                  "RunnerKind": "GameNativeAutoSlay",
+                  "Iteration": 1,
+                  "Seed": "TEST-SEED-001",
+                  "EventKind": "Ancient",
+                  "AncientId": "Urda",
+                  "Invocation": "AutoSlayer.Start(seed, logFile)",
+                  "Command": "AutoSlayer.Start(seed, logFile)",
+                  "Passed": true,
+                  "FailureReasonCodes": [],
+                  "HangSignals": [],
+                  "StartTimestamp": "2026-06-18T10:01:00Z",
+                  "EndTimestamp": "2026-06-18T10:00:00Z",
+                  "RuntimeProbeSamplesPath": "runtime-probe-samples.json",
+                  "MainMenuObservation": {
+                    "Passed": true,
+                    "MainMenuReached": true,
+                    "ProcessObserved": true,
+                    "ProcessExitedAfterObservation": false,
+                    "HungWindowDetected": false,
+                    "StaleProcessObserved": false,
+                    "MaxStaleProcessCount": 0,
+                    "NoLogGrowthTimeoutExceeded": false,
+                    "LogObserved": true
+                  },
+                  "RuntimeObservation": {
+                    "Passed": true,
+                    "ProcessObserved": true,
+                    "ProcessExitedAfterObservation": false,
+                    "HungWindowDetected": false,
+                    "StaleProcessObserved": false,
+                    "MaxStaleProcessCount": 0,
+                    "NoLogGrowthTimeoutExceeded": false,
+                    "LogGrew": true,
+                    "LogObserved": true
+                  }
+                }
+                """);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-IterationDir", runDir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_main_menu_phase_missing");
+            Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_runtime_phase_missing");
+            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_timestamp_order_invalid");
+            Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_start_timestamp_invalid");
+            Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_end_timestamp_invalid");
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerScansIterationDirectoriesWithoutMonkeySummary()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
@@ -1423,7 +1697,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             const string prefix = "[INFO] stale full-log prefix before accepted scan offset\r\n";
             const string actualSlice = "[ERROR] TypeLoadException actual current slice owner\r\n";
             const string staleCurrentSlice = "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol\r\n";
-            var offset = System.Text.Encoding.UTF8.GetByteCount(prefix);
+            var beforeLogPath = Path.Combine(iterationDir, "godot.log.before");
+            File.WriteAllText(beforeLogPath, prefix);
+            var offset = new FileInfo(beforeLogPath).Length;
 
             File.WriteAllText(
                 Path.Combine(iterationDir, "iteration-result.json"),
@@ -1434,6 +1710,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "Command": "spireplus_test_ancient URDA confirm",
                   "ScenarioTag": "ancient-ui",
                   "OwnerArea": "Runtime.Unknown",
+                  "GodotLogBeforePath": "godot.log.before",
+                  "GodotLogAfterLaunchPath": "godot.log.after-launch",
+                  "GodotLogCurrentIterationPath": "godot.log.current-iteration",
                   "LogScanOffsetBytes": {{offset}},
                   "FailureReasonCodes": ["process_unresponsive"],
                   "HangSignals": ["process_unresponsive"]
@@ -1456,10 +1735,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 .EnumerateArray()
                 .Single(item => item.GetProperty("Signal").GetString() == "current_iteration_log_slice_mismatch");
 
-            Assert.Equal("PackageRuntimeDrift", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
             Assert.Equal("RuntimeHarness", mismatchFinding.GetProperty("OwnerArea").GetString());
             Assert.Equal("blocking", mismatchFinding.GetProperty("Severity").GetString());
-            Assert.Equal("PackageRuntimeDrift", FindFindingOwner(iteration, "process_unresponsive"));
+            Assert.Equal("Ancients.Urda", FindFindingOwner(iteration, "process_unresponsive"));
+            Assert.NotEqual("PackageRuntimeDrift", FindFindingOwner(iteration, "process_unresponsive"));
         }
         finally
         {
@@ -1481,6 +1762,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         {
             var iterationDir = Path.Combine(workdir, "iteration-0001");
             Directory.CreateDirectory(iterationDir);
+            const string beforeLog = "[INFO] previous Godot log\r\n";
+            const string currentLog = "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol\r\n";
             File.WriteAllText(
                 Path.Combine(iterationDir, "iteration-result.json"),
                 """
@@ -1490,13 +1773,17 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "Command": "spireplus_test_ancient VAKUU confirm fight",
                   "ScenarioTag": "vakuu-fight",
                   "OwnerArea": "Ancients.Vakuu.FightOptionSetup",
+                  "GodotLogBeforePath": "godot.log.before",
+                  "GodotLogAfterLaunchPath": "godot.log.after-launch",
+                  "GodotLogCurrentIterationPath": "godot.log.current-iteration",
                   "FailureReasonCodes": ["process_unresponsive"],
                   "HangSignals": ["process_unresponsive"]
                 }
                 """);
-            File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[ERROR] TypeLoadException stale full log should not route owner\r\n");
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.before"), beforeLog);
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), beforeLog + currentLog);
             var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
-            File.WriteAllText(currentLogPath, "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol\r\n");
+            File.WriteAllText(currentLogPath, currentLog);
             File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
             WriteMonkeySummary(workdir, 1);
 
@@ -1557,7 +1844,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             File.WriteAllText(currentLogPath, currentLog);
             File.WriteAllText(Path.Combine(runDir, "godot.log.after-launch"), beforeLog + currentLog);
             File.WriteAllText(Path.Combine(runDir, "autoslay.log"), autoSlayLog);
-            File.WriteAllText(Path.Combine(runDir, "runtime-probe-samples.json"), """[{"Phase":"runtime","ProcessId":4242,"ProcessObserved":true,"MainWindowObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0}]""");
+            File.WriteAllText(Path.Combine(runDir, "runtime-probe-samples.json"), """[{"Phase":"main-menu","ProcessId":4242,"ProcessObserved":true,"MainWindowObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0,"CurrentProcessCount":1,"UnknownStartTimeProcessCount":0,"AmbiguousCurrentProcessCount":0},{"Phase":"runtime","ProcessId":4242,"ProcessObserved":true,"MainWindowObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0,"CurrentProcessCount":1,"UnknownStartTimeProcessCount":0,"AmbiguousCurrentProcessCount":0}]""");
             File.WriteAllText(Path.Combine(runDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
             File.WriteAllText(
                 Path.Combine(runDir, "run-result.json"),
@@ -1574,6 +1861,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "OwnerArea": "Runtime.Unknown",
                   "FailureReasonCodes": ["process_unresponsive"],
                   "HangSignals": ["process_unresponsive"],
+                  "ProcessId": 4242,
+                  "StartTimestamp": "2026-06-18T10:00:00Z",
+                  "EndTimestamp": "2026-06-18T10:00:30Z",
                   "AutoSlayLogPath": "autoslay.log",
                   "RuntimeProbeSamplesPath": "runtime-probe-samples.json",
                   "MainMenuObservation": {
@@ -1594,6 +1884,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                     "HungWindowDetected": false,
                     "StaleProcessObserved": false,
                     "MaxStaleProcessCount": 0,
+                    "NoLogGrowthTimeoutExceeded": false,
+                    "LogGrew": true,
                     "LogObserved": true
                   },
                   "GodotLogBeforePath": "godot.log.before",
@@ -1891,11 +2183,15 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "Command": "spireplus_test_ancient URDA confirm",
                   "ScenarioTag": "ancient-ui-urda",
                   "OwnerArea": "Ancients.Urda.MapSaveState",
+                  "GodotLogBeforePath": "godot.log.before",
+                  "GodotLogAfterLaunchPath": "godot.log.after-launch",
+                  "GodotLogCurrentIterationPath": "godot.log.current-iteration",
                   "LogScanOffsetBytes": 0,
                   "FailureReasonCodes": [],
                   "HangSignals": []
                 }
                 """);
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.before"), "");
             File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[Startup] Time to main menu\r\n");
             var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
             File.WriteAllText(currentLogPath, "[Startup] Time to main menu\r\n");
@@ -1908,10 +2204,14 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
             using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
             var iteration = FindIteration(document.RootElement, 1);
+            var findingsJson = iteration.GetProperty("Findings").GetRawText();
             var failedWithoutSignalFinding = iteration
                 .GetProperty("Findings")
                 .EnumerateArray()
-                .Single(item => item.GetProperty("Signal").GetString() == "iteration_failed_without_failure_signal");
+                .SingleOrDefault(item => item.GetProperty("Signal").GetString() == "iteration_failed_without_failure_signal");
+            Assert.True(
+                failedWithoutSignalFinding.ValueKind != JsonValueKind.Undefined,
+                $"Expected iteration_failed_without_failure_signal. Analyzer output:{Environment.NewLine}{result.Output}{Environment.NewLine}Findings:{Environment.NewLine}{findingsJson}");
 
             Assert.Equal("RuntimeHarness", failedWithoutSignalFinding.GetProperty("OwnerArea").GetString());
             Assert.Equal("blocking", failedWithoutSignalFinding.GetProperty("Severity").GetString());
@@ -1992,11 +2292,15 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "Command": "spireplus_test_ancient VAKUU confirm fight",
                   "ScenarioTag": "vakuu-fight",
                   "OwnerArea": "Ancients.Vakuu.FightOptionSetup",
+                  "GodotLogBeforePath": "godot.log.before",
+                  "GodotLogAfterLaunchPath": "godot.log.after-launch",
+                  "GodotLogCurrentIterationPath": "godot.log.current-iteration",
                   "LogScanOffsetBytes": 0,
                   "FailureReasonCodes": [],
                   "HangSignals": []
                 }
                 """);
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.before"), "");
             File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[Startup] Time to main menu\r\n");
             File.WriteAllText(currentLogPath, "[Startup] Time to main menu\r\n");
             File.WriteAllText(staleLogPath, "[ERROR] Spire Plus error from stale audit source\r\n");
@@ -2051,7 +2355,15 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "[string]$GameRoot = 'E:\\Steam\\steamapps\\common\\Slay the Spire 2'",
             "[string]$GodotExe",
             "[switch]$FailOnMismatch",
+            "Normalize-ComparablePath",
+            "Get-ObjectPropertyString",
+            "SlayTheSpire2.pck",
+            "installed_game_pck_exists",
             "source_version_matches_installed_game",
+            "source_commit_matches_installed_game",
+            "source_branch_matches_installed_game",
+            "source_main_assembly_hash_matches_installed_game",
+            "source_release_identity_matches_installed_game",
             "Severity",
             "Warnings",
             "autoslay_autoslayer_source_exists",
@@ -2079,15 +2391,24 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "godot_open_command_prepared",
             "gdre_log_recovery_finished",
             "gdre_log_engine_version_godot_451",
+            "gdre_opening_file_matches_installed_game_pck",
+            "OpeningFileMatchesInstalledGame",
+            "OriginMatchesInstalledGamePck",
+            "PckSha256",
             "ritsulib_manifest_exists",
             "ritsulib_variant_matches_installed_game",
             "ritsulib_variant_dll_exists",
+            "ManifestSha256",
+            "VariantDllSha256",
+            "ExpectedVariantDllSha256",
+            "CompatTargetText",
             "ritsulib_viewer_exists",
             "RitsuLib viewer exists; it is a log viewer, not an unpacker or monkey runner",
             "OpenProjectCommand",
             "EvidenceUsePolicy",
             "NotRuntimeProof",
             "AuthorizedLocalInstallOnly",
+            "AuthorizedSourceOriginVerified",
             "ThirdPartyDumpsProhibited",
             "OriginalGameSourceMustNotBeTracked",
             "RefreshSourceSnapshotBeforeCurrentApiClaims",
@@ -2126,6 +2447,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`",
             "one `run-result.json` per seed",
             "`RecoveredSource.MatchesInstalledGame`",
+            "`RecoveredSource.OriginMatchesInstalledGamePck`",
             "`RuntimeProbeSamplesPath`",
             "`MainMenuObservation`",
             "`RuntimeObservation`",
@@ -2169,13 +2491,37 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "GameRoot": "E:\\Steam\\steamapps\\common\\Slay the Spire 2",
                   "Mismatches": [],
                   "Game": {
-                    "Version": "v0.107.0"
+                    "Version": "v0.107.0",
+                    "Commit": "fixture",
+                    "Branch": "v0.107.0",
+                    "MainAssemblyHash": "12345"
                   },
                   "RecoveredSource": {
                     "Version": "v0.107.0",
                     "Commit": "fixture",
+                    "Branch": "v0.107.0",
+                    "MainAssemblyHash": "12345",
                     "Disposition": "current",
-                    "MatchesInstalledGame": true
+                    "MatchesInstalledGame": true,
+                    "OriginPckPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\SlayTheSpire2.pck",
+                    "OriginMatchesInstalledGamePck": true
+                  },
+                  "RitsuLib": {
+                    "Version": "0.4.24",
+                    "CompatBranch": "0.107.0",
+                    "RootPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib",
+                    "ManifestPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\mod_manifest.json",
+                    "ManifestSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    "VariantsPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\ritsulib-variants.json",
+                    "VariantsSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                    "ViewerPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\viewer\\index.html",
+                    "VariantDirectory": "lib\\0.107.0",
+                    "VariantAssembly": "STS2-RitsuLib.dll",
+                    "VariantDllPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\lib\\0.107.0\\STS2-RitsuLib.dll",
+                    "VariantDllSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                    "ExpectedVariantDllSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                    "CompatTargetPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\lib\\0.107.0\\compat-target.txt",
+                    "CompatTargetText": "0.107.0"
                   },
                   "AutoSlay": {
                     "StartSeedLogFileSignature": true,
@@ -2193,6 +2539,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                     "RefreshSourceSnapshotBeforeCurrentApiClaims": false,
                     "LocalSourceReferenceOnly": true,
                     "AuthorizedLocalInstallOnly": true,
+                    "AuthorizedSourceOriginVerified": true,
                     "ThirdPartyDumpsProhibited": true,
                     "RuntimeProofStillRequiresLaunchEvidence": true,
                     "GameNativeAutoSlayStillRequiresRuntimeLaunchEvidence": true
@@ -2232,9 +2579,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 $"12:00:03.000 [INFO] [AutoSlay] Run completed successfully with seed={seed}") + Environment.NewLine;
             var currentLog = string.Join(
                 Environment.NewLine,
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "release = v0.107.0",
-                "RitsuLib Version: 0.4.16 [compat branch: 0.107.0]",
+                "RitsuLib Version: 0.4.24 [compat branch: 0.107.0]",
                 "[INFO] [EZMicroBalance] [Patcher - SpirePlus] Patch application complete: 25 applied, 0 ignored, 0 failed, 25 total",
                 "[INFO] [EZMicroBalance] ModPatcher applied 25 patches (25 registered).",
                 autoSlayLog.TrimEnd()) + Environment.NewLine;
@@ -2254,7 +2601,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                     "MainWindowObserved": true,
                     "HungWindow": false,
                     "Responding": true,
-                    "StaleProcessCount": 0
+                    "StaleProcessCount": 0,
+                    "CurrentProcessCount": 1,
+                    "UnknownStartTimeProcessCount": 0,
+                    "AmbiguousCurrentProcessCount": 0
                   },
                   {
                     "Phase": "runtime",
@@ -2263,7 +2613,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                     "MainWindowObserved": true,
                     "HungWindow": false,
                     "Responding": true,
-                    "StaleProcessCount": 0
+                    "StaleProcessCount": 0,
+                    "CurrentProcessCount": 1,
+                    "UnknownStartTimeProcessCount": 0,
+                    "AmbiguousCurrentProcessCount": 0
                   }
                 ]
                 """);
@@ -2327,6 +2680,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                     "HungWindowDetected": false,
                     "StaleProcessObserved": false,
                     "MaxStaleProcessCount": 0,
+                    "NoLogGrowthTimeoutExceeded": false,
+                    "LogGrew": true,
                     "LogObserved": true
                   },
                   "AutoSlayLogPath": "run-0001/autoslay.log",
@@ -2353,9 +2708,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "HookAssembly": "EZMicroBalanceCode",
                   "InvocationCommand": "SpirePlus.AutoSlayHarness.Start -> AutoSlayer.Start(seed, logFile)",
                   "Seeds": [{{JsonSerializer.Serialize(seed)}}],
-                  "PackageVersion": "v0.1.0-private-beta.86",
+                  "PackageVersion": "v0.1.0-private-beta.87",
                   "GameVersion": "0.107.0",
-                  "RitsuLibVersion": "0.4.16",
+                  "RitsuLibVersion": "0.4.24",
                   "RitsuCompatBranch": "0.107.0",
                   "Sts1EventMode": "Off",
                   "SourceWorkspaceCheckPath": "local-godot-source-workspace-check.json",
@@ -2367,11 +2722,30 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                     "Passed": true,
                     "SourceVersion": "v0.107.0",
                     "SourceCommit": "fixture",
+                    "SourceBranch": "v0.107.0",
+                    "SourceMainAssemblyHash": "12345",
                     "InstalledGameVersion": "v0.107.0",
+                    "InstalledGameCommit": "fixture",
+                    "InstalledGameBranch": "v0.107.0",
+                    "InstalledGameMainAssemblyHash": "12345",
                     "Disposition": "current",
                     "MatchesInstalledGame": true,
+                    "OriginPckPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\SlayTheSpire2.pck",
+                    "OriginMatchesInstalledGamePck": true,
+                    "RitsuLibVersion": "0.4.24",
+                    "RitsuLibCompatBranch": "0.107.0",
+                    "RitsuLibManifestPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\mod_manifest.json",
+                    "RitsuLibManifestSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    "RitsuLibVariantsPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\ritsulib-variants.json",
+                    "RitsuLibVariantsSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                    "RitsuLibVariantDllPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\lib\\0.107.0\\STS2-RitsuLib.dll",
+                    "RitsuLibVariantDllSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                    "RitsuLibExpectedVariantDllSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                    "RitsuLibCompatTargetPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\lib\\0.107.0\\compat-target.txt",
+                    "RitsuLibCompatTargetText": "0.107.0",
                     "RefreshSourceSnapshotBeforeCurrentApiClaims": false,
-                    "NotRuntimeProof": true
+                    "NotRuntimeProof": true,
+                    "AuthorizedSourceOriginVerified": true
                   }
                 }
                 """);
@@ -2412,11 +2786,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-EvidenceDir",
                 workdir,
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedPatchCount",
@@ -2442,11 +2816,21 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_run_result_passed_true status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_process_id_matches_runtime_probe_samples status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_runtime_probe_samples_exists status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_main_menu_phase_observed status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_runtime_phase_observed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_runtime_probe_samples_single_positive_process_id status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_no_unknown_start_times status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_no_ambiguous_current_processes status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_single_current_process status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_start_timestamp_parseable status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_end_timestamp_parseable status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_timestamp_order_valid status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_runtime_probe_samples_path_matches_summary status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_main_menu_observation_passed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_main_menu_no_log_growth_timeout status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_runtime_observation_passed status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_runtime_log_grew status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_runtime_no_log_growth_timeout status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_autoslay_log_hash_present status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_current_iteration_log_under_evidence_dir status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_current_iteration_log_matches_after_launch_slice status=pass", passResult.Output, StringComparison.Ordinal);
@@ -2466,11 +2850,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-MinRuns",
                 "2",
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedPatchCount",
@@ -2490,17 +2874,39 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-EvidenceDir",
                 workdir,
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedPatchCount",
                 "25");
             Assert.True(logGrowthTimeoutResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{logGrowthTimeoutResult.Output}{logGrowthTimeoutResult.Error}");
             Assert.Contains("run_0001_run_result_main_menu_no_log_growth_timeout status=fail", logGrowthTimeoutResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_runtime_no_log_growth_timeout status=fail", logGrowthTimeoutResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runResultPath, originalRunResultJson);
+
+            File.WriteAllText(
+                runResultPath,
+                originalRunResultJson.Replace("\"LogGrew\": true", "\"LogGrew\": false", StringComparison.Ordinal));
+            var runtimeLogGrowthResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(runtimeLogGrowthResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{runtimeLogGrowthResult.Output}{runtimeLogGrowthResult.Error}");
+            Assert.Contains("run_0001_run_result_runtime_log_grew status=fail", runtimeLogGrowthResult.Output, StringComparison.Ordinal);
             File.WriteAllText(runResultPath, originalRunResultJson);
 
             File.WriteAllText(
@@ -2511,17 +2917,85 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-EvidenceDir",
                 workdir,
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedPatchCount",
                 "25");
             Assert.True(processIdMismatchResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{processIdMismatchResult.Output}{processIdMismatchResult.Error}");
             Assert.Contains("run_0001_run_result_process_id_matches_runtime_probe_samples status=fail", processIdMismatchResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runResultPath, originalRunResultJson);
+
+            var originalRuntimeProbeSamplesJson = File.ReadAllText(runtimeProbeSamplesPath);
+            File.WriteAllText(
+                runtimeProbeSamplesPath,
+                originalRuntimeProbeSamplesJson.Replace("\"Phase\": \"main-menu\"", "\"Phase\": \"startup\"", StringComparison.Ordinal));
+            var missingMainMenuProbePhaseResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(missingMainMenuProbePhaseResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{missingMainMenuProbePhaseResult.Output}{missingMainMenuProbePhaseResult.Error}");
+            Assert.Contains("run_0001_runtime_probe_samples_main_menu_phase_observed status=fail", missingMainMenuProbePhaseResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_runtime_phase_observed status=pass", missingMainMenuProbePhaseResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runtimeProbeSamplesPath, originalRuntimeProbeSamplesJson);
+
+            File.WriteAllText(
+                runResultPath,
+                originalRunResultJson.Replace("\"EndTimestamp\": \"2026-06-18T10:00:30Z\"", "\"EndTimestamp\": \"not-a-timestamp\"", StringComparison.Ordinal));
+            var invalidTimestampResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(invalidTimestampResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{invalidTimestampResult.Output}{invalidTimestampResult.Error}");
+            Assert.Contains("run_0001_run_result_end_timestamp_parseable status=fail", invalidTimestampResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_timestamp_order_valid status=fail", invalidTimestampResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(runResultPath, originalRunResultJson);
+
+            File.WriteAllText(
+                runResultPath,
+                originalRunResultJson.Replace("\"StartTimestamp\": \"2026-06-18T10:00:00Z\"", "\"StartTimestamp\": \"2026-06-18T10:01:00Z\"", StringComparison.Ordinal));
+            var reversedTimestampResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(reversedTimestampResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{reversedTimestampResult.Output}{reversedTimestampResult.Error}");
+            Assert.Contains("run_0001_run_result_start_timestamp_parseable status=pass", reversedTimestampResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_end_timestamp_parseable status=pass", reversedTimestampResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_timestamp_order_valid status=fail", reversedTimestampResult.Output, StringComparison.Ordinal);
             File.WriteAllText(runResultPath, originalRunResultJson);
 
             var planPath = Path.Combine(workdir, "autoslay-plan.json");
@@ -2534,11 +3008,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-EvidenceDir",
                 workdir,
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedPatchCount",
@@ -2564,11 +3038,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-EvidenceDir",
                 workdir,
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedPatchCount",
@@ -2600,11 +3074,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-EvidenceDir",
                 workdir,
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedPatchCount",
@@ -2665,7 +3139,13 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     {
         var iterationDir = Path.Combine(evidenceRoot, $"iteration-{iteration:D4}");
         Directory.CreateDirectory(iterationDir);
-        var offset = System.Text.Encoding.UTF8.GetByteCount(fullLog);
+        var beforeLogPath = Path.Combine(iterationDir, "godot.log.before");
+        var afterLaunchLogPath = Path.Combine(iterationDir, "godot.log.after-launch");
+        var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+        File.WriteAllText(beforeLogPath, fullLog);
+        File.WriteAllText(afterLaunchLogPath, fullLog + currentLog);
+        File.WriteAllText(currentLogPath, currentLog);
+        var offset = new FileInfo(beforeLogPath).Length;
         File.WriteAllText(
             Path.Combine(iterationDir, "iteration-result.json"),
             $$"""
@@ -2675,14 +3155,14 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "Command": {{JsonSerializer.Serialize(command)}},
               "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}},
               "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}},
+              "GodotLogBeforePath": "godot.log.before",
+              "GodotLogAfterLaunchPath": "godot.log.after-launch",
+              "GodotLogCurrentIterationPath": "godot.log.current-iteration",
               "LogScanOffsetBytes": {{offset}},
               "FailureReasonCodes": {{failureReasonCodesJson}},
               "HangSignals": {{hangSignalsJson}}
             }
             """);
-        File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), fullLog + currentLog);
-        var currentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
-        File.WriteAllText(currentLogPath, currentLog);
         File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, auditJson));
     }
 
@@ -2700,9 +3180,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var tuples = document.RootElement.GetProperty("ExpectedRegistrationTuples").EnumerateArray().Select(item => item.GetString()!).ToArray();
             var lines = new List<string>
             {
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "release = v0.107.0",
-                "RitsuLib Version: 0.4.16 [compat branch: 0.107.0]",
+                "RitsuLib Version: 0.4.24 [compat branch: 0.107.0]",
                 "Feature Sts1Events bootstrap=enabled, live=Enabled",
                 mode == "CanaryOnly"
                     ? "StS1 events CanaryOnly mode: registering 4 canary events."
@@ -2814,33 +3294,95 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         const string scenarioTag = "vakuu-fight";
         const string ownerArea = "Ancients.Vakuu.FightOptionSetup";
         const string ackPattern = "\\[SPIREPLUS-EVIDENCE\\]\\s+VakuuFight\\s+fight_option_shown\\b";
+        const int gameProcessId = 1234;
+        const int launcherProcessId = 4321;
+        const int parentProcessId = 5678;
+        const string liveSessionLaunchedAt = "2026-06-18T00:00:00.0000000Z";
+        const string liveSessionLaunchReturnedAt = "2026-06-18T00:00:01.0000000Z";
+        const string gameProcessStartTimeUtc = "2026-06-18T00:00:05.0000000Z";
 
         var iterationDir = Path.Combine(evidenceRoot, "iteration-0001");
         var shadowDir = Path.Combine(iterationDir, "shadow");
         Directory.CreateDirectory(iterationDir);
         Directory.CreateDirectory(shadowDir);
 
+        var retainedBeforeLogPath = Path.Combine(iterationDir, "godot.log.before");
+        var retainedAfterLaunchLogPath = Path.Combine(iterationDir, "godot.log.after-launch");
         var retainedCurrentLogPath = Path.Combine(iterationDir, "godot.log.current-iteration");
         var retainedProbeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+        var retainedPrepareOutputPath = Path.Combine(iterationDir, "prepare-output.json");
         var sourceWorkspaceCheckPath = Path.Combine(evidenceRoot, "local-godot-source-workspace-check.json");
+        var resultBeforeLogPath = useShadowResultPaths ? Path.Combine(shadowDir, "godot.log.before") : retainedBeforeLogPath;
+        var resultAfterLaunchLogPath = useShadowResultPaths ? Path.Combine(shadowDir, "godot.log.after-launch") : retainedAfterLaunchLogPath;
         var resultCurrentLogPath = useShadowResultPaths ? Path.Combine(shadowDir, "godot.log.current-iteration") : retainedCurrentLogPath;
         var resultProbeSamplesPath = useShadowResultPaths ? Path.Combine(shadowDir, "runtime-probe-samples.json") : retainedProbeSamplesPath;
+        var gameProcessPath = Path.Combine(evidenceRoot, "SlayTheSpire2.exe");
+        var steamExePath = Path.Combine(evidenceRoot, "steam.exe");
+        var beforeLog = """
+            [INFO] Previous unrelated Godot log content
+            """;
         var currentLog = """
             [Startup] Time to main menu
             [INFO] [EZMicroBalance] [Patcher - SpirePlus] Patch application complete: 25 applied, 0 ignored, 0 failed, 25 total
             [INFO] [EZMicroBalance] ModPatcher applied 25 patches (25 registered).
-            v0.1.0-private-beta.86
+            v0.1.0-private-beta.87
             [SPIREPLUS-EVIDENCE] VakuuFight fight_option_shown
             """;
-        var probeSamples = """[{"ProcessObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0}]""";
+        var afterLaunchLog = beforeLog + currentLog;
+        var probeSamples = $$"""[{"Phase":"main-menu","ProcessId":{{gameProcessId}},"ProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ExpectedGameProcessId":{{gameProcessId}},"ExpectedGameProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ExpectedGameProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ProcessIdMatchesExpected":true,"ProcessStartTimeMatchesExpected":true,"ProcessPathMatchesExpected":true,"ProcessIdentityMatchesExpected":true,"ProcessObserved":true,"MainWindowObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0,"CurrentProcessCount":1,"UnknownStartTimeProcessCount":0,"AmbiguousCurrentProcessCount":0},{"Phase":"runtime","ProcessId":{{gameProcessId}},"ProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ExpectedGameProcessId":{{gameProcessId}},"ExpectedGameProcessStartTimeUtc":{{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},"ExpectedGameProcessPath":{{JsonSerializer.Serialize(gameProcessPath)}},"ProcessIdMatchesExpected":true,"ProcessStartTimeMatchesExpected":true,"ProcessPathMatchesExpected":true,"ProcessIdentityMatchesExpected":true,"ProcessObserved":true,"MainWindowObserved":true,"HungWindow":false,"Responding":true,"StaleProcessCount":0,"CurrentProcessCount":1,"UnknownStartTimeProcessCount":0,"AmbiguousCurrentProcessCount":0}]""";
 
+        File.WriteAllText(retainedBeforeLogPath, beforeLog);
+        File.WriteAllText(retainedAfterLaunchLogPath, afterLaunchLog);
         File.WriteAllText(retainedCurrentLogPath, currentLog);
-        File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), currentLog);
         File.WriteAllText(retainedProbeSamplesPath, probeSamples);
+        File.WriteAllText(
+            retainedPrepareOutputPath,
+            $$"""
+            {
+              "EvidenceDir": {{JsonSerializer.Serialize(iterationDir)}},
+              "LaunchKind": "SteamAppLaunch",
+              "SteamAppId": "2868840",
+              "LaunchFilePath": {{JsonSerializer.Serialize(steamExePath)}},
+              "LaunchArgumentList": ["-applaunch", "2868840"],
+              "LaunchedProcessId": {{launcherProcessId}},
+              "LaunchedAt": {{JsonSerializer.Serialize(liveSessionLaunchedAt)}},
+              "LaunchReturnedAt": {{JsonSerializer.Serialize(liveSessionLaunchReturnedAt)}},
+              "PidAttributionSchemaVersion": 1,
+              "PidAttributionPassed": true,
+              "PidAttributionMethod": "fixture selected process",
+              "PidProbeStartedAtUtc": "2026-06-18T00:00:01.0000000Z",
+              "PidProbeFinishedAtUtc": "2026-06-18T00:00:06.0000000Z",
+              "PreLaunchSlayProcessCount": 0,
+              "PreLaunchSlayProcessIds": [],
+              "SelectedGameProcessId": {{gameProcessId}},
+              "SelectedGameProcessStartTimeUtc": {{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},
+              "SelectedGameProcessPath": {{JsonSerializer.Serialize(gameProcessPath)}},
+              "SelectedGameProcessParentProcessId": {{parentProcessId}},
+              "ObservedGameProcessCandidates": [
+                {
+                  "ProcessName": "SlayTheSpire2",
+                  "Id": {{gameProcessId}},
+                  "StartTimeUtc": {{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},
+                  "ProcessPath": {{JsonSerializer.Serialize(gameProcessPath)}},
+                  "ParentProcessId": {{parentProcessId}},
+                  "IsPreLaunchProcessId": false,
+                  "IsStartedAfterMinimum": true
+                }
+              ],
+              "AttributionFailureReason": ""
+            }
+            """);
+        File.WriteAllText(Path.Combine(shadowDir, "godot.log.before"), beforeLog);
+        File.WriteAllText(Path.Combine(shadowDir, "godot.log.after-launch"), afterLaunchLog);
         File.WriteAllText(Path.Combine(shadowDir, "godot.log.current-iteration"), currentLog);
         File.WriteAllText(Path.Combine(shadowDir, "runtime-probe-samples.json"), probeSamples);
+        var retainedBeforeLogLength = new FileInfo(retainedBeforeLogPath).Length;
+        var retainedBeforeLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(retainedBeforeLogPath))).ToLowerInvariant();
+        var retainedAfterLaunchLogLength = new FileInfo(retainedAfterLaunchLogPath).Length;
+        var retainedAfterLaunchLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(retainedAfterLaunchLogPath))).ToLowerInvariant();
         var retainedCurrentLogLength = new FileInfo(retainedCurrentLogPath).Length;
         var retainedCurrentLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(retainedCurrentLogPath))).ToLowerInvariant();
+        var retainedPrepareOutputHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(retainedPrepareOutputPath))).ToLowerInvariant();
         File.WriteAllText(
             Path.Combine(iterationDir, "godot-log-audit.json"),
             $$"""
@@ -2870,17 +3412,44 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             {
               "Passed": true,
               "SourceRoot": "D:\\Game\\FOTN\\dev-the-spire\\source code",
-              "Game": { "Version": "v0.107.0", "Commit": "fixture" },
+              "Game": {
+                "Version": "v0.107.0",
+                "Commit": "fixture",
+                "Branch": "v0.107.0",
+                "MainAssemblyHash": "12345"
+              },
               "RecoveredSource": {
                 "Version": "v0.107.0",
                 "Commit": "fixture",
+                "Branch": "v0.107.0",
+                "MainAssemblyHash": "12345",
                 "MatchesInstalledGame": true,
-                "Disposition": "current-source-match"
+                "Disposition": "current-source-match",
+                "OriginPckPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\SlayTheSpire2.pck",
+                "OriginMatchesInstalledGamePck": true
+              },
+              "RitsuLib": {
+                "Version": "0.4.24",
+                "CompatBranch": "0.107.0",
+                "RootPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib",
+                "ManifestPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\mod_manifest.json",
+                "ManifestSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "VariantsPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\ritsulib-variants.json",
+                "VariantsSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "ViewerPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\viewer\\index.html",
+                "VariantDirectory": "lib\\0.107.0",
+                "VariantAssembly": "STS2-RitsuLib.dll",
+                "VariantDllPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\lib\\0.107.0\\STS2-RitsuLib.dll",
+                "VariantDllSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "ExpectedVariantDllSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "CompatTargetPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\lib\\0.107.0\\compat-target.txt",
+                "CompatTargetText": "0.107.0"
               },
               "EvidenceUsePolicy": {
                 "NotRuntimeProof": true,
                 "LocalSourceReferenceOnly": true,
                 "AuthorizedLocalInstallOnly": true,
+                "AuthorizedSourceOriginVerified": true,
                 "ThirdPartyDumpsProhibited": true,
                 "RefreshSourceSnapshotBeforeCurrentApiClaims": false
               },
@@ -2903,6 +3472,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "ObservationIntervalSeconds": 2,
               "UnresponsiveSampleThreshold": 3,
               "NoLogGrowthTimeoutSeconds": 90,
+              "ExpectedPackageVersion": "v0.1.0-private-beta.87",
+              "ExpectedGameVersion": "0.107.0",
+              "ExpectedRitsuLibVersion": "0.4.24",
+              "ExpectedRitsuCompatBranch": "0.107.0",
+              "ExpectedPatchCount": 25,
               "ProcessProbe": { "ProcessName": "SlayTheSpire2", "FailsOnlyAfterConsecutiveUnresponsiveSamples": true },
               "LogGrowthProbe": { "StartupFailsOnNoGrowth": true },
               "SourceWorkspaceCheckPath": {{JsonSerializer.Serialize(sourceWorkspaceCheckPath)}},
@@ -2914,11 +3488,30 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "Passed": true,
                 "SourceVersion": "v0.107.0",
                 "SourceCommit": "fixture",
+                "SourceBranch": "v0.107.0",
+                "SourceMainAssemblyHash": "12345",
                 "InstalledGameVersion": "v0.107.0",
+                "InstalledGameCommit": "fixture",
+                "InstalledGameBranch": "v0.107.0",
+                "InstalledGameMainAssemblyHash": "12345",
                 "Disposition": "current-source-match",
                 "MatchesInstalledGame": true,
+                "OriginPckPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\SlayTheSpire2.pck",
+                "OriginMatchesInstalledGamePck": true,
+                "RitsuLibVersion": "0.4.24",
+                "RitsuLibCompatBranch": "0.107.0",
+                "RitsuLibManifestPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\mod_manifest.json",
+                "RitsuLibManifestSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "RitsuLibVariantsPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\ritsulib-variants.json",
+                "RitsuLibVariantsSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "RitsuLibVariantDllPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\lib\\0.107.0\\STS2-RitsuLib.dll",
+                "RitsuLibVariantDllSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "RitsuLibExpectedVariantDllSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "RitsuLibCompatTargetPath": "E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\STS2-RitsuLib\\lib\\0.107.0\\compat-target.txt",
+                "RitsuLibCompatTargetText": "0.107.0",
                 "RefreshSourceSnapshotBeforeCurrentApiClaims": false,
-                "NotRuntimeProof": true
+                "NotRuntimeProof": true,
+                "AuthorizedSourceOriginVerified": true
               },
               "CommandCorpus": [{{JsonSerializer.Serialize(command)}}],
               "PlannedCommandCounts": { {{JsonSerializer.Serialize(command)}}: 1 },
@@ -2950,6 +3543,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "FailureReasonCounts": {},
               "ProcessExitCount": 0,
               "MainWindowMissingCount": 0,
+              "LiveSessionBindingMissingCount": 0,
+              "GodotLogBeforeMissingCount": 0,
               "CurrentIterationLogMissingCount": 0,
               "UnresponsiveIterationCount": 0,
               "StaleProcessObservedCount": 0,
@@ -2990,7 +3585,35 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "CommandAckObserved": true,
               "FailureReasonCodes": [],
               "HangSignals": [],
-              "GameProcessId": 1234,
+              "LiveSessionPrepareOutputPath": {{JsonSerializer.Serialize(retainedPrepareOutputPath)}},
+              "LiveSessionPrepareOutputSha256": {{JsonSerializer.Serialize(retainedPrepareOutputHash)}},
+              "LiveSessionEvidenceDir": {{JsonSerializer.Serialize(iterationDir)}},
+              "LiveSessionLauncherKind": "SteamAppLaunch",
+              "LiveSessionSteamAppId": "2868840",
+              "LiveSessionLaunchFilePath": {{JsonSerializer.Serialize(steamExePath)}},
+              "LiveSessionLaunchArgumentList": ["-applaunch", "2868840"],
+              "LiveSessionLaunchedProcessId": {{launcherProcessId}},
+              "LiveSessionLaunchedAt": {{JsonSerializer.Serialize(liveSessionLaunchedAt)}},
+              "LiveSessionLaunchReturnedAt": {{JsonSerializer.Serialize(liveSessionLaunchReturnedAt)}},
+              "LiveSessionPidAttributionSchemaVersion": 1,
+              "LiveSessionPidAttributionPassed": true,
+              "LiveSessionPidAttributionMethod": "fixture selected process",
+              "LiveSessionPidProbeStartedAtUtc": "2026-06-18T00:00:01.0000000Z",
+              "LiveSessionPidProbeFinishedAtUtc": "2026-06-18T00:00:06.0000000Z",
+              "LiveSessionPreLaunchSlayProcessCount": 0,
+              "LiveSessionPreLaunchSlayProcessIds": [],
+              "LiveSessionSelectedGameProcessId": {{gameProcessId}},
+              "LiveSessionSelectedGameProcessStartTimeUtc": {{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},
+              "LiveSessionSelectedGameProcessPath": {{JsonSerializer.Serialize(gameProcessPath)}},
+              "LiveSessionSelectedGameProcessParentProcessId": {{parentProcessId}},
+              "LiveSessionAttributionFailureReason": "",
+              "GameProcessId": {{gameProcessId}},
+              "GameProcessStartTimeUtc": {{JsonSerializer.Serialize(gameProcessStartTimeUtc)}},
+              "GameProcessPath": {{JsonSerializer.Serialize(gameProcessPath)}},
+              "GameProcessStartTimeAfterLiveSessionLaunch": true,
+              "GameProcessIdMatchesLiveSession": true,
+              "GameProcessStartTimeMatchesLiveSession": true,
+              "GameProcessPathMatchesLiveSession": true,
               "MainWindowObserved": true,
               "MainMenuElapsedSeconds": 12.3,
               "MaxSecondsWithoutLogGrowth": 1,
@@ -2999,13 +3622,24 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "StaleProcessCount": 0,
               "LogCopied": true,
               "CurrentIterationLogCopied": true,
+              "GodotLogBeforeCopied": true,
               "AuditClean": true,
               "ExpectationPassed": true,
               "Sts1ModeVerifierPassed": true,
               "RestoreSucceeded": true,
               "RuntimeProbeSamplesPath": {{JsonSerializer.Serialize(resultProbeSamplesPath)}},
+              "GodotLogBeforePath": {{JsonSerializer.Serialize(resultBeforeLogPath)}},
+              "GodotLogBeforeLengthBytes": {{retainedBeforeLogLength}},
+              "GodotLogBeforeSha256": {{JsonSerializer.Serialize(retainedBeforeLogHash)}},
+              "GodotLogAfterLaunchPath": {{JsonSerializer.Serialize(resultAfterLaunchLogPath)}},
+              "GodotLogAfterLaunchLengthBytes": {{retainedAfterLaunchLogLength}},
+              "GodotLogAfterLaunchSha256": {{JsonSerializer.Serialize(retainedAfterLaunchLogHash)}},
+              "GodotLogCurrentIterationPath": {{JsonSerializer.Serialize(resultCurrentLogPath)}},
+              "GodotLogCurrentIterationLengthBytes": {{retainedCurrentLogLength}},
+              "GodotLogCurrentIterationSha256": {{JsonSerializer.Serialize(retainedCurrentLogHash)}},
+              "PreLaunchLogLengthBytes": {{retainedBeforeLogLength}},
               "CurrentIterationLogPath": {{JsonSerializer.Serialize(resultCurrentLogPath)}},
-              "LogScanOffsetBytes": 0,
+              "LogScanOffsetBytes": {{retainedBeforeLogLength}},
               "MainMenuObservation": {
                 "MainMenuReached": true,
                 "ProcessObserved": true,
@@ -3014,6 +3648,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "StaleProcessObserved": false,
                 "MaxStaleProcessCount": 0,
                 "NoLogGrowthTimeoutExceeded": false,
+                "LogGrew": true,
                 "LogObserved": true,
                 "Passed": true,
                 "MaxConsecutiveUnresponsiveSamples": 0
@@ -3025,7 +3660,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "HungWindowDetected": false,
                 "StaleProcessObserved": false,
                 "MaxStaleProcessCount": 0,
+                "RuntimeLogGrowthRequired": true,
                 "NoLogGrowthTimeoutExceeded": false,
+                "LogGrew": true,
                 "LogObserved": true,
                 "Passed": true,
                 "MaxConsecutiveUnresponsiveSamples": 0

@@ -1,4 +1,4 @@
-﻿## 严格审核结论
+## 严格审核结论
 
 这次必须更新结论：**上一个主要 runtime blocker 已经被关闭，但整体任务仍未完成。**
 
@@ -31,7 +31,7 @@ Longhaul audit：仍不能恢复
 
 ## 2026-06-18 Current Override
 
-Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85 Off and CanaryOnly loader proof exists, and current beta.86 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`. Any older lines above or below that describe fresh beta.85 CanaryOnly/AdditiveBatch1 smokes as pending, or as the next active runtime target, are historical working notes only. Gameplay, clicked UI, save-load, replacement, multiplayer, independent QA, release handoff, and owner clean-worktree/commit decisions remain pending, and the same-repo validation pause still forbids starting build/test/publish/package/runtime/stage/commit/push work from this thread.
+Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85/beta.86 loader proof remains previous-package context, and current beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`. Any older lines above or below that describe fresh beta.85 CanaryOnly/AdditiveBatch1 smokes as pending, or as the next active runtime target, are historical working notes only. Gameplay, clicked UI, save-load, replacement, multiplayer, independent QA, release handoff, and owner clean-worktree/commit decisions remain pending, and the same-repo validation pause still forbids starting build/test/publish/package/runtime/stage/commit/push work from this thread.
 
 ---
 
@@ -41,7 +41,7 @@ Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status
 
 当前 build/test/package 记录也比之前强：beta.85 runtime-fix validation 是 0 build errors / 0 warnings；`ReleaseEvidenceGateTests` 单独 9/0/0 通过，互补 no-build test lane 是 466/0/21，通过后合计 split coverage 475 passed / 0 failed / 21 skipped；opt-in package/artifact subset 67/0/0 也通过；但文档明确说 June 11 dirty changes 仍没有 gameplay、clicked UI、save-load、route traversal、preview-tools、Vakuu、co-op、independent QA、clean-worktree proof。
 
-Runtime 部分也已经更新：`STS2-RitsuLib v0.4.16` 已安装，beta.85 v0.107.0 package Off smoke 在 `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`，已加载 BaseLib/RitsuLib，选择 compat branch 0.107.0，25/25 ModPatcher patches 应用，并 audit clean；先前 beta.84 失败证据现在只作为 root-cause 证据。
+Runtime 部分也已经更新：`STS2-RitsuLib v0.4.24` 已安装，beta.85 v0.107.0 package Off smoke 在 `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`，已加载 BaseLib/RitsuLib，选择 compat branch 0.107.0，25/25 ModPatcher patches 应用，并 audit clean；先前 beta.84 失败证据现在只作为 root-cause 证据。
 
 `docs/goals/m5-revision-m-final-report.md` 也写明：Revision M 对 beta.85 v0.107.0 Off loader runtime drift closure 完成，但不是 live-ready 或 release-ready；fresh beta.85 CanaryOnly 和 AdditiveBatch1 smokes 还没记录，gameplay、clicked UI、save-load、replacement、multiplayer、independent QA、release handoff proof 仍 pending。
 
@@ -63,7 +63,7 @@ M5 Revision M 的 Off-loader runtime-drift closure
 1. beta.84 的 red smoke root cause 已定位到 stale API / Ectoplasm target。
 2. beta.85 package 已刷新。
 3. beta.85 v0.107.0 Off smoke clean。
-4. RitsuLib v0.4.16 / compat 0.107.0 加载成功。
+4. RitsuLib v0.4.24 / compat 0.107.0 加载成功。
 5. Spire Plus 25/25 migrated patches 应用。
 6. EctoplasmGoldGatePatch exception 消失。
 7. package checker / opt-in artifact subset / static validations 有记录。
@@ -127,7 +127,7 @@ fresh beta.85 AdditiveBatch1：pending
 当前状态：
 
 ```text
-Runtime installed: STS2-RitsuLib v0.4.16
+Runtime installed: STS2-RitsuLib v0.4.24
 Compile package: STS2.RitsuLib 0.3.2
 Manifest min_version: 0.3.2
 ```
@@ -293,7 +293,7 @@ no release-ready claim
 Owner 二选一：
 
 ```text
-A. 保持 beta.85 compile/manifest 0.3.2，外部 runtime 使用 STS2-RitsuLib v0.4.16。
+A. 保持 beta.85 compile/manifest 0.3.2，外部 runtime 使用 STS2-RitsuLib v0.4.24。
 B. 准备 future package-version increment，把 compile package 和 manifest min_version 都升到 0.4.16。
 ```
 

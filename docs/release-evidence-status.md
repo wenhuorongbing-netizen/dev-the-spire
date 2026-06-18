@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `3EDA50CCF8E2ECD49DCF1F6B4CEE7B7E3DE604793E8059253179914834781FFE` |
-| DLL | `B89D89A502BB98950EEAE3E101559FA3E5BA74BFF264BA5D59D43A70A4268EAD` |
-| PCK | `C5619646CEB02FC1D611554EC689CD2F9C81518BED9B6D5CB4CDCE90AED63F75` |
-| Manifest | `ABD6AEAFCF73F7CF74E31D01D4EBD17C667F36B4969724666DFDFC42997AD17E` |
-| README_INSTALL | `65293B1557BEBEE42E4DE1BBF162B23414CC436E6BBF748682D74299C356265D` |
+| ZIP | `97C65F040F7269738778368878E7946D1563F622D0D8959644C54DBC6806A0B1` |
+| DLL | `35575A2651882B4C2D8EDD082A8FD7C6B6534CEB6433F846AEC59259353B19B4` |
+| PCK | `C4EFDCA19F5F98F6A945599110AAF13A89452E3E1B8069326385BD45575218F2` |
+| Manifest | `15C677876A056D0C695DAB05BB7A18A5CB9B13FDDEFD0E595746ADF36D652059` |
+| README_INSTALL | `E968521929ECA272A5C5FA62DA4D90FB37C5307922FD2893ABDA154C3A12DFBC` |
 
 ## Automation Summary
 
@@ -22,16 +22,16 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, real installed package checker, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.86 publish/package sync, installed package parity, runtime preflight, and fresh `v0.107.0` beta.86 AdditiveBatch1 direct loader smoke pass; gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.87 publish/package sync, installed package parity, and AdditiveBatch1 direct loader smoke are refreshed for loader/registration only; gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; the current beta.86 `v0.107.0` AdditiveBatch1 direct loader smoke audited clean for loader/registration proof, while Mod Settings page refresh, gameplay, clicked UI, save-load, preview-tools, Vakuu, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; the current beta.87 `v0.107.0` AdditiveBatch1 direct loader smoke audited clean for loader/registration proof, while Mod Settings page refresh, gameplay, clicked UI, save-load, preview-tools, Vakuu, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Partial | Codex/User | Loader/registration proof exists at `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254`: clean `godot.log.after-launch`, clean `godot-log-audit.json`, startup completion, retained enabled-mode log verifier 21 / 0, and retained runtime packet verifier 45 / 0. To close the formal release-evidence row, add/promote the verifier-required `environment.json`, `package-hashes.json`, and `enabled-mods.txt` alongside this evidence or recapture through the release-evidence collector. |
-| mod-settings-current-display | clicked-ui | Pending | User | Current normal Steam-client Settings -> Mod Settings proof for the beta.86 package: foreground Mods list screenshot showing BaseLib and Spire Plus, foreground Spire Plus config-page screenshot, route note, clean same-session `godot.log`, clean log audit, and filled `mod-settings-checklist.md`. The 2026-05 list screenshot is historical visible-list context only for this row. |
+| fresh-current-package-loader-smoke | loader | Partial | Codex/User | Loader/registration proof exists at `.tools\runtime-evidence\v01070-beta87-additive-batch1-direct-20260618-152531`: clean `godot.log.after-launch`, clean `godot-log-audit.json`, startup completion, retained enabled-mode log verifier 31 / 0, and retained runtime packet verifier 52 / 0. To close the formal release-evidence row, add/promote the verifier-required `environment.json`, `package-hashes.json`, and `enabled-mods.txt` alongside this evidence or recapture through the release-evidence collector. |
+| mod-settings-current-display | clicked-ui | Pending | User | Current normal Steam-client Settings -> Mod Settings proof for the beta.87 package: foreground Mods list screenshot showing BaseLib and Spire Plus, foreground Spire Plus config-page screenshot, route note, clean same-session `godot.log`, clean log audit, and filled `mod-settings-checklist.md`. The 2026-05 list screenshot is historical visible-list context only for this row. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |

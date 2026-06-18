@@ -5,8 +5,8 @@ Current checklist: `development-checklist-v2.md` is now a compact active triage 
 Document type: Feature GDD / local source design
 Project: Spire Plus workspace (`EZMicroBalance` manifest id), with legacy EzDailyContent scaffold preserved for traceability
 Original target game: Slay the Spire 2 public beta v0.104.0, 2026.04.23
-Current implementation target: Slay the Spire 2 public beta v0.106.1, source-refreshed locally on 2026-05-22
-Current dependency baseline: BaseLib v3.1.4
+Current implementation target: Slay the Spire 2 public beta v0.107.0 runtime, with historical v0.106.1 source-refreshed context from 2026-05-22
+Current dependency baseline: BaseLib v3.2.1
 Status: design source only; not implementation proof
 
 ## 1. One-line Goal

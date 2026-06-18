@@ -109,8 +109,8 @@ function Test-PathInsideString {
 
 function Test-BytePrefix {
     param(
-        [Parameter(Mandatory = $true)][byte[]]$Prefix,
-        [Parameter(Mandatory = $true)][byte[]]$Content
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][byte[]]$Prefix,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][byte[]]$Content
     )
 
     if ($Content.Length -lt $Prefix.Length) {

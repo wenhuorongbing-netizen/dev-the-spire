@@ -14,7 +14,7 @@ need their own evidence rows.
 ## Current Source And Tooling State
 
 - Current installed game: `E:\Steam\steamapps\common\Slay the Spire 2`.
-- Current runtime dependency: `STS2-RitsuLib v0.4.16` with `lib\0.107.0`.
+- Current runtime dependency: `STS2-RitsuLib v0.4.24` with `lib\0.107.0`.
 - Local Godot editor: `.tools\godot-4.5.1-mono\Godot_v4.5.1-stable_mono_win64`.
 - Local recovered game project: `source code\project.godot`.
 - Installed RitsuLib includes a local log viewer under
@@ -55,11 +55,19 @@ AutoSlay-backed packet.
 
 Use `-RequireCurrentSourceSnapshot -FailOnMismatch` only when a task requires
 current-source parity. The current local state is expected to report
-`source_version_matches_installed_game` as a warning until `source code/` is
-refreshed from the installed `v0.107.0` package. The checker also warns, by
-default, about the current GDRE export's failed-script and parse-error counts;
-use `-RequireCleanGdreExport` only when those must be release-blocking for the
-task.
+`source_version_matches_installed_game`, `source_commit_matches_installed_game`,
+`source_branch_matches_installed_game`,
+`source_main_assembly_hash_matches_installed_game`, and
+`source_release_identity_matches_installed_game` as warnings until `source code/`
+is refreshed from the installed `v0.107.0` package. The checker also compares the
+GDRE `Opening file` line to the installed `SlayTheSpire2.pck` path and reports
+`GdreExport.OpeningFileMatchesInstalledGame` plus
+`RecoveredSource.OriginMatchesInstalledGamePck`. The report also retains
+RitsuLib manifest, variants, selected variant DLL, and compat-target paths and
+hashes so runtime packets can bind the local Ritsu state they used. GDRE origin
+mismatch and the current GDRE export's failed-script / parse-error counts are
+warnings by default; use `-RequireCurrentSourceSnapshot` or
+`-RequireCleanGdreExport` only when those must be release-blocking for the task.
 
 ## Godot Project Opening
 
@@ -79,7 +87,12 @@ The first implementation layer is deliberately conservative:
 1. Create a timestamped evidence root under `.tools\runtime-evidence`.
 2. Write a deterministic command corpus and `monkey-plan.json`.
 3. For each launched iteration, call `scripts\spire-plus-live-session.ps1` in
-   prepare mode with explicit mod isolation and current-run isolation.
+   prepare mode with explicit mod isolation and current-run isolation, retaining
+   its stdout as `prepare-output.json`.
+   `LiveSessionLaunchedProcessId` is launcher evidence from Steam
+   `-applaunch`, not a claim that Steam's process id is the game process id.
+   The hard game identity is the live-session-selected `SlayTheSpire2` process
+   id, start timestamp, and executable path.
 4. Wait for `[Startup] Time to main menu` in `godot.log`.
 5. During startup, sample the `SlayTheSpire2` process, main-window
    responsiveness, and `godot.log` length/write time. The runner records the
@@ -87,6 +100,9 @@ The first implementation layer is deliberately conservative:
    reset log content. Before that baseline is captured or the game is launched,
    startup fails if any `SlayTheSpire2` process is already running, because the
    shared `godot.log` can no longer be attributed to the launched process.
+   Runtime probe samples must match the live-session-selected game process
+   identity by process id, start timestamp, and path; a different process is
+   treated as harness contamination rather than gameplay evidence.
    Startup also fails if the current process disappears, the window reports
    hung/not responding for
    `-UnresponsiveSampleThreshold` consecutive samples, or the log stops growing
@@ -96,20 +112,24 @@ The first implementation layer is deliberately conservative:
    Process disappearance or a hung/not-responding window fails the iteration;
    post-main-menu log growth is recorded as telemetry but not required because
    an idle main menu can legitimately stop writing.
-8. Copy the full `godot.log` to the iteration folder as forensic context, then
-   write `godot.log.current-iteration` from the accepted pre-launch scan offset
-   so stale appended log content cannot satisfy or fail the current iteration.
-9. Run `scripts\audit-godot-log.ps1` on `godot.log.current-iteration` and
+8. Before launch, retain the shared log as `godot.log.before` in the iteration
+   folder. If no pre-launch log exists, retain an explicit zero-byte file.
+9. After observation, copy the full shared log to `godot.log.after-launch`, then
+   write `godot.log.current-iteration` as the exact byte slice after
+   `godot.log.before`. The retained `LogScanOffsetBytes` must equal the retained
+   before-log byte length; log reset/truncation is invalid packet evidence unless
+   the before snapshot is genuinely zero bytes.
+10. Run `scripts\audit-godot-log.ps1` on `godot.log.current-iteration` and
    retain `godot-log-audit.json`. If the current-iteration slice cannot be
    written, do not write the canonical audit from the full log; any full-log
    diagnostic audit must use `godot-log-after-launch-audit.json`.
-10. Run `scripts\check-sts1-enabled-mode-runtime-log.ps1` for the requested
+11. Run `scripts\check-sts1-enabled-mode-runtime-log.ps1` for the requested
    Off/CanaryOnly/AdditiveBatch1 mode and retain `sts1-mode-log-check.json`.
    This uses `godot.log.current-iteration` as truth, not the evidence folder
    name or older log content.
-11. Restore the live session with `-StopGameOnRestore` and
+12. Restore the live session with `-StopGameOnRestore` and
    `-PreserveNewCurrentRunsOnRestore`.
-12. Write `iteration-result.json` and a root `monkey-summary.json`.
+13. Write `iteration-result.json` and a root `monkey-summary.json`.
 
 The lane fails an iteration on:
 
@@ -117,11 +137,16 @@ The lane fails an iteration on:
 - `SlayTheSpire2` disappearing during startup or post-command observation;
 - any pre-existing `SlayTheSpire2` process observed during startup or
   post-command observation;
+- missing `prepare-output.json`, missing Steam launch metadata, failed selected
+  game process attribution, or runtime probe PID/start/path mismatch against the
+  live-session-selected game process;
 - the game window reporting hung or not responding for the configured
   consecutive-sample threshold;
 - `godot.log` not growing before main menu for the configured no-growth
   timeout;
-- missing or empty `godot.log`;
+- missing `godot.log.before`, or missing/empty `godot.log.after-launch` or
+  `godot.log.current-iteration`; a zero-byte before snapshot is valid only when
+  no pre-launch log existed;
 - `audit-godot-log.ps1` release-blocking signature hits;
 - package/game/RitsuLib/compat branch/patch-count expectation mismatch;
 - actual StS1 mode verifier mismatch;
@@ -166,23 +191,31 @@ can close a game-native monkey proof row:
   `InvocationCommand`;
 - one `run-result.json` per seed with `SchemaVersion: 1`, `Launch: true`,
   `RunnerKind: GameNativeAutoSlay`, invocation text, process id,
-  start/end timestamps, `Passed: true`, empty `FailureReasonCodes` and
+  parseable start/end timestamps where start is not later than end,
+  `Passed: true`, empty `FailureReasonCodes` and
   `HangSignals`, exit code, stale-process count, `EventKind: Ancient`,
-  `AncientId`, `RuntimeProbeSamplesPath`, `MainMenuObservation`,
-  `RuntimeObservation`, and the retained per-run paths/hashes;
+  `AncientId`, `RuntimeProbeSamplesPath`, clean `MainMenuObservation`,
+  clean `RuntimeObservation` with `LogGrew: true` and
+  `NoLogGrowthTimeoutExceeded: false`, and the retained per-run paths/hashes;
 - one retained `runtime-probe-samples.json` per seed with `Phase`, `ProcessId`,
   `ProcessObserved`, `MainWindowObserved`, `HungWindow`, `Responding`, and
-  `StaleProcessCount` fields, stable positive process id binding that matches
-  the per-seed `run-result.json` `ProcessId`, process and main-window
-  observations, no hung-window samples, no `Responding=false` samples, and
-  `StaleProcessCount: 0` on every sample;
+  `StaleProcessCount`, `CurrentProcessCount`,
+  `UnknownStartTimeProcessCount`, and `AmbiguousCurrentProcessCount` fields, at
+  least one `main-menu` phase sample, at least one `runtime` phase sample,
+  stable positive process id binding that matches the per-seed `run-result.json`
+  `ProcessId`, process and main-window observations, no hung-window samples, no
+  `Responding=false` samples, `StaleProcessCount: 0`,
+  `UnknownStartTimeProcessCount: 0`, and `AmbiguousCurrentProcessCount: 0` on
+  every sample;
 - the seed, AutoSlay log path, exit code, Ancient id, ordered
   start/event/Ancient-dialogue/event-option/completion markers, with
   `AutoSlayLogSha256` bound to the retained log file;
 - a retained `check-local-godot-source-workspace.ps1 -OutFile` report with
   schema version, creation time, repo/source/game roots, no-launch policy flags,
   passing AutoSlay source-contract checks, and
-  `RecoveredSource.MatchesInstalledGame` true for the installed game under test;
+  `RecoveredSource.MatchesInstalledGame` and
+  `RecoveredSource.OriginMatchesInstalledGamePck` true for the installed game
+  under test, plus RitsuLib manifest/variants/selected-DLL hashes;
 - the same package, game version, RitsuLib version, compat branch, patch-count,
   `godot.log.before`, `godot.log.after-launch`, `godot.log.current-iteration`,
   `godot-log-audit.json`, and `sts1-mode-log-check.json` bindings required by
@@ -199,9 +232,9 @@ After the packet is captured, verify it with:
 .\scripts\check-spire-plus-autoslay-packet.ps1 `
   -EvidenceDir "<evidence>" `
   -MinRuns 1000 `
-  -ExpectedPackageVersion v0.1.0-private-beta.86 `
+  -ExpectedPackageVersion v0.1.0-private-beta.87 `
   -ExpectedGameVersion 0.107.0 `
-  -ExpectedRitsuLibVersion 0.4.16 `
+  -ExpectedRitsuLibVersion 0.4.24 `
   -ExpectedRitsuCompatBranch 0.107.0 `
   -ExpectedPatchCount 25 `
   -OutFile "<evidence>\autoslay-packet-check.json" `
@@ -216,9 +249,11 @@ and source-version summary, omit the explicit package/game/Ritsu/patch target
 switches, duplicate or drop planned seeds, place per-run logs outside the
 evidence folder, lack per-seed run-result JSON, clean pass/failure state, log
 hashes, `RuntimeProbeSamplesPath`, clean `MainMenuObservation` and
-`RuntimeObservation` records, before/after/current Godot log-slice proof, clean
-audit recomputation, StS1 mode binding, `EventKind: Ancient` / `AncientId`, or
-ordered event-room traversal markers such as `Entering Event room`,
+`RuntimeObservation` records including runtime `LogGrew: true`, parseable ordered run-result timestamps,
+`main-menu` and `runtime` probe phases, unknown process start-time counts,
+ambiguous current-process counts, before/after/current Godot log-slice proof,
+clean audit recomputation, StS1 mode binding, `EventKind: Ancient` /
+`AncientId`, or ordered event-room traversal markers such as `Entering Event room`,
 `Detected Ancient event, clicking through dialogue`, and
 `Selecting event option:`. Use a smaller `-MinRuns` only for temporary parser or
 fixture tests; a real game-native monkey proof should use the intended proof
@@ -239,7 +274,8 @@ per-seed `run-result.json`, `runtime-probe-samples.json`, and sidecar log. It
 refuses to route source ownership from `godot.log.current-iteration` unless
 `godot.log.before` and `godot.log.after-launch` prove the current slice by exact
 bytes. It also reports missing launcher invocation, missing or unhealthy
-runtime probe samples, missing or unhealthy `MainMenuObservation` /
+runtime probe samples, missing `main-menu` / `runtime` probe phases, invalid or
+reversed run-result timestamps, missing or unhealthy `MainMenuObservation` /
 `RuntimeObservation`, `EventKind: Ancient` / `AncientId`, sidecar log,
 completion/failure marker, or ordered Ancient event traversal as
 `RuntimeHarness` evidence defects first. This makes failed AutoSlay packets
@@ -310,10 +346,19 @@ After a launched run, verify the retained packet without launching anything:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.86 `
+  -ExpectedPackageVersion v0.1.0-private-beta.87 `
+  -ExpectedGameVersion 0.107.0 `
+  -ExpectedRitsuLibVersion 0.4.24 `
+  -ExpectedRitsuCompatBranch 0.107.0 `
   -ExpectedPatchCount 25 `
   -FailOnMismatch
 ```
+
+Add `-RequireCurrentSourceSnapshot` only when the packet is being used as
+current-source proof. That mode fails if the retained source-workspace report
+does not have `RecoveredSource.MatchesInstalledGame`,
+`RecoveredSource.OriginMatchesInstalledGamePck`, and
+`EvidenceUsePolicy.AuthorizedSourceOriginVerified` all true.
 
 If the packet fails, triage it without launching anything:
 
@@ -361,15 +406,21 @@ and `child_combat_room_entered`.
 The launched packet checker requires `MainMenuObservation` and
 `RuntimeObservation` in each `iteration-result.json`. These records include
 process-observed, process-exited, stale-process, hung-window, log-observed,
-log-length, and main-menu `NoLogGrowthTimeoutExceeded=false` state. It also requires the retained
+`RuntimeLogGrowthRequired`, log-length, main-menu/runtime
+`NoLogGrowthTimeoutExceeded=false` state, and command-bearing runtime
+`LogGrew=true`. Startup-only or no-command observations do not require idle
+main-menu log growth. The checker also requires the retained
 `run-result.json` `ProcessId` to match the single positive process id observed
 by `runtime-probe-samples.json`.
 `sts1-mode-log-check.json` to match the plan's `Sts1EventMode` and bind its
 `LogPath`, `LogLength`, and `LogSha256` to `godot.log.current-iteration`, exact Spire Plus patch-count lines from
 `godot.log.current-iteration`, probe sample paths and sliced-log paths that
 point to the retained standard files inside the current iteration folder,
-`LogScanOffsetBytes` within the copied full log, a `godot.log.current-iteration`
-slice that matches `godot.log.after-launch` from that offset, command
+`godot.log.before` path/length/SHA256 binding, `godot.log.after-launch`
+path/length/SHA256 binding, `LogScanOffsetBytes` equal to the retained
+before-log byte length, `godot.log.before` as a byte prefix of
+`godot.log.after-launch`, a `godot.log.current-iteration` byte slice that
+matches `godot.log.after-launch` after that before-log prefix, command
 acknowledgement patterns that match known built-in command regexes and that
 retained slice when required, a `godot-log-audit.json` whose scanned `Path`,
 `Length`, and `Sha256` bind to the retained current-iteration slice and whose
@@ -423,13 +474,15 @@ generic unsaved live-test setup line.
 
 The triage analyzer maps retained signals to owner areas. It records the planned
 `OwnerAreaHint` separately from `OwnerAreaFromLog` and `OwnerAreaFromCommand`.
-When `godot.log.current-iteration` exists, the analyzer requires both the full
-copied `godot.log.after-launch` and `LogScanOffsetBytes`; otherwise it reports a
-`RuntimeHarness` blocker and does not route ownership from the unbound current
-slice. When the offset binding is present, the analyzer validates the retained
-current-iteration slice against the full copied log and reports a
-`RuntimeHarness` blocker if they disagree; for owner routing, a valid
-offset-derived slice is preferred over a stale retained slice. If
+When `godot.log.current-iteration` exists, the analyzer requires
+`godot.log.before`, `godot.log.after-launch`, and `LogScanOffsetBytes`;
+otherwise it reports a `RuntimeHarness` blocker and does not route ownership
+from the unbound current slice. When the binding files are present, the analyzer
+requires `LogScanOffsetBytes` to equal the before-log byte length, requires
+`godot.log.before` to be a byte prefix of `godot.log.after-launch`, and requires
+`godot.log.current-iteration` to match the after-launch bytes after that prefix.
+Any mismatch is a `RuntimeHarness` blocker and the log is not trusted for owner
+routing. If
 `iteration-result.json` is missing or invalid, `monkey-summary.json` may still
 provide a fallback row for routing, but the analyzer reports a `RuntimeHarness`
 blocker because summary data does not replace the canonical per-iteration

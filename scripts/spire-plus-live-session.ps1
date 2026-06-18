@@ -346,6 +346,67 @@ function Stop-SpireProcesses {
     return $targets
 }
 
+function Get-ParentProcessIdOrZero {
+    param([Parameter(Mandatory = $true)][int]$ProcessId)
+
+    try {
+        $process = Get-CimInstance -ClassName Win32_Process -Filter "ProcessId = $ProcessId" -ErrorAction Stop
+        if ($process) {
+            return [int]$process.ParentProcessId
+        }
+    } catch {
+        return 0
+    }
+
+    return 0
+}
+
+function Get-SpireProcessCandidates {
+    param(
+        [Parameter(Mandatory = $true)][datetime]$MinimumStartTimeUtc,
+        [int[]]$PreLaunchProcessIds = @()
+    )
+
+    $preLaunchIdSet = @{}
+    foreach ($id in @($PreLaunchProcessIds)) {
+        if ($id -gt 0 -and -not $preLaunchIdSet.ContainsKey($id)) {
+            $preLaunchIdSet[$id] = $true
+        }
+    }
+
+    $candidates = [System.Collections.Generic.List[object]]::new()
+    foreach ($candidate in @(Get-Process -Name SlayTheSpire2 -ErrorAction SilentlyContinue)) {
+        $startTimeUtc = $null
+        try {
+            $startTimeUtc = $candidate.StartTime.ToUniversalTime()
+        } catch {
+            $startTimeUtc = $null
+        }
+
+        $processPath = ''
+        try {
+            $processPath = [string]$candidate.Path
+        } catch {
+            $processPath = ''
+        }
+
+        $startTimeText = if ($startTimeUtc) { $startTimeUtc.ToString('o') } else { $null }
+        $candidates.Add([pscustomobject]@{
+            ProcessName = $candidate.ProcessName
+            Id = [int]$candidate.Id
+            StartTimeUtc = $startTimeText
+            ProcessPath = $processPath
+            ParentProcessId = Get-ParentProcessIdOrZero -ProcessId ([int]$candidate.Id)
+            MainWindowHandle = [int64]$candidate.MainWindowHandle
+            MainWindowTitle = [string]$candidate.MainWindowTitle
+            IsPreLaunchProcessId = $preLaunchIdSet.ContainsKey([int]$candidate.Id)
+            IsStartedAfterMinimum = $null -ne $startTimeUtc -and $startTimeUtc -ge $MinimumStartTimeUtc
+        }) | Out-Null
+    }
+
+    return @($candidates)
+}
+
 if ($Mode -eq 'Prepare') {
     if ($DisableSpirePlus -and -not $MoveOtherMods) {
         throw 'DisableSpirePlus requires -MoveOtherMods so EZMicroBalance is temporarily isolated out of the mods folder and restored afterward.'
@@ -445,9 +506,70 @@ if ($Mode -eq 'Prepare') {
             throw "Steam executable not found: $SteamExe"
         }
 
-        $process = Start-Process -FilePath $SteamExe -ArgumentList @('-applaunch', '2868840') -PassThru
+        $preLaunchSlayProcesses = @(Get-Process -Name SlayTheSpire2 -ErrorAction SilentlyContinue)
+        $preLaunchSlayProcessIds = @($preLaunchSlayProcesses | ForEach-Object { [int]$_.Id } | Sort-Object)
+        $steamAppId = '2868840'
+        $launchArgumentList = @('-applaunch', $steamAppId)
+        $launchRequestedAtUtc = (Get-Date).ToUniversalTime()
+        $process = Start-Process -FilePath $SteamExe -ArgumentList $launchArgumentList -PassThru
+        $launchReturnedAtUtc = (Get-Date).ToUniversalTime()
+        $state['LaunchKind'] = 'SteamAppLaunch'
+        $state['SteamAppId'] = $steamAppId
+        $state['LaunchFilePath'] = $SteamExe
+        $state['LaunchArgumentList'] = @($launchArgumentList)
         $state['LaunchedProcessId'] = $process.Id
-        $state['LaunchedAt'] = (Get-Date).ToString('o')
+        $state['LaunchedAt'] = $launchRequestedAtUtc.ToString('o')
+        $state['LaunchReturnedAt'] = $launchReturnedAtUtc.ToString('o')
+        $state['PidAttributionSchemaVersion'] = 1
+        $state['PidAttributionPassed'] = $false
+        $state['PidAttributionMethod'] = 'single SlayTheSpire2 process started at or after Steam -applaunch request time'
+        $state['PidProbeStartedAtUtc'] = $null
+        $state['PidProbeFinishedAtUtc'] = $null
+        $state['PreLaunchSlayProcessCount'] = $preLaunchSlayProcesses.Count
+        $state['PreLaunchSlayProcessIds'] = @($preLaunchSlayProcessIds)
+        $state['SelectedGameProcessId'] = 0
+        $state['SelectedGameProcessStartTimeUtc'] = $null
+        $state['SelectedGameProcessPath'] = ''
+        $state['SelectedGameProcessParentProcessId'] = 0
+        $state['ObservedGameProcessCandidates'] = @()
+        $state['AttributionFailureReason'] = ''
+
+        $pidProbeStartedAtUtc = (Get-Date).ToUniversalTime()
+        $state['PidProbeStartedAtUtc'] = $pidProbeStartedAtUtc.ToString('o')
+        $pidProbeDeadlineUtc = $pidProbeStartedAtUtc.AddSeconds(90)
+        $selectedGameProcess = $null
+        $observedGameProcessCandidates = @()
+        do {
+            $observedGameProcessCandidates = @(Get-SpireProcessCandidates -MinimumStartTimeUtc $launchRequestedAtUtc -PreLaunchProcessIds $preLaunchSlayProcessIds)
+            $eligibleCandidates = @($observedGameProcessCandidates | Where-Object {
+                [bool]$_.IsStartedAfterMinimum -and -not [bool]$_.IsPreLaunchProcessId
+            })
+
+            if ($eligibleCandidates.Count -eq 1) {
+                $selectedGameProcess = $eligibleCandidates[0]
+                break
+            }
+
+            if ($eligibleCandidates.Count -gt 1) {
+                $state['AttributionFailureReason'] = "Observed $($eligibleCandidates.Count) new SlayTheSpire2 processes after Steam launch; cannot attribute shared godot.log to one game process."
+                break
+            }
+
+            Start-Sleep -Seconds 1
+        } while ((Get-Date).ToUniversalTime() -lt $pidProbeDeadlineUtc)
+
+        if ($selectedGameProcess) {
+            $state['PidAttributionPassed'] = $true
+            $state['SelectedGameProcessId'] = [int]$selectedGameProcess.Id
+            $state['SelectedGameProcessStartTimeUtc'] = $selectedGameProcess.StartTimeUtc
+            $state['SelectedGameProcessPath'] = [string]$selectedGameProcess.ProcessPath
+            $state['SelectedGameProcessParentProcessId'] = [int]$selectedGameProcess.ParentProcessId
+        } elseif ([string]::IsNullOrWhiteSpace([string]$state['AttributionFailureReason'])) {
+            $state['AttributionFailureReason'] = 'No new SlayTheSpire2 process was observed after Steam launch before the PID attribution timeout.'
+        }
+
+        $state['PidProbeFinishedAtUtc'] = (Get-Date).ToUniversalTime().ToString('o')
+        $state['ObservedGameProcessCandidates'] = @($observedGameProcessCandidates)
     }
 
     Save-Json -InputObject $state -Path (Join-Path $evidenceFull 'session-state.json')

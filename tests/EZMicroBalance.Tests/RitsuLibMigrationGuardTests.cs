@@ -262,7 +262,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("Candidate count is 10", proposal, StringComparison.Ordinal);
         Assert.Contains("Before any Batch 4c source migration:", proposal, StringComparison.Ordinal);
         Assert.Contains("Owner accepts this exact candidate list or a smaller subset.", proposal, StringComparison.Ordinal);
-        Assert.Contains("Current `v0.107.0` beta.86 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute", proposal, StringComparison.Ordinal);
+        Assert.Contains("Current `v0.107.0` beta.87 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute", proposal, StringComparison.Ordinal);
         Assert.Contains("retained current AdditiveBatch1 10 event types / 14 registration-line smoke with retained verifier reports and add the missing gameplay evidence", proposal, StringComparison.Ordinal);
         Assert.Contains("Batch 4c may be reviewed as a low-risk candidate proposal only; do not migrate Batch 4c", migrationDoc, StringComparison.Ordinal);
 

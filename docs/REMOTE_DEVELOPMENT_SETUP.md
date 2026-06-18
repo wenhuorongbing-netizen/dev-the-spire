@@ -4,7 +4,7 @@ This guide explains how to clone this private repository on another Windows mach
 
 ## 2026-06-18 Revision M Current Boundary
 
-The `v0.106.1` verified version below is historical setup/source-refresh context. Current local installed game evidence is Slay the Spire 2 `v0.107.0` with BaseLib `v3.1.4`, RitsuLib `v0.4.16`, previous-package beta.85 default-Off proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`, previous-package beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`, and current beta.86 AdditiveBatch1 loader/registration proof at `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
+The `v0.106.1` verified version below is historical setup/source-refresh context. Current local installed game evidence is Slay the Spire 2 `v0.107.0` with BaseLib `v3.2.1`, RitsuLib `v0.4.24`, previous-package beta.85 default-Off proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`, previous-package beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`, and current beta.87 AdditiveBatch1 loader/registration proof at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
 
 ## Baseline
 
@@ -49,9 +49,9 @@ Install Slay the Spire 2 through Steam and record the game root, for example:
 D:\Steam\steamapps\common\Slay the Spire 2
 ```
 
-## 5. Install BaseLib v3.1.4
+## 5. Install BaseLib v3.2.1
 
-Install BaseLib `v3.1.4` runtime files into:
+Install BaseLib `v3.2.1` runtime files into:
 
 ```text
 <GameRoot>\mods\BaseLib

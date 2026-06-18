@@ -16,7 +16,7 @@ public sealed class ReleaseSafetyExpandedGuardTests
         AssertSourceContains(
             bootstrap,
             "Spire Plus Windows bootstrap",
-            "Install BaseLib v3.1.4 under <GameRoot>\\mods\\BaseLib before game verification.",
+            "Install BaseLib v3.2.1 under <GameRoot>\\mods\\BaseLib before game verification.",
             "BaseLib plus Spire Plus appear and are enabled.");
         Assert.DoesNotContain("EzDailyContent Windows bootstrap", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain("BaseLib v3.1.0", bootstrap, StringComparison.Ordinal);
@@ -191,7 +191,8 @@ public sealed class ReleaseSafetyExpandedGuardTests
             "AllowedModIds = @($allowedModIds)",
             "DisableSpirePlus = [bool]$DisableSpirePlus",
             "Start-Process -FilePath $SteamExe",
-            "'-applaunch', '2868840'",
+            "$steamAppId = '2868840'",
+            "$launchArgumentList = @('-applaunch', $steamAppId)",
             "Copy-Item -LiteralPath $settingsBefore -Destination $session.SettingsPath -Force");
 
         Assert.DoesNotContain("Remove-Item", helper, StringComparison.OrdinalIgnoreCase);
@@ -659,14 +660,14 @@ public sealed class ReleaseSafetyExpandedGuardTests
         Assert.Contains("- [x] BaseLib appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("- [ ] Current beta.86 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [ ] Current beta.87 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Fresh loader smoke for the current beta.86 package hash is clean", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Fresh loader smoke for the current beta.87 package hash is clean", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("current beta.86 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current beta.87 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", currentDocs, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);

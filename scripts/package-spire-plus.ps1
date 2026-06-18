@@ -117,7 +117,7 @@ Archive: SpirePlus-$($manifest.version).zip
 Display name: Spire Plus
 Technical compatibility id: EZMicroBalance
 Version: $($manifest.version)
-Requires: BaseLib v3.1.4
+Requires: BaseLib v3.2.1 and STS2-RitsuLib v0.4.24 or newer
 
 Install:
 1. Extract this archive into the Slay the Spire 2 mods folder exactly as packaged.

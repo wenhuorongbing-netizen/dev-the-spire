@@ -11,7 +11,7 @@
 
 **未完成。**
 
-当前项目相比 v19 又有实质进展：beta.85 在 StS2 `v0.107.0` + RitsuLib `v0.4.16` 下的 **Off loader smoke 和 CanaryOnly enabled-mode loader proof 已 clean**，API drift 的关键 red blocker 已修复；随后 beta.86 package/source alignment 让 AdditiveBatch1 enabled-mode loader/registration proof 也达到 clean。
+当前项目相比 v19 又有实质进展：beta.85 在 StS2 `v0.107.0` + RitsuLib `v0.4.24` 下的 **Off loader smoke 和 CanaryOnly enabled-mode loader proof 已 clean**，API drift 的关键 red blocker 已修复；随后 beta.86 package/source alignment 让 AdditiveBatch1 enabled-mode loader/registration proof 也达到 clean。
 
 但这仍不是 StS1 runtime parity。当前仍缺：
 
@@ -58,9 +58,9 @@ Allowed work during the pause is read-only/static checking, documentation/guard 
 
 Runtime, gameplay, QA, build/test/publish, package/release-evidence, staging, commit, and push instructions below apply only after the coordination pause is explicitly lifted. During the coordination pause, do not treat static or source-only work as closing runtime gates.
 
-Latest pause-safe static checkpoint after the runtime-monkey AutoSlay boundary/source-contract, packet-verifier, and analyzer hardening pass: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 1003 checks / 0 mismatches after the v20 subagent coverage, status-board header, current-doc summary, optional no-launch preflight script, test-plan preflight prerequisite, read-only preflight guards, PROJECT_STATE static-summary alignment, active current-guidance route alignment, historical-review current-route alignment, v20 hard-stop report, v20 O76-O84 final-gate overlay, tuple-aware enabled-mode log verifier guards, CanaryOnly current-pass guard, repo-manifest runtime-preflight drift guard, beta.86 AdditiveBatch1 doc alignment, retained-loader subagent split, current pause-state snapshot alignment, current diff-check wording, retained current-slice binding guards, game-native AutoSlay source-contract boundary, game-native AutoSlay packet-verifier run-result/current-slice/audit/StS1-mode/patch-count/launcher/AncientId docs/scripts, and AutoSlay runtime-failure analyzer run-result routing were guarded. The latest beta.86-target read-only `scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch` returned 27 checks / 0 mismatches because both the repo and installed `EZMicroBalance.json` now report `v0.1.0-private-beta.86`; `scripts/check-local-godot-source-workspace.ps1` returned 50 checks / 0 mismatches with all AutoSlay contract checks passing and 3 retained warnings (`source version=v0.106.0 installed version=v0.107.0`, GDRE failed scripts=18, GDRE parse errors=1); a synthetic rich AutoSlay packet returned 171 checks / 0 mismatches through `scripts/check-spire-plus-autoslay-packet.ps1`; `scripts/check-sts1-event-static-suite.ps1` returned 15 static steps / 0 suite failures with the known 33-key localization gap; `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` returned 12 checks / 0 mismatches; `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` returned 534 checks / 0 mismatches; `scripts/check-sts1-v20-final-gate-overlay.ps1 -FailOnMismatch` returned 29 checks / 0 mismatches; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returned 70 checks / 0 mismatches; focused `git diff --check --` on the touched event-governance docs and guard script exited 0 with only CRLF warnings. This is static/preflight evidence and does not itself close gameplay, save/load, replacement, multiplayer, QA, game-native AutoSlay batch proof, release, or handoff gates.
+Latest pause-safe static checkpoint after the runtime-monkey AutoSlay boundary/source-contract, packet-verifier, and analyzer hardening pass: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 1025 checks / 0 mismatches after the v20 subagent coverage, status-board header, current-doc summary, optional no-launch preflight script, test-plan preflight prerequisite, read-only preflight guards, PROJECT_STATE static-summary alignment, active current-guidance route alignment, historical-review current-route alignment, v20 hard-stop report, v20 O76-O84 final-gate overlay, tuple-aware enabled-mode log verifier guards, CanaryOnly current-pass guard, repo-manifest runtime-preflight drift guard, beta.86 AdditiveBatch1 doc alignment, retained-loader subagent split, current pause-state snapshot alignment, current diff-check wording, retained current-slice binding guards, game-native AutoSlay source-contract boundary, game-native AutoSlay packet-verifier run-result/current-slice/audit/StS1-mode/patch-count/launcher/AncientId docs/scripts, AutoSlay runtime-failure analyzer run-result routing, AutoSlay probe phase/timestamp packet/analyzer guards, and runtime `RuntimeLogGrowthRequired` / command-bearing `LogGrew` / no-log-growth-timeout guards were guarded. The latest beta.86-target read-only `scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch` returned 27 checks / 0 mismatches because both the repo and installed `EZMicroBalance.json` now report `v0.1.0-private-beta.87`; `scripts/check-local-godot-source-workspace.ps1` returned 50 checks / 0 mismatches with all AutoSlay contract checks passing and 3 retained warnings (`source version=v0.106.0 installed version=v0.107.0`, GDRE failed scripts=18, GDRE parse errors=1); the retained previous synthetic rich AutoSlay packet checkpoint returned 171 checks / 0 mismatches through `scripts/check-spire-plus-autoslay-packet.ps1` before the later probe phase/timestamp guard additions; `scripts/check-sts1-event-static-suite.ps1` returned 15 static steps / 0 suite failures with the known 33-key localization gap; `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` returned 12 checks / 0 mismatches; `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` returned 534 checks / 0 mismatches; `scripts/check-sts1-v20-final-gate-overlay.ps1 -FailOnMismatch` returned 29 checks / 0 mismatches; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returned 70 checks / 0 mismatches; focused `git diff --check --` on the touched event-governance docs and guard script exited 0 with only CRLF warnings. This is static/preflight evidence and does not itself close gameplay, save/load, replacement, multiplayer, QA, game-native AutoSlay batch proof, release, or handoff gates.
 
-Shared validation update from the migration lane, 2026-06-18: fresh beta.85 CanaryOnly proof under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` reached main menu, audited clean, and passed retained log/packet verifiers with 4 event types / 6 registration calls. The beta.85 AdditiveBatch1 evidence under `.tools/runtime-evidence/v01070-beta85-additive-batch1-20260617-233759/` remains root-cause history for the 13/14 package/source-shape drift. The beta.86 direct AdditiveBatch1 proof under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` reached main menu, audited clean, reported Spire Plus `v0.1.0-private-beta.86`, RitsuLib `0.4.16`, compat branch `0.107.0`, 25/25 Spire Plus patches, 30 SavedSpireFields, 10 event types / 14 registration calls, exact act/shared tuple parity including The Cleric in Overgrowth and Underdocks, retained log verifier 21 / 0, and packet verifier 45 / 0. Treat O25 and O33 as loader/registration proof only, and do not treat either as gameplay, save-load, render, replacement, multiplayer, QA, release, or handoff evidence.
+Shared validation update from the migration lane, 2026-06-18: fresh beta.85 CanaryOnly proof under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` reached main menu, audited clean, and passed retained log/packet verifiers with 4 event types / 6 registration calls. The beta.85 AdditiveBatch1 evidence under `.tools/runtime-evidence/v01070-beta85-additive-batch1-20260617-233759/` remains root-cause history for the 13/14 package/source-shape drift. The beta.86 direct AdditiveBatch1 proof under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` reached main menu, audited clean, reported Spire Plus `v0.1.0-private-beta.87`, RitsuLib `0.4.24`, compat branch `0.107.0`, 25/25 Spire Plus patches, 30 SavedSpireFields, 10 event types / 14 registration calls, exact act/shared tuple parity including The Cleric in Overgrowth and Underdocks, retained log verifier 21 / 0, and packet verifier 45 / 0. Treat O25 and O33 as loader/registration proof only, and do not treat either as gameplay, save-load, render, replacement, multiplayer, QA, release, or handoff evidence.
 
 Additional shared validation update from the `d2ff20f5` test-split follow-up, 2026-06-18: `ReleaseEvidenceGateTests` manual evidence template tests were extracted into a partial test file, `RuntimeMonkeyStabilityGuardTests` added coverage for log-derived owner routing, and the shared validation lane reported `dotnet build EZMicroBalance.sln -m:1 --no-incremental` at 0 warnings / 0 errors plus focused `RuntimeMonkeyStabilityGuardTests` and `ReleaseEvidenceGateTests` at 19 passed / 0 failed / 0 skipped / 19 total. This event thread did not run that validation. It does not close publish, package/release-evidence validation, runtime smoke, gameplay, save-load, replacement, multiplayer, QA, release, or handoff gates.
 
@@ -108,7 +108,7 @@ Complementary no-build test-project lane: 480 passed / 0 failed / 39 skipped / 5
 Current split coverage after beta.86 post-doc/test reconciliation: 489 passed / 0 failed / 39 skipped / 528 total
 Opt-in installed-artifact lane: 67 passed / 0 failed / 2 skipped / 69 total
 Static suite: 15 static steps / 0 suite failures
-current-doc-claims: 1003 checks / 0 mismatches
+current-doc-claims: 1025 checks / 0 mismatches
 runtime-preflight: 27 checks / 0 mismatches (repo and installed package versions beta.86)
 static-file-hygiene: 12 checks / 0 mismatches
 v19 gate ledger: 534 checks / 0 mismatches
@@ -136,7 +136,7 @@ d2ff20f5 focused shared follow-up: build 0 warnings / 0 errors; RuntimeMonkeySta
 
 ```text
 v0.107.0
-RitsuLib 0.4.16 / compat branch 0.107.0
+RitsuLib 0.4.24 / compat branch 0.107.0
 Spire Plus v0.1.0-private-beta.85
 25/25 Spire Plus ModPatcher patches applied
 StS1Events default Off
@@ -155,7 +155,7 @@ installed beta.85 package parity passed
 
 ```text
 v0.107.0
-RitsuLib 0.4.16 / compat branch 0.107.0
+RitsuLib 0.4.24 / compat branch 0.107.0
 Spire Plus v0.1.0-private-beta.85
 StS1Events CanaryOnly mode
 4 event types / 6 registration calls
@@ -175,8 +175,8 @@ tuple-aware copied-log dry-run returned 21 checks / 0 mismatches
 
 ```text
 v0.107.0
-RitsuLib 0.4.16 / compat branch 0.107.0
-Spire Plus v0.1.0-private-beta.86
+RitsuLib 0.4.24 / compat branch 0.107.0
+Spire Plus v0.1.0-private-beta.87
 StS1Events AdditiveBatch1 mode
 10 event types / 14 registration calls
 main menu reached
@@ -195,7 +195,7 @@ retained runtime packet verifier 45 / 0
 当前 validation 明确说：
 
 ```text
-Beta.85 Off, beta.85 CanaryOnly, and beta.86 AdditiveBatch1 loader proof must not be extended to:
+Beta.85 Off, beta.85 CanaryOnly, and beta.87 AdditiveBatch1 loader proof must not be extended to:
 gameplay
 save-load
 replacement
@@ -603,7 +603,7 @@ Subagents are mandatory. Implementation agents cannot approve their own work.
 2. **Runtime Environment Bootstrap**
    - beta.85 package,
    - BaseLib,
-   - RitsuLib v0.4.16,
+   - RitsuLib v0.4.24,
    - EZMicroBalance install,
    - godot.log,
    - loader audit.
@@ -742,14 +742,14 @@ coordination pause 解除后，继续 Mandatory Overnight Run v20。只能在 O0
 | Test matrix             | beta.86 post-doc/test reconciliation 记录为 `489 passed / 0 failed / 39 skipped / 528 total`                                                  |
 | Installed artifact lane | `67 passed / 0 failed / 2 skipped / 69 total`                                                                                           |
 | Static suite            | `15 static steps / 0 suite failures`                                                                                                    |
-| Current doc claims      | 后续静态检查最高记录为 `1003 checks / 0 mismatches`                                                                                                |
-| beta.85 Off loader      | **clean**：v0.107.0 + RitsuLib 0.4.16，25/25 patches，StS1Events default Off                                                               |
+| Current doc claims      | 后续静态检查最高记录为 `1025 checks / 0 mismatches`                                                                                                |
+| beta.85 Off loader      | **clean**：v0.107.0 + RitsuLib 0.4.24，25/25 patches，StS1Events default Off                                                               |
 | beta.85 CanaryOnly loader | **clean**：retained verifiers 证明 4 event types / 6 registration calls                                                                    |
 | beta.86 AdditiveBatch1 loader | **clean**：retained verifiers 证明 10 event types / 14 registration calls                                                                   |
 | Source parity fixes     | Big Fish Box identity、Divine Fountain curse prerequisite、Golden Idol trap branch identities、The Lab Open-only 都有 source/static guard 改进 |
 | Default Off             | 当前可认可为 loader proof 层面通过                                                                                                                |
 
-这些都有当前 validation 记录支持：beta.85 Off proof 显示 `v0.1.0-private-beta.85`、RitsuLib `0.4.16`、compat branch `0.107.0`、25/25 patches、StS1Events default Off、main menu reached、audit clean；beta.85 CanaryOnly proof 显示 4 event types / 6 registration calls；beta.86 AdditiveBatch1 proof 显示 10 event types / 14 registration calls。当前文档也明确这些 proof 只覆盖 loader/registration 层面，不覆盖 gameplay、save-load、replacement、multiplayer、image/render 或 QA。
+这些都有当前 validation 记录支持：beta.85 Off proof 显示 `v0.1.0-private-beta.85`、RitsuLib `0.4.24`、compat branch `0.107.0`、25/25 patches、StS1Events default Off、main menu reached、audit clean；beta.85 CanaryOnly proof 显示 4 event types / 6 registration calls；beta.86 AdditiveBatch1 proof 显示 10 event types / 14 registration calls。当前文档也明确这些 proof 只覆盖 loader/registration 层面，不覆盖 gameplay、save-load、replacement、multiplayer、image/render 或 QA。
 
 但还不能认可的部分：
 
@@ -931,7 +931,7 @@ all code-side work complete
 必须启动这些 subagent，且实现者不能自验：
 
 1. **BuildGate / Repo Health**：build/test/static/format/diff/patch/worktree、zero-warning、skipped tests。
-2. **Runtime Environment Bootstrap**：beta.85 package、BaseLib、RitsuLib v0.4.16、EZMicroBalance install、godot.log、loader audit。
+2. **Runtime Environment Bootstrap**：beta.85 package、BaseLib、RitsuLib v0.4.24、EZMicroBalance install、godot.log、loader audit。
 3. **Enabled-Mode Loader Subagent**：CanaryOnly 和 AdditiveBatch1 loader proof。
 4. **Wiki Parity Spec Auditor**：52 public events、54 canonical rows、exact options、A15、semi-common membership。
 5. **StS2 Source/API Auditor**：EventModel、ActModel、RitsuLib、card/relic/potion/gold/HP/save/replacement APIs。

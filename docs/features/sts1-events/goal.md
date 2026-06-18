@@ -7,9 +7,9 @@ the Spire Plus mod (`EZMicroBalance`) and prove a playable StS1-like event
 experience in Slay the Spire 2. Current source status is a gated prototype, not
 runtime gameplay proof.
 
-## Current Boundary (Revision M / beta.86)
+## Current Boundary (Revision N / beta.87)
 
-This goal is not complete. Current beta.85 `v0.107.0` proof covers default-Off loader startup/patch application and CanaryOnly enabled-mode loader registration; current beta.86 proof under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` covers AdditiveBatch1 loader/registration shape with 10 event types / 14 registration calls. These are loader/registration proofs only. They do not prove event gameplay, save-load, replacement-pool behavior, image/render, multiplayer, QA, build/publish handoff, or full parity. Historical `v0.106.1` CanaryOnly/AdditiveBatch1 loader evidence must stay historical, and the beta.85 AdditiveBatch1 13/14 mismatch remains root-cause history only.
+This goal is not complete. Current beta.85/beta.86 `v0.107.0` proof remains previous-package loader context; current beta.87 proof under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` covers AdditiveBatch1 loader/registration shape with 10 event types / 14 registration calls. These are loader/registration proofs only. They do not prove event gameplay, save-load, replacement-pool behavior, image/render, multiplayer, QA, build/publish handoff, or full parity. Historical `v0.106.1` CanaryOnly/AdditiveBatch1 loader evidence must stay historical, and the beta.85 AdditiveBatch1 13/14 mismatch remains root-cause history only.
 
 ## Success Criteria
 
@@ -36,7 +36,7 @@ This goal is not complete. Current beta.85 `v0.107.0` proof covers default-Off l
 - Events must live inside `EZMicroBalanceCode/Sts1Events/` (no separate mod)
 - Localization must live inside `EZMicroBalance/localization/`
 - No original StS1 art committed to the repository
-- Events must compile against the current repository package references: `STS2.RitsuLib` `0.3.2` and BaseLib `3.1.4`.
-- Current runtime reproof targets the installed official `STS2-RitsuLib` `v0.4.16` variant pack with `lib\0.107.0`, not a source compile-package bump.
+- Events must compile against the current repository package references: `STS2.RitsuLib` `0.4.24` and BaseLib `3.2.1`.
+- Current runtime reproof targets the installed official `STS2-RitsuLib` `v0.4.24` variant pack with `lib\0.107.0`.
 - Normal StS1 event models inherit `EventModel` and are registered through RitsuLib content-builder APIs.
   Ancient-style events remain outside the StS1 unknown-room prototype scope.

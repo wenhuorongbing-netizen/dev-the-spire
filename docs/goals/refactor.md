@@ -11,7 +11,7 @@
 
 ## 2026-06-18 Current Override
 
-Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85 Off and CanaryOnly loader proof exists, and current beta.86 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`. Any older lines above or below that describe CanaryOnly/AdditiveBatch1 proof as beta.85 pending, beta.85 blocked, or the next active runtime target are historical working notes only. Gameplay, Mod Settings UI, save-load, replacement, multiplayer, QA, release, and handoff proof remain pending, and the same-repo validation pause still forbids starting build/test/publish/package/runtime/stage/commit/push work from this thread.
+Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85/beta.86 loader proof remains previous-package context, and current beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`. Any older lines above or below that describe CanaryOnly/AdditiveBatch1 proof as beta.85 pending, beta.85 blocked, or the next active runtime target are historical working notes only. Gameplay, Mod Settings UI, save-load, replacement, multiplayer, QA, release, and handoff proof remain pending, and the same-repo validation pause still forbids starting build/test/publish/package/runtime/stage/commit/push work from this thread.
 
 ---
 

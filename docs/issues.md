@@ -1,11 +1,11 @@
 # Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-18:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `3EDA50CCF8E2ECD49DCF1F6B4CEE7B7E3DE604793E8059253179914834781FFE` |
-| DLL | `B89D89A502BB98950EEAE3E101559FA3E5BA74BFF264BA5D59D43A70A4268EAD` |
-| PCK | `C5619646CEB02FC1D611554EC689CD2F9C81518BED9B6D5CB4CDCE90AED63F75` |
-| Manifest | `ABD6AEAFCF73F7CF74E31D01D4EBD17C667F36B4969724666DFDFC42997AD17E` |
-| README_INSTALL | `65293B1557BEBEE42E4DE1BBF162B23414CC436E6BBF748682D74299C356265D` |
+| ZIP | `97C65F040F7269738778368878E7946D1563F622D0D8959644C54DBC6806A0B1` |
+| DLL | `35575A2651882B4C2D8EDD082A8FD7C6B6534CEB6433F846AEC59259353B19B4` |
+| PCK | `C4EFDCA19F5F98F6A945599110AAF13A89452E3E1B8069326385BD45575218F2` |
+| Manifest | `15C677876A056D0C695DAB05BB7A18A5CB9B13FDDEFD0E595746ADF36D652059` |
+| README_INSTALL | `E968521929ECA272A5C5FA62DA4D90FB37C5307922FD2893ABDA154C3A12DFBC` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -34,10 +34,10 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after beta.85. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean, and current beta.86 direct Off/CanaryOnly/AdditiveBatch1 proof is clean on `v0.107.0` with RitsuLib `0.4.16`.
-  Fresh beta.86 direct proof: Off, CanaryOnly, and AdditiveBatch1 reached main menu, audited clean, and passed retained mode/packet verifiers with 0 mismatches; counts are 0 StS1 registrations, 4 types / 6 calls, and 10 types / 14 calls respectively.
-  Direct-smoke false failure was helper drift: `--force-steam off` reads default settings; live-session now writes `mod_settings.mods_enabled` and has `-PrepareDefaultSettings`.
-  Earlier beta.85 AdditiveBatch1 stays diagnostic (13/14 current-source registrations); gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
+- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean, and beta.86 Off/CanaryOnly/AdditiveBatch1 proof remains previous-package context.
+  Current beta.87 AdditiveBatch1 proof is clean on `v0.107.0` with BaseLib `v3.2.1`, RitsuLib `0.4.24`, and 10 StS1 event types / 14 registration calls.
+  Fresh beta.87 direct proof: AdditiveBatch1 reached main menu, audited clean, and passed retained mode/packet verifiers with 0 mismatches.
+  Runtime blocker root cause was dependency-floor drift plus verifier drift: old floors plus zero-byte `godot.log.before` rejection; fixed. Gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
 ## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.

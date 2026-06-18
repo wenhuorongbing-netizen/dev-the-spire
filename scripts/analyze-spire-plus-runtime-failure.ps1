@@ -191,7 +191,9 @@ function Resolve-AnalysisPath {
 
 function Test-BytePrefix {
     param(
+        [AllowEmptyCollection()]
         [Parameter(Mandatory = $true)][byte[]]$Prefix,
+        [AllowEmptyCollection()]
         [Parameter(Mandatory = $true)][byte[]]$Content
     )
 
@@ -347,6 +349,35 @@ function Test-NoJsonPropertyFalse {
     }
 
     return $true
+}
+
+function Test-AnyJsonPropertyStringEquals {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$Value
+    )
+
+    foreach ($item in @($Items)) {
+        if ([string]::Equals([string](Get-JsonValue -Object $item -Name $Name -DefaultValue ''), $Value, [System.StringComparison]::Ordinal)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function ConvertTo-DateTimeOffsetParseResult {
+    param([AllowEmptyString()][string]$Text)
+
+    [System.DateTimeOffset]$value = [System.DateTimeOffset]::MinValue
+    $styles = [System.Globalization.DateTimeStyles]::AssumeUniversal -bor [System.Globalization.DateTimeStyles]::AdjustToUniversal
+    $parsed = (-not [string]::IsNullOrWhiteSpace($Text)) -and [System.DateTimeOffset]::TryParse($Text, [System.Globalization.CultureInfo]::InvariantCulture, $styles, [ref]$value)
+
+    [pscustomobject]@{
+        Parsed = $parsed
+        Value = $value
+    }
 }
 
 function Get-UnhealthyObservationFields {
@@ -733,10 +764,12 @@ function Analyze-Iteration {
     $auditCandidate = Join-Path $Directory 'godot-log-audit.json'
     $probeSamplesCandidate = Join-Path $Directory 'runtime-probe-samples.json'
     $sts1ModeCandidate = Join-Path $Directory 'sts1-mode-log-check.json'
-    if ($isGameNativeAutoSlay -and $result) {
+    if ($result) {
         $beforeLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogBeforePath' -DefaultValue 'godot.log.before'))
         $fullLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAfterLaunchPath' -DefaultValue 'godot.log.after-launch'))
         $currentIterationLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogCurrentIterationPath' -DefaultValue 'godot.log.current-iteration'))
+    }
+    if ($isGameNativeAutoSlay -and $result) {
         $auditCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAuditPath' -DefaultValue 'godot-log-audit.json'))
         $probeSamplesCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'RuntimeProbeSamplesPath' -DefaultValue 'runtime-probe-samples.json'))
         $sts1ModeCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'Sts1ModeLogCheckPath' -DefaultValue 'sts1-mode-log-check.json'))
@@ -775,48 +808,35 @@ function Analyze-Iteration {
     $logText = ''
     $logTextTrustedForOwner = $false
     if ($result -and $currentIterationLogExists) {
-        if ($isGameNativeAutoSlay) {
-            if (-not ($beforeLogExists -and $fullLogExists)) {
-                Add-Finding `
-                    -Findings $findings `
-                    -Signal 'current_iteration_log_before_after_binding_missing' `
-                    -Severity 'blocking' `
-                    -OwnerArea 'RuntimeHarness' `
-                    -Rationale 'GameNativeAutoSlay evidence has godot.log.current-iteration without both godot.log.before and godot.log.after-launch, so the retained current slice may be stale or hand-assembled.' `
-                    -NextStep 'Fix AutoSlay before/after/current log retention or rerun the packet after validation lanes are unpaused; do not route ownership from an unbound current-iteration slice.' `
-                    -Confidence 'high' `
-                    -EvidenceFiles $evidenceFiles
-            } else {
-                $sliceBinding = Test-CurrentSliceFromBeforeAfter -BeforePath $beforeLogCandidate -AfterPath $fullLogCandidate -CurrentPath $currentIterationLogCandidate
-                $logText = [System.IO.File]::ReadAllText($currentIterationLogCandidate)
-                $logTextTrustedForOwner = [bool]$sliceBinding.SliceMatches
-                if (-not [bool]$sliceBinding.SliceMatches) {
-                    Add-Finding `
-                        -Findings $findings `
-                        -Signal 'current_iteration_log_slice_mismatch' `
-                        -Severity 'blocking' `
-                        -OwnerArea 'RuntimeHarness' `
-                        -Rationale $sliceBinding.Detail `
-                        -NextStep 'Use only byte-bound current-iteration slices for AutoSlay source routing, then fix evidence retention before trusting packet evidence.' `
-                        -Confidence 'high' `
-                        -EvidenceFiles $evidenceFiles
-                }
-            }
+        if (-not ($beforeLogExists -and $fullLogExists)) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'current_iteration_log_before_after_binding_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'Evidence has godot.log.current-iteration without both godot.log.before and godot.log.after-launch, so the retained current slice may be stale or hand-assembled.' `
+                -NextStep 'Fix before/after/current log retention or rerun the packet after validation lanes are unpaused; do not route ownership from an unbound current-iteration slice.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
         } else {
-            $hasOffsetBinding = $fullLogExists -and (Test-JsonProperty -Object $result -Name 'LogScanOffsetBytes')
-            if (-not $hasOffsetBinding) {
+            $sliceBinding = Test-CurrentSliceFromBeforeAfter -BeforePath $beforeLogCandidate -AfterPath $fullLogCandidate -CurrentPath $currentIterationLogCandidate
+            $logText = [System.IO.File]::ReadAllText($currentIterationLogCandidate)
+            $offsetMatchesBeforeLength = $isGameNativeAutoSlay
+            if (-not $isGameNativeAutoSlay -and -not (Test-JsonProperty -Object $result -Name 'LogScanOffsetBytes')) {
                 Add-Finding `
                     -Findings $findings `
                     -Signal 'current_iteration_log_offset_binding_missing' `
                     -Severity 'blocking' `
                     -OwnerArea 'RuntimeHarness' `
-                    -Rationale 'godot.log.current-iteration exists without both godot.log.after-launch and LogScanOffsetBytes, so the retained current slice may be stale or hand-assembled.' `
+                    -Rationale 'godot.log.current-iteration exists without LogScanOffsetBytes, so the retained current slice may be stale or hand-assembled.' `
                     -NextStep 'Fix current-iteration log offset binding or rerun the packet after validation lanes are unpaused; do not route ownership from an unbound current-iteration slice.' `
                     -Confidence 'high' `
                     -EvidenceFiles $evidenceFiles
-            } else {
+            } elseif (-not $isGameNativeAutoSlay) {
                 $logScanOffset = [long](Get-JsonValue -Object $result -Name 'LogScanOffsetBytes' -DefaultValue -1)
+                $beforeLogLength = [long](Get-Item -LiteralPath $beforeLogCandidate).Length
                 $fullLogLength = [long](Get-Item -LiteralPath $fullLogCandidate).Length
+                $offsetMatchesBeforeLength = $logScanOffset -eq $beforeLogLength
                 if ($logScanOffset -lt 0 -or $logScanOffset -gt $fullLogLength) {
                     Add-Finding `
                         -Findings $findings `
@@ -827,25 +847,35 @@ function Analyze-Iteration {
                         -NextStep 'Fix current-iteration log slicing or evidence retention before routing this runtime failure to gameplay source.' `
                         -Confidence 'high' `
                         -EvidenceFiles $evidenceFiles
-                } else {
-                    $expectedCurrentIterationLogText = Read-TextAfterByteOffset -Path $fullLogCandidate -Offset $logScanOffset
-                    $actualCurrentIterationLogText = [System.IO.File]::ReadAllText($currentIterationLogCandidate)
-                    $normalizedExpectedSlice = Normalize-LogSliceForComparison -Text $expectedCurrentIterationLogText
-                    $normalizedActualSlice = Normalize-LogSliceForComparison -Text $actualCurrentIterationLogText
-                    $logText = $expectedCurrentIterationLogText
-                    $logTextTrustedForOwner = $true
-                    if (-not [string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) {
-                        Add-Finding `
-                            -Findings $findings `
-                            -Signal 'current_iteration_log_slice_mismatch' `
-                            -Severity 'blocking' `
-                            -OwnerArea 'RuntimeHarness' `
-                            -Rationale 'godot.log.current-iteration does not match godot.log.after-launch from LogScanOffsetBytes, so the retained slice may be stale or hand-assembled.' `
-                            -NextStep 'Use the derived full-log slice from LogScanOffsetBytes for source routing, then fix current-iteration log retention before trusting packet evidence.' `
-                            -Confidence 'high' `
-                            -EvidenceFiles $evidenceFiles
-                    }
+                } elseif (-not $offsetMatchesBeforeLength) {
+                    Add-Finding `
+                        -Findings $findings `
+                        -Signal 'current_iteration_log_scan_offset_before_length_mismatch' `
+                        -Severity 'blocking' `
+                        -OwnerArea 'RuntimeHarness' `
+                        -Rationale "LogScanOffsetBytes must equal retained godot.log.before length; offset=$logScanOffset, beforeLength=$beforeLogLength." `
+                        -NextStep 'Regenerate the packet with before/after/current log binding before using current-iteration logs for owner routing.' `
+                        -Confidence 'high' `
+                        -EvidenceFiles $evidenceFiles
                 }
+            }
+
+            $logTextTrustedForOwner = [bool]$sliceBinding.SliceMatches -and $offsetMatchesBeforeLength
+            if (-not [bool]$sliceBinding.SliceMatches) {
+                $nextStep = if ($isGameNativeAutoSlay) {
+                    'Use only byte-bound current-iteration slices for AutoSlay source routing, then fix evidence retention before trusting packet evidence.'
+                } else {
+                    'Use only byte-bound current-iteration slices for source routing, then fix current-iteration log retention before trusting packet evidence.'
+                }
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'current_iteration_log_slice_mismatch' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale $sliceBinding.Detail `
+                    -NextStep $nextStep `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
             }
         }
     } elseif (Test-Path -LiteralPath $logCandidate -PathType Leaf) {
@@ -905,6 +935,22 @@ function Analyze-Iteration {
                 -EvidenceFiles $evidenceFiles
         }
 
+        $startTimestampText = if ($result) { [string](Get-JsonValue -Object $result -Name 'StartTimestamp' -DefaultValue '') } else { '' }
+        $endTimestampText = if ($result) { [string](Get-JsonValue -Object $result -Name 'EndTimestamp' -DefaultValue '') } else { '' }
+        $startTimestampParse = ConvertTo-DateTimeOffsetParseResult -Text $startTimestampText
+        $endTimestampParse = ConvertTo-DateTimeOffsetParseResult -Text $endTimestampText
+        if (-not [bool]$startTimestampParse.Parsed) {
+            Add-Finding -Findings $findings -Signal 'autoslay_run_result_start_timestamp_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json must retain a parseable StartTimestamp; found '$startTimestampText'." -NextStep 'Fix AutoSlay run-result timestamp retention before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+
+        if (-not [bool]$endTimestampParse.Parsed) {
+            Add-Finding -Findings $findings -Signal 'autoslay_run_result_end_timestamp_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json must retain a parseable EndTimestamp; found '$endTimestampText'." -NextStep 'Fix AutoSlay run-result timestamp retention before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+
+        if ([bool]$startTimestampParse.Parsed -and [bool]$endTimestampParse.Parsed -and $startTimestampParse.Value -gt $endTimestampParse.Value) {
+            Add-Finding -Findings $findings -Signal 'autoslay_run_result_timestamp_order_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json has StartTimestamp later than EndTimestamp; start='$startTimestampText' end='$endTimestampText'." -NextStep 'Fix AutoSlay run-result timestamp capture before using duration or ownership routing from this packet.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+
         if (-not (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf)) {
             Add-Finding `
                 -Findings $findings `
@@ -919,7 +965,17 @@ function Analyze-Iteration {
             try {
                 $probeSamplesParsed = Get-Content -LiteralPath $probeSamplesCandidate -Raw -Encoding UTF8 | ConvertFrom-Json
                 $probeSamples = @($probeSamplesParsed)
-                $requiredProbeFields = @('Phase', 'ProcessId', 'ProcessObserved', 'MainWindowObserved', 'HungWindow', 'Responding', 'StaleProcessCount')
+                $requiredProbeFields = @(
+                    'Phase',
+                    'ProcessId',
+                    'ProcessObserved',
+                    'MainWindowObserved',
+                    'HungWindow',
+                    'Responding',
+                    'StaleProcessCount',
+                    'CurrentProcessCount',
+                    'UnknownStartTimeProcessCount',
+                    'AmbiguousCurrentProcessCount')
 
                 if ($probeSamples.Count -eq 0) {
                     Add-Finding `
@@ -937,7 +993,10 @@ function Analyze-Iteration {
                     -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -or
                     -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -or
                     -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Responding') -or
-                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount')) {
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'CurrentProcessCount') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'UnknownStartTimeProcessCount') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'AmbiguousCurrentProcessCount')) {
                     $missingProbeFields = @($requiredProbeFields | Where-Object {
                         -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name $_)
                     })
@@ -947,10 +1006,18 @@ function Analyze-Iteration {
                         -Severity 'blocking' `
                         -OwnerArea 'RuntimeHarness' `
                         -Rationale "GameNativeAutoSlay runtime-probe-samples.json is missing required fields: $($missingProbeFields -join ', ')." `
-                        -NextStep 'Record Phase, ProcessId, ProcessObserved, MainWindowObserved, HungWindow, Responding, and StaleProcessCount for every probe sample.' `
+                        -NextStep 'Record Phase, ProcessId, ProcessObserved, MainWindowObserved, HungWindow, Responding, StaleProcessCount, CurrentProcessCount, UnknownStartTimeProcessCount, and AmbiguousCurrentProcessCount for every probe sample.' `
                         -Confidence 'high' `
                         -EvidenceFiles $evidenceFiles
                 } else {
+                    if (-not (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'main-menu')) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_main_menu_phase_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples never retained a main-menu phase sample.' -NextStep 'Fix AutoSlay probe sampling so startup and runtime phases are both represented before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if (-not (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'runtime')) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_runtime_phase_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples never retained a runtime phase sample.' -NextStep 'Fix AutoSlay probe sampling so startup and runtime phases are both represented before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
                     if (-not (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'ProcessObserved')) {
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples never observed the SlayTheSpire2 process.' -NextStep 'Fix process selection before routing this AutoSlay packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
@@ -972,6 +1039,21 @@ function Analyze-Iteration {
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_stale_process' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples saw stale SlayTheSpire2 processes, so shared godot.log evidence may be contaminated.' -NextStep 'Close pre-existing clients and recapture the packet after validation lanes are unpaused.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
+                    $unknownStartTimeSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'UnknownStartTimeProcessCount' -DefaultValue -1) -ne 0 })
+                    if ($unknownStartTimeSamples.Count -gt 0) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_unknown_start_time_process' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples saw SlayTheSpire2 processes with unreadable StartTime, so current-run attribution is ambiguous.' -NextStep 'Recapture with no unreadable SlayTheSpire2 processes before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    $ambiguousCurrentProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'AmbiguousCurrentProcessCount' -DefaultValue -1) -ne 0 })
+                    if ($ambiguousCurrentProcessSamples.Count -gt 0) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_ambiguous_current_process' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples saw multiple current SlayTheSpire2 processes, so shared log and PID evidence are ambiguous.' -NextStep 'Close overlapping clients and recapture the AutoSlay packet after the validation pause is lifted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    $currentProcessCountSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'CurrentProcessCount' -DefaultValue -1) -ne 1 })
+                    if ($currentProcessCountSamples.Count -gt 0) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_current_process_count_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples did not consistently bind to exactly one current SlayTheSpire2 process.' -NextStep 'Fix process selection and contamination rejection before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
                     $observedProcessIds = @($probeSamples |
                         Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ProcessId' -DefaultValue 0) } |
@@ -979,6 +1061,11 @@ function Analyze-Iteration {
                         Sort-Object -Unique)
                     if ($observedProcessIds.Count -ne 1) {
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_identity_unstable' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime probe samples must bind to exactly one positive process id; observed count=$($observedProcessIds.Count)." -NextStep 'Fix AutoSlay process selection and stale-process rejection before trusting this packet.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    } elseif ($result) {
+                        $resultProcessId = [int](Get-JsonValue -Object $result -Name 'ProcessId' -DefaultValue 0)
+                        if ($resultProcessId -le 0 -or $observedProcessIds[0] -ne $resultProcessId) {
+                            Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_id_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime probe samples bind to process id $($observedProcessIds[0]), but run-result.json records ProcessId=$resultProcessId." -NextStep 'Fix AutoSlay process/result PID binding before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        }
                     }
                 }
             } catch {
@@ -1008,8 +1095,8 @@ function Analyze-Iteration {
         $runtimeObservation = if ($result) { Get-JsonValue -Object $result -Name 'RuntimeObservation' -DefaultValue $null } else { $null }
         $runtimeObservationFailures = @(Get-UnhealthyObservationFields `
             -Observation $runtimeObservation `
-            -RequiredTrueFields @('Passed', 'ProcessObserved', 'LogObserved') `
-            -RequiredFalseFields @('ProcessExitedAfterObservation', 'HungWindowDetected', 'StaleProcessObserved') `
+            -RequiredTrueFields @('Passed', 'ProcessObserved', 'LogObserved', 'LogGrew') `
+            -RequiredFalseFields @('ProcessExitedAfterObservation', 'HungWindowDetected', 'StaleProcessObserved', 'NoLogGrowthTimeoutExceeded') `
             -ZeroCountField 'MaxStaleProcessCount')
         if ($runtimeObservationFailures.Count -gt 0) {
             $runtimeSignal = if ($runtimeObservationFailures -contains 'missing') { 'autoslay_runtime_observation_missing' } else { 'autoslay_runtime_observation_unhealthy' }
@@ -1287,12 +1374,42 @@ function Analyze-Iteration {
             'startup_log_stalled' {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeStartup' -Rationale 'godot.log stopped growing before main menu.' -NextStep 'Inspect the last retained log lines and probe timestamps; check package/API drift before touching gameplay code.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
+            'runtime_log_stalled' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'godot.log stopped growing during runtime observation.' -NextStep 'Inspect RuntimeObservation, runtime-probe-samples.json, and the current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
             'process_unresponsive' {
                 $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The window was reported hung or not responding during observation.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal $signal) -Confidence 'medium' -EvidenceFiles $evidenceFiles
             }
             'stale_process_observed' {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The retained probe observed a SlayTheSpire2 process that started before this iteration; shared godot.log evidence may be contaminated.' -NextStep 'Close pre-existing game clients, rerun the packet after validation lanes are unpaused, and do not route ownership from this iteration log.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            'live_session_prepare_output_missing' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The iteration did not retain the live-session prepare output needed to bind launcher setup to runtime evidence.' -NextStep 'Fix prepare-output.json retention and rerun the packet; do not route ownership from unbound runtime evidence.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            'live_session_launch_metadata_missing' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The iteration is missing Steam launch metadata, so launcher setup cannot be verified against runtime evidence.' -NextStep 'Fix live-session launch metadata retention before classifying gameplay behavior.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            'live_session_pid_attribution_missing' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The live-session packet predates or lacks selected-game PID attribution fields.' -NextStep 'Regenerate the packet with the current live-session helper so SlayTheSpire2 PID/start/path identity is retained.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            'live_session_pid_attribution_failed' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The live-session helper could not select exactly one newly launched SlayTheSpire2 process.' -NextStep 'Inspect prepare-output.json candidates, close stale game clients, and rerun after validation lanes are unpaused.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            'game_process_start_time_unbound' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The observed game process start time was not proven to occur at or after the live-session launch request.' -NextStep 'Fix process start-time retention and live-session binding before assigning source ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            'game_process_path_missing' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The iteration did not retain the executable path for the observed SlayTheSpire2 process.' -NextStep 'Fix process path retention in runtime probes before classifying gameplay behavior.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            'game_process_id_mismatch' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The observed runtime process id does not match the live-session selected game process id.' -NextStep 'Treat the packet as contaminated or stale; inspect prepare-output.json and runtime-probe-samples.json before rerunning.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            'game_process_start_time_mismatch' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The observed runtime process start time does not match the live-session selected game process start time.' -NextStep 'Treat PID reuse or stale process contamination as the leading cause; rerun only after process identity probes are clean.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            'game_process_path_mismatch' {
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The observed runtime executable path does not match the live-session selected game process path.' -NextStep 'Verify the launched executable and process probe selection before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
             'command_ack_missing' {
                 $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea

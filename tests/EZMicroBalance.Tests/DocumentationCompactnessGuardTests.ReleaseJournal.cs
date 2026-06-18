@@ -153,7 +153,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.86 package hash is clean",
+            "Fresh loader smoke for the current beta.87 package hash is clean",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

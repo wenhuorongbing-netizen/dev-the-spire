@@ -194,5 +194,5 @@ Authority note: `docs/features/ancient-expansion-urda/` and `docs/features/ancie
 | M0 | Local setup and baseline build/publish established. |
 | M1 | Ancient reward rebalance implemented from the original scaffold. |
 | M2 | Independent `Spire Plus` project created on the stable `EZMicroBalance` technical id and root build succeeds. |
-| M3 | Current v0.106.1/BaseLib v3.1.4 source, build, publish, and package evidence refreshed; controlled live smoke remains pending for this package. |
+| M3 | Historical v0.106.1 source context remains available; current v0.107.0/BaseLib v3.2.1 build, publish, package, and beta.87 AdditiveBatch1 loader evidence refreshed; gameplay live smoke remains pending for this package. |
 | M4 | Private beta release after normal Steam-client Mod Settings, live gameplay/manual matrix, clean handoff, validated commit, and pushed branch. |

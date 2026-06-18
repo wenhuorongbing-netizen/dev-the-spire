@@ -18,9 +18,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             WriteSts1RuntimePacketState(workdir, mode: "AdditiveBatch1");
             var stalePrefix = BuildSts1ModeRuntimeLog("AdditiveBatch1");
             var currentOffSlice = """
-                v0.1.0-private-beta.86
+                v0.1.0-private-beta.87
                 release = v0.107.0
-                RitsuLib Version: 0.4.16 [compat branch: 0.107.0]
+                RitsuLib Version: 0.4.24 [compat branch: 0.107.0]
                 Feature Sts1Events bootstrap=disabled, live=Disabled
                 """;
             File.WriteAllText(Path.Combine(workdir, "godot.log.before"), stalePrefix);
@@ -33,11 +33,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-EvidenceDir",
                 workdir,
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-OutFile",
@@ -73,9 +73,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             WriteSts1RuntimePacketState(workdir, mode: "AdditiveBatch1");
             const string preLaunchPrefix = "[Startup] retained pre-launch log prefix\r\n";
             var actualOffSlice = """
-                v0.1.0-private-beta.86
+                v0.1.0-private-beta.87
                 release = v0.107.0
-                RitsuLib Version: 0.4.16 [compat branch: 0.107.0]
+                RitsuLib Version: 0.4.24 [compat branch: 0.107.0]
                 Feature Sts1Events bootstrap=disabled, live=Disabled
                 """;
             var retainedStaleCurrentSlice = BuildSts1ModeRuntimeLog("AdditiveBatch1");
@@ -95,11 +95,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-EvidenceDir",
                 workdir,
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-OutFile",
@@ -145,11 +145,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-EvidenceDir",
                 workdir,
                 "-ExpectedPackageVersion",
-                "v0.1.0-private-beta.86",
+                "v0.1.0-private-beta.87",
                 "-ExpectedRitsuCompatBranch",
                 "0.107.0",
                 "-ExpectedRitsuLibVersion",
-                "0.4.16",
+                "0.4.24",
                 "-ExpectedGameVersion",
                 "0.107.0",
                 "-OutFile",
