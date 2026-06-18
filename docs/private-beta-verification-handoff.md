@@ -4,9 +4,9 @@ Date: 2026-05-15
 
 **Environment warning (2026-05-08):** The earlier `godot2026-05-08T05.06.30.log` came from v0.105.0 with 17 mods loaded and BaseLib `v3.1.0`, so it is not the required BaseLib + Spire Plus-only setup.
 
-Current docs keep useful BaseLib `v3.1.4` source/package evidence separated from older `v3.1.2` runtime evidence: current 30-field loader smoke, historical installed-PCK resource smoke, current Mod Settings list evidence, normal-Steam A0/A10/A20 combat smoke, A11 map/save-load spot checks, Act 2/3 A11 map-surface observations, and targeted A14 Rootblight hover/starter-notice evidence. Full Ancient reward gameplay, natural A11 traversal, full Rootblight combat behavior, and co-op verification are pending.
+Current docs keep useful BaseLib `v3.1.4` source/package evidence separated from older `v3.1.2` runtime evidence: current 30-field loader smoke, historical installed-PCK resource smoke, historical current-display Mod Settings list evidence, normal-Steam A0/A10/A20 combat smoke, A11 map/save-load spot checks, Act 2/3 A11 map-surface observations, and targeted A14 Rootblight hover/starter-notice evidence. Current beta.86 Mod Settings page-level proof, full Ancient reward gameplay, natural A11 traversal, full Rootblight combat behavior, and co-op verification are pending.
 
-Current naming note: testers should see `Spire Plus`. The technical manifest id and package folder remain `EZMicroBalance` for compatibility. Historical normal Steam-client startup/log evidence confirms the display name and config registration for the earlier 22-field package. The refreshed Mod Settings UI capture `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list.
+Current naming note: testers should see `Spire Plus`. The technical manifest id and package folder remain `EZMicroBalance` for compatibility. Historical normal Steam-client startup/log evidence confirms the display name and config registration for the earlier 22-field package. The refreshed Mod Settings UI capture `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list; current beta.86 list plus Spire Plus config-page proof must be filled under release-evidence row `mod-settings-current-display`.
 
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
@@ -76,7 +76,7 @@ Current manual-proof summary:
 - Historical normal Steam-client startup/log verification passed for the beta.17 package hash and remains historical startup context only.
 - Direct AdditiveBatch1 startup/log verification passed for the beta.86 package hash under `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254`; beta.85 Off/CanaryOnly and beta.19 startup proof remain historical or previous-package context only.
 - Historical helper-driven startup/log verification confirms loader health only. This is loader/helper evidence, not live gameplay evidence.
-- Current Mod Settings list screenshot shows `Spire Plus`; page-level BaseLib/old-display-name evidence remains historical.
+- Historical current-display Mod Settings list screenshot shows `Spire Plus`; page-level BaseLib/old-display-name evidence remains historical, and current beta.86 list plus Spire Plus config-page proof remains pending under `mod-settings-current-display`.
 - Normal Steam-client A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, saved-map boss-reachability graph proof, Act 2/3 A11 map-surface checks, and targeted A14 Rootblight hover/starter-notice spot checks passed.
 - Live Ancient reward gameplay, Urda gameplay, Rootblight combat-end behavior/notices, natural A11 click-by-click traversal, disable-gameplay, broader save/load, and multiplayer checks remain pending.
 Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending.
@@ -84,7 +84,7 @@ Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplay
 1. Launch through the normal Steam client.
 2. Open Settings -> Mod Settings.
 3. Confirm BaseLib appears and is enabled.
-4. Confirm Spire Plus appears with id `EZMicroBalance` and can be enabled. Historical normal Steam logs confirm the refreshed display name and config registration for earlier package states, and `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` captures `Spire Plus` in the Mods list.
+4. Confirm Spire Plus appears with id `EZMicroBalance` and can be enabled. Fill `release/mod-settings-current-display/mod-settings-checklist.md` with a current beta.86 Mods-list screenshot, a current Spire Plus config-page screenshot, route note, same-session `godot.log`, and clean `godot-log-audit.json`. Historical normal Steam logs and `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` are context only for this row.
 5. Confirm legacy `EzDailyContent` is disabled or absent.
 6. Start a run with BaseLib and Spire Plus enabled.
 7. Execute the Ancient reward matrix, including Velvet Choker soft-limit counting, Distinguished Cape v4.3 max-HP math/pay gate with same-pool replacement and locked fallback for unaffordable Vakuu Cape rolls, Prismatic Gem all-off-color reroll/exclusion checks plus reward-screen hint fallback log checks, zhs numeric formatting, and the save/load rows.

@@ -38,7 +38,8 @@ Current status note (2026-06-18): the `v0.1.0-private-beta.86` package/hash rows
 - [x] BaseLib appears in Mod Settings.
 - [x] BaseLib loads when enabled in a controlled smoke profile.
 - [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
-- [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.
+- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.
+- [ ] Current beta.86 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.
 - [x] Historical pre-display-name-refresh Mod Settings evidence exists for the same technical manifest id.
 - [x] Fresh loader smoke for the current beta.86 ZIP hash is clean under `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254`. The beta.19 smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` remains historical startup evidence only.
 - [x] Historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes with clean audits and 25/25 Spire Plus ModPatcher patches; beta.85 Off and CanaryOnly are previous-package `v0.107.0` loader proof, while current beta.86 AdditiveBatch1 proof has 10 event types / 14 registration calls with exact tuple parity.
@@ -80,7 +81,7 @@ The verifier hashes the package under test and requires current package hash par
 manifest/evidence dirs/files inside the declared evidence root, matching row kinds,
 `command.txt` for every passed row, clicked-UI screenshots with foreground preflight,
 clean `godot-log-audit.json` files, result notes, fresh loader rows, preview-tools rows,
-save/load rows, Vakuu victory/failure rows, Rootblight/A11/disable-mod rows, and co-op disposition.
+Mod Settings current-display rows, save/load rows, Vakuu victory/failure rows, Rootblight/A11/disable-mod rows, and co-op disposition.
 Row `RequiredFiles` may add files; they cannot remove the defaults.
 Unknown or blank manifest rows are ignored but reported as warnings.
 Deferred rows fail unless rerun with `-AllowDeferred` after an explicit owner-approved release note.
@@ -110,7 +111,7 @@ Deferred rows fail unless rerun with `-AllowDeferred` after an explicit owner-ap
 
 - Fresh loader smoke for the current beta.86 package hash is clean under `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254`: it loaded BaseLib, RitsuLib, and `EZMicroBalance`, selected RitsuLib compat branch `0.107.0`, reported `v0.1.0-private-beta.86`, applied 25/25 Spire Plus ModPatcher patches, registered AdditiveBatch1 as 10 event types / 14 calls, reached main menu, audited clean, stopped the game, and restored 25 isolated mod entries. This is loader/startup evidence, not gameplay proof.
   - The 2026-05-13 helper startup/log pass is historical 16-field evidence. BaseLib-only plug-off evidence loaded only BaseLib; the earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
-  - Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list. Earlier page-level Mod Settings evidence predates the display-name refresh.
+  - Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list. Earlier page-level Mod Settings evidence predates the display-name refresh; current beta.86 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`.
 - Manual feature results are pending; `docs/features/ancients-rework-v4/manual-verification-matrix.md`, `docs/features/ancient-expansion-urda/manual-test-checklist.md`, and `docs/features/ascension-11-20/manual-test-checklist.md` remain the current manual surfaces.
 - A11 source now inserts a reachable optional route node in the new column and adds Act 1/2/3 route rows, while ordinary A11 route nodes no longer receive a dedicated marker or hover tooltip. The existing A11 live save has a saved-map graph proof from the post-load first-node coord to the boss; natural click-by-click traversal remains pending.
 - Host multiplayer A20 development selection logs an explicit downgrade warning. This is not live co-op support for Branded Form; A20 co-op boss-path behavior remains pending manual verification.

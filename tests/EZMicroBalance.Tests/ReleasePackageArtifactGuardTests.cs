@@ -103,7 +103,7 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Contains("Fresh loader smoke for the current beta.86 package hash is clean", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("This is loader/startup evidence, not gameplay proof", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
-        Assert.Contains("Earlier page-level Mod Settings evidence predates the display-name refresh", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("current beta.86 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("release ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
@@ -127,7 +127,8 @@ public sealed class ReleasePackageArtifactGuardTests
         Assert.Contains("update `docs/release-checklist.md`", handoff, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log verification passed for the beta.17 package hash", handoff, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log evidence confirms the display name", handoff, StringComparison.Ordinal);
-        Assert.Contains("Current Mod Settings list screenshot shows `Spire Plus`", handoff, StringComparison.Ordinal);
+        Assert.Contains("Historical current-display Mod Settings list screenshot shows `Spire Plus`", handoff, StringComparison.Ordinal);
+        Assert.Contains("mod-settings-current-display", handoff, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", handoff, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", handoff, StringComparison.Ordinal);

@@ -160,6 +160,7 @@ public sealed partial class ReleaseEvidenceGateTests
                     var expectedRowIds = new[]
                     {
                         "fresh-current-package-loader-smoke",
+                        "mod-settings-current-display",
                         "ancient-ui-urda",
                         "ancient-ui-morvi",
                         "ancient-ui-lotha",
@@ -366,6 +367,13 @@ public sealed partial class ReleaseEvidenceGateTests
                     AssertChecklistTemplate(
                         rows,
                         evidenceDir,
+                        "mod-settings-current-display",
+                        "mod-settings-checklist.md",
+                        "mod-settings-checklist-template.md",
+                        ["base-lib-visible-enabled", "spire-plus-list-display-name", "spire-plus-config-page-current-name", "technical-id-compatibility", "legacy-mod-surfaces-absent", "clean-log-config-registration"]);
+                    AssertChecklistTemplate(
+                        rows,
+                        evidenceDir,
                         "vakuu-victory-no-black-screen",
                         "vakuu-victory-checklist.md",
                         "vakuu-victory-checklist-template.md",
@@ -441,6 +449,10 @@ public sealed partial class ReleaseEvidenceGateTests
                         .AsArray()
                         .Select(row => row!.AsObject())
                         .Single(row => row["Id"]!.GetValue<string>() == "art-resource-routing-live-preview");
+                    var modSettingsNode = manifestNode["Rows"]!
+                        .AsArray()
+                        .Select(row => row!.AsObject())
+                        .Single(row => row["Id"]!.GetValue<string>() == "mod-settings-current-display");
                     var rootblightNode = manifestNode["Rows"]!
                         .AsArray()
                         .Select(row => row!.AsObject())
@@ -584,6 +596,20 @@ public sealed partial class ReleaseEvidenceGateTests
                     bossAbilityNode["ReleaseNote"] = "";
 
                     PrepareChecklistPassAttempt(
+                        modSettingsNode,
+                        "mod-settings-checklist-template.md",
+                        "mod-settings-checklist.md",
+                        requiredNoteFile: "route-note.md",
+                        noteText: "Synthetic Mod Settings route note for verifier contract.",
+                        resultNote: "Synthetic pass attempt with an unfilled Mod Settings checklist.");
+                    var modSettingsEvidenceDir = modSettingsNode["EvidenceDir"]!.GetValue<string>();
+                    File.WriteAllText(
+                        Path.Combine(modSettingsEvidenceDir, "window-preflight.json"),
+                        """{ "SpireForeground": true }""");
+                    modSettingsNode["ScreenshotFile"] = "mod-settings-list.png";
+                    WriteTinyPng(Path.Combine(modSettingsEvidenceDir, "mod-settings-list.png"), width: 800, height: 450);
+
+                    PrepareChecklistPassAttempt(
                         vakuuVictoryNode,
                         "vakuu-victory-checklist-template.md",
                         "vakuu-victory-checklist.md",
@@ -654,6 +680,8 @@ public sealed partial class ReleaseEvidenceGateTests
                     Assert.Contains("row for title-home-preview has no filled Live result cell", blankChecklistResult.Output, StringComparison.Ordinal);
                     Assert.Contains("rootblight-behavior-checklist.md still contains the unfilled template instruction", blankChecklistResult.Output, StringComparison.Ordinal);
                     Assert.Contains("row for rootblight-start-eligibility has no filled Live result cell", blankChecklistResult.Output, StringComparison.Ordinal);
+                    Assert.Contains("mod-settings-checklist.md still contains the unfilled template instruction", blankChecklistResult.Output, StringComparison.Ordinal);
+                    Assert.Contains("row for base-lib-visible-enabled has no filled Live result cell", blankChecklistResult.Output, StringComparison.Ordinal);
                     Assert.Contains("vakuu-victory-checklist.md still contains the unfilled template instruction", blankChecklistResult.Output, StringComparison.Ordinal);
                     Assert.Contains("row for fight-start-scene has no filled Live result cell", blankChecklistResult.Output, StringComparison.Ordinal);
                     Assert.Contains("vakuu-failure-death-checklist.md still contains the unfilled template instruction", blankChecklistResult.Output, StringComparison.Ordinal);
@@ -686,6 +714,9 @@ public sealed partial class ReleaseEvidenceGateTests
                         Path.Combine(bossAbilityEvidenceDir, "boss-ability-checklist.md"),
                         CreateFilledBossAbilityChecklist());
                     File.WriteAllText(
+                        Path.Combine(modSettingsEvidenceDir, "mod-settings-checklist.md"),
+                        CreateFilledSimpleChecklist("Mod Settings Current Display Checklist", RequiredModSettingsRows()));
+                    File.WriteAllText(
                         Path.Combine(vakuuVictoryNode["EvidenceDir"]!.GetValue<string>(), "vakuu-victory-checklist.md"),
                         CreateFilledSimpleChecklist("Vakuu Victory / No Black Screen Checklist", RequiredVakuuVictoryRows()));
                     File.WriteAllText(
@@ -705,6 +736,7 @@ public sealed partial class ReleaseEvidenceGateTests
                     artRoutingNode["ResultNote"] = "Synthetic pass attempt with every art routing surface row filled.";
                     rootblightNode["ResultNote"] = "Synthetic pass attempt with every Rootblight behavior row filled.";
                     bossAbilityNode["ResultNote"] = "Synthetic pass attempt with every A19/A20 Boss row filled.";
+                    modSettingsNode["ResultNote"] = "Synthetic pass attempt with every Mod Settings row filled.";
                     vakuuVictoryNode["ResultNote"] = "Synthetic pass attempt with every Vakuu victory row filled.";
                     vakuuFailureDeathNode["ResultNote"] = "Synthetic pass attempt with every Vakuu failure/death row filled.";
                     vakuuSaveLoadNode["ResultNote"] = "Synthetic pass attempt with every Vakuu save-load row filled.";

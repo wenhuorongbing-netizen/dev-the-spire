@@ -24,8 +24,8 @@ public sealed partial class ReleaseEvidenceGateTests
             "TESTER_START_HERE.md",
             "Recommended order",
             "Handoff summary",
-            "PendingVerifierRequiredRowCount=20",
-            "PendingVerifierFailureCount=20",
+            "PendingVerifierRequiredRowCount=21",
+            "PendingVerifierFailureCount=21",
             "PendingVerifierWarningCount=0",
             "Move-StaleCurrentLoaderEvidence",
             ".stale-loader-evidence",
@@ -79,8 +79,8 @@ public sealed partial class ReleaseEvidenceGateTests
             Assert.True(summary.GetProperty("NoLaunch").GetBoolean());
             Assert.True(summary.GetProperty("PendingVerifierChecked").GetBoolean());
             Assert.True(summary.GetProperty("PendingVerifierExpectedFailure").GetBoolean());
-            Assert.Equal(20, summary.GetProperty("PendingVerifierRequiredRowCount").GetInt32());
-            Assert.Equal(20, summary.GetProperty("PendingVerifierFailureCount").GetInt32());
+            Assert.Equal(21, summary.GetProperty("PendingVerifierRequiredRowCount").GetInt32());
+            Assert.Equal(21, summary.GetProperty("PendingVerifierFailureCount").GetInt32());
             Assert.Equal(0, summary.GetProperty("PendingVerifierWarningCount").GetInt32());
             Assert.Equal(CurrentPackageZipRelativePath(), summary.GetProperty("PackagePath").GetString());
             Assert.Equal(CurrentPackageZipSha256(), summary.GetProperty("PackageSha256").GetString());
@@ -99,15 +99,16 @@ public sealed partial class ReleaseEvidenceGateTests
             Assert.Contains($"ZIP SHA256: `{CurrentPackageZipSha256()}`.", startHere, StringComparison.Ordinal);
             Assert.Contains("## Handoff summary", startHere, StringComparison.Ordinal);
             Assert.Contains("`handoff-summary.json` records this no-launch scaffold contract.", startHere, StringComparison.Ordinal);
-            Assert.Contains("`PendingVerifierRequiredRowCount=20`.", startHere, StringComparison.Ordinal);
-            Assert.Contains("`PendingVerifierFailureCount=20`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("`PendingVerifierRequiredRowCount=21`.", startHere, StringComparison.Ordinal);
+            Assert.Contains("`PendingVerifierFailureCount=21`.", startHere, StringComparison.Ordinal);
             Assert.Contains("`PendingVerifierWarningCount=0`.", startHere, StringComparison.Ordinal);
             Assert.Contains("These numbers mean the scaffold is expected to fail until live evidence is filled.", startHere, StringComparison.Ordinal);
             Assert.Contains("Recommended order", startHere, StringComparison.Ordinal);
             Assert.Contains(".\\scripts\\check-installed-spire-plus-package.ps1 -ModDirectory \"D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance\"", startHere, StringComparison.Ordinal);
-            Assert.Contains("It should fail closed with 20 pending live rows", startHere, StringComparison.Ordinal);
+            Assert.Contains("It should fail closed with 21 pending live rows", startHere, StringComparison.Ordinal);
             Assert.Contains("release/fresh-current-package-loader-smoke/", startHere, StringComparison.Ordinal);
-            Assert.Contains("The Mods list should show `Spire Plus`; `EZMicroBalance` should appear only as the technical folder/id in paths or logs.", startHere, StringComparison.Ordinal);
+            Assert.Contains("release/mod-settings-current-display/", startHere, StringComparison.Ordinal);
+            Assert.Contains("current Mods-list and Spire Plus config-page screenshots", startHere, StringComparison.Ordinal);
             Assert.Contains("## Focused current regression check", startHere, StringComparison.Ordinal);
             Assert.Contains("Vakuu event option: pick `Sere Talon`. It must be the Vakuu relic that offers 4 Curses, lets you choose 1, then adds that Curse, 2 Wish, and 1 Wish+.", startHere, StringComparison.Ordinal);
             Assert.Contains("It must not show Tanx Claws relic art, title, or Maul-transform text. If the effect is curse choice plus 2 Wish and 1 Wish+ but the art is still Tanx Claws, treat it as a Spire Plus UI/package-load issue.", startHere, StringComparison.Ordinal);
@@ -122,7 +123,7 @@ public sealed partial class ReleaseEvidenceGateTests
             Assert.Contains("verify-spire-plus-release-evidence.ps1", startHere, StringComparison.Ordinal);
             Assert.Contains(expectedEvidenceRootArg, startHere, StringComparison.Ordinal);
             Assert.Contains(expectedManifestArg, startHere, StringComparison.Ordinal);
-            Assert.Contains("`handoff-summary.json` records `PendingVerifierRequiredRowCount=20`, `PendingVerifierFailureCount=20`, and `PendingVerifierWarningCount=0`.", readme, StringComparison.Ordinal);
+            Assert.Contains("`handoff-summary.json` records `PendingVerifierRequiredRowCount=21`, `PendingVerifierFailureCount=21`, and `PendingVerifierWarningCount=0`.", readme, StringComparison.Ordinal);
             Assert.Contains("Those are expected no-launch values, not live proof.", readme, StringComparison.Ordinal);
             Assert.Contains(expectedEvidenceRootArg, readme, StringComparison.Ordinal);
             Assert.Contains(expectedManifestArg, readme, StringComparison.Ordinal);
@@ -162,9 +163,9 @@ public sealed partial class ReleaseEvidenceGateTests
             using var preservedSummaryDocument = JsonDocument.Parse(File.ReadAllText(summaryPath));
             var preservedSummary = preservedSummaryDocument.RootElement;
             Assert.False(preservedSummary.GetProperty("NoLaunch").GetBoolean());
-            Assert.Equal(20, preservedSummary.GetProperty("PendingVerifierRequiredRowCount").GetInt32());
-            Assert.Equal(19, preservedSummary.GetProperty("PendingVerifierFailureCount").GetInt32());
-            Assert.Equal(19, preservedSummary.GetProperty("CurrentVerifierFailureCount").GetInt32());
+            Assert.Equal(21, preservedSummary.GetProperty("PendingVerifierRequiredRowCount").GetInt32());
+            Assert.Equal(20, preservedSummary.GetProperty("PendingVerifierFailureCount").GetInt32());
+            Assert.Equal(20, preservedSummary.GetProperty("CurrentVerifierFailureCount").GetInt32());
             Assert.Equal(loaderEvidenceDir, preservedSummary.GetProperty("CurrentLoaderEvidenceDir").GetString());
 
             using var preservedManifestDocument = JsonDocument.Parse(File.ReadAllText(manifestPath));
@@ -176,9 +177,9 @@ public sealed partial class ReleaseEvidenceGateTests
             var preservedStartHere = File.ReadAllText(startHerePath);
             var preservedReadme = File.ReadAllText(readmePath);
             Assert.Contains("The current-package loader row is filled", preservedStartHere, StringComparison.Ordinal);
-            Assert.Contains("It should fail closed with 19 pending live rows", preservedStartHere, StringComparison.Ordinal);
-            Assert.Contains("current failure count `19`", preservedReadme, StringComparison.Ordinal);
-            Assert.DoesNotContain("It should fail closed with 20 pending live rows", preservedStartHere, StringComparison.Ordinal);
+            Assert.Contains("It should fail closed with 20 pending live rows", preservedStartHere, StringComparison.Ordinal);
+            Assert.Contains("current failure count `20`", preservedReadme, StringComparison.Ordinal);
+            Assert.DoesNotContain("It should fail closed with 21 pending live rows", preservedStartHere, StringComparison.Ordinal);
         }
         finally
         {
@@ -246,7 +247,7 @@ public sealed partial class ReleaseEvidenceGateTests
             using var summaryDocument = JsonDocument.Parse(File.ReadAllText(Path.Combine(evidenceDir, "handoff-summary.json")));
             var summary = summaryDocument.RootElement;
             Assert.True(summary.GetProperty("NoLaunch").GetBoolean());
-            Assert.Equal(20, summary.GetProperty("PendingVerifierFailureCount").GetInt32());
+            Assert.Equal(21, summary.GetProperty("PendingVerifierFailureCount").GetInt32());
             Assert.Equal(archiveDir, summary.GetProperty("StaleCurrentLoaderArchive").GetString());
 
             using var rerunManifestDocument = JsonDocument.Parse(File.ReadAllText(manifestPath));

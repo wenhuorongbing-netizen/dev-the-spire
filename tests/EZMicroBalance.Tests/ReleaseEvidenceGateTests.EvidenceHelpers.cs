@@ -436,6 +436,19 @@ public sealed partial class ReleaseEvidenceGateTests
         ];
     }
 
+    private static IReadOnlyList<(string Id, string Expected)> RequiredModSettingsRows()
+    {
+        return
+        [
+            ("base-lib-visible-enabled", "BaseLib appears in Settings -> Mod Settings and is enabled for the session."),
+            ("spire-plus-list-display-name", "The Mods list shows the player-facing name Spire Plus for the current package."),
+            ("spire-plus-config-page-current-name", "Opening the Spire Plus config page shows current Spire Plus display text, not the older EZ Micro Balance page-level text."),
+            ("technical-id-compatibility", "EZMicroBalance appears only as the technical manifest id, folder, or log/config id where applicable; it is not the primary player-facing mod name."),
+            ("legacy-mod-surfaces-absent", "Legacy EzDailyContent and standalone EZFuturePeek mod surfaces are absent or disabled."),
+            ("clean-log-config-registration", "The same-session godot.log includes current package/config registration evidence and the clean log audit has no release-blocking signatures.")
+        ];
+    }
+
     private static string CreateFilledSimpleChecklist(
         string title,
         IReadOnlyList<(string Id, string Expected)> rows)

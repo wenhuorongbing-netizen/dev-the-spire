@@ -253,6 +253,18 @@ function New-ManualRows {
 
     $requiredRows = @(
         @{ Id = 'fresh-current-package-loader-smoke'; Kind = 'loader'; Label = 'Fresh current-package loader smoke with current package hashes and clean log audit' },
+        @{
+            Id = 'mod-settings-current-display'
+            Kind = 'clicked-ui'
+            Label = 'Current Spire Plus Mod Settings list and config page proof'
+            ExtraRequiredFiles = @('mod-settings-checklist.md')
+            Checkpoints = @(
+                'Open Settings -> Mod Settings through the normal Steam-client path with the current package installed.',
+                'Capture a foreground Mods list screenshot showing BaseLib and Spire Plus, with EZMicroBalance only as the compatibility id/folder where visible.',
+                'Open the Spire Plus config page and capture a foreground page screenshot showing the current display name, not historical EZ Micro Balance page text.',
+                'Attach the same-session godot.log plus clean log audit, including config registration for mod EZMicroBalance.'
+            )
+        },
         @{ Id = 'ancient-ui-urda'; Kind = 'clicked-ui'; Label = 'Urda clicked Ancient UI' },
         @{ Id = 'ancient-ui-morvi'; Kind = 'clicked-ui'; Label = 'Morvi clicked Ancient UI' },
         @{ Id = 'ancient-ui-lotha'; Kind = 'clicked-ui'; Label = 'Lotha clicked Ancient UI' },
@@ -613,6 +625,35 @@ foreach ($row in $manualRows) {
         ) -join [Environment]::NewLine
 
         Write-ChecklistFiles -TemplateContent $ancientRewardChecklist -TemplatePath (Join-Path $rowEvidenceFull 'ancient-reward-relics-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'ancient-reward-relics-checklist.md')
+    }
+
+    if ($row.Id -eq 'mod-settings-current-display') {
+        $modSettingsChecklist = @(
+            '# Mod Settings Current Display Checklist',
+            '',
+            'Template reference for `mod-settings-checklist.md`. Fill the working `mod-settings-checklist.md` with live results before marking this row pass.',
+            '',
+            'Required evidence:',
+            '- `window-preflight.json` proving Slay the Spire 2 was the foreground window before each screenshot.',
+            '- At least one PNG screenshot for the Mods list and one PNG screenshot for the Spire Plus config page; set `ScreenshotFile` to the primary list screenshot or leave it blank so the verifier checks any valid PNG in this folder.',
+            '- `godot.log` and clean `godot-log-audit.json` from the same normal Steam-client session.',
+            '- `route-note.md` describing the exact navigation route, package version, and screenshot filenames.',
+            '',
+            'Scenario rows:',
+            '',
+            '| Scenario ID | Expected behavior | Live result | Evidence file(s) |',
+            '| --- | --- | --- | --- |',
+            '| base-lib-visible-enabled | BaseLib appears in Settings -> Mod Settings and is enabled for the session. |  |  |',
+            '| spire-plus-list-display-name | The Mods list shows the player-facing name Spire Plus for the current package. |  |  |',
+            '| spire-plus-config-page-current-name | Opening the Spire Plus config page shows current Spire Plus display text, not the older EZ Micro Balance page-level text. |  |  |',
+            '| technical-id-compatibility | EZMicroBalance appears only as the technical manifest id, folder, or log/config id where applicable; it is not the primary player-facing mod name. |  |  |',
+            '| legacy-mod-surfaces-absent | Legacy EzDailyContent and standalone EZFuturePeek mod surfaces are absent or disabled. |  |  |',
+            '| clean-log-config-registration | The same-session godot.log includes current package/config registration evidence and the clean log audit has no release-blocking signatures. |  |  |',
+            '',
+            'Do not use the 2026-05 list screenshot or old EZ Micro Balance page-level screenshots to pass this row. Those remain historical context only.'
+        ) -join [Environment]::NewLine
+
+        Write-ChecklistFiles -TemplateContent $modSettingsChecklist -TemplatePath (Join-Path $rowEvidenceFull 'mod-settings-checklist-template.md') -WorkingPath (Join-Path $rowEvidenceFull 'mod-settings-checklist.md')
     }
 
     if ($row.Id -eq 'rootblight-visual-behavior') {

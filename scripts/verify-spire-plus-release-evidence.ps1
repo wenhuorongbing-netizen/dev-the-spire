@@ -39,6 +39,12 @@ if ([string]::IsNullOrWhiteSpace($PackageSha256)) {
 
 $requiredReleaseRows = @(
     @{ Id = 'fresh-current-package-loader-smoke'; Kind = 'loader'; Label = 'Fresh current-package loader smoke with current package hashes and clean log audit' },
+    @{
+        Id = 'mod-settings-current-display'
+        Kind = 'clicked-ui'
+        Label = 'Current Spire Plus Mod Settings list and config page proof'
+        ExtraRequiredFiles = @('mod-settings-checklist.md')
+    },
     @{ Id = 'ancient-ui-urda'; Kind = 'clicked-ui'; Label = 'Urda clicked Ancient UI' },
     @{ Id = 'ancient-ui-morvi'; Kind = 'clicked-ui'; Label = 'Morvi clicked Ancient UI' },
     @{ Id = 'ancient-ui-lotha'; Kind = 'clicked-ui'; Label = 'Lotha clicked Ancient UI' },
@@ -256,6 +262,15 @@ $requiredCoopRows = @(
     'coop-save-load-or-reconnect',
     'coop-preview-tools-disposition',
     'coop-release-note-disposition'
+)
+
+$requiredModSettingsRows = @(
+    'base-lib-visible-enabled',
+    'spire-plus-list-display-name',
+    'spire-plus-config-page-current-name',
+    'technical-id-compatibility',
+    'legacy-mod-surfaces-absent',
+    'clean-log-config-registration'
 )
 
 function Resolve-WorkspacePath {
@@ -1211,6 +1226,20 @@ foreach ($required in $requiredReleaseRows) {
                 -RequiredRows $requiredCoopRows `
                 -TemplateInstruction 'Copy this file to `coop-disposition-checklist.md`' `
                 -ChecklistName 'coop-disposition-checklist.md' `
+                -Failures $failures `
+                -RowId $required.Id
+        }
+    }
+
+    if ($required.Id -eq 'mod-settings-current-display') {
+        $checklistPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'mod-settings-checklist.md'
+        if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $checklistPath) -and
+            (Test-Path -LiteralPath $checklistPath -PathType Leaf)) {
+            Test-SimpleChecklistRows `
+                -ChecklistPath $checklistPath `
+                -RequiredRows $requiredModSettingsRows `
+                -TemplateInstruction 'Copy this file to `mod-settings-checklist.md`' `
+                -ChecklistName 'mod-settings-checklist.md' `
                 -Failures $failures `
                 -RowId $required.Id
         }
