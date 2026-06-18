@@ -846,6 +846,74 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsSourceWorkspaceReportThatDoesNotMatchPlanSummary()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var sourceWorkspaceCheckPath = Path.Combine(workdir, "local-godot-source-workspace-check.json");
+            File.WriteAllText(
+                sourceWorkspaceCheckPath,
+                """
+                {
+                  "Passed": false,
+                  "SourceRoot": "D:\\Game\\FOTN\\dev-the-spire\\source code",
+                  "Game": { "Version": "v0.107.0", "Commit": "fixture" },
+                  "RecoveredSource": {
+                    "Version": "v0.106.1",
+                    "Commit": "stale-fixture",
+                    "MatchesInstalledGame": false,
+                    "Disposition": "stale-source-snapshot"
+                  },
+                  "EvidenceUsePolicy": {
+                    "NotRuntimeProof": true,
+                    "LocalSourceReferenceOnly": true,
+                    "AuthorizedLocalInstallOnly": true,
+                    "ThirdPartyDumpsProhibited": true,
+                    "RefreshSourceSnapshotBeforeCurrentApiClaims": true
+                  },
+                  "Mismatches": ["source_version_matches_installed_game: source version=v0.106.1 installed version=v0.107.0"]
+                }
+                """);
+
+            var updatedHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(sourceWorkspaceCheckPath))).ToLowerInvariant();
+            var planPath = Path.Combine(workdir, "monkey-plan.json");
+            var planJson = File.ReadAllText(planPath);
+            var originalHash = Regex.Match(planJson, """
+                "SourceWorkspaceCheckSha256":\s*"(?<hash>[^"]+)"
+                """, RegexOptions.IgnorePatternWhitespace).Groups["hash"].Value;
+            Assert.False(string.IsNullOrWhiteSpace(originalHash));
+            File.WriteAllText(planPath, planJson.Replace(originalHash, updatedHash, StringComparison.Ordinal));
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("plan_source_workspace_check_hash_matches status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_report_passed status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_report_mismatches_empty status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_report_matches_summary status=fail", result.Output, StringComparison.Ordinal);
+            Assert.DoesNotContain("mismatches=0", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeMonkeyPacketCheckerRejectsAuditJsonNotBoundToCurrentIterationLog()
     {
         var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
@@ -1656,6 +1724,69 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierRejectsRetainedCurrentSliceThatDoesNotMatchBeforeAfter()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "AdditiveBatch1");
+            const string preLaunchPrefix = "[Startup] retained pre-launch log prefix\r\n";
+            var actualOffSlice = """
+                v0.1.0-private-beta.86
+                release = v0.107.0
+                RitsuLib Version: 0.4.16 [compat branch: 0.107.0]
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """;
+            var retainedStaleCurrentSlice = BuildSts1ModeRuntimeLog("AdditiveBatch1");
+            var retainedCurrentSlicePath = Path.Combine(workdir, "godot.log.current-iteration");
+            var retainedCurrentAuditPath = Path.Combine(workdir, "godot-log-current-iteration-audit.json");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.before"), preLaunchPrefix);
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), preLaunchPrefix + actualOffSlice);
+            File.WriteAllText(retainedCurrentSlicePath, retainedStaleCurrentSlice);
+
+            var auditResult = RunPowerShell(auditScript, "-Path", retainedCurrentSlicePath, "-OutFile", retainedCurrentAuditPath);
+            Assert.True(auditResult.ExitCode == 0, $"Audit failed:{Environment.NewLine}{auditResult.Output}{auditResult.Error}");
+
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "AdditiveBatch1",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.86",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.16",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-OutFile",
+                Path.Combine(workdir, "runtime-evidence-packet-check.json"));
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("current_slice_matches_before_after status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("enabled_mode_log_verifier_uses_current_slice status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("enabled_mode_log_verifier_clean status=pass", result.Output, StringComparison.Ordinal);
+
+            using var report = JsonDocument.Parse(File.ReadAllText(Path.Combine(workdir, "runtime-evidence-packet-check.json")));
+            Assert.False(report.RootElement.GetProperty("CurrentSliceMatchesBeforeAfter").GetBoolean());
+            Assert.Contains("current slice", report.RootElement.GetProperty("CurrentSliceBindingDetail").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void Sts1RuntimeEvidencePacketVerifierDerivesAndAuditsCurrentSlice()
     {
         var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
@@ -2105,8 +2236,12 @@ public sealed class RuntimeMonkeyStabilityGuardTests
               },
               "EvidenceUsePolicy": {
                 "NotRuntimeProof": true,
+                "LocalSourceReferenceOnly": true,
+                "AuthorizedLocalInstallOnly": true,
+                "ThirdPartyDumpsProhibited": true,
                 "RefreshSourceSnapshotBeforeCurrentApiClaims": false
-              }
+              },
+              "Mismatches": []
             }
             """);
         var sourceWorkspaceCheckHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(sourceWorkspaceCheckPath))).ToLowerInvariant();

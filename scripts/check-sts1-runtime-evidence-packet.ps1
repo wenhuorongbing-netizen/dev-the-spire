@@ -356,6 +356,19 @@ if ($Mode -ne 'Off') {
     }
 }
 
+$currentSliceBinding = [pscustomobject]@{
+    BeforeExists = $false
+    AfterExists = $false
+    CurrentExists = $false
+    PrefixMatches = $false
+    SliceMatches = $false
+    Detail = 'not checked for Off mode'
+}
+
+if ($Mode -ne 'Off') {
+    $currentSliceBinding = Test-CurrentSliceBinding -BeforePath $beforeLogPath -AfterPath $logPath -CurrentPath $currentLogPath
+}
+
 Write-Output "mode=$Mode"
 Write-Output "evidence_dir=$resolvedEvidenceDir"
 Write-Output "canonical_log_path=$canonicalLogPath"
@@ -387,8 +400,11 @@ if (Test-Path -LiteralPath $canonicalLogPath -PathType Leaf) {
 if ($Mode -ne 'Off') {
     $currentLogExists = Test-Path -LiteralPath $currentLogPath -PathType Leaf
     $canonicalUsesCurrentSlice = [System.StringComparer]::OrdinalIgnoreCase.Equals([System.IO.Path]::GetFullPath($canonicalLogPath), [System.IO.Path]::GetFullPath($currentLogPath))
+    Add-Check -Name 'enabled_before_log_exists' -Passed ([bool]$currentSliceBinding.BeforeExists) -Detail 'enabled-mode packets require godot.log.before so current slice provenance is reviewable'
+    Add-Check -Name 'enabled_after_launch_log_exists' -Passed ([bool]$currentSliceBinding.AfterExists) -Detail "enabled-mode packets require $LogFileName as full forensic log context"
     Add-Check -Name 'enabled_current_iteration_log_exists_or_derived' -Passed $currentLogExists -Detail "requires godot.log.current-iteration or a derivable slice from godot.log.before + $LogFileName; $currentSliceDerivationError"
     Add-Check -Name 'current_slice_derived_from_before_after' -Passed ($currentLogExists -and ((-not $currentSliceDerived) -or [string]::IsNullOrWhiteSpace($currentSliceDerivationError))) -Detail 'retained current slice exists, or was derived only when godot.log.before is a byte prefix of godot.log.after-launch'
+    Add-Check -Name 'current_slice_matches_before_after' -Passed ([bool]$currentSliceBinding.SliceMatches) -Detail $currentSliceBinding.Detail
     Add-Check -Name 'enabled_mode_log_verifier_uses_current_slice' -Passed $canonicalUsesCurrentSlice -Detail 'enabled-mode nested verifier must receive godot.log.current-iteration, not the full copied log'
     Add-Check -Name 'full_log_not_used_as_canonical_verifier_input' -Passed $canonicalUsesCurrentSlice -Detail 'godot.log.after-launch is forensic context only for enabled-mode packets'
     if ($currentSliceDerived) {
@@ -570,6 +586,8 @@ $report = [pscustomobject]@{
     CanonicalLogPath = $canonicalLogPath
     CanonicalAuditPath = $canonicalAuditPath
     CurrentSliceDerivedFromBeforeAfter = $currentSliceDerived
+    CurrentSliceMatchesBeforeAfter = [bool]$currentSliceBinding.SliceMatches
+    CurrentSliceBindingDetail = $currentSliceBinding.Detail
     ExpectedPackageVersion = $ExpectedPackageVersion
     ExpectedRitsuCompatBranch = $ExpectedRitsuCompatBranch
     ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion

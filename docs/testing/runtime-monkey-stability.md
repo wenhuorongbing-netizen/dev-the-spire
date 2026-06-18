@@ -303,8 +303,11 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   `CommandCorpusSource`, `CommandScenarioMatrix`, `ProcessProbe`,
   `LogGrowthProbe`, `CommandAckPatterns`, `SourceWorkspaceCheckPath`,
   `SourceWorkspaceCheckSha256`, and `SourceWorkspace` source-snapshot
-  disposition. The source-workspace check is no-launch evidence binding for
-  API/source triage; it is not gameplay or runtime proof.
+  disposition. The packet verifier parses the retained source-workspace report,
+  requires `Passed=true` with no mismatches, checks the evidence-use policy
+  flags, and compares the report to the plan summary. The source-workspace
+  check is no-launch evidence binding for API/source triage; it is not gameplay
+  or runtime proof.
 - Each `iteration-result.json` records `GameProcessId`,
   `GameProcessStartTimeUtc`, `MainWindowObserved`, `MainMenuDetectedAt`,
   `MainMenuElapsedSeconds`, `PreLaunchLogLengthBytes`,

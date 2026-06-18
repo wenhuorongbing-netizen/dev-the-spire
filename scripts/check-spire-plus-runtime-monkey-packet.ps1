@@ -533,6 +533,7 @@ if ($null -ne $plan) {
     $sourceWorkspaceCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $plan -Name 'SourceWorkspaceCheckPath' -DefaultValue ''))
     $sourceWorkspaceCheckSha256 = [string](Get-JsonValue -Object $plan -Name 'SourceWorkspaceCheckSha256' -DefaultValue '')
     $sourceWorkspace = Get-JsonValue -Object $plan -Name 'SourceWorkspace' -DefaultValue $null
+    $sourceWorkspaceReport = $null
     $sourceWorkspaceCheckExists = $sourceWorkspaceCheckPath -and (Test-Path -LiteralPath $sourceWorkspaceCheckPath -PathType Leaf)
     Add-Check -Name 'plan_source_workspace_check_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckPath)) -Detail 'SourceWorkspaceCheckPath must bind the packet to the local recovered-source workspace check'
     Add-Check -Name 'plan_source_workspace_check_under_evidence_dir' -Passed ($sourceWorkspaceCheckPath -and (Test-PathUnderDirectory -Path $sourceWorkspaceCheckPath -Directory $resolvedEvidenceDir)) -Detail 'SourceWorkspaceCheckPath must stay inside the evidence directory'
@@ -541,11 +542,48 @@ if ($null -ne $plan) {
     if ($sourceWorkspaceCheckExists -and -not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckSha256)) {
         Add-Check -Name 'plan_source_workspace_check_hash_matches' -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $sourceWorkspaceCheckPath), $sourceWorkspaceCheckSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'SourceWorkspaceCheckSha256 must match the retained source-workspace JSON report'
     }
+    if ($sourceWorkspaceCheckExists) {
+        $sourceWorkspaceReport = Read-JsonOrNull -Path $sourceWorkspaceCheckPath -CheckName 'plan_source_workspace_check_json_valid'
+        if ($null -ne $sourceWorkspaceReport) {
+            Add-Check -Name 'plan_source_workspace_check_json_valid' -Passed $true -Detail 'retained source-workspace JSON report parsed'
+            $sourceWorkspaceReportMismatches = Get-ArrayCount -Value (Get-JsonValue -Object $sourceWorkspaceReport -Name 'Mismatches' -DefaultValue @())
+            $sourceWorkspaceReportPolicy = Get-JsonValue -Object $sourceWorkspaceReport -Name 'EvidenceUsePolicy' -DefaultValue $null
+            Add-Check -Name 'plan_source_workspace_report_passed' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReport -Name 'Passed' -DefaultValue $false)) -Detail 'retained source-workspace report must have Passed=true'
+            Add-Check -Name 'plan_source_workspace_report_mismatches_field_present' -Passed (Test-JsonProperty -Object $sourceWorkspaceReport -Name 'Mismatches') -Detail 'retained source-workspace report must retain Mismatches'
+            Add-Check -Name 'plan_source_workspace_report_mismatches_empty' -Passed ((Test-JsonProperty -Object $sourceWorkspaceReport -Name 'Mismatches') -and $sourceWorkspaceReportMismatches -eq 0) -Detail "retained source-workspace report mismatches must be empty; found $sourceWorkspaceReportMismatches"
+            Add-Check -Name 'plan_source_workspace_report_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReportPolicy -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'source-workspace report must record that source inspection is not runtime proof'
+            Add-Check -Name 'plan_source_workspace_report_local_source_reference_only' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReportPolicy -Name 'LocalSourceReferenceOnly' -DefaultValue $false)) -Detail 'source-workspace report must record local-source-reference-only policy'
+            Add-Check -Name 'plan_source_workspace_report_authorized_local_install_only' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReportPolicy -Name 'AuthorizedLocalInstallOnly' -DefaultValue $false)) -Detail 'source-workspace report must record authorized-local-install-only policy'
+            Add-Check -Name 'plan_source_workspace_report_third_party_dumps_prohibited' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReportPolicy -Name 'ThirdPartyDumpsProhibited' -DefaultValue $false)) -Detail 'source-workspace report must record that third-party dumps are prohibited'
+        }
+    }
     Add-Check -Name 'plan_source_workspace_summary_present' -Passed ($null -ne $sourceWorkspace) -Detail 'SourceWorkspace summary must retain source version/disposition and evidence-use policy'
     if ($null -ne $sourceWorkspace) {
         Add-Check -Name 'plan_source_workspace_checked' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'Checked' -DefaultValue $false)) -Detail 'SourceWorkspace.Checked must be true'
         Add-Check -Name 'plan_source_workspace_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'SourceWorkspace must record that source inspection is not runtime proof'
         Add-Check -Name 'plan_source_workspace_disposition_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceWorkspace -Name 'Disposition' -DefaultValue ''))) -Detail 'SourceWorkspace must retain the recovered-source disposition'
+    }
+    if ($null -ne $sourceWorkspace -and $null -ne $sourceWorkspaceReport) {
+        $reportRecoveredSource = Get-JsonValue -Object $sourceWorkspaceReport -Name 'RecoveredSource' -DefaultValue $null
+        $reportGame = Get-JsonValue -Object $sourceWorkspaceReport -Name 'Game' -DefaultValue $null
+        $reportPolicy = Get-JsonValue -Object $sourceWorkspaceReport -Name 'EvidenceUsePolicy' -DefaultValue $null
+        $summaryMatchesReport =
+            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'Passed' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $sourceWorkspaceReport -Name 'Passed' -DefaultValue $false)) -and
+            ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceVersion' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Version' -DefaultValue '')) -and
+            ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceCommit' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Commit' -DefaultValue '')) -and
+            ([string](Get-JsonValue -Object $sourceWorkspace -Name 'InstalledGameVersion' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportGame -Name 'Version' -DefaultValue '')) -and
+            ([string](Get-JsonValue -Object $sourceWorkspace -Name 'Disposition' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Disposition' -DefaultValue '')) -and
+            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'MatchesInstalledGame' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -and
+            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true) -eq [bool](Get-JsonValue -Object $reportPolicy -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true)) -and
+            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportPolicy -Name 'NotRuntimeProof' -DefaultValue $false)) -and
+            ([string](Get-JsonValue -Object $sourceWorkspace -Name 'ReportSha256' -DefaultValue '') -eq $sourceWorkspaceCheckSha256)
+        Add-Check -Name 'plan_source_workspace_report_matches_summary' -Passed $summaryMatchesReport -Detail 'SourceWorkspace summary must match the retained source-workspace report and ReportSha256'
+
+        if ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'RequireCurrentSourceSnapshot' -DefaultValue $false)) {
+            Add-Check -Name 'plan_source_workspace_required_current_snapshot_matches_game' -Passed ([bool](Get-JsonValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -Detail 'RequireCurrentSourceSnapshot requires RecoveredSource.MatchesInstalledGame=true in the retained report'
+        }
+    } elseif ($null -ne $sourceWorkspace) {
+        Add-Check -Name 'plan_source_workspace_report_matches_summary' -Passed $false -Detail 'SourceWorkspace summary cannot be trusted without a valid retained source-workspace report'
     }
     Add-Check -Name 'plan_observation_interval_positive' -Passed ([int](Get-JsonValue -Object $plan -Name 'ObservationIntervalSeconds' -DefaultValue 0) -gt 0) -Detail 'ObservationIntervalSeconds must be present and positive'
     Add-Check -Name 'plan_unresponsive_sample_threshold_positive' -Passed ($planUnresponsiveSampleThreshold -gt 0) -Detail 'UnresponsiveSampleThreshold must be present and positive'
