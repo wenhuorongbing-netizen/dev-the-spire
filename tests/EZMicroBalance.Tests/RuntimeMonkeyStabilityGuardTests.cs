@@ -1069,11 +1069,33 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "[string]$LogPath",
             "[switch]$FailOnBlockingFinding",
             "monkey-summary.json",
+            "autoslay-summary.json",
             "iteration-result.json",
+            "run-result.json",
+            "GameNativeAutoSlay",
+            "AutoSlayer.Start(seed, logFile)",
             "godot.log.after-launch",
             "godot.log.current-iteration",
             "godot-log-audit.json",
             "LogScanOffsetBytes",
+            "autoslay-summary.json",
+            "run-result.json",
+            "GameNativeAutoSlay",
+            "Resolve-AnalysisPath",
+            "Test-CurrentSliceFromBeforeAfter",
+            "GodotLogBeforePath",
+            "GodotLogAfterLaunchPath",
+            "GodotLogCurrentIterationPath",
+            "current_iteration_log_before_after_binding_missing",
+            "AutoSlayLogPath",
+            "EventKind",
+            "AncientId",
+            "autoslay_event_kind_not_ancient",
+            "autoslay_ancient_id_missing",
+            "autoslay_sidecar_event_sequence_missing",
+            "autoslay_current_log_event_sequence_missing",
+            "autoslay_sidecar_ancient_id_missing",
+            "autoslay_current_log_ancient_id_missing",
             "FailureReasonCodes",
             "HangSignals",
             "Get-JsonArrayValues",
@@ -1113,8 +1135,12 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "startup_log_stalled",
             "current_iteration_log_missing",
             "current_iteration_log_slice_mismatch",
+            "current_iteration_log_before_after_binding_missing",
             "current_iteration_log_offset_binding_missing",
             "current_iteration_log_scan_offset_invalid",
+            "autoslay_sidecar_event_sequence_missing",
+            "autoslay_current_log_event_sequence_missing",
+            "Detected Ancient event, clicking through dialogue",
             "iteration_result_missing_or_invalid",
             "iteration_failed_without_failure_signal",
             "godot_log_audit_json_invalid",
@@ -1272,6 +1298,48 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerScansIterationDirectoriesWithoutMonkeySummary()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient URDA confirm",
+                "ancient-ui",
+                "Runtime.Unknown",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[INFO] stale full-log prefix before accepted scan offset",
+                "[SPIREPLUS-EVIDENCE] PreviewTransform [Spire Plus] Preview: Transform prediction",
+                """{"SignatureHits":[]}""");
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+
+            Assert.Equal(1, root.GetProperty("AnalyzedIterationCount").GetInt32());
+            Assert.Equal("PreviewTools", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("PreviewTools", FindFindingOwner(iteration, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerReportsMismatchedCurrentIterationSlice()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
@@ -1375,6 +1443,197 @@ public sealed class RuntimeMonkeyStabilityGuardTests
 
             Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
             Assert.Equal("RuntimeHarness", bindingFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("blocking", bindingFinding.GetProperty("Severity").GetString());
+            Assert.Equal("Ancients.Vakuu.FightOptionSetup", FindFindingOwner(iteration, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerReadsGameNativeAutoSlayRunResultsAndByteBoundSlices()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var runDir = Path.Combine(workdir, "run-0001");
+            Directory.CreateDirectory(runDir);
+            const string seed = "AUTOSLAY-ANALYZER";
+            var beforeLog = "[INFO] previous shared godot.log content\r\n";
+            var currentLog = $"""
+                [INFO] [AutoSlay] Starting run with seed={seed}
+                [INFO] [AutoSlay] Entering Event room (Act 1, Floor 2)
+                [INFO] [AutoSlay] Detected Ancient event, clicking through dialogue: VAKUU
+                [INFO] [AutoSlay] Action: Selecting event option: VAKUU (option: contract)
+                [INFO] [AutoSlay] Run completed successfully with seed={seed}
+                """;
+            var autoSlayLog = $"""
+                [INFO] [AutoSlay] Starting run with seed={seed}
+                [INFO] [AutoSlay] Entering Event room (Act 1, Floor 2)
+                [INFO] [AutoSlay] Detected Ancient event, clicking through dialogue: VAKUU
+                [INFO] [AutoSlay] Action: Selecting event option: VAKUU (option: contract)
+                [INFO] [AutoSlay] Run completed successfully with seed={seed}
+                """;
+            var currentLogPath = Path.Combine(runDir, "godot.log.current-iteration");
+            File.WriteAllText(Path.Combine(runDir, "godot.log.before"), beforeLog);
+            File.WriteAllText(currentLogPath, currentLog);
+            File.WriteAllText(Path.Combine(runDir, "godot.log.after-launch"), beforeLog + currentLog);
+            File.WriteAllText(Path.Combine(runDir, "autoslay.log"), autoSlayLog);
+            File.WriteAllText(Path.Combine(runDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
+            File.WriteAllText(
+                Path.Combine(runDir, "run-result.json"),
+                $$"""
+                {
+                  "SchemaVersion": 1,
+                  "Launch": true,
+                  "RunnerKind": "GameNativeAutoSlay",
+                  "Invocation": "Spire Plus test hook calls AutoSlayer.Start(seed, logFile)",
+                  "Seed": {{JsonSerializer.Serialize(seed)}},
+                  "EventKind": "Ancient",
+                  "AncientId": "VAKUU",
+                  "Passed": false,
+                  "OwnerArea": "Runtime.Unknown",
+                  "FailureReasonCodes": ["process_unresponsive"],
+                  "HangSignals": ["process_unresponsive"],
+                  "AutoSlayLogPath": "run-0001/autoslay.log",
+                  "GodotLogBeforePath": "run-0001/godot.log.before",
+                  "GodotLogAfterLaunchPath": "run-0001/godot.log.after-launch",
+                  "GodotLogCurrentIterationPath": "run-0001/godot.log.current-iteration",
+                  "GodotLogAuditPath": "run-0001/godot-log-audit.json"
+                }
+                """);
+            File.WriteAllText(
+                Path.Combine(workdir, "autoslay-summary.json"),
+                """
+                {
+                  "RunnerKind": "GameNativeAutoSlay",
+                  "Runs": [
+                    {
+                      "Seed": "AUTOSLAY-ANALYZER",
+                      "EventKind": "Ancient",
+                      "AncientId": "VAKUU",
+                      "RunResultPath": "run-0001/run-result.json"
+                    }
+                  ]
+                }
+                """);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var iteration = FindIteration(document.RootElement, 1);
+
+            Assert.Equal(seed, iteration.GetProperty("Seed").GetString());
+            Assert.Equal("GameNativeAutoSlay", iteration.GetProperty("RunnerKind").GetString());
+            Assert.Equal("Ancient", iteration.GetProperty("EventKind").GetString());
+            Assert.Equal("VAKUU", iteration.GetProperty("AncientId").GetString());
+            Assert.Equal("game-native-autoslay", iteration.GetProperty("ScenarioTag").GetString());
+            Assert.True(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.Equal("Ancients.Vakuu", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("Ancients.Vakuu", FindFindingOwner(iteration, "process_unresponsive"));
+            Assert.DoesNotContain(
+                iteration.GetProperty("Findings").EnumerateArray(),
+                item => item.GetProperty("Signal").GetString() == "current_iteration_log_before_after_binding_missing");
+            Assert.DoesNotContain(
+                iteration.GetProperty("Findings").EnumerateArray(),
+                item => item.GetProperty("Signal").GetString() == "autoslay_sidecar_event_sequence_missing");
+            Assert.DoesNotContain(
+                iteration.GetProperty("Findings").EnumerateArray(),
+                item => item.GetProperty("Signal").GetString() == "autoslay_current_log_event_sequence_missing");
+            Assert.DoesNotContain(
+                iteration.GetProperty("Findings").EnumerateArray(),
+                item => item.GetProperty("Signal").GetString() == "autoslay_event_kind_not_ancient");
+            Assert.DoesNotContain(
+                iteration.GetProperty("Findings").EnumerateArray(),
+                item => item.GetProperty("Signal").GetString() == "autoslay_ancient_id_missing");
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerFailClosesUnboundGameNativeAutoSlaySlices()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var runDir = Path.Combine(workdir, "run-0001");
+            Directory.CreateDirectory(runDir);
+            var currentLogPath = Path.Combine(runDir, "godot.log.current-iteration");
+            File.WriteAllText(currentLogPath, "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol\r\n");
+            File.WriteAllText(Path.Combine(runDir, "autoslay.log"), "[INFO] [AutoSlay] Starting run with seed=UNBOUND\r\n");
+            File.WriteAllText(Path.Combine(runDir, "godot-log-audit.json"), ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
+            File.WriteAllText(
+                Path.Combine(runDir, "run-result.json"),
+                """
+                {
+                  "SchemaVersion": 1,
+                  "Launch": true,
+                  "RunnerKind": "GameNativeAutoSlay",
+                  "Invocation": "Spire Plus test hook calls AutoSlayer.Start(seed, logFile)",
+                  "Seed": "UNBOUND",
+                  "Passed": false,
+                  "OwnerArea": "Ancients.Vakuu.FightOptionSetup",
+                  "FailureReasonCodes": ["process_unresponsive"],
+                  "HangSignals": ["process_unresponsive"],
+                  "AutoSlayLogPath": "run-0001/autoslay.log",
+                  "GodotLogBeforePath": "run-0001/godot.log.before",
+                  "GodotLogAfterLaunchPath": "run-0001/godot.log.after-launch",
+                  "GodotLogCurrentIterationPath": "run-0001/godot.log.current-iteration",
+                  "GodotLogAuditPath": "run-0001/godot-log-audit.json"
+                }
+                """);
+            File.WriteAllText(
+                Path.Combine(workdir, "autoslay-summary.json"),
+                """
+                {
+                  "RunnerKind": "GameNativeAutoSlay",
+                  "Runs": [
+                    {
+                      "Seed": "UNBOUND",
+                      "RunResultPath": "run-0001/run-result.json"
+                    }
+                  ]
+                }
+                """);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var iteration = FindIteration(document.RootElement, 1);
+            var bindingFinding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "current_iteration_log_before_after_binding_missing");
+            var sidecarFinding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "autoslay_sidecar_event_sequence_missing");
+
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", bindingFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("RuntimeHarness", sidecarFinding.GetProperty("OwnerArea").GetString());
             Assert.Equal("blocking", bindingFinding.GetProperty("Severity").GetString());
             Assert.Equal("Ancients.Vakuu.FightOptionSetup", FindFindingOwner(iteration, "process_unresponsive"));
         }
@@ -1978,7 +2237,8 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`",
             "one `run-result.json` per seed",
             "`RecoveredSource.MatchesInstalledGame`",
-            "ordered start/event-option/completion",
+            "Ancient id, ordered",
+            "start/event/Ancient-dialogue/event-option/completion markers",
             "observed ordered event-room lines in both",
             "check-spire-plus-autoslay-packet.ps1",
             "GameNativeAutoSlay",
@@ -2004,7 +2264,12 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 sourceWorkspaceReportPath,
                 """
                 {
+                  "SchemaVersion": 1,
+                  "CreatedAt": "2026-06-18T10:00:00Z",
                   "Passed": true,
+                  "RepoRoot": "D:\\Game\\FOTN\\dev-the-spire",
+                  "SourceRoot": "D:\\Game\\FOTN\\dev-the-spire\\source code",
+                  "GameRoot": "E:\\Steam\\steamapps\\common\\Slay the Spire 2",
                   "Mismatches": [],
                   "Game": {
                     "Version": "v0.107.0"
@@ -2026,16 +2291,30 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                     "EventCombatStartedLog": true
                   },
                   "EvidenceUsePolicy": {
+                    "NoLaunch": true,
                     "NotRuntimeProof": true,
                     "RefreshSourceSnapshotBeforeCurrentApiClaims": false,
                     "LocalSourceReferenceOnly": true,
                     "AuthorizedLocalInstallOnly": true,
                     "ThirdPartyDumpsProhibited": true,
+                    "RuntimeProofStillRequiresLaunchEvidence": true,
                     "GameNativeAutoSlayStillRequiresRuntimeLaunchEvidence": true
                   }
                 }
                 """);
             var sourceWorkspaceReportHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(sourceWorkspaceReportPath))).ToLowerInvariant();
+            var launcherPath = Path.Combine(workdir, "autoslay-launcher-proof.json");
+            File.WriteAllText(
+                launcherPath,
+                """
+                {
+                  "LauncherKind": "SpirePlusDebugHook",
+                  "HookId": "SpirePlus.AutoSlayHarness.Start",
+                  "HookAssembly": "EZMicroBalanceCode",
+                  "InvocationCommand": "SpirePlus.AutoSlayHarness.Start -> AutoSlayer.Start(seed, logFile)"
+                }
+                """);
+            var launcherHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(launcherPath))).ToLowerInvariant();
 
             var runDir = Path.Combine(workdir, "run-0001");
             Directory.CreateDirectory(runDir);
@@ -2050,7 +2329,8 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 Environment.NewLine,
                 $"12:00:00.000 [INFO] [AutoSlay] Starting run with seed={seed}",
                 "12:00:01.000 [INFO] [AutoSlay] Entering Event room (Act 1, Floor 2)",
-                "12:00:02.000 [INFO] [AutoSlay] Action: Selecting event option: Sts1BigFish (option: Box)",
+                "12:00:01.500 [INFO] [AutoSlay] Detected Ancient event, clicking through dialogue: VAKUU",
+                "12:00:02.000 [INFO] [AutoSlay] Action: Selecting event option: VAKUU (option: contract)",
                 $"12:00:03.000 [INFO] [AutoSlay] Run completed successfully with seed={seed}") + Environment.NewLine;
             var currentLog = string.Join(
                 Environment.NewLine,
@@ -2089,7 +2369,18 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                   "Launch": true,
                   "RunnerKind": "GameNativeAutoSlay",
                   "Invocation": "Spire Plus test hook calls AutoSlayer.Start(seed, logFile)",
+                  "LauncherKind": "SpirePlusDebugHook",
+                  "LauncherPath": "autoslay-launcher-proof.json",
+                  "LauncherSha256": {{JsonSerializer.Serialize(launcherHash)}},
+                  "HookId": "SpirePlus.AutoSlayHarness.Start",
+                  "HookAssembly": "EZMicroBalanceCode",
+                  "InvocationCommand": "SpirePlus.AutoSlayHarness.Start -> AutoSlayer.Start(seed, logFile)",
                   "Seed": {{JsonSerializer.Serialize(seed)}},
+                  "EventKind": "Ancient",
+                  "AncientId": "VAKUU",
+                  "Passed": true,
+                  "FailureReasonCodes": [],
+                  "HangSignals": [],
                   "ProcessId": 4242,
                   "StartTimestamp": "2026-06-18T10:00:00Z",
                   "EndTimestamp": "2026-06-18T10:00:30Z",
@@ -2112,6 +2403,12 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                 {
                   "RunnerKind": "GameNativeAutoSlay",
                   "Invocation": "Spire Plus test hook calls AutoSlayer.Start(seed, logFile)",
+                  "LauncherKind": "SpirePlusDebugHook",
+                  "LauncherPath": "autoslay-launcher-proof.json",
+                  "LauncherSha256": {{JsonSerializer.Serialize(launcherHash)}},
+                  "HookId": "SpirePlus.AutoSlayHarness.Start",
+                  "HookAssembly": "EZMicroBalanceCode",
+                  "InvocationCommand": "SpirePlus.AutoSlayHarness.Start -> AutoSlayer.Start(seed, logFile)",
                   "Seeds": [{{JsonSerializer.Serialize(seed)}}],
                   "PackageVersion": "v0.1.0-private-beta.86",
                   "GameVersion": "0.107.0",
@@ -2146,7 +2443,12 @@ public sealed class RuntimeMonkeyStabilityGuardTests
                   "Runs": [
                     {
                       "Seed": {{JsonSerializer.Serialize(seed)}},
+                      "Passed": true,
                       "ExitCode": 0,
+                      "EventKind": "Ancient",
+                      "AncientId": "VAKUU",
+                      "FailureReasonCodes": [],
+                      "HangSignals": [],
                       "RunResultPath": "run-0001/run-result.json",
                       "AutoSlayLogPath": "run-0001/autoslay.log",
                       "AutoSlayLogSha256": {{JsonSerializer.Serialize(autoSlayLogHash)}},
@@ -2182,25 +2484,92 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             Assert.True(passResult.ExitCode == 0, $"AutoSlay packet verifier failed:{Environment.NewLine}{passResult.Output}{passResult.Error}");
             Assert.Contains("plan_runner_kind_is_game_native_autoslay status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("plan_invocation_calls_autoslayer_start status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_launcher_sha256_matches status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_hook_id_present status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_schema_version_one status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_policy_no_launch status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_policy_runtime_proof_still_requires_launch status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("plan_source_workspace_report_matches_installed_game status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("summary_run_seeds_match_plan_seeds status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_summary_run_passed_true status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_event_kind_is_ancient status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_launch_true status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_launcher_sha256_matches_plan status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_passed_true status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_autoslay_log_hash_present status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_current_iteration_log_under_evidence_dir status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_current_iteration_log_matches_after_launch_slice status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_expected_patch_count_in_current_log status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_audit_recomputed_clean status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_sts1_mode_log_check_mode_matches_plan status=pass", passResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_autoslay_log_contains_ancient_id status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_autoslay_log_event_sequence_observed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_current_log_event_sequence_observed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_event_room_traversal_observed status=pass", passResult.Output, StringComparison.Ordinal);
             Assert.Contains("mismatches=0", passResult.Output, StringComparison.Ordinal);
+
+            var planPath = Path.Combine(workdir, "autoslay-plan.json");
+            var originalPlanJson = File.ReadAllText(planPath);
+            File.WriteAllText(
+                planPath,
+                originalPlanJson.Replace("\"HookId\": \"SpirePlus.AutoSlayHarness.Start\"", "\"HookId\": \"\"", StringComparison.Ordinal));
+            var hookFailResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.86",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.16",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(hookFailResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{hookFailResult.Output}{hookFailResult.Error}");
+            Assert.Contains("plan_hook_id_present status=fail", hookFailResult.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_hook_id_matches_plan status=fail", hookFailResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(planPath, originalPlanJson);
+
+            var originalSourceWorkspaceReportJson = File.ReadAllText(sourceWorkspaceReportPath);
+            var schemaMissingSourceReportJson = Regex.Replace(
+                originalSourceWorkspaceReportJson,
+                "\\s*\"SchemaVersion\": 1,\\r?\\n",
+                string.Empty,
+                RegexOptions.CultureInvariant);
+            File.WriteAllText(sourceWorkspaceReportPath, schemaMissingSourceReportJson);
+            var schemaMissingSourceWorkspaceReportHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(sourceWorkspaceReportPath))).ToLowerInvariant();
+            File.WriteAllText(
+                planPath,
+                originalPlanJson.Replace(sourceWorkspaceReportHash, schemaMissingSourceWorkspaceReportHash, StringComparison.Ordinal));
+            var schemaFailResult = RunPowerShell(
+                verifier,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.86",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.16",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(schemaFailResult.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{schemaFailResult.Output}{schemaFailResult.Error}");
+            Assert.Contains("plan_source_workspace_check_hash_matches status=pass", schemaFailResult.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_schema_version_one status=fail", schemaFailResult.Output, StringComparison.Ordinal);
+            File.WriteAllText(sourceWorkspaceReportPath, originalSourceWorkspaceReportJson);
+            File.WriteAllText(planPath, originalPlanJson);
 
             File.WriteAllText(
                 autoSlayLogPath,
                 string.Join(
                     Environment.NewLine,
                     $"12:00:00.000 [INFO] [AutoSlay] Starting run with seed={seed}",
+                    "12:00:01.000 [INFO] [AutoSlay] Entering Event room (Act 1, Floor 2)",
+                    "12:00:02.000 [INFO] [AutoSlay] Action: Selecting event option: VAKUU (option: contract)",
                     $"12:00:03.000 [INFO] [AutoSlay] Run completed successfully with seed={seed}"));
             var updatedAutoSlayLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(autoSlayLogPath))).ToLowerInvariant();
             var summaryPath = Path.Combine(workdir, "autoslay-summary.json");

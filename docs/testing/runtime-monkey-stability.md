@@ -160,16 +160,22 @@ AutoSlay proof.
 A future AutoSlay-backed batch packet must retain all of the following before it
 can close a game-native monkey proof row:
 
-- the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`;
+- the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`,
+  retained as a hashed launcher/provenance artifact plus `LauncherKind`,
+  `LauncherPath`, `LauncherSha256`, `HookId`, `HookAssembly`, and
+  `InvocationCommand`;
 - one `run-result.json` per seed with `SchemaVersion: 1`, `Launch: true`,
   `RunnerKind: GameNativeAutoSlay`, invocation text, process id,
-  start/end timestamps, exit code, stale-process count, and the retained
-  per-run paths/hashes;
-- the seed, AutoSlay log path, exit code, ordered start/event-option/completion
-  markers, with `AutoSlayLogSha256` bound to the retained log file;
+  start/end timestamps, `Passed: true`, empty `FailureReasonCodes` and
+  `HangSignals`, exit code, stale-process count, `EventKind: Ancient`,
+  `AncientId`, and the retained per-run paths/hashes;
+- the seed, AutoSlay log path, exit code, Ancient id, ordered
+  start/event/Ancient-dialogue/event-option/completion markers, with
+  `AutoSlayLogSha256` bound to the retained log file;
 - a retained `check-local-godot-source-workspace.ps1 -OutFile` report with
-  passing AutoSlay source-contract checks and `RecoveredSource.MatchesInstalledGame`
-  true for the installed game under test;
+  schema version, creation time, repo/source/game roots, no-launch policy flags,
+  passing AutoSlay source-contract checks, and
+  `RecoveredSource.MatchesInstalledGame` true for the installed game under test;
 - the same package, game version, RitsuLib version, compat branch, patch-count,
   `godot.log.before`, `godot.log.after-launch`, `godot.log.current-iteration`,
   `godot-log-audit.json`, and `sts1-mode-log-check.json` bindings required by
@@ -196,16 +202,38 @@ After the packet is captured, verify it with:
 ```
 
 This verifier is no-launch only. It rejects packets that do not identify
-`GameNativeAutoSlay`, do not record `AutoSlayer.Start(seed, logFile)`, do not
-bind the retained `check-local-godot-source-workspace.ps1` report, policy
-flags, and source-version summary, omit the explicit package/game/Ritsu/patch
-target switches, duplicate or drop planned seeds, place per-run logs outside the
-evidence folder, lack per-seed run-result JSON, log hashes, before/after/current
-Godot log-slice proof, clean audit recomputation, StS1 mode binding, or ordered
-event-room traversal markers such as `Entering Event room` and
+`GameNativeAutoSlay`, do not record structured launcher/mod-hook provenance for
+`AutoSlayer.Start(seed, logFile)`, do not bind the retained
+`check-local-godot-source-workspace.ps1` report, schema fields, policy flags,
+and source-version summary, omit the explicit package/game/Ritsu/patch target
+switches, duplicate or drop planned seeds, place per-run logs outside the
+evidence folder, lack per-seed run-result JSON, clean pass/failure state, log
+hashes, before/after/current Godot log-slice proof, clean audit recomputation,
+StS1 mode binding, `EventKind: Ancient` / `AncientId`, or ordered event-room
+traversal markers such as `Entering Event room`,
+`Detected Ancient event, clicking through dialogue`, and
 `Selecting event option:`. Use a smaller `-MinRuns` only for temporary parser or
 fixture tests; a real game-native monkey proof should use the intended proof
 count.
+
+If a launched AutoSlay batch fails, triage the retained packet without launching
+anything:
+
+```powershell
+.\scripts\analyze-spire-plus-runtime-failure.ps1 `
+  -EvidenceDir "<evidence>" `
+  -OutFile "<evidence>\runtime-failure-analysis.json"
+```
+
+For `GameNativeAutoSlay`, the analyzer reads `autoslay-summary.json` and each
+per-seed `run-result.json`. It refuses to route source ownership from
+`godot.log.current-iteration` unless `godot.log.before` and
+`godot.log.after-launch` prove the current slice by exact bytes, and it reports
+missing launcher invocation, `EventKind: Ancient` / `AncientId`, sidecar log,
+completion/failure marker, or ordered Ancient event traversal as
+`RuntimeHarness` evidence defects first. This makes failed AutoSlay packets
+useful for diagnosis, but it still does not turn a failed or source-only packet
+into gameplay proof.
 
 ## Commands
 

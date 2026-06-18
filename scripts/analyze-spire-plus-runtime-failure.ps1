@@ -159,6 +159,136 @@ function Get-FileSha256OrEmpty {
     return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
 }
 
+function Resolve-AnalysisPath {
+    param(
+        [Parameter(Mandatory = $true)][string]$BaseDir,
+        [AllowEmptyString()][string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return ''
+    }
+
+    if ([System.IO.Path]::IsPathRooted($Path)) {
+        return [System.IO.Path]::GetFullPath($Path)
+    }
+
+    $underBase = [System.IO.Path]::GetFullPath((Join-Path $BaseDir $Path))
+    if (Test-Path -LiteralPath $underBase -PathType Leaf) {
+        return $underBase
+    }
+
+    $parent = [System.IO.Directory]::GetParent($BaseDir)
+    if ($null -ne $parent) {
+        $underParent = [System.IO.Path]::GetFullPath((Join-Path $parent.FullName $Path))
+        if (Test-Path -LiteralPath $underParent -PathType Leaf) {
+            return $underParent
+        }
+    }
+
+    return $underBase
+}
+
+function Test-BytePrefix {
+    param(
+        [Parameter(Mandatory = $true)][byte[]]$Prefix,
+        [Parameter(Mandatory = $true)][byte[]]$Content
+    )
+
+    if ($Prefix.Length -gt $Content.Length) {
+        return $false
+    }
+
+    for ($i = 0; $i -lt $Prefix.Length; $i++) {
+        if ($Prefix[$i] -ne $Content[$i]) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-CurrentSliceFromBeforeAfter {
+    param(
+        [Parameter(Mandatory = $true)][string]$BeforePath,
+        [Parameter(Mandatory = $true)][string]$AfterPath,
+        [Parameter(Mandatory = $true)][string]$CurrentPath
+    )
+
+    $result = [ordered]@{
+        PrefixMatches = $false
+        SliceMatches = $false
+        Detail = ''
+    }
+
+    try {
+        $beforeBytes = [System.IO.File]::ReadAllBytes($BeforePath)
+        $afterBytes = [System.IO.File]::ReadAllBytes($AfterPath)
+        $currentBytes = [System.IO.File]::ReadAllBytes($CurrentPath)
+        $result.PrefixMatches = Test-BytePrefix -Prefix $beforeBytes -Content $afterBytes
+        if (-not $result.PrefixMatches) {
+            $result.Detail = 'godot.log.after-launch does not have godot.log.before as a byte prefix'
+            return [pscustomobject]$result
+        }
+
+        $sliceLength = $afterBytes.Length - $beforeBytes.Length
+        if ($currentBytes.Length -ne $sliceLength) {
+            $result.Detail = "current slice length $($currentBytes.Length) does not match after-before length $sliceLength"
+            return [pscustomobject]$result
+        }
+
+        for ($i = 0; $i -lt $sliceLength; $i++) {
+            if ($currentBytes[$i] -ne $afterBytes[$beforeBytes.Length + $i]) {
+                $result.Detail = "current slice differs from after-launch at byte $i after the before-log prefix"
+                return [pscustomobject]$result
+            }
+        }
+
+        $result.SliceMatches = $true
+        $result.Detail = 'godot.log.current-iteration matches godot.log.after-launch after the godot.log.before byte prefix'
+        return [pscustomobject]$result
+    } catch {
+        $result.Detail = $_.Exception.Message
+        return [pscustomobject]$result
+    }
+}
+
+function Test-OrderedTextSequence {
+    param(
+        [AllowEmptyString()][string]$Text,
+        [Parameter(Mandatory = $true)][string[]]$Needles
+    )
+
+    $offset = 0
+    foreach ($needle in $Needles) {
+        if ([string]::IsNullOrWhiteSpace($needle)) {
+            return $false
+        }
+
+        $index = $Text.IndexOf($needle, $offset, [System.StringComparison]::OrdinalIgnoreCase)
+        if ($index -lt 0) {
+            return $false
+        }
+
+        $offset = $index + $needle.Length
+    }
+
+    return $true
+}
+
+function Test-TextContains {
+    param(
+        [AllowEmptyString()][string]$Text,
+        [Parameter(Mandatory = $true)][string]$Needle
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Needle)) {
+        return $false
+    }
+
+    return $Text.IndexOf($Needle, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+}
+
 function Add-Finding {
     param(
         [Parameter(Mandatory = $true)]
@@ -454,87 +584,157 @@ function Invoke-RecomputedAudit {
 function Analyze-Iteration {
     param(
         [Parameter(Mandatory = $true)][string]$Directory,
-        [AllowNull()]$SummaryResult
+        [AllowNull()]$SummaryResult,
+        [string]$ResultFileName = 'iteration-result.json',
+        [int]$DefaultIteration = 0
     )
 
-    $resultPath = Join-Path $Directory 'iteration-result.json'
-    $fullLogCandidate = Join-Path $Directory 'godot.log.after-launch'
-    $currentIterationLogCandidate = Join-Path $Directory 'godot.log.current-iteration'
-    $logCandidate = if (Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf) {
-        $currentIterationLogCandidate
-    } else {
-        $fullLogCandidate
-    }
-    $auditCandidate = Join-Path $Directory 'godot-log-audit.json'
-    $probeSamplesCandidate = Join-Path $Directory 'runtime-probe-samples.json'
-    $sts1ModeCandidate = Join-Path $Directory 'sts1-mode-log-check.json'
+    $resultPath = Join-Path $Directory $ResultFileName
     $result = Read-JsonOrNull -Path $resultPath
     $iterationResultMissing = $null -eq $result
     if ($null -eq $result -and $null -ne $SummaryResult) {
         $result = $SummaryResult
     }
 
+    $runnerKind = if ($result) { [string](Get-JsonValue -Object $result -Name 'RunnerKind' -DefaultValue '') } else { '' }
+    $isGameNativeAutoSlay = [string]::Equals($runnerKind, 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)
+    $seed = if ($result) { [string](Get-JsonValue -Object $result -Name 'Seed' -DefaultValue '') } else { '' }
+    $eventKind = if ($result) { [string](Get-JsonValue -Object $result -Name 'EventKind' -DefaultValue '') } else { '' }
+    $ancientId = if ($result) { [string](Get-JsonValue -Object $result -Name 'AncientId' -DefaultValue '') } else { '' }
+    $invocation = if ($result) { [string](Get-JsonValue -Object $result -Name 'Invocation' -DefaultValue '') } else { '' }
     $command = if ($result) { [string](Get-JsonValue -Object $result -Name 'Command' -DefaultValue '') } else { '' }
+    if ([string]::IsNullOrWhiteSpace($command) -and -not [string]::IsNullOrWhiteSpace($invocation)) {
+        $command = $invocation
+    }
+    if ([string]::IsNullOrWhiteSpace($eventKind) -and $SummaryResult) {
+        $eventKind = [string](Get-JsonValue -Object $SummaryResult -Name 'EventKind' -DefaultValue '')
+    }
+    if ([string]::IsNullOrWhiteSpace($ancientId) -and $SummaryResult) {
+        $ancientId = [string](Get-JsonValue -Object $SummaryResult -Name 'AncientId' -DefaultValue '')
+    }
     $resultOwnerArea = if ($result) { [string](Get-JsonValue -Object $result -Name 'OwnerArea' -DefaultValue '') } else { '' }
     $scenarioTag = if ($result) { [string](Get-JsonValue -Object $result -Name 'ScenarioTag' -DefaultValue '') } else { '' }
+    if ([string]::IsNullOrWhiteSpace($scenarioTag) -and $isGameNativeAutoSlay) {
+        $scenarioTag = 'game-native-autoslay'
+    }
+
+    $beforeLogCandidate = Join-Path $Directory 'godot.log.before'
+    $fullLogCandidate = Join-Path $Directory 'godot.log.after-launch'
+    $currentIterationLogCandidate = Join-Path $Directory 'godot.log.current-iteration'
+    $auditCandidate = Join-Path $Directory 'godot-log-audit.json'
+    $probeSamplesCandidate = Join-Path $Directory 'runtime-probe-samples.json'
+    $sts1ModeCandidate = Join-Path $Directory 'sts1-mode-log-check.json'
+    if ($isGameNativeAutoSlay -and $result) {
+        $beforeLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogBeforePath' -DefaultValue 'godot.log.before'))
+        $fullLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAfterLaunchPath' -DefaultValue 'godot.log.after-launch'))
+        $currentIterationLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogCurrentIterationPath' -DefaultValue 'godot.log.current-iteration'))
+        $auditCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAuditPath' -DefaultValue 'godot-log-audit.json'))
+        $sts1ModeCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'Sts1ModeLogCheckPath' -DefaultValue 'sts1-mode-log-check.json'))
+    }
+
+    $logCandidate = if (Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf) {
+        $currentIterationLogCandidate
+    } else {
+        $fullLogCandidate
+    }
+
+    $autoSlayLogCandidate = if ($isGameNativeAutoSlay -and $result) {
+        Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'AutoSlayLogPath' -DefaultValue 'autoslay.log'))
+    } else {
+        Join-Path $Directory 'autoslay.log'
+    }
     $findings = [System.Collections.Generic.List[object]]::new()
     $candidateEvidenceFiles = @(
         $resultPath,
+        $beforeLogCandidate,
         $currentIterationLogCandidate,
         $fullLogCandidate,
         $auditCandidate,
         $probeSamplesCandidate,
-        $sts1ModeCandidate
+        $sts1ModeCandidate,
+        $autoSlayLogCandidate
     )
     $evidenceFiles = @($candidateEvidenceFiles | Where-Object {
         Test-Path -LiteralPath $_ -PathType Leaf
     })
     $currentIterationLogExists = Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf
+    $beforeLogExists = Test-Path -LiteralPath $beforeLogCandidate -PathType Leaf
     $fullLogExists = Test-Path -LiteralPath $fullLogCandidate -PathType Leaf
+    $autoSlayLogExists = Test-Path -LiteralPath $autoSlayLogCandidate -PathType Leaf
+    $autoSlayLogText = if ($autoSlayLogExists) { Get-Content -LiteralPath $autoSlayLogCandidate -Raw -Encoding UTF8 } else { '' }
     $logText = ''
     $logTextTrustedForOwner = $false
     if ($result -and $currentIterationLogExists) {
-        $hasOffsetBinding = $fullLogExists -and (Test-JsonProperty -Object $result -Name 'LogScanOffsetBytes')
-        if (-not $hasOffsetBinding) {
-            Add-Finding `
-                -Findings $findings `
-                -Signal 'current_iteration_log_offset_binding_missing' `
-                -Severity 'blocking' `
-                -OwnerArea 'RuntimeHarness' `
-                -Rationale 'godot.log.current-iteration exists without both godot.log.after-launch and LogScanOffsetBytes, so the retained current slice may be stale or hand-assembled.' `
-                -NextStep 'Fix current-iteration log offset binding or rerun the packet after validation lanes are unpaused; do not route ownership from an unbound current-iteration slice.' `
-                -Confidence 'high' `
-                -EvidenceFiles $evidenceFiles
-        } else {
-            $logScanOffset = [long](Get-JsonValue -Object $result -Name 'LogScanOffsetBytes' -DefaultValue -1)
-            $fullLogLength = [long](Get-Item -LiteralPath $fullLogCandidate).Length
-            if ($logScanOffset -lt 0 -or $logScanOffset -gt $fullLogLength) {
+        if ($isGameNativeAutoSlay) {
+            if (-not ($beforeLogExists -and $fullLogExists)) {
                 Add-Finding `
                     -Findings $findings `
-                    -Signal 'current_iteration_log_scan_offset_invalid' `
+                    -Signal 'current_iteration_log_before_after_binding_missing' `
                     -Severity 'blocking' `
                     -OwnerArea 'RuntimeHarness' `
-                    -Rationale "LogScanOffsetBytes is outside godot.log.after-launch; offset=$logScanOffset, length=$fullLogLength." `
-                    -NextStep 'Fix current-iteration log slicing or evidence retention before routing this runtime failure to gameplay source.' `
+                    -Rationale 'GameNativeAutoSlay evidence has godot.log.current-iteration without both godot.log.before and godot.log.after-launch, so the retained current slice may be stale or hand-assembled.' `
+                    -NextStep 'Fix AutoSlay before/after/current log retention or rerun the packet after validation lanes are unpaused; do not route ownership from an unbound current-iteration slice.' `
                     -Confidence 'high' `
                     -EvidenceFiles $evidenceFiles
             } else {
-                $expectedCurrentIterationLogText = Read-TextAfterByteOffset -Path $fullLogCandidate -Offset $logScanOffset
-                $actualCurrentIterationLogText = [System.IO.File]::ReadAllText($currentIterationLogCandidate)
-                $normalizedExpectedSlice = Normalize-LogSliceForComparison -Text $expectedCurrentIterationLogText
-                $normalizedActualSlice = Normalize-LogSliceForComparison -Text $actualCurrentIterationLogText
-                $logText = $expectedCurrentIterationLogText
-                $logTextTrustedForOwner = $true
-                if (-not [string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) {
+                $sliceBinding = Test-CurrentSliceFromBeforeAfter -BeforePath $beforeLogCandidate -AfterPath $fullLogCandidate -CurrentPath $currentIterationLogCandidate
+                $logText = [System.IO.File]::ReadAllText($currentIterationLogCandidate)
+                $logTextTrustedForOwner = [bool]$sliceBinding.SliceMatches
+                if (-not [bool]$sliceBinding.SliceMatches) {
                     Add-Finding `
                         -Findings $findings `
                         -Signal 'current_iteration_log_slice_mismatch' `
                         -Severity 'blocking' `
                         -OwnerArea 'RuntimeHarness' `
-                        -Rationale 'godot.log.current-iteration does not match godot.log.after-launch from LogScanOffsetBytes, so the retained slice may be stale or hand-assembled.' `
-                        -NextStep 'Use the derived full-log slice from LogScanOffsetBytes for source routing, then fix current-iteration log retention before trusting packet evidence.' `
+                        -Rationale $sliceBinding.Detail `
+                        -NextStep 'Use only byte-bound current-iteration slices for AutoSlay source routing, then fix evidence retention before trusting packet evidence.' `
                         -Confidence 'high' `
                         -EvidenceFiles $evidenceFiles
+                }
+            }
+        } else {
+            $hasOffsetBinding = $fullLogExists -and (Test-JsonProperty -Object $result -Name 'LogScanOffsetBytes')
+            if (-not $hasOffsetBinding) {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'current_iteration_log_offset_binding_missing' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale 'godot.log.current-iteration exists without both godot.log.after-launch and LogScanOffsetBytes, so the retained current slice may be stale or hand-assembled.' `
+                    -NextStep 'Fix current-iteration log offset binding or rerun the packet after validation lanes are unpaused; do not route ownership from an unbound current-iteration slice.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            } else {
+                $logScanOffset = [long](Get-JsonValue -Object $result -Name 'LogScanOffsetBytes' -DefaultValue -1)
+                $fullLogLength = [long](Get-Item -LiteralPath $fullLogCandidate).Length
+                if ($logScanOffset -lt 0 -or $logScanOffset -gt $fullLogLength) {
+                    Add-Finding `
+                        -Findings $findings `
+                        -Signal 'current_iteration_log_scan_offset_invalid' `
+                        -Severity 'blocking' `
+                        -OwnerArea 'RuntimeHarness' `
+                        -Rationale "LogScanOffsetBytes is outside godot.log.after-launch; offset=$logScanOffset, length=$fullLogLength." `
+                        -NextStep 'Fix current-iteration log slicing or evidence retention before routing this runtime failure to gameplay source.' `
+                        -Confidence 'high' `
+                        -EvidenceFiles $evidenceFiles
+                } else {
+                    $expectedCurrentIterationLogText = Read-TextAfterByteOffset -Path $fullLogCandidate -Offset $logScanOffset
+                    $actualCurrentIterationLogText = [System.IO.File]::ReadAllText($currentIterationLogCandidate)
+                    $normalizedExpectedSlice = Normalize-LogSliceForComparison -Text $expectedCurrentIterationLogText
+                    $normalizedActualSlice = Normalize-LogSliceForComparison -Text $actualCurrentIterationLogText
+                    $logText = $expectedCurrentIterationLogText
+                    $logTextTrustedForOwner = $true
+                    if (-not [string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) {
+                        Add-Finding `
+                            -Findings $findings `
+                            -Signal 'current_iteration_log_slice_mismatch' `
+                            -Severity 'blocking' `
+                            -OwnerArea 'RuntimeHarness' `
+                            -Rationale 'godot.log.current-iteration does not match godot.log.after-launch from LogScanOffsetBytes, so the retained slice may be stale or hand-assembled.' `
+                            -NextStep 'Use the derived full-log slice from LogScanOffsetBytes for source routing, then fix current-iteration log retention before trusting packet evidence.' `
+                            -Confidence 'high' `
+                            -EvidenceFiles $evidenceFiles
+                    }
                 }
             }
         }
@@ -546,7 +746,156 @@ function Analyze-Iteration {
         $logText = Get-Content -LiteralPath $fullLogCandidate -Raw -Encoding UTF8
     }
 
-    $ownerLogText = if ($logTextTrustedForOwner) { $logText } else { '' }
+    if ($isGameNativeAutoSlay) {
+        if ([string]::IsNullOrWhiteSpace($seed)) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'autoslay_seed_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'GameNativeAutoSlay run evidence must retain the exact seed before the run can be reproduced or triaged.' `
+                -NextStep 'Fix AutoSlay run-result retention so each run-result.json and autoslay-summary.json row records Seed.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        }
+
+        if (-not [string]::Equals($eventKind, 'Ancient', [System.StringComparison]::Ordinal)) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'autoslay_event_kind_not_ancient' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale "GameNativeAutoSlay run evidence must record EventKind='Ancient'; found '$eventKind'." `
+                -NextStep 'Retain EventKind from the game-native AutoSlay event-room handler before treating this packet as Ancient traversal evidence.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        }
+
+        if ([string]::IsNullOrWhiteSpace($ancientId)) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'autoslay_ancient_id_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'GameNativeAutoSlay run evidence must retain the AncientId selected by the event-room handler.' `
+                -NextStep 'Fix AutoSlay run-result and summary retention so every Ancient event run records the concrete AncientId.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        }
+
+        if (-not (Test-OrderedTextSequence -Text $invocation -Needles @('AutoSlayer.Start(seed, logFile)'))) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'autoslay_invocation_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'GameNativeAutoSlay run evidence did not retain the launcher or mod-hook invocation that calls AutoSlayer.Start(seed, logFile).' `
+                -NextStep 'Retain the exact launcher/mod-hook invocation before treating this packet as game-native AutoSlay evidence.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        }
+
+        if (-not $autoSlayLogExists) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'autoslay_sidecar_log_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'GameNativeAutoSlay evidence did not retain the AutoSlay sidecar log for this seed.' `
+                -NextStep 'Fix AutoSlay log retention before classifying gameplay source; the sidecar log is required to prove event-room traversal.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        } else {
+            $eventSequence = @(
+                "Starting run with seed=$seed",
+                'Entering Event room',
+                'Detected Ancient event, clicking through dialogue',
+                'Selecting event option:'
+            )
+            $completionMarker = "Run completed successfully with seed=$seed"
+            $failureMarker = "Run failed with seed=$seed"
+
+            if (-not [string]::IsNullOrWhiteSpace($seed) -and -not (Test-OrderedTextSequence -Text $autoSlayLogText -Needles $eventSequence)) {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'autoslay_sidecar_event_sequence_missing' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale 'The AutoSlay sidecar log does not contain the ordered seed start, event-room entry, Ancient dialogue, and option-selection markers.' `
+                    -NextStep 'Rerun with a seed/launcher path that reaches an Ancient event room, or fix AutoSlay event-room logging before using this packet as gameplay evidence.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($ancientId) -and -not (Test-TextContains -Text $autoSlayLogText -Needle $ancientId)) {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'autoslay_sidecar_ancient_id_missing' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale "The AutoSlay sidecar log does not contain AncientId '$ancientId'." `
+                    -NextStep 'Fix AutoSlay event-room logging or rerun with a retained sidecar log that names the Ancient event actually traversed.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($seed) -and -not (Test-TextContains -Text $autoSlayLogText -Needle $completionMarker) -and -not (Test-TextContains -Text $autoSlayLogText -Needle $failureMarker)) {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'autoslay_completion_or_failure_marker_missing' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale 'The AutoSlay sidecar log has no completion or failure marker for the retained seed.' `
+                    -NextStep 'Fix AutoSlay termination logging before using the sidecar log to classify this run.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($seed) -and (Test-TextContains -Text $autoSlayLogText -Needle $failureMarker)) {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'autoslay_run_failed_marker' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale 'The AutoSlay sidecar log explicitly records a failed run for the retained seed.' `
+                    -NextStep 'Inspect the trusted current-iteration log and sidecar lines around the failure marker, then reroute to gameplay source only after the packet bindings are clean.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+        }
+
+        if ($logTextTrustedForOwner -and -not [string]::IsNullOrWhiteSpace($seed) -and -not (Test-OrderedTextSequence -Text $logText -Needles @("Starting run with seed=$seed", 'Entering Event room', 'Detected Ancient event, clicking through dialogue', 'Selecting event option:'))) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'autoslay_current_log_event_sequence_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'The byte-bound current-iteration Godot log does not contain the ordered AutoSlay event traversal markers.' `
+                -NextStep 'Fix Godot/current-slice logging or rerun the AutoSlay packet; do not use sidecar-only traversal as game-native proof.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        }
+
+        if ($logTextTrustedForOwner -and -not [string]::IsNullOrWhiteSpace($ancientId) -and -not (Test-TextContains -Text $logText -Needle $ancientId)) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'autoslay_current_log_ancient_id_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale "The byte-bound current-iteration Godot log does not contain AncientId '$ancientId'." `
+                -NextStep 'Fix current-slice capture or AutoSlay event-room logging before treating the run as game-native Ancient traversal proof.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        }
+    }
+
+    $ownerLogText = if ($logTextTrustedForOwner -and $isGameNativeAutoSlay) {
+        "$logText`n$autoSlayLogText"
+    } elseif ($logTextTrustedForOwner) {
+        $logText
+    } else {
+        ''
+    }
     $logOwnerArea = Get-OwnerAreaFromText -Text $ownerLogText -Command ''
     $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
 
@@ -573,9 +922,9 @@ function Analyze-Iteration {
 
     if ($iterationResultMissing) {
         $missingResultRationale = if ($null -ne $SummaryResult) {
-            'iteration-result.json is missing or could not be parsed. monkey-summary.json provided a fallback row for routing, but it is not the canonical per-iteration evidence artifact.'
+            "$ResultFileName is missing or could not be parsed. Summary JSON provided a fallback row for routing, but it is not the canonical per-run evidence artifact."
         } else {
-            'iteration-result.json is missing or could not be parsed, and monkey-summary.json did not provide a usable iteration result.'
+            "$ResultFileName is missing or could not be parsed, and summary JSON did not provide a usable run result."
         }
 
         Add-Finding `
@@ -584,7 +933,7 @@ function Analyze-Iteration {
             -Severity 'blocking' `
             -OwnerArea 'RuntimeHarness' `
             -Rationale $missingResultRationale `
-            -NextStep 'Fix evidence retention or rerun the packet after validation lanes are unpaused; do not classify gameplay behavior from an incomplete iteration packet.' `
+            -NextStep 'Fix evidence retention or rerun the packet after validation lanes are unpaused; do not classify gameplay behavior from an incomplete iteration/run packet.' `
             -Confidence 'high' `
             -EvidenceFiles @($resultPath, $logCandidate, $auditCandidate, $probeSamplesCandidate, $sts1ModeCandidate)
     }
@@ -771,7 +1120,7 @@ function Analyze-Iteration {
             -Signal 'iteration_failed_without_failure_signal' `
             -Severity 'blocking' `
             -OwnerArea 'RuntimeHarness' `
-            -Rationale 'iteration-result.json says the iteration failed, but it retained no FailureReasonCodes, HangSignals, or audit hits to explain the failure.' `
+            -Rationale "$ResultFileName says the iteration failed, but it retained no FailureReasonCodes, HangSignals, or audit hits to explain the failure." `
             -NextStep 'Fix runner evidence retention or derive the missing failure code from failed booleans before classifying gameplay source.' `
             -Confidence 'high' `
             -EvidenceFiles $evidenceFiles
@@ -848,7 +1197,11 @@ function Analyze-Iteration {
 
     [pscustomobject]@{
         IterationDir = $Directory
-        Iteration = if ($result) { [int](Get-JsonValue -Object $result -Name 'Iteration' -DefaultValue 0) } else { 0 }
+        Iteration = if ($result) { [int](Get-JsonValue -Object $result -Name 'Iteration' -DefaultValue $DefaultIteration) } else { $DefaultIteration }
+        Seed = $seed
+        RunnerKind = $runnerKind
+        EventKind = $eventKind
+        AncientId = $ancientId
         Passed = if ($result) { [bool](Get-JsonValue -Object $result -Name 'Passed' -DefaultValue $false) } else { $false }
         Command = $command
         ScenarioTag = $scenarioTag
@@ -866,31 +1219,83 @@ function Analyze-Iteration {
     }
 }
 
-$iterationDirs = @()
+$analysisTargets = @()
 $summary = $null
 $summaryResultsByIteration = @{}
 $evidenceFull = ''
 
 if ($IterationDir) {
-    $iterationDirs = @(Resolve-RepoPath -Path $IterationDir)
+    $resolvedIterationDir = Resolve-RepoPath -Path $IterationDir
+    $resultFileName = if (Test-Path -LiteralPath (Join-Path $resolvedIterationDir 'run-result.json') -PathType Leaf) {
+        'run-result.json'
+    } else {
+        'iteration-result.json'
+    }
+    $defaultIteration = if ($resolvedIterationDir -match '(?:iteration|run)-(\d+)$') { [int]$Matches[1] } else { $Iteration }
+    $analysisTargets = @([pscustomobject]@{
+        Directory = $resolvedIterationDir
+        SummaryResult = $null
+        ResultFileName = $resultFileName
+        DefaultIteration = $defaultIteration
+    })
 } elseif ($EvidenceDir) {
     $evidenceFull = Resolve-RepoPath -Path $EvidenceDir
     $summaryPath = Join-Path $evidenceFull 'monkey-summary.json'
+    $autoSlaySummaryPath = Join-Path $evidenceFull 'autoslay-summary.json'
+    $autoSlaySummary = Read-JsonOrNull -Path $autoSlaySummaryPath
     $summary = Read-JsonOrNull -Path $summaryPath
-    if ($summary -and (Test-JsonProperty -Object $summary -Name 'Results')) {
-        foreach ($result in @($summary.Results)) {
-            $summaryResultsByIteration[[int](Get-JsonValue -Object $result -Name 'Iteration' -DefaultValue 0)] = $result
-        }
-    }
+    if ($autoSlaySummary -and
+        [string]::Equals([string](Get-JsonValue -Object $autoSlaySummary -Name 'RunnerKind' -DefaultValue ''), 'GameNativeAutoSlay', [System.StringComparison]::Ordinal) -and
+        (Test-JsonProperty -Object $autoSlaySummary -Name 'Runs') -and
+        @($autoSlaySummary.Runs).Count -gt 0) {
+        $runIndex = 0
+        foreach ($run in @($autoSlaySummary.Runs)) {
+            $runIndex++
+            if ($Iteration -gt 0 -and $runIndex -ne $Iteration) {
+                continue
+            }
 
-    if ($Iteration -gt 0) {
-        $iterationDirs = @(Join-Path $evidenceFull ('iteration-{0:D4}' -f $Iteration))
-    } elseif ($summary -and (Test-JsonProperty -Object $summary -Name 'FailedIterationIds') -and @($summary.FailedIterationIds).Count -gt 0) {
-        $iterationDirs = @($summary.FailedIterationIds | ForEach-Object {
-            Join-Path $evidenceFull ('iteration-{0:D4}' -f [int]$_)
-        })
+            $runResultPath = Resolve-AnalysisPath -BaseDir $evidenceFull -Path ([string](Get-JsonValue -Object $run -Name 'RunResultPath' -DefaultValue ('run-{0:D4}/run-result.json' -f $runIndex)))
+            $runDirectory = [System.IO.Path]::GetDirectoryName($runResultPath)
+            if ([string]::IsNullOrWhiteSpace($runDirectory)) {
+                $runDirectory = Join-Path $evidenceFull ('run-{0:D4}' -f $runIndex)
+            }
+
+            $analysisTargets += [pscustomobject]@{
+                Directory = $runDirectory
+                SummaryResult = $run
+                ResultFileName = [System.IO.Path]::GetFileName($runResultPath)
+                DefaultIteration = $runIndex
+            }
+        }
     } else {
-        $iterationDirs = @(Get-ChildItem -LiteralPath $evidenceFull -Directory -Filter 'iteration-*' -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { $_.FullName })
+        if ($summary -and (Test-JsonProperty -Object $summary -Name 'Results')) {
+            foreach ($result in @($summary.Results)) {
+                $summaryResultsByIteration[[int](Get-JsonValue -Object $result -Name 'Iteration' -DefaultValue 0)] = $result
+            }
+        }
+
+        $iterationDirs = @()
+        if ($Iteration -gt 0) {
+            $iterationDirs = @(Join-Path $evidenceFull ('iteration-{0:D4}' -f $Iteration))
+        } elseif ($summary -and (Test-JsonProperty -Object $summary -Name 'FailedIterationIds') -and @($summary.FailedIterationIds).Count -gt 0) {
+            $iterationDirs = @($summary.FailedIterationIds | ForEach-Object {
+                Join-Path $evidenceFull ('iteration-{0:D4}' -f [int]$_)
+            })
+        } else {
+            $iterationDirs = @(Get-ChildItem -LiteralPath $evidenceFull -Directory -Filter 'iteration-*' -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { $_.FullName })
+        }
+
+        foreach ($dir in $iterationDirs) {
+            $iterationNumber = if ($dir -match 'iteration-(\d+)$') { [int]$Matches[1] } else { 0 }
+            $summaryResult = if ($summaryResultsByIteration.ContainsKey($iterationNumber)) { $summaryResultsByIteration[$iterationNumber] } else { $null }
+            $analysisTargets += [pscustomobject]@{
+                Directory = $dir
+                SummaryResult = $summaryResult
+                ResultFileName = 'iteration-result.json'
+                DefaultIteration = $iterationNumber
+            }
+        }
     }
 } elseif ($LogPath -or $AuditPath) {
     $tempDir = Join-Path $env:TEMP ('spire-plus-runtime-analysis-' + [guid]::NewGuid().ToString('N'))
@@ -902,15 +1307,18 @@ if ($IterationDir) {
         Copy-Item -LiteralPath (Resolve-RepoPath -Path $AuditPath) -Destination (Join-Path $tempDir 'godot-log-audit.json') -Force
     }
 
-    $iterationDirs = @($tempDir)
+    $analysisTargets = @([pscustomobject]@{
+        Directory = $tempDir
+        SummaryResult = $null
+        ResultFileName = 'iteration-result.json'
+        DefaultIteration = 0
+    })
 } else {
     throw 'Pass -EvidenceDir, -IterationDir, or -LogPath/-AuditPath.'
 }
 
-$iterationReports = foreach ($dir in $iterationDirs) {
-    $iterationNumber = if ($dir -match 'iteration-(\d+)$') { [int]$Matches[1] } else { 0 }
-    $summaryResult = if ($summaryResultsByIteration.ContainsKey($iterationNumber)) { $summaryResultsByIteration[$iterationNumber] } else { $null }
-    Analyze-Iteration -Directory $dir -SummaryResult $summaryResult
+$iterationReports = foreach ($target in $analysisTargets) {
+    Analyze-Iteration -Directory $target.Directory -SummaryResult $target.SummaryResult -ResultFileName $target.ResultFileName -DefaultIteration $target.DefaultIteration
 }
 
 $allFindings = @($iterationReports | ForEach-Object { @($_.Findings) })

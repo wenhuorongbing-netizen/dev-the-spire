@@ -378,9 +378,22 @@ if ($summaryExists) {
 }
 
 $planSeeds = @()
+$launcherKind = ''
+$launcherPath = ''
+$launcherSha256 = ''
+$hookId = ''
+$hookAssembly = ''
+$invocationCommand = ''
 if ($null -ne $plan) {
     $runnerKind = [string](Get-JsonValue -Object $plan -Name 'RunnerKind' -DefaultValue '')
     $invocation = [string](Get-JsonValue -Object $plan -Name 'Invocation' -DefaultValue '')
+    $launcherKind = [string](Get-JsonValue -Object $plan -Name 'LauncherKind' -DefaultValue '')
+    $launcherPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $plan -Name 'LauncherPath' -DefaultValue ''))
+    $launcherSha256 = [string](Get-JsonValue -Object $plan -Name 'LauncherSha256' -DefaultValue '')
+    $hookId = [string](Get-JsonValue -Object $plan -Name 'HookId' -DefaultValue '')
+    $hookAssembly = [string](Get-JsonValue -Object $plan -Name 'HookAssembly' -DefaultValue '')
+    $invocationCommand = [string](Get-JsonValue -Object $plan -Name 'InvocationCommand' -DefaultValue '')
+    $launcherExists = -not [string]::IsNullOrWhiteSpace($launcherPath) -and (Test-Path -LiteralPath $launcherPath -PathType Leaf)
     $expectedSts1Mode = [string](Get-JsonValue -Object $plan -Name 'Sts1EventMode' -DefaultValue '')
     $sourceWorkspace = Get-JsonValue -Object $plan -Name 'SourceWorkspace' -DefaultValue $null
     $planSeeds = @(Get-ArrayValues -Value (Get-JsonValue -Object $plan -Name 'Seeds' -DefaultValue @()) | ForEach-Object { [string]$_ })
@@ -389,6 +402,17 @@ if ($null -ne $plan) {
 
     Add-Check -Name 'plan_runner_kind_is_game_native_autoslay' -Passed ([string]::Equals($runnerKind, 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)) -Detail "RunnerKind must be GameNativeAutoSlay; found '$runnerKind'"
     Add-Check -Name 'plan_invocation_calls_autoslayer_start' -Passed (Contains-Text -Text $invocation -Needle 'AutoSlayer.Start(seed, logFile)') -Detail 'Invocation must record the launcher/mod hook that calls AutoSlayer.Start(seed, logFile)'
+    Add-Check -Name 'plan_launcher_kind_present' -Passed (-not [string]::IsNullOrWhiteSpace($launcherKind)) -Detail 'LauncherKind must identify the retained launcher/mod-hook proof type'
+    Add-Check -Name 'plan_launcher_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($launcherPath)) -Detail 'LauncherPath must retain the launcher/mod-hook proof artifact'
+    Add-Check -Name 'plan_launcher_path_under_evidence_dir' -Passed (Test-PathInsideDirectory -Path $launcherPath -Directory $resolvedEvidenceDir) -Detail 'LauncherPath must stay inside the evidence directory'
+    Add-Check -Name 'plan_launcher_path_exists' -Passed $launcherExists -Detail 'LauncherPath must point at a retained launcher/mod-hook proof artifact'
+    Add-Check -Name 'plan_launcher_sha256_present' -Passed (-not [string]::IsNullOrWhiteSpace($launcherSha256)) -Detail 'LauncherSha256 must bind the retained launcher/mod-hook proof artifact'
+    if ($launcherExists -and -not [string]::IsNullOrWhiteSpace($launcherSha256)) {
+        Add-Check -Name 'plan_launcher_sha256_matches' -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $launcherPath), $launcherSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'LauncherSha256 must match LauncherPath'
+    }
+    Add-Check -Name 'plan_hook_id_present' -Passed (-not [string]::IsNullOrWhiteSpace($hookId)) -Detail 'HookId must identify the concrete mod hook that starts game-native AutoSlay'
+    Add-Check -Name 'plan_hook_assembly_present' -Passed (-not [string]::IsNullOrWhiteSpace($hookAssembly)) -Detail 'HookAssembly must identify the assembly that owns the AutoSlay hook'
+    Add-Check -Name 'plan_invocation_command_calls_autoslayer_start' -Passed (Contains-Text -Text $invocationCommand -Needle 'AutoSlayer.Start(seed, logFile)') -Detail 'InvocationCommand must record the exact launcher/mod-hook command that calls AutoSlayer.Start(seed, logFile)'
     Add-Check -Name 'plan_seed_count_meets_minimum' -Passed ($planSeeds.Count -ge $MinRuns) -Detail "Seeds count must be at least $MinRuns; found $($planSeeds.Count)"
     Add-Check -Name 'plan_seeds_all_non_empty' -Passed ($nonEmptyPlanSeeds.Count -eq $planSeeds.Count) -Detail 'all plan Seeds entries must be non-empty'
     Add-Check -Name 'plan_seeds_unique' -Passed ($duplicatePlanSeeds.Count -eq 0) -Detail "plan Seeds must be unique; duplicate seed groups=$($duplicatePlanSeeds.Count)"
@@ -442,12 +466,18 @@ if ($null -ne $plan) {
             $autoSlay = Get-JsonValue -Object $sourceReport -Name 'AutoSlay' -DefaultValue $null
             $policy = Get-JsonValue -Object $sourceReport -Name 'EvidenceUsePolicy' -DefaultValue $null
             $reportMismatches = @(Get-ArrayValues -Value (Get-JsonValue -Object $sourceReport -Name 'Mismatches' -DefaultValue @()))
+            Add-Check -Name 'plan_source_workspace_schema_version_one' -Passed ([int](Get-JsonValue -Object $sourceReport -Name 'SchemaVersion' -DefaultValue 0) -eq 1) -Detail 'retained source-workspace report must come from schema version 1'
+            foreach ($name in @('CreatedAt', 'RepoRoot', 'SourceRoot', 'GameRoot')) {
+                Add-Check -Name "plan_source_workspace_$($name.ToLowerInvariant())_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceReport -Name $name -DefaultValue ''))) -Detail "retained source-workspace report must include $name from check-local-godot-source-workspace.ps1"
+            }
             Add-Check -Name 'plan_source_workspace_report_passed' -Passed ([bool](Get-JsonValue -Object $sourceReport -Name 'Passed' -DefaultValue $false)) -Detail 'source-workspace report must have Passed=true'
             Add-Check -Name 'plan_source_workspace_report_mismatches_empty' -Passed ($reportMismatches.Count -eq 0) -Detail "source-workspace report mismatches must be empty; found $($reportMismatches.Count)"
+            Add-Check -Name 'plan_source_workspace_policy_no_launch' -Passed ([bool](Get-JsonValue -Object $policy -Name 'NoLaunch' -DefaultValue $false)) -Detail 'source-workspace report must record that the checker did not launch Godot or the game'
             Add-Check -Name 'plan_source_workspace_policy_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $policy -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'source-workspace report must record that source inspection alone is not runtime proof'
             Add-Check -Name 'plan_source_workspace_policy_local_source_reference_only' -Passed ([bool](Get-JsonValue -Object $policy -Name 'LocalSourceReferenceOnly' -DefaultValue $false)) -Detail 'source-workspace report must record local-source-reference-only policy'
             Add-Check -Name 'plan_source_workspace_policy_authorized_local_install_only' -Passed ([bool](Get-JsonValue -Object $policy -Name 'AuthorizedLocalInstallOnly' -DefaultValue $false)) -Detail 'source-workspace report must record authorized-local-install-only policy'
             Add-Check -Name 'plan_source_workspace_policy_third_party_dumps_prohibited' -Passed ([bool](Get-JsonValue -Object $policy -Name 'ThirdPartyDumpsProhibited' -DefaultValue $false)) -Detail 'source-workspace report must record that third-party dumps are prohibited'
+            Add-Check -Name 'plan_source_workspace_policy_runtime_proof_still_requires_launch' -Passed ([bool](Get-JsonValue -Object $policy -Name 'RuntimeProofStillRequiresLaunchEvidence' -DefaultValue $false)) -Detail 'source-workspace report must record that runtime proof still requires launch evidence'
             Add-Check -Name 'plan_source_workspace_policy_autoslay_still_requires_launch' -Passed ([bool](Get-JsonValue -Object $policy -Name 'GameNativeAutoSlayStillRequiresRuntimeLaunchEvidence' -DefaultValue $false)) -Detail 'source-workspace report must keep AutoSlay source checks separate from runtime proof'
             foreach ($name in @('StartSeedLogFileSignature', 'NonInteractiveCheck', 'DebugSeedOverride', 'AutoCardSelector', 'AncientDialogueHandler', 'EventOptionSelectionLog', 'EventTriggeredCombatLog', 'EventCombatStartedLog')) {
                 Add-Check -Name "plan_source_workspace_autoslay_$name" -Passed ([bool](Get-JsonValue -Object $autoSlay -Name $name -DefaultValue $false)) -Detail "AutoSlay source-contract field $name must be true"
@@ -503,7 +533,12 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $run = $summaryRuns[$i]
     $runName = "run_{0:D4}" -f ($i + 1)
     $seed = [string](Get-JsonValue -Object $run -Name 'Seed' -DefaultValue '')
+    $summaryRunPassed = [bool](Get-JsonValue -Object $run -Name 'Passed' -DefaultValue $false)
     $exitCode = [int](Get-JsonValue -Object $run -Name 'ExitCode' -DefaultValue -999)
+    $summaryFailureReasonCodes = @(Get-ArrayValues -Value (Get-JsonValue -Object $run -Name 'FailureReasonCodes' -DefaultValue @()))
+    $summaryHangSignals = @(Get-ArrayValues -Value (Get-JsonValue -Object $run -Name 'HangSignals' -DefaultValue @()))
+    $eventKind = [string](Get-JsonValue -Object $run -Name 'EventKind' -DefaultValue '')
+    $ancientId = [string](Get-JsonValue -Object $run -Name 'AncientId' -DefaultValue '')
     $runResultPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'RunResultPath' -DefaultValue ''))
     $autoSlayLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'AutoSlayLogPath' -DefaultValue ''))
     $beforeLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogBeforePath' -DefaultValue ''))
@@ -523,7 +558,12 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
 
     Add-Check -Name "${runName}_seed_present" -Passed (-not [string]::IsNullOrWhiteSpace($seed)) -Detail 'each AutoSlay run must retain its seed'
     Add-Check -Name "${runName}_seed_listed_in_plan" -Passed ($planSeeds -contains $seed) -Detail "seed '$seed' must be listed in autoslay-plan.json Seeds"
+    Add-Check -Name "${runName}_summary_run_passed_true" -Passed $summaryRunPassed -Detail 'each summary run must record Passed=true for proof packets'
+    Add-Check -Name "${runName}_summary_run_failure_reason_codes_empty" -Passed ($summaryFailureReasonCodes.Count -eq 0) -Detail "summary run FailureReasonCodes must be empty; found $($summaryFailureReasonCodes.Count)"
+    Add-Check -Name "${runName}_summary_run_hang_signals_empty" -Passed ($summaryHangSignals.Count -eq 0) -Detail "summary run HangSignals must be empty; found $($summaryHangSignals.Count)"
     Add-Check -Name "${runName}_exit_code_zero" -Passed ($exitCode -eq 0) -Detail "ExitCode must be 0 for proof packets; found $exitCode"
+    Add-Check -Name "${runName}_event_kind_is_ancient" -Passed ([string]::Equals($eventKind, 'Ancient', [System.StringComparison]::Ordinal)) -Detail "EventKind must be Ancient for Ancient AutoSlay proof; found '$eventKind'"
+    Add-Check -Name "${runName}_ancient_id_present" -Passed (-not [string]::IsNullOrWhiteSpace($ancientId)) -Detail 'AncientId must identify the Ancient dialogue/options traversed by this run'
     Add-Check -Name "${runName}_run_result_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($runResultPath)) -Detail 'RunResultPath must retain launch provenance for each run'
     Add-Check -Name "${runName}_run_result_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $runResultPath -Directory $resolvedEvidenceDir) -Detail 'RunResultPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_run_result_exists" -Passed $runResultExists -Detail 'RunResultPath must point at retained run-result.json'
@@ -592,10 +632,15 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_autoslay_log_completed_seed" -Passed ((-not [string]::IsNullOrWhiteSpace($seed)) -and (Contains-Text -Text $autoSlayLog -Needle "Run completed successfully with seed=$seed")) -Detail 'AutoSlay log must contain the completion marker for this seed'
     Add-Check -Name "${runName}_autoslay_log_no_failed_seed" -Passed (-not ((-not [string]::IsNullOrWhiteSpace($seed)) -and (Contains-Text -Text $autoSlayLog -Needle "Run failed with seed=$seed"))) -Detail 'proof packets must not contain a RunFailed marker for this seed'
     Add-Check -Name "${runName}_current_log_contains_autoslay_start" -Passed ((-not [string]::IsNullOrWhiteSpace($seed)) -and (Contains-Text -Text $currentLog -Needle "Starting run with seed=$seed")) -Detail 'current-iteration godot log must contain the AutoSlay start marker'
+    if (-not [string]::IsNullOrWhiteSpace($ancientId)) {
+        Add-Check -Name "${runName}_autoslay_log_contains_ancient_id" -Passed (Contains-Text -Text $autoSlayLog -Needle $ancientId) -Detail "AutoSlay sidecar log must contain AncientId '$ancientId'"
+        Add-Check -Name "${runName}_current_log_contains_ancient_id" -Passed (Contains-Text -Text $currentLog -Needle $ancientId) -Detail "current-iteration godot log must contain AncientId '$ancientId'"
+    }
 
     $eventSequence = @(
         "Starting run with seed=$seed",
         'Entering Event room',
+        'Detected Ancient event, clicking through dialogue',
         'Selecting event option:',
         "Run completed successfully with seed=$seed"
     )
@@ -603,8 +648,8 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $currentLogEventSequenceObserved = (-not [string]::IsNullOrWhiteSpace($seed)) -and (Test-OrderedTextSequence -Text $currentLog -Needles $eventSequence)
     $runEventTraversal = $autoSlayEventSequenceObserved -and $currentLogEventSequenceObserved
     $eventTraversalObserved = $eventTraversalObserved -or $runEventTraversal
-    Add-Check -Name "${runName}_autoslay_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $autoSlayEventSequenceObserved) -Detail 'AutoSlay sidecar log must contain ordered start, Entering Event room, Selecting event option, and completion markers'
-    Add-Check -Name "${runName}_current_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $currentLogEventSequenceObserved) -Detail 'current-iteration godot log must contain ordered start, Entering Event room, Selecting event option, and completion markers'
+    Add-Check -Name "${runName}_autoslay_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $autoSlayEventSequenceObserved) -Detail 'AutoSlay sidecar log must contain ordered start, Entering Event room, Detected Ancient event, Selecting event option, and completion markers'
+    Add-Check -Name "${runName}_current_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $currentLogEventSequenceObserved) -Detail 'current-iteration godot log must contain ordered start, Entering Event room, Detected Ancient event, Selecting event option, and completion markers'
     Add-Check -Name "${runName}_event_room_traversal_observed" -Passed ($AllowMissingEventTraversal -or $runEventTraversal) -Detail 'AutoSlay event proof requires ordered event traversal in both sidecar and current-iteration godot logs'
 
     if ($auditExists) {
@@ -677,11 +722,34 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $resultAuditPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogAuditPath' -DefaultValue ''))
             $resultSts1ModeCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'Sts1ModeLogCheckPath' -DefaultValue ''))
             $resultInvocation = [string](Get-JsonValue -Object $runResult -Name 'Invocation' -DefaultValue '')
+            $resultFailureReasonCodes = @(Get-ArrayValues -Value (Get-JsonValue -Object $runResult -Name 'FailureReasonCodes' -DefaultValue @()))
+            $resultHangSignals = @(Get-ArrayValues -Value (Get-JsonValue -Object $runResult -Name 'HangSignals' -DefaultValue @()))
+            $resultLauncherKind = [string](Get-JsonValue -Object $runResult -Name 'LauncherKind' -DefaultValue '')
+            $resultLauncherPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'LauncherPath' -DefaultValue ''))
+            $resultLauncherSha256 = [string](Get-JsonValue -Object $runResult -Name 'LauncherSha256' -DefaultValue '')
+            $resultHookId = [string](Get-JsonValue -Object $runResult -Name 'HookId' -DefaultValue '')
+            $resultHookAssembly = [string](Get-JsonValue -Object $runResult -Name 'HookAssembly' -DefaultValue '')
+            $resultInvocationCommand = [string](Get-JsonValue -Object $runResult -Name 'InvocationCommand' -DefaultValue '')
             Add-Check -Name "${runName}_run_result_schema_version_one" -Passed ([int](Get-JsonValue -Object $runResult -Name 'SchemaVersion' -DefaultValue 0) -eq 1) -Detail 'run-result.json SchemaVersion must be 1'
             Add-Check -Name "${runName}_run_result_launch_true" -Passed ([bool](Get-JsonValue -Object $runResult -Name 'Launch' -DefaultValue $false)) -Detail 'run-result.json must record Launch=true'
             Add-Check -Name "${runName}_run_result_runner_kind_game_native_autoslay" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'RunnerKind' -DefaultValue ''), 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)) -Detail 'run-result.json RunnerKind must be GameNativeAutoSlay'
             Add-Check -Name "${runName}_run_result_invocation_calls_autoslayer_start" -Passed (Contains-Text -Text $resultInvocation -Needle 'AutoSlayer.Start(seed, logFile)') -Detail 'run-result.json Invocation must record the launcher/mod hook that calls AutoSlayer.Start(seed, logFile)'
+            Add-Check -Name "${runName}_run_result_launcher_kind_matches_plan" -Passed ([string]::Equals($resultLauncherKind, $launcherKind, [System.StringComparison]::Ordinal)) -Detail 'run-result.json LauncherKind must match autoslay-plan.json'
+            Add-Check -Name "${runName}_run_result_launcher_path_matches_plan" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultLauncherPath, $launcherPath)) -Detail 'run-result.json LauncherPath must match autoslay-plan.json'
+            Add-Check -Name "${runName}_run_result_launcher_sha256_matches_plan" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultLauncherSha256, $launcherSha256)) -Detail 'run-result.json LauncherSha256 must match autoslay-plan.json'
+            Add-Check -Name "${runName}_run_result_hook_id_matches_plan" -Passed ([string]::Equals($resultHookId, $hookId, [System.StringComparison]::Ordinal)) -Detail 'run-result.json HookId must match autoslay-plan.json'
+            Add-Check -Name "${runName}_run_result_hook_assembly_matches_plan" -Passed ([string]::Equals($resultHookAssembly, $hookAssembly, [System.StringComparison]::Ordinal)) -Detail 'run-result.json HookAssembly must match autoslay-plan.json'
+            Add-Check -Name "${runName}_run_result_invocation_command_matches_plan" -Passed ([string]::Equals($resultInvocationCommand, $invocationCommand, [System.StringComparison]::Ordinal)) -Detail 'run-result.json InvocationCommand must match autoslay-plan.json'
+            Add-Check -Name "${runName}_run_result_invocation_command_calls_autoslayer_start" -Passed (Contains-Text -Text $resultInvocationCommand -Needle 'AutoSlayer.Start(seed, logFile)') -Detail 'run-result.json InvocationCommand must record the exact launcher/mod-hook command that calls AutoSlayer.Start(seed, logFile)'
             Add-Check -Name "${runName}_run_result_seed_matches_summary" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'Seed' -DefaultValue ''), $seed, [System.StringComparison]::Ordinal)) -Detail 'run-result.json Seed must match autoslay-summary.json run Seed'
+            Add-Check -Name "${runName}_run_result_event_kind_matches_summary" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'EventKind' -DefaultValue ''), $eventKind, [System.StringComparison]::Ordinal)) -Detail 'run-result.json EventKind must match autoslay-summary.json run EventKind'
+            Add-Check -Name "${runName}_run_result_ancient_id_matches_summary" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'AncientId' -DefaultValue ''), $ancientId, [System.StringComparison]::Ordinal)) -Detail 'run-result.json AncientId must match autoslay-summary.json run AncientId'
+            Add-Check -Name "${runName}_run_result_passed_true" -Passed ([bool](Get-JsonValue -Object $runResult -Name 'Passed' -DefaultValue $false)) -Detail 'run-result.json Passed must be true for proof packets'
+            Add-Check -Name "${runName}_run_result_passed_matches_summary" -Passed ([bool](Get-JsonValue -Object $runResult -Name 'Passed' -DefaultValue $false) -eq $summaryRunPassed) -Detail 'run-result.json Passed must match autoslay-summary.json run Passed'
+            Add-Check -Name "${runName}_run_result_failure_reason_codes_empty" -Passed ($resultFailureReasonCodes.Count -eq 0) -Detail "run-result.json FailureReasonCodes must be empty; found $($resultFailureReasonCodes.Count)"
+            Add-Check -Name "${runName}_run_result_hang_signals_empty" -Passed ($resultHangSignals.Count -eq 0) -Detail "run-result.json HangSignals must be empty; found $($resultHangSignals.Count)"
+            Add-Check -Name "${runName}_run_result_failure_reason_codes_match_summary" -Passed ([string]::Equals([string]::Join("`n", @($summaryFailureReasonCodes | ForEach-Object { [string]$_ })), [string]::Join("`n", @($resultFailureReasonCodes | ForEach-Object { [string]$_ })), [System.StringComparison]::Ordinal)) -Detail 'run-result.json FailureReasonCodes must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_hang_signals_match_summary" -Passed ([string]::Equals([string]::Join("`n", @($summaryHangSignals | ForEach-Object { [string]$_ })), [string]::Join("`n", @($resultHangSignals | ForEach-Object { [string]$_ })), [System.StringComparison]::Ordinal)) -Detail 'run-result.json HangSignals must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_process_id_positive" -Passed ([int](Get-JsonValue -Object $runResult -Name 'ProcessId' -DefaultValue 0) -gt 0) -Detail 'run-result.json must retain a positive launched process id'
             Add-Check -Name "${runName}_run_result_start_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $runResult -Name 'StartTimestamp' -DefaultValue ''))) -Detail 'run-result.json must retain StartTimestamp'
             Add-Check -Name "${runName}_run_result_end_timestamp_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $runResult -Name 'EndTimestamp' -DefaultValue ''))) -Detail 'run-result.json must retain EndTimestamp'
